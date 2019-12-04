@@ -249,14 +249,20 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [ volcello, ]
+        start_year: 1986
+        end_year: 2005
+      volcello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
         start_year: 1986
         end_year: 2005
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+##      - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
@@ -265,12 +271,12 @@ diagnostics:
       - {dataset: CNRM-CM5-2}
       - {dataset: CSIRO-Mk3-6-0}
       - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
+##      - {dataset: FGOALS-s2}
 ##      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
+##      - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R-CC}
+##      - {dataset: GISS-E2-H-CC}
+##      - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
       - {dataset: HadGEM2-ES}
       - {dataset: IPSL-CM5A-LR}
@@ -364,7 +370,13 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [areacello, ]
+        start_year: 1986
+        end_year: 2005
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
         start_year: 1986
         end_year: 2005
     additional_datasets:
@@ -383,8 +395,8 @@ diagnostics:
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R-CC}
+##      - {dataset: GISS-E2-H-CC}
+##      - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
       - {dataset: HadGEM2-ES}
       - {dataset: IPSL-CM5A-LR}
@@ -417,7 +429,6 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [volcello, ]
         start_year: 1986
         end_year: 2005
       so:
@@ -425,7 +436,6 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [ volcello, ]
         start_year: 1986
         end_year: 2005
       vo:
@@ -433,7 +443,13 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [volcello, ]
+        start_year: 1986
+        end_year: 2005
+      volcello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
         start_year: 1986
         end_year: 2005
     additional_datasets:
@@ -489,7 +505,6 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [volcello, ]
         start_year: 1986
         end_year: 2005
       so:
@@ -497,7 +512,6 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [ volcello, ]
         start_year: 1986
         end_year: 2005
       vo:
@@ -505,7 +519,13 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [volcello, ]
+        start_year: 1986
+        end_year: 2005
+      volcello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
         start_year: 1986
         end_year: 2005
     additional_datasets:
@@ -557,9 +577,15 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [areacello, ]
         start_year: 1986
         end_year: 2005
+#      areacello:
+#        mip: fx
+#        project: CMIP5
+#        exp: historical
+#        ensemble: r0i0p0
+#        start_year: 1986
+#        end_year: 2005
     additional_datasets:
       - {dataset: bcc-csm1-1}
 ##      - {dataset: BNU-ESM} 
@@ -605,9 +631,15 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [areacello, ]
         start_year: 1986
         end_year: 2005
+#      areacello:
+#        mip: fx
+#        project: CMIP5
+#        exp: historical
+#        ensemble: r0i0p0
+#        start_year: 1986
+#        end_year: 2005
     additional_datasets:
       - {dataset: bcc-csm1-1}
 ##      - {dataset: BNU-ESM} 
@@ -644,10 +676,15 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        fx_files: [areacello, ]
         start_year: 1986
         end_year: 2005
-        #fx_files: [areacello]
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
     additional_datasets:
       - {dataset: bcc-csm1-1}
 ##      - {dataset: BNU-ESM} 
@@ -655,8 +692,8 @@ diagnostics:
       - {dataset: CNRM-CM5}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R-CC}
+##      - {dataset: GISS-E2-H-CC}
+##      - {dataset: GISS-E2-R-CC}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
@@ -739,7 +776,6 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
-        fx_files: [areacello, ]
       hfds:
         preprocessor: preprocessor_time
         mip: Omon
@@ -748,7 +784,13 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
-        fx_files: [areacello, ]
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
     additional_datasets:
     #  - {dataset: bcc-csm1-1}
     #  - {dataset: CanESM2}
@@ -796,7 +838,6 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
-        fx_files: [areacello, ]
       fgco2:
         preprocessor: preprocessor_time
         mip: Omon
@@ -805,7 +846,13 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
-        fx_files: [areacello, ]
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
     additional_datasets:
     #  - {dataset: bcc-csm1-1}
     #  - {dataset: CanESM2}
@@ -846,7 +893,6 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
-        fx_files: [areacello, ]
       hfds:
         preprocessor: preprocessor_time
         mip: Omon
@@ -855,7 +901,13 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1986
         end_year: 2005
-        fx_files: [areacello, ]
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
     additional_datasets:
     #  - {dataset: bcc-csm1-1}
     #  - {dataset: CanESM2}
