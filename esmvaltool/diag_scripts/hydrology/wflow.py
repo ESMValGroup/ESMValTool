@@ -129,8 +129,8 @@ def _load_pcraster_dem(filename):
     data = dataset.ReadAsArray()
     dataset = None
 
-    lons = lon_offset + lon_step * np.arange(lon_size)
-    lats = lat_offset + lat_step * np.arange(lat_size)
+    lons = lon_offset + lon_step/2 + lon_step * np.arange(lon_size)
+    lats = lat_offset + lat_step/2 + lat_step * np.arange(lat_size)
 
     lon_coord = iris.coords.DimCoord(
         lons,
