@@ -144,98 +144,110 @@ lai_cmip_def: &laidef
   end_year: 2000
 
 diagnostics:
-  mapplots:
-    description: mapplots
+  overview:
+    description: histogram & scales
     variables:
       lai:
         preprocessor: pp_mpqb_lai
         <<: *laidef
     scripts:
       mpqb:
-        reference_dataset: MultiModelMedian
-        script: mpqb/mpqb_comparison.py
-      mpqb_taylor:
-        reference_dataset: MultiModelMedian
-        script: mpqb/taylordiagram.py
-  lineplots:
-    description: lineplots
-    variables:
-      lai:
-        preprocessor: pp_lineplots
-        <<: *laidef
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_europe:
-    description: lineplots_europe
-    variables:
-      lai:
-        preprocessor: pp_lineplots
-        <<: *laidef
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  mapplots_std:
-    description: mapplots
-    variables:
-      lai:
-        preprocessor: pp_mpqb_sm_std
-        <<: *laidef
-    scripts:
-      mpqb:
-        reference_dataset: MultiModelMedian
-        script: mpqb/mpqb_comparison.py
-  lineplots_std:
-    description: lineplots_std
-    variables:
-      lai:
-        preprocessor: pp_lineplots_std
-        <<: *laidef
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_europe_std:
-    description: lineplots_europe_std
-    variables:
-      lai:
-        preprocessor: pp_lineplots_std
-        <<: *laidef
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  maps_yearmean:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      lai:
-        preprocessor: pp_mpqb_yearmean
-        <<: *laidef
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
-  maps_yearmin:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      lai:
-        preprocessor: pp_mpqb_yearmin
-        <<: *laidef
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
-  maps_yearmax:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      lai:
-        preprocessor: pp_mpqb_yearmax
-        <<: *laidef
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
-  maps_yearstddev:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      lai:
-        preprocessor: pp_mpqb_yearstddev
-        <<: *laidef
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
+        script: mpqb/mpqb_overview.py
+        vmin: 0
+        vmax: 0.7
+        number_of_bars: 14
+#  mapplots:
+#    description: mapplots
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_lai
+#        <<: *laidef
+#    scripts:
+#      mpqb:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/mpqb_comparison.py
+#      mpqb_taylor:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/taylordiagram.py
+#  lineplots:
+#    description: lineplots
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe:
+#    description: lineplots_europe
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  mapplots_std:
+#    description: mapplots
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_sm_std
+#        <<: *laidef
+#    scripts:
+#      mpqb:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/mpqb_comparison.py
+#  lineplots_std:
+#    description: lineplots_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe_std:
+#    description: lineplots_europe_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  maps_yearmean:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmean
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmin:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmin
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmax:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmax
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearstddev:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearstddev
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
