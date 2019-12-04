@@ -110,7 +110,7 @@ def _fix_units(cube, definition):
         cube.units = 'm'  # fix invalid units
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt'}:
+    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt', 'rlds'}:
         # Add missing 'per day'
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
@@ -121,10 +121,10 @@ def _fix_units(cube, definition):
         # Change units from fraction to percentage
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
-    if cube.var_name in {'zg'}:
+    if cube.var_name in {'zg', 'orog'}:
         # Divide by acceleration of gravity [m s-2],
-        # required for surface geopotential height, see:
-        # https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
+        # required for geopotential height, see:
+        # https://apps.ecmwf.int/codes/grib/param-db?id=129
         cube.units = cube.units / 'm s-2'
         cube.data = cube.core_data() / 9.80665
 
@@ -192,6 +192,7 @@ def _compute_daily(cube):
             'tasmin',
             'pr',
             'rsds',
+            'rlds',
             'hfds',
             'evspsbl',
             'rsdt',
@@ -210,6 +211,7 @@ def _compute_daily(cube):
     elif cube.var_name in {
             'pr',
             'rsds',
+            'rlds',
             'hfds',
             'evspsbl',
             'rsdt',
@@ -323,6 +325,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
         cube = _compute_daily(cube)
 
     if 'fx' in var['mip']:
+        cube = iris.util.squeeze(cube)
         cube.remove_coord('time')
 
     # Convert units if required

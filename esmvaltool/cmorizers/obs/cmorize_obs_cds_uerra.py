@@ -145,7 +145,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
     cfg['work_dir'] = cfg_user['work_dir']
     # If it doesn't exist, create it
     if not os.path.isdir(cfg['work_dir']):
-        logger.info(f"Creating working directory for regridding: {cfg['work_dir']}")
+        logger.info("Creating working directory for "
+                    f"regridding: {cfg['work_dir']}")
         os.mkdir(cfg['work_dir'])
 
     for short_name, var in cfg['variables'].items():
@@ -156,9 +157,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         logger.info("Start regridding to: %s", cfg['custom']['regrid'])
         _regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
-
         logger.info("Start CMORizing")
-        for year in range(1979, 2029):
+
+        for year in range(1961, 2029):
             # File concatenation
             in_file = os.path.join(cfg['work_dir'],
                                    var['file'].format(year=year))

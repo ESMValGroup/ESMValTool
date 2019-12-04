@@ -49,7 +49,7 @@ requirements:
     - ecmwf-api-client
     - eofs
     - esmpy
-    - esmvalcore>=2.0.0b2,<2.1
+    - esmvalcore>=2.0.0b3,<2.1
     - jinja2
     - matplotlib
     - nc-time-axis
@@ -60,7 +60,9 @@ requirements:
     - python-stratify
     - pyyaml
     - scikit-learn
+    - seaborn
     - shapely
+    - xesmf
     - xarray>=0.12.0
     - yamale  # in esmvalgroup channel
     - fiona
