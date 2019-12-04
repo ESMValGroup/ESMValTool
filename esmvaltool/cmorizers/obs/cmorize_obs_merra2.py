@@ -14,42 +14,36 @@ Download and processing instructions
     - For download instructions see the download script `download_merra2.sh`.
 
 """
+import glob
 import logging
-import re
-from collections import defaultdict
-from concurrent.futures import ProcessPoolExecutor, as_completed
+import os
 from copy import deepcopy
-from datetime import datetime, timedelta
-from os import cpu_count
-from pathlib import Path
-from warnings import catch_warnings, filterwarnings
-from dask import array as da
+from datetime import datetime
 
 import cf_units
-import glob
 import iris
-import os
-import numpy as np
+from dask import array as da
 
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import daily_statistics
 
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+
 def _fix_time_monthly(cube):
-    """ This function fixes the time coordinate by setting it to the 15th of each month """
+    """ This function fixes the time coordinate by setting it
+        to the 15th of each month """
     # Read dataset time unit and calendar from file
     dataset_time_unit = str(cube.coord('time').units)
     dataset_time_calender = cube.coord('time').units.calendar
     # Convert datetime
     time_as_datetime = cf_units.num2date(cube.coord('time').core_points(),
-                                  dataset_time_unit,
-                                  dataset_time_calender)
+                                         dataset_time_unit,
+                                         dataset_time_calender)
     newtime = []
     for timepoint in time_as_datetime:
-        midpoint = datetime(timepoint.year,timepoint.month, 15)
+        midpoint = datetime(timepoint.year, timepoint.month, 15)
         newtime.append(midpoint)
 
     newtime = cf_units.date2num(newtime,
@@ -62,28 +56,32 @@ def _fix_time_monthly(cube):
 
 
 def _load_cube(in_files, var):
-    var_constraint = iris.Constraint(cube_func=(lambda c: c.var_name == var['raw']))
-    cube_list = iris.load_raw(in_files)#,constraint=var_constraint)
+    cube_list = iris.load_raw(in_files)
     selected = [c for c in cube_list if c.var_name == var['raw']]
     selected = iris.cube.CubeList(selected)
 
-    drop_attrs = ['History', 'Filename', 'Comment', 'RangeBeginningDate', 'RangeEndingDate', 'GranuleID', 'ProductionDateTime', 'Source']
-    drop_time_attrs = ['begin_date', 'begin_time', 'time_increment', 'valid_range', 'vmax', 'vmin']
+    drop_attrs = ['History', 'Filename', 'Comment', 'RangeBeginningDate',
+                  'RangeEndingDate', 'GranuleID', 'ProductionDateTime', 
+                  'Source']
+    drop_time_attrs = ['begin_date', 'begin_time',
+                       'time_increment', 'valid_range', 'vmax', 'vmin']
     for c in selected:
         for attr in drop_attrs:
             c.attributes.pop(attr)
         for attr in drop_time_attrs:
-            c.coord('time').attributes.pop(attr) # = None
-        c.coord('time').points = c.coord('time').core_points().astype('float64')
+            c.coord('time').attributes.pop(attr)  # = None
+        c.coord('time').points = c.coord(
+            'time').core_points().astype('float64')
 
     from iris.util import unify_time_units
     unify_time_units(selected)
     cube = selected.concatenate_cube()
     return cube
 
+
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
-    axis2def = {'T' : 'time', 'X' : 'longitude', 'Y' : 'latitude'}
+    axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude'}
     for axis in 'T', 'X', 'Y':
         coord_def = definition.coordinates.get(axis2def[axis])
         if coord_def:
@@ -97,20 +95,6 @@ def _fix_coordinates(cube, definition):
             if len(coord.points) > 1:
                 coord.guess_bounds()
     return cube
-
-#    for coord_name in ['time', 'lat', 'lon']:
-#        coord_def = definition.coordinates.get(coord_name)
-#        if coord_def:
-#            coord = cube.coord(coord_name)
-#            if coord_name == 'time':
-#                coord.convert_units('days since 1850-1-1 00:00:00.0')
-#            coord.standard_name = coord_def.standard_name
-#            coord.var_name = coord_def.out_name
-#            coord.long_name = coord_def.long_name
-#            coord.points = coord.core_points().astype('float64')
-#            if len(coord.points) > 1:
-#                coord.guess_bounds()
-#    return cube
 
 
 def _extract_variable(in_files, var, cfg, out_dir):
@@ -138,13 +122,8 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     # Roll longitude
     cube.coord('longitude').points = cube.coord('longitude').points + 180.
-#    _fix_bounds(cube, cube.coord('longitude'))
-#    cube.attributes['geospatial_lon_min'] = 0.
-#    cube.attributes['geospatial_lon_max'] = 360.
     nlon = len(cube.coord('longitude').points)
     cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
-
-
 
     # Fix coordinates
     cube = _fix_coordinates(cube, definition)
@@ -164,11 +143,12 @@ def _extract_variable(in_files, var, cfg, out_dir):
     )
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
-def cmorization(in_dir, out_dir, cfg, config_user):
+
+def cmorization(in_dir, out_dir, cfg, _):
     """Run CMORizer for MERRA2."""
     cfg.pop('cmor_table')
 
-    for year in range(1980,2019):
+    for year in range(1980, 2019):
         for short_name, var in cfg['variables'].items():
             if 'short_name' not in var:
                 var['short_name'] = short_name
