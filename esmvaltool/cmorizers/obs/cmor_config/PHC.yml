@@ -6,7 +6,7 @@ attributes:
   tier: 2
   modeling_realm: clim
   project_id: OBS6
-  source: 'https://data.nodc.noaa.gov/woa/WOA13/DATAv2/'
+  source: 'http://psc.apl.washington.edu/nonwp_projects/PHC/Data3.html'
   reference: 'phc'
   comment: ''
 
