@@ -767,6 +767,16 @@ diagnostics:
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
 
+  PHC:
+    description: PHC check
+    variables:
+      thetao:
+      so:
+    additional_datasets:
+      - {dataset: PHC, project: OBS6, mip: Omon, tier: 2,
+          type: clim, version: 3, start_year: 1950, end_year: 1950}
+    scripts: null
+
   UWisc:
     description: UWisc check
     variables:
