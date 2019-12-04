@@ -82,11 +82,12 @@ def _load_cube(in_files, var):
 
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
-    for coord_name in ['time', 'lat', 'lon']:
-        coord_def = definition.coordinates.get(coord_name)
+    axis2def = {'T' : 'time', 'X' : 'longitude', 'Y' : 'latitude'}
+    for axis in 'T', 'X', 'Y':
+        coord_def = definition.coordinates.get(axis2def[axis])
         if coord_def:
-            coord = cube.coord(coord_name)
-            if coord_name == 'time':
+            coord = cube.coord(axis=axis)
+            if axis == 'T':
                 coord.convert_units('days since 1850-1-1 00:00:00.0')
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
@@ -95,6 +96,20 @@ def _fix_coordinates(cube, definition):
             if len(coord.points) > 1:
                 coord.guess_bounds()
     return cube
+
+#    for coord_name in ['time', 'lat', 'lon']:
+#        coord_def = definition.coordinates.get(coord_name)
+#        if coord_def:
+#            coord = cube.coord(coord_name)
+#            if coord_name == 'time':
+#                coord.convert_units('days since 1850-1-1 00:00:00.0')
+#            coord.standard_name = coord_def.standard_name
+#            coord.var_name = coord_def.out_name
+#            coord.long_name = coord_def.long_name
+#            coord.points = coord.core_points().astype('float64')
+#            if len(coord.points) > 1:
+#                coord.guess_bounds()
+#    return cube
 
 
 def _extract_variable(in_files, var, cfg, out_dir):
@@ -120,6 +135,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
+    # Fix coordinates
     cube = _fix_coordinates(cube, definition)
 
     cube.coord('latitude').attributes = None
