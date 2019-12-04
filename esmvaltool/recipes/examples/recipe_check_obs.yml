@@ -774,7 +774,7 @@ diagnostics:
       so:
     additional_datasets:
       - {dataset: PHC, project: OBS6, mip: Omon, tier: 2,
-          type: clim, version: 3, start_year: 1950, end_year: 1950}
+         type: clim, version: 3, start_year: 1950, end_year: 1950}
     scripts: null
 
   UWisc:
