@@ -157,6 +157,32 @@ def _load_pcraster_dem(filename):
     return cube
 
 
+def check_dem(cube, region):
+    """Check that the DEM and extract_region parameters match."""
+    dem = {
+        'start_longitude': cube.coord('longitude').cell(0).point,
+        'end_longitude': cube.coord('longitude').cell(-1).point,
+        'start_latitude': cube.coord('latitude').cell(0).point,
+        'end_latitude': cube.coord('latitude').cell(-1).point,
+    }
+
+    msg = ("longitude: [{start_longitude}, {end_longitude}] "
+           "latitude: [{start_latitude}, {end_latitude}]")
+    logger.info("DEM region: %s", msg.format(**dem))
+    logger.info("extract_region: %s", msg.format(**region))
+
+    for key in ('start_longitude', 'start_latitude'):
+        if dem[key] < region[key]:
+            logger.warning(
+                "Insufficient data available, decrease extract_region: %s to "
+                "a number at least one grid cell below %s", key, dem[key])
+    for key in ('end_longitude', 'end_latitude'):
+        if dem[key] > region[key]:
+            logger.warning(
+                "Insufficient data available, increase extract_region: %s to "
+                "a number at least one grid cell above %s", key, dem[key])
+
+
 def main(cfg):
     """Process data for use as input to the wflow hydrological model."""
     input_metadata = cfg['input_data'].values()
@@ -168,13 +194,7 @@ def main(cfg):
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
         dem = load_dem(dem_path)
-        logger.info(
-            "DEM region: lon [%s, %s] lat [%s, %s]",
-            dem.coord('longitude').points[0],
-            dem.coord('longitude').points[-1],
-            dem.coord('latitude').points[0],
-            dem.coord('latitude').points[-1],
-        )
+        check_dem(dem, cfg['region'])
         dem = extract_region(dem, **cfg['region'])
 
         logger.info("Processing variable precipitation_flux")
