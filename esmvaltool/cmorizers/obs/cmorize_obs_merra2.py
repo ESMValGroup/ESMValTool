@@ -23,6 +23,7 @@ from datetime import datetime, timedelta
 from os import cpu_count
 from pathlib import Path
 from warnings import catch_warnings, filterwarnings
+from dask import array as da
 
 import cf_units
 import glob
@@ -134,6 +135,16 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     # Fix data type
     cube.data = cube.core_data().astype('float32')
+
+    # Roll longitude
+    cube.coord('longitude').points = cube.coord('longitude').points + 180.
+#    _fix_bounds(cube, cube.coord('longitude'))
+#    cube.attributes['geospatial_lon_min'] = 0.
+#    cube.attributes['geospatial_lon_max'] = 360.
+    nlon = len(cube.coord('longitude').points)
+    cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
+
+
 
     # Fix coordinates
     cube = _fix_coordinates(cube, definition)
