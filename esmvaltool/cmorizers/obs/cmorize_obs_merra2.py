@@ -61,16 +61,16 @@ def _load_cube(in_files, var):
     selected = iris.cube.CubeList(selected)
 
     drop_attrs = ['History', 'Filename', 'Comment', 'RangeBeginningDate',
-                  'RangeEndingDate', 'GranuleID', 'ProductionDateTime', 
+                  'RangeEndingDate', 'GranuleID', 'ProductionDateTime',
                   'Source']
     drop_time_attrs = ['begin_date', 'begin_time',
                        'time_increment', 'valid_range', 'vmax', 'vmin']
-    for c in selected:
+    for cube in selected:
         for attr in drop_attrs:
-            c.attributes.pop(attr)
+            cube.attributes.pop(attr)
         for attr in drop_time_attrs:
-            c.coord('time').attributes.pop(attr)  # = None
-        c.coord('time').points = c.coord(
+            cube.coord('time').attributes.pop(attr)
+        cube.coord('time').points = cube.coord(
             'time').core_points().astype('float64')
 
     from iris.util import unify_time_units
@@ -138,8 +138,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
         cube,
         cube.var_name,
         out_dir,
-        attributes,
-        local_keys=['positive'],
+        attributes
     )
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
