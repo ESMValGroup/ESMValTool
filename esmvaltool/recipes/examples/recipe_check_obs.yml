@@ -13,6 +13,19 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  CERES-EBAF:
+    description: CERES-EBAF check
+    variables:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: Ed4.0, start_year: 2001, end_year: 2018}
+    scripts: null
+
+  
   CRU:
     description: CRU check
     variables:
@@ -292,6 +305,17 @@ diagnostics:
     additional_datasets:
       - {dataset: PATMOS-x, project: OBS, mip: Amon, tier: 2,
          type: sat, version: NOAA, start_year: 1982, end_year: 2016}
+    scripts: null
+
+
+  PHC:
+    description: PHC check
+    variables:
+      so:
+      thetao:
+    additional_datasets:
+      - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
+          type: clim, version: 3, start_year: 1950, end_year: 1950}
     scripts: null
 
 
@@ -753,6 +777,7 @@ diagnostics:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
+
 
   UWisc:
     description: UWisc check
