@@ -228,6 +228,11 @@ def main(cfg):
 
         tas_dem.convert_units('degC')
 
+        # Adjust longitude coordinate to wflow convention
+        for cube in [tas_dem, pet_dem, pr_dem]:
+            cube.coord('longitude').points = (cube.coord('longitude').points +
+                                              180) % 360 - 180
+
         cubes = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
         save(cubes, dataset, provenance, cfg)
 
