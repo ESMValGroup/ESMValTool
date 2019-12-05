@@ -1,0 +1,337 @@
+# ESMValTool
+# recipe_mpqb.yml
+---
+documentation:
+  description: |
+    Test recipe for the MPQB (C3S_511) for soil moisture
+
+  authors:
+    - mueller_benjamin
+
+
+################################################
+# Define some default parameters using anchors #
+################################################
+
+mmm_stat: &mmm_stat
+  multi_model_statistics:
+    span: overlap
+    statistics: [mean, median]
+
+mpqbregridder: &mpqbregridder
+  regrid:
+    target_grid: 2x2
+    scheme: area_weighted
+  monthly_statistics:
+    operator: mean
+    
+mpqbregridder_coarse: &mpqbregridder_c
+  regrid:
+    target_grid: IPSL-CM5A-LR
+    scheme: area_weighted
+  monthly_statistics:
+    operator: mean
+    
+mpqbregridder_fine: &mpqbregridder_f
+  regrid:
+    target_grid: IPSL-CM5A-MR
+    scheme: nearest
+  monthly_statistics:
+    operator: mean
+
+# The main preprocessor for all
+# input data
+default_pp_maps: &pp_maps
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat
+
+default_pp_maps_coarse: &pp_maps_c
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder_c
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat
+  
+default_pp_maps_fine: &pp_maps_f
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder_f
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat
+
+# Additional preprocessor for
+# line plots
+default_pp_line: &pp_line
+  mask_fillvalues:
+    threshold_fraction: 0.8
+  area_statistics:
+    operator: mean
+
+reproduce_dorigo2012: &pp_reproduce_dorigo2012
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder
+  seasonal_statistics:
+    operator: mean
+  mask_landsea:
+    mask_out: sea
+  mask_glaciated:
+    mask_out: glaciated
+
+
+################################################
+################################################
+################################################
+
+datasets:
+#  - {dataset: eraintland, type: reanaly, project: OBS6, mip: E6hr,
+#     version: 1, tier: 3, frequency: 6hr, <<: *timeperiod}
+#  - {dataset: CDS-SATELLITE-SOIL-MOISTURE, type: sat, project: OBS, mip: Lmon,
+#     version: COMBINED-TCDR-v201812.0.0, tier: 3, <<: *timeperiod}
+#  - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+#     version: 1, tier: 3, <<: *timeperiod}
+#  - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+#     version: 1, tier: 3, <<: *timeperiod}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5B-LR}
+  - {dataset: IPSL-CM5A-MR}
+
+preprocessors:
+  pp_tmp:
+    annual_statistics:
+      operator: mean
+
+  pp_reproduce_dorigo2012:
+    <<: *pp_reproduce_dorigo2012
+
+  pp_mpqb_sm:
+    <<: *pp_maps
+    
+  pp_mpqb_lai:
+    <<: *pp_maps
+    
+  pp_mpqb_lai_c:
+    <<: *pp_maps_c
+    
+  pp_mpqb_lai_f:
+    <<: *pp_maps_f
+    
+  pp_mpqb_lai_orig:
+    custom_order: true
+    mask_below_threshold:
+      threshold: 0.01
+    mask_landsea:
+      mask_out: sea
+
+  pp_mpqb_sm_std:
+    anomalies:
+      period: monthly
+#      standardize: true
+    <<: *pp_maps
+
+  pp_lineplots:
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_lineplots_std:
+    anomalies:
+      period: monthly
+#      standardize: true
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_mpqb_yearmean:
+    <<: *pp_maps
+    annual_statistics:
+      operator: mean
+
+  pp_mpqb_yearmin:
+    <<: *pp_maps
+    annual_statistics:
+      operator: min
+
+  pp_mpqb_yearmax:
+    <<: *pp_maps
+    annual_statistics:
+      operator: max
+
+  pp_mpqb_yearstddev:
+    <<: *pp_maps
+    annual_statistics:
+      operator: std_dev
+
+lai_cmip_def: &laidef
+  project: CMIP5
+  mip: Lmon
+  ensemble: r1i1p1
+  exp: historical
+  start_year: 1990
+  end_year: 2000
+
+diagnostics:
+  histogram:
+    description: histogram for 2x2 gridded data
+    variables:
+      lai:
+        preprocessor: pp_mpqb_lai
+        <<: *laidef
+    scripts:
+      mpqb:
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 0.7
+        number_of_bars: 14
+        logarithmic: False
+  histogram_c:
+    description: histogram for regridded data on coarsest level
+    variables:
+      lai:
+        preprocessor: pp_mpqb_lai_c
+        <<: *laidef
+    scripts:
+      mpqb:
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 0.7
+        number_of_bars: 14
+        logarithmic: False
+  histogram_f:
+    description: histogram for regridded data on finest level
+    variables:
+      lai:
+        preprocessor: pp_mpqb_lai_f
+        <<: *laidef
+    scripts:
+      mpqb:
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 0.7
+        number_of_bars: 14
+        logarithmic: False
+  histogram_O:
+    description: histogram for original data
+    variables:
+      lai:
+        preprocessor: pp_mpqb_lai_orig
+        <<: *laidef
+    scripts:
+      mpqb:
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 0.7
+        number_of_bars: 14
+        logarithmic: False 
+  resolution:
+    description: resolution
+    variables:
+      lai:
+        preprocessor: pp_mpqb_lai_orig
+        <<: *laidef 
+    scripts: 
+      mpqb_res:
+        script: mpqb/mpqb_resolution.py
+#  mapplots:
+#    description: mapplots
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_lai
+#        <<: *laidef
+#    scripts:
+#      mpqb:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/mpqb_comparison.py
+#      mpqb_taylor:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/taylordiagram.py
+#  lineplots:
+#    description: lineplots
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe:
+#    description: lineplots_europe
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  mapplots_std:
+#    description: mapplots
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_sm_std
+#        <<: *laidef
+#    scripts:
+#      mpqb:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/mpqb_comparison.py
+#  lineplots_std:
+#    description: lineplots_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe_std:
+#    description: lineplots_europe_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  maps_yearmean:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmean
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmin:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmin
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmax:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmax
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearstddev:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearstddev
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
