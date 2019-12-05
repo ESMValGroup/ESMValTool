@@ -39,6 +39,7 @@ def main(cfg):
     input_data = cfg['input_data'].values()
     number_of_bars = cfg.pop('number_of_bars', 10) # default number of bins set to 10
     lower_upper = [cfg.pop('vmin', None), cfg.pop('vmax', None)]
+    logarithmic = cfg.pop('logarithmic', False)
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
@@ -81,18 +82,22 @@ def main(cfg):
             ax.bar(x,
                    hist["hist"],
                    width,
-#                   color = color[idx],
                    label = dataset,
-#                   alpha=1.0 / len(hists),
                    )
             
         plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha = 0.3)
-        plt.ylim(0, 1.1*np.max(
-                [np.max(content["hist"]) for _, content in hists.items()]))
         plt.legend()
         plt.xlabel(grouped_input_data[dataset][0]['long_name'] +
                    " [" + grouped_input_data[dataset][0]['units'] + "]")
         plt.ylabel("frequency")
+        if logarithmic:
+            ax.set_yscale('log', nonposy='clip')
+#        if logarithmic:
+#            plt.ylim(0, 5*np.max(
+#                     [np.max(content["hist"]) for _, content in hists.items()]))
+#        else:
+        plt.ylim(0, 1.1*np.max(
+                 [np.max(content["hist"]) for _, content in hists.items()]))
         plt.tight_layout()
         filename = get_plot_filename('histogram', cfg)
         logger.info("Saving as %s", filename)

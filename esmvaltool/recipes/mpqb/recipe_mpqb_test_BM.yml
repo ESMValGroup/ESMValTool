@@ -81,8 +81,8 @@ datasets:
 #  - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
 #     version: 1, tier: 3, <<: *timeperiod}
   - {dataset: IPSL-CM5A-LR}
-  - {dataset: IPSL-CM5A-MR}
   - {dataset: IPSL-CM5B-LR}
+  - {dataset: IPSL-CM5A-MR}
 
 preprocessors:
   pp_tmp:
@@ -97,6 +97,8 @@ preprocessors:
     
   pp_mpqb_lai:
     <<: *pp_maps
+    
+  pp_mpqb_lai_orig: {}
 
   pp_mpqb_sm_std:
     anomalies:
@@ -144,7 +146,7 @@ lai_cmip_def: &laidef
   end_year: 2000
 
 diagnostics:
-  overview:
+  histogram:
     description: histogram & scales
     variables:
       lai:
@@ -152,10 +154,20 @@ diagnostics:
         <<: *laidef
     scripts:
       mpqb:
-        script: mpqb/mpqb_overview.py
+        script: mpqb/mpqb_histogram.py
         vmin: 0
         vmax: 0.7
         number_of_bars: 14
+        logarithmic: False
+  resolution:
+    description: histogram & scales
+    variables:
+      lai:
+        preprocessor: pp_mpqb_lai_orig
+        <<: *laidef 
+    scripts: 
+      mpqb_res:
+        script: mpqb/mpqb_resolution.py
 #  mapplots:
 #    description: mapplots
 #    variables:
