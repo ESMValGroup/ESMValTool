@@ -7,7 +7,7 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-from esmvaltool import __version__
+__version__ = '2.0.0b1'
 
 PACKAGES = [
     'esmvaltool',
