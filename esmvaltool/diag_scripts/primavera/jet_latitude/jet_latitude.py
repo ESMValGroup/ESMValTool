@@ -125,14 +125,6 @@ class JetLatitude(object):
                 sin(2 * pi * upper_cut * k) / (pi * k) -
                 sin(2 * pi * lower_cut * k) / (pi * k)
             ) * (sin(pi * k / n) / (pi * k / n))
-        # print(weights)
-        # f = np.arange(0, 0.5, 0.001)
-        # pro = np.empty(n)
-        # R = np.empty(500)
-        # for i in range(500):
-        #     for j in range(n):
-        #         pro[j] = weights[n + j + 1] * cos(2 * pi * f[i] * (j + 1))
-        #     R[i] = weights[n+1] + 2 * sum(pro)
         return weights
 
     def _compute_var(self, alias, data, bins, metadata):
@@ -274,11 +266,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    lanczos_weight = np.load(os.path.expandvars(
-        '$HOME/jetlat/python/LF_weights.npy'
-    ))
-    print(lanczos_weight)
-    print(lanczos_weight.shape)
-    new_lanczos = JetLatitude._get_lanczos_weights()
-    print(lanczos_weight - new_lanczos)
+    main()
