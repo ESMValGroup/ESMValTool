@@ -307,6 +307,15 @@ diagnostics:
          type: sat, version: NOAA, start_year: 1982, end_year: 2016}
     scripts: null
 
+  PHC:
+    description: PHC check
+    variables:
+      thetao:
+      so:
+    additional_datasets:
+      - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
+          type: clim, version: 3, start_year: 1950, end_year: 1950}
+    scripts: null
 
   PIOMAS:
     description: PIOMAS
@@ -765,16 +774,6 @@ diagnostics:
     additional_datasets:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
-    scripts: null
-
-  PHC:
-    description: PHC check
-    variables:
-      thetao:
-      so:
-    additional_datasets:
-      - {dataset: PHC, project: OBS6, mip: Omon, tier: 2,
-         type: clim, version: 3, start_year: 1950, end_year: 1950}
     scripts: null
 
 
