@@ -39,7 +39,7 @@ class JetLatitude(object):
             iris.coord_categorisation.add_season(ua, 'time')
 
             ua_filtered = da.apply_along_axis(
-                lambda m: np.convolve(m, lanczos_weight, mode='same'),
+                lambda m: np.convolve(m, lanczos, mode='same'),
                 axis=ua.coord_dims('time')[0],
                 arr=ua.core_data()
             )
