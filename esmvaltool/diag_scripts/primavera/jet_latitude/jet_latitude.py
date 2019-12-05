@@ -32,7 +32,12 @@ class JetLatitude(object):
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
-        lanczos = self._get_lanczos_weights()
+        cfg_filter = self.cfg.get('lanczos', {})
+        lanczos = self._get_lanczos_weights(
+            cfg_filter.get('low_cut', 0),
+            cfg_filter.get('upper_cut', 0.1),
+            cfg_filter.get('window_size', 61),
+        )
         for alias in data:
             logger.info('Processing %s', alias)
             ua = iris.load_cube(data[alias][0]['filename'])
@@ -78,7 +83,7 @@ class JetLatitude(object):
             self._compute_var(alias, wind, wind_bins, data[alias][0])
 
     @staticmethod
-    def _get_lanczos_weights(lower_cut=0, upper_cut=1/10, ratio=1/2.3):
+    def _get_lanczos_weights(lower_cut=0, upper_cut=1/10, window_size=61):
         """
         Get the weights for Lanczos band-pass filters.
 
@@ -89,28 +94,14 @@ class JetLatitude(object):
         Parameters:
         -----------
         lower_cut: float
-            Lower cut-off frequency
+            Lower cut-off frequency (day-1)
         upper_cut: float
-            Upper cut-off frequency
-        ratio: float
-            The ratio 0<{R}<1 that expresses the part of the band-width
-            expected to have a response function amplitude less than unity
-            due to the attenuation around the window boundaries.
+            Upper cut-off frequency (day-1)
+        window_size: int
+            Days to sample. Must be an odd number
 
         """
-
-        # Here frequencies are: CYCLES/(TIME INTERVAL).
-        # Thus the Nyquist frequency always equals 0.5
-        # For example if you have 6-hourly data a frequency
-        # corresponding to a period of 3 days would be = 6/(3x24).
-
-        # Fc1 = 0
-        # Fc2 = 1/10  # Low-pass with cut-off at periods of 10 days
-        # (daily data)
-        # # This value gives a window of 61 days (Woollings et al., 2010)
-        # R = 1/2.3
-
-        n = ceil(1.3 / (ratio * (upper_cut - lower_cut)))
+        n = (window_size - 1) // 2
         weights = np.empty(2 * n + 1)
 
         for k in range(-n, 0):

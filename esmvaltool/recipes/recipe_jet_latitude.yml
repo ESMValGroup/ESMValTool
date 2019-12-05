@@ -80,10 +80,7 @@ preprocessors:
     zonal_means:
       coordinate: longitude
       mean_type: mean
-    lanczos_filter:
-      low_cut: 0
-      upper_cut: 0.1
-      ratio: 2.3
+
 
 diagnostics:
   jetlat:
@@ -100,3 +97,7 @@ diagnostics:
           probability_tick: 0.01
         latitude_bins: 2.5
         speed_bins: 1.0
+        lanczos_filter:
+          low_cut: 0  # days-1
+          upper_cut: 0.1  # days-1
+          window size: 61  # in days
