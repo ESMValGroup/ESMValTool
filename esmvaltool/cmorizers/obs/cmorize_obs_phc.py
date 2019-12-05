@@ -10,7 +10,8 @@ Source
 Last access
    20190131
 
-Go to the `DOWNLOAD DATA (NetCDF)`, and download `ANNUAL` fields.
+Go to `DOWNLOAD DATA (NetCDF)` and download the `ANNUAL` fields 
+for both `TEMPERATURE` and `SALINITY`.
 
 """
 import logging
