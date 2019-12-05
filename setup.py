@@ -40,6 +40,7 @@ REQUIREMENTS = {
         'rpy2',
         'scitools-iris>=2.2',
         'scikit-learn',
+        'seaborn',
         'shapely',
         'SkillMetrics',
         'stratify',
