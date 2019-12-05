@@ -13,11 +13,11 @@ attributes:
 # Variables to cmorize (here use only filename prefix)
 variables:
   thetao:
-    mip: Omon
+    mip: Oyr
     raw: temp
     file: phc3.0_annual.nc
   so:
-    mip: Omon
+    mip: Oyr
     raw: salt
     file: phc3.0_annual.nc
   areacello:
