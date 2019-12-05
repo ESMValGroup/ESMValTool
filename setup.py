@@ -39,6 +39,7 @@ REQUIREMENTS = {
         'pyyaml',
         'scitools-iris>=2.2',
         'scikit-learn',
+        'SkillMetrics',
         'seaborn',
         'shapely',
         'stratify',
