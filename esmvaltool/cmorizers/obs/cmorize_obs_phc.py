@@ -95,9 +95,8 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     xr_file = xr.open_dataset(raw_info['file'])
     xr_time = xr_file.expand_dims('time')
     xr_time = xr_time.assign_coords(time=[1])
-    xr_time.time.attrs = OrderedDict([('standard_name', 'time'),
-                                      ('units', 'days since 1950-1-1 00:00:00')
-                                      ])
+    xr_time.time.attrs = OrderedDict(
+        [('standard_name', 'time'), ('units', 'days since 1950-1-1 00:00:00')])
 
     cube = _fix_data(xr_time, var)
     fix_var_metadata(cube, var_info)
