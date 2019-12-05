@@ -1,11 +1,11 @@
 import os
 import logging
-from math import pi, sin, ceil
+from math import pi, sin
 
 import matplotlib.pyplot as plt
 
 import numpy as np
-import dask.array as da
+# import dask.array as da
 from scipy import stats
 
 import iris
@@ -42,11 +42,11 @@ class JetLatitude(object):
             logger.info('Processing %s', alias)
             ua = iris.load_cube(data[alias][0]['filename'])
             iris.coord_categorisation.add_season(ua, 'time')
-
-            ua_filtered = da.apply_along_axis(
+            # Using numpy because dask apply along axis is buggy
+            ua_filtered = np.apply_along_axis(
                 lambda m: np.convolve(m, lanczos, mode='same'),
                 axis=ua.coord_dims('time')[0],
-                arr=ua.core_data()
+                arr=ua.data()
             )
             ua = ua.copy(ua_filtered)
             wind = ua.collapsed('latitude', iris.analysis.MAX)
