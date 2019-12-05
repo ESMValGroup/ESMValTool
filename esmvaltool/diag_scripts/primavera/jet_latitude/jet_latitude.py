@@ -46,7 +46,7 @@ class JetLatitude(object):
             ua_filtered = np.apply_along_axis(
                 lambda m: np.convolve(m, lanczos, mode='same'),
                 axis=ua.coord_dims('time')[0],
-                arr=ua.data()
+                arr=ua.data
             )
             ua = ua.copy(ua_filtered)
             wind = ua.collapsed('latitude', iris.analysis.MAX)
