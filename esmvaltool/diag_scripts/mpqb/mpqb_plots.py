@@ -6,10 +6,10 @@ import copy
 import yaml
 import os
 from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
-
+import numpy as np
 
 def get_ecv_plot_config(ecv_name):
-    cfg_filename = os.path.join(os.path.split(__file__)[0],'mpqb_cfg.yml')
+    cfg_filename = os.path.join(os.path.split(__file__)[0], 'mpqb_cfg.yml')
     with open(cfg_filename,'r') as handle:
         plot_config = yaml.safe_load(handle)
     ecv_plot_config = plot_config[ecv_name]
@@ -23,12 +23,12 @@ def mpqb_mapplot(cube,filename,**plotkwargs):
     # replace the cmap key with the cmap object, and add grey shading for masked values
     cmapname = plotkwargs.pop('cmap')
     cmap = matplotlib.cm.get_cmap(cmapname)
-    cmap.set_bad("grey", 0.4)
+    cmap.set_bad("grey", 0.1)
     plotkwargs['cmap'] = cmap
-    plotkwargs['antialiased'] = True
+    plotkwargs['rasterized'] = True
     # Take out small grid lines like this
-    plotkwargs['linewidth'] = 0
-    iris.quickplot.pcolormesh(cube,**plotkwargs)
+    pcols = iris.plot.pcolormesh(cube,**plotkwargs)
+    pcols.set_edgecolor('face')
     plt.gca().coastlines()
     plt.title(plottitle)
     fig.savefig(filename, bbox_inches='tight')
