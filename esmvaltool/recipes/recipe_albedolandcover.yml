@@ -11,11 +11,30 @@ documentation:
 
 albedolandcover_parameters: &albedolandcover_parameters
   params:
-    latsize_BB: 5    # size of the big box in the latitudinal direction. Recommanded value: 5
-    lonsize_BB: 5    # size of the big box in the longitudinal direction. Recommanded value: 5
-    threshold_sumpred: 90    # minimum grid cell area fraction that must be covered by the sum of the area fractions of all land cover classes included in the local regression for one grid cell, for this grid cell to be included in the regression. Recommanded value: 90
-    mingc: 3    # minimum number of grid cells with non-zero area fraction covered by one land cover class within a big box, for this land cover class to be included as a predictor in the local regression. Recommanded value:2
-    minnum_gc_bb: 15    # minimum number of grid cells with relevant information required within a big box to perform the local regression. Recommanded value: 15
+    # size of the big box in the latitudinal direction.
+    # Recommended value: 5
+    latsize_BB: 5
+    # size of the big box in the longitudinal direction.
+    # Recommended value: 5
+    lonsize_BB: 5
+    # minimum grid cell area fraction that must be
+    # covered by the sum of the area fractions of all
+    # land cover classes included in the local
+    # regression for one grid cell, for this grid cell
+    # to be included in the regression.
+    # Recommended value: 90
+    threshold_sumpred: 90
+    # minimum number of grid cells with non-zero area fraction
+    # covered by one land cover class within a big box, for this
+    # land cover class to be included as a predictor in the local
+    # regression.
+    # Recommended value: 2
+    mingc: 3
+    # minimum number of grid cells with relevant
+    # information required within a big box to perform
+    # the local regression.
+    # Recommended value: 15
+    minnum_gc_bb: 15
     snowfree: true
     lc1_class: ['treeFrac']
     lc2_class: ['shrubFrac']
