@@ -84,8 +84,11 @@ def main(cfg):
             if cfg['write_plots']:
                 metrics_plot_dictionary = get_ecv_plot_config(
                     dataset_cfg[0]['short_name'])
+                plot_kwargs = metrics_plot_dictionary[metricname]
+                # Overwrite plot title to be dataset name
+                plot_kwargs['title'] = dataset
                 mpqb_mapplot(resultcube, plot_file, **
-                             metrics_plot_dictionary[metricname])
+                             plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
 
