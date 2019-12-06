@@ -5,7 +5,7 @@ attributes:
   version: '2013v2'
   tier: 2
   modeling_realm: clim
-  project_id: CMIP5
+  project_id: OBS
   source: 'https://data.nodc.noaa.gov/woa/WOA13/DATAv2/'
   reference: 'woa'
   comment: ''

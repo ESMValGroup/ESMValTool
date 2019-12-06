@@ -7,7 +7,7 @@ documentation:
 
 datasets:
 #  - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
-  - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
