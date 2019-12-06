@@ -6,20 +6,19 @@ documentation:
     Recipe calling the extreme_events diagnostic followed by the hyint diagnostic
 
   authors:
-    - arno_en
-    - hard_jo
-    - broe_bj
-    - sand_ma
-    - mohr_cw
+    - arnone_enrico
+    - vonhardenberg_jost
+    - broetz_bjoern
+    - sandstad_marit
+    - mohr_christianwilhelm
 
   maintainer:
-    - arno_en
+    - arnone_enrico
 
   references:
     - giorgi11jc
     - giorgi14jgr
-    - zhang-2011
-    - sillman-2013
+    - zhang11wcc
 
   projects:
     - c3s-magic
