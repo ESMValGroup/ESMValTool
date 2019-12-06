@@ -226,6 +226,10 @@ authors:
     name: Kadygrov, Nikolay
     institute: IPSL, France
     orcid:
+  kalverla_peter:
+    name: Kalverla, Peter
+    institute: NLeSC, Netherlands
+    orcid: https://orcid.org/0000-0002-5025-7862
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
@@ -378,7 +382,7 @@ authors:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0001-8653-2312
-  verh_st:
+  verhoeven_stefan:
     name: Verhoeven, Stefan
     institute: NLeSC, Netherlands
     email: s.verhoeven 'at' esciencecenter.nl
@@ -710,6 +714,7 @@ references:
   piomas: "Zhang, J. et al., Mon. Wea. Rev. doi:10.1175/1520-0493(2003)131<0845:MGSIWA>2.0.CO;2, 2013."
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
   woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, 2013."
+  phc: "Steele et al., J. Clim., doi:10.1175/1520-0442(2001)014<2079:PAGOHW>2.0.CO;2, 2001."
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
