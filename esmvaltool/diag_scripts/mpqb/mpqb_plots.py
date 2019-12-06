@@ -27,7 +27,7 @@ def mpqb_mapplot(cube,filename,**plotkwargs):
     plotkwargs['cmap'] = cmap
     plotkwargs['rasterized'] = True
     # Take out small grid lines like this
-    pcols = iris.plot.pcolormesh(cube,**plotkwargs)
+    pcols = iris.quickplot.pcolormesh(cube,**plotkwargs)
     pcols.set_edgecolor('face')
     plt.gca().coastlines()
     plt.title(plottitle)
