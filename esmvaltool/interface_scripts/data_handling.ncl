@@ -6,7 +6,6 @@
 ;
 ; Contents:
 ;    function read_data
-;    function read_fx_data
 ;
 ; #############################################################################
 
@@ -31,8 +30,9 @@ function read_data(info_item[1]:logical)
 ; References
 ;
 ; Modification history
-;   20180511_A-righ_ma: adapted to the revised list-based metadata structure.
-;   20180212_A-righ_ma: written.
+;   20180511-righi_mattia: adapted to the revised list-based metadata
+;                          structure.
+;   20180212-righi_mattia: written.
 ;
 local funcname, scriptname, infile, fin
 begin
@@ -60,7 +60,7 @@ begin
 
   ; Check that variable is in the file
   if (.not. isfilevar(fin, info_item@short_name)) then
-    error_msg("f", scriptname, funcname, "variable " + variable + \
+    error_msg("f", scriptname, funcname, "variable " + info_item@short_name + \
               " not found in file " + infile)
   end if
 
@@ -69,100 +69,5 @@ begin
 
   leave_msg(scriptname, funcname)
   return(data)
-
-end
-
-; #############################################################################
-undef("read_fx_data")
-function read_fx_data(info_item[1]:logical,
-                      fx_variable[1]:string)
-;
-; Arguments
-;    index: index to current input file as defined in the <variable>_info.ncl
-;           file in the preproc directory of the current variable
-;    fx_variable: name of the fx variable to read
-;
-; Return value
-;    A list of data array(s) with all metadata or a missing value if the
-;    fx variable is not found.
-;
-; Description
-;    Retrieve the fx variable data and metadata based on the input_file_info
-;    logical defined in the <variable>_info.ncl file automatically generated
-;    by the preprocessor and stored in the preproc/<preproc_id>/ subdirectory.
-;    Unlike read_data, this function does not exit on error if the input file
-;    is not found. This is to provide more flexibility to the calling
-;    diagnostic.
-;
-; Caveats
-;    If auxiliary coordinates are associated to the fx-variables (typically for
-;    areacello), these are also read and pushed to the return list.
-;
-; References
-;
-; Modification history
-;   20180511_A-righ_ma: adapted to the revised list-based metadata structure.
-;   20180526_A-righ_ma: written.
-;
-local funcname, scriptname, infile, fin
-begin
-
-  funcname = "read_fx_data"
-  scriptname = "interface_scripts/data_handling.ncl"
-  enter_msg(scriptname, funcname)
-
-  ; Check attribute availability
-  if (.not.isatt(info_item, fx_variable)) then
-    error_msg("f", scriptname, funcname, "input path for the fx_variable " + \
-              fx_variable + " not found in the metadata file, please add " + \
-              "'fx_files: [" + fx_variable + "]' to the variable " + \
-              "dictionary in the recipe")
-  end if
-  infile = info_item@$fx_variable$
-
-  ; Return missing if variable not available
-  if (ismissing(infile)) then
-    error_msg("w", scriptname, funcname, "fx variable " + fx_variable + \
-              " not found for dataset " + info_item@dataset)
-    out = new(1, float)
-    out = default_fillvalue(typeof(out))
-    return(out)
-  end if
-
-  ; Open file
-  log_info("Reading in file = " + infile)
-  fin = addfile(infile, "r")
-
-  ; Check that variable is in the file
-  if (.not. isfilevar(fin, fx_variable)) then
-    error_msg("f", scriptname, funcname, "variable " + fx_variable + \
-              " not found in " + infile)
-  end if
-
-  ; Initialize list
-  outlist = NewList("lifo")
-
-  ; Check if auxiliary coordinates are defined
-  atts = getfilevaratts(fin, fx_variable)
-  if (any("coordinates".eq.atts)) then
-    ; Read auxiliary coordinates in reverse order (for correct order in list)
-    coords = fin->$fx_variable$@coordinates
-    ncoords = str_fields_count(coords, " ")
-    do ii = 1, ncoords
-      curr_coord = str_squeeze(str_get_field(coords, ncoords + 1 - ii, " "))
-      if (.not. isfilevar(fin, curr_coord)) then
-        error_msg("w", scriptname, funcname, "auxiliary coordinate " + \
-                  curr_coord + " not found in " + infile + ", skipping")
-      else
-        ListPush(outlist, fin->$curr_coord$)
-      end if
-    end do
-  end if
-
-  ; Push variable to the list
-  ListPush(outlist, fin->$fx_variable$)
-
-  leave_msg(scriptname, funcname)
-  return(outlist)
 
 end

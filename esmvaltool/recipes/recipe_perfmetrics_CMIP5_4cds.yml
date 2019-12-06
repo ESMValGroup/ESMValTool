@@ -8,12 +8,12 @@ documentation:
     variables (like ozone, sea-ice, aerosol...)
 
   authors:
-    - fran_fr
-    - righ_ma
-    - eyri_ve
+    - frank_franziska
+    - righi_mattia
+    - eyring_veronika
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - gleckler08jgr
@@ -251,7 +251,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       cycle: &cycle_settings
@@ -348,7 +349,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       cycle:
@@ -429,7 +431,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       cycle:
@@ -504,7 +507,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       cycle:
@@ -579,7 +583,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       zonal: &zonal_settings
@@ -672,7 +677,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
@@ -750,7 +756,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
@@ -828,7 +835,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
@@ -905,7 +913,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
@@ -982,7 +991,8 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
@@ -1053,7 +1063,8 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
     scripts:
       grading:
         <<: *grading_settings
@@ -1132,7 +1143,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       latlon: &latlon_settings
@@ -1808,7 +1820,7 @@ diagnostics:
   #  themes:
   #    - aerosols
   #  realms:
-  #    - atmos    
+  #    - atmos
   #  description: Fine mode optical depth at 550 nm
   #  variables:
   #    od550lt1aer:
@@ -1849,7 +1861,7 @@ diagnostics:
   #    - chem
   #    - ghg
   #  realms:
-  #    - atmosChem    
+  #    - atmosChem
   #  variables:
   #    toz:
   #      preprocessor: ppNOLEV2thr10

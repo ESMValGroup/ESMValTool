@@ -52,7 +52,7 @@ function scatterplot(wks_in[1],
 ;    the calling diag_script (option: diag_script_info@scatter_log).
 ;
 ; Modification history
-;    20140228-A_righ_ma: written.
+;    20140228-righi_mattia: written.
 ;
 local funcname, scriptname, scattermode, loc_res, resL, linec, lineh, linel, \
   resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, fac2p, str,
@@ -262,7 +262,8 @@ undef("scatterplot3D")
 function scatterplot3D(wks_in[1],
                        source,
                        varname[1]:string,
-                       levels[*]:numeric)
+                       levels[*]:numeric,
+                       inlist:list)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
@@ -289,7 +290,7 @@ function scatterplot3D(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20151103-A_righ_ma: written.
+;    20151103-righi_mattia: written.
 ;
 local funcname, scriptname, data, xpts, ypts, zpts, defaults, var, wks, res, \
   res_new, colors, ncolors, resM, markers, resT, labels, imod, idx, xp, yp, \
@@ -467,7 +468,7 @@ function scatterplot_markers(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20151105_righ_ma: written.
+;    20151105-righi_mattia: written.
 ;
 local funcname, scriptname, data, xpts, ypts, defaults, var, wks, annots, \
   colors, markers, res, res_new, lg_outfile, styles, lgres

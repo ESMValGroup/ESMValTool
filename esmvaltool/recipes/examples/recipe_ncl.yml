@@ -6,10 +6,10 @@ documentation:
     Example recipe that plots air temperature.
 
   authors:
-    - righ_ma
+    - righi_mattia
 
   maintainer:
-    - righ_ma
+    - righi_mattia
     
   references:
     - acknow_project
@@ -18,10 +18,10 @@ documentation:
     - esmval
 
 datasets:
-  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 2000, end_year: 2002}
 
 preprocessors:
   preprocessor_1:
@@ -43,9 +43,9 @@ diagnostics:
       ta:
         preprocessor: preprocessor_1
         reference_dataset: ERA-Interim
-        fx_files: [sftlf]
-    additional_datasets:
-      - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+        mip: Amon
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1, start_year: 2000, end_year: 2002}
     scripts:
       test_ta: &settings
         script: examples/diagnostic.ncl

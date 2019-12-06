@@ -7,9 +7,9 @@ documentation:
     variance and agreement and plot the results as maps and time series.
 
   authors:
-    - manu_ni
-    - hunt_al
-    - pere_nu
+    - manubens_nicolau
+    - hunter_alasdair
+    - perez-zanon_nuria
 
 
   projects:
@@ -48,11 +48,12 @@ diagnostics:
         mip: Amon
     scripts:
       main:
-        script: magic_bsc/multimodel_products.r
+        script: magic_bsc/multimodel_products.R
 
         #Parameters for Season() function
         moninf: 6   #If this is null, then the monthly anomalies will be computed
         monsup: 6
+        colorbar_lim: 3
 
         agreement_threshold: 80
         #Time series plot options

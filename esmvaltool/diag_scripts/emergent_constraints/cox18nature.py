@@ -4,7 +4,7 @@
 
 Description
 -----------
-Plot effective climate sensitivity ECS vs. temperature variability metric psi
+Plot equilibrium climate sensitivity ECS vs. temperature variability metric psi
 to establish an emergent relationship for ECS.
 
 Author
@@ -32,9 +32,11 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    group_metadata, io, plot, run_diagnostic, select_metadata)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename, group_metadata,
+                                            io, plot, run_diagnostic,
+                                            select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -45,7 +47,7 @@ COLOR_LARGE_LAMBDA = '#009900'
 
 ECS_ATTRS = {
     'short_name': 'ecs',
-    'long_name': 'Effective Climate Sensitivity (ECS)',
+    'long_name': 'Equilibrium Climate Sensitivity (ECS)',
     'units': 'K',
 }
 TASA_ATTRS = {
@@ -89,14 +91,13 @@ def _plot_model_point(model, psi_cube, ecs_cube, lambda_cube):
     """Plot a single model point for emergent relationship."""
     col = _get_model_color(model, lambda_cube)
     style = plot.get_dataset_style(model, 'cox18nature')
-    AXES.plot(
-        psi_cube.extract(iris.Constraint(dataset=model)).data,
-        ecs_cube.extract(iris.Constraint(dataset=model)).data,
-        linestyle='none',
-        marker=style['mark'],
-        markeredgecolor=col,
-        markerfacecolor=col,
-        markersize=style['size'])
+    AXES.plot(psi_cube.extract(iris.Constraint(dataset=model)).data,
+              ecs_cube.extract(iris.Constraint(dataset=model)).data,
+              linestyle='none',
+              marker=style['mark'],
+              markeredgecolor=col,
+              markerfacecolor=col,
+              markersize=style['size'])
 
 
 def _get_line_plot_legend():
@@ -136,11 +137,10 @@ def _save_fig(cfg, basename, legend=None):
         legend = []
     else:
         legend = [legend]
-    FIG.savefig(
-        path,
-        additional_artists=legend,
-        bbox_inches='tight',
-        orientation='landscape')
+    FIG.savefig(path,
+                additional_artists=legend,
+                bbox_inches='tight',
+                orientation='landscape')
     logger.info("Wrote %s", path)
     AXES.cla()
     return path
@@ -163,7 +163,7 @@ def get_provenance_record(caption, statistics, plot_type, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'ancestors': ancestor_files,
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'caption': caption,
         'domains': ['global'],
         'plot_type': plot_type,
@@ -201,19 +201,17 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
         # Plot lines
         for model in models:
             cube = tas_cubes[model]
-            AXES.plot(
-                cube.coord('year').points,
-                cube.data,
-                color=_get_model_color(model, lambda_cube))
+            AXES.plot(cube.coord('year').points,
+                      cube.data,
+                      color=_get_model_color(model, lambda_cube))
         obs_style = plot.get_dataset_style('OBS', 'cox18nature')
         obs_cube = tas_cubes[obs_name]
-        AXES.plot(
-            obs_cube.coord('year').points,
-            obs_cube.data,
-            linestyle='none',
-            marker='o',
-            markeredgecolor=obs_style['color'],
-            markerfacecolor=obs_style['color'])
+        AXES.plot(obs_cube.coord('year').points,
+                  obs_cube.data,
+                  linestyle='none',
+                  marker='o',
+                  markeredgecolor=obs_style['color'],
+                  markerfacecolor=obs_style['color'])
 
         # Plot appearance
         AXES.set_title('Simulation of global warming record')
@@ -251,19 +249,17 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
         # Plot lines
         for model in models:
             cube = psi_cubes[model]
-            AXES.plot(
-                cube.coord('year').points,
-                cube.data,
-                color=_get_model_color(model, lambda_cube))
+            AXES.plot(cube.coord('year').points,
+                      cube.data,
+                      color=_get_model_color(model, lambda_cube))
         obs_style = plot.get_dataset_style('OBS', 'cox18nature')
         obs_cube = psi_cubes[obs_name]
-        AXES.plot(
-            obs_cube.coord('year').points,
-            obs_cube.data,
-            linestyle='none',
-            marker='o',
-            markeredgecolor=obs_style['color'],
-            markerfacecolor=obs_style['color'])
+        AXES.plot(obs_cube.coord('year').points,
+                  obs_cube.data,
+                  linestyle='none',
+                  marker='o',
+                  markeredgecolor=obs_style['color'],
+                  markerfacecolor=obs_style['color'])
 
         # Plot appearance
         AXES.set_title('Metric of variability versus time')
@@ -316,24 +312,23 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         # Plot lines
         AXES.set_xlim(auto=False)
         AXES.set_ylim(auto=False)
-        AXES.plot(
-            lines['x'],
-            lines['y_best_estim'],
-            color='black',
-            linestyle='dashdot',
-            label='Linear regression')
-        AXES.plot(
-            lines['x'],
-            lines['y_minus_err'],
-            color='black',
-            linestyle='dashed')
-        AXES.plot(
-            lines['x'], lines['y_plus_err'], color='black', linestyle='dashed')
-        AXES.axvline(
-            obs_mean,
-            color='blue',
-            linestyle='dashdot',
-            label='Observational constraint')
+        AXES.plot(lines['x'],
+                  lines['y_best_estim'],
+                  color='black',
+                  linestyle='dashdot',
+                  label='Linear regression')
+        AXES.plot(lines['x'],
+                  lines['y_minus_err'],
+                  color='black',
+                  linestyle='dashed')
+        AXES.plot(lines['x'],
+                  lines['y_plus_err'],
+                  color='black',
+                  linestyle='dashed')
+        AXES.axvline(obs_mean,
+                     color='blue',
+                     linestyle='dashdot',
+                     label='Observational constraint')
         AXES.axvline(obs_mean - obs_std, color='blue', linestyle='dashed')
         AXES.axvline(obs_mean + obs_std, color='blue', linestyle='dashed')
 
@@ -361,11 +356,10 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
     # Provenance
     filename = 'pdf_{}'.format(obs_cube.attributes['dataset'])
     netcdf_path = get_diagnostic_filename(filename, cfg)
-    cube = iris.cube.Cube(
-        ecs_pdf,
-        var_name='pdf',
-        long_name='Probability density function',
-        units='K-1')
+    cube = iris.cube.Cube(ecs_pdf,
+                          var_name='pdf',
+                          long_name='Probability density function',
+                          units='K-1')
     cube.add_aux_coord(
         iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
     io.iris_save(cube, netcdf_path)
@@ -378,19 +372,17 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
 
     # Plot
     if cfg['write_plots']:
-        AXES.plot(
-            ecs_lin,
-            ecs_pdf,
-            color='black',
-            linewidth=2.0,
-            label='Emergent constraint')
-        AXES.hist(
-            ecs_cube.data,
-            bins=6,
-            range=(2.0, 5.0),
-            density=True,
-            color='orange',
-            label='{} models'.format(project))
+        AXES.plot(ecs_lin,
+                  ecs_pdf,
+                  color='black',
+                  linewidth=2.0,
+                  label='Emergent constraint')
+        AXES.hist(ecs_cube.data,
+                  bins=6,
+                  range=(2.0, 5.0),
+                  density=True,
+                  color='orange',
+                  label='{} models'.format(project))
 
         # Plot appearance
         AXES.set_title('PDF of emergent constraint')
@@ -417,11 +409,10 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
     # Provenance
     filename = 'cdf_{}'.format(obs_cube.attributes['dataset'])
     netcdf_path = get_diagnostic_filename(filename, cfg)
-    cube = iris.cube.Cube(
-        ecs_cdf,
-        var_name='cdf',
-        long_name='Cumulative distribution function',
-        units='1')
+    cube = iris.cube.Cube(ecs_cdf,
+                          var_name='cdf',
+                          long_name='Cumulative distribution function',
+                          units='1')
     cube.add_aux_coord(
         iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
     io.iris_save(cube, netcdf_path)
@@ -435,24 +426,24 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
 
     # Plot
     if cfg['write_plots']:
-        AXES.plot(
-            ecs_lin,
-            ecs_cdf,
-            color='black',
-            linewidth=2.0,
-            label='Emergent constraint')
-        AXES.hist(
-            ecs_cube.data,
-            bins=6,
-            range=(2.0, 5.0),
-            cumulative=True,
-            density=True,
-            color='orange',
-            label='{} models'.format(project))
-        AXES.axhline(
-            (1.0 - confidence_level) / 2.0, color='black', linestyle='dashdot')
-        AXES.axhline(
-            (1.0 + confidence_level) / 2.0, color='black', linestyle='dashdot')
+        AXES.plot(ecs_lin,
+                  ecs_cdf,
+                  color='black',
+                  linewidth=2.0,
+                  label='Emergent constraint')
+        AXES.hist(ecs_cube.data,
+                  bins=6,
+                  range=(2.0, 5.0),
+                  cumulative=True,
+                  density=True,
+                  color='orange',
+                  label='{} models'.format(project))
+        AXES.axhline((1.0 - confidence_level) / 2.0,
+                     color='black',
+                     linestyle='dashdot')
+        AXES.axhline((1.0 + confidence_level) / 2.0,
+                     color='black',
+                     linestyle='dashdot')
 
         # Plot appearance
         AXES.set_title('CDF of emergent constraint')
@@ -482,8 +473,8 @@ def get_ecs_range(cfg, psi_cube, ecs_cube, obs_cube):
 
     # Calculate constrained ECS range
     ecs_mean = ecs_lin[np.argmax(ecs_pdf)]
-    ecs_index_range = np.where((ecs_cdf >= conf_low) &
-                               (ecs_cdf <= conf_high))[0]
+    ecs_index_range = np.where((ecs_cdf >= conf_low)
+                               & (ecs_cdf <= conf_high))[0]
     ecs_range = ecs_lin[ecs_index_range]
     ecs_low = min(ecs_range)
     ecs_high = max(ecs_range)

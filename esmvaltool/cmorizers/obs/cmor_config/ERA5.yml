@@ -1,0 +1,108 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: ERA5
+  project_id: OBS6
+  tier: 3
+  version: '1'
+  modeling_realm: reanaly
+  source: 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5'
+  reference: 'era5'
+  comment: 'Contains modified Copernicus Climate Change Service Information {year}'
+
+# Variables to CMORize
+variables:
+  # time independent
+  orog:
+    mip: fx
+    raw: z
+    file: 'era5_orography_*_hourly.nc'
+  # hourly frequency
+  clt:
+    mip: E1hr
+    raw: tcc
+    file: 'era5_total_cloud_cover_*_hourly.nc'
+  evspsbl:
+    mip: E1hr
+    raw: e
+    file: 'era5_evaporation_*_hourly.nc'
+  evspsblpot:
+    mip: E1hr
+    raw: pev
+    file: 'era5_potential_evaporation_*_hourly.nc'
+  mrro:
+    mip: E1hr
+    raw: ro
+    file: 'era5_runoff_*_hourly.nc'
+  pr:
+    mip: E1hr
+    raw: tp
+    file: 'era5_total_precipitation_*_hourly.nc'
+  prsn:
+    mip: E1hr
+    raw: sf
+    file: 'era5_snowfall_*_hourly.nc'
+  ps:
+    mip: E1hr
+    raw: sp
+    file: 'era5_surface_pressure_*_hourly.nc'
+  psl:
+    mip: E1hr
+    raw: msl
+    file: 'era5_mean_sea_level_pressure_*_hourly.nc'
+  ptype:
+    mip: E1hr
+    raw: ptype
+    file: 'era5_precipitation_type_*_hourly.nc'
+  rls:
+    mip: E1hr
+    raw: msnlwrf
+    file: 'era5_mean_surface_net_long_wave_radiation_flux_*_hourly.nc'
+  rlds:
+    mip: E1hr
+    raw: strd
+    file: 'era5_surface_thermal_radiation_downwards_*_hourly.nc'
+  rsds:
+    mip: E1hr
+    raw: ssrd
+    file: 'era5_surface_solar_radiation_downwards_*_hourly.nc'
+  rsdt:
+    mip: E1hr
+    raw: tisr
+    file: 'era5_toa_incident_solar_radiation_*_hourly.nc'
+  rss:
+    mip: E1hr
+    raw: ssr
+    file: 'era5_surface_net_solar_radiation_*_hourly.nc'
+  uas:
+    mip: E1hr
+    raw: u10
+    file: 'era5_10m_u_component_of_wind_*_hourly.nc'
+  vas:
+    mip: E1hr
+    raw: v10
+    file: 'era5_10m_v_component_of_wind_*_hourly.nc'
+  tas:
+    mip: E1hr
+    raw: t2m
+    file: 'era5_2m_temperature_*_hourly.nc'
+  tasmax:
+    mip: E1hr
+    raw: mx2t
+    file: 'era5_maximum_2m_temperature_since_previous_post_processing_*_hourly.nc'
+  tasmin:
+    mip: E1hr
+    raw: mn2t
+    file: 'era5_minimum_2m_temperature_since_previous_post_processing_*_hourly.nc'
+  tdps:
+    mip: E1hr
+    raw: d2m
+    file: 'era5_2m_dewpoint_temperature_*_hourly.nc'
+  ts:
+    mip: E1hr
+    raw: skt
+    file: 'era5_skin_temperature_*_hourly.nc'
+  tsn:
+    mip: E1hr
+    raw: tsn
+    file: 'era5_temperature_of_snow_layer_*_hourly.nc'

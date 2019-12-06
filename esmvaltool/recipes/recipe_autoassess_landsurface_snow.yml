@@ -9,10 +9,10 @@ documentation:
     (on JASMIN).
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5, exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
@@ -31,7 +31,8 @@ diagnostics:
     variables:
       snw: # surface_snow_amount (CMOR name=snw)
         mip: LImon
-        fx_files: [sftlf]
+      sftlf:
+        mip: fx
     scripts:
       autoassess_landsurf_snow: &autoassess_landsurf_snow_settings
         script: autoassess/autoassess_area_base.py
@@ -40,7 +41,6 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: []
-        fx: [sftlf]
         start: 1997/12/01
         end: 2002/12/01
         climfiles_root: '/group_workspaces/jasmin4/esmeval/autoassess_specific_files/files'  # on Jasmin

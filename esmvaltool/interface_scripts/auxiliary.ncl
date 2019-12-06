@@ -40,7 +40,7 @@ function bname(a[*]:string)
 ; References
 ;
 ; Modification history
-;    20131106-A_gott_kl: written.
+;    20131106-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, a, i, b, rm_prefix, rm_suffix
 begin
@@ -80,7 +80,7 @@ function basename(name[1]:string)
 ; References
 ;
 ; Modification history
-;    20130419-A_gott_kl: written.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, suffix
 begin
@@ -124,7 +124,7 @@ function att2var(data,
 ; References
 ;
 ; Modification history
-;    20131107-A_gott_kl: written.
+;    20131107-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, meta, result, temp, atts, att, iatt
 begin
@@ -224,7 +224,7 @@ function att2var_default(data,
 ; References
 ;
 ; Modification history
-;    20140403-A_GoKl: written.
+;    20140403-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, meta, result, default, option
 begin
@@ -264,7 +264,7 @@ function get_ncdf_name(var[1]:string)
 ; References
 ;
 ; Modification history
-;    20131108-A_gott_kl: written.
+;    20131108-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, work_dir, diag_script, output_dir, ncdf_dir
 begin
@@ -308,7 +308,7 @@ function get_ncdf_dir(work_dir[1]:string,
 ; References
 ;
 ; Modification history
-;    20131108-A_gott_kl: written.
+;    20131108-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, work_dir, subfolder, ncdf_dir
 begin
@@ -363,7 +363,7 @@ function ncdf_read(infile, varname)
 ; References
 ;
 ; Modification history
-;    20131111-A_gott_kl: written.
+;    20131111-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, infile, ncdf, varname, i, ivar, nvar, \
   vdims, var, atts, temp, defaults
@@ -444,6 +444,62 @@ begin
 
 end
 
+
+; #############################################################################
+undef("ncdf_att")
+function ncdf_att(infile[1],
+                  att[1]:string)
+;
+; Arguments
+;    infile: full path & name of the netCDF file to be read OR a file
+;            variable already created by addfile(...).
+;    att: attribute to be read.
+;
+; Return value
+;    Contents of attribute att (could be any type supported by netCDF).
+;
+; Description
+;    Checks existence of att in infile, then retrieves contents.
+;
+; Caveats
+;    str_infile does not resolve the file name for a file variable.
+;
+; References
+;
+; Modification history
+;    20140131-A_gott_kl: written.
+;
+local funcname, scriptname, f, file_atts, i, result
+begin
+
+  funcname = "ncdf_att"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
+
+  if (typeof(infile).eq."string") then
+    f = addfile(infile, "r")
+    str_infile = infile
+  else if (typeof(infile).eq."file") then
+    f = infile
+    str_infile = "file associated with file variable argument."
+  else
+    error_msg("f", scriptname, funcname, "wrong type of infile argument")
+  end if
+  end if
+  file_atts = getvaratts(f)  ; retrieve global attributes
+  if (any(file_atts.eq.att)) then
+    i = ind(file_atts.eq.att)
+    result = f@$file_atts(i)$
+  else
+    error_msg("w", scriptname, funcname, att + " not found in " + str_infile)
+    result = "missing"
+  end if
+
+  leave_msg(scriptname, funcname)
+  return(result)
+
+end
+
 ; #############################################################################
 undef("ncdf_define")
 function ncdf_define(ncdf, data)
@@ -464,7 +520,7 @@ function ncdf_define(ncdf, data)
 ;    http://www.ncl.ucar.edu/Applications/method_2.shtml
 ;
 ; Modification history
-;    20131112-A_gott_kl: written.
+;    20131112-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
   dimUnlim, atts
@@ -599,7 +655,7 @@ function ncdf_write(data,
 ;    http://www.ncl.ucar.edu/Support/talk_archives/2009/0367.html
 ;
 ; Modification history
-;    20131107-A_gott_kl: written.
+;    20131107-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
 begin
@@ -711,7 +767,7 @@ function ncdf_att(infile[1],
 ; References
 ;
 ; Modification history
-;    20140131-A_gott_kl: written.
+;    20140131-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, f, file_atts, i, result
 begin
@@ -766,7 +822,7 @@ function copy_CoordNames_n(var_from,
 ; References
 ;
 ; Modification history
-;    20130419-A_gott_kl: written.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, var_from, var_to, n, rank
 begin
@@ -819,7 +875,7 @@ function extend_var_at(var,
 ; References
 ;
 ; Modification history
-;    20130419-A_gott_kl: written.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, var, coord, index, var_new, var_dim, \
   var_dim_plus, rank
@@ -915,7 +971,7 @@ function remove_index(array,
 ; References
 ;
 ; Modification history
-;    20160704-A_righ_ma: written.
+;    20160704-righi_mattia: written.
 ;
 local funcname, scriptname, dsize, rank, iarr
 begin
@@ -975,7 +1031,7 @@ procedure set_default_att(info:logical,
 ; References
 ;
 ; Modification history
-;    20171214-A_righ_ma: written.
+;    20171214-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -1010,7 +1066,7 @@ function empty_str(nn[1]:integer)
 ; References
 ;
 ; Modification history
-;     20140228-A_righ_ma: written.
+;    20140228-righi_mattia: written.
 ;
 local funcname, scriptname, ii
 begin

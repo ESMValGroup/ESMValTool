@@ -17,8 +17,8 @@
 ;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;    20190201-A_righ_ma: adapted to v2 and replace NaN/inf with FillValue.
-;    20160224-A_wenz_sa: written based on reformat_obs_ESACCI-AEROSOL.ncl.
+;    20190201-righi_mattia: adapted to v2 and replace NaN/inf with FillValue.
+;    20160224-wenzel_sabrina: written based on reformat_obs_ESACCI-AEROSOL.ncl.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \

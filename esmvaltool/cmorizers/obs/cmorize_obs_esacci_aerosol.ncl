@@ -19,12 +19,12 @@
 ;    Put all files in input_dir_path (no subdirectories with years).
 ;
 ; Modification history
-;    20190124-A_righ_ma: adapted to v2.
-;    20160718-A_laue_ax: added AOD550 + AOD870 uncertainties.
-;    20160525-A_righ_ma: updated to v4.21 and adding more variables.
-;    20150126-A_righ_ma: adding AOD at other wavelengths.
-;    20151124-A_righ_ma: switched to monthly raw data (now available).
-;    20150424-A_righ_ma: written.
+;    20190124-righi_mattia: adapted to v2.
+;    20160718-lauer_axel: added AOD550 + AOD870 uncertainties.
+;    20160525-righi_mattia: updated to v4.21 and adding more variables.
+;    20150126-righi_mattia: adding AOD at other wavelengths.
+;    20151124-righi_mattia: switched to monthly raw data (now available).
+;    20150424-righi_mattia: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -78,9 +78,7 @@ begin
 
   ; Global attributes
   SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/"
-  REF = "Popp et al., ESA Aerosol Climate Change Initiative " + \
-    "(ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental " + \
-    "Data Analysis, 2016"
+  REF = "Popp et al., Remote Sens., doi:10.3390/rs8050421, 2016."
   COMMENT = "Combined dataset ERS2-ATSR2 (1997-2002) and ENVISAT-AATSR " + \
     "(2003-2011), based on the University of Swansea algorithm " + \
     "(monthly mean L3 data)"

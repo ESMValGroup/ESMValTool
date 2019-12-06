@@ -13,10 +13,10 @@ documentation:
     There are no restrictions in terms of data.
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
@@ -50,6 +50,7 @@ diagnostics:
       lat_lon:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
@@ -58,6 +59,7 @@ diagnostics:
       zonal_mean:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
@@ -66,6 +68,7 @@ diagnostics:
       meridional_mean:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
