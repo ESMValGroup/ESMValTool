@@ -308,6 +308,17 @@ diagnostics:
     scripts: null
 
 
+  PHC:
+    description: PHC check
+    variables:
+      so:
+      thetao:
+    additional_datasets:
+      - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
+          type: clim, version: 3, start_year: 1950, end_year: 1950}
+    scripts: null
+
+
   PIOMAS:
     description: PIOMAS
     variables:
@@ -766,6 +777,7 @@ diagnostics:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
+
 
   UWisc:
     description: UWisc check
