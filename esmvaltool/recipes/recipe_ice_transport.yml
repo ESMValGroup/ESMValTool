@@ -16,7 +16,7 @@ documentation:
     - pred_va
 
 datasets:
-  - {project: CMIP6, activity: CMIP, dataset: HadGEM3-GC31-LL, mip: SImon, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2014}
+  - {project: CMIP6, activity: CMIP, dataset: HadGEM3-GC31-LL, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
 
 preprocessors:
   bering: &bering
@@ -28,16 +28,34 @@ preprocessors:
   bering_levels:
     <<: *bering
 
+  so_preproc:
+    mask_above_threshold:
+      threshold: 45
+    mask_below_threshold:
+      threshold: 10
+
 diagnostics:
-  bering:
-    description: "Simple personal diagnostic"
+  # bering:
+  #   description: "Simple personal diagnostic"
+  #   variables:
+  #     siconc:
+  #       preprocessor: bering
+  #     sivol:
+  #       preprocessor: bering
+  #     siv:
+  #       preprocessor: bering
+  #   scripts:
+  #     ice_transport:
+  #       script: primavera/ice_transport.py
+
+  fresh_water:
+    description: "Fresh water transport"
     variables:
-      siconc:
-        preprocessor: bering
-      sivol:
-        preprocessor: bering
-      siv:
-        preprocessor: bering
+      so:
+        preprocessor: so_preproc
+        mip: Omon
+      vo:
+        mip: Omon
     scripts:
       ice_transport:
-        script: primavera/ice_transport.py
+        script: primavera/fresh_water_transport.py
