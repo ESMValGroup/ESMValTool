@@ -14,12 +14,12 @@ sm:
   ubrmsd:
     title: ubrmsd
     vmin: 0.
-    vmax: 1.
+    vmax: .4
     cmap: YlGn
   rmsd:
     title: rmsd
     vmin: 0.
-    vmax: 1.
+    vmax: .4
     cmap: YlGn
   absdiff:
     title: absdiff

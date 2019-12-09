@@ -5,7 +5,7 @@ import warnings
 from pprint import pformat
 
 import yaml
-import skill_metrics
+import skill_metrics as sm
 import matplotlib.pyplot as plt
 import iris
 import numpy as np
@@ -58,16 +58,20 @@ def main(cfg):
         a = refdat.data.compressed()
         b = dat.data.compressed()
         rvalue_list.append(pearsonr(a,b)[0])
-        rmsd_list.append(rmsd1d(a,b))
+        rmsd_list.append(sm.centered_rms_dev(a,b)) # replace rmsd1d with skillmetrics.centered_rmsd
+                                      # https://github.com/PeterRochford/SkillMetrics/
+                                      # blob/master/Examples/target3.py
+                                      # and switch on checkstat in taylordiagram plot
         std_list.append(np.std(b))
 
 
-    skill_metrics.taylor_diagram(np.array(std_list),
+    sm.taylor_diagram(np.array(std_list),
                                  np.array(rmsd_list),
                                  np.array(rvalue_list),
                                  markerLabel=all_datasets,
                                  markerLegend = 'on',
-                                 markerColor = 'r')
+                                 markerColor = 'r',
+                                 checkstats='on')
     if cfg['write_plots']:
         plot_filename = get_plot_filename('taylordiagram',cfg)
         logger.info(
