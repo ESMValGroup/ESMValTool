@@ -41,7 +41,7 @@ this index is simple averaged over the respective domain.
 In its given form, this equation is prone to small standard deviations close to
 zero. For example, values of :math:`s^M = 10^{-5} \mu` and :math:`s^O = 10^{-7}
 \mu` (where :math:`\mu` is the mean of :math:`s^O` over all grid cells) results
-in an MVI in the magnitude of :math:`10^4` for this single grid cell even
+in a MVI of the order of :math:`10^4` for this single grid cell even
 though the two standard deviations are close to zero and negligible compared to
 other grid cells. Due to the use of the arithmetic mean, a single high value is
 able to distort the overall MVI.
