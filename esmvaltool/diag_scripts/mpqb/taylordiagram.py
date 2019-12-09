@@ -58,10 +58,7 @@ def main(cfg):
         a = refdat.data.compressed()
         b = dat.data.compressed()
         rvalue_list.append(pearsonr(a,b)[0])
-        rmsd_list.append(sm.centered_rms_dev(a,b)) # replace rmsd1d with skillmetrics.centered_rmsd
-                                      # https://github.com/PeterRochford/SkillMetrics/
-                                      # blob/master/Examples/target3.py
-                                      # and switch on checkstat in taylordiagram plot
+        rmsd_list.append(sm.centered_rms_dev(a,b))
         std_list.append(np.std(b))
 
 
@@ -69,8 +66,13 @@ def main(cfg):
                                  np.array(rmsd_list),
                                  np.array(rvalue_list),
                                  markerLabel=all_datasets,
-                                 markerLegend = 'on',
-                                 markerColor = 'r',
+                                 markerLegend='on',
+                                 markerColor='r',
+                                 markerSize=7,
+                                 rmsLabelFormat='0:.2f',
+                                 colObs='k',
+                                 markerObs='x',
+                                 titleOBS=reference_dataset,
                                  checkstats='on')
     if cfg['write_plots']:
         plot_filename = get_plot_filename('taylordiagram',cfg)
