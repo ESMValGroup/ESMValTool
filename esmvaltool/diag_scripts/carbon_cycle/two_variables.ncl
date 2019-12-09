@@ -1,10 +1,6 @@
 ; #############################################################################
 ; carbon_cycle/two_variables.ncl
 ; #############################################################################
-; DIAGNOSTIC SCRIPT FOR SCATTER PLOT WITH TWO VARIABLES
-; Author: Alessandro Anav (University of Exeter, UK)
-; EMBRACE project
-; #############################################################################
 ;
 ; Description:
 ;     Draw a scatter plot with two variables.
@@ -13,17 +9,18 @@
 ;     region: the region to be averaged.
 ;
 ; Modification history:
-;     20180823_A-schl_ma: continued porting to v2.0.
-;     20180619_A-wenz_sa: adopted script to v2.
-;     20170511_A-gier_be: added metadata to files.
-;     20151130_A-laue_ax: corrected passing of file type from namelist to
-;                         plotting functions; moved call to write_references
-;                         to beginning of code.
-;     20151105_A-righ_ma: graphic part moved to external plot_scripts.
-;     20151104_A-righ_ma: removing regridding, not necessary for this
-;                         diagnostic.
-;     201507??_A-wenz_sa: adapted to ESMValTool structure.
-;     201505??_A-anav_al: written.
+;     20191209-schlund_manuel: added new provenance tracking.
+;     20180823-schlund_manuel: continued porting to v2.0.
+;     20180619-wenzel_sabrina: adopted script to v2.
+;     20170511-gier_bettina: added metadata to files.
+;     20151130-lauer_axel: corrected passing of file type from namelist to
+;                          plotting functions; moved call to write_references
+;                          to beginning of code.
+;     20151105-righi_mattia: graphic part moved to external plot_scripts.
+;     20151104-righi_mattia: removing regridding, not necessary for this
+;                            diagnostic.
+;     201507??-wenzel_sabrina: adapted to ESMValTool structure.
+;     201505??-anav_alessandro: written.
 ;
 ; #############################################################################
 

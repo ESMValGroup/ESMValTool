@@ -2510,8 +2510,8 @@ function evolution_base_plot(wks_in[1],
 ;     and uncertainty.
 ;
 ; Modification history:
-;     20180822_A-schl_ma: ported to v2.0.
-;     20170308_A-gier_be: written.
+;     20180822-schlund_manuel: ported to v2.0.
+;     20170308-gier_bettina: written.
 ;
 local funcname, scriptname, verbosity, wks_out, wks_in, data, source, res, \
   atts, base, varname, multi_model, refmean

@@ -1,10 +1,6 @@
 ; #############################################################################
 ; carbon_cycle/main.ncl
 ; #############################################################################
-; DIAGNOSTIC SCRIPT FOR ERRORBAR AND SEASONAL CYCLE PLOTS
-; Author: Alessandro Anav (University of Exeter, UK)
-; EMBRACE project
-; #############################################################################
 ;
 ; Description:
 ;     Calculates temporal and spatial averages and plots the variable as
@@ -48,21 +44,22 @@
 ;     and observations and coincides with the land-sea mask.
 ;
 ; Modification history:
-;     20180816_A-schl_ma: continued porting to v2.0.
-;     20180619_A-wenz_sa: adopted script to v2.
-;     20170330_A-gier_be: added external data-read in (e.g. GCP).
-;     20170316_A-gier_be: added cdo regridding, landmask for CRU obs.
-;     20170308_A-gier_be: added "evolution_plot".
-;     20151130_A-laue_ax: corrected passing of file type from namelist to
-;                         plotting functions; moved call to write_references
-;                         to beginning of code.
-;     20151105_A-righ_ma: graphic part moved to external plot_scripts.
-;     20151030_A-righ_ma: regridding not working on ocean grids, removed since
-;                         it is not necessary for these diagnostics.
-;     20151029_A-righ_ma: replacing area functions with ESMValTool functions.
-;     20151021_A-righ_ma: pep8 and header standardization.
-;     201510??_A-wenz_sa: adapted to ESMValTool structure.
-;     201505??_A-anav_al: written.
+;     20191209-schlund_manuel: added new provenance tracking.
+;     20180816-schlund_manuel: continued porting to v2.0.
+;     20180619-wenzel_sabrina: adopted script to v2.
+;     20170330-gier_bettina: added external data-read in (e.g. GCP).
+;     20170316-gier_bettina: added cdo regridding, landmask for CRU obs.
+;     20170308-gier_bettina: added "evolution_plot".
+;     20151130-lauer_axel: corrected passing of file type from namelist to
+;                          plotting functions; moved call to write_references
+;                          to beginning of code.
+;     20151105-righi_mattia: graphic part moved to external plot_scripts.
+;     20151030-righi_mattia: regridding not working on ocean grids, removed
+;                            since it is not necessary for these diagnostics.
+;     20151029-righi_mattia: replacing area functions with ESMValTool functions.
+;     20151021-righi_mattia: pep8 and header standardization.
+;     201510??-wenzel_sabrina: adapted to ESMValTool structure.
+;     201505??-anav_alessandro: written.
 ;
 ; #############################################################################
 

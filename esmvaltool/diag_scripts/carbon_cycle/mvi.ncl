@@ -1,10 +1,6 @@
 ; #############################################################################
 ; carbon_cycle/mvi.ncl
 ; #############################################################################
-; DIAGNOSTIC SCRIPT TO CREATE MVI-IAV-TREND PLOT
-; Author: Alessandro Anav (University of Exeter, UK)
-; EMBRACE project
-; #############################################################################
 ;
 ; Description:
 ;    Calculates the model variability index (MVI), interannual variability
@@ -33,14 +29,15 @@
 ;     the preprocessor section of the recipe.
 ;
 ; Modification history:
-;     20180814_A-schl_ma: continued porting to v2.0.
-;     20180619_A-wenz_sa: adopted script to v2.
-;     20170316_A-gier_be: Added cdo regridding, landmask for CRU obs.
-;     20151130_A-laue_ax: moved call to write_references to beginning of code.
-;     20151104_A-righ_ma: graphic part moved to external plot_scripts.
-;     20151102_A-righ_ma: replacing area functions with ESMValTool functions.
-;     201507??_A-wenz_sa: adapted to ESMValTool structure.
-;     201505??_A-anav_al: written.
+;     20191209-schlund_manuel: added new provenance tracking.
+;     20180814-schlund_manuel: continued porting to v2.0.
+;     20180619-wenzel_sabrina: adopted script to v2.
+;     20170316-gier_bettina: Added cdo regridding, landmask for CRU obs.
+;     20151130-lauer_axel: moved call to write_references to beginning of code.
+;     20151104-righi_mattia: graphic part moved to external plot_scripts.
+;     20151102-righi_mattia: replacing area functions with ESMValTool functions.
+;     201507??-wenzel_sabrina: adapted to ESMValTool structure.
+;     201505??-anav_alessandro: written.
 ;
 ; #############################################################################
 

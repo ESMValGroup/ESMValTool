@@ -30,6 +30,8 @@ function read_data(info_item[1]:logical)
 ; References
 ;
 ; Modification history
+;   20191209-schlund_manuel: attributes from file are now added to the array
+;                            returned by this function.
 ;   20180511-righi_mattia: adapted to the revised list-based metadata
 ;                          structure.
 ;   20180212-righi_mattia: written.
