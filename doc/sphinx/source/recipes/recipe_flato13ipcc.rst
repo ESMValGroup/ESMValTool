@@ -59,7 +59,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
       For comparison, the observation-based estimates provided by the Global
       Carbon Project (GCP) are also shown (thick black line). The confidence
       limits on the ensemble mean are derived by assuming that the CMIP5 models
-      come from a t-distribution. The grey areas show the range of annual mean
+      are drawn from a t-distribution. The grey areas show the range of annual mean
       fluxes simulated across the model ensemble. This figure includes results
       from all CMIP5 models that reported land CO2 fluxes, ocean CO2 fluxes, or
       both (Anav et al., 2013).
@@ -489,4 +489,3 @@ Example plots
    change vs. springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in
    the seasonal cycle in transient climate change experiments (CMIP5 historical
    experiments: 1901-2000, RCP4.5 experiments: 2101-2200).
-
