@@ -815,4 +815,5 @@ statistics:
   detrend: detrend
   smpi: single metric performance index statistics
   mder: multiple diagnostic ensemble regression
+  mvi: model variability index
   other: other statistics
