@@ -56,7 +56,8 @@
 ;     20151105-righi_mattia: graphic part moved to external plot_scripts.
 ;     20151030-righi_mattia: regridding not working on ocean grids, removed
 ;                            since it is not necessary for these diagnostics.
-;     20151029-righi_mattia: replacing area functions with ESMValTool functions.
+;     20151029-righi_mattia: replacing area functions with ESMValTool
+;                            functions.
 ;     20151021-righi_mattia: pep8 and header standardization.
 ;     201510??-wenzel_sabrina: adapted to ESMValTool structure.
 ;     201505??-anav_alessandro: written.
@@ -91,9 +92,8 @@ begin
     if (variable_info[1]@short_name .ne. var0) then
       err = True
     end if
-  else if (DIM_VAR .gt. 2) then
+  elseif (DIM_VAR .gt. 2) then
     err = True
-  end if
   end if
   if (err) then
     error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
@@ -137,14 +137,13 @@ begin
   ; Set region - supports 2D array for lat and strings
   if isstring(DOMAIN) then
     region = select_region(DOMAIN)
-  else if dimsizes(DOMAIN) .eq. 2 then
+  elseif dimsizes(DOMAIN) .eq. 2 then
     region = (/DOMAIN(0), DOMAIN(1), \
               0.0, 360.0/)
     region@name = flt2string(DOMAIN(0)) + "_-_" + flt2string(DOMAIN(1))
     region@DM_tag = "DM_reg"
   else
     error_msg("f", DIAG_SCRIPT, "", DOMAIN + " is an invalid region type")
-  end if
   end if
 
   ; Set time range
