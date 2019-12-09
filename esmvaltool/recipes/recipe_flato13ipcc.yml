@@ -28,9 +28,6 @@ documentation:
 
 preprocessors:
 
-  noop:
-    {}
-
   clim:
     regrid:
       target_grid: 2x2
@@ -42,7 +39,20 @@ preprocessors:
       statistics: [mean]
       exclude: [reference_dataset]
 
-  regridding:
+  land_fraction_weighting:
+    weighting_landsea_fraction: &weighting_options
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP',
+        'inmcm4',
+        'JMA-TRANSCOM',
+      ]
+
+  sea_fraction_weighting:
+    weighting_landsea_fraction:
+      <<: *weighting_options
+      area_type: sea
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -931,8 +941,8 @@ diagnostics:
 
   fig09-26top:
     variables:
-      fgco2_grid: &fgco2_settings
-        preprocessor: regridding
+      fgco2: &fgco2_settings
+        preprocessor: sea_fraction_weighting
         project: CMIP5
         mip: Omon
         exp: historical
@@ -941,39 +951,34 @@ diagnostics:
         end_year: 2005
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
-        derive: true
         additional_datasets:
-          - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986}
-          # No data
-          # - {dataset: BNU-ESM}
+          # - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
           - {dataset: CanESM2}
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2G}
           - {dataset: GFDL-ESM2M}
           - {dataset: HadGEM2-CC}
           - {dataset: HadGEM2-ES}
-          # - {dataset: inmcm4}
+          - {dataset: inmcm4}
           - {dataset: IPSL-CM5A-LR}
           - {dataset: IPSL-CM5A-MR}
           - {dataset: IPSL-CM5B-LR}
-          # Shape of fx files and fgco2 differ on mistral
-          # - {dataset: MIROC-ESM}
-          # - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MIROC-ESM}
+          - {dataset: MIROC-ESM-CHEM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
-      fgco2_grid_GCP:
+      fgco2_GCP:
         <<: *fgco2_settings
-        preprocessor: noop
-        short_name: fgco2_grid
-        start_year: 1959
+        preprocessor: default
+        short_name: fgco2
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2}
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
     scripts:
       main_global: &fig09_26_settings
         script: carbon_cycle/main.ncl
         styleset: CMIP5
-        region: Global
+        region: global
         legend_year_outside: false
         legend_outside: false
         sort: true
@@ -988,13 +993,13 @@ diagnostics:
 
   fig09-26bottom:
     variables:
-      nbp_grid:
+      nbp:
         <<: *fgco2_settings
-        preprocessor: noop
+        preprocessor: land_fraction_weighting
         mip: Lmon
         additional_datasets: &nbp_datasets
-          - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959}
-          - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986}
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+          - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
           - {dataset: BNU-ESM}
           - {dataset: CanESM2}
           - {dataset: CESM1-BGC}
@@ -1005,8 +1010,7 @@ diagnostics:
           - {dataset: inmcm4}
           - {dataset: IPSL-CM5A-LR}
           - {dataset: IPSL-CM5A-MR}
-          # Overlapping files for several variables at mistral
-          # - {dataset: IPSL-CM5B-LR}
+          - {dataset: IPSL-CM5B-LR}
           - {dataset: MIROC-ESM}
           - {dataset: MIROC-ESM-CHEM}
           - {dataset: MPI-ESM-LR}
@@ -1028,16 +1032,15 @@ diagnostics:
 
   fig09-27top:
     variables:
-      fgco2_grid:
+      fgco2:
         <<: *fgco2_settings
         start_year: 1986
-      fgco2_grid_GCP:
+      fgco2_GCP:
         <<: *fgco2_settings
-        preprocessor: noop
-        short_name: fgco2_grid
-        start_year: 1986
+        preprocessor: default
+        short_name: fgco2
         additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2}
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1986, end_year: 2005, frequency: yr}
     scripts:
       main_global: &fig09_27_settings
         <<: *fig09_26_settings
@@ -1046,10 +1049,11 @@ diagnostics:
 
   fig09-27bottom:
     variables:
-      nbp_grid:
+      nbp:
         <<: *fgco2_settings
-        preprocessor: noop
+        preprocessor: default
         mip: Lmon
+        start_year: 1986
         additional_datasets: *nbp_datasets
     scripts:
       main_global:

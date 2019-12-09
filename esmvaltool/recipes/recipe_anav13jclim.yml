@@ -21,9 +21,6 @@ documentation:
 
 preprocessors:
 
-  noop:
-    {}
-
   regridding: &regridding
     regrid:
       target_grid: 2x2
@@ -524,18 +521,6 @@ diagnostics:
     realms:
       - land
     variables:
-      cSoil:
-        preprocessor: land_fraction_weighting
-        project: CMIP5
-        mip: Lmon
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1986
-        end_year: 2005
-        reference_dataset: HWSD
-        plot_units: PgC
-        additional_datasets:
-          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000}
       cVeg:
         preprocessor: land_fraction_weighting
         project: CMIP5
@@ -548,6 +533,18 @@ diagnostics:
         plot_units: PgC
         additional_datasets:
           - {dataset: NDP, project: OBS, type: reanaly, version: 017b, tier: 3, start_year: 2000, end_year: 2000}
+      cSoil:
+        preprocessor: land_fraction_weighting
+        project: CMIP5
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: HWSD
+        plot_units: PgC
+        additional_datasets:
+          - {dataset: HWSD, project: OBS, type: reanaly, version: 1.2, tier: 3, start_year: 2000, end_year: 2000}
     additional_datasets:
       - {dataset: BNU-ESM}
       - {dataset: CanESM2}
@@ -618,7 +615,7 @@ diagnostics:
       fgco2_GCP:
         <<: *var_fgco2
         short_name: fgco2
-        preprocessor: noop
+        preprocessor: default
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
     scripts:

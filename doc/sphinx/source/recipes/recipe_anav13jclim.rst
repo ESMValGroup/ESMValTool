@@ -220,7 +220,7 @@ Example plots
    (bottom).
 
 .. _fig_anav13jclim_6:
-.. figure:: /recipes/figures/anav13jclim/nbp_evolution_global
+.. figure:: /recipes/figures/anav13jclim/cSoil-cVeg_scatter_global.png
    :align: center
    :width: 80%
 
