@@ -35,7 +35,8 @@
 ;     20170316-gier_bettina: Added cdo regridding, landmask for CRU obs.
 ;     20151130-lauer_axel: moved call to write_references to beginning of code.
 ;     20151104-righi_mattia: graphic part moved to external plot_scripts.
-;     20151102-righi_mattia: replacing area functions with ESMValTool functions.
+;     20151102-righi_mattia: replacing area functions with ESMValTool
+;                            functions.
 ;     201507??-wenzel_sabrina: adapted to ESMValTool structure.
 ;     201505??-anav_alessandro: written.
 ;
