@@ -49,7 +49,7 @@ able to distort the overall MVI.
 In the original publication, the maximum MVI is in the order of 10 (for the
 variable `gpp`). However, a naive application of the MVI definition yields
 values over :math:`10^9` for some models. Unfortunately, `Anav et al. (2013)`_
-do not specify an explanation on how to deal with this problem. Nevertheless,
+do not provide an explanation on how to deal with this problem. Nevertheless,
 this script provides two configuration options to avoid high MVI values, but
 they are not related to the original paper or any other peer-revied study and
 should be used with great caution (see :ref:`user settings`).
