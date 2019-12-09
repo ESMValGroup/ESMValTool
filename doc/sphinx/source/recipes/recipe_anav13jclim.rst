@@ -81,9 +81,10 @@ User settings in recipe
 
 #. Preprocessor
 
+   * ``mask_fillvalues``: Mask common missing values on different datasets.
    * ``mask_landsea``: Mask land/ocean.
    * ``regrid``: Regridding.
-   * ``mask_fillvalues``: Mask common missing values on different datasets.
+   * ``weighting_landsea_fraction``: Land/ocean fraction weighting.
 
 #. Script carbon_cycle/main.ncl
 
@@ -146,24 +147,24 @@ Variables
 
 * *tas* (atmos, monthly, longitude, latitude, time)
 * *pr* (atmos, monthly, longitude, latitude, time)
-* *nbp_grid* (land, monthly, longitude, latitude, time)
-* *gpp_grid* (land, monthly, longitude, latitude, time)
-* *lai_grid* (land, monthly, longitude, latitude, time)
-* *cveg_grid* (land, monthly, longitude, latitude, time)
-* *csoil_grid* (land, monthly, longitude, latitude, time)
+* *nbp* (land, monthly, longitude, latitude, time)
+* *gpp* (land, monthly, longitude, latitude, time)
+* *lai* (land, monthly, longitude, latitude, time)
+* *cveg* (land, monthly, longitude, latitude, time)
+* *csoil* (land, monthly, longitude, latitude, time)
 * *tos* (ocean, monthly, longitude, latitude, time)
-* *fgco2_grid* (ocean, monthly, longitude, latitude, time)
+* *fgco2* (ocean, monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
 ---------------------------------
 
 * CRU (*tas*, *pr*)
-* JMA-TRANSCOM (*nbp_grid*, *fgco2_grid*)
-* MTE (*gpp_grid*)
-* LAI3g (*lai_grid*)
-* NDP (*cveg_grid*)
-* HWSD (*csoil_grid*)
+* JMA-TRANSCOM (*nbp*, *fgco2*)
+* MTE (*gpp*)
+* LAI3g (*lai*)
+* NDP (*cveg*)
+* HWSD (*csoil*)
 * HadISST (*tos*)
 
 
