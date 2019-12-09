@@ -157,6 +157,7 @@ class EnergyVectors(object):
                 subdir,
                 'evector_y.{}'.format(self.cfg[NAMES.OUTPUT_FILE_TYPE])
             ),
+            coastlines=True,
             **(self.cfg.get(
                 'quickplot',
                 {'plot_type': 'pcolormesh', 'cmap': 'bwr'}
