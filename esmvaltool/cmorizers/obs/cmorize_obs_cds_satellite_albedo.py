@@ -10,23 +10,12 @@ Last access
    20190401
 
 Download and processing instructions
-   - Download the data from source as follows:
-         - Variable: ALBB-BH and ALBB-DH
-         - Satellite: SPOT
-         - Sensor: VGT
-         - Product version: V1
-         - Horizontal resolution: 1 km
-         - Year: select 1999-2014
-         - Month: select all
-         - Nominal day:  select 10, 20, 28, 29, 30, 31
-         - Version: 1.4.1 
-         - Format:  Compressed tar file (.tar.gz.)  [recommended]
-   - Decompress the files and put them in a single directory 
+   - Download the data from source using the download script
+   - Decompress the files and put them in a single directory
 
 Notes
 -----
    - This script regrids and cmorizes the above dataset.
-   - Request might need to be split into chunks to not exceed download limit
 
 Modification history
    20191208-crezee_bas: written based on cds-satellite-lai-fapar
@@ -108,6 +97,7 @@ def _regrid_dataset(in_dir, var, cfg):
     in front of filename.
     """
     filelist = glob.glob(os.path.join(in_dir, var['file']))
+
     for infile in filelist:
         _, infile_tail = os.path.split(infile)
         outfile_tail = infile_tail.replace('c3s', 'c3s_regridded')
@@ -190,31 +180,25 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         _regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
 
+
         # File concatenation
         logger.info("Start setting time_bnds")
         cubelist = _set_time_bnds(cfg['work_dir'], var)
 
-        # Loop over two different platform names
-        for platformname in ['SPOT-4', 'SPOT-5']:
-            # Now split the cubelist on the different platform
-            logger.info("Start processing part of dataset: %s", platformname)
-            cubelist_platform = cubelist.extract(iris.AttributeConstraint(
-                platform=platformname))
-            for n_cube, _ in enumerate(cubelist_platform):
-                cubelist_platform[n_cube].attributes.pop('identifier')
-            if cubelist_platform:
-                assert _attrs_are_the_same(cubelist_platform)
-                cube = cubelist_platform.concatenate_cube()
-            else:
-                logger.warning("No files found for platform %s \
-                               (check input data)", platformname)
-                continue
-            savename = os.path.join(cfg['work_dir'],
-                                    var['short_name'] + platformname + '.nc')
-            logger.info("Saving as: %s", savename)
-            iris.save(cube, savename)
-            logger.info("Finished file concatenation over time")
-            in_file = savename
-            logger.info("Start CMORization of file %s", in_file)
-            _cmorize_dataset(in_file, var, cfg, out_dir)
-            logger.info("Finished regridding and CMORizing %s", in_file)
+        attrs_to_remove = ['identifier', 'date_created']
+        for cube in cubelist:
+            for attr in attrs_to_remove:
+                cube.attributes.pop(attr)
+                
+        assert _attrs_are_the_same(cubelist)
+
+        cube = cubelist.concatenate_cube()
+        savename = os.path.join(cfg['work_dir'],
+                                var['short_name'] + '.nc')
+        logger.info("Saving as: %s", savename)
+        iris.save(cube, savename)
+        logger.info("Finished file concatenation over time")
+        in_file = savename
+        logger.info("Start CMORization of file %s", in_file)
+        _cmorize_dataset(in_file, var, cfg, out_dir)
+        logger.info("Finished regridding and CMORizing %s", in_file)

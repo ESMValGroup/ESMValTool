@@ -54,8 +54,7 @@ def download_cds_satellite_albedo():
                 'year': f"{year}",
                 'month': [f"{month:02d}"],
                 'nominal_day': [
-                    '10', '20', '28',
-                    '29', '30', '31',
+                    '20',
                 ],
             },
             savename)
