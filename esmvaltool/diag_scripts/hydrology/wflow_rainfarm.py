@@ -95,6 +95,7 @@ def regrid_temperature(src_temp, src_height, target_height):
 
     target_temp = target_slt - target_dtemp_compat
     target_temp.var_name = src_temp.var_name
+
     return target_temp
 
 def debruin_PET(tas, psl, rsds, rsdt, **kwargs):
@@ -197,48 +198,55 @@ def main(cfg):
     dem_path = os.path.join(cfg['auxiliary_data_dir'], cfg['dem_file'])
     dem = iris.load_cube(dem_path)
 
-    # Read source orography (add era5 later) and try to make it cmor compatible
-    # orog_path = os.path.join(cfg['auxiliary_data_dir'], cfg['oro_file'])
-    # orog = iris.load_cube(orog_path)
-
-    ## Processing precipitation
+    ## Processing orography
     logger.info("Processing variable orography")
     orog = all_vars['orog']
 
     ## Processing precipitation
     logger.info("Processing variable precipitation_flux")
     pr = all_vars['pr']
-    # pr_dem = preproc.regrid(pr, target_grid=dem, scheme='linear')
+    pr_dem = preproc.regrid(pr, target_grid=dem, scheme='linear')
 
     ## Processing temperature
     logger.info("Processing variable temperature")
     tas = all_vars['tas']
     tas_dem = regrid_temperature(tas, orog, dem)
     
+    ## Processing air pressure at mean sea level
+    logger.info("Processing variable air pressure at mean sea level")
+    psl = all_vars['psl']
+    psl_dem = preproc.regrid(psl, target_grid=dem, scheme='linear')
+
+    ## Processing air pressure at mean sea level
+    logger.info("Processing variable surface downwelling shortwave flux in air")
+    rsds = all_vars['rsds']
+    rsds_dem = preproc.regrid(rsds, target_grid=dem, scheme='linear')
+
+    ## Processing air pressure at mean sea level
+    logger.info("Processing variable surface downwelling shortwave flux in air")
+    rsdt = all_vars['rsdt']
+    rsdt_dem = preproc.regrid(rsdt, target_grid=dem, scheme='linear')
+
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
-    pet = debruin_PET(**all_vars)
+    pet = debruin_PET(tas=tas_dem, psl=psl_dem, rsds=rsds_dem, rsdt=rsdt_dem)
     pet.var_name = 'pet'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
-    
+
     ## Convert units   
     pet_dem.units = pet_dem.units / 'kg m-3'
     pet_dem.data = pet_dem.core_data() / 1000.
     pet_dem.convert_units('mm day-1')
 
-    pr.units = pr.units / 'kg m-3'
-    pr.data = pr.core_data() / 1000.
-    pr.convert_units('mm day-1')
+    pr_dem.units = pr_dem.units / 'kg m-3'
+    pr_dem.data = pr_dem.core_data() / 1000.
+    pr_dem.convert_units('mm day-1')
     
-    # pr_dem.units = pr_dem.units / 'kg m-3'
-    # pr_dem.data = pr_dem.core_data() / 1000.
-    # pr_dem.convert_units('mm day-1')
-
     tas_dem.convert_units('degC')
 
     # Save output
     # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"
-    cubelist = iris.cube.CubeList([pr, tas_dem, pet_dem])
+    cubelist = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
     basin = cfg['basin_name']
     dataset = cfg['dataset']
     startyear = cfg['startyear']
