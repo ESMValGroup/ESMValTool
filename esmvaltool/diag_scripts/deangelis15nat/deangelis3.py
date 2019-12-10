@@ -136,7 +136,7 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
     axx.legend(loc=1)
 
     fig.tight_layout()
-    fig.savefig(filepath)
+    fig.savefig(filepath, dpi=300)
     plt.close()
 
     # def plot_deangelis_fig3b(cfg, m_drsnst_dts, m_drsnstcs_dprws,
@@ -169,17 +169,17 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs):
                      ('default', [0, 8])])
 
     model_scheme_name = dict([(1, ['Correlated-k-distribution, N >= 20',
-                                   'turquoise']),
+                                   'dodgerblue']),
                               (2, ['Correlated-k-distribution, 10 < N < 20',
-                                   'lightgreen']),
+                                   'limegreen']),
                               (3, ['Pseudo-k-distribution, N >= 20',
-                                   'yellow']),
+                                   'gold']),
                               (4, ['Pseudo-k-distribution, 10 < N < 20',
-                                   'tab:orange']),
+                                   'darkorange']),
                               (5, ['7-band parameterization (N = 7)',
-                                   'tomato']),
+                                   'crimson']),
                               (6, ['Pade approximants, higher res.',
-                                   'tab:grey']),
+                                   'slategrey']),
                               (7, ['Pade approximants, lower res.',
                                    'silver']),
                               (8, ['unknown',
@@ -241,7 +241,7 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs):
     axx.legend(ncol=2, loc=2)
     fig.tight_layout()
     fig.savefig(os.path.join(cfg['plot_dir'], 'fig3b.' +
-                             cfg['output_file_type']))
+                             cfg['output_file_type']), dpi=300)
     plt.close()
 
     # Fig 4
@@ -282,7 +282,7 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs):
 
     fig.tight_layout()
     fig.savefig(os.path.join(cfg['plot_dir'], 'fig4.' +
-                             cfg['output_file_type']))
+                             cfg['output_file_type']), dpi=300)
     plt.close()
 
 

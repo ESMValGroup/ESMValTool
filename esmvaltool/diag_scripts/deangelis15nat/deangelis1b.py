@@ -58,11 +58,11 @@ def plot_bar_kw(cfg, dd1, dd2, dd3):
     index = np.arange(n_groups)
     bar_width = 0.25
 
-    axx.bar(index, dd1, bar_width, color='tab:gray',
+    axx.bar(index, dd1, bar_width, color='cornflowerblue',
             label='Pre-industrial')
-    axx.bar(index + bar_width, dd2, bar_width, color='g',
+    axx.bar(index + bar_width, dd2, bar_width, color='orange',
             label='RCP8.5')
-    axx.bar(index + (bar_width * 2), dd3, bar_width, color='r',
+    axx.bar(index + (bar_width * 2), dd3, bar_width, color='silver',
             label=r'4xCO$_2$')
 
     axx.set_xlabel(' ')
