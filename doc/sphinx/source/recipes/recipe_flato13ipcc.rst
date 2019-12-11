@@ -54,9 +54,35 @@ following figures from Flato et al. (2013) can currently be reproduced:
       trend distributions of (c) September Arctic and (d) February Antarctic
       sea ice extent.
 
+    * Figure 9.26: Ensemble-mean global ocean carbon uptake (a) and global land
+      carbon uptake (b) in the CMIP5 ESMs for the historical period 1900–2005.
+      For comparison, the observation-based estimates provided by the Global
+      Carbon Project (GCP) are also shown (thick black line). The confidence
+      limits on the ensemble mean are derived by assuming that the CMIP5 models
+      are drawn from a t-distribution. The grey areas show the range of annual mean
+      fluxes simulated across the model ensemble. This figure includes results
+      from all CMIP5 models that reported land CO2 fluxes, ocean CO2 fluxes, or
+      both (Anav et al., 2013).
+
+    * Figure 9.27: Simulation of global mean (a) atmosphere–ocean CO2 fluxes
+      ("fgCO2") and (b) net atmosphere–land CO2 fluxes ("NBP"), by ESMs for the
+      period 1986–2005. For comparison, the observation-based estimates
+      provided by Global Carbon Project (GCP) and the Japanese Meteorological
+      Agency (JMA) atmospheric inversion are also shown. The error bars for the
+      ESMs and observations represent interannual variability in the fluxes,
+      calculated as the standard deviation of the annual means over the period
+      1986–2005.
+
     * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
-      mean surface air temperature of CMIP5 models, both for the period
-      1961-1990 and for the pre-industrial control runs.
+      mean surface air temperature, both for the period 1961-1990 and for the
+      pre-industrial control runs.
+
+    * Figure 9.42b: Transient climate response (TCR) against equilibrium climate
+      sensitivity (ECS).
+
+    * Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
+      change vs. springtime d(alpha\ :sub:`s`\)/d(T\ :sub:`s`\) values in the seasonal
+      cycle in transient climate change experiments (Hall and Qu, 2006).
 
 Available recipes and diagnostics
 ---------------------------------
@@ -67,6 +93,7 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
+    * carbon_cycle/main.ncl: See :ref:`recipes_anav13jclim`.
     * climate_metrics/ecs.py: See :ref:`recipes_ecs`.
     * clouds/clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias (Fig. 9.2, 9.4)
@@ -77,9 +104,15 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * seaice/seaice_tsline.ncl: Time series of sea ice extent (Fig. 9.24a/b)
     * seaice/seaice_trends.ncl: Trend distributions of sea ice extent (Fig 9.24c/d)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
+    * ipcc_ar5/ch09_fig09_42b.py: TCR vs. ECS (Fig. 9.42b)
+    * emergent_constraints/snowalbedo.ncl: snow-albedo effect (Fig. 9.45a)
 
 User settings in recipe
 -----------------------
+
+#. Script carbon_cycle/main.ncl
+
+   See :ref:`recipes_anav13jclim`.
 
 #. Script climate_metrics/ecs.py
 
@@ -224,22 +257,69 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * save: :obj:`dict` containing keyword arguments for the function
-     :func:`matplotlib.pyplot.savefig`.
    * axes_functions: :obj:`dict` containing methods executed for the plot's
      :class:`matplotlib.axes.Axes` object.
    * dataset_style: name of the style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
    * matplotlib_style: name of the matplotlib style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
+   * save: :obj:`dict` containing keyword arguments for the function
+     :func:`matplotlib.pyplot.savefig`.
+   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
+     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
+
+#. Script ipcc_ar5/ch09_fig09_42b.py
+
+   *Required settings for script*
+
+   none
+
+   *Optional settings for script*
+
+   * dataset_style: name of the style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * log_x: Apply logarithm to X axis (ECS).
+   * log_y: Apply logarithm to Y axis (TCR).
+   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
+     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
+
+#. Script emergent_constraints/snowalbedo.ncl
+
+   *Required settings for script*
+
+   * exp_presentday: name of present-day experiment (e.g. "historical")
+   * exp_future: name of climate change experiment (e.g. "rcp45")
+
+   *Optional settings for script*
+
+   * diagminmax: observational uncertainty (min and max)
+   * legend_outside: create extra file with legend (true, false)
+   * styleset: e.g. "CMIP5" (if not set, this diagnostic will create its own
+     color table and symbols for plotting)
+   * suffix: string to be added to output filenames
+   * xmax: upper limit of x-axis (default = automatic)
+   * xmin: lower limit of x-axis (default = automatic)
+   * ymax: upper limit of y-axis (default = automatic)
+   * ymin: lower limit of y-axis (default = automatic)
+
+   *Required settings for variables*
+
+   * ref_model: name of reference data set
+
+   *Optional settings for variables*
+
+   none
 
 Variables
 ---------
 
 * areacello (fx, longitude latitude)
+* fgco2 (ocean, monthly mean, longitude latitude time)
+* nbp (ocean, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
 * rlut, rlutcs (atmos, monthly mean, longitude latitude time)
 * rsdt (atmos, monthly mean, longitude latitude time)
+* rsuscs, rsdscs (atmos, monthly mean, longitude latitude time)
 * rsut, rsutcs (atmos, monthly mean, longitude latitude time)
 * sic (ocean-ice, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
@@ -254,10 +334,13 @@ Observations and reformat scripts
 instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+* GCP (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp.py)
 * GPCP-SG (pr - obs4mips)
-* HadCRUT4 (tas - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
-* HadISST (sic, tos - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadisst.ncl)
+* JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
+* HadCRUT4 (tas - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
+* HadISST (sic, tos - esmvaltool/cmorizers/obs/cmorize_obs_hadisst.ncl)
+* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/cmorizers/obs/cmorize_obs_isccp_fh.ncl)
 
 
 References
@@ -272,6 +355,10 @@ References
   Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex and
   P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom
   and New York, NY, USA.
+
+* Hall, A., and X. Qu, 2006: Using the current seasonal cycle to constrain
+  snow albedo feedback in future climate change, Geophys. Res. Lett., 33,
+  L03502, doi:10.1029/2005GL025127.
 
 * Jones et al., 2013: Attribution of observed historical near-surface temperature
   variations to anthropogenic and natural causes using CMIP5 simulations. Journal
@@ -358,6 +445,29 @@ Example plots
    in September including multi-model mean and standard deviation.
 
 .. _fig_flato13ipcc_6:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-26.png
+   :align: center
+
+   Figure 9.26 (bottom): Ensemble-mean global land carbon uptake in the CMIP5
+   ESMs for the historical period 1900–2005.  For comparison, the
+   observation-based estimates provided by the Global Carbon Project (GCP) are
+   also shown (black line). The confidence limits on the ensemble mean are
+   derived by assuming that the CMIP5 models come from a t-distribution. The
+   grey areas show the range of annual mean fluxes simulated across the model
+   ensemble.
+
+.. _fig_flato13ipcc_7:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-27.png
+   :align: center
+
+   Figure 9.27 (top): Simulation of global mean atmosphere–ocean CO2 fluxes
+   ("fgCO2") by ESMs for the period 1986–2005. For comparison, the
+   observation-based estimates provided by Global Carbon Project (GCP) are also
+   shown. The error bars for the ESMs and observations represent interannual
+   variability in the fluxes, calculated as the standard deviation of the
+   annual means over the period 1986–2005.
+
+.. _fig_flato13ipcc_8:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
    :align: center
 
@@ -365,3 +475,17 @@ Example plots
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
 
+.. _fig_flato13ipcc_9:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-42b.png
+   :align: center
+
+   Figure 9.42b: Transient climate response (TCR) against equilibrium climate
+   sensitivity (ECS) for CMIP5 models.
+
+.. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
+   :align: center
+
+   Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
+   change vs. springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in
+   the seasonal cycle in transient climate change experiments (CMIP5 historical
+   experiments: 1901-2000, RCP4.5 experiments: 2101-2200).

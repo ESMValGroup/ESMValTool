@@ -28,16 +28,25 @@ Atmosphere
    recipe_thermodyn_diagtool
    recipe_validation
 
-Climate metrics and emergent constraints
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Climate metrics
+^^^^^^^^^^^^^^^
+.. toctree::
+   :maxdepth: 1
+
+   recipe_perfmetrics
+   recipe_smpi
+
+Future projections
+^^^^^^^^^^^^^^^^^^
 .. toctree::
    :maxdepth: 1
 
    recipe_emergent_constraints
    recipe_cox18nature
+   recipe_snowalbedo
    recipe_ecs
-   recipe_perfmetrics
-   recipe_smpi
+   recipe_wenzel16jclim
+   recipe_tcr
 
 IPCC
 ^^^^
@@ -54,6 +63,7 @@ Land
 
    recipe_hydrology
    recipe_landcover
+   recipe_anav13jclim
    recipe_runoff_et
 
 Ocean

@@ -13,6 +13,19 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  CERES-EBAF:
+    description: CERES-EBAF check
+    variables:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: Ed4.0, start_year: 2001, end_year: 2018}
+    scripts: null
+
+  
   CRU:
     description: CRU check
     variables:
@@ -164,8 +177,8 @@ diagnostics:
       fgco2:
         mip: Omon
     additional_datasets:
-      - {dataset: GCP, project: OBS, tier: 2, type: reanaly, version: 2018,
-         start_year: 1959, end_year: 2017, frequency: yr}
+      - {dataset: GCP, project: OBS, frequency: yr, tier: 2,
+         type: reanaly, version: 2018, start_year: 1959, end_year: 2017}
     scripts: null
 
 
@@ -295,6 +308,17 @@ diagnostics:
     scripts: null
 
 
+  PHC:
+    description: PHC check
+    variables:
+      so:
+      thetao:
+    additional_datasets:
+      - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
+          type: clim, version: 3, start_year: 1950, end_year: 1950}
+    scripts: null
+
+
   PIOMAS:
     description: PIOMAS
     variables:
@@ -360,6 +384,17 @@ diagnostics:
     additional_datasets:
       - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, mip: day, tier: 3,
          type: sat, version: COMBINED-TCDR-v201812.0.0,
+         start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  CDS-UERRA:
+    description: CDS-UERRA check
+    variables:
+      sm:
+    additional_datasets:
+      - {dataset: CDS-UERRA, project: OBS6, mip: E6hr, frequency: 6hr, tier: 3,
+         type: reanaly, version: UERRA-HARMONIE,
          start_year: 1979, end_year: 2018}
     scripts: null
 
@@ -629,6 +664,9 @@ diagnostics:
       tsn: *E1hr
       orog:
         mip: fx
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, frequency: 1hr, tier: 3,
+         type: reanaly, version: 1, start_year: 1990, end_year: 1990}
     scripts: null
 
 
@@ -751,6 +789,7 @@ diagnostics:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
+
 
   UWisc:
     description: UWisc check
