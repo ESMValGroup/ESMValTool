@@ -703,6 +703,7 @@ references:
   lai3g: "Zhu et al., Remote Sens., doi:10.3390/rs5020927, 2013."
   landflux-eval: "Mueller et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-17-3707-2013, 2013."
   landschuetzer2016: "Landschuetzer et al., Global Biogeochem. Cycles, doi:10.1002/2015GB005359, 2016."
+  merra2: "Gelaro et al., J. Clim., doi:10.1175/JCLI-D-16-0758.1, 2017"
   modis1: "Platnick et al., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2002.808301, 2003."
   modis2: "Levy et al., Atmos. Meas. Tech., doi:10.5194/amt-6-2989-2013, 2013."
   mte: "Jung et al., J. Geophys. Res., doi:10.1029/2010JG001566, 2011."
