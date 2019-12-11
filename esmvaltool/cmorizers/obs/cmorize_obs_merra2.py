@@ -23,6 +23,7 @@ from datetime import datetime
 import cf_units
 import iris
 from dask import array as da
+from iris.util import unify_time_units
 
 from esmvalcore.cmor.table import CMOR_TABLES
 
@@ -73,7 +74,6 @@ def _load_cube(in_files, var):
         cube.coord('time').points = cube.coord(
             'time').core_points().astype('float64')
 
-    from iris.util import unify_time_units
     unify_time_units(selected)
     cube = selected.concatenate_cube()
     return cube
