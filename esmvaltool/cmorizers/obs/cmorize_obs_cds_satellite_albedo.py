@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for cds-satellite-lai-fapar data.
+"""ESMValTool CMORizer for cds-satellite-albedo data.
 
 Tier
    Tier 3
@@ -11,7 +11,7 @@ Last access
 
 Download and processing instructions
    - Download the data from source using the download script
-   - Decompress the files and put them in a single directory
+   - Decompress the files (tar -xzvf XXXX.tar.gz) and put them in a single directory
 
 Notes
 -----
