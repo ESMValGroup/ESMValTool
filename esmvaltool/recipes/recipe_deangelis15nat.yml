@@ -3,7 +3,6 @@
 documentation:
   description: |
     Recipe for reproducing the plots in DeAngelis et al., 2015 Nature
-    Reduced version: only figure 3
 
   authors:
     - weigel_katja
@@ -48,8 +47,14 @@ diagnostics:
     description: Bar plot of all model mean of LvP, LWC, SWA, and SH
                   (DeAngelis Fig. 1b).
     variables:
-      rlnst:
-        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+      rlnst: &spatial_mean_cmip5_r1i1p1_amon_t2ms
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        field: T2Ms
+        derive: true
+        force_derivation: false
       rsnst:
         <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
       lvp:
@@ -97,7 +102,7 @@ diagnostics:
       - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
 
       # CNRM-CM5-2 only 140 years available
-      # not working here, no rcp85 available or wrong time?
+      # not working here, no rcp85 available?
       # - {dataset: CNRM-CM5-2, exp: piControl, start_year: 1850,
       #    end_year: 1989}
       # - {dataset: CNRM-CM5-2, exp: rcp85, start_year: 2091, end_year: 2100}
@@ -178,7 +183,7 @@ diagnostics:
       - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1990,
          end_year: 1999}
 
-      # not working here, no rcp85 available or wrong time?
+      # not working here, no rcp85 available
       # - {dataset: MPI-ESM-P, exp: piControl, start_year: 2015,
       #    end_year: 2164}
       # - {dataset: MPI-ESM-P, exp: rcp85, start_year: 2091, end_year: 2100}
@@ -202,7 +207,7 @@ diagnostics:
 
 
   deangelis2:
-    description: Plots scatter plot and linear regression for LvP/dtas,
+    description: Plots scatter plot and linear regression for LvP/dtas.
     # dLWC/dtas, dSWA/dtas, and dSH/dtas (DeAngelis extended data Fig. 1,
     # one plot for each model) and temperature-mediated responses of
     # LvP (i.e. LvdP/dT) and SWA (i.e., dSWA/dT) for all-sky and clear-sky
@@ -210,15 +215,8 @@ diagnostics:
     # LvdP/dT versus clear-sky dSWA/dT conditions (DeAngelis Fig. 2a).
 
     variables:
-      rlnst: &spatial_mean_cmip5_r1i1p1_amon_t2ms
-        preprocessor: spatial_mean
-        # reference_dataset: GFDL-CM3
-        project: CMIP5
-        ensemble: r1i1p1
-        mip: Amon
-        field: T2Ms
-        derive: true
-        force_derivation: false
+      rlnst:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
       rsnst:
         <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
       rlnstcs:
@@ -332,14 +330,8 @@ diagnostics:
   deangelis3:
     description: Plot fig 3 of DeAngelis et al., 2015, with observations
     variables:
-      rsnstcs: &spatial_mean_cmip5_r1i1p1_amon_t2ms
-        preprocessor: spatial_mean
-        project: CMIP5
-        ensemble: r1i1p1
-        mip: Amon
-        field: T2Ms
-        derive: true
-        force_derivation: false
+      rsnstcs:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
       rsnstcsnorm: &tropical_cmip5_r1i1p1_amon_t2ms
         preprocessor: tropical_ocean
         project: CMIP5
@@ -358,14 +350,14 @@ diagnostics:
       prw:
         <<: *tropical_cmip5_r1i1p1_amon_t2ms
         derive: false
+        additional_datasets:
+          # - {dataset: RSS, project: OBS, type: reanaly, version: 1,
+          #    start_year: 2001, end_year: 2009, tier: 2}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+             start_year: 2001, end_year: 2009, tier: 3}
+          - {dataset: SSMI, project: obs4mips, type: satellite, level: L3,
+             version: RSSv07r00, start_year: 2001, end_year: 2009, tier: 1}
     additional_datasets:
-      # - {dataset: RSS, project: OBS, type: reanaly, version: 1,
-      #    start_year: 2001, end_year: 2009, tier: 2}
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
-         start_year: 2001, end_year: 2009, tier: 3}
-      - {dataset: SSMI, project: obs4mips, type: satellite, level: L3,
-         version: RSSv07r00, start_year: 2001, end_year: 2009, tier: 1}
-      # additional_datasets:
       # I tried all models used in the paper
       # (listed in extended data Tab. 1) so far not all are working (see below)
       - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
@@ -456,8 +448,9 @@ diagnostics:
       - {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1850,
          end_year: 1999}
+      # not working here, no rcp85 available
       # - {dataset: MPI-ESM-P, exp: piControl, start_year: 2015,
-      #    end_year: 2164}
+      #    end_year: 2164} #works?
       # - {dataset: MPI-ESM-P, exp: abrupt4xCO2, start_year: 1850,
       #    end_year: 1999}
       - {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
