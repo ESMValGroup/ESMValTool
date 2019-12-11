@@ -23,7 +23,6 @@ from datetime import datetime
 import cf_units
 import iris
 from dask import array as da
-from iris.util import unify_time_units
 
 from esmvalcore.cmor.table import CMOR_TABLES
 
@@ -33,8 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def _fix_time_monthly(cube):
-    """ This function fixes the time coordinate by setting it
-        to the 15th of each month """
+    """Fix time by setting it to 15th of month."""
     # Read dataset time unit and calendar from file
     dataset_time_unit = str(cube.coord('time').units)
     dataset_time_calender = cube.coord('time').units.calendar
@@ -74,7 +72,7 @@ def _load_cube(in_files, var):
         cube.coord('time').points = cube.coord(
             'time').core_points().astype('float64')
 
-    unify_time_units(selected)
+    iris.util.unify_time_units(selected)
     cube = selected.concatenate_cube()
     return cube
 
@@ -111,7 +109,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     # Set correct names
     cube.var_name = definition.short_name
-    #cube.standard_name = definition.standard_name
+    # cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
     # Fix units
