@@ -25,6 +25,7 @@ jobs:
             conda activate esmvaltool
             # Install r-lintr for r linter test
             Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
+            no_output_timeout: 20m
             # Run tests
             python setup.py test
       - save_cache:
@@ -62,6 +63,7 @@ jobs:
             set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
             Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            no_output_timeout: 20m
             julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -120,6 +122,7 @@ jobs:
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            no_output_timeout: 20m
             julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -184,6 +187,7 @@ jobs:
             # Build conda package
             apt update && apt install time
             \time -v conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
+            no_output_timeout: 30m
       - store_artifacts:
           path: /logs
 
