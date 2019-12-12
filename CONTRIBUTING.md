@@ -27,11 +27,11 @@ To install in development mode, follow these instructions.
 ## Using the development version of the ESMValTool Core package
 
 If you need the latest developments of the ESMValTool Core package,
-you can install that into the same conda environment:
+you can install it from source into the same conda environment. First follow the steps above and then:
 
 -   Clone the ESMValTool Core github repository: `git clone git@github.com:ESMValGroup/ESMValCore`)
 -   Go to the esmvalcore directory: `cd ESMValCore`
--   Update the esmvaltool conda environment `conda env update --name esmvaltool --file environment.yml`
+-   Update the esmvaltool conda environment `conda env update --name esmvaltool --file environment.yml`. This step is only needed if the dependencies changed since the latest release, which will rarely happen.
 -   Activate the esmvaltool environment: `conda activate esmvaltool`
 -   Install `esmvalcore` in development mode: `pip install -e '.[develop]'`.
 
@@ -89,7 +89,7 @@ Because there is no standard best practices document for NCL, we use [PEP8](http
 
 ### R
 
-A document on best practices for R is [Hadley Wickham's R Style Guide](http://r-pkgs.had.co.nz/style.html). We partially check adherence to this style guide by using [lintr](https://cran.r-project.org/web/packages/lintr/index.html) on CircleCI. In the future we would also like to make use of [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html) to assess the quality of R code.
+Best practices for R code are described in [The tidyverse style guide](https://style.tidyverse.org/). We check adherence to this style guide by using [lintr](https://cran.r-project.org/web/packages/lintr/index.html) on CircleCI. Please use [styler](https://styler.r-lib.org/) to automatically format your code according to this style guide. In the future we would also like to make use of [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html) to assess the quality of R code.
 
 ### YAML
 

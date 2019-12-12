@@ -1,7 +1,7 @@
 .. _recipe_diurnal_temperature_index:
 
-Diurnal temperature variation indicator: Difference between Tmax and Tmin for a specific day
-============================================================================================
+Diurnal temperature range
+=========================
 
 Overview
 --------
@@ -23,7 +23,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* diurnal_temp_index.r : calculates the diaurnal temperature vulnerability index.
+* diurnal_temp_index.R : calculates the diaurnal temperature vulnerability index.
 
 
 User settings
@@ -72,3 +72,5 @@ Example plots
 .. figure::  /recipes/figures/diurnal_temp_index/Seasonal_DTRindicator_MPI-ESM-MR_2030_2080_1961_1990.png
    :align:   center
    :width:   14cm
+
+Mean number of days exceeding the Diurnal Temperature Range (DTR) simulated during the historical period (1961-1990) by 5 degrees during the period 2030-2080. The result is derived from one RCP 8.5 scenario simulated by MPI-ESM-MR.
