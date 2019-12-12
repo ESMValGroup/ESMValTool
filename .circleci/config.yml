@@ -25,9 +25,9 @@ jobs:
             conda activate esmvaltool
             # Install r-lintr for r linter test
             Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
-            no_output_timeout: 20m
             # Run tests
             python setup.py test
+          no_output_timeout: 20m
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -63,7 +63,6 @@ jobs:
             set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
             Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            no_output_timeout: 20m
             julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -78,6 +77,7 @@ jobs:
             echo 0 | cdo -f nc input,r1x1 tmp.nc
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
+          no_output_timeout: 20m
       - save_cache:
           key: test-install-{{ .Branch }}
           paths:
@@ -122,7 +122,6 @@ jobs:
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            no_output_timeout: 20m
             julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -133,6 +132,7 @@ jobs:
             python setup.py test --installation
             ncl -V
             cdo --version
+          no_output_timeout: 20m
       - store_artifacts:
           path: /logs
 
@@ -187,7 +187,7 @@ jobs:
             # Build conda package
             apt update && apt install time
             \time -v conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
-            no_output_timeout: 30m
+          no_output_timeout: 30m
       - store_artifacts:
           path: /logs
 
