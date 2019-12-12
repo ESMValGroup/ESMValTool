@@ -10,52 +10,41 @@ documentation:
     An example personal diagnostic can be found in
     esmvaltool/diag_scripts/examples/my_little_diagnostic.py
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
-  - {project: CMIP6, activity: CMIP, dataset: HadGEM3-GC31-LL, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
+  - {project: CMIP6, activity: CMIP, dataset: HadGEM3-GC31-LL, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2014}
 
 preprocessors:
-  bering: &bering
+  extract:
     extract_region:
-      start_longitude: -174.
-      end_longitude: -165.
-      start_latitude: 63.9
-      end_latitude: 67.3
-  bering_levels:
-    <<: *bering
-
-  so_preproc:
-    mask_above_threshold:
-      threshold: 45
-    mask_below_threshold:
-      threshold: 10
+      start_latitude: 40
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
 
 diagnostics:
-  # bering:
-  #   description: "Simple personal diagnostic"
-  #   variables:
-  #     siconc:
-  #       preprocessor: bering
-  #     sivol:
-  #       preprocessor: bering
-  #     siv:
-  #       preprocessor: bering
-  #   scripts:
-  #     ice_transport:
-  #       script: primavera/ice_transport.py
-
   fresh_water:
     description: "Fresh water transport"
     variables:
       so:
-        preprocessor: so_preproc
+        preprocessor: extract
         mip: Omon
       vo:
+        preprocessor: extract
         mip: Omon
     scripts:
-      ice_transport:
+      fresh_water_transport:
         script: primavera/fresh_water_transport.py
+        straits:
+            BERINGSTRAIT: {latitude: [63.9, 67.3], longitude: [-174, -165]}
+            FRAMSTRAIT: {latitude: [77, 78], longitude: [-20, 14]}
+            GIN: {latitude: [65, 82], longitude: [-20, 14]}
+            LABRADOR: {latitude: [45, 72], longitude: [-70, -40]}
+            BARENTS: {latitude: [79.7, 80.3], longitude: [17.5, 52]}
+            GREEN-ICE: {latitude: [64.6, 66], longitude: [-41, -21]}
+            ICE-NORWAY: {latitude: [64.6, 65], longitude: [-15.7, 12.4]}
+            NORTHBAFFIN: {latitude: [78, 79], longitude: [-78.4, -63]}
