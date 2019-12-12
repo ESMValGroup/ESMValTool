@@ -10,10 +10,10 @@ documentation:
     An example personal diagnostic can be found in
     esmvaltool/diag_scripts/examples/my_little_diagnostic.py
   authors:
-    - predoi_valeriu
+    - fuentes-franco_ramon
 
   maintainer:
-    - predoi_valeriu
+    - vegas-regidor_javier
 
 datasets:
   - {project: CMIP6, activity: CMIP, dataset: HadGEM3-GC31-LL, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2014}
