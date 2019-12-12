@@ -639,34 +639,55 @@ diagnostics:
       - {project: OBS6, dataset: ERA5, tier: 3, type: reanaly,
          version: 1, start_year: 1990, end_year: 1990}
     variables:
-      clt: &E1hr
+      clt:
         mip: E1hr
-      evspsbl: *E1hr
-      evspsblpot: *E1hr
-      mrro: *E1hr
-      pr: *E1hr
-      prsn: *E1hr
-      ps: *E1hr
-      psl: *E1hr
-      ptype: *E1hr
-      rls: *E1hr
-      rlds: *E1hr
-      rsds: *E1hr
-      rsdt: *E1hr
-      rss: *E1hr
-      uas: *E1hr
-      vas: *E1hr
-      tas: *E1hr
-      tasmax: *E1hr
-      tasmin: *E1hr
-      tdps: *E1hr
-      ts: *E1hr
-      tsn: *E1hr
+      evspsbl:
+        mip: E1hr
+      evspsblpot:
+        mip: E1hr
+      mrro:
+        mip: E1hr
+      pr:
+        mip: E1hr
+      prsn:
+        mip: E1hr
+      ps:
+        mip: E1hr
+      psl:
+        mip: E1hr
+      ptype:
+        mip: E1hr
+      rls:
+        mip: E1hr
+      rlds:
+        mip: E1hr
+      rsds:
+        mip: E1hr
+      rsdt:
+        mip: E1hr
+      rss:
+        mip: E1hr
+      uas:
+        mip: E1hr
+      vas:
+        mip: E1hr
+      tas:
+        mip: E1hr
+      tasmax:
+        mip: E1hr
+      tasmin:
+        mip: E1hr
+      tdps:
+        mip: E1hr
+      ts:
+        mip: E1hr
+      tsn:
+        mip: E1hr
       orog:
         mip: fx
     additional_datasets:
-      - {dataset: ERA5, project: OBS6, frequency: 1hr, tier: 3,
-         type: reanaly, version: 1, start_year: 1990, end_year: 1990}
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly,
+         version: 1, start_year: 1990, end_year: 1990}
     scripts: null
 
 
