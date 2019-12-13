@@ -239,52 +239,6 @@ for (model_idx in c(1:(length(models_name)))) {
   )
   graphics_close(figname)
 
-
-  # Produce figure
-  field <- ncdf_opener(outfile, "qb", "lon", "lat", rotate = "full")
-  ics_ref <- ics
-  ipsilon_ref <- ipsilon
-
-  tmp_figname <- sub(".nc", paste0(".", output_file_type), outfile)
-  figname <- sub(work_dir, plot_dir, tmp_figname)
-
-  figure_size <- c(600, 400)
-  if (tolower(output_file_type) != "png") {
-    figure_size <- c(10, 6)
-  }
-  graphics_startup(figname, output_file_type, figure_size)
-
-  tmp_levels <- c(0:20) * 0.1
-  tmp_colors <- rev(rainbow(30)[1:20])
-
-  # contours
-  par(cex.main = 1.8, cex.axis = 1.4, cex.lab = 1.4, mar = c(5, 5, 4, 8))
-  filled_contour3(ics, ipsilon, field,
-       xlab = "Longitude", ylab = "Latitude",
-       main = paste0(exp), levels = tmp_levels,
-              col = tmp_colors,
-       axes = F, asp = 1
-  )
-  # continents
-  map("world", regions = ".", interior = F, exact = F, boundary = T, add = T,
-      col = "black", lwd = 2)
-  axis(1, col = "grey40", at = seq(-180, 180, 45))
-  axis(2, col = "grey40", at = seq(-90, 90, 30))
-
-  colorbar_scale <- c(-0.15, -0.08, 0.1, -0.1)
-  if (tolower(output_file_type) != "png") {
-    colorbar_scale <- c(-0.13, -0.06, 0.1, -0.1)
-  }
-  image_scale3(volcano, levels = tmp_levels,
-               new_fig_scale = colorbar_scale,
-               col = tmp_colors,
-               colorbar.label = paste0("QB", perc_lev),
-               cex.colorbar = 1.3, cex.label = 1.4,
-               colorbar.width = 1, line.label = 2.9,
-               line.colorbar = 1.0, extend = F
-              )
-  graphics_close(figname)
-
   # Set provenance for this output file
   caption <-
     paste0(
