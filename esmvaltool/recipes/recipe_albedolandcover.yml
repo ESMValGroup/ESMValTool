@@ -11,12 +11,15 @@ documentation:
 
 albedolandcover_parameters: &albedolandcover_parameters
   params:
+    #
     # size of the big box in the latitudinal direction.
     # Recommended value: 5
     latsize_BB: 5
+    #
     # size of the big box in the longitudinal direction.
     # Recommended value: 5
     lonsize_BB: 5
+    # 
     # minimum grid cell area fraction that must be
     # covered by the sum of the area fractions of all
     # land cover classes included in the local
@@ -24,12 +27,14 @@ albedolandcover_parameters: &albedolandcover_parameters
     # to be included in the regression.
     # Recommended value: 90
     threshold_sumpred: 90
+    # 
     # minimum number of grid cells with non-zero area fraction
     # covered by one land cover class within a big box, for this
     # land cover class to be included as a predictor in the local
     # regression.
     # Recommended value: 2
-    mingc: 3
+    mingc: 2
+    #
     # minimum number of grid cells with relevant
     # information required within a big box to perform
     # the local regression.
@@ -38,7 +43,7 @@ albedolandcover_parameters: &albedolandcover_parameters
     snowfree: true
     lc1_class: ['treeFrac']
     lc2_class: ['shrubFrac']
-    lc3_class: ['grassFrac', 'cropFrac']
+    lc3_class: ['grassFrac', 'cropFrac', 'pastureFrac']
 
 
 CMIP6_landcover: &CMIP6_landcover
