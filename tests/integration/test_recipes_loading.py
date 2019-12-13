@@ -1,16 +1,17 @@
 """Test recipes are well formed."""
 
 import os
-
-import iris
-import pytest
-import numpy as np
-
 from pathlib import Path
 
-import esmvalcore
-import esmvaltool
+import iris
+import numpy as np
+import pytest
+
+from esmvalcore import _data_finder
+from esmvalcore._config import read_config_user_file
 from esmvalcore._recipe import read_recipe_file
+
+import esmvaltool
 
 from .test_diagnostic_run import write_config_user_file
 
@@ -23,13 +24,15 @@ def _get_recipes():
 
 @pytest.fixture
 def config_user(tmp_path):
+    """Generate dummy config-user file for testing purposes."""
     filename = write_config_user_file(tmp_path)
-    cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
+    cfg = read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
     return cfg
 
 
 def create_test_file(filename, tracking_id=None):
+    """Generate dummy data file for recipe checker."""
     dirname = os.path.dirname(filename)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -37,8 +40,7 @@ def create_test_file(filename, tracking_id=None):
     attributes = {}
     if tracking_id is not None:
         attributes['tracking_id'] = tracking_id
-    cube = iris.cube.Cube([],
-                          attributes=attributes)
+    cube = iris.cube.Cube([], attributes=attributes)
     xcoord = iris.coords.DimCoord(np.linspace(0, 5, 5),
                                   standard_name="longitude")
     ycoord = iris.coords.DimCoord(np.linspace(0, 5, 12),
@@ -47,15 +49,42 @@ def create_test_file(filename, tracking_id=None):
                                   standard_name="height",
                                   attributes={'positive': 'up'})
     cube = iris.cube.Cube(np.zeros((5, 12, 17), np.float32),
-                          dim_coords_and_dims=[(xcoord, 0),
-                                               (ycoord, 1),
+                          dim_coords_and_dims=[(xcoord, 0), (ycoord, 1),
                                                (zcoord, 2)],
                           attributes=attributes)
     iris.save(cube, filename)
 
 
+def get_dummy_filenames(pattern):
+    """Generate list of realistic dummy filename(s) according to pattern."""
+    dummy_filenames = []
+    # Time-invariant (fx) variables don't have years in their filename
+    if 'fx' in pattern:
+        if pattern.endswith('[_.]*nc'):
+            dummy_filename = pattern.replace('[_.]*', '.')
+        elif pattern.endswith('*.nc'):
+            dummy_filename = pattern.replace('*', '')
+        dummy_filenames.append(dummy_filename)
+    # For other variables, add custom (large) intervals in dummy filename
+    elif '*' in pattern:
+        if pattern.endswith('[_.]*nc'):
+            dummy_filename = pattern[:-len('[_.]*nc')]
+        elif pattern.endswith('*.nc'):
+            dummy_filename = pattern[:-len('*.nc')]
+        # Spread dummy data over multiple files for realistic test
+        # Note: adding too many intervals here makes the tests really slow!
+        for interval in ['1800_1949', '1950_2199']:
+            dummy_filenames.append(dummy_filename + '_' + interval + '.nc')
+    # Provide for the possibility of filename patterns without *.
+    else:
+        dummy_filename = pattern
+        dummy_filenames.append(dummy_filename)
+    return dummy_filenames
+
+
 @pytest.fixture
 def patched_datafinder(tmp_path, monkeypatch):
+    """Alternative to `_datafinder.find_files()` for dummy files in tests."""
     def tracking_ids(i=0):
         while True:
             yield i
@@ -64,56 +93,21 @@ def patched_datafinder(tmp_path, monkeypatch):
     tracking_id = tracking_ids()
 
     def find_files(_, filenames):
+        filename_pattern = filenames[0]
+        dummyfiles = str(tmp_path / 'input' / filename_pattern)
+        filenames = get_dummy_filenames(dummyfiles)
+
         # Any occurrence of [something] in filename should have
         # been replaced before this function is called.
         for filename in filenames:
             assert '[' not in filename
 
-        filename = filenames[0]
-        filename = str(tmp_path / 'input' / filename)
-        filenames = []
-        if filename.endswith('*.nc'):
-            filename = filename[:-len('*.nc')]
-            intervals = [
-                '1820_1829',
-                '1830_1839',
-                '1840_1849',
-                '1850_1859',
-                '1860_1869',
-                '1870_1879',
-                '1880_1889',
-                '1890_1899',
-                '1900_1909',
-                '1910_1919',
-                '1920_1929',
-                '1930_1939',
-                '1940_1949',
-                '1950_1959',
-                '1960_1969',
-                '1970_1979',
-                '1980_1989',
-                '1990_1999',
-                '2000_2009',
-                '2010_2019',
-                '2020_2029',
-                '2030_2039',
-                '2040_2049',
-                '2050_2059',
-                '2060_2069',
-                '2070_2079',
-                '2080_2089',
-                '2090_2099',
-            ]
-            for interval in intervals:
-                filenames.append(filename + interval + '.nc')
-        else:
-            filenames.append(filename)
-
         for file in filenames:
             create_test_file(file, next(tracking_id))
+
         return filenames
 
-    monkeypatch.setattr(esmvalcore._data_finder, 'find_files', find_files)
+    monkeypatch.setattr(_data_finder, 'find_files', find_files)
 
 
 @pytest.mark.parametrize('recipe_file', _get_recipes())
