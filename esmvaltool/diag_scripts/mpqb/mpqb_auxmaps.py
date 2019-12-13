@@ -45,15 +45,6 @@ def _array2cube(array_in, cube_template):
     return newcube
 
 
-def compute_diagnostic(filename):
-    """Compute an example diagnostic."""
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
-    logger.debug("Running example computation")
-    return cube.collapsed('time', iris.analysis.MEAN)
-
-
 def main(cfg):
     """Compute the time average for each input dataset."""
     metrics_to_calculate = ['theilsenmk', 'timemean']
