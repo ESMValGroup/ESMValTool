@@ -21,6 +21,8 @@ class HeatFlux(object):
     def __init__(self, config):
         self.cfg = config
         self.window = self.cfg['window']
+        self.min_value = self.cfg['min_value']
+        self.max_value = self.cfg['max_value']
 
     def compute(self):
         """Compute diagnostic."""
@@ -90,6 +92,7 @@ class HeatFlux(object):
                 len(filter_weights), self.window
                 )
         heat_flux.var_name = 'vptp'
+        heat_flux.units = 'K m s-1'
         return heat_flux
 
     @staticmethod
@@ -118,7 +121,8 @@ class HeatFlux(object):
             ),
             **(self.cfg.get(
                 'quickplot',
-                {'plot_type': 'pcolormesh', 'cmap': 'bwr'}
+                {'plot_type': 'pcolormesh', 'cmap': 'bwr',
+                 'vmin' : self.min_value, 'vmax': self.max_value}
             ))
         )
 
