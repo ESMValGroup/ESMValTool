@@ -17,11 +17,16 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 class EnergyVectors(object):
-    """Energy evctor diagnostic class."""
+    """Energy vector diagnostic class."""
 
     def __init__(self, config):
         self.cfg = config
         self.window = self.cfg['window']
+        self.zonal_min = self.cfg['zonal_min']
+        self.zonal_max = self.cfg['zonal_max']
+        self.meridional_min = self.cfg['meridional_min']
+        self.meridional_max = self.cfg['meridional_max']
+
 
     def compute(self):
         """Compute energy vectors."""
@@ -146,9 +151,11 @@ class EnergyVectors(object):
                 subdir,
                 'evector_x.{}'.format(self.cfg[NAMES.OUTPUT_FILE_TYPE])
             ),
+            coastlines=True,
             **(self.cfg.get(
                 'quickplot',
-                {'plot_type': 'pcolormesh', 'cmap': 'bwr'}
+                {'plot_type': 'pcolormesh', 'cmap': 'bwr',
+                 'vmin' : self.zonal_min, 'vmax': self.zonal_max}
             ))
         )
         quickplot(
@@ -160,7 +167,8 @@ class EnergyVectors(object):
             coastlines=True,
             **(self.cfg.get(
                 'quickplot',
-                {'plot_type': 'pcolormesh', 'cmap': 'bwr'}
+                {'plot_type': 'pcolormesh', 'cmap': 'bwr',
+                 'vmin' : self.meridional_min, 'vmax' : self.meridional_max}
             ))
         )
 

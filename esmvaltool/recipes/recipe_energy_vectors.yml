@@ -72,6 +72,10 @@ diagnostics:
       energy_vectors:
         script: primavera/energy_vectors/energy_vectors.py
         window: 10   # in days
+        zonal_min: -200 # Minimum value for the scale of the plot
+        zonal_max: 200 # Maximum value for the scale of the plot
+        meridional_min: -100 # Minimum value for the scale of the plot
+        meridional_max: 100 # Maximum value for the scale of the plot
 
   heat_flux:
     description: Energy vectors
@@ -86,3 +90,5 @@ diagnostics:
       heat_flux:
         script: primavera/energy_vectors/heat_flux.py
         window: 10   # in days
+        min_value: -20 # Minimum value for the scale of the plot
+        max_value: 20 # Maximum value for the scale of the plot
