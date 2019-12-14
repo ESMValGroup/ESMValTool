@@ -192,7 +192,7 @@ local funcname, scriptname
 begin
 
   funcname = "metadata_att_as_array"
-  scriptname = "interface_scripts/auxiliary.ncl"
+  scriptname = "interface_scripts/interface.ncl"
   enter_msg(scriptname, funcname)
 
   do ii = 0, ListCount(inlist) - 1
