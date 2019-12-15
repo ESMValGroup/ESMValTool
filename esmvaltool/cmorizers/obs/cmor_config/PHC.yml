@@ -1,0 +1,32 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: PHC
+  version: '3'
+  tier: 2
+  modeling_realm: clim
+  project_id: OBS6
+  source: 'http://psc.apl.washington.edu/nonwp_projects/PHC/Data3.html'
+  reference: 'phc'
+  comment: 'The data are multiyear annual mean, but given Omon mip.'
+  frequency: yr
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  thetao:
+    mip: Omon
+    raw: temp
+    file: phc3.0_annual.nc
+  so:
+    mip: Omon
+    raw: salt
+    file: phc3.0_annual.nc
+  areacello:
+    mip: fx
+    raw: areacello
+    file: phc3.0_annual.nc
+
+# Custom dictionary for this cmorizer
+custom:
+  # years to be analyzed
+  years: [1800, ]
