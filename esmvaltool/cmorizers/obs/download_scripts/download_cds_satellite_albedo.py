@@ -28,14 +28,15 @@ def download_cds_satellite_albedo():
 
     c = cdsapi.Client()
     
+    
+    
     start = '199901'
-    end = '201401'
+    end = '201405'
     loopdate = datetime.strptime(start,'%Y%m')
     enddate = datetime.strptime(end,'%Y%m')
     
-    while loopdate < enddate:
+    while loopdate <= enddate:
         
-        loopdate += relativedelta.relativedelta(months=1)
         month = loopdate.month
         year = loopdate.year
         savename = os.path.join(cds_satellite_albedo_dir,
@@ -58,6 +59,7 @@ def download_cds_satellite_albedo():
                 ],
             },
             savename)
+        loopdate += relativedelta.relativedelta(months=1)
 
 
 if __name__ == "__main__":
