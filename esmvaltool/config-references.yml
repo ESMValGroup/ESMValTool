@@ -31,7 +31,7 @@ authors:
     name: Drost, Niels
     institute: NLeSC, Netherlands
     email: n.drost@esciencecenter.nl
-    orcid:
+    orcid: https://orcid.org/0000-0001-9795-7981
   koldunov_nikolay:
     name: Koldunov, Nikolay
     institute: AWI, Germany
@@ -82,6 +82,7 @@ authors:
     name: Alidoost, Sarah
     institute: NLeSC, Netherlands
     email: f.alidoost 'at' esciencecenter.nl
+    orcid: https://orcid.org/0000-0001-8407-6472
   anav_alessandro:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
@@ -386,6 +387,7 @@ authors:
     name: Verhoeven, Stefan
     institute: NLeSC, Netherlands
     email: s.verhoeven 'at' esciencecenter.nl
+    orcid: https://orcid.org/0000-0002-5821-2060
   walton_jeremy:
     name: Walton, Jeremy
     institute: MetOffice, UK
