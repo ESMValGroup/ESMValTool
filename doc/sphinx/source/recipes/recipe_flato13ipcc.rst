@@ -54,6 +54,25 @@ following figures from Flato et al. (2013) can currently be reproduced:
       trend distributions of (c) September Arctic and (d) February Antarctic
       sea ice extent.
 
+    * Figure 9.26: Ensemble-mean global ocean carbon uptake (a) and global land
+      carbon uptake (b) in the CMIP5 ESMs for the historical period 1900–2005.
+      For comparison, the observation-based estimates provided by the Global
+      Carbon Project (GCP) are also shown (thick black line). The confidence
+      limits on the ensemble mean are derived by assuming that the CMIP5 models
+      are drawn from a t-distribution. The grey areas show the range of annual mean
+      fluxes simulated across the model ensemble. This figure includes results
+      from all CMIP5 models that reported land CO2 fluxes, ocean CO2 fluxes, or
+      both (Anav et al., 2013).
+
+    * Figure 9.27: Simulation of global mean (a) atmosphere–ocean CO2 fluxes
+      ("fgCO2") and (b) net atmosphere–land CO2 fluxes ("NBP"), by ESMs for the
+      period 1986–2005. For comparison, the observation-based estimates
+      provided by Global Carbon Project (GCP) and the Japanese Meteorological
+      Agency (JMA) atmospheric inversion are also shown. The error bars for the
+      ESMs and observations represent interannual variability in the fluxes,
+      calculated as the standard deviation of the annual means over the period
+      1986–2005.
+
     * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
       mean surface air temperature, both for the period 1961-1990 and for the
       pre-industrial control runs.
@@ -74,6 +93,7 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
+    * carbon_cycle/main.ncl: See :ref:`recipes_anav13jclim`.
     * climate_metrics/ecs.py: See :ref:`recipes_ecs`.
     * clouds/clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias (Fig. 9.2, 9.4)
@@ -89,6 +109,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
 
 User settings in recipe
 -----------------------
+
+#. Script carbon_cycle/main.ncl
+
+   See :ref:`recipes_anav13jclim`.
 
 #. Script climate_metrics/ecs.py
 
@@ -290,6 +314,8 @@ Variables
 ---------
 
 * areacello (fx, longitude latitude)
+* fgco2 (ocean, monthly mean, longitude latitude time)
+* nbp (ocean, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
 * rlut, rlutcs (atmos, monthly mean, longitude latitude time)
 * rsdt (atmos, monthly mean, longitude latitude time)
@@ -308,11 +334,13 @@ Observations and reformat scripts
 instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+* GCP (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp.py)
 * GPCP-SG (pr - obs4mips)
-* HadCRUT4 (tas - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
-* HadISST (sic, tos - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadisst.ncl)
-* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/utils/cmorizers/obs/cmorize_obs_isccp_fh.ncl)
+* JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
+* HadCRUT4 (tas - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
+* HadISST (sic, tos - esmvaltool/cmorizers/obs/cmorize_obs_hadisst.ncl)
+* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/cmorizers/obs/cmorize_obs_isccp_fh.ncl)
 
 
 References
@@ -417,14 +445,37 @@ Example plots
    in September including multi-model mean and standard deviation.
 
 .. _fig_flato13ipcc_6:
-.. figure:: /recipes/figures/flato13ipcc/figure-9-42a.png
+.. figure:: /recipes/figures/flato13ipcc/fig-9-26.png
+   :align: center
+
+   Figure 9.26 (bottom): Ensemble-mean global land carbon uptake in the CMIP5
+   ESMs for the historical period 1900–2005.  For comparison, the
+   observation-based estimates provided by the Global Carbon Project (GCP) are
+   also shown (black line). The confidence limits on the ensemble mean are
+   derived by assuming that the CMIP5 models come from a t-distribution. The
+   grey areas show the range of annual mean fluxes simulated across the model
+   ensemble.
+
+.. _fig_flato13ipcc_7:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-27.png
+   :align: center
+
+   Figure 9.27 (top): Simulation of global mean atmosphere–ocean CO2 fluxes
+   ("fgCO2") by ESMs for the period 1986–2005. For comparison, the
+   observation-based estimates provided by Global Carbon Project (GCP) are also
+   shown. The error bars for the ESMs and observations represent interannual
+   variability in the fluxes, calculated as the standard deviation of the
+   annual means over the period 1986–2005.
+
+.. _fig_flato13ipcc_8:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
    :align: center
 
    Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global mean
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
 
-.. _fig_flato13ipcc_7:
+.. _fig_flato13ipcc_9:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-42b.png
    :align: center
 
@@ -438,4 +489,3 @@ Example plots
    change vs. springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in
    the seasonal cycle in transient climate change experiments (CMIP5 historical
    experiments: 1901-2000, RCP4.5 experiments: 2101-2200).
-
