@@ -122,10 +122,10 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1990,
          end_year: 1999}
 
-      - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      - {dataset: GISS-E2-H, exp: rcp85, start_year: 2091, end_year: 2100}
-      - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1990,
-         end_year: 1999}
+      # - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
+      # - {dataset: GISS-E2-H, exp: rcp85, start_year: 2091, end_year: 2100}
+      # - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1990,
+      #    end_year: 1999}
 
       # HadGEM2-ES not working, fails to merge cubes in preprocesor,
       # but I don't see why
@@ -269,9 +269,9 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
       - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850,
          end_year: 1999}
-      - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1850,
-         end_year: 1999}
+      # - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
+      # - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1850,
+      #    end_year: 1999}
       #  HadGEM2-ES not working, fails to merge cubes in preprocesor,
       #  but I don't see why
       # "Can not concatenate cubes: failed to concatenate into a single cube.
@@ -401,9 +401,9 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
       - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850,
          end_year: 1999}
-      - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1850,
-         end_year: 1999}
+      # - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
+      # - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1850,
+      #    end_year: 1999}
       #  HadGEM2-ES not working, fails to merge cubes in preprocesor,
       #  but I don't see why
       # "Can not concatenate cubes: failed to concatenate into a single cube.

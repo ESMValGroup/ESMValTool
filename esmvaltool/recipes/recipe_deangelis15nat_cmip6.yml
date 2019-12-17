@@ -108,7 +108,7 @@ diagnostics:
     
     scripts:
       deangelis3:
-        script: testkw/deangelis3.py
+        script: deangelis15nat/deangelis3.py
         plot_ecs_regression: 'True'
         output_name: 'deangelis3'
     
