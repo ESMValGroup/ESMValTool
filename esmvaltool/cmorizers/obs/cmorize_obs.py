@@ -229,6 +229,7 @@ def _cmor_reformat(config, obs_list):
 
     # set the reformat scripts dir
     reformat_scripts = os.path.dirname(os.path.abspath(__file__))
+    logger.info("Using cmorizer scripts repository: %s", reformat_scripts)
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
