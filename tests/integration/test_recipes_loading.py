@@ -73,7 +73,7 @@ def get_dummy_filenames(pattern):
             dummy_filename = pattern[:-len('*.nc')]
         # Spread dummy data over multiple files for realistic test
         # Note: adding too many intervals here makes the tests really slow!
-        for interval in ['1800_1949', '1950_2199']:
+        for interval in ['0000_1849', '1850_9999']:
             dummy_filenames.append(dummy_filename + '_' + interval + '.nc')
     # Provide for the possibility of filename patterns without *.
     else:
