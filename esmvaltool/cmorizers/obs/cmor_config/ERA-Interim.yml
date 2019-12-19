@@ -1,0 +1,265 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: ERA-Interim
+  project_id: OBS6
+  tier: 3
+  version: '1'
+  modeling_realm: reanaly
+  source: 'www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim'
+  reference: 'era-interim'
+  comment: |
+    'Contains modified Copernicus Climate Change Service Information {year}'
+
+# Variables to CMORize
+variables:
+  # time independent
+  sftlf:
+    mip: fx
+    raw: lsm
+    file: 'ERA-Interim_lsm.nc'
+  orog:
+    mip: fx
+    raw: z
+    file: 'ERA-Interim_z.nc'
+  # daily frequency
+  clt_day:
+    short_name: clt
+    mip: day
+    raw: tcc
+    file: 'ERA-Interim_tcc_daily_*.nc'
+  evspsbl_day:
+    short_name: evspsbl
+    mip: Eday
+    raw: e
+    file: 'ERA-Interim_e_daily_*.nc'
+  pr_day:
+    short_name: pr
+    mip: day
+    raw: tp
+    file: 'ERA-Interim_tp_daily_*.nc'
+  prsn_day:
+    short_name: prsn
+    mip: day
+    raw: sf
+    file: 'ERA-Interim_sf_daily_*.nc'
+  ps_day:
+    short_name: ps
+    mip: CFday
+    raw: sp
+    file: 'ERA-Interim_sp_daily_*.nc'
+  psl_day:
+    short_name: psl
+    mip: day
+    raw: msl
+    file: 'ERA-Interim_msl_daily_*.nc'
+  rlds_day:
+    short_name: rlds
+    mip: day
+    raw: strd
+    file: 'ERA-Interim_strd_daily_*.nc'
+  rsds_day:
+    short_name: rsds
+    mip: day
+    raw: ssrd
+    file: 'ERA-Interim_ssrd_daily_*.nc'
+  rsdt_day:
+    short_name: rsdt
+    mip: CFday
+    raw: tisr
+    file: 'ERA-Interim_tisr_daily_*.nc'
+  rss_day:
+    short_name: rss
+    mip: day
+    raw: ssr
+    file: 'ERA-Interim_ssr_daily_*.nc'
+  tas_day:
+    short_name: tas
+    mip: day
+    raw: t2m
+    file: 'ERA-Interim_t2m_daily_*.nc'
+  tasmax:
+    mip: day
+    raw: mx2t
+    file: 'ERA-Interim_mx2t_daily_*.nc'
+  tasmin:
+    mip: day
+    raw: mn2t
+    file: 'ERA-Interim_mn2t_daily_*.nc'
+  tdps_day:
+    short_name: tdps
+    mip: Eday
+    raw: d2m
+    file: 'ERA-Interim_d2m_daily_*.nc'
+  ts_day:
+    short_name: ts
+    mip: Eday
+    raw: skt
+    file: 'ERA-Interim_skt_daily_*.nc'
+  tsn_day:
+    short_name: tsn
+    mip: Eday
+    raw: tsn
+    file: 'ERA-Interim_tsn_daily_*.nc'
+  uas_day:
+    short_name: uas
+    mip: day
+    raw: u10
+    file: 'ERA-Interim_u10_daily_*.nc'
+  vas_day:
+    short_name: vas
+    mip: day
+    raw: v10
+    file: 'ERA-Interim_v10_daily_*.nc'
+  zg_day:
+    short_name: zg
+    mip: day
+    raw: z
+    file: 'ERA-Interim_z_daily_*.nc'
+  # monthly frequency
+  clivi:
+    mip: Amon
+    raw: p57.162
+    file: 'ERA-Interim_p57.162_monthly_*.nc'
+  clt_month:
+    short_name: clt
+    mip: Amon
+    raw: tcc
+    file: 'ERA-Interim_tcc_monthly_*.nc'
+  clwvi:
+    mip: Amon
+    raw:
+      - p56.162
+      - p57.162
+    operator: sum
+    files:
+      - 'ERA-Interim_p56.162_monthly_*.nc'
+      - 'ERA-Interim_p57.162_monthly_*.nc'
+  evspsbl_month:
+    short_name: evspsbl
+    mip: Amon
+    raw: e
+    file: 'ERA-Interim_e_monthly_*.nc'
+  hfds:
+    mip: Omon
+    raw:
+      - ssr
+      - str
+      - slhf
+      - sshf
+    operator: sum
+    files:
+      - 'ERA-Interim_ssr_monthly_*.nc'
+      - 'ERA-Interim_str_monthly_*.nc'
+      - 'ERA-Interim_slhf_monthly_*.nc'
+      - 'ERA-Interim_sshf_monthly_*.nc'
+  hur:
+    mip: Amon
+    raw: r
+    file: 'ERA-Interim_r_monthly_*.nc'
+  hus:
+    mip: Amon
+    raw: q
+    file: 'ERA-Interim_q_monthly_*.nc'
+  pr_month:
+    short_name: pr
+    mip: Amon
+    raw: tp
+    file: 'ERA-Interim_tp_monthly_*.nc'
+  prw:
+    mip: Amon
+    raw: tcwv
+    file: 'ERA-Interim_tcwv_monthly_*.nc'
+  prsn_month:
+    short_name: prsn
+    mip: Amon
+    raw: sf
+    file: 'ERA-Interim_sf_monthly_*.nc'
+  ps_month:
+    short_name: ps
+    mip: Amon
+    raw: sp
+    file: 'ERA-Interim_sp_monthly_*.nc'
+  psl_month:
+    short_name: psl
+    mip: Amon
+    raw: msl
+    file: 'ERA-Interim_msl_monthly_*.nc'
+  rsds_month:
+    short_name: rsds
+    mip: Amon
+    raw: ssrd
+    file: 'ERA-Interim_ssrd_monthly_*.nc'
+  rsdt_month:
+    short_name: rsdt
+    mip: Amon
+    raw: tisr
+    file: 'ERA-Interim_tisr_monthly_*.nc'
+  rss_month:
+    short_name: rss
+    mip: Emon
+    raw: ssr
+    file: 'ERA-Interim_ssr_monthly_*.nc'
+  ta:
+    mip: Amon
+    raw: t
+    file: 'ERA-Interim_t_monthly_*.nc'
+  tas_month:
+    short_name: tas
+    mip: Amon
+    raw: t2m
+    file: 'ERA-Interim_t2m_monthly_*.nc'
+  tauu:
+    mip: Amon
+    raw: iews
+    file: 'ERA-Interim_iews_monthly_*.nc'
+  tauv:
+    mip: Amon
+    raw: inss
+    file: 'ERA-Interim_inss_monthly_*.nc'
+  tdps_month:
+    short_name: tdps
+    mip: Emon
+    raw: d2m
+    file: 'ERA-Interim_d2m_monthly_*.nc'
+  tos:
+    mip: Omon
+    raw: sst
+    file: 'ERA-Interim_sst_monthly_*.nc'
+  ts_month:
+    short_name: ts
+    mip: Amon
+    raw: skt
+    file: 'ERA-Interim_skt_monthly_*.nc'
+  tsn_month:
+    short_name: tsn
+    mip: LImon
+    raw: tsn
+    file: 'ERA-Interim_tsn_monthly_*.nc'
+  ua:
+    mip: Amon
+    raw: u
+    file: 'ERA-Interim_u_monthly_*.nc'
+  uas_month:
+    short_name: uas
+    mip: Amon
+    raw: u10
+    file: 'ERA-Interim_u10_monthly_*.nc'
+  va:
+    mip: Amon
+    raw: v
+    file: 'ERA-Interim_v_monthly_*.nc'
+  vas_month:
+    short_name: vas
+    mip: Amon
+    raw: v10
+    file: 'ERA-Interim_v10_monthly_*.nc'
+  wap:
+    mip: Amon
+    raw: w
+    file: 'ERA-Interim_w_monthly_*.nc'
+  zg_month:
+    short_name: zg
+    mip: Amon
+    raw: z
+    file: 'ERA-Interim_z_monthly_*.nc'

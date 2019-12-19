@@ -6,11 +6,11 @@ documentation:
     Recipe for executing the NCAR CVDP package in the ESMValTool framework.
 
   authors:
-    - phil_ad
-    - broe_bj
+    - phillips_adam
+    - broetz_bjoern
 
   maintainer:
-    - broe_bj
+    - broetz_bjoern
 
   references:
     - phillips14eos
@@ -20,7 +20,9 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 2005}
+  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
+  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
+  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
 
 diagnostics:
 

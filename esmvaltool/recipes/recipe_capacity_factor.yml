@@ -6,22 +6,26 @@ documentation:
      Diurnal Temperature Variation (DTR) Indicator and Wind Capacity Factor
 
   authors:
-    - hunt_al
-    - manu_ni
-    - lled_ll
-    - caro_lo
-    - bojo_dr
-    - gonz_nu
-    - pere_nu
+    - hunter_alasdair
+    - manubens_nicolau
+    - lledo_llorenc
+    - caron_louis-philippe
+    - bojovic_dragana
+    - gonzalez-reviriego_nube
+    - perez-zanon_nuria
 
   projects:
     - c3s-magic
 
 datasets:
   - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
 
 preprocessors:
   preproc:
+    regrid:
+      target_grid: IPSL-CM5A-MR
+      scheme: linear 
     extract_region:
       start_longitude: -20
       end_longitude: 60
@@ -41,7 +45,7 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: magic_bsc/capacity_factor.r
+        script: magic_bsc/capacity_factor.R
         power_curves:
           - PowerCurves/Enercon_E70_2.3MW.txt
           - PowerCurves/Gamesa_G80_2.0MW.txt

@@ -11,15 +11,15 @@ documentation:
     checked.
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,      project: CMIP5,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
 
 preprocessors:
   pp_aa_area:
@@ -34,13 +34,19 @@ diagnostics:
       rsns: # Surf SW net all sky
         derive: true
         force_derivation: false
-        fx_files: [sftlf]
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+      sftlf:
+        mip: fx
       rlns: # Surf LW net all sky
         derive: true
         force_derivation: false
-        fx_files: [sftlf]
-    additional_datasets:
-      - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+        mip: Amon
+        additional_datasets:
+          - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+      sftlf:
+        mip: fx
     scripts:
       autoassess_landsurf_surfrad: &autoassess_landsurf_surfrad_settings
         script: autoassess/autoassess_area_base.py
@@ -50,7 +56,6 @@ diagnostics:
         exp_model: MPI-ESM-MR
         obs_models: [CERES-EBAF]
         obs_type: obs4mips
-        fx: [sftlf]
         start: 1997/12/01
         end: 2002/12/01
 

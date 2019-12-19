@@ -6,11 +6,11 @@ documentation:
     Recipe that demonstrates various uses of the preprocessor derive functionality.
 
   authors:
-    - ande_bo
-    - schl_ma
+    - andela_bouwe
+    - schlund_manuel
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   projects:
     - c3s-magic
@@ -55,21 +55,6 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: HadGEM2-A}
-      nbp_grid: &nbp_grid
-        preprocessor: regrid
-        project: CMIP5
-        mip: Lmon
-        exp: historical
-        start_year: 2000
-        end_year: 2005
-        derive: true
-        additional_datasets:
-          - {dataset: CanESM2,      ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR,   ensemble: r1i1p1}
-          - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
-      fgco2_grid:
-        <<: *nbp_grid
-        mip: Omon
     scripts: null
 
   diag2:
@@ -124,4 +109,12 @@ diagnostics:
         <<: *cloud
       netcre:
         <<: *toz
+    scripts: null
+
+  diag8:
+    description: Test sispeed
+    variables:
+      clltkisccp:
+        <<: *cloud
+        mip: OImon
     scripts: null

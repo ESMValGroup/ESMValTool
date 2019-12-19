@@ -9,8 +9,8 @@ documentation:
         Energy Cycle and the material entropy production.
 
   authors:
-    - lemb_va
-    - kold_ni
+    - lembo_valerio
+    - koldunov_nikolay
 
   references:
     - lembo16climdyn
@@ -21,13 +21,13 @@ documentation:
     - trr181
 
 datasets:
-  - {dataset: CanESM2, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2456, end_year: 2460}
-  - {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2002, end_year: 2007}
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2044, end_year: 2049}
-  - {dataset: MIROC5, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2310, end_year: 2314}
-  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2031, end_year: 2035}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+  #- {dataset: CanESM2, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2456, end_year: 2460}
+  #- {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2002, end_year: 2007}
+  #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2044, end_year: 2049}
+  #- {dataset: MIROC5, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2310, end_year: 2314}
+  #- {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1995, end_year: 2000}
+  #- {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
 
 diagnostics:
   Thermodyn_Diag:
@@ -68,19 +68,22 @@ diagnostics:
       vas:
         mip: day
       ta:
-        fx_files: [sftlf]
         mip: day
+      sftlf:
+        mip: fx
       ua:
         mip: day
       va:
         mip: day
       wap:
         mip: day
+      sftlf:
+        mip: fx
     scripts:
       Thermodyn_Diag:
         script: thermodyn_diagtool/thermodyn_diagnostics.py
         wat: true
-        lec: false
+        lec: true
         entr: true
         met: 3
         lsm: true

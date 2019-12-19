@@ -8,12 +8,12 @@ documentation:
     variables (like ozone, sea-ice, aerosol...)
 
   authors:
-    - fran_fr
-    - righ_ma
-    - eyri_ve
+    - frank_franziska
+    - righi_mattia
+    - eyring_veronika
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - gleckler08jgr
@@ -182,58 +182,45 @@ preprocessors:
 
 diagnostics:
 
-  ### ta: AIR TEMPERATURE #####################################################
-  ta850:
-    description: Air temperature at 850 hPa global.
+  ### The diagnostics are ordered by runtime, to optimize tasks execution #####
+
+  ### sm: SOIL MOISTURE #######################################################
+  sm:
+    description: Soil moisture
     themes:
       - phys
     realms:
-      - atmos
+      - land
     variables:
-      ta:
-        preprocessor: pp850
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
+      sm:
+        preprocessor: ppNOLEV1thr10
+        reference_dataset: ESACCI-SOILMOISTURE
+        mip: Lmon
+        derive: true
+        force_derivation: false
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
+        start_year: 2002
+        end_year: 2004
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
       - {dataset: CESM1-FASTCHEM}
       - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
       - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
       - {dataset: FGOALS-g2}
       - {dataset: FGOALS-s2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
@@ -244,20 +231,16 @@ diagnostics:
       - {dataset: MIROC5}
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
       - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat,
+         version: L3S-SSMV-COMBINED-v4.2, tier: 2}
     scripts:
-      cycle: &cycle_settings
+      grading: &grading_settings
         script: perfmetrics/main.ncl
         # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
-        plot_type: cycle
+        plot_type: cycle_latlon
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: monthlyclim
         # Region ('global', 'trop', 'nhext', 'shext')
@@ -268,249 +251,15 @@ diagnostics:
         legend_outside: true
         # Plot style
         styleset: CMIP5
-      grading: &grading_settings
-        <<: *cycle_settings
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
-        plot_type: cycle_latlon
         # Calculate grading
         calc_grading: true
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD, taylor]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median, none]
-
-
-  ta200:
-    description: Air temperature at 200 hPa global.
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      ta:
-        preprocessor: pp200
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      cycle:
-        <<: *cycle_settings
-      grading:
-        <<: *grading_settings
         # Metric ('RMSD', 'BIAS', taylor')
         metric: [RMSD]
         # Normalization ('mean', 'median', 'centered_median', 'none')
         normalization: [centered_median]
 
 
-  ta30:
-    description: Air temperature at 30 hPa global.
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      ta:
-        preprocessor: pp30
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      cycle:
-        <<: *cycle_settings
-
-
-  ta5:
-    description: Air temperature at 5 hPa global.
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      ta:
-        preprocessor: pp5
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      cycle:
-        <<: *cycle_settings
-
-
+  ### ta: AIR TEMPERATURE (zonal) #############################################
   taZONAL:
     description: Air temperature zonal mean
     themes:
@@ -579,7 +328,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       zonal: &zonal_settings
@@ -604,18 +354,18 @@ diagnostics:
         diff_levs: [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
 
 
-  ### ua: EASTWARD WIND #######################################################
-  ua850:
-    description: Eastward wind at 850 hPa global.
+  ### clt: TOTAL CLOUD COVER ##################################################
+  clt:
+    description: Total cloud cover
     themes:
-      - atmDyn
+      - clouds
     realms:
       - atmos
     variables:
-      ua:
-        preprocessor: pp850
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
+      clt:
+        preprocessor: ppNOLEV2
+        reference_dataset: ESACCI-CLOUD
+        alternative_dataset: PATMOS-x
         mip: Amon
         project: CMIP5
         exp: historical
@@ -628,24 +378,18 @@ diagnostics:
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
       - {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
       - {dataset: CMCC-CM}
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
       - {dataset: CSIRO-Mk3-6-0}
       - {dataset: EC-EARTH, ensemble: r6i1p1}
       - {dataset: FGOALS-g2}
       - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
@@ -667,400 +411,35 @@ diagnostics:
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MPI-ESM-LR}
       - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      grading:
-        <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
-
-
-  ua200:
-    description: Eastward wind at 200 hPa global.
-    themes:
-      - atmDyn
-    realms:
-      - atmos
-    variables:
-      ua:
-        preprocessor: pp200
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      grading:
-        <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
-
-
-  ### va: NORTHWARD WIND ######################################################
-  va850:
-    description: Northward wind at 850 hPa global.
-    themes:
-      - atmDyn
-    realms:
-      - atmos
-    variables:
-      va:
-        preprocessor: pp850
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      grading:
-        <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
-
-
-  va200:
-    description: Northward wind at 200 hPa global.
-    themes:
-      - atmDyn
-    realms:
-      - atmos
-    variables:
-      va:
-        preprocessor: pp200
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
-      - {dataset: FGOALS-g2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      grading:
-        <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
-
-
-  ### zg: GEOPOTENTIAL HEIGHT #################################################
-  zg500:
-    description: Geopotential height 500 hPa global.
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      zg:
-        preprocessor: pp500
-        reference_dataset: ERA-Interim
-        alternative_dataset: NCEP
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2002
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
-      - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+         version: AVHRR-fv3.0, tier: 2}
+      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
     scripts:
+      latlon: &latlon_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: latlon
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: annualclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Draw difference plots
+        plot_diff: true
+        # Calculate t-test in difference plots
+        t_test: true
+        # Confidence level for the t-test
+        conf_level: 0.95
+        # Add global average to the plot
+        show_global_avg: true
+        # Contour levels for absolute plot
+        abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        # Contour levels for difference plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
-
-
-  ### hus: SPECIFIC HUMIDITY ##################################################
-  hus400:
-    description: Specific humidity at 400 hPa global.
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      hus:
-        preprocessor: pp400
-        reference_dataset: AIRS
-        alternative_dataset: ERA-Interim
-        mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2003
-        end_year: 2004
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CMCC-CM}
-      - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
-      - {dataset: FIO-ESM}
-      - {dataset: GISS-E2-H-CC}
-      - {dataset: GISS-E2-R-CC}
-      - {dataset: GFDL-CM2p1}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-    scripts:
-      grading:
-        <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### tas: NEAR-SURFACE TEMPERATURE ###########################################
@@ -1132,23 +511,14 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
-      latlon: &latlon_settings
-        script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
-        plot_type: latlon
-        # Time average ('opt' argument of time_operations.ncl)
-        time_avg: annualclim
-        # Region ('global', 'trop', 'nhext', 'shext')
-        region: global
-        # Draw difference plots
-        plot_diff: true
-        # Calculate t-test in difference plots
-        t_test: true
-        # Confidence level for the t-test
-        conf_level: 0.95
+      latlon:
+        <<: *latlon_settings
+        # Add global average to the plot
+        show_global_avg: false
         # Contour levels for absolute plot
         abs_levs: [240, 243, 246, 249, 252, 255, 258,
                    261, 264, 267, 270, 273, 276, 279,
@@ -1157,10 +527,6 @@ diagnostics:
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### ts: SEA-SURFACE (SKIN) TEMPERATURE ######################################
@@ -1225,15 +591,12 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ESACCI-SST, project: OBS, type: sat, version: L4-GHRSST-SSTdepth-OSTIA-GLOB, tier: 2}
+      - {dataset: ESACCI-SST, project: OBS, type: sat,
+         version: L4-GHRSST-SSTdepth-OSTIA-GLOB, tier: 2}
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### pr: PRECIPITATION #######################################################
@@ -1303,34 +666,106 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-SG, project: obs4mips, level: L3,
+         version: v2.2, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
-  ### clt: TOTAL CLOUD COVER ##################################################
-  clt:
-    description: Total cloud cover
+  ### zg: GEOPOTENTIAL HEIGHT (500 hPa) #######################################
+  zg500:
+    description: Geopotential height 500 hPa global
     themes:
-      - clouds
+      - phys
     realms:
       - atmos
     variables:
-      clt:
-        preprocessor: ppNOLEV2
-        reference_dataset: ESACCI-CLOUD
-        alternative_dataset: PATMOS-x
+      zg:
+        preprocessor: pp500
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
         mip: Amon
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
         start_year: 2000
         end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### lwcre: LONGWAVE CLOUD FORCING ###########################################
+  lwcre:
+    description: Longwave cloud radiative effect
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        force_derivation: false
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2001
+        end_year: 2003
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -1346,16 +781,14 @@ diagnostics:
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
       - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: EC-EARTH, ensemble: r6i1p1}
       - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
       - {dataset: FIO-ESM}
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
@@ -1373,23 +806,91 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+         version: Ed2-7, tier: 1}
     scripts:
       latlon:
         <<: *latlon_settings
         # Add global average to the plot
-        show_global_avg: true
+        show_global_avg: false
         # Contour levels for absolute plot
         abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
         # Contour levels for difference plot
         diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
+
+
+  ### swcre: SHORTWAVE CLOUD FORCING ##########################################
+  swcre:
+    description: Shortwave cloud radiative effect
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      swcre:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        force_derivation: false
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2001
+        end_year: 2003
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CM}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-s2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+         version: Ed2-7, tier: 1}
+    scripts:
+      latlon:
+        <<: *latlon_settings
+        # Add global average to the plot
+        show_global_avg: false
+        # Contour levels for absolute plot
+        abs_levs: [-100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
+        # Contour levels for difference plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      grading:
+        <<: *grading_settings
 
 
   ### rlut: ALL-SKY LONGWAVE RADIATION ########################################
@@ -1452,14 +953,79 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+         version: Ed2-7, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
+
+
+  ### hus: SPECIFIC HUMIDITY (400 hPa) ########################################
+  hus400:
+    description: Specific humidity at 400 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      hus:
+        preprocessor: pp400
+        reference_dataset: AIRS
+        alternative_dataset: ERA-Interim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2003
+        end_year: 2004
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: FIO-ESM}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: AIRS, project: obs4mips, level: L3,
+         version: RetStd-v5, tier: 1}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+    scripts:
+      grading:
+        <<: *grading_settings
 
 
   ### rsut: ALL-SKY SHORTWAVE RADIATION #######################################
@@ -1519,58 +1085,62 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+         version: Ed2-7, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
-  ### lwcre: LONGWAVE CLOUD FORCING ###########################################
-  lwcre:
-    description: Longwave cloud radiative effect
+  ### ua: EASTWARD WIND (200 hPa) #############################################
+  ua200:
+    description: Eastward wind at 200 hPa global
     themes:
-      - clouds
+      - atmDyn
     realms:
       - atmos
     variables:
-      lwcre:
-        preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+      ua:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
         mip: Amon
-        derive: true
-        force_derivation: false
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        start_year: 2001
-        end_year: 2003
+        start_year: 2000
+        end_year: 2002
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
       - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
       - {dataset: CMCC-CM}
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
       - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
       - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
       - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
@@ -1585,66 +1155,67 @@ diagnostics:
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MPI-ESM-LR}
       - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
       - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
-      latlon:
-        <<: *latlon_settings
-        # Contour levels for absolute plot
-        abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-        # Contour levels for difference plot
-        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
-
-  ### swcre: SHORTWAVE CLOUD FORCING ##########################################
-  swcre:
-    description: Shortwave cloud radiative effect
+  ### va: NORTHWARD WIND (850 hPa) ############################################
+  va850:
+    description: Northward wind at 850 hPa global.
     themes:
-      - clouds
+      - atmDyn
     realms:
       - atmos
     variables:
-      swcre:
-        preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+      va:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
         mip: Amon
-        derive: true
-        force_derivation: false
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        start_year: 2001
-        end_year: 2003
+        start_year: 2000
+        end_year: 2002
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
       - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
       - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: FGOALS-s2}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
       - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
       - {dataset: HadGEM2-AO}
       - {dataset: HadGEM2-CC}
@@ -1659,23 +1230,496 @@ diagnostics:
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MPI-ESM-LR}
       - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
       - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
-      latlon:
-        <<: *latlon_settings
-        # Contour levels for absolute plot
-        abs_levs: [-100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
-        # Contour levels for difference plot
-        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      grading:
+        <<: *grading_settings
+
+
+  ### ua: EASTWARD WIND (850 hPa) #############################################
+  ua850:
+    description: Eastward wind at 850 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
+    variables:
+      ua:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### va: NORTHWARD WIND (200 hPa) ############################################
+  va200:
+    description: Northward wind at 200 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
+    variables:
+      va:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### ta: AIR TEMPERATURE (5 hPa) #############################################
+  ta5:
+    description: Air temperature at 5 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp5
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      cycle: &cycle_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: cycle
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: monthlyclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
+        plot_stddev: ref_model
+        # Plot legend in a separate file
+        legend_outside: true
+        # Plot style
+        styleset: CMIP5
+
+
+  ### ta: AIR TEMPERATURE (850 hPa) ###########################################
+  ta850:
+    description: Air temperature at 850 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
       grading:
         <<: *grading_settings
         # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
+        metric: [RMSD, taylor]
         # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
+        normalization: [centered_median, none]
+
+
+  ### ta: AIR TEMPERATURE (30 hPa) ############################################
+  ta30:
+    description: Air temperature at 30 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp30
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+
+
+  ### ta: AIR TEMPERATURE (200 hPa) ###########################################
+  ta200:
+    description: Air temperature at 200 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH, ensemble: r6i1p1}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+      grading:
+        <<: *grading_settings
 
 
   ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ###############################
@@ -1717,15 +1761,12 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
       - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ###############################
@@ -1758,14 +1799,11 @@ diagnostics:
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MRI-CGCM3}
-      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### abs550aer: ABSORPTION OPTICAL DEPTH AT 550 nm ###########################
@@ -1798,14 +1836,11 @@ diagnostics:
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ##################
@@ -1837,14 +1872,11 @@ diagnostics:
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MRI-CGCM3}
-      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
     scripts:
       grading:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### toz: TOTAL COLUMN OZONE #################################################
@@ -1880,81 +1912,10 @@ diagnostics:
     scripts:
       grading_global:
         <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
       grading_shpolar:
         <<: *grading_settings
         # Region
         region: shpolar
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
-
-  ### sic: SEA-ICE CONCENTRATION (NH) #########################################
-
-  ### sic: SEA-ICE CONCENTRATION (SH) #########################################
-
-  ### sm: SOIL MOISTURE #######################################################
-  sm:
-    description: Soil moisture
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      sm:
-        preprocessor: ppNOLEV1thr10
-        reference_dataset: ESACCI-SOILMOISTURE
-        mip: Lmon
-        derive: true
-        force_derivation: false
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2002
-        end_year: 2004
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CESM1-BGC}
-      - {dataset: CESM1-CAM5}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CNRM-CM5 }
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: FGOALS-g2}
-      - {dataset: FGOALS-s2}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadCM3}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC4h}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MRI-CGCM3}
-      - {dataset: NorESM1-M}
-      - {dataset: NorESM1-ME}
-      - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2}
-    scripts:
-      grading:
-        <<: *grading_settings
-        # Metric ('RMSD', 'BIAS', taylor')
-        metric: [RMSD]
-        # Normalization ('mean', 'median', 'centered_median', 'none')
-        normalization: [centered_median]
 
 
   ### COLLECT METRICS #########################################################

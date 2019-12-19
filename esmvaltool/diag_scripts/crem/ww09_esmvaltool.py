@@ -26,22 +26,22 @@ Cloud Regime Error Metrics (CREM).
     none
 
   Modification history
-    20190216-A_laue_ax: outsourced regridding to preprocessor
-    20190215-A_laue_ax: added metadata to netcdf output and plot
-    20190213-A_laue_ax: made code more flexible to support CMIP6 data
-    20181012-A_laue_ax: extended (optional) netCDF output
-    20180920-A_laue_ax: code adapted for ESMValTool v2.0
-    20171128-A_laue_ax: added author and diagname to meta data
-                        switched off "replacing of exact values"
-                        in regridding function
-    20170713-A_laue_ax: added tagging (for reporting)
-    20151117-A_laue_ax: added parameters for call to "write_references"
-    20151113-A_laue_ax: added creation of directory for plots if needed
-                        (code was crashing if directory does not exist)
-    20151029-A_laue_ax: added output of acknowledgements + processed files
-                        to log-file
-    20150903-A_laue_ax: ESMValTool implementation.
-    20150521-A_will_ke: CREM routines written.
+    20190216-lauer_axel: outsourced regridding to preprocessor
+    20190215-lauer_axel: added metadata to netcdf output and plot
+    20190213-lauer_axel: made code more flexible to support CMIP6 data
+    20181012-lauer_axel: extended (optional) netCDF output
+    20180920-lauer_axel: code adapted for ESMValTool v2.0
+    20171128-lauer_axel: added author and diagname to meta data
+                         switched off "replacing of exact values"
+                         in regridding function
+    20170713-lauer_axel: added tagging (for reporting)
+    20151117-lauer_axel: added parameters for call to "write_references"
+    20151113-lauer_axel: added creation of directory for plots if needed
+                         (code was crashing if directory does not exist)
+    20151029-lauer_axel: added output of acknowledgements + processed files
+                         to log-file
+    20150903-lauer_axel: ESMValTool implementation.
+    20150521-williams_keith: CREM routines written.
 """
 import logging
 import os
@@ -207,8 +207,8 @@ def main(cfg):
         'domains': ['global'],
         'plot_type': 'bar',
         'authors': [
-            'will_ke',
-            'laue_ax',
+            'williams_keith',
+            'lauer_axel',
         ],
         'references': [
             'acknow_project',

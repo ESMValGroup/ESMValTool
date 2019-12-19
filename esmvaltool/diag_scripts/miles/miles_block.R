@@ -13,8 +13,8 @@
 # ECMWF ERA-Interim reanalysis.
 #
 # Modification history
-#   20180525-arno_en: Conversion to v2.0
-#   20181203 hard_jo: Completed conversion, rlint compliant
+#   20180525-arnone_enrico: Conversion to v2.0
+#   20181203-vonhardenberg_jost: Completed conversion, rlint compliant
 #
 # ############################################################################
 
@@ -22,16 +22,23 @@ library(tools)
 library(yaml)
 
 provenance_record <- function(infile) {
-  xprov <- list(ancestors = infile,
-                authors = list("hard_jo", "davi_pa", "arno_en"),
-                references = list("davini18", "davini12jclim",
-                                  "tibaldi90tel"),
-                projects = list("c3s-magic"),
-                caption = "MiLES blocking statistics",
-                statistics = list("other"),
-                realms = list("atmos"),
-                themes = list("phys"),
-                domains = list("nh"))
+  xprov <- list(
+    ancestors = infile,
+    authors = list(
+      "vonhardenberg_jost", "davini_paolo",
+      "arnone_enrico"
+    ),
+    references = list(
+      "davini18", "davini12jclim",
+      "tibaldi90tel"
+    ),
+    projects = list("c3s-magic"),
+    caption = "MiLES blocking statistics",
+    statistics = list("other"),
+    realms = list("atmos"),
+    themes = list("phys"),
+    domains = list("nh")
+  )
   return(xprov)
 }
 
@@ -70,18 +77,23 @@ work_dir <- settings$work_dir
 regridding_dir <- settings$run_dir
 plot_dir <- settings$plot_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
-dir.create(regridding_dir, recursive = T, showWarnings = F)
+dir.create(regridding_dir,
+  recursive = T,
+  showWarnings = F
+)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # setup provenance file and list
-provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance_file <-
+  paste0(regridding_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 # extract metadata
 models_dataset <- unname(sapply(list0, "[[", "dataset"))
 models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
 models_exp <- unname(sapply(list0, "[[", "exp"))
-reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
+reference_model <-
+  unname(sapply(list0, "[[", "reference_dataset"))[1]
 models_start_year <- unname(sapply(list0, "[[", "start_year"))
 models_end_year <- unname(sapply(list0, "[[", "end_year"))
 models_experiment <- unname(sapply(list0, "[[", "exp"))
@@ -100,9 +112,15 @@ for (model_idx in c(1:(length(models_dataset)))) {
   infile <- climofiles[model_idx]
   for (seas in seasons) {
     filenames <- miles_block_fast(
-      year1 = year1, year2 = year2, expid = exp, ens = ensemble,
-      dataset = dataset, season = seas, z500filename = infile,
-      FILESDIR = work_dir, doforce = TRUE
+      year1 = year1,
+      year2 = year2,
+      expid = exp,
+      ens = ensemble,
+      dataset = dataset,
+      season = seas,
+      z500filename = infile,
+      FILESDIR = work_dir,
+      doforce = TRUE
     )
     # Set provenance for output files
     xprov <- provenance_record(list(infile))
@@ -135,17 +153,26 @@ if (write_plots) {
       year2 <- models_end_year[model_idx]
       for (seas in seasons) {
         filenames <- miles_block_figures(
-          year1 = year1, year2 = year2, expid = exp,
-          dataset = dataset, ens = ensemble,
-          dataset_ref = dataset_ref, year1_ref = year1_ref,
-          year2_ref = year2_ref, expid_ref = exp_ref,
-          ens_ref = ensemble_ref, season = seas,
-          FIGDIR = plot_dir, FILESDIR = work_dir,
+          year1 = year1,
+          year2 = year2,
+          expid = exp,
+          dataset = dataset,
+          ens = ensemble,
+          dataset_ref = dataset_ref,
+          year1_ref = year1_ref,
+          year2_ref = year2_ref,
+          expid_ref = exp_ref,
+          ens_ref = ensemble_ref,
+          season = seas,
+          FIGDIR = plot_dir,
+          FILESDIR = work_dir,
           REFDIR = work_dir
         )
         # Set provenance for output files (same as diagnostic files)
-        xprov <- provenance_record(list(climofiles[model_idx],
-                                        climofiles[ref_idx]))
+        xprov <- provenance_record(list(
+          climofiles[model_idx],
+          climofiles[ref_idx]
+        ))
         for (fname in filenames$figs) {
           provenance[[fname]] <- xprov
         }

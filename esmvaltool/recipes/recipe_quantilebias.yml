@@ -6,11 +6,11 @@ documentation:
     Tool for calculation of precipitation quantile bias
 
   authors:
-    - arno_en
-    - hard_jo
+    - arnone_enrico
+    - vonhardenberg_jost
 
   maintainer:
-    - hard_jo
+    - vonhardenberg_jost
 
   references:
     - mehran14jgr
@@ -19,11 +19,14 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r2i1p1, start_year: 1997, end_year: 1997}
-  - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1, start_year: 1997, end_year: 1997}
+   - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979, end_year: 2005}
 
 preprocessors:
-  masking_preprocessor:
+  mask_regrid_preproc:
+    regrid:
+      target_grid: 2x2
+      scheme: area_weighted
     mask_landsea:
       mask_out: sea
 
@@ -32,53 +35,9 @@ diagnostics:
     description: Tool for calculation of precipitation quantile bias 
     variables:
       pr:
-        preprocessor: masking_preprocessor 
+        preprocessor: mask_regrid_preproc 
         reference_dataset: "GPCP-SG"
         mip: Amon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1997
-        end_year: 1997
-    additional_datasets:
-      - {dataset: ACCESS1-0}
-#      - {dataset: ACCESS1-3}
-      #- {dataset: bcc-csm1-1}
-      #- {dataset: bcc-csm1-1-m}
-      #- {dataset: CanESM2}
-      #- {dataset: CCSM4}
-      #- {dataset: CESM1-BGC}
-      #- {dataset: CESM1-CAM5}
-      #- {dataset: CESM1-FASTCHEM}
-      #- {dataset: CESM1-WACCM}
-      #- {dataset: CMCC-CESM}
-      #- {dataset: CMCC-CM}
-      #- {dataset: CMCC-CMS}
-      #- {dataset: CNRM-CM5}
-      #- {dataset: CSIRO-Mk3-6-0}
-      #- {dataset: EC-EARTH31, ensemble: r2i1p1}
-      #- {dataset: FGOALS-g2}
-      #- {dataset: FGOALS-s2}
-      #- {dataset: FIO-ESM}
-      #- {dataset: GFDL-CM2p1}
-      #- {dataset: GFDL-CM3}
-      #- {dataset: GFDL-ESM2G}
-      #- {dataset: GFDL-ESM2M}
-      #- {dataset: HadGEM2-AO}
-      #- {dataset: HadGEM2-CC}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: inmcm4}
-      #- {dataset: IPSL-CM5A-LR}
-      #- {dataset: IPSL-CM5A-MR}
-      #- {dataset: IPSL-CM5B-LR}
-      #- {dataset: MIROC5}
-      #- {dataset: MIROC-ESM}
-      #- {dataset: MIROC-ESM-CHEM}
-      #- {dataset: MPI-ESM-LR}
-      #- {dataset: MPI-ESM-P}
-      #- {dataset: MRI-CGCM3}
-      #- {dataset: NorESM1-M}
-      #- {dataset: NorESM1-ME}
 
     scripts:
       main:
