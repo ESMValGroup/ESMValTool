@@ -7,7 +7,7 @@ import iris
 import numpy as np
 import pytest
 
-from esmvalcore import _data_finder
+from esmvalcore import _data_finder, _recipe_checks
 from esmvalcore._config import read_config_user_file
 from esmvalcore._recipe import read_recipe_file
 
@@ -20,6 +20,12 @@ def _get_recipes():
     recipes_path = Path(esmvaltool.__file__).absolute().parent / 'recipes'
     recipes = recipes_path.glob("**/recipe*.yml")
     return recipes
+
+
+def _tracking_ids(i=0):
+    while True:
+        yield i
+        i += 1
 
 
 @pytest.fixture
@@ -84,33 +90,52 @@ def get_dummy_filenames(pattern):
 
 @pytest.fixture
 def patched_datafinder(tmp_path, monkeypatch):
-    """Alternative to `_datafinder.find_files()` for dummy files in tests."""
-    def tracking_ids(i=0):
-        while True:
-            yield i
-            i += 1
-
-    tracking_id = tracking_ids()
+         """
+        Replaces `_datafinder.find_files()`.
+        Creates and points to dummy data input files instead of searching for
+        existing data.
+        """
 
     def find_files(_, filenames):
-        filename_pattern = filenames[0]
-        dummyfiles = str(tmp_path / 'input' / filename_pattern)
+        drs = filenames[0]
+        dummyfiles = str(tmp_path / 'input' / drs)
         filenames = get_dummy_filenames(dummyfiles)
-
-        # Any occurrence of [something] in filename should have
-        # been replaced before this function is called.
-        for filename in filenames:
-            assert '[' not in filename
 
         for file in filenames:
             create_test_file(file, next(tracking_id))
 
         return filenames
-
+    
+    tracking_id = _tracking_ids()
     monkeypatch.setattr(_data_finder, 'find_files', find_files)
 
 
+@pytest.fixture
+def patched_extract_shape(monkeypatch):
+    def extract_shape(settings):
+        """
+        Replaces `_recipe_checks.extract_shape`.
+        Skips check that shapefile exists.
+        """
+
+        valid = {
+            'method': {'contains', 'representative'},
+            'crop': {True, False},
+        }
+        for key in valid:
+            value = settings.get(key)
+            if not (value is None or value in valid[key]):
+                raise _recipe_checks.RecipeError(
+                    f"In preprocessor function `extract_shape`: Invalid value "
+                    f"'{value}' for argument '{key}', choose from "
+                    "{}".format(
+                        ', '.join(f"'{k}'".lower() for k in valid[key])
+                        ))
+
+    monkeypatch.setattr(_recipe_checks, 'extract_shape', extract_shape)
+
+
 @pytest.mark.parametrize('recipe_file', _get_recipes())
-def test_diagnostic_run(recipe_file, config_user, patched_datafinder):
+def test_diagnostic_run(recipe_file, config_user, patched_datafinder, patched_extract_shape):
     """Check that recipe files are well formed."""
     read_recipe_file(recipe_file, config_user)
