@@ -14,7 +14,7 @@ sm:
   ubrmsd:
     title: ubrmsd
     vmin: 0.
-    vmax: .4
+    vmax: .1
     cmap: YlGn
   rmsd:
     title: rmsd

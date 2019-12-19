@@ -3,6 +3,7 @@ import iris
 import matplotlib
 import matplotlib.pyplot as plt
 import copy
+import datetime
 import yaml
 import os
 from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
@@ -28,8 +29,10 @@ def get_ecv_plot_config(ecv_name):
 
 def get_plottitle_timeperiod(cube):
     time_coord = cube.coord('time')
-    time_asdatetime = time_coord.units.num2date(time_coord.points)
-    start, end = time_asdatetime[0].year, time_asdatetime[-1].year
+    time_asdatetime = time_coord.units.num2date(time_coord.bounds).flatten()
+    starttime = min(time_asdatetime) + datetime.timedelta(seconds=1)
+    endtime = max(time_asdatetime) - datetime.timedelta(seconds=1)
+    start, end = starttime.year, endtime.year
     return f"{start} - {end}"
 
 def mpqb_mapplot(cube,filename,**plotkwargs):
