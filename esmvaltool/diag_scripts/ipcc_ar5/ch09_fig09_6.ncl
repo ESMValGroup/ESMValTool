@@ -22,10 +22,10 @@
 ;
 ;
 ; Modification history
-;    20190205-A_gier_be: Adapted to new ncl structure
-;    20181012-A_gier_be: Ported to v2
-;    20171020-A_laue_ax: added tags for reporting
-;    20170404-A_gier_be: written.
+;    20190205-gier_bettina: Adapted to new ncl structure
+;    20181012-gier_bettina: Ported to v2
+;    20171020-lauer_axel: added tags for reporting
+;    20170404-gier_bettina: written.
 ;
 ; #############################################################################
 
