@@ -37,7 +37,7 @@ Variables
 * grassFrac (land, monthly mean, time latitude longitude)
 * treeFrac (land, monthly mean, time latitude longitude)
 * shrubFrac (land, monthly mean, time latitude longitude)
-* cropFrac     (land, monthly mean, time latitude longitude)
+* cropFrac (land, monthly mean, time latitude longitude)
 * pastureFrac  (land, monthly mean, time latitude longitude)
 
 
