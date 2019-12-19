@@ -10,8 +10,8 @@ Last access
    20190401
 
 Download and processing instructions
-   - Download the data from source using the download script
-   - Decompress the files (tar -xzvf XXXX.tar.gz) and put them in a single directory
+   - Download the data from source to the right directory using the download script
+   - Decompress the files within the directory: "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
 
 Notes
 -----
@@ -115,7 +115,7 @@ def _regrid_dataset(in_dir, var, cfg):
             cube = iris.load_cube(infile,
                                       constraint=utils.var_name_constraint(
                                           var['raw']))
-        lai_cube = regrid(cube, cfg['custom']['regrid_resolution'],
+        cube = regrid(cube, cfg['custom']['regrid_resolution'],
                           'nearest')
         logger.info("Saving: %s", outfile)
 
