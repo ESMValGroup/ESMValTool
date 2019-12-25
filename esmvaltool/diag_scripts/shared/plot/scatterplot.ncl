@@ -262,8 +262,7 @@ undef("scatterplot3D")
 function scatterplot3D(wks_in[1],
                        source,
                        varname[1]:string,
-                       levels[*]:numeric,
-                       inlist:list)
+                       levels[*]:numeric)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
@@ -456,7 +455,7 @@ function scatterplot_markers(wks_in[1],
 ;    source(0, :) = x-axis values
 ;    source(1, :) = y-axis values
 ;    source!0 = statistic
-;    source!1 = model
+;    source!1 = dataset
 ;
 ; Return value
 ;    A graphic object.
