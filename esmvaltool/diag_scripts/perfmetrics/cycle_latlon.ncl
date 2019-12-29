@@ -42,6 +42,11 @@ begin
     ; Read data
     var = read_data(info_items[imod])
 
+    ; Convert data to floats if necessary
+    if (typeof(var) .eq. "double") then
+      var := dble2flt(var)
+    end if
+
     ; Extract region
     var_reg = area_operations(var, region(0), region(1), \
                               region(2), region(3), "extract", True)
