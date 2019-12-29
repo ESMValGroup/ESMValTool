@@ -3,3 +3,8 @@ Compat
 DataFrames
 RainFARM
 YAML
+JSON
+PyCall
+PyPlot
+NetCDF
+Statistics
