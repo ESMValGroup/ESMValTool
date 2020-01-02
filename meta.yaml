@@ -60,6 +60,8 @@ requirements:
     - python-stratify
     - pyyaml
     - scikit-learn
+    - seawater
+    - seaborn
     - shapely
     - xesmf
     - xarray>=0.12.0
@@ -68,7 +70,7 @@ requirements:
     - xlrd
     - xlsxwriter
     # Command line tools used by diagnostic scripts
-    - cdo
+    - cdo>=1.9.7
     - imagemagick
     - nco
     # Multi language support:

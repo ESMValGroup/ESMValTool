@@ -39,6 +39,8 @@ REQUIREMENTS = {
         'pyyaml',
         'scitools-iris>=2.2',
         'scikit-learn',
+        'seawater',
+        'seaborn',
         'shapely',
         'stratify',
         'xarray>=0.12',
