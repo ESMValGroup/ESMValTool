@@ -240,7 +240,7 @@ The following python modules are included in the diagnostics package:
 * regions.py : Contains code to select specific regions, and definition of the regions themselves.
 * utils.py : Helpful utilites.
 
-Diagnostics are stored in diag_scripts/arcit_ocean/
+Diagnostics are stored in diag_scripts/arctic_ocean/
 
 
 Variables
@@ -265,4 +265,3 @@ References
 * Wang, Q., et al., An assessment of the Arctic Ocean in a suite of interannual CORE-II simulations. Part I: Sea ice and solid freshwater, Ocean Modelling, Volume 99, March 2016, Pages 110-132, ISSN 1463-5003, doi.org/10.1016/j.ocemod.2015.12.008
 
 * Wang, Q., Ilicak, M., Gerdes, R., Drange, H., Aksenov, Y., Bailey, D. A., ... & Cassou, C. (2016). An assessment of the Arctic Ocean in a suite of interannual CORE-II simulations. Part II: Liquid freshwater. Ocean Modelling, 99, 86-109, doi.org/10.1016/j.ocemod.2015.12.009
-
