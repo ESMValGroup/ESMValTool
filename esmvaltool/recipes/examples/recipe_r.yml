@@ -1,0 +1,29 @@
+# ESMValTool
+# recipe_example_r.yml
+---
+documentation:
+  description: Recipe for example diagnostic written in R.
+
+  authors:
+    - arnone_enrico
+
+  maintainer:
+    - andela_bouwe
+
+datasets:
+  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+preprocessors:
+  preproc:
+    extract_levels: false
+diagnostics:
+  example:
+    description: Example diagnostic written in R
+    variables:
+      pr:
+        preprocessor: preproc
+        reference_dataset: "EC-EARTH"
+        mip: day
+    scripts:
+      main:
+        script: examples/diagnostic.R
+        parameter1: 1  # example parameter

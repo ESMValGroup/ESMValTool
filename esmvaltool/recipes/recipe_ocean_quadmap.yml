@@ -1,0 +1,63 @@
+# ESMValTool
+# recipe_ocean_quadmap.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate the Diagnostic Maps quad.
+    Based on the ocean assess/Marine Assess toolkit plots.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+datasets:
+  # working datasets
+  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
+
+
+preprocessors:
+  prep_quad_map: # For Global 2D fields
+    extract_time:
+      start_year: 2001
+      start_month: 1
+      start_day: 1
+      end_year: 2003
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+
+diagnostics:
+# --------------------------------------------------
+# Quad Maps diagnostics
+# -----------------------------------------------
+   diag_map_1:
+     description: Global surface quad plots
+     variables:
+       tos: # Temperature ocean surface
+         preprocessor: prep_quad_map
+         mip: Omon
+     additional_datasets:
+#        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
+#        download from: https://datashare.is.ed.ac.uk/handle/10283/536
+       - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 1}
+     scripts:
+       Global_Ocean_map: &Global_Ocean_map
+         script: ocean/diagnostic_maps_quad.py
+         control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+         exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+         observational_dataset: {dataset: ATSR, project: obs4mips,}

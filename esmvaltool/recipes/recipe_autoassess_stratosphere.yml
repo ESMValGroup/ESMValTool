@@ -1,0 +1,103 @@
+# ESMValTool
+# recipe_autoassess_stratosphere.yml
+---
+documentation:
+  description: |
+    Recipe that runs the Autoassess Stratosphere assessment area diagnostic.
+    The original stratospehre diagnostic from autoassess accepts two input UM
+    suites; this has now been changed for ESMValTool to two datasets; the
+    recipe can accomodate as many pairs of datasets to be compared as the user
+    needs. This is handled in the diagnostics/aa_strato/scripts. While the
+    script is the same (autoassess_stratosphere.py), the (control_model,
+    exp_model) pair may vary accoding to the user needs. Different (start,
+    end) dates can also be specified (in autoassess format) per run, as long as
+    the time data is within the (start_year, end_year) specified in datasets
+    section. Preprocessing is basic and just extracts levels and regrids onto
+    the reference ERA-Interim dataset; this is done once.
+    The original autoassess diagnostic needs MERRA obs data as well, add MERRA
+    file request in this namelist when running.
+
+  authors:
+    - predoi_valeriu
+
+  maintainer:
+    - predoi_valeriu
+
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+  - {dataset: inmcm4,      project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+
+preprocessors:
+  pp_aa_area:
+    extract_levels:
+      levels: [100000., 50000., 10000., 7000., 5000., 3000., 1000.]
+      scheme: nearest
+    regrid:
+      target_grid: ERA-Interim
+      scheme: linear
+
+diagnostics:
+  aa_strato:
+    description: Autoassess test diag for Stratosphere.
+    variables:
+      ta:
+        preprocessor: pp_aa_area
+        mip: Amon
+      ua:
+        preprocessor: pp_aa_area
+        mip: Amon
+      hus:
+        preprocessor: pp_aa_area
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA-Interim,  project: OBS6,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+    scripts:
+      autoassess_strato_test_1: &autoassess_strato_test_1_settings
+        script: autoassess/autoassess_area_base.py
+        title: "Autoassess Stratosphere Diagnostic Metric MPI-MPI"
+        area: stratosphere
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        obs_models: [ERA-Interim]  # list to hold models that are NOT for metrics but for obs operations
+        additional_metrics: [ERA-Interim, inmcm4]  # list to hold additional datasets for metrics
+        start: 1997/12/01
+        end: 2002/12/01
+      autoassess_strato_test_2: &autoassess_strato_test_2_settings
+        script: autoassess/autoassess_area_base.py
+        title: "Autoassess Stratosphere Diagnostic Metric MPI-INM"
+        area: stratosphere
+        control_model: MPI-ESM-LR
+        exp_model: inmcm4
+        obs_models: [ERA-Interim]  # list to hold models that are NOT for metrics but for obs operations
+        additional_metrics: [ERA-Interim]  # list to hold additional datasets for metrics
+        start: 1997/12/01
+        end: 2002/12/01
+
+  plot_standard:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      plot_strato_test_1: &plot_strato_test_1_settings
+        <<: *autoassess_strato_test_1_settings
+        control_model: MPI-ESM-LR
+        exp_model: MPI-ESM-MR
+        obs_models: [ERA-Interim]
+        script: autoassess/plot_autoassess_metrics.py
+        ancestors: ['*/autoassess_strato_test_1']
+        title: "Plot Stratosphere Metrics MPI-MPI"
+        plot_name: "Stratosphere_Metrics"
+        diag_tag: aa_strato
+        diag_name: autoassess_strato_test_1
+        error_metric: ERA-Interim  # has to be from additional_metrics list
+      plot_strato_test_2: &plot_strato_test_2_settings
+        <<: *autoassess_strato_test_2_settings
+        control_model: MPI-ESM-LR
+        exp_model: inmcm4
+        obs_models: [ERA-Interim]
+        script: autoassess/plot_autoassess_metrics.py
+        ancestors: ['*/autoassess_strato_test_2']
+        title: "Plot Stratosphere Metrics MPI-MPI"
+        plot_name: "Stratosphere_Metrics"
+        diag_tag: aa_strato
+        diag_name: autoassess_strato_test_2
+        error_metric: ERA-Interim  # has to be from additional_metrics list

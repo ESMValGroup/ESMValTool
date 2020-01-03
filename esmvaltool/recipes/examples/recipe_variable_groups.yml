@@ -1,0 +1,62 @@
+# recipe_variable_groups.yml
+---
+documentation:
+
+  description: |
+    Example recipe to demonstrate grouping of variables in the diagnostic
+    section.
+
+  authors:
+    - schlund_manuel
+
+  maintainer:
+    - schlund_manuel
+
+  projects:
+    - crescendo
+
+
+preprocessors:
+
+  mask:
+    mask_landsea:
+      mask_out: sea
+
+
+ARBITRARY_YAML_ANCHOR: &datasets
+  - {dataset: CanESM2}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: MIROC5}
+  - {dataset: MPI-ESM-LR}
+  - {dataset: NorESM1-M}
+
+
+diagnostics:
+
+  diag_variable_groups:
+    description: Demonstrate the use of variable groups.
+    variables:
+      tas_1: &variable_settings
+        short_name: tas
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2005
+        tag: TAS1
+        additional_datasets: *datasets
+      tas_2:
+        <<: *variable_settings
+        preprocessor: mask
+        tag: TAS2
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      tas_3:
+        <<: *variable_settings
+        exp: rcp45
+        start_year: 2020
+        end_year: 2025
+        tag: TAS3
+        additional_datasets: *datasets
+    scripts: null

@@ -1,0 +1,46 @@
+# ESMValTool
+# recipe_runoff_et.yml
+---
+documentation:
+  description: |
+    Recipe for plotting runoff and ET diagnostics. The diagnostics calculates water
+    balance components for different catchments and compares the results against
+    observations. Currently, the required catchment mask needs to be downloaded manually
+    at https://doi.org/10.5281/zenodo.2025776
+
+  authors:
+    - hagemann_stefan
+    - loew_alexander
+    - stacke_tobias
+
+  maintainer:
+    - righi_mattia
+
+  references:
+    - duemenil00mpimr
+    - hagemann13james
+    - weedon14wrr
+
+  projects:
+    - embrace
+    - crescendo
+
+datasets:
+  - {dataset: MPI-ESM-LR,    project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
+  - {dataset: IPSL-CM5B-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
+
+diagnostics:
+  catchment_analysis:
+    description: EMBRACE runoff and land surface evaporation diagnostic
+    variables:
+      evspsbl:
+        mip: Amon
+      mrro:
+        mip: Lmon
+      pr:
+        mip: Amon
+    scripts:
+      catchment_analysis:
+        script: runoff_et/catchment_analysis.py
+        catchmentmask: ~/catchmentmask_v1.nc
+

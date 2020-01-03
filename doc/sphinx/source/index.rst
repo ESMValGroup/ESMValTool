@@ -6,15 +6,7 @@
 Welcome to ESMValTool's documentation!
 ======================================
 
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-   intro
-
-   diag_scripts/index
-   plot_scripts/index
+.. include:: _sidebar.rst.inc
 
 Indices and tables
 ==================

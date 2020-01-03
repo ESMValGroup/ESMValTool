@@ -1,0 +1,120 @@
+# ESMValTool
+# recipe_preprocessor_derive_test.yml
+---
+documentation:
+  description: |
+    Recipe that demonstrates various uses of the preprocessor derive functionality.
+
+  authors:
+    - andela_bouwe
+    - schlund_manuel
+
+  maintainer:
+    - righi_mattia
+
+  projects:
+    - c3s-magic
+
+preprocessors:
+
+  regrid:
+    regrid:
+      target_grid: CanESM2
+      scheme: linear
+
+
+diagnostics:
+
+  diag1:
+    description: Test variable derivation
+    variables:
+      toz: &toz
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        start_year: 2000
+        end_year: 2005
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: GFDL-CM3, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, ensemble: r1i1p2}
+          - {dataset: GISS-E2-R, ensemble: r1i1p2}
+      swcre:
+        <<: *toz
+      lwcre:
+        <<: *toz
+      clhmtisccp: &cloud
+        project: CMIP5
+        mip: cfMon
+        exp: amip
+        start_year: 1985
+        end_year: 1988
+        ensemble: r1i1p1
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: HadGEM2-A}
+    scripts: null
+
+  diag2:
+    description: Test variable derivation
+    variables:
+      rtnt:
+        <<: *toz
+      clhtkisccp:
+        <<: *cloud
+    scripts: null
+
+  diag3:
+    description: Test variable derivation
+    variables:
+      rsnt:
+        <<: *toz
+      clmmtisccp:
+        <<: *cloud
+    scripts: null
+
+  diag4:
+    description: Test variable derivation
+    variables:
+      rsns:
+        <<: *toz
+      clmtkisccp:
+        <<: *cloud
+    scripts: null
+
+  diag5:
+    description: Test variable derivation
+    variables:
+      rlns:
+        <<: *toz
+      clmtkisccp:
+        <<: *cloud
+    scripts: null
+
+  diag6:
+    description: Test variable derivation
+    variables:
+      lwp:
+        <<: *toz
+      cllmtisccp:
+        <<: *cloud
+    scripts: null
+
+  diag7:
+    description: Test variable derivation
+    variables:
+      clltkisccp:
+        <<: *cloud
+      netcre:
+        <<: *toz
+    scripts: null
+
+  diag8:
+    description: Test sispeed
+    variables:
+      clltkisccp:
+        <<: *cloud
+        mip: OImon
+    scripts: null

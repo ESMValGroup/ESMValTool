@@ -1,0 +1,126 @@
+# ESMValTool
+# recipe_ocean_ice_extent.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several sea ice plots based.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+datasets:
+# Note that there is no way to extract specific months here, need to add times twice in extract_time
+  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
+
+
+preprocessors:
+
+  timeseries_NHW_ice_extent: # North Hemisphere Winter ice_extent
+    custom_order: true
+    extract_time: &time_anchor # declare time here.
+        start_year: 1989
+        start_month: 12
+        start_day: 1
+        end_year: 2004
+        end_month: 9
+        end_day: 31
+    extract_season:
+      season: DJF
+    extract_region:
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: 0.
+      end_latitude: 90.
+
+  timeseries_NHS_ice_extent: # North Hemisphere Summer ice_extent
+    custom_order: true
+    extract_time: *time_anchor
+    extract_season:
+      season: JJA
+    extract_region:
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: 0.
+      end_latitude: 90.
+
+  timeseries_SHS_ice_extent: # South Hemisphere Summer ice_extent
+    custom_order: true
+    extract_time:  *time_anchor
+    extract_season:
+      season: DJF
+    extract_region:
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: -90.
+      end_latitude: 0.
+
+  timeseries_SHW_ice_extent: # South Hemisphere Winter ice_extent
+    custom_order: true
+    extract_time:  *time_anchor
+    extract_season:
+      season: JJA
+    extract_region:
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: -90.
+      end_latitude: 0.
+
+
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+  diag_ice_NHW:
+    description: North Hemisphere Winter Sea Ice diagnostics
+    variables:
+      sic: # surface ice cover
+        preprocessor: timeseries_NHW_ice_extent
+        mip: OImon
+    scripts:
+      Global_seaice_timeseries:
+        script: ocean/diagnostic_seaice.py
+        threshold: 15.
+
+  diag_ice_NHS:
+    description:  North Hemisphere Summer Sea Ice diagnostics
+    variables:
+      sic: # surface ice cover
+        preprocessor: timeseries_NHS_ice_extent
+        mip: OImon
+    scripts:
+      Global_seaice_timeseries:
+        script: ocean/diagnostic_seaice.py
+        threshold: 15.
+
+  diag_ice_SHW:
+    description:  South Hemisphere Winter Sea Ice diagnostics
+    variables:
+      sic: # surface ice cover
+        preprocessor: timeseries_SHW_ice_extent
+        mip: OImon
+    scripts:
+      Global_seaice_timeseries:
+        script: ocean/diagnostic_seaice.py
+        threshold: 15.
+
+  diag_ice_SHS:
+    description:  South Hemisphere Summer Sea Ice diagnostics
+    variables:
+      sic: # surface ice cover
+        preprocessor: timeseries_SHS_ice_extent
+        mip: OImon
+    scripts:
+      Global_seaice_timeseries:
+        script: ocean/diagnostic_seaice.py
+        threshold: 15.

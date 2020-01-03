@@ -1,0 +1,250 @@
+###############################################################################
+# PYTHON STYLE FILE
+# cmip6.yml
+# created by 'convert_ncl_style.py'.
+###############################################################################
+# This file defines plot attributes for certain datasets.
+#
+# Template:
+#
+# DATASET:
+#   avgstd: 0
+#   color: '#ffffff'
+#   dash: --
+#   facecolor: none
+#   mark: x
+#   thick: 1
+#
+# DATASET:   dataset name (same as given in the main recipe)
+# avgstd:    0 = takes part in the calculation of mean and stddev
+#            1 = does not take part in the calculation of mean and stddev
+#            (usually 0 for models, 1 for observations/reanalysis)
+# color:     hex RGB or RGBA string (e.g. #0f0fa1), see
+#            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+# dash:      matplotlib dash pattern (linestyle)
+# facecolor: Color of the filling (none = no filling)
+# mark:      marker string for markers (used in matplotlib), see
+#            https://matplotlib.org/api/markers_api.html
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# thick:     line thickness
+###############################################################################
+
+AWI-CM-1-1-MR:
+  avgstd: 0
+  color: '#d99694'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
+BCC-CSM2-MR:
+  avgstd: 0
+  color: '#984b07'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+BCC-ESM1:
+  avgstd: 0
+  color: '#984b07'
+  dash: '-'
+  facecolor: none
+  mark: s
+  thick: 1
+CAMS-CSM1-0:
+  avgstd: 0
+  color: '#f79646'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CanESM5:
+  avgstd: 0
+  color: '#00b050'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CNRM-CM6-1:
+  avgstd: 0
+  color: '#9bbb59'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CNRM-ESM2-1:
+  avgstd: 0
+  color: '#9bbb59'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CESM2:
+  avgstd: 0
+  color: '#00b0f0'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+CESM2-WACCM:
+  avgstd: 0
+  color: '#00b0f0'
+  dash: -.
+  facecolor: none
+  mark: s
+  thick: 1
+E3SM-1-0:
+  avgstd: 0
+  color: '#f79646'
+  dash: ':'
+  facecolor: none
+  mark: o
+  thick: 1
+EC-Earth3-Veg:
+  avgstd: 0
+  color: '#d99694'
+  dash: ':'
+  facecolor: none
+  mark: s
+  thick: 1
+GFDL-AM4:
+  avgstd: 0
+  color: '#295d91'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+GFDL-CM4:
+  avgstd: 0
+  color: '#295d91'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+GFDL-ESM4:
+  avgstd: 0
+  color: '#295d91'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+GISS-E2-1-G:
+  avgstd: 0
+  color: '#b3a2c7'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+GISS-E2-1-H:
+  avgstd: 0
+  color: '#b3a2c7'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+HadGEM3-GC31-LL:
+  avgstd: 0
+  color: '#4f6228'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+INM-CM5-0:
+  avgstd: 0
+  color: '#a1452c'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+IPSL-CM6A-LR:
+  avgstd: 0
+  color: '#002060'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
+IPSL-CM6A-MR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+IPSL-CM6B-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+MIROC6:
+  avgstd: 0
+  color: '#7031a0'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+MIROC-ES2L:
+  avgstd: 0
+  color: '#7031a0'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+MPI-ESM1-2-HR:
+  avgstd: 0
+  color: '#00b0f0'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+MRI-ESM2-0:
+  avgstd: 0
+  color: '#c3d69b'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+NESM3:
+  avgstd: 0
+  color: '#00843c'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+SAM0-UNICON:
+  avgstd: 0
+  color: '#ffc000'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
+UKESM1-0-LL:
+  avgstd: 0
+  color: '#4f6228'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+MultiModelMean:
+  avgstd: 1
+  color: '#ff0000'
+  dash: '-'
+  facecolor: '#ff0000'
+  mark: 'o'
+  thick: 3
+MultiModelMedian:
+  avgstd: 1
+  color: '#0000ff'
+  dash: '-'
+  facecolor: '#0000ff'
+  mark: 'o'
+  thick: 3
+default:
+  avgstd: 0
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 1

@@ -1,0 +1,56 @@
+# ESMValTool
+# recipe_ncl.yml
+---
+documentation:
+  description: |
+    Example recipe that plots air temperature.
+
+  authors:
+    - righi_mattia
+
+  maintainer:
+    - righi_mattia
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+
+datasets:
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 2000, end_year: 2002}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 2000, end_year: 2002}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 2000, end_year: 2002}
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1,
+     start_year: 2000, end_year: 2002}
+
+preprocessors:
+  preprocessor_1:
+    extract_levels:
+      levels: 85000
+      scheme: nearest
+
+diagnostics:
+  example:
+    description: Example diagnostic
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: preprocessor_1
+        reference_dataset: ERA-Interim
+        mip: Amon
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1,
+             start_year: 2000, end_year: 2002}
+    scripts:
+      test_ta: &settings
+        script: examples/diagnostic.ncl
+        projection: Mollweide
+        colormap: WhiteBlueGreenYellowRed
+        ncdf: default

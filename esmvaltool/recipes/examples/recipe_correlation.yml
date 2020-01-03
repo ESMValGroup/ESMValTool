@@ -1,0 +1,74 @@
+# ESMValTool
+# recipe_correlation.yml
+---
+documentation:
+  description: |
+    Calculate the Pearsons r correlation coefficient over specified dimensions.
+
+  authors:
+    - andela_bouwe
+
+  maintainer:
+    - andela_bouwe
+
+  projects:
+    - c3s-magic
+
+preprocessors:
+  preprocess_3d_data:
+    extract_season:
+      season: DJF
+    extract_levels:
+      levels: reference_dataset
+      scheme: nearest
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+
+diagnostics:
+  analyses:
+    description: |
+      Pearsons r correlation coefficient with respect to a reference dataset.
+      Note that a mean over the time coordinate is taken before computing the
+      correlation, because there is no preprocessor function to regrid the
+      time coordinate.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: preprocess_3d_data
+        reference_dataset: ERA-Interim
+        start_year: 2000
+        end_year: 2002
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        additional_datasets:
+          # One or more datasets can be added here
+          - {dataset: bcc-csm1-1}
+          # The reference dataset is required
+          - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    scripts:
+      correlation_pressure:
+        script: examples/correlate.py
+        plot_type: zonal
+        pearsonr:
+          corr_coords:
+            - air_pressure
+          mdtol: 1.0
+          common_mask: true
+        quickplot:
+          plot_type: pcolormesh
+      correlation_latlon:
+        script: examples/correlate.py
+        plot_type: profile
+        pearsonr:
+          corr_coords:
+            - latitude
+            - longitude
+          mdtol: 1.0
+        quickplot:
+          plot_type: plot

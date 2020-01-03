@@ -1,0 +1,489 @@
+# ESMValTool
+# recipe_lauer13jclim.yml
+---
+documentation:
+  description: |
+    Diagnostics of clouds and hydrological cycle reproducing selected figures
+    from Lauer and Hamilton (2013).
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer13jclim
+
+  projects:
+    - esmval
+    - embrace
+
+datasets:
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
+  #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  # - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  # - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+
+diagnostics:
+
+  # ==========================================================================
+  # Lauer and Hamilton (2013) - Figure 1
+  # Geographical distribution of multi-year annual/seasonal means (panel plot)
+  # ==========================================================================
+
+  clouds_fig1_lwp:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwp:
+        preprocessor: clim
+        reference_dataset: UWisc
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: UWisc, project: OBS, type: sat, version: v2,
+         start_year: 1988, end_year: 2007, tier: 3}
+    scripts:
+      clim: &clim_settings
+        script: clouds/clouds.ncl
+        # projection
+        # ----------
+        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+        projection: CylindricalEquidistant
+        # timemean
+        # --------
+        # - annualclim: 1 plot (annual mean)
+        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+        timemean: annualclim
+        showdiff: false
+
+  clouds_fig1_clt:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        reference_dataset: MODIS
+        mip: Amon
+    additional_datasets:
+      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *clim_settings
+
+  clouds_fig1_pr:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: clim
+        reference_dataset: GPCP-SG
+        mip: Amon
+    additional_datasets:
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+         start_year: 1986, end_year: 2005, tier: 1}
+    scripts:
+      clim:
+        <<: *clim_settings
+
+  clouds_fig1_swcre:
+    description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
+    variables:
+      swcre:
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *clim_settings
+
+  clouds_fig1_lwcre:
+    description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *clim_settings
+
+  # ==========================================================================
+  # Lauer and Hamilton (2013) - Figure 3
+  # Taylor plots of multi-year mean quantities
+  # ==========================================================================
+
+  clouds_fig3_clt:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        reference_dataset: MODIS
+        mip: Amon
+    additional_datasets:
+      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim: &taylor_settings
+        script: clouds/clouds_taylor.ncl
+        # emrabcelegend
+        # -------------
+        # - true:  1) save legend to separate file
+        #          2) plot alternative reference data set (if available) as a
+        #             black or red star and use "altern. ref. dataset" as label
+        # - false: 1) plot legend into taylor plot (same file)
+        #          2) plot alternative reference data set (if available) using
+        #             model symbols and use name of observations as label
+        embracelegend: false
+        # estimate_obs_uncertainty
+        # ------------------------
+        # - true:  estimate observational uncertainties from mean values
+        #          (assuming fractions of obs. RMSE from documentation of the
+        #          obs data); only available for "CERES-EBAF", "MODIS",
+        #          "MODIS-L3"
+        # - false: do not estimate obs. uncertainties from mean values
+        estimate_obs_uncertainty: false
+        # mask_ts_sea_ice
+        # ---------------
+        # - true:  mask T < 272 K as sea ice (only for variable "ts")
+        # - false: no additional grid cells masked for variable "ts"
+        mask_ts_sea_ice: false
+        # styleset
+        # --------
+        # styleset (line styles + symbols) used for plotting
+        # ("CMIP5", "DEFAULT")
+        styleset: CMIP5
+        # timemean
+        # --------
+        # - annualclim: 1 plot (annual mean)
+        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+        timemean: annualclim
+        # valid_fraction
+        # --------------
+        # used for creating sea ice mask (mask_ts_sea_ice = true): fraction of
+        # valid time steps required to mask grid cell as valid data
+        valid_fraction: 0.5
+
+  clouds_fig3_lwp:
+    description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
+    variables:
+      lwp:
+        preprocessor: clim
+        reference_dataset: UWisc
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: UWisc, project: OBS, type: sat, version: v2,
+         start_year: 1988, end_year: 2007, tier: 3}
+    scripts:
+      clim:
+        <<: *taylor_settings
+
+  clouds_fig3_swcre:
+    description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
+    variables:
+      swcre:
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *taylor_settings
+
+  clouds_fig3_lwcre:
+    description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *taylor_settings
+
+  clouds_fig3_pr:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: clim
+        reference_dataset: GPCP-SG
+        mip: Amon
+    additional_datasets:
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+         start_year: 1986, end_year: 2005, tier: 1}
+    scripts:
+      clim:
+        <<: *taylor_settings
+
+  # ==========================================================================
+  # Lauer and Hamilton (2013) - Equation 2, part of Figure 8
+  # Interannual variability: relative temporal standard deviation calculated
+  # from monthly mean anomalies after subtracting the climatological mean
+  # seasonal cycle
+  # ==========================================================================
+
+  clouds_fig8_lwp:
+    description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwp:
+        preprocessor: clim
+        reference_dataset: UWisc
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: UWisc, project: OBS, type: sat, version: v2,
+         start_year: 1988, end_year: 2007, tier: 3}
+    scripts:
+      clim: &intera_settings
+        script: clouds/clouds_interannual.ncl
+        # colormap
+        # --------
+        # colors for scale bar (e.g., WhiteBlueGreenYellowRed, rainbow)
+        colormap: WhiteBlueGreenYellowRed
+        # extrafiles
+        # ----------
+        # write plots for individual models to separate files (true, false)
+        extrafiles: false
+        # projection
+        # ----------
+        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+        projection: CylindricalEquidistant
+        # timemean
+        # --------
+        # - annualclim: 1 plot (annual mean)
+        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+        timemean: annualclim
+
+  clouds_fig8_clt:
+    description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        reference_dataset: MODIS
+        mip: Amon
+    additional_datasets:
+      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *intera_settings
+
+  clouds_fig8_swcre:
+    description: interannual variability
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
+    variables:
+      swcre:
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *intera_settings
+
+  clouds_fig8_lwcre:
+    description: interannual variability
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        preprocessor: clim
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *intera_settings
+
+  clouds_fig8_pr:
+    description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: clim
+        reference_dataset: GPCP-SG
+        mip: Amon
+    additional_datasets:
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+         start_year: 1986, end_year: 2005, tier: 1}
+    scripts:
+      clim:
+        <<: *intera_settings

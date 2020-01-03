@@ -1,0 +1,68 @@
+# ESMValTool
+# recipe_autoassess_radiation_rms_cfMon_all.yml
+---
+documentation:
+  description: |
+    Diagnostics of spatial RMS errors of radiation and clouds.
+
+  authors:
+    - tsushima_yoko
+    - read_simon
+    - predoi_valeriu
+
+  maintainer:
+    - predoi_valeriu
+
+  projects:
+    - cmug
+
+datasets:
+  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: cfMon,  exp: amip,  ensemble: r1i1p1,  start_year: 1985,  end_year: 1988}
+  - {dataset: HadGEM2-A,  project: CMIP5,  mip: cfMon,  exp: amip,  ensemble: r1i1p1,  start_year: 1985,  end_year: 1988}
+
+preprocessors:
+  pp_rad_derive_var:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+  radiation_cfMon_all_ISCCP:
+    description: "CMIP5 vs ISCCP Clouds"
+    variables:
+      cllmtisccp: # Low-intermediate Cloud
+        preprocessor: pp_rad_derive_var
+        derive: true
+        force_derivation: false
+      clltkisccp: # Low-thick Cloud
+        preprocessor: pp_rad_derive_var
+        derive: true
+        force_derivation: false
+      clmmtisccp: # Middle-intermediate Cloud
+        preprocessor: pp_rad_derive_var
+        derive: true
+        force_derivation: false
+      clmtkisccp: # Middle-thick Cloud
+        preprocessor: pp_rad_derive_var
+        derive: true
+        force_derivation: false
+      clhmtisccp: # High-intermediate Cloud
+        preprocessor: pp_rad_derive_var
+        derive: true
+        force_derivation: false
+      clhtkisccp: # High-thick Cloud
+        preprocessor: pp_rad_derive_var
+        derive: true
+        force_derivation: false
+    additional_datasets:
+      - {dataset: ISCCP,  project: obs4mips, level: L3,  version: V1.0,  start_year: 1985,  end_year: 1988, tier: 1}
+    scripts:
+      autoassess_Radiation_rms_cfMon_all:
+        script: autoassess/autoassess_radiation_rms.py
+        title: "Autoassess Radiation RMS Amon All (vs. CERES-EBAF)"
+        control_model: MRI-CGCM3
+        exper_model: HadGEM2-A
+        observational_datasets: ['ISCCP'] # list of at least one element; if no OBS wanted comment out
+        analysis_type: lat_lon  # use any of: lat_lon, zonal_mean, vertical_mean
+        landsea_mask: landsea.nc
+

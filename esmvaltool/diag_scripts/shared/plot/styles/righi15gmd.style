@@ -1,0 +1,45 @@
+###############################################################################
+# righi15gmd STYLES
+###############################################################################
+# This file defines the plot attributes for the righi15gmd models.
+# Based on Righi et al., GMD (2015).
+#
+# MODEL NAME: must be the same as given in the main recipe.
+# COLOR: can be either an NCL named color, a RGB code (size 3) on a 0-255 scale
+#        or a RGBA code (size 4) with the last element indicating the opacity
+#        on a 0-1 scale (0 = transparent, 1 = full), see
+#        http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+#        https://www.ncl.ucar.edu/Document/Graphics/create_color_table.shtml
+# DASH: the dash pattern index lines, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/dashpatterns.png
+# THICK: the line thickness (NCL default is 1)
+# MARK: marker index for markers, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# AVG-STD: 0 = takes part in the calculation of mean and stddev
+#          1 = does not take part in the calculation of mean and stddev
+#          (usually 0 for models, 1 for observations/reanalysis)
+#
+# Mind the formatting: columns are separated by the | symbol , colors given
+# as RGB/RGBA must be comma-separated.
+###############################################################################
+MODEL NAME            # COLOR                # DASH # THICK # MARK # AVG-STD
+###############################################################################
+EVAL2                 | cyan                 |   0  |   2   |  16  |   0
+QCTM                  | blue                 |   0  |   2   |  16  |   0
+TS2000                | green3               |   0  |   2   |  16  |   0
+ACCMIP                | red                  |   0  |   2   |  16  |   0
+ACCMIP-S1             | gold                 |   0  |   2   |  16  |   0
+ACCMIP-S2             | chocolate4           |   0  |   2   |  16  |   0
+ERA-Interim           | black                |   1  |   2   |  16  |   1
+GLOBALVIEW            | black                |   1  |   2   |  16  |   1
+Tilmes                | black                |   1  |   2   |  16  |   1
+GTO-ECV               | black                |   1  |   2   |  16  |   1
+HALOE                 | black                |   1  |   2   |  16  |   1
+NCEP                  | orange1              |   1  |   2   |  16  |   1
+AIRS                  | orange1              |   1  |   2   |  16  |   1
+AURA-TES              | orange1              |   1  |   2   |  16  |   1
+AURA-MLS-OMI          | orange1              |   1  |   2   |  16  |   1
+NIWA-BS               | orange1              |   1  |   2   |  16  |   1
+model_mean            | black                |   0  |   3   |  16  |   1

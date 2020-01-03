@@ -1,0 +1,51 @@
+###############################################################################
+# CCMVal1 STYLES
+###############################################################################
+# This file defines the plot attributes for the CCMVal2 models.
+# Mostly based on CCMValTool definitions.
+#
+# MODEL NAME: must be the same as given in the main recipe.
+# COLOR: can be either an NCL named color, a RGB code (size 3) on a 0-255 scale
+#        or a RGBA code (size 4) with the last element indicating the opacity
+#        on a 0-1 scale (0 = transparent, 1 = full), see
+#        http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+#        https://www.ncl.ucar.edu/Document/Graphics/create_color_table.shtml
+# DASH: the dash pattern index lines, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/dashpatterns.png
+# THICK: the line thickness (NCL default is 1)
+# MARK: marker index for markers, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# AVG-STD: 0 = takes part in the calculation of mean and stddev
+#          1 = does not take part in the calculation of mean and stddev
+#          (usually 0 for models, 1 for observations/reanalysis)
+#
+# Mind the formatting: columns are separated by the | symbol , colors given
+# as RGB/RGBA must be comma-separated.
+###############################################################################
+MODEL NAME            # COLOR                # DASH # THICK # MARK # AVG-STD
+###############################################################################
+AMTRAC                |  27, 170, 204        |   0  |   1   |    2 |   0
+CAM3.5                | 128, 207, 226        |   0  |   1   |    2 |   0
+CCSRNIES              | 235, 184,   3        |   0  |   1   |    2 |   0
+CMAM                  | 255,   0,   0        |   0  |   1   |    2 |   0
+CNRM-ACM              | 129,   1, 126        |   2  |   1   |    2 |   0
+E39CA                 | 128, 207, 226        |   2  |   1   |    2 |   0
+EMAC                  | 240, 119,   0        |   0  |   1   |    2 |   0
+GEOSCCM               | 129,   1, 126        |   0  |   1   |    2 |   0
+LMDZrepro             | 255,   0,   0        |   2  |   1   |    2 |   0
+LMDZzINCA             | 255,   0,   0        |   2  |   1   |    2 |   0
+MRI                   |	  0, 136,  55        |   2  |   1   |    2 |   0
+Niwa_SOCOL            | 153, 207,  22        |   2  |   1   |    2 |   0
+SOCOL                 | 153, 207,  22        |   0  |   1   |    2 |   0
+ULAQ                  |	240, 119,   0        |   2  |   1   |    2 |   0
+UMETRAC               |  27, 170, 204        |   2  |   1   |    2 |   0
+UMSLIMCAT             | 240,   3, 127        |   0  |   1   |    2 |   0
+UMUKCA-METO           |   0, 136,  55        |   0  |   1   |    2 |   0
+UMUKCA-UCAM           |  13,  56, 150        |   2  |   1   |    2 |   0
+WACCM                 |  13,  56, 150        |   0  |   1   |    2 |   0
+ERA40                 | black                |   0  |   2   |   16 |   1
+HALOE                 | black                |  16  |   2   |    1 |   1
+UKMO                  | black                |   2  |   2   |    2 |   1
+model_mean            | brown                |   0  |   2   |    2 |   1

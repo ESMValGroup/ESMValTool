@@ -1,7 +1,0 @@
-###############################################################################
-STANDARD NAME  # GO NAME      # VALID TYPES   # VERT  # REFERENCE           #
-###############################################################################
-o2             | O2        | TO3M            |       | CMIP5_Omon          |
-spco2          | spco2     | TO2Ms           |       | CMIP5_Omon          |
-talk           | talk      | TO2Ms           |       | CMIP5_Omon          |
-chl            | chl       | TO2Ms           |       | CMIP5_Omon          |

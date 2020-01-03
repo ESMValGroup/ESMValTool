@@ -1,0 +1,35 @@
+###############################################################################
+# CMIP6 STYLES - PRELIMINARY
+###############################################################################
+# This file defines the plot attributes for the CMIP6 models.
+#
+# MODEL NAME: must be the same as given in the main recipe.
+# COLOR: can be either an NCL named color, a RGB code (size 3) on a 0-255 scale
+#        or a RGBA code (size 4) with the last element indicating the opacity
+#        on a 0-1 scale (0 = transparent, 1 = full), see
+#        http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+#        https://www.ncl.ucar.edu/Document/Graphics/create_color_table.shtml
+# DASH: the dash pattern index lines, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/dashpatterns.png
+# THICK: the line thickness (NCL default is 1)
+# MARK: marker index for markers, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# AVG-STD: 0 = takes part in the calculation of mean and stddev
+#          1 = does not take part in the calculation of mean and stddev
+#          (usually 0 for models, 1 for observations/reanalysis)
+#
+# Mind the formatting: columns are separated by the | symbol , colors given
+# as RGB/RGBA must be comma-separated.
+###############################################################################
+MODEL NAME            # COLOR                # DASH # THICK # MARK # AVG-STD
+###############################################################################
+CNRM-CM6-1            |  30,  76,  36        |   1  |   1   |   6  |   0
+GISS-E2-1-G           | 119,  29, 123        |   0  |   1   |   4  |   0
+GFDL-AM4              |  35,  54, 109        |   0  |   1   |   4  |   0
+IPSL-CM6A-LR          |  91,  83, 174        |   0  |   1   |   4  |   0
+IPSL-CM6A-MR          |  91,  83, 174        |   1  |   1   |   6  |   0
+IPSL-CM6B-LR          |  91,  83, 174        |   2  |   1   |   7  |   0
+MIROC6                | 184,  95, 182        |   1  |   1   |   6  |   0
+default               |   0,   0,   0        |   0  |   1   |  16  |   0

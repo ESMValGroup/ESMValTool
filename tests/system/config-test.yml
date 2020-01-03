@@ -1,0 +1,46 @@
+###############################################################################
+# Diagnostic test configuration file for the ESMValTool
+#
+# './setup.py test' will look for this file in the following locations
+# and use the first config-test.yml file found:
+#   - current working directory
+#   - ~/.esmvaltool/
+#   - ESMValTool/tests/test_diagnostics/
+#
+###############################################################################
+---
+
+test:
+  # Execute system/diagnostic tests [false]/true
+  run: false
+  # Simulate input data using the dummydata module [true]/false
+  simulate_input: true
+  # Limit testing/generating reference data to the following recipes
+  # An empty list means any recipe in esmvaltool/nml
+  recipes: [
+    recipe_MyVar.yml,
+  ]
+
+# Reference data configuration
+reference:
+  # Directory containing reference output
+  output: ~/esmvaltool_reference_output
+  # Generate reference data instead of checking [false]/true
+  generate: false
+
+# Template for the user configuration file
+user:
+  write_plots: true
+  write_netcdf: true
+  log_level: warning
+  exit_on_warning: false
+  output_file_type: pdf
+  save_intermediary_cubes: true
+
+  rootpath:
+    CMIP5: ~/esmvaltool_simulated_input
+    OBS: ~/esmvaltool_simulated_input
+    default: ~/esmvaltool_simulated_input
+
+  drs:
+    CMIP5: default

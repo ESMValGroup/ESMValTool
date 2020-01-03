@@ -1,0 +1,44 @@
+# ESMValTool
+# recipe_cvdp.yml
+---
+documentation:
+  description: |
+    Recipe for executing the NCAR CVDP package in the ESMValTool framework.
+
+  authors:
+    - phillips_adam
+    - broetz_bjoern
+
+  maintainer:
+    - broetz_bjoern
+
+  references:
+    - phillips14eos
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
+  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
+  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
+
+diagnostics:
+
+  diagnostic1:
+    description: Run the NCAR CVDPackage.
+    variables:
+      ts:
+        mip: Amon
+      tas:
+        mip: Amon
+      pr:
+        mip: Amon
+      psl:
+        mip: Amon
+    scripts:
+      cvdp:
+        script: cvdp/cvdp_wrapper.py
+        quickplot:
+          plot_type: pcolormesh

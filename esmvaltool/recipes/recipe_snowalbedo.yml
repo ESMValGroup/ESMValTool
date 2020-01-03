@@ -1,0 +1,85 @@
+# ESMValTool
+# recipe_snowalbedo.yml
+---
+documentation:
+  description: |
+    Recipe snow-albedo feedback
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - crescendo
+
+diagnostics:
+  snowalbedo:
+    description: springtime snow-albedo feedback values vs. seasonal cycle
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      alb:
+        mip: Amon
+        project: CMIP5
+        ensemble: r1i1p1
+        reference_dataset: ISCCP-FH
+        derive: true
+        additional_datasets:
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, start_year: 1984, end_year: 2000, tier: 2}
+      tas:
+        mip: Amon
+        project: CMIP5
+        ensemble: r1i1p1
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 1984, end_year: 2000, tier: 3}
+      rsdt:
+        mip: Amon
+        project: CMIP5
+        ensemble: r1i1p1
+        reference_dataset: ISCCP-FH
+        additional_datasets:
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, start_year: 1984, end_year: 2000, tier: 2}
+    additional_datasets:
+      - {dataset: bcc-csm1-1, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: bcc-csm1-1, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: CanESM2, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: CanESM2, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: CCSM4, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: CCSM4, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: CNRM-CM5, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: CNRM-CM5, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: GFDL-CM3, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: GFDL-CM3, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: GISS-E2-H, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: GISS-E2-H, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: GISS-E2-R, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: GISS-E2-R, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: IPSL-CM5A-LR, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: MIROC-ESM, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: MIROC-ESM, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: MPI-ESM-LR, exp: rcp45, start_year: 2101, end_year: 2200}
+      - {dataset: NorESM1-M, exp: historical, start_year: 1901, end_year: 2000}
+      - {dataset: NorESM1-M, exp: rcp45, start_year: 2101, end_year: 2200}
+    scripts:
+      fig09_45a:
+        script: emergent_constraints/snowalbedo.ncl
+        exp_presentday: historical
+        exp_future: rcp45
+        legend_outside: false
+        xmin: -1.7
+        xmax: -0.3
+        ymin: -1.7
+        ymax: -0.3
+#        styleset: "CMIP5"

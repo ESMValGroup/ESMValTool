@@ -1,0 +1,44 @@
+# ESMValTool
+# recipe_concatenate_exps.yml
+---
+documentation:
+  description: |
+    Concatenate time series of different experiments at the preprocessor level.
+
+  authors:
+    - schlund_manuel
+
+  maintainer:
+    - schlund_manuel
+
+datasets:
+  - {dataset: CanESM2}
+  - {dataset: GFDL-ESM2M}
+  - {dataset: MPI-ESM-LR}
+
+
+diagnostics:
+
+  diag_regular:
+    description: Only use historical data.
+    variables:
+      tas: &variable_settings
+        project: CMIP5
+        mip: Amon
+        ensemble: r1i1p1
+        exp: historical
+        start_year: 1950
+        end_year: 2000
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly,
+             version: 1, start_year: 1980, end_year: 2000}
+    scripts: null
+
+  diag_concatenate_exps:
+    description: Concatenate historical and RCP 8.5 data
+    variables:
+      tas:
+        <<: *variable_settings
+        exp: [historical, rcp85]
+        end_year: 2050
+    scripts: null

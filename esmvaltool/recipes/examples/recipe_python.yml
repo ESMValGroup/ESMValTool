@@ -1,0 +1,60 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: Example recipe that plots the mean precipitation and temperature.
+
+  authors:
+    - andela_bouwe
+    - righi_mattia
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+
+  preprocessor1:
+    extract_levels:
+      levels: 85000
+      scheme: nearest
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+
+diagnostics:
+
+  diagnostic1:
+    description: Air temperature and precipitation Python tutorial diagnostic.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: preprocessor1
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+      pr:
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh

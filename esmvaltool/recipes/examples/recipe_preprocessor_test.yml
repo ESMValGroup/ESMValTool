@@ -1,0 +1,117 @@
+# ESMValTool
+# recipe_preprocessor_test.yml
+---
+documentation:
+  description: |
+    Various example preprocessors.
+
+  authors:
+    - righi_mattia
+    - andela_bouwe
+    - schlund_manuel
+
+  maintainer:
+    - righi_mattia
+
+  projects:
+    - c3s-magic
+
+datasets:
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+
+  preprocessor_1:
+    extract_levels:
+      levels: ERA-Interim
+      # This also works, but allows specifying the pressure coordinate name
+      # levels: {dataset: ERA-Interim, coordinate: air_pressure}
+      scheme: linear
+    mask_landsea:
+      mask_out: land  # if land (sea), will mask land (sea and oceans) out
+    regrid:
+      target_grid: ERA-Interim
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.90
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [NCEP]
+
+  preprocessor_2:
+    custom_order: true
+    regrid:
+      target_grid: 1x1
+      scheme: nearest
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev8}
+      scheme: nearest
+    mask_fillvalues: false
+    multi_model_statistics:
+      span: full
+      statistics: [median]
+
+  preprocessor_3:
+    extract_levels:
+      levels: [2000, 7000]
+      scheme: nearest
+    regrid:
+      target_grid: 2x2
+      lon_offset: false
+      lat_offset: false
+      scheme: nearest
+    mask_fillvalues: false
+    multi_model_statistics: false
+
+  preprocessor_4:
+    extract_levels: false
+    regrid: false
+    mask_fillvalues: false
+    multi_model_statistics: false
+
+diagnostics:
+
+  diagnostic_1: &diag
+    description: Preprocessor test diagnostic.
+    variables:
+      ta:
+        preprocessor: preprocessor_1
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1}
+          - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      orog:
+        mip: fx
+      sftlf:
+        mip: fx
+    scripts: null
+
+  diagnostic_2:
+    <<: *diag
+    variables:
+      ta:
+        preprocessor: preprocessor_2
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+    scripts: null
+
+  diagnostic_3_and_4:
+    description: Preprocessor test diagnostic.
+    variables:
+      ta:
+        preprocessor: preprocessor_3
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+      pr:
+        preprocessor: preprocessor_4
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+    scripts: null
