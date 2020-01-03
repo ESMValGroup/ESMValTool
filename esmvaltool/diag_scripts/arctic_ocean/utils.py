@@ -137,7 +137,7 @@ def find_observations_name(config):
     Assumes that there is only one observational data set.
     """
     obsname = []
-    for _, value in config['input_data'].items():
+    for value in config['input_data'].values():
         if value['project'] == "OBS6":
             obsname = value['dataset']
             print(obsname)
