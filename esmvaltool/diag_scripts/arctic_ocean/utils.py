@@ -17,7 +17,6 @@ from cdo import Cdo
 
 from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
 
-mpl.use('agg')
 logger = logging.getLogger(os.path.basename(__file__))
 
 
