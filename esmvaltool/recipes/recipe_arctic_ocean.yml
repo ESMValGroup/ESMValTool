@@ -142,7 +142,7 @@ diagnostics:
         # number of columns in the bias plots
         plot2d_bias_ncol: 4
         # Plot transects
-        transects: True
+        transects: true
         # Select regions (transects) to plot
         # Available options are:
         # AWpath - transect along the path of the Atlantic Water
