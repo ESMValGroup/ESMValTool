@@ -31,7 +31,7 @@ authors:
     name: Drost, Niels
     institute: NLeSC, Netherlands
     email: n.drost@esciencecenter.nl
-    orcid:
+    orcid: https://orcid.org/0000-0001-9795-7981
   koldunov_nikolay:
     name: Koldunov, Nikolay
     institute: AWI, Germany
@@ -76,12 +76,11 @@ authors:
   aerts_jerom:
     name: Aerts, Jerom
     institute: University of Delft, Netherlands
-    email: J.P.M.Aerts@tudelft.nl
-    orcid:
+    orcid: https://orcid.org/0000-0003-0157-4818
   alidoost_sarah:
     name: Alidoost, Sarah
     institute: NLeSC, Netherlands
-    email: f.alidoost 'at' esciencecenter.nl
+    orcid: https://orcid.org/0000-0001-8407-6472
   anav_alessandro:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
@@ -117,7 +116,7 @@ authors:
   camphuijsen_jaro:
     name: Camphuijsen, Jaro
     institute: NLeSC, Netherlands
-    orcid:
+    orcid: https://orcid.org/0000-0002-8928-7831
   capistrano_vinicius:
     name: Capistrano, Vinicius
     institute: INPE, Brazil
@@ -226,6 +225,10 @@ authors:
     name: Kadygrov, Nikolay
     institute: IPSL, France
     orcid:
+  kalverla_peter:
+    name: Kalverla, Peter
+    institute: NLeSC, Netherlands
+    orcid: https://orcid.org/0000-0002-5025-7862
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
@@ -234,6 +237,10 @@ authors:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  lejeune_quentin:
+    name: Lejeune, Quentin
+    institute: Climate Analytics, Germany
+    orcid: https://orcid.org/0000-0001-9152-3197
   lembo_valerio:
     name: Lembo, Valerio
     institute: CEN, University of Hamburg, Germany
@@ -378,10 +385,10 @@ authors:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0001-8653-2312
-  verh_st:
+  verhoeven_stefan:
     name: Verhoeven, Stefan
     institute: NLeSC, Netherlands
-    email: s.verhoeven 'at' esciencecenter.nl
+    orcid: https://orcid.org/0000-0002-5821-2060
   walton_jeremy:
     name: Walton, Jeremy
     institute: MetOffice, UK
@@ -699,6 +706,7 @@ references:
   lai3g: "Zhu et al., Remote Sens., doi:10.3390/rs5020927, 2013."
   landflux-eval: "Mueller et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-17-3707-2013, 2013."
   landschuetzer2016: "Landschuetzer et al., Global Biogeochem. Cycles, doi:10.1002/2015GB005359, 2016."
+  merra2: "Gelaro et al., J. Clim., doi:10.1175/JCLI-D-16-0758.1, 2017"
   modis1: "Platnick et al., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2002.808301, 2003."
   modis2: "Levy et al., Atmos. Meas. Tech., doi:10.5194/amt-6-2989-2013, 2013."
   mte: "Jung et al., J. Geophys. Res., doi:10.1029/2010JG001566, 2011."
@@ -710,6 +718,7 @@ references:
   piomas: "Zhang, J. et al., Mon. Wea. Rev. doi:10.1175/1520-0493(2003)131<0845:MGSIWA>2.0.CO;2, 2013."
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
   woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, 2013."
+  phc: "Steele et al., J. Clim., doi:10.1175/1520-0442(2001)014<2079:PAGOHW>2.0.CO;2, 2001."
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
@@ -810,4 +819,5 @@ statistics:
   detrend: detrend
   smpi: single metric performance index statistics
   mder: multiple diagnostic ensemble regression
+  mvi: model variability index
   other: other statistics
