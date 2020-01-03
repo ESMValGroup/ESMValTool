@@ -26,7 +26,6 @@ from esmvaltool.diag_scripts.arctic_ocean.utils import (dens_back, genfilename,
 from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
 logger = logging.getLogger(os.path.basename(__file__))
 
-mpl.use('agg')
 
 
 def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
