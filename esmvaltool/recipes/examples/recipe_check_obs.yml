@@ -315,7 +315,7 @@ diagnostics:
       thetao:
     additional_datasets:
       - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
-          type: clim, version: 3, start_year: 1950, end_year: 1950}
+         type: clim, version: 3, start_year: 1950, end_year: 1950}
     scripts: null
 
 
@@ -576,9 +576,6 @@ diagnostics:
         mip: Amon
       tasmax:
         mip: day
-      tas_month:
-        short_name: tas
-        mip: Amon
       tasmin:
         mip: day
       tauu:
@@ -599,9 +596,9 @@ diagnostics:
       ts_month:
         short_name: ts
         mip: Amon
-      tsn:
+      tsn_month:
         mip: LImon
-      tsn:
+      tsn_day:
         mip: Eday
       ua:
         mip: Amon
@@ -635,9 +632,6 @@ diagnostics:
 
   ERA5:
     description: ERA5 check
-    additional_datasets:
-      - {project: OBS6, dataset: ERA5, tier: 3, type: reanaly,
-         version: 1, start_year: 1990, end_year: 1990}
     variables:
       clt:
         mip: E1hr
