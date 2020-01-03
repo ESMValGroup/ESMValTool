@@ -32,9 +32,6 @@ preprocessors:
     extract_levels:
       levels: 85000
       scheme: nearest
-    regrid: false
-    mask_landsea: false
-    multi_model_statistics: false
 
 diagnostics:
   example:
