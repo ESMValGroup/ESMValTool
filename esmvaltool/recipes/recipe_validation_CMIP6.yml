@@ -1,0 +1,66 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    Validation of CONTROL and EXPERIMENT datasets.
+    This recipe produces standard comparison plots for two models
+    and may include observational data. The standard comparison
+    metrics are 2D lat-lon differences (between control and experiment),
+    plain 2D lat-lon for each model, 1D (coordinate vs time)
+    zonal and meridional means for both control and experiment models.
+    Plots are produced for each season (winter DJF, spring MAM, summer JJA,
+    autumn SON) and for the entire year.
+    There are no restrictions in terms of data.
+
+  authors:
+    - predoi_valeriu
+
+  maintainer:
+    - predoi_valeriu
+
+datasets:
+  - {dataset: IPSL-CM6A-LR, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1900, end_year: 2000}
+  - {dataset: UKESM1-0-LL,  project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, grid: gn, start_year: 1900, end_year: 2000}
+
+preprocessors:
+  pp_rad:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+  validation_with_ERA-Interim:
+    description: "CMIP6 with ERA-Interim"
+    variables:
+      tas:
+        preprocessor: pp_rad
+    additional_datasets:
+      - {dataset: ERA-Interim,  project: OBS6,  type: reanaly,  version: 1,  start_year: 1980,  end_year: 2000,  tier: 3}
+    scripts:
+      lat_lon:
+        script: validation.py
+        title: ""
+        cmip_era: CMIP6
+        control_model: UKESM1-0-LL
+        exper_model: IPSL-CM6A-LR
+        observational_datasets: ['ERA-Interim'] # list of at least one element; if no OBS wanted comment out
+        analysis_type: lat_lon  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
+        seasonal_analysis: false
+      zonal_mean:
+        script: validation.py
+        title: ""
+        cmip_era: CMIP6
+        control_model: UKESM1-0-LL
+        exper_model: IPSL-CM6A-LR
+        observational_datasets: ['ERA-Interim'] # list of at least one element; if no OBS wanted comment out
+        analysis_type: zonal_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
+        seasonal_analysis: true
+      meridional_mean:
+        script: validation.py
+        title: ""
+        cmip_era: CMIP6
+        control_model: UKESM1-0-LL
+        exper_model: IPSL-CM6A-LR
+        observational_datasets: ['ERA-Interim'] # list of at least one element; if no OBS wanted comment out
+        analysis_type: meridional_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
+        seasonal_analysis: true

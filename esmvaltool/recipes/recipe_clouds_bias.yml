@@ -1,0 +1,205 @@
+# ESMValTool
+# recipe_clouds_bias.yml
+---
+documentation:
+  description: |
+    Diagnostics of clouds and hydrological cycle multi-model mean, mean bias,
+    absolute bias, relative bias.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - embrace
+
+datasets:
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
+  #    ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  # - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  # - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  # - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 2005}
+  - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+  - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1986, end_year: 2005}
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+
+diagnostics:
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.2 a/b/c
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, and mean absolute error
+  # (geographical distributions)
+  # **********************************************************************
+
+  clouds_bias_tas:
+    description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: clim
+        reference_dataset: ERA-Interim
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+         start_year: 1986, end_year: 2005, tier: 3}
+    scripts:
+      clim: &clim_settings
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: false
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.4
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, mean absolute error, and
+  # mean relative error (geographical ditributions)
+  # **********************************************************************
+
+  clouds_bias_pr:
+    description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: clim
+        reference_dataset: GPCP-SG
+        mip: Amon
+    additional_datasets:
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
+         start_year: 1986, end_year: 2005, tier: 1}
+    scripts:
+      clim:
+        <<: *clim_settings
+        plot_abs_diff: true
+        plot_rel_diff: true
+
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, mean absolute error, and
+  # mean relative error (geographical ditributions) of total cloud cover
+  # **********************************************************************
+
+  clouds_bias_clt:
+    description: multi-model mean bias of annual mean compared with a
+                 reference dataset (observations).
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        reference_dataset: MODIS
+        mip: Amon
+    additional_datasets:
+      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+         start_year: 2001, end_year: 2010, tier: 1}
+    scripts:
+      clim:
+        <<: *clim_settings
+        plot_abs_diff: true
+        plot_rel_diff: true

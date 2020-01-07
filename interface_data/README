@@ -1,3 +1,0 @@
-This folder is used by Python to write temporary NCL scripts. It is
-the way Python passes on more complicated data structes to NCL (less
-complicated data is passed on as environment variables). 

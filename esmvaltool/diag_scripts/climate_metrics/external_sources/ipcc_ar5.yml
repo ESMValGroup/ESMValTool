@@ -1,0 +1,49 @@
+# ECS (IPCC AR5 table 9.5, units: K)
+ecs:
+  ACCESS1-0: 3.8
+  bcc-csm1-1-m: 2.9
+  bcc-csm1-1: 2.8
+  BNU-ESM: 4.1
+  CanESM2: 3.7
+  CCSM4: 2.9
+  CNRM-CM5: 3.3
+  CSIRO-Mk3-6-0: 4.1
+  GFDL-CM3: 4.0
+  GFDL-ESM2G: 2.4
+  GFDL-ESM2M: 2.4
+  GISS-E2-H: 2.3
+  GISS-E2-R: 2.1
+  HadGEM2-ES: 4.6
+  inmcm4: 2.1
+  IPSL-CM5A-LR: 4.1
+  IPSL-CM5B-LR: 2.6
+  MIROC-ESM: 4.7
+  MIROC5: 2.7
+  MPI-ESM-LR: 3.6
+  MRI-CGCM3: 2.6
+  NorESM1-M: 2.8
+
+# Climate feedback parameter lambda (IPCC AR5 table 9.5, units: W m-2 K-1)
+feedback_parameter:
+  ACCESS1-0: 0.8
+  bcc-csm1-1-m: 1.2
+  bcc-csm1-1: 1.1
+  BNU-ESM: 1.0
+  CanESM2: 1.0
+  CCSM4: 1.2
+  CNRM-CM5: 1.1
+  CSIRO-Mk3-6-0: 0.6
+  GFDL-CM3: 0.8
+  GFDL-ESM2G: 1.3
+  GFDL-ESM2M: 1.4
+  GISS-E2-H: 1.7
+  GISS-E2-R: 1.8
+  HadGEM2-ES: 0.6
+  inmcm4: 1.4
+  IPSL-CM5A-LR: 0.8
+  IPSL-CM5B-LR: 1.0
+  MIROC-ESM: 0.9
+  MIROC5: 1.5
+  MPI-ESM-LR: 1.1
+  MRI-CGCM3: 1.2
+  NorESM1-M: 1.1

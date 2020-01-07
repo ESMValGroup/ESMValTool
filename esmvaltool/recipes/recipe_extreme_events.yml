@@ -1,0 +1,86 @@
+# ESMValTool
+# recipe_ExtremeEvents.yml
+---
+documentation:
+  description: |
+     Calculate indices for monitoring changes in extremes based on daily temperature
+     and precipitation data. Producing Glecker and timeline plots of this as
+     shown in the IPCC_AR4 report
+
+  authors:
+    - broetz_bjoern
+    - sandstad_marit
+    - mohr_christianwilhelm
+    - arnone_enrico
+    - vonhardenberg_jost
+
+  maintainer:
+    - sandstad_marit
+
+  references:
+    - zhang11wcc
+
+  projects:
+    - crescendo
+    - c3s-magic
+
+#preprocessor:
+#  prep0:
+
+datasets:
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CMCC-CESM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CMCC-CM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CMCC-CMS, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: inmcm4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: FGOALS-g2, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: HadCM3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CCSM4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: GFDL-CM3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CESM1-BGC, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+
+# - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1981, end_year: 2005, tier: 3}
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 1981, end_year: 2000, tier: 3}
+
+diagnostics:
+  extreme_events:
+    description: calculate extreme events
+    variables:
+      pr:
+        mip: day
+      tas:
+        mip: day
+      tasmax:
+        mip: day
+      tasmin:
+        mip: day
+
+    scripts:
+      main:
+        script: extreme_events/extreme_events.R
+        reference_datasets: ["ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3"]
+        regrid_dataset: ERA-Interim
+        mip_name: CMIP
+        timeseries_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
+        gleckler_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
+        ts_plt: true
+        glc_plt: true
+        base_range: [1981, 2000]
+        analysis_range: [1981, 2000]

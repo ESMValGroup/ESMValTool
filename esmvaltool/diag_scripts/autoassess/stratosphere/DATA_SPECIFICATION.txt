@@ -1,0 +1,7 @@
+The stratospheric area requires monthly mean zonal wind (U), temperature (T), and age of air.
+
+STASH 30201  lbproc=192
+
+STASH 30204  lbproc=192
+
+STASH 34150  lbproc=128

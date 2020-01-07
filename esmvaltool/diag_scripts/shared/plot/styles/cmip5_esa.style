@@ -1,0 +1,108 @@
+###############################################################################
+# CMIP5 STYLES WITH HIGHLIGHTED ESA OBSERVATIONS
+###############################################################################
+# This file defines the plot attributes for the CMIP5 models.
+# Mostly based on IPCC-AR5 Chapter 9 figures.
+#
+# MODEL NAME: must be the same as given in the main recipe.
+# COLOR: can be either an NCL named color, a RGB code (size 3) on a 0-255 scale
+#        or a RGBA code (size 4) with the last element indicating the opacity
+#        on a 0-1 scale (0 = transparent, 1 = full), see
+#        http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+#        https://www.ncl.ucar.edu/Document/Graphics/create_color_table.shtml
+# DASH: the dash pattern index lines, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/dashpatterns.png
+# THICK: the line thickness (NCL default is 1)
+# MARK: marker index for markers, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# AVG-STD: 0 = takes part in the calculation of mean and stddev
+#          1 = does not take part in the calculation of mean and stddev
+#          (usually 0 for models, 1 for observations/reanalysis)
+#
+# Mind the formatting: columns are separated by the | symbol , colors given
+# as RGB/RGBA must be comma-separated.
+###############################################################################
+MODEL NAME            # COLOR                # DASH # THICK # MARK # AVG-STD
+###############################################################################
+ACCESS1-0             |  91, 142, 210        |   0  |   1   |   4  |   0
+ACCESS1-3             |  91, 142, 210        |   1  |   1   |   6  |   0
+bcc-csm1-1            | 148,  25,  30        |   0  |   1   |   4  |   0
+bcc-csm1-1-m          | 148,  25,  30        |   1  |   1   |   6  |   0
+BNU-ESM               | 196, 121,   0        |   0  |   1   |   4  |   0
+CanCM4                |  30,  76,  36        |   0  |   1   |   4  |   0
+CanESM2               |  30,  76,  36        |   1  |   1   |   6  |   0
+CNRM-AM-PRE6          |  30,  76,  36        |   1  |   1   |   6  |   0
+CCSM4                 |  67, 178, 216        |   0  |   1   |   4  |   0
+CESM1-BGC             |  67, 178, 216        |   1  |   1   |   6  |   0
+CESM1-CAM5            |  67, 178, 216        |   2  |   1   |   7  |   0
+CESM1-CAM5-1-FV2      |  67, 178, 216        |   2  |   1   |   7  |   0
+CESM1-FASTCHEM        |  67, 178, 216        |   3  |   1   |   5  |   0
+CESM1-WACCM           |  67, 178, 216        |   4  |   1   |   2  |   0
+CMCC-CESM             | 232,  32,  35        |   0  |   1   |   4  |   0
+CMCC-CM               | 232,  32,  35        |   1  |   1   |   6  |   0
+CMCC-CMS              | 232,  32,  35        |   2  |   1   |   7  |   0
+CNRM-CM5              | 145, 214, 126        |   0  |   1   |   4  |   0
+CSIRO-Mk3-6-0         | 241,  75,  32        |   0  |   1   |   4  |   0
+EC-EARTH              | 124,  99, 184        |   0  |   1   |   4  |   0
+FGOALS-g2             | 248, 154,  28        |   0  |   1   |   4  |   0
+FIO-ESM               |  77, 187,  55        |   0  |   1   |   4  |   0
+GFDL-CM2p1            |  35,  54, 109        |   0  |   1   |   4  |   0
+GFDL-CM3              |  35,  54, 109        |   1  |   1   |   6  |   0
+GFDL-ESM2G            |  35,  54, 109        |   2  |   1   |   7  |   0
+MPIESM-1-1            |  35,  54, 109        |   2  |   1   |   7  |   0
+GFDL-ESM2M            |  35,  54, 109        |   3  |   1   |   5  |   0
+GISS-E2-H             | 119,  29, 123        |   0  |   1   |   4  |   0
+GISS-E2-H-CC          | 119,  29, 123        |   1  |   1   |   6  |   0
+GISS-E2-R             | 119,  29, 123        |   2  |   1   |   7  |   0
+GISS-E2-R-CC          | 119,  29, 123        |   3  |   1   |   5  |   0
+HadCM3                | 122, 139,  38        |   0  |   1   |   4  |   0
+HadGEM2-AO            | 122, 139,  38        |   1  |   1   |   6  |   0
+HadGEM2-A             | 122, 139,  38        |   1  |   1   |   6  |   0
+HadGEM2-CC            | 122, 139,  38        |   2  |   1   |   7  |   0
+HadGEM2-ES            | 122, 139,  38        |   3  |   1   |   5  |   0
+inmcm4                | 161,  37,  44        |   0  |   1   |   4  |   0
+INMCM4                | 161,  37,  44        |   0  |   1   |   4  |   0
+IPSL-CM5A-LR          |  91,  83, 174        |   0  |   1   |   4  |   0
+IPSL-CM5A-MR          |  91,  83, 174        |   1  |   1   |   6  |   0
+IPSL-CM5B-LR          |  91,  83, 174        |   2  |   1   |   7  |   0
+MIROC4h               | 184,  95, 182        |   0  |   1   |   4  |   0
+MIROC5                | 184,  95, 182        |   1  |   1   |   6  |   0
+MIROC-ESM             | 184,  95, 182        |   2  |   1   |   7  |   0
+MIROC-ESM-CHEM        | 184,  95, 182        |   3  |   1   |   5  |   0
+MPI-ESM-LR            |  93, 161, 162        |   0  |   1   |   4  |   0
+MPI-ESM-MR            |  93, 161, 162        |   1  |   1   |   6  |   0
+MPI-ESM-P             |  93, 161, 162        |   2  |   1   |   7  |   0
+MRI-CGCM3             | 173, 255,  47        |   0  |   1   |   4  |   0
+MRI-ESM1              | 173, 255,  47        |   1  |   1   |   7  |   0
+NorESM1-M             | 241,  58, 167        |   0  |   1   |   4  |   0
+NorESM1-ME            | 241,  58, 167        |   1  |   1   |   7  |   0
+MultiModelMean        | 255,   0,   0        |   0  |   3   |  12  |   1
+MultiModelMedian      |   0,   0, 255        |   0  |   3   |  12  |   1
+NSIDC                 |   0,   0,   0        |   0  |   3   |  16  |   1
+HadISST               |   0,   0,   0        |   1  |   3   |  16  |   1
+MOHC-HadISST          |   0,   0,   0        |   1  |   3   |  16  |   1
+AMSRE                 |   0,   0,   0        |   2  |   3   |  16  |   1
+ERAINT                |   0,   0,   0        |   3  |   3   |  16  |   1
+NCEP                  |   0,   0,   0        |   4  |   3   |  16  |   1
+TRMM-3B43-v7-0.25deg  |   0,   0,   0        |   5  |   3   |  16  |   1
+TRMM-L3               |   0,   0,   0        |   5  |   3   |  16  |   1
+CERES-SYN1deg         |   0,   0,   0        |   0  |   1   |  16  |   0
+CMAP                  |   0,   0,   0        |   6  |   3   |  16  |   1
+GPCP-1DD-V12          |   0,   0,   0        |   7  |   3   |  16  |   1
+MERRA                 |   0,   0,   0        |   8  |   3   |  16  |   1
+ESACCI-AEROSOL        |   0,   0,   0        |   0  |   3   |  16  |   1
+ESACCI-CLOUD          | 255,   0,   0        |   0  |   3   |   0  |   0
+MODIS                 |   0, 255,   0        |   0  |   3   |  16  |   1
+NIWA-BS               |   0,   0,   0        |   1  |   3   |   8  |   1
+BDBP                  |   0,   0,   0        |   1  |   3   |   4  |   1
+IGAG/SPARC            | 248, 154,  28        |   0  |   3   |  16  |   0
+PATMOS-x              |   0,   0, 255        |   0  |   3   |   0  |   0
+CLARA-A2              |   0, 255, 255        |   0  |   3   |   0  |   0
+ERA-Interim           | 255, 200,   0        |   0  |   3   |   0  |   0
+ESACCI-SSMI           |   0,   0,   0        |   0  |   20  |   0  |   0
+ESACCI-AMSR           |   0,   0,   0        |   1  |   20  |   0  |   0
+NSIDC-NT              |   0,   0,   0        |   2  |   9   |   0  |   0
+NSIDC-BT              |   0,   0,   0        |  12  |   9   |   0  |   0
+default               |   0,   0,   0        |   0  |   1   |  16  |   0

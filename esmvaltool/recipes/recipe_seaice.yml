@@ -1,0 +1,242 @@
+# ESMValTool
+# recipe_seaice.yml
+---
+documentation:
+  description: |
+    Recipe for Arctic and Antarctic sea ice diagnostics.
+
+  authors:
+    - senftleben_daniel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - massonnet12tc
+    - stroeve07grl
+
+  projects:
+    - crescendo
+    - esmval
+
+# only datasets for which historical and rcp85 data are available
+# (and which are working with the ESMValTool)
+datasets:
+  - {dataset: ACCESS1-0}
+  - {dataset: ACCESS1-3}
+  - {dataset: bcc-csm1-1}
+  - {dataset: bcc-csm1-1-m}
+  - {dataset: CanESM2}
+  - {dataset: CCSM4}
+  - {dataset: CESM1-CAM5}
+  - {dataset: CNRM-CM5}
+  - {dataset: CSIRO-Mk3-6-0}
+  - {dataset: FGOALS-g2}
+  - {dataset: GFDL-CM3}
+  - {dataset: GFDL-ESM2G}
+  - {dataset: GFDL-ESM2M}
+  - {dataset: inmcm4}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5A-MR}
+  - {dataset: IPSL-CM5B-LR}
+  - {dataset: MIROC5}
+  - {dataset: MIROC-ESM}
+  - {dataset: MIROC-ESM-CHEM}
+  - {dataset: MPI-ESM-LR}
+  - {dataset: MPI-ESM-MR}
+  - {dataset: MRI-CGCM3}
+  - {dataset: MRI-ESM1}
+  - {dataset: NorESM1-M}
+  - {dataset: NorESM1-ME}
+
+
+diagnostics:
+  seaice_tsline:
+    description: Timeseries of September/February Arctic/Antartic sea ice area and extent
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1960
+        end_year: 2005
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1960
+        end_year: 2005
+    scripts:
+      sie_nh:
+        script: seaice/seaice_tsline.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # "CMIP5", "DEFAULT"
+        styleset: "CMIP5"
+        # Plot multi-model mean & std dev
+        multi_model_mean: true
+        # Create legend label for each individual ensemble member
+        EMs_in_lg: false
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+      sie_sh:
+        script: seaice/seaice_tsline.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Antarctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "3"
+        # "CMIP5", "DEFAULT"
+        styleset: "CMIP5"
+        # Plot multi-model mean & std dev
+        multi_model_mean: true
+        # Create legend label for each individual ensemble member
+        EMs_in_lg: false
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: false
+
+  seaice_trends:
+    description: Trend of September/February Arctic/Antarctic sea ice extent
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1960
+        end_year: 2005
+        reference_dataset: HadISST
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1960
+        end_year: 2005
+    scripts:
+      trends_nh:
+        script: seaice/seaice_trends.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+      trends_sh:
+        script: seaice/seaice_trends.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Antarctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "2"
+
+  seaice_ecs:
+    description: Emergent constraints for September Arctic sea ice extent
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1960
+        end_year: 2005
+        reference_dataset: HadISST
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1960, end_year: 2005}
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1960
+        end_year: 2005
+    additional_datasets:
+      # must be exactly the same models as the ones specified in section datasets
+      - {dataset: ACCESS1-0, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: ACCESS1-3, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CNRM-CM5, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: FGOALS-g2, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC5, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM-CHEM, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-MR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-CGCM3, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-ESM1, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: NorESM1-M, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: NorESM1-ME, exp: rcp85, start_year: 2006, end_year: 2100}
+    scripts:
+      ecs_nh:
+        script: seaice/seaice_ecs.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+        hist_exp: "historical"
+        rcp_exp: "rcp85"
+        styleset: "CMIP5"
+
+  seaice_yod:
+    description: year of near disappearance of September Arctic sea ice
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: rcp85
+        ensemble: r1i1p1
+        start_year: 2006
+        end_year: 2100
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 2006
+        end_year: 2100
+    scripts:
+      yod_nh:
+        script: seaice/seaice_yod.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+

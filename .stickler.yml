@@ -1,0 +1,24 @@
+# stickler-ci configuration
+
+---
+
+linters:
+    flake8:
+    pep8:
+    yamllint:
+    shellcheck:
+files:
+    ignore: [
+        'doc/sphinx',
+        'esmvaltool/doc/sphinx',
+        # ignore old stuff, recent versions are in 'esmvaltool' dir
+        'backend',
+        'diag_scripts',
+        'interface_data',
+        'interface_scripts',
+        'main.py',
+        'nml',
+        'plot_scripts',
+        'reformat_scripts',
+        'variable_defs',
+    ]

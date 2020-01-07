@@ -1,0 +1,37 @@
+#--------------------------- 
+# TURBINE CHARACTERISTICS
+#--------------------------- 
+# Name: Gamesa_G80_2.0MW [string]
+# Manufacturer: Gamesa [string]
+# Diameter: 80 m
+# CutIn: 4 m/s
+# CutOut: 25 m/s
+# ReCutIn: unknown m/s
+# RatedSpeed: 17 m/s
+# RatedPower: 2000 kW
+# IECClass: Ia/IIa [Ia/IIa/IIIa/S]
+# Control: pitch [pitch/stall/active_stall/flaps]
+# HubHeights: 60,67,78,100 m
+#
+#--------------------------- 
+# POWER CURVE
+# Density: 1.225 kg/m^3
+#---------------------------
+WindSpeed	Power
+3.0	0
+4.0	66
+5.0	152
+6.0	280
+7.0	457
+8.0	690
+9.0	978
+10.0	1296
+11.0	1598
+12.0	1818
+13.0	1935
+14.0	1980
+15.0	1995
+16.0	1999
+17.0	2000
+25.0	2000
+25.5	0

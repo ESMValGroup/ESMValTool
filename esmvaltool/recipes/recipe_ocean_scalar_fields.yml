@@ -1,0 +1,53 @@
+# ESMValTool
+# recipe_ocean_scarlar_fields.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the scalar fields.
+    These fluxes are saved as MFO files in CMIP5.
+    Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+datasets:
+  # working datasets
+    - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+    - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
+
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+  diag_timeseries:
+    description: sea_water_transport_across_line
+    variables:
+      mfo: # sea_water_transport_across_line
+        mip: Omon
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years

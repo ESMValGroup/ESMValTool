@@ -1,0 +1,25 @@
+# codacy configuration file
+
+---
+
+engines:
+    coverage:
+        enabled: true
+        exclude_paths: [
+            'tests',
+        ]
+    metrics:
+        enabled: true
+    duplication:
+        enabled: true
+    prospector:
+        enabled: true
+    pylint:
+        enabled: true
+        python_version: 3
+
+exclude_paths: [
+    'doc/sphinx/**',
+    'esmvaltool/cmor/tables/**',
+    'tests/**'
+]
