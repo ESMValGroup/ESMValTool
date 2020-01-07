@@ -17,6 +17,7 @@ Atmosphere
    recipe_combined_climate_extreme_index
    recipe_consecdrydays
    recipe_diurnal_temperature_index
+   recipe_energy_vectors
    recipe_extreme_events
    recipe_heatwaves_coldwaves
    recipe_hyint

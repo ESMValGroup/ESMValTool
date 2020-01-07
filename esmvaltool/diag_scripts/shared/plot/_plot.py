@@ -120,13 +120,14 @@ def get_dataset_style(dataset, style_file=None):
     return style[dataset]
 
 
-def quickplot(cube, filename, plot_type, **kwargs):
+def quickplot(cube, filename, plot_type, coastlines=False, **kwargs):
     """Plot a cube using one of the iris.quickplot functions."""
     logger.debug("Creating '%s' plot %s", plot_type, filename)
     plot_function = getattr(iris.quickplot, plot_type)
     fig = plt.figure()
     plot_function(cube, **kwargs)
-    # plt.gca().coastlines()
+    if coastlines:
+        plt.gca().coastlines()
     fig.savefig(filename)
     plt.close(fig)
 

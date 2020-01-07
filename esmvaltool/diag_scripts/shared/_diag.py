@@ -453,19 +453,26 @@ class Datasets(object):
 
         """
         paths = list(self._datasets)
-        for info in dataset_info:
-            paths = [path for path in paths if
-                     self._datasets[path].get(info) == dataset_info[info]]
+        paths = []
+        for path in self._datasets:
+            append = True
+            for info in dataset_info:
+                if self._datasets[path].get(info) != dataset_info[info]:
+                    append = False
+                    break
+            if append:
+                paths.append(path)
+
         if not paths:
             logger.warning("%s does not match any dataset", dataset_info)
             return paths
-        if not fail_when_ambiguous:
-            return sorted(paths)
-        if len(paths) > 1:
+
+        if fail_when_ambiguous and len(paths) > 1:
             msg = 'Given dataset information is ambiguous'
             logger.error(msg)
             raise RuntimeError(msg)
-        return sorted(paths)
+        paths.sort()
+        return paths
 
     def add_dataset(self, path, data=None, **dataset_info):
         """Add dataset to class.
