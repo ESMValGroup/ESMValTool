@@ -77,3 +77,8 @@ diagnostics:
         basin: Meuse
         region: *region
         dem_file: 'wflow/wflow_dem_Meuse.nc'
+
+
+
+
+        
