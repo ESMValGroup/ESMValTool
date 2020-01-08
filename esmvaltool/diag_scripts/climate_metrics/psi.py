@@ -29,6 +29,7 @@ import os
 
 import cf_units
 import iris
+import iris.coord_categorisation
 import numpy as np
 from scipy import stats
 
@@ -45,6 +46,7 @@ def calculate_psi(cube, cfg):
     lag = cfg.get('lag', 1)
     psi_years = []
     psis = []
+    iris.coord_categorisation.add_year(cube, 'time')
 
     # Moving average
     for yr_idx in range(cube.shape[0] - window_length):

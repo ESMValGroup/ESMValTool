@@ -51,6 +51,7 @@ import sys
 
 import numpy as np
 import iris
+import iris.coord_categorisation
 import iris.exceptions
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
@@ -129,6 +130,7 @@ def make_profiles_plots(
 
     # Make annual or Decadal means from:
     if np.max(raw_times) - np.min(raw_times) < 20:
+        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
     else:
         cube = diagtools.decadal_average(cube)

@@ -26,6 +26,7 @@ import logging
 import os
 
 import iris
+import iris.coord_categorisation
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
@@ -494,6 +495,7 @@ def main(cfg):
     tas_obs = []
     for (dataset, [data]) in group_metadata(input_data, 'dataset').items():
         cube = iris.load_cube(data['filename'])
+        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         tas_cubes[dataset] = cube
         if data['project'] == 'OBS':
@@ -505,6 +507,7 @@ def main(cfg):
     for (dataset, [data]) in group_metadata(
             io.netcdf_to_metadata(cfg, pattern='psi_*.nc'), 'dataset').items():
         cube = iris.load_cube(data['filename'])
+        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cubes[dataset] = cube
         if data['project'] == 'OBS':
