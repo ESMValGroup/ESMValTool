@@ -20,9 +20,6 @@ preprocessors:
   daily_mean:
     daily_statistics:
       operator: mean
-  daily_sum:
-    daily_statistics:
-      operator: sum
   daily_min:
     daily_statistics:
       operator: min
@@ -56,7 +53,7 @@ diagnostics:
     variables:
       pr:
         mip: E1hr
-        preprocessor: daily_sum
+        preprocessor: daily_mean
       uas:
         mip: E1hr
         preprocessor: daily_mean
