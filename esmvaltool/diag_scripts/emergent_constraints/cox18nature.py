@@ -507,7 +507,6 @@ def main(cfg):
     for (dataset, [data]) in group_metadata(
             io.netcdf_to_metadata(cfg, pattern='psi_*.nc'), 'dataset').items():
         cube = iris.load_cube(data['filename'])
-        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cubes[dataset] = cube
         if data['project'] == 'OBS':
