@@ -5,12 +5,14 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     - dataset: model
       filename: path/to/model
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: true
   - input:
@@ -19,6 +21,7 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: true
   - input:
@@ -26,6 +29,7 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: false
   - input:
@@ -33,6 +37,7 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: false
   - input:
@@ -40,6 +45,7 @@ _has_necessary_attributes:
       filename: path/to/model
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: false
   - input:
@@ -47,13 +53,7 @@ _has_necessary_attributes:
       filename: path/to/model
       long_name: 'Loooong name'
       cmor_name: var
-      units: KiB
-    output: false
-  - input:
-    - dataset: model
-      filename: path/to/model
-      long_name: 'Loooong name'
-      project: CMIP42
+      short_name: var
       units: KiB
     output: false
   - input:
@@ -61,19 +61,6 @@ _has_necessary_attributes:
       filename: path/to/model
       long_name: 'Loooong name'
       project: CMIP42
-      cmor_name: var
-    output: false
-  - input:
-    - dataset: model
-      long_name: 'Loooong name'
-      project: CMIP42
-      cmor_name: var
-      units: KiB
-    - dataset: model
-      filename: path/to/model
-      long_name: 'Loooong name'
-      project: CMIP42
-      cmor_name: var
       units: KiB
     output: false
   - input:
@@ -82,11 +69,36 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
+    output: false
+  - input:
+    - dataset: model
+      long_name: 'Loooong name'
+      project: CMIP42
+      cmor_name: var
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      cmor_name: var
+      short_name: var
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      cmor_name: var
+      short_name: var
       units: KiB
     - dataset: model
       filename: path/to/model
       long_name: 'Loooong name'
       cmor_name: var
+      short_name: var
       units: KiB
     output: false
   - input:
@@ -94,22 +106,27 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     - dataset: model
       filename: path/to/model
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
     output: false
   - input:
     - dataset: model
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     - dataset: model
       filename: path/to/model
       cmor_name: var
+      cmor_name: var
+      short_name: var
       units: KiB
     output: false
   - kwargs:
@@ -120,12 +137,14 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     - dataset: model
       filename: path/to/model
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: true
   - kwargs:
@@ -136,6 +155,7 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: true
   - kwargs:
@@ -143,6 +163,7 @@ _has_necessary_attributes:
     input:
     - long_name: 'Loooong name'
       cmor_name: var
+      short_name: var
       units: KiB
     - long_name: 'Loooong name'
       units: KiB
@@ -152,9 +173,11 @@ _has_necessary_attributes:
     input:
     - long_name: 'Loooong name'
       cmor_name: var
+      short_name: var
       units: KiB
     - long_name: 'Loooong name'
       cmor_name: var
+      short_name: var
       units: KiB
     output: true
   - kwargs:
@@ -164,6 +187,7 @@ _has_necessary_attributes:
       filename: path/to/model
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     output: false
   - kwargs:
@@ -174,12 +198,14 @@ _has_necessary_attributes:
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
       units: KiB
     - dataset: model
       filename: path/to/model
       long_name: 'Loooong name'
       project: CMIP42
       cmor_name: var
+      short_name: var
     output: false
   - kwargs:
       only_var_attrs: true
