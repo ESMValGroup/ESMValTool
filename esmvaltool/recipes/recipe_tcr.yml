@@ -28,7 +28,7 @@ diagnostics:
     description: Calculate TCR for all available CMIP5 models.
     variables:
       1pctCO2: &variable_settings
-        short_name: tas
+        cmor_name: tas
         preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1

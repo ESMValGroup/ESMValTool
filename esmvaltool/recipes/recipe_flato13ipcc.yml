@@ -775,7 +775,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Omon
-        short_name: tos
+        cmor_name: tos
         preprocessor: zonal_mean
         reference_dataset: HadISST
         start_year: 1979
@@ -971,7 +971,7 @@ diagnostics:
       fgco2_GCP:
         <<: *fgco2_settings
         preprocessor: default
-        short_name: fgco2
+        cmor_name: fgco2
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
     scripts:
@@ -1038,7 +1038,7 @@ diagnostics:
       fgco2_GCP:
         <<: *fgco2_settings
         preprocessor: default
-        short_name: fgco2
+        cmor_name: fgco2
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1986, end_year: 2005, frequency: yr}
     scripts:
@@ -1075,7 +1075,7 @@ diagnostics:
       - atmos
     variables:
       tas_rtnt: &ecs_settings
-        short_name: tas
+        cmor_name: tas
         preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
@@ -1132,12 +1132,12 @@ diagnostics:
           - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       rtnt:
         <<: *ecs_settings
-        short_name: rtnt
+        cmor_name: rtnt
         derive: true
         additional_datasets: *datasets_cmip5_rtnt
       rtmt:
         <<: *ecs_settings
-        short_name: rtmt
+        cmor_name: rtmt
         additional_datasets: *datasets_cmip5_rtmt
     scripts:
       ecs: &ecs_script
@@ -1151,7 +1151,7 @@ diagnostics:
       - atmos
     variables:
       1pctCO2: &tcr_settings
-        short_name: tas
+        cmor_name: tas
         preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
@@ -1381,13 +1381,13 @@ diagnostics:
           - {dataset: UKESM1-0-LL, exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
       rtnt:
         <<: *ecs_settings
-        short_name: rtnt
+        cmor_name: rtnt
         project: CMIP6
         derive: true
         additional_datasets: *datasets_cmip6_rtnt
       rtmt:
         <<: *ecs_settings
-        short_name: rtmt
+        cmor_name: rtmt
         project: CMIP6
         additional_datasets: *datasets_cmip6_rtmt
     scripts:

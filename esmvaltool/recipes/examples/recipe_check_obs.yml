@@ -248,10 +248,10 @@ diagnostics:
       hus:
         mip: Amon
       pr_month:
-        short_name: pr
+        cmor_name: pr
         mip: Amon
       pr_day:
-        short_name: pr
+        cmor_name: pr
         mip: day
       rlut:
         mip: day
@@ -260,16 +260,16 @@ diagnostics:
       tas:
         mip: Amon
       ua_month:
-        short_name: ua
+        cmor_name: ua
         mip: Amon
       ua_day:
-        short_name: ua
+        cmor_name: ua
         mip: day
       va_month:
-        short_name: va
+        cmor_name: va
         mip: Amon
       va_day:
-        short_name: va
+        cmor_name: va
         mip: day
       wap:
         mip: Amon
@@ -423,66 +423,66 @@ diagnostics:
     description: CERES-SYN1deg check
     variables:
       rlds_month:
-        short_name: rlds
+        cmor_name: rlds
         mip: Amon
       rlds_3hr:
-        short_name: rlds
+        cmor_name: rlds
         mip: 3hr
       rldscs_month:
-        short_name: rldscs
+        cmor_name: rldscs
         mip: Amon
       rldscs_3hr:
-        short_name: rldscs
+        cmor_name: rldscs
         mip: 3hr
       rlus_month:
-        short_name: rlus
+        cmor_name: rlus
         mip: Amon
       rlus_3hr:
-        short_name: rlus
+        cmor_name: rlus
         mip: 3hr
       rluscs:
         mip: 3hr
       rlut_month:
-        short_name: rlut
+        cmor_name: rlut
         mip: Amon
       rlut_3hr:
-        short_name: rlut
+        cmor_name: rlut
         mip: 3hr
       rlutcs_month:
-        short_name: rlutcs
+        cmor_name: rlutcs
         mip: Amon
       rlutcs_3hr:
-        short_name: rlutcs
+        cmor_name: rlutcs
         mip: 3hr
       rsds_month:
-        short_name: rsds
+        cmor_name: rsds
         mip: Amon
       rsds_3hr:
-        short_name: rsds
+        cmor_name: rsds
         mip: 3hr
       rsdscs:
         mip: 3hr
       rsdt:
         mip: Amon
       rsus_month:
-        short_name: rsus
+        cmor_name: rsus
         mip: Amon
       rsus_3hr:
-        short_name: rsus
+        cmor_name: rsus
         mip: 3hr
       rsuscs:
         mip: 3hr
       rsut_month:
-        short_name: rsut
+        cmor_name: rsut
         mip: Amon
       rsut_3hr:
-        short_name: rsut
+        cmor_name: rsut
         mip: 3hr
       rsutcs_month:
-        short_name: rsutcs
+        cmor_name: rsutcs
         mip: Amon
       rsutcs_3hr:
-        short_name: rsutcs
+        cmor_name: rsutcs
         mip: 3hr
     additional_datasets:
       - {dataset: CERES-SYN1deg, project: OBS, tier: 3,
@@ -496,18 +496,18 @@ diagnostics:
       clivi:
         mip: Amon
       clt_day:
-        short_name: clt
+        cmor_name: clt
         mip: day
       clt_month:
-        short_name: clt
+        cmor_name: clt
         mip: Amon
       clwvi:
         mip: Amon
       evspsbl_day:
-        short_name: evspsbl
+        cmor_name: evspsbl
         mip: Eday
       evspsbl_month:
-        short_name: evspsbl
+        cmor_name: evspsbl
         mip: Amon
       hfds:
         mip: Omon
@@ -518,61 +518,61 @@ diagnostics:
       orog:
         mip: fx
       pr_day:
-        short_name: pr
+        cmor_name: pr
         mip: day
       pr_month:
-        short_name: pr
+        cmor_name: pr
         mip: Amon
       prsn_day:
-        short_name: prsn
+        cmor_name: prsn
         mip: day
       prsn_month:
-        short_name: prsn
+        cmor_name: prsn
         mip: Amon
       prw:
         mip: Amon
       ps_day:
-        short_name: ps
+        cmor_name: ps
         mip: CFday
       ps_month:
-        short_name: ps
+        cmor_name: ps
         mip: Amon
       psl_day:
-        short_name: psl
+        cmor_name: psl
         mip: day
       psl_month:
-        short_name: psl
+        cmor_name: psl
         mip: Amon
       rlds_day:
-        short_name: rlds
+        cmor_name: rlds
         mip: day
       rsds_day:
-        short_name: rsds
+        cmor_name: rsds
         mip: day
       rsds_month:
-        short_name: rsds
+        cmor_name: rsds
         mip: Amon
       rsdt_day:
-        short_name: rsdt
+        cmor_name: rsdt
         mip: CFday
       rsdt_month:
-        short_name: rsdt
+        cmor_name: rsdt
         mip: Amon
       rss_day:
-        short_name: rss
+        cmor_name: rss
         mip: day
       rss_month:
-        short_name: rss
+        cmor_name: rss
         mip: Emon
       sftlf:
         mip: fx
       ta:
         mip: Amon
       tas_day:
-        short_name: tas
+        cmor_name: tas
         mip: day
       tas_month:
-        short_name: tas
+        cmor_name: tas
         mip: Amon
       tasmax:
         mip: day
@@ -583,18 +583,18 @@ diagnostics:
       tauv:
         mip: Amon
       tdps_day:
-        short_name: tdps
+        cmor_name: tdps
         mip: Eday
       tdps_month:
-        short_name: tdps
+        cmor_name: tdps
         mip: Emon
       tos:
         mip: Omon
       ts_day:
-        short_name: ts
+        cmor_name: ts
         mip: Eday
       ts_month:
-        short_name: ts
+        cmor_name: ts
         mip: Amon
       tsn_month:
         mip: LImon
@@ -603,26 +603,26 @@ diagnostics:
       ua:
         mip: Amon
       uas_day:
-        short_name: uas
+        cmor_name: uas
         mip: day
       uas_month:
-        short_name: uas
+        cmor_name: uas
         mip: Amon
       va:
         mip: Amon
       vas_day:
-        short_name: vas
+        cmor_name: vas
         mip: day
       vas_month:
-        short_name: vas
+        cmor_name: vas
         mip: Amon
       wap:
         mip: Amon
       zg_day:
-        short_name: zg
+        cmor_name: zg
         mip: day
       zg_month:
-        short_name: zg
+        cmor_name: zg
         mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3,

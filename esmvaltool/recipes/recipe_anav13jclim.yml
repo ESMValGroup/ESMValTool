@@ -614,7 +614,7 @@ diagnostics:
           - {dataset: NorESM1-ME}
       fgco2_GCP:
         <<: *var_fgco2
-        short_name: fgco2
+        cmor_name: fgco2
         preprocessor: default
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2017, frequency: yr}

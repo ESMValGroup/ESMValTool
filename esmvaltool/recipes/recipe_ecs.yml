@@ -147,7 +147,7 @@ diagnostics:
     description: Calculate ECS for all available CMIP5 models.
     variables:
       tas_rtnt: &variable_settings_cmip5
-        short_name: tas
+        cmor_name: tas
         preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
@@ -158,12 +158,12 @@ diagnostics:
         additional_datasets: *cmip5_rtmt
       rtnt:
         <<: *variable_settings_cmip5
-        short_name: rtnt
+        cmor_name: rtnt
         derive: true
         additional_datasets: *cmip5_rtnt
       rtmt:
         <<: *variable_settings_cmip5
-        short_name: rtmt
+        cmor_name: rtmt
         additional_datasets: *cmip5_rtmt
     scripts:
       ecs: &ecs_script
@@ -182,7 +182,7 @@ diagnostics:
     description: Calculate ECS for all available CMIP6 models.
     variables:
       tas_rtnt: &variable_settings_cmip6
-        short_name: tas
+        cmor_name: tas
         preprocessor: spatial_mean
         project: CMIP6
         mip: Amon
@@ -192,12 +192,12 @@ diagnostics:
         additional_datasets: *cmip6_rtmt
       rtnt:
         <<: *variable_settings_cmip6
-        short_name: rtnt
+        cmor_name: rtnt
         derive: true
         additional_datasets: *cmip6_rtnt
       rtmt:
         <<: *variable_settings_cmip6
-        short_name: rtmt
+        cmor_name: rtmt
         additional_datasets: *cmip6_rtmt
     scripts:
       ecs:
