@@ -46,7 +46,6 @@ def calculate_psi(cube, cfg):
     lag = cfg.get('lag', 1)
     psi_years = []
     psis = []
-    iris.coord_categorisation.add_year(cube, 'time')
 
     # Moving average
     for yr_idx in range(cube.shape[0] - window_length):
@@ -116,6 +115,7 @@ def main(cfg):
     for (dataset, [data]) in grouped_data.items():
         logger.info("Processing %s", dataset)
         cube = iris.load_cube(data['filename'])
+        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
         data.update(psi_attrs)
