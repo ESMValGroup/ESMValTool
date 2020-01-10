@@ -144,20 +144,19 @@ def _fix_coordinates(cube, definition):
         utils.add_scalar_height_coord(cube, 2.)
     if 'height10m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.)
-    for axis in 'T', 'X', 'Y', 'Z':
-        coord_def = definition.coordinates.get(axis)
-        if coord_def:
-            coord = cube.coord(axis=axis)
-            if axis == 'T':
-                coord.convert_units('days since 1850-1-1 00:00:00.0')
-            if axis == 'Z':
-                coord.convert_units(coord_def.units)
-            coord.standard_name = coord_def.standard_name
-            coord.var_name = coord_def.out_name
-            coord.long_name = coord_def.long_name
-            coord.points = coord.core_points().astype('float64')
-            if len(coord.points) > 1:
-                coord.guess_bounds()
+    for coord_def in definition.coordinates.values():
+        axis = coord_def.axis
+        coord = cube.coord(axis=axis)
+        if axis == 'T':
+            coord.convert_units('days since 1850-1-1 00:00:00.0')
+        if axis == 'Z':
+            coord.convert_units(coord_def.units)
+        coord.standard_name = coord_def.standard_name
+        coord.var_name = coord_def.out_name
+        coord.long_name = coord_def.long_name
+        coord.points = coord.core_points().astype('float64')
+        if len(coord.points) > 1:
+            coord.guess_bounds()
     return cube
 
 
