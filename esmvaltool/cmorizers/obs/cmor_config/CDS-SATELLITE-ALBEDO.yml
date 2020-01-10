@@ -13,14 +13,14 @@ attributes:
 
 # Variables to CMORize
 variables:
-#  bdalb:
-#    mip: Lmon
-#    raw: AL_DH_BB
-#    file: 'c3s_ALBB-DH_????????000000_GLOBE_VGT_V1.0.1.nc'
-  bhalb:
+  bdalb:
     mip: Lmon
-    raw: AL_BH_BB
-    file: 'c3s_ALBB-BH_????????000000_GLOBE_VGT_V1.0.1.nc'
+    raw: AL_DH_BB
+    file: 'c3s_ALBB-DH_????????000000_GLOBE_VGT_V1.0.1.nc'
+#  bhalb:
+#    mip: Lmon
+#    raw: AL_BH_BB
+#    file: 'c3s_ALBB-BH_????????000000_GLOBE_VGT_V1.0.1.nc'
 
 # Parameters
 custom:

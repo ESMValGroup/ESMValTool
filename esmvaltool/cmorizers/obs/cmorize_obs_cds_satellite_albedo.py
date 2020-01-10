@@ -22,6 +22,8 @@ Modification history
 
 """
 
+#TODO uncomment again in cmor_config yml file such that all variables are processed
+
 import glob
 import logging
 import os
@@ -189,16 +191,26 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         for cube in cubelist:
             for attr in attrs_to_remove:
                 cube.attributes.pop(attr)
-                
-        assert _attrs_are_the_same(cubelist)
 
-        cube = cubelist.concatenate_cube()
-        savename = os.path.join(cfg['work_dir'],
-                                var['short_name'] + '.nc')
-        logger.info("Saving as: %s", savename)
-        iris.save(cube, savename)
-        logger.info("Finished file concatenation over time")
-        in_file = savename
-        logger.info("Start CMORization of file %s", in_file)
-        _cmorize_dataset(in_file, var, cfg, out_dir)
-        logger.info("Finished regridding and CMORizing %s", in_file)
+        # Loop over two different platform names
+        for platformname in ['SPOT-4', 'SPOT-5']:
+            # Now split the cubelist on the different platform
+            logger.info("Start processing part of dataset: %s", platformname)
+            cubelist_platform = cubelist.extract(iris.AttributeConstraint(
+                platform=platformname))
+            if cubelist_platform:
+                assert _attrs_are_the_same(cubelist_platform)
+                cube = cubelist_platform.concatenate_cube()
+            else:
+                logger.warning("No files found for platform %s \
+                               (check input data)", platformname)
+                continue
+            savename = os.path.join(cfg['work_dir'],
+                                    var['short_name'] + platformname + '.nc')
+            logger.info("Saving as: %s", savename)
+            iris.save(cube, savename)
+            logger.info("Finished file concatenation over time")
+            in_file = savename
+            logger.info("Start CMORization of file %s", in_file)
+            _cmorize_dataset(in_file, var, cfg, out_dir)
+            logger.info("Finished regridding and CMORizing %s", in_file)
