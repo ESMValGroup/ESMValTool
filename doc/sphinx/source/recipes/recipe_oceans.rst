@@ -492,8 +492,8 @@ The diagnostic_maps_multimodel.py_ diagnostic makes model(s) vs observations map
 and if data are not provided it draws only model field.
 
 It is always nessary to define the overall layout trough the argument `layout_rowcol`,
-which is a list of two integers indicating respectively the number of rows and columns 
-to organize the plot. Observations has not be accounted in here as they are automatically 
+which is a list of two integers indicating respectively the number of rows and columns
+to organize the plot. Observations has not be accounted in here as they are automatically
 added at the top of the figure.
 
 This diagnostic also includes the optional arguments, `maps_range` and
@@ -821,22 +821,22 @@ The file needs to be reformatted using the `cmorize_obs_py` script with output n
 .. Links:
 
 .. Recipes:
-.. _recipe_ocean_amoc.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_amoc.yml
-.. _recipe_ocean_example.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_example.yml
-.. _recipe_ocean_scalar_fields.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_scalar_fields.yml
-.. _recipe_ocean_bgc.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_bgc.yml
-.. _recipe_ocean_quadmap.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_quadmap.yml
-.. _recipe_ocean_Landschuetzer2016.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_Landschuetzer2016.yml
-.. _recipe_ocean_multimap.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_multimap.yml
+.. _recipe_ocean_amoc.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_amoc.yml
+.. _recipe_ocean_example.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_example.yml
+.. _recipe_ocean_scalar_fields.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_scalar_fields.yml
+.. _recipe_ocean_bgc.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_bgc.yml
+.. _recipe_ocean_quadmap.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_quadmap.yml
+.. _recipe_ocean_Landschuetzer2016.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_Landschuetzer2016.yml
+.. _recipe_ocean_multimap.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_multimap.yml
 
 .. Diagnostics:
-.. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/:
-.. _diagnostic_maps.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_maps.py
-.. _diagnostic_maps_quad.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_maps_quad.py
-.. _diagnostic_model_vs_obs.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_model_vs_obs.py
-.. _diagnostic_maps_multimodel.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_maps_multimodel.py
-.. _diagnostic_profiles.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_profiles.py
-.. _diagnostic_timeseries.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_timeseries.py
-.. _diagnostic_transects.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_transects.py
-.. _diagnostic_seaice.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_seaice.py
-.. _diagnostic_tools.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_tools.py
+.. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/:
+.. _diagnostic_maps.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_maps.py
+.. _diagnostic_maps_quad.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_maps_quad.py
+.. _diagnostic_model_vs_obs.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_model_vs_obs.py
+.. _diagnostic_maps_multimodel.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_maps_multimodel.py
+.. _diagnostic_profiles.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_profiles.py
+.. _diagnostic_timeseries.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_timeseries.py
+.. _diagnostic_transects.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_transects.py
+.. _diagnostic_seaice.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_seaice.py
+.. _diagnostic_tools.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_tools.py

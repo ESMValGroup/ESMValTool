@@ -32,4 +32,4 @@ The easiest way to get help if you cannot find the answer in the documentation o
 
 ## Contributing
 
-If you would like to contribute a new diagnostic or feature, please have a look at [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md).
+If you would like to contribute a new diagnostic or feature, please have a look at [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/master/CONTRIBUTING.md).
