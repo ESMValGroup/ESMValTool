@@ -25,7 +25,7 @@ diagnostics:
          type: sat, version: Ed4.0, start_year: 2001, end_year: 2018}
     scripts: null
 
-  
+
   CRU:
     description: CRU check
     variables:
@@ -308,6 +308,17 @@ diagnostics:
     scripts: null
 
 
+  PHC:
+    description: PHC check
+    variables:
+      so:
+      thetao:
+    additional_datasets:
+      - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
+         type: clim, version: 3, start_year: 1950, end_year: 1950}
+    scripts: null
+
+
   PIOMAS:
     description: PIOMAS
     variables:
@@ -565,9 +576,6 @@ diagnostics:
         mip: Amon
       tasmax:
         mip: day
-      tas_month:
-        short_name: tas
-        mip: Amon
       tasmin:
         mip: day
       tauu:
@@ -588,9 +596,9 @@ diagnostics:
       ts_month:
         short_name: ts
         mip: Amon
-      tsn:
+      tsn_month:
         mip: LImon
-      tsn:
+      tsn_day:
         mip: Eday
       ua:
         mip: Amon
@@ -623,36 +631,57 @@ diagnostics:
 
 
   ERA5:
-    description: ERA5 check check
+    description: ERA5 check
     variables:
-      clt: &E1hr
+      clt:
         mip: E1hr
-      evspsbl: *E1hr
-      evspsblpot: *E1hr
-      mrro: *E1hr
-      pr: *E1hr
-      prsn: *E1hr
-      ps: *E1hr
-      psl: *E1hr
-      ptype: *E1hr
-      rls: *E1hr
-      rlds: *E1hr
-      rsds: *E1hr
-      rsdt: *E1hr
-      rss: *E1hr
-      uas: *E1hr
-      vas: *E1hr
-      tas: *E1hr
-      tasmax: *E1hr
-      tasmin: *E1hr
-      tdps: *E1hr
-      ts: *E1hr
-      tsn: *E1hr
+      evspsbl:
+        mip: E1hr
+      evspsblpot:
+        mip: E1hr
+      mrro:
+        mip: E1hr
+      pr:
+        mip: E1hr
+      prsn:
+        mip: E1hr
+      ps:
+        mip: E1hr
+      psl:
+        mip: E1hr
+      ptype:
+        mip: E1hr
+      rls:
+        mip: E1hr
+      rlds:
+        mip: E1hr
+      rsds:
+        mip: E1hr
+      rsdt:
+        mip: E1hr
+      rss:
+        mip: E1hr
+      uas:
+        mip: E1hr
+      vas:
+        mip: E1hr
+      tas:
+        mip: E1hr
+      tasmax:
+        mip: E1hr
+      tasmin:
+        mip: E1hr
+      tdps:
+        mip: E1hr
+      ts:
+        mip: E1hr
+      tsn:
+        mip: E1hr
       orog:
         mip: fx
     additional_datasets:
-      - {dataset: ERA5, project: OBS6, frequency: 1hr, tier: 3,
-         type: reanaly, version: 1, start_year: 1990, end_year: 1990}
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly,
+         version: 1, start_year: 1990, end_year: 1990}
     scripts: null
 
 
@@ -715,6 +744,16 @@ diagnostics:
     scripts: null
 
 
+  MERRA2:
+    description: MERRA2 check
+    variables:
+      sm:
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS6, mip: Lmon, tier: 3,
+         type: reanaly, version: 5.12.4, start_year: 1980, end_year: 2018}
+    scripts: null
+
+
   MTE:
     description: MTE check
     variables:
@@ -766,6 +805,7 @@ diagnostics:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
+
 
   UWisc:
     description: UWisc check
