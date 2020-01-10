@@ -146,8 +146,6 @@ def _fix_coordinates(cube, definition):
         utils.add_scalar_height_coord(cube, 10.)
     for axis in 'T', 'X', 'Y', 'Z':
         coord_def = definition.coordinates.get(axis)
-#    for definition_axis,axis in zip(['time','longitude','latitude'],['T','X','Y']):
-#        coord_def = definition.coordinates.get(definition_axis)
         if coord_def:
             coord = cube.coord(axis=axis)
             if axis == 'T':
@@ -179,6 +177,7 @@ def _fix_monthly_time_coord(cube):
     coord.points = 0.5 * (start + end)
     coord.bounds = np.column_stack([start, end])
 
+
 def _compute_monthly(cube):
     """Convert various frequencies to daily frequency.
 
@@ -190,6 +189,7 @@ def _compute_monthly(cube):
     cube.remove_coord(cube.coord('month_number'))
     cube.remove_coord(cube.coord('year'))
     return cube
+
 
 def _compute_daily(cube):
     """Convert various frequencies to daily frequency.
@@ -331,7 +331,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     cube = _fix_coordinates(cube, definition)
 
-    if attributes['dataset_id']=='ERA-Interim':
+    if attributes['dataset_id'] == 'ERA-Interim':
         if 'mon' in var['mip']:
             _fix_monthly_time_coord(cube)
         if 'day' in var['mip']:
@@ -341,13 +341,14 @@ def _extract_variable(in_files, var, cfg, out_dir):
             cube.remove_coord('time')
 
     # Specific to ERA Interim Land
-    elif attributes['dataset_id']=='ERA-Interim-Land':
+    elif attributes['dataset_id'] == 'ERA-Interim-Land':
         if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
         if 'day' in var['mip']:
             cube = _compute_daily(cube)
     else:
-        raise ValueError("Unknown dataset_id for this script: {attributes['dataset_id']}")
+        raise ValueError("Unknown dataset_id for this script:\
+                         {attributes['dataset_id']}")
 
     # Convert units if required
     cube.convert_units(definition.units)
