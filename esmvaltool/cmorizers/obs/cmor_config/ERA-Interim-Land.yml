@@ -13,14 +13,9 @@ attributes:
 
 # Variables to CMORize
 variables:
-  sm_daily:
-    short_name: sm
-    mip: CFday
-    raw: swvl1
-    file: 'eraintland_swvl1_????.nc'
   sm_monthly:
     short_name: sm
     mip: Lmon
     raw: swvl1
-    file: 'eraintland_swvl1_????.nc'
+    file: 'ERA-Interim-Land_swvl1_6hourly_????.nc'
 
