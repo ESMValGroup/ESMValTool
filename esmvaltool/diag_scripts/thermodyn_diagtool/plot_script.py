@@ -203,8 +203,6 @@ def entropy(plotpath, filename, name, ext_name, model):
     elif ext_name == 'Potential energy entropy production':
         rangec = [0, 0.1]
         c_m = 'YlOrBr'
-    else:
-        quit()
     with Dataset(filename) as dataset:
         var = dataset.variables[name][:, :, :]
         lats = dataset.variables['lat'][:]
@@ -316,11 +314,9 @@ def init_plotentr(model, pdir, flist):
     """
     entropy(pdir, flist[0], 'ssens', 'Sensible Heat entropy production', model)
     entropy(pdir, flist[1], 'sevap', 'Evaporation entropy production', model)
-    entropy(pdir, flist[2], 'srain',
-            'Rainfall precipitation entropy production', model)
-    entropy(pdir, flist[3], 'ssnow',
-            'Snowfall precipitation entropy production', model)
-    entropy(pdir, flist[4], 'smelt', 'Snow melting entropy production', model)
+    entropy(pdir, flist[2], 'srain', 'Rainfall entropy production', model)
+    entropy(pdir, flist[3], 'ssnow', 'Snowfall entropy production', model)
+    entropy(pdir, flist[4], 'smelt', 'Snowmelt entropy production', model)
     entropy(pdir, flist[5], 'spotp', 'Potential energy entropy production',
             model)
 
@@ -775,6 +771,8 @@ def plot_mm_summaryscat(pdir, summary_varlist):
     ylabel = r'S$_{dir}$ [W m-2 K-1]'
     varlist = [indentr_all, matentr_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
+    axi.set(xlim=(min(indentr_all)-0.003, max(indentr_all)+0.003),
+            ylim=(min(matentr_all)-0.003, max(matentr_all)+0.003))
     axi = plt.subplot(325)
     title = '(e) Indirect vs. emission temperature'
     xlabel = r'T$_E$ [K]'
