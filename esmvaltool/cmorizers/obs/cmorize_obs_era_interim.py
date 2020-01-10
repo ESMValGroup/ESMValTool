@@ -144,9 +144,10 @@ def _fix_coordinates(cube, definition):
         utils.add_scalar_height_coord(cube, 2.)
     if 'height10m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.)
-
-    for definition_axis,axis in zip(['time','longitude','latitude'],['T','X','Y']):
-        coord_def = definition.coordinates.get(definition_axis)
+    for axis in 'T', 'X', 'Y', 'Z':
+        coord_def = definition.coordinates.get(axis)
+#    for definition_axis,axis in zip(['time','longitude','latitude'],['T','X','Y']):
+#        coord_def = definition.coordinates.get(definition_axis)
         if coord_def:
             coord = cube.coord(axis=axis)
             if axis == 'T':
