@@ -4,7 +4,7 @@
 Porting a namelist (recipe) or diagnostic to ESMValTool v2.0
 ************************************************************
 
-This guide summarizes the main steps to be taken in order to port an ESMValTool namelist (now called **recipe**) and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``version2_development``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
+This guide summarizes the main steps to be taken in order to port an ESMValTool namelist (now called **recipe**) and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``master``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
 
 In the following, it is assumed that the user has successfully installed ESMValTool v2 and has a rough overview of its structure (see `Technical Overview <http://www.esmvaltool.org/download/Righi_ESMValTool2-TechnicalOverview.pdf>`_).
 
@@ -17,14 +17,15 @@ Do not forget to assign it to yourself.
 Create your own branch
 ======================
 
-Create your own branch from ``version2_development`` for each namelist (recipe) to be ported:
+Create your own branch from ``master`` for each namelist (recipe) to be ported:
 
 .. code-block:: bash
 
-    git checkout version2_development
-    git checkout -b version2_<recipe>
+    git checkout master
+    git pull
+    git checkout -b <recipe>
 
-``version2_development`` contains only v2.0 under the ``./esmvaltool/`` directory. 
+``master`` contains only v2.0 under the ``./esmvaltool/`` directory.
 
 Convert xml to yml
 ==================
@@ -40,8 +41,8 @@ Do not forget to also rewrite the recipe header in a ``documentation`` section u
 Create a copy of the diag script in v2.0
 ========================================
 
-The diagnostic script to be ported goes into the directory ./esmvaltool/diag_script/. It is recommended to get a copy of the very last version of the script to be ported from the development branch (either in the public or in the private repository). Just create a local (offline) copy of this file from the repository and add it to ../esmvaltool/diag_script/ as a new file.
- 
+The diagnostic script to be ported goes into the directory ./esmvaltool/diag_script/. It is recommended to get a copy of the very last version of the script to be ported from the ``version1`` branch (either in the public or in the private repository). Just create a local (offline) copy of this file from the repository and add it to ../esmvaltool/diag_script/ as a new file.
+
 Note that (in general) this is not necessary for plot scripts and for the libraries in ``./esmvaltool/diag_script/ncl/lib/``, which have already been ported. Changes may however still be necessary, especially in the plot scripts which have not yet been fully tested with all diagnostics.
 
 Check and apply renamings
@@ -128,7 +129,7 @@ The following changes may also have to be considered:
 - namelists are now called recipes and collected in ``esmvaltool/recipes``;
 - models are now called datasets and all files have been updated accordingly, including NCL functions (see table above);
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
-- `input_file_info`` is now a list of a list of logicals, where each element describes one dataset and one variable. Convenience functions to extract the required elements (e.g., all datasets of a given variable) are provided in ``esmvaltool/interface_scripts/interface.ncl``;
+- ``input_file_info`` is now a list of a list of logicals, where each element describes one dataset and one variable. Convenience functions to extract the required elements (e.g., all datasets of a given variable) are provided in ``esmvaltool/interface_scripts/interface.ncl``;
 - the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``input_file_info`` and the convenience functions in ``esmvaltool/interface_scripts/interface.ncl`` to access the required attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
 - diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics are to be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they go in ``shared/``);
@@ -158,7 +159,7 @@ In the new version, all settings are centralized in the recipe, completely repla
 Make sure the diagnostic script writes NetCDF output
 ======================================================
 
-Each diagnostic script is required to write the output of the anaylsis in one or more NetCDF files. This is to give the user the possibility to further look into the results, besides the plots, but (most importantly) for tagging purposes when publishing the data in a report and/or on a website. 
+Each diagnostic script is required to write the output of the anaylsis in one or more NetCDF files. This is to give the user the possibility to further look into the results, besides the plots, but (most importantly) for tagging purposes when publishing the data in a report and/or on a website.
 
 For each of the plot produced by the diagnostic script a single NetCDF file has to be generated. The variable saved in this file should also contain all the necessary metadata that documents the plot (dataset names, units, statistical methods, etc.).
 The files have to be saved in the work directory (defined in `cfg['work_dir']` and `config_user_info@work_dir`, for the python and NCL diagnostics, respectively).
@@ -208,9 +209,9 @@ Before submitting a pull request, the code should be cleaned to adhere to the co
 Update the documentation
 ========================
 
-If necessary, add or update the documentation for your recipes in the corrsponding rst file, which is now in ``doc\sphinx\source\recipes``. Do not forget to also add the documentation file to the list in ``doc\sphinx\source\annex_c`` to make sure it actually appears in the documentation. 
+If necessary, add or update the documentation for your recipes in the corrsponding rst file, which is now in ``doc\sphinx\source\recipes``. Do not forget to also add the documentation file to the list in ``doc\sphinx\source\annex_c`` to make sure it actually appears in the documentation.
 
 Open a pull request
 ===================
 
-Create a pull request on github to merge your branch back to ``version2_development``, provide a short description of what has been done and nominate one or more reviewers.
+Create a pull request on github to merge your branch back to ``master``, provide a short description of what has been done and nominate one or more reviewers.
