@@ -232,9 +232,6 @@ def _compute_daily(cube):
         cube = daily_statistics(cube, 'sum')
     else:
         cube = daily_statistics(cube, 'mean')
-    # Remove daily statistics aux coordinates
-    cube.remove_coord(cube.coord('day_of_year'))
-    cube.remove_coord(cube.coord('year'))
 
     # Correct the time coordinate
     cube.coord('time').points = cube.coord('time').units.date2num([
