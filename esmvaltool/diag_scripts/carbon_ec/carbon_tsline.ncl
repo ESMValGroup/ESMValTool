@@ -19,6 +19,8 @@
 ;                non-missing)
 ;    ref_start: start year of reference period for anomalies
 ;    ref_end: end year of reference period for anomalies
+;    ridx_start: start index of reference period for anomalies
+;    ridx_end end index of reference period for anomalies
 ;    ref_value: if true, right panel with mean values is attached
 ;    ref_mask: if true, model fields will be masked by reference fields
 ;    region: name of domain
@@ -34,6 +36,10 @@
 ; Caveats
 ;
 ; Modification history
+;    20191219-wenzel_sabrina: added option to coose index instead 
+;                             reference period
+;    20191019-wenzel_sabrina: copyed tsline.ncl to carbon_tsline and
+;                             added the option to cumulate variables
 ;    20190911-bock_lisa: included method of Jones et al., 2013 and
 ;                        added provenance
 ;    20181112-bock_lisa: code rewritten for ESMValTool v2.0
@@ -174,6 +180,19 @@ begin
           error_msg("f", DIAG_SCRIPT, "", \
                     "period for reference years is not properly defined")
         end if
+
+      elseif (isatt(diag_script_info, "ridx_start") .and. \
+          isatt(diag_script_info, "ridx_end")) then
+        ridx_start = diag_script_info@ridx_start
+        ridx_end   = diag_script_info@ridx_end
+        if (ridx_start.lt.0) then
+          ridx_start = 0
+        end if
+        if ((ridx_start.lt.0) .or. (ridx_end.gt.end_year) .or. \
+            (ridx_end.lt.ridx_start)) then
+          error_msg("f", DIAG_SCRIPT, "", \
+                    "period for reference years is not properly defined")
+        end if
       else
         error_msg("f", DIAG_SCRIPT, "", \
                   "period for reference years is not defined " + \
@@ -241,6 +260,13 @@ begin
     ; Anomaly
     if (anom .eq. "anom") then
       ; calculate monthly mean of ref period if 0.5 data points are available
+      if (isatt(diag_script_info, "ridx_start")) then
+      	 ref_start = A0&time(ridx_start)
+	 ref_end   = A0&time(ridx_end)
+printVarSummary(A0)	 
+print(ref_start)
+      end if	 
+
       tmp = time_operations(A0, ref_start, ref_end, "extract", "", 0)
       limit  = toint(0.5 * dimsizes(tmp&time))
       do i = 0, dimsizes(tmp!0)-1
@@ -290,10 +316,16 @@ begin
         end if
         delete(A0_timavg_ref)
 
-        anom_ref(imod) = anom_ref_tmp
-        ; delete(anom_ref_tmp)
-      end if
+        if anom_ref(imod) .eq. anom_ref_tmp then
+          ; delete(anom_ref_tmp)
+        end if
 
+      	if (isatt(diag_script_info, "ridx_start")) then
+      	    delete(ref_start)
+	    delete(ref_end)	 
+      	end if
+
+      end if
     end if
 
     ; Calculate time average of dataset

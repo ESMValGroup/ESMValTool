@@ -15,7 +15,7 @@ load "$diag_scripts/shared/latlon.ncl"
 
 ; #############################################################################
 undef("cumulate_carbon")
-function cumulate_carbon(NBP[*][*][*][*]:numeri)
+function cumulate_carbon(NBP[*][*][*][*]:numeric)
 
 ;  Arguments:
 ;     NBP            : carbon flux variable
