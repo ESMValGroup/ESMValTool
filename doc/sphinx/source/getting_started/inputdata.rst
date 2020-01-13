@@ -96,6 +96,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 |                              | tasmin, uas, vas, zg (day), evspsbl, tdps, ts, tsn, rss, tdps (Eday), tsn (LImon), hfds, tos (Omon), |      |                 |
 |                              | orog, sftlf (fx)                                                                                     |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ERA-Interim-Land             | sm (Lmon)                                                                                            |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-CLOUD                 | clivi, clt, cltStderr, clwvi (Amon)                                                                  |   2  | NCL             |
