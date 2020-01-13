@@ -9,7 +9,6 @@ import os
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean.cm as cmo
-import matplotlib as mpl
 from matplotlib import cm
 import matplotlib.pylab as plt
 import numpy as np

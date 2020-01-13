@@ -31,7 +31,6 @@ import os
 from collections import OrderedDict
 
 import cartopy.crs as ccrs
-import matplotlib as mpl
 from matplotlib import cm
 import numpy as np
 
