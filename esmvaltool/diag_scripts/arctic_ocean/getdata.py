@@ -17,7 +17,7 @@ from esmvaltool.diag_scripts.arctic_ocean.utils import (genfilename,
                                                         get_fx_filenames,
                                                         get_series_lenght,
                                                         get_provenance_record)
-from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
