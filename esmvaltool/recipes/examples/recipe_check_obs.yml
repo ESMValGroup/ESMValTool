@@ -597,8 +597,10 @@ diagnostics:
         short_name: ts
         mip: Amon
       tsn_month:
+        short_name: tsn
         mip: LImon
       tsn_day:
+        short_name: tsn
         mip: Eday
       ua:
         mip: Amon
@@ -627,6 +629,17 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3,
          type: reanaly, version: 1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  ERA-Interim-Land:
+    description: ERA-Interim-Land check
+    variables:
+      sm:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: ERA-Interim-Land, project: OBS6, tier: 3,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2010}
     scripts: null
 
 
