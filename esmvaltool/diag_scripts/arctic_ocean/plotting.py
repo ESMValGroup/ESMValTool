@@ -26,7 +26,6 @@ from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-
 def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
     """Create base figure for multipanel plot.
 
