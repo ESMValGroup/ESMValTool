@@ -46,7 +46,6 @@ from esmvaltool.diag_scripts.arctic_ocean.utils import (
     get_fx_filenames, timmean)
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
-mpl.use('agg')  # noqa
 
 logger = logging.getLogger(os.path.basename(__file__))
 
