@@ -15,7 +15,7 @@ import pyproj
 import seawater as sw
 from cdo import Cdo
 
-from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
