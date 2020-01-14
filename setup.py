@@ -40,6 +40,7 @@ REQUIREMENTS = {
         'scitools-iris>=2.2',
         'scikit-learn',
         'SkillMetrics',
+        'seawater',
         'seaborn',
         'shapely',
         'stratify',
