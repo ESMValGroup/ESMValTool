@@ -227,6 +227,16 @@ def main(cfg):
                 coordinate_collapse(exps, cfg) for exps in exper_seasons
             ]
             plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key)
+            if obs:
+                for iobs in obs:
+                    obs_seasons = apply_seasons(iobs)
+                    obs_seasons = [
+                        coordinate_collapse(obss, cfg) for obss in obs_seasons
+                    ]
+                    plot_key_obs = short_name + '_' + ctrl['dataset'] \
+                        + '_vs_' + iobs['dataset']
+                    plot_ctrl_exper_seasons(ctrl_seasons,
+                                            obs_seasons, cfg, plot_key_obs)
 
         # apply the supermeans (MEAN on time), collapse a coord and plot
         ctrl, exper, obs_list = apply_supermeans(ctrl, exper, obs)
