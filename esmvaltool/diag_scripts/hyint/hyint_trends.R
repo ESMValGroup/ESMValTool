@@ -129,7 +129,7 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
 
     # setup time array
     times <- as.numeric(year1) + 1:ntime - 1
-    rettimes <- 1:length(times)
+    rettimes <- seq_len(length(times))
     if (trend_years[1] != F) {
       # apply trend to limited time interval if required
       rettimes <- which((times >= trend_years[1]) &
@@ -214,7 +214,7 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
 
   # variables definition
   for (var in field_names) {
-    for (itype in 1:length(var_type)) {
+    for (itype in seq_len(length(var_type))) {
       svar <- paste0(var, "_", var_type[itype])
       rfield <- get(svar, rtseries_list)
       rfield[is.nan(rfield)] <- NA

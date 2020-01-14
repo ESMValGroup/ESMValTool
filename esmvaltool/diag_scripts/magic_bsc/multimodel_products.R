@@ -219,7 +219,7 @@ if (moninf <= monsup) {
     )
     # and removing the last december
     names(dim(reference_seasonal_mean)) <- nom
-    dimensiones <- 1:length(dim(reference_seasonal_mean))
+    dimensiones <- seq_len(length(dim(reference_seasonal_mean)))
     reference_seasonal_mean <- Apply(
       reference_seasonal_mean,
       target_dims = time_dim,
@@ -241,7 +241,7 @@ if (moninf <= monsup) {
 }
 
 margins <-
-  list(c(1:length(dim(
+  list(seq_len(length(dim(
     reference_seasonal_mean
   )))[-c(time_dim + 1)])
 years_dim <- which(names(dim(reference_seasonal_mean)) == "year")
@@ -362,7 +362,7 @@ if (moninf <= monsup) {
     )
     borrar <- dim(rcp_seasonal_mean)[time_dim]
     names(dim(rcp_seasonal_mean)) <- nom
-    dimensiones <- 1:length(dim(rcp_seasonal_mean))
+    dimensiones <- seq_len(length(dim(rcp_seasonal_mean)))
     rcp_seasonal_mean <- Apply(
       # nolint
       rcp_seasonal_mean,
@@ -416,7 +416,7 @@ metadata <- list(
 attr(time, "variables") <- metadata
 
 # Save the single model anomalies
-for (mod in 1:length(model_names)) {
+for (mod in seq_len(length(model_names))) {
   data <- anomaly[mod, , , ] # nolint
   data <- aperm(data, c(2, 3, 1))
   names(dim(data)) <- c("lat", "lon", "time")
@@ -470,7 +470,7 @@ years <-
 data_frame$Year <- c(years)
 names(data_frame)[2] <- "Model"
 
-for (i in 1:length(levels(data_frame$Model))) {
+for (i in seq_len(length(levels(data_frame$Model)))) {
   levels(data_frame$Model)[i] <- model_names[i]
 }
 
