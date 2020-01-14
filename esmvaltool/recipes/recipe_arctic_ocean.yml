@@ -45,25 +45,18 @@ diagnostics:
         mip: fx
         exp: historical
         ensemble: r0i0p0
-        start_year: 2000
-        end_year: 2002
-      thetao:
+        additional_datasets:
+          - {dataset: PHC, project: OBS6, tier: 2, type: clim, version: 3}
+      thetao: &variable
         mip: Omon
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
         start_year: 1980
         end_year: 2005
-      so:
-        mip: Omon
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 1980
-        end_year: 2005
-
-    additional_datasets:
-      - {dataset: PHC,        project: OBS6,    tier: 2,    type: clim,    version: 3,        start_year: 1950,  end_year: 1950}
+        additional_datasets:
+          - {dataset: PHC, project: OBS6, mip: Omon, tier: 2, type: clim, version: 3, start_year: 1950, end_year: 1950}
+      so: *variable
     scripts:
       arctic_ocean_main:
         script: arctic_ocean/arctic_ocean.py
