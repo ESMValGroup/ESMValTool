@@ -71,7 +71,7 @@ requirements:
     - xlrd
     - xlsxwriter
     # Command line tools used by diagnostic scripts
-    - cdo
+    - cdo>=1.9.7
     - imagemagick
     - nco
     # Multi language support:

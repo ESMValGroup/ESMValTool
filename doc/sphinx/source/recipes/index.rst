@@ -61,8 +61,10 @@ Land
 .. toctree::
    :maxdepth: 1
 
+   recipe_albedolandcover
    recipe_hydrology
    recipe_landcover
+   recipe_anav13jclim
    recipe_runoff_et
 
 Ocean
