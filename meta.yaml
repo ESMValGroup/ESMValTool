@@ -45,6 +45,7 @@ requirements:
     # Normally installed via pip:
     - cartopy
     - cf-units
+    - cmocean
     - cython
     - ecmwf-api-client
     - eofs
