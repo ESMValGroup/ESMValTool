@@ -15,7 +15,8 @@ dataset_plotnames = {
   'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
   'cds-era5-land-monthly' : 'ERA5-Land',
   'cds-era5-monthly' : 'ERA5',
-  'MERRA2' : 'MERRA2'
+  'MERRA2' : 'MERRA2',
+  'cds-satellite-lai-fapar' : 'SPOT-VGT',
 }
 
 

@@ -28,10 +28,12 @@ def theilsenmk(cube):
     mkmask = (mkdata == 0)  # create mask where MK test is zero
     outcube.data.mask |= mkmask
     # Set name
+    mean_days = np.mean(np.diff(cube.coord('time').points))
+    days_per_year = 365.25
+    outcube.data = outcube.data * (days_per_year / mean_days)
     outcube.rename('theil-sen trend of ' + outcube.name())
     outcube.units = cf_units.Unit(str(outcube.units) + ' year-1')
     return outcube
-
 
 def timemean(cube):
     """Calculate mean over time."""
