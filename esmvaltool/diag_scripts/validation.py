@@ -36,6 +36,15 @@ def plot_contour(cube, plt_title, file_name):
     plt.close()
 
 
+def save_plotted_cubes(cube, cfg, plot_name):
+    """Save cubes that were plotted to disk."""
+    if "save_cubes" in cfg:
+        if cfg["save_cubes"]:
+            save_name = plot_name.replace("png", "nc")
+            save_path = os.path.join(cfg['work_dir'], save_name)
+            iris.save(cube, save_path)
+
+
 def plot_latlon_cubes(cube_1,
                       cube_2,
                       cfg,
@@ -63,6 +72,7 @@ def plot_latlon_cubes(cube_1,
     diffed_cube = imath.subtract(cube_1, cube_2)
     plot_file_path = os.path.join(cfg['plot_dir'], 'Difference_' + plot_name)
     plot_contour(diffed_cube, 'Difference ' + plot_title, plot_file_path)
+    save_plotted_cubes(diffed_cube, cfg, 'Difference_' + plot_name)
 
     # plot each cube
     var = data_names.split('_')[0]
@@ -79,6 +89,7 @@ def plot_latlon_cubes(cube_1,
                                               ".png")
             plot_contour(cube, " ".join([cube_name, cfg['analysis_type'],
                                          var]), plot_file_path)
+            save_plotted_cubes(cube, cfg, os.path.basename(plot_file_path))
     else:
         # obs is always cube_2
         if not season:
@@ -89,6 +100,7 @@ def plot_latlon_cubes(cube_1,
                 cfg['plot_dir'], "_".join([obs_name, var, season]) + ".png")
         plot_contour(cube_2, " ".join([obs_name, cfg['analysis_type'], var]),
                      plot_file_path)
+        save_plotted_cubes(cube_2, cfg, os.path.basename(plot_file_path))
 
 
 def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
@@ -113,7 +125,14 @@ def plot_zonal_cubes(cube_1, cube_2, cfg, plot_data):
         png_name = 'Zonal_Mean_' + xcoordinate + '_' + data_names + '.png'
     elif xcoordinate == 'longitude':
         png_name = 'Merid_Mean_' + xcoordinate + '_' + data_names + '.png'
-    plt.savefig(os.path.join(cfg['plot_dir'], period, png_name))
+    plot_file_path = os.path.join(cfg['plot_dir'], period, png_name)
+    plt.savefig(plot_file_path)
+    save_plotted_cubes(cube_1, cfg,
+                       "_".join([cube_names[0],
+                                 os.path.basename(plot_file_path)]))
+    save_plotted_cubes(cube_2, cfg,
+                       "_".join([cube_names[1],
+                                 os.path.basename(plot_file_path)]))
     plt.close()
 
 
