@@ -160,6 +160,9 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube.coord('latitude').var_name = 'lat'
     cube.coord('longitude').var_name = 'lon'
 
+    # Make latitude increasing
+    cube = cube[..., ::-1, :]
+
     for coord_name in 'latitude', 'longitude', 'time':
         try:
             coord = cube.coord(coord_name)
@@ -185,9 +188,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Convert units if required
     cube.convert_units(definition.units)
-
-    # Make latitude increasing
-    cube = cube[:, ::-1, ...]
 
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",

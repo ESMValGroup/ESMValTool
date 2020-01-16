@@ -29,6 +29,8 @@ preprocessors:
       end_longitude: 40
       start_latitude: 30
       end_latitude: 70
+    mask_landsea:
+      mask_out: sea
 
 diagnostics:
   extreme_index:
