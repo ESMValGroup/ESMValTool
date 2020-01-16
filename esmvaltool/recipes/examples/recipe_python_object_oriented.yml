@@ -3,7 +3,8 @@
 ---
 documentation:
   description: |
-    Example recipe that runs a Python example diagnostic with a more object oriented interface.
+    Example recipe that runs a Python example diagnostic with a more object
+    oriented interface.
 
   authors:
     - schlund_manuel
@@ -12,9 +13,9 @@ documentation:
     - schlund_manuel
 
 datasets:
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
 
 preprocessors:
 
@@ -43,9 +44,15 @@ diagnostics:
     description: Air temperature and precipitation Python tutorial diagnostic.
     variables:
       ta:
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
         preprocessor: preprocessor1
         reference_dataset: ERA-Interim
       pr:
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
         preprocessor: preprocessor2
         reference_dataset: ERA-Interim
     scripts:
@@ -63,9 +70,12 @@ diagnostics:
     description: Another Python tutorial diagnostic.
     variables:
       tas:
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
         preprocessor: preprocessor2
         additional_datasets:
-          - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
         reference_dataset: MPI-ESM-LR
     scripts:
       script2:
