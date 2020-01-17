@@ -25,6 +25,7 @@ REQUIREMENTS = {
         'cartopy',
         'cdo',
         'cf-units',
+        'cmocean',
         'cython',
         'ecmwf-api-client',
         'eofs',

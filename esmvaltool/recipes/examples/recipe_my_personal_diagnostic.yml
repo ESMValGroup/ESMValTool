@@ -15,8 +15,8 @@ documentation:
     - predoi_valeriu
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: NorESM1-M,   project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
   pp:
@@ -31,6 +31,8 @@ diagnostics:
       ta:
         preprocessor: pp
         mip: Amon
+        start_year: 2000
+        end_year: 2002
       sftlf:
         mip: fx
       sftof:
@@ -41,4 +43,3 @@ diagnostics:
       my_diagnostic:
         # Replace this path with the absolute path to your diagnostic (eg. /path/to/your/my_little_diagnostic.py)
         script: examples/my_little_diagnostic.py
-
