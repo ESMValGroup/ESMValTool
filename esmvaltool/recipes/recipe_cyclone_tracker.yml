@@ -18,16 +18,39 @@ documentation:
 
 
 datasets:
-  - {project: CMIP6, mip: day, dataset: ECMWF-IFS-HR, exp: hist-1950,
-     ensemble: r1i1p1f1, grid: gr, start_year: 2005, end_year: 2005}
+#  - {project: PRIMAVERA, activity: HighResMIP, mip: 6hrPlevPt, dataset: CNRM-CM6-1-HR, exp: highresSST-present , ensemble: r1i1p1f2, grid: gr, start_year: 2013, end_year: 2013}
+  - {project: PRIMAVERA, mip: 6hrPlevPt, dataset: CNRM-CM6-1, exp: highresSST-present, ensemble: r1i1p1f2, grid: gr, start_year: 2011, end_year: 2011}
 
 preprocessors:
+
   ppregrid:
     regrid:
       target_grid: 1x1
       scheme: linear
 
+  ppregrid_custom_time:
+    extract_time: &time_period
+      start_year: 2011
+      start_month: 1
+      start_day: 1
+      end_year: 2011
+      end_month: 7
+      end_day: 1
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+
   ppwind:
+    extract_levels:
+      levels: [85000, 70000, 50000]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  ppwind_custom_time:
+    extract_time: *time_period
     extract_levels:
       levels: [85000, 70000, 50000]
       scheme: linear
@@ -43,57 +66,124 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
 
+  ppta_custom_time:
+    extract_time: *time_period
+    extract_levels:
+      levels: [50000,45000,40000,35000,30000]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
   ppzg:
     extract_levels:
-      levels: [90000, 30000, 5000]
+      levels: [90000, 85000, 80000, 75000, 70000, 65000, 60000, 55000, 50000,
+    45000, 40000, 35000, 30000]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  ppzg_custom_time:
+    extract_time: *time_period
+    extract_levels:
+      levels: [90000, 85000, 80000, 75000, 70000, 65000, 60000, 55000, 50000,
+    45000, 40000, 35000, 30000]
       scheme: linear
     regrid:
       target_grid: 1x1
       scheme: linear
 
 diagnostics:
-  tracker:
+#  tracker:
+#    variables:
+#      psl:
+#        preprocessor: ppregrid
+#        short: psl
+#      ua:
+#        preprocessor: ppwind
+#        short: ua
+#      va:
+#        preprocessor: ppwind
+#        short: va
+#      uas:
+#        preprocessor: ppregrid
+#        short: uas
+#      vas:
+#        preprocessor: ppregrid
+#        short: vas
+#      ta:
+#        preprocessor: ppta
+#        short: ta
+#      zg:
+#        preprocessor: ppzg
+#        short: zg7h
+#    scripts:
+#      preproccess:
+#        westbd: -1000
+#        eastbd: -1000
+#        northbd: -1000
+#        southbd: -1000
+#        type: 'tcgen'
+#        mslpthresh: 0.01
+#        mslpthresh2: 101000
+#        v850thresh: 5
+#        contint: 100.0
+#        wcore_depth: 1.0
+#        verb: 3
+#        tracker_exe: /home/users/sloosvel/BSC-Cyclone-Tracker/gfdl-vortextracker/trk_exec/tracker.exe
+#        script: primavera/cyclone_tracker.py
+#        custom_time: False
+
+  tracker_custom_time:
     variables:
       psl:
-        preprocessor: ppregrid
+        preprocessor: ppregrid_custom_time
+        short: psl
       ua:
-        preprocessor: ppwind
+        preprocessor: ppwind_custom_time
+        short: ua
       va:
-        preprocessor: ppwind
+        preprocessor: ppwind_custom_time
+        short: va
       uas:
-        preprocessor: ppregrid
+        preprocessor: ppregrid_custom_time
+        short: uas
       vas:
-        preprocessor: ppregrid
+        preprocessor: ppregrid_custom_time
+        short: vas
       ta:
-        preprocessor: ppta
+        preprocessor: ppta_custom_time
+        short: ta
       zg:
-        preprocessor: ppzg
+        preprocessor: ppzg_custom_time
+        short: zg
     scripts:
       preproccess:
-        westbd: 100
-        eastbd: 370
-        northbd: 30
-        southbd: 0
+        westbd: -1000
+        eastbd: -1000
+        northbd: -1000
+        southbd: -1000
         type: 'tcgen'
         mslpthresh: 0.01
         mslpthresh2: 101000
         v850thresh: 5
         contint: 100.0
         wcore_depth: 1.0
-        verb: 1
-        tracker_exe: /home/users/sloosvel/BSC-Cyclone-Tracker/gfdl-vortextracker/trk_exec/tracker.exe
+        verb: 3
+        ikeflag: y
+        tracker_exe: /home/users/sloosvel/BSC-Cyclone-Tracker/BSC-Cyclone-Tracker/gfdl-vortextracker/trk_exec/tracker.exe
         script: primavera/cyclone_tracker/cyclone_tracker.py
+        custom_time: True
 
-#      postprocess:
-#        scale: #1min 10min, 1hour, 3hours
-#        lat_max: 40
-#        time_min: 48
-#        wind_min: 1.38
-#        max_landfall: 5
-#        no_cores: 5
-#        script: primavera/postprocess.R
-
-
+    #  postprocess:
+    #    scale: 1min #1min 10min, 1hour, 3hours
+    #    lat_max: 40
+    #    time_min: 24
+    #    wind_min: 1
+    #    max_landfall: 5
+    #    no_cores: 1
+    #    script: primavera/cyclone_postprocess.R
 
 
 
