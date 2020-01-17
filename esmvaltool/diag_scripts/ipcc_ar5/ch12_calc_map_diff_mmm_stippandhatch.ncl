@@ -11,12 +11,13 @@
 ;    to the same file, if the file already exists overwrites
 ;
 ; Modification history
-;    20181307-A_lore_ru: Ported to version 2
-;    20170120-A_lore_ru: separated plotting from calculations
-;    20161027-A_lore_ru: added stippling and hatching for significance
-;    20161024-A_lore_ru: adjusted to plot multiple figs with one diag script
-;    20160621-A_lore_ru: adapted to ESMValTool
-;    20130501-A_sedl_ja: written for IPCC AR5.
+;    20181307-A_lorenz_ruth: Ported to version 2
+;    20170120-A_lorenz_ruth: separated plotting from calculations
+;    20161027-A_lorenz_ruth: added stippling and hatching for significance
+;    20161024-A_lorenz_ruth: adjusted to plot multiple figures
+;                            with one diagnostic script
+;    20160621-A_lorenz_ruth: adapted to ESMValTool
+;    20130501-A_sedlacek_jan: written for IPCC AR5.
 ;
 ; #############################################################################
 
@@ -38,10 +39,8 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -198,19 +197,18 @@ begin
         log_info("Read natural variability for stippling for each model")
         iav_file = addfile(input_dir + "/" + "IAV_piControl_" + \
                            info_items[imod]@dataset + "_" +  \
-                           info_items[imod]@ensemble + "_" + field_type0 + \
+                           info_items[imod]@ensemble + "_" + \
                            "_" + var0 + "_" + diag_script_info@time_avg + \
                            ".nc", "r")
         if ((dim_seas .eq. 1) .and. \
             (diag_script_info@time_avg .eq. "annualclim")) then
           iav(imod, 0, :, :) = iav_file->iav
-        else if ((dim_seas .eq. 1) .and. \
-                 (diag_script_info@time_avg .eq. "seasonalclim")) then
+        elseif ((dim_seas .eq. 1) .and. \
+                (diag_script_info@time_avg .eq. "seasonalclim")) then
           tmp_iav = iav_file->iav
           iav(imod, 0, :, :) = tmp_iav(diag_script_info@seasons, :, :)
         else
           iav(imod, :, :, :) = iav_file->iav
-        end if
         end if
       end if
     end if
@@ -221,10 +219,10 @@ begin
       ; Calculate multi-model mean of iav
       log_info("Calculate multi-model mean of natural variability")
       natvar_mmm = rm_single_dims(dim_avg_n(iav, 0) * sqrt(2.))
-    else if (diag_script_info@iavmode .eq. "mmm") then
+    elseif (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
-                            field_type0 + "_" + var0 + "_" + \
+                            var0 + "_" + \
                             diag_script_info@time_avg + ".nc", "r")
       natvar_mmm = natvar_file->iav
       if ((dim_seas .ne. 4) .and. \
@@ -232,21 +230,19 @@ begin
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-      else if (diag_script_info@time_avg .eq. "annualclim") then
+      elseif (diag_script_info@time_avg .eq. "annualclim") then
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp)
       end if
-      end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
-    end if
     end if
   else
     ; Read already calculated mmm iav as default
     log_info("Read precalculated natural variability for multi-model")
     natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
-                          field_type0 + "_" + var0 + "_" + \
+                          var0 + "_" + \
                           diag_script_info@time_avg + ".nc", "r")
     natvar_mmm = natvar_file->iav
     if ((dim_seas .ne. 4) .and. \
@@ -254,11 +250,10 @@ begin
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-    else if (diag_script_info@time_avg .eq. "annualclim") then
+    elseif (diag_script_info@time_avg .eq. "annualclim") then
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp)
-    end if
     end if
   end if
   data2!0 = "models"

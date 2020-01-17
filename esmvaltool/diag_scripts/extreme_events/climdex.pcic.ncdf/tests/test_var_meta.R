@@ -38,7 +38,7 @@ test.create.climdex.cmip5.filenames <- function() {
                          "tx10pETCCDI_mon_CanESM2_rcp45_r1i1p1_201001-209912.nc", "tx10pETCCDI_yr_CanESM2_rcp45_r1i1p1_2010-2099.nc",
                          "tx90pETCCDI_mon_CanESM2_rcp45_r1i1p1_201001-209912.nc", "tx90pETCCDI_yr_CanESM2_rcp45_r1i1p1_2010-2099.nc",
                          "wsdiETCCDI_yr_CanESM2_rcp45_r1i1p1_2010-2099.nc", "altwsdiETCCDI_yr_CanESM2_rcp45_r1i1p1_2010-2099.nc")
-  
+
   checkEquals(valid.tmax.mon.fn, create.climdex.cmip5.filenames(fn.split, climdex.var.list$tmax.mon))
   checkEquals(valid.tmax.all.fn, create.climdex.cmip5.filenames(fn.split, climdex.var.list$tmax.all))
 }

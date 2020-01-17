@@ -9,10 +9,10 @@
 ;    Can either plot seasonal means or annual means in one panel, but not both
 ;
 ; Modification history
-;    20181307-A_lore_ru: Ported to version 2
-;    20171002-A_lore_ru: Added tags for searching
-;    20170530-A_lore_ru: multiple variables possible
-;    20170120-A_lore_ru: adapted towritten for ESMValTool
+;    20181307-A_lorenz_ruth: Ported to version 2
+;    20171002-A_lorenz_ruth: Added tags for searching
+;    20170530-A_lorenz_ruth: multiple variables possible
+;    20170120-A_lorenz_ruth: adapted towritten for ESMValTool
 ;                        based on IPCC AR5 scripts.
 ;
 ; #############################################################################
@@ -32,10 +32,8 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -421,13 +419,13 @@ begin
       "12.11 of Collins et al. (2013)."
   end if
   statistics = ("mean")
-  domain = ("glob")
-  plottype = ("map")
-  authors = (/"lore_ru"/)
+  domains = ("global")
+  plot_types = ("geo")
+  authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
-                 authors, references, infiles)
+  log_provenance(nc_file, plot_file, caption, statistics, domains, \
+                 plot_types, authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")
 end

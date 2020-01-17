@@ -444,6 +444,62 @@ begin
 
 end
 
+
+; #############################################################################
+undef("ncdf_att")
+function ncdf_att(infile[1],
+                  att[1]:string)
+;
+; Arguments
+;    infile: full path & name of the netCDF file to be read OR a file
+;            variable already created by addfile(...).
+;    att: attribute to be read.
+;
+; Return value
+;    Contents of attribute att (could be any type supported by netCDF).
+;
+; Description
+;    Checks existence of att in infile, then retrieves contents.
+;
+; Caveats
+;    str_infile does not resolve the file name for a file variable.
+;
+; References
+;
+; Modification history
+;    20140131-A_gott_kl: written.
+;
+local funcname, scriptname, f, file_atts, i, result
+begin
+
+  funcname = "ncdf_att"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
+
+  if (typeof(infile).eq."string") then
+    f = addfile(infile, "r")
+    str_infile = infile
+  else if (typeof(infile).eq."file") then
+    f = infile
+    str_infile = "file associated with file variable argument."
+  else
+    error_msg("f", scriptname, funcname, "wrong type of infile argument")
+  end if
+  end if
+  file_atts = getvaratts(f)  ; retrieve global attributes
+  if (any(file_atts.eq.att)) then
+    i = ind(file_atts.eq.att)
+    result = f@$file_atts(i)$
+  else
+    error_msg("w", scriptname, funcname, att + " not found in " + str_infile)
+    result = "missing"
+  end if
+
+  leave_msg(scriptname, funcname)
+  return(result)
+
+end
+
 ; #############################################################################
 undef("ncdf_define")
 function ncdf_define(ncdf, data)
