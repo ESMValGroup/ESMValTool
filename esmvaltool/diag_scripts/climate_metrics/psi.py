@@ -29,6 +29,7 @@ import os
 
 import cf_units
 import iris
+import iris.coord_categorisation
 import numpy as np
 from scipy import stats
 
@@ -114,6 +115,7 @@ def main(cfg):
     for (dataset, [data]) in grouped_data.items():
         logger.info("Processing %s", dataset)
         cube = iris.load_cube(data['filename'])
+        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
         data.update(psi_attrs)
