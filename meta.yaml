@@ -49,7 +49,7 @@ requirements:
     - ecmwf-api-client
     - eofs
     - esmpy
-    - esmvalcore>=2.0.0b3,<2.1
+    - esmvalcore>=2.0.0b5,<2.1
     - jinja2
     - matplotlib
     - nc-time-axis
