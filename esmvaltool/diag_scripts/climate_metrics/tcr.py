@@ -33,6 +33,7 @@ from pprint import pformat
 
 import cf_units
 import iris
+import iris.coord_categorisation
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -51,7 +52,10 @@ END_YEAR_IDX = 80
 
 def _get_anomaly_cube(onepct_cube, pi_cube):
     """Get anomaly cube."""
+    iris.coord_categorisation.add_year(onepct_cube, 'time')
     onepct_cube = onepct_cube.aggregated_by('year', iris.analysis.MEAN)
+
+    iris.coord_categorisation.add_year(pi_cube, 'time')
     pi_cube = pi_cube.aggregated_by('year', iris.analysis.MEAN)
 
     # Check cube
