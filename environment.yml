@@ -10,7 +10,7 @@ dependencies:
   - esmvalcore>=2.0.0b3,<2.1
   # Non-Python dependencies
   - graphviz
-  - cdo
+  - cdo>=1.9.7
   - imagemagick
   - nco
 
