@@ -8,6 +8,8 @@ import iris.analysis
 import iris.cube
 import iris.util
 
+from esmvalcore.preprocessor import extract_month
+
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
@@ -110,8 +112,8 @@ class CycloneTracker(object):
                 alias, data, os.path.join(self.cfg[n.WORK_DIR], output)
                 )
 
-
-    def run_custom_time(self, dataset, total, years, months, start_day, end_day, output_file):
+    def run_custom_time(self, dataset, total, years,
+                        months, start_day, end_day, output_file):
         total_period = []
         for i, variable in enumerate(total):
             total_period.append(total[i])
@@ -128,7 +130,8 @@ class CycloneTracker(object):
                        end_year=list(years)[-1],
                        end_month=list(months)[-1],
                        end_day=end_day)
-        self.call_tracker(total, filename, output_file, list(years)[0], list(months)[0])
+        self.call_tracker(total, filename, output_file,
+                          list(years)[0], list(months)[0])
 
     def run_full_years(self, dataset, total, years, months, output_file):
         for month in months:
@@ -152,7 +155,8 @@ class CycloneTracker(object):
                     dataset=dataset,
                     year=year,
                     month=format(month, '02d'))
-                self.call_tracker(total_year, filename, output_file, year, month)
+                self.call_tracker(total_year, filename, output_file,
+                                  year, month)
 
     def call_tracker(self, variables, filename, output, year, month):
         input_path = os.path.join(self.cfg[n.WORK_DIR], filename + '.nc')
@@ -271,3 +275,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
