@@ -5,7 +5,7 @@ documentation:
 
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
-    9.2, 9.4, 9.5, 9.8, 9.14, 9.24, 9.42, 9.45a.
+    9.2, 9.4, 9.5, 9.8, 9.14, 9.24, 9.26, 9.27, 9.42, 9.45a.
 
   authors:
     - bock_lisa
@@ -39,6 +39,24 @@ preprocessors:
       statistics: [mean]
       exclude: [reference_dataset]
 
+  land_fraction_weighting:
+    weighting_landsea_fraction: &weighting_options
+      area_type: land
+      exclude: [
+        'bcc-csm1-1-m',
+        'GCP',
+        'inmcm4',
+        'JMA-TRANSCOM',
+      ]
+
+  sea_fraction_weighting:
+    weighting_landsea_fraction:
+      <<: *weighting_options
+      area_type: sea
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+
   spatial_mean:
     area_statistics:
       operator: mean
@@ -58,9 +76,8 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    zonal_means:
-      coordinate: longitude
-      mean_type: mean
+    zonal_statistics:
+      operator: mean
     convert_units:
       units: degC
 
@@ -75,9 +92,8 @@ preprocessors:
       end_longitude: 360.
       start_latitude: -5.
       end_latitude: 5.
-    zonal_means:
-      coordinate: latitude
-      mean_type: mean
+    meridional_statistics:
+      operator: mean
     convert_units:
       units: degC
 
@@ -911,6 +927,136 @@ diagnostics:
         region: "Antarctic"
         # A = annual mean, 3 = March, 9 = September
         month: "2"
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.26
+  # **********************************************************************
+  # Ensemble-mean global ocean carbon uptake (top) and global land
+  # carbon uptake (bottom) in the CMIP5 ESMs for the historical period
+  # 1901-2005.
+  # **********************************************************************
+
+  fig09-26top:
+    variables:
+      fgco2: &fgco2_settings
+        preprocessor: sea_fraction_weighting
+        project: CMIP5
+        mip: Omon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1901
+        end_year: 2005
+        reference_dataset: JMA-TRANSCOM
+        plot_units: PgC y-1
+        additional_datasets:
+          # - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: HadGEM2-CC}
+          - {dataset: HadGEM2-ES}
+          - {dataset: inmcm4}
+          - {dataset: IPSL-CM5A-LR}
+          - {dataset: IPSL-CM5A-MR}
+          - {dataset: IPSL-CM5B-LR}
+          - {dataset: MIROC-ESM}
+          - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MPI-ESM-MR}
+          - {dataset: NorESM1-ME}
+      fgco2_GCP:
+        <<: *fgco2_settings
+        preprocessor: default
+        short_name: fgco2
+        additional_datasets:
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+    scripts:
+      main_global: &fig09_26_settings
+        script: carbon_cycle/main.ncl
+        styleset: CMIP5
+        region: global
+        legend_year_outside: false
+        legend_outside: false
+        sort: true
+        anav_month: true
+        seasonal_cycle_plot: false
+        errorbar_plot: false
+        mean_IAV_plot: false
+        evolution_plot: true
+        evolution_plot_volcanoes: false
+        evolution_plot_anomaly: false
+        evolution_plot_ref_dataset: GCP
+
+  fig09-26bottom:
+    variables:
+      nbp:
+        <<: *fgco2_settings
+        preprocessor: land_fraction_weighting
+        mip: Lmon
+        additional_datasets: &nbp_datasets
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+          - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: HadGEM2-CC}
+          - {dataset: HadGEM2-ES}
+          - {dataset: inmcm4}
+          - {dataset: IPSL-CM5A-LR}
+          - {dataset: IPSL-CM5A-MR}
+          - {dataset: IPSL-CM5B-LR}
+          - {dataset: MIROC-ESM}
+          - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MPI-ESM-MR}
+          - {dataset: NorESM1-ME}
+    scripts:
+      main_global:
+        <<: *fig09_26_settings
+
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.27
+  # **********************************************************************
+  # Simulation of global mean (a) atmosphere-ocean CO2 fluxes (fgCO2)
+  # and (b) net atmosphere-land CO2 fluxes (NBP), by ESMs for the
+  # period 1986-2005.
+  # **********************************************************************
+
+  fig09-27top:
+    variables:
+      fgco2:
+        <<: *fgco2_settings
+        start_year: 1986
+      fgco2_GCP:
+        <<: *fgco2_settings
+        preprocessor: default
+        short_name: fgco2
+        additional_datasets:
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1986, end_year: 2005, frequency: yr}
+    scripts:
+      main_global: &fig09_27_settings
+        <<: *fig09_26_settings
+        errorbar_plot: true
+        evolution_plot: false
+
+  fig09-27bottom:
+    variables:
+      nbp:
+        <<: *fgco2_settings
+        preprocessor: default
+        mip: Lmon
+        start_year: 1986
+        additional_datasets: *nbp_datasets
+    scripts:
+      main_global:
+        <<: *fig09_27_settings
+
 
   # **********************************************************************
   # Flato et al. (2013) - IPCC AR5, chap. 9
