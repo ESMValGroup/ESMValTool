@@ -18,11 +18,21 @@ First create a recipe in esmvaltool/recipes to define the input data your analys
 and optionally preprocessing and other settings. Also create a script in the esmvaltool/diag_scripts directory
 and make sure it is referenced from your recipe. The easiest way to do this is probably to copy the example recipe
 and diagnostic script and adjust those to your needs.
-A good example recipe is esmvaltool/recipes/examples/recipe_python.yml
-and a good example diagnostic is esmvaltool/diag_scripts/examples/diagnostic.py.
 
 If you have no preferred programming language yet, Python 3 is highly recommended, because it is most well supported.
 However, NCL, R, and Julia scripts are also supported.
+
+Good example recipes for the different languages are:
+* python: esmvaltool/recipes/examples/recipe_python.yml
+* R: esmvaltool/recipes/examples/recipe_r.yml
+* julia: esmvaltool/recipes/examples/recipe_julia.yml
+* ncl: esmvaltool/recipes/examples/recipe_ncl.yml
+
+Good example diagnostics are:
+* python: esmvaltool/diag_scripts/examples/diagnostic.py
+* R: esmvaltool/diag_scripts/examples/diagnostic.R
+* julia: esmvaltool/diag_scripts/examples/diagnostic.jl
+* ncl: esmvaltool/diag_scripts/examples/diagnostic.ncl
 
 Unfortunately not much documentation is available at this stage,
 so have a look at the other recipes and diagnostics for further inspiration.
