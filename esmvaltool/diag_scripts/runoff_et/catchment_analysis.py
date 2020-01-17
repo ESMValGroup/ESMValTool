@@ -33,6 +33,7 @@ import os
 from itertools import cycle
 
 import iris
+import iris.coord_categorisation
 import numpy as np
 
 import esmvaltool.diag_scripts.shared as diag
@@ -519,6 +520,7 @@ def get_sim_data(cfg, datapath, catchment_cube):
     for i, days in enumerate(daypermonth):
         new_cube.data[i] *= days
     # Aggregate over year --> unit mm per year
+    iris.coord_categorisation.add_year(new_cube, 'time')
     year_cube = new_cube.aggregated_by('year', iris.analysis.SUM)
     year_cube.units = "mm a-1"
     # Compute long term mean
