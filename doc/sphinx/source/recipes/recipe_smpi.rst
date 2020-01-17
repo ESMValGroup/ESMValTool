@@ -1,7 +1,7 @@
 .. _recipes_smpi:
 
-Single Model Perfomance Index (SMPI)
-====================================
+Single Model Performance Index (SMPI)
+=====================================
 
 Overview
 --------
@@ -72,7 +72,8 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
 
 * ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
 * HadISST (sic, tos - reformat_scripts/obs/reformat_obs_HadISST.ncl)

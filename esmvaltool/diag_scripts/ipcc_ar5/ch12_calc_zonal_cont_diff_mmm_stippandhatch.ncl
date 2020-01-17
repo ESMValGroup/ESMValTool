@@ -31,15 +31,16 @@
 ;    base_cnMaxLevel: max level for base contours
 ;
 ; Modification history
-;    20181024-A_lore_ru: ported to v2, regridding in preprocessor
-;    20170517-A_lore_ru: changed to regrid to common grid first before
-;                        calculating zonal average and added ability to use
-;                        irregular grids (e.g. thetao)
-;    20170127-A_lore_ru: changed routine for plotting stippling/hatching to
-;                        zonalmean_profile to get dots and hatch
-;    20161031-A_lore_ru: increased flexibility and add stippling and hatching
-;    20160831-A_lore_ru: adapted for ESMValTool
-;    20130503-A_sedl_ja: written for IPCC AR5
+;    20181024-A_lorenz_ruth: ported to v2, regridding in preprocessor
+;    20170517-A_lorenz_ruth: changed to regrid to common grid first before
+;                            calculating zonal average and added ability to use
+;                            irregular grids (e.g. thetao)
+;    20170127-A_lorenz_ruth: changed routine for plotting stippling/hatching to
+;                            zonalmean_profile to get dots and hatch
+;    20161031-A_lorenz_ruth: increased flexibility and added
+;                            stippling and hatching
+;    20160831-A_lorenz_ruth: adapted for ESMValTool
+;    20130503-A_sedlacek_jan: written for IPCC AR5
 ;
 ; #############################################################################
 ; A temporary file written by the invoking Python script
@@ -59,10 +60,8 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -202,12 +201,11 @@ begin
     if ((dim_seas .eq. 1) .and. \
         (diag_script_info@time_avg .eq. "annualclim")) then
       var_reg(imod, 0, :, :) = (/data1/)
-    else if ((dim_seas .eq. 1) .and. \
-             (diag_script_info@time_avg .eq. "seasonalclim")) then
+    elseif ((dim_seas .eq. 1) .and. \
+            (diag_script_info@time_avg .eq. "seasonalclim")) then
       var_reg(imod, 0, :, :) = (/data1(diag_script_info@seasons, :, :)/)
     else
       var_reg(imod, :, :, :) = (/data1(diag_script_info@seasons, :, :)/)
-    end if
     end if
     if (isatt(diag_script_info, "iavmode")) then
       if (diag_script_info@iavmode .eq. "each") then
@@ -217,7 +215,7 @@ begin
         iav_file = addfile(input_dir + "/" + \
                            "IAV_piControl_" + \
                            info_items[imod]@dataset + "_" + \
-                           info_items[imod]@ensemble + "_" + field_type0 \
+                           info_items[imod]@ensemble + "_" \
                            + "_" + var0 + "_" + \
                            diag_script_info@time_avg + ".nc", "r")
         iav_native = iav_file->iav
@@ -226,8 +224,8 @@ begin
           ; Average over longitudes for zonal mean
           iav_zon = dim_avg_n_Wrap(iav_native, 2)
           iav(imod, 0, :, :) = iav_zon
-        else if ((dim_seas .eq. 1) .and. \
-                 (diag_script_info@time_avg .eq. "seasonalclim")) then
+        elseif ((dim_seas .eq. 1) .and. \
+                (diag_script_info@time_avg .eq. "seasonalclim")) then
           ; Average over longitudes for zonal mean
           iav_zon = dim_avg_n_Wrap(iav_native, 3)
           iav(imod, 0, :, :) = iav_zon(diag_script_info@seasons, :, :)
@@ -235,7 +233,6 @@ begin
           ; Average over longitudes for zonal mean
           iav_zon = dim_avg_n_Wrap(iav_native, 3)
           iav(imod, :, :, :) = iav_zon(diag_script_info@seasons, :, :)
-        end if
         end if
       end if
     end if
@@ -247,12 +244,12 @@ begin
       ; calculate multi-model mean of iav
       tmp_pow = dim_avg_n(iav ^ 2, 0)
       natvar_mmm = rm_single_dims(tmp_pow * sqrt(2.))
-    else if (diag_script_info@iavmode .eq. "mmm") then
+    elseif (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       ; read already calculated mmm iav
       natvar_file = addfile(input_dir + "/" + \
-                            "IAV_mmm_piControl_" + field_type0 + \
-                            "_" + var0 + "_" + diag_script_info@time_avg + \
+                            "IAV_mmm_piControl_" + \
+                            var0 + "_" + diag_script_info@time_avg + \
                             ".nc", "r")
       natvar_mmm = natvar_file->iav
       if ((dim_seas .ne. 4) .and. \
@@ -260,22 +257,20 @@ begin
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-      else if (diag_script_info@time_avg .eq. "annualclim") then
+      elseif (diag_script_info@time_avg .eq. "annualclim") then
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp)
       end if
-      end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
-    end if
     end if
   else
     log_info("Read precalculated natural variability for multi-model")
     ; read already calculated mmm iav
     natvar_file = addfile(input_dir + "/" + \
-                          "IAV_mmm_piControl_" + field_type0 + \
-                          "_" + var0 + "_" + diag_script_info@time_avg + \
+                          "IAV_mmm_piControl_" + \
+                          var0 + "_" + diag_script_info@time_avg + \
                           ".nc", "r")
     natvar_mmm = natvar_file->iav
     if ((dim_seas .ne. 4) .and. \
@@ -283,11 +278,10 @@ begin
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-    else if (diag_script_info@time_avg .eq. "annualclim") then
+    elseif (diag_script_info@time_avg .eq. "annualclim") then
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp)
-    end if
     end if
   end if
   ; ##############################################
