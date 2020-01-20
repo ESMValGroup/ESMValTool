@@ -37,7 +37,7 @@ diagnostics:
         derive: true
         force_derivation: false
         additional_datasets:
-          - {dataset: GFDL-CM3,  ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, ensemble: r1i1p1}
           - {dataset: GISS-E2-H, ensemble: r1i1p2}
           - {dataset: GISS-E2-R, ensemble: r1i1p2}
       swcre:
@@ -55,21 +55,6 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: HadGEM2-A}
-      nbp_grid: &nbp_grid
-        preprocessor: regrid
-        project: CMIP5
-        mip: Lmon
-        exp: historical
-        start_year: 2000
-        end_year: 2005
-        derive: true
-        additional_datasets:
-          - {dataset: CanESM2,      ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR,   ensemble: r1i1p1}
-          - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
-      fgco2_grid:
-        <<: *nbp_grid
-        mip: Omon
     scripts: null
 
   diag2:
