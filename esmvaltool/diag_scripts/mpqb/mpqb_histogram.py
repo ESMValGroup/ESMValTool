@@ -22,6 +22,15 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+dataset_plotnames = {
+  'ERA-Interim-Land' : 'ERA-Interim-Land',
+  'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
+  'cds-era5-land-monthly' : 'ERA5-Land',
+  'cds-era5-monthly' : 'ERA5',
+  'MERRA2' : 'MERRA2',
+  'cds-satellite-lai-fapar' : 'SPOT-VGT',
+}
+
 def calculate_histograms(cube, numbars, lower_upper):
     # returns a dictionary for histogram plotting
     hist, bins = da.histogram(cube.core_data(), bins=numbars, range=lower_upper)
@@ -85,7 +94,7 @@ def main(cfg):
                 ax.bar(x,
                        hist["hist"],
                        width,
-                       label = dataset,
+                       label = dataset_plotnames[dataset],
                        )
                 plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha = 0.3)
                 plt.legend()
@@ -93,7 +102,7 @@ def main(cfg):
                 ax.hist(hist["bins"][:-1],
                         hist["bins"],
                         weights=hist["hist"],
-                        label=dataset,
+                        label=dataset_plotnames[dataset],
                         histtype='step',
                         linewidth=2
                         )
