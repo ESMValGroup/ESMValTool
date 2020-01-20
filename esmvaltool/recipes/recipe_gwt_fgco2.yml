@@ -50,25 +50,25 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
 
-      fgco2_ssp119_1.5:
-        short_name: fgco2
-        preprocessor: prep_1
-        additional_datasets:
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r2i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r3i1p1f2, start_year: 2013, end_year: 2033, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r4i1p1f2, start_year: 2017, end_year: 2037, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
-
-      fgco2_ssp119_2.0:
-        short_name: fgco2
-        preprocessor: prep_1
-        additional_datasets:
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r2i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r3i1p1f2, start_year: 2028, end_year: 2048, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r4i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
-        # - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r8i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
+#      fgco2_ssp119_1.5:
+#        short_name: fgco2
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r2i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r3i1p1f2, start_year: 2013, end_year: 2033, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r4i1p1f2, start_year: 2017, end_year: 2037, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
+#
+#      fgco2_ssp119_2.0:
+#        short_name: fgco2
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r2i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r3i1p1f2, start_year: 2028, end_year: 2048, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r4i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119], ensemble: r8i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
 
       fgco2_ssp126_1.5:
         short_name: fgco2
@@ -170,35 +170,35 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370], ensemble: r4i1p1f2, start_year: 2075, end_year: 2095, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370], ensemble: r8i1p1f2, start_year: 2073, end_year: 2093, grid: gn}
 
-      fgco2_ssp434_1.5:
-        short_name: fgco2
-        preprocessor: prep_1
-        additional_datasets:
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r4i1p1f2, start_year: 2017, end_year: 2037, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
-
-      fgco2_ssp434_2.0:
-        short_name: fgco2
-        preprocessor: prep_1
-        additional_datasets:
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
-
-      fgco2_ssp434_3.0:
-        short_name: fgco2
-        preprocessor: prep_1
-        additional_datasets:
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2053, end_year: 2073, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2052, end_year: 2072, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2051, end_year: 2071, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r4i1p1f2, start_year: 2054, end_year: 2074, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r8i1p1f2, start_year: 2049, end_year: 2069, grid: gn}
+#      fgco2_ssp434_1.5:
+#        short_name: fgco2
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r4i1p1f2, start_year: 2017, end_year: 2037, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
+#
+#      fgco2_ssp434_2.0:
+#        short_name: fgco2
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
+#
+#      fgco2_ssp434_3.0:
+#        short_name: fgco2
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2053, end_year: 2073, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2052, end_year: 2072, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2051, end_year: 2071, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r4i1p1f2, start_year: 2054, end_year: 2074, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r8i1p1f2, start_year: 2049, end_year: 2069, grid: gn}
 
       fgco2_ssp585_1.5:
         short_name: fgco2
