@@ -9,7 +9,7 @@
 ;    http://www.esrl.noaa.gov/psd/data/gridded/data.ncep.reanalysis.html
 ;
 ; Last access
-;    20190204
+;    20200120
 ;
 ; Download and processing instructions
 ;    To facilitate the download, the links to the ftp server are provided.
@@ -37,14 +37,16 @@
 ;      ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/other_gauss/
 ;        ulwrf.ntat.gauss.????.nc
 ;
-;    Select the section "Pressure" and "Surface" and download the variables
-;    listed below. Since raw data on pressure levels and for surface have the
+;    Select the section "Pressure", "Surface" and "Surface_gauss"
+;    and download the variables listed below.
+;    Since raw data on pressure levels and for surface have the
 ;    same file and variable name, save the data in two different subdirectories
 ;    "press" and "surf" in input_dir_path.
 ;    Specify the time range of the data as YEAR1-YEAR2 below, considering only
 ;    complete years (Jan to Dec).
 ;
 ; Modification history
+;    20200120-weigel_katja: Added psl and ts.
 ;    20190204-righi_mattia: merged with NCEP-daily and adapted to v2.
 ;    20140128-righi_mattia: written.
 ;
@@ -70,32 +72,38 @@ begin
   ; Selected variable (standard name)
   VAR = (/"ta", "zg", "hur", "hus", "ua", \
           "va", "wap", "tas", "pr", \
-          "ua", "va", "pr", "rlut"/)
+          "ua", "va", "pr", "rlut", \
+          "psl", "ts"/)
 
   ; Name in the raw data
   NAME = (/"air", "hgt", "rhum", "shum", "uwnd", \
            "vwnd", "omega", "air", "prate", \
-           "uwnd", "vwnd", "prate", "ulwrf"/)
+           "uwnd", "vwnd", "prate", "ulwrf", \
+           "pres", "skt"/)
 
   ; Subdirectory
   SUBDIR = (/"pressure/", "pressure/", "pressure/", "pressure/", "pressure/", \
              "pressure/", "pressure/", "surface/", "surface/", \
-             "pressure/", "pressure/", "surface/", "surface/"/)
+             "pressure/", "pressure/", "surface/", "surface/", \
+             "surface/", "surface_gauss/"/)
 
   ; Expected units (according to CMOR standard)
   EXPUNITS = (/"K", "m", "%", "1", "m/s", \
                "m/s", "Pascal/s", "K", "Kg/m^2/s", \
-               "m/s", "m/s", "Kg/m^2/s", "W/m^2"/)
+               "m/s", "m/s", "Kg/m^2/s", "W/m^2", \
+               "Pascals", "K"/)
 
   ; MIP
   MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", \
           "Amon", "Amon", "Amon", "Amon", \
-          "day", "day", "day", "day"/)
+          "day", "day", "day", "day", \
+          "Amon", "Amon"/)
 
   ; Frequency
   FREQ = (/"mon", "mon", "mon", "mon", "mon", \
            "mon", "mon", "mon", "mon", \
-           "day", "day", "day", "day"/)
+           "day", "day", "day", "day", \
+           "mon", "mon"/)
 
   ; CMOR tables
   CMOR_TABLE = getenv("cmor_tables") + "/cmip5/Tables/CMIP5_" + MIP
@@ -126,6 +134,11 @@ begin
 
       if (isStrSubset(MIP(vv), "mon")) then
         fname = input_dir_path + SUBDIR(vv) + NAME(vv) + ".mon.mean.nc"
+      end if
+
+      if (isStrSubset(SUBDIR(vv), "gauss") .and. \
+          isStrSubset(MIP(vv), "mon")) then
+        fname = input_dir_path + SUBDIR(vv) + NAME(vv) + ".sfc.mon.mean.nc"
       end if
 
       if (isStrSubset(MIP(vv), "day")) then
@@ -165,7 +178,7 @@ begin
       end if
 
       ; Convert units
-      if (any(VAR(vv).eq.(/"ta", "tas"/)) .and. \
+      if (any(VAR(vv).eq.(/"ta", "tas", "ts"/)) .and. \
           output@units.eq."degC") then
         output = output + 273.15
         output@units = "K"
@@ -173,6 +186,10 @@ begin
       if (VAR(vv).eq."hus" .and. output@units.eq."grams/kg") then
         output = output / 1000.
         output@units = "1"
+      end if
+      if (VAR(vv).eq."psl" .and. output@units.eq."millibars") then
+        output = output * 100.
+        output@units = "Pascals"
       end if
       if (output@units.ne.EXPUNITS(vv)) then
         error_msg("f", DIAG_SCRIPT, "", \
@@ -199,6 +216,23 @@ begin
       delete(output)
       output = tmp
       delete(tmp)
+
+      ; Reformat from gaussian to fixed grid for ts.
+      ; Using the same size as the non gaussian surface grid.
+      if (isStrSubset(SUBDIR(vv), "gauss") .and. \
+          isStrSubset(MIP(vv), "mon")) then
+        tmp = g2fsh_Wrap(output, (/73,144/))
+        lattmp = flt2dble(tmp&lat)
+        lontmp = flt2dble(tmp&lon)
+        delete(tmp&lat)
+        delete(tmp&lon)
+        tmp&lat = lattmp
+        tmp&lon = lontmp
+        delete(output)
+        output = tmp
+        delete(tmp)
+      end if
+
 
       ; Calculate coordinate bounds
       bounds = guess_coord_bounds(output, FREQ(vv))
