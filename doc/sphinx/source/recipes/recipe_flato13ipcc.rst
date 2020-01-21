@@ -403,7 +403,6 @@ References
 Example plots
 -------------
 
-.. _fig_flato13ipcc_1:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-2.png
    :align:   center
 
@@ -413,7 +412,6 @@ Example plots
    (Dee et al., 2011), c) mean absolute model error with respect to the
    climatology from ERA-Interim.
 
-.. _fig_flato13ipcc_2:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-4.png
    :align:   center
 
@@ -425,7 +423,6 @@ Example plots
    difference between the multi-model mean and the ERA-Interim absolute
    seasonality.
 
-.. _fig_flato13ipcc_3:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
    :align:   center
 
@@ -437,7 +434,6 @@ Example plots
    averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
    gray lines), and the multi-model mean (thick red line).
 
-.. _fig_flato13ipcc_4:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-6.png
    :align:   center
 
@@ -451,7 +447,6 @@ Example plots
    effect (SW CRE). The correlations between the reference and alternate 
    observations are also shown (solid green circles).
 
-.. _fig_flato13ipcc_5:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-8.png
    :align:   center
 
@@ -464,7 +459,6 @@ Example plots
    different observations (thick black lines). Dataset pre-processing like
    described in Jones et al., 2013.
 
-.. _fig_flato13ipcc_6:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
    :align: center
 
@@ -480,7 +474,6 @@ Example plots
    reference for the error calculation (a), (b), and (c); and for
    observations in (d).
 
-.. _fig_flato13ipcc_7:
 .. figure::  /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
    :align:   center
    :width:   9cm
@@ -494,7 +487,6 @@ Example plots
    Figure 9.24a: Time series of total sea ice area and extent (accumulated) for the Arctic
    in September including multi-model mean and standard deviation.
 
-.. _fig_flato13ipcc_6:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-26.png
    :align: center
 
@@ -506,7 +498,6 @@ Example plots
    grey areas show the range of annual mean fluxes simulated across the model
    ensemble.
 
-.. _fig_flato13ipcc_7:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-27.png
    :align: center
 
@@ -517,7 +508,6 @@ Example plots
    variability in the fluxes, calculated as the standard deviation of the
    annual means over the period 1986–2005.
 
-.. _fig_flato13ipcc_8:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
    :align: center
 
@@ -525,7 +515,6 @@ Example plots
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
 
-.. _fig_flato13ipcc_9:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-42b.png
    :align: center
 
