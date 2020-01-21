@@ -82,9 +82,8 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    zonal_means:
-      coordinate: longitude
-      mean_type: mean
+    zonal_statistics:
+      operator: mean
     convert_units:
       units: degC
 
@@ -99,9 +98,8 @@ preprocessors:
       end_longitude: 360.
       start_latitude: -5.
       end_latitude: 5.
-    zonal_means:
-      coordinate: latitude
-      mean_type: mean
+    meridional_statistics:
+      operator: mean
     convert_units:
       units: degC
 
