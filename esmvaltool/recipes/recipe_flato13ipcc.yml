@@ -6,6 +6,9 @@ documentation:
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
     9.2, 9.4, 9.5, 9.6, 9.8, 9.14, 9.24, 9.26, 9.27, 9.42, 9.45a.
+    Processing of CMIP3 models currently works only in serial mode, due to
+    an issue in the input data still under investigation. This affects the
+    diagnostics for Fig. 9.6 in this recipe.
 
   authors:
     - bock_lisa
