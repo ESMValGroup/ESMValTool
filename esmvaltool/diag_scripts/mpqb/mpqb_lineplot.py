@@ -44,7 +44,7 @@ def main(cfg):
 
     if cfg['write_plots']:
         plt.clf()
-        fig = plt.figure()
+        fig = plt.figure(figsize=(10,4))
         ax = fig.add_subplot()
         for dataset in grouped_input_data:
             logger.info("Opening dataset: {0}".format(dataset))
