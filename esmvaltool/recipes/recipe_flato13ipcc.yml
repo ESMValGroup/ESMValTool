@@ -674,32 +674,28 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
+        field: T2Ms
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - &cmip3 {dataset: bccr_bcm2_0, project: CMIP3, mip: A1,
-                modeling_realm: atm, exp: 20c3m, frequency: mo, ensemble: run1}
-      - {<<: *cmip3, dataset: cccma_cgcm3_1}
-      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63}
-      - {<<: *cmip3, dataset: csiro_mk3_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_1}
-      - {<<: *cmip3, dataset: giss_aom}
-      - {<<: *cmip3, dataset: giss_model_e_h}
-      - {<<: *cmip3, dataset: giss_model_e_r}
-      - {<<: *cmip3, dataset: iap_fgoals1_0_g}
-      - {<<: *cmip3, dataset: ingv_echam4}
-      - {<<: *cmip3, dataset: inmcm3_0}
-      - {<<: *cmip3, dataset: ipsl_cm4}
-      - {<<: *cmip3, dataset: miroc3_2_hires}
-      - {<<: *cmip3, dataset: miroc3_2_medres}
-      # - {<<: *cmip3, dataset: miub_echo_g}
-      - {<<: *cmip3, dataset: mpi_echam5}
-      # - {<<: *cmip3, dataset: mri_cgcm2_3_2a}
-      - {<<: *cmip3, dataset: ncar_ccsm3_0}
-      - {<<: *cmip3, dataset: ncar_pcm1}
-      - {<<: *cmip3, dataset: ukmo_hadcm3}
-      - {<<: *cmip3, dataset: ukmo_hadgem1}
+      - &cmip3 {dataset: bccr_bcm2_0,  institute: BCCR, project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  frequency: mo, ensemble: run1}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
+      - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
+      - {<<: *cmip3, dataset: giss_aom, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
+      - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
+      - {<<: *cmip3, dataset: ingv_echam4, institute: INGV}
+      - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
+      - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
+      - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
+      - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
+      - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
+      - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
+      - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
+      - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
 
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -718,7 +714,6 @@ diagnostics:
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
       - {dataset: CNRM-CM5-2}
-      - {dataset: EC-EARTH}
       - {dataset: FIO-ESM}
       - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
@@ -747,8 +742,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}      
     scripts:
       fig09-6_pattern_cor: &fig09_6_pattern_cor
         script: ipcc_ar5/ch09_fig09_6.ncl
@@ -763,31 +758,28 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
+        field: T2Ms
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0}
-      - {<<: *cmip3, dataset: cccma_cgcm3_1}
-      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63}
-      - {<<: *cmip3, dataset: csiro_mk3_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_1}
-      - {<<: *cmip3, dataset: giss_aom}
-      - {<<: *cmip3, dataset: giss_model_e_h}
-      - {<<: *cmip3, dataset: giss_model_e_r}
-      - {<<: *cmip3, dataset: iap_fgoals1_0_g}
-      - {<<: *cmip3, dataset: ingv_echam4}
-      - {<<: *cmip3, dataset: inmcm3_0}
-      - {<<: *cmip3, dataset: ipsl_cm4}
-      - {<<: *cmip3, dataset: miroc3_2_hires}
-      - {<<: *cmip3, dataset: miroc3_2_medres}
-      # - {<<: *cmip3, dataset: miub_echo_g}
-      - {<<: *cmip3, dataset: mpi_echam5}
-      # - {<<: *cmip3, dataset: mri_cgcm2_3_2a}
-      - {<<: *cmip3, dataset: ncar_ccsm3_0}
-      - {<<: *cmip3, dataset: ncar_pcm1}
-      - {<<: *cmip3, dataset: ukmo_hadcm3}
-      - {<<: *cmip3, dataset: ukmo_hadgem1}
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
+      - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
+      - {<<: *cmip3, dataset: giss_aom, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
+      - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
+      - {<<: *cmip3, dataset: ingv_echam4, institute: INGV}
+      - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
+      - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
+      - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
+      - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
+      - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
+      - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
+      - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
+      - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
 
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -835,8 +827,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-         tier: 1, start_year: 2003, end_year: 2011}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -852,31 +843,28 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
+        field: T2Ms
         start_year: 1980
         end_year: 1999
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0}
-      - {<<: *cmip3, dataset: cccma_cgcm3_1}
-      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63}
-      - {<<: *cmip3, dataset: csiro_mk3_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_1}
-      - {<<: *cmip3, dataset: giss_aom}
-      - {<<: *cmip3, dataset: giss_model_e_h}
-      - {<<: *cmip3, dataset: giss_model_e_r}
-      - {<<: *cmip3, dataset: iap_fgoals1_0_g}
-      - {<<: *cmip3, dataset: ingv_echam4}
-      - {<<: *cmip3, dataset: inmcm3_0}
-      - {<<: *cmip3, dataset: ipsl_cm4}
-      - {<<: *cmip3, dataset: miroc3_2_hires}
-      - {<<: *cmip3, dataset: miroc3_2_medres}
-      # - {<<: *cmip3, dataset: miub_echo_g}
-      - {<<: *cmip3, dataset: mpi_echam5}
-      # - {<<: *cmip3, dataset: mri_cgcm2_3_2a}
-      - {<<: *cmip3, dataset: ncar_ccsm3_0}
-      - {<<: *cmip3, dataset: ncar_pcm1}
-      - {<<: *cmip3, dataset: ukmo_hadcm3}
-      - {<<: *cmip3, dataset: ukmo_hadgem1}
+      - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
+      - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
+      - {<<: *cmip3, dataset: giss_aom, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
+      - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
+      - {<<: *cmip3, dataset: ingv_echam4, institute: INGV}
+      - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
+      - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
+      - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
+      - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
+      - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
+      - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
+      - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
+      - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
 
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -895,7 +883,6 @@ diagnostics:
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
       - {dataset: CNRM-CM5-2}
-      - {dataset: EC-EARTH}
       - {dataset: FIO-ESM}
       - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
@@ -932,7 +919,7 @@ diagnostics:
         <<: *fig09_6_pattern_cor
 
   fig09-6_swcre:
-    description: Calc pattern correlation for shortwave cloud radiative effect
+    description: Calculate pattern correlation for shortwave cloud radiative effect
     variables:
       swcre:
         preprocessor: regrid_4_5
@@ -941,33 +928,26 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
+        field: T2Ms
         start_year: 1980
         end_year: 1999
         derive: true
         force_derivation: false
     additional_datasets:
-      - {<<: *cmip3, dataset: bccr_bcm2_0}
-      # - {<<: *cmip3, dataset: cccma_cgcm3_1}
-      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63}
-      - {<<: *cmip3, dataset: csiro_mk3_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_0}
-      # - {<<: *cmip3, dataset: gfdl_cm2_1}
-      - {<<: *cmip3, dataset: giss_aom}
-      - {<<: *cmip3, dataset: giss_model_e_h}
-      - {<<: *cmip3, dataset: giss_model_e_r}
-      - {<<: *cmip3, dataset: iap_fgoals1_0_g}
-      - {<<: *cmip3, dataset: ingv_echam4}
-      - {<<: *cmip3, dataset: inmcm3_0}
-      - {<<: *cmip3, dataset: ipsl_cm4}
-      - {<<: *cmip3, dataset: miroc3_2_hires}
-      - {<<: *cmip3, dataset: miroc3_2_medres}
-      - {<<: *cmip3, dataset: miub_echo_g}
-      - {<<: *cmip3, dataset: mpi_echam5}
-      # - {<<: *cmip3, dataset: mri_cgcm2_3_2a}
-      - {<<: *cmip3, dataset: ncar_ccsm3_0}
-      - {<<: *cmip3, dataset: ncar_pcm1}
-      - {<<: *cmip3, dataset: ukmo_hadcm3}
-      - {<<: *cmip3, dataset: ukmo_hadgem1}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
+      - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
+      - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
+      - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
+      - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
+      - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
+      - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
+      - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
+      - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
+      - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
+      - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
+      - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
 
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
@@ -1013,8 +993,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
-         tier: 1, start_year: 2003, end_year: 2011}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -1026,8 +1005,8 @@ diagnostics:
       fig09-6_cor_collect:
         script: ipcc_ar5/ch09_fig09_6_collect.ncl
         ancestors: ['*/fig09-6_pattern_cor']
-        diag_order: ['fig09-6_tas', 'fig09-6_rlut',
-                     'fig09-6_pr', 'fig09-6_swcre']
+        diag_order: ['fig09-6_tas', 'fig09-6_rlut', 'fig09-6_pr']
+
 
 
   # **********************************************************************
