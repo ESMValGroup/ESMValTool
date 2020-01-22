@@ -1,4 +1,4 @@
-"""Script to download era-interim data.
+"""Script to download era-interim and era-interim-land data.
 
 Before running the script:
 1. Install the dependency i.e. ECMWFDataServer.
@@ -77,9 +77,11 @@ DAY_PARAMS = [
     ('166.128', 'v10', 'an'),  # 10 metre V wind component
     ('168.128', 'd2m', 'an'),  # 2 metre dewpoint temperature
     ('151.128', 'msl', 'an'),  # Mean sea level pressure
+    ('134.128', 'sp', 'an'),  # Surface pressure
     ('144.128', 'sf', 'accu'),  # Snowfall
     ('176.128', 'ssr', 'accu'),  # Surface net solar radiation
     ('169.128', 'ssrd', 'accu'),  # Surface solar radiation downwards
+    ('175.128', 'strd', 'accu'),  # Surface thermal radiation downwards
     ('205.128', 'ro', 'accu'),  # Runoff
     ('238.128', 'tsn', 'an'),  # Temperature of snow layer
     ('212.128', 'tisr', 'accu'),  # TOA incident solar radiation
@@ -115,6 +117,9 @@ MONTH_TIMESTEPS = {
     }
 }
 
+LAND_PARAMS = [
+    ('39.128', 'swvl1', 'an'),  # Volumetric soil moisture layer 1 [0-7 cm]
+]
 
 MONTH_PARAMS = [
     ('167.128', 't2m', 'an'),  # 2 metre temperature
@@ -136,7 +141,6 @@ MONTH_PARAMS = [
     ('57.162', 'p57.162', 'an'),  # Vertical integral of cloud frozen water
     ('137.128', 'tcwv', 'an'),  # Total column water vapour
     ('134.128', 'sp', 'an'),  # Surface pressure
-    ('151.128', 'msl', 'an'),  # Mean sea level pressure
     ('229.128', 'iews', 'fc'),  # Inst. eastward turbulent surface stress
     ('230.128', 'inss', 'fc'),  # Inst. northward turbulent surface stress
     ('34.128', 'sst', 'an'),  # Sea surface temperature
@@ -157,6 +161,24 @@ INVARIANT_PARAMS = [
     ('172.128', 'lsm'),  # Land-sea mask
     ('129.128', 'z'),  # Geopotential (invariant at surface)
 ]
+
+
+def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
+    for param_id, symbol, timestep in params:
+        frequency = '6hourly'
+        for year in years:
+            server.retrieve({
+                'class': 'ei',
+                'dataset': 'interim_land',
+                'date': f'{year}-01-01/to/{year}-12-31',
+                'expver': '2',
+                'grid': '0.25/0.25',
+                'param': param_id,
+                'format': 'netcdf',
+                'target': f'{era_interim_land_dir}/ERA-Interim-Land_{symbol}'
+                          f'_{frequency}_{year}.nc',
+                **timesteps[timestep]
+            })
 
 
 def _get_daily_data(params, timesteps, years, server, era_interim_dir):
@@ -239,6 +261,8 @@ def cli():
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
     era_interim_dir = f'{rawobs_dir}/Tier3/ERA-Interim'
     os.makedirs(era_interim_dir, exist_ok=True)
+    era_interim_land_dir = f'{rawobs_dir}/Tier3/ERA-Interim-Land'
+    os.makedirs(era_interim_land_dir, exist_ok=True)
 
     years = range(args.start_year, args.end_year + 1)
     server = ECMWFDataServer()
@@ -247,6 +271,8 @@ def cli():
     _get_monthly_data(MONTH_PARAMS, MONTH_TIMESTEPS,
                       years, server, era_interim_dir)
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
+    _get_land_data(LAND_PARAMS, DAY_TIMESTEPS,
+                   years, server, era_interim_land_dir)
 
 
 if __name__ == "__main__":
