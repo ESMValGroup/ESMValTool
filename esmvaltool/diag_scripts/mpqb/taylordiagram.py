@@ -22,6 +22,16 @@ from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import paralle
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+dataset_plotnames = {
+  'ERA-Interim-Land' : 'ERA-Interim-Land',
+  'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
+  'cds-era5-land-monthly' : 'ERA5-Land',
+  'cds-era5-monthly' : 'ERA5',
+  'MERRA2' : 'MERRA2',
+  'cds-satellite-lai-fapar' : 'SPOT-VGT',
+}
+
+
 
 def main(cfg):
     # read referenece data set
@@ -50,6 +60,7 @@ def main(cfg):
     rvalue_list = []
     rmsd_list = []
     std_list = []
+    labels = []
     for dataset in ordered.keys():
         dat = iris.load_cube(grouped_input_data[dataset][0]['filename'])
         # Create common masking
@@ -60,19 +71,20 @@ def main(cfg):
         rvalue_list.append(pearsonr(a,b)[0])
         rmsd_list.append(sm.centered_rms_dev(a,b))
         std_list.append(np.std(b))
+        labels.append(dataset_plotnames[dataset])
 
 
     sm.taylor_diagram(np.array(std_list),
                                  np.array(rmsd_list),
                                  np.array(rvalue_list),
-                                 markerLabel=all_datasets,
+                                 markerLabel=labels,
                                  markerLegend='on',
                                  markerColor='r',
                                  markerSize=7,
                                  rmsLabelFormat='0:.2f',
                                  colObs='k',
                                  markerObs='x',
-                                 titleOBS=reference_dataset,
+                                 titleOBS=dataset_plotnames[reference_dataset],
                                  checkstats='on')
     if cfg['write_plots']:
         plot_filename = get_plot_filename('taylordiagram',cfg)
