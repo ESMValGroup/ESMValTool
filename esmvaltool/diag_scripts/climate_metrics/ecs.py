@@ -36,6 +36,7 @@ from pprint import pformat
 
 import cf_units
 import iris
+import iris.coord_categorisation
 import numpy as np
 import seaborn as sns
 import yaml
@@ -58,9 +59,13 @@ RTMT_DATASETS = set()
 def _calculate_anomaly(data_4x, data_pic):
     """Calculate anomaly cube for a dataset."""
     cube_4x = iris.load_cube(data_4x[0]['filename'])
+    iris.coord_categorisation.add_year(cube_4x, 'time')
     cube_4x = cube_4x.aggregated_by('year', iris.analysis.MEAN)
+
     cube_pic = iris.load_cube(data_pic[0]['filename'])
+    iris.coord_categorisation.add_year(cube_pic, 'time')
     cube_pic = cube_pic.aggregated_by('year', iris.analysis.MEAN)
+
     x_data = cube_pic.coord('year').points
     y_data = _get_data_time_last(cube_pic)
     slope = _get_slope(x_data, y_data)
@@ -212,6 +217,8 @@ def check_input_data(cfg):
 def preprocess_data(cfg):
     """Extract input data."""
     input_data = deepcopy(list(cfg['input_data'].values()))
+    if not input_data:
+        return ([], [])
 
     # Use 'rtmt' instead of 'rtmt' if necessary
     for dataset in input_data:
@@ -366,15 +373,26 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
             'units': cf_units.Unit('W m-2 K-1'),
         },
     ]
-    attrs = {
-        'project': list(cfg['input_data'].values())[0]['project'],
-    }
+    input_data = list(cfg['input_data'].values())
+    if input_data:
+        attrs = {
+            'project': input_data[0]['project'],
+        }
+    else:
+        attrs = {}
     if RTMT_DATASETS:
         attrs['net_toa_radiation'] = (
             f"For datasets {RTMT_DATASETS}, 'rtmt' (net top of model "
             f"radiation) instead of 'rtnt' (net top of atmosphere radiation) "
-            "is used due to lack of data. These two variables might differ.")
+            f"is used due to lack of data. These two variables might differ.")
+    data_available = False
     for (idx, var_attr) in enumerate(var_attrs):
+        if not data[idx]:
+            logger.info(
+                "Skipping writing of '%s' for all models, no data available",
+                var_attr['short_name'])
+            continue
+        data_available = True
         path = get_diagnostic_filename(var_attr['short_name'], cfg)
         io.save_scalar_data(data[idx], path, var_attr, attributes=attrs)
         caption = "{long_name} for multiple climate models.".format(**var_attr)
@@ -382,6 +400,8 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
         provenance_record['ancestors'] = ancestor_files
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path, provenance_record)
+    if not data_available:
+        raise ValueError("No input data given")
 
 
 def main(cfg):
