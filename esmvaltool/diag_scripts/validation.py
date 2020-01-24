@@ -88,7 +88,7 @@ def plot_latlon_cubes(cube_1,
                 plot_contour(cube, " ".join([cube_name, cfg['analysis_type'], 
                                              var]), plot_file_path)
             else:
-                plot_file_path = os.path.join(cfg['plot_dir'],
+                plot_file_path = os.path.join(cfg['plot_dir'], season, 
                                               "_".join([cube_name,
                                                         var, season]) +
                                               ".png")
