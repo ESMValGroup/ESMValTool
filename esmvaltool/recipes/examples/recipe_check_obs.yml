@@ -281,6 +281,25 @@ diagnostics:
     scripts: null
 
 
+  OSI-450:
+    description: OSI-450 check
+    variables:
+      sic_day:
+        short_name: sic
+        mip: day
+      sic_month:
+        short_name: sic
+        mip: OImon
+      areacello:
+        mip: fx
+    additional_datasets:
+      - {dataset: OSI-450-nh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+    scripts: null
+
+
   NSIDC-0116:
     description: NSIDC-0116 check
     variables:
@@ -597,8 +616,10 @@ diagnostics:
         cmor_name: ts
         mip: Amon
       tsn_month:
+        short_name: tsn
         mip: LImon
       tsn_day:
+        short_name: tsn
         mip: Eday
       ua:
         mip: Amon
@@ -627,6 +648,17 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3,
          type: reanaly, version: 1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  ERA-Interim-Land:
+    description: ERA-Interim-Land check
+    variables:
+      sm:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: ERA-Interim-Land, project: OBS6, tier: 3,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2010}
     scripts: null
 
 
