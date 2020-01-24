@@ -280,31 +280,23 @@ diagnostics:
          type: reanaly, version: 1, start_year: 1948, end_year: 2018}
     scripts: null
 
+
   OSI-450:
-    description: OSI 450 monthly data
+    description: OSI-450 check
     variables:
-      sic:
+      sic_day:
+        short_name: sic
+        mip: day
+      sic_month:
+        short_name: sic
         mip: OImon
       areacello:
-        preproc: nopp
         mip: fx
     additional_datasets:
-      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1979, end_year: 2015}
-      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1979, end_year: 2015}
-    scripts: null
-
-  OSI-450-daily:
-    description: OSI 450 daily data
-    variables:
-      sic:
-        preproc: nopp
-        mip: day
-      areacello:
-        preproc: nopp
-        mip: fx
-    additional_datasets:
-      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2015}
-      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2015}
+      - {dataset: OSI-450-nh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
     scripts: null
 
 
