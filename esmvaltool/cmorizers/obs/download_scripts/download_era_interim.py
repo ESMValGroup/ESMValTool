@@ -1,4 +1,4 @@
-"""Script to download era-interim data.
+"""Script to download era-interim and era-interim-land data.
 
 Before running the script:
 1. Install the dependency i.e. ECMWFDataServer.
@@ -117,6 +117,9 @@ MONTH_TIMESTEPS = {
     }
 }
 
+LAND_PARAMS = [
+    ('39.128', 'swvl1', 'an'),  # Volumetric soil moisture layer 1 [0-7 cm]
+]
 
 MONTH_PARAMS = [
     ('167.128', 't2m', 'an'),  # 2 metre temperature
@@ -158,6 +161,24 @@ INVARIANT_PARAMS = [
     ('172.128', 'lsm'),  # Land-sea mask
     ('129.128', 'z'),  # Geopotential (invariant at surface)
 ]
+
+
+def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
+    for param_id, symbol, timestep in params:
+        frequency = '6hourly'
+        for year in years:
+            server.retrieve({
+                'class': 'ei',
+                'dataset': 'interim_land',
+                'date': f'{year}-01-01/to/{year}-12-31',
+                'expver': '2',
+                'grid': '0.25/0.25',
+                'param': param_id,
+                'format': 'netcdf',
+                'target': f'{era_interim_land_dir}/ERA-Interim-Land_{symbol}'
+                          f'_{frequency}_{year}.nc',
+                **timesteps[timestep]
+            })
 
 
 def _get_daily_data(params, timesteps, years, server, era_interim_dir):
@@ -240,6 +261,8 @@ def cli():
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
     era_interim_dir = f'{rawobs_dir}/Tier3/ERA-Interim'
     os.makedirs(era_interim_dir, exist_ok=True)
+    era_interim_land_dir = f'{rawobs_dir}/Tier3/ERA-Interim-Land'
+    os.makedirs(era_interim_land_dir, exist_ok=True)
 
     years = range(args.start_year, args.end_year + 1)
     server = ECMWFDataServer()
@@ -248,6 +271,8 @@ def cli():
     _get_monthly_data(MONTH_PARAMS, MONTH_TIMESTEPS,
                       years, server, era_interim_dir)
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
+    _get_land_data(LAND_PARAMS, DAY_TIMESTEPS,
+                   years, server, era_interim_land_dir)
 
 
 if __name__ == "__main__":
