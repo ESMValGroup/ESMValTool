@@ -73,7 +73,7 @@ def plot_latlon_cubes(cube_1,
 
     # plot difference: cube_1 - cube_2; use numpy.ma.abs()
     diffed_cube = imath.subtract(cube_1, cube_2)
-    plot_file_path = os.path.join(cfg['plot_dir'], 'Difference_' + plot_name)
+    
     plot_contour(diffed_cube, 'Difference ' + plot_title, plot_file_path)
     save_plotted_cubes(diffed_cube, cfg, 'Difference_' + plot_name)
 
