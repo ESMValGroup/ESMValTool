@@ -104,7 +104,7 @@ def plot_latlon_cubes(cube_1,
                          plot_file_path)
         else:
             plot_file_path = os.path.join(
-                cfg['plot_dir'], "_".join([obs_name, var, season]) + ".png")
+                cfg['plot_dir'], season, "_".join([obs_name, var, season]) + ".png")
         plot_contour(cube_2, " ".join([obs_name, cfg['analysis_type'], var]),
                      plot_file_path)
         save_plotted_cubes(cube_2, cfg, os.path.basename(plot_file_path))
