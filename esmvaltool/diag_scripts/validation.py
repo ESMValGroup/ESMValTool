@@ -84,7 +84,7 @@ def plot_latlon_cubes(cube_1,
         for cube, cube_name in zip(cubes, cube_names):
             if not season:
                 plot_file_path = os.path.join(
-                    cfg['plot_dir'], "_".join([cube_name, var]) + ".png")
+                    cfg['plot_dir'], "alltime", "_".join([cube_name, var]) + ".png")
             else:
                 plot_file_path = os.path.join(cfg['plot_dir'],
                                               "_".join([cube_name,
