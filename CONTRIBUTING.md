@@ -27,11 +27,11 @@ To install in development mode, follow these instructions.
 ## Using the development version of the ESMValTool Core package
 
 If you need the latest developments of the ESMValTool Core package,
-you can install that into the same conda environment:
+you can install it from source into the same conda environment. First follow the steps above and then:
 
 -   Clone the ESMValTool Core github repository: `git clone git@github.com:ESMValGroup/ESMValCore`)
 -   Go to the esmvalcore directory: `cd ESMValCore`
--   Update the esmvaltool conda environment `conda env update --name esmvaltool --file environment.yml`
+-   Update the esmvaltool conda environment `conda env update --name esmvaltool --file environment.yml`. This step is only needed if the dependencies changed since the latest release, which will rarely happen.
 -   Activate the esmvaltool environment: `conda activate esmvaltool`
 -   Install `esmvalcore` in development mode: `pip install -e '.[develop]'`.
 
@@ -109,9 +109,11 @@ Go to the directory where the repository is cloned and run
 
 Make sure that your newly added documentation builds without warnings or errors.
 
-## Pull requests and code review
+## Branches, pull requests and code review
 
-New development should preferably be done in a new git branch in the main ESMValTool github repository. However, for scientists requiring confidentiality, private repositories are available. It is recommended that you open a pull request early (in draft mode), as this will cause CircleCI to run the unit tests and Codacy to analyse your code. It's also easier to get help from other developers if your code is visible in a pull request.
+New development should preferably be done in the main ESMValTool github repository, however, for scientists requiring confidentiality, private repositories are available. The default git branch is ``master``. Use this branch to create a new feature branch from and make a pull request against. This [page](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow) offers a good introduction to git branches, but it was written for BitBucket while we use GitHub, so replace the word BitBucket by GitHub whenever you read it.
+
+It is recommended that you open a [draft pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/) early, as this will cause CircleCI to run the unit tests and Codacy to analyse your code. It's also easier to get help from other developers if your code is visible in a pull request.
 
 You can view the results of the automatic checks below your pull request. If one of the tests shows a red cross instead of a green approval sign, please click the link and try to solve the issue. Note that this kind of automated checks make it easier to review code, but they are not flawless, so occasionally Codacy will report false positives.
 
