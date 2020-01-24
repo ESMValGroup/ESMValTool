@@ -62,6 +62,8 @@ def plot_latlon_cubes(cube_1,
     """
     if not season:
         plot_name = "_".join([cfg['analysis_type'], data_names]) + '.png'
+        plot_title = "alltime " + cfg['analysis_type'] + ': ' + data_names  
+        plot_file_path = os.path.join(cfg['plot_dir'], "alltime", 'Difference_' + plot_name) 
     else:
         plot_name = "_".join([cfg['analysis_type'], data_names, season]) + \
                     '.png'
