@@ -98,7 +98,7 @@ def plot_latlon_cubes(cube_1,
     else:
         # obs is always cube_2
         if not season:
-            plot_file_path = os.path.join(cfg['plot_dir'],
+            plot_file_path = os.path.join(cfg['plot_dir'], "alltime", 
                                           "_".join([obs_name, var]) + ".png")
         else:
             plot_file_path = os.path.join(
