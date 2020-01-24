@@ -285,10 +285,10 @@ diagnostics:
     description: OSI-450 check
     variables:
       sic_day:
-        short_name: sic
+        cmor_name: sic
         mip: day
       sic_month:
-        short_name: sic
+        cmor_name: sic
         mip: OImon
       areacello:
         mip: fx
@@ -616,10 +616,10 @@ diagnostics:
         cmor_name: ts
         mip: Amon
       tsn_month:
-        short_name: tsn
+        cmor_name: tsn
         mip: LImon
       tsn_day:
-        short_name: tsn
+        cmor_name: tsn
         mip: Eday
       ua:
         mip: Amon
