@@ -100,6 +100,8 @@ def plot_latlon_cubes(cube_1,
         if not season:
             plot_file_path = os.path.join(cfg['plot_dir'], "alltime", 
                                           "_".join([obs_name, var]) + ".png")
+            plot_contour(cube_2, " ".join([obs_name, cfg['analysis_type'], var]),  
+                         plot_file_path)
         else:
             plot_file_path = os.path.join(
                 cfg['plot_dir'], "_".join([obs_name, var, season]) + ".png")
