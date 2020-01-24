@@ -261,8 +261,7 @@ workflows:
           filters:
             branches:
               only:
-                - version2_development
-                - version2_master
+                - master
     jobs:
       - test
       - test_installation
