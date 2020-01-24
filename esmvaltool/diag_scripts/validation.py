@@ -67,7 +67,8 @@ def plot_latlon_cubes(cube_1,
     else:
         plot_name = "_".join([cfg['analysis_type'], data_names, season]) + \
                     '.png'
-    plot_title = cfg['analysis_type'] + ': ' + data_names
+        plot_title = season + " " + cfg['analysis_type'] + ': ' + data_names
+        plot_file_path = os.path.join(cfg['plot_dir'], season, 'Difference_' + plot_name)
     cubes = [cube_1, cube_2]
 
     # plot difference: cube_1 - cube_2; use numpy.ma.abs()
