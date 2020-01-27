@@ -18,6 +18,17 @@ from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
+
+dataset_plotnames = {
+  'ERA-Interim-Land' : 'ERA-Interim-Land',
+  'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
+  'cds-era5-land-monthly' : 'ERA5-Land',
+  'cds-era5-monthly' : 'ERA5',
+  'MERRA2' : 'MERRA2',
+  'cds-satellite-lai-fapar' : 'SPOT-VGT',
+}
+
+
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -33,12 +44,12 @@ def main(cfg):
 
     if cfg['write_plots']:
         plt.clf()
-        fig = plt.figure()
+        fig = plt.figure(figsize=(10,4))
         ax = fig.add_subplot()
         for dataset in grouped_input_data:
             logger.info("Opening dataset: {0}".format(dataset))
             cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
-            iris.quickplot.plot(cube, label=dataset)
+            iris.quickplot.plot(cube, label=dataset_plotnames[dataset])
         plt.legend()
         plt.xticks(rotation=90)
         plt.tight_layout()

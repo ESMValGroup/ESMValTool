@@ -28,10 +28,12 @@ def theilsenmk(cube):
     mkmask = (mkdata == 0)  # create mask where MK test is zero
     outcube.data.mask |= mkmask
     # Set name
+    mean_days = np.mean(np.diff(cube.coord('time').points))
+    days_per_year = 365.25
+    outcube.data = outcube.data * (days_per_year / mean_days)
     outcube.rename('theil-sen trend of ' + outcube.name())
     outcube.units = cf_units.Unit(str(outcube.units) + ' year-1')
     return outcube
-
 
 def timemean(cube):
     """Calculate mean over time."""
@@ -43,15 +45,6 @@ def _array2cube(array_in, cube_template):
     newcube = cube_template.copy()
     newcube.data = np.ma.fix_invalid(array_in)
     return newcube
-
-
-def compute_diagnostic(filename):
-    """Compute an example diagnostic."""
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
-    logger.debug("Running example computation")
-    return cube.collapsed('time', iris.analysis.MEAN)
 
 
 def main(cfg):
@@ -84,8 +77,11 @@ def main(cfg):
             if cfg['write_plots']:
                 metrics_plot_dictionary = get_ecv_plot_config(
                     dataset_cfg[0]['short_name'])
+                plot_kwargs = metrics_plot_dictionary[metricname]
+                # Overwrite plot title to be dataset name
+                plot_kwargs['title'] = dataset
                 mpqb_mapplot(resultcube, plot_file, **
-                             metrics_plot_dictionary[metricname])
+                             plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
 

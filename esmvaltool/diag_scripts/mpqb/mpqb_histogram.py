@@ -9,6 +9,7 @@ import numpy as np
 import dask.array as da
 
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import iris
 import itertools as it
 import warnings
@@ -20,6 +21,15 @@ from esmvaltool.diag_scripts.shared._base import (
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+dataset_plotnames = {
+  'ERA-Interim-Land' : 'ERA-Interim-Land',
+  'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
+  'cds-era5-land-monthly' : 'ERA5-Land',
+  'cds-era5-monthly' : 'ERA5',
+  'MERRA2' : 'MERRA2',
+  'cds-satellite-lai-fapar' : 'SPOT-VGT',
+}
 
 def calculate_histograms(cube, numbars, lower_upper):
     # returns a dictionary for histogram plotting
@@ -40,6 +50,7 @@ def main(cfg):
     number_of_bars = cfg.pop('number_of_bars', 10) # default number of bins set to 10
     lower_upper = [cfg.pop('vmin', None), cfg.pop('vmax', None)]
     logarithmic = cfg.pop('logarithmic', False)
+    histtype = cfg.pop('histtype','bar') # default type is 'bar'
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
@@ -79,14 +90,29 @@ def main(cfg):
             x = hist["bins"][:-1] + width * (list(
                     hists.keys()).index(dataset) + 0.5)
                 
-            ax.bar(x,
-                   hist["hist"],
-                   width,
-                   label = dataset,
-                   )
-            
-        plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha = 0.3)
-        plt.legend()
+            if histtype=='bar':
+                ax.bar(x,
+                       hist["hist"],
+                       width,
+                       label = dataset_plotnames[dataset],
+                       )
+                plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha = 0.3)
+                plt.legend()
+            elif histtype=='step':
+                ax.hist(hist["bins"][:-1],
+                        hist["bins"],
+                        weights=hist["hist"],
+                        label=dataset_plotnames[dataset],
+                        histtype='step',
+                        linewidth=2
+                        )
+                handles, labels = ax.get_legend_handles_labels()
+                new_handles = [Line2D([], [], c=h.get_edgecolor()) for h in handles]
+                plt.legend(handles=new_handles, labels=labels)
+            else:
+                logger.warning(f"Unsupported argument for histtype: {histtype}")
+
+
         plt.xlabel(grouped_input_data[dataset][0]['long_name'] +
                    " [" + grouped_input_data[dataset][0]['units'] + "]")
         plt.ylabel("frequency")
