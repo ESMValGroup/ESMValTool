@@ -16,8 +16,8 @@
 ;    1900-2015 on a 5x5 grid).
 ;
 ; Modification history
-;    20190308-A_righ_ma: minor changes to include coordinate boundaries.
-;    20190227-A_bock_ls: written.
+;    20190308-righi_mattia: minor changes to include coordinate boundaries.
+;    20190227-bock_lisa: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \

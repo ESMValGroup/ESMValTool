@@ -11,10 +11,10 @@ documentation:
     Temperature, Sea Ice Fraction and sea surface salinity.
 
   authors:
-    - hass_bg
-    - gier_be
-    - righ_ma
-    - eyri_ve
+    - hassler_birgit
+    - gier_bettina
+    - righi_mattia
+    - eyring_veronika
 
   references:
     - rk2008bams
@@ -90,7 +90,7 @@ diagnostics:
         start_year: 1980
         end_year: 2005
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading: &grading_settings
         script: perfmetrics/main.ncl
@@ -112,7 +112,7 @@ diagnostics:
       va:
         <<: *variable_settings
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -134,7 +134,7 @@ diagnostics:
       ua:
         <<: *variable_settings
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -156,7 +156,7 @@ diagnostics:
       hus:
         <<: *variable_settings
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -179,7 +179,7 @@ diagnostics:
         <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -202,7 +202,7 @@ diagnostics:
         <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -300,7 +300,7 @@ diagnostics:
         preprocessor: ppNOLEVirreg
         mip: Omon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -323,7 +323,7 @@ diagnostics:
         <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -346,7 +346,7 @@ diagnostics:
         <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl

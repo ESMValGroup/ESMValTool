@@ -11,12 +11,12 @@
 ## E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
 ##
 ## Project
-## Copernicus C3S-MAGIC (C3S 34a Lot2) 
+## Copernicus C3S-MAGIC (C3S 34a Lot2)
 ##
 ## References:
 ## https://github.com/oloapinivad/MiLES
-## Davini, P., C. Cagnazzo, S. Gualdi, and A. Navarra, 2012: Bidimensional Diagnostics, Variability, and Trends of Northern Hemisphere Blocking. J. Climate, 25, 6496–6509, doi: 10.1175/JCLI-D-12-00032.1
-## Tibaldi S, Molteni F. 1990. On the operational predictability of blocking. Tellus A 42(3): 343–365, doi:10.1034/j.1600- 0870.1990.t01- 2- 00003.x
+## Davini, P., C. Cagnazzo, S. Gualdi, and A. Navarra, 2012: Bidimensional Diagnostics, Variability, and Trends of Northern Hemisphere Blocking. J. Climate, 25, 6496-6509, doi: 10.1175/JCLI-D-12-00032.1
+## Tibaldi S, Molteni F. 1990. On the operational predictability of blocking. Tellus A 42(3): 343-365, doi:10.1034/j.1600-0870.1990.t01-2-00003.x
 ##
 ## This namelist is part of the ESMValTool
 ################################################################################
@@ -26,13 +26,13 @@
 ---
 documentation:
   description: |
-    Recipe for computing and plotting blocking statistics using 
+    Recipe for computing and plotting blocking statistics using
     the MiLES (Mid-Latitude Evaluation System) package
 
   authors:
-    - hard_jo
-    - davi_pa
-    - arno_en
+    - vonhardenberg_jost
+    - davini_paolo
+    - arnone_enrico
 
   references:
     - davini18
@@ -44,7 +44,7 @@ documentation:
 
 datasets:
    - {dataset: EC-EARTH,    project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1980,  end_year: 1989}
-   - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1980,  end_year: 1989 }
+   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3, start_year: 1980,  end_year: 1989 }
 
 preprocessors:
     preproc1:
@@ -64,16 +64,16 @@ preprocessors:
 diagnostics:
 
   miles_diagnostics:
-    description: MiLES Blocking Diagnostics 
+    description: MiLES Blocking Diagnostics
     variables:
       zg:
         preprocessor: preproc1
         mip: day
         reference_dataset: "ERA-Interim"
     scripts:
-        miles_block: 
+        miles_block:
             script: miles/miles_block.R
             seasons: DJF # Select season ('DJF','MAM','JJA','SON')
-        
-        
+
+
 

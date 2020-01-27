@@ -35,7 +35,7 @@ procedure log_info(output_string[*]:string)
 ; References
 ;
 ; Modification history
-;    20180202-A_righ_ma: written to replace info_output.
+;    20180202-righi_mattia: written to replace info_output.
 ;
 local nn, ii
 begin
@@ -70,7 +70,7 @@ procedure log_debug(output_string[*]:string)
 ; References
 ;
 ; Modification history
-;    20180202-A_righ_ma: written to replace info_output.
+;    20180202-righi_mattia: written to replace info_output.
 ;
 local nn, ii
 begin
@@ -105,8 +105,8 @@ procedure enter_msg(script[1]:string,
 ; References
 ;
 ; Modification history
-;    20180202_A_righ_ma: removed required verbosity.
-;    20150319-A_righ_ma: written.
+;    20180202-righi_mattia: removed required verbosity.
+;    20150319-righi_mattia: written.
 ;
 begin
 
@@ -135,8 +135,8 @@ procedure leave_msg(script[1]:string,
 ; References
 ;
 ; Modification history
-;    20180202_A_righ_ma: removed required verbosity.
-;    20150319-A_righ_ma: written.
+;    20180202-righi_mattia: removed required verbosity.
+;    20150319-righi_mattia: written.
 ;
 begin
 
@@ -169,8 +169,8 @@ procedure error_msg(type[1]:string,
 ; References
 ;
 ; Modification history
-;    20150924-A_laue_ax: added type "error" (treated as "fatal")
-;    20140929-A_righ_ma: written.
+;    20150924-lauer_axel: added type "error" (treated as "fatal").
+;    20140929-righi_mattia: written.
 ;
 local nn, ii, msg_level, msg_origin
 begin
@@ -225,7 +225,7 @@ procedure tool_stop()
 ; References
 ;
 ; Modification history
-;    20150521-A_righ_ma: written.
+;    20150521-righi_mattia: written.
 ;
 begin
 
@@ -255,7 +255,7 @@ procedure exit_if_missing_atts(in[1], \
 ; References
 ;
 ; Modification history
-;    20141002-A_righ_ma: written.
+;    20141002-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -265,7 +265,7 @@ begin
   enter_msg(scriptname, funcname)
 
   if (.not.all(isatt(in, reqatts))) then
-    error_msg("f", diag_script, "", "missing required diag_script_info " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing required diag_script_info " + \
               "attribute: " + reqatts(ind(.not.isatt(in, reqatts))))
   end if
 
@@ -305,9 +305,9 @@ procedure log_provenance(nc_file:string,
 ; References
 ;
 ; Modification history
-;    20190415-A_righ_ma: turn domains into a list.
-;    20190415-A_righ_ma: extended to avoid overwriting previous call.
-;    20190225-A_bock_li: written.
+;    20190415-righi_mattia: turn domains into a list.
+;    20190415-righi_mattia: extended to avoid overwriting previous call.
+;    20190225-bock_lisa: written.
 ;
 local funcname, scriptname, yaml_file, outstring, existing
 begin

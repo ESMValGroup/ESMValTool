@@ -220,6 +220,7 @@ def calc_qbo_index(qbo):
         period = period2
     else:
         period = period1
+
     return (period, ampl_west, ampl_east)
 
 

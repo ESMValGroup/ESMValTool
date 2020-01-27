@@ -26,19 +26,14 @@
 ;    fraction as a first guess
 ;
 ; Modification history
-;    20180209-A_righ_ma: fixed bug in lwpStderr.
-;    20180209-A_hass_bg: adapted to v2.
-;    20180810-A_righ_ma: fix minor calendar issue.
-;    20180806-A_righ_ma: code cleaning.
-;    20170116-A-laue_ax: using cirrus fraction to convert lwp and iwp
-;                        from in-cloud values to gridbox averages
-;                        (test).
-;    20160408-A-laue_ax: added processing of uncertainties
-;                        removed suffixes for variables names.
-;    20151118-A-laue_ax: bugfix: added unit conversion
-;                        clivi, clwvi: g/m2 --> kg/m2
-;                        clt: frac --> %
-;    20150430-eval_ma: written.
+;    20180209-righi_mattia: fixed bug in lwpStderr.
+;    20180209-hassler_birgit: adapted to v2.
+;    20180810-righi_mattia: fix minor calendar issue.
+;    20180806-righi_mattia: code cleaning.
+;    20170116-lauer_axel: using cirrus fraction to gridbox averages.
+;    20160408-lauer_axel: added processing of uncertainties.
+;    20151118-lauer_axel: bugfix: added unit conversion.
+;    20150430-evaldsson_martin: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \

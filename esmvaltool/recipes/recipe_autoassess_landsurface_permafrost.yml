@@ -7,10 +7,10 @@ documentation:
     Land surface area and ice masks are time independent.
     
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5, exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
@@ -29,10 +29,12 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-        fx_files: [sftlf, mrsofc]
       tsl:
         mip: Lmon
-        fx_files: [sftlf, mrsofc]
+      sftlf:
+        mip: fx
+      mrsofc:
+        mip: fx
     scripts:
       autoassess_landsurf_permafrost: &autoassess_landsurf_permafrost_settings
         script: autoassess/autoassess_area_base.py
@@ -41,7 +43,6 @@ diagnostics:
         control_model: MPI-ESM-LR
         exp_model: MPI-ESM-MR
         obs_models: []
-        fx: [sftlf, mrsofc]
         start: 1997/12/01
         end: 2002/12/01
         climfiles_root: '/group_workspaces/jasmin4/esmeval/for_vp/obs_etc'

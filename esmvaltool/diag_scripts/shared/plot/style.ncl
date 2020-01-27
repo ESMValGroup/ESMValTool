@@ -12,6 +12,9 @@
 ;    function format_units
 ;    function set_log_ticks
 ;    function sort_alphabetically
+;    function unique_labels_min
+;    function unique_labels_all
+;    function get_unique_items
 ;
 ; #############################################################################
 
@@ -39,7 +42,7 @@ function project_style(items: list,
 ;                      observations and reanalyses).
 ;
 ; Return value
-;    An array of the same size of items list, with the stlye
+;    An array of the same size of items list, with the style
 ;    information for the given flag. The type depends on the flag.
 ;
 ; Description
@@ -56,11 +59,11 @@ function project_style(items: list,
 ; References
 ;
 ; Modification history
-;    20150512-A_righ_ma: modified to read style info from external style
-;                        files, instead of using hard-coded values in the
-;                        code. Functionalities of the project_styleset and
-;                        project_style_<styleset> functions porteed here.
-;    20130419-A_gott_kl: written.
+;    20150512-righi_mattia: modified to read style info from external style
+;                           files, instead of using hard-coded values in the
+;                           code. Functionalities of the project_styleset and
+;                           project_style_<styleset> functions porteed here.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
@@ -392,7 +395,7 @@ function gsnColorRange(lower:numeric,
 ;    http://www.ncl.ucar.edu/Applications/Scripts/contoursym_4.ncl
 ;
 ; Modification history
-;    20130422-A_gott_kl: written.
+;    20130422-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
   ncolors_right, output, color_start
@@ -463,7 +466,7 @@ function format_units(str[1]: string)
 ; References
 ;
 ; Modification history
-;    20140320-A_righ_ma: written.
+;    20140320-righi_mattia: written.
 ;
 local funcname, scriptname, loc_str
 begin
@@ -524,7 +527,7 @@ function set_log_ticks(fmin[1]:numeric,
 ; References
 ;
 ; Modification history
-;    20141003-A_righ_ma: written.
+;    20141003-righi_mattia: written.
 ;
 local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
@@ -614,7 +617,7 @@ function sort_alphabetically(orig_names[*], idx_exclude, dest_exclude)
 ; References
 ;
 ; Modification history
-;    20151028-A_righ:ma: written.
+;    20151028-righi_mattia: written.
 ;
 begin
 
@@ -665,5 +668,187 @@ begin
 
   enter_msg(scriptname, funcname)
     return(perm_idx)
+
+end
+
+; #############################################################################
+undef("unique_labels_min")
+function unique_labels_min(items: list, \
+                           prio: string)
+;
+; Arguments
+;    items: list of input_file_info metadata
+;    prio: string vector with attribute names of elements of items, ordered by
+;          priority for annotation (starting with highest).
+;
+; Return value
+;    A vector (string) with one element for each item element, each label
+;    contains the least possible attribute strings.
+;
+; Description
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181217-schlund_manuel: adapated to new NCL interface of v2.0.
+;    20130422-gottschaldt_klaus-dirk: written.
+;
+local funcname, scriptname, prio, result, unique, iprio, index
+begin
+
+  funcname = "unique_labels_min"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Start with highest priority
+  result = metadata_att_as_array(items, prio(0))
+  unique = get_unique_values(result)
+
+  ; Iterate over priorities
+  iprio = 1
+  do while (dimsizes(unique) .ne. dimsizes(result))
+
+    ; Not enough prios given
+    if (iprio .eq. dimsizes(prio)) then
+      error_msg("w", scriptname, funcname, "Add more attributes to prio " + \
+                "to make labels unique! Continuing with non-unique labels")
+      break
+
+    ; Add further prio
+    else
+      do i = 0, dimsizes(unique) - 1
+        index := ind(result .eq. unique(i))
+        new_prio = metadata_att_as_array(items, prio(iprio))
+
+        ; More than one occurence
+        if (dimsizes(index) .gt. 1) then
+          result(index) = result(index) + "_" + new_prio(index)
+        end if
+      end do
+
+      ; Reset
+      unique := get_unique_values(result)
+      iprio = iprio + 1
+    end if
+  end do
+
+  leave_msg(scriptname, funcname)
+  return(result)
+
+end
+
+; #############################################################################
+undef("unique_labels_all")
+function unique_labels_all(items: list, \
+                           prio:string)
+;
+; Arguments
+;    items: list of input_file_info metadata
+;    prio: string vector with attribute names of elements of items, ordered by
+;          priority for annotation (starting with highest).
+;
+; Return value
+;    A vector (string) with one element for each item element, all labels
+;    contain the same (least possible) number of attribute strings.
+
+; Description
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181217-schlund_manuel: adapated to new NCL interface of v2.0.
+;    20130422-gottschaldt_klaus-dirk: written.
+;
+local funcname, scriptname, prio, result, unique, iprio, index
+begin
+
+  funcname = "unique_labels_all"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Start with highest priority
+  result = metadata_att_as_array(items, prio(0))
+  unique = get_unique_values(result)
+
+  ; Iterate over priorities
+  iprio = 1
+  do while (dimsizes(unique) .ne. dimsizes(result))
+
+    ; Not enough prios given
+    if (iprio .eq. dimsizes(prio)) then
+      error_msg("w", scriptname, funcname, "Add more attributes to prio " + \
+                "to make labels unique! Continuing with non-unique labels")
+      break
+
+    ; Add further prio
+    else
+      do i = 0, dimsizes(unique) - 1
+        index := ind(result .eq. unique(i))
+        new_prio = metadata_att_as_array(items, prio(iprio))
+        result(index) = result(index) + "_" + new_prio(index)
+      end do
+
+      ; Reset
+      unique := get_unique_values(result)
+      iprio = iprio + 1
+    end if
+  end do
+
+  leave_msg(scriptname, funcname)
+  return(result)
+
+end
+
+; #############################################################################
+undef("get_unique_items")
+function get_unique_items(items: list,
+                          prio: string)
+
+;
+; Arguments
+;    items: list of input_file_info metadata
+;    prio: string vector with attribute names of elements of items, ordered by
+;          priority for annotation (starting with highest).
+;
+; Description
+;    Return all unique list elements with the given prio.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181218-schlund_manuel: written
+;
+local items, prio, funcname, scriptname, unique_labels, ilist, unique_list, \
+  atts, info
+begin
+
+  funcname = "get_unique_items"
+  scriptname = "diag_scripts/shared/plot/style.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Get unique lables
+  unique_labels = unique_labels_min(items, prio)
+  do ilist = 0, ListCount(items) - 1
+    items[ilist]@label = unique_labels(ilist)
+  end do
+
+  ; Select unique labels (always return 1st element)
+  unique_list = NewList("lifo")
+  unique_labels := get_unique_values(unique_labels)
+  do ilab = 0, dimsizes(unique_labels) - 1
+    atts := True
+    atts@label = unique_labels(ilab)
+    info = select_metadata_by_atts(items, atts)
+    ListAppend(unique_list, info[0])
+  end do
+
+  leave_msg(scriptname, funcname)
+  return(unique_list)
 
 end

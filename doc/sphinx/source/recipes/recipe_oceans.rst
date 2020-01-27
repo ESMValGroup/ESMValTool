@@ -1,7 +1,7 @@
 .. _XML_oceans:
 
-Recipes for evaluating models of the ocean
-==========================================
+Ocean diagnostics
+=================
 
 Overview
 ........
@@ -42,7 +42,8 @@ Available recipes
 * recipe_ocean_scalar_fields.yml_
 * recipe_ocean_bgc.yml_
 * recipe_ocean_quadmap.yml_
-* recipe_ocean_Landschutzer2014.yml_
+* recipe_ocean_ice_extent.yml_
+* recipe_ocean_multimap.yml_
 
 
 recipe_ocean_amoc.yml
@@ -252,6 +253,20 @@ sea ice diagnostic is the only tool that performs a field specific evaluation.
 
 The diagnostic_seaice.py_ diagnostic is more fully described below.
 
+recipe_ocean_multimap.yml
+-------------------------
+
+The recipe_ocean_multimap.yml_ is an example recipe showing the
+diagnostic_maps_multimodel.py_ diagnostic.
+This diagnostic produces an image showing Model vs Observations maps or
+only Model fields when observational data are not provided.
+Each map shows latitude vs longitude fields and user defined values are used to set the colour scale.
+Plot layout can be modified by modifying the `layout_rowcol` argument.
+
+The figure produced by this recipe compares the ocean surface CO2 fluxes
+for 16 different CMIP5 model against Landschuetzer2016 observations.
+
+The diagnostic_maps_multimodel.py_ diagnostic is documented below.
 
 
 Available diagnostics
@@ -270,6 +285,7 @@ Each module is described in more detail both below and inside the module.
 - diagnostic_timeseries.py
 - diagnostic_tools.py
 - diagnostic_transects.py
+- diagnostic_maps_multimodel.py
 
 
 diagnostic_maps.py
@@ -286,7 +302,7 @@ For this reason, we recommend extracting a small number of specific layers in
 the preprocessor, using the `extract_layer` preprocessor.
 
 This script can not process NetCDFs with multiple time steps. Please use the
-`time_average` preprocessor to collapse the time dimension.
+`climate_statistics` preprocessor to collapse the time dimension.
 
 This diagnostic also includes the optional arguments, `threshold` and
 `thresholds`.
@@ -311,7 +327,7 @@ For a  Global 2D field:
   .. code-block:: yaml
 
       prep_map_1:
-	time_average:
+	climate_statistics:
 
 
 For a  regional 2D field:
@@ -324,7 +340,8 @@ For a  regional 2D field:
 	      end_longitude: 30.
 	      start_latitude: -80.
 	      end_latitude: 80.
-	    time_average:
+        climate_statistics:
+          operator: mean
 
 For a  Global 3D field at the surface and 10m depth:
 
@@ -335,7 +352,8 @@ For a  Global 3D field at the surface and 10m depth:
 	  extract_levels:
 	    levels: [0., 10.]
 	    scheme: linear_horizontal_extrapolate_vertical
-	  time_average:
+      climate_statistics:
+        operator: mean
 
 
 For a multi-model comparison mean of 2D global fields including contour thresholds.
@@ -344,7 +362,8 @@ For a multi-model comparison mean of 2D global fields including contour threshol
 
 	prep_map_4:
 	  custom_order: true
-	  time_average:
+      climate_statistics:
+        operator: mean
 	  regrid:
 	    target_grid: 1x1
 	    scheme: linear
@@ -390,7 +409,8 @@ An appropriate preprocessor for a 2D field would be:
   .. code-block:: yaml
 
 	prep_quad_map:
-	    time_average:
+        climate_statistics:
+            operator: mean
 
 and an example of an appropriate diagnostic section of the recipe would be:
 
@@ -440,7 +460,7 @@ This diagnostic also includes the optional arguments, `maps_range` and
 `diff_range` to manually define plot ranges. Both arguments are a list of two floats
 to set plot range minimun and maximum values respectively for Model and Observations
 maps (Top panels) and for the Model minus Observations panel (bottom left).
-Note that if input data have negative values the Model over Observations map 
+Note that if input data have negative values the Model over Observations map
 (bottom right) is not produced.
 
 The scatter plots plot the matched model coordinate on the x axis, and the
@@ -457,10 +477,49 @@ An appropriate preprocessor for a 3D+time field would be:
 	    extract_levels:
 	      levels:  [100., ]
 	      scheme: linear_extrap
-	    time_average:
+        climate_statistics:
+          operator: mean
 	    regrid:
 	      target_grid: 1x1
 	      scheme: linear
+
+
+
+diagnostic_maps_multimodel.py
+-----------------------------
+
+The diagnostic_maps_multimodel.py_ diagnostic makes model(s) vs observations maps
+and if data are not provided it draws only model field.
+
+It is always nessary to define the overall layout trough the argument `layout_rowcol`,
+which is a list of two integers indicating respectively the number of rows and columns
+to organize the plot. Observations has not be accounted in here as they are automatically
+added at the top of the figure.
+
+This diagnostic also includes the optional arguments, `maps_range` and
+`diff_range` to manually define plot ranges. Both arguments are a list of two floats
+to set plot range minimun and maximum values respectively for variable data and
+the Model minus Observations range.
+
+Note that this diagnostic assumes that the preprocessors do the bulk of the
+hard work, and that the cube received by this diagnostic (via the settings.yml
+and metadata.yml files) has no time component, a small number of depth layers,
+and a latitude and longitude coordinates.
+
+An appropriate preprocessor for a 3D+time field would be:
+
+  .. code-block:: yaml
+
+        preprocessors:
+          prep_map:
+            extract_levels:
+              levels:  [100., ]
+              scheme: linear_extrap
+        climate_statistics:
+          operator: mean
+            regrid:
+              target_grid: 1x1
+              scheme: linear
 
 
 
@@ -573,7 +632,8 @@ An appropriate preprocessor for a 3D+time field would be:
 
   .. code-block:: yaml
 
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_slice:
       latitude: [-50.,50.]
       longitude: 332.
@@ -743,8 +803,8 @@ The following WOA datasets are used by the ocean diagnostics:
 These files need to be reformatted using the `cmorize_obs_py` script with output name `WOA`.
 
 
-Landschutzer 2014
------------------
+Landschuetzer 2016
+------------------
 These data can be downloaded from:
 ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
 (last access 02/28/2019)
@@ -754,27 +814,29 @@ The following variables are used by the ocean diagnostics:
  - spco2, Surface Aqueous Partial Pressure of CO2
  - dpco2, Delta CO2 Partial Pressure
 
-The file needs to be reformatted using the `cmorize_obs_py` script with output name `Landschutzer2014`.
+The file needs to be reformatted using the `cmorize_obs_py` script with output name `Landschuetzer2016`.
 
 
 
 .. Links:
 
 .. Recipes:
-.. _recipe_ocean_amoc.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_amoc.yml
-.. _recipe_ocean_example.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_example.yml
-.. _recipe_ocean_scalar_fields.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_scalar_fields.yml
-.. _recipe_ocean_bgc.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_bgc.yml
-.. _recipe_ocean_quadmap.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_quadmap.yml
-.. _recipe_ocean_Landschutzer2014.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_Landschutzer2014.yml
+.. _recipe_ocean_amoc.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_amoc.yml
+.. _recipe_ocean_example.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_example.yml
+.. _recipe_ocean_scalar_fields.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_scalar_fields.yml
+.. _recipe_ocean_bgc.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_bgc.yml
+.. _recipe_ocean_quadmap.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_quadmap.yml
+.. _recipe_ocean_Landschuetzer2016.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_Landschuetzer2016.yml
+.. _recipe_ocean_multimap.yml: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/recipes/recipe_ocean_multimap.yml
 
 .. Diagnostics:
-.. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/:
-.. _diagnostic_maps.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_maps.py
-.. _diagnostic_maps_quad.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_maps_quad.py
-.. _diagnostic_model_vs_obs.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_model_vs_obs.py
-.. _diagnostic_profiles.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_profiles.py
-.. _diagnostic_timeseries.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_timeseries.py
-.. _diagnostic_transects.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_transects.py
-.. _diagnostic_seaice.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_seaice.py
-.. _diagnostic_tools.py: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/diagnostic_tools.py
+.. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/:
+.. _diagnostic_maps.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_maps.py
+.. _diagnostic_maps_quad.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_maps_quad.py
+.. _diagnostic_model_vs_obs.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_model_vs_obs.py
+.. _diagnostic_maps_multimodel.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_maps_multimodel.py
+.. _diagnostic_profiles.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_profiles.py
+.. _diagnostic_timeseries.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_timeseries.py
+.. _diagnostic_transects.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_transects.py
+.. _diagnostic_seaice.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_seaice.py
+.. _diagnostic_tools.py: https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/ocean/diagnostic_tools.py
