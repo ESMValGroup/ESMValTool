@@ -340,6 +340,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     elif attributes['dataset_id'] == 'ERA-Interim-Land':
         if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
+            _fix_monthly_time_coord(cube)
         if 'day' in var['mip']:
             cube = _compute_daily(cube)
     else:
