@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 
 import iris
+import dask.array as da
 from esmvalcore import preprocessor as preproc
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -243,6 +244,20 @@ def main(cfg):
     pr_dem.convert_units('mm day-1')
     
     tas_dem.convert_units('degC')
+
+
+    # Round times to integer number of days
+    time_coord = pr_dem.coord('time')
+    time_coord.points = da.floor(time_coord.core_points())
+    time_coord.bounds = None
+
+    time_coord = tas_dem.coord('time')
+    time_coord.points = da.floor(time_coord.core_points())
+    time_coord.bounds = None
+
+    time_coord = pet_dem.coord('time')
+    time_coord.points = da.floor(time_coord.core_points())
+    time_coord.bounds = None
 
     # Save output
     # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"

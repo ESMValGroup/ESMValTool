@@ -13,10 +13,10 @@ documentation:
 preprocessors:
   crop_basin: &crop_basin
     extract_region:
-      start_longitude: 3
-      end_longitude: 7
-      start_latitude: 47
-      end_latitude: 52
+      start_longitude: -72.75
+      end_longitude: -68
+      start_latitude: 40
+      end_latitude: 44.75
   hourly_mean:
     <<: *crop_basin
     # extract_time:
@@ -25,35 +25,37 @@ preprocessors:
     #   end_day: 3
 
 diagnostics:
-  diagnostic_daily:
-    description: WFlow input preprocessor for daily data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      tas: &var_daily
-        mip: day
-        preprocessor: crop_basin
-        start_year: 1990
-        end_year: 1990
-      pr: *var_daily
-      orog:
-        mip: fx
-        preprocessor: crop_basin
-      # evspsblpot:  # doesn't exist.
-      # Reconstruct evspsblpot using:
-      psl: *var_daily
-      rsds: *var_daily
-      rsdt:
-        <<: *var_daily
-        mip: CFday
-    scripts:
-      script:
-        script: hydrology/wflow.py
-        basin_name: Meuse
-        dataset: ERA-Interim
-        startyear: '1990'
-        endyear: '1990'
-        dem_file: 'wflow/wflow_dem_Meuse.nc'
+  # diagnostic_daily:
+  #   description: WFlow input preprocessor for daily data
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     tas: &var_daily
+  #       mip: day
+  #       preprocessor: crop_basin
+  #       start_year: 1999
+  #       end_year: 2001
+  #     pr: *var_daily
+  #     orog:
+  #       mip: fx
+  #       start_year: 1999
+  #       end_year: 1999
+  #       preprocessor: crop_basin
+  #     # evspsblpot:  # doesn't exist.
+  #     # Reconstruct evspsblpot using:
+  #     psl: *var_daily
+  #     rsds: *var_daily
+  #     rsdt:
+  #       <<: *var_daily
+  #       mip: CFday
+  #   scripts:
+  #     script:
+  #       script: hydrology/wflow.py
+  #       basin_name: Merrimack
+  #       dataset: ERA-Interim
+  #       startyear: '1999'
+  #       endyear: '2001'
+  #       dem_file: 'wflow/wflow_dem_Merrimack.nc'
 
   diagnostic_hourly:
     description: WFlow input preprocessor for hourly data
@@ -62,12 +64,14 @@ diagnostics:
     variables:
       orog:
         mip: fx
+        start_year: 1999
+        end_year: 1999
         preprocessor: crop_basin
       tas: &var_hourly
         mip: E1hr
         preprocessor: hourly_mean
-        start_year: 1990
-        end_year: 1990
+        start_year: 1999
+        end_year: 2001
       pr: *var_hourly
       # Reconstruct evspsblpot similar to ERA-Interim:
       psl: *var_hourly
@@ -76,11 +80,11 @@ diagnostics:
     scripts:
       script:
         script: hydrology/wflow.py
-        basin_name: Meuse
+        basin_name: Merrimack
         dataset: ERA5
-        startyear: '1990'
-        endyear: '1990'
-        dem_file: 'wflow/wflow_dem_Meuse.nc'
+        startyear: '1999'
+        endyear: '2001'
+        dem_file: 'wflow/wflow_dem_Merrimack.nc'
 
 
 

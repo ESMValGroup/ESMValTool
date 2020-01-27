@@ -19,17 +19,6 @@ preprocessors:
       start_latitude: 40
       end_latitude: 44.75
 
-  crop_basin_ERA-Interim: &crop_basin_ERA-Interim
-    extract_region:
-      # start_longitude: -77.5
-      # end_longitude: -70
-      # start_latitude: 41
-      # end_latitude: 48.5
-      start_longitude: -72.75
-      end_longitude: -68
-      start_latitude: 40
-      end_latitude: 44.75
-
   hourly_mean:
     <<: *crop_basin_ERA5
     daily_statistics:
@@ -49,8 +38,8 @@ diagnostics:
       tas: &var_hourly
         mip: E1hr
         preprocessor: hourly_mean
-        start_year: 1999
-        end_year: 2001
+        start_year: 2014
+        end_year: 2014
       pr: *var_hourly
       # Reconstruct evspsblpot similar to ERA-Interim:
       psl: *var_hourly
@@ -60,19 +49,19 @@ diagnostics:
       script:
         script: hydrology/wflow_rainfarm.py
         ancestors: [orog, tas, psl, rsds, rsdt, rainfarm]
-        basin_name: Merrimack_1km_day
+        basin_name: Merrimack_200m_day
         dataset: ERA5
-        startyear: '1999'
-        endyear: '2001'
-        dem_file: 'wflow/wflow_dem_merrimack_1km.nc'
+        startyear: '2014'
+        endyear: '2014'
+        dem_file: 'wflow/wflow_dem_merrimack_200m.nc'
       
       rainfarm:
         script: rainfarm/rainfarm.jl
         ancestors: [pr]
         slope: 0               # spatial spectral slope (set to 0 to compute from large scales)
         nens: 1                # number of ensemble members to be calculated
-        nf: 30                # subdivisions for downscaling 3km=10, 1km=30, 250m=120
+        nf: 150                # subdivisions for downscaling 3km=10, 1km=30, 250m=120, 200m=150
         conserv_glob: false    # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
         conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
-        weights_climo: wc2.0_30s_prec.nc   # orographic weights: set to false (or omit) or path to a fine-scale precipitation climatology file
+        weights_climo: wc2.0_30s_prec.nc   # orographic weights: set to false (or omit) or path to a fine-scale precipitation climatology files
         
