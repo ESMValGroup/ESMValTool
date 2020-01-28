@@ -54,13 +54,13 @@ preprocessors:
 # Define grid
   preprocessor: &era5_grid
     regrid:
-      target_grid: 0.25 x 0.25 #0.25 x 0.25 Replace this by ERA5, does not work with ESMValTool build
+      target_grid: 0.25 x 0.25 
       lon_offset: true
       lat_offset: true
       scheme: linear          
   preprocessor: &era_interim_grid
     regrid:
-      target_grid: 0.25 x 0.25 #0.75 x 0.75 Replace this by ERA-Interim, does not work with ESMValTool build
+      target_grid: 0.25 x 0.25 
       lon_offset: true
       lat_offset: true
       scheme: linear     
@@ -89,129 +89,129 @@ preprocessors:
       operator: mean
       period: day    
 
-# Doring Basin    
-  doring_era5_grid_hourly_water: &doring_era5_grid_hourly_water
-    <<: *doring
-    <<: *era5_grid
-    <<: *hourly_water         
-  doring_era5_grid_hourly_temperature: &doring_era5_grid_hourly_temperature
-    <<: *doring
-    <<: *era5_grid
-    <<: *hourly_temperature
-  doring_era_interim_grid_daily_water: &doring_era_interim_grid_daily_water
-    <<: *doring
-    <<: *era_interim_grid
-    <<: *daily_water
-  doring_era_interim_grid_daily_temperature: &doring_era_interim_grid_daily_temperature
-    <<: *doring
-    <<: *era_interim_grid
-    <<: *daily_temperature
-  # Doring Basin Climatology
-  doring_era5_grid_hourly_water_climatology: 
-    <<: *doring_era5_grid_hourly_water
-    <<: *climatology     
-  doring_era5_grid_hourly_temperature_climatology:
-    <<: *doring_era5_grid_hourly_temperature
-    <<: *climatology
-  doring_era_interim_grid_daily_water_climatology:
-    <<: *doring_era_interim_grid_daily_water
-    <<: *climatology  
-  doring_era_interim_grid_daily_temperature_climatology:
-    <<: *doring_era_interim_grid_daily_temperature
-    <<: *climatology  
+# # Doring Basin    
+#   doring_era5_grid_hourly_water: &doring_era5_grid_hourly_water
+#     <<: *doring
+#     <<: *era5_grid
+#     <<: *hourly_water         
+#   doring_era5_grid_hourly_temperature: &doring_era5_grid_hourly_temperature
+#     <<: *doring
+#     <<: *era5_grid
+#     <<: *hourly_temperature
+#   doring_era_interim_grid_daily_water: &doring_era_interim_grid_daily_water
+#     <<: *doring
+#     <<: *era_interim_grid
+#     <<: *daily_water
+#   doring_era_interim_grid_daily_temperature: &doring_era_interim_grid_daily_temperature
+#     <<: *doring
+#     <<: *era_interim_grid
+#     <<: *daily_temperature
+#   # Doring Basin Climatology
+#   doring_era5_grid_hourly_water_climatology: 
+#     <<: *doring_era5_grid_hourly_water
+#     <<: *climatology     
+#   doring_era5_grid_hourly_temperature_climatology:
+#     <<: *doring_era5_grid_hourly_temperature
+#     <<: *climatology
+#   doring_era_interim_grid_daily_water_climatology:
+#     <<: *doring_era_interim_grid_daily_water
+#     <<: *climatology  
+#   doring_era_interim_grid_daily_temperature_climatology:
+#     <<: *doring_era_interim_grid_daily_temperature
+#     <<: *climatology  
 
-# Great Kei Basin    
-  greatkei_era5_grid_hourly_water: &greatkei_era5_grid_hourly_water
-    <<: *greatkei
-    <<: *era5_grid
-    <<: *hourly_water         
-  greatkei_era5_grid_hourly_temperature: &greatkei_era5_grid_hourly_temperature
-    <<: *greatkei
-    <<: *era5_grid
-    <<: *hourly_temperature
-  greatkei_era_interim_grid_daily_water: &greatkei_era_interim_grid_daily_water
-    <<: *greatkei
-    <<: *era_interim_grid
-    <<: *daily_water         
-  greatkei_era_interim_grid_daily_temperature: &greatkei_era_interim_grid_daily_temperature
-    <<: *greatkei
-    <<: *era_interim_grid
-    <<: *daily_temperature
-  # Great Kei Basin Climatology
-  greatkei_era5_grid_hourly_water_climatology: 
-    <<: *greatkei_era5_grid_hourly_water
-    <<: *climatology     
-  greatkei_era5_grid_hourly_temperature_climatology:
-    <<: *greatkei_era5_grid_hourly_temperature
-    <<: *climatology
-  greatkei_era_interim_grid_daily_water_climatology:
-    <<: *greatkei_era_interim_grid_daily_water
-    <<: *climatology  
-  greatkei_era_interim_grid_daily_temperature_climatology:
-    <<: *greatkei_era_interim_grid_daily_temperature
-    <<: *climatology
+# # Great Kei Basin    
+#   greatkei_era5_grid_hourly_water: &greatkei_era5_grid_hourly_water
+#     <<: *greatkei
+#     <<: *era5_grid
+#     <<: *hourly_water         
+#   greatkei_era5_grid_hourly_temperature: &greatkei_era5_grid_hourly_temperature
+#     <<: *greatkei
+#     <<: *era5_grid
+#     <<: *hourly_temperature
+#   greatkei_era_interim_grid_daily_water: &greatkei_era_interim_grid_daily_water
+#     <<: *greatkei
+#     <<: *era_interim_grid
+#     <<: *daily_water         
+#   greatkei_era_interim_grid_daily_temperature: &greatkei_era_interim_grid_daily_temperature
+#     <<: *greatkei
+#     <<: *era_interim_grid
+#     <<: *daily_temperature
+#   # Great Kei Basin Climatology
+#   greatkei_era5_grid_hourly_water_climatology: 
+#     <<: *greatkei_era5_grid_hourly_water
+#     <<: *climatology     
+#   greatkei_era5_grid_hourly_temperature_climatology:
+#     <<: *greatkei_era5_grid_hourly_temperature
+#     <<: *climatology
+#   greatkei_era_interim_grid_daily_water_climatology:
+#     <<: *greatkei_era_interim_grid_daily_water
+#     <<: *climatology  
+#   greatkei_era_interim_grid_daily_temperature_climatology:
+#     <<: *greatkei_era_interim_grid_daily_temperature
+#     <<: *climatology
 
 # Merrimack Basin    
-  merrimack_era5_grid_hourly_water: &merrimack_era5_grid_hourly_water
-    <<: *merrimack
-    <<: *era5_grid
-    <<: *hourly_water         
-  merrimack_era5_grid_hourly_temperature: &merrimack_era5_grid_hourly_temperature
-    <<: *merrimack
-    <<: *era5_grid
-    <<: *hourly_temperature
-  merrimack_era_interim_grid_daily_water: &merrimack_era_interim_grid_daily_water
-    <<: *merrimack
-    <<: *era_interim_grid
-    <<: *daily_water         
-  merrimack_era_interim_grid_daily_temperature: &merrimack_era_interim_grid_daily_temperature
-    <<: *merrimack
-    <<: *era_interim_grid
-    <<: *daily_temperature
-# Merrimack Basin Climatology
-  merrimack_era5_grid_hourly_water_climatology: 
-    <<: *merrimack_era5_grid_hourly_water
-    <<: *climatology     
-  merrimack_era5_grid_hourly_temperature_climatology:
-    <<: *merrimack_era5_grid_hourly_temperature
-    <<: *climatology
-  merrimack_era_interim_grid_daily_water_climatology:
-    <<: *merrimack_era_interim_grid_daily_water
-    <<: *climatology  
-  merrimack_era_interim_grid_daily_temperature_climatology:
-    <<: *merrimack_era_interim_grid_daily_temperature
-    <<: *climatology
+#   merrimack_era5_grid_hourly_water: &merrimack_era5_grid_hourly_water
+#     <<: *merrimack
+#     <<: *era5_grid
+#     <<: *hourly_water         
+#   merrimack_era5_grid_hourly_temperature: &merrimack_era5_grid_hourly_temperature
+#     <<: *merrimack
+#     <<: *era5_grid
+#     <<: *hourly_temperature
+#   merrimack_era_interim_grid_daily_water: &merrimack_era_interim_grid_daily_water
+#     <<: *merrimack
+#     <<: *era_interim_grid
+#     <<: *daily_water         
+#   merrimack_era_interim_grid_daily_temperature: &merrimack_era_interim_grid_daily_temperature
+#     <<: *merrimack
+#     <<: *era_interim_grid
+#     <<: *daily_temperature
+# # Merrimack Basin Climatology
+#   merrimack_era5_grid_hourly_water_climatology: 
+#     <<: *merrimack_era5_grid_hourly_water
+#     <<: *climatology     
+#   merrimack_era5_grid_hourly_temperature_climatology:
+#     <<: *merrimack_era5_grid_hourly_temperature
+#     <<: *climatology
+#   merrimack_era_interim_grid_daily_water_climatology:
+#     <<: *merrimack_era_interim_grid_daily_water
+#     <<: *climatology  
+#   merrimack_era_interim_grid_daily_temperature_climatology:
+#     <<: *merrimack_era_interim_grid_daily_temperature
+#     <<: *climatology
 
-# Meuse Basin    
-  meuse_era5_grid_hourly_water: &meuse_era5_grid_hourly_water
-    <<: *meuse
-    <<: *era5_grid
-    <<: *hourly_water         
-  meuse_era5_grid_hourly_temperature: &meuse_era5_grid_hourly_temperature
-    <<: *meuse
-    <<: *era5_grid
-    <<: *hourly_temperature
-  meuse_era_interim_grid_daily_water: &meuse_era_interim_grid_daily_water
-    <<: *meuse
-    <<: *era_interim_grid
-    <<: *daily_water         
-  meuse_era_interim_grid_daily_temperature: &meuse_era_interim_grid_daily_temperature
-    <<: *meuse
-    <<: *era_interim_grid
-    <<: *daily_temperature
-# Meuse Basin Climatology
-  meuse_era5_grid_hourly_water_climatology: 
-    <<: *meuse_era5_grid_hourly_water
-    <<: *climatology     
-  meuse_era5_grid_hourly_temperature_climatology:
-    <<: *meuse_era5_grid_hourly_temperature
-    <<: *climatology
-  meuse_era_interim_grid_daily_water_climatology:
-    <<: *meuse_era_interim_grid_daily_water
-    <<: *climatology  
-  meuse_era_interim_grid_daily_temperature_climatology:
-    <<: *meuse_era_interim_grid_daily_temperature
-    <<: *climatology
+# # Meuse Basin    
+#   meuse_era5_grid_hourly_water: &meuse_era5_grid_hourly_water
+#     <<: *meuse
+#     <<: *era5_grid
+#     <<: *hourly_water         
+#   meuse_era5_grid_hourly_temperature: &meuse_era5_grid_hourly_temperature
+#     <<: *meuse
+#     <<: *era5_grid
+#     <<: *hourly_temperature
+#   meuse_era_interim_grid_daily_water: &meuse_era_interim_grid_daily_water
+#     <<: *meuse
+#     <<: *era_interim_grid
+#     <<: *daily_water         
+#   meuse_era_interim_grid_daily_temperature: &meuse_era_interim_grid_daily_temperature
+#     <<: *meuse
+#     <<: *era_interim_grid
+#     <<: *daily_temperature
+# # Meuse Basin Climatology
+#   meuse_era5_grid_hourly_water_climatology: 
+#     <<: *meuse_era5_grid_hourly_water
+#     <<: *climatology     
+#   meuse_era5_grid_hourly_temperature_climatology:
+#     <<: *meuse_era5_grid_hourly_temperature
+#     <<: *climatology
+#   meuse_era_interim_grid_daily_water_climatology:
+#     <<: *meuse_era_interim_grid_daily_water
+#     <<: *climatology  
+#   meuse_era_interim_grid_daily_temperature_climatology:
+#     <<: *meuse_era_interim_grid_daily_temperature
+#     <<: *climatology
 
 # Rhine Basin    
   rhine_era5_grid_hourly_water: &rhine_era5_grid_hourly_water
@@ -244,294 +244,294 @@ preprocessors:
     <<: *rhine_era_interim_grid_daily_temperature
     <<: *climatology
 
-# Savannah Basin    
-  savannah_era5_grid_hourly_water: &savannah_era5_grid_hourly_water
-    <<: *savannah
-    <<: *era5_grid
-    <<: *hourly_water         
-  savannah_era5_grid_hourly_temperature: &savannah_era5_grid_hourly_temperature
-    <<: *savannah
-    <<: *era5_grid
-    <<: *hourly_temperature
-  savannah_era_interim_grid_daily_water: &savannah_era_interim_grid_daily_water
-    <<: *savannah
-    <<: *era_interim_grid
-    <<: *daily_water         
-  savannah_era_interim_grid_daily_temperature: &savannah_era_interim_grid_daily_temperature
-    <<: *savannah
-    <<: *era_interim_grid
-    <<: *daily_temperature
-# Savannah Basin Climatology
-  savannah_era5_grid_hourly_water_climatology: 
-    <<: *savannah_era5_grid_hourly_water
-    <<: *climatology     
-  savannah_era5_grid_hourly_temperature_climatology:
-    <<: *savannah_era5_grid_hourly_temperature
-    <<: *climatology
-  savannah_era_interim_grid_daily_water_climatology:
-    <<: *savannah_era_interim_grid_daily_water
-    <<: *climatology  
-  savannah_era_interim_grid_daily_temperature_climatology:
-    <<: *savannah_era_interim_grid_daily_temperature
-    <<: *climatology
+# # Savannah Basin    
+#   savannah_era5_grid_hourly_water: &savannah_era5_grid_hourly_water
+#     <<: *savannah
+#     <<: *era5_grid
+#     <<: *hourly_water         
+#   savannah_era5_grid_hourly_temperature: &savannah_era5_grid_hourly_temperature
+#     <<: *savannah
+#     <<: *era5_grid
+#     <<: *hourly_temperature
+#   savannah_era_interim_grid_daily_water: &savannah_era_interim_grid_daily_water
+#     <<: *savannah
+#     <<: *era_interim_grid
+#     <<: *daily_water         
+#   savannah_era_interim_grid_daily_temperature: &savannah_era_interim_grid_daily_temperature
+#     <<: *savannah
+#     <<: *era_interim_grid
+#     <<: *daily_temperature
+# # Savannah Basin Climatology
+#   savannah_era5_grid_hourly_water_climatology: 
+#     <<: *savannah_era5_grid_hourly_water
+#     <<: *climatology     
+#   savannah_era5_grid_hourly_temperature_climatology:
+#     <<: *savannah_era5_grid_hourly_temperature
+#     <<: *climatology
+#   savannah_era_interim_grid_daily_water_climatology:
+#     <<: *savannah_era_interim_grid_daily_water
+#     <<: *climatology  
+#   savannah_era_interim_grid_daily_temperature_climatology:
+#     <<: *savannah_era_interim_grid_daily_temperature
+#     <<: *climatology
 
 
 diagnostics:
-  # Doring Basin
-  doring_diagnostic_daily:
-    description: PCR-GLOBWB input preprocessor for daily data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_daily_doring
-        mip: day
-        start_year: 1990
-        end_year: 2018
-        preprocessor: doring_era_interim_grid_daily_water
-      pr_climatology: &var_daily_climatology_doring
-        short_name: pr
-        mip: day 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: doring_era_interim_grid_daily_water_climatology        
-      tas:
-        <<: *var_daily_doring
-        preprocessor: doring_era_interim_grid_daily_temperature
-      tas_climatology: 
-        short_name: tas
-        <<: *var_daily_climatology_doring
-        preprocessor: doring_era_interim_grid_daily_temperature_climatology
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # # Doring Basin
+  # doring_diagnostic_daily:
+  #   description: PCR-GLOBWB input preprocessor for daily data
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_daily_doring
+  #       mip: day
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: doring_era_interim_grid_daily_water
+  #     pr_climatology: &var_daily_climatology_doring
+  #       short_name: pr
+  #       mip: day 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: doring_era_interim_grid_daily_water_climatology        
+  #     tas:
+  #       <<: *var_daily_doring
+  #       preprocessor: doring_era_interim_grid_daily_temperature
+  #     tas_climatology: 
+  #       short_name: tas
+  #       <<: *var_daily_climatology_doring
+  #       preprocessor: doring_era_interim_grid_daily_temperature_climatology
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
         
-  doring_diagnostic_hourly:
-    description: PCR-GLOBWB  input preprocesor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_hourly_doring
-        mip: E1hr
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2018
-        preprocessor: doring_era5_grid_hourly_water
-      pr_climatology: &var_hourly_climatology_doring
-        short_name: pr
-        mip: E1hr
-        frequency: 1hr # Remove in new version ESMVALCore  
-        start_year: 1990
-        end_year: 2004
-        preprocessor: doring_era5_grid_hourly_water_climatology      
-      tas:
-        <<: *var_hourly_doring
-        preprocessor: doring_era5_grid_hourly_temperature
-      tas_climatology: 
-        short_name: tas
-        <<: *var_hourly_climatology_doring
-        preprocessor: doring_era5_grid_hourly_temperature_climatology      
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # doring_diagnostic_hourly:
+  #   description: PCR-GLOBWB  input preprocesor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_hourly_doring
+  #       mip: E1hr
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: doring_era5_grid_hourly_water
+  #     pr_climatology: &var_hourly_climatology_doring
+  #       short_name: pr
+  #       mip: E1hr
+  #       frequency: 1hr # Remove in new version ESMVALCore  
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: doring_era5_grid_hourly_water_climatology      
+  #     tas:
+  #       <<: *var_hourly_doring
+  #       preprocessor: doring_era5_grid_hourly_temperature
+  #     tas_climatology: 
+  #       short_name: tas
+  #       <<: *var_hourly_climatology_doring
+  #       preprocessor: doring_era5_grid_hourly_temperature_climatology      
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
 
-  # Great Kei Basin        
-  greatkei_diagnostic_daily:
-    description: PCR-GLOBWB input preprocessor for daily data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_daily_greatkei
-        mip: day
-        start_year: 1990
-        end_year: 2018
-        preprocessor: greatkei_era_interim_grid_daily_water
-      pr_climatology: &var_daily_climatology_greatkei
-        short_name: pr
-        mip: day 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: greatkei_era_interim_grid_daily_water_climatology
-      tas:
-        <<: *var_daily_greatkei
-        preprocessor: greatkei_era_interim_grid_daily_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_daily_climatology_greatkei
-        preprocessor: greatkei_era_interim_grid_daily_temperature_climatology     
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # # Great Kei Basin        
+  # greatkei_diagnostic_daily:
+  #   description: PCR-GLOBWB input preprocessor for daily data
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_daily_greatkei
+  #       mip: day
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: greatkei_era_interim_grid_daily_water
+  #     pr_climatology: &var_daily_climatology_greatkei
+  #       short_name: pr
+  #       mip: day 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: greatkei_era_interim_grid_daily_water_climatology
+  #     tas:
+  #       <<: *var_daily_greatkei
+  #       preprocessor: greatkei_era_interim_grid_daily_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_daily_climatology_greatkei
+  #       preprocessor: greatkei_era_interim_grid_daily_temperature_climatology     
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
 
-  greatkei_diagnostic_hourly:
-    description: PCR-GLOBWB  input preprocesor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_hourly_greatkei
-        mip: E1hr
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2018
-        preprocessor: greatkei_era5_grid_hourly_water
-      pr_climatology: &var_hourly_climatology_greatkei
-        short_name: pr
-        mip: E1hr
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: greatkei_era5_grid_hourly_water_climatology
-      tas:
-        <<: *var_hourly_greatkei
-        preprocessor: greatkei_era5_grid_hourly_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_hourly_climatology_greatkei
-        preprocessor: greatkei_era5_grid_hourly_temperature_climatology   
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # greatkei_diagnostic_hourly:
+  #   description: PCR-GLOBWB  input preprocesor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_hourly_greatkei
+  #       mip: E1hr
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: greatkei_era5_grid_hourly_water
+  #     pr_climatology: &var_hourly_climatology_greatkei
+  #       short_name: pr
+  #       mip: E1hr
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: greatkei_era5_grid_hourly_water_climatology
+  #     tas:
+  #       <<: *var_hourly_greatkei
+  #       preprocessor: greatkei_era5_grid_hourly_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_hourly_climatology_greatkei
+  #       preprocessor: greatkei_era5_grid_hourly_temperature_climatology   
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
         
   # Merrimack Basin
-  merrimack_diagnostic_daily:
-    description: PCR-GLOBWB input preprocessor for daily data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_daily_merrimack
-        mip: day
-        start_year: 1990
-        end_year: 2018
-        preprocessor: merrimack_era_interim_grid_daily_water
-      pr_climatology: &var_daily_climatology_merrimack
-        short_name: pr
-        mip: day 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: merrimack_era_interim_grid_daily_water_climatology
-      tas:
-        <<: *var_daily_merrimack
-        preprocessor: merrimack_era_interim_grid_daily_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_daily_climatology_merrimack
-        preprocessor: merrimack_era_interim_grid_daily_temperature_climatology     
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # merrimack_diagnostic_daily:
+    # description: PCR-GLOBWB input preprocessor for daily data
+    # additional_datasets:
+    #   - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    # variables:
+    #   pr: &var_daily_merrimack
+    #     mip: day
+    #     start_year: 1990
+    #     end_year: 2018
+    #     preprocessor: merrimack_era_interim_grid_daily_water
+    #   pr_climatology: &var_daily_climatology_merrimack
+    #     short_name: pr
+    #     mip: day 
+    #     start_year: 1990
+    #     end_year: 2004
+    #     preprocessor: merrimack_era_interim_grid_daily_water_climatology
+    #   tas:
+    #     <<: *var_daily_merrimack
+    #     preprocessor: merrimack_era_interim_grid_daily_temperature
+    #   tas_climatology:
+    #     short_name: tas
+    #     <<: *var_daily_climatology_merrimack
+    #     preprocessor: merrimack_era_interim_grid_daily_temperature_climatology     
+    # scripts:
+    #   script:
+    #     script: hydrology/pcrglobwb.py
         
-  merrimack_diagnostic_hourly:
-    description: PCR-GLOBWB  input preprocesor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_hourly_merrimack
-        mip: E1hr 
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2018
-        preprocessor: merrimack_era5_grid_hourly_water
-      pr_climatology: &var_hourly_climatology_merrimack
-        short_name: pr
-        mip: E1hr 
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: merrimack_era5_grid_hourly_water_climatology
-      tas:
-        <<: *var_hourly_merrimack
-        preprocessor: merrimack_era5_grid_hourly_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_hourly_climatology_merrimack
-        preprocessor: merrimack_era5_grid_hourly_temperature_climatology   
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # merrimack_diagnostic_hourly:
+  #   description: PCR-GLOBWB  input preprocesor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_hourly_merrimack
+  #       mip: E1hr 
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2008
+  #       preprocessor: merrimack_era5_grid_hourly_water
+  #     pr_climatology: &var_hourly_climatology_merrimack
+  #       short_name: pr
+  #       mip: E1hr 
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: merrimack_era5_grid_hourly_water_climatology
+  #     tas:
+  #       <<: *var_hourly_merrimack
+  #       preprocessor: merrimack_era5_grid_hourly_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_hourly_climatology_merrimack
+  #       preprocessor: merrimack_era5_grid_hourly_temperature_climatology   
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
 
   # Meuse Basin
-  meuse_diagnostic_daily:
-    description: PCR-GLOBWB input preprocessor for daily data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_daily_meuse
-        mip: day
-        start_year: 1990
-        end_year: 2018
-        preprocessor: meuse_era_interim_grid_daily_water
-      pr_climatology: &var_daily_climatology_meuse
-        short_name: pr
-        mip: day 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: meuse_era_interim_grid_daily_water_climatology
-      tas:
-        <<: *var_daily_meuse
-        preprocessor: meuse_era_interim_grid_daily_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_daily_climatology_meuse
-        preprocessor: meuse_era_interim_grid_daily_temperature_climatology     
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # meuse_diagnostic_daily:
+  #   description: PCR-GLOBWB input preprocessor for daily data
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_daily_meuse
+  #       mip: day
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: meuse_era_interim_grid_daily_water
+  #     pr_climatology: &var_daily_climatology_meuse
+  #       short_name: pr
+  #       mip: day 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: meuse_era_interim_grid_daily_water_climatology
+  #     tas:
+  #       <<: *var_daily_meuse
+  #       preprocessor: meuse_era_interim_grid_daily_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_daily_climatology_meuse
+  #       preprocessor: meuse_era_interim_grid_daily_temperature_climatology     
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
         
-  meuse_diagnostic_hourly:
-    description: PCR-GLOBWB  input preprocesor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_hourly_meuse
-        mip: E1hr 
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2018
-        preprocessor: meuse_era5_grid_hourly_water
-      pr_climatology: &var_hourly_climatology_meuse
-        short_name: pr
-        mip: E1hr 
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: meuse_era5_grid_hourly_water_climatology
-      tas:
-        <<: *var_hourly_meuse
-        preprocessor: meuse_era5_grid_hourly_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_hourly_climatology_meuse
-        preprocessor: meuse_era5_grid_hourly_temperature_climatology   
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # meuse_diagnostic_hourly:
+  #   description: PCR-GLOBWB  input preprocesor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_hourly_meuse
+  #       mip: E1hr 
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: meuse_era5_grid_hourly_water
+  #     pr_climatology: &var_hourly_climatology_meuse
+  #       short_name: pr
+  #       mip: E1hr 
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: meuse_era5_grid_hourly_water_climatology
+  #     tas:
+  #       <<: *var_hourly_meuse
+  #       preprocessor: meuse_era5_grid_hourly_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_hourly_climatology_meuse
+  #       preprocessor: meuse_era5_grid_hourly_temperature_climatology   
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
 
-  # Rhine Basin
-  rhine_diagnostic_daily:
-    description: PCR-GLOBWB input preprocessor for daily data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_daily_rhine
-        mip: day
-        start_year: 1990
-        end_year: 2018
-        preprocessor: rhine_era_interim_grid_daily_water
-      pr_climatology: &var_daily_climatology_rhine
-        short_name: pr
-        mip: day 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: rhine_era_interim_grid_daily_water_climatology
-      tas:
-        <<: *var_daily_rhine
-        preprocessor: rhine_era_interim_grid_daily_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_daily_climatology_rhine
-        preprocessor: rhine_era_interim_grid_daily_temperature_climatology     
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # # Rhine Basin
+  # rhine_diagnostic_daily:
+  #   description: PCR-GLOBWB input preprocessor for daily data
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_daily_rhine
+  #       mip: day
+  #       start_year: 1990
+  #       end_year: 1990
+  #       preprocessor: rhine_era_interim_grid_daily_water
+  #     pr_climatology: &var_daily_climatology_rhine
+  #       short_name: pr
+  #       mip: day 
+  #       start_year: 1990
+  #       end_year: 1991
+  #       preprocessor: rhine_era_interim_grid_daily_water_climatology
+  #     tas:
+  #       <<: *var_daily_rhine
+  #       preprocessor: rhine_era_interim_grid_daily_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_daily_climatology_rhine
+  #       preprocessor: rhine_era_interim_grid_daily_temperature_climatology     
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
         
   rhine_diagnostic_hourly:
     description: PCR-GLOBWB  input preprocesor for hourly data
@@ -542,14 +542,14 @@ diagnostics:
         mip: E1hr
         frequency: 1hr # Remove in new version ESMVALCore 
         start_year: 1990
-        end_year: 2018
+        end_year: 1991
         preprocessor: rhine_era5_grid_hourly_water
       pr_climatology: &var_hourly_climatology_rhine
         short_name: pr
         mip: E1hr
         frequency: 1hr # Remove in new version ESMVALCore  
         start_year: 1990
-        end_year: 2004
+        end_year: 1990
         preprocessor: rhine_era5_grid_hourly_water_climatology
       tas:
         <<: *var_hourly_rhine
@@ -562,59 +562,59 @@ diagnostics:
       script:
         script: hydrology/pcrglobwb.py
 
-  # Savannah Basin
-  savannah_diagnostic_daily:
-    description: PCR-GLOBWB input preprocessor for daily data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_daily_savannah
-        mip: day
-        start_year: 1990
-        end_year: 2018
-        preprocessor: savannah_era_interim_grid_daily_water
-      pr_climatology: &var_daily_climatology_savannah
-        short_name: pr
-        mip: day 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: savannah_era_interim_grid_daily_water_climatology
-      tas:
-        <<: *var_daily_savannah
-        preprocessor: savannah_era_interim_grid_daily_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_daily_climatology_savannah
-        preprocessor: savannah_era_interim_grid_daily_temperature_climatology     
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # # Savannah Basin
+  # savannah_diagnostic_daily:
+  #   description: PCR-GLOBWB input preprocessor for daily data
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_daily_savannah
+  #       mip: day
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: savannah_era_interim_grid_daily_water
+  #     pr_climatology: &var_daily_climatology_savannah
+  #       short_name: pr
+  #       mip: day 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: savannah_era_interim_grid_daily_water_climatology
+  #     tas:
+  #       <<: *var_daily_savannah
+  #       preprocessor: savannah_era_interim_grid_daily_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_daily_climatology_savannah
+  #       preprocessor: savannah_era_interim_grid_daily_temperature_climatology     
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
         
-  savannah_diagnostic_hourly:
-    description: PCR-GLOBWB  input preprocesor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_hourly_savannah
-        mip: E1hr
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2018
-        preprocessor: savannah_era5_grid_hourly_water
-      pr_climatology: &var_hourly_climatology_savannah
-        short_name: pr
-        mip: E1hr
-        frequency: 1hr # Remove in new version ESMVALCore 
-        start_year: 1990
-        end_year: 2004
-        preprocessor: savannah_era5_grid_hourly_water_climatology
-      tas:
-        <<: *var_hourly_savannah
-        preprocessor: savannah_era5_grid_hourly_temperature
-      tas_climatology:
-        short_name: tas
-        <<: *var_hourly_climatology_savannah
-        preprocessor: savannah_era5_grid_hourly_temperature_climatology   
-    scripts:
-      script:
-        script: hydrology/pcrglobwb.py
+  # savannah_diagnostic_hourly:
+  #   description: PCR-GLOBWB  input preprocesor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_hourly_savannah
+  #       mip: E1hr
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2018
+  #       preprocessor: savannah_era5_grid_hourly_water
+  #     pr_climatology: &var_hourly_climatology_savannah
+  #       short_name: pr
+  #       mip: E1hr
+  #       frequency: 1hr # Remove in new version ESMVALCore 
+  #       start_year: 1990
+  #       end_year: 2004
+  #       preprocessor: savannah_era5_grid_hourly_water_climatology
+  #     tas:
+  #       <<: *var_hourly_savannah
+  #       preprocessor: savannah_era5_grid_hourly_temperature
+  #     tas_climatology:
+  #       short_name: tas
+  #       <<: *var_hourly_climatology_savannah
+  #       preprocessor: savannah_era5_grid_hourly_temperature_climatology   
+  #   scripts:
+  #     script:
+  #       script: hydrology/pcrglobwb.py
