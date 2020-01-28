@@ -1,11 +1,44 @@
 .. _inputdata:
 
-**********
-Input data
-**********
+********************
+Acquiring input data
+********************
+
+ESMValTool accepts input data from various models as well as
+observations and reanalysis data, provided that they adhere to the
+CF/CMOR format. This section provides some guidelines for unfamiliar users.
 
 Models
 ======
+
+ESMValTool will look for existing data in the directories specified in the
+user configuration file. Alternatively, it can use an external
+tool called Synda (http://prodiguer.github.io/synda/index.html). Here, we
+describe the basic steps to configure EMSValTool to work with Synda. This is
+the recommended approach for first-time users to quickly obtain some data for
+running ESMValTool.
+
+To install Synda, follow the steps listed in the Synda documentation. This
+description assumes that you use the conda install. As the last step, Synda will
+ask to set your openID credentials. Therefore, you'll need to create an account
+at https://esgf-node.llnl.gov/projects/esgf-llnl/ and join a Data Access Control
+Group, e.g. CMIP5 Research. For more information, see
+https://esgf.github.io/esgf-user-support/user_guide.html.
+
+Once you have set up Synda, you'll need to configure ESMValTool to recognize
+your Synda installation. Note that it is not possible to combine the two in a
+single conda environment, for Synda requires python 2 and ESMValTool requires
+Python 3. Typing ``which synda`` while your synda environment
+is active will print its location. To make the ``synda`` program usable from ESMValTool we suggest
+creating a directory ``mkdir ~/bin`` and and appending that folder to your PATH
+environment variable, e.g. by adding the following line to your ``~/.bashrc`` file:
+``PATH=$PATH:$HOME/bin``.
+
+Finally, in the new bin folder, make a link to synda:
+``ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda``.
+
+Now, ESMValTool should be able to recognize your Synda installation. First time
+users can now continue with :ref:`Running ESMValTool <running>`.
 
 Observations
 ============
@@ -38,9 +71,13 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-SOIL-MOISTURE  | sm (Lmon), smStderr (Lmon)                                                                           |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CDS-UERRA                    | sm (E6hr)                                                                                            |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-XCH4                     | xch4 (Amon)                                                                                          |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-XCO2                     | xco2 (Amon)                                                                                          |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CERES-EBAF                   | rlut, rlutcs, rsut, rsutcs (Amon)                                                                    |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CERES-SYN1deg                | rlds, rldscs, rlus, rluscs, rlut, rlutcs, rsds, rsdscs, rsus, rsuscs, rsut, rsutcs (3hr)             |   3  | NCL             |
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
@@ -51,11 +88,15 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, psl, rls, rsds, rsdt, rss, uas, vas, tas, tasmax, tasmin,  |   3  | Python          |
-|                              | tdps, ts, tsn (E1hr)                                                                          |      |      |                 |
+| ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | Python          |
+|                              | tasmax, tasmin, tdps, ts, tsn (E1hr), orog (fx)                                                      |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA-Interim                  | clivi, clt, clwvi, hfds, hur, hus, pr, prw, ps, psl, ta, tas, tauu, tauv, ts, ua, va, wap, zg (Amon) |   3  | NCL             |
-|                              | pr, psl, tas, tasmin, tasmax, zg (day), sftlf (fx), tos (Omon)                                       |      |                 |
+| ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
+|                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, tas, tasmax,  |      |                 |
+|                              | tasmin, uas, vas, zg (day), evspsbl, tdps, ts, tsn, rss, tdps (Eday), tsn (LImon), hfds, tos (Omon), |      |                 |
+|                              | orog, sftlf (fx)                                                                                     |      |                 |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ERA-Interim-Land             | sm (Lmon)                                                                                            |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -73,6 +114,10 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SST                   | ts, tsStderr (Amon)                                                                                  |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| FLUXCOM                      | gpp (Lmon)                                                                                           |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| GCP                          | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GHCN                         | pr (Amon)                                                                                            |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadCRUT3                     | tas, tasa (Amon)                                                                                     |   2  | NCL             |
@@ -81,11 +126,19 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadISST                      | sic (OImon), tos (Omon), ts (Amon)                                                                   |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| HWSD                         | cSoil (Lmon), areacella (fx), sftlf (fx)                                                             |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ISCCP-FH                     | alb, prw, ps, rlds, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs, tas, ts (Amon)               |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| JMA-TRANSCOM                 | nbp (Lmon), fgco2 (Omon)                                                                             |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | LAI3g                        | lai (Lmon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | LandFlux-EVAL                | et, etStderr (Lmon)                                                                                  |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Landschuetzer2016            | fgco2 (Omon), spco2 (Omon), dpco2 (Omon)                                                             |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| MERRA2                       | sm (Lmon)                                                                                            |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MODIS                        | cliwi, clt, clwvi, iwpStderr, lwpStderr (Amon), od550aer (aero)                                      |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -94,9 +147,19 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | NCEP                         | hur, hus, pr, ta, tas, ua, va, wap, zg (Amon)                                                        |   2  | NCL             |
 |                              | pr, rlut, ua, va (day)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| NDP                          | cVeg (Lmon)                                                                                          |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| NSIDC-0116-[nh|sh]           | usi, vsi (day)                                                                                       |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| OSI-450-[nh|sh]              | sic (OImon, day)                                                                                     |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | PATMOS-x                     | clt (Amon)                                                                                           |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| PHC                          | thetao, so                                                                                           |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| PIOMAS                       | sit (day)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | UWisc                        | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
