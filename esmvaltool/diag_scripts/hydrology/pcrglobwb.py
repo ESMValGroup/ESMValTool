@@ -46,6 +46,8 @@ def add_spinup_year(cube, cube_climatology, varname):
 
     # Drop dimension day_of_year
     iris.util.demote_dim_coord_to_aux_coord(cube_climatology, 'day_of_year')
+    cube_climatology.remove_coord('day_of_year')
+
     # Add dimension time
     cube_climatology.add_dim_coord(time, 0)
 
@@ -62,15 +64,6 @@ def add_spinup_year(cube, cube_climatology, varname):
     cube.data = cube.core_data().astype('float32')
     cube_climatology.data = cube_climatology.core_data().astype('float32')
    
-    # Create list of aux coords and remove aux coords
-    coordlist = ['day_of_month',
-                 'day_of_year',
-                 'month_number',
-                 'year']
-
-    for coordname in coordlist:
-        cube.remove_coord(coordname)
-        cube_climatology.remove_coord(coordname)
 
     for coord_name in 'latitude', 'longitude', 'time':
         coord = cube.coord(coord_name)
