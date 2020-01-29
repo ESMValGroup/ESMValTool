@@ -1,0 +1,494 @@
+# ESMValTool
+# recipe_mpqb.yml
+---
+documentation:
+  description: |
+    Test recipe for the MPQB (C3S_511) for soil moisture
+
+  authors:
+    - mueller_benjamin
+
+
+################################################
+# Define some default parameters using anchors #
+################################################
+
+mmm_stat: &mmm_stat
+  multi_model_statistics:
+    span: overlap
+    statistics: [mean]
+
+mpqbregridder: &mpqbregridder
+  regrid:
+    target_grid: 1x1
+    scheme: area_weighted
+  monthly_statistics:
+    operator: mean
+    
+mpqbregridder_coarse: &mpqbregridder_c
+  regrid:
+    target_grid: IPSL-CM5A-LR
+    scheme: area_weighted
+  monthly_statistics:
+    operator: mean
+    
+mpqbregridder_fine: &mpqbregridder_f
+  regrid:
+    target_grid: IPSL-CM5A-MR
+    scheme: nearest
+  monthly_statistics:
+    operator: mean
+
+extract_tropics: &extr_trop
+  extract_region: 
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: -30
+    end_latitude: 30
+
+extract_nhstormtracks: &extr_nhstorm
+  extract_region: 
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: 35
+    end_latitude: 65
+
+extract_southernocean: &extr_socean
+  extract_region: 
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: -60
+    end_latitude: -30
+ 
+extract_itcz: &extr_itcz
+  extract_region: 
+    start_longitude: 136
+    end_longitude: 275
+    start_latitude: 0
+    end_latitude: 12
+ 
+extract_southeastpacific: &extr_sepacific
+  extract_region: 
+    start_longitude: 275
+    end_longitude: 290
+    start_latitude: -19
+    end_latitude: -4
+    
+    
+    
+# The main preprocessor for all
+# input data
+default_pp_maps: &pp_maps
+  custom_order: true
+  mask_below_threshold:
+    threshold: 1
+  <<: *mpqbregridder
+  #mask_landsea:
+  #  mask_out: sea
+  <<: *mmm_stat
+
+default_pp_maps_without_gl: &pp_maps_without_gl
+  custom_order: true
+  mask_below_threshold:
+    threshold: 1
+  <<: *mpqbregridder
+
+default_pp_maps_without_trop: &pp_maps_without_trop
+  custom_order: true
+  mask_below_threshold:
+    threshold: 1
+  <<: *mpqbregridder
+  <<: *extr_trop
+
+default_pp_maps_without_socean: &pp_maps_without_so
+  custom_order: true
+  mask_below_threshold:
+    threshold: 1
+  <<: *mpqbregridder
+  <<: *extr_socean
+
+default_pp_maps_without_nhstorm: &pp_maps_without_nhs
+  custom_order: true
+  mask_below_threshold:
+    threshold: 1
+  <<: *mpqbregridder
+  <<: *extr_nhstorm
+  
+default_pp_maps_without_itcz: &pp_maps_without_itcz
+  custom_order: true
+  mask_below_threshold:
+    threshold: 1
+  <<: *mpqbregridder
+  <<: *extr_itcz
+
+default_pp_maps_without_sepacific: &pp_maps_without_sepacific
+  custom_order: true
+  mask_below_threshold:
+    threshold: 1
+  <<: *mpqbregridder
+  <<: *extr_sepacific
+
+  
+default_pp_maps_coarse: &pp_maps_c
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder_c
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat
+  
+default_pp_maps_fine: &pp_maps_f
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder_f
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat
+
+# Additional preprocessor for
+# line plots
+default_pp_line: &pp_line
+  mask_fillvalues:
+    threshold_fraction: 0.8
+  area_statistics:
+    operator: mean
+
+
+################################################
+################################################
+################################################
+
+datasets:
+  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
+     tier: 2} 
+  - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
+     tier: 2} 
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
+     tier: 3}       
+  - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+     tier: 3}
+  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
+     tier: 3}
+     
+     
+preprocessors:
+  pp_tmp:
+    annual_statistics:
+      operator: mean
+
+  pp_mpqb_sm:
+    <<: *pp_maps
+    
+  pp_mpqb_clouds:
+    <<: *pp_maps    
+    
+  pp_mpqb_clouds_without_gl:
+    <<: *pp_maps_without_gl    
+
+  pp_mpqb_clouds_without_trop:
+    <<: *pp_maps_without_trop    
+
+  pp_mpqb_clouds_without_itcz:
+    <<: *pp_maps_without_itcz    
+
+  pp_mpqb_clouds_without_socean:
+    <<: *pp_maps_without_so    
+
+  pp_mpqb_clouds_without_sepacific:
+    <<: *pp_maps_without_sepacific    
+
+  pp_mpqb_clouds_without_nhstorm:
+    <<: *pp_maps_without_nhs    
+
+    
+  pp_mpqb_sm_std:
+    anomalies:
+      period: monthly
+#      standardize: true
+    <<: *pp_maps
+
+  pp_lineplots_gl:
+    <<: *pp_maps_without_gl
+    <<: *pp_line
+
+  pp_lineplots_trop:
+    <<: *pp_maps_without_trop
+    <<: *pp_line
+    
+  pp_lineplots_itcz:
+    <<: *pp_maps_without_itcz
+    <<: *pp_line
+
+  pp_lineplots_socean:
+    <<: *pp_maps_without_so
+    <<: *pp_line
+
+  pp_lineplots_sepacific:
+    <<: *pp_maps_without_sepacific
+    <<: *pp_line
+
+  pp_lineplots_nhstorm:
+    <<: *pp_maps_without_nhs
+    <<: *pp_line
+    
+  pp_lineplots_std:
+    anomalies:
+      period: monthly
+#      standardize: true
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_mpqb_yearmean:
+    <<: *pp_maps
+    annual_statistics:
+      operator: mean
+
+  pp_mpqb_yearmin:
+    <<: *pp_maps
+    annual_statistics:
+      operator: min
+
+  pp_mpqb_yearmax:
+    <<: *pp_maps
+    annual_statistics:
+      operator: max
+
+  pp_mpqb_yearstddev:
+    <<: *pp_maps
+    annual_statistics:
+      operator: std_dev
+
+cloud_def: &clouddef
+  mip: Amon
+  start_year: 2013
+  end_year: 2016
+
+hist_def: &histdef
+  script: mpqb/mpqb_histogram.py
+  vmin: 0
+  vmax: 100
+  number_of_bars: 20
+  logarithmic: False
+ 
+ 
+diagnostics:
+  histogram_gl:
+    description: histogram for 1x1 gridded data
+    variables:
+      clt:
+        preprocessor: pp_mpqb_clouds_without_gl
+        <<: *clouddef
+    scripts:
+      mpqb_gl:
+        <<: *histdef
+  histogram_trop:
+    description: histogram for 1x1 gridded data
+    variables:
+      clt:
+        preprocessor: pp_mpqb_clouds_without_trop
+        <<: *clouddef
+    scripts:
+      mpqb_trop:
+        <<: *histdef
+  histogram_itcz:
+    description: histogram for 1x1 gridded data
+    variables:
+      clt:
+        preprocessor: pp_mpqb_clouds_without_itcz
+        <<: *clouddef
+    scripts:
+      mpqb_itcz:
+        <<: *histdef
+  histogram_socean:
+    description: histogram for 1x1 gridded data
+    variables:
+      clt:
+        preprocessor: pp_mpqb_clouds_without_socean
+        <<: *clouddef
+    scripts:
+      mpqb_socean:
+        <<: *histdef
+  histogram_sepacific:
+    description: histogram for 1x1 gridded data
+    variables:
+      clt:
+        preprocessor: pp_mpqb_clouds_without_sepacific
+        <<: *clouddef
+    scripts:
+      mpqb_sepacific:
+        <<: *histdef
+  histogram_nhstorm:
+    description: histogram for 1x1 gridded data
+    variables:
+      clt:
+        preprocessor: pp_mpqb_clouds_without_nhstorm
+        <<: *clouddef
+    scripts:
+      mpqb_nhstorm:
+        <<: *histdef
+
+        # histogram_c:
+    # description: histogram for regridded data on coarsest level
+    # variables:
+      # lai:
+        # preprocessor: pp_mpqb_lai_c
+        # <<: *laidef
+    # scripts:
+      # mpqb:
+        # script: mpqb/mpqb_histogram.py
+        # vmin: 0
+        # vmax: 0.7
+        # number_of_bars: 14
+        # logarithmic: False
+  # histogram_f:
+    # description: histogram for regridded data on finest level
+    # variables:
+      # lai:
+        # preprocessor: pp_mpqb_lai_f
+        # <<: *laidef
+    # scripts:
+      # mpqb:
+        # script: mpqb/mpqb_histogram.py
+        # vmin: 0
+        # vmax: 0.7
+        # number_of_bars: 14
+        # logarithmic: False
+  # histogram_O:
+    # description: histogram for original data
+    # variables:
+      # lai:
+        # preprocessor: pp_mpqb_lai_orig
+        # <<: *laidef
+    # scripts:
+      # mpqb:
+        # script: mpqb/mpqb_histogram.py
+        # vmin: 0
+        # vmax: 0.7
+        # number_of_bars: 14
+        # logarithmic: False 
+  # resolution:
+    # description: resolution
+    # variables:
+      # lai:
+        # preprocessor: pp_mpqb_lai_orig
+        # <<: *laidef 
+    # scripts: 
+      # mpqb_res:
+        # script: mpqb/mpqb_resolution.py
+  mapplots:
+    description: mapplots
+    variables:
+      clt:
+        preprocessor: pp_mpqb_clouds
+        <<: *clouddef
+    scripts:
+      mpqb:
+        reference_dataset: MultiModelMean
+        script: mpqb/mpqb_comparison.py
+      mpqb_taylor:
+        reference_dataset: MultiModelMean
+        script: mpqb/taylordiagram.py
+  lineplots:
+    description: lineplots
+    variables:
+      clt:
+        preprocessor: pp_lineplots_gl
+        # preprocessor: pp_lineplots_trop
+        # preprocessor: pp_lineplots_itcz
+        # preprocessor: pp_lineplots_socean
+        # preprocessor: pp_lineplots_sepacific
+        # preprocessor: pp_lineplots_nhstorm  
+        <<: *clouddef
+      # clt_trop:
+        # preprocessor: pp_lineplots_trop
+        # <<: *clouddef
+      # clt_itcz:
+        # preprocessor: pp_lineplots_itcz
+        # <<: *clouddef
+      # clt_socean:
+        # preprocessor: pp_lineplots_socean
+        # <<: *clouddef
+      # clt_sepacific:
+        # preprocessor: pp_lineplots_sepacific
+        # <<: *clouddef
+      # clt_nhstorm:
+        # preprocessor: pp_lineplots_nhstorm
+        # <<: *clouddef
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe:
+#    description: lineplots_europe
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  mapplots_std:
+#    description: mapplots
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_sm_std
+#        <<: *laidef
+#    scripts:
+#      mpqb:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/mpqb_comparison.py
+#  lineplots_std:
+#    description: lineplots_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe_std:
+#    description: lineplots_europe_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  maps_yearmean:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmean
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmin:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmin
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmax:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearmax
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearstddev:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_yearstddev
+#        <<: *laidef
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py

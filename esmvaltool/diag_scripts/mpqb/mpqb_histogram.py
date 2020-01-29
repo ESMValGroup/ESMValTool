@@ -40,7 +40,6 @@ def main(cfg):
     number_of_bars = cfg.pop('number_of_bars', 10) # default number of bins set to 10
     lower_upper = [cfg.pop('vmin', None), cfg.pop('vmax', None)]
     logarithmic = cfg.pop('logarithmic', False)
-
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
     logger.info(
@@ -99,7 +98,8 @@ def main(cfg):
         plt.ylim(0, 1.1*np.max(
                  [np.max(content["hist"]) for _, content in hists.items()]))
         plt.tight_layout()
-        filename = get_plot_filename('histogram', cfg)
+#        filename = get_plot_filename('histogram', cfg)
+        filename = get_plot_filename('histogram_' + cfg["script"], cfg)
         logger.info("Saving as %s", filename)
         fig.savefig(filename)
         plt.close(fig)
