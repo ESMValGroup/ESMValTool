@@ -302,11 +302,11 @@ authors:
     given-names: Klaus
 
 cff-version: "1.0.3"
-date-released: 2019-09-05
-doi: "10.0000/TODO"
+date-released: 2020-01-27
+doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.0.0b1"
+version: "v2.0.0b2"
 ...
