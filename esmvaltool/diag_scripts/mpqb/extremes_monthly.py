@@ -37,7 +37,6 @@ dataset_plotnames = {
   'cds-satellite-lai-fapar' : 'SPOT-VGT',
 }
 
-
 def convert_human_readable_coords_to_iso(coord_in):
     '''
     # This function converts human readable single coords of latitude or longitude 
@@ -127,7 +126,7 @@ def read_extreme_event_catalogue():
     # Now convert them to iso-6709
     for coord_key in ['Lat_from','Lat_to','Lon_from','Lon_to']:
         ex_table[coord_key] = ex_table[coord_key].apply(lambda x: convert_human_readable_coords_to_iso(x))
-        
+
     # Now create event_id
     ex_table['extreme_event_id'] = ex_table[['Event Category','Region/Country', 'Year']].apply(lambda x: '_'.join(x),axis=1)
     # Now strip the whitespace
@@ -148,6 +147,24 @@ def read_extreme_event_catalogue():
     return ex_table,raw_table
 
 
+
+def _extract_event(cube,ex_table,event_name):
+    event = ex_table.loc[event_name]
+    cube = pp.extract_region(cube,
+                             event['Lon_from'],
+                             event['Lon_to'],
+                             event['Lat_from'],
+                             event['Lat_to'])
+    cube = pp.extract_time(cube,
+                           event['Time_start'].year,
+                           event['Time_start'].month,
+                           event['Time_start'].day,
+                           event['Time_stop'].year,
+                           event['Time_stop'].month,
+                           event['Time_stop'].day)
+    return cube
+
+
 def main(cfg):
 
     # Read all datasets that are provided.
@@ -160,37 +177,46 @@ def main(cfg):
         "Starting MPQB extremes_monthly script."
     )
 
-
     ex_table = read_extreme_event_catalogue()[0]
-#    import IPython;IPython.embed()
+#    event_names =  ['Drought-Heat_Europe_2013'] 
+    event_names = [name for name in ex_table.index if ('Drought' in name)]
+
+    # Initialize a pandas dataframe for saving the table of metrics
+    df_metrics = pd.DataFrame(columns=[dataset_plotnames[key] for key in grouped_input_data.keys()],
+                              index=event_names, dtype=float)
 
     for dataset in grouped_input_data.keys():
         dataset_cfg = grouped_input_data[dataset]
-
         logger.info("Opening dataset: %s", dataset)
-        # Opening the pair
+
+        # Opening the data
         cube = iris.load_cube(dataset_cfg[0]['filename'])
-        import IPython;IPython.embed()
+        for event_name in event_names:
+#            try:
+            if True:
+                if dataset=='MERRA2':
+                    cube.coord('time').bounds = None
+                    logger.info(f"Guessing bounds for {dataset}")
+                    cube.coord('time').guess_bounds()
+                event_cube = _extract_event(cube, ex_table, event_name)
+                event_cube = pp.area_statistics(event_cube, 'mean')
+                logger.info(f"{event_cube.shape[0]} months for {event_name}")
+                event_cube = pp.climate_statistics(event_cube, 'mean')
+                meanvalue = float(event_cube.data)
+                df_metrics.loc[event_name, dataset_plotnames[dataset]] = f"{meanvalue:0.2f}"
+#            except ValueError:
+#                logger.info(f"{event_name} not included in dataset (is the event too short?)")
 
-        #pp.extract_region(start_latitude=
-        cube_regionmean = cube.collapsed(['latitude','longitude'],iris.analysis.MEAN)
-
-
-        pdt1 = PartialDateTime(year=2003, month=7, day=1)
-        pdt2 = PartialDateTime(year=2003, month=8, day=31)
-        selmonth = iris.Constraint(
-            time=lambda cell: pdt1 <= cell.point < pdt2)
-        exvalue = cube_regionmean.extract(selmonth)
-
-        print(f"{dataset_plotnames[dataset]} {exvalue.data:.03f}")
-
+    # Save to html with specified precision
+    savename_html = os.path.join(cfg['plot_dir'],'event_table.html')
+    html_metrics = df_metrics.style.set_precision(2).render()
+    logger.info(
+        "Saving metric html-table as: {0}".format(savename_html))
+    with open(savename_html, mode='w+') as handle:
+        handle.write(html_metrics)
 
     if cfg['write_plots']:
          print("No plotting implemented in this diagnostic")
-#        plot_filename = get_plot_filename('taylordiagram',cfg)
-#        logger.info(
-#                "Writing plot to: %s", plot_filename)
-#        plt.savefig(plot_filename)
 
     logger.info("Finished!")
 
