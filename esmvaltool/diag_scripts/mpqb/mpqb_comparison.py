@@ -112,8 +112,11 @@ class MPQBpair:
 
             metrics_plot_dictionary = get_ecv_plot_config(
                 self.ds_cfg[self.ds1][0]['short_name'])
+            plot_kwargs = metrics_plot_dictionary[metricname]
+            # Overwrite plot title to be dataset name
+            plot_kwargs['title'] = self.ds1
             mpqb_mapplot(cube, plot_file, **
-                         metrics_plot_dictionary[metricname])
+                         plot_kwargs)
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                         pformat(provenance_record))

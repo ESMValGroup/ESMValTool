@@ -5,7 +5,7 @@ import warnings
 from pprint import pformat
 
 import yaml
-import skill_metrics
+import skill_metrics as sm
 import matplotlib.pyplot as plt
 import iris
 import numpy as np
@@ -21,6 +21,16 @@ from mpqb_plots import get_ecv_plot_config, mpqb_mapplot
 from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import parallel_apply_along_axis
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+dataset_plotnames = {
+  'ERA-Interim-Land' : 'ERA-Interim-Land',
+  'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
+  'cds-era5-land-monthly' : 'ERA5-Land',
+  'cds-era5-monthly' : 'ERA5',
+  'MERRA2' : 'MERRA2',
+  'cds-satellite-lai-fapar' : 'SPOT-VGT',
+}
+
 
 
 def main(cfg):
@@ -50,6 +60,7 @@ def main(cfg):
     rvalue_list = []
     rmsd_list = []
     std_list = []
+    labels = []
     for dataset in ordered.keys():
         dat = iris.load_cube(grouped_input_data[dataset][0]['filename'])
         # Create common masking
@@ -58,16 +69,23 @@ def main(cfg):
         a = refdat.data.compressed()
         b = dat.data.compressed()
         rvalue_list.append(pearsonr(a,b)[0])
-        rmsd_list.append(rmsd1d(a,b))
+        rmsd_list.append(sm.centered_rms_dev(a,b))
         std_list.append(np.std(b))
+        labels.append(dataset_plotnames[dataset])
 
 
-    skill_metrics.taylor_diagram(np.array(std_list),
+    sm.taylor_diagram(np.array(std_list),
                                  np.array(rmsd_list),
                                  np.array(rvalue_list),
-                                 markerLabel=all_datasets,
-                                 markerLegend = 'on',
-                                 markerColor = 'r')
+                                 markerLabel=labels,
+                                 markerLegend='on',
+                                 markerColor='r',
+                                 markerSize=7,
+                                 rmsLabelFormat='0:.2f',
+                                 colObs='k',
+                                 markerObs='x',
+                                 titleOBS=dataset_plotnames[reference_dataset],
+                                 checkstats='on')
     if cfg['write_plots']:
         plot_filename = get_plot_filename('taylordiagram',cfg)
         logger.info(

@@ -11,7 +11,7 @@ output_dir: /work/bd0854/b309143/ESMValTool/  # user's specific!
 auxiliary_data_dir: /mnt/lustre02/work/bd0854/b309143/ESMValTool/  # user's specific!
 
 save_intermediary_cubes: False
-max_parallel_tasks: 8
+max_parallel_tasks: 4
 
 rootpath:
   CMIP5:    /mnt/lustre01/work/kd0956/CMIP5/data/cmip5/output1

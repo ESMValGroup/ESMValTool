@@ -162,15 +162,15 @@ default_pp_line: &pp_line
 
 datasets:
   - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
-     tier: 2} 
+     tier: 2, alias: PATMOS-x} 
   - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
-     tier: 2} 
+     tier: 2, alias: ESACCI-CLOUD} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
-     tier: 3}       
+     tier: 3, alias: ERA-Interim}       
   - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-     tier: 3}
+     tier: 3, alias: MODIS}
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
-     tier: 3}
+     tier: 3, alias: ERA5}
      
      
 preprocessors:
@@ -262,7 +262,7 @@ preprocessors:
 
 cloud_def: &clouddef
   mip: Amon
-  start_year: 2013
+  start_year: 2003
   end_year: 2016
 
 hist_def: &histdef
@@ -270,6 +270,7 @@ hist_def: &histdef
   vmin: 0
   vmax: 100
   number_of_bars: 20
+  #histtype: step
   logarithmic: False
  
  
@@ -329,7 +330,7 @@ diagnostics:
       mpqb_nhstorm:
         <<: *histdef
 
-        # histogram_c:
+  # histogram_c:
     # description: histogram for regridded data on coarsest level
     # variables:
       # lai:
@@ -387,37 +388,62 @@ diagnostics:
       mpqb:
         reference_dataset: MultiModelMean
         script: mpqb/mpqb_comparison.py
-      mpqb_taylor:
-        reference_dataset: MultiModelMean
-        script: mpqb/taylordiagram.py
-  lineplots:
+      # mpqb_taylor:
+        # reference_dataset: MultiModelMean
+        # script: mpqb/taylordiagram.py
+  lineplots_gl:
     description: lineplots
     variables:
       clt:
         preprocessor: pp_lineplots_gl
-        # preprocessor: pp_lineplots_trop
-        # preprocessor: pp_lineplots_itcz
-        # preprocessor: pp_lineplots_socean
-        # preprocessor: pp_lineplots_sepacific
-        # preprocessor: pp_lineplots_nhstorm  
         <<: *clouddef
-      # clt_trop:
-        # preprocessor: pp_lineplots_trop
-        # <<: *clouddef
-      # clt_itcz:
-        # preprocessor: pp_lineplots_itcz
-        # <<: *clouddef
-      # clt_socean:
-        # preprocessor: pp_lineplots_socean
-        # <<: *clouddef
-      # clt_sepacific:
-        # preprocessor: pp_lineplots_sepacific
-        # <<: *clouddef
-      # clt_nhstorm:
-        # preprocessor: pp_lineplots_nhstorm
-        # <<: *clouddef
     scripts:
-      lineplot:
+      lineplot_gl:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_trop:
+    description: lineplots
+    variables:
+      clt:
+        preprocessor: pp_lineplots_trop
+        <<: *clouddef
+    scripts:
+      lineplot_trop:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_itcz:
+    description: lineplots
+    variables:
+      clt:
+        preprocessor: pp_lineplots_itcz
+        <<: *clouddef
+    scripts:
+      lineplot_itcz:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_socean:
+    description: lineplots
+    variables:
+      clt:
+        preprocessor: pp_lineplots_socean
+        <<: *clouddef
+    scripts:
+      lineplot_socean:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_sepacific:
+    description: lineplots
+    variables:
+      clt:
+        preprocessor: pp_lineplots_sepacific
+        <<: *clouddef
+    scripts:
+      lineplot_sepacific:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_nhstorm:
+    description: lineplots
+    variables:
+      clt:
+        preprocessor: pp_lineplots_nhstorm
+        <<: *clouddef
+    scripts:
+      lineplot_nhstorm:
         script: mpqb/mpqb_lineplot.py
 #  lineplots_europe:
 #    description: lineplots_europe

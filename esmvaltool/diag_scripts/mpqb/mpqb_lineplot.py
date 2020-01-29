@@ -18,6 +18,16 @@ from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
+
+dataset_plotnames = {
+  'ERA-Interim' : 'ERA-Interim',
+  'ESACCI-CLOUD' : 'ESA-CCI',
+  'ERA5' : 'ERA5',
+  'PATMOS-x' : 'PATMOSx',
+  'MODIS' : 'MODIS',
+}
+
+
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -33,16 +43,16 @@ def main(cfg):
 
     if cfg['write_plots']:
         plt.clf()
-        fig = plt.figure()
+        fig = plt.figure(figsize=(10,4))
         ax = fig.add_subplot()
         for dataset in grouped_input_data:
             logger.info("Opening dataset: {0}".format(dataset))
             cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
-            iris.quickplot.plot(cube, label=dataset)
+            iris.quickplot.plot(cube, label=grouped_input_data[dataset][0]['alias'])
         plt.legend()
         plt.xticks(rotation=90)
         plt.tight_layout()
-        filename = get_plot_filename('lineplot', cfg)
+        filename = get_plot_filename('lineplot_' + cfg["script"], cfg)
         logger.info("Saving as %s", filename)
         fig.savefig(filename)
         plt.close(fig)
