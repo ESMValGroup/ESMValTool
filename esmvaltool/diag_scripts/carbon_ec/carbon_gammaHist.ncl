@@ -1,0 +1,360 @@
+; #############################################################################
+; carbon_corr_2var.ncl
+; Author: Sabrina Wenzel (DLR, Germany)    
+;############################################################################
+; Description
+;    Reads and correlates in time spatial averages of CO2 fluxes (derived 
+;    from land and ocean carbon fluxes) and temperature
+;
+; Required diag_script_info attributes (diagnostics specific)
+;    * ec_units     units of first var
+;    * ec_v2_units  units of second var 
+;    * ec_anom      (optional) plot anomalies. 
+;    * ec_detr      (optional) plot detrendet variables 
+;
+; Caveats
+;
+; Modification history
+;     202001-A_wenz_sa: code rewritten for ESMValTool v2.0
+;     20151027-A_laue_ax: added call to 'write_references'
+;     201404-A_wenz_sa: updated according to changes in ESMValTool
+;     201303-A_wenz_sa: written  
+
+; #############################################################################
+
+load "$diag_scripts/../interface_scripts/interface.ncl"
+
+load "$diag_scripts/carbon_ec/carbon_aux.ncl"
+
+load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/ensemble.ncl"
+
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/scatterplot.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+
+
+
+begin
+
+  enter_msg(DIAG_SCRIPT, "")
+
+  tmp = metadata_att_as_array(input_file_info, "short_name")
+  variables = get_unique_values(tmp)
+  delete(tmp)
+  n = dimsizes(variables)
+
+  if (n.gt.2) then
+    log_info(DIAG_SCRIPT + ": WARNING - max 2 variables supported. " \
+             + "Using only first two variables.")
+  end if
+
+  var0 = variables(0)
+  var1 = variables(1)
+
+; Load var_info
+
+  var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  names = metadata_att_as_array(info0, "dataset")
+  infiles = metadata_att_as_array(info0, "filename")
+  refname = variable_info[0]@reference_dataset
+
+  var1 = variable_info[1]@short_name
+  info1 = select_metadata_by_name(input_file_info, var1)
+  names_err = metadata_att_as_array(info1, "dataset")
+  infiles_err = metadata_att_as_array(info1, "filename")
+  refname = variable_info[1]@reference_dataset
+
+  dim_MOD = ListCount(info0)
+  datasetnames0 = metadata_att_as_array(info0, "dataset")
+  datasetnames1 = metadata_att_as_array(info1, "dataset")
+
+  log_info("+++++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + " + " +var1+ ")")
+  log_info("+++++++++++++++++++++++++++++++++++++++++++++")
+
+  ;****************************************************************** 
+  ; Create output plot directory
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + plot_dir)
+
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
+  ; Check for required settings
+  exit_if_missing_atts(diag_script_info, "styleset")
+
+  ; Set default values for non-required diag_script_info attributes
+  set_default_att(diag_script_info, "ts_anom", False)
+  set_default_att(diag_script_info, "detr", False)
+  set_default_att(diag_script_info, "volcanoes", False)
+
+  if(isatt(diag_script_info, "ec_units")) then
+    UNITS = diag_script_info@ec_units
+  end if
+  if(isatt(diag_script_info, "ec_v2_units")) then
+    UNITS_v2 = diag_script_info@ec_v2_units
+  end if
+    
+  if(isatt(diag_script_info, "ec_anom")) then
+    anom = diag_script_info@ec_anom
+  end if
+  
+  if(isatt(diag_script_info,"ec_detr")) then 
+    detr=diag_script_info@ec_detr 
+  end if
+
+  ;;================================================================== 
+  ; Set index of the reference dataset and read it
+  if (isatt(variable_info[0], "reference_dataset")) then
+    ref_ind0 = ind(datasetnames0.eq.variable_info[0]@reference_dataset)
+    ;A0_ref = read_data(info0[ref_ind0])
+  end if
+  if (isatt(variable_info[1], "reference_dataset")) then
+    ref_ind1 = ind(datasetnames1.eq.variable_info[1]@reference_dataset)
+    ;A1_ref = read_data(info1[ref_ind1])
+  end if
+  iref = where(ref_ind0 .eq. ref_ind1, 0, 1)
+
+  ;;time span
+  xMax_year = max(metadata_att_as_array(info0, "end_year"))
+  xMin_year = min(metadata_att_as_array(info0, "start_year"))
+  nMax = xMax_year - xMin_year + 1
+
+  ;;setup data holders for time lines 
+  aY1reg = new((/dim_MOD,nMax/),"float") 
+  aY2reg = new((/dim_MOD,nMax/),"float") 
+  aY1reg!1 = "year"
+  aY1reg&year = ispan(xMin_year,xMax_year,1)  
+  aY2reg!1 = "year"
+  aY2reg&year = ispan(xMin_year,xMax_year,1) 
+
+  ;;setup data holders for slope 
+  aYreg  = new((/dim_MOD,nMax/),"float") 
+  arc    = new((/2,dim_MOD/),"float") 
+  ccr    = new((/dim_MOD/),"float")
+  var    = new((/2,dim_MOD/),"float")
+
+  ;;================================================================== 
+  ;;loop for models
+  do imod = 0, dim_MOD-1  
+    
+       ; Read data
+       A0 = read_data(info0[imod])
+       dnames0 = getVarDimNames(A0)
+
+       A1 = read_data(info1[imod])
+       dnames1 = getVarDimNames(A1)
+
+       idx_mod := imod
+
+      ; Copute time average 
+      tmp_A0 := time_operations(A0,-1,-1,"average","yearly",False)
+      tmp_A1 := time_operations(A1,-1,-1,"average","yearly",True)
+      delete([/A0,A1/])
+
+      ;; Convert units if appropriate
+      if (isatt(variable_info[0], "plot_units")) then
+          tmp_A0 := convert_units(tmp_A0,variable_info[0]@plot_units)
+      end if
+      if (isatt(variable_info[1], "plot_units")) then
+          tmp_A1 := convert_units(tmp_A1,variable_info[1]@plot_units)
+      end if
+
+      ; set years with big vulkanic eruptions to _FillValues
+      if (isatt(diag_script_info,"ec_volc")) then
+          volc_years = diag_script_info@ec_volc
+          do y = 0,dimsizes(tmp_A0&year)-1
+              aY1reg(idx_mod,y) = where(any(tmp_A0&year(y).eq.volc_years), \
+                                            tmp_A0@_FillValue,(/tmp_A0(y)/))
+              aY2reg(idx_mod,y) = where(any(tmp_A2&year(y).eq.volc_years), \
+                                            tmp_A2@_FillValue,(/tmp_A2(y)/))
+          end do
+      else
+          aY1reg(idx_mod,0:dimsizes(tmp_A0&year)-1) = tofloat(tmp_A0)
+          aY2reg(idx_mod,0:dimsizes(tmp_A1&year)-1) = tofloat(tmp_A1)
+      end if
+      delete([/tmp_A0,tmp_A1/])
+       
+      ; remove 11-yr running mean for anomalies 
+      if (anom .eq. True) then
+          nmeanh = 5
+          tmp1 = new((/nMax/),"float")
+          tmp2 = new((/nMax/),"float")
+          do n = nmeanh,nMax-nmeanh-1
+              tmp1(n) = (/avg(aY1reg(idx_mod,n-nmeanh:n+nmeanh))/)
+              tmp2(n) = (/avg(aY2reg(idx_mod,n-nmeanh:n+nmeanh))/)
+          end do	       
+
+          tmp1(:nmeanh-1) = tmp1(nmeanh)
+          tmp1(nMax-nmeanh:) = (/tmp1(nMax-nmeanh-1)/)
+          aY1reg(idx_mod,:)     = aY1reg(idx_mod,:) - tmp1
+          delete(tmp1)
+          
+          tmp2(:nmeanh-1) = tmp2(nmeanh)
+          tmp2(nMax-nmeanh:) = (/tmp2(nMax-nmeanh-1)/)
+          aY2reg(idx_mod,:)     = aY2reg(idx_mod,:) - tmp2
+          delete(tmp2) 
+      end if 
+
+      ; remove trend
+      if (detr .eq. True) then  
+          tmpd := runave(aY1reg(idx_mod,:),2,0)
+          tmpd(0)           = (/tmpd(1)/)
+          aY1reg(idx_mod,:) = aY1reg(idx_mod,:)-tmpd
+          delete(tmpd)
+          
+          tmpd := runave(aY2reg(idx_mod,:),2,0)
+          tmpd(0)           = (/tmpd(1)/)
+          aY2reg(idx_mod,:) = aY2reg(idx_mod,:)-tmpd
+          delete(tmpd)
+      end if
+
+      ; check time range
+      tmin := ind(aY1reg&year.eq.max((/diag_script_info@start_year,toint(info0[imod]@start_year)/)))
+      tmax := ind(aY1reg&year.eq.min((/diag_script_info@end_year,toint(info0[imod]@end_year)/)))
+
+      ; calculate regression line:
+      rc := regline(aY1reg(idx_mod,tmin:tmax), aY2reg(idx_mod,tmin:tmax))
+      df := (/rc@nptxy-2 /)
+      
+      aYreg(idx_mod,tmin:tmax) = (/rc * aY1reg(idx_mod,tmin:tmax) + rc@yintercept/)
+      arc(0,idx_mod) = (/rc/)
+      arc(1,idx_mod) = (/rc@rstd/)
+      ccr(idx_mod)   = (/escorc(aY1reg(idx_mod,tmin:tmax), aY2reg(idx_mod,tmin:tmax))/)
+      var(0,idx_mod) = (/stddev(aY1reg(idx_mod,tmin:tmax))/)
+      var(1,idx_mod) = (/stddev(aY2reg(idx_mod,tmin:tmax))/)
+
+      delete([/rc, df, tmin, tmax/])
+  end do     ;model loop
+
+  ;;counting ref_models only as one model
+
+  datasetnames0 = where(datasetnames0.eq.variable_info[0]@reference_dataset, \
+                        "OBS" , datasetnames0)
+  datasetnames1 = where(datasetnames1.eq.variable_info[1]@reference_dataset, \
+                        "OBS" , datasetnames1)
+
+  ;; Get environment variables for plotting
+  plot_dir = getenv("ESMValTool_plot_dir")
+  diag_script_base = DIAG_SCRIPT
+  output_dir = config_user_info@plot_dir
+
+  ;;Define path and names of plot files  
+  file_type = getenv("ESMValTool_output_file_type")
+  if(ismissing(file_type)) then
+      file_type = "PS"
+  end if
+
+  ;;define arrays for plotting
+  f  = sqrt(dim_MOD)
+  mm = floattointeger(ceil(f))
+  colors   = project_style(info0,diag_script_info, "colors")
+  thicks   = project_style(info0,diag_script_info, "thicks")
+  plot_num = integertochar(ispan(97, 122, 1))
+  plot     = new(dim_MOD, "graphic")
+
+  ;;Call plot scripts
+  plot_file = "corr_" + var0 + "-" + var1 + "_anom_" + \
+              diag_script_info@start_year + "-" + diag_script_info@end_year 
+  wks       = gsn_open_wks(file_type, output_dir + plot_file)
+
+  ;;Create panel for each model
+  do imod=0,dim_MOD-1
+
+      MainStg  = plot_num(imod) + ") " + datasetnames0(imod) \
+                 + "  ~F8~g~F21~~B~IAV~N~= " \
+                 + sprintf("%4.2f", arc(0,imod)) + " GtC/K/yr;  r= " \
+                 + sprintf("%4.2f", ccr(imod))
+      XStg     = "Anomaly in Trop. Temp. (" + UNITS_v2 + ")"
+      YStg     = "Anomaly in d(land+ocean CO~B~2~N~ flux)/dt (" + UNITS + ")"
+
+      data_arr = new((/2,dimsizes(aY1reg(imod,:))/), float)
+      data_arr!0      = "datasets"
+      data_arr!1      = "time"
+      data_arr&datasets = (/XStg,YStg/)
+      data_arr(0, :) = (/aY1reg(imod,:)/)
+      data_arr(1, :) = (/aY2reg(imod,:)/)
+      data_arr@diag_script         = DIAG_SCRIPT
+      data_arr@tiMainString    = MainStg
+      data_arr@gsnCenterString = ""
+      data_arr@tiMainFontHeightF = 0.025
+      data_arr@xyMarkerColors  = "white"
+      data_arr@trXMinF         = min(aY1reg(imod,:));-0.4
+      data_arr@trXMaxF         = max(aY1reg(imod,:));0.6
+      data_arr@trYMinF         = min(aY2reg(imod,:))
+      data_arr@trYMaxF         = max(aY2reg(imod,:))
+
+      if (.not.all(ismissing(data_arr))) then
+          plot(imod) = scatterplot(wks, data_arr, var0, False, False, input_file_info)
+
+       ;;Add year strings as markers
+          add_num_markers(wks, plot(imod), False, aY1reg(imod,:), aY2reg(imod,:))
+          lineres    = True
+          lineres@gsLineColor = colors(imod)
+          str        = unique_string("line")
+          plot@$str$ = gsn_add_polyline(wks, plot(imod), aY1reg(imod,:), \
+                                                         aYreg(imod,:), lineres)
+      end if
+      delete([/data_arr,MainStg,XStg,YStg/])
+  end do
+  
+  ;;Common resources for panel plots
+  pan             = True 
+  pan@gsnFrame    = False 
+  pan@gsnMaximize = True 
+  pan@gsnPanelXWhiteSpacePercent = 10
+  pan@gsnPanelYWhiteSpacePercent = 5
+  gsn_panel(wks,plot,(/mm,mm/),pan)
+  frame (wks)
+
+  delete([/plot,pan/])
+
+  ; Save data for later use
+      new_path = config_user_info@plot_dir
+      new_path = new_path + DIAG_SCRIPT + "_gIAV_" \
+                          + diag_script_info@start_year + "-" \
+                          + diag_script_info@end_year + ".nc"
+
+      ;;Attach attributes to the results
+      arc!0        = "case"
+      arc&case     = (/"mean","stddev"/)
+      arc!1        = "model"
+      arc&model    = datasetnames0
+      arc@ncdf     = new_path
+      arc@var      = "gIAV"
+      arc@diag_script = (/DIAG_SCRIPT/)
+      arc@varIAV   = (/var/)
+      arc@rIAV     = (/ccr/)
+
+      ;;Write NetCDF output
+      ncdf_outfile = ncdf_write(arc, new_path)
+
+      ;;Write results of temporary list
+      xml_name = getenv("ESMValTool_xml_name")
+      suffix = get_file_suffix(xml_name, 0)
+      name = str_sub_str(xml_name, suffix, "")
+      temp_dir = get_output_dir(getenv("ESMValTool_wrk_dir"), "temp") + \
+      name + "_gIAV.nc"
+
+      ;;Remove previous file if already exists
+      if (isfilepresent_esmval(temp_dir)) then
+          system("rm -f " + temp_dir)
+      end if
+
+      ncdf_char = tochar(new_path)
+      temp_list_new = new((/1, dimsizes(ncdf_char)/), character)
+      temp_list_new(0, :) = ncdf_char
+
+      ;; Create new file and add list
+      temp = addfile(temp_dir, "c")
+      temp->temp_list = temp_list_new
+
+end
+;#################################################################################

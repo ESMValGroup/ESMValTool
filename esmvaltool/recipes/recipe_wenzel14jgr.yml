@@ -19,363 +19,442 @@ preprocessors:
   land_fraction_weighting:
     weighting_landsea_fraction:
       area_type: land
-      strict: false
+      #strict: false
+      exclude: [
+        'GCP',
+        'NCEP',
+        ]
 
   sea_fraction_weighting:
     weighting_landsea_fraction:
       area_type: sea
       strict: false
 
+  global_carbon:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -90.
+      end_latitude: 90.
+    area_statistics:
+          operator: sum
+          
+  tropical:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -30.
+      end_latitude: 30.
+    area_statistics:
+          operator: mean
+
+
 diagnostics:
   
   ### Wenzel et al. 2014, Fig. 01: Quantities used to diagnose GAMMA_LT #########################
 
-  diag_tsline_Fig1: &Carbon_tsline
-    description: Fig 1a integrated NBP in the idealized coupled simulation
-    themes:
-      - phys
-    realms:
-      - land
-    variables: 
-      nbp: &var_nbp
-        preprocessor: land_fraction_weighting
-        project: CMIP5
-        mip: Lmon
-        exp: 1pctCO2
-        ensemble: r1i1p1
-        start_year: 1851
-        end_year: 1989
-        plot_units: GtC
-        cumulate: True
-    additional_datasets: &var_datastet
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
-      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-      #- {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
-    scripts:
-      carbon_tsline_1a: &idealized_carbon
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -30
-        ts_maxlat: 30
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "1989"
-        ts_minyear: "1850"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
+#  diag_tsline_Fig1: &Carbon_tsline
+#    description: Fig 1a integrated NBP in the idealized coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables: 
+#      nbp: &var_nbp
+#        preprocessor: land_fraction_weighting
+#        project: CMIP5
+#        mip: Lmon
+#        exp: 1pctCO2
+#        ensemble: r1i1p1
+#        start_year: 1851
+#        end_year: 1989
+#        plot_units: GtC
+#        cumulate: True
+#    additional_datasets: &var_datastet
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
+#      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#      #- {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
+#    scripts:
+#      carbon_tsline_1a: &idealized_carbon
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -30
+#        ts_maxlat: 30
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "1989"
+#        ts_minyear: "1850"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        area_opper: "sum"
+#        styleset: CMIP5       # Plot style
 
-  diag_tsline_Fig1: 
-    description: Fig 1b integrated NBP in the idealized coupled simulation
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      nbp:
-        preprocessor: land_fraction_weighting
-        project: CMIP5
-        mip: Lmon
-        exp: esmFixClim1
-        ensemble: r1i1p1
-        start_year: 1851
-        end_year: 1989
-        plot_units: GtC
-        cumulate: True
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
-      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-     # - {dataset: MIROC-ESM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
-    scripts:
-      carbon_tsline_1b:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -30
-        ts_maxlat: 30
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "1989"
-        ts_minyear: "1850"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
+#  diag_tsline_Fig1: 
+#    description: Fig 1b integrated NBP in the idealized coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      nbp:
+#        preprocessor: land_fraction_weighting
+#        project: CMIP5
+#        mip: Lmon
+#        exp: esmFixClim1
+#        ensemble: r1i1p1
+#        start_year: 1851
+#        end_year: 1989
+#        plot_units: GtC
+#        cumulate: True
+#    additional_datasets:
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
+#      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
+#    scripts:
+#      carbon_tsline_1b:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -30
+#        ts_maxlat: 30
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "1989"
+#        ts_minyear: "1850"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        area_opper: "sum"
+#        styleset: CMIP5       # Plot style
 
-  diag_tsline_Fig1:
-    description: Fig 1c near surface temerature idealized coupled simulation
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
-      tas: &var_tas
-        project: CMIP5
-        mip: Amon
-        exp: 1pctCO2
-        ensemble: r1i1p1
-        start_year: 1851
-        end_year: 1989
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
-      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-     # - {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
-    scripts:
-      tas_tsline_1c:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -30
-        ts_maxlat: 30
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "1989"
-        ts_minyear: "1850"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        styleset: CMIP5       # Plot style
+#  diag_tsline_Fig1:
+#    description: Fig 1c near surface temerature idealized coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      tas: &var_tas
+#        project: CMIP5
+#        mip: Amon
+#        exp: 1pctCO2
+#        ensemble: r1i1p1
+#        start_year: 1851
+#        end_year: 1989
+#    additional_datasets:
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
+#      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
+#    scripts:
+#      tas_tsline_1c:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -30
+#        ts_maxlat: 30
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "1989"
+#        ts_minyear: "1850"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        styleset: CMIP5       # Plot style
 
   ### Wenzel et al. 2014, Fig. 02: Quantities used to diagnose GAMMA_IAV #########################  
 
-  diag_tsline_Fig2:
-    description: Fig 2a integrated NBP in the idealized coupled simulation
-    themes:
-      - phys
-    realms:
-      - land
+#  diag_tsline_Fig2:
+#    description: Fig 2a integrated NBP in the idealized coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      nbp:
+#        preprocessor: land_fraction_weighting
+#        project: CMIP5
+#        mip: Lmon
+#        exp: 1pctCO2
+#        ensemble: r1i1p1
+#        start_year: 1890
+#        end_year: 1989
+#        plot_units: GtC
+ #   additional_datasets:
+ #     - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
+#      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
+#    scripts:
+#      tsline_2a: 
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -30
+#        ts_maxlat: 30
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "2005"
+#        ts_minyear: "1960"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        area_opper: "sum"
+#        styleset: CMIP5       # Plot style
+#        runave: 2
+#                  
+ # diag_tsline_Fig2: 
+#    description: Fig 2b integrated NBP in the historical coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      nbp:
+#        preprocessor: land_fraction_weighting
+#        project: CMIP5
+#        mip: Lmon
+ #       exp: esmHistorical
+ #       ensemble: r1i1p1
+#        start_year: 1960
+#        end_year: 2005
+#        plot_units: GtC
+#    additional_datasets:
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC}
+#      - {dataset: GFDL-ESM2M}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME}
+#    scripts:
+#      tsline_2b:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -30
+#        ts_maxlat: 30
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "2005"
+#        ts_minyear: "1960"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        area_opper: "sum"
+#        styleset: CMIP5       # Plot style
+#        runave: 2
+#          
+#  diag_tsline_Fig2: &tsline_fgcos 
+#    description: Fig 2c integrated NBP in the idealized coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      fgco2: &var_fgco2
+#        preprocessor: sea_fraction_weighting
+#        project: CMIP5
+#        mip: Omon
+#        exp: 1pctCO2
+#        ensemble: r1i1p1
+#        start_year: 1890
+#        end_year: 1989
+#        plot_units: GtC
+#    additional_datasets:
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
+#      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
+#    scripts:
+#      tsline_2c:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -30
+ #       ts_maxlat: 30
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "2005"
+#        ts_minyear: "1960"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        area_opper: "sum"
+#        styleset: CMIP5       # Plot style
+#        runave: 2
+#                   
+ # diag_tsline_Fig2: 
+ #   description: Fig 2d integrated FGCO2 in the historical coupled simulation
+#    variables:
+#      fgco2:
+#        preprocessor: sea_fraction_weighting
+#        project: CMIP5
+#        mip: Omon
+#        exp: esmHistorical
+#        ensemble: r1i1p1
+#        ridx_start: 0
+#        ridx_end: 48
+#        plot_units: GtC
+#    additional_datasets:
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC}
+#      - {dataset: GFDL-ESM2M}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME}
+#    scripts:
+#      tsline_2d:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -30
+#        ts_maxlat: 30
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "2005"
+#        ts_minyear: "1960"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+ #       area_opper: "sum"
+#        styleset: CMIP5       # Plot style
+#        runave: 2
+          
+#  diag_tsline_Fig2:
+#    description: Fig 2e near surface temerature idealized coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      tas:
+#        project: CMIP5
+#        mip: Amon
+#        exp: 1pctCO2
+#        ensemble: r1i1p1
+#        start_year: 1890
+#        end_year: 1989
+#    additional_datasets:
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
+#      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#      #- {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
+#    scripts:
+#      tsline_2e:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -90
+#        ts_maxlat: 90
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48
+#        multi_model_mean: False
+#        ts_maxyear: "2005"
+#        ts_minyear: "1960"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        area_opper: "sum"
+#        styleset: CMIP5       # Plot style
+#        runave: 2
+
+#  diag_tsline_Fig2: 
+#    description: Fig 2f near surface temerature historical coupled simulation
+#    variables:
+#      tas: 
+#        project: CMIP5
+#        mip: Amon
+#        exp: esmHistorical
+#        ensemble: r1i1p1
+#        start_year: 1960
+#        end_year: 2005 
+#    additional_datasets:
+#      - {dataset: CanESM2}
+#      - {dataset: CESM1-BGC}
+#      - {dataset: GFDL-ESM2M}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM}
+#      - {dataset: MPI-ESM-LR}
+#      - {dataset: NorESM1-ME}
+#    scripts:
+#      tsline_2f:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: -90
+#        ts_maxlat: 90
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#        ridx_start: 0
+#        ridx_end: 48 
+#        multi_model_mean: False
+#        ts_maxyear: "2005"
+#        ts_minyear: "1960"
+#        time_avg: "yearly"
+#        ts_anomaly: "anom"
+#        area_opper: "sum"
+#        styleset: CMIP5       # Plot style
+#        runave: 2
+
+  ### Wenzel et al. 2014, Fig. 03/04: Diagnose GAMMA_IAV from each model #########################
+
+  diag_gammaHist_Fig3+4: 
+    description: Fig 3 and 4 correlating near surface temperature and land+ocean carbon fluxes
     variables:
-      nbp:
-        preprocessor: land_fraction_weighting
+      co2flux:
+        preprocessor: global_carbon
+        derive: true
         project: CMIP5
-        mip: Lmon
-        exp: 1pctCO2
-        ensemble: r1i1p1
-        start_year: 1890
-        end_year: 1989
-        plot_units: GtC
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
-      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-     # - {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
-    scripts:
-      tsline_2a: 
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -30
-        ts_maxlat: 30
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "2005"
-        ts_minyear: "1960"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
-        runave: 2
-                  
-  diag_tsline_Fig2: 
-    description: Fig 2b integrated NBP in the historical coupled simulation
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      nbp:
-        preprocessor: land_fraction_weighting
-        project: CMIP5
-        mip: Lmon
+        mip: Amon
         exp: esmHistorical
         ensemble: r1i1p1
         start_year: 1960
         end_year: 2005
-        plot_units: GtC
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2M}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-     # - {dataset: MIROC-ESM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME}
-    scripts:
-      tsline_2b:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -30
-        ts_maxlat: 30
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "2005"
-        ts_minyear: "1960"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
-        runave: 2
-          
-  diag_tsline_Fig2: &tsline_fgcos 
-    description: Fig 2c integrated NBP in the idealized coupled simulation
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      fgco2: &var_fgco2
-        preprocessor: sea_fraction_weighting
-        project: CMIP5
-        mip: Omon
-        exp: 1pctCO2
-        ensemble: r1i1p1
-        start_year: 1890
-        end_year: 1989
-        plot_units: GtC
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
-      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-     # - {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
-    scripts:
-      tsline_2c:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -30
-        ts_maxlat: 30
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "2005"
-        ts_minyear: "1960"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
-        runave: 2
-                   
-  diag_tsline_Fig2: 
-    description: Fig 2d integrated FGCO2 in the historical coupled simulation
-    variables:
-      fgco2:
-        preprocessor: sea_fraction_weighting
-        project: CMIP5
-        mip: Omon
-        exp: esmHistorical
-        ensemble: r1i1p1
-        ridx_start: 0
-        ridx_end: 48
-        plot_units: GtC
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2M}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-     # - {dataset: MIROC-ESM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME}
-    scripts:
-      tsline_2d:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -30
-        ts_maxlat: 30
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "2005"
-        ts_minyear: "1960"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
-        runave: 2
-          
-  diag_tsline_Fig2:
-    description: Fig 2e near surface temerature idealized coupled simulation
-    themes:
-      - phys
-    realms:
-      - atmos
-    variables:
+        plot_units: GtC y-1
+        reference_dataset: GCP
+        additional_datasets:
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
       tas:
-        project: CMIP5
-        mip: Amon
-        exp: 1pctCO2
-        ensemble: r1i1p1
-        start_year: 1890
-        end_year: 1989
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC, start_year: 1 ,end_year: 140}
-      - {dataset: GFDL-ESM2M, start_year: 1 ,end_year: 140}
-      #- {dataset: HadGEM2-ES}
-      #- {dataset: IPSL-CM5A-LR}
-      #- {dataset: MIROC-ESM, start_year: 1 ,end_year: 140}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME, start_year: 1 ,end_year: 140}
-    scripts:
-      tsline_2e:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -90
-        ts_maxlat: 90
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48
-        multi_model_mean: False
-        ts_maxyear: "2005"
-        ts_minyear: "1960"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
-        runave: 2
-
-  diag_tsline_Fig2: 
-    description: Fig 2f near surface temerature historical coupled simulation
-    variables:
-      tas: 
+        preprocessor: tropical
         project: CMIP5
         mip: Amon
         exp: esmHistorical
         ensemble: r1i1p1
         start_year: 1960
-        end_year: 2005 
+        end_year: 2005
+        reference_dataset: NCEP
+        additional_datasets:
+          - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
     additional_datasets:
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
@@ -386,53 +465,19 @@ diagnostics:
       - {dataset: MPI-ESM-LR}
       - {dataset: NorESM1-ME}
     scripts:
-      tsline_2f:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: -90
-        ts_maxlat: 90
-        ts_minlon: 0
-        ts_maxlon: 360
-        ridx_start: 0
-        ridx_end: 48 
-        multi_model_mean: False
-        ts_maxyear: "2005"
-        ts_minyear: "1960"
-        time_avg: "yearly"
-        ts_anomaly: "anom"
-        area_opper: "sum"
-        styleset: CMIP5       # Plot style
-        runave: 2
-
-  ### Wenzel et al. 2014, Fig. 03/04: Diagnose GAMMA_IAV from each model #########################
-
-
-
-  
-#<diag>
-#  <description> preprocess and save co2flux and tas in climo_dir </description>
-#  <variable_def_dir>               ./variable_defs/    </variable_def_dir>
-#  <variable MIP="Lmon">                         nbp    </variable>
-#  <variable MIP="Omon">                       fgco2    </variable>
-#  <variable MIP="Amon">                         tas    </variable>
-#  <field_type>                                 T2Ms    </field_type>
-#  <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
-#  <!-- !!! NOTE1: in diag_scripts/create_co2flux.ncl: please adjust fx-filepath
-#  (lines: 154, 158, 188, 193) to local file path !!! -->
-
-#  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5  </model>
-#  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF esmHistorical r1i1p1 1960 2004 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
-
-#  <diag_script cfg="cfg_carbon_G_IAV.ncl"> create_co2flux.ncl </diag_script>
-    
-#    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys </tags>
-#</diag>
-
+      gammaHist_3+4:
+        script: carbon_ec/carbon_gammaHist.ncl 
+        start_year: 1960
+        end_year: 2005
+        ec_v2_units : "K"      # x-axes units
+        ec_2range : "tas"      # speifiy x-axes variable
+        ec_units : "GtC"       # y-axes units
+        ec_anom : True 
+        ec_detr : False       # (optional) de-trend timeseries
+        #ec_volc : {1963,1964,1982,1983,1992,1993}  #(optional)
+        scatter_log : False # set logaritmic axes in scatterplot.ncl
+        styleset: CMIP5     # Plot style
+        
 #<diag>
 #  <description> Wenzel et al. 2014, Fig. 03/04: correlates to variables and saves in outpu </description>
 #  <variable_def_dir>                ./variable_defs/             </variable_def_dir>

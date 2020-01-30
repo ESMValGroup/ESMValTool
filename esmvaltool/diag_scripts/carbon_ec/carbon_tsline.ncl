@@ -261,10 +261,10 @@ begin
     if (anom .eq. "anom") then
       ; calculate monthly mean of ref period if 0.5 data points are available
       if (isatt(diag_script_info, "ridx_start")) then
-      	 ref_start = A0&time(ridx_start)
-	 ref_end   = A0&time(ridx_end)
-printVarSummary(A0)	 
-print(ref_start)
+      	 tmp_start = cd_calendar(A0&time(ridx_start),0)
+	 tmp_end   = cd_calendar(A0&time(ridx_end),0)
+	 ref_start = toint(tmp_start(0,0))
+	 ref_end   = toint(tmp_end(0,0))
       end if	 
 
       tmp = time_operations(A0, ref_start, ref_end, "extract", "", 0)
@@ -316,13 +316,15 @@ print(ref_start)
         end if
         delete(A0_timavg_ref)
 
-        if anom_ref(imod) .eq. anom_ref_tmp then
+        ;if anom_ref(imod) .eq. anom_ref_tmp then
           ; delete(anom_ref_tmp)
-        end if
+        ;end if
 
       	if (isatt(diag_script_info, "ridx_start")) then
       	    delete(ref_start)
-	    delete(ref_end)	 
+	    delete(ref_end)
+	    delete(tmp_start)	 
+	    delete(tmp_end)
       	end if
 
       end if
