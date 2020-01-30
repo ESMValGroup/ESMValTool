@@ -106,25 +106,31 @@ documentation:
      # start_year: 1986, end_year: 2005}
 
 datasets:
-  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
-     start_year: 2001, end_year: 2010, tier: 2} 
+#  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
+#     start_year: 2003, end_year: 2016, tier: 2} 
   - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
-     start_year: 2001, end_year: 2010, tier: 2} 
+     start_year: 2003, end_year: 2016, tier: 2} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
-     start_year: 2001, end_year: 2010, tier: 3}       
+     start_year: 2003, end_year: 2016, tier: 3}       
+  - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+     start_year: 2003, end_year: 2016, tier: 3}
+  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
+     start_year: 2003, end_year: 2016, tier: 3}
+  - {dataset: UWisc, project: OBS6, type: reanaly, version: v1,
+     start_year: 2003, end_year: 2016, tier: 3}
        
 
 preprocessors:
   clim:
     regrid:
-      target_grid: 2x2
+      target_grid: 1x1
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
     multi_model_statistics:
       span: overlap
       statistics: [mean]
-      exclude: [reference_dataset]
+      #exclude: [reference_dataset]
 
 
 diagnostics:
@@ -172,11 +178,11 @@ diagnostics:
     variables:
       clt:
         preprocessor: clim
-        reference_dataset: MODIS
+        reference_dataset: MultiModelMean
         mip: Amon
-    additional_datasets:
-      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
-         start_year: 2001, end_year: 2010, tier: 1}
+    #additional_datasets:
+      #- {dataset: MODIS, project: obs4mips, level: L3, version: C5,
+      #   start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim: &clim_settings
         script: clouds/clouds.ncl
@@ -189,7 +195,7 @@ diagnostics:
         # - annualclim: 1 plot (annual mean)
         # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
         timemean: annualclim
-        showdiff: false
+        showdiff: true
 
   # clouds_fig1_pr:
     # description: climatological annual means
