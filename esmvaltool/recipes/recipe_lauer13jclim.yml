@@ -109,15 +109,15 @@ datasets:
 #  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
 #     start_year: 2003, end_year: 2016, tier: 2} 
   - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
-     start_year: 2003, end_year: 2016, tier: 2} 
+     start_year: 1988, end_year: 2016, tier: 2} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
-     start_year: 2003, end_year: 2016, tier: 3}       
-  - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-     start_year: 2003, end_year: 2016, tier: 3}
+     start_year: 1988, end_year: 2016, tier: 3}       
+#  - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+#     start_year: 2003, end_year: 2016, tier: 3}
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
-     start_year: 2003, end_year: 2016, tier: 3}
-  - {dataset: UWisc, project: OBS6, type: reanaly, version: v1,
-     start_year: 2003, end_year: 2016, tier: 3}
+     start_year: 1988, end_year: 2016, tier: 3}
+  - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+     start_year: 1988, end_year: 2016, tier: 3}
        
 
 preprocessors:
@@ -176,10 +176,11 @@ diagnostics:
     realms:
       - atmos
     variables:
-      clt:
+      lwp:
         preprocessor: clim
         reference_dataset: MultiModelMean
         mip: Amon
+        derive: true
     #additional_datasets:
       #- {dataset: MODIS, project: obs4mips, level: L3, version: C5,
       #   start_year: 2001, end_year: 2010, tier: 1}
