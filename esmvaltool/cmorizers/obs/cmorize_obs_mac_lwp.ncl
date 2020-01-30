@@ -14,7 +14,7 @@
 ; Download and processing instructions
 ;    Select the MACLWP-mean dataset.
 ;    Download the script file for both projects.
-;    Download the data using http either by selecting each granule 
+;    Download the data using http either by selecting each granule
 ;    individually or by using the option "download all".
 ;    Data is freely available, but a registration is required.
 ;
