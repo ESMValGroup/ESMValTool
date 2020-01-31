@@ -112,8 +112,8 @@ datasets:
      start_year: 1988, end_year: 2016, tier: 2} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
      start_year: 1988, end_year: 2016, tier: 3}       
-#  - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-#     start_year: 2003, end_year: 2016, tier: 3}
+  # - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+     # start_year: 2003, end_year: 2016, tier: 3}
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
      start_year: 1988, end_year: 2016, tier: 3}
   - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
@@ -127,10 +127,10 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      #exclude: [reference_dataset]
+    # multi_model_statistics:
+      # span: overlap
+      # statistics: [mean]
+      # #exclude: [reference_dataset]
 
 
 diagnostics:
@@ -178,7 +178,7 @@ diagnostics:
     variables:
       lwp:
         preprocessor: clim
-        reference_dataset: MultiModelMean
+        #reference_dataset: MultiModelMean
         mip: Amon
         derive: true
     #additional_datasets:
@@ -196,7 +196,8 @@ diagnostics:
         # - annualclim: 1 plot (annual mean)
         # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
         timemean: annualclim
-        showdiff: true
+        showdiff: false
+        embracesetup: true
 
   # clouds_fig1_pr:
     # description: climatological annual means
