@@ -67,6 +67,7 @@ preprocessors:
     custom_order: true
     area_statistics:
       operator: mean
+      fx_files: [areacello, ]
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -79,6 +80,8 @@ preprocessors:
       scheme: linear_horizontal_extrapolate_vertical
     area_statistics:
       operator: mean
+      fx_files: [areacello, ]
+      
     multi_model_statistics:
       span: overlap
       statistics: [mean ]

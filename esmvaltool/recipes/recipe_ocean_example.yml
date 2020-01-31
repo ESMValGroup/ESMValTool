@@ -287,17 +287,17 @@ diagnostics:
       tos: # Temperature ocean surface
         preprocessor: prep_timeseries_1
     scripts:
-      Global_Ocean_Surface_mean_timeseries: 
+      Global_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
 
-  diag_timeseries_2:
-    description: Global Ocean Depth Layers mean timeseries
-    variables:
-      thetao: # Temperature ocean 3D
-        preprocessor: prep_timeseries_2
-    scripts:
-      Global_Ocean_DepthLayers_mean_timeseries:
-        script: ocean/diagnostic_timeseries.py
+  # diag_timeseries_2:
+  #   description: Global Ocean Depth Layers mean timeseries
+  #   variables:
+  #     thetao: # Temperature ocean 3D
+  #       preprocessor: prep_timeseries_2
+  #   scripts:
+  #     Global_Ocean_DepthLayers_mean_timeseries:
+  #       script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_3:
     description: Regional scale surface diagnostics
@@ -308,14 +308,14 @@ diagnostics:
       Regional_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
 
-  diag_timeseries_4:
-    description: Regional scale diagnostics
-    variables:
-      thetao: # Temperature ocean 3D
-        preprocessor: prep_timeseries_4
-    scripts:
-      Regional_Ocean_DepthLayers_mean_timeseries:
-        script: ocean/diagnostic_timeseries.py
+  # diag_timeseries_4:
+  #   description: Regional scale diagnostics
+  #   variables:
+  #     thetao: # Temperature ocean 3D
+  #       preprocessor: prep_timeseries_4
+  #   scripts:
+  #     Regional_Ocean_DepthLayers_mean_timeseries:
+  #       script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_5:
     description: Global Volume average diagnostics
