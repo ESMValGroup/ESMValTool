@@ -269,14 +269,14 @@ diagnostics:
   # --------------------------------------------------
   # Depth integrated diagnostics
   # --------------------------------------------------
-  diag_depthInt_1:
-    description: Global Ocean Surface mean timeseries
-    variables:
-      thetao: # Temperature ocean
-        preprocessor: prep_depth_integration_1
-    scripts:
-      Global_Ocean_DepthIntegration_map:
-        script: ocean/diagnostic_maps.py
+  # diag_depthInt_1:
+  #   description: Global Ocean Surface mean timeseries
+  #   variables:
+  #     thetao: # Temperature ocean
+  #       preprocessor: prep_depth_integration_1
+  #   scripts:
+  #     Global_Ocean_DepthIntegration_map:
+  #       script: ocean/diagnostic_maps.py
 
   # --------------------------------------------------
   # Time series diagnostics
