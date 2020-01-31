@@ -640,7 +640,6 @@ def main(cfg):
     logger.info('Success')
 
 
-
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
