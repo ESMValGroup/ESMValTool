@@ -92,6 +92,11 @@ default_pp_maps_without_gl: &pp_maps_without_gl
   mask_below_threshold:
     threshold: 1
   <<: *mpqbregridder
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
 
 default_pp_maps_without_trop: &pp_maps_without_trop
   custom_order: true
@@ -99,6 +104,11 @@ default_pp_maps_without_trop: &pp_maps_without_trop
     threshold: 1
   <<: *mpqbregridder
   <<: *extr_trop
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
 
 default_pp_maps_without_socean: &pp_maps_without_so
   custom_order: true
@@ -106,6 +116,11 @@ default_pp_maps_without_socean: &pp_maps_without_so
     threshold: 1
   <<: *mpqbregridder
   <<: *extr_socean
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
 
 default_pp_maps_without_nhstorm: &pp_maps_without_nhs
   custom_order: true
@@ -113,6 +128,11 @@ default_pp_maps_without_nhstorm: &pp_maps_without_nhs
     threshold: 1
   <<: *mpqbregridder
   <<: *extr_nhstorm
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
   
 default_pp_maps_without_itcz: &pp_maps_without_itcz
   custom_order: true
@@ -120,6 +140,11 @@ default_pp_maps_without_itcz: &pp_maps_without_itcz
     threshold: 1
   <<: *mpqbregridder
   <<: *extr_itcz
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
 
 default_pp_maps_without_sepacific: &pp_maps_without_sepacific
   custom_order: true
@@ -127,6 +152,11 @@ default_pp_maps_without_sepacific: &pp_maps_without_sepacific
     threshold: 1
   <<: *mpqbregridder
   <<: *extr_sepacific
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
 
   
 default_pp_maps_coarse: &pp_maps_c
@@ -161,16 +191,18 @@ default_pp_line: &pp_line
 ################################################
 
 datasets:
-  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
-     tier: 2, alias: PATMOS-x} 
+#  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
+#     tier: 2, alias: PATMOS-x} 
   - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
      tier: 2, alias: ESACCI-CLOUD} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
      tier: 3, alias: ERA-Interim}       
-  - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-     tier: 3, alias: MODIS}
-  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
-     tier: 3, alias: ERA5}
+  # - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+     # tier: 3, alias: MODIS}
+  # - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
+     # tier: 3, alias: ERA5}
+  # - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+     # tier: 3, alias: MAC-LWP}
      
      
 preprocessors:
@@ -267,8 +299,10 @@ cloud_def: &clouddef
 
 hist_def: &histdef
   script: mpqb/mpqb_histogram.py
+  #vmin: 0
+  #vmax: 100
   vmin: 0
-  vmax: 100
+  vmax: 0.2
   number_of_bars: 20
   #histtype: step
   logarithmic: False
@@ -278,8 +312,9 @@ diagnostics:
   histogram_gl:
     description: histogram for 1x1 gridded data
     variables:
-      clt:
+      lwp:
         preprocessor: pp_mpqb_clouds_without_gl
+        derive: true
         <<: *clouddef
     scripts:
       mpqb_gl:
@@ -287,8 +322,9 @@ diagnostics:
   histogram_trop:
     description: histogram for 1x1 gridded data
     variables:
-      clt:
+      lwp:
         preprocessor: pp_mpqb_clouds_without_trop
+        derive: true
         <<: *clouddef
     scripts:
       mpqb_trop:
@@ -296,8 +332,9 @@ diagnostics:
   histogram_itcz:
     description: histogram for 1x1 gridded data
     variables:
-      clt:
+      lwp:
         preprocessor: pp_mpqb_clouds_without_itcz
+        derive: true
         <<: *clouddef
     scripts:
       mpqb_itcz:
@@ -305,8 +342,9 @@ diagnostics:
   histogram_socean:
     description: histogram for 1x1 gridded data
     variables:
-      clt:
+      lwp:
         preprocessor: pp_mpqb_clouds_without_socean
+        derive: true
         <<: *clouddef
     scripts:
       mpqb_socean:
@@ -314,8 +352,9 @@ diagnostics:
   histogram_sepacific:
     description: histogram for 1x1 gridded data
     variables:
-      clt:
+      lwp:
         preprocessor: pp_mpqb_clouds_without_sepacific
+        derive: true
         <<: *clouddef
     scripts:
       mpqb_sepacific:
@@ -323,8 +362,9 @@ diagnostics:
   histogram_nhstorm:
     description: histogram for 1x1 gridded data
     variables:
-      clt:
+      lwp:
         preprocessor: pp_mpqb_clouds_without_nhstorm
+        derive: true
         <<: *clouddef
     scripts:
       mpqb_nhstorm:
@@ -381,8 +421,9 @@ diagnostics:
   mapplots:
     description: mapplots
     variables:
-      clt:
+      lwp:
         preprocessor: pp_mpqb_clouds
+        derive: true
         <<: *clouddef
     scripts:
       mpqb:
@@ -394,8 +435,9 @@ diagnostics:
   lineplots_gl:
     description: lineplots
     variables:
-      clt:
+      lwp:
         preprocessor: pp_lineplots_gl
+        derive: true
         <<: *clouddef
     scripts:
       lineplot_gl:
@@ -403,8 +445,9 @@ diagnostics:
   lineplots_trop:
     description: lineplots
     variables:
-      clt:
+      lwp:
         preprocessor: pp_lineplots_trop
+        derive: true
         <<: *clouddef
     scripts:
       lineplot_trop:
@@ -412,8 +455,9 @@ diagnostics:
   lineplots_itcz:
     description: lineplots
     variables:
-      clt:
+      lwp:
         preprocessor: pp_lineplots_itcz
+        derive: true
         <<: *clouddef
     scripts:
       lineplot_itcz:
@@ -421,8 +465,9 @@ diagnostics:
   lineplots_socean:
     description: lineplots
     variables:
-      clt:
+      lwp:
         preprocessor: pp_lineplots_socean
+        derive: true
         <<: *clouddef
     scripts:
       lineplot_socean:
@@ -430,8 +475,9 @@ diagnostics:
   lineplots_sepacific:
     description: lineplots
     variables:
-      clt:
+      lwp:
         preprocessor: pp_lineplots_sepacific
+        derive: true
         <<: *clouddef
     scripts:
       lineplot_sepacific:
@@ -439,8 +485,9 @@ diagnostics:
   lineplots_nhstorm:
     description: lineplots
     variables:
-      clt:
+      lwp:
         preprocessor: pp_lineplots_nhstorm
+        derive: true
         <<: *clouddef
     scripts:
       lineplot_nhstorm:

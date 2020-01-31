@@ -113,8 +113,8 @@ def main(cfg):
 #            plt.ylim(0, 5*np.max(
 #                     [np.max(content["hist"]) for _, content in hists.items()]))
 #        else:
-        plt.ylim(0, 1.1*np.max(
-                 [np.max(content["hist"]) for _, content in hists.items()]))
+        plt.ylim(0, 1.1*np.nanmax(
+                 [np.nanmax(content["hist"]) for _, content in hists.items()]))
         plt.tight_layout()
 #        filename = get_plot_filename('histogram', cfg)
         filename = get_plot_filename('histogram_' + cfg["script"], cfg)
