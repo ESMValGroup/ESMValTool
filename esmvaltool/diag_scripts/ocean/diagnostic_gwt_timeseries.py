@@ -220,6 +220,22 @@ def get_threshold_exceedance_date(cube, threshold):
     return time
 
 
+def calculate_total(cfg, metadata, cube):
+    """
+    Calcualte the global total in the cube
+    """
+    if metadata['short_name'] in ['npp', 'rh']:
+        area = 'areacella'
+    elif metadata['short_name'] in ['npp', 'rh']:
+        area = 'areacella'
+    else:
+        print (metadata['short_name'], 'not recognised')
+        assert 0
+
+    return
+
+
+
 def make_time_series_plots(
         cfg,
         metadata,
@@ -377,6 +393,7 @@ def multi_model_time_series(
     layers = {}
     for filename in sorted(metadata):
         cube = iris.load_cube(filename)
+        cube = calculate_total(cfg, metadata, cube)
         cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
 
         cubes = diagtools.make_cube_layer_dict(cube)
@@ -600,6 +617,76 @@ def print_exceedance_dates(cfg, exceedance_dates, window = 10, short_name = 'tas
     out.close()
 
 
+def load_timeseries(cfg, short_names):
+    """
+    Load times series as a dict.
+
+    Dict is :
+    data_dict[(short_name, exp, ensemble) ] = cube
+    assume only one model
+    """
+    data_dict = {}
+    for index, metadata_filename in enumerate(cfg['input_files']):
+        logger.info('load_timeseries:\t%s', metadata_filename)
+
+        metadatas = diagtools.get_input_files(cfg, index=index)
+        for fn in sorted(metadatas):
+            short_name = metadatas[fn]['short_name']
+            exp = metadatas[fn]['exp']
+            ensemble = metadatas[fn]['ensemble']
+
+            if short_name not in short_names:
+                continue
+            cube = iris.load_cube(filename)
+            cube = diagtools.bgc_units(cube, short_name)
+            print('loaded data:', (short_name, exp, ensemble) )
+            data_dict[(short_name, exp, ensemble)] = cube
+    return data_dict
+
+
+def load_areas(cfg, short_names=['areacella', 'areacello']):
+    """
+    Load area data
+    """
+    data_dict = {}
+    for index, metadata_filename in enumerate(cfg['input_files']):
+        logger.info('load_timeseries:\t%s', metadata_filename)
+        metadatas = diagtools.get_input_files(cfg, index=index)
+        for fn in sorted(metadatas):
+            short_name = metadatas[fn]['short_name']
+            exp = metadatas[fn]['exp']
+            ensemble = metadatas[fn]['ensemble']
+            if short_name not in short_names: continue
+            print('loaded area:', (short_name, exp, ensemble) )
+            cube = iris.load_cube(filename)
+
+            print(metadatas[fn], cube)
+    assert 0
+
+
+
+
+def make_ts_figure(cfg, x='time', y='npp',markers='thresholds'):
+    """
+    make a 2D figure.
+    x axis and y axis are determined by the short_names provuided in x and y
+    vars.
+    Markers are placed at certain points when the tas goes above thresholds.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    """
+    short_names = [x, y, ]
+    if markers == 'thresholds':
+        short_names.append('tas')
+
+    data_dict = load_timeseries(cfg, short_names)
+    area_dict = load_areas(cfg)
+
+
+
 def main(cfg):
     """
     Load the config file and some metadata, then make plots.
@@ -610,11 +697,16 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+    make_ts_figure(cfg, x='time', y='npp',markers='thresholds')
+    return
+
     exceedance_dates = {}
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
+
+
 
         #######
         # Multi model time series
