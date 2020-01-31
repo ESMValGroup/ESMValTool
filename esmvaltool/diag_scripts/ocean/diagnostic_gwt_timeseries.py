@@ -637,7 +637,7 @@ def load_timeseries(cfg, short_names):
 
             if short_name not in short_names:
                 continue
-            cube = iris.load_cube(filename)
+            cube = iris.load_cube(fn)
             cube = diagtools.bgc_units(cube, short_name)
             print('loaded data:', (short_name, exp, ensemble) )
             data_dict[(short_name, exp, ensemble)] = cube
@@ -648,7 +648,7 @@ def load_areas(cfg, short_names=['areacella', 'areacello']):
     """
     Load area data
     """
-    data_dict = {}
+    area_dict = {}
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('load_timeseries:\t%s', metadata_filename)
         metadatas = diagtools.get_input_files(cfg, index=index)
@@ -656,12 +656,13 @@ def load_areas(cfg, short_names=['areacella', 'areacello']):
             short_name = metadatas[fn]['short_name']
             exp = metadatas[fn]['exp']
             ensemble = metadatas[fn]['ensemble']
+            variable_group = metadatas[fn]['variable_group']
+
             if short_name not in short_names: continue
             print('loaded area:', (short_name, exp, ensemble) )
-            cube = iris.load_cube(filename)
-
-            print(metadatas[fn], cube)
-    assert 0
+            cube = iris.load_cube(fn)
+            area_dict[(short_name,variable_group)] = cube 
+    return area_dict
 
 
 
@@ -685,6 +686,48 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds'):
     data_dict = load_timeseries(cfg, short_names)
     area_dict = load_areas(cfg)
 
+    exps = {}
+    ensembles = {}
+    for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
+         exps[exp] = True
+         ensembles[ensemble] = True
+
+    fig = plt.figure()
+    for exp_1, ensemble_1 in product(exps, ensembles):
+        
+        x_data, y_data = [], [] 
+        for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
+            if exp != exp_1: continue
+            if ensemble != ensemble_1: continue
+            if short_name not in [x,y]: continue
+            print('make_ts_figure', short_name, exp, ensemble, x,y)
+             
+            if x == 'time':
+                x_data = diagtools.cube_time_to_float(cube)
+            elif short_name == x:
+                x_data = cube.data
+        
+            if y == 'time':
+                y_data = diagtools.cube_time_to_float(cube)
+            elif short_name == y:
+                y_data = cube.data
+
+        if 0 in [len(x_data), len(y_data)]: continue
+        
+        label = ' '.join([exp,ensemble])
+        plt.plot(x_data, y_data, label=label)
+
+    plt.legend()
+    plt.title(' '.join([x, 'by', y ]))
+
+    image_extention = diagtools.get_image_format(cfg)
+
+    path = diagtools.folder(cfg['plot_dir'])
+    path += '_'.join([x,y,markers,]) + image_extention
+
+    print('saving figure:', path)
+    plt.savefig(path)
+    plt.close()
 
 
 def main(cfg):
@@ -697,7 +740,12 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-    make_ts_figure(cfg, x='time', y='npp',markers='thresholds')
+    for y in ['npp', 'tas', 'fgco2', 'rh']: 
+        make_ts_figure(cfg, x='time', y=y,markers='thresholds')
+    
+    make_ts_figure(cfg, x='rh', y='npp',markers='thresholds')
+    make_ts_figure(cfg, x='fgco2', y='npp',markers='thresholds')
+
     return
 
     exceedance_dates = {}
