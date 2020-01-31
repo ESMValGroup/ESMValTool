@@ -13,6 +13,8 @@ def main(cfg):
     for file in fixed_files:
         basename, _ext = os.path.splitext(os.path.basename(file))
         basename = basename.replace('native', 'OBS')
+        if cfg['diagnostic'] == 'daily':
+            basename.replace('E1hr', 'Eday')
         outfile = get_diagnostic_filename(basename, cfg)
         shutil.move(file, outfile)
 
