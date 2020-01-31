@@ -38,15 +38,21 @@ def main(cfg):
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
+
     logger.info(
         "Example of how to group and sort input data by standard_name:"
         "\n%s", pformat(grouped_input_data))
+
+    # In order to get the right line colors for MPQB soil moisture
+    # here we put ERA-Interim-Land at the end of the dictionary if
+    # it is included. 
+    grouped_input_data.move_to_end('ERA-Interim-Land')
 
     if cfg['write_plots']:
         plt.clf()
         fig = plt.figure(figsize=(10,4))
         ax = fig.add_subplot()
-        for dataset in grouped_input_data:
+        for dataset in grouped_input_data:            
             logger.info("Opening dataset: {0}".format(dataset))
             cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
             iris.quickplot.plot(cube, label=dataset_plotnames[dataset])
