@@ -98,14 +98,14 @@ diagnostics:
         fx_var_preprocess: True
         additional_datasets:
          # /data/sthenno1/scratch/ledm/CMIP6/tas
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp119,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp126,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp245,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp370,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp434,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp585,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp534-over,ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
 
       timeseries_fgco2:
@@ -159,4 +159,4 @@ diagnostics:
         script: ocean/diagnostic_timeseries.py
 
       diagnostic_gwt_timeseries:
-        script: ocean/diagnostic_gwt_threshold_calc.py
+        script: ocean/diagnostic_gwt_timeseries.py
