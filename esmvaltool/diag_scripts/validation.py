@@ -248,21 +248,24 @@ def plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key):
     """Call plotting functions and make plots with seasons."""
     seasons = ['DJF', 'MAM', 'JJA', 'SON']
     if cfg['analysis_type'] == 'lat_lon':
-        for c_i, e_i, s_n in zip(ctrl_seasons, exper_seasons, seasons):
-            plot_latlon_cubes(c_i,
-                              e_i,
+        for control_season, experiment_season, season in zip(
+                ctrl_seasons, exper_seasons, seasons):
+            plot_latlon_cubes(control_season,
+                              experiment_season,
                               cfg,
                               plot_key,
                               obs_name=None,
-                              season=s_n)
+                              season=season)
     elif cfg['analysis_type'] == 'zonal_mean':
-        for c_i, e_i, s_n in zip(ctrl_seasons, exper_seasons, seasons):
-            plot_info = [plot_key, 'latitude', s_n]
-            plot_zonal_cubes(c_i, e_i, cfg, plot_info)
+        for control_season, experiment_season, season in zip(
+                ctrl_seasons, exper_seasons, seasons):
+            plot_info = [plot_key, 'latitude', season]
+            plot_zonal_cubes(control_season, experiment_season, cfg, plot_info)
     elif cfg['analysis_type'] == 'meridional_mean':
-        for c_i, e_i, s_n in zip(ctrl_seasons, exper_seasons, seasons):
-            plot_info = [plot_key, 'longitude', s_n]
-            plot_zonal_cubes(c_i, e_i, cfg, plot_info)
+        for control_season, experiment_season, season in zip(
+                ctrl_seasons, exper_seasons, seasons):
+            plot_info = [plot_key, 'longitude', season]
+            plot_zonal_cubes(control_season, experiment_season, cfg, plot_info)
 
 
 def main(cfg):
@@ -279,8 +282,8 @@ def main(cfg):
         ctrl, exper, obs = get_control_exper_obs(short_name, input_data, cfg,
                                                  cmip_era)
         # set a plot key holding info on var and data set names
-        plot_key = short_name + '_' + ctrl['dataset'] \
-            + '_vs_' + exper['dataset']
+        plot_key = "{}_{}_vs_{}".format(short_name, ctrl['dataset'],
+                                        exper['dataset'])
         control_dataset_name = ctrl['dataset']
 
         # get seasons if needed then apply analysis
@@ -300,8 +303,8 @@ def main(cfg):
                     obs_seasons = [
                         coordinate_collapse(obss, cfg) for obss in obs_seasons
                     ]
-                    plot_key_obs = short_name + '_' + ctrl['dataset'] \
-                        + '_vs_' + iobs['dataset']
+                    plot_key_obs = "{}_{}_vs_{}".format(
+                        short_name, ctrl['dataset'], iobs['dataset'])
                     plot_ctrl_exper_seasons(ctrl_seasons, obs_seasons, cfg,
                                             plot_key_obs)
 
@@ -316,8 +319,8 @@ def main(cfg):
             for obs_i, obsfile in zip(obs_list, obs):
                 obs_analyzed = coordinate_collapse(obs_i, cfg)
                 obs_name = obsfile['dataset']
-                plot_key = short_name + '_' + control_dataset_name + \
-                    '_vs_' + obs_name
+                plot_key = "{}_{}_vs_{}".format(short_name,
+                                                control_dataset_name, obs_name)
                 if cfg['analysis_type'] == 'lat_lon':
                     plot_latlon_cubes(ctrl,
                                       obs_analyzed,
