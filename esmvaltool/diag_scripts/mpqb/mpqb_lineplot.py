@@ -25,6 +25,7 @@ dataset_plotnames = {
   'ERA5' : 'ERA5',
   'PATMOS-x' : 'PATMOSx',
   'MODIS' : 'MODIS',
+  'MAC-LWP' : 'MAC-LWP',
 }
 
 

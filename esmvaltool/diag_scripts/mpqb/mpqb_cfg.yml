@@ -115,3 +115,40 @@ clt:
     cmap: YlOrBr
     vmin: 0.0
     vmax: 100.
+
+lwp:
+  pearsonr:
+    title: pearsonr
+    vmin: -1.
+    vmax: 1.
+    cmap: BrBG
+  ubrmsd:
+    title: ubrmsd
+    vmin: 0.
+    vmax: 0.1
+    cmap: YlOrBr
+  rmsd:
+    title: rmsd
+    vmin: 0.
+    vmax: 0.1
+    cmap: YlOrBr
+  absdiff:
+    title: absdiff
+    vmin: -0.2
+    vmax: 0.2
+    cmap: BrBG
+  reldiff:
+    title: reldiff
+    cmap: BrBG
+    vmin: -0.2
+    vmax: 0.2
+  theilsenmk:
+    title: theilsen
+    cmap: BrBG
+    vmin: -0.05
+    vmax: 0.05
+  timemean:
+    title: timemean
+    cmap: YlOrBr
+    vmin: 0.0
+    vmax: 0.2

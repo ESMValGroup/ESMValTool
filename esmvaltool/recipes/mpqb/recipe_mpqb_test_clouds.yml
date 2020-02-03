@@ -81,7 +81,7 @@ extract_southeastpacific: &extr_sepacific
 default_pp_maps: &pp_maps
   custom_order: true
   mask_below_threshold:
-    threshold: 1
+    threshold: 0.01
   <<: *mpqbregridder
   #mask_landsea:
   #  mask_out: sea
@@ -90,7 +90,7 @@ default_pp_maps: &pp_maps
 default_pp_maps_without_gl: &pp_maps_without_gl
   custom_order: true
   mask_below_threshold:
-    threshold: 1
+    threshold: 0.01
   <<: *mpqbregridder
   # mask_landsea:
     # mask_out: land
@@ -101,7 +101,7 @@ default_pp_maps_without_gl: &pp_maps_without_gl
 default_pp_maps_without_trop: &pp_maps_without_trop
   custom_order: true
   mask_below_threshold:
-    threshold: 1
+    threshold: 0.01
   <<: *mpqbregridder
   <<: *extr_trop
   # mask_landsea:
@@ -113,7 +113,7 @@ default_pp_maps_without_trop: &pp_maps_without_trop
 default_pp_maps_without_socean: &pp_maps_without_so
   custom_order: true
   mask_below_threshold:
-    threshold: 1
+    threshold: 0.01
   <<: *mpqbregridder
   <<: *extr_socean
   # mask_landsea:
@@ -125,7 +125,7 @@ default_pp_maps_without_socean: &pp_maps_without_so
 default_pp_maps_without_nhstorm: &pp_maps_without_nhs
   custom_order: true
   mask_below_threshold:
-    threshold: 1
+    threshold: 0.01
   <<: *mpqbregridder
   <<: *extr_nhstorm
   # mask_landsea:
@@ -137,7 +137,7 @@ default_pp_maps_without_nhstorm: &pp_maps_without_nhs
 default_pp_maps_without_itcz: &pp_maps_without_itcz
   custom_order: true
   mask_below_threshold:
-    threshold: 1
+    threshold: 0.01
   <<: *mpqbregridder
   <<: *extr_itcz
   # mask_landsea:
@@ -149,7 +149,7 @@ default_pp_maps_without_itcz: &pp_maps_without_itcz
 default_pp_maps_without_sepacific: &pp_maps_without_sepacific
   custom_order: true
   mask_below_threshold:
-    threshold: 1
+    threshold: 0.01
   <<: *mpqbregridder
   <<: *extr_sepacific
   # mask_landsea:
@@ -181,7 +181,7 @@ default_pp_maps_fine: &pp_maps_f
 # line plots
 default_pp_line: &pp_line
   mask_fillvalues:
-    threshold_fraction: 0.8
+    threshold_fraction: 0.1
   area_statistics:
     operator: mean
 
@@ -197,12 +197,12 @@ datasets:
      tier: 2, alias: ESACCI-CLOUD} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
      tier: 3, alias: ERA-Interim}       
-  # - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-     # tier: 3, alias: MODIS}
-  # - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
-     # tier: 3, alias: ERA5}
-  # - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
-     # tier: 3, alias: MAC-LWP}
+  - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+     tier: 3, alias: MODIS}
+  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
+     tier: 3, alias: ERA5}
+  - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+     tier: 3, alias: MAC-LWP}
      
      
 preprocessors:
@@ -418,80 +418,80 @@ diagnostics:
     # scripts: 
       # mpqb_res:
         # script: mpqb/mpqb_resolution.py
-  mapplots:
-    description: mapplots
-    variables:
-      lwp:
-        preprocessor: pp_mpqb_clouds
-        derive: true
-        <<: *clouddef
-    scripts:
-      mpqb:
-        reference_dataset: MultiModelMean
-        script: mpqb/mpqb_comparison.py
-      # mpqb_taylor:
+  # mapplots:
+    # description: mapplots
+    # variables:
+      # lwp:
+        # preprocessor: pp_mpqb_clouds
+        # derive: true
+        # <<: *clouddef
+    # scripts:
+      # mpqb:
         # reference_dataset: MultiModelMean
-        # script: mpqb/taylordiagram.py
-  lineplots_gl:
-    description: lineplots
-    variables:
-      lwp:
-        preprocessor: pp_lineplots_gl
-        derive: true
-        <<: *clouddef
-    scripts:
-      lineplot_gl:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_trop:
-    description: lineplots
-    variables:
-      lwp:
-        preprocessor: pp_lineplots_trop
-        derive: true
-        <<: *clouddef
-    scripts:
-      lineplot_trop:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_itcz:
-    description: lineplots
-    variables:
-      lwp:
-        preprocessor: pp_lineplots_itcz
-        derive: true
-        <<: *clouddef
-    scripts:
-      lineplot_itcz:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_socean:
-    description: lineplots
-    variables:
-      lwp:
-        preprocessor: pp_lineplots_socean
-        derive: true
-        <<: *clouddef
-    scripts:
-      lineplot_socean:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_sepacific:
-    description: lineplots
-    variables:
-      lwp:
-        preprocessor: pp_lineplots_sepacific
-        derive: true
-        <<: *clouddef
-    scripts:
-      lineplot_sepacific:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_nhstorm:
-    description: lineplots
-    variables:
-      lwp:
-        preprocessor: pp_lineplots_nhstorm
-        derive: true
-        <<: *clouddef
-    scripts:
-      lineplot_nhstorm:
-        script: mpqb/mpqb_lineplot.py
+        # script: mpqb/mpqb_comparison.py
+      # # mpqb_taylor:
+        # # reference_dataset: MultiModelMean
+        # # script: mpqb/taylordiagram.py
+  # lineplots_gl:
+    # description: lineplots
+    # variables:
+      # lwp:
+        # preprocessor: pp_lineplots_gl
+        # derive: true
+        # <<: *clouddef
+    # scripts:
+      # lineplot_gl:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_trop:
+    # description: lineplots
+    # variables:
+      # lwp:
+        # preprocessor: pp_lineplots_trop
+        # derive: true
+        # <<: *clouddef
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_itcz:
+    # description: lineplots
+    # variables:
+      # lwp:
+        # preprocessor: pp_lineplots_itcz
+        # derive: true
+        # <<: *clouddef
+    # scripts:
+      # lineplot_itcz:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_socean:
+    # description: lineplots
+    # variables:
+      # lwp:
+        # preprocessor: pp_lineplots_socean
+        # derive: true
+        # <<: *clouddef
+    # scripts:
+      # lineplot_socean:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_sepacific:
+    # description: lineplots
+    # variables:
+      # lwp:
+        # preprocessor: pp_lineplots_sepacific
+        # derive: true
+        # <<: *clouddef
+    # scripts:
+      # lineplot_sepacific:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_nhstorm:
+    # description: lineplots
+    # variables:
+      # lwp:
+        # preprocessor: pp_lineplots_nhstorm
+        # derive: true
+        # <<: *clouddef
+    # scripts:
+      # lineplot_nhstorm:
+        # script: mpqb/mpqb_lineplot.py
 #  lineplots_europe:
 #    description: lineplots_europe
 #    variables:
