@@ -46,19 +46,31 @@ def main(cfg):
     # In order to get the right line colors for MPQB soil moisture
     # here we put ERA-Interim-Land at the end of the dictionary if
     # it is included. 
-    grouped_input_data.move_to_end('ERA-Interim-Land')
+    if 'ERA-Interim-Land' in grouped_input_data.keys():
+        grouped_input_data.move_to_end('ERA-Interim-Land')
 
     if cfg['write_plots']:
         plt.clf()
         fig = plt.figure(figsize=(10,4))
         ax = fig.add_subplot()
-        for dataset in grouped_input_data:            
+        for dataset in grouped_input_data:
             logger.info("Opening dataset: {0}".format(dataset))
             cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
             iris.quickplot.plot(cube, label=dataset_plotnames[dataset])
         plt.legend()
         plt.xticks(rotation=90)
+        # Add the zero line when plotting anomalies
+        if 'ano' in grouped_input_data[dataset][0]['preprocessor']:
+            plt.axhline(y=0, linestyle=':', color='k')
         plt.tight_layout()
+        # Time axis formatting
+        import matplotlib.dates as mdates
+        years = mdates.YearLocator()   # every year
+        years_fmt = mdates.DateFormatter('%Y')
+        ax = plt.gca()
+        ax.xaxis.set_major_locator(years)
+        ax.xaxis.set_major_formatter(years_fmt)
+        ax.grid(True, which='major', axis='x')
         filename = get_plot_filename('lineplot', cfg)
         logger.info("Saving as %s", filename)
         fig.savefig(filename)
