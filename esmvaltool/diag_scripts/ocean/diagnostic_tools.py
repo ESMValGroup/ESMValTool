@@ -19,6 +19,7 @@ import numpy as np
 import cftime
 import matplotlib.pyplot as plt
 import yaml
+from string import ascii_letters, digits
 
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 
@@ -411,16 +412,23 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
         ])
 
     # Add emply plots to dummy axis.
-    for index in sorted(plot_details):
-        colour = plot_details[index]['c']
 
-        linewidth = plot_details[index].get('lw', 1)
+    #def alphanumeric_key(text):
+    #    """Return a key based on letters and digits in `text`."""
+    #    return [c.lower() for c in text if c in ascii_letters + digits]
 
-        linestyle = plot_details[index].get('ls', '-')
+    for index in sorted(plot_details, key=lambda x: (x[0].isdigit(), x)): #s(), key=alphanumeric_key):
+        dets = plot_details[index]
+        colour = dets['c']
+        label = dets.get('label', str(index))
 
-        label = plot_details[index].get('label', str(index))
-
-        plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)
+        if 'marker' in dets:
+            plt.plot([], [], dets['marker'],c=colour, label=label)
+ 
+        else: 
+            linewidth = dets.get('lw', 1)
+            linestyle = dets.get('ls', '-')
+            plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)
 
     if loc.lower() == 'right':
         legd = ax1.legend(

@@ -850,6 +850,7 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
                    'ssp585': 'red',
                    'ssp534-over':'orange'}
     marker_styles = {1.5: 'o', 2.:'*', 3.:'^', 4.:'s', 5.:'X'}
+    #marker_strings = {'>1.5': 'o', '>2':'*', '>3':'^', '>4':'s', '>5':'X'}
 
     fig = plt.figure()
     x_label,y_label = [], []
@@ -881,7 +882,7 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
         
         label = ' '.join([exp_1, ensemble_1])
         if draw_line:
-            plt.plot(x_data, y_data, lw=0.5, color=exp_colours[exp_1], label=label)
+            plt.plot(x_data, y_data, lw=0.5, color=exp_colours[exp_1], )#label=label)
 
         if markers == 'thresholds':# and x == 'time':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
@@ -896,7 +897,24 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
                          marker_styles[threshold],
                          color=exp_colours[exp_1]) 
 
-    plt.legend()
+    plot_details = {}
+    for exp,color in sorted(exp_colours.items()):
+        plot_details[exp] = {
+                    'c': color,
+                    'ls': '-',
+                    'lw': 2.,
+                    'label': exp
+                }
+    for thres,ms in sorted(marker_styles.items()):
+        plot_details[str(thres)] = {
+                    'c': 'black',
+                    'marker': ms,
+                    'label': '>' + str(thres)+u'\u00B0C'
+                }
+
+    diagtools.add_legend_outside_right(
+                plot_details, plt.gca(), column_width=0.175)
+
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(' '.join([x, 'by', y ]))
@@ -923,21 +941,17 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-    #make_ts_figure(cfg, x='time', y='exchange',markers='thresholds')
-    make_ts_figure(cfg, x='fgco2gt', y='exchange',markers='thresholds')
-    make_ts_figure(cfg, x='nppgt', y='exchange',markers='thresholds')
-    make_ts_figure(cfg, x='rhgt', y='exchange',markers='thresholds')
+    jobss for tomoorrow:
+        check to make sure that you're using the 'right areacella for land.
+        do you even need the areacella for air? probably not, right?
 
-    #return 
-    #make_ts_figure(cfg, x='time', y='fgco2gt',markers='thresholds')
-    #make_ts_figure(cfg, x='time', y='nppgt',markers='thresholds')
-    #make_ts_figure(cfg, x='time', y='rhgt',markers='thresholds')
 
-    #return 
-    for y in ['nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']: 
-        make_ts_figure(cfg, x='time', y=y,markers='thresholds')
-        if y != 'tas':
-            make_ts_figure(cfg, x='tas', y=y,markers='thresholds')
+    for do_ma in [True, False]:
+
+        for x in ['time','nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']:
+            for y in ['nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']:
+                if x == y: continue 
+                make_ts_figure(cfg, x=x, y=y,markers='thresholds', do_moving_average=do_ma)
  
     #make_ts_figure(cfg, x='rh', y='npp',markers='thresholds')
     #make_ts_figure(cfg, x='fgco2', y='npp',markers='thresholds')
