@@ -210,7 +210,7 @@ def calculate_anomaly(cube, anomaly, calc_average=False):
     if new_cube is None:
         return None
     mean = new_cube.data.mean()
-    if calc_average: 
+    if calc_average:
        return mean
     cube.data = cube.data - mean
     return cube
@@ -634,11 +634,11 @@ def fgco2gt(data_dict):
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name == 'areacello':
             areas.append(cube)
-    if len(areas) != 1: 
+    if len(areas) != 1:
         assert 0
     areas = areas[0]
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
-        if short_name != 'fgco2': 
+        if short_name != 'fgco2':
             continue
         cubegt = cube.copy()
         cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
@@ -685,7 +685,7 @@ def exchange(data_dict):
 
     data_dict = rhgt(data_dict)
     data_dict = nppgt(data_dict)
-    
+
     exps = {}
     ensembles = {}
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
@@ -720,9 +720,9 @@ def load_timeseries(cfg, short_names):
         'nppgt': nppgt,
         'rhgt': rhgt,
         'exchange': exchange,
-        } 
+        }
     for sn in short_names:
-        if sn in transforms: 
+        if sn in transforms:
             short_names.extend(transforms[sn])
     data_dict = {}
     for index, metadata_filename in enumerate(cfg['input_files']):
@@ -736,14 +736,14 @@ def load_timeseries(cfg, short_names):
 
             if short_name not in short_names:
                 continue
-            
+
             cube = iris.load_cube(fn)
             #cube = diagtools.bgc_units(cube, short_name)
             print('loaded data:', (short_name, exp, ensemble) )
             data_dict[(short_name, exp, ensemble)] = cube
 
     for sn in short_names:
-        if sn in transforms: 
+        if sn in transforms:
             data_dict = transforms_functions[sn](data_dict)
     return data_dict
 
@@ -762,8 +762,8 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
              continue
         if exp != 'historical': continue
         baselines[(short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
-        
- 
+
+
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name not in short_names:
              continue
@@ -775,36 +775,36 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
 
         for threshold in thresholds:
             time = get_threshold_exceedance_date(cube2, threshold)
-            print("load_thresholds4, exceedance_date",time) 
+            print("load_thresholds4, exceedance_date",time)
             thresholds_dict[(short_name, exp, ensemble)][threshold] = time
     return thresholds_dict
 
 
 
-def load_areas(cfg, short_names=['areacella', 'areacello']):
-    """
-    Load area data
-    """
-    area_dict = {}
-    for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('load_areas:\t%s', metadata_filename)
-        metadatas = diagtools.get_input_files(cfg, index=index)
-        for fn in sorted(metadatas):
-            short_name = metadatas[fn]['short_name']
-            exp = metadatas[fn]['exp']
-            ensemble = metadatas[fn]['ensemble']
-            variable_group = metadatas[fn]['variable_group']
-
-            if short_name not in short_names: continue
-            print('loaded area:', (short_name, exp, ensemble) )
-            cube = iris.load_cube(fn)
-            area_dict[(short_name,variable_group)] = cube 
-    return area_dict
+# def load_areas(cfg, short_names=['areacella', 'areacello']):
+#     """
+#     Load area data
+#     """
+#     area_dict = {}
+#     for index, metadata_filename in enumerate(cfg['input_files']):
+#         logger.info('load_areas:\t%s', metadata_filename)
+#         metadatas = diagtools.get_input_files(cfg, index=index)
+#         for fn in sorted(metadatas):
+#             short_name = metadatas[fn]['short_name']
+#             exp = metadatas[fn]['exp']
+#             ensemble = metadatas[fn]['ensemble']
+#             variable_group = metadatas[fn]['variable_group']
+#
+#             if short_name not in short_names: continue
+#             print('loaded area:', (short_name, exp, ensemble) )
+#             cube = iris.load_cube(fn)
+#             area_dict[(short_name,variable_group)] = cube
+#     return area_dict
 
 
 def get_threshold_point(cube, year):
     """
-    get the location of the year provided. 
+    get the location of the year provided.
     """
     time_units = cube.coord('time').units
     date = datetime.datetime(int(year), 6, 1)
@@ -814,7 +814,7 @@ def get_threshold_point(cube, year):
     return arg_min
 
 
-def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, do_moving_average=True):
+def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='thresholds', draw_line=True, do_moving_average=True):
     """
     make a 2D figure.
     x axis and y axis are determined by the short_names provuided in x and y
@@ -826,20 +826,19 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
     """
-    short_names = [x, y, ]
-    if markers == 'thresholds':
-        short_names.append('tas')
-         
-    data_dict = load_timeseries(cfg, short_names)
-
-    area_dict = load_areas(cfg)
-    thresholds_dict = load_thresholds(cfg,data_dict )
-
+    # short_names = [x, y, ]
+    # if markers == 'thresholds':
+    #     short_names.append('tas')
+    # if data_dict == {}:
+    #     data_dict = load_timeseries(cfg, short_names)
+    #     thresholds_dict = load_thresholds(cfg, data_dict)
     exps = {}
     ensembles = {}
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
          exps[exp] = True
          ensembles[ensemble] = True
+         if do_moving_average:
+             cube = moving_average(cube, '21 years')
 
     exp_colours = {'historical':'black',
                    'ssp119':'green',
@@ -855,48 +854,47 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
     fig = plt.figure()
     x_label,y_label = [], []
     for exp_1, ensemble_1 in product(exps, ensembles):
-        
-        x_data, y_data = [], [] 
+
+        x_data, y_data = [], []
         for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if short_name not in [x,y]: continue
             print('make_ts_figure', short_name, exp, ensemble, x,y)
-            if do_moving_average:
-                cube = moving_average(cube, '21 years') 
+
             if x == 'time':
                 x_data = diagtools.cube_time_to_float(cube)
-                x_label = 'Year' 
+                x_label = 'Year'
             elif short_name == x:
                 x_data = cube.data
                 x_label = ' '.join([x, str(cube.units)])
 
             if y == 'time':
                 y_data = diagtools.cube_time_to_float(cube)
-                y_label = 'Year'  
+                y_label = 'Year'
             elif short_name == y:
                 y_data = cube.data
                 y_label = ' '.join([y, str(cube.units)])
 
         if 0 in [len(x_data), len(y_data)]: continue
-        
+
         label = ' '.join([exp_1, ensemble_1])
         if draw_line:
             plt.plot(x_data, y_data, lw=0.5, color=exp_colours[exp_1], )#label=label)
 
-        if markers == 'thresholds':# and x == 'time':
+        if markers == 'thresholds':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
-            except: 
+            except:
                threshold_times = {}
             for threshold, time in threshold_times.items():
                 if not time: continue
-                  
+
                 y_point = get_threshold_point(cube, time.year)
                 plt.plot(x_data[y_point],
                          y_data[y_point],
                          marker_styles[threshold],
-                         fillstyle='none',   
-                         color=exp_colours[exp_1]) 
+                         fillstyle='none',
+                         color=exp_colours[exp_1])
 
     plot_details = {}
     for exp,color in sorted(exp_colours.items()):
@@ -924,7 +922,7 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
     image_extention = diagtools.get_image_format(cfg)
 
     path = diagtools.folder(cfg['plot_dir'])
-    
+
     path += '_'.join([x,y,markers,]) + image_extention
     if do_moving_average:
         path = path.replace(image_extention, '_21ma'+image_extention)
@@ -946,18 +944,21 @@ def main(cfg):
     #jobss for tomoorrow:
     #    check to make sure that you're using the 'right areacella for land.
     #    do you even need the areacella for air? probably not, right?
-    #    change the recipe to add the other ensemble members to the job. 
+    #    change the recipe to add the other ensemble members to the job.
     #    email the figues to other authors.
+
+
+    short_names = ['time', 'nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']
+    data_dict = load_timeseries(cfg, short_names)
+    thresholds_dict = load_thresholds(cfg, data_dict)
 
     for do_ma in [True, False]:
 
         for x in ['time','nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']:
             for y in ['nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']:
-                if x == y: continue 
-                make_ts_figure(cfg, x=x, y=y,markers='thresholds', do_moving_average=do_ma)
- 
-    #make_ts_figure(cfg, x='rh', y='npp',markers='thresholds')
-    #make_ts_figure(cfg, x='fgco2', y='npp',markers='thresholds')
+                if x == y: continue
+                make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                               markers='thresholds', do_moving_average=do_ma)
 
     return
 
