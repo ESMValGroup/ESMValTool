@@ -944,7 +944,8 @@ def main(cfg):
     jobss for tomoorrow:
         check to make sure that you're using the 'right areacella for land.
         do you even need the areacella for air? probably not, right?
-
+        change the recipe to add the other ensemble members to the job. 
+        email the figues to other authors.
 
     for do_ma in [True, False]:
 
