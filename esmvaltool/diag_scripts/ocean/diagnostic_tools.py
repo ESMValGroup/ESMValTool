@@ -423,7 +423,8 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
         label = dets.get('label', str(index))
 
         if 'marker' in dets:
-            plt.plot([], [], dets['marker'],c=colour, label=label)
+            fillstyle = dets.get('fillstyle', 'full')
+            plt.plot([], [], dets['marker'],fillstyle=fillstyle, c=colour, label=label)
  
         else: 
             linewidth = dets.get('lw', 1)

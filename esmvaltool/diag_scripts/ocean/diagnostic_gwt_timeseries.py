@@ -895,6 +895,7 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
                 plt.plot(x_data[y_point],
                          y_data[y_point],
                          marker_styles[threshold],
+                         fillstyle='none',   
                          color=exp_colours[exp_1]) 
 
     plot_details = {}
@@ -909,6 +910,7 @@ def make_ts_figure(cfg, x='time', y='npp',markers='thresholds', draw_line=True, 
         plot_details[str(thres)] = {
                     'c': 'black',
                     'marker': ms,
+                    'fillstyle':'none',
                     'label': '>' + str(thres)+u'\u00B0C'
                 }
 
@@ -941,11 +943,11 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-    jobss for tomoorrow:
-        check to make sure that you're using the 'right areacella for land.
-        do you even need the areacella for air? probably not, right?
-        change the recipe to add the other ensemble members to the job. 
-        email the figues to other authors.
+    #jobss for tomoorrow:
+    #    check to make sure that you're using the 'right areacella for land.
+    #    do you even need the areacella for air? probably not, right?
+    #    change the recipe to add the other ensemble members to the job. 
+    #    email the figues to other authors.
 
     for do_ma in [True, False]:
 
