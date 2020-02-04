@@ -17,7 +17,7 @@
 ;      path: /cfmip/GOCCP_v3/3D_CloudFraction/grid_2x2xL40/yyyy/avg/
 ;    Put all files under a single directory (no subdirectories with years).
 ;      3D_CloudFraction330m_yyyymm_avg_CFMIP2_sat_3.1.2.nc
-;      3D_CloudFraction_Phase330m_yyyymm_avg_CFMIP2_sat_3.1.2.nc
+;;      3D_CloudFraction_Phase330m_yyyymm_avg_CFMIP2_sat_3.1.2.nc
 ;
 ; Modification history
 ;    20200127-laue_axel: written
@@ -45,10 +45,10 @@ begin
   VAR = (/"clcalipso"/)
 
   ; Names in the raw data
-  NAME = (/"derived"/)
+  NAME = (/"clcalipso"/)
 
   ; Conversion factor
-  CONV = (/1., 1., 1./)
+  CONV = (/100., 100., 100./)
 
   ; MIP
   MIP = (/"cfMon"/)
@@ -93,7 +93,8 @@ begin
 
         ; Read file
         fname = input_dir_path + \
-                "3D_CloudFraction_Phase330m_" + syear + smonth + \
+;;                "3D_CloudFraction_Phase330m_" + syear + smonth + \
+                "3D_CloudFraction330m_" + syear + smonth + \
                 "_avg_CFMIP2_" + TYPE + "_" + VERSION + ".nc"
 
         ; No files found
@@ -104,22 +105,23 @@ begin
         ; Extract data
         f = addfile(fname, "r")
 
-        ; derive as clcalipso = clcalipso_ice + clcalipso_liq + clcalipso_un
-        if (VAR(vv).eq."clcalipso") then
-          un = f->clcalipso_un  ; unclassified cloud fraction
-          xx = dim_sum_n_Wrap(un, 1)
-          ; Read ice cloud fraction
-          ice = f->clcalipso_ice  ; ice cloud fraction
-          xx = xx + ice
-          delete(ice)
-          liq = f->clcalipso_liq  ; liquid cloud fraction
-          xx = xx + liq
-          delete(liq)
-        else
+;;        ; derive as clcalipso = clcalipso_ice + clcalipso_liq + clcalipso_un
+;;        if (VAR(vv).eq."clcalipso") then
+;;          un = f->clcalipso_un  ; unclassified cloud fraction
+;;          xx = dim_sum_n_Wrap(un, 1)
+;;          ; Read ice cloud fraction
+;;          ice = f->clcalipso_ice  ; ice cloud fraction
+;;          xx = xx + ice
+;;          delete(ice)
+;;          liq = f->clcalipso_liq  ; liquid cloud fraction
+;;          xx = xx + liq
+;;          xx = xx * 100.0  ; frac --> %
+;;          delete(liq)
+;;        else
           xx = f->$NAME(vv)$
           ; Convert units
           xx = xx * CONV(vv)
-        end if
+;;        end if
 
         ; Assign to global array
         if (.not.isdefined("output")) then
@@ -129,7 +131,7 @@ begin
           output!0 = "time"
           output&time = time
           output!1 = "alt40"
-          output&alt40 = f->alt_mid
+          output&alt40 = f->alt_mid * 1000.0  ; km --> m
           output!2 = "lat"
           output&lat = f->latitude
           output!3 = "lon"
