@@ -16,7 +16,6 @@ import iris.analysis.cartography
 import iris.coords
 from iris.util import broadcast_to_shape
 from iris.aux_factory import AuxCoordFactory
-from pyproj.crs import CRS
 from pyproj import Transformer
 from shapely.geometry import Polygon, Point
 
@@ -291,8 +290,8 @@ class SeaIceDrift(object):
         # Compute standard deviation of slope
         lreg = slope * sivar + intercept  # linear regression
         s_yx = np.sum((drift - lreg) ** 2) / (MONTHS_PER_YEAR - 2)
-        SS_xx = np.sum((sivar - np.mean(sivar)) ** 2)
-        sd_slope = np.sqrt(s_yx / SS_xx)  # Standard deviation of slope
+        ss_xx = np.sum((sivar - np.mean(sivar)) ** 2)
+        sd_slope = np.sqrt(s_yx / ss_xx)  # Standard deviation of slope
 
         # Significance
         ta = slope / sd_slope  # Student's t
@@ -400,8 +399,8 @@ class SeaIceDrift(object):
         slope_sivol_obs = self.slope_drift_sivol['reference']
         intercept_sivol_obs = self.intercept_drift_sivol['reference']
 
-        slope_ratio_sivol = self.slope_ratio_drift_sivol[dataset]
-        error_sivol = self.error_drift_sivol[dataset]
+        # slope_ratio_sivol = self.slope_ratio_drift_sivol[dataset]
+        # error_sivol = self.error_drift_sivol[dataset]
 
         drift_obs = self.sispeed['reference'].data
         sivol_obs = self.sivol['reference'].data
@@ -419,10 +418,10 @@ class SeaIceDrift(object):
             drift_obs,
             'bo-',
             label=r'reference',
-                #   str(np.round(slope_ratio_sivol, 1)) +
-                # #   r'; $\epsilon_h$=' +
-                # #   str(np.round(error_sivol, 1)) +
-                #   r')',
+            #   str(np.round(slope_ratio_sivol, 1)) +
+            # #   r'; $\epsilon_h$=' +
+            # #   str(np.round(error_sivol, 1)) +
+            #   r')',
             linewidth=2
         )
         ax.plot(sivol_obs, slope_sivol_obs * sivol_obs + intercept_sivol_obs,
@@ -444,9 +443,9 @@ class SeaIceDrift(object):
         siconc = self.siconc[dataset].data
 
         slope_siconc = self.slope_drift_sic[dataset]
-        slope_ratio_siconc = self.slope_ratio_drift_sivol[dataset]
+        # slope_ratio_siconc = self.slope_ratio_drift_sivol[dataset]
         intercept_siconc = self.intercept_drift_siconc[dataset]
-        error_siconc = self.error_drift_siconc[dataset]
+        # error_siconc = self.error_drift_siconc[dataset]
 
         slope_siconc_obs = self.slope_drift_sic['reference']
         intercept_siconc_obs = self.intercept_drift_siconc['reference']
@@ -564,8 +563,6 @@ class InsidePolygonFactory(AuxCoordFactory):
         nd_points_by_key = self._remap(dependency_dims, derived_dims)
         points = self._derive(nd_points_by_key['lat'],
                               nd_points_by_key['lon'],)
-
-        bounds = None
 
         in_polygon = iris.coords.AuxCoord(
             points,
