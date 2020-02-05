@@ -29,6 +29,8 @@ preprocessors:
       end_longitude: 40
       start_latitude: 30
       end_latitude: 70
+    mask_landsea:
+      mask_out: sea
 
 diagnostics:
   extreme_index:
@@ -49,7 +51,7 @@ diagnostics:
 
     scripts:
       metric:
-        script: magic_bsc/extreme_index.r
+        script: magic_bsc/extreme_index.R
 
         weight_t90p: 0.2
         weight_t10p: 0.2

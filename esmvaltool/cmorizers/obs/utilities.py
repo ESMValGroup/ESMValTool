@@ -5,6 +5,7 @@ import os
 from contextlib import contextmanager
 
 import iris
+import iris.exceptions
 import numpy as np
 import yaml
 from cf_units import Unit
@@ -24,7 +25,7 @@ def add_height2m(cube):
 
 def add_scalar_height_coord(cube, height=2.):
     """Add scalar coordinate 'height' with value of `height`m."""
-    logger.info("Adding height coordinate (%sm)", height)
+    logger.debug("Adding height coordinate (%sm)", height)
     height_coord = iris.coords.AuxCoord(
         height,
         var_name='height',
@@ -63,6 +64,7 @@ def fix_coords(cube):
     # first fix any completely missing coord var names
     _fix_dim_coordnames(cube)
     # fix individual coords
+    lon_coord = cube.coord('longitude')
     for cube_coord in cube.coords():
         # fix time
         if cube_coord.var_name == 'time':
@@ -74,15 +76,16 @@ def fix_coords(cube):
         # fix longitude
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
-            if cube.coord('longitude').points[0] < 0. and \
-                    cube.coord('longitude').points[-1] < 181.:
-                cube.coord('longitude').points = \
-                    cube.coord('longitude').points + 180.
-                _fix_bounds(cube, cube.coord('longitude'))
-                cube.attributes['geospatial_lon_min'] = 0.
-                cube.attributes['geospatial_lon_max'] = 360.
-                nlon = len(cube.coord('longitude').points)
-                _roll_cube_data(cube, int(nlon / 2), -1)
+            if lon_coord.ndim == 1:
+                if lon_coord.points[0] < 0. and \
+                        lon_coord.points[-1] < 181.:
+                    lon_coord.points = \
+                        lon_coord.points + 180.
+                    _fix_bounds(cube, lon_coord)
+                    cube.attributes['geospatial_lon_min'] = 0.
+                    cube.attributes['geospatial_lon_max'] = 360.
+                    nlon = len(lon_coord.points)
+                    _roll_cube_data(cube, nlon // 2, -1)
 
         # fix latitude
         if cube_coord.var_name == 'lat':
@@ -101,7 +104,7 @@ def fix_coords(cube):
 
     # remove CS
     cube.coord('latitude').coord_system = None
-    cube.coord('longitude').coord_system = None
+    lon_coord.coord_system = None
 
     return cube
 
@@ -131,8 +134,8 @@ def flip_dim_coord(cube, coord_name):
 
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
-    reg_path = os.path.join(
-        os.path.dirname(__file__), 'cmor_config', dataset + '.yml')
+    reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
+                            dataset + '.yml')
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
@@ -144,27 +147,34 @@ def read_cmor_config(dataset):
 
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
+    _fix_dtype(cube)
     # CMOR standard
-    cube_time = cube.coord('time')
-    reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
-    dates = reftime.num2date(cube_time.points[[0, -1]])
-    if len(cube_time.points) == 1:
-        year = str(dates[0].year)
-        time_suffix = '-'.join([year + '01', year + '12'])
+    try:
+        time = cube.coord('time')
+    except iris.exceptions.CoordinateNotFoundError:
+        time_suffix = None
     else:
-        date1 = str(dates[0].year) + '%02d' % dates[0].month
-        date2 = str(dates[1].year) + '%02d' % dates[1].month
-        time_suffix = '-'.join([date1, date2])
+        if len(time.points) == 1:
+            year = str(time.cell(0).point.year)
+            time_suffix = '-'.join([year + '01', year + '12'])
+        else:
+            date1 = str(time.cell(0).point.year) + '%02d' % \
+                time.cell(0).point.month
+            date2 = str(time.cell(-1).point.year) + '%02d' % \
+                time.cell(-1).point.month
+            time_suffix = '-'.join([date1, date2])
 
-    file_name = '_'.join([
+    name_elements = [
         attrs['project_id'],
         attrs['dataset_id'],
         attrs['modeling_realm'],
         attrs['version'],
         attrs['mip'],
         var,
-        time_suffix,
-    ]) + '.nc'
+    ]
+    if time_suffix:
+        name_elements.append(time_suffix)
+    file_name = '_'.join(name_elements) + '.nc'
     file_path = os.path.join(outdir, file_name)
     logger.info('Saving: %s', file_path)
     status = 'lazy' if cube.has_lazy_data() else 'realized'
@@ -174,7 +184,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 
 def set_global_atts(cube, attrs):
     """Complete the cmorized file with global metadata."""
-    logger.info("Setting global metadata...")
+    logger.debug("Setting global metadata...")
     attrs = dict(attrs)
     cube.attributes.clear()
     timestamp = datetime.datetime.utcnow()
@@ -240,39 +250,68 @@ def _fix_dim_coordnames(cube):
     for coord in cube.coords():
         # guess the CMOR-standard x, y, z and t axes if not there
         coord_type = iris.util.guess_coord_axis(coord)
+        try:
+            coord = cube.coord(axis=coord_type)
+        except iris.exceptions.CoordinateNotFoundError:
+            logger.warning(
+                'Multiple coordinates for axis %s. '
+                'This may be an error, specially for regular grids',
+                coord_type
+            )
+            continue
 
         if coord_type == 'T':
-            cube.coord(axis=coord_type).var_name = 'time'
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'time'
+            coord.attributes = {}
 
         if coord_type == 'X':
-            cube.coord(axis=coord_type).var_name = 'lon'
-            cube.coord(axis=coord_type).standard_name = 'longitude'
-            cube.coord(axis=coord_type).long_name = 'longitude coordinate'
-            cube.coord(axis=coord_type).units = Unit('degrees')
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'lon'
+            coord.standard_name = 'longitude'
+            coord.long_name = 'longitude coordinate'
+            coord.units = Unit('degrees')
+            coord.attributes = {}
 
         if coord_type == 'Y':
-            cube.coord(axis=coord_type).var_name = 'lat'
-            cube.coord(axis=coord_type).standard_name = 'latitude'
-            cube.coord(axis=coord_type).long_name = 'latitude coordinate'
-            cube.coord(axis=coord_type).units = Unit('degrees')
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'lat'
+            coord.standard_name = 'latitude'
+            coord.long_name = 'latitude coordinate'
+            coord.units = Unit('degrees')
+            coord.attributes = {}
 
         if coord_type == 'Z':
-            if cube.coord(axis=coord_type).var_name == 'depth':
-                cube.coord(axis=coord_type).standard_name = 'depth'
-                cube.coord(axis=coord_type).long_name = \
+            if coord.var_name == 'depth':
+                coord.standard_name = 'depth'
+                coord.long_name = \
                     'ocean depth coordinate'
-                cube.coord(axis=coord_type).var_name = 'lev'
-                cube.coord(axis=coord_type).attributes['positive'] = 'down'
-            if cube.coord(axis=coord_type).var_name == 'pressure':
-                cube.coord(axis=coord_type).standard_name = 'air_pressure'
-                cube.coord(axis=coord_type).long_name = 'pressure'
-                cube.coord(axis=coord_type).var_name = 'air_pressure'
-                cube.coord(axis=coord_type).attributes['positive'] = 'up'
-
+                coord.var_name = 'lev'
+                coord.attributes['positive'] = 'down'
+            if coord.var_name == 'pressure':
+                coord.standard_name = 'air_pressure'
+                coord.long_name = 'pressure'
+                coord.var_name = 'air_pressure'
+                coord.attributes['positive'] = 'up'
     return cube
+
+
+def _fix_dtype(cube):
+    """Fix `dtype` of a cube and its coordinates."""
+    if cube.dtype != np.float32:
+        logger.info("Converting data type of data from '%s' to 'float32'",
+                    cube.dtype)
+        cube.data = cube.core_data().astype(np.float32, casting='same_kind')
+    for coord in cube.coords():
+        if coord.dtype != np.float64:
+            logger.info(
+                "Converting data type of coordinate points of '%s' from '%s' "
+                "to 'float64'", coord.name(), coord.dtype)
+            coord.points = coord.core_points().astype(np.float64,
+                                                      casting='same_kind')
+        if coord.has_bounds() and coord.bounds_dtype != np.float64:
+            logger.info(
+                "Converting data type of coordinate bounds of '%s' from '%s' "
+                "to 'float64'", coord.name(), coord.bounds_dtype)
+            coord.bounds = coord.core_bounds().astype(np.float64,
+                                                      casting='same_kind')
 
 
 def _roll_cube_data(cube, shift, axis):
