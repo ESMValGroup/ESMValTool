@@ -19,7 +19,6 @@ preprocessors:
   land_fraction_weighting:
     weighting_landsea_fraction:
       area_type: land
-      #strict: false
       exclude: [
         'GCP',
         'NCEP',
@@ -30,14 +29,24 @@ preprocessors:
       area_type: sea
       strict: false
 
-  global_carbon:
-    extract_region:
-      start_longitude: 0.
-      end_longitude: 360.
-      start_latitude: -90.
-      end_latitude: 90.
+  global_land:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        'GCP',
+        ]
     area_statistics:
           operator: sum
+          
+  global_ocean:
+    weighting_landsea_fraction:
+      area_type: sea
+      exclude: [
+        'GCP', 'CESM1-BGC'
+        ]
+    area_statistics:
+          operator: sum
+          fx_files: [areacello]
           
   tropical:
     extract_region:
@@ -263,6 +272,7 @@ diagnostics:
 #        time_avg: "yearly"
 #        ts_anomaly: "anom"
 #        area_opper: "sum"
+#        volcanoes: True
 #        styleset: CMIP5       # Plot style
 #        runave: 2
 #          
@@ -345,6 +355,7 @@ diagnostics:
 #        time_avg: "yearly"
 #        ts_anomaly: "anom"
  #       area_opper: "sum"
+#        volcanoes: True
 #        styleset: CMIP5       # Plot style
 #        runave: 2
           
@@ -423,6 +434,7 @@ diagnostics:
 #        time_avg: "yearly"
 #        ts_anomaly: "anom"
 #        area_opper: "sum"
+#        volcanoes: True
 #        styleset: CMIP5       # Plot style
 #        runave: 2
 
@@ -431,11 +443,32 @@ diagnostics:
   diag_gammaHist_Fig3+4: 
     description: Fig 3 and 4 correlating near surface temperature and land+ocean carbon fluxes
     variables:
-      co2flux:
-        preprocessor: global_carbon
-        derive: true
+      fgco2:
+        short_name: fgco2
+        preprocessor: global_ocean
         project: CMIP5
-        mip: Amon
+        mip: Omon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1960
+        end_year: 2005
+        plot_units: GtC y-1
+      #  reference_dataset: GCP
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M}
+      #- {dataset: HadGEM2-ES}
+      #- {dataset: IPSL-CM5A-LR}
+     # - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+      
+      fgco2_obs:
+        short_name: fgco2
+        preprocessor: default
+        project: CMIP5
+        mip: Omon
         exp: esmHistorical
         ensemble: r1i1p1
         start_year: 1960
@@ -444,6 +477,28 @@ diagnostics:
         reference_dataset: GCP
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+      nbp:
+      #co2flux:
+        preprocessor: global_land
+        #derive: true
+        project: CMIP5
+        mip: Lmon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1960
+        end_year: 2005
+        plot_units: GtC y-1
+        reference_dataset: GCP
+        additional_datasets:
+          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M}
+      #- {dataset: HadGEM2-ES}
+      #- {dataset: IPSL-CM5A-LR}
+     # - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
       tas:
         preprocessor: tropical
         project: CMIP5
@@ -455,103 +510,170 @@ diagnostics:
         reference_dataset: NCEP
         additional_datasets:
           - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2M}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M}
       #- {dataset: HadGEM2-ES}
       #- {dataset: IPSL-CM5A-LR}
      # - {dataset: MIROC-ESM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
     scripts:
       gammaHist_3+4:
         script: carbon_ec/carbon_gammaHist.ncl 
         start_year: 1960
         end_year: 2005
-        ec_v2_units : "K"      # x-axes units
-        ec_2range : "tas"      # speifiy x-axes variable
-        ec_units : "GtC"       # y-axes units
         ec_anom : True 
-        ec_detr : False       # (optional) de-trend timeseries
-        #ec_volc : {1963,1964,1982,1983,1992,1993}  #(optional)
+        ec_volc : True      #(optional)
         scatter_log : False # set logaritmic axes in scatterplot.ncl
         styleset: CMIP5     # Plot style
         
-#<diag>
-#  <description> Wenzel et al. 2014, Fig. 03/04: correlates to variables and saves in outpu </description>
-#  <variable_def_dir>                ./variable_defs/             </variable_def_dir>
-#  <variable ref_model="GCP"  exclude="NCEP"> co2flux             </variable>
-#  <variable ref_model="NCEP" exclude="GCP">      tas             </variable>
-#  <field_type>                                   T0M             </field_type>
-#  <field_type>                                  T2Ms             </field_type>
-#  <diag_script_cfg_dir>            ./nml/cfg_carbon/             </diag_script_cfg_dir>
+  ### Wenzel et al. 2014, Fig. 05: Diagnose GAMMA_LT and create Emergent Constraint #############
 
-#  <model id="GCP">  OBS   GCP    reanaly   1    1959 2005 @{OBSPATH}/Tier2/GCP  </model>
-#  <model id="NCEP"> OBS   NCEP   reanaly   1    1959 2005 @{OBSPATH}/Tier2/NCEP </model>
+  diag_gammaLT_5: 
+    description: Fig 5 correlates gamma hist vs gammaLT and calculated PDF
+    variables:
+#      fgco2:
+#        short_name: fgco2
+#        preprocessor: global_ocean
+#        project: CMIP5
+#        mip: Omon
+#        exp: esmHistorical
+#        ensemble: r1i1p1
+#        start_year: 1960
+#        end_year: 2005
+#        plot_units: GtC y-1
+#      #  reference_dataset: GCP
+#        additional_datasets:
+#          - {dataset: CanESM2}
+#          - {dataset: CESM1-BGC}
+#          - {dataset: GFDL-ESM2M}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM}
+#          - {dataset: MPI-ESM-LR}
+#          - {dataset: NorESM1-ME}
+#      
+#      fgco2_obs:
+#        short_name: fgco2
+#        preprocessor: default
+#        project: CMIP5
+#        mip: Omon
+#        exp: esmHistorical
+#        ensemble: r1i1p1
+#        start_year: 1960
+#        end_year: 2005
+#        plot_units: GtC y-1
+#        reference_dataset: GCP
+#        additional_datasets:
+#          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+#      nbp_hist:
+#        short_name: nbp
+#        preprocessor: global_land
+#        project: CMIP5
+#        mip: Lmon
+#        exp: esmHistorical
+#        ensemble: r1i1p1
+#        start_year: 1960
+#        end_year: 2005
+#        plot_units: GtC y-1
+#        reference_dataset: GCP
+#        additional_datasets:
+#          - {dataset: GCP, project: OBS, type: reanaly, version: 2018, tier: 2, start_year: 1959, end_year: 2005, frequency: yr}
+#          - {dataset: CanESM2}
+#          - {dataset: CESM1-BGC}
+#          - {dataset: GFDL-ESM2M}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM}
+#          - {dataset: MPI-ESM-LR}
+#          - {dataset: NorESM1-ME}
+      nbp_1pct:
+        short_name: nbp
+        preprocessor: global_land
+        project: CMIP5
+        mip: Lmon
+        exp: 1pctCO2
+        ensemble: r1i1p1
+        start_year: 1880
+        end_year: 1960
+        plot_units: GtC y-1
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M}
+      #- {dataset: HadGEM2-ES}
+      #- {dataset: IPSL-CM5A-LR}
+     # - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+      nbp_esmFix:
+        short_name: nbp
+        preprocessor: global_land
+        project: CMIP5
+        mip: Lmon
+        exp: esmFixClim1
+        ensemble: r1i1p1
+        start_year: 1880
+        end_year: 1960
+        plot_units: GtC y-1
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M}
+      #- {dataset: HadGEM2-ES}
+      #- {dataset: IPSL-CM5A-LR}
+     # - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+#      tas_hist:
+#        short_name: tas
+#        preprocessor: tropical
+#        project: CMIP5
+#        mip: Amon
+#        exp: esmHistorical
+#        ensemble: r1i1p1
+#        start_year: 1960
+#        end_year: 2005
+#        reference_dataset: NCEP
+#        additional_datasets:
+#          - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
+#          - {dataset: CanESM2}
+#          - {dataset: CESM1-BGC}
+#          - {dataset: GFDL-ESM2M}
+#      #- {dataset: HadGEM2-ES}
+#      #- {dataset: IPSL-CM5A-LR}
+#     # - {dataset: MIROC-ESM}
+#          - {dataset: MPI-ESM-LR}
+#          - {dataset: NorESM1-ME}
+      tas_1pct:
+        short_name: tas
+        preprocessor: tropical
+        project: CMIP5
+        mip: Amon
+        exp: 1pctCO2
+        ensemble: r1i1p1
+        start_year: 1880
+        end_year: 1960
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M}
+      #- {dataset: HadGEM2-ES}
+      #- {dataset: IPSL-CM5A-LR}
+     # - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+    scripts:
+      gammaLT_5:
+        script: carbon_ec/carbon_constraint.ncl
+        gIAV_diagscript: gammaHist_Fig3+4
+        gIAV_start: 1960
+        gIAV_end: 2005
+        ec_anom: True
+        reg_models: "MPI-ESM-LR"
+        con_units: "GtC/K"
+        scatter_log: False # set logaritmic axes in scatterplot.ncl
+        xy_line_legend: False
+        styleset: CMIP5     # Plot style
 
-#  <model> CMIP5 CanESM2      Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
-#  <model> CMIP5 CESM1-BGC    Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
-#  <model> CMIP5 GFDL-ESM2M   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
-#  <model> CMIP5 HadGEM2-ES   Amon esmHistorical r1i1p1 1960 2004 @{CLIMOPATH}/CMIP5_ETHZ </model>
-#  <model> CMIP5 IPSL-CM5A-LR Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
-#  <model> CMIP5 MIROC-ESM    Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
-#  <model> CMIP5 MPI-ESM-LR   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
-#  <model> CMIP5 NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
-
-#  <diag_script cfg="cfg_carbon_G_IAV.ncl">  carbon_corr_2var.ncl </diag_script>
-    
-#    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys </tags>
-#</diag>
-
-#<!-- ############################################################################# -->
-#<!-- Wenzel et al. 2014, Fig. 05: Diagnose GAMMA_LT and create Emergent Constraint -->
-#<!-- ############################################################################# -->
-
-#<diag>
-#  <description> Dummy diagnostic to preprocess NBP for carbon_constraint.ncl </description>
-#  <variable_def_dir>               ./variable_defs/    </variable_def_dir>
-#  <variable >                                   NBP    </variable>
-#  <field_type>                                 T2Ms    </field_type>
-#  <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
-
-#  <model> CMIP5_ETHZ CanESM2      Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-
-#  <diag_script cfg="cfg_carbon_G_LT.ncl"> carbon_dummy.ncl </diag_script>
-#</diag>
-
-#<diag>
-#  <description> Wenzel et al. 2014, Fig. 05: correlates to variables and calculated PDF </description>
-#  <variable_def_dir>               ./variable_defs/    </variable_def_dir>
-#  <variable MIP="Lmon">                         NBP    </variable>
-#  <variable MIP="Amon">                         tas    </variable>
-#  <field_type>                                 T2Ms    </field_type>
-#  <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
-
-#  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-#  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
-
-#  <diag_script cfg="cfg_carbon_G_LT.ncl"> carbon_constraint.ncl </diag_script>
-    
-#    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys, T_EC </tags>
-#</diag>
-
-#</DIAGNOSTICS>
-
-#</namelist>
 
 
 
