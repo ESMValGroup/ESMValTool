@@ -1,13 +1,13 @@
 ---
-target_grid: 0.5x0.5
 extension: he5
+file_pattern: 'MLS-Aura_L2GP-{var}_v04-'
 
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: MLS
   version: '004'
   tier: 3
-  modeling_realm: reanaly
+  modeling_realm: sat
   project_id: OBS6
   source: 'https://disc.gsfc.nasa.gov/datasets/ML2RHI_004/summary;https://disc.gsfc.nasa.gov/datasets/ML2T_004/summary'
   reference: 'mls'
@@ -16,10 +16,10 @@ attributes:
 # Variables to cmorize
 variables:
   hur:
-    mip: Amon
-    file_pattern: 'MLS-Aura_L2GP-{var}_v04-23-'
-    raw_var: 'RHI'
-  # hurStdErr:
-  #   mip: Amon
-  #   file_pattern: 'MLS-Aura_L2GP-{var}_v04-23-'
-  #   raw_var: 'RHIPrecision'
+    mip: day
+    raw_var: 'RHI'  # in RHI file
+    cut_levels_outside: [0.002, 320]  # hPa
+  hurStderr:
+    mip: day
+    raw_var: 'RHIPrecision'  # in RHI file
+    cut_levels_outside: [0.002, 320]  # hPa
