@@ -787,6 +787,17 @@ diagnostics:
     scripts: null
 
 
+  MAC-LWP:
+    description: MAC-LWP check
+    variables:
+      lwp:
+      lwpStderr:
+    additional_datasets:
+      - {dataset: MAC-LWP, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: v1, start_year: 1988, end_year: 2016}
+    scripts: null
+
+
   MERRA2:
     description: MERRA2 check
     variables:
