@@ -185,6 +185,9 @@ def main(cfg):
     df_metrics = pd.DataFrame(columns=[dataset_plotnames[key] for key in grouped_input_data.keys()],
                               index=event_names, dtype=float)
 
+    aggregator = cfg.pop('aggregator', 'mean')
+    aggregator = 'min' # TODO put back
+
     for dataset in grouped_input_data.keys():
         dataset_cfg = grouped_input_data[dataset]
         logger.info("Opening dataset: %s", dataset)
@@ -201,7 +204,7 @@ def main(cfg):
                 event_cube = _extract_event(cube, ex_table, event_name)
                 event_cube = pp.area_statistics(event_cube, 'mean')
                 logger.info(f"{event_cube.shape[0]} months for {event_name}")
-                event_cube = pp.climate_statistics(event_cube, 'mean')
+                event_cube = pp.climate_statistics(event_cube, aggregator)
                 meanvalue = float(event_cube.data)
                 df_metrics.loc[event_name, dataset_plotnames[dataset]] = f"{meanvalue:0.2f}"
 #            except ValueError:
