@@ -722,6 +722,32 @@ def tas_norm(data_dict):
         data_dict[('tas_norm', exp, ensemble)] = cube
     return data_dict
 
+# Global
+co2_data = load_co2_forcing(cfg)
+def norm_co2(data_dict,  short='nppgt'):
+    """
+    Weight a value according to the ratio of the forcing co2 for each year
+    against the average co2 forcing in 1850-1900.
+    """
+    print(co2_data['historical']['co2'][:50], co2_data['historical']['time'][:50])
+    baseline = np.mean(co2_data['historical']['co2'][:50])
+
+    for (short_name, exp, ensemble), cube  in data_dict.items():
+        if short_name != short: continue
+        if exp != 'historical': continue
+        cube = data_dict[(short, exp, ensemble)].copy()
+        out = []
+        for d,co2 in zip(cube.data, co2_data[exp]['co2']):
+            out.append(d*baseline/co2)
+        cube.data = np.ma.array(out)
+        data_dict[(short+'_norm', exp, ensemble)] = cube
+
+
+def norm_co2_nppgt(data_dict): return norm_co2(data_dict, short='nppgt')
+def norm_co2_rhgt(data_dict): return norm_co2(data_dict, short='rhgt')
+def norm_co2_exchange(data_dict): return norm_co2(data_dict, short='exchange')
+def norm_co2_fgco2gt(data_dict): return norm_co2(data_dict, short='fgco2')
+
 
 def load_timeseries(cfg, short_names):
     """
@@ -736,19 +762,30 @@ def load_timeseries(cfg, short_names):
         'nppgt': ['npp', 'areacella'],
         'rhgt': ['rh', 'areacella'],
         'exchange': ['rh', 'npp', 'areacella'],
-        'tas_norm': ['tas', ]
+        'tas_norm': ['tas', ],
+        'nppgt_norm': ['nppgt', ],
+        'rhgt_norm': ['rhgt', ],
+        'exchange_norm': ['exchange', ],
+        'fgco2gt_norm': ['fgco2gt', ],
         }
+
     transforms_functions = {
         'fgco2gt': fgco2gt,
         'nppgt': nppgt,
         'rhgt': rhgt,
         'exchange': exchange,
         'tas_norm': tas_norm,
+        'nppgt_norm':norm_co2_nppgt,
+        'rhgt_norm':norm_co2_rhgt,
+        'exchange_norm':norm_co2_exchange,
+        'fgco2gt_norm':norm_co2_fgco2gt,
         }
+
     short_names_to_load = short_names.copy()
     for sn in short_names:
         if sn in transforms:
             short_names_to_load.extend(transforms[sn])
+
     data_dict = {}
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('load_timeseries:\t%s', metadata_filename)
@@ -788,7 +825,6 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
         if exp != 'historical': continue
         baselines[(short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
 
-
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name not in short_names:
              continue
@@ -813,7 +849,6 @@ def load_co2_forcing(cfg):
     files = glob.glob(fold+'*.dat')
     print(files)
     out_dict = {}
-    times_dict = {}
     for fn in files:
         open_fn = open(fn, 'r')
         key = os.path.basename(fn).replace('_co2.dat', '')
@@ -826,13 +861,27 @@ def load_co2_forcing(cfg):
                 if '\n' in line: line.remove('\n')
             times.append(float(line[0]))
             data.append(float(line[1]))
-        out_dict[key] = data
-        times_dict[key] = times
+        out_dict[key] = {'time': times, 'co2':data}
         open_fn.close()
     print(times_dict, out_dict)
 
-    assert 0
-    return times_dict, out_dict
+    path = diagtools.folder(cfg['plot_dir'])
+    path += 'co2_forcing' + image_extention
+    if make_plot and not os.path.exists(path):
+        exp_colours = {'historical':'black',
+                       'ssp119':'green',
+                       'ssp126':'dodgerblue',
+                       'ssp245':'blue',
+                       'ssp370':'purple',
+                       'ssp434':'goldenrod',
+                       'ssp585': 'red',
+                       'ssp534-over':'orange'}
+        for key in times.keys():
+            plt.plot(out_dict[key]['time'], out_dict[key]['co2'], c=exp_colours[key], label=key)
+        plt.legend()
+        plt.savefig(path)
+        plt.close()
+    return out_dict
 
 # def load_areas(cfg, short_names=['areacella', 'areacello']):
 #     """
@@ -996,12 +1045,15 @@ def main(cfg):
     #    do you even need the areacella for air? probably not, right?
     #    change the recipe to add the other ensemble members to the job.
     #    email the figues to other authors.
-    co2_forcing = load_co2_forcing(cfg)
-    assert 0
 
-    short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
-    short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
-    short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
+    '
+
+    # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    # short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
+    short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
+    short_names_x = ['time', ]# 'tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    short_names_y = ['nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
 
     pairs = []
     for do_ma in [True, False]:
