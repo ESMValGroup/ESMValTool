@@ -127,6 +127,9 @@ def moving_average(cube, window):
         A cube with the movinage average set as the data points.
 
     """
+    if 'time' not in [coord.name() for coord in cube.coords()]:
+        return
+
     window = window.split()
     window_len = int(window[0]) / 2.
     win_units = str(window[1])
@@ -188,7 +191,6 @@ def calculate_anomaly(cube, anomaly, calc_average=False):
     """
     start_year = int(np.array(anomaly).min())
     end_year = int(np.array(anomaly).max())
-    print('calculate_anomaly', start_year, end_year)
     end_day = 31
     time_units = cube.coord('time').units
     if time_units.calendar == '360_day':
@@ -196,17 +198,13 @@ def calculate_anomaly(cube, anomaly, calc_average=False):
 
     start_date = datetime.datetime(int(start_year), 1, 1)
     end_date = datetime.datetime(int(end_year), 12, end_day)
-    print('calculate_anomaly', start_date, end_date)
-
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
     constraint = iris.Constraint(
         time=lambda t: t_1 < time_units.date2num(t.point) < t_2)
-    print('calculate_anomaly',t_1, t_2, cube.coord('time'))
 
     new_cube = cube.extract(constraint)
-    print('calculate_anomaly',constraint,new_cube)
     if new_cube is None:
         return None
     mean = new_cube.data.mean()
@@ -221,7 +219,6 @@ def get_threshold_exceedance_date(cube, threshold):
     Calculate the threshold exceedance date.
     """
     loc = np.where(cube.data > threshold)[0]
-    print('exceedance indices:', loc)
     if not len(loc): return None
     times = cube.coord('time').units.num2date(
         cube.coord('time').points)
@@ -663,6 +660,7 @@ def nppgt(data_dict, short='npp', gt='nppgt'):
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name != short:
             continue
+        if (gt, exp, ensemble) in data_dict.keys(): continue
         cubegt = cube.copy()
         cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
         cubegt.units = cf_units.Unit('Pg yr^-1') #cube.units * areas.units
@@ -701,6 +699,29 @@ def exchange(data_dict):
     return data_dict
 
 
+def tas_norm(data_dict):
+    """
+    Calculate tas_norm from the data dictionary.
+    """
+
+    exps = {} 
+    ensembles = {}
+    baselines={}
+    for (short_name, exp, ensemble), cube  in data_dict.items():
+        exps[exp] = True
+        ensembles[ensemble] = True
+        if short_name != 'tas': continue
+        if exp != 'historical': continue
+        baselines[(short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
+    
+    for exp, ensemble in product(exps, ensembles):
+        if not ('tas', exp, ensemble) in data_dict.keys(): continue
+        cube = data_dict[('tas', exp, ensemble)].copy()
+        cube.data = cube.data - baselines[('tas', ensemble)]
+        data_dict[('tas_norm', exp, ensemble)] = cube
+    return data_dict
+
+
 def load_timeseries(cfg, short_names):
     """
     Load times series as a dict.
@@ -714,16 +735,19 @@ def load_timeseries(cfg, short_names):
         'nppgt': ['npp', 'areacella'],
         'rhgt': ['rh', 'areacella'],
         'exchange': ['rh', 'npp', 'areacella'],
+        'tas_norm': ['tas', ]
         }
     transforms_functions = {
         'fgco2gt': fgco2gt,
         'nppgt': nppgt,
         'rhgt': rhgt,
         'exchange': exchange,
+        'tas_norm': tas_norm,
         }
+    short_names_to_load = short_names.copy()
     for sn in short_names:
         if sn in transforms:
-            short_names.extend(transforms[sn])
+            short_names_to_load.extend(transforms[sn])
     data_dict = {}
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('load_timeseries:\t%s', metadata_filename)
@@ -734,7 +758,7 @@ def load_timeseries(cfg, short_names):
             exp = metadatas[fn]['exp']
             ensemble = metadatas[fn]['ensemble']
 
-            if short_name not in short_names:
+            if short_name not in short_names_to_load:
                 continue
 
             cube = iris.load_cube(fn)
@@ -742,13 +766,13 @@ def load_timeseries(cfg, short_names):
             print('loaded data:', (short_name, exp, ensemble) )
             data_dict[(short_name, exp, ensemble)] = cube
 
-    for sn in short_names:
+    for sn in short_names_to_load:
         if sn in transforms:
             data_dict = transforms_functions[sn](data_dict)
     return data_dict
 
 
-def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 2., 3., 4., 5.]):
+def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 2., 3., 4., 5.], ):
     """
     Load thresholds  as a dict.
 
@@ -775,7 +799,6 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
 
         for threshold in thresholds:
             time = get_threshold_exceedance_date(cube2, threshold)
-            print("load_thresholds4, exceedance_date",time)
             thresholds_dict[(short_name, exp, ensemble)][threshold] = time
     return thresholds_dict
 
@@ -810,7 +833,6 @@ def get_threshold_point(cube, year):
     date = datetime.datetime(int(year), 6, 1)
     t_1 = time_units.date2num(date)
     arg_min = np.argmin( np.abs(cube.coord('time').points - t_1))
-    print('get_threshold_point', year, date, t_1, arg_min)
     return arg_min
 
 
@@ -837,8 +859,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
          exps[exp] = True
          ensembles[ensemble] = True
-         if do_moving_average:
-             cube = moving_average(cube, '21 years')
 
     exp_colours = {'historical':'black',
                    'ssp119':'green',
@@ -849,7 +869,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                    'ssp585': 'red',
                    'ssp534-over':'orange'}
     marker_styles = {1.5: 'o', 2.:'*', 3.:'^', 4.:'s', 5.:'X'}
-    #marker_strings = {'>1.5': 'o', '>2':'*', '>3':'^', '>4':'s', '>5':'X'}
 
     fig = plt.figure()
     x_label,y_label = [], []
@@ -860,6 +879,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if short_name not in [x,y]: continue
+            
             print('make_ts_figure', short_name, exp, ensemble, x,y)
 
             if x == 'time':
@@ -948,17 +968,28 @@ def main(cfg):
     #    email the figues to other authors.
 
 
-    short_names = ['time', 'nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']
-    data_dict = load_timeseries(cfg, short_names)
-    thresholds_dict = load_thresholds(cfg, data_dict)
+    short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
 
+    pairs = []
     for do_ma in [True, False]:
+        data_dict = load_timeseries(cfg, short_names)
+        thresholds_dict = load_thresholds(cfg, data_dict)
+        for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
+            if do_ma:
+                data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
-        for x in ['time','nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']:
-            for y in ['nppgt', 'tas', 'fgco2gt', 'rhgt', 'exchange']:
+        print(short_names)
+        for x in short_names_x: 
+            for y in short_names_y:
                 if x == y: continue
+                if (x,y) in pairs: continue
+                print('main:', do_ma, x, y) 
                 make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
                                markers='thresholds', do_moving_average=do_ma)
+                pairs.append((x,y))
+                pairs.append((y,x))
 
     return
 
