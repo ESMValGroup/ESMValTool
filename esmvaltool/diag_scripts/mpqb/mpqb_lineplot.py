@@ -38,9 +38,16 @@ def main(cfg):
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
+
     logger.info(
         "Example of how to group and sort input data by standard_name:"
         "\n%s", pformat(grouped_input_data))
+
+    # In order to get the right line colors for MPQB soil moisture
+    # here we put ERA-Interim-Land at the end of the dictionary if
+    # it is included. 
+    if 'ERA-Interim-Land' in grouped_input_data.keys():
+        grouped_input_data.move_to_end('ERA-Interim-Land')
 
     if cfg['write_plots']:
         plt.clf()
@@ -52,7 +59,18 @@ def main(cfg):
             iris.quickplot.plot(cube, label=grouped_input_data[dataset][0]['alias'])
         plt.legend()
         plt.xticks(rotation=90)
+        # Add the zero line when plotting anomalies
+        if 'ano' in grouped_input_data[dataset][0]['preprocessor']:
+            plt.axhline(y=0, linestyle=':', color='k')
         plt.tight_layout()
+        # Time axis formatting
+        import matplotlib.dates as mdates
+        years = mdates.YearLocator()   # every year
+        years_fmt = mdates.DateFormatter('%Y')
+        ax = plt.gca()
+        ax.xaxis.set_major_locator(years)
+        ax.xaxis.set_major_formatter(years_fmt)
+        ax.grid(True, which='major', axis='x')
         filename = get_plot_filename('lineplot_' + cfg["script"], cfg)
         logger.info("Saving as %s", filename)
         fig.savefig(filename)
