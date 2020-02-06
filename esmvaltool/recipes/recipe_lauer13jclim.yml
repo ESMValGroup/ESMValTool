@@ -106,8 +106,8 @@ documentation:
      # start_year: 1986, end_year: 2005}
 
 datasets:
-#  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
-#     start_year: 2003, end_year: 2016, tier: 2} 
+  # - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
+     # start_year: 1982, end_year: 2016, tier: 2} 
   - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
      start_year: 1988, end_year: 2016, tier: 2} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
@@ -126,7 +126,7 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
     mask_fillvalues:
-      threshold_fraction: 0.95
+      threshold_fraction: 0.5
     # multi_model_statistics:
       # span: overlap
       # statistics: [mean]
