@@ -18,6 +18,7 @@ import iris
 import matplotlib.pyplot as plt
 
 import esmvaltool.diag_scripts.shared
+from esmvaltool.diag_scripts.shared import group_metadata
 import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -47,15 +48,17 @@ class NegativeSeaIceFeedback(object):
         negative_feedback = list()
         p_value = list()
         datasets = list()
-        for dataset in self.datasets:
+        grouped_input_data = group_metadata(
+            self.cfg['input_data'].values(), 'alias', sort='alias')
+        for alias, dataset in grouped_input_data.items():
             try:
-                dataset_info = self.datasets.get_dataset_info(dataset)
-                logger.info('Computing %s', dataset_info[n.ALIAS])
+                var_info = group_metadata(dataset, 'short_name')
+                logger.info('Computing %s', alias)
                 area_cello = iris.load_cube(
-                    dataset_info[n.FX_FILES]['areacello']
+                    var_info['areacello'][0]['filename']
                 )
                 cellarea = area_cello.data
-                sit = iris.load_cube(dataset)
+                sit = iris.load_cube(var_info['sit'][0]['filename'])
                 mask = np.asarray(
                     sit.coord('latitude').points > 80.0,
                     dtype=np.int8
@@ -73,18 +76,18 @@ class NegativeSeaIceFeedback(object):
                 del cellarea, sit
 
                 neg_feedback, stats, _ = self.negative_seaice_feedback(
-                    dataset_info, volume, period=12, order=2
+                    var_info['sit'][0], volume, period=12, order=2
                 )
                 del volume
                 logger.info("Negative feedback: %10.4f", neg_feedback)
                 logger.info("P-Value:           %10.4f", stats[1])
             except Exception as ex:  # noqa
-                logger.error('Failed to compute for %s', dataset_info[n.ALIAS])
+                logger.error('Failed to compute for %s', alias)
                 logger.exception(ex)
             else:
                 negative_feedback.append(neg_feedback)
                 p_value.append(stats[1])
-                datasets.append(dataset_info[n.ALIAS])
+                datasets.append(alias)
 
         if self.cfg[n.WRITE_PLOTS]:
             self._plot_comparison(negative_feedback, datasets)

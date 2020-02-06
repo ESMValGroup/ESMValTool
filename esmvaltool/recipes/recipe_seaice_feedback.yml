@@ -47,7 +47,7 @@ datasets:
   - {<<: *cmip5, dataset: CNRM-CM5}
   - {<<: *cmip5, dataset: CNRM-CM5-2}
   - {<<: *cmip5, dataset: FGOALS-g2}
-  # - {<<: *cmip5, dataset: GFDL-CM2p1} Calendar issue
+  - {<<: *cmip5, dataset: GFDL-CM2p1}
   - {<<: *cmip5, dataset: GFDL-CM3}
   - {<<: *cmip5, dataset: GFDL-ESM2G}
   - {<<: *cmip5, dataset: GFDL-ESM2M}
@@ -62,18 +62,18 @@ datasets:
   - {<<: *cmip5, dataset: MPI-ESM-P}
   - {<<: *cmip5, dataset: NorESM1-M}
   - {<<: *cmip5, dataset: NorESM1-ME}
+  - {<<: *cmip5, dataset: CanCM4}
+  - {<<: *cmip5, dataset: CanESM2}
+  - {<<: *cmip5, dataset: CSIRO-Mk3-6-0}
+  - {<<: *cmip5, dataset: EC-EARTH}
+  - {<<: *cmip5, dataset: GISS-E2-H, ensemble: r1i1p2}
+  - {<<: *cmip5, dataset: GISS-E2-R, ensemble: r1i1p2}
 
-  # Problems with areacello
+  # Missing areacello
   # - {<<: *cmip5, dataset: bcc-csm1-1-m}
-  # - {<<: *cmip5, dataset: CanCM4}
-  # - {<<: *cmip5, dataset: CanESM2}
   # - {<<: *cmip5, dataset: CESM1-CAM5-1-FV2}
-  # - {<<: *cmip5, dataset: CSIRO-Mk3-6-0}
-  # - {<<: *cmip5, dataset: EC-EARTH}
   # - {<<: *cmip5, dataset: FIO-ESM}
-  # - {<<: *cmip5, dataset: GISS-E2-H, ensemble: r1i1p2}
   # - {<<: *cmip5, dataset: GISS-E2-H-CC}
-  # - {<<: *cmip5, dataset: GISS-E2-R, ensemble: r1i1p2}
   # - {<<: *cmip5, dataset: GISS-E2-R-CC}
   # - {<<: *cmip5, dataset: HadGEM2-AO}
   # - {<<: *cmip5, dataset: inmcm4}
@@ -84,7 +84,8 @@ diagnostics:
     variables:
       sit:
         mip: OImon
-        fx_files: [areacello]
+      areacello:
+        mip: fx
     scripts:
       negative_seaice_feedback:
         script: seaice_feedback/negative_seaice_feedback.py
