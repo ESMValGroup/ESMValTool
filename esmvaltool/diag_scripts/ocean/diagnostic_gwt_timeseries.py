@@ -56,6 +56,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from itertools import product
 import cf_units
+import glob
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -803,7 +804,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
     return thresholds_dict
 
 
-def load_co2_forcing():
+def load_co2_forcing(cfg):
     """
     Load annual CO2 data from the auxiliary datasets.
 
@@ -820,14 +821,15 @@ def load_co2_forcing():
         data = []
         for line in open_fn.readlines()[1:]:
             line = line.split(' ')
-            for x in range(len(line):
-                line.remove('')
-                line.remove('\n')
+            for x in range(len(line)):
+                if '' in line: line.remove('')
+                if '\n' in line: line.remove('\n')
             times.append(float(line[0]))
             data.append(float(line[1]))
         out_dict[key] = data
         times_dict[key] = times
         open_fn.close()
+    print(times_dict, out_dict)
 
     assert 0
     return times_dict, out_dict
@@ -994,7 +996,7 @@ def main(cfg):
     #    do you even need the areacella for air? probably not, right?
     #    change the recipe to add the other ensemble members to the job.
     #    email the figues to other authors.
-    co2_forcing = load_co2_forcing()
+    co2_forcing = load_co2_forcing(cfg)
     assert 0
 
     short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
