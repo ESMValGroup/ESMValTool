@@ -127,6 +127,7 @@ diagnostics:
         mip: E1hr
         era5_name: 10m_v_component_of_wind
         era5_freq: hourly
+
   daily:
     description: Create daily ERA5 data
     scripts:
@@ -153,10 +154,6 @@ diagnostics:
         era5_name: runoff
         era5_freq: hourly
         preprocessor: daily_mean
-      orog:
-        mip: fx
-        era5_name: orography
-        era5_freq: hourly
       pr:
         mip: E1hr
         era5_name: total_precipitation
@@ -264,10 +261,6 @@ diagnostics:
       mrro:
         mip: Amon
         era5_name: runoff
-        era5_freq: monthly
-      orog:
-        mip: Amon
-        era5_name: orography
         era5_freq: monthly
       pr:
         mip: Amon
