@@ -723,12 +723,14 @@ def tas_norm(data_dict):
     return data_dict
 
 # Global
-co2_data = load_co2_forcing(cfg)
 def norm_co2(data_dict,  short='nppgt'):
     """
     Weight a value according to the ratio of the forcing co2 for each year
     against the average co2 forcing in 1850-1900.
     """
+    co2_data = load_co2_forcing(cfg)
+    print(co2_data)
+    print(co2_data.keys())
     print(co2_data['historical']['co2'][:50], co2_data['historical']['time'][:50])
     baseline = np.mean(co2_data['historical']['co2'][:50])
 
@@ -863,11 +865,11 @@ def load_co2_forcing(cfg):
             data.append(float(line[1]))
         out_dict[key] = {'time': times, 'co2':data}
         open_fn.close()
-    print(times_dict, out_dict)
 
     path = diagtools.folder(cfg['plot_dir'])
+    image_extention = diagtools.get_image_format(cfg)
     path += 'co2_forcing' + image_extention
-    if make_plot and not os.path.exists(path):
+    if not os.path.exists(path):
         exp_colours = {'historical':'black',
                        'ssp119':'green',
                        'ssp126':'dodgerblue',
@@ -876,7 +878,7 @@ def load_co2_forcing(cfg):
                        'ssp434':'goldenrod',
                        'ssp585': 'red',
                        'ssp534-over':'orange'}
-        for key in times.keys():
+        for key in exp_colours.keys():
             plt.plot(out_dict[key]['time'], out_dict[key]['co2'], c=exp_colours[key], label=key)
         plt.legend()
         plt.savefig(path)
@@ -1046,7 +1048,7 @@ def main(cfg):
     #    change the recipe to add the other ensemble members to the job.
     #    email the figues to other authors.
 
-    '
+    
 
     # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
@@ -1056,6 +1058,7 @@ def main(cfg):
     short_names_y = ['nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
 
     pairs = []
+
     for do_ma in [True, False]:
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
