@@ -722,24 +722,22 @@ def tas_norm(data_dict):
         data_dict[('tas_norm', exp, ensemble)] = cube
     return data_dict
 
-# Global
-def norm_co2(data_dict,  short='nppgt'):
+
+def norm_co2(data_dict, short='nppgt'):
     """
     Weight a value according to the ratio of the forcing co2 for each year
     against the average co2 forcing in 1850-1900.
     """
-    co2_data = load_co2_forcing(cfg)
-    print(co2_data)
-    print(co2_data.keys())
-    print(co2_data['historical']['co2'][:50], co2_data['historical']['time'][:50])
-    baseline = np.mean(co2_data['historical']['co2'][:50])
+    print(data_dict[('co2', 'historical', 'r1i1p1f2' )]['time'][:50],
+          data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2'][:50])
+    baseline = np.mean(data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2'][:50])
 
     for (short_name, exp, ensemble), cube  in data_dict.items():
         if short_name != short: continue
         if exp != 'historical': continue
         cube = data_dict[(short, exp, ensemble)].copy()
         out = []
-        for d,co2 in zip(cube.data, co2_data[exp]['co2']):
+        for d,co2 in zip(cube.data, data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2']):
             out.append(d*baseline/co2)
         cube.data = np.ma.array(out)
         data_dict[(short+'_norm', exp, ensemble)] = cube
@@ -842,15 +840,16 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
     return thresholds_dict
 
 
-def load_co2_forcing(cfg):
+def load_co2_forcing(cfg, data_dict):
     """
     Load annual CO2 data from the auxiliary datasets.
 
+    Unlike the rest of data_dcit, it's isn't loaded as a cube, but rather as a
+    dict.
     """
     fold = cfg['auxiliary_data_dir']+'/atmos_co2_forcing/'
     files = glob.glob(fold+'*.dat')
     print(files)
-    out_dict = {}
     for fn in files:
         open_fn = open(fn, 'r')
         key = os.path.basename(fn).replace('_co2.dat', '')
@@ -863,7 +862,7 @@ def load_co2_forcing(cfg):
                 if '\n' in line: line.remove('\n')
             times.append(float(line[0]))
             data.append(float(line[1]))
-        out_dict[key] = {'time': times, 'co2':data}
+        data_dict[('co2', key, 'r1i1p1f2' )] = {'time': times, 'co2':data}
         open_fn.close()
 
     path = diagtools.folder(cfg['plot_dir'])
@@ -879,11 +878,15 @@ def load_co2_forcing(cfg):
                        'ssp585': 'red',
                        'ssp534-over':'orange'}
         for key in exp_colours.keys():
-            plt.plot(out_dict[key]['time'], out_dict[key]['co2'], c=exp_colours[key], label=key)
+            plt.plot(data_dict[('co2', key, 'r1i1p1f2' )]['time'],
+                     data_dict[('co2', key, 'r1i1p1f2' )]['co2'],
+                     c=exp_colours[key],
+                     label=key)
         plt.legend()
         plt.savefig(path)
         plt.close()
-    return out_dict
+    return data_dict
+
 
 # def load_areas(cfg, short_names=['areacella', 'areacello']):
 #     """
@@ -1048,7 +1051,7 @@ def main(cfg):
     #    change the recipe to add the other ensemble members to the job.
     #    email the figues to other authors.
 
-    
+
 
     # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
@@ -1062,6 +1065,8 @@ def main(cfg):
     for do_ma in [True, False]:
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
+        data_dict = load_co2_forcing(cfg, data_dict)
+
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
             if do_ma:
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
