@@ -704,7 +704,7 @@ def tas_norm(data_dict):
     Calculate tas_norm from the data dictionary.
     """
 
-    exps = {} 
+    exps = {}
     ensembles = {}
     baselines={}
     for (short_name, exp, ensemble), cube  in data_dict.items():
@@ -713,7 +713,7 @@ def tas_norm(data_dict):
         if short_name != 'tas': continue
         if exp != 'historical': continue
         baselines[(short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
-    
+
     for exp, ensemble in product(exps, ensembles):
         if not ('tas', exp, ensemble) in data_dict.keys(): continue
         cube = data_dict[('tas', exp, ensemble)].copy()
@@ -803,6 +803,34 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
     return thresholds_dict
 
 
+def load_co2_forcing():
+    """
+    Load annual CO2 data from the auxiliary datasets.
+
+    """
+    fold = cfg['auxiliary_data_dir']+'/atmos_co2_forcing/'
+    files = glob.glob(fold+'*.dat')
+    print(files)
+    out_dict = {}
+    times_dict = {}
+    for fn in files:
+        open_fn = open(fn, 'r')
+        key = os.path.basename(fn).replace('_co2.dat', '')
+        times = []
+        data = []
+        for line in open_fn.readlines()[1:]:
+            line = line.split(' ')
+            for x in range(len(line):
+                line.remove('')
+                line.remove('\n')
+            times.append(float(line[0]))
+            data.append(float(line[1]))
+        out_dict[key] = data
+        times_dict[key] = times
+        open_fn.close()
+
+    assert 0
+    return times_dict, out_dict
 
 # def load_areas(cfg, short_names=['areacella', 'areacello']):
 #     """
@@ -879,7 +907,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if short_name not in [x,y]: continue
-            
+
             print('make_ts_figure', short_name, exp, ensemble, x,y)
 
             if x == 'time':
@@ -966,7 +994,8 @@ def main(cfg):
     #    do you even need the areacella for air? probably not, right?
     #    change the recipe to add the other ensemble members to the job.
     #    email the figues to other authors.
-
+    co2_forcing = load_co2_forcing()
+    assert 0
 
     short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
@@ -981,11 +1010,11 @@ def main(cfg):
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
-        for x in short_names_x: 
+        for x in short_names_x:
             for y in short_names_y:
                 if x == y: continue
                 if (x,y) in pairs: continue
-                print('main:', do_ma, x, y) 
+                print('main:', do_ma, x, y)
                 make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
                                markers='thresholds', do_moving_average=do_ma)
                 pairs.append((x,y))
