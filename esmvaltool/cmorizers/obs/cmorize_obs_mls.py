@@ -62,33 +62,31 @@ def _cut_cube(cube, var_info):
     return cube
 
 
-def _extract_cubes(cfg, files):
+def _extract_cubes(files_dict, cfg):
     """Extract cubes from files."""
-    cubes_dict = {}
-    for (var, _) in cfg['variables'].items():
-        logger.info("Found variable '%s'", var)
-        cubes_dict[var] = iris.cube.CubeList()
-    for (filename_rhi, filename_t) in files:
-        logger.info("Processing %s", filename_rhi)
+    cubes_dict = _get_cubes_dict(files_dict, cfg)
 
-        # Read files
-        (nc_rhi, nc_loc) = _open_nc_file(filename_rhi, 'RHI')
-        (nc_t, _) = _open_nc_file(filename_t, 'Temperature')
-
-        # Get cubes for all desired variables
-        for (var, var_info) in cfg['variables'].items():
-            (gridded_data, time,
-             pressure) = _get_gridded_data(var_info['raw_var'], nc_rhi, nc_loc,
-                                           nc_t, filename_rhi)
-            cubes_dict[var].append(_get_cube(gridded_data, time, pressure))
-
-    # Create final cube and return it
+    # Create final cubes and return it
+    cube_dict = {}
     for (var, cubes) in cubes_dict.items():
         var_info = cfg['variables'][var]
-        cubes_dict[var] = cubes.concatenate_cube()
-        cubes_dict[var] = _cut_cube(cubes_dict[var], var_info)
+        cube = cubes.concatenate_cube()
+        cube = _cut_cube(cube, var_info)
 
-    return cubes_dict
+        # Calculate monthly mean if desired
+        if 'mon' in cfg['mip']:
+            logger.info("Calculating monthly mean")
+            iris.coord_categorisation.add_month_number(cube, 'time')
+            iris.coord_categorisation.add_year(cube, 'time')
+            cube = cube.aggregated_by(['month_number', 'year'],
+                                      iris.analysis.MEAN)
+            cube.remove_coord('month_number')
+            cube.remove_coord('year')
+
+        # Save cube
+        cube_dict[var] = cube
+
+    return cube_dict
 
 
 def _get_cube(gridded_data, time, pressure):
@@ -115,6 +113,41 @@ def _get_cube(gridded_data, time, pressure):
     return cube
 
 
+def _get_cubes_dict(files_dict, cfg):
+    """Get :obj:`dict` of :class:`iris.cube.CubeList`."""
+    cubes_dict = {var: iris.cube.CubeList() for var in cfg['variables']}
+
+    # Process files
+    file_idx = 1
+    for (filename_rhi, filename_t) in files_dict.values():
+        logger.info("Processing file %5d/%5d [%s]", file_idx, len(files_dict),
+                    filename_rhi)
+
+        # Read files
+        (nc_rhi, nc_loc) = _open_nc_file(filename_rhi, 'RHI')
+        (nc_t, _) = _open_nc_file(filename_t, 'Temperature')
+
+        # Get cubes for all desired variables
+        for (var, var_info) in cfg['variables'].items():
+            (gridded_data, time,
+             pressure) = _get_gridded_data(var_info['raw_var'], nc_rhi, nc_loc,
+                                           nc_t, filename_rhi)
+            cubes_dict[var].append(_get_cube(gridded_data, time, pressure))
+        file_idx += 1
+
+    return cubes_dict
+
+
+def _get_date(filename, variable, cfg):
+    """Extract date from a filename."""
+    file_pattern = cfg['file_pattern'].format(var=variable)
+    filename = os.path.basename(filename)
+    filename = os.path.splitext(filename)[0]
+    filename = filename.replace(file_pattern, '')
+    date = filename.split('_')[1]
+    return date
+
+
 def _get_file_attributes(filename):
     """Get global file attributes."""
     dataset = nc.Dataset(filename, mode='r')
@@ -123,39 +156,53 @@ def _get_file_attributes(filename):
     return {key: attrs.getncattr(key) for key in attrs.ncattrs()}
 
 
+def _get_files_single_var(variable, in_dir, cfg):
+    """Get files for a single variable."""
+    filename = cfg['file_pattern'].format(var=variable)
+    ext = cfg['extension']
+    file_pattern = f'{filename}*.{ext}'
+
+    # Get all files
+    files = glob.glob(os.path.join(in_dir, file_pattern))
+
+    # Only accept certain years if desired
+    if 'start_year' in cfg:
+        start_year = cfg['start_year']
+        logger.info("Only considering year %d and above", start_year)
+    else:
+        start_year = -np.inf
+    if 'end_year' in cfg:
+        end_year = cfg['end_year']
+        logger.info("Only considering year %d and below", end_year)
+    else:
+        end_year = np.inf
+    files_dict = {}
+    for file_ in files:
+        date = _get_date(file_, variable, cfg)
+        year = int(date[:4])
+        if start_year <= year <= end_year:
+            files_dict[date] = file_
+
+    return files_dict
+
+
 def _get_files(in_dir, cfg):
     """Get all files for a given variable."""
     logger.info("Searching files")
-    if 'year' in cfg:
-        year = cfg['year']
-        logger.info("Only considering year %d", year)
-    else:
-        year = None
-    ext = cfg['extension']
-    filename_rhi = cfg['file_pattern'].format(var='RHI')
-    filename_t = cfg['file_pattern'].format(var='Temperature')
-    if year is None:
-        file_pattern_rhi = f'{filename_rhi}*.{ext}'
-    else:
-        file_pattern_rhi = f'{filename_rhi}*_{year:d}*.{ext}'
-    files_rhi = glob.glob(os.path.join(in_dir, file_pattern_rhi))
-    prefix = os.path.join(in_dir, filename_rhi)
-    files_t = []
-    for file_ in files_rhi:
-        suffix = file_.replace(prefix, '')
-        suffix = suffix.replace(f'.{ext}', '')
-        suffix = suffix.split('_')[1]
-        file_pattern_t = os.path.join(in_dir, filename_t)
-        file_pattern_t += f'*_{suffix}.{ext}'
-        file_t = glob.glob(file_pattern_t)
-        if len(file_t) != 1:
-            raise ValueError(
-                f"Expected exactly one corresponding temperature file for RHI "
-                f"file {file_}, found {len(file_t):d} ({file_t})")
-        files_t.append(file_t[0])
-    files = zip(files_rhi, files_t)
-    logger.info("Found %d files", len(files_rhi))
-    return files
+
+    # Get file dictionaries
+    files_dict_rhi = _get_files_single_var('RHI', in_dir, cfg)
+    files_dict_t = _get_files_single_var('Temperature', in_dir, cfg)
+
+    # Check if all files are available
+    all_files = {}
+    for (date, filename_rhi) in files_dict_rhi.items():
+        if date not in files_dict_t:
+            raise ValueError(f"No corresponding temperature file for RHI file "
+                             f"{filename_rhi} found")
+        all_files[date] = (filename_rhi, files_dict_t[date])
+    logger.info("Found %d files", len(all_files))
+    return all_files
 
 
 def _get_gridded_data(variable, nc_rhi, nc_loc, nc_t, filename):
@@ -191,7 +238,7 @@ def _get_gridded_data(variable, nc_rhi, nc_loc, nc_t, filename):
         data_frame = pd.DataFrame({
             'lat': lat,
             'lon': lon,
-            'data': data[:, p_idx],
+            'data': data[:, p_idx].filled(np.nan),
         })
 
         # Create daily-mean gridded data using pivot table
@@ -204,6 +251,7 @@ def _get_gridded_data(variable, nc_rhi, nc_loc, nc_t, filename):
         data_frame = data_frame.reindex(index=ALL_LATS, columns=ALL_LONS)
         gridded_data.append(data_frame.values)
     gridded_data = np.expand_dims(np.array(gridded_data), 0)
+    gridded_data = np.ma.masked_invalid(gridded_data)
 
     return (gridded_data, time, pressure)
 
@@ -276,16 +324,18 @@ def _save_cube(cube, cmor_info, attrs, out_dir):
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
+    glob_attrs['mip'] = cfg['mip']
     cmor_table = cfg['cmor_table']
-    files = _get_files(in_dir, cfg)
+    files_dict = _get_files(in_dir, cfg)
 
     # Run the cmorization
-    cubes_dict = _extract_cubes(cfg, files)
+    cube_dict = _extract_cubes(files_dict, cfg)
 
     # Save data
-    for (var, cube) in cubes_dict.items():
+    for (var, cube) in cube_dict.items():
         logger.info("Saving variable '%s'", var)
         var_info = cfg['variables'][var]
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
+        if 'mip' in var_info:
+            glob_attrs['mip'] = var_info['mip']
+        cmor_info = cmor_table.get_variable(glob_attrs['mip'], var)
         _save_cube(cube, cmor_info, glob_attrs, out_dir)
