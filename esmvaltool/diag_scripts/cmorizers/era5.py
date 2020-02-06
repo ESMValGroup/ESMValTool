@@ -10,7 +10,7 @@ from esmvaltool.diag_scripts.shared import (run_diagnostic,
 def main(cfg):
     """Rename preprocessed native6 file."""
     fixed_files = cfg['input_data']
-    
+
     for file, dictionary in fixed_files.items():
         basename, _ext = os.path.splitext(os.path.basename(file))
         basename = basename.replace('native', 'OBS')
