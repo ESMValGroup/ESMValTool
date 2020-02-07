@@ -17,7 +17,7 @@ preprocessors:
   crop_basin: &crop_basin
     extract_region: &region  # bounding box values depend on catchment
       start_longitude: 3
-      end_longitude: 13
+      end_longitude: 13.5
       start_latitude: 45
       end_latitude: 54
   era5_grid: &era5_grid
