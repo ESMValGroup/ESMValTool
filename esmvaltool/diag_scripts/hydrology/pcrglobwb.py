@@ -119,8 +119,12 @@ def main(cfg):
             cube.data = cube.core_data() / 1000
 
         # Save data
-        output_file = get_diagnostic_filename(
-            Path(input_file).stem + '_pcrglobwb', cfg)
+        basename = '_'.join([
+            'pcrglobwb',
+            Path(input_file).stem,
+            cfg['basin'],
+        ])
+        output_file = get_diagnostic_filename(basename, cfg)
         iris.save(cube, output_file, fill_value=1.e20)
 
         # Store provenance
