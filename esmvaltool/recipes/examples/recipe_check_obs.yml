@@ -797,15 +797,15 @@ diagnostics:
     scripts: null
 
 
-  MLS:
-    description: MLS check
+  MLS-AURA:
+    description: MLS-AURA check
     variables:
       hur:
         mip: Amon
       hurStderr:
         mip: Amon
     additional_datasets:
-      - {dataset: MLS, project: OBS6, tier: 3, type: sat, version: '004', start_year: 2005, end_year: 2019}
+      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004', start_year: 2005, end_year: 2019}
     scripts: null
 
 

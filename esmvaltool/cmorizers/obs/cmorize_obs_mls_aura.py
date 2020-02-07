@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for MLS data.
+"""ESMValTool CMORizer for MLS-AURA data.
 
 Tier
     Tier 3: restricted dataset.
@@ -13,10 +13,11 @@ Last access
 Download and processing instructions
     Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
     "Instructions for downloading". All *.he5 files need to be saved in the
-    $RAWOBS/Tier3/MLS directory, where $RAWOBS refers to the RAWOBS directory
-    defined in the user configuration file. The temperature fields are
-    necessary for quality control of the RHI data (see Data Quality Document
-    for MLS for more information).
+    $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
+    directory defined in the user configuration file. Apply this procedure to
+    both links provided above. The temperature fields are necessary for quality
+    control of the RHI data (see Data Quality Document for MLS-AURA for more
+    information).
     A registration is required for downloading the data.
 
 """
@@ -257,7 +258,7 @@ def _get_gridded_data(variable, nc_rhi, nc_loc, nc_t, filename):
 
 
 def _get_mask(nc_rhi, nc_t, nc_loc):
-    """Remove invalid data (see Data Quality Document of MLS)."""
+    """Remove invalid data (see Data Quality Document of MLS-AURA)."""
     mask = np.full(nc_rhi.variables['L2gpValue'][:].shape, False)
 
     # Status (accept only even status flags)
