@@ -14,12 +14,16 @@ def main(cfg):
     """Rename preprocessed native6 file."""
     fixed_files = cfg['input_data']
 
-    for file, dictionary in fixed_files.items():
+    for file, info in fixed_files.items():
         basename, _ext = os.path.splitext(os.path.basename(file))
         basename = basename.replace('native', 'OBS')
 
-        if dictionary['diagnostic'] == 'daily':
+
+        if info['diagnostic'] == 'daily':
             basename = basename.replace('E1hr', 'Eday')
+
+        end_year = basename[-4:]
+        basename = basename.replace(end_year, f'{int(end_year) - 1}')
 
         outfile = get_diagnostic_filename(basename, cfg)
         logger.info('Moving %s to %s', file, outfile)

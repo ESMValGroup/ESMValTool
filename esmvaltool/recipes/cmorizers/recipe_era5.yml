@@ -15,16 +15,26 @@ documentation:
     - ewatercycle
 
 datasets:
-  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
+  # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1991}
 
 preprocessors:
+  add_one_day: &add_one_day
+    extract_time:
+      end_year: 1991
+      end_month: 1
+      end_day: 1
+
   daily_mean:
+    <<: *add_one_day
     daily_statistics:
       operator: mean
   daily_min:
+    <<: *add_one_day
     daily_statistics:
       operator: min
   daily_max:
+    <<: *add_one_day
     daily_statistics:
       operator: max
 
@@ -32,7 +42,7 @@ diagnostics:
   hourly:
     description: CMORize hourly ERA5 data
     scripts:
-      script:
+      rename:
         script: cmorizers/era5.py
     variables:
       clt:
@@ -131,7 +141,7 @@ diagnostics:
   daily:
     description: Create daily ERA5 data
     scripts:
-      script:
+      rename:
         script: cmorizers/era5.py
     variables:
       clt:
@@ -243,7 +253,7 @@ diagnostics:
   monthly:
     description: CMORize monthly ERA5 data
     scripts:
-      script:
+      rename:
         script: cmorizers/era5.py
     variables:
       clt:
