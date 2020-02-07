@@ -90,7 +90,6 @@ disk of the metadata.yml file (described below).
 
     input_files:[[...]recipe_ocean_bgc_20190118_134855/preproc/diag_timeseries_scalars/mfo/metadata.yml]
     log_level: debug
-    max_data_filesize: 100
     output_file_type: png
     plot_dir: [...]recipe_ocean_bgc_20190118_134855/plots/diag_timeseries_scalars/Scalar_timeseries
     profile_diagnostic: false
