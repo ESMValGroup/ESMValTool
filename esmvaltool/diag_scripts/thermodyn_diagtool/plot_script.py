@@ -457,7 +457,6 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
                antialiaseds='True')
     plt.colorbar()
     plt.title(title, fontsize=14)
-    #plt.grid()
 
 
 def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
