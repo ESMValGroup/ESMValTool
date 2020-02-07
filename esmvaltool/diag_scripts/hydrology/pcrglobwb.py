@@ -4,10 +4,7 @@ from pathlib import Path
 
 import dask.array as da
 import iris
-import numpy as np
-import xarray as xr
 
-from esmvalcore.cmor.table import CMOR_TABLES
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             select_metadata,
@@ -39,7 +36,7 @@ def add_spinup_year(cube, cube_climatology, varname):
 
     # Remove leap year day from climatology
     cube_climatology = cube_climatology.extract(iris.Constraint(day_of_year=lambda cell: cell<366))
-    
+
     # Set climatology year in front of regular startyear
     points = cube.coord('time').points[0] - 366 + cube_climatology.coord('day_of_year').points
     time = cube.coord('time').copy(points)
@@ -55,7 +52,7 @@ def add_spinup_year(cube, cube_climatology, varname):
     time_coord = cube_climatology.coord('time')
     time_coord.points = da.floor(time_coord.core_points())
     time_coord.bounds = None
-    
+
     # Set cube cell_methods to None
     cube.cell_methods = ()
     cube_climatology.cell_methods = ()
@@ -63,7 +60,7 @@ def add_spinup_year(cube, cube_climatology, varname):
     # Set dtype
     cube.data = cube.core_data().astype('float32')
     cube_climatology.data = cube_climatology.core_data().astype('float32')
-   
+
 
     for coord_name in 'latitude', 'longitude', 'time':
         coord = cube.coord(coord_name)
@@ -79,7 +76,7 @@ def add_spinup_year(cube, cube_climatology, varname):
     # Create CubeList and concatenate
     cube_list = iris.cube.CubeList([cube, cube_climatology])
     new_cube = iris.cube.CubeList(cube_list).concatenate_cube()
-    
+
     return new_cube
 
 def main(cfg):
@@ -104,7 +101,7 @@ def main(cfg):
         metadata_climatology = select_metadata(input_data, variable_group=short_name+'_climatology')[0]
         input_climatology_file = metadata_climatology['filename']
         cube_climatology = iris.load_cube(input_climatology_file)
-        
+
         # Run function to add spinup year to regular variable timeseries
         cube = add_spinup_year(cube, cube_climatology, short_name)
 
