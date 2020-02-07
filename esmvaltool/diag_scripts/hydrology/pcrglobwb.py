@@ -21,6 +21,7 @@ def get_provenance_record(ancestor_file):
         'authors': [
             'aerts_jerom',
             'andela_bouwe',
+            'alidoost_sarah',
         ],
         'projects': [
             'ewatercycle',
@@ -32,13 +33,17 @@ def get_provenance_record(ancestor_file):
     }
     return record
 
-def add_spinup_year(cube, cube_climatology, varname):
+def add_spinup_year(cube, cube_climatology):
+    """To reach the equilibrium, the model was spun up using
+    the average climatological forcing over each year"""
 
     # Remove leap year day from climatology
-    cube_climatology = cube_climatology.extract(iris.Constraint(day_of_year=lambda cell: cell<366))
+    cube_climatology = cube_climatology.extract(
+        iris.Constraint(day_of_year=lambda cell: cell < 366))
 
     # Set climatology year in front of regular startyear
-    points = cube.coord('time').points[0] - 366 + cube_climatology.coord('day_of_year').points
+    points = cube.coord('time').points[0] - 366
+    points += cube_climatology.coord('day_of_year').points
     time = cube.coord('time').copy(points)
 
     # Drop dimension day_of_year
@@ -57,10 +62,9 @@ def add_spinup_year(cube, cube_climatology, varname):
     cube.cell_methods = ()
     cube_climatology.cell_methods = ()
 
-    # Set dtype
+    # fix dtype
     cube.data = cube.core_data().astype('float32')
     cube_climatology.data = cube_climatology.core_data().astype('float32')
-
 
     for coord_name in 'latitude', 'longitude', 'time':
         coord = cube.coord(coord_name)
@@ -68,10 +72,10 @@ def add_spinup_year(cube, cube_climatology, varname):
         coord.bounds = None
         coord.guess_bounds()
         coord_climatology = cube_climatology.coord(coord_name)
-        coord_climatology.points = coord_climatology.core_points().astype('float32')
+        coord_climatology.points = (
+            coord_climatology.core_points().astype('float32'))
         coord_climatology.bounds = None
         coord_climatology.guess_bounds()
-
 
     # Create CubeList and concatenate
     cube_list = iris.cube.CubeList([cube, cube_climatology])
@@ -98,12 +102,13 @@ def main(cfg):
         time_coord.guess_bounds()
 
         # Select and load in cube climatology variable timeseries
-        metadata_climatology = select_metadata(input_data, variable_group=short_name+'_climatology')[0]
+        metadata_climatology = select_metadata(
+            input_data, variable_group=short_name+'_climatology')[0]
         input_climatology_file = metadata_climatology['filename']
         cube_climatology = iris.load_cube(input_climatology_file)
 
         # Run function to add spinup year to regular variable timeseries
-        cube = add_spinup_year(cube, cube_climatology, short_name)
+        cube = add_spinup_year(cube, cube_climatology)
 
         # Set lat from highest to lowest value
         cube = cube[:, ::-1, ...]
@@ -118,10 +123,9 @@ def main(cfg):
             Path(input_file).stem + '_pcrglobwb', cfg)
         iris.save(cube, output_file, fill_value=1.e20)
 
-
-        print(cube)
         # Store provenance
-        provenance_record = get_provenance_record([input_file,input_climatology_file])
+        provenance_record = get_provenance_record(
+            [input_file, input_climatology_file])
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(output_file, provenance_record)
 
