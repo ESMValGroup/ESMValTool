@@ -8,7 +8,7 @@ import iris
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             select_metadata,
-                                            group_metadata, run_diagnostic)
+                                            run_diagnostic)
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -32,6 +32,7 @@ def get_provenance_record(ancestor_file):
         'ancestors': [ancestor_file],
     }
     return record
+
 
 def add_spinup_year(cube, cube_climatology):
     """To reach the equilibrium, the model was spun up using
@@ -82,6 +83,7 @@ def add_spinup_year(cube, cube_climatology):
     new_cube = iris.cube.CubeList(cube_list).concatenate_cube()
 
     return new_cube
+
 
 def main(cfg):
     """Process data for use as input to the PCR-GLOBWB hydrological model."""
