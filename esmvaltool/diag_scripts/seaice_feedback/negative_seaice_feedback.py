@@ -378,7 +378,7 @@ class NegativeSeaIceFeedback(object):
         )
         if p_values:
             plt.hlines(0.05, -1, index[-1] + 1, colors='red')
-        ax = plt.gca()
+        axes = plt.gca()
         logger.debug(data)
         max_limit = math.ceil(max(data))
         if max_limit < 0:
@@ -390,10 +390,10 @@ class NegativeSeaIceFeedback(object):
             def _get_y_position(value):
                 if value > min_limit + separation * 0.75:
                     return value - separation * 0.05
-                else:
-                    return value + separation * 0.10
+                return value + separation * 0.10
+
             for i, value in enumerate(data):
-                ax.annotate(
+                axes.annotate(
                     f'{value:.2f}',
                     xy=(index[i], value),
                     xycoords='data',
@@ -403,13 +403,13 @@ class NegativeSeaIceFeedback(object):
                 )
 
         # axes and labels
-        ax.set_ylim(min_limit, max_limit)
+        axes.set_ylim(min_limit, max_limit)
         if p_values:
-            ax.set_ylabel('P-value [log]')
+            axes.set_ylabel('P-value [log]')
             plt.ylim(0, max(0.25, max(data)))
         else:
-            ax.set_ylabel('IFE')
-        ax.set_title('IFE comparison')
+            axes.set_ylabel('IFE')
+        axes.set_title('IFE comparison')
         _, xtick_names = plt.xticks(index, datasets)
         plt.xlim(index[0] - 0.5, index[-1] + 0.5)
         plt.setp(xtick_names, rotation=90, fontsize=10)
