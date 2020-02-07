@@ -52,48 +52,53 @@ class NegativeSeaIceFeedback(object):
             self.cfg['input_data'].values(), 'alias', sort='alias')
         for alias, dataset in grouped_input_data.items():
             try:
-                var_info = group_metadata(dataset, 'short_name')
-                logger.info('Computing %s', alias)
-                area_cello = iris.load_cube(
-                    var_info['areacello'][0]['filename']
-                )
-                cellarea = area_cello.data
-                sit = iris.load_cube(var_info['sit'][0]['filename'])
-                mask = np.asarray(
-                    sit.coord('latitude').points > 80.0,
-                    dtype=np.int8
-                )
-                try:
-                    mask = np.broadcast_to(mask, cellarea.shape)
-                except ValueError:
-                    try:
-                        mask = np.broadcast_to(np.expand_dims(mask, -1),
-                                               cellarea.shape)
-                    except ValueError:
-                        mask = np.broadcast_to(np.expand_dims(mask, 0),
-                                               cellarea.shape)
-                volume = self.compute_volume(sit, cellarea, mask=mask)
-                del cellarea, sit
-
-                neg_feedback, stats, _ = self.negative_seaice_feedback(
-                    var_info['sit'][0], volume, period=12, order=2
-                )
-                del volume
-                logger.info("Negative feedback: %10.4f", neg_feedback)
-                logger.info("P-Value:           %10.4f", stats[1])
-            except Exception as ex:  # noqa
+                feedback, p_val = self._compute_dataset(alias, dataset)
+            except Exception as ex:
                 logger.error('Failed to compute for %s', alias)
                 logger.exception(ex)
             else:
-                negative_feedback.append(neg_feedback)
-                p_value.append(stats[1])
+                negative_feedback.append(feedback)
+                p_value.append(p_val)
                 datasets.append(alias)
 
         if self.cfg[n.WRITE_PLOTS]:
             self._plot_comparison(negative_feedback, datasets)
             self._plot_comparison(p_value, datasets, p_values=True)
 
-    def compute_volume(self, avg_thick, cellarea, mask=1):
+    def _compute_dataset(self, alias, dataset):
+        var_info = group_metadata(dataset, 'short_name')
+        logger.info('Computing %s', alias)
+        area_cello = iris.load_cube(
+            var_info['areacello'][0]['filename']
+        )
+        cellarea = area_cello.data
+        sit = iris.load_cube(var_info['sit'][0]['filename'])
+        mask = np.asarray(
+            sit.coord('latitude').points > 80.0,
+            dtype=np.int8
+        )
+        try:
+            mask = np.broadcast_to(mask, cellarea.shape)
+        except ValueError:
+            try:
+                mask = np.broadcast_to(np.expand_dims(mask, -1),
+                                       cellarea.shape)
+            except ValueError:
+                mask = np.broadcast_to(np.expand_dims(mask, 0),
+                                       cellarea.shape)
+        volume = self.compute_volume(sit, cellarea, mask=mask)
+        del cellarea, sit
+
+        neg_feedback, stats, _ = self.negative_seaice_feedback(
+            var_info['sit'][0], volume, period=12, order=2
+        )
+        del volume
+        logger.info("Negative feedback: %10.4f", neg_feedback)
+        logger.info("P-Value:           %10.4f", stats[1])
+        return (neg_feedback, stats[1])
+
+    @staticmethod
+    def compute_volume(avg_thick, cellarea, mask=1):
         """
         Compute sea ice volume
 
@@ -143,7 +148,8 @@ class NegativeSeaIceFeedback(object):
             raise ValueError("avgthickness has not 2 nor 3 dimensions")
         return vol
 
-    def detrend(self, data, order=1, period=None):
+    @staticmethod
+    def detrend(data, order=1, period=None):
         """
         Detrend signal
 
@@ -319,34 +325,36 @@ class NegativeSeaIceFeedback(object):
                              volume, vol_min, dvol)
                 raise
         if self.cfg[n.WRITE_PLOTS]:
-            path = os.path.join(
-                self.cfg[n.PLOT_DIR],
-                f'ife_{dataset_info[n.ALIAS]}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
-            )
-            plot_options = self.cfg.get('plot', {})
-            fig = plt.figure()
-            plt.scatter(
-                vol_min,
-                dvol,
-                plot_options.get('point_size', 8),
-                color=plot_options.get('point_color', 'black'),
-            )
-            minx, maxx = plt.xlim()
-            x = np.linspace(minx, maxx)
-            plt.plot(x, x * fit_complete[0] + fit_complete[1])
-            ax = plt.gca()
-            ax.set_title(
-                f'Evaluation of the IFE \n{dataset_info[n.ALIAS]} '
-                f'({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})'
-            )
-            ax.set_ylabel('Wintertime volume range \n(anomalies) [10³ km³]')
-            ax.set_xlabel('Volume at minimum\n(anomalies) [10³ km³]')
-            plt.grid(True, 'both', 'both')
-            plt.tight_layout()
-            fig.savefig(path)
-            plt.close(fig)
-
+            self._plot_ife(dataset_info, vol_min, dvol, fit_complete)
         return [fit, [corr, pval, std], [vol_min, dvol]]
+
+    def _plot_ife(self, dataset_info, vol_min, dvol, fit_complete):
+        path = os.path.join(
+            self.cfg[n.PLOT_DIR],
+            f'ife_{dataset_info[n.ALIAS]}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
+        )
+        plot_options = self.cfg.get('plot', {})
+        fig = plt.figure()
+        plt.scatter(
+            vol_min,
+            dvol,
+            plot_options.get('point_size', 8),
+            color=plot_options.get('point_color', 'black'),
+        )
+        minx, maxx = plt.xlim()
+        xvals = np.linspace(minx, maxx)
+        plt.plot(xvals, xvals * fit_complete[0] + fit_complete[1])
+        axes = plt.gca()
+        axes.set_title(
+            f'Evaluation of the IFE \n{dataset_info[n.ALIAS]} '
+            f'({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})'
+        )
+        axes.set_ylabel('Wintertime volume range \n(anomalies) [10³ km³]')
+        axes.set_xlabel('Volume at minimum\n(anomalies) [10³ km³]')
+        plt.grid(True, 'both', 'both')
+        plt.tight_layout()
+        fig.savefig(path)
+        plt.close(fig)
 
     def _plot_comparison(self, data, datasets, p_values=False):
         if p_values:
