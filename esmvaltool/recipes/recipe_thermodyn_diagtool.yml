@@ -21,19 +21,17 @@ documentation:
     - trr181
 
 datasets:
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-  - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2013}
-  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 1995, end_year: 2014}
-  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 1995, end_year: 2014}
-  #- {dataset: EC-Earth3-Veg, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1995, end_year: 2014}
-  - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr2, start_year: 1995, end_year: 2014}
-  #- {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 1995, end_year: 2014}
-  - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1995, end_year: 2014}
-  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 1997, end_year: 1999}
+  #- {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1995, end_year: 2014}
+  #- {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2014}
+
+preprocessors:
+  regrid_preproc:
+    regrid:
+      target_grid: 1.875x1.25
+      lon_offset: True
+      lat_offset: True
+      scheme: area_weighted
 
 diagnostics:
   Thermodyn_Diag:
@@ -41,46 +39,95 @@ diagnostics:
     variables:
       hfls:
         mip: Amon
+        cmor_name: hfls
+        additional_datasets: &other_data
+          - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+          - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+          - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+          - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+          - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2013}
+          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 1995, end_year: 2013}
+          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 1997, end_year: 2013}
+          - {dataset: EC-Earth3-Veg, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1997, end_year: 2013}
+          - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr2, start_year: 1997, end_year: 2013}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1995, end_year: 2013}
+          - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2013}
       hfss:
         mip: Amon
+        additional_datasets: *other_data
       pr:
         mip: Amon
+        additional_datasets: *other_data
       ps:
         mip: Amon
+        additional_datasets: *other_data
       prsn:
         mip: Amon
+        additional_datasets: *other_data
       rlds:
         mip: Amon
+        additional_datasets: *other_data
       rlus:
         mip: Amon
+        additional_datasets: *other_data
       rlut:
         mip: Amon
+        additional_datasets: *other_data
       rsds:
         mip: Amon
+        additional_datasets: *other_data
       rsus:
         mip: Amon
+        additional_datasets: *other_data
       rsdt:
         mip: Amon
+        additional_datasets: *other_data
       rsut:
         mip: Amon
+        additional_datasets: *other_data
       ts:
         mip: Amon
+        additional_datasets: *other_data
       hus:
         mip: Amon
+        additional_datasets: *other_data
       tas:
         mip: day
+        additional_datasets: *other_data
       uas:
         mip: day
-      vas:
+        additional_datasets: *other_data
+      vas_1:
         mip: day
+        short_name: vas
+        preprocessor: regrid_preproc
+      vas_2: &variable_settings 
+        mip: day
+        short_name: vas
+        additional_datasets: *other_data
       ta:
         mip: day
-      ua:
+        additional_datasets: *other_data
+      ua_1: &variable_settings_ua
         mip: day
-      va:
+        short_name: ua
+        preprocessor: regrid_preproc
+      ua_2:
         mip: day
+        short_name: ua
+        additional_datasets: *other_data
+      va_1: &variable_settings_va
+        mip: day
+        short_name: va
+        preprocessor: regrid_preproc
+      va_2:
+        mip: day
+        short_name: va
+        additional_datasets: *other_data
       wap:
         mip: day
+        additional_datasets: *other_data
       #sftlf:
       #  mip: fx
     scripts:
