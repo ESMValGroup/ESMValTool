@@ -20,7 +20,7 @@ import subprocess
 from pathlib import Path
 
 import esmvalcore
-from esmvalcore._config import read_config_user_file
+from esmvalcore._config import configure_logging, read_config_user_file
 from esmvalcore._task import write_ncl_settings
 
 from .utilities import read_cmor_config
@@ -170,20 +170,9 @@ def main():
     if not os.path.isdir(run_dir):
         os.makedirs(run_dir)
 
-    # set logging for screen and file output
-    root_logger = logging.getLogger()
-    out_fmt = ("%(asctime)s [%(process)d] %(levelname)-8s "
-               "%(name)s,%(lineno)s\t%(message)s")
-    logging.basicConfig(filename=os.path.join(run_dir, 'main_log.txt'),
-                        filemode='a',
-                        format=out_fmt,
-                        datefmt='%H:%M:%S',
-                        level=config_user['log_level'].upper())
-    root_logger.setLevel(config_user['log_level'].upper())
-    logfmt = logging.Formatter(out_fmt)
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logfmt)
-    root_logger.addHandler(console_handler)
+    # configure logging
+    log_files = configure_logging(
+        output=run_dir, console_log_level=config_user['log_level'])
 
     # print header
     logger.info(HEADER)
