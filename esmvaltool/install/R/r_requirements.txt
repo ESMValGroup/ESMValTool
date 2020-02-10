@@ -1,5 +1,7 @@
 abind
 akima
+climdex.pcic
+ClimProjDiags
 dotCall64
 functional
 ggplot2
