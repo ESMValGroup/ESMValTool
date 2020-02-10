@@ -94,7 +94,7 @@ def read_extreme_event_catalogue():
     ex_table_dir = './predef/extremes_catalogue/'
     #TODO move ex_table_file to the recipe (default value that can
     # be over written if specified)
-    ex_table_file = 'V1_Apr19_accessed20190813.csv'
+    ex_table_file = 'latest_accessed20200206.csv'
     ex_table_loc = os.path.join(os.path.dirname(__file__),ex_table_dir,ex_table_file)
 
     ############################################
