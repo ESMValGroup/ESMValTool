@@ -300,5 +300,24 @@
     "license": {
         "id": "Apache-2.0"
     },
-    "title": "ESMValTool"
+    "title": "ESMValTool",
+    "communities": [
+        {
+            "identifier": "is-enes3"
+        },
+        {
+            "identifier": "dlr_de"
+        },
+        {
+            "identifier": "ecfunded"
+        },
+        {
+            "identifier": "nlesc"
+        }
+    ],
+    "grants": [
+        {
+            "id": "10.13039/501100000780::824084"
+        }
+    ]
 }
