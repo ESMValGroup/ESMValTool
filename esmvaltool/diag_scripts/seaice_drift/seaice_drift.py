@@ -1,4 +1,4 @@
-"""Sea ice drift diagnostic"""
+"""Sea ice drift diagnostic."""
 import os
 import logging
 import math
@@ -31,6 +31,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 class SeaIceDrift(object):
+    """Class to compute SeaIce Drift metric."""
 
     def __init__(self, config):
         self.cfg = config
@@ -53,6 +54,7 @@ class SeaIceDrift(object):
         self.error_drift_sivol = {}
 
     def compute(self):
+        """Compute metric"""
         logger.info('Loading sea ice concentration')
         siconc_original = {}
         siconc_files = self.datasets.get_path_list(
@@ -127,10 +129,10 @@ class SeaIceDrift(object):
                     sispeed, self._get_mask(sispeed, filename)
                 )
 
-        self.compute_metrics()
-        self.results()
-        self.save()
-        self.plot_results()
+        self._compute_metrics()
+        self._results()
+        self._save()
+        self._plot_results()
 
     def _get_reference_dataset(self, reference_dataset):
         for filename in self.datasets:
@@ -163,9 +165,14 @@ class SeaIceDrift(object):
             data.remove_coord('Inside polygon')
 
         dataset_info = self.datasets.get_dataset_info(filename)
-        area_file = dataset_info.get(n.FX_FILES, {}).get('areacello', '')
-        if area_file:
-            area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
+        var_info = esmvaltool.diag_scripts.shared.group_metadata(
+            self.cfg['input_data'].values(), 'alias'
+        )[dataset_info[n.ALIAS]]
+        var_info = esmvaltool.diag_scripts.shared.group_metadata(
+            var_info, 'short_name')
+        if 'areacello' in var_info:
+            area_file = var_info['areacello'][0]['filename']
+            area_cello = iris.load_cube(area_file)
         else:
             area_cello = iris.analysis.cartography.area_weights(data)
 
@@ -173,19 +180,16 @@ class SeaIceDrift(object):
 
     def _load_cube(self, filepath, standard_name):
         cube = iris.load_cube(filepath, standard_name)
-        cube.remove_coord('day_of_month')
-        cube.remove_coord('day_of_year')
-        cube.remove_coord('year')
         return cube
 
-    def compute_metrics(self):
+    def _compute_metrics(self):
         for dataset in self.siconc.keys():
             logger.info('Compute diagnostics for %s', dataset)
             logger.info('Metrics drift-concentration')
             logger.debug('Siconc: %s', self.siconc[dataset].data)
             logger.debug('Sispeed: %s', self.sispeed[dataset].data)
             logger.info('Slope ratio (no unit)')
-            slope, intercept, sd, sig = self._get_slope_ratio(
+            slope, intercept, _, _ = self._get_slope_ratio(
                 self.siconc[dataset], self.sispeed[dataset])
             self.slope_drift_sic[dataset] = slope
             self.intercept_drift_siconc[dataset] = intercept
@@ -194,7 +198,7 @@ class SeaIceDrift(object):
             logger.debug('sivol: %s', self.sivol[dataset].data)
             logger.debug('Sispeed: %s', self.sispeed[dataset].data)
             logger.info('Slope ratio (no unit)')
-            slope, intercept, sd, sig = self._get_slope_ratio(
+            slope, intercept, _, _ = self._get_slope_ratio(
                 self.sivol[dataset], self.sispeed[dataset]
             )
             self.slope_drift_sivol[dataset] = slope
@@ -278,8 +282,9 @@ class SeaIceDrift(object):
 
     def _get_slope_ratio(self, siconc, drift):
         slope, intercept = np.polyfit(siconc.data, drift.data, 1)
-        sd, sig = self._sd_slope(slope, intercept, siconc.data, drift.data)
-        return slope, intercept, sd, sig
+        std_dev, sig = self._sd_slope(
+            slope, intercept, siconc.data, drift.data)
+        return slope, intercept, std_dev, sig
 
     def _sd_slope(self, slope, intercept, sivar, drift):
         # Parameters
@@ -294,14 +299,14 @@ class SeaIceDrift(object):
         sd_slope = np.sqrt(s_yx / ss_xx)  # Standard deviation of slope
 
         # Significance
-        ta = slope / sd_slope  # Student's t
+        t_student = slope / sd_slope
         sig_slope = 0
-        if np.abs(ta) > t_crit:
+        if np.abs(t_student) > t_crit:
             sig_slope = 1
 
         return sd_slope, sig_slope
 
-    def results(self):
+    def _results(self):
         logger.info('Results')
         for model in self.siconc.keys():
             self._print_results(model)
@@ -330,14 +335,14 @@ class SeaIceDrift(object):
         logger.info('Mean error Drift-Thickness (%) = {0:.4}'
                     ''.format(self.error_drift_sivol.get(model, math.nan)))
 
-    def save(self):
+    def _save(self):
         if not True:
             return
         logger.info('Save variables')
         for dataset in self.siconc.keys():
-            self.save_slope(dataset)
+            self._save_slope(dataset)
 
-    def save_slope(self, dataset):
+    def _save_slope(self, dataset):
         base_path = os.path.join(self.cfg[n.WORK_DIR], dataset)
         if not os.path.isdir(base_path):
             os.makedirs(base_path)
@@ -365,7 +370,7 @@ class SeaIceDrift(object):
                 self.error_drift_sivol.get(dataset, None)
             ))
 
-    def plot_results(self):
+    def _plot_results(self):
         if not self.cfg[n.WRITE_PLOTS]:
             return
         logger.info('Plotting results')
@@ -493,7 +498,7 @@ class SeaIceDrift(object):
 
 
 class InsidePolygonFactory(AuxCoordFactory):
-    """Defines a coordinate """
+    """Defines a coordinate."""
 
     def __init__(self, polygon=None, lat=None, lon=None):
         """
@@ -528,8 +533,7 @@ class InsidePolygonFactory(AuxCoordFactory):
     @property
     def dependencies(self):
         """
-        Returns a dictionary mapping from constructor argument names to
-        the corresponding coordinates.
+        Return a dict mapping from constructor names to coordinates.
         """
         return {'lat': self.lat, 'lon': self.lon}
 
@@ -547,8 +551,8 @@ class InsidePolygonFactory(AuxCoordFactory):
 
     def make_coord(self, coord_dims_func):
         """
-        Returns a new :class:`iris.coords.AuxCoord` as defined by this
-        factory.
+        Returns a new :class:`iris.coords.AuxCoord`
+
         Args:
         * coord_dims_func:
             A callable which can return the list of dimensions relevant
@@ -578,8 +582,9 @@ class InsidePolygonFactory(AuxCoordFactory):
 
     def update(self, old_coord, new_coord=None):
         """
-        Notifies the factory of the removal/replacement of a coordinate
-        which might be a dependency.
+        Notify factory about the removal/replacement of a coordinate
+
+
         Args:
         * old_coord:
             The coordinate to be removed/replaced.
