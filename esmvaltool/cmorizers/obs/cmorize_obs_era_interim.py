@@ -81,7 +81,6 @@ For further details on obtaining daily values from ERA-Interim,
     https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+How+to+calculate+daily+total+precipitation
 
 """
-import calendar
 import logging
 import re
 from collections import defaultdict
@@ -177,7 +176,8 @@ def _fix_monthly_time_coord(cube):
     coord.points = 0.5 * (start + end)
     coord.bounds = np.column_stack([start, end])
 
-def _fix_monthly_time_coord_era_interim_land(cube):
+
+def _fix_monthly_time_coord_eiland(cube):
     """Set the monthly time coordinates to the middle of the month."""
     coord = cube.coord(axis='T')
     start = []
@@ -361,7 +361,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     elif attributes['dataset_id'] == 'ERA-Interim-Land':
         if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
-            _fix_monthly_time_coord_era_interim_land(cube)
+            _fix_monthly_time_coord_eiland(cube)
         if 'day' in var['mip']:
             cube = _compute_daily(cube)
     else:
