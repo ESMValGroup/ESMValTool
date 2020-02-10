@@ -17,10 +17,14 @@ drs:
   CMIP5: default
   CMIP6: default
 
-# Run at most this many tasks in parallel null/[1]/2/3/4/..
+# Run at most this many tasks in parallel [null]/1/2/3/4/..
 # Set to null to use the number of available CPUs.
-# Make sure your system has enough memory for the specified number of tasks.
-max_parallel_tasks: 1
+# If you run out of memory, try setting max_parallel_tasks to 1 and check the
+# amount of memory you need for that by inspecting the file
+# run/resource_usage.txt in the output directory. Using the number there you
+# can increase the number of parallel tasks again to a reasonable number for
+# the amount of memory available in your system.
+max_parallel_tasks: null
 
 # Destination directory
 output_dir: ./esmvaltool_output
@@ -34,9 +38,9 @@ write_plots: true
 write_netcdf: true
 # Set the console log level debug, [info], warning, error
 log_level: info
-# Exit on warning? true/[false]
+# Exit on warning (only for NCL diagnostic scripts)? true/[false]
 exit_on_warning: false
-# Plot file format? [ps]/pdf/png/eps/epsi
+# Plot file format? [png]/pdf/ps/eps/epsi
 output_file_type: png
 # Use netCDF compression true/[false]
 compress_netcdf: false
