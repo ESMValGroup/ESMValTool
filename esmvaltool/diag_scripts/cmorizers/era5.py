@@ -1,13 +1,13 @@
 """native6 diagnostic."""
 
 import logging
-import os
 import shutil
+from pathlib import Path
 
 from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
                                             run_diagnostic)
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 
 def main(cfg):
@@ -15,15 +15,15 @@ def main(cfg):
     fixed_files = cfg['input_data']
 
     for file, info in fixed_files.items():
-        basename, _ext = os.path.splitext(os.path.basename(file))
-        basename = basename.replace('native', 'OBS')
-
+        stem = Path(file).stem
+        basename = stem.replace('native', 'OBS')
 
         if info['diagnostic'] == 'daily':
             basename = basename.replace('E1hr', 'Eday')
 
-        end_year = basename[-4:]
-        basename = basename.replace(end_year, f'{int(end_year) - 1}')
+        if 'fx' not in basename:
+            end_year = basename[-4:]
+            basename = basename.replace(end_year, f'{int(end_year) - 1}')
 
         outfile = get_diagnostic_filename(basename, cfg)
         logger.info('Moving %s to %s', file, outfile)
