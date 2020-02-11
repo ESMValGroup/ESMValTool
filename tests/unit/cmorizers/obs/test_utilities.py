@@ -10,6 +10,7 @@ import esmvaltool.cmorizers.obs.utilities as utils
 
 
 def np_to_da(array, lazy):
+    """Convert numpy array to dask array."""
     if not lazy:
         return array
     if array is None:
@@ -18,6 +19,7 @@ def np_to_da(array, lazy):
 
 
 def is_lazy(cube):
+    """Check if data is lazy."""
     if not cube.has_lazy_data():
         return False
     for coord in cube.coords(dim_coords=False):
@@ -30,6 +32,7 @@ def is_lazy(cube):
 
 
 def cubes_generator(lazy=True):
+    """Generate a list of cubes via test parametrization."""
     cube_datas = [
         np.array([[0, 1], [-1, 0]], dtype=np.int),
         np.array([[0.0, 1.0], [-1.0, 0.0]], dtype=np.float32),
@@ -82,6 +85,7 @@ def cubes_generator(lazy=True):
 
 @pytest.mark.parametrize('cube', cubes_generator(lazy=True))
 def test_fix_dtype_lazy(cube):
+    """Test fix for lazy data."""
     assert is_lazy(cube)
     utils._fix_dtype(cube)
     assert cube.dtype == np.float32
@@ -94,6 +98,7 @@ def test_fix_dtype_lazy(cube):
 
 @pytest.mark.parametrize('cube', cubes_generator(lazy=False))
 def test_fix_dtype_not_lazy(cube):
+    """Test fix for realized data."""
     assert not is_lazy(cube)
     utils._fix_dtype(cube)
     assert cube.dtype == np.float32
@@ -287,3 +292,20 @@ def test_set_global_atts_incorrect():
     with pytest.raises(KeyError) as key_err:
         utils.set_global_atts(cube, global_attrs)
         assert msg in key_err
+
+
+def test_flip_dim_coord():
+    """Test flip dimensional coordinate."""
+    cube = _create_sample_cube()
+    assert cube.data[1, 1, 1, 1] == 22.
+    utils.flip_dim_coord(cube, "latitude")
+    assert cube.data[1, 1, 0, 1] == 22.
+
+
+def test_read_cmor_config():
+    """Test the cmor table reading."""
+    cfg = utils.read_cmor_config("WOA")
+    assert cfg['attributes']['dataset_id'] == 'WOA'
+    assert 'thetao' in cfg['variables']
+    assert 'Omon' in cfg['cmor_table'].tables
+    assert 'thetao' in cfg['cmor_table'].tables['Omon']
