@@ -104,6 +104,11 @@ def test_fix_dtype_not_lazy(cube):
     assert not is_lazy(cube)
 
 
+class VarInfoObj:
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+
 def _create_sample_cube():
     """Create a quick CMOR-compliant sample cube."""
     coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
@@ -112,14 +117,12 @@ def _create_sample_cube():
     time = iris.coords.DimCoord([15, 45],
                                 standard_name='time',
                                 bounds=[[1., 30.], [30., 60.]],
-                                units=Unit(
-                                    'days since 1950-01-01',
-                                    calendar='gregorian'))
+                                units=Unit('days since 1950-01-01',
+                                           calendar='gregorian'))
     zcoord = iris.coords.DimCoord([0.5, 5., 50.],
-                                  var_name='lev',
+                                  var_name='depth',
                                   standard_name='depth',
-                                  bounds=[[0., 2.5], [2.5, 25.],
-                                          [25., 250.]],
+                                  bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
                                   units='m',
                                   attributes={'positive': 'down'})
     lons = iris.coords.DimCoord([1.5, 2.5],
@@ -177,7 +180,23 @@ def test_fix_coords():
     cube.coord("latitude").bounds = None
     cube.coord("depth").bounds = None
     cube.coord("longitude").points = cube.coord("longitude").points - 3.
+    cube.coord("time").var_name = "cows"
+    cube.coord("longitude").var_name = "cows"
+    cube.coord("latitude").var_name = "cows"
+    cube.coord("longitude").units = "m"
+    cube.coord("latitude").units = "K"
     utils.fix_coords(cube)
+    assert cube.coord("time").var_name == "time"
+    assert cube.coord("longitude").var_name == "lon"
+    assert cube.coord("latitude").var_name == "lat"
+    assert cube.coord("longitude").standard_name == "longitude"
+    assert cube.coord("latitude").standard_name == "latitude"
+    assert cube.coord("longitude").long_name == "longitude coordinate"
+    assert cube.coord("latitude").long_name == "latitude coordinate"
+    assert cube.coord("longitude").units == "degrees"
+    assert cube.coord("latitude").units == "degrees"
+    assert cube.coord("depth").var_name == "lev"
+    assert cube.coord("depth").attributes['positive'] == "down"
     assert cube.coord("time").has_bounds()
     assert cube.coord("time").bounds[0][1] == 30.
     assert cube.coord("time").units == 'days since 1950-1-1 00:00:00'
@@ -189,10 +208,82 @@ def test_fix_coords():
     assert cube.data[1, 1, 1, 0] == 22.
     assert cube.coord("latitude").has_bounds()
     assert cube.coord("depth").has_bounds()
+    assert cube.coord('latitude').coord_system is None
+    assert cube.coord('longitude').coord_system is None
 
 
+def test_fix_var_metadata():
+    """Test fixing the variable metadata."""
+    cube = _create_sample_cube()
+    cube.var_name = "cows"
+    cube.long_name = "flying cows"
+    cube.units = "m"
+    var_info = {
+        "short_name": "tas",
+        "frequency": "mon",
+        "modeling_realm": "atmos",
+        "standard_name": "air_temperature",
+        "units": "K",
+        "cell_methods": "area: time: mean",
+        "cell_measures": "area: areacella",
+        "long_name": "Near-Surface Air Temperature",
+        "comment": "near-surface (usually, 2 meter) air temperature",
+        "dimensions": "longitude latitude time height2m",
+        "out_name": "tas",
+        "type": "real",
+        "positive": "",
+        "valid_min": "",
+        "valid_max": "",
+        "ok_min_mean_abs": "",
+        "ok_max_mean_abs": ""
+    }
+    var_info = VarInfoObj(**var_info)
+    utils.fix_var_metadata(cube, var_info)
+    assert cube.var_name == "tas"
+    assert cube.long_name == "Near-Surface Air Temperature"
+    assert cube.units == "K"
+    assert cube.standard_name == "air_temperature"
 
 
+def test_set_global_atts_correct():
+    """Test set global attributes."""
+    cube = _create_sample_cube()
+    global_attrs = {
+        'dataset_id': '1',
+        'version': '2',
+        'tier': '3',
+        'source': '4',
+        'reference': 'acknow_author',
+        'comment': '6',
+        'project_id': '7',
+    }
+    utils.set_global_atts(cube, global_attrs)
+    attrs = cube.attributes
+    assert '1 ' in attrs['title']
+    assert attrs['version'] == '2'
+    assert attrs['tier'] == '3'
+    assert attrs['source'] == '4'
+    assert attrs['reference'] == 'Please acknowledge the author(s).'
+    assert attrs['comment'] == '6'
+    assert attrs['project_id'] == '7'
 
 
-
+def test_set_global_atts_incorrect():
+    """Test set global attributes."""
+    cube = _create_sample_cube()
+    global_attrs = {
+        'version': '2',
+        'tier': '3',
+        'source': '4',
+        'reference': 'acknow_author',
+        'comment': '6',
+        'project_id': '7',
+    }
+    msg = \
+        "".join(["All CMORized datasets need the ",
+                 "global attributes 'dataset_id', ",
+                 "'version', 'tier', 'source', 'reference', 'comment' and ",
+                 "'project_id' specified in the configuration file"])
+    with pytest.raises(KeyError) as key_err:
+        utils.set_global_atts(cube, global_attrs)
+        assert msg in key_err
