@@ -31,7 +31,7 @@ preprocessors:
       target_grid: 0.75 x 0.75
       lon_offset: true
       lat_offset: true
-      scheme: linear
+      scheme: area_weighted
   precipitation_unit: &precipitation_unit
     convert_units:
       units: kg m-2 d-1
