@@ -80,7 +80,7 @@ diagnostics:
       pr: &var_daily
         mip: day
         start_year: 1990
-        end_year: 2018
+        end_year: 1990
         preprocessor: preproc_era_interim_pr
       pr_climatology:
         <<: *var_daily
