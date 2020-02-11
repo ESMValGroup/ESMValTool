@@ -5,6 +5,7 @@ import iris
 import numpy as np
 import pytest
 
+from cf_units import Unit
 import esmvaltool.cmorizers.obs.utilities as utils
 
 
@@ -101,3 +102,97 @@ def test_fix_dtype_not_lazy(cube):
         if coord.has_bounds():
             assert coord.bounds_dtype == np.float64
     assert not is_lazy(cube)
+
+
+def _create_sample_cube():
+    """Create a quick CMOR-compliant sample cube."""
+    coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
+    cube_data = np.ones((2, 3, 2, 2))
+    cube_data[1, 1, 1, 1] = 22.
+    time = iris.coords.DimCoord([15, 45],
+                                standard_name='time',
+                                bounds=[[1., 30.], [30., 60.]],
+                                units=Unit(
+                                    'days since 1950-01-01',
+                                    calendar='gregorian'))
+    zcoord = iris.coords.DimCoord([0.5, 5., 50.],
+                                  var_name='lev',
+                                  standard_name='depth',
+                                  bounds=[[0., 2.5], [2.5, 25.],
+                                          [25., 250.]],
+                                  units='m',
+                                  attributes={'positive': 'down'})
+    lons = iris.coords.DimCoord([1.5, 2.5],
+                                standard_name='longitude',
+                                bounds=[[1., 2.], [2., 3.]],
+                                units='degrees_east',
+                                coord_system=coord_sys)
+    lats = iris.coords.DimCoord([1.5, 2.5],
+                                standard_name='latitude',
+                                bounds=[[1., 2.], [2., 3.]],
+                                units='degrees_north',
+                                coord_system=coord_sys)
+    coords_spec = [(time, 0), (zcoord, 1), (lats, 2), (lons, 3)]
+    cube = iris.cube.Cube(cube_data, dim_coords_and_dims=coords_spec)
+    return cube
+
+
+def test_add_scalar_height_coord():
+    """Test add height aux coord."""
+    cube = _create_sample_cube()
+    utils.add_scalar_height_coord(cube, height=10.)
+    assert cube.coord("height").points[0] == 10.
+    assert "positive" in cube.coord("height").attributes
+    assert cube.coord("height").attributes["positive"] == "up"
+
+
+def test_convert_time_units():
+    """Test convert time units functionlity."""
+    cube = _create_sample_cube()
+    cube.coord("time").units = 'months since 0000-01-01 00:00:00'
+    utils.convert_timeunits(cube, "1950")
+    converted_units = cube.coord("time").units
+    assert converted_units == 'months since 1950-01-01 00:00:00'
+    cube.coord("time").units = 'days since 0000-01-01 00:00:00'
+    utils.convert_timeunits(cube, "1950")
+    converted_units = cube.coord("time").units
+    assert converted_units == 'days since 1950-01-01 00:00:00'
+    cube.coord("time").units = 'days since 1950-1-1'
+    utils.convert_timeunits(cube, "1950")
+    converted_units = cube.coord("time").units
+    assert converted_units == 'days since 1950-1-1 00:00:00'
+    cube = _create_sample_cube()
+    utils.convert_timeunits(cube, "1950")
+    not_converted_units = cube.coord("time").units
+    assert not_converted_units == 'days since 1950-01-01 00:00:00'
+
+
+def test_fix_coords():
+    """Test fix coordinates."""
+    cube = _create_sample_cube()
+    cube.coord("time").bounds = None
+    cube.coord('time').convert_units(
+        Unit('days since 1850-1-1 00:00:00', calendar='gregorian'))
+    cube.coord("longitude").bounds = None
+    cube.coord("latitude").bounds = None
+    cube.coord("depth").bounds = None
+    cube.coord("longitude").points = cube.coord("longitude").points - 3.
+    utils.fix_coords(cube)
+    assert cube.coord("time").has_bounds()
+    assert cube.coord("time").bounds[0][1] == 30.
+    assert cube.coord("time").units == 'days since 1950-1-1 00:00:00'
+    assert cube.coord("time").units.calendar == "gregorian"
+    assert cube.coord("longitude").points[0] == 178.5
+    assert cube.coord("longitude").points[1] == 179.5
+    assert cube.coord("longitude").has_bounds()
+    assert cube.coord("longitude").bounds[1][1] == 180.
+    assert cube.data[1, 1, 1, 0] == 22.
+    assert cube.coord("latitude").has_bounds()
+    assert cube.coord("depth").has_bounds()
+
+
+
+
+
+
+
