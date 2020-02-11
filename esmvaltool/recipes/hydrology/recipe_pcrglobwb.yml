@@ -25,7 +25,7 @@ preprocessors:
       target_grid: 0.25 x 0.25
       lon_offset: true
       lat_offset: true
-      scheme: linear
+      scheme: area_weighted
   era_interim_grid: &era_interim_grid
     regrid:
       target_grid: 0.75 x 0.75
