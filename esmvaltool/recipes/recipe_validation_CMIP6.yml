@@ -45,7 +45,8 @@ diagnostics:
         exper_model: IPSL-CM6A-LR
         observational_datasets: ['ERA-Interim'] # list of at least one element; if no OBS wanted comment out
         analysis_type: lat_lon  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
-        seasonal_analysis: false
+        seasonal_analysis: false  # turn on to output per season
+        save_cubes: true  # save each plotted cube in work
       zonal_mean:
         script: validation.py
         title: ""
@@ -54,7 +55,8 @@ diagnostics:
         exper_model: IPSL-CM6A-LR
         observational_datasets: ['ERA-Interim'] # list of at least one element; if no OBS wanted comment out
         analysis_type: zonal_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
-        seasonal_analysis: true
+        seasonal_analysis: true  # turn on to output per season
+        save_cubes: true  # save each plotted cube in work
       meridional_mean:
         script: validation.py
         title: ""
@@ -63,4 +65,5 @@ diagnostics:
         exper_model: IPSL-CM6A-LR
         observational_datasets: ['ERA-Interim'] # list of at least one element; if no OBS wanted comment out
         analysis_type: meridional_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
-        seasonal_analysis: true
+        seasonal_analysis: true  # turn on to output per season
+        save_cubes: true  # save each plotted cube in work
