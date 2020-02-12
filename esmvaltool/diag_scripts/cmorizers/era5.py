@@ -7,6 +7,8 @@ from pathlib import Path
 from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
                                             run_diagnostic)
 
+from esmvalcore.cmor.table import CMOR_TABLES
+
 logger = logging.getLogger(Path(__file__).name)
 
 
@@ -19,7 +21,10 @@ def main(cfg):
         basename = stem.replace('native', 'OBS')
 
         if info['diagnostic'] == 'daily':
-            basename = basename.replace('E1hr', 'Eday')
+            for mip in ['day', 'Eday', 'CFday']:
+                if CMOR_TABLES['CMIP6'].get_variable(mip, info['short_name']):
+                    basename = basename.replace('E1hr', mip)
+            basename = basename.replace('E1hr', 'day')
 
         if 'fx' not in basename:
             end_year = basename[-4:]
