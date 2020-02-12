@@ -80,17 +80,19 @@ diagnostics:
       pr: &var_daily
         mip: day
         start_year: 1990
-        end_year: 1990
+        end_year: 2018
         preprocessor: preproc_era_interim_pr
-      pr_climatology:
-        <<: *var_daily
+      pr_climatology: &var_daily_clim
+        mip: day
+        start_year: 1990  # it should be possible to specify different years for the climatology
+        end_year: 2004
         short_name: pr
         preprocessor: preproc_era_interim_pr_clim
       tas:
         <<: *var_daily
         preprocessor: preproc_era_interim_tas
       tas_climatology:
-        <<: *var_daily
+        <<: *var_daily_clim
         short_name: tas
         preprocessor: preproc_era_interim_tas_clim
     scripts:
@@ -108,15 +110,17 @@ diagnostics:
         start_year: 1990
         end_year: 2018
         preprocessor: preproc_era5_pr
-      pr_climatology:
-        <<: *var_hourly
+      pr_climatology: &var_hourly_clim
+        mip: Eday
+        start_year: 1990  # it should be possible to specify different years for the climatology
+        end_year: 2004
         short_name: pr
         preprocessor: preproc_era5_pr_clim
       tas:
         <<: *var_hourly
         preprocessor: preproc_era5_tas
       tas_climatology:
-        <<: *var_hourly
+        <<: *var_hourly_clim
         short_name: tas
         preprocessor: preproc_era5_tas_clim
     scripts:
