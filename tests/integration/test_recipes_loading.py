@@ -6,7 +6,6 @@ from pathlib import Path
 import iris
 import numpy as np
 import pytest
-from mock.mock import create_autospec
 
 import esmvalcore
 import esmvaltool
