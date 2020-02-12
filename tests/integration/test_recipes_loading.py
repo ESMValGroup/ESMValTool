@@ -6,12 +6,13 @@ from pathlib import Path
 import iris
 import numpy as np
 import pytest
+from mock.mock import create_autospec
 
+import esmvalcore
+import esmvaltool
 from esmvalcore import _data_finder, _recipe_checks
 from esmvalcore._config import read_config_user_file
 from esmvalcore._recipe import read_recipe_file
-
-import esmvaltool
 
 from .test_diagnostic_run import write_config_user_file
 
@@ -137,8 +138,21 @@ def patched_extract_shape(monkeypatch):
     monkeypatch.setattr(_recipe_checks, 'extract_shape', extract_shape)
 
 
+@pytest.fixture
+def patched_get_reference_levels(monkeypatch):
+    """Replace `_regrid.get_reference_levels`.
+
+    Return a random set of reference levels
+    """
+    def get_reference_levels(*_, **_a):
+        return [1, 2]
+
+    monkeypatch.setattr(esmvalcore._recipe, 'get_reference_levels',
+                        get_reference_levels)
+
+
 @pytest.mark.parametrize('recipe_file', _get_recipes())
 def test_diagnostic_run(recipe_file, config_user, patched_datafinder,
-                        patched_extract_shape):
+                        patched_extract_shape, patched_get_reference_levels):
     """Check that recipe files are valid ESMValTool recipes."""
     read_recipe_file(recipe_file, config_user)
