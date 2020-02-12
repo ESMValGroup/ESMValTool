@@ -249,7 +249,12 @@ begin
     end if
   end if
 
-  error_msg("f", scriptname, funcname, "conversion from " + units_from + \
-            " to " + units_to + " not defined")
+  if (units_from.eq.units_to) then
+    error_msg("w", scriptname, funcname, "No conversion needed from " + \
+              units_from + " to " + units_to)
+    return(out)
+  end if
 
+   error_msg("f", scriptname, funcname, "conversion from " + units_from + \
+             " to " + units_to + " not defined")
 end

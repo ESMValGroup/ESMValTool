@@ -33,6 +33,8 @@ load "$diag_scripts/shared/ensemble.ncl"
 
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/scatterplot.ncl"
+load "$diag_scripts/shared/plot/xy_line.ncl"
+load "$diag_scripts/shared/plot/legends.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
@@ -42,26 +44,29 @@ begin
   tmp = metadata_att_as_array(input_file_info, "short_name")
   variables = get_unique_values(tmp)
   delete(tmp) 
-print(variables)
+
   ; get indices associated with specific variables
   tas_idx = 0;ind(variables.eq."tas")
   nbp_idx = 1;ind(variables.eq."nbp")
-print(input_file_info)
+
   ; Load var_info
   var0 = variable_info[tas_idx]@short_name;variables(tas_idx)
   info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info0)
 
-  var_1pct = variable_info[nbp_idx]@short_name;variables(nbp_idx)
-  info1 = select_metadata_by_name(input_file_info, var_1pct)
+  var1 = variable_info[nbp_idx]@short_name;variables(nbp_idx)
+  info = select_metadata_by_name(input_file_info, var1)
 
-  var_esmFix = variable_info[nbp_idx]@short_name;variables(nbp_idx)
-  info2 = select_metadata_by_name(input_file_info, var_esmFix)
+  info1 = info[dim_MOD:]   ;1pctCO2
+  info2 = info[:dim_MOD-1] ;esmFixClim1
+  
+  ;var_esmFix = variable_info[nbp_idx]@short_name;variables(nbp_idx)
+  ;info2 = select_metadata_by_name(input_file_info, nbp_pct)
 
   log_info("+++++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + " + " + var1 + ")")
   log_info("+++++++++++++++++++++++++++++++++++++++++++++")
 
-  dim_MOD = ListCount(info0)
   datasetnames0 = metadata_att_as_array(info0, "dataset")
   datasetnames1 = metadata_att_as_array(info1, "dataset")
   datasetnames2 = metadata_att_as_array(info2, "dataset")
@@ -93,22 +98,25 @@ print(input_file_info)
     UNITS = diag_script_info@con_units 
   end if 
 
-  file_list = 
+  temp_dir = diag_script_info@nc_infile;config_user_info@run_dir
+  temp_dir = temp_dir + "gIAV_" \
+                      + diag_script_info@gIAV_start + "-" \
+                      + diag_script_info@gIAV_end + ".nc"
 
   ;;================================================================== 
   ;; setup data holders for plots 
-  nMax = max(toint(models@end_year)) - min(toint(models@start_year)) + 1
-  xMax_year = max(toint(models@end_year))
-  xMin_year = min(toint(models@start_year))
+  xMax_year = max(metadata_att_as_array(info0, "end_year"))
+  xMin_year = min(metadata_att_as_array(info0, "start_year"))
+  nMax = xMax_year - xMin_year + 1
 
   ;;carbon cycle climate feedback
-  gamma_LT = new((/dim_MOD/),"float") 
-  gamma_LT_std = new((/dim_MOD/),"float") 
+  gamma_LT = new((/dim_MOD/),double)
+  gamma_LT_std = new((/dim_MOD/),double)
   ;;trend lines 
-  Yreg= new((/dim_MOD-1/),"float")
+  Yreg= new((/dim_MOD-1/),double)
 
   ;;slope 
-  arc=new((/dim_MOD/),"float") 
+  arc=new((/dim_MOD/),double)
     
   ;;read uncoupled VAR0
   climo_dir = getenv("ESMValTool_climo_dir")
@@ -123,63 +131,69 @@ print(input_file_info)
     
     idx_mod := imod
 
+    ;;average yearly
+    A0 := time_operations(A0,-1,-1,"average","yearly",True)
+    A1 := time_operations(A1,-1,-1,"average","yearly",True)
+    A2 := time_operations(A2,-1,-1,"average","yearly",True)
+
     ; Convert units if appropriate
     if (isatt(variable_info[tas_idx], "plot_units")) then
       A0 := convert_units(A0,variable_info[tas_idx]@plot_units)
     end if
-    if (isatt(variable_info[nbp_idx], "plot_units")) then
-      A1 := convert_units(A1_co2flux,variable_info[nbp_idx]@plot_units)
+    if (isatt(variable_info[nbp_idx+1], "plot_units")) then
+      A1 := convert_units(A1,variable_info[nbp_idx+1]@plot_units)
     end if
     if (isatt(variable_info[nbp_idx], "plot_units")) then
-      A2 := convert_units(A2_co2flux,variable_info[nbp_idx]@plot_units)
+      A2 := convert_units(A2,variable_info[nbp_idx]@plot_units)
     end if
 
-    tmpcA0 = new((/dimsizes(tmpA0)+1/),"float")
-    tmpcA2 = new((/dimsizes(tmpA2)+1/),"float")
-    tmpcA0(0) = 0.0
+    ; cummulate nbp over time series
+    tmpcA1 = new((/dimsizes(A1)+1/),double)
+    tmpcA2 = new((/dimsizes(A2)+1/),double)
+    tmpcA1(0) = 0.0
     tmpcA2(0) = 0.0
-    
-    do y = 0,nMax-1
-      tmpcA0(y+1) = tmpcA0(y)+A0(y)
+
+    do y = 0,dimsizes(A1&year)-1
+      tmpcA1(y+1) = tmpcA1(y)+A1(y)
       tmpcA2(y+1) = tmpcA2(y)+A2(y)
     end do
     delete(y)
 
     ; calculate integral line:
-    tidx := dimsizes(tmpA0)-1
-    Y1data := avg(tmpcA0(tidx-9:tidx))-avg(tmpcA0(:9))
+    tidx := dimsizes(A0)-1
+    Y1data := avg(tmpcA1(tidx-9:tidx))-avg(tmpcA1(:9))
     Y2data := avg(tmpcA2(tidx-9:tidx))-avg(tmpcA2(:9))
-    Y3data := avg(tmpA1(tidx-9:tidx))-avg(tmpA1(:9))
+    Y3data := avg(A0(tidx-9:tidx))-avg(A0(:9))
 
     ; calculate gamma_LT:
     gamma_LT(imod) = ((Y1data-Y2data)/(Y3data))
-    gamma_LT_std(imod) = sqrt((stddev(tmpA0(tidx-9:tidx))/Y3data)^2\
-    +(1/stddev(tmpA1(tidx-9:tidx)))^2\
-    +(stddev(tmpA2(tidx-9:tidx))/Y3data)^2)
+    gamma_LT_std(imod) = sqrt((stddev(A1(tidx-9:tidx))/Y3data)^2\
+    +(1/stddev(A0(tidx-9:tidx)))^2\
+    +(stddev(A2(tidx-9:tidx))/Y3data)^2)
     
     delete([/A0,A1,A2,tidx/])
-    delete([/tmpA0,tmpA1,tmpA2/])
-    delete([/tmpaA0,tmpaA1,tmpaA2/])
     delete([/Y1data,Y2data,Y3data/])
-    delete([/tmpcA0,tmpcA2/])
+    delete([/tmpcA1,tmpcA2/])
   end do     ;model loop
 
    ;;read file with GAMMA_IAV values
-   IAV = ncdf_read(file_list, "gIAV")
+   IAV = ncdf_read(temp_dir, "gIAV")
 
-   if (dimsizes(IAV(0,:)).gt.dim_MOD) then
-       Y6data  = IAV(:,1:dim_MOD)         ;;Gamma_IAV from the models
-       obs_std = IAV(:,0)                 ;;Gamma_IAV from the OBS
+   if (dimsizes(IAV(0,:)).eq.dim_MOD+1) then
+     Y6data  = IAV(:,1:dim_MOD)         ;;Gamma_IAV from the models
+     obs_std = IAV(:,0)                 ;;Gamma_IAV from the OBS
    else
-       Y6data = IAV
-       obs_std = (/0,0/)
+     Y6data = IAV
+     obs_std = (/0,0/)
    end if
 
    ;;exclude models from regression if appropriate
-   if(isatt(diag_script_info,"con_units")) then 
-     ind_MOD = diag_script_info@reg_models
-     aX = where(datasetnames0.eq.diag_script_info@reg_models,Y6data,Y6data@_FillValue)
-     aY = where(datasetnames0.eq.diag_script_info@reg_models,gamma_LT,gamma_LT@_FillValue)
+   aX = tofloat(Y6data)
+   aY = tofloat(gamma_LT)
+   if(isatt(diag_script_info,"reg_models")) then 
+     ind_MOD = ind(datasetnames0.eq.diag_script_info@reg_models)
+     aX(:,ind_MOD) = aX@_FillValue
+     aY(ind_MOD) = aY@_FillValue
    end if
 
    ;;Calculate confidence limits on fit (see Wikipedia page on "Simple Linear Regression")
@@ -200,7 +214,6 @@ print(input_file_info)
        Py    = PDF@Py
        gamma_mco2 = rc*obs_std(0)+rc@yintercept
        gamma_eco2 = 0.5*cdft_t(0.05/2., 5)*sqrt(rc@rstd^2+obs_std(1)^2);gamma_mco2*(obs_std(1)/obs_std(0))
-       info_output("constraint gamma_LT = "+gamma_mco2+" +/- "+gamma_eco2, verbosity,1)
    end if
    Py_pr = PDF@Py_pr
    y     = PDF@y
@@ -223,24 +236,26 @@ print(input_file_info)
 
    colors = project_style(info0,diag_script_info, "colors")
    thicks = project_style(info0,diag_script_info, "thicks")
-   plot_num = integertochar(ispan(97,122,1))
 
    XStg    = "Sensitivity of land+ocean CO~B~2~N~ flux, ~F8~g~F21~~B~LT~N~ (GtC/yr/K)"
    YStg    = "Carbon Cycle Climate Feedback, ~F8~g~F21~~B~LT~N~ (GtC/K)"
 
-   data_arr = (/Y6data(0,:), gamma_LT/)
-   data_arr!0 = "models"
-   data_arr&models = (/XStg,YStg/)
+   data_arr = new((/2,dimsizes(gamma_LT)/), float)
+   data_arr!0      = "datasets"
+   data_arr!1      = "model"
+   data_arr&datasets = (/XStg,YStg/)
+   data_arr&model = datasetnames0
+   data_arr(0, :) = tofloat(Y6data(0,:))
+   data_arr(1, :) = tofloat(gamma_LT)
    data_arr@diag_script = DIAG_SCRIPT
 
-   data_arr@res_tiMainString      = plot_num(0)+") "
    data_arr@res_tiMainFontHeightF = 0.025
    data_arr@res_gsnCenterString   = ""
    data_arr@res_trXMinF           = min(Y6data(0,:))-0.2*abs(min(Y6data(0,:)))
    data_arr@res_trXMaxF           = max(Y6data(0,:))+0.2*abs(max(Y6data(0,:)))
    data_arr@res_trYMinF           = min(gamma_LT)-0.2*abs(min(gamma_LT))
    data_arr@res_trYMaxF           = max(gamma_LT)+0.2*abs(max(gamma_LT))
-   plot = scatterplot(wks, data_arr, var0, False, False)
+   plot = scatterplot(wks, data_arr, var0, False, False, input_file_info)
    
    peres = True
    peres@tfPolyDrawOrder = "PreDraw"
@@ -254,18 +269,12 @@ print(input_file_info)
    if (obs_std(0).ne.0) then
        xin = (/obs_std(0)+obs_std(1), obs_std(0)+obs_std(1), \
                obs_std(0)-obs_std(1), obs_std(0)-obs_std(1)/)
-       yin = (/100,-150,-150,100/)
+       yin = (/500,-500,-500,500/)
        add_prediction_error(wks, plot, False, xin, yin)
        delete([/xin,yin/])   
-
-;;        ecres = True 
-;;        ecres@gsLineColor       = "slateblue3"
-;;        ecres@gsLineDashPattern = 2
-;;        ecres@gsLineThicknessF  = 1.5
-;;        ec_line = gsn_add_polyline(wks, plot, (/data_arr@res_trXMinF, obs_std(0), obs_std(0)/), \
-;;                                       (/gamma_mco2, gamma_mco2, data_arr@res_trYMinF/), ecres)
    end if
 
+   ; add regression line
    lres = True
    lres@gsLineColor       = "red"
    lres@gsLineThicknessF  = 1.5
@@ -287,23 +296,35 @@ print(input_file_info)
    frame (wks) 
 
    ;;create line plot with PDFs
-   diag_script_info@multi_model_mean = "n"
+   diag_script_info@multi_model_mean = False
+   diag_script_info@scatter_log = False 
+   diag_script_info@xy_line_legend = False
    pres = True
-   pres@tiMainString       = plot_num(1)+") "
    pres@tiXAxisString      = XStg
    pres@tiYAxisString      = "Probability Density"
    pres@vpWidthF           = 0.4
    if (obs_std(0).eq.0) then
        pres@xyLineColors   = "black"
        pres@xyDashPatterns = 2   
-       pres@trYMinF        = 0.
+       pres@trYMinF        = 0
        xy_line(wks, Py_pr, y, 0., pres, False)
    else
        pres@xyLineColors   = (/"black","red"/)
        pres@xyDashPatterns = (/2, 0/) 
-       pres@trYMinF        = 0.
-       xy_line(wks, (/Py_pr,Py/), (/y,y/), 0., pres, False)
+       pres@trYMinF        = 0
+       xy_line(wks, (/Py_pr,Py/), (/y,y/), 0., pres, input_file_info)
    end if
+
+  ; *************************************
+  ; output to NetCDF
+  out_path = config_user_info@work_dir
+  system("mkdir -p " + out_path)
+  out_path1 = out_path + "constraint_" + var1 + "_" \
+                       + diag_script_info@gIAV_start + "-" \
+                       + diag_script_info@gIAV_end + ".nc"
+  data_arr@ncdf = out_path
+  data_arr@var = var0
+  ncdf_outfile  = ncdf_write(data_arr, out_path1)
 
   ; Call provenance logger
   log_provenance(ncdf_outfile, \

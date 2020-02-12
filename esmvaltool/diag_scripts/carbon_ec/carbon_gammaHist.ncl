@@ -41,18 +41,18 @@ begin
   delete(tmp) 
 
   ; get indices associated with specific variables
-  tas_idx = 0;ind(variables.eq."tas")
-  nbp_idx = 1;ind(variables.eq."nbp")
-  fgco2_idx = 2;ind(variables.eq."fgco2")
+  tas_idx = ind(variables.eq."tas")
+  nbp_idx = ind(variables.eq."nbp")
+  fgco2_idx = ind(variables.eq."fgco2")
 
   ; Load var_info
-  var0 = variable_info[tas_idx]@short_name;variables(tas_idx)
+  var0 = variables(tas_idx)
   info0 = select_metadata_by_name(input_file_info, var0)
 
-  var1 = variable_info[nbp_idx]@short_name;variables(nbp_idx)
+  var1 = variables(nbp_idx)
   info1 = select_metadata_by_name(input_file_info, var1)
 
-  var2 = variable_info[fgco2_idx]@short_name;variables(fgco2_idx)
+  var2 = variables(fgco2_idx)
   info2 = select_metadata_by_name(input_file_info, var2)
 
   log_info("+++++++++++++++++++++++++++++++++++++++++++++")
@@ -63,7 +63,6 @@ begin
   datasetnames0 = metadata_att_as_array(info0, "dataset")
   datasetnames1 = metadata_att_as_array(info1, "dataset")
   datasetnames2 = metadata_att_as_array(info2, "dataset")
-
 
   ;****************************************************************** 
   ; Create output plot directory
@@ -119,23 +118,31 @@ begin
 
        idx_mod := imod
 
-       ;;calculate spatial average
+       ; special case for GCP data
+       if (datasetnames1(imod).eq."GCP") then
+         A1 = A1*148300000000000. ;A1@area
+       end if
+       if (datasetnames2(imod).eq."GCP") then
+         A2 = A2*360000000000000. ;A2@area
+       end if
+
+       ; calculate spatial average
        if (dimsizes(dimsizes(A1)).gt.1) then
          A1_tmp = dim_sum_Wrap(dim_sum_Wrap(A1))
          A1_tmp!0 = "time"
          A1_tmp&time = (/A1&time/)
        else
          A1_tmp = A1
-       end if        
+       end if      
 
-       if (dimsizes(dimsizes(A2)).gt.1) then
+       if (dimsizes(dimsizes(A2)).gt.1) then 
          A2_tmp = dim_sum_Wrap(dim_sum_Wrap(A2))
          A2_tmp!0 = "time"
          A2_tmp&time = (/A2&time/)
        else
          A2_tmp = A2
-       end if
- 
+       end if   
+
        ; add land and ocean carbon fluxes
        A1_co2flux = A1_tmp + A2_tmp
        copy_VarAtts(A1,A1_co2flux)
@@ -143,11 +150,8 @@ begin
        delete([/A1,A1_tmp,A2_tmp/]) 
 
       ;; Convert units if appropriate
-      if (isatt(variable_info[tas_idx], "plot_units")) then
-          A0 := convert_units(A0,variable_info[tas_idx]@plot_units)
-      end if
-      if (isatt(variable_info[nbp_idx], "plot_units")) then
-          A1 := convert_units(A1_co2flux,variable_info[nbp_idx]@plot_units)
+      if (isatt(diag_script_info, "plot_units")) then
+          A1 := convert_units(A1_co2flux,diag_script_info@plot_units)
       end if
 
       ; Copute time average 
@@ -217,10 +221,8 @@ begin
   end do     ;model loop
 
   ;;counting ref_models only as one model
-  datasetnames0 = where(datasetnames0.eq.variable_info[tas_idx]@reference_dataset, \
+  datasetnames0 = where(datasetnames0.eq.variable_info[0]@reference_dataset, \
                         "OBS" , datasetnames0)
-  datasetnames1 = where(datasetnames1.eq.variable_info[nbp_idx]@reference_dataset, \
-                        "OBS" , datasetnames1)
 
   ;; Get environment variables for plotting
   plot_dir = getenv("ESMValTool_plot_dir")
@@ -295,8 +297,8 @@ begin
 
   ; Save data for later use
   if (config_user_info@write_netcdf) then
-    new_path = config_user_info@work_dir
-    new_path = new_path + DIAG_SCRIPT + "_gIAV_" \
+    new_path = diag_script_info@nc_outfile
+    new_path = new_path + "gIAV_" \
                         + diag_script_info@start_year + "-" \
                         + diag_script_info@end_year + ".nc"
 
@@ -314,27 +316,6 @@ begin
     ;Write NetCDF output
     ncdf_outfile = ncdf_write(arc, new_path)
   end if
-
-      ;;Write results of temporary list
-  ;xml_name = getenv("ESMValTool_xml_name")
-
-  ;suffix = get_file_suffix(xml_name, 0)
-  ;name = str_sub_str(xml_name, suffix, "")
-  ;temp_dir = get_output_dir(config_user_info@work_dir, "temp") + \
-  ;name + "_gIAV.nc"
-
-      ;;Remove previous file if already exists
-  ;if (isfilepresent_esmval(temp_dir)) then
-  ;  system("rm -f " + temp_dir)
-  ;end if
-
-  ;ncdf_char = tochar(new_path)
-  ;temp_list_new = new((/1, dimsizes(ncdf_char)/), character)
-  ;temp_list_new(0, :) = ncdf_char
-
-      ;; Create new file and add list
-  ;temp = addfile(temp_dir, "c")
-  ;temp->temp_list = temp_list_new
 
   ; Call provenance logger
   log_provenance(ncdf_outfile, \

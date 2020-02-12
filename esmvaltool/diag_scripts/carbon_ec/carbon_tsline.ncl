@@ -122,6 +122,7 @@ begin
   set_default_att(diag_script_info, "run_ave", 0)
   set_default_att(diag_script_info, "header", False)
   set_default_att(diag_script_info, "volcanoes", False)
+  set_default_att(diag_script_info, "align", False)
 
   ; Determine time range
   start_year = min(metadata_att_as_array(info_items, "start_year"))
@@ -231,6 +232,7 @@ begin
 
     ; Convert units for plotting (if required)
     if (isatt(diag_script_info, "plot_units")) then
+print(diag_script_info@plot_units)
       A0 = convert_units(A0, diag_script_info@plot_units)
     end if
 
@@ -254,7 +256,7 @@ begin
 
     ; Calcluate cumulated fluxes
     if (isatt(variable_info[0], "cumulate")) then
-      A0  = cumulate_carbon(A0)
+      A0 = cumulate_carbon(A0)
     end if
 
     ; Anomaly
@@ -383,9 +385,14 @@ begin
     elseif (time_avg.eq."yearly") then
       date = procmod&year
     end if
-    idx1 = ind(date(0).eq.model_arr&time)
-    idx2 = ind(date(dimsizes(date) - 1).eq.model_arr&time)
-    model_arr(imod, idx1:idx2) = (/procmod/)
+    if (diag_script_info@align) then
+      model_arr(imod, :dimsizes(procmod)-1) = (/procmod/)
+      xmax = date(dimsizes(procmod)-1)
+    else
+      idx1 = ind(date(0).eq.model_arr&time)
+      idx2 = ind(date(dimsizes(date) - 1).eq.model_arr&time)
+      model_arr(imod, idx1:idx2) = (/procmod/)
+    end if
     if (imod.eq.0) then
       copy_VarAtts(procmod, model_arr)
     end if
@@ -420,7 +427,9 @@ begin
     delete(month)
   elseif (time_avg.eq."yearly") then
     xmin = min(model_arr&time)
-    xmax = max(model_arr&time)
+    if (.not.diag_script_info@align) then
+      xmax = max(model_arr&time)
+    end if
     tmp = todouble(model_arr&time)
     delete(model_arr&time)
     model_arr&time = tmp
