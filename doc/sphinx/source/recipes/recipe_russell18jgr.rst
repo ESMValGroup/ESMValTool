@@ -263,110 +263,112 @@ Example plots
    :align:   center
    :width: 50%
 
-   Caption of figure 1.
+   Figure 1: Annual-mean zonal wind stress (tauu - N/m\ :sup:`2`\) with eastward wind stress as positive plotted as a polar contour map. 
 
 .. _fig_russell_2:
 .. figure::  /recipes/figures/russell18jgr/Fig2_1986-2005.png
    :align:   center
    :width: 50%
 
-   Caption of figure 2.
+   Figure 2: The zonal and annual means of the zonal wind stress (N/m\ :sup:`2`\) plotted in a line plot.
 
 .. _fig_russell_3a:
 .. figure::  /recipes/figures/russell18jgr/Fig3_Polar-Front.png
    :align:   center
    :width: 50%
 
-   Caption of figure 3a.
+   Figure 3a: The latitudinal position of Subantarctic Front using definitions from Orsi et al (1995).
 
 .. _fig_russell_3b:
 .. figure::  /recipes/figures/russell18jgr/Fig3_Subantarctic-Fronts.png
    :align:   center
    :width: 50%
 
-   Caption of figure 3b.
+   Figure 3b: The latitudinal position of Polar Front using definitions from Orsi et al (1995).
 
 .. _fig_russell_4:
 .. figure::  /recipes/figures/russell18jgr/Fig4_Drake_passage.png
    :align:   center
    :width: 50%
 
-   Caption of figure 4.
+   Figure 4: Time averaged zonal velocity through Drake Passage (at 69W, in cm/s, eastward is positive). The total transport by the ACC is calculated if volcello file is available.
 
 .. _fig_russell_5:
 .. figure::  /recipes/figures/russell18jgr/Fig5_sic-max-min.png
    :align:   center
    :width: 50%
 
-   Caption of figure 5.
+   Figure 5: Mean extent of sea ice for September(max) in blue and February(min) in red plotted as polar contour map.
+
 
 .. _fig_russell_5g:
 .. figure::  /recipes/figures/russell18jgr/Fig5g_sic-line.png
    :align:   center
    :width: 50%
 
-   Caption of figure 5g.
+   Figure 5g: Annual cycle of sea ice area in southern ocean as a line plot (monthly climatology).
 
 .. _fig_russell_6a:
 .. figure::  /recipes/figures/russell18jgr/Fig6a.png
    :align:   center
    :width: 50%
 
-   Caption of figure 6a.
+   Figure 6a: Density layer based volume transport (in Sv) across 30S based on the layer definitions in Talley (2008).
 
 .. _fig_russell_6b:
 .. figure::  /recipes/figures/russell18jgr/Fig6b.png
    :align:   center
    :width: 50%
 
-   Caption of figure 6b.
+   Figure 6b: Density layer based heat transport(in PW) across 30S based on the layer definitions in Talley (2008).
+
 
 .. _fig_russell_7:
 .. figure::  /recipes/figures/russell18jgr/Fig7_fgco2_polar.png
    :align:   center
    :width: 50%
 
-   Caption of figure 7.
+   Figure 7: Annual mean CO\ :sub:`2`\  flux (sea to air, gC/(yr * m\ :sup:`2`\), positive (red) is out of the ocean) as a polar contour map.
 
 .. _fig_russell_7h:
 .. figure:: /recipes/figures/russell18jgr/Fig7h_fgco2_zonal-flux.png
    :align:   center
    :width: 50%
 
-   Caption of figure 7h.
+   Figure 7h: the time and zonal mean flux of CO\ :sub:`2`\  in gC/(yr * m\ :sup:`2`\) plotted as a line plot.
+
 
 .. _fig_russell_7i:
 .. figure::  /recipes/figures/russell18jgr/Fig7i_fgco2_integrated-flux.png
    :align:   center
    :width: 50%
 
-   Caption of figure 7i.
+   Figure 7i is the cumulative integral of the net CO\ :sub:`2`\  flux from 90S to 30S (in PgC/yr) plotted as a line plot. 
 
 .. _fig_russell_8:
 .. figure::  /recipes/figures/russell18jgr/Fig8_polar-ph.png
    :align:   center
    :width: 50%
 
-   Caption of figure 8.
+   Figure 8: Annual-mean surface pH plotted as a polar contour map.
 
 .. _fig_russell_9a:
 .. figure::  /recipes/figures/russell18jgr/Fig9a.png
    :align:   center
    :width: 50%
 
-   Caption of figure 9a.
+   Figure 9a: Scatter plot of the width of the Southern Hemisphere westerly wind band (in degrees of latitude) against the annual-mean integrated heat uptake south of 30S (in PW—negative uptake is heat lost from the ocean) along with the best fit line.
 
 .. _fig_russell_9b:
 .. figure::  /recipes/figures/russell18jgr/Fig9b.png
    :align:   center
    :width: 50%
 
-   Caption of figure 9b.
+   Figure 9b: Scatter plot of the width of the Southern Hemisphere westerly wind band (in degrees of latitude) against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the best fit line.
 
 .. _fig_russell_9c:
 .. figure:: /recipes/figures/russell18jgr/Fig9c.png
    :align:   center
    :width: 50%
 
-   Caption of figure 9c.
-
+   Figure 9c: Scatter plot of the net heat uptake south of 30S (in PW) against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the best fit line.
