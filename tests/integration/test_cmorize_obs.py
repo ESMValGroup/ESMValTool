@@ -3,7 +3,12 @@
 import contextlib
 import os
 import sys
+
+import iris
+import numpy as np
 import yaml
+from cf_units import Unit
+
 from esmvaltool.cmorizers.obs.cmorize_obs import main as run
 
 
@@ -20,6 +25,100 @@ def write_config_user_file(dirname):
     return str(config_file)
 
 
+def _create_sample_cube():
+    """Create a quick CMOR-compliant sample cube."""
+    coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
+    cube_data = np.ones((2, 3, 2, 2))
+    cube_data[1, 1, 1, 1] = 22.
+    time = iris.coords.DimCoord([15, 45],
+                                standard_name='time',
+                                bounds=[[1., 30.], [30., 60.]],
+                                units=Unit('days since 0000-01-01',
+                                           calendar='gregorian'))
+    zcoord = iris.coords.DimCoord([0.5, 5., 50.],
+                                  var_name='depth',
+                                  standard_name='depth',
+                                  bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
+                                  units='m',
+                                  attributes={'positive': 'down'})
+    lons = iris.coords.DimCoord([1.5, 2.5],
+                                standard_name='longitude',
+                                bounds=[[1., 2.], [2., 3.]],
+                                units='K',
+                                coord_system=coord_sys)
+    lats = iris.coords.DimCoord([1.5, 2.5],
+                                standard_name='latitude',
+                                bounds=[[1., 2.], [2., 3.]],
+                                units='K',
+                                coord_system=coord_sys)
+    coords_spec = [(time, 0), (zcoord, 1), (lats, 2), (lons, 3)]
+    cube = iris.cube.Cube(cube_data, dim_coords_and_dims=coords_spec)
+    return cube
+
+
+def put_dummy_data(data_path):
+    """Create a small dummy netCDF file to be cmorized."""
+    gen_cube = _create_sample_cube()
+    t_path = os.path.join(data_path, "woa13_decav81B0_t00_01.nc")
+    # correct var names
+    gen_cube.var_name = "t_an"
+    iris.save(gen_cube, t_path)
+    s_path = os.path.join(data_path, "woa13_decav81B0_s00_01.nc")
+    gen_cube.var_name = "s_an"
+    iris.save(gen_cube, s_path)
+    # incorrect var names
+    o2_path = os.path.join(data_path, "woa13_all_o00_01.nc")
+    gen_cube.var_name = "o2"
+    iris.save(gen_cube, o2_path)
+    no3_path = os.path.join(data_path, "woa13_all_n00_01.nc")
+    gen_cube.var_name = "no3"
+    iris.save(gen_cube, no3_path)
+    po4_path = os.path.join(data_path, "woa13_all_p00_01.nc")
+    gen_cube.var_name = "po4"
+    iris.save(gen_cube, po4_path)
+    si_path = os.path.join(data_path, "woa13_all_i00_01.nc")
+    gen_cube.var_name = "si"
+    iris.save(gen_cube, si_path)
+
+
+def check_log_file(log_file, no_data=False):
+    """Check the cmorization log file."""
+    with open(log_file, 'r') as log:
+        if no_data:
+            cases = []
+            for line in log.readlines():
+                case = "Could not find raw data WOA" in line
+                cases.append(case)
+            assert True in cases
+        else:
+            cases = []
+            for line in log.readlines():
+                case = "Fixing data" in line
+                cases.append(case)
+            assert True in cases
+
+
+def check_output_exists(output_path):
+    """Check if cmorizer outputted."""
+    # eg Tier2/WOA/OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc
+    output_files = os.listdir(output_path)
+    # ['OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc',
+    # 'OBS_WOA_clim_2013v2_Omon_so_200001-200002.nc']
+    assert len(output_files) == 2
+    assert 'OBS_WOA_clim' in output_files[0]
+    assert '_thetao_' in output_files[0]
+    assert '_so_' in output_files[1]
+
+
+def check_conversion(output_path):
+    """Check basic cmorization."""
+    cube = iris.load_cube(os.path.join(output_path,
+                                       os.listdir(output_path)[0]))
+    assert cube.coord("time").units == Unit('days since 1950-1-1 00:00:00',
+                                            calendar='gregorian')
+    assert cube.coord("latitude").units == 'degrees'
+
+
 @contextlib.contextmanager
 def arguments(*args):
     backup = sys.argv
@@ -28,7 +127,7 @@ def arguments(*args):
     sys.argv = backup
 
 
-def test_cmorize_obs_woa(tmp_path):
+def test_cmorize_obs_woa_no_data(tmp_path):
     """Test for example run of cmorize_obs command."""
 
     config_user_file = write_config_user_file(tmp_path)
@@ -42,19 +141,33 @@ def test_cmorize_obs_woa(tmp_path):
             'WOA',
     ):
         run()
+    log_dir = os.path.join(tmp_path, 'output_dir')
+    log_file = os.path.join(log_dir,
+                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    check_log_file(log_file, no_data=True)
 
 
-def test_cmorize_obs_cru(tmp_path):
+def test_cmorize_obs_woa_data(tmp_path):
     """Test for example run of cmorize_obs command."""
 
     config_user_file = write_config_user_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff'))
-    os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
+    data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
+    os.makedirs(data_path)
+    put_dummy_data(data_path)
     with arguments(
             'cmorize_obs',
             '-c',
             config_user_file,
             '-o',
-            'CRU',
+            'WOA',
     ):
         run()
+
+    log_dir = os.path.join(tmp_path, 'output_dir')
+    log_file = os.path.join(log_dir,
+                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    check_log_file(log_file, no_data=False)
+    output_path = os.path.join(log_dir, os.listdir(log_dir)[0], 'Tier2', 'WOA')
+    check_output_exists(output_path)
+    check_conversion(output_path)
