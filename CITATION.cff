@@ -4,14 +4,72 @@ abstract: "ESMValTool: A community diagnostic and performance metrics tool for r
 
 authors:
   -
-    affiliation: "University of Bremen, Germany"
-    family-names: Adeniyi
-    given-names: Kemisola
-  -
     affiliation: "NLeSC, Netherlands"
     family-names: Andela
     given-names: Bouwe
     orcid: "https://orcid.org/0000-0001-9005-8940"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Broetz
+    given-names: Bjoern
+  -
+    affiliation: "PML, UK"
+    name-particle: de
+    family-names: Mora
+    given-names: Lee
+    orcid: "https://orcid.org/0000-0002-5080-3149"
+  -
+    affiliation: "NLeSC, Netherlands"
+    family-names: Drost
+    given-names: Niels
+    orcid: "https://orcid.org/0000-0001-9795-7981"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Eyring
+    given-names: Veronika
+    orcid: "https://orcid.org/0000-0002-6887-4885"
+  -
+    affiliation: "AWI, Germany"
+    family-names: Koldunov
+    given-names: Nikolay
+    orcid: "https://orcid.org/0000-0002-3365-8146"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Lauer
+    given-names: Axel
+    orcid: "https://orcid.org/0000-0002-9270-1044"
+  -
+    affiliation: "LMU, Germany"
+    family-names: Mueller
+    given-names: Benjamin
+  -
+    affiliation: "URead, UK"
+    family-names: Predoi
+    given-names: Valeriu
+    orcid: "https://orcid.org/0000-0002-9729-6578"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Righi
+    given-names: Mattia
+    orcid: "https://orcid.org/0000-0003-3827-5950"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Schlund
+    given-names: Manuel
+    orcid: "https://orcid.org/0000-0001-5251-0158"
+  -
+    affiliation: "BSC, Spain"
+    family-names: Vegas-Regidor
+    given-names: Javier
+    orcid: "https://orcid.org/0000-0003-0096-4291"
+  -
+    affiliation: "SMHI, Sweden"
+    family-names: Zimmermann
+    given-names: Klaus
+  -
+    affiliation: "University of Bremen, Germany"
+    family-names: Adeniyi
+    given-names: Kemisola
   -
     affiliation: "ISAC-CNR, Italy"
     family-names: Arnone
@@ -32,10 +90,6 @@ authors:
     family-names: Bock
     given-names: Lisa
     orcid: "https://orcid.org/0000-0001-7058-5938"
-  -
-    affiliation: "DLR, Germany"
-    family-names: Broetz
-    given-names: Bjoern
   -
     affiliation: "BSC, Spain"
     family-names: Caron
@@ -95,19 +149,9 @@ authors:
     family-names: Ehbrecht
     given-names: Carsten
   -
-    affiliation: "NLeSC, Netherlands"
-    family-names: Drost
-    given-names: Niels
-    orcid: "https://orcid.org/0000-0001-9795-7981"
-  -
     affiliation: "MetOffice, UK"
     family-names: Earnshaw
     given-names: Paul
-  -
-    affiliation: "DLR, Germany"
-    family-names: Eyring
-    given-names: Veronika
-    orcid: "https://orcid.org/0000-0002-6887-4885"
   -
     affiliation: "University of Bremen, Germany"
     family-names: Gier
@@ -156,16 +200,6 @@ authors:
     family-names: Koirala
     given-names: Sujan
   -
-    affiliation: "AWI, Germany"
-    family-names: Koldunov
-    given-names: Nikolay
-    orcid: "https://orcid.org/0000-0002-3365-8146"
-  -
-    affiliation: "DLR, Germany"
-    family-names: Lauer
-    given-names: Axel
-    orcid: "https://orcid.org/0000-0002-9270-1044"
-  -
     affiliation: "BSC, Spain"
     family-names: Lledó
     given-names: Llorenç
@@ -210,16 +244,6 @@ authors:
     given-names: Christian Wilhelm
     orcid: "https://orcid.org/0000-0003-2656-1802"
   -
-    affiliation: "LMU, Germany"
-    family-names: Mueller
-    given-names: Benjamin
-  -
-    affiliation: "PML, UK"
-    name-particle: de
-    family-names: Mora
-    given-names: Lee
-    orcid: "https://orcid.org/0000-0002-5080-3149"
-  -
     affiliation: "University of Arizona, USA"
     family-names: Amarjiit
     given-names: Pandde
@@ -233,16 +257,6 @@ authors:
     given-names: Adam
     orcid: "https://orcid.org/0000-0003-4859-8585"
   -
-    affiliation: "URead, UK"
-    family-names: Predoi
-    given-names: Valeriu
-    orcid: "https://orcid.org/0000-0002-9729-6578"
-  -
-    affiliation: "DLR, Germany"
-    family-names: Righi
-    given-names: Mattia
-    orcid: "https://orcid.org/0000-0003-3827-5950"
-  -
     affiliation: "University of Arizona, USA"
     family-names: Russell
     given-names: Joellen
@@ -250,11 +264,6 @@ authors:
     affiliation: "CICERO, Norway"
     family-names: Sandstad
     given-names: Marit
-  -
-    affiliation: "DLR, Germany"
-    family-names: Schlund
-    given-names: Manuel
-    orcid: "https://orcid.org/0000-0001-5251-0158"
   -
     affiliation: "MetOffice, UK"
     family-names: Sellar
@@ -287,19 +296,10 @@ authors:
     family-names: Torralba
     given-names: Verónica
   -
-    affiliation: "BSC, Spain"
-    family-names: Vegas-Regidor
-    given-names: Javier
-    orcid: "https://orcid.org/0000-0003-0096-4291"
-  -
     affiliation: "University of Bremen, Germany"
     family-names: Weigel
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
-  -
-    affiliation: "SMHI, Sweden"
-    family-names: Zimmermann
-    given-names: Klaus
 
 cff-version: "1.0.3"
 date-released: 2020-01-27
