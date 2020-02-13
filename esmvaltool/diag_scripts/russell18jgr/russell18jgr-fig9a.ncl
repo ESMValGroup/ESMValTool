@@ -71,27 +71,34 @@ load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 load "$diag_scripts/shared/latlon.ncl"
 
 begin
+
   enter_msg(DIAG_SCRIPT, "")
   nVariables = ListCount(variable_info)
-  hfds_var = variable_info[0]@short_name
-  hfds_items = select_metadata_by_name(input_file_info, hfds_var)
-  tauu_var = variable_info[1]@short_name
+  hfds_items = select_metadata_by_name(input_file_info, "hfds")
+
+  var_names = metadata_att_as_array(variable_info, "short_name")
+  var_ind = str_match_ind(var_names, "tauu")
+  tauu_var = var_names(var_ind)   
   tauu_items = select_metadata_by_name(input_file_info, tauu_var)
   tauu_inputfile_paths = metadata_att_as_array(tauu_items, "filename")
- 
   hfds_inputfile_paths = metadata_att_as_array(hfds_items, "filename")
   start_years_data = metadata_att_as_array(tauu_items, "start_year")
   end_years_data   = metadata_att_as_array(tauu_items, "end_year")  
   nDatasets = ListCount(tauu_items)  
-  nHFDSdatasets = ListCount(hfds_items)
-  if (nVariables .gt. 2) then
-
-    ;; branch for future development
-    ;; not yet implemented
-  
+  areacello_items = select_metadata_by_name(input_file_info, "areacello")
+  areadatasets = metadata_att_as_array(areacello_items, "dataset")
+ 
+  if (nVariables .ne. 3) then
+    error_msg("f", "russell_fig9a.ncl", " ", "Number of variables for" + \
+      " this diag script must be 3 (hfds, areacello & tauu/tauuo)." + \
+      " Please make sure one of tauu or tauuo is commented out ")
+  end if  
+  if (nDatasets .lt. 3) then
+    error_msg("f", "russell_fig9a.ncl", " ", "Minimum number of " + \
+      "datasets required for this diag script must be 3. Please " + \
+      " add more datasets.")
   end if      
   datasetnames = metadata_att_as_array(tauu_items, "dataset")
- 
 end
 
 begin
@@ -166,15 +173,15 @@ begin
     tauu_lon = dim_avg_n_Wrap(tauu_dataset, 1)
     delete(tauu_dataset)
 
-    fx_var = read_fx_data(hfds_items[iii], "areacello")
+    fx_var = read_data(areacello_items[iii])
     ;checking for areacello
-    if (ismissing(fx_var)) then
-      error_msg("f", "russell18jgr-fig9a.ncl", " " , "areacello file for " + \
-                datasetnames(iii) + " not found in the metadata file, please " + \
-                "add 'fx_files: [areacello]' to the variable dictionary in " + \
-                "the recipe or add the location of file to config-user.yml ")
+    if (all(ismissing(fx_var))) then
+      error_msg("f", "russell18jgr-fig9a.ncl", " " ,"areacello file of " + \
+          datasetnames(iii) + "not found in the recipe. If areacello " + \
+          "file available, please copy the dataset name to additional " + \
+          "dataset section of areacello.")
     end if
-    areacello_2d = fx_var[0] 
+    areacello_2d = fx_var 
 
     if (iscoord(hfds_dataset, "lat")) then
       var_lat = hfds_dataset&lat
