@@ -807,14 +807,15 @@ diagnostics:
     scripts: null
 
 
-  MTE:
-    description: MTE check
+  MLS-AURA:
+    description: MLS-AURA check
     variables:
-      gpp:
-      gppStderr:
+      hur:
+        mip: Amon
+      hurStderr:
+        mip: Amon
     additional_datasets:
-      - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
-         type: reanaly, version: May12, start_year: 1982, end_year: 2011}
+      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004', start_year: 2005, end_year: 2019}
     scripts: null
 
 
@@ -837,6 +838,19 @@ diagnostics:
       - {dataset: MODIS, project: OBS, tier: 3,
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
     scripts: null
+
+
+  MTE:
+    description: MTE check
+    variables:
+      gpp:
+      gppStderr:
+    additional_datasets:
+      - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: May12, start_year: 1982, end_year: 2011}
+    scripts: null
+
+
 
 
   NDP:
