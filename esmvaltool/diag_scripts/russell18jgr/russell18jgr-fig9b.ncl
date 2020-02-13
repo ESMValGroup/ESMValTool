@@ -186,14 +186,14 @@ begin
       delete(var_lat)
 
     else
-      fx_var = read_fx_data(fgco2_items[iii], "areacello")
-      if (ismissing(fx_var)) then
-        error_msg("f", "russell18jgr-fig9b.ncl", " " , "areacello file for " + \
-                datasetnames(iii) + " not found in the metadata file, please " + \
-                "add 'fx_files: [areacello]' to the variable dictionary in " + \
-                "the recipe or add the location of file to config-user.yml ")
+      fx_var = read_data(areacello_items[iii])
+      if (all(ismissing(fx_var))) then
+        error_msg("f", "russell18jgr-fig9b.ncl", " ", "areacello file of " + \
+          datasetnames(iii) + "not found in the recipe. If areacello " + \
+          " file available, please copy the dataset name to additional" + \
+          " dataset section of areacello.")
       end if
-      areacello_2d = fx_var[0] 
+      areacello_2d = fx_var 
       area_lat = infile_iii->lat       
       fgco2_dataset = fgco2_dataset * 0.000031536    
       ; unit conversion from kg/s to Pg/yr
