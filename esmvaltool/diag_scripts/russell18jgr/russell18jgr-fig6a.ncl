@@ -60,29 +60,32 @@ load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
 begin
 
   enter_msg(DIAG_SCRIPT, "")
-  vo_var = variable_info[0]@short_name
-  vo_items = select_metadata_by_name(input_file_info, vo_var)
-  so_var = variable_info[1]@short_name
-  so_items = select_metadata_by_name(input_file_info, so_var)
-  thetao_var = variable_info[2]@short_name
-  thetao_items = select_metadata_by_name(input_file_info, thetao_var)
-  
-  datasetnames = metadata_att_as_array(vo_items, "dataset")
+  vo_items = select_metadata_by_name(input_file_info, "vo")
+  so_items = select_metadata_by_name(input_file_info, "so")
+  thetao_items = select_metadata_by_name(input_file_info, "thetao")
+  volcello_items = select_metadata_by_name(input_file_info, "volcello")
+
+  vo_datasets = metadata_att_as_array(vo_items, "dataset")
   start_years_data = metadata_att_as_array(vo_items, "start_year")
   end_years_data = metadata_att_as_array(vo_items, "end_year")  
   vo_inputfile_paths = metadata_att_as_array(vo_items, "filename")
   thetao_inputfile_paths = metadata_att_as_array(thetao_items, "filename")
   so_inputfile_paths = metadata_att_as_array(so_items, "filename")
   nDatasets = ListCount(vo_items)
+  nVolcello = ListCount(volcello_items)
   nVariables = ListCount(variable_info)
-  dim_models = dimsizes(datasetnames)
-
+  dim_models = dimsizes(vo_datasets)
+  if (nVolcello .ne. nDatasets) then
+    error_msg("f", "russell18jgr-fig6a.ncl", " ", "volcello files " + \
+      "for russell18jgr-fig6a.ncl do not match with vo datasets. " + \
+      "Please do not add additional variables in variable groups ")
+  end if
 end
   
   
 begin
  
-  plotpath = config_user_info@plot_dir + "/Russell_figure-6_" \ 
+  plotpath = config_user_info@plot_dir + "/Russell_figure-6a_" \ 
             + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
             + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -271,7 +274,8 @@ begin
     dataset_vo = dim_avg_n_Wrap(dataset_vo_time, 0)
     delete(dataset_vo_time)
     delete(var_test_lon)
-    volcello = fx_var[0]
+    volcello = fx_var
+    delete(fx_var)
 
     ; transport calculation
     if( iscoord(dataset_vo , "lat")) then
