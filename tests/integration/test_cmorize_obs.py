@@ -133,6 +133,7 @@ def test_cmorize_obs_woa_no_data(tmp_path):
     config_user_file = write_config_user_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff'))
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
+    curr_path = os.getcwd()
     with arguments(
             'cmorize_obs',
             '-c',
@@ -141,6 +142,8 @@ def test_cmorize_obs_woa_no_data(tmp_path):
             'WOA',
     ):
         run()
+
+    os.chdir(curr_path)
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
                             os.listdir(log_dir)[0], 'run', 'main_log.txt')
@@ -155,6 +158,7 @@ def test_cmorize_obs_woa_data(tmp_path):
     data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
     os.makedirs(data_path)
     put_dummy_data(data_path)
+    curr_path = os.getcwd()
     with arguments(
             'cmorize_obs',
             '-c',
@@ -164,6 +168,7 @@ def test_cmorize_obs_woa_data(tmp_path):
     ):
         run()
 
+    os.chdir(curr_path)
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
                             os.listdir(log_dir)[0], 'run', 'main_log.txt')
