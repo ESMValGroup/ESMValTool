@@ -11,11 +11,11 @@ import numpy as np
 
 
 dataset_plotnames = {
-  'ERA-Interim-Land' : 'ERA-Interim-Land',
+  'ERA-Interim-Land' : 'ERA-Interim/Land',
   'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
   'cds-era5-land-monthly' : 'ERA5-Land',
   'cds-era5-monthly' : 'ERA5',
-  'MERRA2' : 'MERRA2',
+  'MERRA2' : 'MERRA-2',
   'cds-satellite-lai-fapar' : 'SPOT-VGT',
   'missing': 'missing',
 }

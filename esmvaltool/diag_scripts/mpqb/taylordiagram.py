@@ -23,11 +23,11 @@ from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import paralle
 logger = logging.getLogger(os.path.basename(__file__))
 
 dataset_plotnames = {
-  'ERA-Interim-Land' : 'ERA-Interim-Land',
+  'ERA-Interim-Land' : 'ERA-Interim/Land',
   'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
   'cds-era5-land-monthly' : 'ERA5-Land',
   'cds-era5-monthly' : 'ERA5',
-  'MERRA2' : 'MERRA2',
+  'MERRA2' : 'MERRA-2',
   'cds-satellite-lai-fapar' : 'SPOT-VGT',
 }
 

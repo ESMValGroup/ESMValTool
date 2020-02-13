@@ -43,6 +43,8 @@ def main(cfg):
     lower_upper = [cfg.pop('vmin', None), cfg.pop('vmax', None)]
     logarithmic = cfg.pop('logarithmic', False)
     histtype = cfg.pop('histtype','bar') # default type is 'bar'
+    y0 = cfg.pop('y0', None)
+    y1 = cfg.pop('y1', None)
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
@@ -108,7 +110,6 @@ def main(cfg):
             else:
                 logger.warning(f"Unsupported argument for histtype: {histtype}")
 
-
         plt.xlabel(grouped_input_data[dataset][0]['long_name'] +
                    " [" + grouped_input_data[dataset][0]['units'] + "]")
         plt.ylabel("frequency")
@@ -118,8 +119,10 @@ def main(cfg):
 #            plt.ylim(0, 5*np.max(
 #                     [np.max(content["hist"]) for _, content in hists.items()]))
 #        else:
+
         plt.ylim(0, 1.1*np.max(
                  [np.max(content["hist"]) for _, content in hists.items()]))
+        plt.ylim(y0,y1)
         plt.tight_layout()
         filename = get_plot_filename('histogram_' + cfg['script'], cfg)
         logger.info("Saving as %s", filename)
