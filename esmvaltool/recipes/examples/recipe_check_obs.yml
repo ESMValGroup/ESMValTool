@@ -785,7 +785,7 @@ diagnostics:
          type: reanaly, version: Oct13, start_year: 1989, end_year: 2005}
     scripts: null
 
-    
+
   MAC-LWP:
     description: MAC-LWP check
     variables:
@@ -796,7 +796,7 @@ diagnostics:
          type: sat, version: v1, start_year: 1988, end_year: 2016}
     scripts: null
 
-    
+
   MERRA2:
     description: MERRA2 check
     variables:
