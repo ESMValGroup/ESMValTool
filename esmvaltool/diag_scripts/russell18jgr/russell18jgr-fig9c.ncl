@@ -76,21 +76,29 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
   nVariables = ListCount(variable_info)
-  hfds_var = variable_info[0]@short_name
-  hfds_items = select_metadata_by_name(input_file_info, hfds_var)
-  fgco2_var = variable_info[1]@short_name
-  fgco2_items = select_metadata_by_name(input_file_info, fgco2_var)
-  fgco2_inputfile_paths = metadata_att_as_array(fgco2_items, "filename")
+  hfds_items = select_metadata_by_name(input_file_info, "hfds")
   hfds_inputfile_paths = metadata_att_as_array(hfds_items, "filename")
-  start_years_data = metadata_att_as_array(fgco2_items, "start_year")
-  end_years_data   = metadata_att_as_array(fgco2_items, "end_year")  
+  
+  areacello_items = select_metadata_by_name(input_file_info, "areacello")
+  areadatasets = metadata_att_as_array(areacello_items, "dataset")
+ 
+  fgco2_items = select_metadata_by_name(input_file_info, "fgco2")
+  fgco2_inputfile_paths = metadata_att_as_array(fgco2_items, "filename")
+  start_years_data = metadata_att_as_array(fgco2_items, "start_year") 
+  end_years_data   = metadata_att_as_array(fgco2_items, "end_year")   
+    
   nDatasets = ListCount(fgco2_items)  
   nHFDSdatasets = ListCount(fgco2_items)
-  if (nDatasets .ne. nHFDSdatasets) then
-   
-    ;; branch for future development
-    ;; not yet implemented
   
+  if (nVariables .ne. 3) then
+    error_msg("f", "russell_fig9c.ncl", " ", "Number of variables for" + \
+      " this diag script must be 3 (hfds, areacello & tauu/tauuo)." + \
+      " Please make sure one of tauu or tauuo is commented out ")
+  end if  
+  if (nDatasets .lt. 3) then
+    error_msg("f", "russell_fig9c.ncl", " ", "Minimum number of " + \
+      "datasets required for this diag script must be 3. Please " + \
+      " add more datasets.")
   end if      
   datasetnames = metadata_att_as_array(fgco2_items, "dataset")
  
@@ -194,15 +202,14 @@ begin
       carbon_flux_iii(iii) = sum(carbon_flux_per_lat(0:a))
       delete( var_lat)
     else 
-      fx_var = read_fx_data(fgco2_items[iii], "areacello")
-      if (ismissing(fx_var)) then
-        fx_variable = "areacello"
-        error_msg("f", "russell_fig-7i.ncl", " " , "areacello file for " + \
-                  datasetnames(iii) + " not found in the metadata file, please " + \
-                  "add 'fx_files: [areacello]' to the variable dictionary in " + \
-                  "the recipe or add the location of file to config-user.yml ")
+      fx_var = read_data(areacello_items[iii])
+      if (all(ismissing(fx_var))) then
+        error_msg("f", "russell18jgr-fig9c.ncl", " ", "areacello file of " + \
+          datasetnames(iii) + "not found in the recipe. If areacello " + \
+          " file available, please copy the dataset name to additional" + \
+          " dataset section of areacello.")
       end if
-      areacello_2d = fx_var[0] 
+      areacello_2d = fx_var
       area_lat = infile_iii->lat       
       fgco2_dataset = fgco2_dataset * 0.000031536    
       ; unit conversion from kg/s to Pg/yr
@@ -219,16 +226,16 @@ begin
     hfds_dataset =  read_data(hfds_items[iii]) 
     infile_path = hfds_inputfile_paths(iii)
     infile_iii  = addfile(infile_path, "r")
-      
-    fx_var = read_fx_data(hfds_items[iii], "areacello")
+
+    fx_var = read_data(areacello_items[iii])  
     ;checking for areacello
-    if (ismissing(fx_var)) then
+    if (all(ismissing(fx_var))) then
       error_msg("f", "russell18jgr-fig9c.ncl", " " , "areacello file for " + \
                 datasetnames(iii) + " not found in the metadata file, please " + \
                 "add 'fx_files: [areacello]' to the variable dictionary in " + \
                 "the recipe or add the location of file to config-user.yml ")
     end if
-    areacello_2d = fx_var[0] 
+    areacello_2d = fx_var 
 
     if (iscoord(hfds_dataset, "lat")) then
       var_lat = hfds_dataset&lat
