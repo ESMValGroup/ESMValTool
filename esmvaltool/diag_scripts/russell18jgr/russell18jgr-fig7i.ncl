@@ -41,13 +41,14 @@ load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
 begin
 
   enter_msg(DIAG_SCRIPT, "")
-  var0 = variable_info[0]@short_name
-  info_items = select_metadata_by_name(input_file_info, var0)
-  datasetnames = metadata_att_as_array(info_items, "dataset")
-  start_years_data = metadata_att_as_array(info_items, "start_year")
-  end_years_data = metadata_att_as_array(info_items, "end_year")  
-  inputfile_paths = metadata_att_as_array(info_items, "filename")
-  nDatasets = ListCount(info_items)
+  fgco2_items = select_metadata_by_name(input_file_info, "fgco2")
+  datasetnames = metadata_att_as_array(fgco2_items, "dataset")
+  start_years_data = metadata_att_as_array(fgco2_items, "start_year")
+  end_years_data = metadata_att_as_array(fgco2_items, "end_year")  
+  inputfile_paths = metadata_att_as_array(fgco2_items, "filename")
+  areacello_items = select_metadata_by_name(input_file_info, "areacello")
+  areadatasets = metadata_att_as_array(areacello_items, "dataset")
+  nDatasets = ListCount(fgco2_items)
 
 end
 
@@ -111,8 +112,6 @@ begin
     dataset = read_data(info_items[iii])
     infile_path = inputfile_paths(iii)
     infile_iii  = addfile(infile_path, "r")
-    fx_var = read_fx_data(info_items[iii], "areacello")
-      
     
     if (iscoord(dataset, "lat")) then
       var_lat = infile_iii->lat
@@ -145,16 +144,19 @@ begin
       int_carbon_flux&lat = var_lat 
       delete(var_lat)
     else
-       ; fx_var = read_fx_data(info_items[iii], "areacello")
+      dataset_compare = datasetnames(iii) +"$"
+      fx_ind = str_match_ind_regex(areadatasets, dataset_compare)
+      fx_var = read_data(areacello_items[fx_ind])
         
-       if (ismissing(fx_var)) then
-          fx_variable = "areacello"
-          error_msg("f", "russell_fig-7i.ncl", " " , "areacello file for " + \
-              annots(iii) + " not found in the metadata file, please add " + \
-              "'fx_files: [areacello]' to the variable " + \
+      if (all(ismissing(fx_var))) then
+        fx_variable = "areacello"
+        error_msg("f", "russell_fig-7i.ncl", " " , "areacello file for " + \
+              datasetnames(iii) + " not found in the metadata file, please add " + \
+              "'fx_files: [areacello]' to the variable " + \ 
               "dictionary in the recipe or add the location of file to config-user.yml ")
-       end if
-        areacello_2d = fx_var[0] 
+      end if
+      areacello_2d = fx_var
+      delete(fx_var)
       
         dataset = dataset * -0.000031536    
         ; unit conversion from kg/s to Pg/yr
