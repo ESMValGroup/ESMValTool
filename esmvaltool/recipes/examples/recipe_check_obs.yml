@@ -13,6 +13,16 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  CALIPSO-GOCCP:
+    description: CALIPSO-GOCCP check
+    variables:
+      clcalipso:
+    additional_datasets:
+      - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2,
+         mip: cfMon, tier: 2, start_year: 2007, end_year: 2015}
+    scripts: null
+
+
   CERES-EBAF:
     description: CERES-EBAF check
     variables:
