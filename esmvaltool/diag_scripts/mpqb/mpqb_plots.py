@@ -17,6 +17,7 @@ dataset_plotnames = {
   'cds-era5-monthly' : 'ERA5',
   'MERRA2' : 'MERRA2',
   'cds-satellite-lai-fapar' : 'SPOT-VGT',
+  'missing': 'missing',
 }
 
 
@@ -37,7 +38,7 @@ def get_plottitle_timeperiod(cube):
     return f"{start} - {end}"
 
 def mpqb_mapplot(cube,filename,**plotkwargs):
-    plottitle = dataset_plotnames[plotkwargs.pop('title')]
+    plottitle = dataset_plotnames.pop(plotkwargs.pop('title','missing'),'missing')
     
     fig = plt.figure(dpi=200)
     ax = fig.add_subplot(projection=iris.plot.default_projection(cube))

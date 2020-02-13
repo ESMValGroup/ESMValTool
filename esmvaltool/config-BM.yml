@@ -1,0 +1,51 @@
+###############################################################################
+# User's configuration file for the ESMValTool
+###############################################################################
+---
+# ESMValTool User's configuration file for LMU Desktop
+# Author: Ben Mueller - LMU
+
+# Diagnostics create plots? [true]/false
+write_plots: true
+# Diagnositcs write NetCDF files? [true]/false
+write_netcdf: true
+# Set the console log level debug, [info], warning, error
+log_level: debug
+# verbosity is deprecated and will be removed in the future
+# verbosity: 1
+# Exit on warning? true/[false]
+exit_on_warning: false
+# Plot file format? [ps]/pdf/png/eps/epsi
+output_file_type: png
+# Destination directory
+output_dir: /media/bmueller/Work/ESMVAL_res/V2
+# Use netCDF compression true/[false]
+compress_netcdf: true
+# Save intermediary cubes in the preprocessor true/[false]
+save_intermediary_cubes: false
+# Remove the preproc dir if all fine
+remove_preproc_dir: false
+# Run at most this many tasks in parallel null/[1]/2/3/4/..
+# Set to null to use the number of available CPUs.
+# Make sure your system has enough memory for the specified number of tasks.
+max_parallel_tasks: 1
+# Path to custom config-developer file, to customise project configurations.
+# See config-developer.yml for an example. Set to None to use the default
+config_developer_file: null
+# Get profiling information for diagnostics
+# Only available for Python diagnostics
+profile_diagnostic: true
+
+# Rootpaths to the data from different projects (lists are also possible)
+rootpath:
+  CMIP5: /media/bmueller/Work/ESMVAL_res/work/CMIP5
+  CMIP6: /media/bmueller/Work/ESMVAL_res/work/CMIP6
+  OBS: /media/bmueller/Work/ESMVAL_res/work/Obs
+  OBS6: /media/bmueller/Work/ESMVAL_res/work/Obs
+  default: /media/bmueller/Work/ESMVAL_res/work/CMIP6
+
+# Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
+# See config-developer.yml for definitions.
+drs:
+  CMIP5: default
+#  OBS: OBS

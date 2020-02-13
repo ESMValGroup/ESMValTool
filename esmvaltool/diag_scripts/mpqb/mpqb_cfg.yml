@@ -42,7 +42,7 @@ sm:
     vmin: 0.
     vmax: 0.6
 
-lai:
+snc:
   pearsonr:
     title: pearsonr
     vmin: -1.
@@ -51,17 +51,17 @@ lai:
   ubrmsd:
     title: ubrmsd
     vmin: 0.
-    vmax: 1.
+    vmax: 100.
     cmap: YlOrBr
   rmsd:
     title: rmsd
     vmin: 0.
-    vmax: 1.
+    vmax: 100.
     cmap: YlOrBr
   absdiff:
     title: absdiff
-    vmin: -.5
-    vmax: .5
+    vmin: -100
+    vmax: 100
     cmap: BrBG
   reldiff:
     title: reldiff
@@ -77,4 +77,6 @@ lai:
     title: timemean
     cmap: YlOrBr
     vmin: 0.0
-    vmax: 0.5
+    vmax: 100.
+    
+

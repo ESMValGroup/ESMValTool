@@ -22,14 +22,6 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-dataset_plotnames = {
-  'ERA-Interim-Land' : 'ERA-Interim-Land',
-  'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
-  'cds-era5-land-monthly' : 'ERA5-Land',
-  'cds-era5-monthly' : 'ERA5',
-  'MERRA2' : 'MERRA2',
-  'cds-satellite-lai-fapar' : 'SPOT-VGT',
-}
 
 def calculate_histograms(cube, numbars, lower_upper):
     # returns a dictionary for histogram plotting
@@ -94,7 +86,9 @@ def main(cfg):
                 ax.bar(x,
                        hist["hist"],
                        width,
-                       label = dataset_plotnames[dataset],
+                       label = grouped_input_data[dataset][0].pop(
+                               'alias',
+                               grouped_input_data[dataset][0].pop('dataset')),
                        )
                 plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha = 0.3)
                 plt.legend()
@@ -102,7 +96,9 @@ def main(cfg):
                 ax.hist(hist["bins"][:-1],
                         hist["bins"],
                         weights=hist["hist"],
-                        label=dataset_plotnames[dataset],
+                        label = grouped_input_data[dataset][0].pop(
+                                'alias',
+                                grouped_input_data[dataset][0].pop('dataset')),
                         histtype='step',
                         linewidth=2
                         )
@@ -125,7 +121,7 @@ def main(cfg):
         plt.ylim(0, 1.1*np.max(
                  [np.max(content["hist"]) for _, content in hists.items()]))
         plt.tight_layout()
-        filename = get_plot_filename('histogram', cfg)
+        filename = get_plot_filename('histogram_' + cfg['script'], cfg)
         logger.info("Saving as %s", filename)
         fig.savefig(filename)
         plt.close(fig)

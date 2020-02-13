@@ -1,0 +1,250 @@
+# ESMValTool
+# recipe_mpqb.yml
+---
+documentation:
+  description: |
+    Test recipe for the MPQB (C3S_511) for snowcover
+
+  authors:
+    - mueller_benjamin
+
+
+################################################
+# Define some default parameters using anchors #
+################################################
+
+mmm_stat: &mmm_stat
+  multi_model_statistics:
+    span: overlap
+    statistics: [mean, median]
+    
+sel_NH: &NH
+  extract_region:
+    start_longitude: -180.
+    end_longitude: 180.
+    start_latitude: 25.
+    end_latitude: 85.
+
+mpqbregridder: &mpqbregridder
+  regrid:
+    target_grid: CDS-ERA5LAND-SNOWCOVER
+    scheme: area_weighted
+  monthly_statistics:
+    operator: mean
+
+# input data
+default_pp_maps: &pp_maps
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder
+  <<: *NH
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat
+
+# Additional preprocessor for
+# line plots
+default_pp_line: &pp_line
+  custom_order: true
+  mask_fillvalues:
+    threshold_fraction: 0.8
+  area_statistics:
+    operator: mean
+
+################################################
+################################################
+################################################
+
+datasets:
+
+  - {
+  dataset: CDS-ERA5LAND-SNOWCOVER,
+  type: reanaly,
+  version: V1,
+  alias: ERA5-Land,
+  }
+  
+  - {
+  dataset: GlobSnow,
+  type: sat,
+  version: V2.1,
+  alias: GlobSnow,
+  }
+  
+  - {
+  dataset: TERRA-MODIS-SNOWCOVER,
+  type: sat,
+  version: MOD10CM,
+  alias: TERRA/MODIS,
+  }
+#  - {dataset: IPSL-CM5A-MR}
+
+preprocessors:
+  pp_tmp:
+    annual_statistics:
+      operator: mean
+    
+  pp_mpqb_snc:
+    <<: *pp_maps
+
+  pp_lineplots:
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_lineplots_std:
+    anomalies:
+      period: monthly
+#      standardize: true
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_mpqb_yearmean:
+    <<: *pp_maps
+    annual_statistics:
+      operator: mean
+
+  pp_mpqb_yearmin:
+    <<: *pp_maps
+    annual_statistics:
+      operator: min
+
+  pp_mpqb_yearmax:
+    <<: *pp_maps
+    annual_statistics:
+      operator: max
+
+  pp_mpqb_yearstddev:
+    <<: *pp_maps
+    annual_statistics:
+      operator: std_dev
+
+snc_def: &sncdef
+  project: OBS
+  mip: LImon
+  tier: 3
+  start_year: 2003
+  end_year: 2011
+
+diagnostics:
+
+  histogram:
+    description: histogram for 0.1x0.1 gridded data
+    variables:
+      snc:
+        preprocessor: pp_mpqb_snc
+        <<: *sncdef
+    scripts:
+      mpqb:
+        script: mpqb/mpqb_histogram.py
+        vmin: 0
+        vmax: 100
+        number_of_bars: 20
+        logarithmic: False
+        
+#  resolution:
+#    description: resolution
+#    variables:
+#      snc:
+#        preprocessor: pp_mpqb_snc
+#        <<: *sncdef 
+#    scripts: 
+#      mpqb_res:
+#        script: mpqb/mpqb_resolution.py
+##
+  mapplots:
+    description: mapplots
+    variables:
+      snc:
+        preprocessor: pp_mpqb_snc
+        <<: *sncdef
+    scripts:
+      mpqb:
+        reference_dataset: MultiModelMedian
+        script: mpqb/mpqb_comparison.py
+#      mpqb_taylor:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/taylordiagram.py
+  lineplots:
+    description: lineplots
+    variables:
+      snc:
+        preprocessor: pp_lineplots
+        <<: *sncdef
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+##
+#  lineplots_europe:
+#    description: lineplots_europe
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  mapplots_std:
+#    description: mapplots
+#    variables:
+#      lai:
+#        preprocessor: pp_mpqb_sm_std
+#        <<: *laidef
+#    scripts:
+#      mpqb:
+#        reference_dataset: MultiModelMedian
+#        script: mpqb/mpqb_comparison.py
+#  lineplots_std:
+#    description: lineplots_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe_std:
+#    description: lineplots_europe_std
+#    variables:
+#      lai:
+#        preprocessor: pp_lineplots_std
+#        <<: *laidef
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+  maps_yearmean:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      snc:
+        preprocessor: pp_mpqb_yearmean
+        <<: *sncdef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearmin:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      snc:
+        preprocessor: pp_mpqb_yearmin
+        <<: *sncdef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearmax:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      snc:
+        preprocessor: pp_mpqb_yearmax
+        <<: *sncdef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearstddev:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      snc:
+        preprocessor: pp_mpqb_yearstddev
+        <<: *sncdef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py

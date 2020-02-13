@@ -71,21 +71,29 @@ def main(cfg):
         rvalue_list.append(pearsonr(a,b)[0])
         rmsd_list.append(sm.centered_rms_dev(a,b))
         std_list.append(np.std(b))
-        labels.append(dataset_plotnames[dataset])
+        try:
+            label = grouped_input_data[dataset][0]['alias']
+        except:
+            label = grouped_input_data[dataset][0]['dataset']
+            grouped_input_data[dataset][0]['alias'] = label
+        labels.append(label)
 
-
+    logger.info(np.array(labels))
+    logger.info(np.array(std_list))
+    logger.info(np.array(rmsd_list))
+    logger.info(np.array(rvalue_list))
     sm.taylor_diagram(np.array(std_list),
-                                 np.array(rmsd_list),
-                                 np.array(rvalue_list),
-                                 markerLabel=labels,
-                                 markerLegend='on',
-                                 markerColor='r',
-                                 markerSize=7,
-                                 rmsLabelFormat='0:.2f',
-                                 colObs='k',
-                                 markerObs='x',
-                                 titleOBS=dataset_plotnames[reference_dataset],
-                                 checkstats='on')
+                      np.array(rmsd_list),
+                      np.array(rvalue_list),
+                      markerLabel=labels,
+                      markerLegend='on',
+                      markerColor='r',
+                      markerSize=7,
+                      rmsLabelFormat='0:.2f',
+                      colObs='k',
+                      markerObs='x',
+                      titleOBS=grouped_input_data[dataset][0]['alias'],
+                      checkstats='on')
     if cfg['write_plots']:
         plot_filename = get_plot_filename('taylordiagram',cfg)
         logger.info(
