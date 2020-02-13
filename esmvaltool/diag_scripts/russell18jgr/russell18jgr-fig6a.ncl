@@ -140,7 +140,7 @@ begin
   
     fx_var = read_fx_data(vo_items[iii], "volcello")
     
-    if (ismissing(fx_var)) then ; to give fatal error if volcello is missing
+    if (all(ismissing(fx_var))) then ; to give fatal error if volcello is missing
       fx_variable = "volcello"
       error_msg("f", "russell18jgr-fig6.ncl", " " , "volcello file for "  \
             + annots(iii) + " not found in the metadata file, please add "  \
