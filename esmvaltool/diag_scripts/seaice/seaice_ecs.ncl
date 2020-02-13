@@ -279,11 +279,11 @@ begin
   toplot = (/SSIE_MEAN, SSIE_TRND/)
   toplot!0 = "datasets"  ; Required by plot routine, becomes axes labels
   toplot&datasets = (/i2month + " " + diag_script_info@region \
-                     + " SSIE averaged~C~over " \
+                     + " SIE averaged~C~over " \
                      + min(time_hist) + "-" + max(time_hist) \
                      + " [" + SSIE_MEAN@units + "]", \
                      "Trend in " + i2month + " " + diag_script_info@region \
-                     + " SSIE~C~over " \
+                     + " SIE~C~over " \
                      + min(time_hist) + "-" + max(time_hist) \
                      + " [" + SSIE_TRND@units + "]"/)
   caption1 = toplot&datasets(0) + " vs " + toplot&datasets(1) + "."
@@ -294,7 +294,7 @@ begin
   min_trnd = min((/min(SSIE_TRND), ssie_trnd_ref/))
   max_trnd = max((/max(SSIE_TRND), ssie_trnd_ref/))
 
-  toplot@res_tiMainString = diag_script_info@region + " Sea Ice Extent (SSIE)"
+  toplot@res_tiMainString = diag_script_info@region + " Sea Ice Extent (SIE)"
   toplot@res_gsnCenterString = ""
   toplot@res_trXMinF  = decimalPlaces((min_mean - 1), 0, False)
   toplot@res_trXMaxF  = decimalPlaces((max_mean + 1), 0, False)
@@ -336,7 +336,7 @@ begin
   ; overwrite array --> retain most attributes
   toplot = (/SSIE_MEAN, YOD/)
   toplot&datasets = (/i2month + " " + diag_script_info@region \
-                     + " SSIE averaged~C~over " \
+                     + " SIE averaged~C~over " \
                      + min(time_hist) + "-" + max(time_hist) \
                      + " [" + SSIE_MEAN@units + "]", \
                      "First year of near disappearance"/)
@@ -361,7 +361,7 @@ begin
 
   toplot = (/SSIE_TRND, YOD/)
   toplot&datasets = (/"Trend in " + i2month + " " + diag_script_info@region \
-                     + " SSIE~C~over " \
+                     + " SIE~C~over " \
                      + min(time_hist) + "-" + max(time_hist) \
                      + " [" + SSIE_TRND@units + "]", \
                      "First year of near disappearance"/)
