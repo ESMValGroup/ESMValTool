@@ -35,7 +35,7 @@ diagnostics:
       tas:
         preprocessor: pp_rad
     additional_datasets:
-      - {dataset: ERA-Interim,  project: OBS6,  type: reanaly,  version: 1,  start_year: 1980,  end_year: 2000,  tier: 3}
+      - {dataset: ERA-Interim,  project: OBS6, mip: Amon, type: reanaly,  version: 1,  start_year: 1980,  end_year: 2000,  tier: 3}
     scripts:
       lat_lon:
         script: validation.py
