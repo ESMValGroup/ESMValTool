@@ -98,7 +98,7 @@ begin
     UNITS = diag_script_info@con_units 
   end if 
 
-  temp_dir = diag_script_info@nc_infile;config_user_info@run_dir
+  temp_dir = config_user_info@run_dir + diag_script_info@nc_infile
   temp_dir = temp_dir + "gIAV_" \
                       + diag_script_info@gIAV_start + "-" \
                       + diag_script_info@gIAV_end + ".nc"
@@ -236,6 +236,7 @@ begin
 
    colors = project_style(info0,diag_script_info, "colors")
    thicks = project_style(info0,diag_script_info, "thicks")
+   plot_num = integertochar(ispan(97,122,1))
 
    XStg    = "Sensitivity of land+ocean CO~B~2~N~ flux, ~F8~g~F21~~B~LT~N~ (GtC/yr/K)"
    YStg    = "Carbon Cycle Climate Feedback, ~F8~g~F21~~B~LT~N~ (GtC/K)"
@@ -249,12 +250,13 @@ begin
    data_arr(1, :) = tofloat(gamma_LT)
    data_arr@diag_script = DIAG_SCRIPT
 
+   data_arr@res_tiMainString      = ""
    data_arr@res_tiMainFontHeightF = 0.025
    data_arr@res_gsnCenterString   = ""
    data_arr@res_trXMinF           = min(Y6data(0,:))-0.2*abs(min(Y6data(0,:)))
-   data_arr@res_trXMaxF           = max(Y6data(0,:))+0.2*abs(max(Y6data(0,:)))
+   data_arr@res_trXMaxF           = 3;max(Y6data(0,:))+0.2*abs(max(Y6data(0,:)))
    data_arr@res_trYMinF           = min(gamma_LT)-0.2*abs(min(gamma_LT))
-   data_arr@res_trYMaxF           = max(gamma_LT)+0.2*abs(max(gamma_LT))
+   data_arr@res_trYMaxF           = 0;max(gamma_LT)+0.2*abs(max(gamma_LT))
    plot = scatterplot(wks, data_arr, var0, False, False, input_file_info)
    
    peres = True
@@ -300,6 +302,7 @@ begin
    diag_script_info@scatter_log = False 
    diag_script_info@xy_line_legend = False
    pres = True
+   pres@tiMainString       = plot_num(1)+") "
    pres@tiXAxisString      = XStg
    pres@tiYAxisString      = "Probability Density"
    pres@vpWidthF           = 0.4

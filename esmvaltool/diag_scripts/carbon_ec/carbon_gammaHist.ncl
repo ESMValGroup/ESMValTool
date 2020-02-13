@@ -297,7 +297,7 @@ begin
 
   ; Save data for later use
   if (config_user_info@write_netcdf) then
-    new_path = diag_script_info@nc_outfile
+    new_path = config_user_info@run_dir
     new_path = new_path + "gIAV_" \
                         + diag_script_info@start_year + "-" \
                         + diag_script_info@end_year + ".nc"
