@@ -62,22 +62,26 @@ load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
 begin
 
   enter_msg(DIAG_SCRIPT, "")
-  vo_var = variable_info[0]@short_name
-  vo_items = select_metadata_by_name(input_file_info, vo_var)
-  so_var = variable_info[1]@short_name
-  so_items = select_metadata_by_name(input_file_info, so_var)
-  thetao_var = variable_info[2]@short_name
-  thetao_items = select_metadata_by_name(input_file_info, thetao_var)
-  
-  datasetnames = metadata_att_as_array(vo_items, "dataset")
+  vo_items = select_metadata_by_name(input_file_info, "vo")
+  so_items = select_metadata_by_name(input_file_info, "so")
+  thetao_items = select_metadata_by_name(input_file_info, "thetao")
+  volcello_items = select_metadata_by_name(input_file_info, "volcello")
+
+  vo_datasets = metadata_att_as_array(vo_items, "dataset")
   start_years_data = metadata_att_as_array(vo_items, "start_year")
   end_years_data = metadata_att_as_array(vo_items, "end_year")  
   vo_inputfile_paths = metadata_att_as_array(vo_items, "filename")
   thetao_inputfile_paths = metadata_att_as_array(thetao_items, "filename")
   so_inputfile_paths = metadata_att_as_array(so_items, "filename")
   nDatasets = ListCount(vo_items)
-  dim_models = dimsizes(datasetnames)
-
+  nVolcello = ListCount(volcello_items)
+  nVariables = ListCount(variable_info)
+  dim_models = dimsizes(vo_datasets)
+  if (nVolcello .ne. nDatasets) then
+    error_msg("f", "russell18jgr-fig6a.ncl", " ", "volcello files " + \
+      "for russell18jgr-fig6a.ncl do not match with vo datasets. " + \
+      "Please do not add additional variables in variable groups ")
+  end if
 end
   
   
@@ -140,9 +144,9 @@ begin
 
   do iii = 0 , dim_models -1
   
-    fx_var = read_fx_data(vo_items[iii], "volcello")
+    fx_var = read_data(volcello_items[iii])
     
-    if (ismissing(fx_var)) then
+    if (all(ismissing(fx_var))) then
       fx_variable = "volcello"
       error_msg("f", "russell_fig-7i.ncl", " " , "areacello file for " + \
           annots(iii) + " not found in the metadata file, please add " + \
@@ -256,7 +260,8 @@ begin
     delete(dataset_vo_time)
     delete(var_test_lon)
 
-    volcello = fx_var[0]
+    volcello = fx_var
+    delete(fx_var)
     ; volcello interpolation and transport calculation
     if( iscoord(dataset_vo , "lat")) then
 
