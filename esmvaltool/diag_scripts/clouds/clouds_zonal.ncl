@@ -279,15 +279,15 @@ begin
     res@cnInfoLabelOn      = False    ; turn off cn info label
 
     if (isatt(data1&$vcoord$, "standard_name")) then
-       res@tiYAxisString = data1&$vcoord$@standard_name
-       if (isatt(data1&$vcoord$, "units")) then
-         res@tiYAxisString = res@tiYAxisString + " (" \
-           + data1&$vcoord$@units + ")"
-       end if
+      res@tiYAxisString = data1&$vcoord$@standard_name
+      if (isatt(data1&$vcoord$, "units")) then
+        res@tiYAxisString = res@tiYAxisString + " (" \
+          + data1&$vcoord$@units + ")"
+      end if
     end if
 
     if (isatt(data1&lat, "standard_name")) then
-       res@tiXAxisString = data1&lat@standard_name
+      res@tiXAxisString = data1&lat@standard_name
     end if
 
     ; set explicit contour levels
@@ -381,9 +381,9 @@ begin
 ;    end if
 
     res@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
+                                         / tofloat((dim_MOD + 1) / 2)/))
     res@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
+                                         / tofloat((dim_MOD + 1) / 2)/))
 
     ; ###########################################
     ; # create the plot                         #
@@ -402,8 +402,8 @@ begin
                      "_" + season(0) + filename_add)
       ; difference plots will be saved to a different file
       if (flag_diff) then
-        wks0d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
-                        "_bias_" + season(0) + filename_add)
+        wks0d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
+                        var0 + "_bias_" + season(0) + filename_add)
       end if
       if (numseas.gt.1) then
         wks1 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
@@ -414,12 +414,12 @@ begin
                        "_" + season(3) + filename_add)
         ; difference plots will be saved to a different files
         if (flag_diff) then
-          wks1d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
-                          "_bias_" + season(1) + filename_add)
-          wks2d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
-                          "_bias_" + season(2) + filename_add)
-          wks3d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
-                          "_bias_" + season(3) + filename_add)
+          wks1d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
+                          var0 + "_bias_" + season(1) + filename_add)
+          wks2d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
+                          var0 + "_bias_" + season(2) + filename_add)
+          wks3d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
+                          var0 + "_bias_" + season(3) + filename_add)
         end if
       end if
     end if
@@ -525,9 +525,9 @@ begin
       ; ###########################################
 
       dres@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-                                               / tofloat((dim_MOD + 1) / 2)/))
+                                            / tofloat((dim_MOD + 1) / 2)/))
       dres@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-                                               / tofloat((dim_MOD + 1) / 2)/))
+                                            / tofloat((dim_MOD + 1) / 2)/))
 
       dres@tiMainOn       = False
 
