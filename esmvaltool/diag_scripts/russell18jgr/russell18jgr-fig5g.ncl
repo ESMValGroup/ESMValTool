@@ -47,15 +47,31 @@ load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 load "$diag_scripts/shared/latlon.ncl"
 
 begin
-
   enter_msg(DIAG_SCRIPT, "")
-  var0 = variable_info[0]@short_name
-  var_atts = variable_info[0]
-  info_items = select_metadata_by_name(input_file_info, var0)      
-  inputfile_paths = metadata_att_as_array(info_items, "filename")  ; path to input files
+  att = True
+  att@mip = "OImon"
+  info = select_metadata_by_atts(input_file_info, att)  ; variable
+  var0 = info[0]@short_name
+  
+  info_items = select_metadata_by_name(input_file_info, var0)  
+  sic_datasets = metadata_att_as_array(info_items, "dataset")
+      
+  inputfile_paths = metadata_att_as_array(info_items, "filename")  
   start_years_data = metadata_att_as_array(info_items, "start_year")
   end_years_data = metadata_att_as_array(info_items, "end_year")  
   nDatasets = ListCount(info_items)  
+  
+  att@mip = "fx"
+  volinfo = select_metadata_by_atts(input_file_info, att)  ; area
+  voldatasets = metadata_att_as_array(volinfo, "dataset")
+  volfile_paths = metadata_att_as_array(volinfo, "filename")
+  delete(att)
+  if (dimsizes(sic_datasets) .ne. dimsizes(voldatasets)) then 
+    error_msg("f", DIAG_SCRIPT , " " , "areacello files for " + \
+      "russell18jgr-fig5g.ncl do not match with sic datasets. " + \
+      "Please check to make sure all the sic files have a "+\
+      "areacello file in the recipe.")
+  end if    
 end
 
 begin
@@ -129,14 +145,18 @@ begin
       var_lat = infile_iii->lat 
       radius_earth = 6.37e06
       deg2rad_convF = 0.0174533
-      dlat = abs(var_lat(20) - var_lat(19))   ;some models have closer lat points near poles. hence taking difference of 20th and 19th lat points
+      dlat = abs(var_lat(20) - var_lat(19))   
+      ;some models have closer lat points near poles. 
       dlon = abs(var_lon(20) - var_lon(19))                 
       dist_x_deg_earth = radius_earth * deg2rad_convF * dlat
       clat = cos(var_lat*deg2rad_convF)
 
-      dx = dlon * radius_earth * deg2rad_convF * clat        ; dx = radius of earth * cos(lat of this data point) * (lon1 - lon2 (in radians)) 
-      dy = dlat * radius_earth * deg2rad_convF               ; dy = radius of earth *(lat1 - lat2 (in radians))  
-      dxdy = tofloat(dx*dy)                                  ; area of cell = dx * dy
+      dx = dlon * radius_earth * deg2rad_convF * clat        
+      ; dx = radius of earth * cos(lat of this data point) * (lon1 - lon2) 
+      dy = dlat * radius_earth * deg2rad_convF               
+      ; dy = radius of earth *(lat1 - lat2 (in radians))  
+      dxdy = tofloat(dx*dy)                                  
+      ; area of cell = dx * dy
       areacello_2d = new(dimsizes(sic12m(0,:,:)), float)
       areacello_2d = conform(areacello_2d,dxdy,0)
       delete(var_lon)
@@ -149,33 +169,37 @@ begin
       delete(var_lat)
 
     else
-      fx_var = read_fx_data(info_items[iii], "areacello")
-       
-      if (ismissing(fx_var)) then
-        fx_variable = "areacello"
+      dataset_compare = sic_datasets(iii) +"$"
+      fx_ind = str_match_ind_regex(voldatasets, dataset_compare)
+      fx_var = read_data(volinfo[fx_ind])
+      if (all(ismissing(fx_var))) then
+       ; fx_variable = "areacello"
         error_msg("f", DIAG_SCRIPT , " " , "areacello file for " + \
-          annots(iii) + " not found in the metadata file, please add " + \
-          "'fx_files: [areacello]' to the variable dictionary in the recipe"+\
-          " or add the location of file to config-user.yml ")
+          annots(iii) + " not found, please add dataset " \
+          + "name in the additional dataset section of areacello"\
+          + " or remove the dataset from sic section.")
       end if
       
-      areacello_2d = fx_var[0]
+      areacello_2d = fx_var
       delete(fx_var)
     end if 
 
-    areacello_3d = new( dimsizes(sic12m), float) ; making areacello same dimensions as var12m
+    areacello_3d = new( dimsizes(sic12m), float) 
+    ; making areacello same dimensions as var12m
     areacello_3d = conform(areacello_3d, areacello_2d, (/1,2/)) 
     delete(infile_iii)
     delete(areacello_2d)
     copy_VarCoords(sic12m, areacello_3d)
     sic12m = sic12m * areacello_3d
     delete(areacello_3d)
-    sic_12m_lon_avg =  dim_sum_Wrap(sic12m(:,0:a1,:))   ; take total sum of southern hemisphere
+    sic_12m_lon_avg =  dim_sum_Wrap(sic12m(:,0:a1,:))   
+    ; take total sum of southern hemisphere
     delete(sic12m)
-    var_final = dim_sum_Wrap(sic_12m_lon_avg)   ; unit conversion 
+    var_final = dim_sum_Wrap(sic_12m_lon_avg)  ;unit conversion 
     delete(sic_12m_lon_avg)
     var_final = var_final / (10.0 ^ 14) 
-    ;10^14 = 10^12 for unit conversion & 100 for converting sic from percentage to decimal
+    ;10^14 = 10^12 for unit conversion & 
+    ; 100 for converting sic from percentage to decimal
     
     res@xyDashPatterns            = dashes(iii)
     res@xyLineColors              = colors(iii)
