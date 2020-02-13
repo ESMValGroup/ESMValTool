@@ -50,7 +50,7 @@ requirements:
     - ecmwf-api-client  # in esmvalgroup channel
     - eofs
     - esmpy
-    - esmvalcore>=2.0.0b5,<2.1  # in esmvalgroup channel
+    - esmvalcore>=2.0.0b6,<2.1  # in esmvalgroup channel
     - jinja2
     - matplotlib
     - nc-time-axis

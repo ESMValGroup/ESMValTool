@@ -45,7 +45,7 @@ diagnostics:
       rsut: # TOA SW up all sky
         preprocessor: pp_rad
     additional_datasets:
-      - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+      - {dataset: CERES-EBAF,  project: obs4mips, mip: Amon, level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:
       lat_lon:
         script: validation.py
