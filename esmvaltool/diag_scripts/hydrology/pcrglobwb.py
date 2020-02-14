@@ -7,8 +7,7 @@ import iris
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
-                                            select_metadata,
-                                            run_diagnostic)
+                                            run_diagnostic, select_metadata)
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -35,9 +34,11 @@ def get_provenance_record(ancestor_file):
 
 
 def add_spinup_year(cube, cube_climatology):
-    """To reach the equilibrium, the model was spun up using
-    the average climatological forcing over each year"""
+    """Prepend the climatology to the cube.
 
+    To reach the equilibrium, the model was spun up using
+    the average climatological forcing over each year.
+    """
     # Remove leap year day from climatology
     cube_climatology = cube_climatology.extract(
         iris.Constraint(day_of_year=lambda cell: cell < 366))
@@ -105,7 +106,9 @@ def main(cfg):
 
         # Select and load in cube climatology variable timeseries
         metadata_climatology = select_metadata(
-            input_data, variable_group=short_name+'_climatology')[0]
+            input_data,
+            variable_group=short_name + '_climatology',
+        )[0]
         input_climatology_file = metadata_climatology['filename']
         cube_climatology = iris.load_cube(input_climatology_file)
 
