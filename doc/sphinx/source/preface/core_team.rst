@@ -21,10 +21,12 @@ Core development team
   ESMValTool Core PI and Developer: contact for requests to use the ESMValTool and for collaboration with the
   development team, access to the PRIVATE GitHub repository.
 
-* Alfred-Wegener-Institute Bremerhaven (AWI), Germany
-* Barcelona Computing Center (BSC), Spain
+* Alfred Wegener institute (AWI) Bremerhaven, Germany
+* Barcelona Supercomputing Center (BSC), Spain
+* Netherlands eScience Center (NLeSC), The Netherlands
 * Ludwig Maximilian University of Munich, Germany
-* Netherlands E-Science Center, Netherlands
+* Plymouth Marine Laboratory (PML), United Kingdom
+* Swedish Meteorological and Hydrological Institute (SMHI), Sweden
 * University of Reading, United Kingdom
 
 Contacts for specific diagnostic sets are the respective authors, as listed in the corresponding diagnostic

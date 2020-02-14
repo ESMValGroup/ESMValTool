@@ -434,7 +434,13 @@ def normalise(test, ref, strict=False):
                     ref[metric] = 1.e-20
                     norm[metric] = test[metric] / ref[metric]
             else:
-                norm[metric] = tuple(x / ref[metric] for x in test[metric])
+                if ref[metric] != 0:
+                    norm[metric] = tuple(x / ref[metric]
+                                         for x in test[metric])
+                else:
+                    ref[metric] = 1.
+                    norm[metric] = tuple(x * 0. / ref[metric]
+                                         for x in test[metric])
 
     return norm
 
