@@ -99,50 +99,50 @@ diagnostics:
         additional_datasets:
          # /data/sthenno1/scratch/ledm/CMIP6/tas
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp119,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp126,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp245,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp370,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp434,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp585,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp534-over,ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp119,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp126,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp245,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp370,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp434,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp585,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp534-over,ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp119,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp126,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp245,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp370,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp434,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp585,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp534-over,ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp119,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp126,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp245,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp370,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp434,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp585,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp534-over,ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
-
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp119,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp126,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp245,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp370,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp434,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp585,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: ssp534-over,ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
 
       timeseries_fgco2:
         short_name: fgco2
@@ -151,49 +151,49 @@ diagnostics:
         additional_datasets:
           # All ssp434 are missing.
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         # - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         # - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         #- {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         # - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         # - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         #- {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
 
       timeseries_intpp:
@@ -202,49 +202,304 @@ diagnostics:
         fx_var_preprocess: True
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp119,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp126,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp434,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp534-over,ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+
+      timeseries_epc100:
+        short_name: epc100
+        preprocessor: prep_timeseries_2d_sea
+        fx_var_preprocess: True
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+
+      timeseries_intdic:
+        short_name: intdic
+        preprocessor: prep_timeseries_2d_sea
+        fx_var_preprocess: True
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+      timeseries_intpoc:
+        short_name: intpoc
+        preprocessor: prep_timeseries_2d_sea
+        fx_var_preprocess: True
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+
+      timeseries_fric:
+        short_name: fric
+        preprocessor: prep_timeseries_2d_sea
+        fx_var_preprocess: True
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+
+      timeseries_froc:
+        short_name: froc
+        preprocessor: prep_timeseries_2d_sea
+        fx_var_preprocess: True
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
 
 
       timeseries_rh:
@@ -253,50 +508,50 @@ diagnostics:
         fx_var_preprocess: True
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
-
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+
 
       timeseries_npp:
         short_name: npp
@@ -304,50 +559,49 @@ diagnostics:
         fx_var_preprocess: True
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r1i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r1i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r1i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r2i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r2i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r2i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r3i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r3i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r3i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r3i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r4i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
-
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r4i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r4i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp119,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp126,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp245,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp370,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp434,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp585,     ensemble: r8i1p1f2, start_year: 2015, end_year: 2100, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: ssp534-over,ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585],     ensemble: r8i1p1f2, start_year: 2004, end_year: 2100, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
     scripts:
       diagnostic_timeseries:
