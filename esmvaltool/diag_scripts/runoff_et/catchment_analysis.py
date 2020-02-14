@@ -475,7 +475,8 @@ def get_catchment_data(cfg):
     """
     catchments = get_defaults()
     catchments['refname'] = 'default'
-    catchment_filepath = cfg.get('catchmentmask')
+    catchment_filepath = os.path.join(cfg['auxiliary_data_dir'],
+                                      cfg.get('catchmentmask'))
     catchments['cube'] = iris.load_cube(catchment_filepath)
     if catchments['cube'].coord('latitude').bounds is None:
         catchments['cube'].coord('latitude').guess_bounds()
