@@ -14,8 +14,9 @@ If a diagnostic fails, you will get the message
    INFO    To re-run this diagnostic script, run:
 
 If you run the command in the stdout you will be able to re-run the
-diagnostic without having to re-run the whole preprocessor. If you add the ``-f``
-argument that will force an overwrite, and it will deletes not just the failed diagnostic,
+diagnostic without having to re-run the whole preprocessor. If you add the ``-f`` 
+argument (available only for Python diagnostics, check your options with ``--help``)
+that will force an overwrite, and it will deletes not just the failed diagnostic,
 but the contents of the entire ``plots`` directory - this is risky but useful when needing to
 redo the whole work. Adding ``-i`` or ``--ignore-existing`` will not delete any existing files,
 and it will re-do the work related to the failed diagnostic only.
@@ -54,28 +55,30 @@ link attached to it would make things more clear e.g.:
    recipe_example_LATEST -> recipe_example_20190905_163519
 
 
-You can do that by running the tool with a recursive sift attached to it:
+You can do that by running the tool using the latest output as basis and creating
+a symbolic link to it so it gets picked up at every re-run iteration:
 
 .. code:: bash
 
-   esmvaltool -c ~/config-user.yml recipe_xxx.yml && \
+   esmvaltool -c ~/config-user.yml recipe_xxx.yml; \
    ln -sfT $(ls -1d ~/esmvaltool_output/recipe_xxx_* | tail -1) latest
 
 
-Running a dry run
-=================
+.. uncomment when feature plopped in master
+.. # Running a dry run
+.. =================
 
-You can run in dry-run mode with
+.. You can run in dry-run mode with
 
-.. code:: bash
+.. .. code:: bash
 
-   esmvaltool -c ~/config-user.yml recipe_xxx.yml --dry-run
+..   esmvaltool -c ~/config-user.yml recipe_xxx.yml --dry-run
 
 
-This mode activated will run through the data finding and CMOR checks and fixes
-and will highlight on screen and in `run/main_log.txt` everytime certain data is
-missing or there are issues with the CMOR checks; note that no data is written
-to disk and no diagnostics are run; you don't have to modify your recipe in any
-way to have this mode run. The information provided will help you obtain any data
-that is missing and/or create fixes for the datasets and variables that failed the
+.. This mode activated will run through the data finding and CMOR checks and fixes
+.. and will highlight on screen and in `run/main_log.txt` everytime certain data is
+.. missing or there are issues with the CMOR checks; note that no data is written
+.. to disk and no diagnostics are run; you don't have to modify your recipe in any
+.. way to have this mode run. The information provided will help you obtain any data
+.. that is missing and/or create fixes for the datasets and variables that failed the
 CMOR checks and could not be fixed on the fly.
