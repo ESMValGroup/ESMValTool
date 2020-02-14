@@ -72,27 +72,27 @@ preprocessors:
     <<: *climatology
 
 diagnostics:
-  diagnostic_daily:
+  diagnostic_era_interim:
     description: PCR-GLOBWB input preprocessor for ERA-Interim data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      pr: &var_daily
+      pr: &var_era_interim
         mip: day
-        start_year: 1990
-        end_year: 2018
+        start_year: 2002
+        end_year: 2016
         preprocessor: preproc_era_interim_pr
-      pr_climatology: &var_daily_clim
+      pr_climatology: &var_era_interim_clim
         mip: day
         start_year: 1990  # it should be possible to specify different years for the climatology
-        end_year: 2004
+        end_year: 2002
         short_name: pr
         preprocessor: preproc_era_interim_pr_clim
       tas:
-        <<: *var_daily
+        <<: *var_era_interim
         preprocessor: preproc_era_interim_tas
       tas_climatology:
-        <<: *var_daily_clim
+        <<: *var_era_interim_clim
         short_name: tas
         preprocessor: preproc_era_interim_tas_clim
     scripts:
@@ -100,27 +100,27 @@ diagnostics:
         script: hydrology/pcrglobwb.py
         basin: Rhine
 
-  diagnostic_hourly:
+  diagnostic_era5:
     description: PCR-GLOBWB input preprocessor for ERA5 data
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      pr: &var_hourly
-        mip: Eday
-        start_year: 1990
-        end_year: 2018
+      pr: &var_era5
+        mip: day
+        start_year: 2002
+        end_year: 2016
         preprocessor: preproc_era5_pr
-      pr_climatology: &var_hourly_clim
-        mip: Eday
+      pr_climatology: &var_era5_clim
+        mip: day
         start_year: 1990  # it should be possible to specify different years for the climatology
-        end_year: 2004
+        end_year: 2002
         short_name: pr
         preprocessor: preproc_era5_pr_clim
       tas:
-        <<: *var_hourly
+        <<: *var_era5
         preprocessor: preproc_era5_tas
       tas_climatology:
-        <<: *var_hourly_clim
+        <<: *var_era5_clim
         short_name: tas
         preprocessor: preproc_era5_tas_clim
     scripts:
