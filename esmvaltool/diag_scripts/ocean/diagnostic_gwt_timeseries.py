@@ -659,13 +659,18 @@ def nppgt(data_dict, short='npp', gt='nppgt'):
         assert 0
     areas = areas[0]
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
+        #rint('nppgt:', short_name, exp, ensemble, [short,gt])
         if short_name != short:
+        #   print('nppgt:', short_name,'!=', short)
             continue
-        if (gt, exp, ensemble) in data_dict.keys(): continue
+        if (gt, exp, ensemble) in data_dict.keys(): 
+            print('nppgt:', gt, 'already calculated')
+            continue
+        print('nppgt:', short_name, exp, ensemble, [short,gt])
         cubegt = cube.copy()
         cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
         cubegt.units = cf_units.Unit('Pg yr^-1') #cube.units * areas.units
-
+        print('nppgt:', (gt, exp, ensemble), cubegt.data.mean())
         data_dict[(gt, exp, ensemble)] = cubegt
     return data_dict
 
@@ -728,25 +733,39 @@ def norm_co2(data_dict, short='nppgt'):
     Weight a value according to the ratio of the forcing co2 for each year
     against the average co2 forcing in 1850-1900.
     """
+    print(data_dict.keys())
     print(data_dict[('co2', 'historical', 'r1i1p1f2' )]['time'][:50],
           data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2'][:50])
     baseline = np.mean(data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2'][:50])
-
+    new_data_dict = {}
     for (short_name, exp, ensemble), cube  in data_dict.items():
         if short_name != short: continue
-        if exp != 'historical': continue
+        #if exp != 'historical': continue
         cube = data_dict[(short, exp, ensemble)].copy()
+        print('norm_co2:', short_name, exp, ensemble, 'baseline:',baseline)
         out = []
-        for d,co2 in zip(cube.data, data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2']):
+        co2_data= data_dict[('co2', exp, ensemble )]['co2']
+        if len(cube.data) != len(co2_data):
+            times = cube.coord('time').units.num2date(cube.coord('time').points)
+            print('times do not match', len(cube.data),'!=', len(co2_data))
+            #print('UKESM times:', times)
+            #print('CO2 times:', data_dict[('co2', exp, ensemble )]['time'])
+            print(' in ',short_name, exp, ensemble)
+            for t1, t2 in zip(times, data_dict[('co2', exp, ensemble )]['time']):
+                print(short_name, exp, ensemble, t1,t2)
+            assert 0
+        for d,co2 in zip(cube.data, data_dict[('co2', exp, ensemble)]['co2']):
             out.append(d*baseline/co2)
         cube.data = np.ma.array(out)
-        data_dict[(short+'_norm', exp, ensemble)] = cube
+        new_data_dict[(short+'_norm', exp, ensemble)] = cube
+    data_dict.update(new_data_dict)
+    return data_dict
 
 
 def norm_co2_nppgt(data_dict): return norm_co2(data_dict, short='nppgt')
 def norm_co2_rhgt(data_dict): return norm_co2(data_dict, short='rhgt')
 def norm_co2_exchange(data_dict): return norm_co2(data_dict, short='exchange')
-def norm_co2_fgco2gt(data_dict): return norm_co2(data_dict, short='fgco2')
+def norm_co2_fgco2gt(data_dict): return norm_co2(data_dict, short='fgco2gt')
 
 
 def load_timeseries(cfg, short_names):
@@ -787,6 +806,9 @@ def load_timeseries(cfg, short_names):
             short_names_to_load.extend(transforms[sn])
 
     data_dict = {}
+    if 'co2' in short_names_to_load:
+        data_dict = load_co2_forcing(cfg, data_dict)
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('load_timeseries:\t%s', metadata_filename)
 
@@ -801,7 +823,9 @@ def load_timeseries(cfg, short_names):
 
             cube = iris.load_cube(fn)
             #cube = diagtools.bgc_units(cube, short_name)
-            print('loaded data:', (short_name, exp, ensemble) )
+            
+            print('load_timeseries:\t%s successfull loaded data:', (short_name, exp, ensemble), 'mean:', cube.data.mean())
+
             data_dict[(short_name, exp, ensemble)] = cube
 
     for sn in short_names_to_load:
@@ -862,9 +886,12 @@ def load_co2_forcing(cfg, data_dict):
                 if '\n' in line: line.remove('\n')
             times.append(float(line[0]))
             data.append(float(line[1]))
-        data_dict[('co2', key, 'r1i1p1f2' )] = {'time': times, 'co2':data}
-        open_fn.close()
+        for ens in ['r1', 'r2',  'r3', 'r4', 'r8']:
+            data_dict[('co2', key, ens+'i1p1f2' )] = {'time': times, 'co2':data}
+            print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens+'i1p1f2'), 'mean:', np.array(data).mean())
 
+        open_fn.close()
+    
     path = diagtools.folder(cfg['plot_dir'])
     image_extention = diagtools.get_image_format(cfg)
     path += 'co2_forcing' + image_extention
@@ -932,12 +959,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
     """
-    # short_names = [x, y, ]
-    # if markers == 'thresholds':
-    #     short_names.append('tas')
-    # if data_dict == {}:
-    #     data_dict = load_timeseries(cfg, short_names)
-    #     thresholds_dict = load_thresholds(cfg, data_dict)
     exps = {}
     ensembles = {}
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
@@ -957,28 +978,46 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     fig = plt.figure()
     x_label,y_label = [], []
     for exp_1, ensemble_1 in product(exps, ensembles):
-
         x_data, y_data = [], []
         for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
+            #print('plotting', short_name, exp, ensemble, ' from', x,y)
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if short_name not in [x,y]: continue
-
-            print('make_ts_figure', short_name, exp, ensemble, x,y)
-
+            
+            print('make_ts_figure: found', short_name, exp, ensemble, x,y)
             if x == 'time':
-                x_data = diagtools.cube_time_to_float(cube)
                 x_label = 'Year'
+            elif x == short_name == 'co2':
+                x_data = cube['co2']
+                x_label = ' '.join(['atmopheric co2'])
             elif short_name == x:
                 x_data = cube.data
                 x_label = ' '.join([x, str(cube.units)])
 
             if y == 'time':
-                y_data = diagtools.cube_time_to_float(cube)
+                if isinstance(cube, dict):
+                    x_data = cube['time']
+                else:
+                    y_data = diagtools.cube_time_to_float(cube)
                 y_label = 'Year'
+            elif y == short_name == 'co2' :
+                y_data = cube['co2']
+                y_label = ' '.join(['atmopheric co2'])
             elif short_name == y:
                 y_data = cube.data
                 y_label = ' '.join([y, str(cube.units)])
+
+            if x == 'time' and short_name == y:
+                x_label = 'Year'
+                if isinstance(cube, iris.cube.Cube):
+                    x_data = diagtools.cube_time_to_float(cube)
+                else:
+                    x_data = cube['time']
+            print('make_ts_figure: loaded x data', short_name, exp, ensemble, x, np.mean(x_data))
+            print('make_ts_figure: loaded y data', short_name, exp, ensemble, y, np.mean(y_data))
+
+
 
         if 0 in [len(x_data), len(y_data)]: continue
 
@@ -1056,19 +1095,20 @@ def main(cfg):
     # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
-    short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
-    short_names_x = ['time', ]# 'tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
-    short_names_y = ['nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
+    short_names = ['tas', 'tas_norm', 'co2', 'npp', 'nppgt', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
+    short_names_x = ['time', 'co2', 'tas', 'tas_norm',] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
+    short_names_y = ['tas', 'co2', 'npp', 'nppgt', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
+
 
     pairs = []
 
-    for do_ma in [True, False]:
+    for do_ma in [True, ]:#False]:
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
-        data_dict = load_co2_forcing(cfg, data_dict)
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
-            if do_ma:
+            if do_ma and short_name != 'co2':
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
@@ -1082,35 +1122,6 @@ def main(cfg):
                 pairs.append((x,y))
                 pairs.append((y,x))
 
-    return
-
-    exceedance_dates = {}
-    for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('metadata filename:\t%s', metadata_filename)
-
-        metadatas = diagtools.get_input_files(cfg, index=index)
-
-        #######
-        # Multi model time series
-        multi_model_time_series(
-            cfg,
-            metadatas,
-        )
-
-        for filename in sorted(metadatas):
-
-            logger.info('-----------------')
-            logger.info(
-                'model filenames:\t%s',
-                filename,
-            )
-
-            ######
-            # Time series of individual model
-            exceedance_date = make_time_series_plots(cfg, metadatas[filename], filename)
-            exceedance_dates.update(exceedance_date)
-    print(exceedance_dates)
-    print_exceedance_dates(cfg, exceedance_dates)
     logger.info('Success')
 
 
