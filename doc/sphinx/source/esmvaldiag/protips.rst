@@ -81,4 +81,4 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 .. to disk and no diagnostics are run; you don't have to modify your recipe in any
 .. way to have this mode run. The information provided will help you obtain any data
 .. that is missing and/or create fixes for the datasets and variables that failed the
-CMOR checks and could not be fixed on the fly.
+.. CMOR checks and could not be fixed on the fly.
