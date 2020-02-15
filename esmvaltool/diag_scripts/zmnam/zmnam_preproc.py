@@ -14,12 +14,17 @@ def zmnam_preproc(ifile):
     # Delete leap day, if any.
     full_da_nl = cdo.delete('month=2,day=29', input=ifile)
 
+    # Fill any missing value and detrend.
+    full_da_nl_nn = cdo.fillmiss(full_da_nl)
+    full_da_nl_detr = cdo.detrend(full_da_nl_nn)
+
     # Compute anomalies from the daily/monthly means.
-    gh_da_dm = cdo.ydaymean(input=full_da_nl)
-    gh_da_an = cdo.sub(input=full_da_nl + ' ' + gh_da_dm)
+    gh_da_dm = cdo.ydaymean(input=full_da_nl_detr)
+    gh_da_an = cdo.sub(input=full_da_nl_detr + ' ' + gh_da_dm)
     gh_da_an_zm = cdo.zonmean(input=gh_da_an)
 
-    gh_mo = cdo.monmean(input=full_da_nl)
+    # Compute monthly mean anomalies.
+    gh_mo = cdo.monmean(input=full_da_nl_detr)
     gh_mo_mm = cdo.ymonmean(input=gh_mo)
     gh_mo_an = cdo.sub(input=gh_mo + ' ' + gh_mo_mm)
 
