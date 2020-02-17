@@ -49,8 +49,9 @@ preprocessors:
 
 diagnostics:
 
-   deangelis3:
-    description: Plot fig 3 of DeAngelis et al., 2015, with observations
+   deangelisf3f4:
+
+    description: Plot fig 3 and fig 4 of DeAngelis et al., 2015
     variables:
       rsnstcs: &spatial_mean_cmip5_r1i1p1_amon_t2ms
         preprocessor: spatial_mean
@@ -107,10 +108,10 @@ diagnostics:
 
     
     scripts:
-      deangelis3:
-        script: deangelis15nat/deangelis3.py
+      deangelisf3f4:
+        script: deangelis15nat/deangelisf3f4.py
         plot_ecs_regression: 'True'
-        output_name: 'deangelis3'
+        output_name: 'deangelisf3f4'
     
 
   

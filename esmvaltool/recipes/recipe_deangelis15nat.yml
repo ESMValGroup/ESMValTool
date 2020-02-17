@@ -43,7 +43,7 @@ preprocessors:
 
 diagnostics:
 
-  deangelis1b:
+  deangelisf1b:
     description: Bar plot of all model mean of LvP, LWC, SWA, and SH
                   (DeAngelis Fig. 1b).
     variables:
@@ -200,13 +200,13 @@ diagnostics:
       - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 141, end_year: 150}
 
     scripts:
-      deangelis1b:
-        script: deangelis15nat/deangelis1b.py
+      deangelisf1b:
+        script: deangelis15nat/deangelisf1b.py
         plot_ecs_regression: 'True'
-        output_name: 'deangelis1b'
+        output_name: 'deangelisf1b'
 
 
-  deangelis2:
+  deangelisf2ext:
     description: Plots scatter plot and linear regression for LvP/dtas.
     # dLWC/dtas, dSWA/dtas, and dSH/dtas (DeAngelis extended data Fig. 1,
     # one plot for each model) and temperature-mediated responses of
@@ -322,13 +322,13 @@ diagnostics:
       - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
 
     scripts:
-      deangelis2:
-        script: deangelis15nat/deangelis2.py
+      deangelisf2ext:
+        script: deangelis15nat/deangelisf2ext.py
         plot_ecs_regression: 'True'
-        output_name: 'deangelis2'
+        output_name: 'deangelisf2ext'
 
-  deangelis3:
-    description: Plot fig 3 of DeAngelis et al., 2015, with observations
+  deangelisf3f4:
+    description: Plot fig 3 and fig 4 of DeAngelis et al., 2015
     variables:
       rsnstcs:
         <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
@@ -460,7 +460,7 @@ diagnostics:
       - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
 
     scripts:
-      deangelis3:
-        script: deangelis15nat/deangelis3.py
+      deangelisf3f4:
+        script: deangelis15nat/deangelisf3f4.py
         plot_ecs_regression: 'True'
-        output_name: 'deangelis3'
+        output_name: 'deangelisf3f4'
