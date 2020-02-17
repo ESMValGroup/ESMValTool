@@ -10,12 +10,10 @@ Overview
 Equilibrium climate sensitivity is defined as the change in global mean
 temperature as a result of a doubling of the atmospheric CO\ :sub:`2`
 concentration compared to pre-industrial times after the climate system has
-reached a new equilibrium `Gregory et al. (2004)`_. This recipe uses a
-regression method based on `Andrews et al. (2012)`_ to calculate it for
-several CMIP model.
+reached a new equilibrium. This recipe uses a regression method based on
+`Gregory et al. (2004)`_ to calculate it for several CMIP models.
 
 .. _`Gregory et al. (2004)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2003GL018747
-.. _`Andrews et al. (2012)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2012GL051607
 
 
 Available recipes and diagnostics
@@ -29,6 +27,8 @@ Recipes are stored in recipes/
 Diagnostics are stored in diag_scripts/
 
    * climate_metrics/ecs.py
+   * climate_metrics/create_barplot.py
+   * climate_metrics/create_scatterplot.py
 
 
 User settings in recipe
@@ -40,8 +40,41 @@ User settings in recipe
 
 #. Script climate_metrics/ecs.py
 
+   * ``calculate_mmm``, *bool*, optional (default: ``True``): Calculate
+     multi-model mean ECS.
    * ``read_external_file``, *str*, optional: Read ECS and net climate feedback
-     parameter from external file. All other input data is ignored.
+     parameter from external file. Can be given relative to the diagnostic
+     script or as absolute path.
+   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
+     method (affects all plots), see
+     https://seaborn.pydata.org/generated/seaborn.set.html.
+
+#. Script climate_metrics/create_barplot.py
+
+   * ``label_attribute``, *str*, optional: Attribute of the cube which is used
+     as label for the different input files in the barplot.
+   * ``patterns``, *list of str*, optional: Patterns to filter list of input
+     files.
+   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
+     method (affects all plots), see
+     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``sort_ascending``, *bool*, optional (default: ``False``): Sort bars in
+     ascending order.
+   * ``sort_descending``, *bool*, optional (default: ``False``): Sort bars in
+     descending order.
+   * ``value_labels``, *bool*, optional (default: ``False``): Label bars with
+     value of that bar.
+   * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
+
+#. Script climate_metrics/create_scatterplot.py
+
+   * ``dataset_style``, *str*, optional: Name of the style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * ``pattern``, *str*, optional: Pattern to filter list of input files.
+   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
+     method (affects all plots), see
+     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
 
 Variables
@@ -62,9 +95,6 @@ Observations and reformat scripts
 References
 ----------
 
-* Andrews, Timothy, et al. "Forcing, feedbacks and climate sensitivity in CMIP5
-  coupled atmosphere‐ocean climate models." Geophysical Research Letters 39.9
-  (2012).
 * Gregory, Jonathan M., et al. "A new method for diagnosing radiative forcing
   and climate sensitivity." Geophysical research letters 31.3 (2004).
 

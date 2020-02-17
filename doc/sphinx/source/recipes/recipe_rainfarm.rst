@@ -53,3 +53,11 @@ References
 * Terzago et al. 2018, Nat. Hazards Earth Syst. Sci., 18, 2825-2840
 * D'Onofrio et al. 2014, J of Hydrometeorology 15, 830-843
 * Rebora et. al 2006, JHM 7, 724
+
+Example plots
+-------------
+
+.. figure:: /recipes/figures/rainfarm/rainfarm.png
+   :width: 14cm
+
+   Example of daily cumulated precipitation from the CMIP5 EC-EARTH model on a specific day, downscaled using RainFARM from its original resolution (1.125°) (left panel), increasing spatial resolution by a factor of 8 to 0.14°; Two stochastic realizations are shown (central and right panel). A fixed spectral slope of s=1.7 was used. Notice how the downscaled fields introduce fine scale precipitation structures, while still maintaining on average the original coarse-resolution precipitation. Different stochastic realizations are shown to demonstrate how an ensemble of realizations can be used to reproduce unresolved subgrid variability. (N.B.: this plot was not produced by ESMValTool - the recipe output is netcdf only). 
