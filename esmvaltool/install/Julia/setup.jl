@@ -16,7 +16,12 @@ open(scriptDir * "/julia_requirements.txt") do f
       pkgId=i[1]
       pkgName=i[2]
       @info "Installing" pkgName
-      Pkg.add(pkgName)
+      if pkgName == "ArgParse"
+          Pkg.add(pkgName)
+          Pkg.pin(PackageSpec(name = "ArgParse", version = "0.6.2"))
+      else
+          Pkg.add(pkgName)
+      end
 
       @info "Testing: ", pkgName
       # load the package this needs to be called at top-level
