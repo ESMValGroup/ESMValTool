@@ -25,6 +25,7 @@ Configuration options
 import logging
 import os
 import iris
+import iris.coord_categorisation as cat
 import numpy as np
 from scipy import stats
 import cartopy.crs as cart
@@ -157,7 +158,7 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    if titlestr == 'MME rainfall change due to model error':
+    if titlestr == 'Multi-model mean rainfall change due to model error':
         figname = 'fig2c'
     else:
         figname = 'fig2d'
@@ -293,7 +294,7 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
         linestyle='none',
         markersize=12,
         markeredgewidth=3.0,
-        label='MME')
+        label='multi-model mean')
 
     for iii, model in enumerate(datasets):
         style = e.plot.get_dataset_style(model)
@@ -515,6 +516,7 @@ def main(cfg):
     # Create iris cube for each dataset and save annual means
     for dataset_path in data:
         cube = iris.load(dataset_path)[0]
+        cat.add_month_number(cube, 'time', name='month_number')
         # MJJAS mean (monsoon season)
         cube = cube[np.where(
             np.absolute(cube.coord('month_number').points - 7) <= 2)]
@@ -542,7 +544,7 @@ def main(cfg):
     #          "ar_hist_rain": ar_hist_rain, "mism_diff_rain": mism_diff_rain,
     #          "mwp_hist_rain": mwp_hist_rain}
     # plot_rain_and_wind(cfg, 'MME', data_ar[1:4], lats, lons)
-    plot_rain_and_wind(cfg, 'MME', [
+    plot_rain_and_wind(cfg, 'Multi-model_mean', [
         data_ar["ar_diff_rain"], data_ar["ar_diff_ua"], data_ar["ar_diff_va"]
     ], lats, lons)
 
@@ -566,9 +568,9 @@ def main(cfg):
     plot_reg_li2(cfg, data_ar["datasets"], data_ar["mism_diff_rain"],
                  data_ar2["mism_diff_cor"], data_ar2["mism_hist_rain"])
 
-    plot_rain(cfg, 'MME rainfall change due to model error',
+    plot_rain(cfg, 'Multi-model mean rainfall change due to model error',
               np.mean(data_ar2["proj_err"], axis=2), lats, lons)
-    plot_rain(cfg, 'Corrected MME rainfall change',
+    plot_rain(cfg, 'Corrected multi-model mean rainfall change',
               np.mean(data_ar2["ar_diff_cor"], axis=2), lats, lons)
 
 

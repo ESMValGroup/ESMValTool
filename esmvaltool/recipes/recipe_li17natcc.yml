@@ -56,7 +56,7 @@ preprocessors:
 
 diagnostics:
 
-   lif1:
+   lif1f2:
     description: Fig. 1.
     variables:
       pr: &gridded_cmip5_r1i1p1_amon_t2ms
@@ -189,10 +189,10 @@ diagnostics:
 
 
     scripts:
-      lif1:
-        script: emergent_constraints/lif1.py
+      lif1f2:
+        script: emergent_constraints/lif1f2.py
         plot_ecs_regression: 'True'
-        output_name: 'lif1'
+        output_name: 'lif1f2'
 
 
 
