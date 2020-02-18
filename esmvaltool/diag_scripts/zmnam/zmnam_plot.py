@@ -66,11 +66,25 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
     zg_mo = np.array(in_file.variables['zg'][:])
 
     # Record attributes for output netCDFs
-    time_nam = in_file.variables['time'].long_name
+    if hasattr(in_file.variables['time'], 'long_name'):
+        time_lnam = in_file.variables['time'].long_name
+    else:
+        time_lnam = ""
+    if hasattr(in_file.variables['time'], 'standard_name'):
+        time_snam = in_file.variables['time'].standard_name
+    else:
+        time_snam = ""
     time_uni = in_file.variables['time'].units
     time_cal = in_file.variables['time'].calendar
 
-    lev_nam = in_file.variables['plev'].long_name
+    if hasattr(in_file.variables['plev'], 'long_name'):
+        lev_lnam = in_file.variables['plev'].long_name
+    else:
+        lev_lnam = ""
+    if hasattr(in_file.variables['plev'], 'standard_name'):
+        lev_snam = in_file.variables['plev'].standard_name
+    else:
+        lev_snam = ""
     lev_uni = in_file.variables['plev'].units
     lev_pos = in_file.variables['plev'].positive
     lev_axi = in_file.variables['plev'].axis
@@ -240,13 +254,19 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
     file_out.createDimension('lon', np.size(lon))
     #
     time_var = file_out.createVariable('time', 'd', ('time', ))
-    time_var.setncattr('long_name', time_nam)
+    if time_lnam:
+        time_var.setncattr('long_name', time_lnam)
+    if time_snam:
+        time_var.setncattr('standard_name', time_snam)
     time_var.setncattr('units', time_uni)
     time_var.setncattr('calendar', time_cal)
     time_var[:] = 0  # singleton
     #
     lev_var = file_out.createVariable('plev', 'd', ('plev', ))
-    lev_var.setncattr('long_name', lev_nam)
+    if lev_lnam:
+        lev_var.setncattr('long_name', lev_lnam)
+    if lev_snam:
+        lev_var.setncattr('standard_name', lev_snam)
     lev_var.setncattr('units', lev_uni)
     lev_var.setncattr('positive', lev_pos)
     lev_var.setncattr('axis', lev_axi)
