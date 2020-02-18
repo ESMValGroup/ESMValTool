@@ -34,6 +34,7 @@ import logging
 import os
 from collections import OrderedDict
 import iris
+import iris.coord_categorisation as cat
 import numpy as np
 from scipy import stats
 import scipy.signal as scisi
@@ -308,6 +309,7 @@ def reform_data_iris_deangelis3b4(input_data):
         # subdata: dictionary
         for subdata in my_data:
             cube = iris.load(subdata['filename'])[0]
+            cat.add_year(cube, 'time', name='year')
             cube = cube.aggregated_by('year', iris.analysis.MEAN)
             experiment = subdata['exp']
             if experiment == 'abrupt-4xCO2':

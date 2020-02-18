@@ -32,6 +32,7 @@ import logging
 import os
 from collections import OrderedDict
 import iris
+import iris.coord_categorisation as cat
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
@@ -489,10 +490,11 @@ def main(cfg):
     # Create iris cube for each dataset and save annual means
     for dataset_path in data:
         cube = iris.load(dataset_path)[0]
-        cube = cube.aggregated_by(n.YEAR, iris.analysis.MEAN)
+        cat.add_year(cube, 'time', name='year')
+        cube = cube.aggregated_by('year', iris.analysis.MEAN)
         experiment = data.get_info(n.EXP, dataset_path)
         if experiment == PICONTROL:
-            # DeAngelis use a 21 month running mean on piControl but the
+            # DeAngelis use a 21 year running mean on piControl but the
             # full extend of 150 years abrupt4xCO2. I could not find out,
             # how they tread the edges, currently I just skip the mean for
             # the edges. This is not exacly the same as done in the paper,
