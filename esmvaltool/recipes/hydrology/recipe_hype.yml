@@ -13,83 +13,38 @@ documentation:
 preprocessors:
   preprocessor: &general
     extract_shape:
-      shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
+      shapefile: Meuse_HYPE.shp
       method: contains
       decomposed: true
     area_statistics:
       operator: mean
-
-  daily_mean_temperature:
+  temperature:
     <<: *general
     convert_units:
       units: degC
-    daily_statistics:
-      operator: mean
-
-  daily_min_temperature:
+  water:
     <<: *general
     convert_units:
-      units: degC
-    daily_statistics:
-      operator: min
+      units: kg m-2 d-1
 
-  daily_max_temperature:
-    <<: *general
-    convert_units:
-      units: degC
-    daily_statistics:
-      operator: max
-
-  daily_water:
-    <<: *general
-    #~ convert_units:
-      #~ units: mm d-1
-    daily_statistics:
-        operator: mean
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
 
 diagnostics:
-  diagnostic_daily_data:
+  hype:
     description: HYPE input preprocessor for daily data
-    additional_datasets:
-        - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: &var_daily
+      tas: &var
         mip: day
         start_year: 1979
         end_year: 1979
-        preprocessor: daily_mean_temperature
-      tasmin:
-        <<: *var_daily
-        preprocessor: daily_min_temperature
-      tasmax:
-        <<: *var_daily
-        preprocessor: daily_max_temperature
+        preprocessor: temperature
+      tasmin: *var
+      tasmax: *var
       pr:
-        <<: *var_daily
-        preprocessor: daily_water
-    scripts:
-      script:
-        script: hydrology/hype.py
-
-  diagnostic_hourly_data:
-    description: HYPE input preprocessor for hourly data
-    additional_datasets:
-        - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      tas: &var_hourly
-        mip: E1hr
-        start_year: 1979
-        end_year: 1979
-        preprocessor: daily_mean_temperature
-      tasmin:
-        <<: *var_hourly
-        preprocessor: daily_min_temperature
-      tasmax:
-        <<: *var_hourly
-        preprocessor: daily_max_temperature
-      pr:
-        <<: *var_hourly
-        preprocessor: daily_water
+        <<: *var
+        preprocessor: water
     scripts:
       script:
         script: hydrology/hype.py

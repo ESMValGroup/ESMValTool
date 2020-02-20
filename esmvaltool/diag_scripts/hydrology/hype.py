@@ -4,10 +4,8 @@ from pathlib import Path
 
 import dask.array as da
 import iris
-
 import numpy
 import pandas
-
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -18,7 +16,6 @@ logger = logging.getLogger(Path(__file__).name)
 
 def get_provenance_record(attributes):
     """Create a provenance record."""
-
     ancestor_file = attributes['filename']
 
     record = {
@@ -39,8 +36,7 @@ def get_provenance_record(attributes):
 
 
 def get_output_stem(attributes):
-    """ get output file stem, specific to HYPE """
-
+    """Get output file stem, specific to HYPE."""
     short_to_stem = dict(tas="Tobs",
                          tasmin="TMINobs",
                          tasmax="TMAXobs",
@@ -48,27 +44,22 @@ def get_output_stem(attributes):
 
     shortname = attributes["short_name"]
     if shortname in short_to_stem:
-        stem = short_to_stem[shortname]
+        stem = Path(short_to_stem[shortname])
     else:
         stem = Path(attributes['filename']).stem + '_hype'
+
+    stem = attributes['alias'] / stem
 
     return stem
 
 
 def get_data_times_and_ids(attributes):
-    """ get the data table to be written and the times and indices """
+    """Get the data table to be written and the times and indices."""
     input_file = attributes['filename']
 
     cube = iris.load_cube(input_file)
 
-    data = numpy.array(cube.core_data()).T
-
-    # ad-hoc fix of precipitation:
-    if attributes["short_name"] == "pr":
-        if attributes["units"] == "kg m-2 s-1":
-            data *= 86400
-        elif not attributes["units"] == "mm day-1":
-            raise Exception("possible units error")
+    data = numpy.array(cube.core_data())
 
     # Round times to integer number of days
     time_coord = cube.coord('time')
@@ -85,22 +76,25 @@ def main(cfg):
     """Process data for use as input to the HYPE hydrological model."""
     input_data = cfg['input_data'].values()
     grouped_input_data = group_metadata(input_data,
-                                        'standard_name',
+                                        'long_name',
                                         sort='dataset')
 
-    for standard_name in grouped_input_data:
-        logger.info("Processing variable %s", standard_name)
-        for attributes in grouped_input_data[standard_name]:
+    for long_name in grouped_input_data:
+        logger.info("Processing variable %s", long_name)
+        for attributes in grouped_input_data[long_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
 
             output_file = get_diagnostic_filename(get_output_stem(attributes),
                                                   cfg, 'txt')
+            Path(output_file).parent.mkdir(exist_ok=True)
 
             data, times, ids = get_data_times_and_ids(attributes)
 
             frame = pandas.DataFrame(data, index=times, columns=ids)
 
-            frame.to_csv(output_file, sep=' ', index_label="DATE",
+            frame.to_csv(output_file,
+                         sep=' ',
+                         index_label="DATE",
                          float_format='%.3f')
 
             # Store provenance
