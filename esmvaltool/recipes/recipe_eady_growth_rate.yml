@@ -62,6 +62,10 @@ diagnostics:
     scripts:
       annual_eady_growth_rate:
         script: primavera/eady_growth_rate/eady_growth_rate.py
+        compute_annual_mean: false 
+        compute_seasonal_mean: false
+        compute_climatology: true
+
 
   summer_egr:
     variables:
@@ -74,6 +78,9 @@ diagnostics:
     scripts:
       summer_eady_growth_rate:
         script: primavera/eady_growth_rate/eady_growth_rate.py
+        compute_annual_mean: false
+        compute_seasonal_mean: false
+        compute_climatology: true
 
   winter_egr:
     variables:
@@ -86,4 +93,6 @@ diagnostics:
     scripts:
       winter_eady_growth_rate:
         script: primavera/eady_growth_rate/eady_growth_rate.py
-        compute_climatology: True
+        compute_annual_mean: false
+        compute_seasonal_mean: false
+        compute_climatology: true
