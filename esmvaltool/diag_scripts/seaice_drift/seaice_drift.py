@@ -30,11 +30,11 @@ MONTHS_PER_YEAR = 12
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-class SeaIceDrift(object):
+class SeaIceDrift():
     """Class to compute SeaIce Drift metric."""
 
-    def __init__(self, config):
-        self.cfg = config
+    def __init__(self, cfg):
+        self.cfg = cfg
         self.datasets = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.variables = esmvaltool.diag_scripts.shared.Variables(self.cfg)
 
@@ -64,7 +64,7 @@ class SeaIceDrift(object):
                 self.datasets.get_info('reference_dataset', filename)
             )
             alias = self._get_alias(filename, reference_dataset)
-            siconc = self._load_cube(filename, 'sea_ice_area_fraction')
+            siconc = iris.load_cube(filename, 'sea_ice_area_fraction')
             siconc.convert_units('1.0')
             siconc_original[alias] = siconc
 
@@ -80,7 +80,7 @@ class SeaIceDrift(object):
                 self.datasets.get_info('reference_dataset', filename)
             )
             alias = self._get_alias(filename, reference_dataset)
-            sithick = self._load_cube(filename, 'sea_ice_thickness')
+            sithick = iris.load_cube(filename, 'sea_ice_thickness')
             self.sivol[alias] = self._compute_mean(
                 sithick,
                 self._get_mask(sithick, filename)
@@ -123,7 +123,7 @@ class SeaIceDrift(object):
                 logger.debug(sispeed)
                 self.sispeed[alias] = sispeed
             else:
-                sispeed = self._load_cube(filename, 'sea_ice_speed')
+                sispeed = iris.load_cube(filename, 'sea_ice_speed')
                 sispeed.convert_units('km day-1')
                 self.sispeed[alias] = self._compute_mean(
                     sispeed, self._get_mask(sispeed, filename)
@@ -178,12 +178,8 @@ class SeaIceDrift(object):
 
         return area_cello.data * mask
 
-    def _load_cube(self, filepath, standard_name):
-        cube = iris.load_cube(filepath, standard_name)
-        return cube
-
     def _compute_metrics(self):
-        for dataset in self.siconc.keys():
+        for dataset in self.siconc:
             logger.info('Compute diagnostics for %s', dataset)
             logger.info('Metrics drift-concentration')
             logger.debug('Siconc: %s', self.siconc[dataset].data)
@@ -204,7 +200,7 @@ class SeaIceDrift(object):
             self.slope_drift_sivol[dataset] = slope
             self.intercept_drift_sivol[dataset] = intercept
 
-        for dataset in self.siconc.keys():
+        for dataset in self.siconc:
             if dataset == 'reference':
                 continue
             logger.info('Compute metrics for %s', dataset)
@@ -231,8 +227,7 @@ class SeaIceDrift(object):
         reference_dataset = self._get_alias_name(reference_dataset)
         if filename == reference_dataset:
             return 'reference'
-        else:
-            return filename
+        return filename
 
     def _get_alias_name(self, filename):
         info = self.datasets.get_dataset_info(filename)
@@ -250,8 +245,8 @@ class SeaIceDrift(object):
             start=info[n.START_YEAR],
             end=info[n.END_YEAR],
         )
-
-    def _compute_mean(self, data, weights):
+    @staticmethod
+    def _compute_mean(data, weights):
         mapping = set(
             data.coord_dims('latitude') + data.coord_dims('longitude')
         )
@@ -263,14 +258,16 @@ class SeaIceDrift(object):
                 weights=broadcast_to_shape(weights, data.shape, mapping)
             )
 
-    def _compute_error(self, var, var_obs, drift, drift_obs):
+    @staticmethod
+    def _compute_error(var, var_obs, drift, drift_obs):
         var = var.data
         var_obs = var_obs.data
         drift = drift.data
         drift_obs = drift_obs.data
 
         return 100. * np.nanmean(np.sqrt(
-            self._var_error(var, var_obs) + self._var_error(drift, drift_obs)
+            SeaIceDrift._var_error(var, var_obs) +
+            SeaIceDrift._var_error(drift, drift_obs)
         ))
 
     @staticmethod
@@ -280,13 +277,15 @@ class SeaIceDrift(object):
         var_error_normal = var_error / var_mean
         return var_error_normal ** 2
 
-    def _get_slope_ratio(self, siconc, drift):
+    @staticmethod
+    def _get_slope_ratio(siconc, drift):
         slope, intercept = np.polyfit(siconc.data, drift.data, 1)
-        std_dev, sig = self._sd_slope(
+        std_dev, sig = SeaIceDrift._sd_slope(
             slope, intercept, siconc.data, drift.data)
         return slope, intercept, std_dev, sig
 
-    def _sd_slope(self, slope, intercept, sivar, drift):
+    @staticmethod
+    def _sd_slope(slope, intercept, sivar, drift):
         # Parameters
         alpha = 0.05  # significance level
         nfreedom = MONTHS_PER_YEAR - 2  # number of degrees of freedom
@@ -308,13 +307,13 @@ class SeaIceDrift(object):
 
     def _results(self):
         logger.info('Results')
-        for model in self.siconc.keys():
+        for model in self.siconc:
             self._print_results(model)
 
     def _print_results(self, model):
         if model == 'reference':
             return
-        logger.info('Dataset {0}'.format(model))
+        logger.info('Dataset %s', model)
         if 'latitude_treshold' in self.cfg:
             logger.info(
                 'Metrics computed over domain north of %s',
@@ -339,7 +338,7 @@ class SeaIceDrift(object):
         if not True:
             return
         logger.info('Save variables')
-        for dataset in self.siconc.keys():
+        for dataset in self.siconc:
             self._save_slope(dataset)
 
     def _save_slope(self, dataset):
@@ -374,27 +373,26 @@ class SeaIceDrift(object):
         if not self.cfg[n.WRITE_PLOTS]:
             return
         logger.info('Plotting results')
-        for model in self.siconc.keys():
+        for model in self.siconc:
             if model == 'reference':
                 continue
-            logger.info('Results for {0}'.format(model))
+            logger.info('Results for %s', model)
             self._plot_domain(model)
 
     def _plot_domain(self, dataset):
-        fig, ax = plt.subplots(1, 2, figsize=(18, 6))
+        fig, axes = plt.subplots(1, 2, figsize=(18, 6))
         plt.suptitle('Seasonal cycle {0}'.format(dataset), fontsize=18)
-        self._plot_drift_siconc(ax[0], dataset)
-        self._plot_drift_sivol(ax[1], dataset)
+        self._plot_drift_siconc(axes[0], dataset)
+        self._plot_drift_sivol(axes[1], dataset)
         base_path = os.path.join(self.cfg[n.PLOT_DIR], dataset)
         if not os.path.isdir(base_path):
             os.makedirs(base_path)
         fig.savefig(os.path.join(
             base_path,
             'drift-strength.{0}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
-        )
-        )
+        ))
 
-    def _plot_drift_sivol(self, ax, dataset):
+    def _plot_drift_sivol(self, axes, dataset):
         drift = self.sispeed[dataset].data
         sivol = self.sivol[dataset].data
 
@@ -410,15 +408,15 @@ class SeaIceDrift(object):
         drift_obs = self.sispeed['reference'].data
         sivol_obs = self.sivol['reference'].data
 
-        ax.plot([sivol[-1], sivol[0]], [drift[-1], drift[0]], 'r-',
-                linewidth=2)
-        ax.plot(sivol, drift, 'ro-', label='model', linewidth=2)
-        ax.plot(sivol, slope_sivol * sivol + intercept_sivol, 'r:',
-                linewidth=2)
+        axes.plot([sivol[-1], sivol[0]], [drift[-1], drift[0]], 'r-',
+                  linewidth=2)
+        axes.plot(sivol, drift, 'ro-', label='model', linewidth=2)
+        axes.plot(sivol, slope_sivol * sivol + intercept_sivol, 'r:',
+                  linewidth=2)
 
-        ax.plot([sivol_obs[-1], sivol_obs[0]], [drift_obs[-1], drift_obs[0]],
-                'b-', linewidth=2)
-        ax.plot(
+        axes.plot([sivol_obs[-1], sivol_obs[0]], [drift_obs[-1], drift_obs[0]],
+                  'b-', linewidth=2)
+        axes.plot(
             sivol_obs,
             drift_obs,
             'bo-',
@@ -429,21 +427,21 @@ class SeaIceDrift(object):
             #   r')',
             linewidth=2
         )
-        ax.plot(sivol_obs, slope_sivol_obs * sivol_obs + intercept_sivol_obs,
-                'b:', linewidth=2)
+        axes.plot(sivol_obs, slope_sivol_obs * sivol_obs + intercept_sivol_obs,
+                  'b:', linewidth=2)
 
-        ax.set_xlabel('Sea ice thickness (m)', fontsize=18)
-        ax.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
-        ax.tick_params(axis='both', labelsize=14)
+        axes.set_xlabel('Sea ice thickness (m)', fontsize=18)
+        axes.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
+        axes.tick_params(axis='both', labelsize=14)
         high_sivol, low_sivol = self._get_plot_limits(sivol, sivol_obs, 0.2)
         high_drift, low_drift = self._get_plot_limits(drift, drift_obs)
-        ax.axis([low_sivol, high_sivol, low_drift, high_drift])
-        ax.legend(loc='lower left', shadow=True, frameon=False, fontsize=12)
-        self._annotate_points(ax, sivol, drift)
-        self._annotate_points(ax, sivol_obs, drift_obs)
-        ax.grid()
+        axes.axis([low_sivol, high_sivol, low_drift, high_drift])
+        axes.legend(loc='lower left', shadow=True, frameon=False, fontsize=12)
+        self._annotate_points(axes, sivol, drift)
+        self._annotate_points(axes, sivol_obs, drift_obs)
+        axes.grid()
 
-    def _plot_drift_siconc(self, ax, dataset):
+    def _plot_drift_siconc(self, axes, dataset):
         drift = self.sispeed[dataset].data
         siconc = self.siconc[dataset].data
 
@@ -458,37 +456,39 @@ class SeaIceDrift(object):
         drift_obs = self.sispeed['reference'].data
         siconc_obs = self.siconc['reference'].data
 
-        ax.plot(siconc, drift, 'ro', label='model')
-        ax.plot(siconc, slope_siconc * siconc + intercept_siconc, 'r:',
-                linewidth=2)
+        axes.plot(siconc, drift, 'ro', label='model')
+        axes.plot(siconc, slope_siconc * siconc + intercept_siconc, 'r:',
+                  linewidth=2)
 
-        ax.plot(
+        axes.plot(
             siconc_obs,
             drift_obs,
             'bo',
             label='reference'
         )
-        ax.plot(siconc_obs, slope_siconc_obs * siconc_obs +
-                intercept_siconc_obs,
-                'b:', linewidth=2)
+        axes.plot(siconc_obs, slope_siconc_obs * siconc_obs +
+                  intercept_siconc_obs,
+                  'b:', linewidth=2)
 
-        ax.set_xlabel('Sea ice concentration', fontsize=18)
-        ax.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
-        ax.tick_params(axis='both', labelsize=14)
+        axes.set_xlabel('Sea ice concentration', fontsize=18)
+        axes.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
+        axes.tick_params(axis='both', labelsize=14)
         high_drift, low_drift = self._get_plot_limits(drift, drift_obs)
-        _, low_siconc = self._get_plot_limits(siconc, siconc_obs, 0.1)
-        ax.axis([low_siconc, 1.01, low_drift, high_drift])
-        ax.legend(loc='lower left', shadow=True, frameon=False, fontsize=12)
-        self._annotate_points(ax, siconc, drift)
-        self._annotate_points(ax, siconc_obs, drift_obs)
-        ax.grid()
+        _, low_siconc = SeaIceDrift._get_plot_limits(siconc, siconc_obs, 0.1)
+        axes.axis([low_siconc, 1.01, low_drift, high_drift])
+        axes.legend(loc='lower left', shadow=True, frameon=False, fontsize=12)
+        SeaIceDrift._annotate_points(axes, siconc, drift)
+        SeaIceDrift._annotate_points(axes, siconc_obs, drift_obs)
+        axes.grid()
 
-    def _annotate_points(self, ax, xvalues, yvalues):
-        for x, y, z in zip(xvalues, yvalues, range(1, 12 + 1)):
-            ax.annotate(z, xy=(x, y), xytext=(10, 5),
-                        ha='right', textcoords='offset points')
+    @staticmethod
+    def _annotate_points(axes, xvalues, yvalues):
+        for i, j, k in zip(xvalues, yvalues, range(1, 12 + 1)):
+            axes.annotate(k, xy=(i, j), xytext=(10, 5),
+                          ha='right', textcoords='offset points')
 
-    def _get_plot_limits(self, sivol, sivol_obs, step=0.55):
+    @staticmethod
+    def _get_plot_limits(sivol, sivol_obs, step=0.55):
         low = min(min(sivol), min(sivol_obs)) - 0.5 * step
         low = step * math.floor(low / step)
         low = max(low, 0)
@@ -526,8 +526,8 @@ class InsidePolygonFactory(AuxCoordFactory):
         )
 
         transformed = []
-        for lon, lat in polygon:
-            transformed.append(self.transformer.transform(lon, lat))
+        for lon_val, lat_val in polygon:
+            transformed.append(self.transformer.transform(lon_val, lat_val))
         self.polygon = Polygon(transformed)
 
     @property
@@ -544,8 +544,7 @@ class InsidePolygonFactory(AuxCoordFactory):
             point = self.transformer.transform(lon, lat)
             if self.polygon.contains(Point(point[0], point[1])):
                 return 1.
-            else:
-                return np.nan
+            return np.nan
         vectorized = np.vectorize(in_polygon)
         return vectorized(lat, lon)
 
