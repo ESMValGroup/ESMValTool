@@ -64,14 +64,14 @@ diagnostics:
         derive: true
         force_derivation: false
         additional_datasets:
-          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: v4.1,
+          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: 4.1,
              mip: day, tier: 3, start_year: 1979, end_year: 2005}
 
       areacello:
         mip: fx
         preprocessor: extract
         additional_datasets:
-          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: v4.1,
+          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: 4.1,
              tier: 3, start_year: 1979, end_year: 2005}
           - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v2,
              tier: 2, start_year: 1979, end_year: 2005}
