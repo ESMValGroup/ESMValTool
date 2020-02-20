@@ -14,12 +14,13 @@ If a diagnostic fails, you will get the message
    INFO    To re-run this diagnostic script, run:
 
 If you run the command in the stdout you will be able to re-run the
-diagnostic without having to re-run the whole preprocessor. If you add the ``-f`` 
+diagnostic without having to re-run the whole preprocessor. If you add the ``-f``
 argument (available only for Python diagnostics, check your options with ``--help``)
-that will force an overwrite, and it will deletes not just the failed diagnostic,
-but the contents of the entire ``plots`` directory - this is risky but useful when needing to
+that will force an overwrite, and it will delete not just the failed diagnostic,
+but the contents of it's ``work_dir`` and ``plot_dir`` directories - this useful when needing to
 redo the whole work. Adding ``-i`` or ``--ignore-existing`` will not delete any existing files,
-and it will re-do the work related to the failed diagnostic only.
+and it can be used to skip work that was already done succesfully, provided
+that the diagnostic script supports this.
 
 
 Enter interactive mode with iPython
@@ -52,7 +53,7 @@ link attached to it would make things more clear e.g.:
 
    recipe_example_20190905_163431
    recipe_example_20190905_163519
-   recipe_example_LATEST -> recipe_example_20190905_163519
+   recipe_example_latest -> recipe_example_20190905_163519
 
 
 You can do that by running the tool using the latest output as basis and creating
@@ -60,8 +61,8 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 
 .. code:: bash
 
-   esmvaltool -c ~/config-user.yml recipe_xxx.yml; \
-   ln -sfT $(ls -1d ~/esmvaltool_output/recipe_xxx_* | tail -1) latest
+   esmvaltool -c ~/config-user.yml recipe_example.yml; \
+   ln -sfT $(ls -1d ~/esmvaltool_output/recipe_example_* | tail -1) ~/esmvaltool_output/recipe_example_latest
 
 
 .. uncomment when feature plopped in master
