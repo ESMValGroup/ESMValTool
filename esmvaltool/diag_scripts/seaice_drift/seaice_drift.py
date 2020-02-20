@@ -540,6 +540,7 @@ class InsidePolygonFactory(AuxCoordFactory):
 
     def _derive(self, lat, lon):
         def in_polygon(lat, lon):
+            """Check if point is inside polygon"""
             if lon > 180:
                 lon -= 360
             point = self.transformer.transform(lon, lat)
