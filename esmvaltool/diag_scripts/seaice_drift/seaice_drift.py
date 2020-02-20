@@ -245,6 +245,7 @@ class SeaIceDrift():
             start=info[n.START_YEAR],
             end=info[n.END_YEAR],
         )
+
     @staticmethod
     def _compute_mean(data, weights):
         mapping = set(
