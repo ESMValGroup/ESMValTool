@@ -30,6 +30,7 @@ class EadyGrowthRate(object):
         self.g = 9.80665
         self.con = 0.3098
         self.omega = 7.292e-5
+        self.compute_climatology = self.cfg['compute_climatology']
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
@@ -56,8 +57,8 @@ class EadyGrowthRate(object):
             egr = self.eady_growth_rate(fcor, ua, zg, brunt)
 
             cube_egr = ua.copy(egr * 86400)
-
-            cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
+            if self.compute_climatology:
+                cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
 
             self.save(cube_egr, alias, data)
 

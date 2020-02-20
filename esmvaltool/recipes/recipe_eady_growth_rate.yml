@@ -86,3 +86,4 @@ diagnostics:
     scripts:
       winter_eady_growth_rate:
         script: primavera/eady_growth_rate/eady_growth_rate.py
+        compute_climatology: True
