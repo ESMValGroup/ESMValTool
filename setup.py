@@ -29,7 +29,7 @@ REQUIREMENTS = {
         'cython',
         'ecmwf-api-client',
         'eofs',
-        'esmvalcore>=2.0.0b5,<2.1',
+        'esmvalcore>=2.0.0b6,<2.1',
         'fiona',
         'jinja2',
         'matplotlib<3',

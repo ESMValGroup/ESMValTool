@@ -1,13 +1,70 @@
 {
     "creators": [
         {
-            "affiliation": "University of Bremen, Germany",
-            "name": "Adeniyi, Kemisola"
-        },
-        {
             "affiliation": "NLeSC, Netherlands",
             "name": "Andela, Bouwe",
             "orcid": "0000-0001-9005-8940"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Broetz, Bjoern"
+        },
+        {
+            "affiliation": "PML, UK",
+            "name": "de Mora, Lee",
+            "orcid": "0000-0002-5080-3149"
+        },
+        {
+            "affiliation": "NLeSC, Netherlands",
+            "name": "Drost, Niels",
+            "orcid": "0000-0001-9795-7981"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Eyring, Veronika",
+            "orcid": "0000-0002-6887-4885"
+        },
+        {
+            "affiliation": "AWI, Germany",
+            "name": "Koldunov, Nikolay",
+            "orcid": "0000-0002-3365-8146"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Lauer, Axel",
+            "orcid": "0000-0002-9270-1044"
+        },
+        {
+            "affiliation": "LMU, Germany",
+            "name": "Mueller, Benjamin"
+        },
+        {
+            "affiliation": "URead, UK",
+            "name": "Predoi, Valeriu",
+            "orcid": "0000-0002-9729-6578"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Righi, Mattia",
+            "orcid": "0000-0003-3827-5950"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Schlund, Manuel",
+            "orcid": "0000-0001-5251-0158"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Vegas-Regidor, Javier",
+            "orcid": "0000-0003-0096-4291"
+        },
+        {
+            "affiliation": "SMHI, Sweden",
+            "name": "Zimmermann, Klaus"
+        },
+        {
+            "affiliation": "University of Bremen, Germany",
+            "name": "Adeniyi, Kemisola"
         },
         {
             "affiliation": "ISAC-CNR, Italy",
@@ -28,10 +85,6 @@
             "affiliation": "DLR, Germany",
             "name": "Bock, Lisa",
             "orcid": "0000-0001-7058-5938"
-        },
-        {
-            "affiliation": "DLR, Germany",
-            "name": "Broetz, Bjoern"
         },
         {
             "affiliation": "BSC, Spain",
@@ -92,18 +145,8 @@
             "name": "Ehbrecht, Carsten"
         },
         {
-            "affiliation": "NLeSC, Netherlands",
-            "name": "Drost, Niels",
-            "orcid": "0000-0001-9795-7981"
-        },
-        {
             "affiliation": "MetOffice, UK",
             "name": "Earnshaw, Paul"
-        },
-        {
-            "affiliation": "DLR, Germany",
-            "name": "Eyring, Veronika",
-            "orcid": "0000-0002-6887-4885"
         },
         {
             "affiliation": "University of Bremen, Germany",
@@ -152,16 +195,6 @@
             "name": "Koirala, Sujan"
         },
         {
-            "affiliation": "AWI, Germany",
-            "name": "Koldunov, Nikolay",
-            "orcid": "0000-0002-3365-8146"
-        },
-        {
-            "affiliation": "DLR, Germany",
-            "name": "Lauer, Axel",
-            "orcid": "0000-0002-9270-1044"
-        },
-        {
             "affiliation": "BSC, Spain",
             "name": "Lledó, Llorenç"
         },
@@ -206,15 +239,6 @@
             "orcid": "0000-0003-2656-1802"
         },
         {
-            "affiliation": "LMU, Germany",
-            "name": "Mueller, Benjamin"
-        },
-        {
-            "affiliation": "PML, UK",
-            "name": "de Mora, Lee",
-            "orcid": "0000-0002-5080-3149"
-        },
-        {
             "affiliation": "University of Arizona, USA",
             "name": "Amarjiit, Pandde"
         },
@@ -228,27 +252,12 @@
             "orcid": "0000-0003-4859-8585"
         },
         {
-            "affiliation": "URead, UK",
-            "name": "Predoi, Valeriu",
-            "orcid": "0000-0002-9729-6578"
-        },
-        {
-            "affiliation": "DLR, Germany",
-            "name": "Righi, Mattia",
-            "orcid": "0000-0003-3827-5950"
-        },
-        {
             "affiliation": "University of Arizona, USA",
             "name": "Russell, Joellen"
         },
         {
             "affiliation": "CICERO, Norway",
             "name": "Sandstad, Marit"
-        },
-        {
-            "affiliation": "DLR, Germany",
-            "name": "Schlund, Manuel",
-            "orcid": "0000-0001-5251-0158"
         },
         {
             "affiliation": "MetOffice, UK",
@@ -282,23 +291,33 @@
             "name": "Torralba, Verónica"
         },
         {
-            "affiliation": "BSC, Spain",
-            "name": "Vegas-Regidor, Javier",
-            "orcid": "0000-0003-0096-4291"
-        },
-        {
             "affiliation": "University of Bremen, Germany",
             "name": "Weigel, Katja",
             "orcid": "0000-0001-6133-7801"
-        },
-        {
-            "affiliation": "SMHI, Sweden",
-            "name": "Zimmermann, Klaus"
         }
     ],
     "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
     "license": {
         "id": "Apache-2.0"
     },
-    "title": "ESMValTool"
+    "title": "ESMValTool",
+    "communities": [
+        {
+            "identifier": "is-enes3"
+        },
+        {
+            "identifier": "dlr_de"
+        },
+        {
+            "identifier": "ecfunded"
+        },
+        {
+            "identifier": "nlesc"
+        }
+    ],
+    "grants": [
+        {
+            "id": "10.13039/501100000780::824084"
+        }
+    ]
 }
