@@ -1,0 +1,61 @@
+###############################################################################
+# User's configuration file for the ESMValTool
+###############################################################################
+---
+
+# Rootpaths to the data from different projects (lists are also possible)
+rootpath:
+  CMIP3: [~/cmip3_inputpath1, ~/cmip3_inputpath2]
+  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
+  CMIP6: [~/cmip6_inputpath1, ~/cmip6_inputpath2]
+  OBS: ~/obs_inputpath
+  OBS6: ~/obs6_inputpath
+  obs4mips: ~/obs4mips_inputpath
+  ana4mips: ~/ana4mips_inputpath
+  native6:  ~/native6_inputpath
+  RAWOBS: ~/rawobs_inputpath
+  default: ~/default_inputpath
+
+# Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
+# See config-developer.yml for definitions.
+drs:
+  CMIP5: default
+  CMIP6: default
+
+# Run at most this many tasks in parallel [null]/1/2/3/4/..
+# Set to null to use the number of available CPUs.
+# If you run out of memory, try setting max_parallel_tasks to 1 and check the
+# amount of memory you need for that by inspecting the file
+# run/resource_usage.txt in the output directory. Using the number there you
+# can increase the number of parallel tasks again to a reasonable number for
+# the amount of memory available in your system.
+max_parallel_tasks: null
+
+# Destination directory
+output_dir: ./esmvaltool_output
+
+# Auxiliary data directory (used for some additional datasets)
+auxiliary_data_dir: ./auxiliary_data
+
+# Diagnostics create plots? [true]/false
+write_plots: true
+# Diagnositcs write NetCDF files? [true]/false
+write_netcdf: true
+# Set the console log level debug, [info], warning, error
+log_level: info
+# Exit on warning (only for NCL diagnostic scripts)? true/[false]
+exit_on_warning: false
+# Plot file format? [png]/pdf/ps/eps/epsi
+output_file_type: png
+# Use netCDF compression true/[false]
+compress_netcdf: false
+# Save intermediary cubes in the preprocessor true/[false]
+save_intermediary_cubes: false
+# Remove the preproc dir if all fine
+remove_preproc_dir: true
+# Path to custom config-developer file, to customise project configurations.
+# See config-developer.yml for an example. Set to None to use the default
+# config_developer_file: null
+# Get profiling information for diagnostics
+# Only available for Python diagnostics
+profile_diagnostic: false

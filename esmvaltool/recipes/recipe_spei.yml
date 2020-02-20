@@ -1,13 +1,13 @@
 ---
 documentation:
   description: 'Calculates the SPI and SPEI drought indices.'
-  authors: ['berg_pe']
+  authors: ['berg_peter']
   projects: ['c3s-magic']
   references: ['acknow_project']
 
 datasets:
 #  - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
-  - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
@@ -44,7 +44,7 @@ diagnostics:
       tas: *var
     scripts:
       spi:
-        script: droughtindex/diag_spi.r
+        script: droughtindex/diag_spi.R
         ancestors: [pr]
       spei:
-        script: droughtindex/diag_spei.r
+        script: droughtindex/diag_spei.R

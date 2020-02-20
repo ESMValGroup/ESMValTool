@@ -230,9 +230,9 @@ def map_var_to_stream(diagnostics, stream_map):
 def write_rose_conf(rose_config_template, recipe_file, config_file, log_level):
     """Write the new rose conf file per suite."""
     # Build the ConfigParser object
-    Config = ConfigParser.ConfigParser()
-    Config.optionxform = str
-    Config.read(rose_config_template)
+    config = ConfigParser.ConfigParser()
+    config.optionxform = str
+    config.read(rose_config_template)
     recipe_object = read_yaml_file(recipe_file)
     conf_file = read_yaml_file(config_file)
     datasets = recipe_object['datasets']
@@ -301,30 +301,30 @@ def write_rose_conf(rose_config_template, recipe_file, config_file, log_level):
         logger.info("Use user config file %s", config_file)
 
         # write the file
-        Config.set('jinja2:suite.rc', 'INPUT_DIR',
+        config.set('jinja2:suite.rc', 'INPUT_DIR',
                    '"' + conf_file['INPUT_DIR'] + '"')
-        Config.set('jinja2:suite.rc', 'OUTPUT_DIR', '"' + rose_output + '"')
-        Config.set('jinja2:suite.rc', 'CDDS_DIR',
+        config.set('jinja2:suite.rc', 'OUTPUT_DIR', '"' + rose_output + '"')
+        config.set('jinja2:suite.rc', 'CDDS_DIR',
                    '"' + DEFAULT_SUITE_LOCATION + '"')
-        Config.set('jinja2:suite.rc', 'MIP_CONVERT_CONFIG_DIR',
+        config.set('jinja2:suite.rc', 'MIP_CONVERT_CONFIG_DIR',
                    '"' + new_mipconv_config + '"')
-        Config.set('jinja2:suite.rc', 'ACTIVE_STREAMS', str(active_streams))
-        Config.set('jinja2:suite.rc', 'STREAM_TIME_OVERRIDES',
+        config.set('jinja2:suite.rc', 'ACTIVE_STREAMS', str(active_streams))
+        config.set('jinja2:suite.rc', 'STREAM_TIME_OVERRIDES',
                    str(stream_overrides))
-        Config.set('jinja2:suite.rc', 'FIRST_YEAR', str(dataset['start_year']))
-        Config.set('jinja2:suite.rc', 'REF_YEAR', str(dataset['start_year']))
-        Config.set('jinja2:suite.rc', 'FINAL_YEAR', str(dataset['end_year']))
-        Config.set('jinja2:suite.rc', 'STREAM_COMPONENTS',
+        config.set('jinja2:suite.rc', 'FIRST_YEAR', str(dataset['start_year']))
+        config.set('jinja2:suite.rc', 'REF_YEAR', str(dataset['start_year']))
+        config.set('jinja2:suite.rc', 'FINAL_YEAR', str(dataset['end_year']))
+        config.set('jinja2:suite.rc', 'STREAM_COMPONENTS',
                    str(stream_components))
-        Config.set('jinja2:suite.rc', 'CYCLING_FREQUENCIES',
+        config.set('jinja2:suite.rc', 'CYCLING_FREQUENCIES',
                    str(cycling_frequencies))
-        Config.set(
+        config.set(
             'jinja2:suite.rc', 'TARGET_SUITE_NAME',
             '"' + conf_file['DATASET_TO_SUITE'][dataset['dataset']] + '"')
         with open(os.path.join(rose_suite, 'rose-suite.conf'), 'w') as r_c:
             logger.info("Writing rose-suite.conf file %s",
                         os.path.join(rose_suite, 'rose-suite.conf'))
-            Config.write(r_c)
+            config.write(r_c)
 
         # now that we have to conf file set up we need to
         # edit the mip_convert configuration file with the correct data
@@ -346,18 +346,18 @@ def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
     cdds_dir = os.path.join(DEFAULT_SUITE_LOCATION, 'mip_convert_aux')
 
     # Build the ConfigParser object
-    Config = ConfigParser.ConfigParser()
-    Config.optionxform = str
-    Config.read(mipconv_config)
+    config = ConfigParser.ConfigParser()
+    config.optionxform = str
+    config.read(mipconv_config)
 
     # set the correct fields
-    Config.set('COMMON', 'cdds_dir', cdds_dir)
-    Config.set('request', 'base_date', base_date)
-    Config.set('request', 'suite_id', suite_id)
+    config.set('COMMON', 'cdds_dir', cdds_dir)
+    config.set('request', 'base_date', base_date)
+    config.set('request', 'suite_id', suite_id)
     stream_section = '_'.join(['stream', stream])
     # add the section if not there already
-    if not Config.has_section(stream_section):
-        Config.add_section(stream_section)
+    if not config.has_section(stream_section):
+        config.add_section(stream_section)
     if 'mip' not in dataset:
         # can work without any mip in dataset
         # will not take it from diagnostic (will assemble
@@ -375,18 +375,18 @@ def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
         str_variables = ' '.join(list(set([v for v in variables])))
         if variables:
             for cmip_type in cmip_types:
-                Config.set(stream_section, cmip_type, str_variables)
+                config.set(stream_section, cmip_type, str_variables)
     else:
         cmip_type = '_'.join([dataset['project'], dataset['mip']])
         all_vars = conf_file['STREAM_MAP'].keys()
         str_variables = ' '.join(
             [v for v in all_vars if conf_file['STREAM_MAP'][v] == stream])
-        Config.set(stream_section, cmip_type, str_variables)
+        config.set(stream_section, cmip_type, str_variables)
 
     # write to file
     with open(mipconv_config, 'w') as r_c:
         logger.info("Writing mip_convert config file %s", mipconv_config)
-        Config.write(r_c)
+        config.write(r_c)
 
 
 def _put_in_env(env_script):

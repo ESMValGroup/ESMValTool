@@ -34,15 +34,14 @@
 ; Caveats
 ;
 ; Modification history
-;    20181107-A_righ_ma: revised and extended to include new metadata handling
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc)
-;    20140312-A_righ_ma: adapted to new time_operations structure
-;    20130618-A_gott_kl: adjusted to r738 of
-;                        https://svn.dlr.de/ESM-Diagnostic/sources/trunk
-;    20121130-A_gott_kl: written
+;    20181107-righi_mattia: revised and extended to include new metadata
+;                           handling
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc)
+;    20140312-righi_mattia: adapted to new time_operations structure
+;    20121130-gottschaldt_klaus-dirk: written
 ;
 ; #############################################################################
 
@@ -91,13 +90,6 @@ begin
   ; Loop over all n_datasets info items to read all datasets in a loop
   dataset = read_data(info[0])
   printVarSummary(dataset)
-
-  ; Read fx-variable for the second dataset in the list
-  ; fx-variable are specified in the recipe, the field is returned as a list
-  ; where also auxiliary coordinates are stored (if available).
-  ; If no fx-variable is found a missing value is returned
-  fx_var = read_fx_data(info[1], "sftlf")
-  printVarSummary(fx_var)
 
   ; Retrieve metadata item for the reference dataset
   atts = True
@@ -191,7 +183,7 @@ begin
                  "mean", \
                  "global", \
                  "geo", \
-                 (/"righ_ma", "gott_kl"/), \
+                 (/"righi_mattia", "gottschaldt_klaus-dirk"/), \
                  (/"acknow_author"/), \
                  metadata_att_as_array(info0, "filename"))
 

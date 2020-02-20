@@ -12,7 +12,6 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER
-from matplotlib.patches import Rectangle
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 
@@ -160,10 +159,19 @@ def calc_qbo_index(qbo):
     counterdown = len(indiciesdown)
 
     # Did we start on an upwards or downwards cycle?
-    if indiciesdown[0] < indiciesup[0]:
-        (kup, kdown) = (0, 1)
+    if indiciesdown and indiciesup:
+        if indiciesdown[0] < indiciesup[0]:
+            (kup, kdown) = (0, 1)
+        else:
+            (kup, kdown) = (1, 0)
     else:
-        (kup, kdown) = (1, 0)
+        logger.warning('QBO metric can not be computed; no zero crossings!')
+        logger.warning(
+            f"This means the model U(30hPa, around tropics) doesn't oscillate"
+            f"between positive and negative"
+            f"with a period<12 months, QBO can't be computed, set to 0."
+        )
+        (kup, kdown) = (0, 0)
     # Translate upwards and downwards indices into U wind values
     periodsmin = counterup - kup
     periodsmax = counterdown - kdown
@@ -212,6 +220,7 @@ def calc_qbo_index(qbo):
         period = period2
     else:
         period = period1
+
     return (period, ampl_west, ampl_east)
 
 

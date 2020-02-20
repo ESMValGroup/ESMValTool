@@ -42,6 +42,11 @@ begin
     ; Read data
     var = read_data(info_items[imod])
 
+    ; Convert data to floats if necessary
+    if (typeof(var) .eq. "double") then
+      var := dble2flt(var)
+    end if
+
     ; Extract region
     var_reg = area_operations(var, region(0), region(1), \
                               region(2), region(3), "extract", True)
@@ -91,7 +96,7 @@ begin
                    (/"mean", "stddev"/), \
                    diag_script_info@region, \
                    "other", \
-                   (/"fran_fr", "righ_ma", "eyri_ve"/), \
+                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

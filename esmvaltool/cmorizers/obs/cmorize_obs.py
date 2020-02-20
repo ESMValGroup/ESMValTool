@@ -20,7 +20,7 @@ import subprocess
 from pathlib import Path
 
 import esmvalcore
-from esmvalcore._config import read_config_user_file
+from esmvalcore._config import configure_logging, read_config_user_file
 from esmvalcore._task import write_ncl_settings
 
 from .utilities import read_cmor_config
@@ -170,19 +170,10 @@ def main():
     if not os.path.isdir(run_dir):
         os.makedirs(run_dir)
 
-    # set logging for screen and file output
-    root_logger = logging.getLogger()
-    out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
-    logging.basicConfig(filename=os.path.join(run_dir, 'main_log.txt'),
-                        filemode='a',
-                        format=out_fmt,
-                        datefmt='%H:%M:%S',
-                        level=config_user['log_level'].upper())
-    root_logger.setLevel(config_user['log_level'].upper())
-    logfmt = logging.Formatter(out_fmt)
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logfmt)
-    root_logger.addHandler(console_handler)
+    # configure logging
+    log_files = configure_logging(
+        output=run_dir, console_log_level=config_user['log_level'])
+    logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
     # print header
     logger.info(HEADER)
@@ -228,6 +219,7 @@ def _cmor_reformat(config, obs_list):
 
     # set the reformat scripts dir
     reformat_scripts = os.path.dirname(os.path.abspath(__file__))
+    logger.info("Using cmorizer scripts repository: %s", reformat_scripts)
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
@@ -237,6 +229,7 @@ def _cmor_reformat(config, obs_list):
     logger.info("Processing datasets %s", datasets)
 
     # loop through tier/datasets to be cmorized
+    failed_datasets = []
     for tier in datasets:
         for dataset in datasets[tier]:
             reformat_script_root = os.path.join(
@@ -255,6 +248,7 @@ def _cmor_reformat(config, obs_list):
             os.chdir(out_data_dir)
 
             # figure out what language the script is in
+            logger.info("Reformat script: %s", reformat_script_root)
             if os.path.isfile(reformat_script_root + '.ncl'):
                 reformat_script = reformat_script_root + '.ncl'
                 _run_ncl_script(
@@ -268,7 +262,12 @@ def _cmor_reformat(config, obs_list):
             elif os.path.isfile(reformat_script_root + '.py'):
                 _run_pyt_script(in_data_dir, out_data_dir, dataset, config)
             else:
-                logger.info('Could not find cmorizer for %s', dataset)
+                logger.error('Could not find cmorizer for %s', dataset)
+                failed_datasets.append(dataset)
+                raise Exception(
+                    'Could not find cmorizers for %s datasets ' %
+                    ' '.join(failed_datasets)
+                )
 
 
 if __name__ == '__main__':

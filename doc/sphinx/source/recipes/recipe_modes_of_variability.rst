@@ -24,9 +24,9 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* WeatherRegime.r - function for computing the EOFs and k-means and hierarchical clusters.
+* WeatherRegime.R - function for computing the EOFs and k-means and hierarchical clusters.
 
-* weather_regime.r - applies the above weather regimes function to the datasets
+* weather_regime.R - applies the above weather regimes function to the datasets
 
 
 
@@ -82,10 +82,10 @@ Example plots
 -------------
 
 .. _fig_modesofvar:
-.. figure::  /recipes/figures/modes_of_variability/DJF-psl_observed_regimes.png
+.. figure::  /recipes/figures/modes_of_variability/SON-psl_predicted_regimes.png
    :align:   center
    :width:   14cm
 
-
+Four modes of variability for autumn (September-October-November) in the North Atlantic European Sector for the RCP 8.5 scenario using BCC-CSM1-1 future projection during the period 2020-2075. The frequency of occurrence of each variability mode is indicated in the title of each map.
 
 

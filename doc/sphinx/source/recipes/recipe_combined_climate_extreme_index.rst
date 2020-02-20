@@ -1,18 +1,23 @@
 .. _recipes_extreme_index:
 
 Combined Climate Extreme Index
-====================================================
+==============================
 
 Overview
 --------
 
-The goal of this diagnostic is to compute time series of a number of extreme events: heatwave, coldwave, heavy precipitation, drought and high wind. Then, the user can combine these different components (with or without weights). The result is an index similar to the Climate Extremes Index (CEI; Karl et al., 1996), the modified CEI (mCEI; Gleason et al., 2008) or the Actuaries Climate Index (ACI; American Academy of Actuaries, 2018). The output consists of a netcdf file containing the area-weighted and multi-model multi-metric index. This recipe can be applied to data with any temporal resolution, and the running average is computed based on the user-defined window length (e.g. a window length of 5 would compute the 5-day running mean when applied to monthly data, or 5-month running mean when applied to monthly data).
+The goal of this diagnostic is to compute time series of a number of extreme events: heatwave, coldwave, heavy precipitation, drought and high wind. Then, the user can combine these different components (with or without weights). The result is an index similar to the Climate Extremes Index (CEI; Karl et al., 1996), the modified CEI (mCEI; Gleason et al., 2008) or the Actuaries Climate Index (ACI; American Academy of Actuaries, 2018). The output consists of a netcdf file containing the area-weighted and multi-model multi-metric index. This recipe can be applied to data with any temporal resolution, and the running average is computed based on the user-defined window length (e.g. a window length of 5 would compute the 5-day running mean when applied to data, or 5-month running mean when applied to monthly data).
 
-In recipe_extreme_index.yml, after defining the area and reference and projection period, the weigths for each metric is selected. The options are
+In recipe_extreme_index.yml, after defining the area and reference and projection period, the weigths for each metric selected. The options are
+
 * weight_t90p the weight of the number of days when the maximum temperature exceeds the 90th percentile,
+
 * weight_t10p the weight of the number of days when the minimum temperature falls below the 10th percentile,
+
 * weight_Wx the weight of the number of days when wind power (third power of wind speed) exceeds the 90th percentile,
+
 * weight_cdd the weight of the maximum length of a dry spell, defined as the maximum number of consecutive days when the daily precipitation is lower than 1 mm, and
+
 * weight_rx5day the weight of the maximum precipitation accumulated during 5 consecutive days.
 
 Available recipes and diagnostics
@@ -24,7 +29,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* extreme_index.r
+* extreme_index.R
 
 
 User settings
@@ -88,5 +93,4 @@ Example plots
    :align:   center
    :width:   14cm
 
-
-
+Average change in the heat component (t90p metric) of the Combined Climate Extreme Index for the 2020-2040 compared to the 1971-2000 reference period for the RCP 8.5 scenario simulated by MPI-ESM-MR.

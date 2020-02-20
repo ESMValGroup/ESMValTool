@@ -1,0 +1,129 @@
+# ESMValTool
+# recipe_pcrglobwb.yml
+---
+documentation:
+  description: Pre-processes climate data for use in the PCR-GLOBWB hydrological model.
+  authors:
+    - aerts_jerom
+    - andela_bouwe
+    - drost_niels
+    - camphuijsen_jaro
+    - alidoost_sarah
+  projects: ['ewatercycle']
+  references: ['acknow_project', 'sutanudjaja2018gmd']
+
+
+preprocessors:
+  crop_basin: &crop_basin
+    extract_region: &region  # bounding box values depend on catchment
+      start_longitude: 3
+      end_longitude: 13.5
+      start_latitude: 45
+      end_latitude: 54
+  era5_grid: &era5_grid
+    regrid:
+      target_grid: 0.25 x 0.25
+      lon_offset: true
+      lat_offset: true
+      scheme: area_weighted
+  era_interim_grid: &era_interim_grid
+    regrid:
+      target_grid: 0.75 x 0.75
+      lon_offset: true
+      lat_offset: true
+      scheme: area_weighted
+  precipitation_unit: &precipitation_unit
+    convert_units:
+      units: kg m-2 d-1
+  temperature_unit: &temperature_unit
+    convert_units:
+      units: K
+  climatology: &climatology
+    climate_statistics:
+      operator: mean
+      period: day
+  preproc_era5_pr: &preproc_era5_pr
+    <<: *crop_basin
+    <<: *era5_grid
+    <<: *precipitation_unit
+  preproc_era5_tas: &preproc_era5_tas
+    <<: *crop_basin
+    <<: *era5_grid
+    <<: *temperature_unit
+  preproc_era5_pr_clim:
+    <<: *preproc_era5_pr
+    <<: *climatology
+  preproc_era5_tas_clim:
+    <<: *preproc_era5_tas
+    <<: *climatology
+  preproc_era_interim_pr: &preproc_era_interim_pr
+    <<: *crop_basin
+    <<: *era_interim_grid
+    <<: *precipitation_unit
+  preproc_era_interim_tas: &preproc_era_interim_tas
+    <<: *crop_basin
+    <<: *era_interim_grid
+    <<: *temperature_unit
+  preproc_era_interim_pr_clim:
+    <<: *preproc_era_interim_pr
+    <<: *climatology
+  preproc_era_interim_tas_clim:
+    <<: *preproc_era_interim_tas
+    <<: *climatology
+
+diagnostics:
+  diagnostic_era_interim:
+    description: PCR-GLOBWB input preprocessor for ERA-Interim data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr: &var_era_interim
+        mip: day
+        start_year: 2002
+        end_year: 2016
+        preprocessor: preproc_era_interim_pr
+      pr_climatology: &var_era_interim_clim
+        mip: day
+        start_year: 1990  # it should be possible to specify different years for the climatology
+        end_year: 2002
+        short_name: pr
+        preprocessor: preproc_era_interim_pr_clim
+      tas:
+        <<: *var_era_interim
+        preprocessor: preproc_era_interim_tas
+      tas_climatology:
+        <<: *var_era_interim_clim
+        short_name: tas
+        preprocessor: preproc_era_interim_tas_clim
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+        basin: Rhine
+
+  diagnostic_era5:
+    description: PCR-GLOBWB input preprocessor for ERA5 data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr: &var_era5
+        mip: day
+        start_year: 2002
+        end_year: 2016
+        preprocessor: preproc_era5_pr
+      pr_climatology: &var_era5_clim
+        mip: day
+        start_year: 1990  # it should be possible to specify different years for the climatology
+        end_year: 2002
+        short_name: pr
+        preprocessor: preproc_era5_pr_clim
+      tas:
+        <<: *var_era5
+        preprocessor: preproc_era5_tas
+      tas_climatology:
+        <<: *var_era5_clim
+        short_name: tas
+        preprocessor: preproc_era5_tas_clim
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+        basin: Rhine

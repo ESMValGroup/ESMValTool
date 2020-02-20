@@ -9,19 +9,19 @@ documentation:
     each mode.
 
   authors:
-    - torr_ve
-    - fuck_ne
-    - cort_ni
-    - guem_vi
-    - hunt_al
-    - pere_nu
-    - manu_ni
+    - torralba_veronica
+    - fuckar_neven
+    - cortesi_nicola
+    - guemas_virginie
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
 
   projects:
     - c3s-magic
 
   references:
-    - fuckar
+    - fuckar15cd
 
 datasets:
   - {dataset: CNRM-CM5, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical}
@@ -46,7 +46,7 @@ diagnostics:
         mip: Amon
     scripts:
       main:
-        script: magic_bsc/weather_regime.r
+        script: magic_bsc/weather_regime.R
         plot_type: polar  # rectangular or polar
 
         ncenters: 3

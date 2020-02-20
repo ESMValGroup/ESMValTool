@@ -11,13 +11,13 @@ documentation:
 
 
   authors:
-    - bell_om
+    - bellprat_omar
 
   projects:
     - c3s-magic
 
   references:
-    - weigel
+    - weigel08qjrms
 
 
 datasets:
@@ -49,6 +49,6 @@ diagnostics:
 
     scripts:
       main:
-        script: magic_bsc/toymodel.r
+        script: magic_bsc/toymodel.R
         beta: 500
         number_of_members: 20

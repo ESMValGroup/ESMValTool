@@ -1,8 +1,8 @@
 .. _outputdata:
 
-******
-Output
-******
+*********************
+Inspecting the output
+*********************
 
 ESMValTool automatically generates a new output directory with every run. The
 location is determined by the output_dir option  in the config-user.yml file,
@@ -17,13 +17,13 @@ output_dir/recipe_name_YYYYMMDD_HHMMSS/
 
 This directory will contain 4 further subdirectories:
 
-1. `Preprocessed datasets`_ (preproc): This directory contains all the preprocessed netcdfs data and the `metadata.yml`_ interface files.
+1. `Diagnostic output`_ (work): A place for any diagnostic script results that are not plots, e.g. files in NetCDF format (depends on the diagnostics).
 
-2. `Run`_: This directory includes all log files, a copy of the recipe, a summary of the resource usage, and the `settings.yml`_ interface files and temporary files created by the diagnostic scripts.
+2. `Plots`_: The location for all the plots, split by individual diagnostics and fields.
 
-3. `Diagnostic output`_ (work): A place for any diagnostic script results that are not plots, e.g. files in NetCDF format (depends on the diagnostics).
+3. `Run`_: This directory includes all log files, a copy of the recipe, a summary of the resource usage, and the `settings.yml`_ interface files and temporary files created by the diagnostic scripts.
 
-4. `Plots`_: The location for all the plots, split by individual diagnostics and fields.
+4. `Preprocessed datasets`_ (preproc): This directory contains all the preprocessed netcdfs data and the `metadata.yml`_ interface files. Note that by default this directory will be deleted after each run, because most users will only need the results from the diagnostic scripts.
 
 
 Preprocessed datasets
@@ -90,7 +90,6 @@ disk of the metadata.yml file (described below).
 
     input_files:[[...]recipe_ocean_bgc_20190118_134855/preproc/diag_timeseries_scalars/mfo/metadata.yml]
     log_level: debug
-    max_data_filesize: 100
     output_file_type: png
     plot_dir: [...]recipe_ocean_bgc_20190118_134855/plots/diag_timeseries_scalars/Scalar_timeseries
     profile_diagnostic: false

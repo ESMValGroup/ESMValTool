@@ -6,12 +6,12 @@ documentation:
     Diagnostics of spatial RMS errors of radiation and clouds.
 
   authors:
-    - tsus_yo
-    - read_si
-    - pred_va
+    - tsushima_yoko
+    - read_simon
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
   projects:
     - cmug
@@ -55,7 +55,7 @@ diagnostics:
         derive: true
         force_derivation: false
     additional_datasets:
-      - {dataset: ISCCP,  project: obs4mips, level: L3,  version: V1.0,  start_year: 1985,  end_year: 1988, tier: 1}
+      - {dataset: ISCCP,  project: obs4mips, mip: Amon, level: L3,  version: V1.0,  start_year: 1985,  end_year: 1988, tier: 1}
     scripts:
       autoassess_Radiation_rms_cfMon_all:
         script: autoassess/autoassess_radiation_rms.py

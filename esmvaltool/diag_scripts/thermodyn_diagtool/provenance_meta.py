@@ -13,6 +13,7 @@ The module contains the following functions:
 @author: Valerio Lembo, University of Hamburg, 2019.
 """
 
+import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 
@@ -27,7 +28,7 @@ def get_prov_map(attr, ancestor_files):
         'statistics': ['mean'],
         'domains': ['global'],
         'plot_type': ['geo'],
-        'authors': ['lemb_va'],
+        'authors': ['lembo_valerio'],
         'references': ['lembo16climdyn', 'lembo19gmdd', 'lucarini14revgeop'],
         'ancestors': ancestor_files,
     }
@@ -46,14 +47,14 @@ def get_prov_transp(attr, ancestor_file, plotname):
         'domains': ['global'],
         'plot_type': ['sect'],
         'plot_file': plotname,
-        'authors': ['lemb_va'],
+        'authors': ['lembo_valerio'],
         'references': ['lembo16climdyn', 'lembo19gmdd', 'lucarini14revgeop'],
         'ancestors': ancestor_file,
     }
     return record
 
 
-def meta_direntr(cfg, model, inlist, flist):
+def meta_direntr(cfg, model, input_data, flist):
     """Write metadata to components of the direct entropy prod maps.
 
     Arguments:r
@@ -64,40 +65,67 @@ def meta_direntr(cfg, model, inlist, flist):
     @author: Valerio Lembo, University of Hamburg, 2019.
     """
     with ProvenanceLogger(cfg) as provlog:
+        hfls_file = e.select_metadata(input_data,
+                                      short_name='hfls',
+                                      dataset=model)[0]['filename']
+        hfss_file = e.select_metadata(input_data,
+                                      short_name='hfss',
+                                      dataset=model)[0]['filename']
+        hus_file = e.select_metadata(input_data,
+                                     short_name='hus',
+                                     dataset=model)[0]['filename']
+        pr_file = e.select_metadata(input_data, short_name='pr',
+                                    dataset=model)[0]['filename']
+        prsn_file = e.select_metadata(input_data,
+                                      short_name='prsn',
+                                      dataset=model)[0]['filename']
+        ps_file = e.select_metadata(input_data, short_name='ps',
+                                    dataset=model)[0]['filename']
+        rlut_file = e.select_metadata(input_data,
+                                      short_name='rlut',
+                                      dataset=model)[0]['filename']
+        ts_file = e.select_metadata(input_data, short_name='ts',
+                                    dataset=model)[0]['filename']
+        uas_file = e.select_metadata(input_data,
+                                     short_name='uas',
+                                     dataset=model)[0]['filename']
+        vas_file = e.select_metadata(input_data,
+                                     short_name='vas',
+                                     dataset=model)[0]['filename']
         attr = ['sensible heat entropy production', model]
         ancestor = [
-            inlist[1], inlist[2], inlist[5], inlist[15], inlist[17], inlist[19]
-            ]
+            hfss_file, hus_file, ps_file, rlut_file, uas_file, vas_file,
+            ts_file
+        ]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[0], record)
         attr = ['evaporation entropy production', model]
-        ancestor = [inlist[0], inlist[2], inlist[5], inlist[15]]
+        ancestor = [hfls_file, ts_file]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[1], record)
         attr = ['rainfall precipitation entropy production', model]
-        ancestor = [inlist[2], inlist[3], inlist[5], inlist[15]]
+        ancestor = [hus_file, pr_file, prsn_file, ps_file, ts_file]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[2], record)
         attr = ['snowfall precipitation entropy production', model]
-        ancestor = [inlist[2], inlist[4], inlist[5], inlist[15]]
+        ancestor = [hus_file, prsn_file, ps_file, ts_file]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[3], record)
         attr = ['snow melt entropy production', model]
-        ancestor = [inlist[4], inlist[15]]
+        ancestor = [prsn_file, ts_file]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[4], record)
         attr = ['potential energy entropy production', model]
-        ancestor = [
-            inlist[2], inlist[3], inlist[4], inlist[5], inlist[8], inlist[15]
-            ]
+        ancestor = [hus_file, pr_file, prsn_file, ps_file, rlut_file, ts_file]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[5], record)
 
 
-def meta_indentr(cfg, model, inlist, flist):
+def meta_indentr(cfg, model, input_data, flist):
     """Write metadata to components of the indirect entropy prod maps.
 
     Arguments:
+    ---------
     - model: the name of the model;
     - inlist: the list of the input filenames;
     - flist: the list of the entropy filenames;
@@ -105,13 +133,36 @@ def meta_indentr(cfg, model, inlist, flist):
     @author: Valerio Lembo, University of Hamburg, 2019.
     """
     with ProvenanceLogger(cfg) as provlog:
+        rlds_file = e.select_metadata(input_data,
+                                      short_name='rlds',
+                                      dataset=model)[0]['filename']
+        rlus_file = e.select_metadata(input_data,
+                                      short_name='rlus',
+                                      dataset=model)[0]['filename']
+        rlut_file = e.select_metadata(input_data,
+                                      short_name='rlut',
+                                      dataset=model)[0]['filename']
+        rsds_file = e.select_metadata(input_data,
+                                      short_name='rsds',
+                                      dataset=model)[0]['filename']
+        rsdt_file = e.select_metadata(input_data,
+                                      short_name='rsdt',
+                                      dataset=model)[0]['filename']
+        rsus_file = e.select_metadata(input_data,
+                                      short_name='rsus',
+                                      dataset=model)[0]['filename']
+        rsut_file = e.select_metadata(input_data,
+                                      short_name='rsut',
+                                      dataset=model)[0]['filename']
+        ts_file = e.select_metadata(input_data, short_name='ts',
+                                    dataset=model)[0]['filename']
         attr = ['horizontal entropy production', model]
-        ancestor = [inlist[8], inlist[10], inlist[12]]
+        ancestor = [rlut_file, rsdt_file, rsut_file]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[0], record)
         attr = ['vertical entropy production', model]
         ancestor = [
-            inlist[6], inlist[7], inlist[8], inlist[9], inlist[11], inlist[15]
-            ]
+            rlds_file, rlus_file, rlut_file, rsds_file, rsus_file, ts_file
+        ]
         record = get_prov_map(attr, ancestor)
         provlog.log(flist[1], record)

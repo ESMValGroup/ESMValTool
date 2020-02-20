@@ -10,10 +10,10 @@ documentation:
     Written by Lee de Mora, Plymouth Marine Laboratory, ledm@pml.ac.uk
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - demo_le
+    - demora_lee
 
   references:
     - demora2018gmd
@@ -89,40 +89,45 @@ preprocessors:
 
   # For a 2D global surface map
   prep_surface_map_2D:
-    time_average:
+    climate_statistics:
+      operator: mean
 
   # For a 3D global surface map
   prep_surface_map_3D:
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical
-    time_average:
+    climate_statistics:
+      operator: mean
 
   prep_surface_map_regrid_3D:
     custom_order: true
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
 
 
   prep_global_profile:
-    annual_mean:
+    annual_statistics:
+      operator: mean
     area_statistics:
       operator: mean
 
   prep_global_profile_decadal:
-    annual_mean:
-       decadal: true
+    decadal_statistics:
+      operator: mean
     area_statistics:
       operator: mean
 
   prep_transect_AMT: # Atlantic Meridional Transect (28W)
     custom_order: true
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_region:
       start_longitude: 320.
       end_longitude: 345.
@@ -138,7 +143,8 @@ preprocessors:
 #   prep_depth_integration:
 #     depth_integration:
 # #      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
-#     time_average:
+#     climate_statistics:
+#      operator: mean
 #
 #   # 2D map global depth integration time series maps
 #   prep_depth_integration_timeseries:
@@ -176,29 +182,35 @@ diagnostics:
       thetao: # Temperature 3D
         preprocessor: prep_timeseries_global_volume_average
         mip: Omon
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       so: # Salinity 3D
         preprocessor: prep_timeseries_global_volume_average
         mip: Omon
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       no3: # nitrate
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       o2: # oxygen
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       si: # Silicate
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+      volcello:
+        mip: fx
     #   po4: # phosphate # No HadGEM2-ES phosphate.
     #     preprocessor: prep_timeseries_global_volume_average
     #     mip: Oyr
-    #    fx_files: [volcello,]
-    additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+    #     additional_datasets:
+    #       - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -215,23 +227,20 @@ diagnostics:
 #        mip: Omon
 #        derive: true
 #        force_derivation: false
-#        fx_files: [areacello, ]
       chl: # chlorophyll
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
-        fx_files: [volcello,]
       dfe: # iron
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
-        fx_files: [volcello,]
       talk: # alkalinity
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
-        fx_files: [volcello,]
+      volcello:
+        mip: fx
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_timeseries_global_volume_average
     #     mip: Oyr
-    #    fx_files: [volcello,]
     scripts:
       Global_Volume_verage_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -246,24 +255,21 @@ diagnostics:
       talk: # alkalinity
         preprocessor: prep_global_Surface_average_timeseries_3D
         mip: Oyr
-        fx_files: [areacello, ]
       intpp:
         preprocessor: prep_global_Surface_average_timeseries_2D
         mip: Omon
-        fx_files: [areacello, ]
       chl:
         preprocessor: prep_global_Surface_average_timeseries_3D
         mip: Oyr
         thresholds: [0.1, 0.2, 0.5]
-        fx_files: [areacello, ]
+      areacello:
+        mip: fx
     #   dfe: # iron
     #     preprocessor: prep_global_Surface_average_timeseries_3D
     #     mip: Oyr
-    #    fx_files: [areacello, ]
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_global_Surface_average_timeseries_3D
     #     mip: Oyr
-    #    fx_files: [areacello, ]
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -277,29 +283,35 @@ diagnostics:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
         mip: Omon
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       so: # Salinity ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
         mip: Omon
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       no3: # Nitrate ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
         mip: Oyr
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       o2: # oxygen
         preprocessor: prep_global_Surface_average_timeseries_3D
         mip: Oyr
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       si: # Silicate
         preprocessor: prep_global_Surface_average_timeseries_3D
         mip: Oyr
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+      areacello:
+        mip: fx
     #   po4: # Phosphate
     #     preprocessor: prep_global_Surface_average_timeseries_3D
     #     mip: Oyr
-    #    fx_files: [areacello, ]
-    additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+    #     additional_datasets:
+    #       - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -329,29 +341,35 @@ diagnostics:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_profile
         mip: Omon
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       so: # Salinity ocean surface
         preprocessor: prep_global_profile
         mip: Omon
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       no3: # Nitrate ocean surface
         preprocessor: prep_global_profile
         mip: Oyr
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       o2: # oxygen
         preprocessor: prep_global_profile
         mip: Oyr
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       si: # Silicate
         preprocessor: prep_global_profile
         mip: Oyr
-        fx_files: [volcello,]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+      volcello:
+        mip: fx
     #   po4: # Phosphate
     #     preprocessor: prep_global_profile
     #     mip: Oyr
-    #    fx_files: [volcello,]
-    additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+    #     additional_datasets:
+    #       - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_profile_vs_WOA:
         script: ocean/diagnostic_profiles.py
@@ -366,19 +384,17 @@ diagnostics:
       chl: # chlorophyll
         preprocessor: prep_global_profile
         mip: Oyr
-        fx_files: [volcello,]
       dfe: # iron
         preprocessor: prep_global_profile
         mip: Oyr
-        fx_files: [volcello,]
       talk: # alkalinity
         preprocessor: prep_global_profile
         mip: Oyr
-        fx_files: [volcello,]
+      volcello:
+        mip: fx
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_global_profile
     #     mip: Oyr
-    #    fx_files: [volcello,]
     scripts:
       Global_profile_no_obs:
         script: ocean/diagnostic_profiles.py
@@ -393,29 +409,35 @@ diagnostics:
       thetao:
         preprocessor: prep_surface_map_regrid_3D
         mip: Omon
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       so:
         preprocessor: prep_surface_map_regrid_3D
         mip: Omon
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       no3:
         preprocessor: prep_surface_map_regrid_3D
         mip: Oyr
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       si: # Silicate
         preprocessor: prep_surface_map_regrid_3D
         mip: Oyr
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       o2: # Oxygen
         preprocessor: prep_surface_map_regrid_3D
         mip: Oyr
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+      areacello:
+        mip: fx
     #   po4:
     #     preprocessor: prep_surface_map_3D
     #     mip: Oyr
-    #    fx_files: [areacello, ]
-    additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+    #     additional_datasets:
+    #       - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
@@ -432,25 +454,21 @@ diagnostics:
       intpp:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
       fgco2:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
       chl:
         preprocessor: prep_surface_map_3D
         mip: Oyr
         # thresholds: [0.1, 0.2, 0.5]
-        fx_files: [areacello, ]
       dfe:
         preprocessor: prep_surface_map_3D
         mip: Oyr
-        fx_files: [areacello, ]
-
+      areacello:
+        mip: fx
     #   dic:
     #     preprocessor: prep_surface_map_3D
     #     mip: Oyr
-    #    fx_files: [areacello, ]
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
