@@ -120,7 +120,6 @@ def main(cfg):
             lon = cube.coord('longitude')
             lon.points = lon.points - (lon.points[1] - lon.points[0]) / 2
 
-
             # Unit conversion 'kg m-3 day-1' to 'm' precip (divide by density)
             if short_name == "pr":
                 cube.units = cube.units / 'kg m-3 day-1'
