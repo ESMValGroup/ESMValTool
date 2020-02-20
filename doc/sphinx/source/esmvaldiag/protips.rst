@@ -17,7 +17,7 @@ If you run the command in the stdout you will be able to re-run the
 diagnostic without having to re-run the whole preprocessor. If you add the ``-f``
 argument (available only for Python diagnostics, check your options with ``--help``)
 that will force an overwrite, and it will delete not just the failed diagnostic,
-but the contents of it's ``work_dir`` and ``plot_dir`` directories - this useful when needing to
+but the contents of its ``work_dir`` and ``plot_dir`` directories - this is useful when needing to
 redo the whole work. Adding ``-i`` or ``--ignore-existing`` will not delete any existing files,
 and it can be used to skip work that was already done succesfully, provided
 that the diagnostic script supports this.
