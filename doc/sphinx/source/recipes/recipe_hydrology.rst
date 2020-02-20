@@ -102,7 +102,7 @@ User settings in recipe
 
    * start_year: 1979
    * end_year: 1979
-   * shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp (expects shapefile with subcatchments
+   * shapefile: Meuse_HYPE.shp (expects shapefile with subcatchments)
    
    These settings should not be changed
    
