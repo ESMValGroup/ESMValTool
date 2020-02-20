@@ -46,7 +46,7 @@ preprocessors:
 
 diagnostics:
   diagnostic_daily:
-    description: PCR-GLOBWB input preprocessor for ERA-Interim data
+    description: PCR-GLOBWB input preprocessor for ERA-Interim and ERA5 data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1, mip: day}
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1, mip: day}
@@ -72,4 +72,4 @@ diagnostics:
     scripts:
       script:
         script: hydrology/pcrglobwb.py
-        basin: Rhine
+        basin: rhine

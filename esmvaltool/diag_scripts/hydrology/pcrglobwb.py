@@ -115,12 +115,11 @@ def main(cfg):
             cube = cube[:, ::-1, ...]
 
             # PCRaster coords refer to upper left corner, not center
-            for coord in cube.coords('lon', 'lat'):
-                grid_spacing = coord.points[1] - coord.points[0]
-                if coord.name == 'lat':
-                    coord.points += grid_spacing / 2
-                elif coord.name == 'lon':
-                    coord.points -= grid_spacing / 2
+            lat = cube.coord('latitude')
+            lat.points = lat.points + (lat.points[1] - lat.points[0]) / 2
+            lon = cube.coord('longitude')
+            lon.points = lon.points - (lon.points[1] - lon.points[0]) / 2
+
 
             # Unit conversion 'kg m-3 day-1' to 'm' precip (divide by density)
             if short_name == "pr":
