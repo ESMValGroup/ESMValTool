@@ -40,7 +40,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/seaice_drift/
 
-    * seaice_drift.py: Compute the fourth metrics and generate the associated plots
+    * seaice_drift.py: Compute metrics and plot results
 
 
 User settings in recipe
