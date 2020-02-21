@@ -33,6 +33,7 @@ import os
 from itertools import cycle
 
 import iris
+import iris.coord_categorisation
 import numpy as np
 
 import esmvaltool.diag_scripts.shared as diag
@@ -474,7 +475,13 @@ def get_catchment_data(cfg):
     """
     catchments = get_defaults()
     catchments['refname'] = 'default'
-    catchment_filepath = cfg.get('catchmentmask')
+    if not cfg.get('catchmentmask'):
+        raise ValueError('A catchment mask file needs to be specified in the '
+                         'recipe (see recipe description for details)')
+    catchment_filepath = os.path.join(cfg['auxiliary_data_dir'],
+                                      cfg.get('catchmentmask'))
+    if not os.path.isfile(catchment_filepath):
+        raise IOError('Catchment file {} not found'.format(catchment_filepath))
     catchments['cube'] = iris.load_cube(catchment_filepath)
     if catchments['cube'].coord('latitude').bounds is None:
         catchments['cube'].coord('latitude').guess_bounds()
@@ -519,6 +526,7 @@ def get_sim_data(cfg, datapath, catchment_cube):
     for i, days in enumerate(daypermonth):
         new_cube.data[i] *= days
     # Aggregate over year --> unit mm per year
+    iris.coord_categorisation.add_year(new_cube, 'time')
     year_cube = new_cube.aggregated_by('year', iris.analysis.SUM)
     year_cube.units = "mm a-1"
     # Compute long term mean
