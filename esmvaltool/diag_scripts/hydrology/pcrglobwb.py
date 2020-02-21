@@ -114,11 +114,11 @@ def main(cfg):
             # Set lat from highest to lowest value
             cube = cube[:, ::-1, ...]
 
-            # PCRaster coords refer to upper left corner, not center
-            lat = cube.coord('latitude')
-            lat.points = lat.points + (lat.points[1] - lat.points[0]) / 2
-            lon = cube.coord('longitude')
-            lon.points = lon.points - (lon.points[1] - lon.points[0]) / 2
+            # Workaround for bug in PCRGlob
+            # (see https://github.com/UU-Hydro/PCR-GLOBWB_model/pull/13)
+            for coord_name in ['latitude', 'longitude']:
+                coord = cube.coord(coord_name)
+                coord.points = coord.points + 0.001
 
             # Unit conversion 'kg m-3 day-1' to 'm' precip (divide by density)
             if short_name == "pr":
