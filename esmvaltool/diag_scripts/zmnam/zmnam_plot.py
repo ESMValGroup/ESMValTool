@@ -66,25 +66,12 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
     zg_mo = np.array(in_file.variables['zg'][:])
 
     # Record attributes for output netCDFs
-    if hasattr(in_file.variables['time'], 'long_name'):
-        time_lnam = in_file.variables['time'].long_name
-    else:
-        time_lnam = ""
-    if hasattr(in_file.variables['time'], 'standard_name'):
-        time_snam = in_file.variables['time'].standard_name
-    else:
-        time_snam = ""
+    time_lnam = getattr(in_file.variables['time'], 'long_name', '')
+    time_snam = getattr(in_file.variables['time'], 'standard_name', '')
     time_uni = in_file.variables['time'].units
     time_cal = in_file.variables['time'].calendar
-
-    if hasattr(in_file.variables['plev'], 'long_name'):
-        lev_lnam = in_file.variables['plev'].long_name
-    else:
-        lev_lnam = ""
-    if hasattr(in_file.variables['plev'], 'standard_name'):
-        lev_snam = in_file.variables['plev'].standard_name
-    else:
-        lev_snam = ""
+    lev_lnam = getattr(in_file.variables['plev'], 'long_name', '')
+    lev_snam = getattr(in_file.variables['plev'], 'standard_name', '')
     lev_uni = in_file.variables['plev'].units
     lev_pos = in_file.variables['plev'].positive
     lev_axi = in_file.variables['plev'].axis

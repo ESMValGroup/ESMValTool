@@ -42,14 +42,8 @@ def zmnam_calc(da_fname, outdir, src_props):
 
     in_file = nc4.Dataset(da_fname, "r")
     time_dim = in_file.variables['time'][:]
-    if hasattr(in_file.variables['time'], 'long_name'):
-        time_lnam = in_file.variables['time'].long_name
-    else:
-        time_lnam = ""
-    if hasattr(in_file.variables['time'], 'standard_name'):
-        time_snam = in_file.variables['time'].standard_name
-    else:
-        time_snam = ""
+    time_lnam = getattr(in_file.variables['time'], 'long_name', '')
+    time_snam = getattr(in_file.variables['time'], 'standard_name', '')
     time_uni = in_file.variables['time'].units
     time_cal = in_file.variables['time'].calendar
     time = np.array(time_dim[:], dtype='d')
@@ -58,14 +52,8 @@ def zmnam_calc(da_fname, outdir, src_props):
                         in_file.variables['time'].calendar)
 
     lev = np.array(in_file.variables['plev'][:], dtype='d')
-    if hasattr(in_file.variables['plev'], 'long_name'):
-        lev_lnam = in_file.variables['plev'].long_name
-    else:
-        lev_lnam = ""
-    if hasattr(in_file.variables['plev'], 'standard_name'):
-        lev_snam = in_file.variables['plev'].standard_name
-    else:
-        lev_snam = ""
+    lev_lnam = getattr(in_file.variables['plev'], 'long_name', '')
+    lev_snam = getattr(in_file.variables['plev'], 'standard_name', '')
     lev_uni = in_file.variables['plev'].units
     lev_pos = in_file.variables['plev'].positive
     lev_axi = in_file.variables['plev'].axis
