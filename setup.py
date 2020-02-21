@@ -43,6 +43,7 @@ REQUIREMENTS = {
         'seawater',
         'seaborn',
         'shapely',
+        'SkillMetrics',
         'stratify',
         'xarray>=0.12',
         'xesmf',
