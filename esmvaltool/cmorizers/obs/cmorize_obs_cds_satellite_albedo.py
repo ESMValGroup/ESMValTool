@@ -4,15 +4,17 @@ Tier
    Tier 3
 
 Source
-   https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
+   https://cds.climate.copernicus.eu/
+     cdsapp#!/dataset/satellite-albedo?tab=form
 
 Last access
    20190401
 
 Download and processing instructions
-   - Download the data from source to the right directory using the download script
-   - Decompress the files within the directory: 
-             "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
+   - Download the data from source to the right directory
+     using the download script
+   - Decompress the files within the directory:
+       "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
 
 Notes
 -----
@@ -49,12 +51,14 @@ def _attrs_are_the_same(cubelist):
         # This exception is needed for valid_range, which is an
         # array and therefore not hashable
         except TypeError:
-            unique_attr_vals = {tuple(cube.attributes[key])
-                                for cube in cubelist}
+            unique_attr_vals = {
+                tuple(cube.attributes[key])
+                for cube in cubelist
+            }
         if len(unique_attr_vals) > 1:
             attrs_the_same = False
-            print("Different values found for {0}-attribute: {1}"
-                  .format(key, unique_attr_vals))
+            print("Different values found for {0}-attribute: {1}".format(
+                key, unique_attr_vals))
     return attrs_the_same
 
 
@@ -67,9 +71,8 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cmor_table = cfg['cmor_table']
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
-    cube = iris.load_cube(
-        str(in_file),
-        constraint=utils.var_name_constraint(var['raw']))
+    cube = iris.load_cube(str(in_file),
+                          constraint=utils.var_name_constraint(var['raw']))
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -114,10 +117,9 @@ def _regrid_dataset(in_dir, var, cfg):
                 module='iris',
             )
             cube = iris.load_cube(infile,
-                                      constraint=utils.var_name_constraint(
-                                          var['raw']))
-        cube = regrid(cube, cfg['custom']['regrid_resolution'],
-                          'nearest')
+                                  constraint=utils.var_name_constraint(
+                                      var['raw']))
+        cube = regrid(cube, cfg['custom']['regrid_resolution'], 'nearest')
         logger.info("Saving: %s", outfile)
 
         iris.save(cube, outfile)
@@ -127,8 +129,9 @@ def _set_time_bnds(in_dir, var):
     """Set time_bnds by using attribute and returns a cubelist."""
     # This is a complicated expression, but necessary to keep local
     # variables below the limit, otherwise prospector complains.
-    cubelist = iris.load(glob.glob(os.path.join(
-        in_dir, var['file'].replace('c3s', 'c3s_regridded'))))
+    cubelist = iris.load(
+        glob.glob(
+            os.path.join(in_dir, var['file'].replace('c3s', 'c3s_regridded'))))
 
     # The purpose of the following loop is to remove any attributes
     # that differ between cubes (otherwise concatenation over time fails).
@@ -181,7 +184,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         _regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
 
-
         # File concatenation
         logger.info("Start setting time_bnds")
         cubelist = _set_time_bnds(cfg['work_dir'], var)
@@ -195,13 +197,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         for platformname in ['SPOT-4', 'SPOT-5']:
             # Now split the cubelist on the different platform
             logger.info("Start processing part of dataset: %s", platformname)
-            cubelist_platform = cubelist.extract(iris.AttributeConstraint(
-                platform=platformname))
+            cubelist_platform = cubelist.extract(
+                iris.AttributeConstraint(platform=platformname))
             if cubelist_platform:
                 assert _attrs_are_the_same(cubelist_platform)
                 cube = cubelist_platform.concatenate_cube()
             else:
-                logger.warning("No files found for platform %s \
+                logger.warning(
+                    "No files found for platform %s \
                                (check input data)", platformname)
                 continue
             savename = os.path.join(cfg['work_dir'],
