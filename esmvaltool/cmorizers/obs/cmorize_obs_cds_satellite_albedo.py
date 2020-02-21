@@ -11,7 +11,8 @@ Last access
 
 Download and processing instructions
    - Download the data from source to the right directory using the download script
-   - Decompress the files within the directory: "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
+   - Decompress the files within the directory: 
+             "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
 
 Notes
 -----
@@ -21,8 +22,6 @@ Modification history
    20191208-crezee_bas: written based on cds-satellite-lai-fapar
 
 """
-
-#TODO uncomment again in cmor_config yml file such that all variables are processed
 
 import glob
 import logging
