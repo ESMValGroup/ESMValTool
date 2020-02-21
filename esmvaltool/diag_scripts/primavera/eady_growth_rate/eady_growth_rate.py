@@ -146,31 +146,20 @@ class EadyGrowthRate(object):
         egr.units = 'day-1'
 
         script = self.cfg[n.SCRIPT]
-        project = data[alias][0]['project']
-        dataset = data[alias][0]['dataset']
-        exp = data[alias][0]['exp']
-        start = data[alias][0]['start_year']
-        end = data[alias][0]['end_year']
-        output_name = '{project}_' \
-                      '{dataset}_' \
-                      '{exp}_' \
-                      '{script}_' \
-                      '{start}_' \
-                      '{end}.nc'.format(project=project,
-                                        dataset=dataset,
-                                        exp=exp,
-                                        script=script,
-                                        start=start,
-                                        end=end)
+        info = data[alias][0]
+        keys = [str(info[key]) for key in (
+            'project', 'dataset', 'exp', 'ensemble', 'start_year', 'end_year'
+        ) if key in info]
+        output_name = '_'.join(keys)+'.nc'
         output_file = os.path.join(self.cfg[n.WORK_DIR], output_name)
         iris.save(egr, output_file)
 
         caption = ("{script} between {start} and {end}"
                    "according to {dataset}").format(
                        script=script.split('_'),
-                       start=start,
-                       end=end,
-                       dataset=dataset
+                       start=info['start_year'],
+                       end=info['end_year'],
+                       dataset=info['dataset']
                    )
         ancestors = []
         for i in range(len(data[alias])):
