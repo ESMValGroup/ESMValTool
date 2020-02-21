@@ -194,7 +194,7 @@ def zmnam_calc(da_fname, outdir, src_props):
     outfiles.append(fname)
     file_out = nc4.Dataset(fname, mode='w', format='NETCDF3_CLASSIC')
     file_out.title = 'Zonal mean annular mode (1)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
                         C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     file_out.createDimension('time', None)
@@ -238,7 +238,7 @@ def zmnam_calc(da_fname, outdir, src_props):
     file_out = nc4.Dataset(fname, mode='w', format='NETCDF3_CLASSIC')
     outfiles.append(fname)
     file_out.title = 'Zonal mean annular mode (2)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
     C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     file_out.createDimension('time', None)
@@ -281,7 +281,7 @@ def zmnam_calc(da_fname, outdir, src_props):
     outfiles.append(fname)
 
     file_out.title = 'Zonal mean annular mode (3)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
     C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     file_out.createDimension('time', None)

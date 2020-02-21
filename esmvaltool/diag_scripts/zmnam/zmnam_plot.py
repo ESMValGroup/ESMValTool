@@ -244,7 +244,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
                            mode='w', format='NETCDF3_CLASSIC')
 
     file_out.title = 'Zonal mean annular mode (4)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
     C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     #
