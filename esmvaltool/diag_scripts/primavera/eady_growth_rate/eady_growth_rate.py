@@ -10,7 +10,8 @@ import numpy as np
 
 from dask import array as da
 
-from esmvalcore.preprocessor import regrid
+from esmvalcore.preprocessor import (
+    regrid, annual_statistics, seasonal_statistics)
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
@@ -30,6 +31,9 @@ class EadyGrowthRate(object):
         self.g = 9.80665
         self.con = 0.3098
         self.omega = 7.292e-5
+        self.compute_climatology = self.cfg['compute_climatology']
+        self.compute_annual_mean = self.cfg['compute_annual_mean']
+        self.compute_seasonal_mean = self.cfg['compute_seasonal_mean']
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
@@ -57,7 +61,13 @@ class EadyGrowthRate(object):
 
             cube_egr = ua.copy(egr * 86400)
 
-            cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
+            if self.compute_annual_mean:
+                cube_egr = annual_statistics(cube_egr)
+            elif self.compute_seasonal_mean:
+                cube_egr = seasonal_statistics(cube_egr)
+
+            if self.compute_climatology:
+                cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
 
             self.save(cube_egr, alias, data)
 

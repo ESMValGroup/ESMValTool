@@ -17,9 +17,9 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: MPI-ESM-LR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: bcc-csm1-1,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: GFDL-ESM2G,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
 
@@ -30,7 +30,7 @@ preprocessors:
       # levels: {dataset: ERA-Interim, coordinate: air_pressure}
       scheme: linear
     mask_landsea:
-      mask_out: land #if land, will mask land out; if sea, will mask seas and oceans out
+      mask_out: land  # if land (sea), will mask land (sea and oceans) out
     regrid:
       target_grid: ERA-Interim
       scheme: linear
@@ -80,9 +80,11 @@ diagnostics:
       ta:
         preprocessor: preprocessor_1
         mip: Amon
+        start_year: 2000
+        end_year: 2002
         additional_datasets:
-          - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
-          - {dataset: ERA-Interim,  project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+          - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1}
+          - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
       orog:
         mip: fx
       sftlf:
@@ -95,6 +97,8 @@ diagnostics:
       ta:
         preprocessor: preprocessor_2
         mip: Amon
+        start_year: 2000
+        end_year: 2002
     scripts: null
 
   diagnostic_3_and_4:
@@ -103,7 +107,11 @@ diagnostics:
       ta:
         preprocessor: preprocessor_3
         mip: Amon
+        start_year: 2000
+        end_year: 2002
       pr:
         preprocessor: preprocessor_4
         mip: Amon
+        start_year: 2000
+        end_year: 2002
     scripts: null

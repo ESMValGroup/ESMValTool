@@ -1,0 +1,156 @@
+# ESMValTool
+# recipe_arctic_ocean.yml
+---
+documentation:
+  description: |
+    Arctic Ocean diagnostics.
+
+  authors:
+    - koldunov_nikolay
+
+  maintainer:
+    - koldunov_nikolay
+
+  references:
+    - contact_authors
+
+  projects:
+    - trr181
+    - applicate
+
+# Model problems
+# bcc-csm1-1 - lon and lat in rotated grid coordinates, not usable
+# GFDL-ESM2G - lon and lat in rotated grid coordinates, not usable
+datasets:
+  - {dataset: MPI-ESM-LR}
+  - {dataset: MPI-ESM-MR}
+  - {dataset: CCSM4}
+  - {dataset: CanESM2}
+  - {dataset: CMCC-CM}
+  - {dataset: ACCESS1-3}
+  - {dataset: ACCESS1-0}
+  - {dataset: CSIRO-Mk3-6-0}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5A-MR}
+  - {dataset: HadCM3}
+  - {dataset: HadGEM2-ES}
+
+diagnostics:
+
+  arctic_ocean:
+    description: Derive ocean variables
+    variables:
+      areacello:
+        project: CMIP5
+        mip: fx
+        exp: historical
+        ensemble: r0i0p0
+        additional_datasets:
+          - {dataset: PHC, project: OBS6, tier: 2, type: clim, version: 3}
+      thetao: &variable
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 2005
+        additional_datasets:
+          - {dataset: PHC, project: OBS6, mip: Omon, tier: 2, type: clim, version: 3, start_year: 1950, end_year: 1950}
+      so: *variable
+    scripts:
+      arctic_ocean_main:
+        script: arctic_ocean/arctic_ocean.py
+        # Define if we calculate data for Hovmoeller diagrams.
+        # This data are also needed for mean vertical profiles.
+        hofm_data: True
+        # Define regions, as a list.
+        # 'EB' - Eurasian Basin of the Arctic Ocean
+        # 'AB' - Amerasian Basin of the Arctic Ocean
+        # 'Barents_sea' - Barrents Sea
+        # 'North_sea'   - North Sea
+        hofm_regions: ["AB" ,  'EB']
+        # Define variables to use, should also be in "variables" entry of your diagnostic
+        hofm_vars: ['thetao', 'so']
+        # Maximum depth of Hovmoeller and vertical profiles
+        hofm_depth: 1500
+        # Define if Hovmoeller diagrams will be ploted.
+        hofm_plot: True
+        # Define colormap (as a list, same size as list with variables)
+        # Only cmaps from matplotlib and cmocean are supported.
+        # Additional cmap - 'custom_salinity1'.
+        hofm_cmap: ['Spectral_r', 'custom_salinity1']
+        # Data limits for plots,
+        # List of the same size as the list of the variables
+        # each entry is [vmin, vmax, number of levels, rounding limit]
+        hofm_limits: [[-2, 2.3, 41, 1], [30.5, 35.1, 47, 2]]
+        # Number of columns in the plot
+        hofm_ncol: 3
+        # Calculate the timemmean for every model
+        mean: True
+        # Plot vertical profiles
+        profiles: True
+        # Plot spatial distribution maps
+        plot2d: True
+        # Depths for spatial distribution maps
+        plot2d_depths: [10, 100]
+        # Variables to plot spatial distribution maps
+        plot2d_vars: ['thetao', 'so']
+        # Define colormap (as a list, same size as list with variables)
+        # Only cmaps from matplotlib and cmocean are supported.
+        # Additional cmap - 'custom_salinity1'.
+        plot2d_cmap: ['Spectral_r', 'custom_salinity1']
+        # Data limits for plots,
+        # List of the same size as the list of the variables
+        # each entry is [vmin, vmax, number of levels, rounding limit]
+        plot2d_limits: [[-2, 4, 20, 1], [30.5, 35.1, 47, 2]]
+        # number of columns for plots
+        plot2d_ncol: 4
+        # Plot spatial distribution of the bias plots
+        plot2d_bias: True
+        # Depths for spatial distribution of the bias
+        plot2d_bias_depths: [10, 100]
+        # Variables to plot spatial distribution of the bias for
+        plot2d_bias_vars: ['thetao', 'so']
+        # Color map bames for every variable
+        plot2d_bias_cmap: ['balance', 'balance']
+        # Data limits for plots,
+        # List of the same size as the list of the variables
+        # each entry is [vmin, vmax, number of levels, rounding limit]
+        plot2d_bias_limits: [[-3, 3, 20, 1], [-2, 2, 47, 2]]
+        # number of columns in the bias plots
+        plot2d_bias_ncol: 4
+        # Plot transects
+        transects: true
+        # Select regions (transects) to plot
+        # Available options are:
+        # AWpath - transect along the path of the Atlantic Water
+        # Fram - Fram strait
+        transects_regions: ["AWpath", "Fram"]
+        # Variables to plot on transects
+        transects_vars: ['thetao', 'so']
+        # Color maps for every variable
+        transects_cmap: ['Spectral_r', 'custom_salinity1']
+        # Data limits for plots,
+        # List of the same size as the list of the variables
+        # each entry is [vmin, vmax, number of levels, rounding limit]
+        transects_limits: [[-2, 4, 20, 1], [30.5, 35.1, 47, 2]]
+        # Maximum depth to plot the data
+        transects_depth: 1500
+        # number of columns
+        transects_ncol: 3
+        # Calculate Atlantic Water core depth and temperature
+        # one has to have  `hofm_data`: True and "EB" as one of the `hofm_regions`
+        AW_core: True
+        # Plot maps of temperature spatial distribution at the depth
+        # of Atlantic Water depth
+        AW_core_2d: True
+        # Plot TS diagrams
+        tsdiag: True
+        # Regions to plot TS diagrams for
+        tsdiag_regions: ["AB" ,  'EB']
+        # Maximum depth to consider data for TS diagrams
+        tsdiag_depth: 1500
+        # Number of columns
+        tsdiag_ncol: 3
+        # Observational dataset
+        observational_dataset: {dataset: PHC, project: OBS,}
