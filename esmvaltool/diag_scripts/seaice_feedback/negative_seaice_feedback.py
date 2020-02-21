@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import esmvaltool.diag_scripts.shared
 from esmvaltool.diag_scripts.shared import group_metadata
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -355,6 +356,13 @@ class NegativeSeaIceFeedback(object):
         plt.tight_layout()
         fig.savefig(path)
         plt.close(fig)
+        self._create_prov_record(
+            path, f'Evaluation of IFE for {dataset_info[n.ALIAS]}',
+            [info['filename'] for info in group_metadata(
+                self.cfg['input_data'].values(), n.ALIAS
+            )[dataset_info[n.ALIAS]]
+            ]
+        )
 
     def _plot_comparison(self, data, datasets, p_values=False):
         if p_values:
@@ -417,6 +425,19 @@ class NegativeSeaIceFeedback(object):
         plt.tight_layout()
         fig.savefig(path)
         plt.close(fig)
+        self._create_prov_record(
+            path, f'IFE {filename} comparison for all datasets',
+            group_metadata(self.cfg['input_data'].values(), )
+        )
+
+    def _create_prov_record(self, filepath, caption, ancestors):
+        record = {
+            'caption': caption,
+            'domains': ['nhpolar'],
+            'ancestors': ancestors
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(filepath, record)
 
 
 def main():
