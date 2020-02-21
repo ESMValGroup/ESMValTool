@@ -8,8 +8,6 @@ import iris.analysis
 import iris.cube
 import iris.util
 
-from esmvalcore.preprocessor import extract_month
-
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
@@ -36,7 +34,6 @@ class CycloneTracker(object):
         self.ikeflag = self.cfg['ikeflag']
         self.verb = self.cfg['verb']
         self.tracker_exe = self.cfg['tracker_exe']
-        self.custom_time = self.cfg['custom_time']
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
@@ -86,27 +83,19 @@ class CycloneTracker(object):
             output_file = open(os.path.join(self.cfg[n.WORK_DIR], output),
                                'wb')
 
-            if self.custom_time:
-                try:
-                    start_day = psl.coord('day_of_month').points[0]
-                except iris.exceptions.CoordinateNotFoundError:
-                    iris.coord_categorisation.add_day_of_month(psl, 'time')
-                    start_day = psl.coord('day_of_month').points[0]
-                end_day = psl.coord('day_of_month').points[-1]
-                self.run_custom_time(data[alias][0]['dataset'],
-                                     total,
-                                     years,
-                                     months,
-                                     start_day,
-                                     end_day,
-                                     output_file)
-            else:
-                self.run_full_years(data[alias][0]['dataset'],
-                                    total,
-                                    years,
-                                    months,
-                                    output_file)
-
+            try:
+                start_day = psl.coord('day_of_month').points[0]
+            except iris.exceptions.CoordinateNotFoundError:
+                iris.coord_categorisation.add_day_of_month(psl, 'time')
+                start_day = psl.coord('day_of_month').points[0]
+            end_day = psl.coord('day_of_month').points[-1]
+            self.run_custom_time(data[alias][0]['dataset'],
+                                 total,
+                                 years,
+                                 months,
+                                 start_day,
+                                 end_day,
+                                 output_file)
             output_file.close()
             self.write_provenance(
                 alias, data, os.path.join(self.cfg[n.WORK_DIR], output)
@@ -132,31 +121,6 @@ class CycloneTracker(object):
                        end_day=end_day)
         self.call_tracker(total, filename, output_file,
                           list(years)[0], list(months)[0])
-
-    def run_full_years(self, dataset, total, years, months, output_file):
-        for month in months:
-            total_month = []
-            for i, variable in enumerate(total):
-                total_month.append(extract_month(total[i], month))
-            for year in years:
-                total_year = []
-                for i, variable in enumerate(total_month):
-                    total_year.append(
-                        variable.extract(iris.Constraint(year=year)))
-                    total_year[i].coord('time').convert_units(
-                        'hours since {0}-{1}-1 00:00:00'.format(
-                            year, month))
-                for i, var in enumerate(total):
-                    total[i].coord('time').convert_units(
-                        'hours since {0}-{1}-1 00:00:00'.format(
-                            year, month))
-
-                filename = '{dataset}_{year}{month}'.format(
-                    dataset=dataset,
-                    year=year,
-                    month=format(month, '02d'))
-                self.call_tracker(total_year, filename, output_file,
-                                  year, month)
 
     def call_tracker(self, variables, filename, output, year, month):
         input_path = os.path.join(self.cfg[n.WORK_DIR], filename + '.nc')
@@ -275,4 +239,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
