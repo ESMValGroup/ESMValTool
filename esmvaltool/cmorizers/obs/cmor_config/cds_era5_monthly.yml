@@ -1,0 +1,19 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: cds-era5-monthly
+  project_id: OBS
+  tier: 3
+  version: '1'
+  modeling_realm: reanaly
+  source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land-monthly-means?tab=overview'
+  reference: 'cds-era5-monthly'
+  comment: |
+    'Contains modified Copernicus Climate Change Service Information {year}'
+
+# Variables to CMORize
+variables:
+  sm:
+    mip: Lmon
+    raw: swvl1
+    file: 'era5_deterministic_recent.swvl1.025deg.1m.????.nc'
