@@ -681,6 +681,7 @@ references:
   zhang11wcc: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011."
   # Observations
   aura-tes: "Beer, R., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2005.863716, 2006."
+  cds-era5-land-monthly: "https://confluence.ecmwf.int/display/CKB/ERA5-Land+data+documentation"
   cds-satellite-lai-fapar: "Baret et al., Remote Sens. Environ., doi:10.1016/j.rse.2007.02.018, 2007.OB"
   cds-satellite-soil-moisture: "Gruber et al., Earth Syst. Sci. Data, doi: 10.5194/essd-11-717-2019, 2019."
   cds-uerra: "Ridal et al., HARMONIE reanalysis report of results and dataset, UERRA (EU FP7 Collaborative Project, Grant agreement 607193), http://uerra.eu/component/dpattachments/?task=attachment.download&id=296, 2017."
