@@ -61,6 +61,7 @@ Land
 .. toctree::
    :maxdepth: 1
 
+   recipe_albedolandcover
    recipe_hydrology
    recipe_landcover
    recipe_anav13jclim
@@ -71,6 +72,7 @@ Ocean
 .. toctree::
    :maxdepth: 1
 
+   recipe_arctic_ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_oceans

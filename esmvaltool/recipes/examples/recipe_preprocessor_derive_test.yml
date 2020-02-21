@@ -37,7 +37,7 @@ diagnostics:
         derive: true
         force_derivation: false
         additional_datasets:
-          - {dataset: GFDL-CM3,  ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, ensemble: r1i1p1}
           - {dataset: GISS-E2-H, ensemble: r1i1p2}
           - {dataset: GISS-E2-R, ensemble: r1i1p2}
       swcre:
