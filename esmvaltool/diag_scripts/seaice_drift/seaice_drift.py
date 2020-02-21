@@ -22,6 +22,7 @@ from shapely.geometry import Polygon, Point
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -38,6 +39,7 @@ class SeaIceDrift():
         self.datasets = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.variables = esmvaltool.diag_scripts.shared.Variables(self.cfg)
 
+        self.references = {}
         self.siconc = {}
         self.sivol = {}
         self.sispeed = {}
@@ -61,6 +63,7 @@ class SeaIceDrift():
             standard_name='sea_ice_area_fraction')
         for filename in siconc_files:
             reference_dataset = self._get_reference_dataset(
+                'sic',
                 self.datasets.get_info('reference_dataset', filename)
             )
             alias = self._get_alias(filename, reference_dataset)
@@ -77,6 +80,7 @@ class SeaIceDrift():
             standard_name='sea_ice_thickness')
         for filename in sithick_files:
             reference_dataset = self._get_reference_dataset(
+                'sithick',
                 self.datasets.get_info('reference_dataset', filename)
             )
             alias = self._get_alias(filename, reference_dataset)
@@ -92,6 +96,7 @@ class SeaIceDrift():
         obs_file = self.cfg.get('sispeed_obs', '')
         for filename in sispeed_files:
             reference_dataset = self._get_reference_dataset(
+                'sispeed',
                 self.datasets.get_info('reference_dataset', filename)
             )
             alias = self._get_alias(filename, reference_dataset)
@@ -134,14 +139,14 @@ class SeaIceDrift():
         self._save()
         self._plot_results()
 
-    def _get_reference_dataset(self, reference_dataset):
+    def _get_reference_dataset(self, var, reference_dataset):
         for filename in self.datasets:
             dataset = self.datasets.get_info(n.DATASET, filename)
             if dataset == reference_dataset:
+                self.references[var] = self.datasets.get_info(
+                    n.ALIAS, filename)
                 return filename
-        raise ValueError(
-            'Reference dataset "{}" not found'.format(reference_dataset)
-        )
+        raise ValueError(f'Reference dataset {reference_dataset} not found')
 
     def _get_mask(self, data, filename):
         if 'latitude_treshold' in self.cfg:
@@ -231,20 +236,7 @@ class SeaIceDrift():
 
     def _get_alias_name(self, filename):
         info = self.datasets.get_dataset_info(filename)
-
-        if info[n.PROJECT] == 'OBS':
-            temp = '{project}_{dataset}_{start}_{end}'
-        else:
-            temp = '{project}_{dataset}_{experiment}_{ensemble}_{start}_{end}'
-
-        return temp.format(
-            project=info[n.PROJECT],
-            dataset=info[n.DATASET],
-            experiment=info.get(n.EXP, ''),
-            ensemble=info.get(n.ENSEMBLE, ''),
-            start=info[n.START_YEAR],
-            end=info[n.END_YEAR],
-        )
+        return info[n.ALIAS]
 
     @staticmethod
     def _compute_mean(data, weights):
@@ -346,8 +338,10 @@ class SeaIceDrift():
         base_path = os.path.join(self.cfg[n.WORK_DIR], dataset)
         if not os.path.isdir(base_path):
             os.makedirs(base_path)
+
         siconc_path = os.path.join(base_path, 'metric_drift_siconc.csv')
         sivol_path = os.path.join(base_path, 'metric_drift_sivol.csv')
+
         with open(siconc_path, 'w') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(('slope', 'intercept',
@@ -359,6 +353,17 @@ class SeaIceDrift():
                 self.error_drift_siconc.get(dataset, None)
             ))
 
+        sic_data, ancestors_sic = self._get_data_and_ancestors(dataset, 'sic')
+        _, ancestors_sispeed = self._get_data_and_ancestors(dataset, 'sispeed')
+        sithick_data, ancestors_sithick = self._get_data_and_ancestors(
+            dataset, 'sithick')
+        caption = (
+            f"Drift - siconc metric between {sic_data[n.START_YEAR]} and "
+            f"{sic_data[n.END_YEAR]} according to {dataset}"
+        )
+        self._create_prov_record(
+            siconc_path,  caption, ancestors_sic + ancestors_sispeed)
+
         with open(sivol_path, 'w') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(('slope', 'intercept',
@@ -369,6 +374,12 @@ class SeaIceDrift():
                 self.slope_ratio_drift_sivol.get(dataset, None),
                 self.error_drift_sivol.get(dataset, None)
             ))
+        caption = (
+            f"Drift - sithick metric between {sithick_data[n.START_YEAR]} and "
+            f"{sithick_data[n.END_YEAR]} according to {dataset}"
+        )
+        self._create_prov_record(
+            sivol_path, caption, ancestors_sithick + ancestors_sispeed)
 
     def _plot_results(self):
         if not self.cfg[n.WRITE_PLOTS]:
@@ -388,10 +399,34 @@ class SeaIceDrift():
         base_path = os.path.join(self.cfg[n.PLOT_DIR], dataset)
         if not os.path.isdir(base_path):
             os.makedirs(base_path)
-        fig.savefig(os.path.join(
+        plot_path = os.path.join(
             base_path,
             'drift-strength.{0}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
-        ))
+        )
+        fig.savefig(plot_path)
+
+        sic_data, ancestors_sic = self._get_data_and_ancestors(dataset, 'sic')
+        _, ancestors_sispeed = self._get_data_and_ancestors(dataset, 'sispeed')
+        _, ancestors_sithick = self._get_data_and_ancestors(dataset, 'sithick')
+
+        _, ancestors_sic_ref = self._get_data_and_ancestors(
+            'reference', 'sic')
+        _, ancestors_sispeed_ref = self._get_data_and_ancestors(
+            'reference', 'sispeed')
+        _, ancestors_sithick_ref = self._get_data_and_ancestors(
+            'reference', 'sithick')
+
+        caption = (
+            "Drift - sithick and drift - siconc plot between "
+            f"{sic_data[n.START_YEAR]} and "
+            f"{sic_data[n.END_YEAR]} for {dataset} and reference"
+        )
+        self._create_prov_record(
+            plot_path,
+            caption,
+            ancestors_sic + ancestors_sispeed + ancestors_sithick +
+            ancestors_sic_ref + ancestors_sispeed_ref + ancestors_sithick_ref
+        )
 
     def _plot_drift_sivol(self, axes, dataset):
         drift = self.sispeed[dataset].data
@@ -496,6 +531,32 @@ class SeaIceDrift():
         high = max(max(sivol), max(sivol_obs)) + 0.5 * step
         high = step * math.ceil(high / step)
         return high, low
+
+    def _create_prov_record(self, filepath, caption, ancestors):
+        record = {
+            'caption': caption,
+            'domains': ['nhpolar'],
+            'autors': ['docquier_david'],
+            'references': ['docquier2017cryo'],
+            'ancestors': ancestors
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(filepath, record)
+
+    def _get_data_and_ancestors(self, dataset, var):
+        if dataset == 'reference':
+            dataset = self.references[var]
+
+        data = esmvaltool.diag_scripts.shared.group_metadata(
+            self.cfg['input_data'].values(), 'alias'
+        )[dataset]
+        data = esmvaltool.diag_scripts.shared.group_metadata(
+            data, 'short_name'
+        )
+        return (
+            data[var][0],
+            [data[var][0]['filename'], data['areacello'][0]['filename']]
+        )
 
 
 class InsidePolygonFactory(AuxCoordFactory):
