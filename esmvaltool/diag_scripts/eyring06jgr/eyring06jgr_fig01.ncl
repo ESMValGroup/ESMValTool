@@ -413,22 +413,14 @@ begin
 
    frame(wks)
 ;**********************common output file**************************
-     annots = project_style(info0, diag_script_info, "annots") 
      nc_filename = work_dir + "eyring06f01_" + var0 + ".nc"
-      nc_filename@existing = "append"
-      Xdata@var = var0 + "_var_" + annots
+     Xdata@var = var0
      Xdata@diag_script="eyring06f01"
-     Xdata@line=plotMod
-     Xdata@season=seasons
-     Xdata@stat=(/"mean","std"/)
-    ; delete(Xdata&stat)
-    ; delete(Xdata&season)
-    ; delete( Xdata&line)
 
      printVarSummary(Xdata)
-     Xdata&stat=tofloat(ispan(1,2,1))
-     Xdata&season=tofloat(ispan(1,dimsizes(seasons),1))
-     Xdata&line=tofloat(ispan(1,dimsizes(plotMod),1))
+     Xdata&stat=(/"mean","avg"/)
+     Xdata&season=seasons
+     Xdata&line=plotMod
      printVarSummary(Xdata) 
      nc_outfile = ncdf_write(Xdata, nc_filename)
 
