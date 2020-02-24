@@ -111,7 +111,7 @@ hyint_plot_maps <- # nolint
           return(0)
         }
         # exclude normalization years from multiyear mean
-        retyears <- seq_len(length(years_ref))
+        retyears <- seq_along(years_ref)
         skipyears <- which(as.logical(match(
           years_ref,
           norm_years[1]:norm_years[2]
@@ -219,7 +219,7 @@ hyint_plot_maps <- # nolint
         # if requested calculate multiyear average and store it at time=1
         if (rmultiyear_mean) {
           years <- year1:year2
-          retyears <- seq_len(length(years))
+          retyears <- seq_along(years)
           skipyears <- which(as.logical(match(
             years,
             norm_years[1]:norm_years[2]

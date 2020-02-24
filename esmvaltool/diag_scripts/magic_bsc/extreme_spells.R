@@ -122,7 +122,7 @@ threshold <-
   )
 
 projection_filenames <- fullpath_filenames[projection_files]
-for (i in seq_len(length(projection_filenames))) {
+for (i in seq_along(projection_filenames)) {
   proj_nc <- nc_open(projection_filenames[i])
   projection_data <- ncvar_get(proj_nc, var0)
   time <- ncvar_get(proj_nc, "time")

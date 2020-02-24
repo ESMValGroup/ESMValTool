@@ -97,7 +97,7 @@ dtr_base <- DTRRef(
   calendar = calendario
 )
 
-for (i in seq_len(length(projection_files))) {
+for (i in seq_along(projection_files)) {
   fullpath_projection_tasmax <- filename_tasmax[[projection_files[i]]]
   file <- nc_open(fullpath_projection_tasmax)
   rcp_tasmax <- ncvar_get(file, "tasmax")

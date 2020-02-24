@@ -35,7 +35,7 @@ read_xml_pc <- function(file) {
   xml_data <- xmlToList(xml) # nolint
   pc <- list()
   pcs <- xml_data$wind_turbine_properties$power_curves
-  for (i in seq_len(length(pcs))) {
+  for (i in seq_along(pcs)) {
     if (pcs[[i]]$air_density == 1.225) {
       pc$points <- ldply(
         pcs[[i]]$power_curve_table, # nolint
@@ -94,7 +94,7 @@ plot_pc_list <- function(list_pcs) {
   names <- lapply(list_pcs, function(x)
     x$attr$Name) # nolint
   plot <- ggplot(NULL, aes(x = x, colour = Turbine)) # nolint
-  for (i in seq_len(length(list_pcs))) {
+  for (i in seq_along(list_pcs)) {
     plot <- plot + stat_function(
       data = data.frame(
         x = 0:30,

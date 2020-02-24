@@ -209,7 +209,7 @@ hyint_plot_trends <- function(work_dir, # nolint
       }
 
       # ----- Loop over label when plotting more files in the same panel ----
-      for (ilabel in seq_len(length(store_label))) {
+      for (ilabel in seq_along(store_label)) {
         label <- store_label[ilabel]
         #-----------------Loading data-----------------------#
 

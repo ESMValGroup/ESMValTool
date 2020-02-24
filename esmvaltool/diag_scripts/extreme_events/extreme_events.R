@@ -103,7 +103,7 @@ models <- c()
 metadata <- c()
 
 # loop over variables
-for (i in seq_len(length(settings$input_files))) {
+for (i in seq_along(settings$input_files)) {
   metadata <- yaml::read_yaml(settings$input_files[i])
   models_name <- unname(sapply(metadata, "[[", "dataset"))
   short_name <- unname(sapply(metadata, "[[", "short_name"))
@@ -168,7 +168,7 @@ climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
 
 # Fix input files removing bounds
 print("Removing bounds from preprocessed files")
-for (i in seq_len(length(climofiles))) {
+for (i in seq_along(climofiles)) {
   tmp <- tempfile()
   nco(
     "ncks",
