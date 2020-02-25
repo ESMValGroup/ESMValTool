@@ -623,10 +623,9 @@ def print_exceedance_dates(cfg, exceedance_dates, window = 10, short_name = 'tas
     out.write(txt)
     out.close()
 
-
-def fgco2gt(data_dict):
+def marine_gt(data_dict, short, gt):
     """
-    Calculate fgco2gt from the data dictionary.
+    Calculate global from the data dictionary.
     """
     areas = []
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
@@ -636,14 +635,22 @@ def fgco2gt(data_dict):
         assert 0
     areas = areas[0]
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
-        if short_name != 'fgco2':
+        if short_name != short:
             continue
         cubegt = cube.copy()
         cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
         cubegt.units = cf_units.Unit('Pg yr^-1') #cube.units * areas.units
 
-        data_dict[('fgco2gt', exp, ensemble)] = cubegt
+        data_dict[(gt, exp, ensemble)] = cubegt
     return data_dict
+
+fgco2gt = marine_gt(data_dict, short='fgco2', gt='fgco2gt')
+intppgt = marine_gt(data_dict, short='intpp', gt='intppgt')
+epc100gt = marine_gt(data_dict, short='epc100', gt='epc100gt')
+intdicgt = marine_gt(data_dict, short='intdic', gt='intdicgt')
+intpocgt = marine_gt(data_dict, short='intpoc', gt='intpocgt')
+fricgt = marine_gt(data_dict, short='fric', gt='fricgt')
+frocgt = marine_gt(data_dict, short='froc', gt='frocgt')
 
 
 def nppgt(data_dict, short='npp', gt='nppgt'):
@@ -775,6 +782,11 @@ def load_timeseries(cfg, short_names):
         'fgco2gt': ['fgco2', 'areacello'],
         'nppgt': ['npp', 'areacella'],
         'rhgt': ['rh', 'areacella'],
+        'epc100gt': ['epc100', 'areacello'],
+        'intdicgt': ['intdic', 'areacello'],
+        'intpocgt': ['intpoc', 'areacello'],
+        'fricgt': ['fric', 'areacello'],
+        'frocgt': ['froc', 'areacello'],
         'exchange': ['rh', 'npp', 'areacella'],
         'tas_norm': ['tas', ],
         'nppgt_norm': ['nppgt', ],
@@ -787,6 +799,11 @@ def load_timeseries(cfg, short_names):
         'fgco2gt': fgco2gt,
         'nppgt': nppgt,
         'rhgt': rhgt,
+        'epc100gt': epc100gt,
+        'intdicgt': intdicgt,
+        'intpocgt': intpocgt,
+        'fricgt': fricgt,
+        'frocgt': frocgt,
         'exchange': exchange,
         'tas_norm': tas_norm,
         'nppgt_norm':norm_co2_nppgt,
@@ -915,11 +932,11 @@ def load_co2_forcing(cfg, data_dict):
     # Check for historical-ssp scenarios.
     tmp_dict = {}
     for (short_name, exp, ensemble), ssp_cube in data_dict.items():
-        if short_name in ['co2', 'areacella', 'areacello',]: 
+        if short_name in ['co2', 'areacella', 'areacello',]:
             continue
-        if ('co2', 'historical-'+exp, ensemble ) in tmp_dict.keys(): 
+        if ('co2', 'historical-'+exp, ensemble ) in tmp_dict.keys():
             continue
-        if exp == 'historical': 
+        if exp == 'historical':
             continue
         ssp_only = exp.replace('historical-', '')
         new_times = []
@@ -1175,12 +1192,18 @@ def main(cfg):
     # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
-    short_names = ['tas', 'tas_norm', 'co2', 'npp', 'intpp',
-                   'nppgt', 'fgco2gt', 'intppgt', 'rhgt', 'exchange',
-                   'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',]
-    short_names_x = ['time', 'co2', 'tas', 'tas_norm','intpp',] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    short_names = ['tas', 'tas_norm', 'co2',
+                #    'npp', 'nppgt', 'rhgt', 'exchange',
+                #    'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
+                   'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc',
+                   'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',
+                   ]
+    short_names_x = ['time', 'co2', 'tas', 'tas_norm', 'fgco2gt',]
+    #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
-    short_names_y = ['tas', 'co2', 'npp', 'nppgt', 'intpp', 'intppgt_norm', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
+    short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
+
+     # ]'npp', 'nppgt', 'intpp', 'intppgt_norm', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
 
     pairs = []
 
