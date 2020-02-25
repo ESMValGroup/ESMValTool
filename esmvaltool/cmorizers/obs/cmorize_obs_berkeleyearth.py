@@ -12,7 +12,7 @@ Source
     1º x 1º Latitude-Longitude Grid (~400 MB)
 
 Last access
-    20190904
+    20200225
 
 Download and processing instructions
     Download the following files:

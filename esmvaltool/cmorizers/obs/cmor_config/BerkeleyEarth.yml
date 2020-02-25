@@ -4,9 +4,9 @@ filename: 'Land_and_Ocean_LatLong1.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: BEST
+  dataset_id: BerkeleyEarth
   tier: 2
-  modeling_realm: observation
+  modeling_realm: reanaly
   project_id: OBS
   institution: 'Berkeley Earth Surface Temperature Project'
   source: 'http://berkeleyearth.org/data/'
