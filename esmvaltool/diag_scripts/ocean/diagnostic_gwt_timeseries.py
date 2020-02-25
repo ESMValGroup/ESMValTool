@@ -644,13 +644,13 @@ def marine_gt(data_dict, short, gt):
         data_dict[(gt, exp, ensemble)] = cubegt
     return data_dict
 
-fgco2gt = marine_gt(data_dict, short='fgco2', gt='fgco2gt')
-intppgt = marine_gt(data_dict, short='intpp', gt='intppgt')
-epc100gt = marine_gt(data_dict, short='epc100', gt='epc100gt')
-intdicgt = marine_gt(data_dict, short='intdic', gt='intdicgt')
-intpocgt = marine_gt(data_dict, short='intpoc', gt='intpocgt')
-fricgt = marine_gt(data_dict, short='fric', gt='fricgt')
-frocgt = marine_gt(data_dict, short='froc', gt='frocgt')
+def fgco2gt(data_dict): return marine_gt(data_dict, short='fgco2', gt='fgco2gt')
+def intppgt(data_dict): return marine_gt(data_dict, short='intpp', gt='intppgt')
+def epc100gt(data_dict): return marine_gt(data_dict, short='epc100', gt='epc100gt')
+def intdicgt(data_dict): return marine_gt(data_dict, short='intdic', gt='intdicgt')
+def intpocgt(data_dict): return marine_gt(data_dict, short='intpoc', gt='intpocgt')
+def fricgt(data_dict): return marine_gt(data_dict, short='fric', gt='fricgt')
+def frocgt(data_dict): return marine_gt(data_dict, short='froc', gt='frocgt')
 
 
 def nppgt(data_dict, short='npp', gt='nppgt'):
