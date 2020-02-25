@@ -1135,9 +1135,17 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                          marker_styles[threshold],
                          fillstyle='none',
                          color=exp_colours[exp_1])
-
+    .
+    exp_colours_leg = {'historical':'black',
+                   'ssp119':'green',
+                   'ssp126':'dodgerblue',
+                   'ssp245':'blue',
+                   'ssp370':'purple',
+                   'ssp434':'goldenrod',
+                   'ssp585': 'red',
+                   'ssp534-over':'orange'}
     plot_details = {}
-    for exp,color in sorted(exp_colours.items()):
+    for exp,color in sorted(exp_colours_leg.items()):
         plot_details[exp] = {
                     'c': color,
                     'ls': '-',
