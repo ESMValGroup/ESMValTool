@@ -503,7 +503,6 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp534-over],ensemble: r8i1p1f2, start_year: 2040, end_year: 2100, grid: gn}
 
 
-
       timeseries_rh:
         short_name: rh
         preprocessor: prep_timeseries_2d_land
