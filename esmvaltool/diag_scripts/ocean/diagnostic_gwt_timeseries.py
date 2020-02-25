@@ -663,7 +663,7 @@ def nppgt(data_dict, short='npp', gt='nppgt'):
         if short_name != short:
         #   print('nppgt:', short_name,'!=', short)
             continue
-        if (gt, exp, ensemble) in data_dict.keys(): 
+        if (gt, exp, ensemble) in data_dict.keys():
             print('nppgt:', gt, 'already calculated')
             continue
         print('nppgt:', short_name, exp, ensemble, [short,gt])
@@ -823,7 +823,7 @@ def load_timeseries(cfg, short_names):
 
             cube = iris.load_cube(fn)
             #cube = diagtools.bgc_units(cube, short_name)
-            
+
             print('load_timeseries:\t%s successfull loaded data:', (short_name, exp, ensemble), 'mean:', cube.data.mean())
 
             data_dict[(short_name, exp, ensemble)] = cube
@@ -891,7 +891,7 @@ def load_co2_forcing(cfg, data_dict):
             print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens+'i1p1f2'), 'mean:', np.array(data).mean())
 
         open_fn.close()
-    
+
     path = diagtools.folder(cfg['plot_dir'])
     image_extention = diagtools.get_image_format(cfg)
     path += 'co2_forcing' + image_extention
@@ -984,7 +984,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if short_name not in [x,y]: continue
-            
+
             print('make_ts_figure: found', short_name, exp, ensemble, x,y)
             if x == 'time':
                 x_label = 'Year'
@@ -1095,10 +1095,12 @@ def main(cfg):
     # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
-    short_names = ['tas', 'tas_norm', 'co2', 'npp', 'nppgt', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
-    short_names_x = ['time', 'co2', 'tas', 'tas_norm',] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+    short_names = ['tas', 'tas_norm', 'co2', 'npp', 'intpp',
+                   'nppgt', 'fgco2gt', 'intppgt', 'rhgt', 'exchange',
+                   'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',]
+    short_names_x = ['time', 'co2', 'tas', 'tas_norm','intpp',] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
-    short_names_y = ['tas', 'co2', 'npp', 'nppgt', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
+    short_names_y = ['tas', 'co2', 'npp', 'nppgt', 'intpp', 'intppgt_norm', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
 
 
     pairs = []
