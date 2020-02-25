@@ -43,7 +43,7 @@ preprocessors:
       operator: mean
       period: full
     regrid: 
-      target_grid: 1x1
+      target_grid: 0.5x0.5
       scheme: nearest
 
 diagnostics:
@@ -55,6 +55,8 @@ diagnostics:
     description: land carbon stocks and fluxes
     variables:
       gpp: # Gross primary productivity
+        mip: Lmon
+        start_year: 1985
         preprocessor: preproc_turnover
       ctotal: # Total carbon stock
         derive: true
@@ -64,7 +66,7 @@ diagnostics:
         script: ocean/diagnostic_maps.py
 
   diag_calc_turnover:
-    description: calculate total carbon stock
+    description: calculate turnover time of carbon
     variables:
       gpp: # Gross primary productivity
         preprocessor: preproc_turnover
@@ -72,5 +74,18 @@ diagnostics:
         preprocessor: preproc_turnover
         derive: true
     scripts:
-      cTau:
+      global_Tau:
         script: land_carbon_cycle/calc_turnover.py
+
+  diag_calc_zonal_turnover:
+    description: calculate total carbon stock
+    variables:
+      gpp: # Gross primary productivity
+        preprocessor: preproc_turnover
+      ctotal: # total carbon stock
+        preprocessor: preproc_turnover
+        derive: true  
+    scripts:
+      zonal_Tau:
+        script: land_carbon_cycle/calc_zonal_turnover.py
+        
