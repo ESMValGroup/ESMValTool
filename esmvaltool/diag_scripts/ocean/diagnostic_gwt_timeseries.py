@@ -1204,7 +1204,7 @@ def main(cfg):
 
     # jobtype = 'marine'
     jobtype = 'debug'
-    if jobtype == 'marine':
+    if jobtype == 'debug':
         short_names = [
                        'intpp',
                        'intppgt',
