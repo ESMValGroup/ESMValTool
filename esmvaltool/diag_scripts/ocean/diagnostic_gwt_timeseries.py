@@ -1206,15 +1206,7 @@ def main(cfg):
 
     # jobtype = 'marine'
     short_names, short_names_x, short_names_y = [], [], []
-    jobtype = 'debug'
-    if jobtype == 'debug':
-        short_names = [
-                       'intpp',
-                       'intppgt',
-                       ]
-        short_names_x = ['time', ]
-        short_names_y = ['intpp', 'intppgt',]
-
+    jobtype = 'marine'
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
                 #    'npp', 'nppgt', 'rhgt', 'exchange',
