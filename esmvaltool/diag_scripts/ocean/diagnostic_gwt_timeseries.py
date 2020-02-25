@@ -1100,7 +1100,6 @@ def main(cfg):
     #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
     short_names_y = ['tas', 'co2', 'npp', 'nppgt', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
 
-
     pairs = []
 
     for do_ma in [True, ]:#False]:
