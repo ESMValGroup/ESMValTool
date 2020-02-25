@@ -877,7 +877,7 @@ def load_co2_forcing(cfg, data_dict):
     fold = cfg['auxiliary_data_dir']+'/atmos_co2_forcing/'
     files = glob.glob(fold+'*.dat')
     print(files)
-    hist_dat = []
+    hist_datas = []
     hist_times = []
     for fn in files:
         open_fn = open(fn, 'r')
@@ -892,23 +892,34 @@ def load_co2_forcing(cfg, data_dict):
             times.append(float(line[0]))
             data.append(float(line[1]))
         if key == 'historical':
-            hist_dat = data.copy()
-            hist_times = times.copy()
+            hist_datas = np.array(data).copy()
+            hist_times = np.array(times).copy()
         for ens in ['r1', 'r2',  'r3', 'r4', 'r8']:
             data_dict[('co2', key, ens+'i1p1f2' )] = {'time': times, 'co2':data}
-            #data_dict[('co2', 'historical-'+key, ens+'i1p1f2' )] = {'time': times, 'co2':data}
-
             print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens+'i1p1f2'), 'mean:', np.array(data).mean())
         open_fn.close()
-    
+
     # Check for historical-ssp scenarios.
-    for (short_name, exp, ensemble)  in sorted(data_dict.keys()): 
+    for (short_name, exp, ensemble), ssp_dict in data_dict.items()):
         if short_name != 'co2': continue
-        if exp == 'historical':
+        if exp == 'historical': continue
         new_times = []
         new_datas = []
-        data_dict[('co2', 'historical-'+exp, ensemble )] = 
+        min_time = np.array(ssp_dict['times']).min()
+        if min_time > np.array(hist_times).max():
+            # no overlap
+            new_times = ssp_dict['times']
+            new_datas = ssp_dict['co2']
+        else:
+            # Some overlap
+            new_times = list(np.masked_where(hist_times<min_time, hist_times).compressed())
+            new_datas = list(np.masked_where(hist_times<min_time, hist_datas).compressed())
+            new_times.extend(ssp_dict['times'])
+            new_datas.extend(ssp_dict['new_datas'])
 
+        data_dict[('co2', 'historical-'+exp, ensemble )] ={'time': new_times, 'co2':new_datas}
+
+    # Save the co2 image:
     path = diagtools.folder(cfg['plot_dir'])
     image_extention = diagtools.get_image_format(cfg)
     path += 'co2_forcing' + image_extention
