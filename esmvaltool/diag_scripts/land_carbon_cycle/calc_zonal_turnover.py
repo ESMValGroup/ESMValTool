@@ -30,7 +30,7 @@ from esmvalcore.preprocessor import area_statistics
 
 # esmvaltool.diag_scripts.shared.extract_variables
 
-def _plot_map(cfg, cube, dataset):
+def _plot_line(cfg, data,dataset):
     """
     makes the maps of variables 
 
@@ -54,13 +54,14 @@ def _plot_map(cfg, cube, dataset):
     local_path = cfg['plot_dir']
 
     # do the plotting dance
-    plt.imshow(cube.data, label=dataset)
-    plt.xlabel('Longitude')
-    plt.ylabel('Latitude')
-    plt.title('Total Carbon Stock')
+    plt.plot(data)
+    plt.xlabel('Latitude')
+    plt.ylabel('tau')
+    plt.title('zonal turnover')
     plt.tight_layout()
+    plt.ylim(0,1000)
     plt.grid()
-    plt.colorbar()
+    # plt.colorbar()
     png_name = 'map_' + dataset + '.png'
     plt.savefig(os.path.join(local_path, png_name))
     plt.close()
@@ -77,8 +78,27 @@ def load_variable(metadata, var_name):
     return cube
             
 
-
-def get_cTau(cfg):
+def get_zonal_tau(_datgpp,_datcTotal):
+    __dat=np.zeros((np.shape(_datgpp)[0]))
+    minPoints=20
+    bandsize=9
+    for li in range(len(__dat)):
+        istart=max(0,li-bandsize)
+        iend=min(359,li+bandsize+1)
+        _datgppZone=_datgpp[istart:iend,:]#* _areaZone
+        _datcTotalZone=_datcTotal[istart:iend,:]#* _areaZone
+        # _datgppZone=remove_tail_percentiles(_datgppZone,_outlierPerc=10)
+        # _datcTotalZone=remove_tail_percentiles(_datcTotalZone,_outlierPerc=10)
+        # print(_datZone)
+        # print(_datgpp)
+        nValids=np.nansum(1-np.ma.getmask(np.ma.masked_invalid(_datgppZone)))
+        if nValids > minPoints:
+            __dat[li] = (np.nansum(_datcTotalZone)/np.nansum(_datgppZone)) / (86400*365)
+        else:
+            __dat[li] = np.nan
+            print(nValids,'valid points for tau, setting nan')
+    return(__dat)
+def get_zonal_cTau(cfg):
     """
     A diagnostic function to calculate the total carbon stock from the list of variables
     passed to the diagnostic script.
@@ -90,17 +110,12 @@ def get_cTau(cfg):
         string; runs the user diagnostic
 
     """
-    # assemble the data dictionary keyed by dataset name
-    # this makes use of the handy group_metadata function that
-    # orders the data by 'dataset'; the resulting dictionary is
-    # keyed on datasets e.g. dict = {'MPI-ESM-LR': [var1, var2...]}
-    # where var1, var2 are dicts holding all needed information per variable
-    varNames=list(extract_variables(cfg).keys())
 
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
     # import pdb; pdb.set_trace()
 
     # iterate over key(dataset) and values(list of vars)
+    zonal_tau_models={}
     for key, value in my_files_dict.items():
         # load the cube from data files only
         # using a single variable here so just grab the first (and only)
@@ -108,35 +123,11 @@ def get_cTau(cfg):
 
         c_total = load_variable(value, 'ctotal')
         gpp = load_variable(value, 'gpp')
+        print(gpp,c_total)
 
-        c_tau = (c_total/gpp) / (86400*365)
-        c_tau.var_name = 'cTau'
-        c_tau.standard_name = None 
-        c_tau.long_name = 'Ecosystem Turnover time of carbon'
-        c_tau.units = 'years'
-        ofilename = get_diagnostic_filename(key+'_cTau', cfg)
-        iris.save(c_tau, ofilename)
-        # print(vars()[_val['short_name']])
-        # print(varNames)
-        # print('----')
-        # cube = iris.load_cube(value[0]['filename'])
-
-        # the first data analysis bit: simple cube difference:
-        # perform a difference between ground and first levels
-        # diff_cube = cube[:, :, :] #- cube[:, 1, :, :]
-        # square the difference'd cube just for fun
-        # squared_cube = diff_cube ** 2.
-
-        # the second data analysis bit (slightly more advanced):
-        # compute an area average over the squared cube
-        # to apply the area average use a preprocessor function
-        # rather than writing your own function
-        # area_avg_cube = area_statistics(squared_cube, 'mean')
-
-        # finalize your analysis by plotting a time series of the
-        # diffed, squared and area averaged cube; call the plot function:
-        _plot_map(cfg, c_tau, key)
-
+        c_tau = get_zonal_tau(gpp.data, c_total.data)
+        _plot_line(cfg, c_tau, key)
+        print(key,value)
     # that's it, we're done!
     return 'I am done with my first ESMValTool diagnostic!'
 
@@ -146,4 +137,4 @@ if __name__ == '__main__':
     # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
         # list here the functions that need to run
-        get_cTau(config)
+        get_zonal_cTau(config)
