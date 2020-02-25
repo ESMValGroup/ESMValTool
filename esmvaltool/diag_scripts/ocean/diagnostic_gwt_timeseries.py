@@ -744,6 +744,9 @@ def norm_co2(data_dict, short='nppgt'):
         cube = data_dict[(short, exp, ensemble)].copy()
         print('norm_co2:', short_name, exp, ensemble, 'baseline:',baseline)
         out = []
+        for (j1,j2,j3) in data_dict.keys():
+            if j1 != 'co2': continue
+            print(j1,j2,j3)
         co2_data= data_dict[('co2', exp, ensemble )]['co2']
         if len(cube.data) != len(co2_data):
             times = cube.coord('time').units.num2date(cube.coord('time').points)
@@ -874,6 +877,8 @@ def load_co2_forcing(cfg, data_dict):
     fold = cfg['auxiliary_data_dir']+'/atmos_co2_forcing/'
     files = glob.glob(fold+'*.dat')
     print(files)
+    hist_dat = []
+    hist_times = []
     for fn in files:
         open_fn = open(fn, 'r')
         key = os.path.basename(fn).replace('_co2.dat', '')
@@ -886,11 +891,23 @@ def load_co2_forcing(cfg, data_dict):
                 if '\n' in line: line.remove('\n')
             times.append(float(line[0]))
             data.append(float(line[1]))
+        if key == 'historical':
+            hist_dat = data.copy()
+            hist_times = times.copy()
         for ens in ['r1', 'r2',  'r3', 'r4', 'r8']:
             data_dict[('co2', key, ens+'i1p1f2' )] = {'time': times, 'co2':data}
-            print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens+'i1p1f2'), 'mean:', np.array(data).mean())
+            #data_dict[('co2', 'historical-'+key, ens+'i1p1f2' )] = {'time': times, 'co2':data}
 
+            print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens+'i1p1f2'), 'mean:', np.array(data).mean())
         open_fn.close()
+    
+    # Check for historical-ssp scenarios.
+    for (short_name, exp, ensemble)  in sorted(data_dict.keys()): 
+        if short_name != 'co2': continue
+        if exp == 'historical':
+        new_times = []
+        new_datas = []
+        data_dict[('co2', 'historical-'+exp, ensemble )] = 
 
     path = diagtools.folder(cfg['plot_dir'])
     image_extention = diagtools.get_image_format(cfg)
@@ -952,14 +969,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     make a 2D figure.
     x axis and y axis are determined by the short_names provuided in x and y
     vars.
-    Markers are placed at certain points when the tas goes above thresholds.
-
-    Parameters
-    ----------
-    cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-    """
-    exps = {}
     ensembles = {}
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
          exps[exp] = True
@@ -1050,6 +1059,14 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     for thres,ms in sorted(marker_styles.items()):
         plot_details[str(thres)] = {
                     'c': 'black',
+                    'marker': ms,
+                    'fillstyle':'none',
+                    'label': '>' + str(thres)+u'\u00B0C'
+                }
+
+    diagtools.add_legend_outside_right(
+                plot_details, plt.gca(), column_width=0.175)
+
                     'marker': ms,
                     'fillstyle':'none',
                     'label': '>' + str(thres)+u'\u00B0C'
