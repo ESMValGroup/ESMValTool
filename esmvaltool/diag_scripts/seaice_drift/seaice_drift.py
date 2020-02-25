@@ -362,7 +362,7 @@ class SeaIceDrift():
             f"{sic_data[n.END_YEAR]} according to {dataset}"
         )
         self._create_prov_record(
-            siconc_path,  caption, ancestors_sic + ancestors_sispeed)
+            siconc_path, caption, ancestors_sic + ancestors_sispeed)
 
         with open(sivol_path, 'w') as csvfile:
             csv_writer = csv.writer(csvfile)
