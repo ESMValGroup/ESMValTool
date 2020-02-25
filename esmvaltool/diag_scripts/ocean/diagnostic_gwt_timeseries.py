@@ -1204,7 +1204,7 @@ def main(cfg):
 
     # jobtype = 'marine'
     jobtype = 'debug'
-    if jobtype == 'marine'
+    if jobtype == 'marine':
         short_names = [
                        'intpp',
                        'intppgt',
@@ -1212,7 +1212,7 @@ def main(cfg):
         short_names_x = ['time', ]
         short_names_y = ['intpp', 'intppgt',]
 
-    if jobtype == 'marine'
+    if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
                 #    'npp', 'nppgt', 'rhgt', 'exchange',
                 #    'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
@@ -1224,7 +1224,7 @@ def main(cfg):
         #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
         short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
 
-    if jobtype == 'full'
+    if jobtype == 'full':
         short_names = ['tas', 'tas_norm', 'co2',
                        'npp', 'nppgt', 'rhgt', 'exchange',
                        'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
