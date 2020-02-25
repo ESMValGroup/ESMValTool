@@ -644,6 +644,7 @@ def marine_gt(data_dict, short, gt):
         data_dict[(gt, exp, ensemble)] = cubegt
     return data_dict
 
+
 def fgco2gt(data_dict): return marine_gt(data_dict, short='fgco2', gt='fgco2gt')
 def intppgt(data_dict): return marine_gt(data_dict, short='intpp', gt='intppgt')
 def epc100gt(data_dict): return marine_gt(data_dict, short='epc100', gt='epc100gt')
@@ -1200,16 +1201,40 @@ def main(cfg):
     # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
-    short_names = ['tas', 'tas_norm', 'co2',
+
+    # jobtype = 'marine'
+    jobtype = 'debug'
+    if jobtype == 'marine'
+        short_names = [
+                       'intpp',
+                       'intppgt',
+                       ]
+        short_names_x = ['time', ]
+        short_names_y = ['intpp', 'intppgt',]
+
+    if jobtype == 'marine'
+        short_names = ['tas', 'tas_norm', 'co2',
                 #    'npp', 'nppgt', 'rhgt', 'exchange',
                 #    'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
-                   'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc',
-                   'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',
-                   ]
-    short_names_x = ['time', 'co2', 'tas', 'tas_norm', 'fgco2gt',]
-    #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
-    #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
-    short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
+                       'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc',
+                       'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',
+                       ]
+        short_names_x = ['time', 'co2', 'tas', 'tas_norm', 'fgco2gt',]
+        #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+        #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
+        short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
+
+    if jobtype == 'full'
+        short_names = ['tas', 'tas_norm', 'co2',
+                       'npp', 'nppgt', 'rhgt', 'exchange',
+                       'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
+                       'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc',
+                       'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',
+                       ]
+        short_names_x = ['time', 'co2', 'tas', 'tas_norm', 'fgco2gt',
+                         'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+        short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',
+                         'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
 
      # ]'npp', 'nppgt', 'intpp', 'intppgt_norm', 'fgco2gt', 'rhgt', 'exchange', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm']
 
