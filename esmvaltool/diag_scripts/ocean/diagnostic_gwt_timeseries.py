@@ -1135,7 +1135,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                          marker_styles[threshold],
                          fillstyle='none',
                          color=exp_colours[exp_1])
-    .
+
     exp_colours_leg = {'historical':'black',
                    'ssp119':'green',
                    'ssp126':'dodgerblue',
