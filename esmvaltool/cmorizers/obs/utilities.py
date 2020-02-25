@@ -5,7 +5,6 @@ import os
 from contextlib import contextmanager
 
 import iris
-import iris.exceptions
 import numpy as np
 import yaml
 from cf_units import Unit
@@ -64,7 +63,6 @@ def fix_coords(cube):
     # first fix any completely missing coord var names
     _fix_dim_coordnames(cube)
     # fix individual coords
-    lon_coord = cube.coord('longitude')
     for cube_coord in cube.coords():
         # fix time
         if cube_coord.var_name == 'time':
@@ -76,15 +74,15 @@ def fix_coords(cube):
         # fix longitude
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
-            if lon_coord.ndim == 1:
-                if lon_coord.points[0] < 0. and \
-                        lon_coord.points[-1] < 181.:
-                    lon_coord.points = \
-                        lon_coord.points + 180.
-                    _fix_bounds(cube, lon_coord)
+            if cube_coord.ndim == 1:
+                if cube_coord.points[0] < 0. and \
+                        cube_coord.points[-1] < 181.:
+                    cube_coord.points = \
+                        cube_coord.points + 180.
+                    _fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
-                    nlon = len(lon_coord.points)
+                    nlon = len(cube_coord.points)
                     _roll_cube_data(cube, nlon // 2, -1)
 
         # fix latitude
@@ -104,7 +102,7 @@ def fix_coords(cube):
 
     # remove CS
     cube.coord('latitude').coord_system = None
-    lon_coord.coord_system = None
+    cube.coord('longitude').coord_system = None
 
     return cube
 
