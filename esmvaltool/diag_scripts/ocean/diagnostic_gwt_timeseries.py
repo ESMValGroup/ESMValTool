@@ -686,7 +686,6 @@ def exchange(data_dict):
     """
     Calculate exchange from the data dictionary.
     """
-
     data_dict = rhgt(data_dict)
     data_dict = nppgt(data_dict)
 
@@ -709,7 +708,6 @@ def tas_norm(data_dict):
     """
     Calculate tas_norm from the data dictionary.
     """
-
     exps = {}
     ensembles = {}
     baselines={}
@@ -744,18 +742,12 @@ def norm_co2(data_dict, short='nppgt'):
         cube = data_dict[(short, exp, ensemble)].copy()
         print('norm_co2:', short_name, exp, ensemble, 'baseline:',baseline)
         out = []
-        for (j1,j2,j3) in data_dict.keys():
-            if j1 != 'co2': continue
-            print(j1,j2,j3)
         co2_data= data_dict[('co2', exp, ensemble )]['co2']
         if len(cube.data) != len(co2_data):
             times = cube.coord('time').units.num2date(cube.coord('time').points)
-            print('times do not match', len(cube.data),'!=', len(co2_data))
-            #print('UKESM times:', times)
-            #print('CO2 times:', data_dict[('co2', exp, ensemble )]['time'])
-            print(' in ',short_name, exp, ensemble)
+            print('times do not match', (short_name, exp, ensemble), len(cube.data), '!=', len(co2_data))
             for t1, t2 in zip(times, data_dict[('co2', exp, ensemble )]['time']):
-                print(short_name, exp, ensemble, t1,t2)
+                print(short_name, exp, ensemble, short_name+':', t1, 'co2:', t2)
             assert 0
         for d,co2 in zip(cube.data, data_dict[('co2', exp, ensemble)]['co2']):
             out.append(d*baseline/co2)
@@ -809,9 +801,6 @@ def load_timeseries(cfg, short_names):
             short_names_to_load.extend(transforms[sn])
 
     data_dict = {}
-    if 'co2' in short_names_to_load:
-        data_dict = load_co2_forcing(cfg, data_dict)
-
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('load_timeseries:\t%s', metadata_filename)
 
@@ -830,6 +819,10 @@ def load_timeseries(cfg, short_names):
             print('load_timeseries:\t%s successfull loaded data:', (short_name, exp, ensemble), 'mean:', cube.data.mean())
 
             data_dict[(short_name, exp, ensemble)] = cube
+
+    if 'co2' in short_names_to_load:
+        data_dict = load_co2_forcing(cfg, data_dict)
+
 
     for sn in short_names_to_load:
         if sn in transforms:
@@ -866,6 +859,26 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
             thresholds_dict[(short_name, exp, ensemble)][threshold] = time
     return thresholds_dict
 
+def cube_to_years(cube):
+    """
+    Convert from time coordinate into years.
+
+    Takes an iris time coordinate and returns a list of floats.
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        the opened dataset as a cube.
+
+    Returns
+    -------
+    list
+        List of floats showing the time coordinate in decimal time.
+
+    """
+    if not cube.coords('year'):
+        iris.coord_categorisation.add_year(cube, 'time')
+    return cube.coord('year').points
+
 
 def load_co2_forcing(cfg, data_dict):
     """
@@ -900,24 +913,36 @@ def load_co2_forcing(cfg, data_dict):
         open_fn.close()
 
     # Check for historical-ssp scenarios.
-    for (short_name, exp, ensemble), ssp_dict in data_dict.items()):
-        if short_name != 'co2': continue
-        if exp == 'historical': continue
+    tmp_dict = {}
+    for (short_name, exp, ensemble), ssp_cube in data_dict.items():
+        if short_name in ['co2', 'areacella', 'areacello',]: 
+            continue
+        if ('co2', 'historical-'+exp, ensemble ) in tmp_dict.keys(): 
+            continue
+        if exp == 'historical': 
+            continue
+        ssp_only = exp.replace('historical-', '')
         new_times = []
         new_datas = []
-        min_time = np.array(ssp_dict['times']).min()
+        print((short_name, exp,(ssp_only), ensemble))
+        ssp_times = cube_to_years(ssp_cube)
+        min_time = np.array(ssp_times).min()
         if min_time > np.array(hist_times).max():
+            print(short_name, exp, ensemble, 'no overlap', ('ssp:', min_time, '>', 'hist max:', np.array(hist_times).max()))
             # no overlap
-            new_times = ssp_dict['times']
-            new_datas = ssp_dict['co2']
+            new_times = data_dict[('co2', ssp_only, ensemble)]['time']
+            new_datas = data_dict[('co2', ssp_only, ensemble)]['co2']
         else:
             # Some overlap
-            new_times = list(np.masked_where(hist_times<min_time, hist_times).compressed())
-            new_datas = list(np.masked_where(hist_times<min_time, hist_datas).compressed())
-            new_times.extend(ssp_dict['times'])
-            new_datas.extend(ssp_dict['new_datas'])
+            print(short_name, exp, ensemble,'some overlap', (min_time, '<=', np.array(hist_times).max()))
+            new_times = list(np.ma.masked_where(hist_times<min_time, hist_times).compressed())
+            new_datas = list(np.ma.masked_where(hist_times<min_time, hist_datas).compressed())
+            new_times.extend(data_dict[('co2', ssp_only, ensemble)]['time'])
+            new_datas.extend(data_dict[('co2', ssp_only, ensemble)]['co2'])
 
-        data_dict[('co2', 'historical-'+exp, ensemble )] ={'time': new_times, 'co2':new_datas}
+        print('co2', exp, ensemble, len(new_times), len(new_datas))
+        tmp_dict[('co2', exp, ensemble )] ={'time': new_times, 'co2':new_datas}
+    data_dict.update(tmp_dict)
 
     # Save the co2 image:
     path = diagtools.folder(cfg['plot_dir'])
@@ -932,6 +957,25 @@ def load_co2_forcing(cfg, data_dict):
                        'ssp434':'goldenrod',
                        'ssp585': 'red',
                        'ssp534-over':'orange'}
+        for key in exp_colours.keys():
+            plt.plot(data_dict[('co2', key, 'r1i1p1f2' )]['time'],
+                     data_dict[('co2', key, 'r1i1p1f2' )]['co2'],
+                     c=exp_colours[key],
+                     label=key)
+        plt.legend()
+        plt.savefig(path)
+        plt.close()
+    image_extention = diagtools.get_image_format(cfg)
+    path += 'co2_forcing_hists' + image_extention
+    if not os.path.exists(path):
+        exp_colours = {'historical':'black',
+                       'historical-ssp119':'green',
+                       'historical-ssp126':'dodgerblue',
+                       'historical-ssp245':'blue',
+                       'historical-ssp370':'purple',
+                       'historical-ssp434':'goldenrod',
+                       'historical-ssp585': 'red',
+                       'historical-ssp534-over':'orange'}
         for key in exp_colours.keys():
             plt.plot(data_dict[('co2', key, 'r1i1p1f2' )]['time'],
                      data_dict[('co2', key, 'r1i1p1f2' )]['co2'],
@@ -980,6 +1024,14 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     make a 2D figure.
     x axis and y axis are determined by the short_names provuided in x and y
     vars.
+    Markers are placed at certain points when the tas goes above thresholds.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    """
+    exps = {}
     ensembles = {}
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
          exps[exp] = True
@@ -992,7 +1044,15 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                    'ssp370':'purple',
                    'ssp434':'goldenrod',
                    'ssp585': 'red',
-                   'ssp534-over':'orange'}
+                   'ssp534-over':'orange',
+                   'historical-ssp119':'green',
+                   'historical-ssp126':'dodgerblue',
+                   'historical-ssp245':'blue',
+                   'historical-ssp370':'purple',
+                   'historical-ssp434':'goldenrod',
+                   'historical-ssp585': 'red',
+                   'historical-ssp534-over':'orange'}
+
     marker_styles = {1.5: 'o', 2.:'*', 3.:'^', 4.:'s', 5.:'X'}
 
     fig = plt.figure()
@@ -1070,14 +1130,6 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     for thres,ms in sorted(marker_styles.items()):
         plot_details[str(thres)] = {
                     'c': 'black',
-                    'marker': ms,
-                    'fillstyle':'none',
-                    'label': '>' + str(thres)+u'\u00B0C'
-                }
-
-    diagtools.add_legend_outside_right(
-                plot_details, plt.gca(), column_width=0.175)
-
                     'marker': ms,
                     'fillstyle':'none',
                     'label': '>' + str(thres)+u'\u00B0C'
