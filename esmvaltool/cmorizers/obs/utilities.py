@@ -79,13 +79,23 @@ def fix_coords(cube):
             if lon_coord.ndim == 1:
                 if lon_coord.points[0] < 0. and \
                         lon_coord.points[-1] < 181.:
-                    lon_coord.points = \
-                        lon_coord.points + 180.
+                    lon_coord = cube.coord('longitude').copy()
+
+                    lons_below_0 = lon_coord.points[lon_coord.points < 0.] + \
+                        360.
+                    lons_above_0 = lon_coord.points[lon_coord.points >= 0.]
+                    lons = np.hstack((lons_above_0, lons_below_0))
+
+                    cube.coord('longitude').points = lons
+
                     _fix_bounds(cube, lon_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
-                    nlon = len(lon_coord.points)
-                    _roll_cube_data(cube, nlon // 2, -1)
+                    coord_names = [coord.var_name for coord in cube.coords()]
+                    _roll_cube_data(cube, len(lons_above_0),
+                                    coord_names.index('lon'))
+                else:
+                    _fix_bounds(cube, cube.coord('longitude'))
 
         # fix latitude
         if cube_coord.var_name == 'lat':
