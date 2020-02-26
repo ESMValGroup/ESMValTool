@@ -90,9 +90,8 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
                         short_name,
                         out_dir,
                         attrs,
-                        unlimited_dimensions=['time'],
-                        zlib=True,
-                        complevel=9)
+                        unlimited_dimensions=['time']
+                        )
 
     #####
     # also derive monthly data
@@ -113,9 +112,8 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
                             short_name,
                             out_dir,
                             attrs,
-                            unlimited_dimensions=['time'],
-                            zlib=True,
-                            complevel=9)
+                            unlimited_dimensions=['time']
+                            )
 
 
 def cmorization(in_dir, out_dir, cfg, _):
