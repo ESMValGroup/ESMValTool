@@ -13,6 +13,16 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  CALIPSO-GOCCP:
+    description: CALIPSO-GOCCP check
+    variables:
+      clcalipso:
+    additional_datasets:
+      - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2,
+         mip: cfMon, tier: 2, start_year: 2007, end_year: 2015}
+    scripts: null
+
+
   CERES-EBAF:
     description: CERES-EBAF check
     variables:
@@ -775,7 +785,7 @@ diagnostics:
          type: reanaly, version: Oct13, start_year: 1989, end_year: 2005}
     scripts: null
 
-    
+
   MAC-LWP:
     description: MAC-LWP check
     variables:
@@ -786,7 +796,7 @@ diagnostics:
          type: sat, version: v1, start_year: 1988, end_year: 2016}
     scripts: null
 
-    
+
   MERRA2:
     description: MERRA2 check
     variables:
@@ -797,14 +807,15 @@ diagnostics:
     scripts: null
 
 
-  MTE:
-    description: MTE check
+  MLS-AURA:
+    description: MLS-AURA check
     variables:
-      gpp:
-      gppStderr:
+      hur:
+        mip: Amon
+      hurStderr:
+        mip: Amon
     additional_datasets:
-      - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
-         type: reanaly, version: May12, start_year: 1982, end_year: 2011}
+      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004', start_year: 2005, end_year: 2019}
     scripts: null
 
 
@@ -827,6 +838,19 @@ diagnostics:
       - {dataset: MODIS, project: OBS, tier: 3,
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
     scripts: null
+
+
+  MTE:
+    description: MTE check
+    variables:
+      gpp:
+      gppStderr:
+    additional_datasets:
+      - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: May12, start_year: 1982, end_year: 2011}
+    scripts: null
+
+
 
 
   NDP:
