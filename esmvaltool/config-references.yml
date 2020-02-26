@@ -690,6 +690,7 @@ references:
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi:10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
   cru: "Harris et al., Int. J. Climatol., doi:10.1002/joc.3711, 2014."
   duveiller2018: "Duveiller et al., Sci. Data, doi:10.1038/sdata.2018.14, 2018."
+  e-obs: "Cornes et al., J. Geophys. Res. Atmos., 123. doi:10.1029/2017JD028200"
   eppley-vgpm-modis: "Behrenfeld and Falkowski, Limnol. Oceanogr., doi:10.4319/lo.1997.42.1.0001, 1997."
   era-interim: "Dee et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
   era-interim-land: "Balsamo et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-19-389-2015, 2015."
