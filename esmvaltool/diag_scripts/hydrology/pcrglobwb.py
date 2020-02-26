@@ -7,26 +7,31 @@ import iris
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
-                                            run_diagnostic, select_metadata)
+                                            group_metadata, run_diagnostic,
+                                            select_metadata)
 
 logger = logging.getLogger(Path(__file__).name)
 
 
-def get_provenance_record(ancestor_file):
+def get_provenance_record(ancestor_files):
     """Create a provenance record."""
     record = {
         'caption':
         "Forcings for the PCR-GLOBWB hydrological model.",
         'domains': ['global'],
-        'authors':
-        ['aerts_jerom', 'andela_bouwe', 'alidoost_sarah', 'kalverla_peter'],
+        'authors': [
+            'aerts_jerom',
+            'andela_bouwe',
+            'alidoost_sarah',
+            'kalverla_peter',
+        ],
         'projects': [
             'ewatercycle',
         ],
         'references': [
             'acknow_project',
         ],
-        'ancestors': [ancestor_file],
+        'ancestors': ancestor_files,
     }
     return record
 
@@ -86,20 +91,19 @@ def add_spinup_year(cube, cube_climatology):
 
 def main(cfg):
     """Process data for use as input to the PCR-GLOBWB hydrological model."""
-    for dataset in 'ERA5', 'ERA-Interim':
+    for dataset, metadata in group_metadata(cfg['input_data'].values(),
+                                            'dataset').items():
         for short_name in "pr", "tas":
             logger.info("Processing variable %s for dataset %s", short_name,
                         dataset)
 
             # Load preprocessed cubes for normal data and climatology
-            var = select_metadata(cfg['input_data'].values(),
-                                  dataset=dataset,
-                                  variable_group=short_name)[0]
+            var = select_metadata(metadata, variable_group=short_name)[0]
             cube = iris.load_cube(var['filename'])
-            var_climatology = select_metadata(cfg['input_data'].values(),
-                                              dataset=dataset,
-                                              variable_group=short_name +
-                                              '_climatology')[0]
+            var_climatology = select_metadata(
+                metadata,
+                variable_group=short_name + '_climatology',
+            )[0]
             cube_climatology = iris.load_cube(var_climatology['filename'])
 
             # Create a spin-up year for pcrglob based on the climatology data
