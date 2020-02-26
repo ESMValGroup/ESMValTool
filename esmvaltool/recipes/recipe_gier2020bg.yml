@@ -1,0 +1,104 @@
+# recipe_cox18nature.yml
+---
+documentation:
+
+  description: |
+    Analysis of column-averaged CO2 (XCO2) emission driven model data in
+    comparison to satellite data (Gier et al., 2020).
+
+  authors:
+    - gier_bettina
+
+  maintainer:
+    - gier_bettina
+
+  references:
+    - acknow_author
+
+  projects:
+    - eval4cmip
+    - 4c
+
+#datasets:
+
+#  - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#  - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+#  - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+preprocessors:
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+  mmm1:
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+  mmm2:
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+diagnostics:
+
+  station_comparison:
+    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
+    variables:
+      xco2:
+        #preprocessor: mmm1
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: C3S
+        derive: true
+        additional_datasets:
+          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+      co2:
+        #preprocessor: mmm2
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+    scripts:
+      station_comparison:
+        script: xco2_analysis/station_comparison.ncl
+        path: "/work/bd0854/b309137/data_ext/Tier2/ESRL/"
+        stationlist: "ESRL_stations_diag.csv"
+        ref_varname: co2
+        ref_model_read_in: true
+        ref_model: "MLO"
+        var_order: ["xco2", "co2"]
+
+  xco2_maps:
+    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
+    variables:
+      xco2:
+        preprocessor: mmm1
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: C3S
+        derive: true
+        additional_datasets:
+          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+    scripts:
+      xco2_maps:
+        script: xco2_analysis/global_maps.ncl
+        styleset: "CMIP6"
+        #obs_sampling: true
