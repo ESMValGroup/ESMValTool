@@ -5,9 +5,12 @@
 ;    Sampling Station CO2 data like XCO2 datasets and comparing the two
 ;
 ; Required diag_script_info attributes:
+;    path: path to station data - move this to recipe!
+;    stationlist: ascii data for stations -> make this into recipe cfg
+;    station_varname: short_name of variable for station data
+;    var_order: in this case xco2, co2 - column averaged with obs dataset from recipe first
 ;
 ; Optional diag_script_info attributes:
-;    diag_script_info@region_name: Naming specific region for plots/filenames
 ;
 ; Caveats
 ;    Currently assumes same time for all input variables (mmm computation)
@@ -57,7 +60,7 @@ end
 
 begin
   ; Maximum amount of missing months allowed for calculating SCA
-  min_nmonth = 5
+  min_nmonth = 7 ;5
 
   ; Plot file type
   file_type = config_user_info@output_file_type
