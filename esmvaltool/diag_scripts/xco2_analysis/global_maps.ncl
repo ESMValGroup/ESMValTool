@@ -67,13 +67,6 @@ begin
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
 
-    ;; Formatted varname for plots
-    if var0.eq."xco2" then
-        var0_plotname = "XCO~B~2~N~"
-    else
-        var0_plotname = var0
-    end if
-
 end
 
 begin
@@ -501,4 +494,5 @@ begin
   delete(res_sca_panel_plots)
   delete(pres)
 
+  leave_msg(DIAG_SCRIPT, "")
 end

@@ -28,26 +28,8 @@ documentation:
 
 preprocessors:
 
-  spatial_mean:
-    area_statistics:
-      operator: mean
-
-  mmm:
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: [reference_dataset]
-
-  mmm1:
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: [reference_dataset]
-
-  mmm2:
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
+  noop:
+    {}
 
 diagnostics:
 
@@ -85,8 +67,27 @@ diagnostics:
 #        station_varname: co2
 #        var_order: ["xco2", "co2"]
 
-  xco2_maps:
-    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
+#  xco2_maps:
+#    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
+#    variables:
+#      xco2:
+#        project: CMIP6
+#        mip: Amon
+#        exp: esm-hist
+#        start_year: 2003
+#        end_year: 2014
+#        reference_dataset: C3S
+#        derive: true
+#        additional_datasets:
+#          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+#          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+#          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+#    scripts:
+#      xco2_maps:
+#        script: xco2_analysis/global_maps.ncl
+
+  xco2_sat_masks:
+    description: Influence of satellite coverage on XCO2 data
     variables:
       xco2:
         project: CMIP6
@@ -98,8 +99,6 @@ diagnostics:
         derive: true
         additional_datasets:
           - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
-          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
     scripts:
       xco2_maps:
-        script: xco2_analysis/global_maps.ncl
+        script: xco2_analysis/sat_masks.ncl
