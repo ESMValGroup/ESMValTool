@@ -4,7 +4,7 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    http://search.diasjp.net/en/dataset/APHRO_MA
+    http://search.diasjp.net/en/dataset/AphroTemp
     http://aphrodite.st.hirosaki-u.ac.jp/index.html
 
 Last access
@@ -12,19 +12,20 @@ Last access
 
 Download and processing instructions
     Download the following files:
-        APHRO_MA_{version}.1951-2007.nc.gz.tar
-        version for APHRO_MA: [025deg_V1101, 050deg_V1101]
+        APHRO_MA_TAVE_{version}.1961-2007.nc.tgz
+        version for APHRO_MA_TAVE: [025deg_V1204R1, 050deg_V1204R1]
 
 Refs:
-    Yatagai, A., K. Kamiguchi, O. Arakawa, A. Hamada, N. Yasutomi, and
-    A. Kitoh, 2012: APHRODITE: Constructing a Long-Term Daily Gridded
-    Precipitation Dataset for Asia Based on a Dense Network of Rain Gauges.
-    Bull. Amer. Meteor. Soc., 93, 1401–1415
-    https://doi.org/10.1175/BAMS-D-11-00122.1
+    Yasutomi, N., Hamada, A., Yatagai, A. (2011) Development of a long-term
+    daily gridded temperature dataset and its application to rain/snow
+    discrimination of daily precipitation,
+    Global Environmental Research 15 (2), 165-172
 
 Issues:
     I downloaded the data using the from dias provided python scripts for above
-    mentioned tar balls.
+    mentioned tar balls. The single files for 2007 in the tar was empty.
+    One has to download the single files for 2007.
+    Handling of the tgz archives is not implemented.
 """
 
 import logging
