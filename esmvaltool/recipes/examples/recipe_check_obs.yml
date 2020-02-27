@@ -384,6 +384,22 @@ diagnostics:
 
   ### TIER 3 ##################################################################
 
+  AphroTemp:
+    description: AphroTemp check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: AphroTemp, project: OBS, mip: Amon, tier: 3,
+         type: ground, version: 025deg_V1204R1, start_year: 1961, end_year: 2007}
+      - {dataset: AphroTemp, project: OBS, mip: Amon, tier: 3,
+         type: ground, version: 050deg_V1204R1, start_year: 1961, end_year: 2007}
+      - {dataset: AphroTemp, project: OBS, mip: day, tier: 3,
+         type: ground, version: 025deg_V1204R1, start_year: 1961, end_year: 2007}
+      - {dataset: AphroTemp, project: OBS, mip: day, tier: 3,
+         type: ground, version: 050deg_V1204R1, start_year: 1961, end_year: 2007}
+    scripts: null
+
+
   AURA-TES:
     description: AURA-TES check
     variables:
