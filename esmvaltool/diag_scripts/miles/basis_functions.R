@@ -333,7 +333,8 @@ ncdf_opener_universal <- # nolint
              tmonths = NULL,
              tyears = NULL,
              rotate = "full",
-             interp2grid = F,
+             interp2grid = FALSE,
+             fillmiss = FALSE,
              grid = "r144x73",
              remap_method = "remapcon2",
              exportlonlat = TRUE,
@@ -374,16 +375,22 @@ ncdf_opener_universal <- # nolint
     # interpolation made with CDO: second order conservative remapping
     if (interp2grid) {
       print(paste("Remapping with CDO on", grid, "grid"))
-      filename <- basename(normalizePath(namefile))
-      filedir <- dirname(normalizePath(namefile))
-      cdo <- Sys.which("cdo")
-      tempfile <-
-        paste0(file.path(filedir, paste0("tempfile_", filename)))
-      system2(
-        cdo,
-        args = c(paste0(remap_method, ",", grid), namefile, tempfile)
-      )
-      namefile <- tempfile
+      if (is.null(namevar)) {
+        namefile <- cdo(remap_method,
+          args = paste0("'", grid, "'"),
+          input = namefile
+        )
+      } else {
+        selectf <- cdo("selvar", args = namevar, input = namefile)
+        gridf <- tempfile()
+        cdo("griddes", input = grid, stdout = gridf)
+        namefile <- cdo(remap_method, args = gridf, input = selectf)
+        unlink(c(selectf, gridf))
+      }
+    }
+
+    if (fillmiss) {
+        namefile <- cdo("fillmiss", input = namefile)
     }
 
     # define rotate function (faster than with apply)
@@ -635,7 +642,8 @@ ncdf_opener <- function(namefile,
                         tmonths = NULL,
                         tyears = NULL,
                         rotate = "full",
-                        interp2grid = F,
+                        interp2grid = FALSE,
+                        fillmiss = FALSE,
                         grid = "r144x73",
                         remap_method = "remapcon2",
                         exportlonlat = TRUE,
@@ -649,6 +657,7 @@ ncdf_opener <- function(namefile,
     tyears,
     rotate,
     interp2grid,
+    fillmiss,
     grid,
     remap_method,
     exportlonlat,
@@ -1485,8 +1494,6 @@ eofs <-
     if (do_regression) {
       print("Linear Regressions (it can takes a while)... ")
       regression <- array(NA, dim = c(length(lon), length(lat), neof))
-      # for (i in 1:neof) {regression[,,i]=apply(field,c(1,2),
-      #                          function(x) coef(lm(x ~ coefficient[,i]))[2])}
       for (i in 1:neof) {
         regression[, , i] <- apply(
           field, c(1, 2),

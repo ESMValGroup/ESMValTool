@@ -153,7 +153,6 @@ for (model_idx in c(1:(length(models_name)))) {
   unlink(
     c(
       modf,
-      reff,
       ref_perc_pf,
       mask_reff,
       mask_modf,
