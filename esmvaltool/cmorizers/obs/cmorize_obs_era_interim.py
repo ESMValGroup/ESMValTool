@@ -325,18 +325,18 @@ def _load_cube(in_files, var):
 
 def _extract_variable(in_files, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input files '%s'",
-                var['short_name'], ', '.join(in_files))
+                var['cmor_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    definition = cmor_table.get_variable(var['mip'], var['cmor_name'])
 
     cube = _load_cube(in_files, var)
 
     utils.set_global_atts(cube, attributes)
 
     # Set correct names
-    cube.var_name = definition.short_name
+    cube.var_name = definition.cmor_name
     if definition.standard_name:
         cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
@@ -400,7 +400,7 @@ def _get_in_files_by_year(in_dir, var):
         if len(in_files[year]) != len(var['files']):
             logger.warning(
                 "Skipping CMORizing %s for year '%s', %s input files needed, "
-                "but found only %s", var['short_name'], year,
+                "but found only %s", var['cmor_name'], year,
                 len(var['files']), ', '.join(in_files[year]))
             in_files.pop(year)
 
@@ -440,9 +440,9 @@ def cmorization(in_dir, out_dir, cfg, config_user):
     logger.info("Using at most %s workers", n_workers)
 
     jobs = []
-    for short_name, var in cfg['variables'].items():
-        if 'short_name' not in var:
-            var['short_name'] = short_name
+    for cmor_name, var in cfg['variables'].items():
+        if 'cmor_name' not in var:
+            var['cmor_name'] = cmor_name
         for in_files in _get_in_files_by_year(in_dir, var):
             jobs.append([in_files, var, cfg, out_dir])
 

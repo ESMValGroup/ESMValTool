@@ -74,7 +74,7 @@ variables:
     raw: ssr
     file: 'ERA-Interim_ssr_daily_*.nc'
   ta_day:
-    short_name: ta
+    cmor_name: ta
     mip: day
     raw: t
     file: 'ERA-Interim_t_daily_*.nc'  
@@ -112,7 +112,7 @@ variables:
     raw: u10
     file: 'ERA-Interim_u10_daily_*.nc'
   va_day:
-    short_name: va
+    cmor_name: va
     mip: day
     raw: v
     file: 'ERA-Interim_v_daily_*.nc'
