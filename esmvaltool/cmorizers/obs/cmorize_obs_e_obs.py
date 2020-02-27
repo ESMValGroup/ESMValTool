@@ -20,45 +20,10 @@ import os
 import iris
 import iris.coord_categorisation
 
+from esmvalcore.preprocessor import monthly_statistics
 from . import utilities as utils
 
-
 logger = logging.getLogger(__name__)
-
-
-def monthly_statistics(cube, operator=iris.analysis.MEAN):
-    """
-    from ESMValCore
-    Compute monthly statistics.
-
-    Chunks time in monthly periods and computes statistics over them;
-
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        input cube.
-
-    operator: str, optional
-        Select operator to apply.
-        Available operators: 'mean', 'median', 'std_dev', 'min', 'max'
-
-    Returns
-    -------
-    iris.cube.Cube
-        Monthly statistics cube
-    """
-    if not cube.coords('month_number'):
-        iris.coord_categorisation.add_month_number(cube, 'time')
-    if not cube.coords('year'):
-        iris.coord_categorisation.add_year(cube, 'time')
-
-    # operator = iris.analysis.MEAN
-    cube = cube.aggregated_by(['month_number', 'year'], operator)
-
-    cube.remove_coord('year')
-    cube.remove_coord('month_number')
-
-    return cube
 
 
 def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
@@ -95,25 +60,28 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
 
     #####
     # also derive monthly data
-    if var['add_mon']:
-        logger.info("Building monthly means")
+    if 'add_mon' in var.keys():
+        if var['add_mon']:
+            logger.info("Building monthly means")
 
-        # Calc monthly
-        cube = monthly_statistics(cube)
+            # Calc monthly
+            cube = monthly_statistics(cube)
+            cube.remove_coord('month_number')
+            cube.remove_coord('year')
 
-        # Fix metadata
-        attrs['mip'] = 'Amon'
+            # Fix metadata
+            attrs['mip'] = 'Amon'
 
-        # Fix coordinates
-        utils.fix_coords(cube)
+            # Fix coordinates
+            utils.fix_coords(cube)
 
-        # Save variable
-        utils.save_variable(cube,
-                            short_name,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time']
-                            )
+            # Save variable
+            utils.save_variable(cube,
+                                short_name,
+                                out_dir,
+                                attrs,
+                                unlimited_dimensions=['time']
+                                )
 
 
 def cmorization(in_dir, out_dir, cfg, _):
