@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for CRU data.
+"""ESMValTool CMORizer for GPCC data.
 
 Tier
     Tier 2: other freely-available dataset.
@@ -46,26 +46,20 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
             category=UserWarning,
             module='iris',
         )
-        cubes = iris.load(filepath, utils.var_name_constraint(raw_var))
-
-    # extract pr
-    raw_var = var.get('raw', short_name)
-    cube = cubes.extract(utils.var_name_constraint(raw_var))[0]
+        cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     utils._set_units(cube, var.get('raw_units', short_name))
-    # fix calendat type
+    # fix calendar type
     cal_time = var.get('calendar', short_name)
     origin_time = cube.coord('time').units.origin
     cube.coord('time').units = cf_units.Unit(origin_time, calendar=cal_time)
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
-    # # Fix coordinates
+    # Fix coordinates
     utils.fix_coords(cube)
-    # if 'height2m' in cmor_info.dimensions:
-    #     utils.add_height2m(cube)
 
     # Fix metadata
     attrs = cfg['attributes']
