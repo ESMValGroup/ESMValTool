@@ -595,7 +595,11 @@ diagnostics:
         mip: Emon
       sftlf:
         mip: fx
-      ta:
+      ta_day:
+        short_name: ta
+        mip: day
+      ta_month:
+        short_name: ta
         mip: Amon
       tas_day:
         short_name: tas
@@ -639,7 +643,11 @@ diagnostics:
       uas_month:
         short_name: uas
         mip: Amon
-      va:
+      va_day:
+        short_name: va
+        mip: day
+      va_month:
+        short_name: va
         mip: Amon
       vas_day:
         short_name: vas
@@ -849,8 +857,6 @@ diagnostics:
       - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
          type: reanaly, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
-
-
 
 
   NDP:
