@@ -79,9 +79,8 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                         short_name,
                         out_dir,
                         attrs,
-                        unlimited_dimensions=['time'],
-                        zlib=True,
-                        complevel=9)
+                        unlimited_dimensions=['time']
+                        )
 
     if 'add_mon' in var.keys():
         if var['add_mon']:
@@ -103,9 +102,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                                 short_name,
                                 out_dir,
                                 attrs,
-                                unlimited_dimensions=['time'],
-                                zlib=True,
-                                complevel=9
+                                unlimited_dimensions=['time']
                                 )
 
 
