@@ -1,0 +1,25 @@
+---
+# Filename (will be extended by version)
+filename: 'APHRO_MA_{version}.*.nc.gz'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: APHRO_MA
+  version:
+    v1: '025deg_V1101'
+    v2: '050deg_V1101'
+  tier: 3
+  modeling_realm: ground
+  project_id: OBS
+  source:
+    http://search.diasjp.net/en/dataset/APHRO_MA
+  reference: 'aphro_ma'
+
+# Variables to cmorize
+variables:
+  pr:
+    mip: day
+    raw: precip
+    raw_units: kg m-2 day-1
+    calendar: standard
+    add_mon: true
