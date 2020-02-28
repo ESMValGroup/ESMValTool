@@ -5,7 +5,7 @@ Tier
 
 Source
     https://opendata.dwd.de/climate_environment/GPCC/html/fulldata-monthly_v2018_doi_download.html
-    https://opendata.dwd.de/climate_environment/GPCC/full_data_2018/full_data_monthly_v2018_[025 05 10 25].nc.gz
+    https://opendata.dwd.de/climate_environment/GPCC/full_data_2018/full_data_monthly_v2018_[025 05 10 25].nc.gz # noqa
 Last access
     20200225
 
@@ -19,8 +19,8 @@ import gzip
 import logging
 import os
 import shutil
-import cf_units
 from warnings import catch_warnings, filterwarnings
+import cf_units
 
 import iris
 
@@ -99,7 +99,7 @@ def cmorization(in_dir, out_dir, cfg, _):
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
-    for (k, version) in cfg['attributes']['version'].items():
+    for version in cfg['attributes']['version'].values():
         for (short_name, var) in cfg['variables'].items():
             logger.info("CMORizing variable '%s'", short_name)
             filepath = _unzip(short_name, var, version, raw_filepath, out_dir)
