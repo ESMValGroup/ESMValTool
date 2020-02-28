@@ -177,6 +177,10 @@ authors:
     name: Gallego-Elvira, Belen
     institute: NERC, UK
     orcid: https://orcid.org/0000-0002-2328-0354
+  galytska_evgenia:
+    name: Galytska, Evgenia
+    institute: IUP, Bremen
+    orcid: https://orcid.org/0000-0001-6575-1559
   gettelman_andrew:
     name: Gettelman, Andrew
     institute: NCAR, USA
@@ -693,6 +697,7 @@ references:
   cds-xco2: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
   ceres-ebaf: "Loeb et al., J. Climate, doi:10.1175/JCLI-D-17-0208.1, 2018."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi:10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
+  cowtanway: "Cowtan & Way, Q. J. Roy. Meteor. Soc., doi:0.1002/qj.2297, 2014."
   cru: "Harris et al., Int. J. Climatol., doi:10.1002/joc.3711, 2014."
   duveiller2018: "Duveiller et al., Sci. Data, doi:10.1038/sdata.2018.14, 2018."
   eppley-vgpm-modis: "Behrenfeld and Falkowski, Limnol. Oceanogr., doi:10.4319/lo.1997.42.1.0001, 1997."
@@ -710,6 +715,7 @@ references:
   fluxcom: "Jung et al., Scientific Data 6:74, doi:10.1038/s41597-019-0076-8, 2019."
   gcp: "Le Quere et al., Earth Syst. Sci. Data, doi:10.5194/essd-10-2141-2018, 2018."
   ghcn: "Jones and Moberg, J. Clim., doi:10.1175/1520-0442(2003)016<0206:HALSSA>2.0.CO;2, 2003."
+  gpcc: "Schneider et al., doi: [10.5676/DWD_GPCC/FD_M_V2018_025, 10.5676/DWD_GPCC/FD_M_V2018_050, 10.5676/DWD_GPCC/FD_M_V2018_100, 10.5676/DWD_GPCC/FD_M_V2018_250], 2018."
   hadcrut3: "Brohan et al., J. Geophys. Res., doi:10.1029/2005JD006548, 2006."
   hadcrut4: "Morice et al., J. Goophys. Res., doi:10.1029/2011JD017187, 2012."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
