@@ -20,7 +20,6 @@ variables:
   tas:
     mip: Amon
     raw: tave
-    raw_file_var: _TAVE
     raw_units: degC
     calendar: standard
     add_mon: true

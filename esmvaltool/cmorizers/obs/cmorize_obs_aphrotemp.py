@@ -22,9 +22,9 @@ Refs:
     Global Environmental Research 15 (2), 165-172
 
 Issues:
-    I downloaded the data using the from dias provided python scripts for above
-    mentioned tar balls. The single files for 2007 in the tar was empty.
-    One has to download the single files for 2007.
+    Data was downloaded using the from dias provided python scripts for above
+    mentioned tar balls (download_APHRO.py). The single files for 2007 in the
+    tar were empty. The single files for 2007 have to be downloaded separately.
     Handling of the tgz archives is not implemented.
 """
 
@@ -113,7 +113,7 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
-        for (k, version) in cfg['attributes']['version'].items():
+        for version in cfg['attributes']['version'].values():
             logger.info("CMORizing variable '%s'", short_name)
 
             filenames = raw_filename.format(version=version)
