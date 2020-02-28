@@ -11,8 +11,14 @@ Last access
 
 Download and processing instructions
     Download the following files:
-        '{version}_0_0.nc.gz'
-    where {version} is the desired version(s).
+        'had4_krig_v1_0_0.nc.gz'
+        'had4_uah_v1_0_0.nc.gz'
+        'had4_short_krig_v2_0_0.nc.gz'
+        'had4_short_uah_v2_0_0.nc.gz'
+        'ghcn_short_krig_v2_0_0.nc.gz'
+        'ghcn_short_uah_v2_0_0.nc.gz'
+        'had4sst4_krig_v2_0_0.nc.gz'
+        'had4_krig_v2_0_0.nc.gz'
 
 """
 
@@ -35,7 +41,7 @@ def _clean(filepath):
         logger.info("Removed cached file %s", filepath)
 
 
-def _extract_variable(short_name, var, v, version, cfg, filepath, out_dir):
+def _extract_variable(short_name, var, vkey, version, cfg, filepath, out_dir):
     """Extract variable."""
     raw_var = var.get('raw', short_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
@@ -54,7 +60,7 @@ def _extract_variable(short_name, var, v, version, cfg, filepath, out_dir):
     attrs = cfg['attributes'].copy()
     attrs['mip'] = var['mip']
     attrs['version'] = version
-    baseline = cfg['attributes']['baseline'][v]
+    baseline = cfg['attributes']['baseline'][vkey]
     attrs['baseline'] = baseline
     attrs['comment'] = attrs['comment'].format(baseline=baseline)
     utils.fix_var_metadata(cube, cmor_info)
@@ -90,13 +96,13 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
-        for (v, version) in cfg['attributes']['version'].items():
+        for (vkey, version) in cfg['attributes']['version'].items():
             logger.info("CMORizing variable '%s' version '%s'",
                         short_name, version)
             zip_filepath = raw_filepath.format(version=version)
             filepath = _unzip(short_name, zip_filepath, out_dir)
             if filepath is None:
                 continue
-            _extract_variable(short_name, var, v, version, cfg,
+            _extract_variable(short_name, var, vkey, version, cfg,
                               filepath, out_dir)
             _clean(filepath)
