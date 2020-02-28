@@ -89,7 +89,7 @@ refmsk[!is.na(refmsk)] <- 1
 xprov <- list(
   ancestors = list(""),
   authors = list("berg_peter"),
-  references = list("mckee93"),
+  references = list("mckee93proc"),
   projects = list("c3s-magic"),
   caption = "",
   statistics = list("other"),
