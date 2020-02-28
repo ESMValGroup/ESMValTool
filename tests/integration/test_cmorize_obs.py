@@ -131,7 +131,6 @@ def test_cmorize_obs_woa_no_data(tmp_path):
     """Test for example run of cmorize_obs command."""
 
     config_user_file = write_config_user_file(tmp_path)
-    os.makedirs(os.path.join(tmp_path, 'raw_stuff'))
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
     curr_path = os.getcwd()
     with arguments(
