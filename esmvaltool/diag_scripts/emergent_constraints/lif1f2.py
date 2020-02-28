@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Calculates emergent constraint on Indian summer monsoon
- following Li et al. (2017).
+
+"""Calculates emergent constraint on Indian summer monsoon.
 
 ###############################################################################
 testkw/lif1.py
@@ -24,6 +24,7 @@ Configuration options
 
 import logging
 import os
+from pprint import pformat
 import iris
 import iris.coord_categorisation as cat
 import numpy as np
@@ -32,17 +33,70 @@ import cartopy.crs as cart
 import matplotlib.pyplot as plt
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 TEMP_NAME = 'ts'
 
 
+def _get_sel_files(cfg, dataname, dim=2):
+    """Get filenames from cfg for single models or multi-model mean."""
+    selection = []
+    if dim == 2:
+        for hlp in select_metadata(cfg['input_data'].values(),
+                                   dataset=dataname):
+            selection.append(hlp['filename'])
+    else:
+        for hlp in cfg['input_data'].values():
+            selection.append(hlp['filename'])
+
+    return selection
+
+
+def get_provenance_record(ancestor_files, caption, statistics,
+                          domains, plot_type='geo'):
+    """Get Provenance record."""
+    record = {
+        'caption': caption,
+        'statistics': statistics,
+        'domains': domains,
+        'plot_type': plot_type,
+        'themes': ['atmDyn', 'monsoon', 'EC'],
+        'authors': [
+            'weigel_katja',
+        ],
+        'references': [
+            'li17natcc',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
+
+
 def get_latlon_index(coords, lim1, lim2):
-    """Get index for given values (1D vector, e.g. lats or lons)
-    between two limits"""
+    """Get index for given 1D vector, e.g. lats or lons between 2 limits."""
     index = (np.where(
         np.absolute(coords - (lim2 + lim1) / 2.0) <= (lim2 - lim1) / 2.0))[0]
     return index
+
+
+def cube_to_save_ploted(var, lats, lons, names):
+    """Create cube to prepare plotted data for saving to netCDF."""
+    new_cube = iris.cube.Cube(var, var_name=names['var_name'],
+                              long_name=names['long_name'],
+                              units=names['units'])
+    new_cube.add_dim_coord(iris.coords.DimCoord(lats,
+                                                var_name='lat',
+                                                long_name='latitude',
+                                                units='degrees_north'), 0)
+    new_cube.add_dim_coord(iris.coords.DimCoord(lons,
+                                                var_name='lon',
+                                                long_name='longitude',
+                                                units='degrees_east'), 1)
+
+    return new_cube
 
 
 def plot_rain_and_wind(cfg, dataname, data, lats, lons):
@@ -50,14 +104,15 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
     if not cfg[n.WRITE_PLOTS]:
         return
 
+    plotdata = {}
     if data[0].ndim == 3:
-        pd0 = np.mean(data[0], axis=2)
-        pd1 = np.mean(data[1], axis=2)
-        pd2 = np.mean(data[2], axis=2)
+        plotdata['pr'] = np.mean(data[0], axis=2)
+        plotdata['ua'] = np.mean(data[1], axis=2)
+        plotdata['va'] = np.mean(data[2], axis=2)
     else:
-        pd0 = data[0]
-        pd1 = data[1]
-        pd2 = data[2]
+        plotdata['pr'] = data[0]
+        plotdata['ua'] = data[1]
+        plotdata['va'] = data[2]
 
     # Plot data
     # create figure and axes instances
@@ -69,7 +124,7 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
     cnplot = plt.contourf(
         lons,
         lats,
-        pd0,
+        plotdata['pr'],
         np.linspace(-0.75, 0.75, 11),
         transform=cart.PlateCarree(),
         cmap='BrBG',
@@ -87,8 +142,8 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
     axx.quiver(
         lons[::2],
         lats[::2],
-        pd1[::2, ::2],
-        pd2[::2, ::2],
+        plotdata['ua'][::2, ::2],
+        plotdata['va'][::2, ::2],
         scale=5.0,
         color='indigo',
         transform=cart.PlateCarree())
@@ -107,12 +162,68 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
     axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    fig.savefig(
-        os.path.join(
-            cfg[n.PLOT_DIR],
-            dataname + '_rain_wind_change.' + cfg[n.OUTPUT_FILE_TYPE]),
-            dpi=300)
+    fig.savefig(get_plot_filename(dataname + '_rain_wind_change', cfg),
+                dpi=300)
     plt.close()
+
+    caption = dataname + ': Changes in precipitation (colour shade, ' + \
+        r'mm d$^{-1}$)' + \
+        r'and 850-hPa wind (m s$^{-1}$ scaled with 0.5) ' + \
+        'during the Indian summer monsoon season (May to September)' + \
+        'from 1980–2009 to 2070–2099 projected ' + \
+        'under the RCP 8.5 scenario. All climatology changes are' + \
+        'normalized by the corresponding global mean SST increase ' + \
+        'for each model.'
+
+    if data[0].ndim == 3:
+        caption = caption + ' The white contours display the inter-model ' + \
+            'standard deviations of precipitation changes.'
+
+    provenance_record = get_provenance_record(_get_sel_files(cfg, dataname,
+                                                             dim=data[0].ndim),
+                                              caption, ['diff'], ['reg'])
+
+    diagnostic_file = get_diagnostic_filename(dataname + '_rain_wind_change',
+                                              cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    cubelist = iris.cube.CubeList([cube_to_save_ploted(plotdata['pr'], lats,
+                                                       lons,
+                                                       {'var_name': 'd_pr',
+                                                        'long_name': 'Prec' +
+                                                                     'ipita' +
+                                                                     'tion ' +
+                                                                     'Change',
+                                                        'units': 'mm d-1'})])
+
+    if data[0].ndim == 3:
+        cubelist.append(cube_to_save_ploted(np.std(data[0], axis=2), lats,
+                                            lons, {'var_name': 'std_pr',
+                                                   'long_name': 'Standard ' +
+                                                                'Deviation ' +
+                                                                'of the Prec' +
+                                                                'ipitation ',
+                                                   'units': 'mm d-1'}))
+
+    cubelist.append(cube_to_save_ploted(plotdata['ua'][::2, ::2], lats[::2],
+                                        lons[::2],
+                                        {'var_name': 'd_ua',
+                                         'long_name': 'Eastward Wind Change',
+                                         'units': 'm s-1'}))
+
+    cubelist.append(cube_to_save_ploted(plotdata['va'][::2, ::2], lats[::2],
+                                        lons[::2],
+                                        {'var_name': 'd_va',
+                                         'long_name': 'Northward Wind Change',
+                                         'units': 'm s-1'}))
+
+    iris.save(cubelist, target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def plot_rain(cfg, titlestr, data, lats, lons):
@@ -163,15 +274,12 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     else:
         figname = 'fig2d'
 
-    fig.savefig(
-        os.path.join(cfg[n.PLOT_DIR], figname + '.' + cfg[n.OUTPUT_FILE_TYPE]),
-                     dpi=300)
+    fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
 
 
 def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     """Plot contour map."""
-
     # Set mask for pvalue > 0.005
     mask = reg2d[:, :, 1] > 0.05
     zzz = np.ma.array(reg2d[:, :, 0], mask=mask)
@@ -222,16 +330,12 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     axx.set_yticklabels(['15°S', '0°', '15°N', '30°N'])
 
     fig.tight_layout()
-    fig.savefig(
-        os.path.join(cfg[n.PLOT_DIR],
-                     'fig1b_rain_correlation.' + cfg[n.OUTPUT_FILE_TYPE]),
-                     dpi=300)
+    fig.savefig(get_plot_filename('fig1b_rain_correlation', cfg), dpi=300)
     plt.close()
 
 
 def plot_reg_li(cfg, data_ar):
-    """Plot scatter plot and regression"""
-
+    """Plot scatter plot and regression."""
     # data_ar {"datasets": datasets, "ar_diff_rain": ar_diff_rain,
     #          "ar_diff_ua": ar_diff_ua, "ar_diff_va": ar_diff_va,
     #          "ar_hist_rain": ar_hist_rain, "mism_diff_rain": mism_diff_rain,
@@ -266,15 +370,12 @@ def plot_reg_li(cfg, data_ar):
     axx.legend(ncol=2, loc=0, framealpha=1)
 
     fig.tight_layout()
-    fig.savefig(
-        os.path.join(cfg[n.PLOT_DIR], 'fig2a.' + cfg[n.OUTPUT_FILE_TYPE]),
-        dpi=300)
+    fig.savefig(get_plot_filename('fig2a', cfg), dpi=300)
     plt.close()
 
 
 def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
-    """Plot scatter plot and regression"""
-
+    """Plot scatter plot and regression."""
     y_reg = 0.5 * np.linspace(-2, 21, 2)
 
     fig, axx = plt.subplots(figsize=(7, 7))
@@ -339,11 +440,8 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     axx.legend(ncol=2, loc=2, framealpha=1)
 
     fig.tight_layout()
-    fig.savefig(
-        os.path.join(cfg[n.PLOT_DIR], 'fig2b.' + cfg[n.OUTPUT_FILE_TYPE]), 
-        dpi=300)
+    fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
     plt.close()
-
 
 ###############################################################################
 # Setup diagnostic
@@ -351,8 +449,7 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
 
 
 def get_reg_2d_li(mism_diff_rain, ar_hist_rain, lats, lons):
-    """Linear regression between 1D and 2D array
-    (returns 2D array of p and r value)"""
+    """Linear regression of 1D and 2D array, returns 2D array of p and r."""
     reg2d = np.zeros((len(lats), len(lons), 4))
     for iii in range(len(lats)):
         for jjj in range(len(lons)):
@@ -366,8 +463,7 @@ def get_reg_2d_li(mism_diff_rain, ar_hist_rain, lats, lons):
 
 
 def substract_li(cfg, data, lats, lons):
-    """Difference between historical and future fields"""
-
+    """Difference between historical and future fields."""
     pathlist = data.get_path_list(short_name='pr', exp='historical')
 
     ar_diff_rain = np.zeros((len(lats), len(lons), len(pathlist)))
@@ -377,18 +473,19 @@ def substract_li(cfg, data, lats, lons):
     ar_diff_ua = np.zeros((len(lats), len(lons), len(pathlist)))
     ar_diff_va = np.zeros((len(lats), len(lons), len(pathlist)))
     datasets = []
+    future_exp = 'rcp85'
     for iii, dataset_path in enumerate(pathlist):
 
         # Substract historical experiment from rcp85 experiment
         datasets.append(data.get_info(n.DATASET, dataset_path))
         ar_diff_rain[:, :, iii] = (data.get_data(short_name='pr',
-                                                 exp='rcp85',
+                                                 exp=future_exp,
                                                  dataset=datasets[iii]) -
                                    data.get_data(short_name='pr',
                                                  exp='historical',
                                                  dataset=datasets[iii])) / \
             (data.get_data(short_name=TEMP_NAME,
-                           exp='rcp85', dataset=datasets[iii]) -
+                           exp=future_exp, dataset=datasets[iii]) -
              data.get_data(short_name=TEMP_NAME,
                            exp='historical', dataset=datasets[iii]))
         # ISM (60◦ –95◦ E, 10◦ –30◦ N)
@@ -405,24 +502,24 @@ def substract_li(cfg, data, lats, lons):
                                   iii])[get_latlon_index(lats, -12, 12), :])
 
         ar_diff_ua[:, :, iii] = (data.get_data(short_name='ua',
-                                               exp='rcp85',
+                                               exp=future_exp,
                                                dataset=datasets[iii]) -
                                  data.get_data(short_name='ua',
                                                exp='historical',
                                                dataset=datasets[iii])) / \
             (data.get_data(short_name=TEMP_NAME,
-                           exp='rcp85', dataset=datasets[iii]) -
+                           exp=future_exp, dataset=datasets[iii]) -
              data.get_data(short_name=TEMP_NAME,
                            exp='historical', dataset=datasets[iii]))
 
         ar_diff_va[:, :, iii] = (data.get_data(short_name='va',
-                                               exp='rcp85',
+                                               exp=future_exp,
                                                dataset=datasets[iii]) -
                                  data.get_data(short_name='va',
                                                exp='historical',
                                                dataset=datasets[iii])) / \
             (data.get_data(short_name=TEMP_NAME,
-                           exp='rcp85', dataset=datasets[iii]) -
+                           exp=future_exp, dataset=datasets[iii]) -
              data.get_data(short_name=TEMP_NAME,
                            exp='historical', dataset=datasets[iii]))
 
@@ -443,9 +540,7 @@ def substract_li(cfg, data, lats, lons):
 
 
 def correct_li(data, lats, lons, reg):
-    """Correction with mean western pacific rain compared
-    to measurements of 6 mm d−1"""
-
+    """Correction of mean western pacific rain to measured value (6 mm d−1)."""
     # Prec bias for each model
     mwp_hist_cor = data["mwp_hist_rain"] - 6.0
 
@@ -484,14 +579,7 @@ def correct_li(data, lats, lons, reg):
 
 
 def main(cfg):
-    """Run the diagnostic.
-
-    Parameters
-    ----------
-    cfg : dict
-        Configuration dictionary of the recipe.
-
-    """
+    """Run the diagnostic."""
     ###########################################################################
     # Read recipe data
     ###########################################################################
@@ -505,9 +593,9 @@ def main(cfg):
     logging.debug("Found variables in recipe:\n%s", var)
 
     # Check for tas and rlnst
-    if not var.vars_available('pr', 'ua', 'va'):
-        raise ValueError("This diagnostic needs 'pr', 'ua', and" +
-                         " 'va' variables")
+    if not var.vars_available('pr', 'ua', 'va', TEMP_NAME):
+        raise ValueError("This diagnostic needs 'pr', 'ua', " +
+                         " 'va', and a temperature variable")
 
     ###########################################################################
     # Read data
@@ -525,9 +613,10 @@ def main(cfg):
         short_name = data.get_info(n.SHORT_NAME, dataset_path)
         if short_name == 'pr':
             # convert from kg m-2 s-1 to mm d-1
+            # cube.convert_units('mm d-1') doesn't work.
             cube.data = cube.data * (60.0 * 60.0 * 24.0)
             cube.units = 'mm d-1'
-            # cube.convert_units('mm d-1') doesn't work
+            # Possible because all data must be interpolated to the same grid.
             if 'lats' not in locals():
                 lats = cube.coord('latitude').points
                 lons = cube.coord('longitude').points
@@ -544,6 +633,7 @@ def main(cfg):
     #          "ar_hist_rain": ar_hist_rain, "mism_diff_rain": mism_diff_rain,
     #          "mwp_hist_rain": mwp_hist_rain}
     # plot_rain_and_wind(cfg, 'MME', data_ar[1:4], lats, lons)
+
     plot_rain_and_wind(cfg, 'Multi-model_mean', [
         data_ar["ar_diff_rain"], data_ar["ar_diff_ua"], data_ar["ar_diff_va"]
     ], lats, lons)
