@@ -18,7 +18,7 @@ attributes:
 # Variables to cmorize
 variables:
   tas:
-    mip: Amon
+    mip: day
     raw: tave
     raw_units: degC
     calendar: standard
