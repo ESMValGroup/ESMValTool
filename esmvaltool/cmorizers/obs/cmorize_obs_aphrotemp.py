@@ -29,10 +29,10 @@ Issues:
 """
 
 import logging
-import iris
-
 from warnings import catch_warnings, filterwarnings
 from pathlib import Path
+
+import iris
 
 from esmvalcore.preprocessor import monthly_statistics
 from . import utilities as utils
@@ -80,8 +80,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                         short_name,
                         out_dir,
                         attrs,
-                        unlimited_dimensions=['time']
-                        )
+                        unlimited_dimensions=['time'])
 
     if 'add_mon' in var.keys():
         if var['add_mon']:
@@ -103,8 +102,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                                 short_name,
                                 out_dir,
                                 attrs,
-                                unlimited_dimensions=['time']
-                                )
+                                unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
