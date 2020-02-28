@@ -29,7 +29,7 @@ import iris
 import iris.coord_categorisation as cat
 import numpy as np
 from scipy import stats
-import cartopy.crs as cart
+# import cartopy.crs as cart
 import matplotlib.pyplot as plt
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
@@ -38,7 +38,6 @@ from esmvaltool.diag_scripts.shared._base import (
     select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
-TEMP_NAME = 'ts'
 
 
 def _get_sel_files(cfg, dataname, dim=2):
@@ -50,6 +49,17 @@ def _get_sel_files(cfg, dataname, dim=2):
             selection.append(hlp['filename'])
     else:
         for hlp in cfg['input_data'].values():
+            selection.append(hlp['filename'])
+
+    return selection
+
+
+def _get_sel_files_var(cfg, varnames):
+    """Get filenames from cfg for all model mean and differen variables."""
+    selection = []
+
+    for var in varnames:
+        for hlp in select_metadata(cfg['input_data'].values(), short_name=var):
             selection.append(hlp['filename'])
 
     return selection
@@ -97,6 +107,19 @@ def cube_to_save_ploted(var, lats, lons, names):
                                                 units='degrees_east'), 1)
 
     return new_cube
+
+
+def cube_to_save_scatter(var1, var2, names):
+    """Create cubes to prepare scatter plot data for saving to netCDF."""
+    cubes = iris.cube.CubeList([iris.cube.Cube(var1,
+                                               var_name=names['var_name1'],
+                                               long_name=names['long_name1'],
+                                               units=names['units1'])])
+    cubes.append(iris.cube.Cube(var2, var_name=names['var_name2'],
+                                long_name=names['long_name2'],
+                                units=names['units2']))
+
+    return cubes
 
 
 def plot_rain_and_wind(cfg, dataname, data, lats, lons):
@@ -277,6 +300,33 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
 
+    titlestr = titlestr + ' Box displays the area used to define the ' + \
+        'average ISM (Indian Summer Monsoon) rainfall. Precipitaiton ' + \
+        'changes are normalized by the corresponding global ' + \
+        'mean SST increase for each model.'
+
+    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
+
+    provenance_record = get_provenance_record(selection,
+                                              titlestr, ['diff'], ['reg'])
+
+    diagnostic_file = get_diagnostic_filename(figname, cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_ploted(data, lats, lons, {'var_name': 'd_pr',
+                                                     'long_name': 'Prec' +
+                                                                  'ipita' +
+                                                                  'tion ' +
+                                                                  'Change',
+                                                     'units': 'mm d-1'}),
+              target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
+
 
 def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     """Plot contour map."""
@@ -333,6 +383,35 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     fig.savefig(get_plot_filename('fig1b_rain_correlation', cfg), dpi=300)
     plt.close()
 
+    caption = 'Inter-model relationship between ISM ' + \
+        '(Indian Summer Monsoon) region (60◦ –95◦ E, 10◦ –30◦ N) ' + \
+        'rainfall changes and in simulated present-day precipitation ' + \
+        'over the Indo-Pacific. Solid boxes denote the tropical ' + \
+        'western Pacific (140◦ E–170◦ W, 12◦ S–12◦ N) and southeastern ' + \
+        'Indian Ocean (SEIO; 70◦ –100◦ E, 8◦ S–2◦ N) and colour shading ' + \
+        'indicates regions of significance at the 95% level according to ' + \
+        't-test. All the precipitation changes are normalized by the ' + \
+        'corresponding global mean SST increase for each model'
+
+    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
+
+    provenance_record = get_provenance_record(selection,
+                                              caption, ['corr'], ['reg'])
+
+    diagnostic_file = get_diagnostic_filename('fig1b_rain_correlation', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_ploted(zzz, lats, lons, {'var_name': 'corr',
+                                                    'long_name': 'Correlation',
+                                                    'units': '1'}),
+              target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
+
 
 def plot_reg_li(cfg, data_ar):
     """Plot scatter plot and regression."""
@@ -373,6 +452,39 @@ def plot_reg_li(cfg, data_ar):
     fig.savefig(get_plot_filename('fig2a', cfg), dpi=300)
     plt.close()
 
+    caption = ' Scatterplot of the simulated tropical western Pacific ' + \
+        'precipitation (mm d−1 ) versus projected average ISM ' + \
+        '(Indian Summer Monsoon) rainfall changes under the ' + \
+        'RCP 8.5 scenario. The red line denotes the observed present-day ' + \
+        'western Pacific precipitation and the inter-model ' + \
+        'correlation (r) is shown.'
+
+    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
+
+    provenance_record = get_provenance_record(selection,
+                                              caption, ['corr'], ['reg'],
+                                              plot_type='scatter')
+
+    diagnostic_file = get_diagnostic_filename('fig2a', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_scatter(data_ar["mwp_hist_rain"],
+                                   data_ar["mism_diff_rain"],
+                                   {'var_name1': 'm_pr',
+                                    'long_name1': 'Mean Precipitation',
+                                    'units1': 'mm d-1',
+                                    'var_name2': 'd_pr',
+                                    'long_name2': 'Precipitation Change',
+                                    'units2': 'mm d-1'}),
+
+              target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
+
 
 def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     """Plot scatter plot and regression."""
@@ -382,11 +494,6 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
 
     axx.plot(np.linspace(-2, 21, 2), y_reg, color='k')
 
-    # axx.plot(np.mean(mdiff_ism) / np.mean(hist_ism) * 100.0,
-    #         np.mean(mdiff_ism_cor) / np.mean(hist_ism) * 100.0,
-    #         color='k', marker='v', linestyle='none',
-    #             markersize=12, markeredgewidth=3.0,
-    #             label='MME')
     axx.plot(
         np.mean((mdiff_ism / hist_ism) * 100.0),
         np.mean((mdiff_ism_cor / hist_ism) * 100.0),
@@ -442,6 +549,41 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     fig.tight_layout()
     fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
     plt.close()
+    
+    caption = ' Scatterplot of the uncorrected versus corrected average ' + \
+        'ISM (Indian Summer Monsoon) rainfall change ratios (% per degree ' + \
+        'Celsius of global SST warming). The error bars for the ' + \
+        'Multi-model mean indicate the standard deviation spread among ' + \
+        'models and the 2:1 line (y = 0.5x) is used to illustrate the ' + \
+        'Multi-model mean reduction in projected rainfall increase.'
+
+    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
+
+    provenance_record = get_provenance_record(selection,
+                                              caption, ['corr'], ['reg'],
+                                              plot_type='scatter')
+
+    diagnostic_file = get_diagnostic_filename('fig2b', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_scatter(np.mean((mdiff_ism / hist_ism) * 100.0),
+                                   np.mean((mdiff_ism_cor / hist_ism) * 100.0),
+                                   {'var_name1': 'rd_pr',
+                                    'long_name1': 'Relative Precipitation ' +
+                                                  'Change',
+                                    'units1': 'percent K-1',
+                                    'var_name2': 'corr_pr',
+                                    'long_name2': 'Precipitation Correction',
+                                    'units2': 'percent K-1'}),
+
+              target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
+
 
 ###############################################################################
 # Setup diagnostic
@@ -484,9 +626,9 @@ def substract_li(cfg, data, lats, lons):
                                    data.get_data(short_name='pr',
                                                  exp='historical',
                                                  dataset=datasets[iii])) / \
-            (data.get_data(short_name=TEMP_NAME,
+            (data.get_data(short_name='ts',
                            exp=future_exp, dataset=datasets[iii]) -
-             data.get_data(short_name=TEMP_NAME,
+             data.get_data(short_name='ts',
                            exp='historical', dataset=datasets[iii]))
         # ISM (60◦ –95◦ E, 10◦ –30◦ N)
         mism_diff_rain[iii] = \
@@ -507,9 +649,9 @@ def substract_li(cfg, data, lats, lons):
                                  data.get_data(short_name='ua',
                                                exp='historical',
                                                dataset=datasets[iii])) / \
-            (data.get_data(short_name=TEMP_NAME,
+            (data.get_data(short_name='ts',
                            exp=future_exp, dataset=datasets[iii]) -
-             data.get_data(short_name=TEMP_NAME,
+             data.get_data(short_name='ts',
                            exp='historical', dataset=datasets[iii]))
 
         ar_diff_va[:, :, iii] = (data.get_data(short_name='va',
@@ -518,9 +660,9 @@ def substract_li(cfg, data, lats, lons):
                                  data.get_data(short_name='va',
                                                exp='historical',
                                                dataset=datasets[iii])) / \
-            (data.get_data(short_name=TEMP_NAME,
+            (data.get_data(short_name='ts',
                            exp=future_exp, dataset=datasets[iii]) -
-             data.get_data(short_name=TEMP_NAME,
+             data.get_data(short_name='ts',
                            exp='historical', dataset=datasets[iii]))
 
         plot_rain_and_wind(cfg, datasets[iii], [
@@ -593,9 +735,9 @@ def main(cfg):
     logging.debug("Found variables in recipe:\n%s", var)
 
     # Check for tas and rlnst
-    if not var.vars_available('pr', 'ua', 'va', TEMP_NAME):
+    if not var.vars_available('pr', 'ua', 'va', 'ts'):
         raise ValueError("This diagnostic needs 'pr', 'ua', " +
-                         " 'va', and a temperature variable")
+                         " 'va', and 'ts'")
 
     ###########################################################################
     # Read data
@@ -632,7 +774,6 @@ def main(cfg):
     #          "ar_diff_ua": ar_diff_ua, "ar_diff_va": ar_diff_va,
     #          "ar_hist_rain": ar_hist_rain, "mism_diff_rain": mism_diff_rain,
     #          "mwp_hist_rain": mwp_hist_rain}
-    # plot_rain_and_wind(cfg, 'MME', data_ar[1:4], lats, lons)
 
     plot_rain_and_wind(cfg, 'Multi-model_mean', [
         data_ar["ar_diff_rain"], data_ar["ar_diff_ua"], data_ar["ar_diff_va"]
