@@ -31,10 +31,11 @@ import gzip
 import logging
 import shutil
 import os
-import iris
-
 from warnings import catch_warnings, filterwarnings
 from pathlib import Path
+
+import iris
+
 from esmvalcore.preprocessor import monthly_statistics
 
 from . import utilities as utils
@@ -112,7 +113,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                                 out_dir,
                                 attrs,
                                 unlimited_dimensions=['time']
-                                )
+                               )
 
 
 def _unzip(short_name, zip_path, out_dir):
@@ -137,7 +138,7 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
-        for (k, version) in cfg['attributes']['version'].items():
+        for version in cfg['attributes']['version'].values():
             logger.info("CMORizing variable '%s'", short_name)
 
             filenames = raw_filename.format(version=version)
