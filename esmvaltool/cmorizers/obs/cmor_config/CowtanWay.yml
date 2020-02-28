@@ -32,7 +32,7 @@ attributes:
 
 # Variables to cmorize
 variables:
-  tas:
+  tasa:
     mip: Amon
     raw: temperature_anomaly
     short_name: tasa

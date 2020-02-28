@@ -42,7 +42,6 @@ def _extract_variable(short_name, var, v, version, cfg, filepath, out_dir):
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name).copy()
-    cmor_info.long_name = cmor_info.long_name + ' anomaly'
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
@@ -63,7 +62,7 @@ def _extract_variable(short_name, var, v, version, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        var['short_name'],
+                        short_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
