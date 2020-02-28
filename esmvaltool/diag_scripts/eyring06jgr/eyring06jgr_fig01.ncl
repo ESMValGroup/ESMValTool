@@ -21,6 +21,8 @@
 ;;    @e06fig01_XMin:     min limit X axis
 ;;    @e06fig01_levmax:   max limit Y axis
 ;;    @e06fig01_levmin:   min limit Y axis
+;;    @e06fig12a_start_year: year when start the climatology calculation
+;;    @e06fig12a_start_year: year when end the climatology calculation
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -47,8 +49,6 @@ begin
    ensembles = metadata_att_as_array(info0, "ensemble")
    y1 = metadata_att_as_array(info0, "start_year")
    y2 = metadata_att_as_array(info0, "end_year") 
-   print(y1)
-   print(y2)
    if (isatt(variable_info[0], "reference_dataset")) then
      refname = variable_info[0]@reference_dataset
      do imod = 0, dimsizes(names) - 1
@@ -61,8 +61,6 @@ begin
               "(variable_info[0]@reference_dataset) needs to be defined.")
    end if
 
-   print(refname)
-   print(iref)
    if(isatt(variable_info, "units")) then
         UNITS = variable_info@units
     else
@@ -74,7 +72,6 @@ begin
     else
         LONG_NAME = var0
     end if
-   print(UNITS)
    print(LONG_NAME)
 
    log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -88,26 +85,15 @@ begin
    set_default_att(diag_script_info, "e06fig01_latmin", -90.)
    set_default_att(diag_script_info, "e06fig01_latmax", 90.)
    set_default_att(diag_script_info, "e06fig01_multimean", False)
-   ;if (.not.isatt(diag_script_info, "e06fig01_latmin")) then
-   ;   error_msg("f", DIAG_SCRIPT, "", "no latitude bands " + \
-   ;           "(e06fig01_latrange) defined.")
-   ;end if  
+   set_default_att(diag_script_info, "e06fig01_start_year", max(y1))
+   set_default_att(diag_script_info, "e06fig01_end_year",min(y2))
    
-    seasons=diag_script_info@e06fig01_season
-    print(seasons)
+   seasons=diag_script_info@e06fig01_season
    latrange=new((/dimsizes(seasons),2/),"float")
- ;  printVarSummary(latrange)
    latrange(:,0)=diag_script_info@e06fig01_latmin
    latrange(:,1)=diag_script_info@e06fig01_latmax
    seasons=diag_script_info@e06fig01_season
-   print(latrange)
-   print(seasons)
 
-   ;if (dimsizes(seasons).ne.dimsizes(latrange(:,0))) then
-   ;            print("fatal:plot requires dimension 'e06fig01_season' equal last dimension 'e06fig01_latrange' ")
-   ;            status_exit(1)
-   ;     end if
-    
 
    colors = project_style(info0, diag_script_info, "colors")
    dashes = project_style(info0, diag_script_info, "dashes")
@@ -115,58 +101,54 @@ begin
    markers = project_style(info0, diag_script_info, "markers") 
 
 
-  flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
-  index_mod = ind(flag_mod.gt.0)
-  index_obs = ind(flag_mod.eq.0)
-  dim_MOD = dimsizes(index_mod)
-  dim_OBS = 0
+   flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
+   index_mod = ind(flag_mod.gt.0)
+   index_obs = ind(flag_mod.eq.0)
+   dim_MOD = dimsizes(index_mod)
+   dim_OBS = 0
 
-  if (.not.all(ismissing(index_obs))) then
-    dim_OBS = dimsizes(index_obs)
-    list_obs_mod = names(index_obs)
-  end if
+   if (.not.all(ismissing(index_obs))) then
+     dim_OBS = dimsizes(index_obs)
+     list_obs_mod = names(index_obs)
+   end if
 
-    Max_lev=new((/dimsizes(seasons)/),"float")
-    Min_lev=new((/dimsizes(seasons)/),"float")
-    XMax=new((/dimsizes(seasons)/),"float")
-    XMin=new((/dimsizes(seasons)/),"float")   
+   Max_lev=new((/dimsizes(seasons)/),"float")
+   Min_lev=new((/dimsizes(seasons)/),"float")
+   XMax=new((/dimsizes(seasons)/),"float")
+   XMin=new((/dimsizes(seasons)/),"float")   
 
-    if(isatt(diag_script_info, "levmax")) then
+   if(isatt(diag_script_info, "levmax")) then
          
-       Max_lev = diag_script_info@e06fig01_levmax
-    else
+      Max_lev = diag_script_info@e06fig01_levmax
+   else
  
-        Max_lev=1000.
-    end if
-    if(isatt(diag_script_info, "levmin")) then
-        Min_lev = diag_script_info@e06fig01_levmin
-    else
-        Min_lev=1.
-    end if
-    if(isatt(diag_script_info, "XMax")) then
-        XMax = diag_script_info@e06fig01_XMax
-    else
-        XMax=20.
-    end if
-    if(isatt(diag_script_info, "XMin")) then
-        XMin = diag_script_info@e06fig01_XMin
-    else
-        XMin=-30. 
-    end if
+      Max_lev=1000.
+   end if
+   if(isatt(diag_script_info, "levmin")) then
+      Min_lev = diag_script_info@e06fig01_levmin
+   else
+      Min_lev=1.
+   end if
+   if(isatt(diag_script_info, "XMax")) then
+      XMax = diag_script_info@e06fig01_XMax
+   else
+      XMax=20.
+   end if
+   if(isatt(diag_script_info, "XMin")) then
+      XMin = diag_script_info@e06fig01_XMin
+   else
+      XMin=-30. 
+   end if
 
-    multimean = diag_script_info@e06fig01_multimean
-    print(multimean)
-    if (multimean)
-        dimTot=dim_MOD+dim_OBS
-    else
-        dimTot=dim_MOD+dim_OBS-1
-    end if
+   multimean = diag_script_info@e06fig01_multimean
+   if (multimean)
+       dimTot=dim_MOD+dim_OBS
+   else
+       dimTot=dim_MOD+dim_OBS-1
+   end if
 
-
-   print(XMax)
-   print(XMin)
-   print(Min_lev)
-   print(Max_lev)
+   year_start=toint(diag_script_info@e06fig01_start_year)
+   year_end=toint(diag_script_info@e06fig01_end_year)
 
   ; make sure path for (mandatory) netcdf output exists
 
@@ -175,10 +157,6 @@ begin
   system("mkdir -p " + work_dir)
 
 end
-;begin
-;    vardeffile = "interface_data/" + var0 + "_info.tmp"
-;    loadscript(vardeffile)
-;end
 begin
   aux_title_info = ""
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f01_" + var0)
@@ -188,7 +166,6 @@ begin
   plot_num = integertochar(ispan(97, 122, 1))
   rad = 4.0 * atan(1.0) / 180.0
   A0 = read_data(info0[iref]) 
-  ;printVarSummary(A0)
   lev0 = A0&plev
   dimLev = dimsizes(lev0)
   delete(A0)
@@ -219,27 +196,16 @@ begin
 
 ;******************************************************************
   do imod = 0, dim_MOD1 - 1
-    print(imod)
     do ipan=0,dimsizes(seasons)-1
-      print(ipan)
-      print(latrange(ipan, 0))
-      print(latrange(ipan, 1))
       ; Extract data
       A0 = read_data(info0[imod])
-        
-      printVarSummary(A0)
       if(all(isdim(A0,(/"time","plev","lat","lon"/)))) then        
 
         dummy1 = area_operations(A0(time|:,plev|:, lat|:, lon|:), latrange(ipan, 0), \
                                latrange(ipan, 1), 0., 360., "average", True)
-        ;   dummy2=dim_avg_Wrap(A0)
            coslat   = cos(A0&lat * rad)
            coslat!0 = "lat"
            coslat&lat = A0&lat
-           ;printVarSummary(A0)
-
-         ;  dummy1 = dim_avg_wgt_Wrap(dummy2(:,:,{latrange(ipan,0):latrange(ipan,1)}), coslat({latrange(ipan,0):latrange(ipan,1)}), 1)
-        ;   delete(dummy2)
            delete(coslat)
            delete(A0)
        else
@@ -247,7 +213,6 @@ begin
              coslat   = cos(A0&lat * rad)
              coslat!0 = "lat"
              coslat&lat = A0&lat
-             ;printVarSummary(A0)
 
              dummy1 = dim_avg_wgt_Wrap(A0(:,:,{latrange(ipan,0):latrange(ipan,1)}), coslat({latrange(ipan,0):latrange(ipan,1)}), 1)
              delete(coslat)
@@ -255,17 +220,14 @@ begin
        
           end if
        end if
-       printVarSummary(dummy1)
        if (seasons(ipan).ne."ANN") then
-                 tmp = time_operations(dummy1,y1(imod),y2(imod),"extract",seasons(ipan),True)
-                 printVarSummary(tmp)
-                 dummy2 = time_operations(tmp,y1(imod),y2(imod),"average","yearly",True)
+                 tmp = time_operations(dummy1,year_start,year_end,"extract",seasons(ipan),True)
+                 dummy2 = time_operations(tmp,year_start,year_end,"average","yearly",True)
                  delete(tmp)
                  delete(dummy1)
        else
-                 dummy2 = time_operations(dummy1,y1(imod),y2(imod),"average","yearly",True)
+                 dummy2 = time_operations(dummy1,year_start,year_end,"average","yearly",True)
        end if
-       printVarSummary(dummy2)
        tmp = dim_avg_n_Wrap(dummy2,0)
        tmp_st = dim_stddev_n_Wrap(dummy2,0)
        delete(dummy2)
@@ -313,9 +275,9 @@ begin
          yp_R(j,:) = tofloat(lev0(j)/100.)
          yp_R(dimsizes(lev0)+j,:) = tofloat(lev0(dimsizes(lev0)-1-j)/100)      
          xp_R(dimsizes(lev0)+j,:) = (Xref(:,(dimsizes(lev0)-1-j),1))
-    end do
-    if (multimean) then 
-        do j=0,dimsizes(lev0)-1
+   end do
+   if (multimean) then 
+       do j=0,dimsizes(lev0)-1
     ;        printVarSummary(X_MMM_std)
             xp_M(j,:) = Xdata(dimTot-1,:,j,0)-((X_MMM_std(:,j,0)))
             yp_M(j,:) = tofloat(lev0(j)/100.)
@@ -323,9 +285,6 @@ begin
             xp_M(dimsizes(lev0)+j,:) = Xdata(dimTot-1,:,(dimsizes(lev0)-1-j),0)+(X_MMM_std(:,(dimsizes(lev0)-1-j),0))
          end do
     end if
-   printVarSummary(Xdata)
-   printVarSummary(tmpData)
-   printVarSummary(Xref)
 ;*************************plotting*******************************************************
 
   do ipanel=0, dimsizes(seasons)-1
@@ -351,7 +310,6 @@ begin
 
       res@tiMainString      = seasons(ipanel)+" "+lat_names(latrange(ipanel,0))+"- "+lat_names(latrange(ipanel,1))
       res@xyMarkLineModes    = LineScatters
-      ;print(LineScatters)
 
       res@trYAxisType       = "LogAxis"
       res@trYReverse        = True
@@ -367,7 +325,6 @@ begin
       res@tmXMajorGridLineDashPattern = 2            ; select short dash lines
 
 
-      ;printVarSummary(Xdata)
       Xdata&plev=lev0
       Ydata!0="plev"
       Ydata&plev=lev0
@@ -376,9 +333,7 @@ begin
       gsres = True
 
       gsres@gsFillColor = "Snow3"
- ;gsres@gsFillOpacityF = 0.5
       plot_xp_R_d(ipanel) = gsn_add_polygon(wks,plot_d(ipanel),xp_R(:,ipanel),yp_R(:,ipanel),gsres)
-      ;gsres@gsFillOpacityF = 0.5
       if (multimean) then
         gsres1=True
         gsres1@gsFillColor       = "cyan"                 ; color chosen
@@ -418,7 +373,7 @@ begin
      Xdata@diag_script="eyring06f01"
 
      printVarSummary(Xdata)
-     Xdata&stat=(/"mean","avg"/)
+     Xdata&stat=(/"mean","stddev"/)
      Xdata&season=seasons
      Xdata&line=plotMod
      printVarSummary(Xdata) 
