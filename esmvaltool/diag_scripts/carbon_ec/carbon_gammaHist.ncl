@@ -143,11 +143,24 @@ begin
          A2_tmp = A2
        end if   
 
+       ;allign timeseries first (there might be better ways to do it)
+       if (dimsizes(A1_tmp).ne.dimsizes(A2_tmp))then
+         maxt = max((/dimsizes(A1_tmp),dimsizes(A2_tmp)/))
+         tmpA = new((/2,maxt/),typeof(A1_tmp&time))
+         tmpA(0,:dimsizes(A1_tmp)-1) = A1_tmp&time
+         tmpA(1,:dimsizes(A2_tmp)-1) = A2_tmp&time
+         dum = tmpA(1,:) - tmpA(0,:)
+         ind_t = ind(dum.eq.0)
+         delete([/maxt,dum,tmpA/])
+       else 
+         ind_t = ispan(0, dimsizes(A1_tmp)-1, 1)
+       end if
+
        ; add land and ocean carbon fluxes
-       A1_co2flux = A1_tmp + A2_tmp
-       copy_VarAtts(A1,A1_co2flux)
-       copy_VarCoords(A1,A1_co2flux)
-       delete([/A1,A1_tmp,A2_tmp/]) 
+       A1_co2flux = A1_tmp(ind_t) + A2_tmp(ind_t)
+       copy_VarAtts(A2,A1_co2flux)
+       copy_VarCoords(A2,A1_co2flux)
+       delete([/A1,A1_tmp,A2_tmp,ind_t/]) 
 
       ;; Convert units if appropriate
       if (isatt(diag_script_info, "plot_units")) then
