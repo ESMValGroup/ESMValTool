@@ -89,8 +89,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                         short_name,
                         out_dir,
                         attrs,
-                        unlimited_dimensions=['time']
-                        )
+                        unlimited_dimensions=['time'])
 
     if 'add_mon' in var.keys():
         if var['add_mon']:
@@ -112,8 +111,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                                 short_name,
                                 out_dir,
                                 attrs,
-                                unlimited_dimensions=['time']
-                               )
+                                unlimited_dimensions=['time'])
 
 
 def _unzip(short_name, zip_path, out_dir):
