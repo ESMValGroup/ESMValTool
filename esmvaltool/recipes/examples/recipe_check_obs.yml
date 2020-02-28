@@ -205,7 +205,6 @@ diagnostics:
   GPCC:
     description: GPCC check
     variables:
-      tas:
       pr:
     additional_datasets:
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
