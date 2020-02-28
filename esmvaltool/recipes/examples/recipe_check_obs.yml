@@ -211,7 +211,7 @@ diagnostics:
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: v2018_025, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: v2018_050, start_year: 1891, end_year: 2016}
+         type: reanaly, version: v2018_05, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
