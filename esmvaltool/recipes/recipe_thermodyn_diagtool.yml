@@ -22,8 +22,6 @@ documentation:
 
 datasets:
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 1997, end_year: 1999}
-  #- {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1995, end_year: 2014}
-  #- {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2014}
 
 preprocessors:
   regrid_preproc:
@@ -41,6 +39,7 @@ diagnostics:
         mip: Amon
         cmor_name: hfls
         additional_datasets: &other_data
+          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2397, end_year: 2399}
           - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
           - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
           - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
@@ -51,7 +50,7 @@ diagnostics:
           - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 1997, end_year: 2013}
           - {dataset: EC-Earth3-Veg, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1997, end_year: 2013}
           - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr2, start_year: 1997, end_year: 2013}
-          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1995, end_year: 2013}
+          - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1995, end_year: 1997}
           - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1995, end_year: 2013}
       hfss:
         mip: Amon
@@ -107,29 +106,30 @@ diagnostics:
         short_name: vas
         additional_datasets: *other_data
       ta:
-        mip: day
-        additional_datasets: *other_data
+         mip: day
+         additional_datasets: *other_data
       ua_1: &variable_settings_ua
-        mip: day
-        short_name: ua
-        preprocessor: regrid_preproc
+         mip: day
+         short_name: ua
+         preprocessor: regrid_preproc
       ua_2:
-        mip: day
-        short_name: ua
-        additional_datasets: *other_data
+         mip: day
+         short_name: ua
+         additional_datasets: *other_data
       va_1: &variable_settings_va
-        mip: day
-        short_name: va
-        preprocessor: regrid_preproc
+         mip: day
+         short_name: va
+         preprocessor: regrid_preproc
       va_2:
-        mip: day
-        short_name: va
-        additional_datasets: *other_data
+         mip: day
+         short_name: va
+         additional_datasets: *other_data
       wap:
-        mip: day
-        additional_datasets: *other_data
-      #sftlf:
-      #  mip: fx
+         mip: day
+         additional_datasets: *other_data
+      sftlf:
+         mip: fx
+         additional_datasets: *other_data
     scripts:
       Thermodyn_Diag:
         script: thermodyn_diagtool/thermodyn_diagnostics.py
@@ -137,4 +137,4 @@ diagnostics:
         lec: true
         entr: true
         met: 3
-        lsm: false
+        lsm: true
