@@ -1,4 +1,4 @@
-import argparse
+import argparse # pylint:disable=missing-docstring
 import os
 from datetime import datetime
 
