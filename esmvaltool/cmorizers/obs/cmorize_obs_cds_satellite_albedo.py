@@ -14,7 +14,7 @@ Download and processing instructions
    - Download the data from source to the right directory
      using the download script
    - Decompress the files within the directory:
-       "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
+       "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"  # NOQA
 
 Notes
 -----
