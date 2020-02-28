@@ -14,7 +14,7 @@ attributes:
   modeling_realm: reanaly
   project_id: OBS
   source: 'https://opendata.dwd.de/climate_environment/GPCC/html/fulldata-monthly_v2018_doi_download.html'
-  reference: 'gpcc_v2018'
+  reference: 'gpcc'
   comment: ''
 
 # Variables to cmorize
