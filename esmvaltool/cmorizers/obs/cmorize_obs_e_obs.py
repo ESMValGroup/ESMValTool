@@ -55,8 +55,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
                         short_name,
                         out_dir,
                         attrs,
-                        unlimited_dimensions=['time']
-                        )
+                        unlimited_dimensions=['time'])
 
     #####
     # also derive monthly data
@@ -80,8 +79,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
                                 short_name,
                                 out_dir,
                                 attrs,
-                                unlimited_dimensions=['time']
-                                )
+                                unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
@@ -90,7 +88,7 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # Run the cmorization
     ver = cfg['attributes']['version']
-    for (k, res) in cfg['attributes']['resolution'].items():
+    for res in cfg['attributes']['resolution'].values():
         for (short_name, var) in cfg['variables'].items():
             logger.info("CMORizing variable '%s' on %s°x%s°",
                         short_name, res, res)
