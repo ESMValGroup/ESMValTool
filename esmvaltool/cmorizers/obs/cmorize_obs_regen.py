@@ -15,8 +15,9 @@ Download and processing instructions
 """
 
 import logging
-import cf_units
 from pathlib import Path
+
+import cf_units
 import iris
 
 from esmvalcore.preprocessor import monthly_statistics
@@ -56,8 +57,7 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
                         short_name,
                         out_dir,
                         attrs,
-                        unlimited_dimensions=['time']
-                        )
+                        unlimited_dimensions=['time'])
 
     if 'add_mon' in var.keys():
         if var['add_mon']:
@@ -79,8 +79,7 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
                                 short_name,
                                 out_dir,
                                 attrs,
-                                unlimited_dimensions=['time']
-                                )
+                                unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
