@@ -106,28 +106,28 @@ Example plots
 -------------
 
 
-.. figure:: /recipes/figures/carbon_constraints/fig1.png
+.. figure:: /recipes/figures/tas_Global_CMIP5_1pctCO2_anom__1-1999.png
    :width: 10 cm 
    :alt: xxxxx
    
    Time series of tropical (30°S - 30°N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
    
    
-.. figure:: /recipes/figures/carbon_constraints/fig2.png
+.. figure:: /recipes/figures/wenzel14jgr/tas_Global_CMIP5_esmHistorical_anom__1960-2005.png
    :width: 10 cm 
    :alt: xxxxx
    
    Correlations between the interannual variability of global co2flux (nbp+fgco2) and tropical temperature for the individual CMIP5 models using esmHistorical simulations, and for observations.
 
 
-.. figure:: /recipes/figures/carbon_constraints/fig3.png
+.. figure:: /recipes/figures/wenzel14jgr/constr_tas-nbp_30-1960.000001.png
    :scale: 50 %
    :alt: xxxxx
 
    Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30°S-30°N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
       
    
-.. figure:: /recipes/figures/carbon_constraints/fig4.png
+.. figure:: /recipes/figures/wenzel14jgr/constr_tas-nbp_30-1960.000002.png
    :scale: 30 %
    :alt: xxxxx
    
