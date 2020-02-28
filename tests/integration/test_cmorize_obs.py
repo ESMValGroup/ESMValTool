@@ -85,11 +85,8 @@ def check_log_file(log_file, no_data=False):
     """Check the cmorization log file."""
     with open(log_file, 'r') as log:
         if no_data:
-            cases = []
-            for line in log.readlines():
-                case = "Could not find raw data WOA" in line
-                cases.append(case)
-            assert True in cases
+            msg = "Could not find raw data WOA"
+            assert any(msg in line for line in log):
         else:
             cases = []
             for line in log.readlines():
