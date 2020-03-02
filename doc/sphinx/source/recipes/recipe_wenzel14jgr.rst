@@ -21,7 +21,6 @@ Diagnostics are stored in diag_scripts/
 * carbon_constraint.ncl: scatter plot of GammaLT vs. GammaIAV + line plot of probability density functions; diagnosing GammaLT
 
 
-
 User settings
 -------------
 
@@ -86,8 +85,9 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-.. note:: (1) Obs4mips data can be used directly without any preprocessing.
-          (2) See headers of reformat scripts for non-obs4mips data for download instructions.
+.. note:: 
+   (1) Obs4mips data can be used directly without any preprocessing.
+   (2) See headers of reformat scripts for non-obs4mips data for download instructions.
 
 * GCP - Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
 * NCEP - National Centers for Environmental Prediction reanalysis data for near surface temperature
