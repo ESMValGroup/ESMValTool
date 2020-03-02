@@ -339,13 +339,13 @@ def marine_gt(data_dict, short, gt):
             continue
         cubegt = cube.copy()
         print(short, gt, cube.units)
-        if cube.units == cf_units.Unit('kg m-2 s-1')
+        if cube.units == cf_units.Unit('kg m-2 s-1'):
             cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
             cubegt.units = cf_units.Unit('Pg yr^-1')
-        elif cube.units == cf_units.Unit('kg m-2')
+        elif cube.units == cf_units.Unit('kg m-2'):
             cubegt.data = cube.data * areas.data * 1.E-12
             cubegt.units = cf_units.Unit('Pg')
-        elif cube.units == cf_units.Unit('mol m-2 s-1')
+        elif cube.units == cf_units.Unit('mol m-2 s-1'):
             cubegt.data = cube.data * areas.data * 12.0107* 1.E-15 * (360*24*60*60)
             cubegt.units = cf_units.Unit('Pg yr^-1')
         else:
@@ -557,7 +557,6 @@ def load_timeseries(cfg, short_names):
     for sn in short_names_to_load:
         if sn in transforms:
             data_dict = transforms_functions[sn](data_dict)
-    assert 0
     return data_dict
 
 
@@ -802,7 +801,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                 x_label = 'Year'
             elif x == short_name == 'co2':
                 x_data = cube['co2']
-                x_label = ' '.join(['atmopheric co2'])
+                x_label = ' '.join(['Atmospheric co2, ppm'])
             elif short_name == x:
                 x_data = cube.data
                 x_label = ' '.join([x, str(cube.units)])
@@ -815,7 +814,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                 y_label = 'Year'
             elif y == short_name == 'co2' :
                 y_data = cube['co2']
-                y_label = ' '.join(['atmopheric co2'])
+                y_label = ' '.join(['Atmospheric co2, ppm'])
             elif short_name == y:
                 y_data = cube.data
                 y_label = ' '.join([y, str(cube.units)])
@@ -924,7 +923,7 @@ def main(cfg):
                        'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc',
                        'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',
                        ]
-        short_names_x = ['time', 'co2', 'tas', 'tas_norm', 'fgco2gt',]
+        short_names_x = ['time', 'co2', 'tas_norm', 'fgco2gt',]
         #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
         #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
         short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
