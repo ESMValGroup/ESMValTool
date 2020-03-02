@@ -4,7 +4,7 @@ Emergent constraints on carbon cycle feedbacks
 Overview
 --------
 
-Figures from Wenzel et al. (2014) are reproduced with namelist_wenz14jgr.yml. Variables relevant for the carbon cycle - climate feedback such as near surface air temperature (tas), net biosphere productivity (nbp) and (fgco2) are analyzed for coupled (1pctCO2; here the carbon cycle is fully coupled to the climate response) and uncoupled (esmFixCLim1; here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a comparison of cumulated nbp from coupled and uncoupled simulations and includes a set of routines to diagnose the long-term carbon cycle - climate feedback parameter (GammaLT) from an ensemble of CMIP5 models. Also included in the namelist is a comparison of the interannual variability of nbp and fgco2 for historical simulations used to diagnose the observable sensitivity of CO2 to tropical temperature changes (GammaIAV). As a key figure of this namelistrecipe, the diagnosed values from the models GammaLT vs. GammaIAV are compared in a scatter plot constituting an emergent constraint.
+Figures from Wenzel et al. (2014) are reproduced with namelist_wenz14jgr.yml. Variables relevant for the carbon cycle - climate feedback such as near surface air temperature (tas), net biosphere productivity (nbp) and (fgco2) are analyzed for coupled (1pctCO2, here the carbon cycle is fully coupled to the climate response) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a comparison of cumulated nbp from coupled and uncoupled simulations and includes a set of routines to diagnose the long-term carbon cycle - climate feedback parameter (GammaLT) from an ensemble of CMIP5 models. Also included in the namelist is a comparison of the interannual variability of nbp and fgco2 for historical simulations used to diagnose the observable sensitivity of CO2 to tropical temperature changes (GammaIAV). As a key figure of this namelistrecipe, the diagnosed values from the models GammaLT vs. GammaIAV are compared in a scatter plot constituting an emergent constraint.
 
 
 Available recipes and diagnostics
@@ -18,7 +18,7 @@ Diagnostics are stored in diag_scripts/
 
 * carbon_tsline.ncl: time line plots of annual means for spatial averages
 * carbon_gammaHist.ncl: scatter plot of annual mean anomalies of two different variables; diagnosing and saving GammaIAV
-* carbon_constraint.ncl: scatter plot of GammaLT vs. GammaIAV + line plot of probability density functions; diagnosing GammaLT
+* carbon_constraint.ncl: scatter plot of GammaLT vs. GammaIAV + line plot of probability density functions, diagnosing GammaLT
 
 
 User settings
@@ -30,10 +30,10 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 
    *Required Settings (scripts)*
 
-   * ts_minlat: minimum latitude for area-averaging
-   * ts_maxlat: maximum latitude for area-averaging
-   * ts_minlon: minimum longitude for area-averaging
-   * ts_maxlon: maximum longitude for area-averaging
+   * ts_minlat: minimum latitude for area averaging
+   * ts_maxlat: maximum latitude for area averaging
+   * ts_minlon: minimum longitude for area averaging
+   * ts_maxlon: maximum longitude for area averaging
    * ts_maxyear: last year (time range)
    * ts_minyear: first year (time range)
    * time_avg: currently, only yearly is available
@@ -68,7 +68,7 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
    * gIAV_start: start year of GammIAV calculation period
    * gIAV_end: end year of GammIAV calculation period
    * ec_anom: True
-   * con_units: label string for units, e.g.,"GtC/K"
+   * con_units: label string for units, e.g. (GtC/K)
 
    *Optional settings (scripts)*
 
@@ -82,15 +82,15 @@ Variables
 * nbp (land, monthly mean, longitude latitude time)
 * fgco2 (ocean, monthly mean, longitude latitude time)
 
+
 Observations and reformat scripts
 ---------------------------------
 
-.. note:: 
-   (1) Obs4mips data can be used directly without any preprocessing.
-   (2) See headers of reformat scripts for non-obs4mips data for download instructions.
+.. note:: (1) Obs4mips data can be used directly without any preprocessing.
+          (2) See headers of reformat scripts for non-obs4mips data for download instructions.
 
-* GCP - Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
-* NCEP - National Centers for Environmental Prediction reanalysis data for near surface temperature
+* GCP: Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
+* NCEP: National Centers for Environmental Prediction reanalysis data for near surface temperature
 
 
 References
@@ -107,7 +107,7 @@ Example plots
    :width: 10 cm 
    :align: center
    
-   Time series of tropical (30°S - 30°N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
+   Time series of tropical (30°S to 30°N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
    
    
 .. figure:: /recipes/figures/wenzel14jgr/tas_Global_CMIP5_esmHistorical_anom__1960-2005.png
@@ -121,7 +121,7 @@ Example plots
    :scale: 50 %
    :align: center
 
-   Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30°S-30°N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
+   Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30°S to 30°N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
       
    
 .. figure:: /recipes/figures/wenzel14jgr/constr_tas-nbp_30-1960.000002.png
