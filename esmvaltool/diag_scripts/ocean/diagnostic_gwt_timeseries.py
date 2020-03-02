@@ -322,6 +322,7 @@ def print_exceedance_dates(cfg, exceedance_dates, window = 10, short_name = 'tas
     out.write(txt)
     out.close()
 
+
 def marine_gt(data_dict, short, gt):
     """
     Calculate global from the data dictionary.
@@ -337,6 +338,7 @@ def marine_gt(data_dict, short, gt):
         if short_name != short:
             continue
         cubegt = cube.copy()
+        print(short, gt, cube.units)
         cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
         cubegt.units = cf_units.Unit('Pg yr^-1') #cube.units * areas.units
 
@@ -546,6 +548,7 @@ def load_timeseries(cfg, short_names):
     for sn in short_names_to_load:
         if sn in transforms:
             data_dict = transforms_functions[sn](data_dict)
+    assert 0
     return data_dict
 
 
