@@ -1,0 +1,90 @@
+# recipe_li17natcc.yml
+---
+documentation:
+  description: |
+    Recipe for reproducing the plots in Li et al., 2017 Nature climate change
+
+  authors:
+    - weigel_katja
+
+  references:
+    - li17natcc
+
+  projects:
+    - eval4cmip
+
+preprocessors:
+  pp850:
+    extract_levels:
+      levels: 85000
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_latitude: -40
+      end_latitude: 40
+      start_longitude: 0
+      end_longitude: 360
+  tropical:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_latitude: -40
+      end_latitude: 40
+      start_longitude: 0
+      end_longitude: 360
+  glob:
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+
+diagnostics:
+
+   lif1f2:
+    description: Diagnostic for reproducing figure 1 and 2 from Li et al., 2017
+    variables:
+      pr: &gridded_cmip6_r1i1p1_amon_t2ms
+        preprocessor: tropical
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        field: T2Ms
+      ua: &gridded_cmip6_r1i1p1_amon_t3m_pp850
+        preprocessor: pp850
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        field: T3M
+      va:
+        <<: *gridded_cmip6_r1i1p1_amon_t3m_pp850
+      ts: &global_mean_cmip6_r1i1p1_amon_t2ms
+        preprocessor: glob
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: MIROC6,    exp: historical,  start_year: 1980, end_year: 2009}
+      - {dataset: MIROC6,    exp: ssp585,       start_year: 2070, end_year: 2099}
+
+      - {dataset: MRI,  exp: historical,  start_year: 1980, end_year: 2009}
+      - {dataset: MRI,  exp: ssp585,       start_year: 2070, end_year: 2099}
+
+      - {dataset: CESM2,       exp: historical,  start_year: 1980, end_year: 2009}
+      - {dataset: CESM2,       exp: ssp585,       start_year: 2070, end_year: 2099}
+
+
+
+    scripts:
+      lif1f2:
+        script: emergent_constraints/lif1f2.py
+        plot_ecs_regression: 'True'
+        output_name: 'lif1f2'
+
+
+
+
+
