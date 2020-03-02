@@ -337,6 +337,8 @@ def marine_gt(data_dict, short, gt):
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name != short:
             continue
+        if (gt, exp, ensemble) in data_dict.items():
+            continue
         cubegt = cube.copy()
         print(short, gt, cube.units)
         if cube.units == cf_units.Unit('kg m-2 s-1'):
@@ -362,6 +364,7 @@ def intdicgt(data_dict): return marine_gt(data_dict, short='intdic', gt='intdicg
 def intpocgt(data_dict): return marine_gt(data_dict, short='intpoc', gt='intpocgt')
 def fricgt(data_dict): return marine_gt(data_dict, short='fric', gt='fricgt')
 def frocgt(data_dict): return marine_gt(data_dict, short='froc', gt='frocgt')
+def frcgt(data_dict): return marine_gt(data_dict, short='frc', gt='frcgt')
 
 
 def nppgt(data_dict, short='npp', gt='nppgt'):
@@ -398,6 +401,27 @@ def rhgt(data_dict):
     Calculate rhgt from the data dictionary.
     """
     return nppgt(data_dict, short='rh', gt='rhgt')
+
+
+def frc(data_dict):
+    """
+    Calculate exchange from the data dictionary.
+    """
+    data_dict = fric(data_dict)
+    data_dict = froc(data_dict)
+
+    exps = {}
+    ensembles = {}
+    for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
+        exps[exp] = True
+        ensembles[ensemble] = True
+
+    for exp, ensemble in product(exps, ensembles):
+        cube = data_dict[('fric', exp, ensemble)].copy()
+        cube2 = data_dict[('froc', exp, ensemble)]
+        cube.data = cube.data + cube2.data
+        data_dict[('frc', exp, ensemble)] = cube
+    return data_dict
 
 
 def exchange(data_dict):
@@ -499,6 +523,8 @@ def load_timeseries(cfg, short_names):
         'intpocgt': ['intpoc', 'areacello'],
         'fricgt': ['fric', 'areacello'],
         'frocgt': ['froc', 'areacello'],
+        'frc': ['fric', 'froc', 'areacello'],
+        'frcgt': ['frc', ],
         'exchange': ['rh', 'npp', 'areacella'],
         'tas_norm': ['tas', ],
         'nppgt_norm': ['nppgt', ],
@@ -517,6 +543,8 @@ def load_timeseries(cfg, short_names):
         'intpocgt': intpocgt,
         'fricgt': fricgt,
         'frocgt': frocgt,
+        'frc': frc,
+        'frcgt': frcgt,
         'exchange': exchange,
         'tas_norm': tas_norm,
         'nppgt_norm':norm_co2_nppgt,
@@ -749,6 +777,34 @@ def get_threshold_point(cube, year):
     arg_min = np.argmin( np.abs(cube.coord('time').points - t_1))
     return arg_min
 
+def get_long_name(name):
+    """
+    Get a title friendly longname.
+    """
+    longnames = {
+        'tas' : 'Temperature',
+        'co2' : 'Atmospheric CO2',
+        'rh': 'Heterotrophic respiration',
+        'intpp' : 'Marine Primary Production',
+        'intdic' : 'Dissolved Inorganic Carbon',
+        'intpoc' : 'Particulate Organic Carbon',
+        'epc100' : 'POC flux at 100m',
+        'npp'   : 'Net Primary Production on Land',
+        'fgco2' : 'Air sea Flux of CO2',
+        'frc':  'Carbon Flux at sea floor',
+        'fric':  'Inorganic Carbon Flux at sea floor',
+        'froc':  'Organic Carbon Flux at sea floor',
+    }
+    long_name = ''
+    if name.find('gt_norm') > -1:
+        long_name += 'Normalised Global Total'
+        name = name[name.find('gt_norm')]
+    elif name[-2:]. == 'gt':
+        long_name += 'Global Total'
+        name = name[:-2]
+
+    return long_name + longnames.get(name, name)
+
 
 def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='thresholds', draw_line=True, do_moving_average=True):
     """
@@ -877,7 +933,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
 
     plt.xlabel(x_label)
     plt.ylabel(y_label)
-    plt.title(' '.join([x, 'by', y ]))
+    plt.title(' '.join([(get_long_name(x), 'by', get_long_name(y)]))
 
     image_extention = diagtools.get_image_format(cfg)
 
@@ -920,13 +976,13 @@ def main(cfg):
         short_names = ['tas', 'tas_norm', 'co2',
                 #    'npp', 'nppgt', 'rhgt', 'exchange',
                 #    'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
-                       'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc',
-                       'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',
+                       'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'frc',
+                       'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt','frcgt',
                        ]
         short_names_x = ['time', 'co2', 'tas_norm', 'fgco2gt',]
         #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
         #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
-        short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt',]
+        short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc','frc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt', 'frcgt',]
 
     if jobtype == 'full':
         short_names = ['tas', 'tas_norm', 'co2',
