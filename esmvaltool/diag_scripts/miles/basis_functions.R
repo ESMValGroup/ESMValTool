@@ -44,13 +44,13 @@ whicher <- function(axis, number) {
 area_weight <- function(ics, ipsilon, root = T) {
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   if (root == T) {
-    for (j in 1:length(ipsilon)) {
+    for (j in seq_along(ipsilon)) {
       field[, j] <- sqrt(cos(pi / 180 * ipsilon[j]))
     }
   }
 
   if (root == F) {
-    for (j in 1:length(ipsilon)) {
+    for (j in seq_along(ipsilon)) {
       field[, j] <- cos(pi / 180 * ipsilon[j])
     }
   }
@@ -1363,7 +1363,7 @@ largescale_extension_if <- function(ics, ipsilon, field) {
     # reduce range considering border effect
     new <-
       rbind(field, field, field) # bind domain for cross-date line
-    for (i in 1:length(ics)) {
+    for (i in seq_along(ics)) {
       ii <- i + length(ics)
       # check to speed up
       if (!all(new[(ii - passo):(ii + passo), ] == 0)) {
@@ -1409,7 +1409,7 @@ longitude_filter <- function(ics, ipsilon, field) {
     for (j in startipsilon:((startipsilon + estension))) {
       new[, j] <- time_persistence(new[, j], persistence = passo)
     }
-    field[, , t] <- new[length(ics) + (1:length(ics)), ]
+    field[, , t] <- new[length(ics) + (seq_along(ics)), ]
   }
   return(field)
 }
