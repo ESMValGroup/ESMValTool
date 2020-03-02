@@ -29,13 +29,13 @@ import iris
 import iris.coord_categorisation as cat
 import numpy as np
 from scipy import stats
-# import cartopy.crs as cart
+import cartopy.crs as cart
 import matplotlib.pyplot as plt
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    select_metadata)
+    select_metadata, group_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -122,20 +122,20 @@ def cube_to_save_scatter(var1, var2, names):
     return cubes
 
 
-def plot_rain_and_wind(cfg, dataname, data, lats, lons):
+def plot_rain_and_wind(cfg, dataname, data, future_exp):
     """Plot contour map."""
     if not cfg[n.WRITE_PLOTS]:
         return
 
     plotdata = {}
-    if data[0].ndim == 3:
-        plotdata['pr'] = np.mean(data[0], axis=2)
-        plotdata['ua'] = np.mean(data[1], axis=2)
-        plotdata['va'] = np.mean(data[2], axis=2)
+    if data['ar_diff_rain'].ndim == 3:
+        plotdata['pr'] = np.mean(data['ar_diff_rain'], axis=2)
+        plotdata['ua'] = np.mean(data['ar_diff_ua'], axis=2)
+        plotdata['va'] = np.mean(data['ar_diff_va'], axis=2)
     else:
-        plotdata['pr'] = data[0]
-        plotdata['ua'] = data[1]
-        plotdata['va'] = data[2]
+        plotdata['pr'] = data['ar_diff_rain']
+        plotdata['ua'] = data['ar_diff_ua']
+        plotdata['va'] = data['ar_diff_va']
 
     # Plot data
     # create figure and axes instances
@@ -145,8 +145,8 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
 
     # draw filled contours
     cnplot = plt.contourf(
-        lons,
-        lats,
+        data['lons'],
+        data['lats'],
         plotdata['pr'],
         np.linspace(-0.75, 0.75, 11),
         transform=cart.PlateCarree(),
@@ -154,17 +154,16 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
         # cmap='RdBu_r',
         extend='both')
 
-    if data[0].ndim == 3:
-        plt.contour(
-            lons,
-            lats,
-            np.std(data[0], axis=2), [0.2, 0.4, 0.6],
-            transform=cart.PlateCarree(),
-            colors='w')
+    if data['ar_diff_rain'].ndim == 3:
+        plt.contour(data['lons'],
+                    data['lats'],
+                    np.std(data['ar_diff_rain'], axis=2), [0.2, 0.4, 0.6],
+                    transform=cart.PlateCarree(),
+                    colors='w')
     axx.coastlines()
     axx.quiver(
-        lons[::2],
-        lats[::2],
+        data['lons'][::2],
+        data['lats'][::2],
         plotdata['ua'][::2, ::2],
         plotdata['va'][::2, ::2],
         scale=5.0,
@@ -194,25 +193,26 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
         r'and 850-hPa wind (m s$^{-1}$ scaled with 0.5) ' + \
         'during the Indian summer monsoon season (May to September)' + \
         'from 1980–2009 to 2070–2099 projected ' + \
-        'under the RCP 8.5 scenario. All climatology changes are' + \
-        'normalized by the corresponding global mean SST increase ' + \
+        'under the ' + future_exp + ' scenario. All climatology changes ' + \
+        'are normalized by the corresponding global mean SST increase ' + \
         'for each model.'
 
-    if data[0].ndim == 3:
+    if data['ar_diff_rain'].ndim == 3:
         caption = caption + ' The white contours display the inter-model ' + \
             'standard deviations of precipitation changes.'
 
-    provenance_record = get_provenance_record(_get_sel_files(cfg, dataname,
-                                                             dim=data[0].ndim),
-                                              caption, ['diff'], ['reg'])
+    provenance_record = get_provenance_record(
+        _get_sel_files(cfg, dataname, dim=data['ar_diff_rain'].ndim),
+        caption, ['diff'], ['reg'])
 
     diagnostic_file = get_diagnostic_filename(dataname + '_rain_wind_change',
                                               cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    cubelist = iris.cube.CubeList([cube_to_save_ploted(plotdata['pr'], lats,
-                                                       lons,
+    cubelist = iris.cube.CubeList([cube_to_save_ploted(plotdata['pr'],
+                                                       data['lats'],
+                                                       data['lons'],
                                                        {'var_name': 'd_pr',
                                                         'long_name': 'Prec' +
                                                                      'ipita' +
@@ -220,23 +220,28 @@ def plot_rain_and_wind(cfg, dataname, data, lats, lons):
                                                                      'Change',
                                                         'units': 'mm d-1'})])
 
-    if data[0].ndim == 3:
-        cubelist.append(cube_to_save_ploted(np.std(data[0], axis=2), lats,
-                                            lons, {'var_name': 'std_pr',
-                                                   'long_name': 'Standard ' +
-                                                                'Deviation ' +
-                                                                'of the Prec' +
-                                                                'ipitation ',
-                                                   'units': 'mm d-1'}))
+    if data['ar_diff_rain'].ndim == 3:
+        cubelist.append(cube_to_save_ploted(np.std(data['ar_diff_rain'],
+                                                   axis=2),
+                                            data['lats'],
+                                            data['lons'],
+                                            {'var_name': 'std_pr',
+                                             'long_name': 'Standard ' +
+                                                          'Deviation ' +
+                                                          'of the Prec' +
+                                                          'ipitation ',
+                                             'units': 'mm d-1'}))
 
-    cubelist.append(cube_to_save_ploted(plotdata['ua'][::2, ::2], lats[::2],
-                                        lons[::2],
+    cubelist.append(cube_to_save_ploted(plotdata['ua'][::2, ::2],
+                                        data['lats'][::2],
+                                        data['lons'][::2],
                                         {'var_name': 'd_ua',
                                          'long_name': 'Eastward Wind Change',
                                          'units': 'm s-1'}))
 
-    cubelist.append(cube_to_save_ploted(plotdata['va'][::2, ::2], lats[::2],
-                                        lons[::2],
+    cubelist.append(cube_to_save_ploted(plotdata['va'][::2, ::2],
+                                        data['lats'][::2],
+                                        data['lons'][::2],
                                         {'var_name': 'd_va',
                                          'long_name': 'Northward Wind Change',
                                          'units': 'm s-1'}))
@@ -413,7 +418,7 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def plot_reg_li(cfg, data_ar):
+def plot_reg_li(cfg, data_ar, future_exp):
     """Plot scatter plot and regression."""
     # data_ar {"datasets": datasets, "ar_diff_rain": ar_diff_rain,
     #          "ar_diff_ua": ar_diff_ua, "ar_diff_va": ar_diff_va,
@@ -454,8 +459,8 @@ def plot_reg_li(cfg, data_ar):
 
     caption = ' Scatterplot of the simulated tropical western Pacific ' + \
         'precipitation (mm d−1 ) versus projected average ISM ' + \
-        '(Indian Summer Monsoon) rainfall changes under the ' + \
-        'RCP 8.5 scenario. The red line denotes the observed present-day ' + \
+        '(Indian Summer Monsoon) rainfall changes under the ' + future_exp + \
+        ' scenario. The red line denotes the observed present-day ' + \
         'western Pacific precipitation and the inter-model ' + \
         'correlation (r) is shown.'
 
@@ -549,7 +554,7 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     fig.tight_layout()
     fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
     plt.close()
-    
+
     caption = ' Scatterplot of the uncorrected versus corrected average ' + \
         'ISM (Indian Summer Monsoon) rainfall change ratios (% per degree ' + \
         'Celsius of global SST warming). The error bars for the ' + \
@@ -557,9 +562,8 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
         'models and the 2:1 line (y = 0.5x) is used to illustrate the ' + \
         'Multi-model mean reduction in projected rainfall increase.'
 
-    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
-
-    provenance_record = get_provenance_record(selection,
+    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                 ['pr', 'ts']),
                                               caption, ['corr'], ['reg'],
                                               plot_type='scatter')
 
@@ -604,7 +608,7 @@ def get_reg_2d_li(mism_diff_rain, ar_hist_rain, lats, lons):
     return reg2d
 
 
-def substract_li(cfg, data, lats, lons):
+def substract_li(cfg, data, lats, lons, future_exp):
     """Difference between historical and future fields."""
     pathlist = data.get_path_list(short_name='pr', exp='historical')
 
@@ -615,7 +619,6 @@ def substract_li(cfg, data, lats, lons):
     ar_diff_ua = np.zeros((len(lats), len(lons), len(pathlist)))
     ar_diff_va = np.zeros((len(lats), len(lons), len(pathlist)))
     datasets = []
-    future_exp = 'rcp85'
     for iii, dataset_path in enumerate(pathlist):
 
         # Substract historical experiment from rcp85 experiment
@@ -665,10 +668,11 @@ def substract_li(cfg, data, lats, lons):
              data.get_data(short_name='ts',
                            exp='historical', dataset=datasets[iii]))
 
-        plot_rain_and_wind(cfg, datasets[iii], [
-            ar_diff_rain[:, :, iii], ar_diff_ua[:, :, iii],
-            ar_diff_va[:, :, iii]
-        ], lats, lons)
+        plot_rain_and_wind(cfg, datasets[iii],
+                           {'ar_diff_rain': ar_diff_rain[:, :, iii],
+                            'ar_diff_ua': ar_diff_ua[:, :, iii],
+                            'ar_diff_va': ar_diff_va[:, :, iii],
+                            'lats': lats, 'lons': lons}, future_exp)
 
     return {
         "datasets": datasets,
@@ -739,6 +743,18 @@ def main(cfg):
         raise ValueError("This diagnostic needs 'pr', 'ua', " +
                          " 'va', and 'ts'")
 
+    available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
+
+    if 'historical' not in available_exp:
+        raise ValueError("The diagnostic needs an historical experiment " +
+                         " and one other experiment.")
+
+    if len(available_exp) != 2:
+        raise ValueError("The diagnostic needs an two model experiments: " +
+                         " onehistorical and one other one.")
+
+    available_exp.remove('historical')
+    future_exp = available_exp[0]
     ###########################################################################
     # Read data
     ###########################################################################
@@ -768,16 +784,18 @@ def main(cfg):
     # Process data
     ###########################################################################
 
-    data_ar = substract_li(cfg, data, lats, lons)
+    data_ar = substract_li(cfg, data, lats, lons, future_exp)
 
     # data_ar {"datasets": datasets, "ar_diff_rain": ar_diff_rain,
     #          "ar_diff_ua": ar_diff_ua, "ar_diff_va": ar_diff_va,
     #          "ar_hist_rain": ar_hist_rain, "mism_diff_rain": mism_diff_rain,
     #          "mwp_hist_rain": mwp_hist_rain}
 
-    plot_rain_and_wind(cfg, 'Multi-model_mean', [
-        data_ar["ar_diff_rain"], data_ar["ar_diff_ua"], data_ar["ar_diff_va"]
-    ], lats, lons)
+    plot_rain_and_wind(cfg, 'Multi-model_mean',
+                       {'ar_diff_rain': data_ar["ar_diff_rain"],
+                        'ar_diff_ua': data_ar["ar_diff_ua"],
+                        'ar_diff_va': data_ar["ar_diff_va"],
+                        'lats': lats, 'lons': lons}, future_exp)
 
     # Regression between mean ISM rain difference and historical rain
     reg2d = get_reg_2d_li(data_ar["mism_diff_rain"], data_ar["ar_hist_rain"],
@@ -785,7 +803,7 @@ def main(cfg):
 
     plot_2dcorrelation_li(cfg, reg2d, lats, lons)
 
-    plot_reg_li(cfg, data_ar)
+    plot_reg_li(cfg, data_ar, future_exp)
 
     # Regression between mean WP rain and rain difference for each location
     reg2d_wp = get_reg_2d_li(data_ar["mwp_hist_rain"], data_ar["ar_diff_rain"],
