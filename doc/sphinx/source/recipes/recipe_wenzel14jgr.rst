@@ -4,7 +4,7 @@ Emergent constraints on carbon cycle feedbacks
 Overview
 --------
 
-Figures from Wenzel et al. (2014) are reproduced with namelist_wenz14jgr.yml. Variables relevant for the carbon cycle-climate feedback such as near surface air temperature (tas), net biosphere productivity (nbp) and (fgco2) are analyzed for coupled (1pctCO2; here the carbon cycle is fully coupled to the climate response) and uncoupled (esmFixCLim1; here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a comparison of cumulated nbp from coupled and uncoupled simulations and includes a set of routines to diagnose the long-term carbon cycle-climate feedback parameter (GammaLT) from an ensemble of CMIP5 models. Also included in the namelist is a comparison of the interannual variability of nbp and fgco2 for historical simulations used to diagnose the observable sensitivity of CO2 to tropical temperature changes (GammaIAV). As a key figure of this namelistrecipe, the diagnosed values from the models GammaLT vs. GammaIAV are compared in a scatter plot constituting an emergent constraint.
+Figures from Wenzel et al. (2014) are reproduced with namelist_wenz14jgr.yml. Variables relevant for the carbon cycle - climate feedback such as near surface air temperature (tas), net biosphere productivity (nbp) and (fgco2) are analyzed for coupled (1pctCO2; here the carbon cycle is fully coupled to the climate response) and uncoupled (esmFixCLim1; here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a comparison of cumulated nbp from coupled and uncoupled simulations and includes a set of routines to diagnose the long-term carbon cycle - climate feedback parameter (GammaLT) from an ensemble of CMIP5 models. Also included in the namelist is a comparison of the interannual variability of nbp and fgco2 for historical simulations used to diagnose the observable sensitivity of CO2 to tropical temperature changes (GammaIAV). As a key figure of this namelistrecipe, the diagnosed values from the models GammaLT vs. GammaIAV are compared in a scatter plot constituting an emergent constraint.
 
 
 Available recipes and diagnostics
@@ -96,15 +96,12 @@ Observations and reformat scripts
 References
 ----------
 
-* Cox, P. M., D. B. Pearson, B. B. Booth, P. Friedlingstein, C. C. Huntingford, C. D. B. Jones, and C. M. Luke, 2013, Sensitivity of tropical carbon to climate change constrained by carbon dioxide variability, Nature, 494(7437), 341-
-344. doi: 10.1038/nature11882
+* Cox, P. M., D. B. Pearson, B. B. Booth, P. Friedlingstein, C. C. Huntingford, C. D. B. Jones, and C. M. Luke, 2013, Sensitivity of tropical carbon to climate change constrained by carbon dioxide variability, Nature, 494(7437), 341-344. doi: 10.1038/nature11882
 * Wenzel, S., P. M. Cox, V. Eyring, and P. Friedlingstein, 2014, Emergent Constraints on Climate Carbon Cycle Feedbacks in the CMIP5 Earth System Models, JGR Biogeoscience, 119(5), doi: 2013JG002591.
-
 
 
 Example plots
 -------------
-
 
 .. figure:: /recipes/figures/tas_Global_CMIP5_1pctCO2_anom__1-1999.png
    :width: 10 cm 
