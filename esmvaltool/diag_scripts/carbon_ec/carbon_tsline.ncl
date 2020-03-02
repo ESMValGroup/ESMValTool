@@ -36,7 +36,7 @@
 ; Caveats
 ;
 ; Modification history
-;    20191219-wenzel_sabrina: added option to coose index instead 
+;    20191219-wenzel_sabrina: added option to coose index instead
 ;                             reference period
 ;    20191019-wenzel_sabrina: copyed tsline.ncl to carbon_tsline and
 ;                             added the option to cumulate variables
@@ -153,10 +153,10 @@ begin
     A_ref = read_data(info_items[ref_ind])
   end if
 
-  ;; Area opperation
+  ; Area opperation
   if (isatt(diag_script_info, "area_opper")) then
     area_opper = diag_script_info@area_opper
-    if (all(area_opper.ne.(/"sum","average"/))) then
+    if (all(area_opper.ne.(/"sum", "average"/))) then
       error_msg("f", diag_script, "", \
                 "area opperation option " + area_opper + " not yet " + \
                 "implemented")
@@ -183,7 +183,7 @@ begin
         end if
 
       elseif (isatt(diag_script_info, "ridx_start") .and. \
-          isatt(diag_script_info, "ridx_end")) then
+              isatt(diag_script_info, "ridx_end")) then
         ridx_start = diag_script_info@ridx_start
         ridx_end   = diag_script_info@ridx_end
         if (ridx_start.lt.0) then
@@ -232,7 +232,6 @@ begin
 
     ; Convert units for plotting (if required)
     if (isatt(diag_script_info, "plot_units")) then
-print(diag_script_info@plot_units)
       A0 = convert_units(A0, diag_script_info@plot_units)
     end if
 
@@ -263,11 +262,11 @@ print(diag_script_info@plot_units)
     if (anom .eq. "anom") then
       ; calculate monthly mean of ref period if 0.5 data points are available
       if (isatt(diag_script_info, "ridx_start")) then
-      	 tmp_start = cd_calendar(A0&time(ridx_start),0)
-	 tmp_end   = cd_calendar(A0&time(ridx_end),0)
-	 ref_start = toint(tmp_start(0,0))
-	 ref_end   = toint(tmp_end(0,0))
-      end if	 
+        tmp_start = cd_calendar(A0&time(ridx_start), 0)
+        tmp_end   = cd_calendar(A0&time(ridx_end), 0)
+        ref_start = toint(tmp_start(0, 0))
+        ref_end   = toint(tmp_end(0, 0))
+      end if
 
       tmp = time_operations(A0, ref_start, ref_end, "extract", "", 0)
       limit  = toint(0.5 * dimsizes(tmp&time))
@@ -318,16 +317,16 @@ print(diag_script_info@plot_units)
         end if
         delete(A0_timavg_ref)
 
-        ;if anom_ref(imod) .eq. anom_ref_tmp then
+        ; if anom_ref(imod) .eq. anom_ref_tmp then
           ; delete(anom_ref_tmp)
-        ;end if
+        ; end if
 
-      	if (isatt(diag_script_info, "ridx_start")) then
-      	    delete(ref_start)
-	    delete(ref_end)
-	    delete(tmp_start)	 
-	    delete(tmp_end)
-      	end if
+        if (isatt(diag_script_info, "ridx_start")) then
+          delete(ref_start)
+          delete(ref_end)
+          delete(tmp_start)
+          delete(tmp_end)
+        end if
 
       end if
     end if
@@ -358,13 +357,13 @@ print(diag_script_info@plot_units)
       delete(tmp1)
       delete(tmp2)
     else
-      ;procmod = area_operations(A0_timavg, -90., 90., 0., 360., \
+      ; procmod = area_operations(A0_timavg, -90., 90., 0., 360., \
       ;                          "average", True)
       procmod = area_operations(A0_timavg, diag_script_info@ts_minlat, \
                                 diag_script_info@ts_maxlat, \
                                 diag_script_info@ts_minlon, \
                                 diag_script_info@ts_maxlon, area_opper, True)
-                     
+
     end if
     delete(A0_timavg)
 
@@ -382,7 +381,7 @@ print(diag_script_info@plot_units)
     ; Match time coordinate
     if (time_avg.eq."monthly") then
       date = cd_calendar(procmod&time, -1)
-    elseif (time_avg.eq."yearly") then
+    else if (time_avg.eq."yearly") then
       date = procmod&year
     end if
     if (diag_script_info@align) then

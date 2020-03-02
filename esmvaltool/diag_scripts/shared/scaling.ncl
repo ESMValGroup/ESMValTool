@@ -272,6 +272,6 @@ begin
     return(out)
   end if
 
-   error_msg("f", scriptname, funcname, "conversion from " + units_from + \
-             " to " + units_to + " not defined")
+  error_msg("f", scriptname, funcname, "conversion from " + units_from + \
+            " to " + units_to + " not defined")
 end
