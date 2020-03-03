@@ -384,6 +384,7 @@ begin
     else if (time_avg.eq."yearly") then
       date = procmod&year
     end if
+    end if
     if (diag_script_info@align) then
       model_arr(imod, :dimsizes(procmod)-1) = (/procmod/)
       xmax = date(dimsizes(procmod)-1)

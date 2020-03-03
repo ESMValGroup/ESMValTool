@@ -238,7 +238,7 @@ begin
   plot_num = integertochar(ispan(97, 122, 1))
 
   XStg = "Sensitivity of land+ocean CO~B~2~N~ flux," \
-         "~F8~g~F21~~B~LT~N~ (GtC/yr/K)"
+         + "~F8~g~F21~~B~LT~N~ (GtC/yr/K)"
   YStg = "Carbon Cycle Climate Feedback, ~F8~g~F21~~B~LT~N~ (GtC/K)"
 
   data_arr = new((/2, dimsizes(gamma_LT)/), float)
