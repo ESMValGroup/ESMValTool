@@ -42,16 +42,18 @@ import esmvaltool.diag_scripts.shared.names as n
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plot_slope_regression(cfg, data_model):
+def plot_slope_regression(cfg, data_dict):
     """Scatter plot of linear regression slope, some variables (fig2a)."""
     # def plot_slope_regression(cfg, dlvpdt, drsnstdt, drsnstcsdt):
 
     if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
         return
 
+    data_model = data_dict['regressions']
     sa_lvpdt = data_model[:, 3]
     sa_rsnstdt = data_model[:, 1]
     sa_rsnstcsdt = data_model[:, 5]
+    datasets = data_dict['datasets']
 
     m_all = np.array([np.mean(sa_lvpdt), np.mean(sa_rsnstdt),
                       np.mean(sa_rsnstcsdt)])
@@ -68,11 +70,11 @@ def plot_slope_regression(cfg, data_model):
     y_reg_rsnst = reg_rsnst.slope * np.linspace(0.2, 1.4, 2) + \
         reg_rsnst.intercept
 
-    plt.style.use('/work/bd0854/b380216/esmvaltool/v2private/' +
-                  'ESMValTool-private/esmvaltool/diag_scripts/testkw/' +
-                  'style_kw_deangelis2.mplstyle')
+    # plt.style.use('/work/bd0854/b380216/esmvaltool/v2private/' +
+    #               'ESMValTool-private/esmvaltool/diag_scripts/testkw/' +
+    #               'style_kw_deangelis2.mplstyle')
 
-    fig, axx = plt.subplots()
+    fig, axx = plt.subplots(figsize=(7, 7))
     axx.plot(np.arange(len(m_all)) + 1, m_all,
              linestyle='none', marker='x',
              markersize=25, markeredgewidth=4.0, markerfacecolor='r',
@@ -123,80 +125,152 @@ def plot_slope_regression(cfg, data_model):
     axx.legend(loc=2)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'fig2.' +
+    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'fig2a.' +
                              cfg[n.OUTPUT_FILE_TYPE]))
     plt.close()
 
     # filepath2 = os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
     #                          cfg[n.OUTPUT_FILE_TYPE])
 
-    e.plot.scatterplot(
-        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2)],
-        [sa_lvpdt, y_reg_sa],
-        os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
-                     cfg[n.OUTPUT_FILE_TYPE]),
-        mpl_style_file='default.mplstyle',
-        plot_kwargs=[{'linestyle': 'none',
-                      'marker': '*',
-                      'markersize': 15,
-                      'markeredgewidth': 2.0,
-                      'markerfacecolor': 'k',
-                      'markeredgecolor': 'k'},
-                     {'color': 'r',
-                      'linestyle': '-',
-                      'label': 'Fit (r={:.2f}, '.format(reg_sa.rvalue) +
+    fig, axx = plt.subplots(figsize=(7, 7))
+
+    axx.plot(np.linspace(0.2, 1.4, 2), y_reg_sa, color='r')
+    
+    for iii, model in enumerate(datasets):
+        style = e.plot.get_dataset_style(model)
+        axx.plot(
+            sa_rsnstcsdt[iii],
+            sa_lvpdt[iii],
+            marker=style['mark'],
+            color=style['color'],
+            markerfacecolor=style['facecolor'],
+            linestyle='none',
+            markersize=10,
+            markeredgewidth=2.0,
+            label=model)
+        
+    
+    axx.set_xlabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_title(' ')
+    axx.set_ylabel(r'dL$_{\rm v}$P/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlim([0.3, 1.35])
+    axx.set_xticks(np.linspace(0.4, 1.2, 5))
+    axx.set_ylim([1.75, 2.8])
+    axx.set_yticks(np.linspace(1.8, 2.8, 6))
+    axx.text(0.9, 2.75, 'Fit (r={:.2f}, '.format(reg_sa.rvalue) +
                                ' slope = {:.2f}, '.format(reg_sa.slope) +
-                               ')'}],
-        save_kwargs={
-            'bbox_inches': 'tight',
-            'orientation': 'portrait'},
-        axes_functions={
-            'set_title': '',
-            'set_xlabel': r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
-            'set_ylabel': r'dL$_{\rm v}$P/dT (W m$^{-2}$ K$^{-1}$)',
-            'set_xlim': [0.3, 1.35],
-            'set_xticks': np.linspace(0.4, 1.2, 5),
-            'set_ylim': [1.75, 2.8],
-            'set_yticks': np.linspace(1.8, 2.8, 6),
-            'legend': {'loc': 3}})
+                               ')')
+    axx.legend(loc=3)
+
+    fig.tight_layout()
+    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
+                             cfg[n.OUTPUT_FILE_TYPE]))
+    plt.close()    
+        
+#    e.plot.scatterplot(
+#        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2)],
+#        [sa_lvpdt, y_reg_sa],
+#        os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
+#                     cfg[n.OUTPUT_FILE_TYPE]),
+#        mpl_style_file='default.mplstyle',
+#        plot_kwargs=[{'linestyle': 'none',
+#                      'marker': '*',
+#                      'markersize': 15,
+#                      'markeredgewidth': 2.0,
+#                      'markerfacecolor': 'k',
+#                      'markeredgecolor': 'k'},
+#                     {'color': 'r',
+#                      'linestyle': '-',
+#                      'label': 'Fit (r={:.2f}, '.format(reg_sa.rvalue) +
+#                               ' slope = {:.2f}, '.format(reg_sa.slope) +
+#                               ')'}],
+#        save_kwargs={
+#            'bbox_inches': 'tight',
+#            'orientation': 'portrait'},
+#        axes_functions={
+#            'set_title': '',
+#            'set_xlabel': r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
+#            'set_ylabel': r'dL$_{\rm v}$P/dT (W m$^{-2}$ K$^{-1}$)',
+#            'set_xlim': [0.3, 1.35],
+#            'set_xticks': np.linspace(0.4, 1.2, 5),
+#            'set_ylim': [1.75, 2.8],
+#            'set_yticks': np.linspace(1.8, 2.8, 6),
+#            'legend': {'loc': 3}})
 
     # filepath2 = os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
     #                          cfg[n.OUTPUT_FILE_TYPE])
 
-    e.plot.scatterplot(
-        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2), np.linspace(0.2, 1.4, 2)],
-        [sa_rsnstdt, y_reg_rsnst, np.linspace(0.2, 1.4, 2)],
-        os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
-                     cfg[n.OUTPUT_FILE_TYPE]),
-        mpl_style_file='default.mplstyle',
-        plot_kwargs=[{'linestyle': 'none', 'marker': '*',
-                      'markersize': 15, 'markeredgewidth': 2.0,
-                      'markerfacecolor': 'k', 'markeredgecolor': 'k'},
-                     {'color': 'r', 'linestyle': '-',
-                      'label': 'Fit (r={:.2f}, '.format(reg_rsnst.rvalue) +
+    fig, axx = plt.subplots(figsize=(7, 7))
+
+    axx.plot(np.linspace(0.2, 1.4, 2), y_reg_rsnst, color='r')
+    
+    for iii, model in enumerate(datasets):
+        style = e.plot.get_dataset_style(model)
+        axx.plot(
+            sa_rsnstcsdt[iii],
+            sa_rsnstdt[iii],
+            marker=style['mark'],
+            color=style['color'],
+            markerfacecolor=style['facecolor'],
+            linestyle='none',
+            markersize=10,
+            markeredgewidth=2.0,
+            label=model)
+        
+    
+    axx.set_xlabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_title(' ')
+    axx.set_ylabel(r'all-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlim([0.45, 1.15])
+    axx.set_xticks(np.linspace(0.5, 1.1, 7))
+    axx.set_ylim([0.45, 1.15])
+    axx.set_yticks(np.linspace(0.5, 1.1, 7))
+    axx.text(0.85, 1.1, 'Fit (r={:.2f}, '.format(reg_rsnst.rvalue) +
                                ' slope = {:.2f}, '.format(reg_rsnst.slope) +
-                               ')'},
-                     {'color': 'tab:gray', 'linestyle': '-',
-                      'label': '1:1 line'}],
-        save_kwargs={
-            'bbox_inches': 'tight',
-            'orientation': 'portrait'},
-        axes_functions={
-            'set_title': '',
-            'set_xlabel': r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
-            'set_ylabel': r'all-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
-            'set_xlim': [0.45, 1.15],
-            'set_xticks': np.linspace(0.5, 1.1, 7),
-            'set_ylim': [0.45, 1.15],
-            'set_yticks': np.linspace(0.5, 1.1, 7),
-            'legend': {'loc': 2}})
+                               ')')
+    axx.legend(loc=2)
+
+    fig.tight_layout()
+    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
+                             cfg[n.OUTPUT_FILE_TYPE]))
+    plt.close()    
+    
+#    e.plot.scatterplot(
+#        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2), np.linspace(0.2, 1.4, 2)],
+#        [sa_rsnstdt, y_reg_rsnst, np.linspace(0.2, 1.4, 2)],
+#        os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
+#                     cfg[n.OUTPUT_FILE_TYPE]),
+#        mpl_style_file='default.mplstyle',
+#        plot_kwargs=[{'linestyle': 'none', 'marker': '*',
+#                      'markersize': 15, 'markeredgewidth': 2.0,
+#                      'markerfacecolor': 'k', 'markeredgecolor': 'k'},
+#                     {'color': 'r', 'linestyle': '-',
+#                      'label': 'Fit (r={:.2f}, '.format(reg_rsnst.rvalue) +
+#                               ' slope = {:.2f}, '.format(reg_rsnst.slope) +
+#                               ')'},
+#                     {'color': 'tab:gray', 'linestyle': '-',
+#                      'label': '1:1 line'}],
+#        save_kwargs={
+#            'bbox_inches': 'tight',
+#            'orientation': 'portrait'},
+#        axes_functions={
+#            'set_title': '',
+#            'set_xlabel': r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
+#            'set_ylabel': r'all-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
+#            'set_xlim': [0.45, 1.15],
+#            'set_xticks': np.linspace(0.5, 1.1, 7),
+#            'set_ylim': [0.45, 1.15],
+#            'set_yticks': np.linspace(0.5, 1.1, 7),
+#            'legend': {'loc': 2}})
 
 
-def plot_slope_regression_all(cfg, data_model):
+def plot_slope_regression_all(cfg, data_dict):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
     if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
         return
 
+    
+    data_model = data_dict['regressions']
     m_all = np.array([np.mean(data_model[:, 3]), np.mean(data_model[:, 0]),
                       np.mean(data_model[:, 1]), np.mean(data_model[:, 2]),
                       np.mean(data_model[:, 4]), np.mean(data_model[:, 5])])
@@ -213,11 +287,11 @@ def plot_slope_regression_all(cfg, data_model):
     text_rlnstdt = '{:.2f}'.format(reg_rlnstdt.rvalue)
     text_hfssdt = '{:.2f}'.format(reg_hfssdt.rvalue)
 
-    plt.style.use('/work/bd0854/b380216/esmvaltool/v2private/' +
-                  'ESMValTool-private/esmvaltool/diag_scripts/' +
-                  'testkw/style_kw_deangelis2.mplstyle')
+    # plt.style.use('/work/bd0854/b380216/esmvaltool/v2private/' +
+    #              'ESMValTool-private/esmvaltool/diag_scripts/' +
+    #              'testkw/style_kw_deangelis2.mplstyle')
 
-    fig, axx = plt.subplots()
+    fig, axx = plt.subplots(figsize=(7, 7))
     axx.plot(np.arange(len(m_all)) + 1, m_all,
              linestyle='none', marker='x',
              markersize=25, markeredgewidth=4.0, markerfacecolor='r',
@@ -406,6 +480,7 @@ def substract_and_reg_deangelis2(cfg, data, var):
                       ('MRI-CGCM3', 24), ('NorESM1-M', 25)])
     pathlist = data.get_path_list(short_name='tas', exp=PICONTROL)
     regressions = np.zeros((len(pathlist), 7))
+    datasets = []
 
     data_var = OrderedDict()
     reg_var = OrderedDict()
@@ -415,11 +490,13 @@ def substract_and_reg_deangelis2(cfg, data, var):
 
         # Substract piControl experiment from abrupt4xCO2 experiment
         dataset = data.get_info(n.DATASET, dataset_path)
+        datasets.append(dataset)
 
         for jvar in varvar:
             data_var[jvar] = data.get_data(short_name=jvar, exp=ABRUPT4XCO2,
                                            dataset=dataset) - \
-                data.get_data(short_name=jvar, exp=PICONTROL, dataset=dataset)
+                data.get_data(short_name=jvar, exp=PICONTROL,
+                              dataset=dataset)
 
         # Perform linear regression
         for jvar in varvar:
@@ -442,7 +519,7 @@ def substract_and_reg_deangelis2(cfg, data, var):
                             reg_var["rsnstcs"].slope,
                             model_nrs[dataset]]
 
-    return regressions
+    return dict([('regressions', regressions), ('datasets', datasets)])
 
 
 ###############################################################################
@@ -515,10 +592,10 @@ def main(cfg):
     # Process data
     ###########################################################################
 
-    data_model = substract_and_reg_deangelis2(cfg, data, var)
+    data_dict = substract_and_reg_deangelis2(cfg, data, var)
 
-    plot_slope_regression(cfg, data_model)
-    plot_slope_regression_all(cfg, data_model)
+    plot_slope_regression(cfg, data_dict)
+    plot_slope_regression_all(cfg, data_dict)
 
 
 if __name__ == '__main__':

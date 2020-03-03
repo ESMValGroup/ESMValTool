@@ -39,11 +39,33 @@ import numpy as np
 from scipy import stats
 import scipy.signal as scisi
 import matplotlib.pyplot as plt
+from pprint import pformat
 from esmvaltool.diag_scripts.shared import (
     run_diagnostic, select_metadata,
     variables_available, plot)
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+def get_provenance_record(attributes, ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    caption = ("Something ... {dataset}.".format(**attributes))
+
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'zonal',
+        'authors': [
+            'weigel_katja',
+        ],
+        'references': [
+            'deangelis15nat',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
 
 
 def set_axx_deangelis4(axx, ylen, ytickstrs, x_obs, dx_obs):
@@ -145,7 +167,7 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
     # s_drsnstcs_dprws, s_drsnstcs_dprws_obs):
 
 
-def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs):
+def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs, provenance_record):
     """Plot DeAngelis Fig. 3a and 4."""
     # Fig 4
 
@@ -285,7 +307,13 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs):
     fig.savefig(os.path.join(cfg['plot_dir'], 'fig4.' +
                              cfg['output_file_type']), dpi=300)
     plt.close()
-
+    
+    basename = os.path.join(cfg['work_dir'], 'provenance'+ '_test')
+    diagnostic_file = get_diagnostic_filename(basename, cfg)
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 def make_grid_prw(grid_pwx, data_prw_obs, data_rsnstcsnorm_obs):
     """Grid rsnstcsnorm based on prw grid."""
@@ -473,8 +501,10 @@ def main(cfg):
 
     data_model = substract_and_reg_deangelis(cfg, cubes, grid_pw,
                                              reg_prw_obs)
-
-    plot_deangelis_fig3b(cfg, data_model, reg_prw_obs)
+    attributes = {'test_att': 'test_att', 'dataset': cfg['input_files']}
+    provenance_record = get_provenance_record(attributes, 
+                                              ancestor_files=[input_data])
+    plot_deangelis_fig3b(cfg, data_model, reg_prw_obs, provenance_record)
 
     ###########################################################################
     # Write data
