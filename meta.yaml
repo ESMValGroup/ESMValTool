@@ -44,6 +44,7 @@ requirements:
     - iris
     # Normally installed via pip:
     - cartopy
+    - cdsapi
     - cf-units
     - cmocean
     - cython
