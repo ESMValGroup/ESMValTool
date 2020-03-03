@@ -432,7 +432,9 @@ def plot_reg_li(cfg, data_ar, future_exp):
     axx.plot(np.linspace(5.5, 8.8, 2), y_reg, color='k')
 
     for iii, model in enumerate(data_ar["datasets"]):
-        style = e.plot.get_dataset_style(model)
+        proj = (select_metadata(cfg['input_data'].values(),
+                                dataset=model))[0]['project']
+        style = e.plot.get_dataset_style(model, style_file=proj.lower())
         axx.plot(
             data_ar["mwp_hist_rain"][iii],
             data_ar["mism_diff_rain"][iii],
@@ -445,6 +447,7 @@ def plot_reg_li(cfg, data_ar, future_exp):
             label=model)
 
     axx.set_xlim([5.5, 8.8])
+    axx.set_ylim([-0.01, 0.55])
     axx.text(8.1, 0.01, 'r = {:.2f}'.format(reg.rvalue))
     axx.set_xticks(np.linspace(6, 8, 3))
     axx.set_yticks(np.linspace(0.0, 0.5, 6))
@@ -464,9 +467,8 @@ def plot_reg_li(cfg, data_ar, future_exp):
         'western Pacific precipitation and the inter-model ' + \
         'correlation (r) is shown.'
 
-    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
-
-    provenance_record = get_provenance_record(selection,
+    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                 ['pr', 'ts']),
                                               caption, ['corr'], ['reg'],
                                               plot_type='scatter')
 
@@ -493,11 +495,9 @@ def plot_reg_li(cfg, data_ar, future_exp):
 
 def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     """Plot scatter plot and regression."""
-    y_reg = 0.5 * np.linspace(-2, 21, 2)
-
     fig, axx = plt.subplots(figsize=(7, 7))
 
-    axx.plot(np.linspace(-2, 21, 2), y_reg, color='k')
+    axx.plot(np.linspace(-2, 21, 2), 0.5 * np.linspace(-2, 21, 2), color='k')
 
     axx.plot(
         np.mean((mdiff_ism / hist_ism) * 100.0),
@@ -510,7 +510,10 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
         label='multi-model mean')
 
     for iii, model in enumerate(datasets):
-        style = e.plot.get_dataset_style(model)
+
+        proj = (select_metadata(cfg['input_data'].values(),
+                                dataset=model))[0]['project']
+        style = e.plot.get_dataset_style(model, style_file=proj.lower())
         axx.plot(
             mdiff_ism[iii] / hist_ism[iii] * 100.0,
             mdiff_ism_cor[iii] / hist_ism[iii] * 100.0,

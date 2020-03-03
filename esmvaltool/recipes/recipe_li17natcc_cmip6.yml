@@ -67,14 +67,24 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: MIROC6,    exp: historical,  start_year: 1980, end_year: 2009}
-      - {dataset: MIROC6,    exp: ssp585,       start_year: 2070, end_year: 2099}
+      - {dataset: ACCESS-ESM1-5,    institute: CSIRO,    exp: historical,  grid: gn,  start_year: 1980, end_year: 2009}
+      - {dataset: ACCESS-ESM1-5,     institute: CSIRO,   exp: ssp585,  grid: gn,       start_year: 2070, end_year: 2099}
 
-      - {dataset: MRI,  exp: historical,  start_year: 1980, end_year: 2009}
-      - {dataset: MRI,  exp: ssp585,       start_year: 2070, end_year: 2099}
+      - {dataset: BCC-CSM2-MR,    institute: BCC,    exp: historical,  grid: gn,  start_year: 1980, end_year: 2009}
+      - {dataset: BCC-CSM2-MR,     institute: BCC,   exp: ssp585,  grid: gn,       start_year: 2070, end_year: 2099}
 
-      - {dataset: CESM2,       exp: historical,  start_year: 1980, end_year: 2009}
-      - {dataset: CESM2,       exp: ssp585,       start_year: 2070, end_year: 2099}
+      - {dataset: CanESM5,    institute: CCCma,    exp: historical,  grid: gn,  start_year: 1980, end_year: 2009}
+      - {dataset: CanESM5,     institute: CCCma,   exp: ssp585,  grid: gn,       start_year: 2070, end_year: 2099}
+
+      - {dataset: IPSL-CM6A-LR,    institute: IPSL,    exp: historical,  grid: gr,  start_year: 1980, end_year: 2009}
+      - {dataset: IPSL-CM6A-LR,     institute: IPSL,   exp: ssp585,  grid: gr,       start_year: 2070, end_year: 2099}
+
+      - {dataset: MIROC6,  institute: MIROC,  exp: historical,  grid: gn,  start_year: 1980, end_year: 2009}
+      - {dataset: MIROC6,  institute: MIROC,  exp: ssp585,  grid: gn,       start_year: 2070, end_year: 2099}
+
+      - {dataset: MRI-ESM2-0, institute: MRI,  exp: historical,  grid: gn,  start_year: 1980, end_year: 2009}
+      - {dataset: MRI-ESM2-0, institute: MRI,  exp: ssp585,  grid: gn,       start_year: 2070, end_year: 2099}
+
 
 
 
