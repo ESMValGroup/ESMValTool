@@ -86,13 +86,9 @@ def check_log_file(log_file, no_data=False):
     with open(log_file, 'r') as log:
         if no_data:
             msg = "Could not find raw data WOA"
-            assert any(msg in line for line in log):
         else:
-            cases = []
-            for line in log.readlines():
-                case = "Fixing data" in line
-                cases.append(case)
-            assert True in cases
+            msg = "Fixing data"
+        assert any(msg in line for line in log)
 
 
 def check_output_exists(output_path):
