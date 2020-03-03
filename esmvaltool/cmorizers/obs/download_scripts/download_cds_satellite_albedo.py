@@ -1,4 +1,6 @@
-import argparse  # pylint: disable=missing-docstring
+"""Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
+
+import argparse
 import os
 from datetime import datetime
 
