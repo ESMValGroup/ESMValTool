@@ -1,12 +1,13 @@
 """Tests for the module :mod:`esmvaltool.cmorizers.obs.utilities`."""
 
+from unittest.mock import Mock
+
 import dask.array as da
 import iris
 import numpy as np
 import pytest
-
 from cf_units import Unit
-from unittest.mock import Mock
+
 import esmvaltool.cmorizers.obs.utilities as utils
 
 
