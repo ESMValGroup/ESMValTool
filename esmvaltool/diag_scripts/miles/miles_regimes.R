@@ -41,6 +41,7 @@ source(paste0(diag_scripts_dir, "/miles/basis_functions.R"))
 source(paste0(diag_scripts_dir, "/miles/regimes_figures.R"))
 source(paste0(diag_scripts_dir, "/miles/regimes_fast.R"))
 source(paste0(diag_scripts_dir, "/miles/miles_parameters.R"))
+source(paste0(diag_scripts_dir, "/shared/external.R")) # nolint
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
