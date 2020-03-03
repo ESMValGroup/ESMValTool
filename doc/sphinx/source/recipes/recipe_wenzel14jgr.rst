@@ -104,7 +104,7 @@ Example plots
    :width: 10 cm 
    :align: center
    
-   Time series of tropical (30°S to 30°N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
+   Time series of tropical (30S to 30N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
    
    
 .. figure:: /recipes/figures/wenzel14jgr/tas_Global_CMIP5_esmHistorical_anom__1960-2005.png
@@ -118,7 +118,7 @@ Example plots
    :scale: 50 %
    :align: center
 
-   Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30°S to 30°N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
+   Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30S to 30N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
       
    
 .. figure:: /recipes/figures/wenzel14jgr/constr_tas-nbp_30-1960.000002.png
