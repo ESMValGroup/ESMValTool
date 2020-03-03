@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from cf_units import Unit
+from unittest.mock import Mock
 import esmvaltool.cmorizers.obs.utilities as utils
 
 
@@ -109,9 +110,10 @@ def test_fix_dtype_not_lazy(cube):
     assert not is_lazy(cube)
 
 
-class VarInfoObj:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
+def VarInfoObj(var_dict):
+    mock_dict = Mock()
+    mock_dict.__dict__ = var_dict
+    return mock_dict
 
 
 def _create_sample_cube():
@@ -242,7 +244,7 @@ def test_fix_var_metadata():
         "ok_min_mean_abs": "",
         "ok_max_mean_abs": ""
     }
-    var_info = VarInfoObj(**var_info)
+    var_info = VarInfoObj(var_info)
     utils.fix_var_metadata(cube, var_info)
     assert cube.var_name == "tas"
     assert cube.long_name == "Near-Surface Air Temperature"
