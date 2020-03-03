@@ -31,6 +31,18 @@ preprocessors:
   noop:
     {}
 
+  regrid_mask:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+
 diagnostics:
 
 #  station_comparison:
@@ -86,8 +98,25 @@ diagnostics:
 #      xco2_maps:
 #        script: xco2_analysis/global_maps.ncl
 
-  xco2_sat_masks:
-    description: Influence of satellite coverage on XCO2 data
+#  xco2_sat_masks:
+#    description: Influence of satellite coverage on XCO2 data
+#    variables:
+#      xco2:
+#        project: CMIP6
+#        mip: Amon
+#        exp: esm-hist
+#        start_year: 2003
+#        end_year: 2014
+#        reference_dataset: C3S
+#        derive: true
+#        additional_datasets:
+#          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+#    scripts:
+#      xco2_sat_masks:
+#        script: xco2_analysis/sat_masks.ncl
+
+  delta_T:
+    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
     variables:
       xco2:
         project: CMIP6
@@ -99,6 +128,24 @@ diagnostics:
         derive: true
         additional_datasets:
           - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+      tas:
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: GISS
+        additional_datasets:
+          - {dataset: GISS, project: OBS, type: reanaly, version: 2, tier: 2}
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
     scripts:
-      xco2_maps:
-        script: xco2_analysis/sat_masks.ncl
+      delta_T:
+        script: xco2_analysis/delta_T.ncl
+        styleset: CMIP6
+        masking: obs
+        var_order: ["xco2", "tas"]
+        region: [-30, 30]
+        modis_path: /work/bd0854/b309137/data_ext/Land_Cover_Class_1degree.nc4

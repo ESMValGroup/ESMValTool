@@ -553,4 +553,7 @@ begin
      draw(plot)
      frame(wks)
      ;print(stobs_ts)
+
+
+  leave_msg(DIAG_SCRIPT, "")
 end
