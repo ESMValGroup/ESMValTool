@@ -18,8 +18,6 @@ preprocessors:
     extract_levels:
       levels: 85000
       scheme: linear
-    # extract_season:
-    #   season: JJA
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -32,8 +30,6 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    # extract_season:
-    #   season: JJA
     extract_region:
       start_latitude: -40
       end_latitude: 40
@@ -44,22 +40,11 @@ preprocessors:
       mask_out: land
     area_statistics:
       operator: mean
-    # extract_season:
-    #   season: JJA
-    # average_region:
-    #   coord1: latitude
-    #   coord2: longitude
-    # glob_ocean:
-    # extract_season:
-    #   season: JJA
-    # average_region:
-    #   coord1: grid_latitude
-    #   coord2: grid_longitude
 
 diagnostics:
 
-   lif1f2:
-    description: Fig. 1.
+  lif1f2:
+    description: Diagnostic for reproducing figure 1 and 2 from Li et al., 2017
     variables:
       pr: &gridded_cmip5_r1i1p1_amon_t2ms
         preprocessor: tropical
@@ -75,15 +60,6 @@ diagnostics:
         field: T3M
       va:
         <<: *gridded_cmip5_r1i1p1_amon_t3m_pp850
-      # tos seems not to work:
-      # iris.exceptions.CoordinateMultiDimError: Multi-dimensional coordinate not supported: 'latitude'
-      # using tas instead...
-      #tos: &global_mean_cmip5_r1i1p1_omon_t2ms
-        #preprocessor: glob_ocean
-        #project: CMIP5
-        #ensemble: r1i1p1
-        #mip: Omon
-        #field: T2Ms
       ts: &global_mean_cmip5_r1i1p1_amon_t2ms
         preprocessor: glob
         project: CMIP5
@@ -91,112 +67,73 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      # tos does not work, possibly due to irregular grid
-      # Start with few
-      #- {dataset: CNRM-CM5,      exp: historical,  start_year: 1980, end_year: 2005}
-      #- {dataset: CNRM-CM5,      exp: rcp85,       start_year: 2070, end_year: 2099}
-      #- {dataset: GFDL-ESM2G,      exp: historical,  start_year: 1980, end_year: 2005}
-      #- {dataset: GFDL-ESM2G,      exp: rcp85,       start_year: 2070, end_year: 2099}
-      #- {dataset: inmcm4,        exp: historical,  start_year: 1980, end_year: 2005}
-      #- {dataset: inmcm4,        exp: rcp85,       start_year: 2070, end_year: 2099}
-      #- {dataset: MRI-CGCM3,  exp: historical,  start_year: 1980, end_year: 2005}
-      #- {dataset: MRI-CGCM3,  exp: rcp85,       start_year: 2070, end_year: 2099}
-      #- {dataset: NorESM1-M,      exp: historical,  start_year: 1980, end_year: 2005}
-      #- {dataset: NorESM1-M,      exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: ACCESS1-0, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: ACCESS1-0, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      # All (deangelis)
-      # ACCESS1-0 and ACCESS1-3 not working, error in time check,
-      # probably more than 31 days in (some) months
-      - {dataset: ACCESS1-0,    exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: ACCESS1-0,    exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: bcc-csm1-1-m,  exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: bcc-csm1-1-m,  exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: CanESM2, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CanESM2, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: CanESM2,       exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: CanESM2,       exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: CCSM4, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CCSM4, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: CCSM4,       exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: CCSM4,       exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: CESM1-CAM5, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CESM1-CAM5, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: CESM1-CAM5,       exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: CESM1-CAM5,       exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: CNRM-CM5, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CNRM-CM5, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      # does not work:
-      # File "/mnt/lustre02/work/bd0854/b380216/esmvaltool/v2private/ESMValTool-private/esmvaltool/preprocessor/_io.py", line 80, in concatenate
-      # raise ConcatenationError('Can not concatenate cubes {0}'.format(cubes))
-      # esmvaltool.preprocessor._io.ConcatenationError: Can not concatenate cubes (<iris 'Cube' of precipitation_flux / (kg m-2 s-1) (time: 120; latitude: 48; longitude: 96)>, <iris 'Cube' of precipitation_flux / (kg m-2 s-1) (time: 120; latitude: 48; longitude: 96)>, <iris 'Cube' of precipitation_flux / (kg m-2 s-1) (time: 120; latitude: 48; longitude: 96)>, <iris 'Cube' of precipitation_flux / (kg m-2 s-1) (time: 60; latitude: 48; longitude: 96)>)
-      # - {dataset: CMCC-CESM,       exp: historical,  start_year: 1980, end_year: 2005}
-      # - {dataset: CMCC-CESM,       exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: CNRM-CM5,      exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: CNRM-CM5,      exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: GFDL-CM3, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: CSIRO-Mk3-6-0,      exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0,      exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      # data not available for most variables for FGOALS-s2 on DKRZ
-      # - {dataset: FGOALS-s2,      exp: historical,  start_year: 1980, end_year: 2005}
-      # - {dataset: FGOALS-s2,      exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: GFDL-ESM2M, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: GFDL-CM3,      exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: GFDL-CM3,      exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: GISS-E2-R, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GISS-E2-R, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: GFDL-ESM2G,      exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: GFDL-ESM2G,      exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: HadGEM2-AO, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: HadGEM2-AO, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: GFDL-ESM2M,      exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: GFDL-ESM2M,      exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: HadGEM2-CC, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: HadGEM2-CC, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: GISS-E2-R,     exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: GISS-E2-R,     exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: inmcm4, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: inmcm4, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: HadGEM2-AO,     exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: HadGEM2-AO,     exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      # does not work:
-      # File "/mnt/lustre02/work/bd0854/b380216/esmvaltool/v2private/ESMValTool-private/esmvaltool/preprocessor/_io.py", line 80, in concatenate
-      # raise ConcatenationError('Can not concatenate cubes {0}'.format(cubes))
-      # esmvaltool.preprocessor._io.ConcatenationError: Can not concatenate cubes (<iris 'Cube' of air_temperature / (K) (time: 300; latitude: 145; longitude: 192)>, <iris 'Cube' of air_temperature / (K) (time: 252; latitude: 145; longitude: 192)>, <iris 'Cube' of air_temperature / (K) (time: 300; latitude: 145; longitude: 192)>)
-      - {dataset: HadGEM2-CC,     exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: HadGEM2-CC,     exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: IPSL-CM5A-MR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: inmcm4,        exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: inmcm4,        exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: IPSL-CM5A-LR,  exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,  exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: IPSL-CM5A-MR,  exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: IPSL-CM5A-MR,  exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: MPI-ESM-MR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: MPI-ESM-MR, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: IPSL-CM5B-LR,  exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: IPSL-CM5B-LR,  exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: MRI-CGCM3, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: MRI-CGCM3, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: MPI-ESM-LR,    exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: MPI-ESM-LR,    exp: rcp85,       start_year: 2070, end_year: 2099}
+      - {dataset: NorESM1-M, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: NorESM1-M, exp: rcp85, start_year: 2070, end_year: 2099}
 
-      - {dataset: MPI-ESM-MR,    exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: MPI-ESM-MR,    exp: rcp85,       start_year: 2070, end_year: 2099}
-
-      - {dataset: MRI-CGCM3,  exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: MRI-CGCM3,  exp: rcp85,       start_year: 2070, end_year: 2099}
-
-      - {dataset: NorESM1-M,      exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: NorESM1-M,      exp: rcp85,       start_year: 2070, end_year: 2099}
-
-      - {dataset: NorESM1-ME,      exp: historical,  start_year: 1980, end_year: 2005}
-      - {dataset: NorESM1-ME,      exp: rcp85,       start_year: 2070, end_year: 2099}
-
-
+      - {dataset: NorESM1-ME, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: NorESM1-ME, exp: rcp85, start_year: 2070, end_year: 2099}
 
     scripts:
       lif1f2:
         script: emergent_constraints/lif1f2.py
-        plot_ecs_regression: 'True'
         output_name: 'lif1f2'
-
-
-
-
-
