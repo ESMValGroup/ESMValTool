@@ -1,7 +1,7 @@
-.. _recipes_ecs:
+.. _recipes_li17natcc:
 
-Constraining future Indian Summer Monsoon projections with  the present-day precipitation over the tropical western Pacific
-===========================================================================================================================
+Constraining future Indian Summer Monsoon projections with the present-day precipitation over the tropical western Pacific
+==========================================================================================================================
 
 Overview
 --------
@@ -9,9 +9,9 @@ Overview
 
 Following `Li et al. (2017)`_ the change between present-day and future Indian Summer Monsoon (ISM) precipitation is constrained
 using the precipitation over the tropical western Pacific compared to
-a fixed, observed amound of 6 mm d-1 from Global Precipitation Climatology Project (GPCP) for 1980-2009 `(Adler et al., 2003)`_.
-For CMIP6 historical data for 1980-2009 should be used. For CMIP5 historical data only from 1980-2005 should be used, due to the length of the data sets.
-At the moment it is not possiible to use a combined [historical, rcp] data set, because the diagnostic requires that a historical data set exists.
+a fixed, observed amound of 6 mm d-1 from Global Precipitation Climatology Project (GPCP) `(Adler et al., 2003)`_ for 1980-2009.
+For CMIP6, historical data for 1980-2009 should be used. For CMIP5 historical data from 1980-2005 should be used, due to the length of the data sets.
+At the moment it is not possiible to use a combined [historical, rcp] data set, because the diagnostic requires that a historical data set is given.
 
 .. _`(Adler et al., 2003)`: https://journals.ametsoc.org/doi/abs/10.1175/1525-7541%282003%29004%3C1147%3ATVGPCP%3E2.0.CO%3B2
 .. _`Li et al. (2017)`: https://www.nature.com/articles/nclimate3387
@@ -23,7 +23,6 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
    * recipe_li17natcc.yml
-   * recipe_li17natcc_cmip6.yml
 
 
 Diagnostics are stored in diag_scripts/
@@ -34,55 +33,15 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-#. Preprocessor
-
-   * ``area_statistics`` (*operation: mean*): Calculate global mean.
-
-#. Script climate_metrics/ecs.py
-
-   * ``calculate_mmm``, *bool*, optional (default: ``True``): Calculate
-     multi-model mean ECS.
-   * ``read_external_file``, *str*, optional: Read ECS and net climate feedback
-     parameter from external file. Can be given relative to the diagnostic
-     script or as absolute path.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
-
-#. Script climate_metrics/create_barplot.py
-
-   * ``label_attribute``, *str*, optional: Attribute of the cube which is used
-     as label for the different input files in the barplot.
-   * ``patterns``, *list of str*, optional: Patterns to filter list of input
-     files.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
-   * ``sort_ascending``, *bool*, optional (default: ``False``): Sort bars in
-     ascending order.
-   * ``sort_descending``, *bool*, optional (default: ``False``): Sort bars in
-     descending order.
-   * ``value_labels``, *bool*, optional (default: ``False``): Label bars with
-     value of that bar.
-   * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
-
-#. Script climate_metrics/create_scatterplot.py
-
-   * ``dataset_style``, *str*, optional: Name of the style file (located in
-     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
-   * ``pattern``, *str*, optional: Pattern to filter list of input files.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
-   * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
+The recipe can be run with different CMIP5 and CMIP6 models. For each model, two experiments must be given: one historical run, possibly between 1980-2009 and one other model experiment. The user can coose the other model experiment, but it needs to be the same for all given models. The start and end year for the second data set can be choosen by the user. Different ensemble members are not possible, yet.
 
 
 Variables
 ---------
 
 * *pr* (atmos, monthly, longitude, latitude, time)
-* *ua* (atmos, monthly, longitude, latitude, pressure level, time)
-* *va* (atmos, monthly, longitude, latitude, pressure level, time)
+* *ua* (atmos, monthly, longitude, latitude, plev, time)
+* *va* (atmos, monthly, longitude, latitude, plev, time)
 * *ts* (atmos, monthly, longitude, latitude, time)
 
 
@@ -101,11 +60,30 @@ References
 Example plots
 -------------
 
-.. _fig_ecs_1:
-.. figure:: /recipes/figures/ecs/CanESM2.png
+.. _li17natcc_fig2a:
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2a.png
    :align: center
    :width: 50%
 
-   Scatterplot between TOA radiance and global mean surface temperature anomaly
-   for 150 years of the abrupt 4x CO2 experiment including linear regression to
-   calculate ECS for CanESM2 (CMIP5).
+   Scatter plot of the simulated tropical western Pacific precipitation (mm d−1 ) versus projected average ISM (Indian Summer Monsoon) rainfall changes under the ssp585 scenario. The red line denotes the observed present-day western Pacific precipitation and the inter-model correlation (r) is shown. (CMIP6).
+
+.. _li17natcc_fig2b:
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2b.png
+   :align: center
+   :width: 50%
+
+   Scatter plot of the uncorrected versus corrected average ISM (Indian Summer Monsoon) rainfall change ratios (% per degree Celsius of global SST warming). The error bars for the Multi-model mean indicate the standard deviation spread among models and the 2:1 line (y = 0.5x) is used to illustrate the Multi-model mean reduction in projected rainfall increase. (CMIP6).
+
+.. _li17natcc_fig2c:
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2c.png
+   :align: center
+   :width: 50%
+
+   Multi-model mean rainfall change due to model error. Box displays the area used to define the average ISM (Indian Summer Monsoon) rainfall. Precipitation changes are normalized by the corresponding global mean SST increase for each model. (CMIP6).
+
+.. _li17natcc_fig2d:
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2d.png
+   :align: center
+   :width: 50%
+
+   Corrected multi-model mean rainfall change. Box displays the area used to define the average ISM (Indian Summer Monsoon) rainfall. Precipitation changes are normalized by the corresponding global mean SST increase for each model. (CMIP6).

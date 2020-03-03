@@ -184,21 +184,37 @@ def plot_rain_and_wind(cfg, dataname, data, future_exp):
     axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    fig.savefig(get_plot_filename(dataname + '_rain_wind_change', cfg),
+    fig.savefig(get_plot_filename(dataname + '_li17natcc_fig1a', cfg),
                 dpi=300)
     plt.close()
 
-    caption = dataname + ': Changes in precipitation (colour shade, ' + \
-        r'mm d$^{-1}$)' + \
-        r'and 850-hPa wind (m s$^{-1}$ scaled with 0.5) ' + \
-        'during the Indian summer monsoon season (May to September)' + \
-        'from 1980–2009 to 2070–2099 projected ' + \
-        'under the ' + future_exp + ' scenario. All climatology changes ' + \
-        'are normalized by the corresponding global mean SST increase ' + \
-        'for each model.'
-
-    if data['ar_diff_rain'].ndim == 3:
-        caption = caption + ' The white contours display the inter-model ' + \
+    if data['ar_diff_rain'].ndim == 2:
+        caption = dataname + ': Changes in precipitation (colour shade, ' + \
+            'mm d-1) ' + \
+            'and 850-hPa wind (m s-1 scaled with 0.5) during ' + \
+            'the Indian summer monsoon season (May to September) from ' + \
+            str((select_metadata(cfg['input_data'].values(), dataset=dataname,
+                                 exp='historical'))[0]['start_year']) + '-' + \
+            str((select_metadata(cfg['input_data'].values(), dataset=dataname,
+                                 exp='historical'))[0]['end_year']) + \
+            ' to ' + \
+            str((select_metadata(cfg['input_data'].values(), dataset=dataname,
+                                 exp=future_exp))[0]['start_year']) + '-' + \
+            str((select_metadata(cfg['input_data'].values(), dataset=dataname,
+                                 exp=future_exp))[0]['end_year']) + \
+            ' projected ' + \
+            'under the ' + future_exp + ' scenario. All climatology ' + \
+            'changes are normalized by the corresponding global mean ' + \
+            'SST increase for each model.'
+    else:
+        caption = dataname + ': Changes in precipitation (colour shade, ' + \
+            'mm d-1) and 850-hPa wind' + \
+            ' (m s-1 scaled with 0.5) ' + \
+            'during the Indian summer monsoon season (May to September)' + \
+            'under the ' + future_exp + ' scenario. All climatology ' + \
+            'changes are normalized by the corresponding global mean ' + \
+            'SST increase for each model. ' + \
+            'The white contours display the inter-model ' + \
             'standard deviations of precipitation changes.'
 
     provenance_record = get_provenance_record(
@@ -297,16 +313,16 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    if titlestr == 'Multi-model mean rainfall change due to model error':
-        figname = 'fig2c'
+    if titlestr == 'Multi-model mean rainfall change due to model error.':
+        figname = 'li17natcc_fig2c'
     else:
-        figname = 'fig2d'
+        figname = 'li17natcc_fig2d'
 
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
 
     titlestr = titlestr + ' Box displays the area used to define the ' + \
-        'average ISM (Indian Summer Monsoon) rainfall. Precipitaiton ' + \
+        'average ISM (Indian Summer Monsoon) rainfall. Precipitation ' + \
         'changes are normalized by the corresponding global ' + \
         'mean SST increase for each model.'
 
@@ -385,7 +401,7 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     axx.set_yticklabels(['15°S', '0°', '15°N', '30°N'])
 
     fig.tight_layout()
-    fig.savefig(get_plot_filename('fig1b_rain_correlation', cfg), dpi=300)
+    fig.savefig(get_plot_filename('li17natcc_fig1b', cfg), dpi=300)
     plt.close()
 
     caption = 'Inter-model relationship between ISM ' + \
@@ -403,7 +419,7 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     provenance_record = get_provenance_record(selection,
                                               caption, ['corr'], ['reg'])
 
-    diagnostic_file = get_diagnostic_filename('fig1b_rain_correlation', cfg)
+    diagnostic_file = get_diagnostic_filename('li17natcc_fig1b', cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
@@ -457,10 +473,10 @@ def plot_reg_li(cfg, data_ar, future_exp):
     axx.legend(ncol=2, loc=0, framealpha=1)
 
     fig.tight_layout()
-    fig.savefig(get_plot_filename('fig2a', cfg), dpi=300)
+    fig.savefig(get_plot_filename('li17natcc_fig2a', cfg), dpi=300)
     plt.close()
 
-    caption = ' Scatterplot of the simulated tropical western Pacific ' + \
+    caption = ' Scatter plot of the simulated tropical western Pacific ' + \
         'precipitation (mm d−1 ) versus projected average ISM ' + \
         '(Indian Summer Monsoon) rainfall changes under the ' + future_exp + \
         ' scenario. The red line denotes the observed present-day ' + \
@@ -472,7 +488,7 @@ def plot_reg_li(cfg, data_ar, future_exp):
                                               caption, ['corr'], ['reg'],
                                               plot_type='scatter')
 
-    diagnostic_file = get_diagnostic_filename('fig2a', cfg)
+    diagnostic_file = get_diagnostic_filename('li17natcc_fig2a', cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
@@ -555,10 +571,10 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
     axx.legend(ncol=2, loc=2, framealpha=1)
 
     fig.tight_layout()
-    fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
+    fig.savefig(get_plot_filename('li17natcc_fig2b', cfg), dpi=300)
     plt.close()
 
-    caption = ' Scatterplot of the uncorrected versus corrected average ' + \
+    caption = ' Scatter plot of the uncorrected versus corrected average ' + \
         'ISM (Indian Summer Monsoon) rainfall change ratios (% per degree ' + \
         'Celsius of global SST warming). The error bars for the ' + \
         'Multi-model mean indicate the standard deviation spread among ' + \
@@ -570,7 +586,7 @@ def plot_reg_li2(cfg, datasets, mdiff_ism, mdiff_ism_cor, hist_ism):
                                               caption, ['corr'], ['reg'],
                                               plot_type='scatter')
 
-    diagnostic_file = get_diagnostic_filename('fig2b', cfg)
+    diagnostic_file = get_diagnostic_filename('li17natcc_fig2b', cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
@@ -820,9 +836,9 @@ def main(cfg):
     plot_reg_li2(cfg, data_ar["datasets"], data_ar["mism_diff_rain"],
                  data_ar2["mism_diff_cor"], data_ar2["mism_hist_rain"])
 
-    plot_rain(cfg, 'Multi-model mean rainfall change due to model error',
+    plot_rain(cfg, 'Multi-model mean rainfall change due to model error.',
               np.mean(data_ar2["proj_err"], axis=2), lats, lons)
-    plot_rain(cfg, 'Corrected multi-model mean rainfall change',
+    plot_rain(cfg, 'Corrected multi-model mean rainfall change.',
               np.mean(data_ar2["ar_diff_cor"], axis=2), lats, lons)
 
 

@@ -43,8 +43,8 @@ preprocessors:
 
 diagnostics:
 
-  lif1f2:
-    description: Diagnostic for reproducing figure 1 and 2 from Li et al., 2017
+  cmip5:
+    description: Diagnostic for figure 1 and 2 from Li et al., 2017. Data sets from CMIP5.
     variables:
       pr: &gridded_cmip5_r1i1p1_amon_t2ms
         preprocessor: tropical
@@ -136,4 +136,49 @@ diagnostics:
     scripts:
       lif1f2:
         script: emergent_constraints/lif1f2.py
-        output_name: 'lif1f2'
+
+  cmip6:
+    description: Diagnostic for figure 1 and 2 from Li et al., 2017. Data sets from CMIP6.
+    variables:
+      pr: &gridded_cmip6_r1i1p1_amon_t2ms
+        preprocessor: tropical
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        field: T2Ms
+      ua: &gridded_cmip6_r1i1p1_amon_t3m_pp850
+        preprocessor: pp850
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        field: T3M
+      va:
+        <<: *gridded_cmip6_r1i1p1_amon_t3m_pp850
+      ts: &global_mean_cmip6_r1i1p1_amon_t2ms
+        preprocessor: glob
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+      - {dataset: BCC-CSM2-MR, institute: BCC, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: BCC-CSM2-MR, institute: BCC, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+      - {dataset: CanESM5, institute: CCCma, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: CanESM5, institute: CCCma, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, exp: historical, grid: gr, start_year: 1980, end_year: 2009}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, exp: ssp585, grid: gr, start_year: 2070, end_year: 2099}
+
+      - {dataset: MIROC6, institute: MIROC, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: MIROC6, institute: MIROC, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+      - {dataset: MRI-ESM2-0, institute: MRI, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: MRI-ESM2-0, institute: MRI, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+    scripts:
+      lif1f2:
+        script: emergent_constraints/lif1f2.py
