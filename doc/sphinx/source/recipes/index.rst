@@ -87,5 +87,6 @@ Other
    recipe_multimodel_products
    recipe_rainfarm
    recipe_seaice
+   recipe_seaice_drift
    recipe_shapeselect
    recipe_toymodel

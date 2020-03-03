@@ -10,3 +10,4 @@ Guidelines for diagnostic developers
     Developer configuration file <config_developer>
     Contributing a CMORizing script for an observational dataset <observations>
     GitHub Workflow <git_repository>
+    Pro tips for smoother operations <protips>

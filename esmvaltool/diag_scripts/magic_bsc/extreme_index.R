@@ -157,7 +157,7 @@ for (j in 1:4) { # nolint
   attr(historical_data, "Variables")$dat1$time <- time
 
   base_sd <- base_sd_historical <- base_mean <- list()
-  for (m in 1:length(metric)) {
+  for (m in seq_along(metric)) {
     if (var0 != "pr") {
       thresholds <- Threshold(
         # nolint
@@ -212,7 +212,7 @@ for (j in 1:4) { # nolint
   # and standard deviation from the index
   projection_filenames <- fullpath_filenames[projection_files]
 
-  for (i in 1:length(projection_filenames)) {
+  for (i in seq_along(projection_filenames)) {
     proj_nc <- nc_open(projection_filenames[i])
     projection_data <- ncvar_get(proj_nc, var0)
     time <- ncvar_get(proj_nc, "time")
@@ -266,7 +266,7 @@ for (j in 1:4) { # nolint
       projection_data <- 0.5 * 1.23 * (projection_data**3)
     }
 
-    for (m in 1:length(metric)) {
+    for (m in seq_along(metric)) {
       if (var0 != "pr") {
         projection_index <-
           Climdex(
