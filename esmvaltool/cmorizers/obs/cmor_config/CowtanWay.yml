@@ -1,0 +1,38 @@
+---
+# Filename (will be extended by variable name)
+filename: '{version}_0_0.nc.gz'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CowtanWay
+  version:
+    v1: 'had4_krig_v1'
+    v2: 'had4_uah_v1'
+    v3: 'had4_short_krig_v2'
+    v4: 'had4_short_uah_v2'
+    v5: 'ghcn_short_krig_v2'
+    v6: 'ghcn_short_uah_v2'
+    v7: 'had4sst4_krig_v2'
+    v8: 'had4_krig_v2'
+  baseline:
+    v1: '1981-2010'
+    v2: '1981-2010'
+    v3: '1981-2010'
+    v4: '1981-2010'
+    v5: '1981-2010'
+    v6: '1981-2010'
+    v7: '1961-1990'
+    v8: '1961-1990'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html'
+  reference: 'cowtanway'
+  comment: 'Temperature anomaly with respect to the period {baseline}.'
+
+# Variables to cmorize
+variables:
+  tasa:
+    mip: Amon
+    raw: temperature_anomaly
+    short_name: tasa

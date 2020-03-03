@@ -13,6 +13,16 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  CALIPSO-GOCCP:
+    description: CALIPSO-GOCCP check
+    variables:
+      clcalipso:
+    additional_datasets:
+      - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2,
+         mip: cfMon, tier: 2, start_year: 2007, end_year: 2015}
+    scripts: null
+
+
   CERES-EBAF:
     description: CERES-EBAF check
     variables:
@@ -34,6 +44,37 @@ diagnostics:
     additional_datasets:
       - {dataset: CRU, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
+    scripts: null
+
+
+  CowtanWay:
+    description: CowtanWay check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_krig_v1, start_year: 1979,
+         end_year: 2013}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_uah_v1, start_year: 1979, end_year: 2013}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_short_krig_v2, start_year: 1979,
+         end_year: 2019, end_month: 11}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_short_uah_v2, start_year: 1979,
+         end_year: 2017, end_month: 7}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: ghcn_short_krig_v2, start_year: 1979,
+         end_year: 2019, end_month: 8}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: ghcn_short_uah_v2, start_year: 1979,
+         end_year: 2017, end_month: 7}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4sst4_krig_v2, start_year: 1850,
+         end_year: 2018}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_krig_v2, start_year: 1850,
+         end_year: 2019, end_month: 11}
     scripts: null
 
 
@@ -192,6 +233,22 @@ diagnostics:
     scripts: null
 
 
+  GPCC:
+    description: GPCC check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_025, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_05, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_25, start_year: 1891, end_year: 2016}
+    scripts: null
+
+
   HadCRUT3:
     description: HadCRUT3 check
     variables:
@@ -278,6 +335,25 @@ diagnostics:
     additional_datasets:
       - {dataset: NCEP, project: OBS, tier: 2,
          type: reanaly, version: 1, start_year: 1948, end_year: 2018}
+    scripts: null
+
+
+  OSI-450:
+    description: OSI-450 check
+    variables:
+      sic_day:
+        short_name: sic
+        mip: day
+      sic_month:
+        short_name: sic
+        mip: OImon
+      areacello:
+        mip: fx
+    additional_datasets:
+      - {dataset: OSI-450-nh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
     scripts: null
 
 
@@ -566,7 +642,11 @@ diagnostics:
         mip: Emon
       sftlf:
         mip: fx
-      ta:
+      ta_day:
+        short_name: ta
+        mip: day
+      ta_month:
+        short_name: ta
         mip: Amon
       tas_day:
         short_name: tas
@@ -610,7 +690,11 @@ diagnostics:
       uas_month:
         short_name: uas
         mip: Amon
-      va:
+      va_day:
+        short_name: va
+        mip: day
+      va_month:
+        short_name: va
         mip: Amon
       vas_day:
         short_name: vas
@@ -757,6 +841,17 @@ diagnostics:
     scripts: null
 
 
+  MAC-LWP:
+    description: MAC-LWP check
+    variables:
+      lwp:
+      lwpStderr:
+    additional_datasets:
+      - {dataset: MAC-LWP, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: v1, start_year: 1988, end_year: 2016}
+    scripts: null
+
+
   MERRA2:
     description: MERRA2 check
     variables:
@@ -767,14 +862,15 @@ diagnostics:
     scripts: null
 
 
-  MTE:
-    description: MTE check
+  MLS-AURA:
+    description: MLS-AURA check
     variables:
-      gpp:
-      gppStderr:
+      hur:
+        mip: Amon
+      hurStderr:
+        mip: Amon
     additional_datasets:
-      - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
-         type: reanaly, version: May12, start_year: 1982, end_year: 2011}
+      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004', start_year: 2005, end_year: 2019}
     scripts: null
 
 
@@ -796,6 +892,17 @@ diagnostics:
     additional_datasets:
       - {dataset: MODIS, project: OBS, tier: 3,
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+
+  MTE:
+    description: MTE check
+    variables:
+      gpp:
+      gppStderr:
+    additional_datasets:
+      - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
 
 
