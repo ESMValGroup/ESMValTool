@@ -233,6 +233,16 @@ diagnostics:
     scripts: null
 
 
+  GISTEMP:
+    description: GISTEMP check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: GISTEMP, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: v4, start_year: 1880, end_year: 2020}
+    scripts: null
+
+
   GPCC:
     description: GPCC check
     variables:

@@ -1,0 +1,20 @@
+---
+# Filename (will be extended by variable name)
+filename: 'gistemp250_GHCNv4.nc.gz'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GISTEMP
+  version: 'v4'
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'https://data.giss.nasa.gov/gistemp/'
+  reference: 'gistemp'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tasa:
+    mip: Amon
+    raw: tempanomaly
