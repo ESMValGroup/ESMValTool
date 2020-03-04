@@ -42,7 +42,8 @@ def zmnam_calc(da_fname, outdir, src_props):
 
     in_file = nc4.Dataset(da_fname, "r")
     time_dim = in_file.variables['time'][:]
-    time_nam = in_file.variables['time'].long_name
+    time_lnam = getattr(in_file.variables['time'], 'long_name', '')
+    time_snam = getattr(in_file.variables['time'], 'standard_name', '')
     time_uni = in_file.variables['time'].units
     time_cal = in_file.variables['time'].calendar
     time = np.array(time_dim[:], dtype='d')
@@ -51,7 +52,8 @@ def zmnam_calc(da_fname, outdir, src_props):
                         in_file.variables['time'].calendar)
 
     lev = np.array(in_file.variables['plev'][:], dtype='d')
-    lev_nam = in_file.variables['plev'].long_name
+    lev_lnam = getattr(in_file.variables['plev'], 'long_name', '')
+    lev_snam = getattr(in_file.variables['plev'], 'standard_name', '')
     lev_uni = in_file.variables['plev'].units
     lev_pos = in_file.variables['plev'].positive
     lev_axi = in_file.variables['plev'].axis
@@ -180,7 +182,7 @@ def zmnam_calc(da_fname, outdir, src_props):
     outfiles.append(fname)
     file_out = nc4.Dataset(fname, mode='w', format='NETCDF3_CLASSIC')
     file_out.title = 'Zonal mean annular mode (1)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
                         C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     file_out.createDimension('time', None)
@@ -189,13 +191,19 @@ def zmnam_calc(da_fname, outdir, src_props):
     file_out.createDimension('lon', np.size(lon))
 
     time_var = file_out.createVariable('time', 'd', ('time', ))
-    time_var.setncattr('long_name', time_nam)
+    if time_lnam:
+        time_var.setncattr('long_name', time_lnam)
+    if time_snam:
+        time_var.setncattr('standard_name', time_snam)
     time_var.setncattr('units', time_uni)
     time_var.setncattr('calendar', time_cal)
     time_var[:] = time_dim[:]
 
     lev_var = file_out.createVariable('plev', 'd', ('plev', ))
-    lev_var.setncattr('long_name', lev_nam)
+    if lev_lnam:
+        lev_var.setncattr('long_name', lev_lnam)
+    if lev_snam:
+        lev_var.setncattr('standard_name', lev_snam)
     lev_var.setncattr('units', lev_uni)
     lev_var.setncattr('positive', lev_pos)
     lev_var.setncattr('axis', lev_axi)
@@ -218,20 +226,26 @@ def zmnam_calc(da_fname, outdir, src_props):
     file_out = nc4.Dataset(fname, mode='w', format='NETCDF3_CLASSIC')
     outfiles.append(fname)
     file_out.title = 'Zonal mean annular mode (2)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
     C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     file_out.createDimension('time', None)
     file_out.createDimension('plev', np.size(lev))
 
     time_var = file_out.createVariable('time', 'd', ('time', ))
-    time_var.setncattr('long_name', time_nam)
+    if time_lnam:
+        time_var.setncattr('long_name', time_lnam)
+    if time_snam:
+        time_var.setncattr('standard_name', time_snam)
     time_var.setncattr('units', time_uni)
     time_var.setncattr('calendar', time_cal)
     time_var[:] = time_mo
 
     lev_var = file_out.createVariable('plev', 'd', ('plev', ))
-    lev_var.setncattr('long_name', lev_nam)
+    if lev_lnam:
+        lev_var.setncattr('long_name', lev_lnam)
+    if lev_snam:
+        lev_var.setncattr('standard_name', lev_snam)
     lev_var.setncattr('units', lev_uni)
     lev_var.setncattr('positive', lev_pos)
     lev_var.setncattr('axis', lev_axi)
@@ -255,7 +269,7 @@ def zmnam_calc(da_fname, outdir, src_props):
     outfiles.append(fname)
 
     file_out.title = 'Zonal mean annular mode (3)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
     C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     file_out.createDimension('time', None)
@@ -264,13 +278,19 @@ def zmnam_calc(da_fname, outdir, src_props):
     file_out.createDimension('lon', np.size(lon))
 
     time_var = file_out.createVariable('time', 'd', ('time', ))
-    time_var.setncattr('long_name', time_nam)
+    if time_lnam:
+        time_var.setncattr('long_name', time_lnam)
+    if time_snam:
+        time_var.setncattr('standard_name', time_snam)
     time_var.setncattr('units', time_uni)
     time_var.setncattr('calendar', time_cal)
     time_var[:] = 0
     #
     lev_var = file_out.createVariable('plev', 'd', ('plev', ))
-    lev_var.setncattr('long_name', lev_nam)
+    if lev_lnam:
+        lev_var.setncattr('long_name', lev_lnam)
+    if lev_snam:
+        lev_var.setncattr('standard_name', lev_snam)
     lev_var.setncattr('units', lev_uni)
     lev_var.setncattr('positive', lev_pos)
     lev_var.setncattr('axis', lev_axi)
