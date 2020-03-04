@@ -45,7 +45,7 @@ Future projections
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
-   recipe_wenzel14jgr.rst
+   recipe_wenzel14jgr
    recipe_wenzel16jclim
    recipe_tcr
 
