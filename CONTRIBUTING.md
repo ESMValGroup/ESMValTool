@@ -17,6 +17,9 @@ To install in development mode, follow these instructions.
 -   Go to the esmvaltool directory: `cd ESMValTool`
 -   Create the esmvaltool conda environment `conda env create --name esmvaltool --file environment.yml`
 -   Activate the esmvaltool environment: `conda activate esmvaltool`
+-   Go to the esmvalcore directory: `cd ESMValCore`
+-   Install ESMValCore in development mode: `pip install -e '.[develop]'`
+-   Go to the esmvaltool directory: `cd ESMValTool`
 -   Install in development mode: `pip install -e '.[develop]'`. If you are installing behind a proxy that does not trust the usual pip-urls you can declare them with the option `--trusted-host`, e.g. `pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]`
 -   If you want to use R diagnostics, run `Rscript esmvaltool/install/R/setup.R` to install the R dependences. Note that if you only want to run the lint test for R scripts you will have to install the `lintr` package. You can do that by running `Rscript esmvaltool/install/R/setup_devutils.R`.
 -   If you want to use Julia diagnostics, first install Julia as described below in section "Installing Julia", then run `julia esmvaltool/install/Julia/setup.jl` to install the Julia dependences. Install Julia dependences after R dependences if you plan to use both.
