@@ -45,6 +45,10 @@ diagnostics:
 
   cmip5:
     description: Diagnostic for figure 1 and 2 from Li et al., 2017. Data sets from CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
     variables:
       pr: &gridded_cmip5_r1i1p1_amon_t2ms
         preprocessor: tropical
@@ -139,6 +143,10 @@ diagnostics:
 
   cmip6:
     description: Diagnostic for figure 1 and 2 from Li et al., 2017. Data sets from CMIP6.
+    themes:
+      - EC
+    realms:
+      - atmos
     variables:
       pr: &gridded_cmip6_r1i1p1_amon_t2ms
         preprocessor: tropical
