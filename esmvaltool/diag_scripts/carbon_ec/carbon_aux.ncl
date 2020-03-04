@@ -51,7 +51,7 @@ begin
       copy_VarAtts(NBP, NBP_tmp)
       copy_VarCoords(NBP, NBP_tmp)
 
-    else if (dimsizes(idx_new).eq.1) then
+    elseif (dimsizes(idx_new).eq.1) then
       NBP_tmp(0) = 0.0
       do y = 0, dimsizes(NBP) - 2
         NBP_tmp(y + 1) = NBP_tmp(y:) + NBP(y)
@@ -62,7 +62,6 @@ begin
     else
       error_msg("f", scriptname, funcname, \
                 "rank " + dimsizes(idx_new) + " of NBP not supported")
-    end if
     end if
     delete(y)
 
