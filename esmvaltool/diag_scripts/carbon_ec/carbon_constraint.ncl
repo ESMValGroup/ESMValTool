@@ -16,7 +16,7 @@
 ;                     carbon_corr_2var.ncl
 ;
 ; Modification history
-;    202001-A_wenz_sa: code rewritten for ESMValTool v2.0
+;    202001??-`zechlau_sabrina: code rewritten for ESMValTool v2.0
 ;    20170822-bock_lisa: added tags for reporting
 ;    20151027-lauer_axel: added call to 'write_references'
 ;    201509-zechlau_sabrina: updated to new ESMValTool structure
