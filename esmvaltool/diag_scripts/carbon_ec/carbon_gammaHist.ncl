@@ -12,10 +12,10 @@
 ; Caveats
 ;
 ; Modification history
-;     202001-A_wenz_sa: code rewritten for ESMValTool v2.0
-;     20151027-A_laue_ax: added call to 'write_references'
-;     201404-A_wenz_sa: updated according to changes in ESMValTool
-;     201303-A_wenz_sa: written
+;     20200115-zechlau_sabrina: code rewritten for ESMValTool v2.0
+;     20151027-lauer_axel: added call to 'write_references'
+;     201404??-zechlau_sabrina: updated according to changes in ESMValTool
+;     201303??-zechlau_sabrina: written
 ; #############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
