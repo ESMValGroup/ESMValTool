@@ -17,7 +17,7 @@
 ;
 ; Modification history
 ;    202001-A_wenz_sa: code rewritten for ESMValTool v2.0
-;    * 20170822-A_bock_ls: added tags for reporting
+;    20170822-bock_lisa: added tags for reporting
 ;    * 20151027-A_laue_ax: added call to 'write_references'
 ;    * 201509-A_Sabrina Wenzel: updated to new ESMValTool structure
 ;    * 201303-A_Sabrina Wenzel: written
