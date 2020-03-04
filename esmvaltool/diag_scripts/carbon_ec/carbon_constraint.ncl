@@ -20,7 +20,7 @@
 ;    20170822-bock_lisa: added tags for reporting
 ;    20151027-lauer_axel: added call to 'write_references'
 ;    201509-zechlau_sabrina: updated to new ESMValTool structure
-;    * 201303-A_Sabrina Wenzel: written
+;    201303-wenzel_sabrina: written
 ; #############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
