@@ -58,6 +58,12 @@ begin
     units_from = var@units
   end if
 
+  if (units_from.eq.units_to) then
+    error_msg("w", scriptname, funcname, "No conversion needed from " + \
+              units_from + " to " + units_to)
+    return(out)
+  end if
+
   if (units_from.eq."1") then
     if (units_to.eq."g/kg") then
       out = out * 1000.
@@ -264,12 +270,6 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
-  end if
-
-  if (units_from.eq.units_to) then
-    error_msg("w", scriptname, funcname, "No conversion needed from " + \
-              units_from + " to " + units_to)
-    return(out)
   end if
 
   error_msg("f", scriptname, funcname, "conversion from " + units_from + \
