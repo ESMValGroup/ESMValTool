@@ -407,9 +407,7 @@ def frc(data_dict):
     """
     Calculate exchange from the data dictionary.
     """
-    data_dict = fric(data_dict)
-    data_dict = froc(data_dict)
-
+    #data_dict = fric(data_dict)
     exps = {}
     ensembles = {}
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
@@ -417,6 +415,8 @@ def frc(data_dict):
         ensembles[ensemble] = True
 
     for exp, ensemble in product(exps, ensembles):
+        if ('fric', exp, ensemble) not in data_dict: continue
+        if ('froc', exp, ensemble) not in data_dict: continue
         cube = data_dict[('fric', exp, ensemble)].copy()
         cube2 = data_dict[('froc', exp, ensemble)]
         cube.data = cube.data + cube2.data
@@ -797,10 +797,10 @@ def get_long_name(name):
     }
     long_name = ''
     if name.find('gt_norm') > -1:
-        long_name += 'Normalised Global Total'
+        long_name += 'Normalised Global Total '
         name = name[name.find('gt_norm')]
-    elif name[-2:]. == 'gt':
-        long_name += 'Global Total'
+    elif name[-2:] == 'gt':
+        long_name += 'Global Total '
         name = name[:-2]
 
     return long_name + longnames.get(name, name)
@@ -933,7 +933,10 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
 
     plt.xlabel(x_label)
     plt.ylabel(y_label)
-    plt.title(' '.join([(get_long_name(x), 'by', get_long_name(y)]))
+    if x == 'time':
+        plt.title(get_long_name(y))
+    else:
+        plt.title(' '.join([get_long_name(x), 'by', get_long_name(y)]))
 
     image_extention = diagtools.get_image_format(cfg)
 
