@@ -24,6 +24,7 @@ REQUIREMENTS = {
     'install': [
         'cartopy',
         'cdo',
+        'cdsapi',
         'cf-units',
         'cmocean',
         'cython',

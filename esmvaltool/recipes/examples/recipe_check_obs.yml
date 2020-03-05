@@ -50,7 +50,7 @@ diagnostics:
   CowtanWay:
     description: CowtanWay check
     variables:
-      tas:
+      tasa:
     additional_datasets:
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: had4_krig_v1, start_year: 1979,
@@ -438,6 +438,17 @@ diagnostics:
     additional_datasets:
       - {dataset: AURA-TES, project: OBS, mip: Amon, tier: 3,
          type: sat, version: 1, start_year: 2005, end_year: 2011}
+    scripts: null
+
+
+  CDS-SATELLITE-ALBEDO:
+    description: CDS-SATELLITE-ALBEDO check
+    variables:
+      bdalb:
+      bhalb:
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-ALBEDO, project: OBS6, mip: Lmon, tier: 3,
+         type: sat, version: V1, start_year: 1999, end_year: 2013}
     scripts: null
 
 
