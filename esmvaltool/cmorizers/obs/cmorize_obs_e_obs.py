@@ -12,7 +12,6 @@ Last access
 Download and processing instructions
     Download the ensemble mean files for:
         TG TN TX RR PP
-    make cdo monmean over the files to the new name *.nc -> *_mon.nc
 """
 
 import logging
