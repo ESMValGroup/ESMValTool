@@ -575,12 +575,10 @@ def load_timeseries(cfg, short_names):
             #cube = diagtools.bgc_units(cube, short_name)
 
             print('load_timeseries:\t%s successfull loaded data:', (short_name, exp, ensemble), 'mean:', cube.data.mean())
-
             data_dict[(short_name, exp, ensemble)] = cube
 
     if 'co2' in short_names_to_load:
         data_dict = load_co2_forcing(cfg, data_dict)
-
 
     for sn in short_names_to_load:
         if sn in transforms:
@@ -746,27 +744,6 @@ def load_co2_forcing(cfg, data_dict):
     return data_dict
 
 
-# def load_areas(cfg, short_names=['areacella', 'areacello']):
-#     """
-#     Load area data
-#     """
-#     area_dict = {}
-#     for index, metadata_filename in enumerate(cfg['input_files']):
-#         logger.info('load_areas:\t%s', metadata_filename)
-#         metadatas = diagtools.get_input_files(cfg, index=index)
-#         for fn in sorted(metadatas):
-#             short_name = metadatas[fn]['short_name']
-#             exp = metadatas[fn]['exp']
-#             ensemble = metadatas[fn]['ensemble']
-#             variable_group = metadatas[fn]['variable_group']
-#
-#             if short_name not in short_names: continue
-#             print('loaded area:', (short_name, exp, ensemble) )
-#             cube = iris.load_cube(fn)
-#             area_dict[(short_name,variable_group)] = cube
-#     return area_dict
-
-
 def get_threshold_point(cube, year):
     """
     get the location of the year provided.
@@ -857,9 +834,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                 x_label = 'Year'
             elif x == short_name == 'co2':
                 x_data = cube['co2']
+                x_times = cube['time']
                 x_label = ' '.join(['Atmospheric co2, ppm'])
             elif short_name == x:
                 x_data = cube.data
+                x_times = diagtools.cube_time_to_float(cube)
                 x_label = ' '.join([x, str(cube.units)])
 
             if y == 'time':
@@ -867,28 +846,43 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                     x_data = cube['time']
                 else:
                     y_data = diagtools.cube_time_to_float(cube)
+                    y_times = y_data.copy()
                 y_label = 'Year'
-            elif y == short_name == 'co2' :
+            elif y == short_name == 'co2':
                 y_data = cube['co2']
+                y_times = cube['time']
                 y_label = ' '.join(['Atmospheric co2, ppm'])
             elif short_name == y:
                 y_data = cube.data
+                y_times = diagtools.cube_time_to_float(cube)
                 y_label = ' '.join([y, str(cube.units)])
 
             if x == 'time' and short_name == y:
                 x_label = 'Year'
                 if isinstance(cube, iris.cube.Cube):
                     x_data = diagtools.cube_time_to_float(cube)
+                    x_times = x_data.copy()
                 else:
                     x_data = cube['time']
+                    x_times = x_data.copy()
+
             print('make_ts_figure: loaded x data', short_name, exp, ensemble, x, np.mean(x_data))
             print('make_ts_figure: loaded y data', short_name, exp, ensemble, y, np.mean(y_data))
 
-        if 0 in [len(x_data), len(y_data)]: continue
+        if 0 in [len(x_data), len(y_data)]:
+            continue
 
         label = ' '.join([exp_1, ensemble_1])
         if draw_line:
-            plt.plot(x_data, y_data, lw=0.5, color=exp_colours[exp_1], )#label=label)
+            cutoff = 2015.
+            plt.plot(np.ma.masked_where(x_times < cutoff, x_data),
+                     np.ma.masked_where(y_times < cutoff, y_data),
+                     lw=0.5,
+                     color=exp_colours[exp_1], )
+            plt.plot(np.ma.masked_where(x_times >= cutoff, x_data),
+                     np.ma.masked_where(y_times >= cutoff, y_data),
+                     lw=0.5,
+                     color=exp_colours['historical'], )
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
