@@ -50,7 +50,7 @@ Note that sometimes, if you are under a firewall, the installation of Julia diag
 
 ## Running tests
 
-Go to the directory where the repository is cloned and run `python setup.py test --installation`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
+Go to the directory where the repository is cloned and run `python setup.py test --addopts --installation`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
 
 ## Code style
 
@@ -86,6 +86,7 @@ We use `pycodestyle` on CircleCI to automatically check that there are no format
 ### NCL
 
 Because there is no standard best practices document for NCL, we use [PEP8](https://www.python.org/dev/peps/pep-0008/) for NCL code as well, with some minor adjustments to accomodate for differences in the languages. The most important difference is that for NCL code the indentation should be 2 spaces instead of 4.
+Use the command `nclcodestyle /path/to/file.ncl` to check if your code follows the style guide.
 
 ### R
 
@@ -94,6 +95,10 @@ Best practices for R code are described in [The tidyverse style guide](https://s
 ### YAML
 
 Please use `yamllint` to check that your YAML files do not contain mistakes.
+
+### Any text file
+
+A generic tool to check for common spelling mistakes is [codespell](https://pypi.org/project/codespell/).
 
 ## Documentation
 

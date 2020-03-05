@@ -69,7 +69,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            python setup.py test --installation
+            python setup.py test --addopts --installation
             esmvaltool -h
             ncl -V
             # cdo test, check that it supports hdf5
@@ -129,7 +129,7 @@ jobs:
             pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
-            python setup.py test --installation
+            python setup.py test --addopts --installation
             ncl -V
             cdo --version
           no_output_timeout: 20m
