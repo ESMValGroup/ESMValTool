@@ -977,8 +977,8 @@ def main(cfg):
     jobtype = 'marine'
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
-                #    'npp', 'nppgt', 'rhgt', 'exchange',
-                #    'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
+                       # 'npp', 'nppgt', 'rh', 'rhgt', 'exchange',
+                       # 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
                        'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'frc',
                        'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt','frcgt',
                        ]
