@@ -89,7 +89,6 @@ def fix_coords(cube):
                     _fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
-                    coord_names = [coord.var_name for coord in cube.coords()]
                     _roll_cube_data(cube, len(lons_above_0), -1)
                 else:
                     _fix_bounds(cube, cube.coord('longitude'))
