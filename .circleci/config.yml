@@ -186,7 +186,7 @@ jobs:
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
             apt update && apt install time
-            \time -v conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
+            \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
           no_output_timeout: 30m
       - store_artifacts:
           path: /logs

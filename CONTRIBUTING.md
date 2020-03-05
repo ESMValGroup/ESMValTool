@@ -159,7 +159,7 @@ from the ESMValCore project to create a draft version of the release notes and e
 Follow these steps to create a new conda package:
 
 -   Check out the tag corresponding to the release, e.g. `git checkout v2.0.0b2`
--   Edit meta.yaml and uncomment the lines starting with `git_rev` and `git_url`, remove the line starting with `path` in the `source` section.
+-   Edit package/meta.yaml and uncomment the lines starting with `git_rev` and `git_url`, remove the line starting with `path` in the `source` section.
 -   Activate the base environment `conda activate base`
--   Run `conda build . -c conda-forge -c esmvalgroup` to build the conda package
+-   Run `conda build package -c conda-forge -c esmvalgroup` to build the conda package
 -   If the build was successful, upload the package to the esmvalgroup conda channel, e.g. `anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.0.0b2-py_0.tar.bz2`.
