@@ -66,11 +66,12 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
     zg_mo = np.array(in_file.variables['zg'][:])
 
     # Record attributes for output netCDFs
-    time_nam = in_file.variables['time'].long_name
+    time_lnam = getattr(in_file.variables['time'], 'long_name', '')
+    time_snam = getattr(in_file.variables['time'], 'standard_name', '')
     time_uni = in_file.variables['time'].units
     time_cal = in_file.variables['time'].calendar
-
-    lev_nam = in_file.variables['plev'].long_name
+    lev_lnam = getattr(in_file.variables['plev'], 'long_name', '')
+    lev_snam = getattr(in_file.variables['plev'], 'standard_name', '')
     lev_uni = in_file.variables['plev'].units
     lev_pos = in_file.variables['plev'].positive
     lev_axi = in_file.variables['plev'].axis
@@ -230,7 +231,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
                            mode='w', format='NETCDF3_CLASSIC')
 
     file_out.title = 'Zonal mean annular mode (4)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
     C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     #
@@ -240,13 +241,19 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
     file_out.createDimension('lon', np.size(lon))
     #
     time_var = file_out.createVariable('time', 'd', ('time', ))
-    time_var.setncattr('long_name', time_nam)
+    if time_lnam:
+        time_var.setncattr('long_name', time_lnam)
+    if time_snam:
+        time_var.setncattr('standard_name', time_snam)
     time_var.setncattr('units', time_uni)
     time_var.setncattr('calendar', time_cal)
     time_var[:] = 0  # singleton
     #
     lev_var = file_out.createVariable('plev', 'd', ('plev', ))
-    lev_var.setncattr('long_name', lev_nam)
+    if lev_lnam:
+        lev_var.setncattr('long_name', lev_lnam)
+    if lev_snam:
+        lev_var.setncattr('standard_name', lev_snam)
     lev_var.setncattr('units', lev_uni)
     lev_var.setncattr('positive', lev_pos)
     lev_var.setncattr('axis', lev_axi)
