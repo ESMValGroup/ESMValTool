@@ -47,6 +47,37 @@ diagnostics:
     scripts: null
 
 
+  CowtanWay:
+    description: CowtanWay check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_krig_v1, start_year: 1979,
+         end_year: 2013}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_uah_v1, start_year: 1979, end_year: 2013}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_short_krig_v2, start_year: 1979,
+         end_year: 2019, end_month: 11}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_short_uah_v2, start_year: 1979,
+         end_year: 2017, end_month: 7}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: ghcn_short_krig_v2, start_year: 1979,
+         end_year: 2019, end_month: 8}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: ghcn_short_uah_v2, start_year: 1979,
+         end_year: 2017, end_month: 7}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4sst4_krig_v2, start_year: 1850,
+         end_year: 2018}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_krig_v2, start_year: 1850,
+         end_year: 2019, end_month: 11}
+    scripts: null
+
+
   Duveiller2018:
     description: Duveiller2018 check
     variables:
@@ -222,6 +253,22 @@ diagnostics:
     scripts: null
 
 
+  GPCC:
+    description: GPCC check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_025, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_05, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_25, start_year: 1891, end_year: 2016}
+    scripts: null
+
+
   HadCRUT3:
     description: HadCRUT3 check
     variables:
@@ -381,6 +428,18 @@ diagnostics:
     scripts: null
 
 
+  REGEN:
+    description: REGEN check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: REGEN, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+    scripts: null
+
+
   WOA:
     description: WOA check
     variables:
@@ -411,6 +470,17 @@ diagnostics:
     additional_datasets:
       - {dataset: AURA-TES, project: OBS, mip: Amon, tier: 3,
          type: sat, version: 1, start_year: 2005, end_year: 2011}
+    scripts: null
+
+
+  CDS-SATELLITE-ALBEDO:
+    description: CDS-SATELLITE-ALBEDO check
+    variables:
+      bdalb:
+      bhalb:
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-ALBEDO, project: OBS6, mip: Lmon, tier: 3,
+         type: sat, version: V1, start_year: 1999, end_year: 2013}
     scripts: null
 
 
@@ -615,7 +685,11 @@ diagnostics:
         mip: Emon
       sftlf:
         mip: fx
-      ta:
+      ta_day:
+        short_name: ta
+        mip: day
+      ta_month:
+        short_name: ta
         mip: Amon
       tas_day:
         short_name: tas
@@ -659,7 +733,11 @@ diagnostics:
       uas_month:
         short_name: uas
         mip: Amon
-      va:
+      va_day:
+        short_name: va
+        mip: day
+      va_month:
+        short_name: va
         mip: Amon
       vas_day:
         short_name: vas
@@ -869,8 +947,6 @@ diagnostics:
       - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
          type: reanaly, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
-
-
 
 
   NDP:

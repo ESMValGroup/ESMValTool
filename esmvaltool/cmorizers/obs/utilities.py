@@ -5,7 +5,6 @@ import os
 from contextlib import contextmanager
 
 import iris
-import iris.exceptions
 import numpy as np
 import yaml
 from cf_units import Unit
@@ -64,7 +63,6 @@ def fix_coords(cube):
     # first fix any completely missing coord var names
     _fix_dim_coordnames(cube)
     # fix individual coords
-    lon_coord = cube.coord('longitude')
     for cube_coord in cube.coords():
         # fix time
         if cube_coord.var_name == 'time':
@@ -76,9 +74,9 @@ def fix_coords(cube):
         # fix longitude
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
-            if lon_coord.ndim == 1:
-                if lon_coord.points[0] < 0. and \
-                        lon_coord.points[-1] < 181.:
+            if cube_coord.ndim == 1:
+                if cube_coord.points[0] < 0. and \
+                        cube_coord.points[-1] < 181.:
                     lon_coord = cube.coord('longitude').copy()
 
                     lons_below_0 = lon_coord.points[lon_coord.points < 0.] + \
@@ -86,14 +84,13 @@ def fix_coords(cube):
                     lons_above_0 = lon_coord.points[lon_coord.points >= 0.]
                     lons = np.hstack((lons_above_0, lons_below_0))
 
-                    cube.coord('longitude').points = lons
+                    cube_coord.points = lons
 
-                    _fix_bounds(cube, lon_coord)
+                    _fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     coord_names = [coord.var_name for coord in cube.coords()]
-                    _roll_cube_data(cube, len(lons_above_0),
-                                    coord_names.index('lon'))
+                    _roll_cube_data(cube, len(lons_above_0), -1)
                 else:
                     _fix_bounds(cube, cube.coord('longitude'))
 
@@ -114,7 +111,7 @@ def fix_coords(cube):
 
     # remove CS
     cube.coord('latitude').coord_system = None
-    lon_coord.coord_system = None
+    cube.coord('longitude').coord_system = None
 
     return cube
 
