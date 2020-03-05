@@ -218,12 +218,16 @@ def calculate_anomaly(cube, anomaly, calc_average=False):
 def get_threshold_exceedance_date(cube, threshold):
     """
     Calculate the threshold exceedance date.
+
+    Assumes that model run ends 2100, and uses 20 year window.
     """
     loc = np.where(cube.data > threshold)[0]
     if not len(loc): return None
     times = cube.coord('time').units.num2date(
         cube.coord('time').points)
     time = times[loc[0]]
+    if time.year > 2090.:
+        return None
     return time
 
 
@@ -752,7 +756,9 @@ def get_threshold_point(cube, year):
     date = datetime.datetime(int(year), 6, 1)
     t_1 = time_units.date2num(date)
     arg_min = np.argmin( np.abs(cube.coord('time').points - t_1))
+    #print('get_threshold_point',t_1, date, arg_min)
     return arg_min
+
 
 def get_long_name(name):
     """
@@ -822,6 +828,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
     fig = plt.figure()
     x_label,y_label = [], []
     for exp_1, ensemble_1 in product(exps, ensembles):
+        print('\nproduct loop', exp_1, ensemble_1)
         x_data, y_data = [], []
         for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
             #print('plotting', short_name, exp, ensemble, ' from', x,y)
@@ -830,47 +837,66 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
             if short_name not in [x,y]: continue
 
             print('make_ts_figure: found', short_name, exp, ensemble, x,y)
-            if x == 'time':
-                x_label = 'Year'
-            elif x == short_name == 'co2':
-                x_data = cube['co2']
-                x_times = cube['time']
-                x_label = ' '.join(['Atmospheric co2, ppm'])
-            elif short_name == x:
-                x_data = cube.data
-                x_times = diagtools.cube_time_to_float(cube)
-                x_label = ' '.join([x, str(cube.units)])
-
-            if y == 'time':
-                if isinstance(cube, dict):
-                    x_data = cube['time']
-                else:
-                    y_data = diagtools.cube_time_to_float(cube)
-                    y_times = y_data.copy()
-                y_label = 'Year'
-            elif y == short_name == 'co2':
-                y_data = cube['co2']
-                y_times = cube['time']
-                y_label = ' '.join(['Atmospheric co2, ppm'])
-            elif short_name == y:
-                y_data = cube.data
-                y_times = diagtools.cube_time_to_float(cube)
-                y_label = ' '.join([y, str(cube.units)])
-
-            if x == 'time' and short_name == y:
+            if x == 'time'and short_name == y:
                 x_label = 'Year'
                 if isinstance(cube, iris.cube.Cube):
                     x_data = diagtools.cube_time_to_float(cube)
                     x_times = x_data.copy()
+                    print('setting x time to ',short_name, exp, ensemble)
                 else:
                     x_data = cube['time']
                     x_times = x_data.copy()
+                    print('setting x time to ',short_name, exp, ensemble)
+            elif x == short_name == 'co2':
+                x_data = cube['co2']
+                x_times = cube['time']
+                print('setting x time to ',short_name, exp, ensemble)
+                x_label = ' '.join(['Atmospheric co2, ppm'])
+            elif short_name == x:
+                x_data = cube.data
+                x_times = diagtools.cube_time_to_float(cube)
+                print('setting x time to ',short_name, exp, ensemble)
+                x_label = ' '.join([x, str(cube.units)])
+
+            if y == 'time':
+                print('what kind of crazy person plots time on y axis?')
+                assert 0
+#                if isinstance(cube, dict):
+#                    x_data = cube['time']
+#                else:
+#                    y_data = diagtools.cube_time_to_float(cube)
+#                    y_times = y_data.copy()
+#                y_label = 'Year'
+            elif y == short_name == 'co2':
+                y_data = cube['co2']
+                y_times = cube['time']
+                print('setting y time to ',short_name, exp, ensemble)
+
+                y_label = ' '.join(['Atmospheric co2, ppm'])
+            elif short_name == y:
+                y_data = cube.data
+                y_times = diagtools.cube_time_to_float(cube)
+                print('setting y time to ',short_name, exp, ensemble)
+                y_label = ' '.join([y, str(cube.units)])
+
+#           if x == 'time' and short_name == y:
+#               x_label = 'Year'
+#               if isinstance(cube, iris.cube.Cube):
+#                   x_data = diagtools.cube_time_to_float(cube)
+#                   x_times = x_data.copy()
+#               else:
+#                   x_data = cube['time']
+#                   x_times = x_data.copy()
 
             print('make_ts_figure: loaded x data', short_name, exp, ensemble, x, np.mean(x_data))
             print('make_ts_figure: loaded y data', short_name, exp, ensemble, y, np.mean(y_data))
 
         if 0 in [len(x_data), len(y_data)]:
             continue
+
+        if len(x_data) != len(x_times) or len(y_data) != len(y_times):
+            print('x:', len(x_data), len(x_times), 'y:', len(y_data), len(y_times))
+            assert 0 
 
         label = ' '.join([exp_1, ensemble_1])
         if draw_line:
@@ -891,9 +917,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
             except:
                threshold_times = {}
             for threshold, time in threshold_times.items():
-                if not time: continue
-
+                if not time: 
+                    continue
                 y_point = get_threshold_point(cube, time.year)
+                print(exp_1, ensemble_1,x,y, threshold, time, y_point, len(x_data),len(y_data), )
+
                 plt.plot(x_data[y_point],
                          y_data[y_point],
                          marker_styles[threshold],
@@ -908,6 +936,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                    'ssp434':'goldenrod',
                    'ssp585': 'red',
                    'ssp534-over':'orange'}
+
     plot_details = {}
     for exp,color in sorted(exp_colours_leg.items()):
         plot_details[exp] = {
