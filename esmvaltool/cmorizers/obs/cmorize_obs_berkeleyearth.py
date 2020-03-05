@@ -196,7 +196,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
         attrs['comment'] = comments[s_name]
         utils.set_global_atts(cube, attrs)
         utils.save_variable(cube,
-                            short_name,
+                            s_name,
                             out_dir,
                             attrs,
                             unlimited_dimensions=['time'])
