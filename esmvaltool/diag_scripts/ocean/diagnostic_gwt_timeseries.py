@@ -875,6 +875,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
         label = ' '.join([exp_1, ensemble_1])
         if draw_line:
             cutoff = 2015.
+            x_times = np.ma.array(x_times)
+            y_times = np.ma.array(y_times)
             plt.plot(np.ma.masked_where(x_times < cutoff, x_data),
                      np.ma.masked_where(y_times < cutoff, y_data),
                      lw=0.5,
