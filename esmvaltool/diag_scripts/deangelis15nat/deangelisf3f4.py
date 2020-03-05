@@ -44,9 +44,22 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic, select_metadata,
     variables_available, plot)
 from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename)
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    select_metadata, group_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def _get_sel_files_var(cfg, varnames):
+    """Get filenames from cfg for all model mean and differen variables."""
+    selection = []
+
+    for var in varnames:
+        for hlp in select_metadata(cfg['input_data'].values(), short_name=var):
+            selection.append(hlp['filename'])
+
+    return selection
+
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
@@ -306,10 +319,29 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs, provenance_record):
     fig.tight_layout()
     fig.savefig(os.path.join(cfg['plot_dir'], 'fig4.' +
                              cfg['output_file_type']), dpi=300)
-    plt.close()
     
-    basename = os.path.join(cfg['work_dir'], 'provenance'+ '_test')
-    diagnostic_file = get_diagnostic_filename(basename, cfg)
+    fig.savefig(get_plot_filename('fig4', cfg), dpi=300)
+    plt.close()
+
+    caption = '....'
+
+    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
+
+    provenance_record = get_provenance_record(selection,
+                                              caption, ['diff'], ['reg'])
+
+    diagnostic_file = get_diagnostic_filename('fig4', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_ploted(mdrsnstdts, {'var_name': 'mdrsnstdts',
+                                                     'long_name': 'Prec' +
+                                                                  'ipita' +
+                                                                  'tion ' +
+                                                                  'Change',
+                                                     'units': 'mm d-1'}),
+              target=diagnostic_file)
+
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
