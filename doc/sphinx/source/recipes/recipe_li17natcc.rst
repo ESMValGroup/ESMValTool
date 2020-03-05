@@ -33,7 +33,11 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-The recipe can be run with different CMIP5 and CMIP6 models. For each model, two experiments must be given: one historical run, possibly between 1980-2009 and one other model experiment. The user can coose the other model experiment, but it needs to be the same for all given models. The start and end year for the second data set can be choosen by the user. Different ensemble members are not possible, yet.
+The recipe can be run with different CMIP5 and CMIP6 models. For each model, two experiments must be given: 
+one historical run, possibly between 1980-2009 and one other model experiment. The user can choose the other model experiment, 
+but it needs to be the same for all given models. 
+The start and end year for the second data set can be choosen by the user, but should be consistent for all models 
+(the same for future scenarios, the same length for other experiments). Different ensemble members are not possible, yet.
 
 
 Variables
