@@ -34,7 +34,8 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    cube.units = var.get('raw_units', short_name)
+    if 'raw_units' in var:
+        cube.units = var['raw_units']
     cube.convert_units(cmor_info.units)
 
     # Fix calendar type
