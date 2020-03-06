@@ -17,6 +17,7 @@ diagnostics:
     description: BerkeleyEarth check
     variables:
       tas:
+      tasa:
     additional_datasets:
       - {dataset: BerkeleyEarth, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: 2020, start_year: 1850, end_year: 2019}
