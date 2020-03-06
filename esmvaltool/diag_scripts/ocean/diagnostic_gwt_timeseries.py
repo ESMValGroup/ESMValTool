@@ -721,7 +721,7 @@ def load_co2_forcing(cfg, data_dict):
                 new_datas = list(np.ma.masked_where(hist_times<min_time, hist_datas).compressed())
                 new_times.extend(data_dict[('co2', ssp_only, ensemble)]['time'])
                 new_datas.extend(data_dict[('co2', ssp_only, ensemble)]['co2'])
-            
+
 
         if len(new_times) != len(ssp_times):
             print('New times do not match old times:', len(new_times), '!=', len(ssp_times),'\nnew:',new_times, '\nssp:',ssp_times)
@@ -921,28 +921,33 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
 
         if len(x_data) != len(x_times) or len(y_data) != len(y_times):
             print('x:', len(x_data), len(x_times), 'y:', len(y_data), len(y_times))
-            assert 0 
+            assert 0
 
         label = ' '.join([exp_1, ensemble_1])
         if draw_line:
-            cutoff = 2015.
             x_times = np.ma.array(x_times)
             y_times = np.ma.array(y_times)
-            plt.plot(np.ma.masked_where(x_times < cutoff, x_data),
-                     np.ma.masked_where(y_times < cutoff, y_data),
-                     lw=0.5,
-                     color=exp_colours[exp_1], )
-            plt.plot(np.ma.masked_where(x_times >= cutoff, x_data),
-                     np.ma.masked_where(y_times >= cutoff, y_data),
-                     lw=0.5,
-                     color=exp_colours['historical'], )
+            if exp_1 == 'historical':
+                plt.plot(np.ma.masked_where(x_times < 2005, x_data),
+                         np.ma.masked_where(y_times < 2005, y_data),
+                         lw=0.5,
+                         color=exp_colours[exp_1], )
+            else:
+                plt.plot(np.ma.masked_where((2005 < x_times) + (x_times < 2015), x_data),
+                         np.ma.masked_where((2005 < y_times) + (y_times < 2015), y_data),
+                         lw=0.5,
+                         color=exp_colours['historical'], )
+                plt.plot(np.ma.masked_where(x_times >= 2015, x_data),
+                         np.ma.masked_where(y_times >= 2015, y_data),
+                         lw=0.5,
+                         color=exp_colours['historical'], )
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
             except:
                threshold_times = {}
             for threshold, time in threshold_times.items():
-                if not time: 
+                if not time:
                     continue
                 y_point = get_threshold_point(cube, time.year)
                 print(exp_1, ensemble_1,x,y, threshold, time, y_point, len(x_data),len(y_data), )
