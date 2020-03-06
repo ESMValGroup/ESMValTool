@@ -13,6 +13,17 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  BerkeleyEarth:
+    description: BerkeleyEarth check
+    variables:
+      tas:
+      tasa:
+    additional_datasets:
+      - {dataset: BerkeleyEarth, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: 2020, start_year: 1850, end_year: 2019}
+    scripts: null
+
+
   CALIPSO-GOCCP:
     description: CALIPSO-GOCCP check
     variables:
@@ -405,6 +416,18 @@ diagnostics:
     additional_datasets:
       - {dataset: PIOMAS, project: OBS, tier: 2,
          type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  REGEN:
+    description: REGEN check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: REGEN, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
     scripts: null
 
 

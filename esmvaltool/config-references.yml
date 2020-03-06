@@ -690,6 +690,7 @@ references:
   zhang11wcc: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011."
   # Observations
   aura-tes: "Beer, R., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2005.863716, 2006."
+  berkeleyearth: "Rohde et al., Geoinfor. Geostat.: An Overview, doi:10.4172/gigs.1000103, 2013"
   cds-satellite-albedo: "http://datastore.copernicus-climate.eu/c3s/published-forms/c3sprod/satellite-albedo/Documentation_albedo_for_version_1_data.zip"
   cds-satellite-lai-fapar: "Baret et al., Remote Sens. Environ., doi:10.1016/j.rse.2007.02.018, 2007.OB"
   cds-satellite-soil-moisture: "Gruber et al., Earth Syst. Sci. Data, doi: 10.5194/essd-11-717-2019, 2019."
@@ -740,6 +741,7 @@ references:
   patmos-x: "Heidinger et al., Bull. Amer. Meteor. Soc., doi:10.1175/BAMS-D-12-00246.1, 2013."
   phc: "Steele et al., J. Clim., doi:10.1175/1520-0442(2001)014<2079:PAGOHW>2.0.CO;2, 2001."
   piomas: "Zhang et al., Mon. Wea. Rev. doi:10.1175/1520-0493(2003)131<0845:MGSIWA>2.0.CO;2, 2013."
+  regen: "Contractor et al., HESS, doi:10.5194/hess-24-919-2020, 2020."
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
   woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, doi:10.7289/V55X26VD, 2013."
 
