@@ -24,7 +24,6 @@ variables:
     raw: temperature
     raw_units: celsius
     rawclim: climatology
-    short_clim: tasc
     short_anom: tasa
     rawsftlf_varname: sftlf
     rawsftlf: land_mask

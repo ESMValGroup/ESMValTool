@@ -169,8 +169,8 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     logger.info("Fixing coordinates")
     attrs = cfg['attributes']
     attrs['mip'] = var['mip']
-    short_names = [short_name, var['short_anom'], var['short_clim']]
-    for s_name, cube in zip(short_names, [cube_abs, cube_anom, cube_clim]):
+    short_names = [short_name, var['short_anom']]
+    for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
         cmor_info = cfg['cmor_table'].get_variable(var['mip'], s_name)
 
         utils.fix_coords(cube)
@@ -188,11 +188,10 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     comments = {'tas': "Temperature time-series calculated from the anomaly "
                        "time-series by adding the temperature climatology "
                        "for {}-{}".format(climstart, climend),
-                'tasc': "Climatology {}-{}".format(climstart, climend),
                 'tasa': "Temperature anomaly with respect to the period"
                         " {}-{}".format(climstart, climend)}
 
-    for s_name, cube in zip(short_names, [cube_abs, cube_anom, cube_clim]):
+    for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
         attrs['comment'] = comments[s_name]
         utils.set_global_atts(cube, attrs)
         utils.save_variable(cube,
