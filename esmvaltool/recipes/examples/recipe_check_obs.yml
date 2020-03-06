@@ -237,7 +237,6 @@ diagnostics:
     description: GHCN_CAMS check
     variables:
       tas:
-      pr:
     additional_datasets:
       - {dataset: GHCN_CAMS, project: OBS, mip: Amon, tier: 2,
          type: ground, version: 1, start_year: 1948, end_year: 2020}

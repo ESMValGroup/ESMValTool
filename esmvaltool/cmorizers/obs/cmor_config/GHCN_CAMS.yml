@@ -1,5 +1,5 @@
 ---
-# Filename (will be extended by variable name)
+# Filename
 filename: 'air.mon.mean.nc'
 
 # Common global attributes for Cmorizer output
