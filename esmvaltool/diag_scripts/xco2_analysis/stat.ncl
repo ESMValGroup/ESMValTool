@@ -93,7 +93,7 @@ begin
     sca = new(ntime/12, float)
     gryrf = calc_gr(data, "monthlyfilled", min_nmonth)
     do itim = 0, ntime/12 - 1
-        detrended = data(itim*12:itim*12+11) - cumsum(gryrf(itim*12:itim*12+11)/12., 1)
+        detrended = data(itim*12:itim*12+11) - dim_cumsum(gryrf(itim*12:itim*12+11)/12., 1)
         mvnum = num(ismissing(detrended))
         if mvnum .le. min_nmonth then
             sca(itim) = max(detrended) - min(detrended)

@@ -19,13 +19,6 @@ documentation:
     - eval4cmip
     - 4c
 
-#datasets:
-
-#  - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-#  - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-#  - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-#  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-
 preprocessors:
 
   noop:
@@ -45,78 +38,8 @@ preprocessors:
 
 diagnostics:
 
-#  station_comparison:
-#    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
-#    variables:
-#      xco2:
-#        #preprocessor: mmm1
-#        project: CMIP6
-#        mip: Amon
-#        exp: esm-hist
-#        start_year: 2003
-#        end_year: 2014
-#        reference_dataset: C3S
-#        derive: true
-#        additional_datasets:
-#          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
-#          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-#          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-#      co2:
-#        #preprocessor: mmm2
-#        project: CMIP6
-#        mip: Amon
-#        exp: esm-hist
-#        start_year: 2003
-#        end_year: 2014
-#        additional_datasets:
-#          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-#          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-#    scripts:
-#      station_comparison:
-#        script: xco2_analysis/station_comparison.ncl
-#        path: "/work/bd0854/b309137/data_ext/Tier2/ESRL/"
-#        stationlist: "ESRL_stations_diag.csv"
-#        station_varname: co2
-#        var_order: ["xco2", "co2"]
-
-#  xco2_maps:
-#    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
-#    variables:
-#      xco2:
-#        project: CMIP6
-#        mip: Amon
-#        exp: esm-hist
-#        start_year: 2003
-#        end_year: 2014
-#        reference_dataset: C3S
-#        derive: true
-#        additional_datasets:
-#          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
-#          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-#          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-#    scripts:
-#      xco2_maps:
-#        script: xco2_analysis/global_maps.ncl
-
-#  xco2_sat_masks:
-#    description: Influence of satellite coverage on XCO2 data
-#    variables:
-#      xco2:
-#        project: CMIP6
-#        mip: Amon
-#        exp: esm-hist
-#        start_year: 2003
-#        end_year: 2014
-#        reference_dataset: C3S
-#        derive: true
-#        additional_datasets:
-#          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
-#    scripts:
-#      xco2_sat_masks:
-#        script: xco2_analysis/sat_masks.ncl
-
-  delta_T:
-    description: Comparison of CO2 and XCO2 at select NOAA-ESRL station
+  xco2_analysis:
+    description: Does the bulk of the XCO2 analysis including figures 3, 4, 8, 10-12
     variables:
       xco2:
         project: CMIP6
@@ -130,6 +53,146 @@ diagnostics:
           - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      xco2_maps:
+        script: xco2_analysis/global_maps.ncl
+
+      xco2_main:
+        script: xco2_analysis/main.ncl
+        styleset: CMIP6
+        region: [-90, 90]
+        # Possible masking options: obs
+        masking: ["obs"]
+
+      xco2_panels_unsampled:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat, "none"
+        masking: ["none"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "full-area"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+      xco2_panels_obs:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat
+        masking: ["obs"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "full-area"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+      xco2_panels_scia:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat
+        masking: ["sciamachy"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "full-area"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+      xco2_panels_gosat:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat
+        masking: ["gosat"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "full-area"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+      xco2_panels_obs_lonavg:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat
+        masking: ["obs"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "lat-first"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+      xco2_panels_lonavg:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat
+        masking: ["none"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "lat-first"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+      xco2_panels_obs_land:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat
+        masking: ["obs", "land"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "full-area"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+      xco2_panels_obs_land_lonavg:
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat
+        masking: ["obs", "land"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "lat-first"
+        obs_in_panel: true
+        plot_var2_mean: true
+
+
+  xco2_sat_masks:
+    description: Influence of satellite coverage on XCO2 data
+    variables:
+      xco2:
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: C3S
+        derive: true
+        additional_datasets:
+          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+    scripts:
+      xco2_sat_masks:
+        script: xco2_analysis/sat_masks.ncl
+
+  delta_T:
+    description: Plots XCO2 IAV against growing season temperature anomaly
+    variables:
+      xco2:
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: C3S
+        derive: true
+        additional_datasets:
+          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       tas:
         project: CMIP6
         mip: Amon
@@ -141,6 +204,10 @@ diagnostics:
           - {dataset: GISS, project: OBS, type: reanaly, version: 2, tier: 2}
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
     scripts:
       delta_T:
         script: xco2_analysis/delta_T.ncl
@@ -149,3 +216,43 @@ diagnostics:
         var_order: ["xco2", "tas"]
         region: [-30, 30]
         modis_path: /work/bd0854/b309137/data_ext/Land_Cover_Class_1degree.nc4
+
+  station_comparison:
+    description: Comparison of CO2 and XCO2 at select NOAA-ESRL stations
+    variables:
+      xco2:
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: C3S
+        derive: true
+        additional_datasets:
+          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      co2:
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      station_comparison:
+        script: xco2_analysis/station_comparison.ncl
+        path: "/work/bd0854/b309137/data_ext/Tier2/ESRL/"
+        stationlist: "ESRL_stations_diag.csv"
+        station_varname: co2
+        var_order: ["xco2", "co2"]

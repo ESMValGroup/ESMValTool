@@ -2759,5 +2759,219 @@ begin
 
   leave_msg(scriptname, funcname)
   return(plot)
+end
+; ----------------------
+
+undef("xy_line_gen")
+function xy_line_gen(wks[1],
+                  source,
+                  source_x,
+                  source_stddev,
+                  res_in : logical,
+                  debuginfo[1] : logical,
+                  items: list)
+;;
+;; Arguments:
+;;    * wks:  workstation, must be passed - no default used yet!
+;;    * source:        data to be plotted (no netCDF input possible yet)
+;;    * source_x:      x-axis of array to be plotted (e.g. source&time, ... )
+;;    * source_stddev: standard deviation of input, needed if
+;;                     diag_script_info@multi_model_mean is set to "y"
+;;    * res_in:  diag_script-specific resources passed from diag_script
+;;    * debuginfo:  description about diagnostic rendered onto plot
+;;
+;; Source prototype
+;;
+;; Description
+;;    Defines default ressources, which are overridden by argument res.
+;;    Creates an xy-plot, according to wks & res.
+;;    Adds multi model mean and standard deviation if
+;;    diag_script_info@multi_model_mean is set to "y".
+;    items: list of input_file_info items
+;;
+;; Caveats
+;;
+;; Modification history
+;;    20170116_A_gier_be: modified from xy_line
+;;
+local funcname, scriptname, verbosity, res, res_in, res_stddev, source, \
+    source_x, source_stddev, wks, wks_in, colors, colors_mm, dashes, \
+    dashes_mm, thicks, thicks_mm, annots, annots_mm, avgstd, avgstd_mm, temp, \
+    plot, shading_plot, mm, lgres, nitems, lbid, amres, annoid, labels, \
+    lg_outfile, psres, vpx, vph, vpy, vpw, bpres, tmborder
+begin
+
+    funcname = "xy_line_gen"
+    scriptname = "diag_scripts/shared/plot/xy_line.ncl"
+    enter_msg(scriptname, funcname)
+
+    ;; Select colors and other plotting attributes
+    ;; (see ./diag_scripts/lib/ncl/style.ncl)
+    mod_inds = get1Dindex(metadata_att_as_array(items, "dataset"), source&model)
+    colors = project_style(items, diag_script_info, "colors")
+    dashes = project_style(items, diag_script_info, "dashes")
+    thicks = project_style(items, diag_script_info, "thicks")
+    annots = project_style(items, diag_script_info, "annots")
+    avgstd = project_style(items, diag_script_info, "avgstd")
+    printVarSummary(colors)
+    printVarSummary(dashes)
+    printVarSummary(thicks)
+    printVarSummary(annots)
+    printVarSummary(avgstd)
+    colors := array_append_record(colors, "red", 0)
+    dashes := array_append_record(dashes, 0, 0)
+    thicks := array_append_record(thicks, 3., 0)
+    annots := array_append_record(annots, "multi-model mean", 0)
+    avgstd := array_append_record(avgstd, 1, 0)
+
+    ;; Set/copy resources
+    res                   = True
+    res@xyLineColors      = colors  ; change line color
+    res@xyLineThicknesses = thicks  ; make 2nd lines thicker
+    res@xyMonoDashPattern = False
+    res@xyDashPatterns    = dashes
+    res@gsnDraw           = False   ; don't draw yet
+    res@gsnFrame          = False   ; don't advance frame yet
+    res@tiMainFontHeightF = .025    ; font height
+    res@gsnMaximize       = True
+    res@vpHeightF = 0.4
+    res@vpWidthF = 0.8
+    res@trXMinF = min(source_x)
+    res@trXMaxF = max(source_x) + 0.25 * (max(source_x) - min(source_x))
+    res@trYMinF  = min(source) - 0.05 * (max(source) - min(source))
+    res@trYMaxF  = max(source) + 0.05 * (max(source) - min(source))
+    copy_VarMeta(res_in, res)  ; copy passed resources
+
+    ;; Plot
+    plot = gsn_csm_xy(wks, source_x, source, res)
+
+    ;; Resources for a customized legend.
+    lgres                     = True
+    lgres@lgMonoLineThickness = False
+    ;lgres@lgItemType         = "Lines"   ; show lines only (default)
+    lgres@lgLabelFontHeightF  = .08      ; legend label font thickness
+    lgres@vpWidthF            = 0.15     ; width of legend (NDC)
+    lgres@vpHeightF           = 0.38      ; height of legend (NDC)
+    ;lgres@lgPerimThicknessF  = 2.0       ; thicken the box perimeter
+    lgres@lgPerimOn           = True
+    lgres@lgPerimColor        = 0
+    lgres@lgMonoDashIndex     = False
+    lgres@lgBoxBackground     = 0
+    lgres@lgPerimFill         = 0
+    lgres@lgPerimFillColor    = 0
+    lgres@lgLabelAutoStride   = True
+    lgres@lgLineColors      = colors
+    lgres@lgDashIndexes     = dashes
+    lgres@lgLineThicknesses = thicks + 0.5
+    labels = annots
+    labels(0) = "OBS"
+    nitems = dimsizes(labels)
+    lgres@lgItemOrder = ispan(nitems - 1, 0, 1)
+
+    ;; Create legend
+    lbid = gsn_create_legend(wks, nitems, labels, lgres)
+
+    ;; Add legend at the correct position
+    ;; Point (0, 0) is the dead center of the plot. Point (0, .5) is center,
+    ;; flush bottom. Point (0.5, 0.5) is flush bottom, flush right.
+    amres                  = True
+    amres@amJust           = "TopRight"  ; reference corner of box
+    amres@amParallelPosF   =  0.5        ; Move legend to +right, -left
+    amres@amOrthogonalPosF = -0.5        ; +down, -up
+
+    ;; Draw and frame
+    psres = True
+    psres@gsnDraw = False
+    psres@gsnFrame = False
+    maximize_output(wks, psres)
+
+    ;; Get plot size
+    getvalues plot
+        "vpXF"      : vpx
+        "vpYF"      : vpy
+        "vpWidthF"  : vpw
+        "vpHeightF" : vph
+    end getvalues
+    bres = True
+    bres@gsnDraw      = False
+    bres@gsnFrame     = False
+    bres@tmXBOn       = False
+    bres@tmYLOn       = False
+    bres@tmXTOn       = False
+    bres@tmYROn       = False
+    bres@tmXBBorderOn = False
+    bres@tmXTBorderOn = False
+    bres@tmYLBorderOn = False
+    bres@tmYRBorderOn = False
+
+    ;; Create a blank plot with the same size as plot, attach legend
+    bres@vpXF      = vpx
+    bres@vpYF      = vpy
+    bres@vpWidthF  = vpw
+    bres@vpHeightF = vph
+    blank_plot = gsn_csm_blank_plot(wks, bres)
+
+    ;; Add legend to plot
+    if (isatt(diag_script_info, "xy_line_legend")) then
+        if (diag_script_info@xy_line_legend .ne. False) then
+            annoid = gsn_add_annotation(blank_plot, lbid, amres)
+        end if
+    else
+        annoid = gsn_add_annotation(blank_plot, lbid, amres)
+    end if
+
+    ;; Put legend into an extra file
+    if (isatt(source, "legend_outside")) then
+        if (source@legend_outside) then
+            lg_outfile = wks@legendfile
+            styles = True
+            styles@colors = colors
+            styles@dashes = dashes
+            styles@thicks = thicks
+            create_legend_lines(annots, styles, lg_outfile, "lines")
+        end if
+    end if
+
+    ;; Create another blank plot to make sure plot border thickness is even
+    bres@tmXBBorderOn = True
+    bres@tmXTBorderOn = True
+    bres@tmYLBorderOn = True
+    bres@tmYRBorderOn = True
+    bres@tmBorderThicknessF = 3
+    blank_plot2 = gsn_csm_blank_plot(wks, bres)
+
+    ;; Draw first plot with the actual values (+ grid lines if
+    ;; tmXMajorGrid/gsnYRefLine are set)
+    draw(plot)
+
+    ;; Draw second plot with legend on top of previous plot. This
+    ;; is, as far as I know, the only way to draw the legend on top
+    ;; of the grid lines
+    draw(blank_plot)
+
+    ;; Redraw plot borders since the legend may (partially) cover some
+    ;; of the borders drawn in the first 'plot'
+    draw(blank_plot2)
+    if (debuginfo) then
+        txres = True
+        txres@txFuncCode = "~"
+        debugbox = write_info(debuginfo)
+        am_infobox_id = place_debuginfo(wks, debugbox, txres, blank_plot2)
+        drawNDCGrid(wks)
+        place_description(wks,\
+                          debuginfo@description,\
+                          debuginfo@description_ycoord)
+    end if
+
+    ;frame(wks)
+
+    ;; outfile name
+    if (isatt(wks, "fullname")) then
+        outfile = wks@fullname
+    else
+        outfile = wks@name
+    end if
+    leave_msg(scriptname, funcname)
+    return(plot)
 
 end

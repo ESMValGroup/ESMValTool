@@ -41,7 +41,6 @@ begin
   enter_msg(DIAG_SCRIPT, "")
   AUTHORS = (/"gier_bettina"/)
   REFERENCES = (/"acknow_author"/)
-  DOMAIN = (/"global"/) ;diag_script_info@region
 
   ; Variable
   var0 = diag_script_info@var_order(0)
@@ -73,17 +72,17 @@ begin
   lat_max = diag_script_info@region(1)
 
   if lat_min.eq.(-90) .and. lat_max.eq.90 then
-    region = "Global"
+    region = "global"
   else if lat_min.eq.(30) .and. lat_max.eq.60 then
-    region = "NHmidlat"
+    region = "nhmidlat"
   else if lat_min.eq.(-60) .and. lat_max.eq.(-30) then
-    region = "SHmidlat"
+    region = "shmidlat"
   else if lat_min.eq.(-30) .and. lat_max.eq.(30) then
-    region = "Tropics"
+    region = "tropics"
   else if lat_min.eq.(0) .and. lat_max.eq.(90) then
-    region = "NH"
+    region = "nh"
   else if lat_min.eq.(-90) .and. lat_max.eq.0 then
-    region = "SH"
+    region = "sh"
   else
     region = "lat_" + tostring(lat_min) + "_" + tostring(lat_max)
   end if
@@ -92,6 +91,7 @@ begin
   end if
   end if
   end if
+  DOMAIN = (/region/)
 
   ; Plot file type
   file_type = config_user_info@output_file_type
