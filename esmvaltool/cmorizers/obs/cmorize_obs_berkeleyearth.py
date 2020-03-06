@@ -68,8 +68,8 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
     timecoord_anom = dummycube.coord('time')
 
     # build timecoord for the climatology cube
-    dummycube_clim = dummycube.extract(iris.Constraint(year=lambda cell:
-                                       cell == climstart + climcenter))
+    dummycube_clim = dummycube.extract(iris.Constraint(
+        year=lambda cell: cell == climstart + climcenter))
     timecoord_clim = dummycube_clim.coord('time')
 
     # change to the new time coordinates
@@ -125,7 +125,7 @@ def calc_abs_temperature(cube_anom, cube_clim, short_name):
                               units=units,
                               dim_coords_and_dims=crds_n_dims)
 
-    return(cube_abs)
+    return cube_abs
 
 
 def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
@@ -158,7 +158,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     climstart, climend = [int(x) for x in re.findall(r"\d{4}",
                                                      cube_clim.long_name)]
 
-    # do a correct time coordinate
+    # redo the broken time coordinate
     cube_anom, cube_clim = reinit_broken_time(cube_anom, cube_clim,
                                               climstart, climend)
 
@@ -215,8 +215,8 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     attrs_sftlf = cfg['attributes']
     attrs_sftlf['mip'] = var['rawsftlf_mip']
     if 'rawsftlf_units' in var:
-        if var['rawsftlf_units'] == 'None':
-            utils._set_units(cube_sftlf, '1')
+        if 'rawsftlf_units' in var:
+            cube_sftlf.units = var['rawsftlf_units']
         cube_sftlf.convert_units(cmor_info_sftlf.units)
 
     # fix metadata and save
