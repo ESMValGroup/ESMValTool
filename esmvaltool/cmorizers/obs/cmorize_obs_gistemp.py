@@ -43,7 +43,8 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 
     # Fix coordinates
     utils.fix_coords(cube)
-    utils.add_height2m(cube)
+    if 'height2m' in cmor_info.dimensions:
+        utils.add_height2m(cube)
 
     # Fix metadata
     attrs = cfg['attributes']
