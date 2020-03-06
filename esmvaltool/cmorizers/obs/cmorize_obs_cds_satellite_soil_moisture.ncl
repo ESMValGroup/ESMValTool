@@ -44,7 +44,7 @@ begin
 
   ; Period
   YEAR1 = 1979
-  YEAR2 = 2018
+  YEAR2 = 2019
 
   ; Selected variable (standard name)
   VAR = (/"sm", "smStderr"/)
@@ -53,10 +53,10 @@ begin
   NAME = (/"sm", "sm_uncertainty"/)
 
   ; MIP
-  MIP = (/"day", "day"/)
+  MIP = (/"Lmon", "Lmon"/)
 
   ; Frequency
-  FREQ = (/"day", "day"/)
+  FREQ = (/"mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
@@ -65,7 +65,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "COMBINED-TCDR-v201812.0.0"
+  VERSION = "CUSTOM-MERGED-C3S-511-SPQB-Apr2019"
 
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
@@ -87,8 +87,8 @@ begin
       ; Set list of files
       files = systemfunc("ls " + input_dir_path + \
                          "C3S-SOILMOISTURE-L3S-SSMV-" + \
-                         "COMBINED-DAILY-" + yy + "????000000-" + \
-                         "TCDR-v201812.0.0.nc")
+                         "COMBINED-MONTHLY-" + yy + "????000000-" + \
+                         "?CDR-v201812.0.?.nc") ; both ICDR and TCDR and also two versions of ICDR
       f = addfiles(files, "r")
       delete(files)
 
