@@ -304,7 +304,7 @@ area_size <- function(ics,
     resolution <- ics[2] - ics[1]
   }
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
-  for (j in 1:length(ipsilon)) {
+  for (j in seq_along(ipsilon)) {
     field[, j] <- area_lonlat(
       0,
       resolution,
@@ -328,7 +328,7 @@ area_weight <- function(ics,
                         norm = F) {
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   if (root == T) {
-    for (j in 1:length(ipsilon)) {
+    for (j in seq_along(ipsilon)) {
       field[, j] <- sqrt(cos(pi / 180 * ipsilon[j]))
     }
   }
@@ -1667,7 +1667,7 @@ cdo <-
       noout <- T
     }
     if (input[1] != "") {
-      for (i in 1:length(input)) {
+      for (i in seq_along(input)) {
         input[i] <- paste0("'", input[i], "'")
       }
       input <- paste(input, collapse = " ")
