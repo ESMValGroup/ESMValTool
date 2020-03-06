@@ -15,7 +15,7 @@ Last access
     20200225
 
 Download and processing instructions
-    Download the following files:
+    Download the following file:
     http://berkeleyearth.lbl.gov/auto/Global/Gridded/Land_and_Ocean_LatLong1.nc
 
 """
