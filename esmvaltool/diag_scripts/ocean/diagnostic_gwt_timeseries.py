@@ -653,6 +653,9 @@ def load_co2_forcing(cfg, data_dict):
     print(files)
     hist_datas = []
     hist_times = []
+    ssp585_datas = []
+    ssp585_times = []
+
     for fn in files:
         open_fn = open(fn, 'r')
         key = os.path.basename(fn).replace('_co2.dat', '')
@@ -668,6 +671,9 @@ def load_co2_forcing(cfg, data_dict):
         if key == 'historical':
             hist_datas = np.array(data).copy()
             hist_times = np.array(times).copy()
+        if key == 'ssp585':
+            ssp585_datas = np.array(data).copy()
+            ssp585_times = np.array(times).copy()
         for ens in ['r1', 'r2',  'r3', 'r4', 'r8']:
             data_dict[('co2', key, ens+'i1p1f2' )] = {'time': times, 'co2':data}
             print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens+'i1p1f2'), 'mean:', np.array(data).mean())
@@ -678,29 +684,48 @@ def load_co2_forcing(cfg, data_dict):
     for (short_name, exp, ensemble), ssp_cube in data_dict.items():
         if short_name in ['co2', 'areacella', 'areacello',]:
             continue
-        if ('co2', 'historical-'+exp, ensemble ) in tmp_dict.keys():
+        if ('co2', 'historical-'+exp, 'historical-ssp585-'+exp, ensemble ) in tmp_dict.keys():
             continue
         if exp == 'historical':
             continue
         ssp_only = exp.replace('historical-', '')
+        if ssp_only == 'ssp585-ssp534-over':
+            ssp_only = 'ssp534-over'
         new_times = []
         new_datas = []
         print((short_name, exp,(ssp_only), ensemble))
         ssp_times = cube_to_years(ssp_cube)
         min_time = np.array(ssp_times).min()
-        if min_time > np.array(hist_times).max():
-            print(short_name, exp, ensemble, 'no overlap', ('ssp:', min_time, '>', 'hist max:', np.array(hist_times).max()))
-            # no overlap
-            new_times = data_dict[('co2', ssp_only, ensemble)]['time']
-            new_datas = data_dict[('co2', ssp_only, ensemble)]['co2']
-        else:
-            # Some overlap
-            print(short_name, exp, ensemble,'some overlap', (min_time, '<=', np.array(hist_times).max()))
+        if exp == 'historical-ssp585-ssp534-over':
+            print(exp, len(new_times), len(new_datas))
             new_times = list(np.ma.masked_where(hist_times<min_time, hist_times).compressed())
             new_datas = list(np.ma.masked_where(hist_times<min_time, hist_datas).compressed())
+            print(exp, len(new_times), len(new_datas) )
+            new_times.extend(np.ma.masked_where(ssp585_times >= 2040., ssp585_times).compressed())
+            new_datas.extend(np.ma.masked_where(ssp585_times >= 2040., ssp585_datas).compressed())
+            print(exp, len(new_times), len(new_datas))
             new_times.extend(data_dict[('co2', ssp_only, ensemble)]['time'])
             new_datas.extend(data_dict[('co2', ssp_only, ensemble)]['co2'])
+            print(exp, len(new_times), len(new_datas))
 
+        else:
+            if min_time > np.array(hist_times).max():
+                print(short_name, exp, ensemble, 'no overlap', ('ssp:', min_time, '>', 'hist max:', np.array(hist_times).max()))
+                # no overlap
+                new_times = data_dict[('co2', ssp_only, ensemble)]['time']
+                new_datas = data_dict[('co2', ssp_only, ensemble)]['co2']
+            else:
+                # Some overlap
+                print(short_name, exp, ensemble,'some overlap', (min_time, '<=', np.array(hist_times).max()))
+                new_times = list(np.ma.masked_where(hist_times<min_time, hist_times).compressed())
+                new_datas = list(np.ma.masked_where(hist_times<min_time, hist_datas).compressed())
+                new_times.extend(data_dict[('co2', ssp_only, ensemble)]['time'])
+                new_datas.extend(data_dict[('co2', ssp_only, ensemble)]['co2'])
+            
+
+        if len(new_times) != len(ssp_times):
+            print('New times do not match old times:', len(new_times), '!=', len(ssp_times),'\nnew:',new_times, '\nssp:',ssp_times)
+            assert 0
         print('co2', exp, ensemble, len(new_times), len(new_datas))
         tmp_dict[('co2', exp, ensemble )] ={'time': new_times, 'co2':new_datas}
     data_dict.update(tmp_dict)
@@ -736,7 +761,7 @@ def load_co2_forcing(cfg, data_dict):
                        'historical-ssp370':'purple',
                        'historical-ssp434':'goldenrod',
                        'historical-ssp585': 'red',
-                       'historical-ssp534-over':'orange'}
+                       'historical-ssp585-ssp534-over':'orange'}
         for key in exp_colours.keys():
             plt.plot(data_dict[('co2', key, 'r1i1p1f2' )]['time'],
                      data_dict[('co2', key, 'r1i1p1f2' )]['co2'],
@@ -821,7 +846,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                    'historical-ssp370':'purple',
                    'historical-ssp434':'goldenrod',
                    'historical-ssp585': 'red',
-                   'historical-ssp534-over':'orange'}
+                   'historical-ssp585-ssp534-over':'orange'}
 
     marker_styles = {1.5: 'o', 2.:'*', 3.:'^', 4.:'s', 5.:'X'}
 
