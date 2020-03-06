@@ -344,7 +344,7 @@ def marine_gt(data_dict, short, gt):
         if (gt, exp, ensemble) in data_dict.items():
             continue
         cubegt = cube.copy()
-        print(short, gt, cube.units)
+        # print(short, gt, cube.units)
         if cube.units == cf_units.Unit('kg m-2 s-1'):
             cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
             cubegt.units = cf_units.Unit('Pg yr^-1')
