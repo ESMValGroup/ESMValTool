@@ -690,6 +690,7 @@ references:
   zhang11wcc: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011."
   # Observations
   aura-tes: "Beer, R., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2005.863716, 2006."
+  berkeleyearth: "Rohde et al., Geoinfor. Geostat.: An Overview, doi:10.4172/gigs.1000103, 2013"
   cds-satellite-albedo: "http://datastore.copernicus-climate.eu/c3s/published-forms/c3sprod/satellite-albedo/Documentation_albedo_for_version_1_data.zip"
   cds-satellite-lai-fapar: "Baret et al., Remote Sens. Environ., doi:10.1016/j.rse.2007.02.018, 2007.OB"
   cds-satellite-soil-moisture: "Gruber et al., Earth Syst. Sci. Data, doi: 10.5194/essd-11-717-2019, 2019."
