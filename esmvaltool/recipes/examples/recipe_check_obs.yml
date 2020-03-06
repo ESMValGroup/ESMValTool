@@ -98,13 +98,13 @@ diagnostics:
       psl:
     additional_datasets:
       - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
-         version: 20.0e_0.1, start_year: 1950, end_year: 2019, end_month: 07}
+         version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
       - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
-         version: 20.0e_0.25, start_year: 1950, end_year: 2019, end_month: 07}
+         version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
       - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
-         version: 20.0e_0.1, start_year: 1950, end_year: 2019, end_month: 07}
+         version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
       - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
-         version: 20.0e_0.25, start_year: 1950, end_year: 2019, end_month: 07}
+         version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
     scripts: null
 
 

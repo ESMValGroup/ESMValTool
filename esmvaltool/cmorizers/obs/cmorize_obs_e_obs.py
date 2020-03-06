@@ -44,7 +44,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
     # Fix metadata
     utils.fix_var_metadata(cube, cmor_info)
     attrs = cfg['attributes'].copy()
-    attrs['version'] = 'v'+attrs['version']+'_'+str(res)
+    attrs['version'] = 'v' + attrs['version'] + '-' + str(res)
     attrs.pop('resolution')
     attrs['mip'] = var['mip']
     utils.set_global_atts(cube, attrs)
