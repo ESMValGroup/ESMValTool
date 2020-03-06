@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for CRU data.
+"""ESMValTool CMORizer for GISTEMP data.
 
 Tier
     Tier 2: other freely-available dataset.
