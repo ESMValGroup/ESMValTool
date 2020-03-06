@@ -1,5 +1,5 @@
 """
-ESMValTool CMORizer for BEST data.
+ESMValTool CMORizer for BerkeleyEarth data.
 
 Tier
     Tier 2: other freely-available dataset.
