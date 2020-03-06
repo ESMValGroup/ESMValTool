@@ -70,7 +70,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
 
     # Fix var units
     definition = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    utils._set_units(cube, var.get('raw_units', short_name))
+    cube.units = var.get('raw_units', short_name)
     cube.convert_units(definition.units)
     utils.fix_var_metadata(cube, definition)
 
