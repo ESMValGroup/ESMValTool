@@ -1,7 +1,7 @@
 """ESMValTool CMORizer for CRU data.
 
 Tier
-    Tier 2: other freely-available dataset.
+    Tier 3: restricted dataset.
 
 Source
     http://search.diasjp.net/en/dataset/APHRO_MA
