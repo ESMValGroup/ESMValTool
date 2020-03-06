@@ -1,36 +1,49 @@
-"""ESMValTool CMORizer for CRU data.
+"""ESMValTool CMORizer for APHRODITE Monsoon Asia (APHRO_MA) data.
 
 Tier
     Tier 3: restricted dataset.
 
 Source
-    http://search.diasjp.net/en/dataset/APHRO_MA
-    http://aphrodite.st.hirosaki-u.ac.jp/index.html
+    http://aphrodite.st.hirosaki-u.ac.jp/download/
 
 Last access
-    20200225
+    20200306
 
 Download and processing instructions
-    Download the following files:
-        APHRO_MA_{version}.1951-2007.nc.gz.tar
-        version for APHRO_MA: [025deg_V1101, 050deg_V1101]
+    Register at
+    http://aphrodite.st.hirosaki-u.ac.jp/download/create/
+
+    Download the following files from
+    http://aphrodite.st.hirosaki-u.ac.jp/product/:
+        APHRO_V1808_TEMP/APHRO_MA
+            025deg_nc/APHRO_MA_TAVE_025deg_V1808.nc.tgz
+            050deg_nc/APHRO_MA_TAVE_050deg_V1808.nc.tgz
+        APHRO_V1101/APHRO_MA
+            025deg_nc/APHRO_MA_050deg_V1101.1951-2007.nc.gz.tar
+            050deg_nc/APHRO_MA_025deg_V1101.1951-2007.nc.gz.tar
+        APHRO_V1101EX_R1/APHRO_MA
+            025deg_nc/APHRO_MA_025deg_V1101_EXR1.nc.tgz
+            050deg_nc/APHRO_MA_050deg_V1101_EXR1.nc.tgz
+
+    Please untar / unzip all *.tar *.tgz *.gz files prior to running the
+    cmorizer!
 
 Refs:
+    APHRO_V1101 and APHRO_V1101EX_R1
     Yatagai, A., K. Kamiguchi, O. Arakawa, A. Hamada, N. Yasutomi, and
     A. Kitoh, 2012: APHRODITE: Constructing a Long-Term Daily Gridded
     Precipitation Dataset for Asia Based on a Dense Network of Rain Gauges.
     Bull. Amer. Meteor. Soc., 93, 1401–1415
     https://doi.org/10.1175/BAMS-D-11-00122.1
 
-Issues:
-    I downloaded the data using the from dias provided python scripts for above
-    mentioned tar balls.
+    APHRO_V1808_TEMP
+    Yasutomi, N., Hamada, A., Yatagai, A. (2011) Development of a long-term
+    daily gridded temperature dataset and its application to rain/snow
+    discrimination of daily precipitation,
+    Global Environmental Research 15 (2), 165-172
 """
 
-import gzip
 import logging
-import shutil
-import os
 from warnings import catch_warnings, filterwarnings
 from pathlib import Path
 
@@ -41,13 +54,6 @@ from esmvalcore.preprocessor import monthly_statistics
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
-
-
-def _clean(filepath):
-    """Remove unzipped input file."""
-    if os.path.isfile(filepath):
-        os.remove(filepath)
-        logger.info("Removed cached file %s", filepath)
 
 
 def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
@@ -69,18 +75,21 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
             )
 
     # Fix var units
-    definition = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     cube.units = var.get('raw_units', short_name)
-    cube.convert_units(definition.units)
-    utils.fix_var_metadata(cube, definition)
+    cube.convert_units(cmor_info.units)
+    utils.fix_var_metadata(cube, cmor_info)
 
     # fix coordinates
+    if 'height2m' in cmor_info.dimensions:
+        utils.add_height2m(cube)
     utils.fix_coords(cube)
 
     # Fix metadata
     attrs = cfg['attributes'].copy()
     attrs['mip'] = var['mip']
     attrs['version'] = version
+    attrs['reference'] = var['reference']
     attrs['source'] = attrs['source']
     utils.set_global_atts(cube, attrs)
 
@@ -114,36 +123,16 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
                                 unlimited_dimensions=['time'])
 
 
-def _unzip(short_name, zip_path, out_dir):
-    """Unzip `*.gz` file."""
-    if not os.path.isfile(zip_path):
-        logger.debug("Skipping '%s', file '%s' not found", short_name,
-                     zip_path)
-        return None
-    logger.info("Found input file '%s'", zip_path)
-    filename = os.path.basename(zip_path).replace('.gz', '')
-    new_path = os.path.join(out_dir, filename)
-    with gzip.open(zip_path, 'rb') as zip_file:
-        with open(new_path, 'wb') as new_file:
-            shutil.copyfileobj(zip_file, new_file)
-    logger.info("Succefully extracted file to %s", new_path)
-    return new_path
-
-
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     raw_filename = cfg['filename']
 
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
-        for version in cfg['attributes']['version'].values():
+        for version in var['version'].values():
             logger.info("CMORizing variable '%s'", short_name)
-
-            filenames = raw_filename.format(version=version)
-            for zip_path in sorted(Path(in_dir).glob(filenames)):
-                filepath = _unzip(short_name, zip_path, out_dir)
-                if filepath is None:
-                    continue
+            filenames = raw_filename.format(raw_file_var=var['raw_file_var'],
+                                            version=version)
+            for filepath in sorted(Path(in_dir).glob(filenames)):
                 _extract_variable(short_name, var, cfg, filepath, out_dir,
                                   version)
-                _clean(filepath)
