@@ -931,17 +931,19 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                 plt.plot(np.ma.masked_where(x_times > 2005, x_data),
                          np.ma.masked_where(y_times > 2005, y_data),
                          lw=0.5,
-                         color=exp_colours[exp_1], )
+                         color=exp_colours[exp_1])
             else:
-		
+                print(exp_1, np.ma.masked_where((2005 > x_times) * (x_times > 2015), x_times)
+                assert 0
                 plt.plot(np.ma.masked_where((2005 > x_times) * (x_times > 2015), x_data),
                          np.ma.masked_where((2005 > y_times) * (y_times > 2015), y_data),
                          lw=0.5,
-                         color=exp_colours['historical'], )
+                         color=exp_colours['historical'])
+
                 plt.plot(np.ma.masked_where(x_times < 2015, x_data),
                          np.ma.masked_where(y_times < 2015, y_data),
                          lw=0.5,
-                         color=exp_colours[exp_1], )
+                         color=exp_colours[exp_1])
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
