@@ -10,7 +10,7 @@ attributes:
   modeling_realm: ground
   project_id: OBS
   source: 'https://www.esrl.noaa.gov/psd/data/gridded/data.ghcncams.html'
-  reference: 'ghcn_cams'
+  reference: 'ghcn-cams'
   comment: ''
 
 # Variables to cmorize
