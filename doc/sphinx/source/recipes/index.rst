@@ -16,6 +16,7 @@ Atmosphere
    recipe_crem
    recipe_combined_climate_extreme_index
    recipe_consecdrydays
+   recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_extreme_events
    recipe_heatwaves_coldwaves
