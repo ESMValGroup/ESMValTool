@@ -581,6 +581,10 @@ authors:
     institute: NCAR, US
     orcid:
 
+# Note: the reference section has been replaced by bibtex files in esmvaltool/references.
+# Please make a bibtex file, rename it to the tag used in the recipe or diagnostic, and add the file to the folder esmvaltool/references.
+# There is some online tools to convert a doi to bibtex format like https://doi2bib.org/
+
 projects:
   applicate: EU Horizon 2020 Advanced prediction in polar regions and beyond
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project

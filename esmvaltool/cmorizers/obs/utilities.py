@@ -12,6 +12,7 @@ from cf_units import Unit
 from dask import array as da
 
 from esmvalcore._config import get_tag_value
+from esmvalcore._citation import cite_tag_value
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvaltool import __version__ as version
 
@@ -203,7 +204,7 @@ def set_global_atts(cube, attrs):
             'source':
             attrs.pop('source'),
             'reference':
-            get_tag_value('references', attrs.pop('reference')),
+            cite_tag_value(attrs.pop('reference')),
             'comment':
             attrs.pop('comment'),
             'user':
