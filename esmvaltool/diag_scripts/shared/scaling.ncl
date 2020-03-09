@@ -154,6 +154,15 @@ begin
     end if
   end if
 
+  if (units_from.eq."kg s-1") then
+    if (any(units_to.eq.(/"GtC"/))) then
+      out = out * 3600. * 24. / 1.e12
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
   if (units_from.eq."kg m-2 s-1") then
     if (any(units_to.eq.(/"PgC y-1", "GtC y-1"/))) then
       out = out * 3600. * 24. * 365 / 1.e12

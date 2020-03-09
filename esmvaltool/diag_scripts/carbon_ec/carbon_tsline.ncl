@@ -169,8 +169,10 @@ begin
   if (isatt(diag_script_info, "ts_anomaly")) then
     anom = diag_script_info@ts_anomaly
     if (anom .eq. "anom") then
-      if (isatt(diag_script_info, "ref_start") .and. \
-          isatt(diag_script_info, "ref_end")) then
+      if ((isatt(diag_script_info, "ref_start") .and. \
+          isatt(diag_script_info, "ref_end")) .and. \
+          .not. (isatt(diag_script_info, "ridx_start") .and. \
+              isatt(diag_script_info, "ridx_end"))) then
         ref_start = diag_script_info@ref_start
         ref_end   = diag_script_info@ref_end
         if (ref_start.lt.start_year) then
@@ -230,11 +232,6 @@ begin
     A0 = read_data(info_items[imod])
     dnames = getVarDimNames(A0)
 
-    ; Convert units for plotting (if required)
-    if (isatt(diag_script_info, "plot_units")) then
-      A0 = convert_units(A0, diag_script_info@plot_units)
-    end if
-
     if (isatt(variable_info[0], "reference_dataset")) then
 
       ; masking with reference dataset
@@ -256,12 +253,30 @@ begin
     ; Calcluate cumulated fluxes
     if (isatt(variable_info[0], "cumulate")) then
       A0 = cumulate_carbon(A0)
+      A0@units = "kg s-1"
+    end if
+
+    ; Convert units for plotting (if required)
+    if (isatt(diag_script_info, "plot_units")) then
+      A0 = convert_units(A0, diag_script_info@plot_units)
+    end if
+
+    ; Running Mean
+    if(diag_script_info@run_ave .gt. 0) then
+      run_ave = "running_mean"
+      tmp = runave_Wrap(A0, 12 * diag_script_info@run_ave, 0)
+      delete(A0)
+      A0 = tmp
+      delete(tmp)
+    else
+      run_ave = ""
     end if
 
     ; Anomaly
     if (anom .eq. "anom") then
       ; calculate monthly mean of ref period if 0.5 data points are available
-      if (isatt(diag_script_info, "ridx_start")) then
+      if (isatt(diag_script_info, "ridx_start") .and. \
+          isatt(diag_script_info, "ridx_end")) then
         tmp_start = cd_calendar(A0&time(ridx_start), 0)
         tmp_end   = cd_calendar(A0&time(ridx_end), 0)
         ref_start = toint(tmp_start(0, 0))
@@ -366,17 +381,6 @@ begin
 
     end if
     delete(A0_timavg)
-
-    ; Running Mean
-    if(diag_script_info@run_ave .gt. 0) then
-      run_ave = "running_mean"
-      tmp = runave_Wrap(procmod, 12 * diag_script_info@runave, 0)
-      delete(procmod)
-      procmod = tmp
-      delete(tmp)
-    else
-      run_ave = ""
-    end if
 
     ; Match time coordinate
     if (time_avg.eq."monthly") then
