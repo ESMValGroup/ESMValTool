@@ -234,7 +234,7 @@ diagnostics:
 
 
   GHCN-CAMS:
-    description: GHCN_CAMS check
+    description: GHCN-CAMS check
     variables:
       tas:
     additional_datasets:
