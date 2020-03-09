@@ -233,7 +233,7 @@ diagnostics:
     scripts: null
 
 
-  GHCN_CAMS:
+  GHCN-CAMS:
     description: GHCN_CAMS check
     variables:
       tas:
