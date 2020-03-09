@@ -717,6 +717,7 @@ references:
   fluxcom: "Jung et al., Scientific Data 6:74, doi:10.1038/s41597-019-0076-8, 2019."
   gcp: "Le Quere et al., Earth Syst. Sci. Data, doi:10.5194/essd-10-2141-2018, 2018."
   ghcn: "Jones and Moberg, J. Clim., doi:10.1175/1520-0442(2003)016<0206:HALSSA>2.0.CO;2, 2003."
+  gistemp: "Lenssen et al.,  J. Geophys. Res. Atmos., doi:10.1029/2018JD029522, 2019."
   gpcc: "Schneider et al., doi: [10.5676/DWD_GPCC/FD_M_V2018_025, 10.5676/DWD_GPCC/FD_M_V2018_050, 10.5676/DWD_GPCC/FD_M_V2018_100, 10.5676/DWD_GPCC/FD_M_V2018_250], 2018."
   hadcrut3: "Brohan et al., J. Geophys. Res., doi:10.1029/2005JD006548, 2006."
   hadcrut4: "Morice et al., J. Goophys. Res., doi:10.1029/2011JD017187, 2012."
