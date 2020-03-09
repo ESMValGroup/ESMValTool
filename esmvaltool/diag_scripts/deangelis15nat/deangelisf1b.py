@@ -38,8 +38,52 @@ import iris
 import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    select_metadata, group_metadata)
+
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+def _get_sel_files_var(cfg, varnames):
+    """Get filenames from cfg for all model mean and differen variables."""
+    selection = []
+
+    for var in varnames:
+        for hlp in select_metadata(cfg['input_data'].values(), short_name=var):
+            selection.append(hlp['filename'])
+
+    return selection
+
+def cube_to_save_matrix(variables, names):
+    """Create cubes to prepare bar plot data for saving to netCDF."""
+    cubes = iris.cube.CubeList()
+    for iii, var in enumerate(variables):
+        cubes.append([iris.cube.Cube(var, var_name=names[iii]['var_name'],
+                                     long_name=names[iii]['long_name'],
+                                     units=names[iii]['units'])])
+
+    return cubes
+
+
+def get_provenance_record(ancestor_files, caption, statistics,
+                          domains, plot_type='bar'):
+    """Get Provenance record."""
+    record = {
+        'caption': caption,
+        'statistics': statistics,
+        'domains': domains,
+        'plot_type': plot_type,
+        'themes': ['phys'],
+        'authors': [
+            'weigel_katja',
+        ],
+        'references': [
+            'deangelis15nat',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
 
 
 def plot_bar_kw(cfg, dd1, dd2, dd3):
