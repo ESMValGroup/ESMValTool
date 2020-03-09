@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for GHCN_CAMS data.
+"""ESMValTool CMORizer for GHCN-CAMS data.
 
 Tier
     Tier 2: other freely-available dataset.
