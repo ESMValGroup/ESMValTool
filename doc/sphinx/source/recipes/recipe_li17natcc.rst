@@ -65,28 +65,28 @@ Example plots
 -------------
 
 .. _li17natcc_fig2a:
-.. figure:: recipes/figures/emergent_constraints/li17natcc_fig2a.png
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2a.png
    :align: center
    :width: 50%
 
    Scatter plot of the simulated tropical western Pacific precipitation (mm d\ :sup:`-1`\ ) versus projected average ISM (Indian Summer Monsoon) rainfall changes under the ssp585 scenario. The red line denotes the observed present-day western Pacific precipitation and the inter-model correlation (r) is shown. (CMIP6).
 
 .. _li17natcc_fig2b:
-.. figure:: recipes/figures/emergent_constraints/li17natcc_fig2b.png
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2b.png
    :align: center
    :width: 50%
 
    Scatter plot of the uncorrected versus corrected average ISM (Indian Summer Monsoon) rainfall change ratios (% per degree Celsius of global SST warming). The error bars for the Multi-model mean indicate the standard deviation spread among models and the 2:1 line (y = 0.5x) is used to illustrate the Multi-model mean reduction in projected rainfall increase. (CMIP6).
 
 .. _li17natcc_fig2c:
-.. figure:: recipes/figures/emergent_constraints/li17natcc_fig2c.png
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2c.png
    :align: center
    :width: 50%
 
    Multi-model mean rainfall change due to model error. Box displays the area used to define the average ISM (Indian Summer Monsoon) rainfall. Precipitation changes are normalized by the corresponding global mean SST increase for each model. (CMIP6).
 
 .. _li17natcc_fig2d:
-.. figure:: recipes/figures/emergent_constraints/li17natcc_fig2d.png
+.. figure:: /recipes/figures/emergent_constraints/li17natcc_fig2d.png
    :align: center
    :width: 50%
 
