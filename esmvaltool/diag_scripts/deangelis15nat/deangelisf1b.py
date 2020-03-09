@@ -146,10 +146,10 @@ def plot_bar_deangelis(cfg, pi_all, rcp85_all, co2_all):
     list_dict["name"] = [{'var_name': 'pi_all',
                           'long_name': 'Fluxes for piControl scenario',
                           'units': 'W m-2'},
-                          {'var_name': 'rcp85_all',
+                         {'var_name': 'rcp85_all',
                           'long_name': 'Fluxes for future scenario',
                           'units': 'W m-2'},
-                          {'var_name': 'co2_all',
+                         {'var_name': 'co2_all',
                           'long_name': 'Fluxes for 4 times CO2 scenario',
                           'units': 'W m-2'}]
 
