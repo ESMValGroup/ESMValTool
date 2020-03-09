@@ -33,19 +33,19 @@ Configuration options
 import logging
 import os
 from collections import OrderedDict
+from pprint import pformat
 import iris
 import iris.coord_categorisation as cat
 import numpy as np
 from scipy import stats
 import scipy.signal as scisi
 import matplotlib.pyplot as plt
-from pprint import pformat
 from esmvaltool.diag_scripts.shared import (
-    run_diagnostic, select_metadata,
+    run_diagnostic,
     variables_available, plot)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    select_metadata, group_metadata)
+    select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -61,15 +61,58 @@ def _get_sel_files_var(cfg, varnames):
     return selection
 
 
-def get_provenance_record(attributes, ancestor_files):
-    """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Something ... {dataset}.".format(**attributes))
+def cube_to_save_matrix(var1, name):
+    """Create cubes to prepare scatter plot data for saving to netCDF."""
+    cubes = iris.cube.CubeList([iris.cube.Cube(var1,
+                                               var_name=name['var_name'],
+                                               long_name=name['long_name'],
+                                               units=name['units'])])
 
+    return cubes
+
+
+def cube_to_save_vars(list_dict):
+    """Create cubes to prepare bar plot data for saving to netCDF."""
+    # cubes = iris.cube.CubeList()
+    for iii, var in enumerate(list_dict["data"]):
+        if iii == 0:
+            cubes = iris.cube.CubeList([
+                iris.cube.Cube(var,
+                               var_name=list_dict["name"][iii]['var_name'],
+                               long_name=list_dict["name"][iii]['long_name'],
+                               units=list_dict["name"][iii]['units'])])
+        else:
+            cubes.append(
+                iris.cube.Cube(var,
+                               var_name=list_dict["name"][iii]['var_name'],
+                               long_name=list_dict["name"][iii]['long_name'],
+                               units=list_dict["name"][iii]['units']))
+
+    return cubes
+
+
+def cube_to_save_scatter(var1, var2, names):
+    """Create cubes to prepare scatter plot data for saving to netCDF."""
+    cubes = iris.cube.CubeList([iris.cube.Cube(var1,
+                                               var_name=names['var_name1'],
+                                               long_name=names['long_name1'],
+                                               units=names['units1'])])
+    cubes.append(iris.cube.Cube(var2, var_name=names['var_name2'],
+                                long_name=names['long_name2'],
+                                units=names['units2']))
+
+    return cubes
+
+
+def get_provenance_record(ancestor_files, caption, statistics,
+                          domains, plot_type='other'):
+    """Get Provenance record."""
     record = {
         'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_type': 'zonal',
+        'statistics': statistics,
+        'domains': domains,
+        'plot_type': plot_type,
+        'themes': ['phys'],
         'authors': [
             'weigel_katja',
         ],
@@ -83,7 +126,7 @@ def get_provenance_record(attributes, ancestor_files):
 
 def set_axx_deangelis4(axx, ylen, ytickstrs, x_obs, dx_obs):
     """Axis settings for deangelis 4."""
-    axx.set_xlabel(r'clr-dSWA/dPW (% kg$^{-1}$ m$^2$)')
+    axx.set_xlabel(r'$/Delta$rsnst/$/Delta$prw (% kg$^{-1}$ m$^2$)')
     axx.set_xlim([0.02, 0.13])
     axx.set_xticks(np.linspace(0.02, 0.12, 6))
     axx.set_ylim([-0.5, ylen + 0.5])
@@ -109,8 +152,8 @@ def set_axx_deangelis4(axx, ylen, ytickstrs, x_obs, dx_obs):
 
 def set_axx_deangelis3b(axx, x_obs, dx_obs):
     """Axis settings for deangelis 3b."""
-    axx.set_xlabel(r'clr-dSWA/dPW (% kg$^{-1}$ m$^2$)')
-    axx.set_ylabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlabel(r'$/Delta$rsnstcs/$/Delta$prw (% kg$^{-1}$ m$^2$)')
+    axx.set_ylabel(r'$/Delta$rsnstcs/$/Delta$tas (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.0, 0.13])
     axx.set_xticks(np.linspace(0.0, 0.12, 7))
     axx.set_ylim([0.45, 1.15])
@@ -134,28 +177,29 @@ def set_axx_deangelis3b(axx, x_obs, dx_obs):
 
 def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
     """Plot DeAngelis Fig. 3a."""
-    filepath = os.path.join(cfg['plot_dir'], dataset_name + 'fig3a.' +
-                            cfg['output_file_type'])
-
-    x_reg_prw = np.linspace(0.0, 65, 2)
-    y_reg_prw = reg_prw.slope * x_reg_prw + reg_prw.intercept
-    text_reg_prw = dataset_name + ', dSWA/dPW ={:.2f}'.format(reg_prw.slope)
+    reg_prw_dict = {}
+    reg_prw_dict["x"] = np.linspace(0.0, 65, 2)
+    reg_prw_dict["y"] = reg_prw.slope * reg_prw_dict["x"] + reg_prw.intercept
+    reg_prw_dict["text"] = dataset_name + \
+        r', $/Delta$rsnst/$/Delta$prw ={:.2f}'.format(reg_prw.slope)
 
     fig, axx = plt.subplots(figsize=(8, 8))
-    axx.plot(x_reg_prw, y_reg_prw, linestyle='solid', color='k',
-             label=text_reg_prw)
+    axx.plot(reg_prw_dict["x"], reg_prw_dict["y"], linestyle='solid',
+             color='k',
+             label=reg_prw_dict["text"])
     axx.plot(data["x"], data["ypic"], linestyle='none',
              color='k', marker='d')
 
     ccc = 0.0
     for kobs in reg_obs.keys():
-        y_reg_obs = (reg_obs[kobs].slope * x_reg_prw +
-                     reg_obs[kobs].intercept)
-        text_reg_obs = ('CERES-EBAF/' + kobs +
-                        ', dSWA/dPW ={:.2f}'.format(reg_obs[kobs].slope))
-        axx.plot(x_reg_prw, y_reg_obs, linestyle='solid',
+        reg_prw_dict["y_obs"] = (reg_obs[kobs].slope * reg_prw_dict["x"] +
+                                 reg_obs[kobs].intercept)
+        reg_prw_dict["text_obs"] = ('CERES-EBAF/' + kobs +
+                                    r', $/Delta$rsnst/$/Delta$' +
+                                    'prw ={:.2f}'.format(reg_obs[kobs].slope))
+        axx.plot(reg_prw_dict["x"], reg_prw_dict["y_obs"], linestyle='solid',
                  color=(0.25 * ccc, 1.0 - 0.25 * ccc, 0.7),
-                 label=text_reg_obs)
+                 label=reg_prw_dict["text_obs"])
         axx.plot(data["x"], (data["yobs"])[kobs], linestyle='none',
                  color=(0.25 * ccc, 1.0 - 0.25 * ccc, 0.7), marker='<')
         ccc = ccc + 1.0
@@ -163,8 +207,8 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
             ccc = 0.5
 
     axx.set_title(' ')
-    axx.set_xlabel(r'Column precipitable water, PW (kg m$^{-2}$)')
-    axx.set_ylabel('Normalized clr-SWA(%)')
+    axx.set_xlabel(r'Water Vapor Path (prw) (kg m$^{-2}$)')
+    axx.set_ylabel('Normalized Netto Short Wave Radiation for clear syke (%)')
     axx.set_xlim([9, 61])
     axx.set_xticks(np.linspace(10, 60, 6))
     axx.set_ylim([16.5, 26.5])
@@ -172,61 +216,209 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
     axx.legend(loc=1)
 
     fig.tight_layout()
-    fig.savefig(filepath, dpi=300)
+    fig.savefig(get_plot_filename('fig3a_' + dataset_name, cfg), dpi=300)
     plt.close()
 
-    # def plot_deangelis_fig3b(cfg, m_drsnst_dts, m_drsnstcs_dprws,
-    # m_drsnstcs_dprws_obs,
-    # s_drsnstcs_dprws, s_drsnstcs_dprws_obs):
+    caption = 'Scatter plot and regression lines the between the ' + \
+        'netto short wave radiation for clear skye normalized by ' + \
+        'normalized by incoming solar flux (rsnstcsnorm) and the ' + \
+        'Water Vapor Path (prw) in the pre-industrial climate.'
+
+    provenance_record = get_provenance_record(
+        _get_sel_files_var(cfg, ['prw', 'rsnstcsnorm']), caption, ['other'],
+        ['global'])
+
+    diagnostic_file = get_diagnostic_filename('fig3a_' + dataset_name, cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    list_dict = {}
+    list_dict["data"] = [data["x"], data["ypic"]]
+    list_dict["name"] = [{'var_name': 'prw_' + dataset_name,
+                          'long_name': 'Water Vapor Path ' + dataset_name,
+                          'units': 'kg m-2'},
+                         {'var_name': 'rsnstdtsnorm',
+                          'long_name': 'Normalized Netto Short ' +
+                                       'Wave Radiation fo' +
+                                       'clear syke',
+                          'units': 'percent'}]
+    for kobs in reg_obs.keys():
+        list_dict["data"].append((data["yobs"])[kobs])
+        list_dict["name"].append({'var_name': 'prw_' + kobs,
+                                  'long_name': 'Water Vapor Path ' +
+                                               'CERES-EBAF/' + kobs,
+                                  'units': 'kg m-2'})
+
+    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs, provenance_record):
-    """Plot DeAngelis Fig. 3a and 4."""
-    # Fig 4
-
+def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
+    """Plot DeAngelis Fig. 4."""
     # Set dictionary modelkey vs number from DeAngelis et al., 2015
     # all models which are in the paper, other dictonaries contain only
     # the currently selected ones
-    model_nr = dict([('ACCESS1-0', [1, 2]), ('ACCESS1-3', [2, 2]),
-                     ('bcc-csm1-1', [3, 5]),
-                     ('bcc-csm1-1-m', [4, 5]), ('CanESM2', [5, 2]),
-                     ('CCSM4', [6, 5]), ('CNRM-CM5', [7, 6]),
-                     ('CNRM-CM5-2', [8, 6]), ('GFDL-CM3', [9, 3]),
-                     ('GFDL-ESM2G', [10, 3]),
-                     ('GFDL-ESM2M', [11, 3]), ('GISS-E2-H', [12, 4]),
-                     ('GISS-E2-R', [13, 4]),
-                     ('HadGEM2-ES', [14, 1]), ('inmcm4', [15, 5]),
-                     ('IPSL-CM5A-LR', [16, 7]),
-                     ('IPSL-CM5A-MR', [17, 7]), ('IPSL-CM5B-LR', [18, 7]),
-                     ('MIROC-ESM', [19, 1]), ('MIROC5', [20, 1]),
-                     ('MPI-ESM-LR', [21, 1]),
-                     ('MPI-ESM-MR', [22, 1]), ('MPI-ESM-P', [23, 1]),
-                     ('MRI-CGCM3', [24, 5]), ('NorESM1-M', [25, 5]),
-                     ('default', [0, 8])])
-
-    model_scheme_name = dict([(1, ['Correlated-k-distribution, N >= 20',
-                                   'dodgerblue']),
-                              (2, ['Correlated-k-distribution, 10 < N < 20',
-                                   'limegreen']),
-                              (3, ['Pseudo-k-distribution, N >= 20',
-                                   'gold']),
-                              (4, ['Pseudo-k-distribution, 10 < N < 20',
-                                   'darkorange']),
-                              (5, ['7-band parameterization (N = 7)',
+    model_dict = dict([('ACCESS1-0',
+                        ['Correlated-k-distribution, 10 < N < 20',
+                         'limegreen']),
+                       ('ACCESS1-3',
+                        ['Correlated-k-distribution, 10 < N < 20',
+                         'limegreen']),
+                       ('bcc-csm1-1', ['7-band parameterization (N = 7)',
+                                       'crimson']),
+                       ('bcc-csm1-1-m', ['7-band parameterization (N = 7)',
+                                         'crimson']),
+                       ('CanESM2', ['Correlated-k-distribution, 10 < N < 20',
+                                    'limegreen']),
+                       ('CCSM4', ['7-band parameterization (N = 7)',
+                                  'crimson']),
+                       ('CNRM-CM5', ['Pade approximants, higher res.',
+                                     'slategrey']),
+                       ('CNRM-CM5-2', ['Pade approximants, higher res.',
+                                       'slategrey']),
+                       ('GFDL-CM3', ['Pseudo-k-distribution, N >= 20',
+                                     'gold']),
+                       ('GFDL-ESM2G', ['Pseudo-k-distribution, N >= 20',
+                                       'gold']),
+                       ('GFDL-ESM2M', ['Pseudo-k-distribution, N >= 20',
+                                       'gold']),
+                       ('GISS-E2-H', ['Pseudo-k-distribution, 10 < N < 20',
+                                      'darkorange']),
+                       ('GISS-E2-R', ['Pseudo-k-distribution, 10 < N < 20',
+                                      'darkorange']),
+                       ('HadGEM2-ES', ['Correlated-k-distribution, N >= 20',
+                                       'dodgerblue']),
+                       ('inmcm4', ['7-band parameterization (N = 7)',
                                    'crimson']),
-                              (6, ['Pade approximants, higher res.',
-                                   'slategrey']),
-                              (7, ['Pade approximants, lower res.',
-                                   'silver']),
-                              (8, ['unknown',
-                                   'xkcd:pale purple'])])
+                       ('IPSL-CM5A-LR', ['Pade approximants, lower res.',
+                                         'silver']),
+                       ('IPSL-CM5A-MR', ['Pade approximants, lower res.',
+                                         'silver']),
+                       ('IPSL-CM5B-LR', ['Pade approximants, lower res.',
+                                         'silver']),
+                       ('MIROC-ESM', ['Correlated-k-distribution, N >= 20',
+                                      'dodgerblue']),
+                       ('MIROC5', ['Correlated-k-distribution, N >= 20',
+                                   'dodgerblue']),
+                       ('MPI-ESM-LR', ['Correlated-k-distribution, N >= 20',
+                                       'dodgerblue']),
+                       ('MPI-ESM-MR', ['Correlated-k-distribution, N >= 20',
+                                       'dodgerblue']),
+                       ('MPI-ESM-P', ['Correlated-k-distribution, N >= 20',
+                                      'dodgerblue']),
+                       ('MRI-CGCM3', ['7-band parameterization (N = 7)',
+                                      'crimson']),
+                       ('NorESM1-M', ['7-band parameterization (N = 7)',
+                                      'crimson']),
+                       ('default', ['unknown',
+                                    'xkcd:pale purple'])])
+
+    ytickstrs_and_schemes = {}
+    ytickstrs_and_schemes["ytickstrs"] = []
+    ytickstrs_and_schemes["schemes"] = []
+    # used_schemes = []
+    fig, axx = plt.subplots(figsize=(8, 8))
+
+    for iii, jjj in enumerate(np.argsort(mdrsnstdts[:, 1])):
+        modelkey = list(data_model.keys())[jjj]
+        if modelkey not in model_dict.keys():
+            modelkey = 'default'
+        if (model_dict[modelkey])[0] not in ytickstrs_and_schemes["schemes"]:
+            axx.fill([mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2],
+                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
+                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
+                      mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2]],
+                     [iii - 0.3, iii - 0.3, iii + 0.3, iii + 0.3],
+                     color=model_dict[modelkey][1],
+                     label=model_dict[modelkey][0])
+            ytickstrs_and_schemes["schemes"].append(model_dict[modelkey][0])
+        else:
+            axx.fill([mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2],
+                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
+                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
+                      mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2]],
+                     [iii - 0.3, iii - 0.3, iii + 0.3, iii + 0.3],
+                     color=model_dict[modelkey][1])
+
+        ytickstrs_and_schemes["ytickstrs"].append(list(data_model.keys())[jjj])
+
+    axx = set_axx_deangelis4(axx, len(data_model.keys()),
+                             ytickstrs_and_schemes["ytickstrs"],
+                             prw["mean"], prw["diff"])
+
+    fig.tight_layout()
+
+    fig.savefig(get_plot_filename('fig4', cfg), dpi=300)
+    plt.close()
+
+    caption = 'The relationship between the ratio of the change of ' + \
+        'netto short wave radiation (rsnst) and the change of the ' + \
+        'Water Vapor Path (prw) and characteristics of the ' + \
+        'parameterization scheme for solar absorption by water vapour ' + \
+        'in a cloud-free atmosphere, with colours for each model ' + \
+        'referring to different types of parameterizations as described ' + \
+        'in the key (N refers to the number of exponential terms ' + \
+        'representing water vapour absorption). The width of horizontal ' + \
+        'shading for models and the vertical dashed lines for ' + \
+        'observations (Obs.) represent statistical uncertainties of ' + \
+        'the ratio, as the 95% confidence interval (CI) of the regression ' + \
+        'slope to the rsnst versus prw curve. For the observations ' + \
+        'the minimum of the lower bounds of all CIs to the maximum of ' + \
+        'the upper bounds of all CIs is shown.'
+
+    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                 ['prw',
+                                                                  'rsnst']),
+                                              caption, ['other'], ['global'])
+
+    diagnostic_file = get_diagnostic_filename('fig4', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_matrix(mdrsnstdts, {'var_name': 'mdrsnstdts',
+                                               'long_name': 'Change of Netto' +
+                                                            'Short Wave ' +
+                                                            'Radiation ' +
+                                                            'with Change ' +
+                                                            'of the ' +
+                                                            'Water Vapor Path',
+                                               'units': '% kg-1 m2'}),
+              target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
+
+
+def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
+    """Plot DeAngelis Fig. 3b and prepare 4."""
+    # Fig 4
+#    model_scheme_name = dict([(1, ['Correlated-k-distribution, N >= 20',
+#                                   'dodgerblue']),
+#                              (2, ['Correlated-k-distribution, 10 < N < 20',
+#                                   'limegreen']),
+#                              (3, ['Pseudo-k-distribution, N >= 20',
+#                                   'gold']),
+#                              (4, ['Pseudo-k-distribution, 10 < N < 20',
+#                                   'darkorange']),
+#                              (5, ['7-band parameterization (N = 7)',
+#                                   'crimson']),
+#                              (6, ['Pade approximants, higher res.',
+#                                   'slategrey']),
+#                              (7, ['Pade approximants, lower res.',
+#                                   'silver']),
+#                              (8, ['unknown',
+#                                   'xkcd:pale purple'])])
 
     # Plot data
     fig, axx = plt.subplots(figsize=(8, 8))
 
     mdrsnstdts = np.zeros((len(data_model.keys()), 3))
-    # mdrsnstcsdprws = np.zeros(len(data_model.keys()))
-    # sdrsnstcsdprws = np.zeros(len(data_model.keys()))
 
     for iii, modelkey in enumerate(data_model.keys()):
         mdrsnstdts[iii, 0] = (list(data_model[modelkey]))[0]
@@ -246,8 +438,6 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs, provenance_record):
                  markerfacecolor=(plot.get_dataset_style(modelkey))
                  ['facecolor'], linestyle='none',
                  markersize=10, markeredgewidth=2.0, label=modelkey)
-        # axx.text(mdrsnstdts[iii, 1] - 0.005, mdrsnstdts[iii, 0] - 0.5 * 0.01,
-        #          modelkey, color='k')
 
     prw = {}
     if reg_prw_obs:
@@ -276,76 +466,52 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs, provenance_record):
 
     axx.legend(ncol=2, loc=2)
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg['plot_dir'], 'fig3b.' +
-                             cfg['output_file_type']), dpi=300)
+    fig.savefig(get_plot_filename('fig3b', cfg), dpi=300)
     plt.close()
 
-    # Fig 4
-    ytickstrs = []
+    caption = 'Scatter plot and regression line the between the ratio ' + \
+        'of the change of ' + \
+        'netto short wave radiation (rsnst) and the change of the ' + \
+        'Water Vapor Path (prw) against the ratio of the change of ' + \
+        'netto short wave radiation for clear skye (rsnstcs) and the ' + \
+        'the change of surface temperature (tas).' + \
+        'The width of horizontal ' + \
+        'shading for models and the vertical dashed lines for ' + \
+        'observations (Obs.) represent statistical uncertainties of ' + \
+        'the ratio, as the 95% confidence interval (CI) of the regression ' + \
+        'slope to the rsnst versus prw curve. For the observations ' + \
+        'the minimum of the lower bounds of all CIs to the maximum of ' + \
+        'the upper bounds of all CIs is shown.'
 
-    fig, axx = plt.subplots(figsize=(8, 8))
+    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                 ['prw',
+                                                                  'tas',
+                                                                  'rsnst',
+                                                                  'rsnstcs']),
+                                              caption, ['other'], ['global'])
 
-    used_schemes = []
-
-    for iii, jjj in enumerate(np.argsort(mdrsnstdts[:, 1])):
-        modelkey = list(data_model.keys())[jjj]
-        if modelkey not in model_nr.keys():
-            modelkey = 'default'
-        if (model_nr[modelkey])[1] not in used_schemes:
-            axx.fill([mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2],
-                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
-                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
-                      mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2]],
-                     [iii - 0.3, iii - 0.3, iii + 0.3, iii + 0.3],
-                     color=(model_scheme_name[(model_nr[modelkey])[1]])[1],
-                     label=(model_scheme_name[(model_nr[modelkey])[1]])[0])
-            used_schemes.append((model_nr[modelkey])[1])
-        else:
-            axx.fill([mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2],
-                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
-                      mdrsnstdts[jjj, 1] + 2.0 * mdrsnstdts[jjj, 2],
-                      mdrsnstdts[jjj, 1] - 2.0 * mdrsnstdts[jjj, 2]],
-                     [iii - 0.3, iii - 0.3, iii + 0.3, iii + 0.3],
-                     color=(model_scheme_name[(model_nr[modelkey])[1]])[1])
-
-        # axx.text(mdrsnstdts[jjj, 1] - 0.002, iii - 0.55 * 0.3,
-        #          str((model_nr[modelkey])[0]), color='k')
-        ytickstrs.append(list(data_model.keys())[jjj])
-
-    axx = set_axx_deangelis4(axx, len(data_model.keys()),
-                             ytickstrs,
-                             prw["mean"], prw["diff"])
-
-    fig.tight_layout()
-    fig.savefig(os.path.join(cfg['plot_dir'], 'fig4.' +
-                             cfg['output_file_type']), dpi=300)
-    
-    fig.savefig(get_plot_filename('fig4', cfg), dpi=300)
-    plt.close()
-
-    caption = '....'
-
-    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
-
-    provenance_record = get_provenance_record(selection,
-                                              caption, ['diff'], ['reg'])
-
-    diagnostic_file = get_diagnostic_filename('fig4', cfg)
+    diagnostic_file = get_diagnostic_filename('fig3b', cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    iris.save(cube_to_save_ploted(mdrsnstdts, {'var_name': 'mdrsnstdts',
-                                                     'long_name': 'Prec' +
-                                                                  'ipita' +
-                                                                  'tion ' +
-                                                                  'Change',
-                                                     'units': 'mm d-1'}),
+    iris.save(cube_to_save_matrix(mdrsnstdts, {'var_name': 'mdrsnstdts',
+                                               'long_name': 'Change of Netto' +
+                                                            'Short Wave ' +
+                                                            'Radiation ' +
+                                                            'with Change ' +
+                                                            'of the ' +
+                                                            'Water Vapor Path',
+                                               'units': '% kg-1 m2'}),
               target=diagnostic_file)
 
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
+
+    # Fig 4
+    plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw)
+
 
 def make_grid_prw(grid_pwx, data_prw_obs, data_rsnstcsnorm_obs):
     """Grid rsnstcsnorm based on prw grid."""
@@ -533,10 +699,8 @@ def main(cfg):
 
     data_model = substract_and_reg_deangelis(cfg, cubes, grid_pw,
                                              reg_prw_obs)
-    attributes = {'test_att': 'test_att', 'dataset': cfg['input_files']}
-    provenance_record = get_provenance_record(attributes, 
-                                              ancestor_files=[input_data])
-    plot_deangelis_fig3b(cfg, data_model, reg_prw_obs, provenance_record)
+
+    plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs)
 
     ###########################################################################
     # Write data
