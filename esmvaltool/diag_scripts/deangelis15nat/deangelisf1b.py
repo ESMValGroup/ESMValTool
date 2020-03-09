@@ -33,6 +33,7 @@ Configuration options
 import logging
 import os
 from collections import OrderedDict
+from pprint import pformat
 import matplotlib.pyplot as plt
 import iris
 import numpy as np
@@ -40,10 +41,10 @@ import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    select_metadata, group_metadata)
-
+    select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 def _get_sel_files_var(cfg, varnames):
     """Get filenames from cfg for all model mean and differen variables."""
@@ -55,13 +56,23 @@ def _get_sel_files_var(cfg, varnames):
 
     return selection
 
-def cube_to_save_matrix(variables, names):
+
+def cube_to_save_vars(list_dict):
     """Create cubes to prepare bar plot data for saving to netCDF."""
-    cubes = iris.cube.CubeList()
-    for iii, var in enumerate(variables):
-        cubes.append([iris.cube.Cube(var, var_name=names[iii]['var_name'],
-                                     long_name=names[iii]['long_name'],
-                                     units=names[iii]['units'])])
+    # cubes = iris.cube.CubeList()
+    for iii, var in enumerate(list_dict["data"]):
+        if iii == 0:
+            cubes = iris.cube.CubeList([
+                iris.cube.Cube(var,
+                               var_name=list_dict["name"][iii]['var_name'],
+                               long_name=list_dict["name"][iii]['long_name'],
+                               units=list_dict["name"][iii]['units'])])
+        else:
+            cubes.append(
+                iris.cube.Cube(var,
+                               var_name=list_dict["name"][iii]['var_name'],
+                               long_name=list_dict["name"][iii]['long_name'],
+                               units=list_dict["name"][iii]['units']))
 
     return cubes
 
@@ -86,13 +97,10 @@ def get_provenance_record(ancestor_files, caption, statistics,
     return record
 
 
-def plot_bar_kw(cfg, dd1, dd2, dd3):
+def plot_bar_deangelis(cfg, pi_all, rcp85_all, co2_all):
     """Plot linear regression used to calculate ECS."""
     if not cfg[n.WRITE_PLOTS]:
         return
-
-    file_name = os.path.join(cfg[n.PLOT_DIR],
-                             'bar_all.' + cfg[n.OUTPUT_FILE_TYPE])
 
     # Plot data
     n_groups = 4
@@ -102,23 +110,55 @@ def plot_bar_kw(cfg, dd1, dd2, dd3):
     index = np.arange(n_groups)
     bar_width = 0.25
 
-    axx.bar(index, dd1, bar_width, color='cornflowerblue',
+    axx.bar(index, pi_all, bar_width, color='cornflowerblue',
             label='Pre-industrial')
-    axx.bar(index + bar_width, dd2, bar_width, color='orange',
+    axx.bar(index + bar_width, rcp85_all, bar_width, color='orange',
             label='RCP8.5')
-    axx.bar(index + (bar_width * 2), dd3, bar_width, color='silver',
+    axx.bar(index + (bar_width * 2), co2_all, bar_width, color='silver',
             label=r'4xCO$_2$')
 
     axx.set_xlabel(' ')
     axx.set_ylabel(r'Model mean (W m$^{-2}$)')
     axx.set_title(' ')
     axx.set_xticks(index + bar_width)
-    axx.set_xticklabels((r'L$_{\rm v}$P', 'LWC', 'SWA', 'SH'))
+    axx.set_xticklabels(('lvp', 'rlnst', 'rsnst', 'hfss'))
     axx.legend(loc=1)
 
     fig.tight_layout()
-    fig.savefig(file_name)
+    fig.savefig(get_plot_filename('bar_all', cfg), dpi=300)
     plt.close()
+
+    caption = '...'
+
+    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
+                                                                 ['rlnst',
+                                                                  'rsnst',
+                                                                  'lvp',
+                                                                  'hfss']),
+                                              caption, ['mean'], ['global'])
+
+    diagnostic_file = get_diagnostic_filename('bar_all', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    list_dict = {}
+    list_dict["data"] = [pi_all, rcp85_all, co2_all]
+    list_dict["name"] = [{'var_name': 'pi_all',
+                          'long_name': 'Fluxes for piControl scenario',
+                          'units': 'W m-2'},
+                          {'var_name': 'rcp85_all',
+                          'long_name': 'Fluxes for future scenario',
+                          'units': 'W m-2'},
+                          {'var_name': 'co2_all',
+                          'long_name': 'Fluxes for 4 times CO2 scenario',
+                          'units': 'W m-2'}]
+
+    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 ###############################################################################
@@ -207,7 +247,7 @@ def main(cfg):
         float(len(pathlist))
 
     # Plot ECS regression if desired
-    plot_bar_kw(cfg, pi_all, rcp85_all, co2_all)
+    plot_bar_deangelis(cfg, pi_all, rcp85_all, co2_all)
 
 
 if __name__ == '__main__':
