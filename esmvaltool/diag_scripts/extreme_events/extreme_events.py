@@ -64,16 +64,18 @@ def _count_calc(data, axis):
 def _sum(data, axis):
     pass
 
-def compute_diagnostic(filename):
-    """Compute an example diagnostic."""
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
+def compute_indices(cubes):
+    """Compute indices."""
+    out = {}
+    logger.debug("Computing frost days index for:")
     count_true = iris.analysis.Aggregator('_count_values_below',
             _count_values_below, units_func=lambda units: 1)
-
-    logger.debug("Running example computation")
-    return cube.collapsed('time', count_true)
+    cube_list = iris.cube.CubeList()
+    for name in cubes.keys():
+        logger.debug("%s", name)
+        cube_list.append(cubes[name]['tasmin'].collapsed('time', count_true))
+    out['frost_days'] = cube_list
+    return out
 
 
 def plot_diagnostic(cube, basename, provenance_record, cfg):
@@ -116,22 +118,25 @@ def main(cfg):
         "\n%s", pformat(grouped_input_data))
 
     # Example of how to loop over variables/datasets in alphabetical order
+    cubes  = {}
     for alias in grouped_input_data:
         logger.info("Processing alias %s", alias)
-        cubes  = {}
+        cubes[alias] = {}
         for attributes in grouped_input_data[alias]:
             logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
-            cubes[attributes['short_name']] = iris.load_cube(input_file)
+            cubes[alias][attributes['short_name']] = iris.load_cube(input_file)
         # log if all expected short_names are there
         #call compute idices for alias with all 4 cubes
-        #call plot idices for alias
-        #cube = compute_diagnostic(input_file)
-        output_basename = os.path.splitext(
-                os.path.basename(input_file))[0] + '_mean'
-        provenance_record = get_provenance_record(
-                attributes, ancestor_files=[input_file])
-        #plot_diagnostic(cube, output_basename, provenance_record, cfg)
+    etccdi_indices = compute_indices(cubes)
+    logger.info("Finalized computation for %s", ", ".join(etccdi_indices.keys()))
+    #cube = compute_diagnostic(input_file)
+    #output_basename = os.path.splitext(
+    #        os.path.basename(input_file))[0] + '_mean'
+    #provenance_record = get_provenance_record(
+    #        attributes, ancestor_files=[input_file])
+    #call plot idices
+    #plot_diagnostic(cube, output_basename, provenance_record, cfg)
 
 
 if __name__ == '__main__':
