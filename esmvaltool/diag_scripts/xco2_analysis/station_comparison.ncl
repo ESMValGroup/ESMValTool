@@ -200,12 +200,12 @@ begin
 
 
     obsfiles = diag_script_info@path + "OBS_ESRL_surface_flask_" + st_code + \
-               "_T0M_" + diag_script_info@ref_varname + "_" + YEAR1 + "01-" + \
+               "_T0M_" + diag_script_info@station_varname + "_" + YEAR1 + "01-" + \
                YEAR2 + "12.nc"
     ; Reading in station data
     do istat=0, nstat-1
         var = addfile(obsfiles(istat), "r")
-        statdata = var->$diag_script_info@ref_varname$
+        statdata = var->$diag_script_info@station_varname$
 
         ; Extract correct timestep
         timestat = cd_calendar(statdata&time, 0)

@@ -456,7 +456,7 @@ begin
       res_sca_panel_plots@gsnFrame = False
       res_sca_panel_plots@cnLevelSelectionMode = "ManualLevels"
       res_sca_panel_plots@cnMinLevelValF = 0.
-      res_sca_panel_plots@cnMaxLevelValF = 26.
+      res_sca_panel_plots@cnMaxLevelValF = 13.
       res_sca_panel_plots@cnLevelSpacingF = 1.
       res_sca_panel_plots@gsnStringFontHeightF = 0.03
       res_sca_panel_plots@tmXBLabelFontHeightF = 0.025

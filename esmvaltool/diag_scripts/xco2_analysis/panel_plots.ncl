@@ -128,7 +128,7 @@ begin
     subtract_mmm = 2
   end if
 
-  if diag_script_info@masking[0] .ne. "none" then
+  if diag_script_info@masking(0) .ne. "none" then
     opt_mask = "_" + str_join(diag_script_info@masking, "_")
   else
     opt_mask = ""
