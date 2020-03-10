@@ -128,17 +128,18 @@ def _get_ratio_colorbarInfo():
     cbInfo_ratio = {}
     border = 0.9
     ncolo = 128
+    num = int(ncolo // 4)
     # get the colormap
     cbInfo_ratio['tickBounds'] = np.concatenate(
-        (np.geomspace(0.2, 0.25, num=int(ncolo) / 4),
-         np.geomspace(0.25, 0.33, num=int(ncolo) / 4),
-         np.geomspace(0.33, 0.5, num=int(ncolo) / 4),
-         np.geomspace(0.5, border, num=int(ncolo) / 4),
+        (np.geomspace(0.2, 0.25, num=num),
+         np.geomspace(0.25, 0.33, num=num),
+         np.geomspace(0.33, 0.5, num=num),
+         np.geomspace(0.5, border, num=num),
          np.linspace(border, 1 / border, num=int(ncolo / 4)),
-         np.geomspace(1 / border, 2, num=int(ncolo) / 4),
-         np.geomspace(2, 3, num=int(ncolo) / 4),
-         np.geomspace(3, 4, num=int(ncolo) / 4),
-         np.geomspace(4, 5, num=int(ncolo) / 4)))
+         np.geomspace(1 / border, 2, num=num),
+         np.geomspace(2, 3, num=num),
+         np.geomspace(3, 4, num=num),
+         np.geomspace(4, 5, num=num)))
     colors1 = plt.cm.Blues(np.linspace(0.15, 0.998, ncolo))[::-1]
     colorsgr = np.tile(np.array([0.8, 0.8, 0.8, 1]),
                        int(ncolo / 4)).reshape(int(ncolo / 4), -1)
