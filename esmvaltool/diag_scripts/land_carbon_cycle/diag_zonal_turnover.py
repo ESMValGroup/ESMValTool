@@ -1,18 +1,5 @@
 """
-Look at this module for guidance how to write your own.
-
-Read the README_PERSONAL_DIAGNOSTIC file associated with this example;
-
-Module for personal diagnostics (example).
-Internal imports from exmvaltool work e.g.:
-
-from esmvalcore.preprocessor import regrid
-from esmvaltool.diag_scripts.shared.supermeans import get_supermean
-
-Pipe output through logger;
-
-Please consult the documentation for help with esmvaltool's functionalities
-and best coding practices.
+compares the zonal turnover time from the models with observation from Carvalhais et al., 2014
 """
 # place your module imports here:
 import extraUtils as xu
@@ -27,11 +14,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import get_diagnostic_filename, group_metadata, select_metadata, run_diagnostic, extract_variables
-from esmvalcore.preprocessor import area_statistics
+from esmvaltool.diag_scripts.shared import group_metadata, select_metadata, run_diagnostic
 
 ## Classes and settings
-class dotDict(dict):
+class dot_dict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
@@ -39,22 +25,22 @@ class dotDict(dict):
 
 
 def _get_fig_config(__cfg):
-    fcfg = {}
-    fcfg['fill_val'] = np.nan
-    fcfg['multimodel'] = False
-    fcfg['correlation_method'] = 'pearson'
-    fcfg['ax_fs'] = 7.1
-    fcfg['valrange_x'] = (2, 1000)
-    fcfg['valrange_y'] = (-70, 90)
-    fcfg['minPoints'] = 0
-    fcfg['bandsize'] = 1.986
-    fcfg['obs_label'] = 'Carvalhais2014'
-    fcfg['gpp_threshold'] = 10  #gC m-2 yr -1
-    fcfgL = list(fcfg.keys())
-    for _fc in fcfgL:
+    fig_config = {}
+    fig_config['fill_val'] = np.nan
+    fig_config['multimodel'] = False
+    fig_config['correlation_method'] = 'pearson'
+    fig_config['ax_fs'] = 7.1
+    fig_config['valrange_x'] = (2, 1000)
+    fig_config['valrange_y'] = (-70, 90)
+    fig_config['minPoints'] = 0
+    fig_config['bandsize'] = 1.986
+    fig_config['obs_label'] = 'Carvalhais2014'
+    fig_config['gpp_threshold'] = 10  #gC m-2 yr -1
+    fig_config_list = list(fig_config.keys())
+    for _fc in fig_config_list:
         if __cfg.get(_fc) != None:
-            fcfg[_fc] = __cfg.get(_fc)
-    _figSet = dotDict(fcfg)
+            fig_config[_fc] = __cfg.get(_fc)
+    _figSet = dot_dict(fig_config)
     _figSet.ax_fs = 9
     return _figSet
 
@@ -75,11 +61,15 @@ def _apply_common_mask(_dat1, _dat2):
     return _dat1, _dat2
 
 
-def _apply_gpp_threshold(_gppDat, _fcfg):
-    gpp_thres = _fcfg.gpp_threshold / (
-        86400.0 * 365 * 1000.)  # converting gC m-2 yr-1 to kgC m-2 s-1
-    _gppDat = np.ma.masked_less(_gppDat, gpp_thres).filled(_fcfg.fill_val)
-    return _gppDat
+def _apply_gpp_threshold(gpp_dat, fig_config):
+    '''
+    returns the input array with values below the threshold of gpp set to nan
+    '''    
+    # converting gC m-2 yr-1 to kgC m-2 s-1
+    gpp_thres = fig_config.gpp_threshold / (
+        86400.0 * 365 * 1000.)  
+    gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(fig_config.fill_value)
+    return gpp_dat
 
 
 def _get_obs_data(cfg):
@@ -127,7 +117,7 @@ def _get_zonal_tau(cfg):
 
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
 
-    fcfg = _get_fig_config(cfg)
+    fig_config = _get_fig_config(cfg)
     zonal_tau_mod = {}
     global_gpp_mod = {}
     global_ctotal_mod = {}
@@ -136,12 +126,12 @@ def _get_zonal_tau(cfg):
         zonal_tau_mod[key] = {}
         ctotal = _load_variable(value, 'ctotal')
         gpp = _load_variable(value, 'gpp')
-        gppDat = xu.remove_invalid(gpp.data, _fill_val=fcfg._fill_val)
-        ctotalDat = xu.remove_invalid(ctotal.data, _fill_val=fcfg._fill_val)
+        gppDat = xu.remove_invalid(gpp.data, fill_value=fig_config.fill_value)
+        ctotalDat = xu.remove_invalid(ctotal.data, fill_value=fig_config.fill_value)
         for coord in gpp.coords():
             mod_coords[coord.name()] = coord.points
         zonal_tau_mod[key]['data'] = _zonal_tau(gppDat, ctotalDat,
-                                                mod_coords['latitude'], fcfg)
+                                                mod_coords['latitude'], fig_config)
         zonal_tau_mod[key]['latitude'] = mod_coords['latitude']
         print(key, value)
 
@@ -152,15 +142,15 @@ def _get_zonal_tau(cfg):
     mm_ctotal = xu.remove_invalid(np.nanmedian(np.array(
         [_ctotal for _ctotal in global_ctotal_mod.values()]),
                                                axis=0),
-                                  _fill_val=fcfg.fill_val)
+                                  fill_value=fig_config.fill_value)
     mm_gpp = xu.remove_invalid(np.nanmedian(np.array(
         [_gpp for _gpp in global_gpp_mod.values()]),
                                             axis=0),
-                               _fill_val=fcfg.fill_val)
+                               fill_value=fig_config.fill_value)
     zonal_tau_mod['zmultimodel'] = {}
     zonal_tau_mod['zmultimodel']['data'] = _zonal_tau(mm_gpp, mm_ctotal,
                                                       mod_coords['latitude'],
-                                                      fcfg)
+                                                      fig_config)
     zonal_tau_mod['zmultimodel']['latitude'] = mod_coords['latitude']
     # get the observation of zonal tau
     zonal_tau_obs = _get_obs_data(cfg)
@@ -177,25 +167,25 @@ def _load_variable(metadata, var_name):
     return cube
 
 
-def _zonal_tau(_datgpp, _datcTotal, _lats, _fcfg):
+def _zonal_tau(dat_gpp, dat_ctotal, _lats, fig_config):
     __dat = np.ones_like(_lats) * np.nan
     _latint = abs(_lats[1] - _lats[0])
-    windowSize = int(_fcfg.bandsize / (_latint * 2))
+    windowSize = int(fig_config.bandsize / (_latint * 2))
 
-    _datgpp = xu.remove_invalid(_datgpp, _fill_val=_fcfg.fill_val)
-    _datcTotal = xu.remove_invalid(_datcTotal, _fill_val=_fcfg.fill_val)
-    # _datgpp = _apply_gpp_threshold(_datgpp,_fcfg)
-    _datgppC, _datcTotalC = _apply_common_mask(_datgpp, _datcTotal)
+    dat_gpp = xu.remove_invalid(dat_gpp, fill_value=fig_config.fill_value)
+    dat_ctotal = xu.remove_invalid(dat_ctotal, fill_value=fig_config.fill_value)
+    # dat_gpp = _apply_gpp_threshold(dat_gpp,fig_config)
+    dat_gpp_common, dat_ctotal_common = _apply_common_mask(dat_gpp, dat_ctotal)
     for li in range(len(__dat)):
         istart = max(0, li - windowSize)
         iend = min(np.size(_lats), li + windowSize + 1)
-        _datgppZone = _datgpp[istart:iend, :]  #* _areaZone
-        _datcTotalZone = _datcTotal[istart:iend, :]  #* _areaZone
+        dat_gpp_zone = dat_gpp_common[istart:iend, :]  #* _area_zone
+        dat_ctotal_zone = dat_ctotal_common[istart:iend, :]  #* _area_zone
         nValids = np.nansum(1 -
-                            np.ma.getmask(np.ma.masked_invalid(_datgppZone)))
-        if nValids > _fcfg.minPoints:
-            __dat[li] = (np.nansum(_datcTotalZone) /
-                         np.nansum(_datgppZone)) / (86400 * 365)
+                            np.ma.getmask(np.ma.masked_invalid(dat_gpp_zone)))
+        if nValids > fig_config.minPoints:
+            __dat[li] = (np.nansum(dat_ctotal_zone) /
+                         np.nansum(dat_gpp_zone)) / (86400 * 365)
         else:
             __dat[li] = np.nan
     return __dat
@@ -219,7 +209,7 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, cfg):
     Note: this function is private; remove the '_'
     so you can make it public.
     """
-    _fcfg = _get_fig_config(cfg)
+    fig_config = _get_fig_config(cfg)
     models = list(all_mod_dat.keys())
     models = sorted(models, key=str.casefold)
     nmodels = len(models)
@@ -232,7 +222,7 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, cfg):
     plt.figure(figsize=(3, 5))
 
     sp0 = plt.subplot(1, 1, 1)
-    sp0.plot(tau_obs, lats_obs, color='k', lw=1.5, label=_fcfg.obs_label)
+    sp0.plot(tau_obs, lats_obs, color='k', lw=1.5, label=fig_config.obs_label)
     sp0.fill_betweenx(lats_obs,
                       tau_obs_5,
                       tau_obs_95,
@@ -255,19 +245,19 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, cfg):
                      lw=0.5,
                      label=row_mod)
 
-    leg = xu.draw_line_legend(ax_fs=_fcfg.ax_fs)
+    leg = xu.draw_line_legend(ax_fs=fig_config.ax_fs)
 
     plt.gca().set_xscale('log')
-    plt.xlim(_fcfg.valrange_x[0], _fcfg.valrange_x[1])
-    plt.ylim(_fcfg.valrange_y[0], _fcfg.valrange_y[1])
+    plt.xlim(fig_config.valrange_x[0], fig_config.valrange_x[1])
+    plt.ylim(fig_config.valrange_y[0], fig_config.valrange_y[1])
     plt.axhline(y=0, lw=0.48, color='grey')
     x_lab = '$\\tau$'
-    plt.xlabel(x_lab, fontsize=_fcfg.ax_fs)
-    plt.ylabel('Latitude ($^\\circ N$)', fontsize=_fcfg.ax_fs, ma='center')
+    plt.xlabel(x_lab, fontsize=fig_config.ax_fs)
+    plt.ylabel('Latitude ($^\\circ N$)', fontsize=fig_config.ax_fs, ma='center')
     xu.rem_axLine(['top', 'right'])
 
     local_path = cfg['plot_dir']
-    png_name = 'comparison_zonal_turnovertime_' + _fcfg.obs_label + '.png'
+    png_name = 'comparison_zonal_turnovertime_' + fig_config.obs_label + '.png'
     plt.savefig(os.path.join(local_path, png_name),
                 bbox_inches='tight',
                 bbox_extra_artists=[leg],

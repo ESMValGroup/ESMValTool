@@ -4,67 +4,22 @@ from matplotlib import pyplot as plt
 import matplotlib as mpl
 
 
-def get_mask_01(_dat, _fill_val=-9999.):
-    m_mask = np.ma.masked_equal(
-        np.ma.masked_not_equal(_dat, _fill_val).filled(1), _fill_val).filled(0)
-    return m_mask
-
-def remove_invalid(tmp, _fill_val=-9999.):
-    tmp = np.ma.masked_outside(tmp, -1e15, 1e15).filled(_fill_val)
+def remove_invalid(tmp, fill_value=-9999.):
+    '''
+    removes the invalid non-numeric values from the input array and fills it with fill_value. Also removes all large and small values with magnitude beyond 1e15
+    '''
+    tmp = np.ma.masked_outside(tmp, -1e15, 1e15).filled(fill_value)
     whereisNan = np.isnan(tmp)
-    tmp[whereisNan] = _fill_val
+    tmp[whereisNan] = fill_value
     whereisNan = np.isinf(tmp)
-    tmp[whereisNan] = _fill_val
+    tmp[whereisNan] = fill_value
     return tmp
-
-def remove_abs_outlier(_dat1mc, _dat2mc, _outlierPerc=2):
-    # remove the outliers
-    _absDev = np.abs(_dat1mc - _dat2mc)
-    _absDevPerc = np.nanpercentile(_absDev, int(100 - _outlierPerc))
-    _outMask = np.ma.getmask(np.ma.masked_greater(_absDev, _absDevPerc))
-    _dat1mc[_outMask] = np.nan
-    _dat2mc[_outMask] = np.nan
-    return (_dat1mc, _dat2mc)
-
-
-def calc_pearson_r(_dat1, _dat2, _fill_val=-9999., outlierPerc=None):
-    _mask_1 = get_mask_01(_dat1, _fill_val)
-    _mask_2 = get_mask_01(_dat2, _fill_val)
-    _com_mask = _mask_1 * _mask_2
-    _data_mask = np.ma.getmask(np.ma.masked_equal(_com_mask, 1))
-    __dat1 = _dat1[_data_mask].flatten()
-    __dat2 = _dat2[_data_mask].flatten()
-    if outlierPerc != None:
-        __dat1, __dat2 = remove_abs_outlier(__dat1,
-                                            __dat2,
-                                            _outlierPerc=outlierPerc)
-    nans = np.logical_or(np.isnan(__dat1), np.isnan(__dat2))
-
-    _r, _p = scst.pearsonr(np.ma.masked_equal(__dat1[~nans], _fill_val),
-                           np.ma.masked_equal(__dat2[~nans], _fill_val))
-    return (_r, _p)
-
-
-def calc_spearman_r(_dat1, _dat2, _fill_val=-9999., outlierPerc=None):
-    _mask_1 = get_mask_01(_dat1, _fill_val)
-    _mask_2 = get_mask_01(_dat2, _fill_val)
-    _com_mask = _mask_1 * _mask_2
-    _data_mask = np.ma.getmask(np.ma.masked_equal(_com_mask, 1))
-    __dat1 = _dat1[_data_mask].flatten()
-    __dat2 = _dat2[_data_mask].flatten()
-    if outlierPerc != None:
-        __dat1, __dat2 = remove_abs_outlier(__dat1,
-                                            __dat2,
-                                            _outlierPerc=outlierPerc)
-    nans = np.logical_or(np.isnan(__dat1), np.isnan(__dat2))
-    _r, _p = scst.spearmanr(np.ma.masked_equal(__dat1[~nans], _fill_val),
-                            np.ma.masked_equal(__dat2[~nans], _fill_val),
-                            nan_policy='omit')
-    return (_r, _p)
-
 
 ## axis lines, ticks, and fontsizes
 def put_ticks(nticks=5, which_ax='both', axlw=0.3):
+    '''
+    puts the ticks on given locations and sets the width of axis lines
+    '''
     ax = plt.gca()
     if which_ax == 'x':
         ax.xaxis.set_ticks_position('bottom')
@@ -106,6 +61,9 @@ def put_ticks(nticks=5, which_ax='both', axlw=0.3):
 
 
 def rem_ticks(which_ax='both'):
+    '''
+    removes ticks from either x or y axis and preserves the lines
+    '''
     ax = plt.gca()
     if which_ax == 'x' or which_ax == 'both':
         ax.set_xticklabels([])
@@ -117,6 +75,10 @@ def rem_ticks(which_ax='both'):
 
 
 def rem_axLine(rem_list=['top', 'right'], axlw=0.4):
+    '''
+    removes the axis lines from the list of which lines to remove
+    rem_list can be 'left', 'right', 'top', 'bottom'
+    '''
     ax = plt.gca()
     for loc, spine in ax.spines.items():
         if loc in rem_list:
@@ -128,12 +90,18 @@ def rem_axLine(rem_list=['top', 'right'], axlw=0.4):
 
 
 def ax_clr(axfs=7):
+    '''
+    removes all the axis lines
+    '''
     rem_axLine(rem_list=['top', 'right', 'left', 'bottom'])
     rem_ticks(which_ax='both')
     return
 
 
 def ax_clrX(axfs=7, axlw=0.3, nticks=3):
+    '''
+    removes all the axis lines except the left one
+    '''
     rem_axLine(rem_list=['top', 'right', 'bottom'])
     rem_ticks(which_ax='x')
     plt.gca().tick_params(axis='y', labelsize=axfs)
@@ -142,6 +110,9 @@ def ax_clrX(axfs=7, axlw=0.3, nticks=3):
 
 
 def ax_clrY(axfs=7, axlw=0.3, nticks=3):
+    '''
+    removes all the axis lines except the bottom one
+    '''
     rem_axLine(rem_list=['top', 'right', 'left'])
     rem_ticks(which_ax='y')
     put_ticks(which_ax='x', axlw=0.3, nticks=nticks)
@@ -150,6 +121,9 @@ def ax_clrY(axfs=7, axlw=0.3, nticks=3):
 
 
 def ax_clrXY(axfs=7, axlw=0.3, nticks=3):
+    '''
+    removes the top and right axis
+    '''
     rem_axLine(rem_list=['top', 'right'])
     put_ticks(which_ax='y', axlw=0.3, nticks=nticks)
     plt.gca().tick_params(axis='both', labelsize=axfs)
@@ -157,6 +131,9 @@ def ax_clrXY(axfs=7, axlw=0.3, nticks=3):
 
 
 def ax_orig(axfs=7, axlw=0.3, nticks=3):
+    '''
+    removes the top and right axis and sets the axis linewidth to a thin one
+    '''
     rem_axLine(rem_list=['top', 'right'], axlw=axlw)
     put_ticks(which_ax='both', axlw=0.3, nticks=nticks)
     plt.gca().tick_params(axis='both', labelsize=axfs)
@@ -164,6 +141,9 @@ def ax_orig(axfs=7, axlw=0.3, nticks=3):
 
 
 def rotate_labels(which_ax='both', rot=0, axfs=6):
+    '''
+    rotates the ticks labels to rot and sets it fontsize to axfs
+    '''
     if which_ax == 'x' or which_ax == 'both':
         locs, labels = plt.xticks()
         plt.setp(labels, rotation=rot, fontsize=axfs)
@@ -179,6 +159,9 @@ def draw_line_legend(ax_fs=8):
                      columnspacing=0.05,
                      fancybox=True,
                      handlelength=1.5)
+    '''
+    draws a legend for line plots and puts it outside the plot area in x-direction
+    '''
     leg.get_frame().set_linewidth(0)
     leg.get_frame().set_facecolor('#eeeeee')
     leg.legendPatch.set_alpha(0.45)

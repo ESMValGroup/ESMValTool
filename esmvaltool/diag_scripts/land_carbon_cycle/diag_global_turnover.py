@@ -5,33 +5,34 @@ ecosystem carbon turnover time
 # place your module imports here:
 
 # operating system manipulations (e.g. path constructions)
-import sys, os, os.path
+import os, os.path
 
 # to manipulate iris cubes
 import iris
 # plotting functions
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import matplotlib.colors
 
 # map library
 import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import cartopy
 
 import numpy as np
+import scipy.stats as stats
+
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import get_diagnostic_filename, group_metadata, select_metadata, run_diagnostic, extract_variables
-from esmvalcore.preprocessor import area_statistics
 
 # user-defined functions
 import extraUtils as xu
+
+# set the properties of the lines used for hatching
 mpl.rcParams['hatch.color'] = 'yellow'
 mpl.rcParams['hatch.linewidth'] = 0.7
 
-# 
+#
 
-class dotDict(dict):
+
+class dot_dict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
@@ -41,7 +42,7 @@ class dotDict(dict):
 # Figure settings and colorbar info
 
 
-def _get_dia_colorbarInfo():
+def _get_diagonal_colorbar_info():
     cbInfo_diagonal = {}
     cbName = 'plasma_r'
     cbInfo_diagonal['tickBounds'] = np.concatenate(
@@ -52,7 +53,10 @@ def _get_dia_colorbarInfo():
                      num=10)[:-1], np.linspace(256, 1000, num=2,
                                                endpoint=True)))
     cbInfo_diagonal['ticksLoc'] = np.array([1, 8, 16, 32, 64, 128, 256])
-    clist_ = xu.get_colomap(cbName, cbInfo_diagonal['tickBounds'], lowp=0., hip=1)
+    clist_ = xu.get_colomap(cbName,
+                            cbInfo_diagonal['tickBounds'],
+                            lowp=0.,
+                            hip=1)
     cbInfo_diagonal['colMap'] = mpl.colors.ListedColormap(clist_)
     return cbInfo_diagonal
 
@@ -120,26 +124,22 @@ def _get_fig_config(__cfg):
             fcfg[_fc] = __cfg.get(_fc)
 
     # convert dictionary to dot notation
-    _figSet = dotDict(fcfg)
+    _figSet = dot_dict(fcfg)
     return _figSet
 
 
-def _get_ratio_colorbarInfo():
+def _get_ratio_colorbar_info():
     cbInfo_ratio = {}
     border = 0.9
     ncolo = 128
     num = int(ncolo // 4)
     # get the colormap
     cbInfo_ratio['tickBounds'] = np.concatenate(
-        (np.geomspace(0.2, 0.25, num=num),
-         np.geomspace(0.25, 0.33, num=num),
-         np.geomspace(0.33, 0.5, num=num),
-         np.geomspace(0.5, border, num=num),
+        (np.geomspace(0.2, 0.25, num=num), np.geomspace(0.25, 0.33, num=num),
+         np.geomspace(0.33, 0.5, num=num), np.geomspace(0.5, border, num=num),
          np.linspace(border, 1 / border, num=int(ncolo / 4)),
-         np.geomspace(1 / border, 2, num=num),
-         np.geomspace(2, 3, num=num),
-         np.geomspace(3, 4, num=num),
-         np.geomspace(4, 5, num=num)))
+         np.geomspace(1 / border, 2, num=num), np.geomspace(2, 3, num=num),
+         np.geomspace(3, 4, num=num), np.geomspace(4, 5, num=num)))
     colors1 = plt.cm.Blues(np.linspace(0.15, 0.998, ncolo))[::-1]
     colorsgr = np.tile(np.array([0.8, 0.8, 0.8, 1]),
                        int(ncolo / 4)).reshape(int(ncolo / 4), -1)
@@ -162,27 +162,29 @@ def _get_ratio_colorbarInfo():
 # data and calculation functions
 
 
-def _apply_common_mask(_dat1, _dat2):
+def _apply_common_mask(dat_1, dat_2):
     '''
     returns the copies of two arrays with common mask applied
     '''
-    _dat1Mask = np.ma.getmask(np.ma.masked_invalid(_dat1))
-    _dat2Mask = np.ma.getmask(np.ma.masked_invalid(_dat2))
-    _valMaskA = 1 - (1 - _dat1Mask) * (1 - _dat2Mask)
+    dat_1Mask = np.ma.getmask(np.ma.masked_invalid(dat_1))
+    dat_2Mask = np.ma.getmask(np.ma.masked_invalid(dat_2))
+    _valMaskA = 1 - (1 - dat_1Mask) * (1 - dat_2Mask)
     _valMask = np.ma.nonzero(_valMaskA)
-    _dat1[_valMask] = np.nan
-    _dat2[_valMask] = np.nan
-    _dat1 = np.ma.masked_invalid(_dat1)
-    _dat2 = np.ma.masked_invalid(_dat2)
-    return _dat1, _dat2
+    dat_1[_valMask] = np.nan
+    dat_2[_valMask] = np.nan
+    dat_1 = np.ma.masked_invalid(dat_1)
+    dat_2 = np.ma.masked_invalid(dat_2)
+    return dat_1, dat_2
 
-
-def _apply_gpp_threshold(_gppDat, _fcfg):
+def _apply_gpp_threshold(gpp_dat, fig_config):
+    '''
+    returns the input array with values below the threshold of gpp set to nan
+    '''    
     # converting gC m-2 yr-1 to kgC m-2 s-1
-    gpp_thres = _fcfg.gpp_threshold / (86400.0 * 365 * 1000.)
-    _gppDat = np.ma.masked_less(_gppDat, gpp_thres).filled(_fcfg.fill_val)
-    return _gppDat
-
+    gpp_thres = fig_config.gpp_threshold / (
+        86400.0 * 365 * 1000.)  
+    gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(fig_config.fill_value)
+    return gpp_dat
 
 def _get_agreement_mask(_mmdat,
                         _dat_5,
@@ -200,11 +202,11 @@ def _get_agreement_mask(_mmdat,
     return agreement_mask
 
 
-def _get_hex_data(_dat1, _dat2, valrange_sc):
-    _dat1, _dat2 = _apply_common_mask(_dat1, _dat2)
-    _dat1mc = np.ma.masked_equal(_dat1, np.nan).compressed()
-    _dat2mc = np.ma.masked_equal(_dat2, np.nan).compressed()
-    return _dat1mc, _dat2mc
+def _get_hex_data(dat_1, dat_2):
+    dat_1, dat_2 = _apply_common_mask(dat_1, dat_2)
+    dat_1mc = np.ma.masked_equal(dat_1, np.nan).compressed()
+    dat_2mc = np.ma.masked_equal(dat_2, np.nan).compressed()
+    return dat_1mc, dat_2mc
 
 
 def _get_obs_data(cfg):
@@ -282,10 +284,10 @@ def _get_turnover_data(cfg):
         _ctotal = ctotal.data
         _ctau = (_ctotal / _gpp) / (86400 * 365)
         _allModdat[key]['grid'] = xu.remove_invalid(_ctau,
-                                                    _fill_val=fcfg.fill_val)
+                                                    fill_value=fcfg.fill_val)
         _allModdat[key]['global'] = (
-            np.nansum(xu.remove_invalid(_ctotal, _fill_val=fcfg.fill_val)) /
-            np.nansum(xu.remove_invalid(_gpp, _fill_val=fcfg.fill_val))) / (
+            np.nansum(xu.remove_invalid(_ctotal, fill_value=fcfg.fill_val)) /
+            np.nansum(xu.remove_invalid(_gpp, fill_value=fcfg.fill_val))) / (
                 86400 * 365)
 
         # plot the map of the turnover time from the model
@@ -307,11 +309,11 @@ def _load_variable(metadata, var_name):
 # Plotting functions
 
 
-def _fix_map(__ax, __fcfg):
-    __ax.set_global()
-    __ax.coastlines(linewidth=0.4, color='grey')
+def _fix_map(axis_obj):
+    axis_obj.set_global()
+    axis_obj.coastlines(linewidth=0.4, color='grey')
     plt.gca().outline_patch.set_visible(False)
-    return __ax
+    return axis_obj
 
 
 def _get_data_to_plot(_data, _fcfg):
@@ -343,10 +345,10 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
     nmodels = len(models)
 
     # define the data and information for plotting ratios
-    cbInfo_ratio = _get_ratio_colorbarInfo()
+    cbInfo_ratio = _get_ratio_colorbar_info()
 
     # get the colormap for diagonal maps
-    cbInfo_diagonal = _get_dia_colorbarInfo()
+    cbInfo_diagonal = _get_diagonal_colorbar_info()
 
     plt.figure(figsize=(9, 6))
     for row_m in range(nmodels):
@@ -367,14 +369,15 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
                                frameon=False)
                 plot_dat = dat_row
                 plt.imshow(_get_data_to_plot(plot_dat, _fcfg),
-                           norm=matplotlib.colors.BoundaryNorm(
-                               cbInfo_diagonal['tickBounds'], len(cbInfo_diagonal['tickBounds'])),
+                           norm=mpl.colors.BoundaryNorm(
+                               cbInfo_diagonal['tickBounds'],
+                               len(cbInfo_diagonal['tickBounds'])),
                            cmap=cbInfo_diagonal['colMap'],
                            origin='upper',
                            vmin=cbInfo_diagonal['tickBounds'][0],
                            vmax=cbInfo_diagonal['tickBounds'][-1],
                            transform=ccrs.PlateCarree())
-                _fix_map(_ax, _fcfg)
+                _fix_map(_ax)
 
             # plot the scatterplot/density plot below the diagonal
             if row_m < col_m:
@@ -385,7 +388,7 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
                     _fcfg.wp * _fcfg.aspect_map, _fcfg.hp * _fcfg.aspect_map
                 ])
                 xdat, ydat = dat_col, dat_row
-                dat1h, dat2h = _get_hex_data(xdat, ydat, _fcfg.valrange_sc)
+                dat1h, dat2h = _get_hex_data(xdat, ydat)
                 _ax.hexbin(dat1h,
                            dat2h,
                            bins='log',
@@ -399,9 +402,10 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
                 xmin, xmax = plt.xlim()
                 plt.plot((xmin, xmax), (ymin, ymax), 'k', lw=0.1)
                 if _fcfg.correlation_method == 'pearson':
-                    r, p = xu.calc_pearson_r(xdat, ydat)
+                    r = stats.pearsonr(dat1h, dat2h)[0]
                 else:
-                    r, p = xu.calc_spearman_r(xdat, ydat)
+                    r = stats.spearmanr(dat1h, dat2h)[0]
+                print(r)
                 title_str = "$R^2$=" + str(round(r**2, 2))
                 plt.title(title_str,
                           fontsize=_fcfg.ax_fs * 0.953,
@@ -433,17 +437,18 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
                                projection=ccrs.Robinson(central_longitude=0),
                                frameon=False)
                 plot_dat = xu.remove_invalid(dat_row / dat_col,
-                                             _fill_val=_fcfg.fill_val)
+                                             fill_value=_fcfg.fill_val)
                 _ax.imshow(_get_data_to_plot(plot_dat, _fcfg),
-                           norm=matplotlib.colors.BoundaryNorm(
-                               cbInfo_ratio['tickBounds'], len(cbInfo_ratio['tickBounds'])),
+                           norm=mpl.colors.BoundaryNorm(
+                               cbInfo_ratio['tickBounds'],
+                               len(cbInfo_ratio['tickBounds'])),
                            interpolation='none',
                            vmin=cbInfo_ratio['tickBounds'][0],
                            vmax=cbInfo_ratio['tickBounds'][-1],
                            cmap=cbInfo_ratio['colMap'],
                            origin='upper',
                            transform=ccrs.PlateCarree())
-                _fix_map(_ax, _fcfg)
+                _fix_map(_ax)
             if col_m == 0:
                 if row_mod == 'obs':
                     _title_sp = _fcfg.obs_label
@@ -528,7 +533,7 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
     tau_obs_95 = all_obs_dat['tau_ctotal_95']['grid']
 
     # set the information of the colormap used for plotting bias
-    cbInfo = _get_ratio_colorbarInfo()
+    cbInfo = _get_ratio_colorbar_info()
 
     # calculate the bias of multimodel median turnover time
     models = list(all_mod_dat.keys())
@@ -541,9 +546,9 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
         dat_tau_full[row_m] = dat_tau
 
     mm_tau = xu.remove_invalid(np.nanmedian(dat_tau_full, axis=0),
-                               _fill_val=_fcfg.fill_val)
+                               fill_value=_fcfg.fill_val)
     mm_bias_tau = mm_tau / tau_obs
-    mm_bias_tau = xu.remove_invalid(mm_bias_tau, _fill_val=_fcfg.fill_val)
+    mm_bias_tau = xu.remove_invalid(mm_bias_tau, fill_value=_fcfg.fill_val)
     # mm_bias_tau[np.isnan(mm_bias_tau)] = 0
 
     # define figure and main axis to plot the map
@@ -554,7 +559,7 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
 
     # plot the data of multimodel bias (=bias of multimodel median turnover time)
     _ax.imshow(_get_data_to_plot(mm_bias_tau, _fcfg),
-               norm=matplotlib.colors.BoundaryNorm(cbInfo['tickBounds'],
+               norm=mpl.colors.BoundaryNorm(cbInfo['tickBounds'],
                                                    len(cbInfo['tickBounds'])),
                interpolation='none',
                vmin=cbInfo['tickBounds'][0],
@@ -562,7 +567,7 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
                cmap=cbInfo['colMap'],
                origin='upper',
                transform=ccrs.PlateCarree())
-    _fix_map(_ax, _fcfg)
+    _fix_map(_ax)
 
     # get the model agreement mask (less than quarter of the model within the
     # observational uncertainty)
@@ -641,7 +646,7 @@ def _plot_single_map(_dat, _datglobal, _name, _cfg):
     _fcfg = _get_fig_config(_cfg)
 
     # colormap configuration
-    cbInfo = _get_dia_colorbarInfo()
+    cbInfo = _get_diagonal_colorbar_info()
 
     # define the figure and axis
     plt.figure(figsize=(5, 3))
@@ -650,19 +655,19 @@ def _plot_single_map(_dat, _datglobal, _name, _cfg):
                    frameon=False)
     # plot data over the map
     plt.imshow(_get_data_to_plot(_dat, _fcfg),
-               norm=matplotlib.colors.BoundaryNorm(cbInfo['tickBounds'],
+               norm=mpl.colors.BoundaryNorm(cbInfo['tickBounds'],
                                                    len(cbInfo['tickBounds'])),
                cmap=cbInfo['colMap'],
                origin='upper',
                vmin=cbInfo['tickBounds'][0],
                vmax=cbInfo['tickBounds'][-1],
                transform=ccrs.PlateCarree())
-    _fix_map(_ax, _fcfg)
+    _fix_map(_ax)
 
     # get the data and set the title of the map
 
     _datMedian = np.nanmedian(xu.remove_invalid(_dat,
-                                                _fill_val=_fcfg.fill_val))
+                                                fill_value=_fcfg.fill_val))
     title_str = _fcfg.varName + ": global = " + str(round(
         _datglobal, 2)) + ", median = " + str(round(_datMedian, 2))
 

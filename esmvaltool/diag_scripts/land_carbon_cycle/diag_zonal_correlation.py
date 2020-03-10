@@ -1,33 +1,21 @@
 """
-Look at this module for guidance how to write your own.
-
-Read the README_PERSONAL_DIAGNOSTIC file associated with this example;
-
-Module for personal diagnostics (example).
-Internal imports from exmvaltool work e.g.:
-
-from esmvalcore.preprocessor import regrid
-from esmvaltool.diag_scripts.shared.supermeans import get_supermean
-
-Pipe output through logger;
-
-Please consult the documentation for help with esmvaltool's functionalities
-and best coding practices.
+calculates and compares the correlation between the turnover time of carbon and climate defined as the partial correlations with precipitation and temperature
 """
 # place your module imports here:
 import extraUtils as xu
 
 # operating system manipulations (e.g. path constructions)
 import os
+import sys
 
 # to manipulate iris cubes
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats as stats
 
 # internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import get_diagnostic_filename, group_metadata, select_metadata, run_diagnostic, extract_variables
-from esmvalcore.preprocessor import area_statistics
+from esmvaltool.diag_scripts.shared import group_metadata, select_metadata, run_diagnostic
 
 
 def _load_variable(metadata, var_name):
@@ -38,12 +26,10 @@ def _load_variable(metadata, var_name):
     return cube
 
 
-### user-defined functions for calculating partial correlations
-
 ## Classes and settings
 
 
-class dotDict(dict):
+class dot_dict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
@@ -55,7 +41,7 @@ def _get_fig_config(__cfg):
     fcfg = {}
     fcfg['fill_val'] = np.nan
     fcfg['multimodel'] = False
-    fcfg['correlation_method'] = 'spearman'
+    fcfg['correlation_method'] = 'pearson'
 
     # define the data and information for plotting ratios
     fcfg['ax_fs'] = 7.1
@@ -63,14 +49,14 @@ def _get_fig_config(__cfg):
     fcfg['valrange_y'] = (-70, 90)
     fcfg['minPoints'] = 3
     fcfg['bandsize'] = 9.5
-    fcfg['outlierPerc'] = 0
     fcfg['obs_label'] = 'Carvalhais2014'
     fcfg['gpp_threshold'] = 0  # gC m-2 yr -1
+
     fcfgL = list(fcfg.keys())
     for _fc in fcfgL:
-        if __cfg.get(_fc) != None:
+        if __cfg.get(_fc) is not None:
             fcfg[_fc] = __cfg.get(_fc)
-    _figSet = dotDict(fcfg)
+    _figSet = dot_dict(fcfg)
     return _figSet
 
 
@@ -79,8 +65,7 @@ def _get_fig_config(__cfg):
 
 def _apply_common_mask(_dat1, _dat2, _dat3):
     '''
-    returns a mask array with 1 where all three data arrays have valid numeric
-    values and zero elsewhere
+    apply a common mask to three arrays so that they have the same locations of all valid and invalid (non numeric) grid cells
     '''
     _dat1Mask = np.ma.getmask(np.ma.masked_invalid(_dat1))
     _dat2Mask = np.ma.getmask(np.ma.masked_invalid(_dat2))
@@ -95,21 +80,20 @@ def _apply_common_mask(_dat1, _dat2, _dat3):
     _dat3 = np.ma.masked_invalid(_dat3)
     return _dat1, _dat2, _dat3
 
-
-def _apply_gpp_threshold(_gppDat, _fcfg):
-    gpp_thres = _fcfg.gpp_threshold / (
-        86400.0 * 365 * 1000.)  # converting gC m-2 yr-1 to kgC m-2 s-1
-    _gppDat = np.ma.masked_less(_gppDat, gpp_thres).filled(_fcfg.fill_val)
-    return _gppDat
-
-
-def _fisher_z(_rdat):
-    _zdat = 0.5 * (np.log(1 + _rdat) - np.log(1 - _rdat))
-    return _zdat
+def _apply_gpp_threshold(gpp_dat, fig_config):
+    '''
+    returns the input array with values below the threshold of gpp set to nan
+    '''    
+    # converting gC m-2 yr-1 to kgC m-2 s-1
+    gpp_thres = fig_config.gpp_threshold / (
+        86400.0 * 365 * 1000.)  
+    gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(fig_config.fill_value)
+    return gpp_dat
 
 
 def _get_obs_data(cfg):
-    """Get and handle the observations of turnover time from Carvalhais 2014.
+    """
+    Get and handle the observations of turnover time from Carvalhais 2014.
 
     Arguments:
         cfg - nested dictionary of metadata
@@ -173,81 +157,101 @@ def _get_zonal_correlation(cfg):
     return 'zonal correlation diagnostic is complete'
 
 
-def _inverse_fisher_z(_zdat):
-    _rdat = (np.exp(2 * _zdat) - 1) / (np.exp(2 * _zdat) + 1)
-    return _rdat
-
-
 def _partialCorr(C, _fcfg):
     d1 = C[:, 0]
     d2 = C[:, 1]
     d3 = C[:, 2]
-    if d1.size > _fcfg.minPoints:
-        d1out = _percentile_based_outlier(d1, threshold=_fcfg.outlierPerc)
-        d1[d1out] = np.nan
-        d2out = _percentile_based_outlier(d2, threshold=_fcfg.outlierPerc)
-        d2[d2out] = np.nan
-        d3out = _percentile_based_outlier(d3, threshold=_fcfg.outlierPerc)
-        d3[d3out] = np.nan
-        d1, d2, d3 = _apply_common_mask(d1, d2, d3)
-        d1 = np.ma.masked_invalid(d1).compressed().flatten()
-        d2 = np.ma.masked_invalid(d2).compressed().flatten()
-        d3 = np.ma.masked_invalid(d3).compressed().flatten()
-        if _fcfg.correlation_method == 'pearson':
-            r12, p = xu.calc_pearson_r(d1, d2, outlierPerc=_fcfg.outlierPerc)
-            r13, p = xu.calc_pearson_r(d1, d3, outlierPerc=_fcfg.outlierPerc)
-            r23, p = xu.calc_pearson_r(d2, d3, outlierPerc=_fcfg.outlierPerc)
-        elif _fcfg.correlation_method == 'spearman':
-            r12, p = xu.calc_spearman_r(d1, d2, outlierPerc=_fcfg.outlierPerc)
-            r13, p = xu.calc_spearman_r(d1, d3, outlierPerc=_fcfg.outlierPerc)
-            r23, p = xu.calc_spearman_r(d2, d3, outlierPerc=_fcfg.outlierPerc)
-        else:
-            print('set a valid correLation_method [pearson/spearman]')
-            exit
-        r123 = (r12 - r13 * r23) / np.sqrt((1 - r13**2) * (1 - r23**2))
+    if _fcfg.correlation_method == 'pearson':
+        r12 = stats.pearsonr(d1, d2)[0]
+        r13 = stats.pearsonr(d1, d3)[0]
+        r23 = stats.pearsonr(d2, d3)[0]
+    elif _fcfg.correlation_method == 'spearman':
+        r12 = stats.spearmanr(d1, d2)[0]
+        r13 = stats.spearmanr(d1, d3)[0]
+        r23 = stats.spearmanr(d2, d3)[0]
     else:
-        r123 = np.nan
+        sys.exit('set a valid correlation_method [pearson/spearman]')
+    r123 = (r12 - r13 * r23) / np.sqrt((1 - r13**2) * (1 - r23**2))
     return r123
 
 
-def _percentile_based_outlier(data, threshold=2):
-    diff = threshold / 2.0
-    minval, maxval = np.percentile(data, [diff, 100 - diff])
-    return (data < minval) | (data > maxval)
-
-
-def _zonal_correlation(_dat, _pr, _tas, _lats, _fcfg):
+def _zonal_correlation(_tau, _pr, _tas, _lats, _fcfg):
     _latint = abs(_lats[1] - _lats[0])
     windowSize = int(_fcfg.bandsize / (_latint * 2))
-    __dat = np.zeros((np.shape(_dat)[0], 2))
-    _dat, _pr, _tas = _apply_common_mask(_dat, _pr, _tas)
-    for li in range(len(__dat)):
-        istart = max(0, li - windowSize)
-        iend = min(np.size(_lats), li + windowSize + 1)
-        _datZone = _dat[istart:iend, :]
+    __dat = np.ones((np.shape(_tau)[0], 2)) * np.nan
+    _tau, _pr, _tas = _apply_common_mask(_tau, _pr, _tas)
+    minPoints = np.shape(_tau)[1] / 8
+    for lat_index in range(len(__dat)):
+        istart = max(0, lat_index - windowSize)
+        iend = min(np.size(_lats), lat_index + windowSize + 1)
+        _tauZone = _tau[istart:iend, :]
         _prZone = _pr[istart:iend, :]
         _tasZone = _tas[istart:iend, :]
-        _datZoneC = np.ma.masked_invalid(_datZone).compressed().flatten()
-        _prZoneC = np.ma.masked_invalid(_prZone).compressed().flatten()
-        _tasZoneC = np.ma.masked_invalid(_tasZone).compressed().flatten()
-        pc_vpt = _partialCorr(
-            np.column_stack((_datZoneC, _prZoneC, _tasZoneC)), _fcfg)
-        pc_vtp = _partialCorr(
-            np.column_stack((_datZoneC, _tasZoneC, _prZoneC)), _fcfg)
-        __dat[li, 0] = pc_vpt
-        __dat[li, 1] = pc_vtp
+        d1 = np.ma.masked_invalid(_tauZone).compressed().flatten()
+        d2 = np.ma.masked_invalid(_prZone).compressed().flatten()
+        d3 = np.ma.masked_invalid(_tasZone).compressed().flatten()
+        nValids = sum(~np.isnan(d1 + d2 + d3))
+        if nValids > minPoints:
+            __dat[lat_index, 0] = _partialCorr(np.vstack((d1, d2, d3)).T, _fcfg)
+            __dat[lat_index, 1] = _partialCorr(np.vstack((d1, d3, d2)).T, _fcfg)
     return __dat
+
+
+def _get_multimodel_stats(r_multimodel):
+    """
+    returns the mean, low and high correlations of all models using the fisher's z transformation
+
+    Arguments:
+        r_multimodel - zonal correlation from the models in the column dimensions
+
+    Returns:
+        mean, mean - std, and mean + std correlations
+    """
+
+    # set the threshold of correlation to avoid infinities
+    r_multimodel[r_multimodel > 0.99] = 0.99
+    r_multimodel[r_multimodel < -0.99] = -0.99
+
+    # z tranform the correlation 
+    z_multimodel = 0.5 * (np.log(1 + r_multimodel) - np.log(1 - r_multimodel))
+    z_multimodel[np.isinf(z_multimodel)] = np.nan
+    zmm_ens = np.nanmean(z_multimodel, axis=1)
+    zmm_ens_std = np.nanstd(z_multimodel, axis=1)
+
+    # get the mean correlation using inverse of fisher's z transformation
+    r_mean = (np.exp(2 * zmm_ens) - 1) / (np.exp(2 * zmm_ens) + 1)
+
+    # get the lower bound of correlation using inverse of fisher's z transformation
+    z_low = zmm_ens - zmm_ens_std
+    r_low = (np.exp(2 * z_low) - 1) / (np.exp(2 * z_low) + 1)
+
+    # get the upper bound of correlation using inverse of fisher's z transformation
+    z_high = zmm_ens + zmm_ens_std
+    r_hi = (np.exp(2 * z_high) - 1) / (np.exp(2 * z_high) + 1)
+    return r_mean, r_low, r_hi
 
 
 # Plotting functions
 
 
-def _fix_axis(x_lab, _fcfg, ax_fs=8, axlw=0.4, rem_list=['top', 'right']):
-    plt.xlim(_fcfg.valrange_x[0], _fcfg.valrange_x[1])
-    plt.ylim(_fcfg.valrange_y[0], _fcfg.valrange_y[1])
+def _fix_axis(x_lab, fig_config, ax_fs=8, axlw=0.4, rem_list=['top', 'right']):
+    """
+    fixes the axis limits, labels and lines
+
+    Arguments:
+        x_lab - axis labels
+        fig_config - figure configurations
+        ax_fs - fontsize for axis and tick labels
+        ax_lw - linewidth of axis lines
+        rem_list - list of axis lines to remove
+
+    Returns:
+    """
+    plt.xlim(fig_config.valrange_x[0], fig_config.valrange_x[1])
+    plt.ylim(fig_config.valrange_y[0], fig_config.valrange_y[1])
     plt.axhline(y=0, lw=0.48, color='grey')
     plt.axvline(x=0, lw=0.48, color='grey')
-    plt.xlabel(x_lab, fontsize=_fcfg.ax_fs)
+    plt.xlabel(x_lab, fontsize=fig_config.ax_fs)
     ax = plt.gca()
     for loc, spine in ax.spines.items():
         if loc in rem_list:
@@ -324,37 +328,28 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, cfg):
 
     # define arrays to store the zonal correlation of each model
 
-    rAll_pt = np.zeros((len(lats_obs), nmodels))
-    rAll_tp = np.zeros((len(lats_obs), nmodels))
+    r_tau_pr_c_tas_all = np.ones((len(lats_obs), nmodels)) * np.nan
+    r_tau_tas_c_pr_all = np.ones((len(lats_obs), nmodels)) * np.nan
+
     # loop over models and plot zonal correlations
     for row_m in range(nmodels):
         row_mod = models[row_m]
-        mod_dat_row = all_mod_dat[row_mod]['data']
+        r_mod = all_mod_dat[row_mod]['data']
         lats_mod = all_mod_dat[row_mod]['latitude']
-        r_mod_vtp = mod_dat_row[:, 1]
-        rAll_tp[:, row_m] = r_mod_vtp
-        sp1.plot(np.ma.masked_equal(r_mod_vtp, np.nan),
+        r_tau_tas_c_pr_mod = r_mod[:, 1]
+        r_tau_tas_c_pr_all[:, row_m] = r_tau_tas_c_pr_mod
+        sp1.plot(np.ma.masked_equal(r_tau_tas_c_pr_mod, np.nan),
                  lats_mod,
                  lw=0.3,
                  label=row_mod)
-        r_mod_vpt = mod_dat_row[:, 0]
-        rAll_pt[:, row_m] = r_mod_vpt
-        sp2.plot(np.ma.masked_equal(r_mod_vpt, np.nan),
+        r_tau_pr_c_tas_mod = r_mod[:, 0]
+        r_tau_pr_c_tas_all[:, row_m] = r_tau_pr_c_tas_mod
+        sp2.plot(np.ma.masked_equal(r_tau_pr_c_tas_mod, np.nan),
                  lats_mod,
                  lw=0.3,
                  label=row_mod)
-
-    # get the normalized mean zonal correlation of all models for tau-tas,pr
-    zAll_tp = _fisher_z(rAll_tp)  # do the fisher's transformation of r
-    zAll_tp[np.isinf(zAll_tp)] = np.nan
-    # mean of fisher's z
-    zmm_ens = np.nanmean(zAll_tp, axis=1)
-    zmm_ens_std = np.nanstd(zAll_tp, axis=1)
-    r_mmod = inverse__fisher_z(zmm_ens)
-    # get the uncertainty ranges
-    r_mmod_std_low = inverse__fisher_z(zmm_ens - zmm_ens_std)
-    r_mmod_std_hi = inverse__fisher_z(zmm_ens + zmm_ens_std)
-    # plot the normalized mean and uncertainty
+    r_mmod, r_mmod_std_low, r_mmod_std_hi = _get_multimodel_stats(
+        r_tau_tas_c_pr_all)
     sp1.plot(np.ma.masked_equal(r_mmod, np.nan),
              lats_mod,
              color='blue',
@@ -367,14 +362,8 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, cfg):
                       facecolor='#42d4f4',
                       alpha=0.25)
 
-    # get the normalized mean zonal correlation of all models for tau-pr,tas
-    zAll_pt = _fisher_z(rAll_pt)
-    zAll_pt[np.isinf(zAll_pt)] = np.nan
-    zmm_ens = np.nanmean(zAll_pt, axis=1)
-    zmm_ens_std = np.nanstd(zAll_pt, axis=1)
-    r_mmod = inverse__fisher_z(zmm_ens)
-    r_mmod_std_low = inverse__fisher_z(zmm_ens - zmm_ens_std)
-    r_mmod_std_hi = inverse__fisher_z(zmm_ens + zmm_ens_std)
+    r_mmod, r_mmod_std_low, r_mmod_std_hi = _get_multimodel_stats(
+        r_tau_pr_c_tas_all)
 
     sp2.plot(np.ma.masked_equal(r_mmod, np.nan),
              lats_mod,
@@ -391,9 +380,9 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, cfg):
     plt.gca().yaxis.set_label_position("right")
     # draw the legend
     leg = xu.draw_line_legend(ax_fs=_fcfg.ax_fs)
-    # generate output path and save
-
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
+
+    # save and close the figure
     local_path = cfg['plot_dir']
     png_name = 'comparison_zonal_' + _fcfg.correlation_method + '_correlation_turnovertime_climate_' + _fcfg.obs_label + '.png'
     plt.savefig(os.path.join(local_path, png_name),
@@ -402,7 +391,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, cfg):
                 dpi=450)
     plt.close()
 
-    return 'Plotting complete'
+    return 'Plotting of zonal correlation is complete'
 
 
 if __name__ == '__main__':
