@@ -296,6 +296,7 @@ class NegativeSeaIceFeedback(object):
         # (pathological case)
         if np.max(vol_min) == 0.0 or np.max(dvol == 0.0):
             fit = np.nan
+            fit_complete = [np.nan, np.nan]
             corr = np.nan
             pval = np.nan
             std = np.nan
@@ -427,7 +428,7 @@ class NegativeSeaIceFeedback(object):
         plt.close(fig)
         self._create_prov_record(
             path, f'IFE {filename} comparison for all datasets',
-            group_metadata(self.cfg['input_data'].values(), )
+            group_metadata(self.cfg['input_data'].values(), n.ALIAS)
         )
 
     def _create_prov_record(self, filepath, caption, ancestors):
