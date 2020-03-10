@@ -244,6 +244,16 @@ diagnostics:
     scripts: null
 
 
+  GHCN-CAMS:
+    description: GHCN-CAMS check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: GHCN-CAMS, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 1, start_year: 1948, end_year: 2020}
+    scripts: null
+
+
   GISTEMP:
     description: GISTEMP check
     variables:
