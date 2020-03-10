@@ -45,7 +45,7 @@ from esmvaltool.diag_scripts.shared import (
     variables_available, plot)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    select_metadata)
+    select_metadata, group_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -651,6 +651,21 @@ def main(cfg):
                                      'rsnstcsnorm', 'prw']):
         raise ValueError("This diagnostic needs 'tas', " +
                          "'rsnstcs', 'rsnstcsnorm', and 'prw' variables")
+        
+    available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
+
+    if 'abrupt-4xCO2' not in available_exp:
+        if 'abrupt4xCO2' not in available_exp:
+            raise ValueError("The diagnostic needs an experiment with " +
+                             "4 times CO2.")
+    
+    if 'piControl' not in available_exp:
+        raise ValueError("The diagnostic needs a pre industrial control " +
+                         "experiment.")
+
+    if len(available_exp) != 2:
+        raise ValueError("The diagnostic needs two model experiments: " +
+                         "pre industrial control and 4 times CO2.")
 
     ###########################################################################
     # Read data
