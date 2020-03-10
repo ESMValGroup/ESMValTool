@@ -8,10 +8,10 @@ documentation:
     Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
 
   authors:
-    - lova_to
+    - lovato_tomas
   
   maintainer:
-    - lova_to
+    - lovato_tomas
 
   references:
     - acknow_project
@@ -34,7 +34,8 @@ preprocessors:
   # --------------------------------------------------
   # For a 2D global surface map
   prep_surface_map_2D:
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -42,9 +43,8 @@ preprocessors:
   # Global area-weighted Average from 2D field
   prep_global_Surface_average_timeseries_2D:
     custom_order: true
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -58,26 +58,29 @@ diagnostics:
   # Surface time series vs OBS
   # --------------------------------------------------
   diag_timeseries_surface_average_vs_OBS:
-    description: Global surface time series (Landschutzer2014 observations)
+    description: Global surface time series (Landschuetzer2016 observations)
     variables:
       dpco2:
         preprocessor: prep_global_Surface_average_timeseries_2D
         mip: Omon
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
+      areacello:
+        mip: fx
       spco2:
         preprocessor: prep_global_Surface_average_timeseries_2D
         mip: Omon
-        fx_files: [areacello, ]
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
       fgco2:
         preprocessor: prep_global_Surface_average_timeseries_2D
         mip: Omon
-        fx_files: [areacello, ]
-    additional_datasets:
-      - {dataset: Landschutzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
     scripts:
       Global_surface_timeseries:
         script: ocean/diagnostic_timeseries.py
-        observational_dataset: {dataset: Landschutzer2016, project: OBS}
+        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
 
 
   # --------------------------------------------------
@@ -89,30 +92,29 @@ diagnostics:
       dpco2:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
         maps_range: [-90., 90.]
         diff_range: [-50., 50.]
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
+      areacello:
+        mip: fx
       spco2:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
         maps_range: [300., 400.]
         diff_range: [-50., 50.]
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
       fgco2:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
         maps_range: [-0.2, 0.2]
         diff_range: [-0.1, 0.1]
-    additional_datasets:
-      - {dataset: Landschutzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
         observational_dataset: {dataset: Landschutzer2016, project: OBS}
-
-
-
-

@@ -3,12 +3,20 @@
 documentation:
   description: |
     Validation of CONTROL and EXPERIMENT datasets.
+    This recipe produces standard comparison plots for two models
+    and may include observational data. The standard comparison
+    metrics are 2D lat-lon differences (between control and experiment),
+    plain 2D lat-lon for each model, 1D (coordinate vs time)
+    zonal and meridional means for both control and experiment models.
+    Plots are produced for each season (winter DJF, spring MAM, summer JJA,
+    autumn SON) and for the entire year.
+    There are no restrictions in terms of data.
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2005}
@@ -42,25 +50,28 @@ diagnostics:
       lat_lon:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
         analysis_type: lat_lon  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
-        seasonal_analysis: False
+        seasonal_analysis: false
       zonal_mean:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
         analysis_type: zonal_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
-        seasonal_analysis: True
+        seasonal_analysis: true
       meridional_mean:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
         analysis_type: meridional_mean  # use any of: lat_lon, meridional_mean, zonal_mean, vertical_mean[not implemented]
-        seasonal_analysis: True
+        seasonal_analysis: true
 

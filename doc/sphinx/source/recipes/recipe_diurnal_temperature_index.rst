@@ -1,14 +1,14 @@
 .. _recipe_diurnal_temperature_index:
 
-Diurnal temperature variation indicator: Difference between Tmax and Tmin for a specific day
-============================================================================================
+Diurnal temperature range
+=========================
 
 Overview
 --------
 
 The goal of this diagnostic is to compute a vulnerability indicator for the diurnal temperature range (DTR); the maximum variation in temperature within a period of 24 hours at a given location.  This indicator was first proposed by the energy sector, to identify locations which may experience increased diurnal temperature variation in the future, which would put additional stress on the operational management of district heating systems. This indicator was defined as the DTR exceeding 5 degrees celsius at a given location and day of the year (Deandreis et al., N.D.). Projections of this indicator currently present high uncertainties, uncertainties associated to both Tmax and Tmin in future climate projections.
 
-As well as being of use to the energy sector, the global‐average DTR has been evaluated using both observations and climate model simulations (Braganza et. al., 2004) and changes in the mean and variability of the DTR have been shown to have a wide range of impacts on society, such as on the transmission of diseases (Lambrechts et al., 2011;  Paaijmans et al., 2010) and energy consumption (Deandreis et al., N.D.).
+As well as being of use to the energy sector, the global‐average DTR has been evaluated using both observations and climate model simulations (Braganza et. al., 2004) and changes in the mean and variability of the DTR have been shown to have a wide range of impacts on society, such as on the transmission of diseases (Lambrechts et al., 2011;  Paaijmans et al., 2010).
 
 The recipe recipe_diurnal_temperature_index.yml computes first a mean DTR for a reference period using historical simulations and then, the number of days when the DTR from the future climate projections exceeds that of the reference period by 5 degrees or more. The user can define both the reference and projection periods, and the region to be considered.  The output produced by this recipe consists of a four panel plot showing the maps of the projected mean DTR indicator for each season and a netcdf file containing the corresponding data.
 
@@ -23,7 +23,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* diurnal_temp_index.r : calculates the diaurnal temperature vulnerability index.
+* diurnal_temp_index.R : calculates the diaurnal temperature vulnerability index.
 
 
 User settings
@@ -69,6 +69,8 @@ Example plots
 -------------
 
 .. _fig_diurnal:
-.. figure::  /recipes/figures/diurnal_temp_index/rcp85_diurnal.png
+.. figure::  /recipes/figures/diurnal_temp_index/Seasonal_DTRindicator_MPI-ESM-MR_2030_2080_1961_1990.png
    :align:   center
    :width:   14cm
+
+Mean number of days exceeding the Diurnal Temperature Range (DTR) simulated during the historical period (1961-1990) by 5 degrees during the period 2030-2080. The result is derived from one RCP 8.5 scenario simulated by MPI-ESM-MR.

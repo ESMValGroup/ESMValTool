@@ -2,15 +2,14 @@
 # recipe_python.yml
 ---
 documentation:
-  description: |
-    Example recipe that plots the mean precipitation and temperature.
+  description: Example recipe that plots the mean precipitation and temperature.
 
   authors:
-    - ande_bo
-    - righ_ma
+    - andela_bouwe
+    - righi_mattia
 
   maintainer:
-    - schl_ma
+    - schlund_manuel
 
   references:
     - acknow_project
@@ -20,9 +19,8 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: CanESM2,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
 
@@ -31,7 +29,7 @@ preprocessors:
       levels: 85000
       scheme: nearest
     regrid:
-      target_grid: reference_dataset
+      target_grid: 1x1
       scheme: linear
     multi_model_statistics:
       span: overlap
@@ -48,9 +46,13 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor1
-        reference_dataset: CanESM2
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
       pr:
-        reference_dataset: MPI-ESM-LR
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
     scripts:
       script1:
         script: examples/diagnostic.py

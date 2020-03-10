@@ -11,12 +11,12 @@
 ## E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
 ##
 ## Project
-## Copernicus C3S-MAGIC (C3S 34a Lot2) 
+## Copernicus C3S-MAGIC (C3S 34a Lot2)
 ##
 ## References:
 ## https://github.com/oloapinivad/MiLES
-## S. Corti, F. Molteni and T. N. Palmer, 1999 
-##   Signature of recent climate change in frequencies of natural 
+## S. Corti, F. Molteni and T. N. Palmer, 1999
+##   Signature of recent climate change in frequencies of natural
 ##   atmospheric circulation regimes". Nature 398, 799-802
 ##
 ## This namelist is part of the ESMValTool
@@ -27,13 +27,13 @@
 ---
 documentation:
   description: |
-    Recipe for computing and plotting weather regimes using 
+    Recipe for computing and plotting weather regimes using
     the MiLES (Mid-Latitude Evaluation System) package
 
   authors:
-    - hard_jo
-    - davi_pa
-    - arno_en
+    - vonhardenberg_jost
+    - davini_paolo
+    - arnone_enrico
 
   references:
     - davini18
@@ -44,7 +44,7 @@ documentation:
 
 datasets:
    - {dataset: EC-EARTH,    project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1980,  end_year: 1989}
-   - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1980,  end_year: 1989 }
+   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3, start_year: 1980,  end_year: 1989 }
 
 preprocessors:
     preproc1:
@@ -64,14 +64,14 @@ preprocessors:
 diagnostics:
 
   miles_diagnostics:
-    description: MiLES Weather Regimes Diagnostics 
+    description: MiLES Weather Regimes Diagnostics
     variables:
       zg:
         preprocessor: preproc1
         mip: day
         reference_dataset: "ERA-Interim"
     scripts:
-        miles_regimes: 
+        miles_regimes:
             script: miles/miles_regimes.R
             seasons: DJF # Select season (beta: 'DJF' only possible option for now)
             nclusters: 4 # beta: only 4 possible for now

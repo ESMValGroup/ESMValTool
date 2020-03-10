@@ -1,3 +1,5 @@
+.. _recipes_shapeselect:
+
 Shapeselect
 ===========
 
@@ -40,3 +42,12 @@ Variables
 
 * pr,tas      (daily)
 
+Example plots
+-------------
+
+.. _fig_shapeselect:
+.. figure::  /recipes/figures/shapeselect/shapeselect.png
+   :align:   center
+   :width:   14cm
+
+   Example of the selection of model grid points falling within (blue pluses) and without (red dots) a provided shapefile (blue contour).

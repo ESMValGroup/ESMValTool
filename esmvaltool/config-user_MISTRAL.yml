@@ -1,0 +1,31 @@
+# ESMValTool User's configuration file for DKRZ-MISTRAL
+# Author: Mattia Righi
+
+write_plots: True
+write_netcdf: True
+log_level: debug
+exit_on_warning: False
+output_file_type: png
+
+output_dir: /work/bd0854/b309143/ESMValTool/  # user's specific!
+auxiliary_data_dir: /mnt/lustre02/work/bd0854/b309143/ESMValTool/  # user's specific!
+
+save_intermediary_cubes: False
+max_parallel_tasks: 4
+
+rootpath:
+  CMIP5:    /mnt/lustre01/work/kd0956/CMIP5/data/cmip5/output1
+#  CMIP5:    /mnt/lustre02/work/bd0854/b309057/CMIP5
+  CMIP6:    /mnt/lustre02/work/ik1017/CMIP6/data/CMIP6
+#  OBS:      /mnt/lustre02/work/bd0854/b309070/obs
+  OBS:      [/mnt/lustre02/work/bd0854/DATA/ESMValTool2/OBS, /mnt/lustre02/work/bd0854/DATA/ESMValTool2/DEVOBS] 
+  OBS6:     [/mnt/lustre02/work/bd0854/DATA/ESMValTool2/OBS, /mnt/lustre02/work/bd0854/DATA/ESMValTool2/DEVOBS]
+  obs4mips: /mnt/lustre02/work/bd0854/b309070/obs
+  ana4mips: /mnt/lustre02/work/bd0854/b309070/obs
+  default:  /mnt/lustre01/work/kd0956/CMIP5/data/cmip5/output1
+drs:
+#  CMIP5: ETHZ
+  CMIP5: DKRZ
+#  CMIP6: DKRZ
+
+

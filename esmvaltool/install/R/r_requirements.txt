@@ -6,14 +6,12 @@ dotCall64
 functional
 ggplot2
 gridExtra
-JuliaCall
 lintr
 logging
 mapproj
 maps
 multiApply
 ncdf4
-ncdf4.helpers
 PCICt
 plyr
 RColorBrewer

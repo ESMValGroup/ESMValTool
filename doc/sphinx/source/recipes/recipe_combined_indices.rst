@@ -1,7 +1,7 @@
 .. _recipes_combined_indices:
 
-Indices based on area averages
-====================================================
+Nino indices, North Atlantic Oscillation (NAO), Souther Oscillation Index (SOI)
+===============================================================================
 
 Overview
 --------
@@ -9,7 +9,7 @@ Overview
 The goal of this diagnostic is to compute indices based on area averages.
 
 In recipe_combined_indices.yml, after defining the period (historical or
-future projection), the variable is selected. The predefined indices are:
+future projection), the variable is selected. The predefined areas are:
 
 * Nino 3
 * Nino 3.4
@@ -26,7 +26,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* combined_indices.r : calculates the area-weighted means and multi-model means, with or without weights
+* combined_indices.R : calculates the area-weighted means and multi-model means, with or without weights
 
 
 
@@ -35,7 +35,7 @@ User settings
 
 User setting files are stored in recipes/
 
-#. recipe_combined_indices.yml
+#.	recipe_combined_indices.yml
 
    *Required settings for script*
 
@@ -46,11 +46,16 @@ User setting files are stored in recipes/
    * standardized: ‘true’ or ‘false’ to specify whether to compute the standarization of the variable.
 
 
+     *Required settings for preprocessor (only for 3D variables)*
+     
+	  extract_levels:
+   *   levels: [50000] # e.g. for 500 hPa level
+   *   scheme: nearest
+   
 Variables
 ---------
 
-* psl, tasmax, tasmin, pr or sfcWind (atmos, monthly, longitude, latitude, time)
-* tos (ocean, monthly, longitude, latitude, time)
+* all variables (atmos/ocean, monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
@@ -68,9 +73,8 @@ Example plots
 -------------
 
 .. _fig_combinedindices1:
-.. figure::  /recipes/figures/Index_NAO.png
+.. figure::  /recipes/figures/Combined_Indices_Area_Average/Nino3.4_tos_Dec-Feb_running-mean__1950-2005.png
    :align:   center
    :width:   14cm
 
-
-
+Time series of the standardized sea surface temperature (tos) area averaged over the Nino 3.4 region during the boreal winter (December-January-February). The time series correspond to the MPI-ESM-MR (red) and BCC-CSM1-1 (blue) models and their mean (black) during the period 1950-2005 for the ensemble r1p1i1 of the historical simulations.

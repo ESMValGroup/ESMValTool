@@ -7,10 +7,10 @@ documentation:
     absolute bias, relative bias.
 
   authors:
-    - laue_ax
+    - lauer_axel
 
   maintainer:
-    - laue_ax
+    - lauer_axel
 
   references:
     - flato13ipcc
@@ -140,7 +140,7 @@ diagnostics:
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
     scripts:
       clim: &clim_settings

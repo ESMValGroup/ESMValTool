@@ -60,12 +60,12 @@ procedure create_legend_lines(labels:string, \
 ;
 ; Caveats
 ;
-; Modification history:
-;    20150511-A_laue_ax: added safe lower limits for panelling plot
-;    20150508-A_righ_ma: added lines/markers option.
-;    20150120-A_gott_kl: remove pre-existing file type suffix
-;    20140305-A_righ_ma: modified to plot always as epsi format.
-;    20140219-A_fran_fr: written.
+; Modification history
+;    20150511-lauer_axel: added safe lower limits for panelling plot
+;    20150508-righi_mattia: added lines/markers option.
+;    20150120-gottschaldt_klaus-dirk: remove pre-existing file type suffix
+;    20140305-righi_mattia: modified to plot always as epsi format.
+;    20140219-frank_franziska: written.
 ;
 local funcname, scriptname, region, temp, outfile, n_suff, wks_legend
 begin
@@ -205,7 +205,7 @@ function output_type()
 ; Caveats
 ;
 ; Modification history
-;    20131028-A_gott_kl: written.
+;    20131028-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, file_type
 begin
@@ -243,8 +243,8 @@ procedure copy_VarAtt_sel(var1, var2, sel: string)
 ;
 ; Caveats:
 ;
-; Modification history:
-;    20141227-A_gott_kl written.
+; Modification history
+;    20141227-gottschaldt_klaus-dirk written.
 ;
 local funcname, scriptname, atts, i1, i2, n
 begin
@@ -304,7 +304,7 @@ function panelling(wks,
 ;    Might not be fit to be used with non-NCL routines.
 ;
 ; Modification history
-;    20131112-A_gott_kl: written.
+;    20131112-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, plots, info, wks, outfile
 begin
@@ -349,12 +349,12 @@ begin
     end if
     ia = 0
     ie = nvert * nhori - 1
-    ie = min((/dimsizes(plots) - 1, ie/))  ; a_laue_ax: added for cloud diag
+    ie = min((/dimsizes(plots) - 1, ie/))
     do ipage = 0, npages - 1
       gsn_panel(wks, plots(ia:ie), (/nvert, nhori/), pres)
       ia = ie + 1
       ie = ia + (nvert * nhori) - 1
-      ie = min((/dimsizes(plots) - 1, ie/))  ; a_laue_ax
+      ie = min((/dimsizes(plots) - 1, ie/))
     end do
   else
     pres@gsnPaperOrientation   = "auto"
@@ -386,7 +386,7 @@ function get_plot_dir()
 ; Caveats
 ;
 ; Modification history
-;    20131104-A_gott_kl: written.
+;    20131104-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, plot_dir
 begin
@@ -425,8 +425,8 @@ function get_outfile_name(add_specs[1]:string)
 ;    Fetches string with additional elements specified within diag script
 ;
 ; Modification history
-;    20131204-A_senf_da: generalized naming.
-;    20131104-A_gott_kl: written.
+;    20131204-senftleben_daniel: generalized naming.
+;    20131104-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, outfile, file_type, plot_dir, diag_script_base, \
   add_specs, output_dir
@@ -475,7 +475,7 @@ function get_wks(wks_in,
 ; Caveats
 ;
 ; Modification history
-;    20131113-A_gott_kl: written.
+;    20131113-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, wks_in, diag_script, add_specs, file_type
 begin
@@ -524,8 +524,9 @@ procedure add_markers(wks[1]:graphic,
 ;
 ; Caveats:
 ;
-; Modification history:
-;    20140224-A_gott_kl: written for use with profile_plev.ncl in Emmons.ncl
+; Modification history
+;    20140224-gottschaldt_klaus-dirk: written for use with profile_plev.ncl
+;                                     in Emmons.ncl
 ;
 local funcname, scriptname, res, str, atts, iatt, color
 begin
@@ -595,8 +596,8 @@ procedure add_num_markers(wks[1]:graphic,
 ;
 ; Caveats:
 ;
-; Modification history:
-;    20150914-A_wenz_sa: written.
+; Modification history
+;    20150914-wenzel_sabrina: written.
 ;
 local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
@@ -680,8 +681,8 @@ procedure add_errorbar(wks[1]:graphic,
 ;
 ; Caveats:
 ;
-; Modification history:
-;    20150914-A_wenz_sa: written.
+; Modification history
+;    20150914-wenzel_sabrina: written.
 ;
 local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
@@ -822,7 +823,7 @@ procedure horizontal_whiskers(wks[1]:graphic,
 ;    www.ncl.ucar.edu/Document/Graphics/Interfaces/gsn_add_polyline.shtml
 ;
 ; Modification history
-;    20140224-A_gott_kl: written.
+;    20140224-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, n, i, j, xmin, xmax, ypos, imiss, ivalid, result, \
   x, y, res, str
@@ -924,8 +925,8 @@ procedure add_prediction_error(wks[1]:graphic,
 ;
 ; Caveats:
 ;
-; Modification history:
-;    20150914-A_wenz_sa: written.
+; Modification history
+;    20150914-wenzel_sabrina: written.
 ;
 local funcname, scriptname, xpos, ypos, res, str, atts, iatt, color
 begin
@@ -979,7 +980,7 @@ function month_sel(month_names:string)
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local month_names, month_n, i
 begin
@@ -1049,7 +1050,7 @@ function lat_names(lat_val:numeric)
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local lat_name, lat_val, i
 begin
@@ -1089,7 +1090,7 @@ procedure add_line(wks,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local plres, str
 begin
@@ -1126,7 +1127,7 @@ procedure add_scatt(wks,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local plres, str
 begin
@@ -1161,7 +1162,7 @@ procedure add_legenda(wks,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local model, dim_mod, colors, dashs, edge_x, edge_y, edge_res, tx1res, \
   dim_lb, xleg, xl, yleg, yl, xtxt, ytxt, place, dim_lines, space_lines, \
@@ -1293,7 +1294,7 @@ function calcRegCoeffs(y:numeric)
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local y, d_y, d_t, ma, x, funcx, pi, t, a
 begin
@@ -1353,7 +1354,7 @@ function genZonalMeans(x:numeric,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local dimx, ntim, nlat, nzone, z, t, i, j, cnt, idx_st, idx_ed, xZonMean
 begin
@@ -1436,7 +1437,7 @@ function calcMeanAnnCycleMonthly(RegCoeffAs:numeric)
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local dimx, z, month, t, xMeanAnnCycleMon
 begin
@@ -1477,7 +1478,7 @@ function calcMeanAnnCycleAnnual(RegCoeffAs:numeric)
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local dimx, day, t, xMeanAnnCycleDay
 begin
@@ -1524,7 +1525,7 @@ procedure rmMeanAnnCycle(x:numeric,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local dimx, ntim, t, i, idx_st, idx_ed, nyr, xdata
 begin
@@ -1575,7 +1576,7 @@ function apfiltersmooth(xMonAnom:numeric,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local dimx, dimf, ntim, nwin, z, t, i, j, hfw, idx_ed, avgwidth, \
   totalwgt, total, num, minval, finished, data, hold, xSmthMonAnom
@@ -1687,7 +1688,7 @@ procedure smoothAnomalies(xAnnAnom:numeric,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local dimx, dimf, ntim, nset, nwin, s, t, i, j, hfw, idx_ed, avgwidth, \
   totalwgt, total, num, minval, finished, smthdata, hold, buffer, filter, \
@@ -1815,7 +1816,7 @@ function clmMon2clmDayn(x:numeric,
 ; Caveats
 ;
 ; Modification history
-;    20190605-A_righ_ma: ported from v1.
+;    20190605-righi_mattia: ported from v1.
 ;
 local dNames, dimx, rank, X, midMon, day
 begin

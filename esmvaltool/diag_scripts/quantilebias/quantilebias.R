@@ -18,41 +18,24 @@
 # Caveats
 #
 # Modification history
-#    20180926-A_arno_en: Refined for usage as recipe
-#    20180518-A_arno_en: Written for v2.0
+#    20180926-arnone_enrico: Refined for usage as recipe
+#    20180518-arnone_enrico: Written for v2.0
 #
 # #############################################################################
 
 library(tools)
 library(yaml)
 
-cdo <- function(command, args = "", input = "", options = "", output = "",
-                stdout = "", noout = F) {
-  if (args != "") args <- paste0(",", args)
-  if (stdout != "") stdout <- paste0(" > '", stdout, "'")
-  if (input[1] != "") {
-    for (i in 1:length(input)) {
-      input[i] <- paste0("'", input[i], "'")
-    }
-    input <- paste(input, collapse = " ")
-  }
-  output0 <- output
-  if (output != "") {
-    output <- paste0("'", output, "'")
-  } else if ( !noout ) {
-    output <- tempfile()
-    output0 <- output
-  }
-  argstr <- paste0(options, " ", command, args, " ", input, " ", output,
-                   " ", stdout)
-  print(paste("cdo", argstr))
-  ret <- system2("cdo", args = argstr)
-  if (ret != 0) {
-    stop(paste("Failed (", ret, "): cdo", argstr))
-  }
-  return(output0)
-}
+# get path to script and source subroutines (if needed)
+args <- commandArgs(trailingOnly = FALSE)
+spath <- paste0(dirname(unlist(strsplit(
+  grep("--file", args,
+    value = TRUE
+  ), "="
+))[2]), "/")
 
+source(paste0(spath, "quantilebias_functions.R"))
+source(paste0(spath, "../shared/external.R")) # nolint
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -76,6 +59,7 @@ varname <- climolist$short_name
 
 # create working dirs if they do not exist
 dir.create(work_dir, recursive = T, showWarnings = F)
+dir.create(plot_dir, recursive = T, showWarnings = F)
 setwd(work_dir)
 
 # setup provenance file and list
@@ -84,7 +68,8 @@ provenance <- list()
 
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
-reference_model <- unname(sapply(metadata, "[[", "reference_dataset"))[1]
+reference_model <-
+  unname(sapply(metadata, "[[", "reference_dataset"))[1]
 models_start_year <- unname(sapply(metadata, "[[", "start_year"))
 models_end_year <- unname(sapply(metadata, "[[", "end_year"))
 models_experiment <- unname(sapply(metadata, "[[", "exp"))
@@ -96,7 +81,7 @@ ref_data_file <- climofiles[ref_idx]
 ## Loop through input models
 for (model_idx in c(1:(length(models_name)))) {
   if (model_idx == ref_idx) {
-     next
+    next
   }
   # Setup parameters and path
   exp <- models_name[model_idx]
@@ -106,25 +91,34 @@ for (model_idx in c(1:(length(models_name)))) {
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]
 
-  inregname <- paste0(exp, "_", model_exp, "_", model_ens, "_",
-                      toString(year1), "-", toString(year2), "_", varname)
-  outfile <- paste0(work_dir, "/", inregname, "_", perc_lev, "qb.nc")
-  print(paste0(diag_base, ": pre-processing file: ", infile))
-
-  print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
+  inregname <- paste0(
+    exp,
+    "_",
+    model_exp,
+    "_",
+    model_ens,
+    "_",
+    toString(year1),
+    "-",
+    toString(year2),
+    "_",
+    varname
+  )
+  outfile <-
+    paste0(work_dir, "/", inregname, "_", perc_lev, "qb.nc")
 
   # Select variable of interest
   modf <- cdo("selvar", args = varname, input = infile)
 
-  # Remap reference onto model grid
-  selectf <- cdo("selvar", args = varname, input = ref_data_file)
-  reff <- cdo("remapcon", args = modf, input = selectf)
+  reff <- ref_data_file
 
   # Get (X)th percentile of reference dataset
   refminf <- cdo("timmin", input = reff)
   refmaxf <- cdo("timmax", input = reff)
-  ref_perc_pf <- cdo("timpctl", args = perc_lev,
-                     input = c(reff, refminf, refmaxf))
+  ref_perc_pf <- cdo("timpctl",
+    args = perc_lev,
+    input = c(reff, refminf, refmaxf)
+  )
 
   # Select points with monthly precipitation greater than (75)th perc
   mask_reff <- cdo("ge", input = c(reff, ref_perc_pf))
@@ -140,31 +134,139 @@ for (model_idx in c(1:(length(models_name)))) {
   qb1f <- cdo("div", input = c(mod_sumf, ref_sumf))
   tempfile <- tempfile()
 
-  temp1f <- cdo("chname", args = paste0(varname, ",qb"), input = qb1f)
-  temp2f <- cdo("setattribute", args = "qb@units=' '", input = temp1f)
+  temp1f <-
+    cdo("chname", args = paste0(varname, ",qb"), input = qb1f)
+  temp2f <-
+    cdo("setattribute", args = "qb@units=' '", input = temp1f)
   temp1f <- cdo("setattribute",
-                args = "qb@long_name='Precipitation quantile bias'",
-                input = temp2f, output = temp1f)
-  cdo("setattribute", args = "qb@standard_name='precipitation_quantile_bias'",
-      input = temp1f, output = outfile)
+    args = "qb@long_name='Precipitation quantile bias'",
+    input = temp2f,
+    output = temp1f
+  )
+  cdo("setattribute",
+    args = "qb@standard_name='precipitation_quantile_bias'",
+    input = temp1f,
+    output = outfile
+  )
 
   # Remove temporary files
-  unlink(c(modf, reff, ref_perc_pf, mask_reff, mask_modf,
-           ref_sumf, mod_sumf, qb1f, refminf, refmaxf, selectf,
-           mask_mod2f, mask_ref2f, temp1f, temp2f))
+  unlink(
+    c(
+      modf,
+      reff,
+      ref_perc_pf,
+      mask_reff,
+      mask_modf,
+      ref_sumf,
+      mod_sumf,
+      qb1f,
+      refminf,
+      refmaxf,
+      mask_mod2f,
+      mask_ref2f,
+      temp1f,
+      temp2f
+    )
+  )
+
+
+  # Produce figure
+  field <- ncdf_opener(outfile, "qb", "lon", "lat", rotate = "full")
+  ics_ref <- ics
+  ipsilon_ref <- ipsilon
+
+  tmp_figname <- sub(".nc", paste0(".", output_file_type), outfile)
+  figname <- sub(work_dir, plot_dir, tmp_figname)
+
+  figure_size <- c(600, 400)
+  if (tolower(output_file_type) != "png") {
+    figure_size <- c(10, 6)
+  }
+  graphics_startup(figname, output_file_type, figure_size)
+
+  tmp_levels <- c(0:20) * 0.1
+  tmp_colors <- rev(rainbow(30)[1:20])
+
+  # contours
+  par(
+    cex.main = 1.8,
+    cex.axis = 1.4,
+    cex.lab = 1.4,
+    mar = c(5, 5, 4, 8)
+  )
+  filled_contour3(
+    ics,
+    ipsilon,
+    field,
+    xlab = "Longitude",
+    ylab = "Latitude",
+    main = paste0(exp),
+    levels = tmp_levels,
+    col = tmp_colors,
+    axes = F,
+    asp = 1
+  )
+  # continents
+  map(
+    "world",
+    regions = ".",
+    interior = F,
+    exact = F,
+    boundary = T,
+    add = T,
+    col = "black",
+    lwd = 2
+  )
+  axis(1, col = "grey40", at = seq(-180, 180, 45))
+  axis(2, col = "grey40", at = seq(-90, 90, 30))
+
+  colorbar_scale <- c(-0.15, -0.08, 0.1, -0.1)
+  if (tolower(output_file_type) != "png") {
+    colorbar_scale <- c(-0.13, -0.06, 0.1, -0.1)
+  }
+  image_scale3(
+    volcano,
+    levels = tmp_levels,
+    new_fig_scale = colorbar_scale,
+    col = tmp_colors,
+    colorbar.label = paste0("QB", perc_lev),
+    cex.colorbar = 1.3,
+    cex.label = 1.4,
+    colorbar.width = 1,
+    line.label = 2.9,
+    line.colorbar = 1.0,
+    extend = F
+  )
+  graphics_close(figname)
 
   # Set provenance for this output file
-  caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
-                    year1, " to ", year2, " according to ", exp)
-  xbase <- list(ancestors = list(infile, ref_data_file),
-                authors = list("arno_en", "hard_jo"),
-                projects = list("c3s-magic"), references = list("mehran14jgr"),
-                caption = caption, statistics = list("perc"),
-                realms = list("atmos"), themes = list("phys"),
-                domains = list("global"), reference_dataset = ref_data_file)
+  caption <-
+    paste0(
+      "Precipitation quantile bias ",
+      perc_lev,
+      "% for years ",
+      year1,
+      " to ",
+      year2,
+      " according to ",
+      exp
+    )
+  xbase <- list(
+    ancestors = list(infile, ref_data_file),
+    authors = list("arnone_enrico", "vonhardenberg_jost"),
+    projects = list("c3s-magic"),
+    references = list("mehran14jgr"),
+    caption = caption,
+    statistics = list("perc"),
+    realms = list("atmos"),
+    themes = list("phys"),
+    domains = list("global"),
+    reference_dataset = ref_data_file
+  )
 
   # Store provenance in main provenance list
   provenance[[outfile]] <- xbase
+  provenance[[figname]] <- xbase
 }
 
 # Write provenance to file
