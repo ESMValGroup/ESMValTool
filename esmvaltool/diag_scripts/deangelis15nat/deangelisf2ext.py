@@ -135,7 +135,7 @@ def plot_slope_regression(cfg, data_dict):
     fig, axx = plt.subplots(figsize=(7, 7))
 
     axx.plot(np.linspace(0.2, 1.4, 2), y_reg_sa, color='r')
-    
+
     for iii, model in enumerate(datasets):
         style = e.plot.get_dataset_style(model)
         axx.plot(
@@ -148,8 +148,7 @@ def plot_slope_regression(cfg, data_dict):
             markersize=10,
             markeredgewidth=2.0,
             label=model)
-        
-    
+
     axx.set_xlabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
     axx.set_title(' ')
     axx.set_ylabel(r'dL$_{\rm v}$P/dT (W m$^{-2}$ K$^{-1}$)')
@@ -158,15 +157,15 @@ def plot_slope_regression(cfg, data_dict):
     axx.set_ylim([1.75, 2.8])
     axx.set_yticks(np.linspace(1.8, 2.8, 6))
     axx.text(0.9, 2.75, 'Fit (r={:.2f}, '.format(reg_sa.rvalue) +
-                               ' slope = {:.2f}, '.format(reg_sa.slope) +
-                               ')')
+             ' slope = {:.2f}, '.format(reg_sa.slope) +
+             ')')
     axx.legend(loc=3)
 
     fig.tight_layout()
     fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
                              cfg[n.OUTPUT_FILE_TYPE]))
-    plt.close()    
-        
+    plt.close()
+
 #    e.plot.scatterplot(
 #        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2)],
 #        [sa_lvpdt, y_reg_sa],
@@ -203,7 +202,7 @@ def plot_slope_regression(cfg, data_dict):
     fig, axx = plt.subplots(figsize=(7, 7))
 
     axx.plot(np.linspace(0.2, 1.4, 2), y_reg_rsnst, color='r')
-    
+
     for iii, model in enumerate(datasets):
         style = e.plot.get_dataset_style(model)
         axx.plot(
@@ -216,8 +215,7 @@ def plot_slope_regression(cfg, data_dict):
             markersize=10,
             markeredgewidth=2.0,
             label=model)
-        
-    
+
     axx.set_xlabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
     axx.set_title(' ')
     axx.set_ylabel(r'all-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
@@ -226,15 +224,15 @@ def plot_slope_regression(cfg, data_dict):
     axx.set_ylim([0.45, 1.15])
     axx.set_yticks(np.linspace(0.5, 1.1, 7))
     axx.text(0.85, 1.1, 'Fit (r={:.2f}, '.format(reg_rsnst.rvalue) +
-                               ' slope = {:.2f}, '.format(reg_rsnst.slope) +
-                               ')')
+             ' slope = {:.2f}, '.format(reg_rsnst.slope) +
+             ')')
     axx.legend(loc=2)
 
     fig.tight_layout()
     fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
                              cfg[n.OUTPUT_FILE_TYPE]))
-    plt.close()    
-    
+    plt.close()
+
 #    e.plot.scatterplot(
 #        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2), np.linspace(0.2, 1.4, 2)],
 #        [sa_rsnstdt, y_reg_rsnst, np.linspace(0.2, 1.4, 2)],
@@ -269,7 +267,6 @@ def plot_slope_regression_all(cfg, data_dict):
     if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
         return
 
-    
     data_model = data_dict['regressions']
     m_all = np.array([np.mean(data_model[:, 3]), np.mean(data_model[:, 0]),
                       np.mean(data_model[:, 1]), np.mean(data_model[:, 2]),
