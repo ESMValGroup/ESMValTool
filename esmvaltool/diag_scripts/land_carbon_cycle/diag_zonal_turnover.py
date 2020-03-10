@@ -15,6 +15,7 @@ Please consult the documentation for help with esmvaltool's functionalities
 and best coding practices.
 """
 # place your module imports here:
+import extraUtils as xu
 
 # operating system manipulations (e.g. path constructions)
 import os
@@ -24,39 +25,93 @@ import iris
 import matplotlib.pyplot as plt
 
 import numpy as np
+
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import get_diagnostic_filename, group_metadata, select_metadata, run_diagnostic, extract_variables
 from esmvalcore.preprocessor import area_statistics
 
+## Classes and settings
+class dotDict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
-# esmvaltool.diag_scripts.shared.extract_variables
 
-def load_variable(metadata, var_name):
-    candidates = select_metadata(metadata, short_name=var_name)
-    assert len(candidates) == 1
-    filename = candidates[0]['filename']
-    cube = iris.load_cube(filename)
-    return cube
-            
+def _get_fig_config(__cfg):
+    fcfg = {}
+    fcfg['fill_val'] = np.nan
+    fcfg['multimodel'] = False
+    fcfg['correlation_method'] = 'pearson'
+    fcfg['ax_fs'] = 7.1
+    fcfg['valrange_x'] = (2, 1000)
+    fcfg['valrange_y'] = (-70, 90)
+    fcfg['minPoints'] = 0
+    fcfg['bandsize'] = 1.986
+    fcfg['obs_label'] = 'Carvalhais2014'
+    fcfg['gpp_threshold'] = 10  #gC m-2 yr -1
+    fcfgL = list(fcfg.keys())
+    for _fc in fcfgL:
+        if __cfg.get(_fc) != None:
+            fcfg[_fc] = __cfg.get(_fc)
+    _figSet = dotDict(fcfg)
+    _figSet.ax_fs = 9
+    return _figSet
 
-def _zonal_tau(_datgpp,_datcTotal):
-    __dat=np.zeros((np.shape(_datgpp)[0]))
-    minPoints=20
-    bandsize=9
-    for li in range(len(__dat)):
-        istart=max(0,li-bandsize)
-        iend=min(359,li+bandsize+1)
-        _datgppZone=_datgpp[istart:iend,:]#* _areaZone
-        _datcTotalZone=_datcTotal[istart:iend,:]#* _areaZone
-        # _datgppZone=remove_tail_percentiles(_datgppZone,_outlierPerc=10)
-        # _datcTotalZone=remove_tail_percentiles(_datcTotalZone,_outlierPerc=10)
-        nValids=np.nansum(1-np.ma.getmask(np.ma.masked_invalid(_datgppZone)))
-        if nValids > minPoints:
-            __dat[li] = (np.nansum(_datcTotalZone)/np.nansum(_datgppZone)) / (86400*365)
-        else:
-            __dat[li] = np.nan
-            print(nValids,'valid points for tau, setting nan')
-    return(__dat)
+
+# calculation and data functions
+def _apply_common_mask(_dat1, _dat2):
+    '''
+    returns a mask array with 1 where all three data arrays have valid numeric values and zero elsewhere
+    '''
+    _dat1Mask = np.ma.getmask(np.ma.masked_invalid(_dat1))
+    _dat2Mask = np.ma.getmask(np.ma.masked_invalid(_dat2))
+    _valMaskA = 1 - (1 - _dat1Mask) * (1 - _dat2Mask)
+    _valMask = np.ma.nonzero(_valMaskA)
+    _dat1[_valMask] = np.nan
+    _dat2[_valMask] = np.nan
+    _dat1 = np.ma.masked_invalid(_dat1)
+    _dat2 = np.ma.masked_invalid(_dat2)
+    return _dat1, _dat2
+
+
+def _apply_gpp_threshold(_gppDat, _fcfg):
+    gpp_thres = _fcfg.gpp_threshold / (
+        86400.0 * 365 * 1000.)  # converting gC m-2 yr-1 to kgC m-2 s-1
+    _gppDat = np.ma.masked_less(_gppDat, gpp_thres).filled(_fcfg.fill_val)
+    return _gppDat
+
+
+def _get_obs_data(cfg):
+    """Get and handle the observations of turnover time from Carvalhais 2014.
+
+    Arguments:
+        cfg - nested dictionary of metadata
+
+    Returns:
+        dictionary with observation data with different variables as keys
+    """
+    if not cfg.get('obs_files'):
+        raise ValueError('The observation files needs to be specified in the '
+                         'recipe (see recipe description for details)')
+    else:
+        input_files = [
+            os.path.join(cfg['auxiliary_data_dir'], obs_file)
+            for obs_file in cfg.get('obs_files')
+        ]
+    all_data = {}
+    varList = cfg.get('obs_variables')
+    print(varList)
+    for _var in varList:
+        variable_constraint = iris.Constraint(
+            cube_func=(lambda c: c.var_name == _var))
+        cube = iris.load_cube(input_files, constraint=variable_constraint)
+        all_data[_var] = cube.data
+    for coord in cube.coords():
+        all_data[coord.name()] = coord.points
+    return all_data
+
+
 def _get_zonal_tau(cfg):
     """
     A diagnostic function to calculate the total carbon stock from the list of variables
@@ -71,61 +126,85 @@ def _get_zonal_tau(cfg):
     """
 
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
-    # import pdb; pdb.set_trace()
 
-    # iterate over key(dataset) and values(list of vars)
-    allModdat={}
+    fcfg = _get_fig_config(cfg)
+    zonal_tau_mod = {}
+    global_gpp_mod = {}
+    global_ctotal_mod = {}
     for key, value in my_files_dict.items():
-        # load the cube from data files only
-        # using a single variable here so just grab the first (and only)
-        # list element
+        mod_coords = {}
+        zonal_tau_mod[key] = {}
+        ctotal = _load_variable(value, 'ctotal')
+        gpp = _load_variable(value, 'gpp')
+        gppDat = xu.remove_invalid(gpp.data, _fill_val=fcfg._fill_val)
+        ctotalDat = xu.remove_invalid(ctotal.data, _fill_val=fcfg._fill_val)
+        for coord in gpp.coords():
+            mod_coords[coord.name()] = coord.points
+        zonal_tau_mod[key]['data'] = _zonal_tau(gppDat, ctotalDat,
+                                                mod_coords['latitude'], fcfg)
+        zonal_tau_mod[key]['latitude'] = mod_coords['latitude']
+        print(key, value)
 
-        c_total = load_variable(value, 'ctotal')
-        gpp = load_variable(value, 'gpp')
-        print(gpp,c_total)
+        global_ctotal_mod[key] = ctotalDat
+        global_gpp_mod[key] = gppDat
 
-        c_tau = _zonal_tau(gpp.data, c_total.data)
-        print(key,value)
-        allModdat[key]=c_tau
-    allObsdat = _get_obs_data(cfg)
-    _plot_zonal_tau(allModdat,allObsdat, cfg)
-    return 'I am done with my first ESMValTool diagnostic!'
+    # get the multimodel median GPP and ctotal and calculate zonal tau from multimodel median
+    mm_ctotal = xu.remove_invalid(np.nanmedian(np.array(
+        [_ctotal for _ctotal in global_ctotal_mod.values()]),
+                                               axis=0),
+                                  _fill_val=fcfg.fill_val)
+    mm_gpp = xu.remove_invalid(np.nanmedian(np.array(
+        [_gpp for _gpp in global_gpp_mod.values()]),
+                                            axis=0),
+                               _fill_val=fcfg.fill_val)
+    zonal_tau_mod['zmultimodel'] = {}
+    zonal_tau_mod['zmultimodel']['data'] = _zonal_tau(mm_gpp, mm_ctotal,
+                                                      mod_coords['latitude'],
+                                                      fcfg)
+    zonal_tau_mod['zmultimodel']['latitude'] = mod_coords['latitude']
+    # get the observation of zonal tau
+    zonal_tau_obs = _get_obs_data(cfg)
+    # plot the figure
+    _plot_zonal_tau(zonal_tau_mod, zonal_tau_obs, cfg)
+    return 'done plotting the zonal turnover time'
 
-def _get_obs_data(cfg):
-    """Get all data."""
-    if not cfg.get('obs_files'):
-        raise ValueError('The observation files needs to be specified in the '
-                        'recipe (see recipe description for details)')
-    else:
-        input_files = [os.path.join(cfg['auxiliary_data_dir'], obs_file) for obs_file in cfg.get('obs_files')]
-    all_data = {}
-    varList = cfg.get('obs_variables')
-    print (input_files,varList)
-    for _var in varList:
-        variable_constraint = iris.Constraint(cube_func=(lambda c: c.var_name == _var))
-        cube = iris.load_cube(input_files,constraint=variable_constraint)
-        print(cube)    
-        all_data[_var]=cube.data
-    return (all_data)
 
-def rem_axLine(rem_list=['top','right'],axlw=0.4):
-    ax=plt.gca()
-    for loc, spine in ax.spines.items():
-        if loc in rem_list:
-            spine.set_position(('outward',0)) # outward by 10 points
-            spine.set_linewidth(0.)
+def _load_variable(metadata, var_name):
+    candidates = select_metadata(metadata, short_name=var_name)
+    assert len(candidates) == 1
+    filename = candidates[0]['filename']
+    cube = iris.load_cube(filename)
+    return cube
+
+
+def _zonal_tau(_datgpp, _datcTotal, _lats, _fcfg):
+    __dat = np.ones_like(_lats) * np.nan
+    _latint = abs(_lats[1] - _lats[0])
+    windowSize = int(_fcfg.bandsize / (_latint * 2))
+
+    _datgpp = xu.remove_invalid(_datgpp, _fill_val=_fcfg.fill_val)
+    _datcTotal = xu.remove_invalid(_datcTotal, _fill_val=_fcfg.fill_val)
+    # _datgpp = _apply_gpp_threshold(_datgpp,_fcfg)
+    _datgppC, _datcTotalC = _apply_common_mask(_datgpp, _datcTotal)
+    for li in range(len(__dat)):
+        istart = max(0, li - windowSize)
+        iend = min(np.size(_lats), li + windowSize + 1)
+        _datgppZone = _datgpp[istart:iend, :]  #* _areaZone
+        _datcTotalZone = _datcTotal[istart:iend, :]  #* _areaZone
+        nValids = np.nansum(1 -
+                            np.ma.getmask(np.ma.masked_invalid(_datgppZone)))
+        if nValids > _fcfg.minPoints:
+            __dat[li] = (np.nansum(_datcTotalZone) /
+                         np.nansum(_datgppZone)) / (86400 * 365)
         else:
-            spine.set_linewidth(axlw)
-    return
-def draw_legend(ax_fs=8):
-    leg = plt.legend(loc=(1.00974,.06),fontsize=ax_fs,ncol=1,columnspacing=0.05,fancybox=True,handlelength=0.8)
-    leg.get_frame().set_linewidth(0)
-    leg.get_frame().set_facecolor('#eeeeee')
-    leg.legendPatch.set_alpha(0.45)
-    texts = leg.get_texts()
-    plt.setp(texts, fontsize=ax_fs*0.9)
-    return(leg)
-def _plot_zonal_tau(all_mod_dat,all_obs_dat,cfg):
+            __dat[li] = np.nan
+    return __dat
+
+
+# Plotting functions
+
+
+def _plot_zonal_tau(all_mod_dat, all_obs_dat, cfg):
     """
     makes the maps of variables 
 
@@ -140,49 +219,65 @@ def _plot_zonal_tau(all_mod_dat,all_obs_dat,cfg):
     Note: this function is private; remove the '_'
     so you can make it public.
     """
-    models=list(all_mod_dat.keys())
-    nmodels=len(models)
-    lats=np.linspace(-89.75,89.75,360,endpoint=True)[::-1]
-    tau_obs=all_obs_dat['tau_ctotal']
-    tau_obs_5=all_obs_dat['tau_ctotal_5']
-    tau_obs_95=all_obs_dat['tau_ctotal_95']
-    plt.figure(figsize=(3,5))
-    sp0=plt.subplot(1,1,1)
-    sp0.plot(tau_obs,lats,color='k',lw=1.5,label='Observation')
-    sp0.fill_betweenx(lats, tau_obs_5,tau_obs_95, facecolor='grey',alpha=0.40)
-    ax_fs=8
+    _fcfg = _get_fig_config(cfg)
+    models = list(all_mod_dat.keys())
+    models = sorted(models, key=str.casefold)
+    nmodels = len(models)
+
+    lats_obs = all_obs_dat['latitude']
+    tau_obs = all_obs_dat['tau_ctotal']
+    tau_obs_5 = all_obs_dat['tau_ctotal_5']
+    tau_obs_95 = all_obs_dat['tau_ctotal_95']
+
+    plt.figure(figsize=(3, 5))
+
+    sp0 = plt.subplot(1, 1, 1)
+    sp0.plot(tau_obs, lats_obs, color='k', lw=1.5, label=_fcfg.obs_label)
+    sp0.fill_betweenx(lats_obs,
+                      tau_obs_5,
+                      tau_obs_95,
+                      facecolor='grey',
+                      alpha=0.40)
+
     for row_m in range(nmodels):
-        row_mod=models[row_m]
-        dat_mod_tau=all_mod_dat[row_mod]
-        sp0.plot(np.ma.masked_equal(np.flipud(dat_mod_tau),np.nan),lats,lw=0.5,label=row_mod)
+        row_mod = models[row_m]
+        dat_mod_tau = all_mod_dat[row_mod]['data']
+        lats_mod = all_mod_dat[row_mod]['latitude']
+        if row_mod == 'zmultimodel':
+            sp0.plot(np.ma.masked_equal(dat_mod_tau, np.nan),
+                     lats_mod,
+                     lw=1.5,
+                     color='blue',
+                     label='Multimodel')
+        else:
+            sp0.plot(np.ma.masked_equal(dat_mod_tau, np.nan),
+                     lats_mod,
+                     lw=0.5,
+                     label=row_mod)
 
+    leg = xu.draw_line_legend(ax_fs=_fcfg.ax_fs)
 
-    # dat_mod_tau=mm_ens_zonal_tau
-    # sp0.plot(np.ma.masked_equal(dat_mod_tau,np.nan),lats,color='blue',lw=lwMainLine,label='Model Ensemble')
-    leg=draw_legend()
-    valrange_md=(1,1000)
     plt.gca().set_xscale('log')
-    plt.xlim(valrange_md[0],valrange_md[1])
-    plt.xlim(2,1000)
-    plt.ylim(-65,85)
-    plt.axhline(y=0,lw=0.48,color='grey')
-    x_lab='$\\tau$'
+    plt.xlim(_fcfg.valrange_x[0], _fcfg.valrange_x[1])
+    plt.ylim(_fcfg.valrange_y[0], _fcfg.valrange_y[1])
+    plt.axhline(y=0, lw=0.48, color='grey')
+    x_lab = '$\\tau$'
+    plt.xlabel(x_lab, fontsize=_fcfg.ax_fs)
+    plt.ylabel('Latitude ($^\\circ N$)', fontsize=_fcfg.ax_fs, ma='center')
+    xu.rem_axLine(['top', 'right'])
 
-    plt.xlabel(x_lab,fontsize=ax_fs)
-    plt.ylabel('Latitude ($^\\circ N$)',fontsize=ax_fs,ma='center')
-    rem_axLine(['top','right'])
     local_path = cfg['plot_dir']
-    t_x=plt.figtext(0.5,0.5,' ',transform=plt.gca().transAxes)
-    png_name = 'comparison_zonal_turnovertime_Carvalhais2014.png'
-    plt.savefig(os.path.join(local_path, png_name),bbox_inches='tight',bbox_extra_artists=[t_x,leg],dpi=450)
+    png_name = 'comparison_zonal_turnovertime_' + _fcfg.obs_label + '.png'
+    plt.savefig(os.path.join(local_path, png_name),
+                bbox_inches='tight',
+                bbox_extra_artists=[leg],
+                dpi=450)
     plt.close()
 
-    return 'Plotting complete'
+    return 'Plotting complete for zonal turnover'
 
 
+# main
 if __name__ == '__main__':
-    # always use run_diagnostic() to get the config (the preprocessor
-    # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
-        # list here the functions that need to run
         _get_zonal_tau(config)
