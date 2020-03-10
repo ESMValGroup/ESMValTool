@@ -1,0 +1,100 @@
+# ESMValTool
+# recipe_carvalhais2014nat.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate the ecosystem turnover time of carbon based on Carvalhais et al., 2014, Nature.
+
+  authors:
+    - koirala_sujan
+
+  maintainer:
+    - koirala_sujan
+
+  references:
+    - carvalhais2014
+
+  projects:
+    - crescendo
+
+
+datasets:
+
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1982, end_year: 2005}
+  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1982, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1982, end_year: 2005}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1982, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1982, end_year: 2005}
+  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1982, end_year: 2005}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1982, end_year: 2005}
+
+
+preprocessors:
+  # --------------------------------------------------
+  # preprocessors: time mean, spatial regrid, and mask
+  # --------------------------------------------------
+  preproc_meanRegrid:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid: 
+      target_grid: NorESM1-M
+      scheme: nearest
+    mask_landsea:
+      mask_out: sea
+    multi_model_statistics:
+      span: full
+      statistics: [median]
+    mask_landsea:
+      mask_out: sea
+diagnostics:
+  # --------------------------------------------------
+  # diagnostics: global and zonal turnover
+  # --------------------------------------------------
+  diag_land_carbon_turnover_NorESM:
+    description: diagnose the turnover time of ecosystem carbon.
+    variables:
+      gpp: # gross primary productivity
+        preprocessor: preproc_meanRegrid
+        fx_files: [sftlf, areacella]
+        mip: Lmon
+      ctotal: # total carbon stock (cVeg + cSoil)
+        preprocessor: preproc_meanRegrid
+        fx_files: [sftlf, areacella]
+        derive: true
+        mip: Lmon
+      pr: # mean precipitation
+        preprocessor: preproc_meanRegrid
+        mip: Amon
+      tas: #mean air temperature
+        preprocessor: preproc_meanRegrid
+        mip: Amon
+    scripts:
+      zonal_turnover_time: # evaluate the zonal turnover time
+        script: land_carbon_cycle/diag_zonal_turnover.py
+        ancestors: [ctotal, gpp]
+        obs_files: ['zonal_mean_tau_ctotal_Carvalhais_NorESM.nc']
+        obs_variables: ['tau_ctotal','tau_ctotal_5','tau_ctotal_95']
+        ax_fs: 8
+      global_turnover_time: # evaluate the global distributions of turnover time 
+        script: land_carbon_cycle/diag_global_turnover.py
+        ancestors: [ctotal, gpp]
+        obs_files: ['tau_ctotal_Carvalhais_NorESM.nc']
+        obs_variables: ['tau_ctotal','tau_ctotal_5','tau_ctotal_95']
+        ax_fs: 8
+      zonal_correlation_spearman: # evaluate the zonal correlation (spearman) of turnover time with climate
+        script: land_carbon_cycle/diag_zonal_correlation.py
+        ancestors: [ctotal, gpp,pr, tas]
+        obs_files: ['zonal_spearman_correlation_tau_ctotal_pr_Carvalhais_NorESM.nc','zonal_spearman_correlation_tau_ctotal_tas_Carvalhais_NorESM.nc']
+        correlation_method: spearman
+        obs_variables: ['r_tau_ctotal_pr','r_tau_ctotal_pr_5','r_tau_ctotal_pr_95','r_tau_ctotal_tas','r_tau_ctotal_tas_5','r_tau_ctotal_tas_95']
+        ax_fs: 8
+      zonal_correlation_pearson: # evaluate the zonal correlation (pearson) of turnover time with climate
+        script: land_carbon_cycle/diag_zonal_correlation.py
+        ancestors: [ctotal, gpp,pr, tas]
+        obs_files: ['zonal_pearson_correlation_tau_ctotal_pr_Carvalhais_NorESM.nc','zonal_pearson_correlation_tau_ctotal_tas_Carvalhais_NorESM.nc']
+        correlation_method: pearson
+        obs_variables: ['r_tau_ctotal_pr','r_tau_ctotal_pr_5','r_tau_ctotal_pr_95','r_tau_ctotal_tas','r_tau_ctotal_tas_5','r_tau_ctotal_tas_95']
+        ax_fs: 8
+        
