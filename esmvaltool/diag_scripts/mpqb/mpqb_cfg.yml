@@ -97,8 +97,8 @@ clt:
     cmap: YlOrBr
   absdiff:
     title: absdiff
-    vmin: -50.
-    vmax: 50.
+    vmin: -30.
+    vmax: 30.
     cmap: BrBG
   reldiff:
     title: reldiff
@@ -134,14 +134,14 @@ lwp:
     cmap: YlOrBr
   absdiff:
     title: absdiff
-    vmin: -0.2
-    vmax: 0.2
+    vmin: -0.1
+    vmax: 0.1
     cmap: BrBG
   reldiff:
     title: reldiff
     cmap: BrBG
-    vmin: -0.2
-    vmax: 0.2
+    vmin: -0.5
+    vmax: 0.5
   theilsenmk:
     title: theilsen
     cmap: BrBG

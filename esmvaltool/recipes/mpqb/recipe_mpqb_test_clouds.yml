@@ -17,6 +17,7 @@ mmm_stat: &mmm_stat
   multi_model_statistics:
     span: overlap
     statistics: [mean]
+    exclude: [ERA-Interim, ERA5]
 
 mpqbregridder: &mpqbregridder
   regrid:
@@ -81,16 +82,22 @@ extract_southeastpacific: &extr_sepacific
 default_pp_maps: &pp_maps
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder
   #mask_landsea:
   #  mask_out: sea
   <<: *mmm_stat
 
+default_pp_maps_withnoth: &pp_maps_with_nothing
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.001
+  
+  
 default_pp_maps_without_gl: &pp_maps_without_gl
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder
   # mask_landsea:
     # mask_out: land
@@ -101,7 +108,7 @@ default_pp_maps_without_gl: &pp_maps_without_gl
 default_pp_maps_without_trop: &pp_maps_without_trop
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder
   <<: *extr_trop
   # mask_landsea:
@@ -113,7 +120,7 @@ default_pp_maps_without_trop: &pp_maps_without_trop
 default_pp_maps_without_socean: &pp_maps_without_so
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder
   <<: *extr_socean
   # mask_landsea:
@@ -125,7 +132,7 @@ default_pp_maps_without_socean: &pp_maps_without_so
 default_pp_maps_without_nhstorm: &pp_maps_without_nhs
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder
   <<: *extr_nhstorm
   # mask_landsea:
@@ -137,7 +144,7 @@ default_pp_maps_without_nhstorm: &pp_maps_without_nhs
 default_pp_maps_without_itcz: &pp_maps_without_itcz
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder
   <<: *extr_itcz
   # mask_landsea:
@@ -149,7 +156,7 @@ default_pp_maps_without_itcz: &pp_maps_without_itcz
 default_pp_maps_without_sepacific: &pp_maps_without_sepacific
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder
   <<: *extr_sepacific
   # mask_landsea:
@@ -162,7 +169,7 @@ default_pp_maps_without_sepacific: &pp_maps_without_sepacific
 default_pp_maps_coarse: &pp_maps_c
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder_c
   mask_landsea:
     mask_out: sea
@@ -171,7 +178,7 @@ default_pp_maps_coarse: &pp_maps_c
 default_pp_maps_fine: &pp_maps_f
   custom_order: true
   mask_below_threshold:
-    threshold: 0.01
+    threshold: 0.001
   <<: *mpqbregridder_f
   mask_landsea:
     mask_out: sea
@@ -191,8 +198,8 @@ default_pp_line: &pp_line
 ################################################
 
 datasets:
-#  - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
-#     tier: 2, alias: PATMOS-x} 
+  # - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
+     # tier: 2, alias: PATMOS-x} 
   - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
      tier: 2, alias: ESACCI-CLOUD} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, 
@@ -215,6 +222,9 @@ preprocessors:
     
   pp_mpqb_clouds:
     <<: *pp_maps    
+
+  pp_mpqb_clouds_withnoth:
+    <<: *pp_maps_with_nothing   
     
   pp_mpqb_clouds_without_gl:
     <<: *pp_maps_without_gl    
@@ -409,29 +419,30 @@ diagnostics:
         # vmax: 0.7
         # number_of_bars: 14
         # logarithmic: False 
-  # resolution:
-    # description: resolution
-    # variables:
-      # lai:
-        # preprocessor: pp_mpqb_lai_orig
-        # <<: *laidef 
-    # scripts: 
-      # mpqb_res:
-        # script: mpqb/mpqb_resolution.py
-  # mapplots:
-    # description: mapplots
-    # variables:
-      # lwp:
-        # preprocessor: pp_mpqb_clouds
-        # derive: true
-        # <<: *clouddef
-    # scripts:
-      # mpqb:
+  resolution:
+    description: resolution
+    variables:
+      lwp:
+        preprocessor: pp_mpqb_clouds_withnoth
+        derive: true
+        <<: *clouddef 
+    scripts: 
+      mpqb_res:
+        script: mpqb/mpqb_resolution.py
+  mapplots:
+    description: mapplots
+    variables:
+      lwp:
+        preprocessor: pp_mpqb_clouds
+        derive: true
+        <<: *clouddef
+    scripts:
+      mpqb:
+        reference_dataset: MultiModelMean
+        script: mpqb/mpqb_comparison.py
+      # mpqb_taylor:
         # reference_dataset: MultiModelMean
-        # script: mpqb/mpqb_comparison.py
-      # # mpqb_taylor:
-        # # reference_dataset: MultiModelMean
-        # # script: mpqb/taylordiagram.py
+        # script: mpqb/taylordiagram.py
   # lineplots_gl:
     # description: lineplots
     # variables:
