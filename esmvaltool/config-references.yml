@@ -581,9 +581,11 @@ authors:
     institute: NCAR, US
     orcid:
 
-# Note: the reference section has been replaced by bibtex files in esmvaltool/references.
-# Please make a bibtex file, rename it to the tag used in the recipe or diagnostic, and add the file to the folder esmvaltool/references.
-# There is some online tools to convert a doi to bibtex format like https://doi2bib.org/
+# Note: the reference section has been replaced by the folder esmvaltool/references that contains bibtex files.
+# How to add a bibtex file to esmvaltool/references:
+#  - make a bibtex file for a reference entry. There are some online tools to convert a doi to bibtex format like https://doi2bib.org/
+#  - rename the file to the tag used in the recipe or diagnostic.
+#  - add the file to the folder esmvaltool/references.
 
 projects:
   applicate: EU Horizon 2020 Advanced prediction in polar regions and beyond
