@@ -22,7 +22,7 @@ sea ice. To estimate the strength of that feedback, anomalies of the annual
 minimum of sea-ice volume north of 80°N are first estimated. Then,
 the increase in sea-ice volume until the next annual maximum is computed
 for each year. The IFE is defined as the regression of this ice volume
-production onto the baseline summer volume anomaly
+production onto the baseline summer volume anomaly.
 
 
 Available recipes and diagnostics
@@ -73,5 +73,4 @@ Example plots
    :width:   14cm
 
    Seaice negative feedback values (CMIP5 historical experiment 1979-2004).
-
 
