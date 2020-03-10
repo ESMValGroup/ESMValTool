@@ -61,11 +61,13 @@ Observations and reformat scripts
 ---------------------------------
 
 deangelisf3f4.py:
-* *rsnstcs*
-CERES-EBAF
+
+* *rsnstcs*:
+   CERES-EBAF
 
 * *prw*
-ERA-Interim, SSMI
+   ERA-Interim, SSMI
+
 
 References
 ----------
