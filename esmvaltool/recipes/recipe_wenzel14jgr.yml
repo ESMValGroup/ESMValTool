@@ -206,6 +206,7 @@ diagnostics:
         ridx_end: 120
         ref_start: 1850
         ref_end: 1859
+        plot_units: K
         multi_model_mean: False
         ts_maxyear: "1989"
         ts_minyear: "1850"
@@ -420,6 +421,7 @@ diagnostics:
         ts_maxlon: 360
         ref_start: 1960
         ref_end: 1969
+        plot_units: K
         multi_model_mean: False
         ts_maxyear: "2005"
         ts_minyear: "1960"
@@ -464,6 +466,7 @@ diagnostics:
         ridx_end: 120
         ref_start: 1890
         ref_end: 1899
+        plot_units: K
         multi_model_mean: False
         ts_maxyear: "2005"
         ts_minyear: "1960"
@@ -476,7 +479,7 @@ diagnostics:
         
   ### Wenzel et al. 2014, Fig. 03/04: Diagnose GAMMA_IAV from each model #########################
 
-  diag_gammaHist_Fig3+4: 
+  diag_gammaHist_Fig3and4: 
     description: Fig 3 and 4 correlating near surface temperature and land+ocean carbon fluxes
     variables:
       fgco2:
@@ -559,7 +562,7 @@ diagnostics:
           #- {dataset: MPI-ESM-LR, start_year: 1960 ,end_year: 2005}
           - {dataset: NorESM1-ME, start_year: 1960 ,end_year: 2005}
     scripts:
-      gammaHist_3+4:
+      gammaHist_3and4:
         script: carbon_ec/carbon_gammaHist.ncl 
         start_year: 1960
         end_year: 2005
@@ -632,13 +635,13 @@ diagnostics:
     scripts:
       gammaLT_5:
         script: carbon_ec/carbon_constraint.ncl
-        gIAV_diagscript: "gammaHist_Fig3+4"
+        gIAV_diagscript: "gammaHist_Fig3and4"
         gIAV_start: 1960
         gIAV_end: 2005
         ec_anom: True
         #reg_models: "MPI-ESM-LR"
         con_units: "GtC/K"
-        nc_infile: ../../diag_gammaHist_Fig3+4/gammaHist_3+4/
+        nc_infile: ../../diag_gammaHist_Fig3and4/gammaHist_3and4/
         styleset: CMIP5     # Plot style
 
 

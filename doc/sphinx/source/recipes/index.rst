@@ -42,10 +42,10 @@ Future projections
    :maxdepth: 1
 
    recipe_emergent_constraints
+   recipe_wenzel14jgr
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
-   recipe_wenzel14jgr
    recipe_wenzel16jclim
    recipe_tcr
 

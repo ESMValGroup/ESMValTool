@@ -36,15 +36,21 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
    * ts_maxlon: maximum longitude for area averaging
    * ts_maxyear: last year (time range)
    * ts_minyear: first year (time range)
+   * plot_units: units to appear on Figure
    * time_avg: currently, only yearly is available
-   * ts_anomaly: calculates anomalies with respect to the first 10-year average (anom)
-   * area_opper: type of area operation (sum)
+   * area_opper: type of area operation (sum)ridx_start: 0
+   * styleset: Plot style
 
    *Optional settings (scripts)*
 
    * multi_model_mean: True for multi-model mean calculation
    * volcanoes: True for marking years with lage volcanik erruptions
    * align: True for aligning models to have the same start yeart (needed for idealized 2x CO2 Simulations)
+   * ts_anomaly: calculates anomalies with respect to a defined time range average (anom)
+   * ridx_start: if ts_anomaly is True, define start time index for reference period
+   * ridx_end: if ts_anomaly is True, define end time index for reference period
+   * ref_start: if ts_anomaly is True, define start year for reference period
+   * ref_end: if ts_anomaly is True, define end year for reference period
 
    *Required settings (variables)*
 
@@ -53,8 +59,13 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 #. carbon_gammaHist.ncl 
 
    *Required Settings (scripts)*
-
-   * ec_anom : True 
+ 
+   * start_year: first year (time range)
+   * end_year: last year (time range)
+   * plot_units: units to appear on Figure
+   * ec_anom: calculates anomalies with respect to the first 10-year average (anom) 
+   * scatter_log: set logaritmic axes in scatterplot.ncl
+   * styleset: Plot style
 
    *Optional settings (scripts)*
 
@@ -64,11 +75,13 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 
    *Required Settings (scripts)*
 
-   * gIAV_diagscript: "gammaHist_Fig3+4"
+   * gIAV_diagscript: "gammaHist_Fig3and4"
    * gIAV_start: start year of GammIAV calculation period
    * gIAV_end: end year of GammIAV calculation period
    * ec_anom: True
    * con_units: label string for units, e.g. (GtC/K)
+   * nc_infile: specify path to historical gamma values derived by carbon_gammaHist.ncl
+   * styleset: Plot style
 
    *Optional settings (scripts)*
 
