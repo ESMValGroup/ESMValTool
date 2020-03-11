@@ -34,6 +34,11 @@ User settings in recipe
 
 The recipe can be run with different CMIP5 and CMIP6 models.
 deangelisf1b.py:
+Several flux variables (W m\ :sup:-2\) and up to 6 different model exeriements can be handeled.
+Each variable needs to be given for each model experiment. The same experiments must
+be given for all models.
+In `DeAngelis et al. (2015)`_
+150 year means are used but the recipe can handle any duration.
 
 deangelisf2ext.py:
 
@@ -47,8 +52,18 @@ Variables
 ---------
 
 deangelisf1b.py:
+Tested for:
+
+* *rsnst* (atmos, monthly, longitude, latitude, time)
+* *rlnst* (atmos, monthly, longitude, latitude, time)
+* *lvp* (atmos, monthly, longitude, latitude, time)
+* *hfss* (atmos, monthly, longitude, latitude, time)
+
+any flux variable (W m\ :sup:-2\) should be possible.
 
 deangelisf2ext.py:
+
+To be completed
 
 deangelisf3f4.py:
 * *rsnstcs* (atmos, monthly, longitude, latitude, time)
@@ -59,6 +74,12 @@ deangelisf3f4.py:
 
 Observations and reformat scripts
 ---------------------------------
+
+deangelisf1b.py:
+* None
+
+deangelisf2ext.py:
+* None
 
 deangelisf3f4.py:
 
