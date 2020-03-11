@@ -37,7 +37,7 @@
 ;
 ; Required Preprocessor attributes ((configured to recreate figure 4))
 ;   - None (no preprocessing required)
-;      but for esmvaltool just add (time_average: false)
+;     in the recipe do not keep a preprocessor in variable section
 ;
 ;
 ; Caveats
