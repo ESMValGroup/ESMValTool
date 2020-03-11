@@ -38,6 +38,9 @@ from scipy import stats
 import matplotlib.pyplot as plt
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    select_metadata, group_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -125,8 +128,7 @@ def plot_slope_regression(cfg, data_dict):
     axx.legend(loc=2)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'fig2a.' +
-                             cfg[n.OUTPUT_FILE_TYPE]))
+    fig.savefig(get_plot_filename('fig2a', cfg), dpi=300)
     plt.close()
 
     # filepath2 = os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
@@ -162,42 +164,8 @@ def plot_slope_regression(cfg, data_dict):
     axx.legend(loc=3)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
-                             cfg[n.OUTPUT_FILE_TYPE]))
+    fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
     plt.close()
-
-#    e.plot.scatterplot(
-#        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2)],
-#        [sa_lvpdt, y_reg_sa],
-#        os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
-#                     cfg[n.OUTPUT_FILE_TYPE]),
-#        mpl_style_file='default.mplstyle',
-#        plot_kwargs=[{'linestyle': 'none',
-#                      'marker': '*',
-#                      'markersize': 15,
-#                      'markeredgewidth': 2.0,
-#                      'markerfacecolor': 'k',
-#                      'markeredgecolor': 'k'},
-#                     {'color': 'r',
-#                      'linestyle': '-',
-#                      'label': 'Fit (r={:.2f}, '.format(reg_sa.rvalue) +
-#                               ' slope = {:.2f}, '.format(reg_sa.slope) +
-#                               ')'}],
-#        save_kwargs={
-#            'bbox_inches': 'tight',
-#            'orientation': 'portrait'},
-#        axes_functions={
-#            'set_title': '',
-#            'set_xlabel': r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
-#            'set_ylabel': r'dL$_{\rm v}$P/dT (W m$^{-2}$ K$^{-1}$)',
-#            'set_xlim': [0.3, 1.35],
-#            'set_xticks': np.linspace(0.4, 1.2, 5),
-#            'set_ylim': [1.75, 2.8],
-#            'set_yticks': np.linspace(1.8, 2.8, 6),
-#            'legend': {'loc': 3}})
-
-    # filepath2 = os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
-    #                          cfg[n.OUTPUT_FILE_TYPE])
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
@@ -229,38 +197,9 @@ def plot_slope_regression(cfg, data_dict):
     axx.legend(loc=2)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
-                             cfg[n.OUTPUT_FILE_TYPE]))
+    fig.savefig(get_plot_filename('exfig2b', cfg), dpi=300)
     plt.close()
-
-#    e.plot.scatterplot(
-#        [sa_rsnstcsdt, np.linspace(0.2, 1.4, 2), np.linspace(0.2, 1.4, 2)],
-#        [sa_rsnstdt, y_reg_rsnst, np.linspace(0.2, 1.4, 2)],
-#        os.path.join(cfg[n.PLOT_DIR], 'exfig2b.' +
-#                     cfg[n.OUTPUT_FILE_TYPE]),
-#        mpl_style_file='default.mplstyle',
-#        plot_kwargs=[{'linestyle': 'none', 'marker': '*',
-#                      'markersize': 15, 'markeredgewidth': 2.0,
-#                      'markerfacecolor': 'k', 'markeredgecolor': 'k'},
-#                     {'color': 'r', 'linestyle': '-',
-#                      'label': 'Fit (r={:.2f}, '.format(reg_rsnst.rvalue) +
-#                               ' slope = {:.2f}, '.format(reg_rsnst.slope) +
-#                               ')'},
-#                     {'color': 'tab:gray', 'linestyle': '-',
-#                      'label': '1:1 line'}],
-#        save_kwargs={
-#            'bbox_inches': 'tight',
-#            'orientation': 'portrait'},
-#        axes_functions={
-#            'set_title': '',
-#            'set_xlabel': r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
-#            'set_ylabel': r'all-dSWA/dT (W m$^{-2}$ K$^{-1}$)',
-#            'set_xlim': [0.45, 1.15],
-#            'set_xticks': np.linspace(0.5, 1.1, 7),
-#            'set_ylim': [0.45, 1.15],
-#            'set_yticks': np.linspace(0.5, 1.1, 7),
-#            'legend': {'loc': 2}})
-
+    
 
 def plot_slope_regression_all(cfg, data_dict):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
@@ -367,8 +306,7 @@ def plot_slope_regression_all(cfg, data_dict):
     axx.legend(loc=2)
 
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg[n.PLOT_DIR], 'exfig2a.' +
-                             cfg[n.OUTPUT_FILE_TYPE]))
+    fig.savefig(get_plot_filename('exfig2a', cfg), dpi=300)
     plt.close()
 
 
