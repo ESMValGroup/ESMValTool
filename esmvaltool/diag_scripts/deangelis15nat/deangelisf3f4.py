@@ -65,7 +65,7 @@ def main(cfg):
     if not variables_available(cfg, required_vars):
         raise ValueError("This diagnostic needs {required_vars} variables")
 
-    available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
+    available_exp = list(group_metadata(input_data, 'exp'))
 
     if 'abrupt-4xCO2' not in available_exp:
         if 'abrupt4xCO2' not in available_exp:
@@ -80,8 +80,6 @@ def main(cfg):
     # Read data
     ###########################################################################
 
-    grid_pw = {}
-    grid_pw["x"] = np.arange(12.0, 59.0, 2, dtype=float)
     # Create iris cube for each dataset and save annual means
     cubes = reform_data_iris_deangelis3b4(input_data)
 
@@ -104,24 +102,8 @@ def main(cfg):
     # Process data
     ###########################################################################
 
-    # Observations (one rsnstcsnorm, X PRW data set, DeAngelis contains 3
-    data_prw_obs = OrderedDict()
-    grid_pw["yobs"] = OrderedDict()
-    reg_prw_obs = OrderedDict()
-    if np.min(np.array([len(meas_tub_rsnstcsnorm), len(meas_tub_prw)])) > 0:
-        data_rsnstcsnorm_obs = cubes[meas_tub_rsnstcsnorm[0]]
-        for kmeas_tub_prw in meas_tub_prw:
-            data_prw_obs[kmeas_tub_prw[0]] = \
-                cubes[kmeas_tub_prw]
-            (grid_pw["yobs"])[kmeas_tub_prw[0]] = \
-                make_grid_prw(grid_pw["x"],
-                              data_prw_obs[kmeas_tub_prw[0]],
-                              data_rsnstcsnorm_obs)
-            reg_prw_obs[kmeas_tub_prw[0]] = \
-                stats.linregress(grid_pw["x"],
-                                 (grid_pw["yobs"])[kmeas_tub_prw[0]])
-    else:
-        logger.info('No observations, only model data used')
+    [grid_pw, reg_prw_obs] = set_grid_pw_reg_obs(cubes, meas_tub_rsnstcsnorm,
+                                                 meas_tub_prw)
 
     data_model = substract_and_reg_deangelis(cfg, cubes, grid_pw,
                                              reg_prw_obs)
@@ -138,6 +120,33 @@ def _get_sel_files_var(cfg, varnames):
             selection.append(hlp['filename'])
 
     return selection
+
+
+def set_grid_pw_reg_obs(cubes, meas_tub_rsnstcsnorm, meas_tub_prw):
+    """Set prw grid and calculate regression for observational data."""
+    # Observations (one rsnstcsnorm, X PRW data set, DeAngelis contains 3
+    data_prw_obs = OrderedDict()
+    grid_pw = {}
+    grid_pw["x"] = np.arange(12.0, 59.0, 2, dtype=float)
+    grid_pw["yobs"] = OrderedDict()
+    reg_prw_obs = OrderedDict()
+
+    if np.min(np.array([len(meas_tub_rsnstcsnorm), len(meas_tub_prw)])) > 0:
+        data_rsnstcsnorm_obs = cubes[meas_tub_rsnstcsnorm[0]]
+        for kmeas_tub_prw in meas_tub_prw:
+            data_prw_obs[kmeas_tub_prw[0]] = \
+                cubes[kmeas_tub_prw]
+            (grid_pw["yobs"])[kmeas_tub_prw[0]] = \
+                make_grid_prw(grid_pw["x"],
+                              data_prw_obs[kmeas_tub_prw[0]],
+                              data_rsnstcsnorm_obs)
+            reg_prw_obs[kmeas_tub_prw[0]] = \
+                stats.linregress(grid_pw["x"],
+                                 (grid_pw["yobs"])[kmeas_tub_prw[0]])
+    else:
+        logger.info('No observations, only model data used')
+
+    return [grid_pw, reg_prw_obs]
 
 
 def cube_to_save_matrix(var1, name):
