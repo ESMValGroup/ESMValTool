@@ -43,167 +43,122 @@ preprocessors:
 
 diagnostics:
 
-  #deangelisf1b:
-    #description: Bar plot of all model mean of LvP, LWC, SWA, and SH
-                  #(DeAngelis Fig. 1b).
-    #variables:
-      #rlnst: &spatial_mean_cmip5_r1i1p1_amon_t2ms
-        #preprocessor: spatial_mean
-        #project: CMIP5
-        #ensemble: r1i1p1
-        #mip: Amon
-        #field: T2Ms
-        #derive: true
-        #force_derivation: false
-      #rsnst:
-        #<<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
-      #lvp:
-        #<<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
-      #hfss:
-        #<<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
-        #derive: false
-    #additional_datasets:
-      #- {dataset: GFDL-CM3, exp: piControl, start_year: 1,
-         #end_year: 150}
-      #- {dataset: GFDL-CM3, exp: rcp85, start_year: 2091,
-         #end_year: 2100}
-      #- {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 141, end_year: 150}
+  deangelisf1b:
+    description: Bar plot of global multi-model experiment mean for flux variables, e.g. rlnst, rsnst, lvp, hfss (DeAngelis Fig. 1b).
+    variables:
+      rlnst: &spatial_mean_cmip5_r1i1p1_amon_t2ms
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        field: T2Ms
+        derive: true
+        force_derivation: false
+      rsnst:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+      lvp:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+      hfss:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+        derive: false
+    additional_datasets:
+      - {dataset: GFDL-CM3, exp: piControl, start_year: 1,
+         end_year: 150}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2091,
+         end_year: 2100}
+      - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 141, end_year: 150}
 
-      ## ACCESS1-0 and ACCESS1-3 not working, error in time check,
-      ## probably more than 31 days in (some) months - CORRECTED
-      #- {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
-      #- {dataset: ACCESS1-0, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
+      - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
+      - {dataset: ACCESS1-0, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
 
-      #- {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
-      #- {dataset: ACCESS1-3, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
+      - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
+      - {dataset: ACCESS1-3, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
 
-      ## bcc-csm1-1 not working here, rcp85 cannot merge some cubes
-      #- {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-      #- {dataset: bcc-csm1-1, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 300, end_year: 309}
+      - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
+      - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 300, end_year: 309}
 
-      #- {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      #- {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 380,
-         #end_year: 389}
+      - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
+      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 380,
+         end_year: 389}
 
-      #- {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
-      #- {dataset: CanESM2, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
+      - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: CanESM2, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
 
-      #- {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
-      #- {dataset: CCSM4, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
+      - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
+      - {dataset: CCSM4, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
 
-      #- {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
-      #- {dataset: CNRM-CM5, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
+      - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM5, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
 
-      ## CNRM-CM5-2 only 140 years available
-      ## not working here, no rcp85 available?
-      ## - {dataset: CNRM-CM5-2, exp: piControl, start_year: 1850,
-      ##    end_year: 1989}
-      ## - {dataset: CNRM-CM5-2, exp: rcp85, start_year: 2091, end_year: 2100}
-      ## - {dataset: CNRM-CM5-2, exp: abrupt4xCO2, start_year: 1980,
-      ##    end_year: 1989}
+      - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: abrupt4xCO2, start_year: 141, end_year: 150}
 
-      #- {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
-      #- {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: GFDL-ESM2G, exp: abrupt4xCO2, start_year: 141, end_year: 150}
+      - {dataset: GFDL-ESM2M, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: GFDL-ESM2M, exp: abrupt4xCO2, start_year: 141, end_year: 150}
 
-      #- {dataset: GFDL-ESM2M, exp: piControl, start_year: 1, end_year: 150}
-      #- {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: GFDL-ESM2M, exp: abrupt4xCO2, start_year: 141, end_year: 150}
+      - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
+      - {dataset: GISS-E2-R, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1990,
+         end_year: 1999}
 
-      #- {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
-      #- {dataset: GISS-E2-R, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1990,
-         #end_year: 1999}
+      - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
+      - {dataset: inmcm4, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2230, end_year: 2239}
 
-      ## - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      ## - {dataset: GISS-E2-H, exp: rcp85, start_year: 2091, end_year: 2100}
-      ## - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1990,
-      ##    end_year: 1999}
+      # IPSL-CM5A-MR only 140 years available
+      - {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850,
+         end_year: 1989}
+      - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR, exp: abrupt4xCO2, start_year: 1980,
+         end_year: 1989}
 
-      ## HadGEM2-ES not working, fails to merge cubes in preprocesor,
-      ## but I don't see why
-      ## - {dataset: HadGEM2-ES, exp: piControl, start_year: 1861,
-      ##    end_year: 2010}
-      ### time overlap 2099/2100, therefore shifted 2 years
-      ## - {dataset: HadGEM2-ES, exp: rcp85, start_year: 2089, end_year: 2098}
-      ## - {dataset: HadGEM2-ES, exp: abrupt4xCO2, start_year: 2001,
-      ##    end_year: 2010}
+      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
+         end_year: 1999}
+      - {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1990,
+         end_year: 1999}
 
+      - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
+      - {dataset: MIROC-ESM, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 141, end_year: 150}
 
-      #- {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
-      #- {dataset: inmcm4, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2230, end_year: 2239}
+      - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
+      - {dataset: MIROC5, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2240, end_year: 2249}
 
-      ## IPSL-CM5A-LR not working
-      ## Not working (latest version does not contain all variables)
-      ## - {dataset: IPSL-CM5A-LR,  exp: piControl, start_year: 1850,
-      ##    end_year: 1999}
-      ## piControl does not exist for all data from 1850 on (e.g. hfls)
-      ## - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 2400,
-      ##    end_year: 2549}
-      ## - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2091, end_year: 2100}
-      ## - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1990,
-      ##    end_year: 1999}
+      - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1990,
+         end_year: 1999}
 
-      ## IPSL-CM5A-MR only 140 years available
-      #- {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850,
-         #end_year: 1989}
-      #- {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: IPSL-CM5A-MR, exp: abrupt4xCO2, start_year: 1980,
-         #end_year: 1989}
+      - {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: MPI-ESM-MR, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1990,
+         end_year: 1999}
 
-      #- {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
-         #end_year: 1999}
-      #- {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1990,
-         #end_year: 1999}
+      - {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
+      - {dataset: MRI-CGCM3, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: MRI-CGCM3, exp: abrupt4xCO2, start_year: 1991,
+         end_year: 2000}
 
-      #- {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
-      #- {dataset: MIROC-ESM, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 141, end_year: 150}
+      - {dataset: NorESM1-M, exp: piControl, start_year: 700, end_year: 849}
+      - {dataset: NorESM1-M, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 141, end_year: 150}
 
-      #- {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
-      #- {dataset: MIROC5, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2240, end_year: 2249}
-
-      #- {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
-      #- {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1990,
-         #end_year: 1999}
-
-      #- {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
-      #- {dataset: MPI-ESM-MR, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1990,
-         #end_year: 1999}
-
-      ## not working here, no rcp85 available
-      ## - {dataset: MPI-ESM-P, exp: piControl, start_year: 2015,
-      ##    end_year: 2164}
-      ## - {dataset: MPI-ESM-P, exp: rcp85, start_year: 2091, end_year: 2100}
-      ## - {dataset: MPI-ESM-P, exp: abrupt4xCO2, start_year: 1990,
-      ##    end_year: 1999}
-
-      #- {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
-      #- {dataset: MRI-CGCM3, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: MRI-CGCM3, exp: abrupt4xCO2, start_year: 1991,
-         #end_year: 2000}
-
-      #- {dataset: NorESM1-M, exp: piControl, start_year: 700, end_year: 849}
-      #- {dataset: NorESM1-M, exp: rcp85, start_year: 2091, end_year: 2100}
-      #- {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 141, end_year: 150}
-
-    #scripts:
-      #deangelisf1b:
-        #script: deangelis15nat/deangelisf1b.py
-        #plot_ecs_regression: 'True'
-        #output_name: 'deangelisf1b'
+    scripts:
+      deangelisf1b:
+        script: deangelis15nat/deangelisf1b.py
+        plot_ecs_regression: 'True'
+        output_name: 'deangelisf1b'
 
 
   #deangelisf2ext:
@@ -363,25 +318,17 @@ diagnostics:
         <<: *tropical_cmip5_r1i1p1_amon_t2ms
         derive: false
         additional_datasets:
-          # - {dataset: RSS, project: OBS, type: reanaly, version: 1,
-          #    start_year: 2001, end_year: 2009, tier: 2}
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
              start_year: 2001, end_year: 2009, tier: 3}
           - {dataset: SSMI, project: obs4mips, type: satellite, level: L3,
              version: RSSv07r00, start_year: 2001, end_year: 2009, tier: 1}
     additional_datasets:
-      # I tried all models used in the paper
-      # (listed in extended data Tab. 1) so far not all are working (see below)
       - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
       - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-      # ACCESS1-0 and ACCESS1-3 not working, error in time check,
-      # probably more than 31 days in (some) months
       - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
       - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
       - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
       - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
-      # bcc-csm1-1 and bcc-csm1-1-m WORK BUT strange values for
-      # lvp therefore skipped
       - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
       - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
       - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
@@ -389,23 +336,10 @@ diagnostics:
          end_year: 389}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      # CCSM4 not working
-      # Not working because latitude differs between rlus
-      # and rlut (different float length)
       - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
       - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      # CNRM-CM5-2 only 140 years available
-      # - {dataset: CNRM-CM5-2, exp: piControl, start_year: 1850,
-      #    end_year: 1989}
-      # - {dataset: CNRM-CM5-2, exp: abrupt4xCO2, start_year: 1850,
-      #    end_year: 1989}
-
-      # - {dataset: FGOALS-g2, exp: piControl, start_year: 501, end_year: 650}
-      # - {dataset: FGOALS-g2, exp: abrupt4xCO2, start_year: 501,
-      #    end_year: 650}
-
       - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
       - {dataset: GFDL-ESM2G, exp: abrupt4xCO2, start_year: 1, end_year: 150}
       - {dataset: GFDL-ESM2M, exp: piControl, start_year: 1, end_year: 150}
@@ -413,34 +347,8 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
       - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850,
          end_year: 1999}
-      # - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      # - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1850,
-      #    end_year: 1999}
-      #  HadGEM2-ES not working, fails to merge cubes in preprocesor,
-      #  but I don't see why
-      # "Can not concatenate cubes: failed to concatenate into a single cube.
-      #  Cube metadata differs for phenomenon: toa_outgoing_longwave_flux"
-      # - {dataset: HadGEM2-ES, exp: piControl, start_year: 2010,
-      #   end_year: 2159}
-      # - {dataset: HadGEM2-ES, exp: abrupt4xCO2, start_year: 1861,
-      #   end_year: 2010}
-      # HadGEM2-A0 not in de DeAngelis et al., but in Li et al,
-      # to test default case
-      # - {dataset: HadGEM2-AO, exp: piControl, start_year: 2010,
-      #    end_year: 2159}
-      # - {dataset: HadGEM2-AO, exp: abrupt4xCO2, start_year: 1861,
-      #    end_year: 2010}
       - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
       - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-      # IPSL-CM5A-LR not working
-      # Not working (latest version does not contain all variables)
-      # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
-      #    end_year: 1999}
-      # piControl does not exist for all data from 1850 on (e.g. hfls)
-      # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 2400,
-      #    end_year: 2549}
-      # - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850,
-      #    end_year: 1999}
       # IPSL-CM5A-MR only 140 years available
       - {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850,
          end_year: 1989}
@@ -460,11 +368,6 @@ diagnostics:
       - {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1850,
          end_year: 1999}
-      # not working here, no rcp85 available
-      # - {dataset: MPI-ESM-P, exp: piControl, start_year: 2015,
-      #    end_year: 2164} #works?
-      # - {dataset: MPI-ESM-P, exp: abrupt4xCO2, start_year: 1850,
-      #    end_year: 1999}
       - {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
       - {dataset: MRI-CGCM3, exp: abrupt4xCO2, start_year: 1851,
          end_year: 2000}
