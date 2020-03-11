@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
 """.
 
 Calculates radiative constraint on hydrologic cycle intensification
@@ -48,6 +44,78 @@ from esmvaltool.diag_scripts.shared._base import (
     select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def main(cfg):
+    """Run the diagnostic.
+
+    Parameters :
+    ----------
+    cfg : dict
+        Configuration dictionary of the recipe.
+
+    """
+    ###########################################################################
+    # Read recipe data
+    ###########################################################################
+    # Get Input data
+    input_data = (cfg['input_data'].values())
+    required_vars = ('tas', 'rsnstcs', 'rsnstcsnorm', 'prw')
+
+    if not variables_available(cfg, required_vars):
+        raise ValueError(f"This diagnostic needs {required_vars} variables")
+
+    ###########################################################################
+    # Read data
+    ###########################################################################
+
+    grid_pw = {}
+    grid_pw["x"] = np.arange(12.0, 59.0, 2, dtype=float)
+    # Create iris cube for each dataset and save annual means
+    cubes = reform_data_iris_deangelis3b4(input_data)
+
+    meas_tub_rsnstcsnorm = []
+    meas_tub_prw = []
+    for ctub in cubes:
+        if ctub[2] == 'nomodel':
+            if ctub[1] == 'prw':
+                meas_tub_prw.append(ctub)
+            if ctub[1] == 'rsnstcsnorm':
+                meas_tub_rsnstcsnorm.append(ctub)
+
+    if len(meas_tub_rsnstcsnorm) > 1:
+        raise ValueError(
+            "This diagnostic expects one (or no) observational "
+            "dataset for rsnstcsnorm"
+        )
+
+    ###########################################################################
+    # Process data
+    ###########################################################################
+
+    # Observations (one rsnstcsnorm, X PRW data set, DeAngelis contains 3
+    data_prw_obs = OrderedDict()
+    grid_pw["yobs"] = OrderedDict()
+    reg_prw_obs = OrderedDict()
+    if np.min(np.array([len(meas_tub_rsnstcsnorm), len(meas_tub_prw)])) > 0:
+        data_rsnstcsnorm_obs = cubes[meas_tub_rsnstcsnorm[0]]
+        for kmeas_tub_prw in meas_tub_prw:
+            data_prw_obs[kmeas_tub_prw[0]] = \
+                cubes[kmeas_tub_prw]
+            (grid_pw["yobs"])[kmeas_tub_prw[0]] = \
+                make_grid_prw(grid_pw["x"],
+                              data_prw_obs[kmeas_tub_prw[0]],
+                              data_rsnstcsnorm_obs)
+            reg_prw_obs[kmeas_tub_prw[0]] = \
+                stats.linregress(grid_pw["x"],
+                                 (grid_pw["yobs"])[kmeas_tub_prw[0]])
+    else:
+        logger.info('No observations, only model data used')
+
+    data_model = substract_and_reg_deangelis(cfg, cubes, grid_pw,
+                                             reg_prw_obs)
+
+    plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs)
 
 
 def _get_sel_files_var(cfg, varnames):
@@ -126,7 +194,7 @@ def get_provenance_record(ancestor_files, caption, statistics,
 
 def set_axx_deangelis4(axx, ylen, ytickstrs, x_obs, dx_obs):
     """Axis settings for deangelis 4."""
-    axx.set_xlabel(r'$/Delta$rsnst/$/Delta$prw (% kg$^{-1}$ m$^2$)')
+    axx.set_xlabel(r'$\delta$rsnst / $\delta$prw (% kg$^{-1}$ m$^2$)')
     axx.set_xlim([0.02, 0.13])
     axx.set_xticks(np.linspace(0.02, 0.12, 6))
     axx.set_ylim([-0.5, ylen + 0.5])
@@ -152,8 +220,8 @@ def set_axx_deangelis4(axx, ylen, ytickstrs, x_obs, dx_obs):
 
 def set_axx_deangelis3b(axx, x_obs, dx_obs):
     """Axis settings for deangelis 3b."""
-    axx.set_xlabel(r'$/Delta$rsnstcs/$/Delta$prw (% kg$^{-1}$ m$^2$)')
-    axx.set_ylabel(r'$/Delta$rsnstcs/$/Delta$tas (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlabel(r'$\delta$rsnstcs / $\delta$prw (% kg$^{-1}$ m$^2$)')
+    axx.set_ylabel(r'$\delta$rsnstcs / $\delta$tas (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.0, 0.13])
     axx.set_xticks(np.linspace(0.0, 0.12, 7))
     axx.set_ylim([0.45, 1.15])
@@ -181,7 +249,7 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
     reg_prw_dict["x"] = np.linspace(0.0, 65, 2)
     reg_prw_dict["y"] = reg_prw.slope * reg_prw_dict["x"] + reg_prw.intercept
     reg_prw_dict["text"] = dataset_name + \
-        r', $/Delta$rsnst/$/Delta$prw ={:.2f}'.format(reg_prw.slope)
+        r', $\delta$rsnst / $\delta$prw ={:.2f}'.format(reg_prw.slope)
 
     fig, axx = plt.subplots(figsize=(8, 8))
     axx.plot(reg_prw_dict["x"], reg_prw_dict["y"], linestyle='solid',
@@ -195,7 +263,7 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
         reg_prw_dict["y_obs"] = (reg_obs[kobs].slope * reg_prw_dict["x"] +
                                  reg_obs[kobs].intercept)
         reg_prw_dict["text_obs"] = ('CERES-EBAF/' + kobs +
-                                    r', $/Delta$rsnst/$/Delta$' +
+                                    r', $\delta$rsnst / $\delta$' +
                                     'prw ={:.2f}'.format(reg_obs[kobs].slope))
         axx.plot(reg_prw_dict["x"], reg_prw_dict["y_obs"], linestyle='solid',
                  color=(0.25 * ccc, 1.0 - 0.25 * ccc, 0.7),
@@ -262,60 +330,34 @@ def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
     # Set dictionary modelkey vs number from DeAngelis et al., 2015
     # all models which are in the paper, other dictonaries contain only
     # the currently selected ones
-    model_dict = dict([('ACCESS1-0',
-                        ['Correlated-k-distribution, 10 < N < 20',
-                         'limegreen']),
-                       ('ACCESS1-3',
-                        ['Correlated-k-distribution, 10 < N < 20',
-                         'limegreen']),
-                       ('bcc-csm1-1', ['7-band parameterization (N = 7)',
-                                       'crimson']),
-                       ('bcc-csm1-1-m', ['7-band parameterization (N = 7)',
-                                         'crimson']),
-                       ('CanESM2', ['Correlated-k-distribution, 10 < N < 20',
-                                    'limegreen']),
-                       ('CCSM4', ['7-band parameterization (N = 7)',
-                                  'crimson']),
-                       ('CNRM-CM5', ['Pade approximants, higher res.',
-                                     'slategrey']),
-                       ('CNRM-CM5-2', ['Pade approximants, higher res.',
-                                       'slategrey']),
-                       ('GFDL-CM3', ['Pseudo-k-distribution, N >= 20',
-                                     'gold']),
-                       ('GFDL-ESM2G', ['Pseudo-k-distribution, N >= 20',
-                                       'gold']),
-                       ('GFDL-ESM2M', ['Pseudo-k-distribution, N >= 20',
-                                       'gold']),
-                       ('GISS-E2-H', ['Pseudo-k-distribution, 10 < N < 20',
-                                      'darkorange']),
-                       ('GISS-E2-R', ['Pseudo-k-distribution, 10 < N < 20',
-                                      'darkorange']),
-                       ('HadGEM2-ES', ['Correlated-k-distribution, N >= 20',
-                                       'dodgerblue']),
-                       ('inmcm4', ['7-band parameterization (N = 7)',
-                                   'crimson']),
-                       ('IPSL-CM5A-LR', ['Pade approximants, lower res.',
-                                         'silver']),
-                       ('IPSL-CM5A-MR', ['Pade approximants, lower res.',
-                                         'silver']),
-                       ('IPSL-CM5B-LR', ['Pade approximants, lower res.',
-                                         'silver']),
-                       ('MIROC-ESM', ['Correlated-k-distribution, N >= 20',
-                                      'dodgerblue']),
-                       ('MIROC5', ['Correlated-k-distribution, N >= 20',
-                                   'dodgerblue']),
-                       ('MPI-ESM-LR', ['Correlated-k-distribution, N >= 20',
-                                       'dodgerblue']),
-                       ('MPI-ESM-MR', ['Correlated-k-distribution, N >= 20',
-                                       'dodgerblue']),
-                       ('MPI-ESM-P', ['Correlated-k-distribution, N >= 20',
-                                      'dodgerblue']),
-                       ('MRI-CGCM3', ['7-band parameterization (N = 7)',
-                                      'crimson']),
-                       ('NorESM1-M', ['7-band parameterization (N = 7)',
-                                      'crimson']),
-                       ('default', ['unknown',
-                                    'xkcd:pale purple'])])
+    model_dict = {
+        'ACCESS1-0': ('Correlated-k-distribution, 10 < N < 20', 'limegreen'),
+        'ACCESS1-3': ('Correlated-k-distribution, 10 < N < 20', 'limegreen'),
+        'bcc-csm1-1': ('7-band parameterization (N = 7)', 'crimson'),
+        'bcc-csm1-1-m': ('7-band parameterization (N = 7)', 'crimson'),
+        'CanESM2': ('Correlated-k-distribution, 10 < N < 20', 'limegreen'),
+        'CCSM4': ('7-band parameterization (N = 7)', 'crimson'),
+        'CNRM-CM5': ('Pade approximants, higher res.', 'slategrey'),
+        'CNRM-CM5-2': ('Pade approximants, higher res.', 'slategrey'),
+        'GFDL-CM3': ('Pseudo-k-distribution, N >= 20', 'gold'),
+        'GFDL-ESM2G': ('Pseudo-k-distribution, N >= 20', 'gold'),
+        'GFDL-ESM2M': ('Pseudo-k-distribution, N >= 20', 'gold'),
+        'GISS-E2-H': ('Pseudo-k-distribution, 10 < N < 20', 'darkorange'),
+        'GISS-E2-R': ('Pseudo-k-distribution, 10 < N < 20', 'darkorange'),
+        'HadGEM2-ES': ('Correlated-k-distribution, N >= 20', 'dodgerblue'),
+        'inmcm4': ('7-band parameterization (N = 7)', 'crimson'),
+        'IPSL-CM5A-LR': ('Pade approximants, lower res.', 'silver'),
+        'IPSL-CM5A-MR': ('Pade approximants, lower res.', 'silver'),
+        'IPSL-CM5B-LR': ('Pade approximants, lower res.', 'silver'),
+        'MIROC-ESM': ('Correlated-k-distribution, N >= 20', 'dodgerblue'),
+        'MIROC5': ('Correlated-k-distribution, N >= 20', 'dodgerblue'),
+        'MPI-ESM-LR': ('Correlated-k-distribution, N >= 20', 'dodgerblue'),
+        'MPI-ESM-MR': ('Correlated-k-distribution, N >= 20', 'dodgerblue'),
+        'MPI-ESM-P': ('Correlated-k-distribution, N >= 20', 'dodgerblue'),
+        'MRI-CGCM3': ('7-band parameterization (N = 7)', 'crimson'),
+        'NorESM1-M': ('7-band parameterization (N = 7)', 'crimson'),
+        'default': ('unknown', 'xkcd:pale purple'),
+    }
 
     ytickstrs_and_schemes = {}
     ytickstrs_and_schemes["ytickstrs"] = []
@@ -631,82 +673,9 @@ def substract_and_reg_deangelis(cfg, cubes, grid_pw,
 # Experiments
 # 'piControl' and 'abrupt4xCO2'
 
-
-def main(cfg):
-    """Run the diagnostic.
-
-    Parameters :
-    ----------
-    cfg : dict
-        Configuration dictionary of the recipe.
-
-    """
-    ###########################################################################
-    # Read recipe data
-    ###########################################################################
-    # Get Input data
-    input_data = (cfg['input_data'].values())
-
-    if not variables_available(cfg, ['tas', 'rsnstcs',
-                                     'rsnstcsnorm', 'prw']):
-        raise ValueError("This diagnostic needs 'tas', " +
-                         "'rsnstcs', 'rsnstcsnorm', and 'prw' variables")
-
-    ###########################################################################
-    # Read data
-    ###########################################################################
-
-    grid_pw = {}
-    grid_pw["x"] = np.arange(12.0, 59.0, 2, dtype=float)
-    # Create iris cube for each dataset and save annual means
-    cubes = reform_data_iris_deangelis3b4(input_data)
-
-    meas_tub_rsnstcsnorm = []
-    meas_tub_prw = []
-    for ctub in cubes:
-        if ctub[2] == 'nomodel':
-            if ctub[1] == 'prw':
-                meas_tub_prw.append(ctub)
-            if ctub[1] == 'rsnstcsnorm':
-                meas_tub_rsnstcsnorm.append(ctub)
-
-    if len(meas_tub_rsnstcsnorm) > 1:
-        raise ValueError("This diagnostic expects one (or no) observation " +
-                         "data set for rsnstcsnorm")
-
-    ###########################################################################
-    # Process data
-    ###########################################################################
-
-    # Observations (one rsnstcsnorm, X PRW data set, DeAngelis contains 3
-    data_prw_obs = OrderedDict()
-    grid_pw["yobs"] = OrderedDict()
-    reg_prw_obs = OrderedDict()
-    if np.min(np.array([len(meas_tub_rsnstcsnorm), len(meas_tub_prw)])) > 0:
-        data_rsnstcsnorm_obs = cubes[meas_tub_rsnstcsnorm[0]]
-        for kmeas_tub_prw in meas_tub_prw:
-            data_prw_obs[kmeas_tub_prw[0]] = \
-                cubes[kmeas_tub_prw]
-            (grid_pw["yobs"])[kmeas_tub_prw[0]] = \
-                make_grid_prw(grid_pw["x"],
-                              data_prw_obs[kmeas_tub_prw[0]],
-                              data_rsnstcsnorm_obs)
-            reg_prw_obs[kmeas_tub_prw[0]] = \
-                stats.linregress(grid_pw["x"],
-                                 (grid_pw["yobs"])[kmeas_tub_prw[0]])
-    else:
-        logger.info('No observations, only model data used')
-
-    data_model = substract_and_reg_deangelis(cfg, cubes, grid_pw,
-                                             reg_prw_obs)
-
-    plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs)
-
     ###########################################################################
     # Write data
     ###########################################################################
-
-
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
