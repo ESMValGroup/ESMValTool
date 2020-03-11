@@ -41,7 +41,7 @@ import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    select_metadata)
+    select_metadata, group_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -97,31 +97,28 @@ def get_provenance_record(ancestor_files, caption, statistics,
     return record
 
 
-def plot_bar_deangelis(cfg, pi_all, rcp85_all, co2_all):
+def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     """Plot linear regression used to calculate ECS."""
     if not cfg[n.WRITE_PLOTS]:
         return
 
     # Plot data
-    n_groups = 4
-
     fig, axx = plt.subplots()
 
-    index = np.arange(n_groups)
-    bar_width = 0.25
+    set_colors = ['cornflowerblue', 'orange', 'silver', 'limegreen',
+                  'rosybrown', 'orchid']
+    bar_width = 1.0 / float(len(available_vars))
 
-    axx.bar(index, pi_all, bar_width, color='cornflowerblue',
-            label='Pre-industrial')
-    axx.bar(index + bar_width, rcp85_all, bar_width, color='orange',
-            label='RCP8.5')
-    axx.bar(index + (bar_width * 2), co2_all, bar_width, color='silver',
-            label=r'4xCO$_2$')
+    for iii, iexp in enumerate(available_exp):
+        axx.bar(np.arange(len(available_vars)) + bar_width * float(iii),
+                data_var_sum[iexp],
+                bar_width, color=set_colors[iii], label=iexp)
 
     axx.set_xlabel(' ')
     axx.set_ylabel(r'Model mean (W m$^{-2}$)')
     axx.set_title(' ')
-    axx.set_xticks(index + bar_width)
-    axx.set_xticklabels(('lvp', 'rlnst', 'rsnst', 'hfss'))
+    axx.set_xticks(np.arange(len(available_vars)) + bar_width)
+    axx.set_xticklabels(available_vars)
     axx.legend(loc=1)
 
     fig.tight_layout()
@@ -130,28 +127,22 @@ def plot_bar_deangelis(cfg, pi_all, rcp85_all, co2_all):
 
     caption = '...'
 
-    provenance_record = get_provenance_record(_get_sel_files_var(cfg,
-                                                                 ['rlnst',
-                                                                  'rsnst',
-                                                                  'lvp',
-                                                                  'hfss']),
-                                              caption, ['mean'], ['global'])
+    provenance_record = get_provenance_record(
+        _get_sel_files_var(cfg, available_vars), caption, ['mean'], ['global'])
 
     diagnostic_file = get_diagnostic_filename('bar_all', cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     list_dict = {}
-    list_dict["data"] = [pi_all, rcp85_all, co2_all]
-    list_dict["name"] = [{'var_name': 'pi_all',
-                          'long_name': 'Fluxes for piControl scenario',
-                          'units': 'W m-2'},
-                         {'var_name': 'rcp85_all',
-                          'long_name': 'Fluxes for future scenario',
-                          'units': 'W m-2'},
-                         {'var_name': 'co2_all',
-                          'long_name': 'Fluxes for 4 times CO2 scenario',
-                          'units': 'W m-2'}]
+    list_dict["data"] = []
+    list_dict["name"] = []
+    for iexp in available_exp:
+        list_dict["data"].append(data_var_sum[iexp])
+        list_dict["name"].append({'var_name': iexp + '_all',
+                                  'long_name': 'Fluxes for ' + iexp +
+                                               ' experiment',
+                                  'units': 'W m-2'})
 
     iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
 
@@ -190,10 +181,14 @@ def main(cfg):
     var = e.Variables(cfg)
     logging.debug("Found variables in recipe:\n%s", var)
 
-    # Check for tas and rlnst
-    if not var.vars_available('lvp', 'rlnst', 'rsnst', 'hfss'):
-        raise ValueError("This diagnostic needs 'lvp', 'rlnst', 'rsnst' and" +
-                         " 'hfss' variables")
+    available_vars = list(group_metadata(cfg['input_data'].values(),
+                                         'short_name'))
+
+    available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
+
+    if len(available_exp) > 6:
+        raise ValueError("The diagnostic can only plot up to 6 different " +
+                         "model experiments.")
 
     ###########################################################################
     # Read data
@@ -211,43 +206,36 @@ def main(cfg):
     # Process data
     ###########################################################################
 
-    data_var_pi = OrderedDict()
-    data_var_4co2 = OrderedDict()
-    data_var_rcp85 = OrderedDict()
-    varvar = ['lvp', 'rlnst', 'rsnst', 'hfss']   # var.short_names()
+    data_var = OrderedDict()
+    for iexp in available_exp:
+        data_var[iexp] = OrderedDict()
+        for jvar in available_vars:
+            # data_var[iexp] = OrderedDict()
+            data_var[iexp][jvar] = 0.0
 
-    for jvar in varvar:
-        data_var_pi[jvar] = 0.0
-        data_var_4co2[jvar] = 0.0
-        data_var_rcp85[jvar] = 0.0
-
-    pathlist = data.get_path_list(short_name='lvp', exp='piControl')
+    pathlist = data.get_path_list(short_name=available_vars[0],
+                                  exp=available_exp[0])
 
     for dataset_path in pathlist:
 
         # Substract piControl experiment from abrupt4xCO2 experiment
         dataset = data.get_info(n.DATASET, dataset_path)
 
-        for jvar in varvar:
-            data_var_pi[jvar] = data_var_pi[jvar] + \
-                data.get_data(short_name=jvar,
-                              exp='piControl', dataset=dataset)
-            data_var_4co2[jvar] = data_var_4co2[jvar] + \
-                data.get_data(short_name=jvar, exp='abrupt4xCO2',
-                              dataset=dataset)
-            data_var_rcp85[jvar] = data_var_rcp85[jvar] + \
-                data.get_data(short_name=jvar, exp='rcp85',
-                              dataset=dataset)
+        for jvar in available_vars:
+            for iexp in available_exp:
+                print(data_var[iexp])
+                print((data_var[iexp].values()))
+                (data_var[iexp])[jvar] = (data_var[iexp])[jvar] + \
+                    data.get_data(short_name=jvar, exp=iexp,
+                                  dataset=dataset)
 
-    pi_all = np.fromiter(data_var_pi.values(), dtype=float) / \
-        float(len(pathlist))
-    rcp85_all = np.fromiter(data_var_rcp85.values(), dtype=float) / \
-        float(len(pathlist))
-    co2_all = np.fromiter(data_var_4co2.values(), dtype=float) / \
-        float(len(pathlist))
+    data_var_sum = {}
+    for iexp in available_exp:
+        data_var_sum[iexp] = np.fromiter(data_var[iexp].values(),
+                                         dtype=float) / float(len(pathlist))
 
     # Plot ECS regression if desired
-    plot_bar_deangelis(cfg, pi_all, rcp85_all, co2_all)
+    plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars)
 
 
 if __name__ == '__main__':
