@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Calculates the ETCCDI Climate Change Indices."""
 import logging
 import os
