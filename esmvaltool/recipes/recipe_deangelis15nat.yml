@@ -84,9 +84,9 @@ diagnostics:
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: rcp85, start_year: 2091, end_year: 2100}
       - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
-      - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
-      - {dataset: CCSM4, exp: rcp85, start_year: 2091, end_year: 2100}
-      - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
+      # - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
+      # - {dataset: CCSM4, exp: rcp85, start_year: 2091, end_year: 2100}
+      # - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: rcp85, start_year: 2091, end_year: 2100}
       - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
@@ -318,8 +318,8 @@ diagnostics:
          end_year: 389}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
-      - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
+      # - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
