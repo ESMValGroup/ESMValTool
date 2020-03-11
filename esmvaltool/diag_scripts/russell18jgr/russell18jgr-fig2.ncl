@@ -50,9 +50,8 @@
 ;    - not tested for any observation models.
 ;
 ; Modification history
-;  20190510 - A_russ_jo, A_pand_am - written and implemented for ESMValToolv2
-;
-;
+;  20190510 - A_russ_joellen, A_pandde_amarjiit - written and implemented
+;             for ESMValToolv2
 ; ############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
@@ -163,7 +162,7 @@ begin
                  "mean", \
                  "sh", \
                  "geo", \
-                 "russ_jo", \
+                 "russ_joellen", \
                  "russell18jgr", \
                  infile_path)
 
