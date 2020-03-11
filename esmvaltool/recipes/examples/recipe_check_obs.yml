@@ -316,6 +316,17 @@ diagnostics:
     scripts: null
 
 
+  HALOE:
+    description: HALOE check
+    variables:
+      tro3:
+      vmrh2o:
+    additional_datasets:
+      - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: 1, start_year: 1991, end_year: 2002}
+    scripts: null
+
+
   Landschuetzer2016:
     description: Landschuetzer2016 check
     variables:
