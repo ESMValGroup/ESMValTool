@@ -44,7 +44,8 @@ preprocessors:
 diagnostics:
 
   deangelisf1b:
-    description: Bar plot of global multi-model experiment mean for flux variables, e.g. rlnst, rsnst, lvp, hfss (DeAngelis Fig. 1b).
+    description: Bar plot similar to (DeAngelis Fig. 1b).
+    # Global multi-model experiment mean for flux variables, e.g. rlnst, rsnst, lvp, hfss
     variables:
       rlnst: &spatial_mean_cmip5_r1i1p1_amon_t2ms
         preprocessor: spatial_mean
