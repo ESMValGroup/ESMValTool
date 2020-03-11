@@ -187,7 +187,7 @@ area_size <- function(ics, ipsilon, resolution = NA, norm = F) {
     resolution <- ics[2] - ics[1]
   }
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
-  for (j in 1:length(ipsilon)) {
+  for (j in seq_along(ipsilon)) {
     field[, j] <- area_lonlat(
       0, resolution, ipsilon[j] - 0.5 * resolution,
       ipsilon[j] + 0.5 * resolution
@@ -206,7 +206,7 @@ area_size <- function(ics, ipsilon, resolution = NA, norm = F) {
 area_weight <- function(ics, ipsilon, root = T, norm = F) {
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   if (root == T) {
-    for (j in 1:length(ipsilon)) {
+    for (j in seq_along(ipsilon)) {
       field[, j] <- sqrt(cos(pi / 180 * ipsilon[j]))
     }
   }
@@ -1343,34 +1343,42 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   invisible()
 }
 
-cdo <- function(command, args = "", input = "", options = "", output = "",
-                stdout = "", noout = F) {
-  if (args != "") args <- paste0(",", args)
-  if (stdout != "") {
-    stdout <- paste0(" > '", stdout, "'")
-    noout <- T
-  }
-  if (input[1] != "") {
-    for (i in 1:length(input)) {
-      input[i] <- paste0("'", input[i], "'")
+cdo <-
+  function(command,
+             args = "",
+             input = "",
+             options = "",
+             output = "",
+             stdout = "",
+             noout = F) {
+    if (args != "") {
+      args <- paste0(",", args)
     }
-    input <- paste(input, collapse = " ")
-  }
-  output0 <- output
-  if (output != "") {
-    output <- paste0("'", output, "'")
-  } else if (!noout) {
-    output <- tempfile()
+    if (stdout != "") {
+      stdout <- paste0(" > '", stdout, "'")
+      noout <- T
+    }
+    if (input[1] != "") {
+      for (i in seq_along(input)) {
+        input[i] <- paste0("'", input[i], "'")
+      }
+      input <- paste(input, collapse = " ")
+    }
     output0 <- output
+    if (output != "") {
+      output <- paste0("'", output, "'")
+    } else if (!noout) {
+      output <- tempfile()
+      output0 <- output
+    }
+    argstr <- paste0(
+      options, " ", command, args, " ", input, " ", output,
+      " ", stdout
+    )
+    print(paste("cdo", argstr))
+    ret <- system2("cdo", args = argstr)
+    if (ret != 0) {
+      stop(paste("Failed (", ret, "): cdo", argstr))
+    }
+    return(output0)
   }
-  argstr <- paste0(
-    options, " ", command, args, " ", input, " ", output,
-    " ", stdout
-  )
-  print(paste("cdo", argstr))
-  ret <- system2("cdo", args = argstr)
-  if (ret != 0) {
-    stop(paste("Failed (", ret, "): cdo", argstr))
-  }
-  return(output0)
-}

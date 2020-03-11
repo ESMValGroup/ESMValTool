@@ -5,7 +5,6 @@
 ### Author: Mattia Righi (DLR)
 ###############################################################################
 #SBATCH --partition=compute
-#SBATCH --ntasks=8
 #SBATCH --time=08:00:00
 #SBATCH --mail-type=FAIL,END
 #SBATCH --account=bd0854

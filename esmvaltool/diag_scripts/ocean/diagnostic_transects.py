@@ -16,7 +16,7 @@ An approproate preprocessor for a 3D+time field would be::
     prep_transect:
       climate_statistics:
         operator: mean
-      extract_slice: # Atlantic Meridional Transect
+      extract_transect: # Atlantic Meridional Transect
         latitude: [-50.,50.]
         longitude: 332.
 

@@ -61,8 +61,10 @@ Land
 .. toctree::
    :maxdepth: 1
 
+   recipe_albedolandcover
    recipe_hydrology
    recipe_landcover
+   recipe_anav13jclim
    recipe_runoff_et
 
 Ocean
@@ -70,6 +72,7 @@ Ocean
 .. toctree::
    :maxdepth: 1
 
+   recipe_arctic_ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_oceans
@@ -84,5 +87,6 @@ Other
    recipe_multimodel_products
    recipe_rainfarm
    recipe_seaice
+   recipe_seaice_drift
    recipe_shapeselect
    recipe_toymodel

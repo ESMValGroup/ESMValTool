@@ -132,7 +132,7 @@ WeatherRegime <- function( # nolint
     lon_dim <- which(names(dim(data)) == "lon")
     lat_dim <- which(names(dim(data)) == "lat")
     dims <-
-      c(1:length(dim(data)))[-c(sdate, ftime, lon_dim, lat_dim)]
+      c(seq_along(dim(data)))[-c(sdate, ftime, lon_dim, lat_dim)]
     data <- aperm(data, c(sdate, ftime, lat_dim, lon_dim, dims))
     margins <- 5:length(dim(data))
     result <- Apply(
