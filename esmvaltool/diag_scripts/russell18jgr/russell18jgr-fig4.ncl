@@ -170,27 +170,27 @@ begin
     dataset = dim_avg_n_Wrap(dataset_all_time, 0)
     delete(dataset_all_time)
     dataset@var = var0
-    dataset@diag_script = DIAG_SCRIPT 
-    dataset@model_name = annots(iii) 
+    dataset@diag_script = DIAG_SCRIPT
+    dataset@model_name = annots(iii)
 
     strUnits = " (" + dataset@units + ")"  ; to show units in title
     if (isatt(diag_script_info, "new_units")) then
       strUnits = " (" + diag_script_info@new_units + ") "
     end if
 
-    dataset_compare = uo_dataset_name(iii) +"$"
+    dataset_compare = uo_dataset_name(iii) + "$"
     fx_ind = str_match_ind_regex(voldatasets, dataset_compare)
     print(dataset_compare)
     print(fx_ind)
     if (ismissing(fx_ind)) then
       fx_var = new(1, float)
       fx_var = fx_var@_FillValue
-    else  
+    else
       fx_var = read_data(volinfo[fx_ind])
-    end if  
-     
-    if (iscoord(dataset,"i")) then ; changes i-j coordinates to lat-lon
-     
+    end if
+
+    if (iscoord(dataset, "i")) then  ; changes i-j coordinates to lat-lon
+
       delete(dataset&i)
       delete(dataset&j)
       infile_path = inputfile_paths(iii)
@@ -199,12 +199,12 @@ begin
       area_lat = infile_iii->lat
       dataset!1  = "lat"
       dataset!2  = "lon"
-      dataset&lat = tofloat(area_lat(:,10))
-      dataset&lon = tofloat(area_lon(10,:))
+      dataset&lat = tofloat(area_lat(:, 10))
+      dataset&lon = tofloat(area_lon(10, :))
       delete(area_lat)
       delete(area_lon)
       warn_ij = True
-  
+
     end if
 
     if(.not.(iscoord(dataset, "lat"))) then
@@ -212,154 +212,156 @@ begin
       infile_iii  = addfile(infile_path, "r")
       area_lon = infile_iii->lon
       area_lat = infile_iii->lat
-      var_lat = area_lat(:,10)
-      var_lon = area_lon(10,:)
-  
+      var_lat = area_lat(:, 10)
+      var_lon = area_lon(10, :)
+
       delete(area_lat)
       delete(area_lon)
-  
-      if(max(var_lon) .gt. 291) then ; finds the closest lon grid point to 69 W
+
+      if(max(var_lon) .gt. 291) then  ; finds the closest lon grid point to 69W
         a = closest_val(291.0, var_lon)
       else
         a = closest_val(-69.0, var_lon)
       end if
 
       exact_lon = var_lon(a)
-      var_final = dataset(:,:,a)   ; taking the lon value closest to 69W
+      var_final = dataset(:, :, a)  ; taking the lon value closest to 69W
       b1 = closest_val(-76, var_lat)
-      b2 = closest_val(-48, var_lat)          
-  
+      b2 = closest_val(-48, var_lat)
+
       if (.not. all((ismissing(fx_var)))) then
-   
+
         drlon = tofloat(abs(var_lon(a) - var_lon(a + 1))) * 6.37e06 * 0.0174533
         ; drlon = horizontal distance between 2 data poins along the same lon
-        volcello_3d = fx_var 
+        volcello_3d = fx_var
         volcello_3d = volcello_3d/drlon
         if(abs(volcello_3d&lev(0)) .gt. abs(volcello_3d&lev(1))) then
-          volcello_2d = volcello_3d(::-1,:,a) 
+          volcello_2d = volcello_3d(::-1, :, a)
           ; if volcello has decreasing lev
         else
-          volcello_2d = volcello_3d(:,:,a)
+          volcello_2d = volcello_3d(:, :, a)
         end if
-        if (any(dimsizes(volcello_2d) .ne. dimsizes(var_final))) then 
-          ; if dimensions of volcello are not same as uo 
+        if (any(dimsizes(volcello_2d) .ne. dimsizes(var_final))) then
+          ; if dimensions of volcello are not same as uo
           volcello_2d_new = linint1_n_Wrap(volcello_2d&rlat, volcello_2d, \
-                                           False, var_final&rlat, 0, 1) 
+                                           False, var_final&rlat, 0, 1)
           delete(volcello_2d)
           volcello_2d = volcello_2d_new
           delete(volcello_2d_new)
         end if
-    
-        transportpercell = var_final * volcello_2d  / (10 ^ 6) 
+
+        transportpercell = var_final * volcello_2d / (10 ^ 6)
         ; to convert from m^3/s to sverdrups
         copy_VarCoords(var_final, transportpercell)
-        transportperlat = dim_sum_n_Wrap(transportpercell, 0) 
-        ; sum of transport on each lat         
-        transportperlat = transportperlat / tofloat(cos(var_lat * 0.0174533 )) 
-        ;to compensate for changing horizontal distance with lat
-        totaltransport = sum(transportperlat(b1:b2))        
+        transportperlat = dim_sum_n_Wrap(transportpercell, 0)
+        ; sum of transport on each lat
+        transportperlat = transportperlat / tofloat(cos(var_lat * 0.0174533))
+        ; to compensate for changing horizontal distance with lat
+        totaltransport = sum(transportperlat(b1:b2))
         delete(drlon)
         delete(volcello_2d)
         delete(transportpercell)
         delete(transportperlat)
-        delete(volcello_3d)      
-      
-      else   
+        delete(volcello_3d)
+
+      else
         totaltransport = "missing volume file"
-        error_msg("w", "russell18jgr-fig4.ncl", " " ," volcello file for " \
+        error_msg("w", "russell18jgr-fig4.ncl", " ", " volcello file for " \
                   + annots(iii) + " not found in the recipe. If volcello " \
                   + "file available, please copy the dataset name from " \
                   + "additional dataset section of uo to additional " \
                   + "dataset section of volcello. This is a warning, not " \
                   + "an error, it just skips the transport calcultions")
-      end if  
+      end if
       delete(var_lat)
-      delete(var_lon)      
+      delete(var_lon)
 
     else
-      
-      if(max(dataset&lon) .gt. 291) then ; finds the closest lon grid point to 69 W
+      ; finds the closest lon grid point to 69 W
+      if(max(dataset&lon) .gt. 291) then
         a = closest_val(291.0, dataset&lon)
       else
         a = closest_val(-69.0, dataset&lon)
       end if
-      var_final = dataset(:,:,a)
+      var_final = dataset(:, :, a)
       b1 = closest_val(-76, var_final&lat)
       b2 = closest_val(-48, var_final&lat)
-      exact_lon = dataset&lon(a)   ; taking the lon value closest to 69W
+      exact_lon = dataset&lon(a)  ; taking the lon value closest to 69W
 
       if (.not. all(ismissing(fx_var))) then
         dlon = tofloat(abs(dataset&lon(a) - dataset&lon(a+1))) * 6.37e06 \
-              * 0.0174533 
+              * 0.0174533
         ; dlon = horizontal distance between 2 data poins along the same lon
         volcello_3d = fx_var
         volcello_3d = volcello_3d/dlon
 
         if(abs(volcello_3d&lev(0)) .gt. abs(volcello_3d&lev(1))) then
-          volcello_2d = volcello_3d(::-1,:,a)  ; if volcello has decreasing lev
+          volcello_2d = volcello_3d(::-1, :, a)
+          ; if volcello has decreasing lev
         else
-          volcello_2d = volcello_3d(:,:,a)
+          volcello_2d = volcello_3d(:, :, a)
         end if
         if (any(dimsizes(volcello_2d) .ne. dimsizes(var_final))) then
-          ; if dimensions of volcello are not same as uo 
+          ; if dimensions of volcello are not same as uo
           volcello_2d_new = linint1_n_Wrap(volcello_2d&lat, volcello_2d, \
-                                            False, var_final&lat, 0, 1) 
+                                           False, var_final&lat, 0, 1)
           delete(volcello_2d)
           volcello_2d = volcello_2d_new
           delete(volcello_2d_new)
         end if
-        transportpercell = var_final * volcello_2d  / (10 ^ 6) 
+        transportpercell = var_final * volcello_2d / (10 ^ 6)
         ; to convert from m^3/s to sverdrups
         transportperlat = dim_sum_n_Wrap(transportpercell, 0)
-        transportperlat = transportperlat / tofloat(cos(dataset&lat * 0.0174533))
-        ;to compensate for changing horizontal distance with lat
+        transportperlat = transportperlat \
+          / tofloat(cos(dataset&lat * 0.0174533))
+        ; to compensate for changing horizontal distance with lat
         totaltransport = sum(transportperlat(b1:b2))
-     
+
         delete(dlon)
         delete(volcello_2d)
         delete(transportpercell)
         delete(transportperlat)
-        delete(volcello_3d)        
-      else      
+        delete(volcello_3d)
+      else
         totaltransport = "missing volume file"
-        error_msg("w", "russell18jgr-fig4.ncl", " " ," volcello file for " \
-          + annots(iii) + " not found in the recipe. If volcello " \
-          + "file available, please copy the dataset name from " \
-          + "additional dataset section of uo to additional " \
-          + "dataset section of volcello. This is a warning, not " \
-          + "an error, it just skips the transport calcultions")
+        error_msg("w", "russell18jgr-fig4.ncl", " ", " volcello file for " \
+                  + annots(iii) + " not found in the recipe. If volcello " \
+                  + "file available, please copy the dataset name from " \
+                  + "additional dataset section of uo to additional " \
+                  + "dataset section of volcello. This is a warning, not " \
+                  + "an error, it just skips the transport calcultions")
       end if
     end if
     delete(fx_var)
-     
-    if (exact_lon .gt. 200) then ;editing the lon value for printing as W
+
+    if (exact_lon .gt. 200) then  ; editing the lon value for printing as W
       exact_lon = 360.0 - exact_lon
     else
       exact_lon = exact_lon * -1
-    end if 
-    
+    end if
+
     if(typeof(totaltransport) .eq. "float") then
-      res@gsnLeftString = "Net transport : " + sprintf("%4.1f", totaltransport)\
-                          + "Sv"
-    else 
+      res@gsnLeftString = "Net transport : " \
+                          + sprintf("%4.1f", totaltransport) + "Sv"
+    else
       res@gsnLeftString = " no volcello file "
     end if
-  
-    if (isatt(diag_script_info, "unitCorrectionalFactor")) then 
+
+    if (isatt(diag_script_info, "unitCorrectionalFactor")) then
       ; to convert the units in datasets
-      var_final = var_final * diag_script_info@unitCorrectionalFactor    
-    end if 
-  
+      var_final = var_final * diag_script_info@unitCorrectionalFactor
+    end if
+
     res@gsnRightString  = "Drake passage (" + sprintf("%4.2f", exact_lon) \
                           + " W)"
     res@tiMainString    = "Section velocity of " + annots(iii) + strUnits
-    
-    plots(iii) = gsn_csm_contour(wks, var_final(:,b1:b2), res)
-    
+
+    plots(iii) = gsn_csm_contour(wks, var_final(:, b1:b2), res)
+
     nc_filename = config_user_info@work_dir + "russell18jgr_fig4_" + var0 \
       + "_" + annots(iii) + "_" + (start_years_data(iii)) + "-" \
-      + (end_years_data(iii))+ ".nc"
- 
+      + (end_years_data(iii)) + ".nc"
+
     ncdf_outfile = ncdf_write(dataset, nc_filename)
     delete(dataset)
     delete(var_final)
