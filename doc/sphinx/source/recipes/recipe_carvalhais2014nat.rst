@@ -19,14 +19,14 @@ In addition, metrics of global turnover times and correlations with observation 
 .. _tau calculation:
 
 Calculation of turnover time
----------------
+----------------------------
 
 The turnover time of carbon is defined as,
 .. math::
 
    \tau =  \frac{cSoil + cVeg}{gpp}
 
-where :math:`cSoil` and :math:`cVeg` are the carbon content of the soil and vegetation over the land surface, and gpp is the gross primary productivity. 
+where :math:`cSoil` and :math:`cVeg` are the carbon content of the soil and vegetation over the land surface, and gpp is the gross primary productivity.
 
 This equation assumes that the total carbon content over land is the sum of the soil and vegetation components, which may be in contrast to what the original publication used. In the original publication, all the carbon pools which respired to the atmosphere were added up to calculate the total carbon stock.
 
@@ -48,9 +48,9 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/
 
-   * carbon_cycle/main.ncl
-   * carbon_cycle/mvi.ncl
-   * carbon_cycle/two_variables.ncl
+   * land_carbon_cycle/diag_global_turnover.py
+   * land_carbon_cycle/diag_zonal_turnover.py
+   * land_carbon_cycle/diag_zonal_correlation.py
    * perfmetrics/main.ncl
    * perfmetrics/collect.ncl
 

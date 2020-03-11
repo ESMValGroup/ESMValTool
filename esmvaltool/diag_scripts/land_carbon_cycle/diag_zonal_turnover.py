@@ -1,33 +1,36 @@
-"""
-compares the zonal turnover time from the models with observation from Carvalhais et al., 2014
-"""
+'''
+compares the zonal turnover time from the models with observation from
+Carvalhais et al., 2014
+'''
 
 # operating system manipulations (e.g. path constructions)
 import os
 
 # to manipulate iris cubes
+import math
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import group_metadata, select_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import group_metadata
+from esmvaltool.diag_scripts.shared import select_metadata
+from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # helper functions
 import extraUtils as xu
 
 
 ## Classes and settings
-class dot_dict(dict):
-    """dot.notation access to dictionary attributes"""
+class Dot_dict(dict):
+    '''dot.notation access to dictionary attributes'''
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
 
 def _get_fig_config(diag_config):
-    """
-    get the default settings of the figure, and replace default with 
+    '''
+    get the default settings of the figure, and replace default with
     runtime settings from recipe
 
     Arguments:
@@ -35,15 +38,14 @@ def _get_fig_config(diag_config):
 
     Returns:
         a dot dictionary of settings
-    """
+    '''
     fig_config = {}
     fig_config['fill_value'] = np.nan
     fig_config['multimodel'] = False
-    fig_config['correlation_method'] = 'pearson'
+    fig_config['min_points_frac'] = 0.02
     fig_config['ax_fs'] = 7.1
     fig_config['valrange_x'] = (2, 1000)
     fig_config['valrange_y'] = (-70, 90)
-    fig_config['minPoints'] = 0
     fig_config['bandsize'] = 1.86
     fig_config['obs_label'] = 'Carvalhais2014'
     fig_config['gpp_threshold'] = 10  #gC m-2 yr -1
@@ -51,9 +53,8 @@ def _get_fig_config(diag_config):
     for _fc in fig_config_list:
         if diag_config.get(_fc) is not None:
             fig_config[_fc] = diag_config.get(_fc)
-    _figSet = dot_dict(fig_config)
-    _figSet.ax_fs = 9
-    return _figSet
+    fig_setting = Dot_dict(fig_config)
+    return fig_setting
 
 
 # calculation and data functions
@@ -61,12 +62,12 @@ def _apply_common_mask(dat_1, dat_2):
     '''
     apply a common mask of valid grid cells across two input arrays
     '''
-    dat_1Mask = np.ma.getmask(np.ma.masked_invalid(dat_1))
-    dat_2Mask = np.ma.getmask(np.ma.masked_invalid(dat_2))
-    _valMaskA = 1 - (1 - dat_1Mask) * (1 - dat_2Mask)
-    _valMask = np.ma.nonzero(_valMaskA)
-    dat_1[_valMask] = np.nan
-    dat_2[_valMask] = np.nan
+    dat_1_mask = np.ma.getmask(np.ma.masked_invalid(dat_1))
+    dat_2_mask = np.ma.getmask(np.ma.masked_invalid(dat_2))
+    _val_mask_a = 1 - (1 - dat_1_mask) * (1 - dat_2_mask)
+    _val_mask = np.ma.nonzero(_val_mask_a)
+    dat_1[_val_mask] = np.nan
+    dat_2[_val_mask] = np.nan
     dat_1 = np.ma.masked_invalid(dat_1)
     dat_2 = np.ma.masked_invalid(dat_2)
     return dat_1, dat_2
@@ -84,14 +85,15 @@ def _apply_gpp_threshold(gpp_dat, fig_config):
 
 
 def _get_obs_data(diag_config):
-    """Get and handle the observations of turnover time from Carvalhais 2014.
+    '''
+    Get and handle the observations of turnover time from Carvalhais 2014.
 
     Arguments:
         diag_config - nested dictionary of metadata
 
     Returns:
         dictionary with observation data with different variables as keys
-    """
+    '''
     if not diag_config.get('obs_files'):
         raise ValueError('The observation files needs to be specified in the '
                          'recipe (see recipe description for details)')
@@ -101,21 +103,22 @@ def _get_obs_data(diag_config):
             for obs_file in diag_config.get('obs_files')
         ]
     all_data = {}
-    varList = diag_config.get('obs_variables')
-    print(varList)
-    for _var in varList:
+    var_list = diag_config.get('obs_variables')
+    for v_ind in range(len(var_list)):
+        var_obs = var_list[v_ind]
         variable_constraint = iris.Constraint(
-            cube_func=(lambda c: c.var_name == _var))
+            cube_func=(lambda c: c.var_name == var_obs))
         cube = iris.load_cube(input_files, constraint=variable_constraint)
-        all_data[_var] = cube.data
+        all_data[var_obs] = cube.data
     for coord in cube.coords():
         all_data[coord.name()] = coord.points
     return all_data
 
 
 def _get_zonal_tau(diag_config):
-    """
-    A diagnostic function to calculate the total carbon stock from the list of variables passed to the diagnostic script.
+    '''
+    A diagnostic function to calculate the total carbon stock from the list of
+    variables passed to the diagnostic script.
 
     Arguments:
         diag_config - nested dictionary of metadata
@@ -123,7 +126,7 @@ def _get_zonal_tau(diag_config):
     Returns:
         string; runs the user diagnostic
 
-    """
+    '''
 
     my_files_dict = group_metadata(diag_config['input_data'].values(),
                                    'dataset')
@@ -139,7 +142,7 @@ def _get_zonal_tau(diag_config):
         gpp = _load_variable(value, 'gpp')
         gpp_dat = xu.remove_invalid(gpp.data, fill_value=fig_config.fill_value)
         ctotal_dat = xu.remove_invalid(ctotal.data,
-                                      fill_value=fig_config.fill_value)
+                                       fill_value=fig_config.fill_value)
         for coord in gpp.coords():
             mod_coords[coord.name()] = coord.points
         zonal_tau_mod[key]['data'] = _calc_zonal_tau(gpp_dat, ctotal_dat,
@@ -151,7 +154,8 @@ def _get_zonal_tau(diag_config):
         global_ctotal_mod[key] = ctotal_dat
         global_gpp_mod[key] = gpp_dat
 
-    # get the multimodel median GPP and ctotal and calculate zonal tau from multimodel median
+    # get the multimodel median GPP and ctotal and calculate zonal tau from
+    # multimodel median
     mm_ctotal = xu.remove_invalid(np.nanmedian(np.array(
         [_ctotal for _ctotal in global_ctotal_mod.values()]),
                                                axis=0),
@@ -172,15 +176,16 @@ def _get_zonal_tau(diag_config):
 
 
 def _load_variable(metadata, var_name):
-    """
-    load the data for the variable based on the metadata of the diagnostic variable
+    '''
+    load the data for a variable based on the metadata of the diagnostic
+    variable
 
     Arguments:
         metadata - nested dictionary of metadata
 
     Returns:
         iris cube of the data
-    """
+    '''
     candidates = select_metadata(metadata, short_name=var_name)
     assert len(candidates) == 1
     filename = candidates[0]['filename']
@@ -189,7 +194,7 @@ def _load_variable(metadata, var_name):
 
 
 def _calc_zonal_tau(dat_gpp, dat_ctotal, dat_lats, fig_config):
-    """
+    '''
     calculate zonal turnover time
 
     Arguments:
@@ -200,26 +205,26 @@ def _calc_zonal_tau(dat_gpp, dat_ctotal, dat_lats, fig_config):
 
     Returns:
         zonal_tau - zonal turnover time of carbon
-    """
+    '''
     # get the interval of latitude and create array for partial correlation
     lat_int = abs(dat_lats[1] - dat_lats[0])
     zonal_tau = np.ones_like(dat_lats) * np.nan
 
     # get the size of the sliding window based on the bandsize in degrees
-    windowSize = math.ceil(fig_config.bandsize / (lat_int * 2))
+    window_size = math.ceil(fig_config.bandsize / (lat_int * 2))
 
     dat_gpp = xu.remove_invalid(dat_gpp, fill_value=fig_config.fill_value)
     dat_ctotal = xu.remove_invalid(dat_ctotal,
                                    fill_value=fig_config.fill_value)
 
-    minPoints = np.shape(dat_gpp)[1] / 50
+    min_points = np.shape(dat_gpp)[1] * fig_config.min_points_frac
     for lat_index in range(len(zonal_tau)):
-        istart = max(0, lat_index - windowSize)
-        iend = min(np.size(dat_lats), lat_index + windowSize + 1)
+        istart = max(0, lat_index - window_size)
+        iend = min(np.size(dat_lats), lat_index + window_size + 1)
         dat_gpp_zone = dat_gpp[istart:iend, :]  #* _area_zone
         dat_ctotal_zone = dat_ctotal[istart:iend, :]  #* _area_zone
-        nValids = np.nansum(~np.isnan(dat_gpp_zone + dat_ctotal_zone))
-        if nValids > minPoints:
+        num_valid_points = np.nansum(~np.isnan(dat_gpp_zone + dat_ctotal_zone))
+        if num_valid_points > min_points:
             zonal_tau[lat_index] = (np.nansum(dat_ctotal_zone) /
                                     np.nansum(dat_gpp_zone)) / (86400 * 365)
     return zonal_tau
@@ -228,8 +233,8 @@ def _calc_zonal_tau(dat_gpp, dat_ctotal, dat_lats, fig_config):
 
 
 def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
-    """
-    makes the maps of variables 
+    '''
+    makes the maps of variables
 
     Arguments:
         diag_config - nested dictionary of metadata
@@ -241,7 +246,7 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
 
     Note: this function is private; remove the '_'
     so you can make it public.
-    """
+    '''
     fig_config = _get_fig_config(diag_config)
     models = list(all_mod_dat.keys())
     models = sorted(models, key=str.casefold)
