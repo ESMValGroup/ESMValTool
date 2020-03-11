@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.stats as scst
 from matplotlib import pyplot as plt
 import matplotlib as mpl
 
@@ -15,7 +14,8 @@ def remove_invalid(tmp, fill_value=-9999.):
     tmp[whereisNan] = fill_value
     return tmp
 
-## axis lines, ticks, and fontsizes
+
+# axis lines, ticks, and fontsizes
 def put_ticks(nticks=5, which_ax='both', axlw=0.3):
     '''
     puts the ticks on given locations and sets the width of axis lines
@@ -152,6 +152,7 @@ def rotate_labels(which_ax='both', rot=0, axfs=6):
         plt.setp(labels, rotation=rot, fontsize=axfs)
     return
 
+
 def draw_line_legend(ax_fs=8):
     leg = plt.legend(loc=(1.00974, .06),
                      fontsize=ax_fs,
@@ -168,6 +169,7 @@ def draw_line_legend(ax_fs=8):
     texts = leg.get_texts()
     plt.setp(texts, fontsize=ax_fs * 0.9)
     return leg
+
 
 # MAPs
 def get_colomap(cmap_nm, bounds__, lowp=0.05, hip=0.95):
@@ -190,7 +192,6 @@ def mk_colo_tau(axcol_,
                 cbfs=9,
                 nticks=10,
                 cbtitle='',
-                col_scale='linear',
                 tick_locs=[],
                 ex_tend='both',
                 cb_or='horizontal',

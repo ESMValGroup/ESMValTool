@@ -156,58 +156,18 @@ References
 Example plots
 -------------
 
-.. _fig_anav13jclim_1:
-.. figure:: /recipes/figures/anav13jclim/nbp_evolution_global.png
+.. _fig_carvalhais2014nat_1:
+.. figure:: /recipes/figures/carvalhais2014nat/comparison_zonal_pearson_correlation_turnovertime_climate_Carvalhais2014.png
    :align: center
    :width: 80%
 
    Time series of global net biome productivity (NBP) over the period
    1901-2005. Similar to Anav et al.  (2013), Figure 5.
 
-.. _fig_anav13jclim_2:
-.. figure:: /recipes/figures/anav13jclim/gpp_cycle_nh.png
+.. _fig_carvalhais2014nat_2:
+.. figure:: /recipes/figures/carvalhais2014nat/global_comparison_matrix_models_Carvalhais2014.png
    :align: center
    :width: 80%
 
    Seasonal cycle plot for nothern hemisphere gross primary production (GPP)
    over the period 1986-2005. Similar to Anav et al. (2013), Figure 9.
-
-.. _fig_anav13jclim_3:
-.. figure:: /recipes/figures/anav13jclim/gpp_errorbar_trop.png
-   :align: center
-   :width: 80%
-
-   Errorbar plot for tropical gross primary production (GPP) over the period
-   1986-2005.
-
-.. _fig_anav13jclim_4:
-.. figure:: /recipes/figures/anav13jclim/tos_scatter_global.png
-   :align: center
-   :width: 80%
-
-   Scatterplot for interannual variability and mean of global sea surface
-   temperature (TOS) over the period 1986-2005.
-
-.. _fig_anav13jclim_5:
-.. figure:: /recipes/figures/anav13jclim/tas_global.png
-   :align: center
-   :width: 80%
-
-   Scatterplot for multiyear average of 2m surface temperature (TAS) in x axis,
-   its linear trend in y axis, and MVI. Similar to Anav et al. (2013) Figure 1
-   (bottom).
-
-.. _fig_anav13jclim_6:
-.. figure:: /recipes/figures/anav13jclim/cSoil-cVeg_scatter_global.png
-   :align: center
-   :width: 80%
-
-   Scatterplot for vegetation carbon content (cVeg) and soil carbon content
-   (cSoil) over the period 1986-2005. Similar to Anav et al. (2013), Figure 12.
-
-.. _fig_anav13jclim_7:
-.. figure:: /recipes/figures/anav13jclim/diag_grading_pr-global_to_diag_grading_gpp-global_RMSD.png
-   :align: center
-   :width: 80%
-
-   Performance metrics plot for carbon-cycle-relevant diagnostics.

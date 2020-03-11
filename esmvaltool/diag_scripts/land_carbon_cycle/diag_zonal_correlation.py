@@ -1,8 +1,6 @@
 """
 calculates and compares the correlation between the turnover time of carbon and climate defined as the partial correlations with precipitation and temperature
 """
-# place your module imports here:
-import extraUtils as xu
 
 # operating system manipulations (e.g. path constructions)
 import os
@@ -17,8 +15,20 @@ import scipy.stats as stats
 # internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import group_metadata, select_metadata, run_diagnostic
 
+# place your module imports here
+import extraUtils as xu
+
 
 def _load_variable(metadata, var_name):
+    """
+    load the data for the variable based on the metadata of the diagnostic variable
+
+    Arguments:
+        metadata - nested dictionary of metadata
+
+    Returns:
+        iris cube of the data
+    """
     candidates = select_metadata(metadata, short_name=var_name)
     assert len(candidates) == 1
     filename = candidates[0]['filename']
@@ -36,81 +46,92 @@ class dot_dict(dict):
     __delattr__ = dict.__delitem__
 
 
-def _get_fig_config(__cfg):
+def _get_fig_config(diag_config):
+    """
+    get the default settings of the figure, and replace default with 
+    runtime settings from recipe
 
-    fcfg = {}
-    fcfg['fill_val'] = np.nan
-    fcfg['multimodel'] = False
-    fcfg['correlation_method'] = 'pearson'
+    Arguments:
+        diag_config - nested dictionary of metadata
+
+    Returns:
+        a dot dictionary of settings
+    """
+
+    fig_config = {}
+    fig_config['fill_val'] = np.nan
+    fig_config['multimodel'] = False
+    fig_config['correlation_method'] = 'pearson'
 
     # define the data and information for plotting ratios
-    fcfg['ax_fs'] = 7.1
-    fcfg['valrange_x'] = (-1, 1)
-    fcfg['valrange_y'] = (-70, 90)
-    fcfg['minPoints'] = 3
-    fcfg['bandsize'] = 9.5
-    fcfg['obs_label'] = 'Carvalhais2014'
-    fcfg['gpp_threshold'] = 0  # gC m-2 yr -1
+    fig_config['ax_fs'] = 7.1
+    fig_config['valrange_x'] = (-1, 1)
+    fig_config['valrange_y'] = (-70, 90)
+    fig_config['minPoints'] = 3
+    fig_config['bandsize'] = 9.5
+    fig_config['obs_label'] = 'Carvalhais2014'
+    fig_config['gpp_threshold'] = 0  # gC m-2 yr -1
 
-    fcfgL = list(fcfg.keys())
-    for _fc in fcfgL:
-        if __cfg.get(_fc) is not None:
-            fcfg[_fc] = __cfg.get(_fc)
-    _figSet = dot_dict(fcfg)
+    fig_config_list = list(fig_config.keys())
+    for _fc in fig_config_list:
+        if diag_config.get(_fc) is not None:
+            fig_config[_fc] = diag_config.get(_fc)
+    _figSet = dot_dict(fig_config)
     return _figSet
 
 
 # data and calculations
 
 
-def _apply_common_mask(_dat1, _dat2, _dat3):
+def _apply_common_mask(dat_1, dat_2, dat_3):
     '''
     apply a common mask to three arrays so that they have the same locations of all valid and invalid (non numeric) grid cells
     '''
-    _dat1Mask = np.ma.getmask(np.ma.masked_invalid(_dat1))
-    _dat2Mask = np.ma.getmask(np.ma.masked_invalid(_dat2))
-    _dat3Mask = np.ma.getmask(np.ma.masked_invalid(_dat3))
-    _valMaskA = 1 - (1 - _dat1Mask) * (1 - _dat2Mask) * (1 - _dat3Mask)
+    dat_1Mask = np.ma.getmask(np.ma.masked_invalid(dat_1))
+    dat_2Mask = np.ma.getmask(np.ma.masked_invalid(dat_2))
+    dat_3Mask = np.ma.getmask(np.ma.masked_invalid(dat_3))
+    _valMaskA = 1 - (1 - dat_1Mask) * (1 - dat_2Mask) * (1 - dat_3Mask)
     _valMask = np.ma.nonzero(_valMaskA)
-    _dat1[_valMask] = np.nan
-    _dat2[_valMask] = np.nan
-    _dat3[_valMask] = np.nan
-    _dat1 = np.ma.masked_invalid(_dat1)
-    _dat2 = np.ma.masked_invalid(_dat2)
-    _dat3 = np.ma.masked_invalid(_dat3)
-    return _dat1, _dat2, _dat3
+    dat_1[_valMask] = np.nan
+    dat_2[_valMask] = np.nan
+    dat_3[_valMask] = np.nan
+    dat_1 = np.ma.masked_invalid(dat_1)
+    dat_2 = np.ma.masked_invalid(dat_2)
+    dat_3 = np.ma.masked_invalid(dat_3)
+    return dat_1, dat_2, dat_3
+
 
 def _apply_gpp_threshold(gpp_dat, fig_config):
     '''
     returns the input array with values below the threshold of gpp set to nan
-    '''    
+    '''
     # converting gC m-2 yr-1 to kgC m-2 s-1
-    gpp_thres = fig_config.gpp_threshold / (
-        86400.0 * 365 * 1000.)  
-    gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(fig_config.fill_value)
+    gpp_thres = fig_config.gpp_threshold / (86400.0 * 365 * 1000.)
+    gpp_dat = np.ma.masked_less(gpp_dat,
+                                gpp_thres).filled(fig_config.fill_value)
     return gpp_dat
 
 
-def _get_obs_data(cfg):
+def _get_obs_data(diag_config):
     """
     Get and handle the observations of turnover time from Carvalhais 2014.
 
     Arguments:
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
 
     Returns:
         dictionary with observation data with different variables as keys
     """
-    if not cfg.get('obs_files'):
+    if not diag_config.get('obs_files'):
         raise ValueError('The observation files needs to be specified in the '
                          'recipe (see recipe description for details)')
     else:
         input_files = [
-            os.path.join(cfg['auxiliary_data_dir'], obs_file)
-            for obs_file in cfg.get('obs_files')
+            os.path.join(diag_config['auxiliary_data_dir'], obs_file)
+            for obs_file in diag_config.get('obs_files')
         ]
     all_data = {}
-    varList = cfg.get('obs_variables')
+    varList = diag_config.get('obs_variables')
     for _var in varList:
         variable_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == _var))
@@ -122,22 +143,23 @@ def _get_obs_data(cfg):
     return all_data
 
 
-def _get_zonal_correlation(cfg):
+def _get_zonal_correlation(diag_config):
     """
     A diagnostic function to calculate the zonal correlation between ecosystem 
     carbon turnover time and climate.
 
     Arguments:
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
 
     Returns:
-        string; runs the user diagnostic
+        data of the zonal correlations in models and from observations
     """
-    my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
-    fcfg = _get_fig_config(cfg)
-    allModdat = {}
+    my_files_dict = group_metadata(diag_config['input_data'].values(),
+                                   'dataset')
+    fcfg = _get_fig_config(diag_config)
+    all_mod_dat = {}
     for key, value in my_files_dict.items():
-        allModdat[key] = {}
+        all_mod_dat[key] = {}
         mod_coords = {}
         c_total = _load_variable(value, 'ctotal')
         gpp = _load_variable(value, 'gpp')
@@ -148,53 +170,83 @@ def _get_zonal_correlation(cfg):
         ctau = (c_total / _gpp) / (86400 * 365)
         for coord in gpp.coords():
             mod_coords[coord.name()] = coord.points
-        zon_corr = _zonal_correlation(ctau.data, pr.data, tas.data,
-                                      mod_coords['latitude'], fcfg)
-        allModdat[key]['data'] = zon_corr
-        allModdat[key]['latitude'] = mod_coords['latitude']
-    allObsdat = _get_obs_data(cfg)
-    _plot_zonal_correlation(allModdat, allObsdat, cfg)
+        zon_corr = _calc_zonal_correlation(ctau.data, pr.data, tas.data,
+                                           mod_coords['latitude'], fcfg)
+        all_mod_dat[key]['data'] = zon_corr
+        all_mod_dat[key]['latitude'] = mod_coords['latitude']
+    all_obs_dat = _get_obs_data(diag_config)
+    _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config)
     return 'zonal correlation diagnostic is complete'
 
 
-def _partialCorr(C, _fcfg):
-    d1 = C[:, 0]
-    d2 = C[:, 1]
-    d3 = C[:, 2]
-    if _fcfg.correlation_method == 'pearson':
-        r12 = stats.pearsonr(d1, d2)[0]
-        r13 = stats.pearsonr(d1, d3)[0]
-        r23 = stats.pearsonr(d2, d3)[0]
-    elif _fcfg.correlation_method == 'spearman':
-        r12 = stats.spearmanr(d1, d2)[0]
-        r13 = stats.spearmanr(d1, d3)[0]
-        r23 = stats.spearmanr(d2, d3)[0]
+def _partialCorr(datCol, fig_config):
+    """
+    A function to calculate the linear partial correlation between the variables in the first and second column of datCol controlled for the covariation with that in the third column.
+
+    Arguments:
+        datCol - an array with different variables in different columns
+        fig_config - configuration with correlation_method
+
+    Returns:
+        r123 - correlation between variables 1 and 2 controlled for 3
+    """
+    dat_x = datCol[:, 0]
+    dat_y = datCol[:, 1]
+    dat_z = datCol[:, 2]
+    if fig_config.correlation_method == 'pearson':
+        r12 = stats.pearsonr(dat_x, dat_y)[0]
+        r13 = stats.pearsonr(dat_x, dat_z)[0]
+        r23 = stats.pearsonr(dat_y, dat_z)[0]
+    elif fig_config.correlation_method == 'spearman':
+        r12 = stats.spearmanr(dat_x, dat_y)[0]
+        r13 = stats.spearmanr(dat_x, dat_z)[0]
+        r23 = stats.spearmanr(dat_y, dat_z)[0]
     else:
         sys.exit('set a valid correlation_method [pearson/spearman]')
     r123 = (r12 - r13 * r23) / np.sqrt((1 - r13**2) * (1 - r23**2))
     return r123
 
 
-def _zonal_correlation(_tau, _pr, _tas, _lats, _fcfg):
-    _latint = abs(_lats[1] - _lats[0])
-    windowSize = int(_fcfg.bandsize / (_latint * 2))
-    __dat = np.ones((np.shape(_tau)[0], 2)) * np.nan
-    _tau, _pr, _tas = _apply_common_mask(_tau, _pr, _tas)
-    minPoints = np.shape(_tau)[1] / 8
-    for lat_index in range(len(__dat)):
+def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
+    """
+    calculate zonal partial correlations for sliding windows
+
+    Arguments:
+        dat_tau - data of global tau
+        dat_pr - precipitation
+        dat_tas - air temperature
+        dat_lats - latitude of the given model
+        fig_config - figure/diagnostic configurations
+
+    Returns:
+        corr_dat zonal correlations
+    """
+    # get the interval of latitude and create array for partial correlation
+    lat_int = abs(dat_lats[1] - dat_lats[0])
+    corr_dat = np.ones((np.shape(dat_tau)[0], 2)) * np.nan
+
+    # get the size of the sliding window based on the bandsize in degrees
+    windowSize = int(fig_config.bandsize / (lat_int * 2))
+
+    dat_tau, dat_pr, dat_tas = _apply_common_mask(dat_tau, dat_pr, dat_tas)
+    # minimum 1/8 of the given window has valid data points
+    minPoints = np.shape(dat_tau)[1] / 8
+    for lat_index in range(len(corr_dat)):
         istart = max(0, lat_index - windowSize)
-        iend = min(np.size(_lats), lat_index + windowSize + 1)
-        _tauZone = _tau[istart:iend, :]
-        _prZone = _pr[istart:iend, :]
-        _tasZone = _tas[istart:iend, :]
-        d1 = np.ma.masked_invalid(_tauZone).compressed().flatten()
-        d2 = np.ma.masked_invalid(_prZone).compressed().flatten()
-        d3 = np.ma.masked_invalid(_tasZone).compressed().flatten()
-        nValids = sum(~np.isnan(d1 + d2 + d3))
+        iend = min(np.size(dat_lats), lat_index + windowSize + 1)
+        dat_tau_zone = dat_tau[istart:iend, :]
+        dat_pr_zone = dat_pr[istart:iend, :]
+        dat_tas_zone = dat_tas[istart:iend, :]
+        dat_x = np.ma.masked_invalid(dat_tau_zone).compressed().flatten()
+        dat_y = np.ma.masked_invalid(dat_pr_zone).compressed().flatten()
+        dat_z = np.ma.masked_invalid(dat_tas_zone).compressed().flatten()
+        nValids = sum(~np.isnan(dat_x + dat_y + dat_z))
         if nValids > minPoints:
-            __dat[lat_index, 0] = _partialCorr(np.vstack((d1, d2, d3)).T, _fcfg)
-            __dat[lat_index, 1] = _partialCorr(np.vstack((d1, d3, d2)).T, _fcfg)
-    return __dat
+            corr_dat[lat_index, 0] = _partialCorr(
+                np.vstack((dat_x, dat_y, dat_z)).T, fig_config)
+            corr_dat[lat_index, 1] = _partialCorr(
+                np.vstack((dat_x, dat_z, dat_y)).T, fig_config)
+    return corr_dat
 
 
 def _get_multimodel_stats(r_multimodel):
@@ -212,7 +264,7 @@ def _get_multimodel_stats(r_multimodel):
     r_multimodel[r_multimodel > 0.99] = 0.99
     r_multimodel[r_multimodel < -0.99] = -0.99
 
-    # z tranform the correlation 
+    # z tranform the correlation
     z_multimodel = 0.5 * (np.log(1 + r_multimodel) - np.log(1 - r_multimodel))
     z_multimodel[np.isinf(z_multimodel)] = np.nan
     zmm_ens = np.nanmean(z_multimodel, axis=1)
@@ -234,7 +286,7 @@ def _get_multimodel_stats(r_multimodel):
 # Plotting functions
 
 
-def _fix_axis(x_lab, fig_config, ax_fs=8, axlw=0.4, rem_list=['top', 'right']):
+def _fix_axis(x_lab, fig_config, axlw=0.4, rem_list=['top', 'right']):
     """
     fixes the axis limits, labels and lines
 
@@ -262,19 +314,19 @@ def _fix_axis(x_lab, fig_config, ax_fs=8, axlw=0.4, rem_list=['top', 'right']):
     return
 
 
-def _plot_zonal_correlation(all_mod_dat, all_obs_dat, cfg):
+def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     """
     makes the line plots of zonal correlations from all models 
 
     Arguments:
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
         all_mod_dat - dictionary of correlations from all models
         all_obs_dat - dictionary of correlations and ranges from observation
 
     Returns:
         string; makes some time-series plots
     """
-    _fcfg = _get_fig_config(cfg)
+    _fcfg = _get_fig_config(diag_config)
     models = list(all_mod_dat.keys())
     nmodels = len(models)
     models = sorted(models, key=str.casefold)
@@ -324,7 +376,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, cfg):
                       facecolor='grey',
                       alpha=0.40)
 
-    #### PLOTTING for models
+    # PLOTTING for models
 
     # define arrays to store the zonal correlation of each model
 
@@ -383,7 +435,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, cfg):
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
 
     # save and close the figure
-    local_path = cfg['plot_dir']
+    local_path = diag_config['plot_dir']
     png_name = 'comparison_zonal_' + _fcfg.correlation_method + '_correlation_turnovertime_climate_' + _fcfg.obs_label + '.png'
     plt.savefig(os.path.join(local_path, png_name),
                 bbox_inches='tight',

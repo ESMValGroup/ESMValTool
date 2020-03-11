@@ -20,7 +20,7 @@ import numpy as np
 import scipy.stats as stats
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import get_diagnostic_filename, group_metadata, select_metadata, run_diagnostic, extract_variables
+from esmvaltool.diag_scripts.shared import get_diagnostic_filename, group_metadata, select_metadata, run_diagnostic
 
 # user-defined functions
 import extraUtils as xu
@@ -43,98 +43,106 @@ class dot_dict(dict):
 
 
 def _get_diagonal_colorbar_info():
-    cbInfo_diagonal = {}
+    """
+    get the dictionary of colormap and colorbar information needed for plotting the maps along the diagonal, i.e., the maps of turnover time
+    """
+
+    cb_info_diagonal = {}
     cbName = 'plasma_r'
-    cbInfo_diagonal['tickBounds'] = np.concatenate(
+    cb_info_diagonal['tickBounds'] = np.concatenate(
         ([1], np.linspace(8, 16, num=10)[:-1], np.linspace(16, 32,
                                                            num=10)[:-1],
          np.linspace(32, 64, num=10)[:-1], np.linspace(64, 128, num=10)[:-1],
          np.linspace(128, 256,
                      num=10)[:-1], np.linspace(256, 1000, num=2,
                                                endpoint=True)))
-    cbInfo_diagonal['ticksLoc'] = np.array([1, 8, 16, 32, 64, 128, 256])
+    cb_info_diagonal['ticksLoc'] = np.array([1, 8, 16, 32, 64, 128, 256])
     clist_ = xu.get_colomap(cbName,
-                            cbInfo_diagonal['tickBounds'],
+                            cb_info_diagonal['tickBounds'],
                             lowp=0.,
                             hip=1)
-    cbInfo_diagonal['colMap'] = mpl.colors.ListedColormap(clist_)
-    return cbInfo_diagonal
+    cb_info_diagonal['colMap'] = mpl.colors.ListedColormap(clist_)
+    return cb_info_diagonal
 
 
-def _get_fig_config(__cfg):
+def _get_fig_config(diag_config):
     """
     get the default settings of the figure, and replace default with 
     runtime settings from recipe
 
     Arguments:
-        __cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
 
     Returns:
         a dot dictionary of settings
     """
 
-    fcfg = {}
+    fig_config = {}
 
     # generic settings
-    fcfg['ax_fs'] = 7.1
-    fcfg['fill_val'] = np.nan
+    fig_config['ax_fs'] = 7.1
+    fig_config['fill_val'] = np.nan
 
     # settings of the figure and maps
     nmodels = len(
-        list(group_metadata(__cfg['input_data'].values(),
-                            'dataset').keys())) + 1
-    fcfg['x0'] = 0.02
-    fcfg['y0'] = 1.0
-    fcfg['wp'] = 1. / nmodels
-    fcfg['hp'] = fcfg['wp']
-    fcfg['xsp'] = 0.0
-    fcfg['ysp'] = -0.03
-    fcfg['aspect_map'] = 0.5
+        list(
+            group_metadata(diag_config['input_data'].values(),
+                           'dataset').keys())) + 1
+    fig_config['x0'] = 0.02
+    fig_config['y0'] = 1.0
+    fig_config['wp'] = 1. / nmodels
+    fig_config['hp'] = fig_config['wp']
+    fig_config['xsp'] = 0.0
+    fig_config['ysp'] = -0.03
+    fig_config['aspect_map'] = 0.5
 
     # settings for the location of scatterplots
-    fcfg['xsp_sca'] = fcfg['wp'] / 3 * (fcfg['aspect_map'])
-    fcfg['ysp_sca'] = fcfg['hp'] / 3 * (fcfg['aspect_map'])
+    fig_config['xsp_sca'] = fig_config['wp'] / 3 * (fig_config['aspect_map'])
+    fig_config['ysp_sca'] = fig_config['hp'] / 3 * (fig_config['aspect_map'])
 
     # colorbar specific settings
-    fcfg['hcolo'] = 0.0123
-    fcfg['wcolo'] = 0.25
-    fcfg['cb_off_y'] = 0.06158
-    fcfg['x_colo_d'] = 0.02
-    fcfg['x_colo_r'] = 0.76
-    fcfg['y_colo_single'] = 0.1086
+    fig_config['hcolo'] = 0.0123
+    fig_config['wcolo'] = 0.25
+    fig_config['cb_off_y'] = 0.06158
+    fig_config['x_colo_d'] = 0.02
+    fig_config['x_colo_r'] = 0.76
+    fig_config['y_colo_single'] = 0.1086
 
     # the correlation method for metric given in the title of the scatterplot
-    fcfg['correlation_method'] = 'spearman'
-    fcfg['tx_y_corr'] = 1.075
+    fig_config['correlation_method'] = 'spearman'
+    fig_config['tx_y_corr'] = 1.075
 
     # define the range of data and masks
-    fcfg['valrange_sc'] = (2, 256)
-    fcfg['obs_label'] = 'Carvalhais2014'
-    fcfg['obs_global'] = 23
-    fcfg['gpp_threshold'] = 10  #gC m-2 yr -1
+    fig_config['valrange_sc'] = (2, 256)
+    fig_config['obs_label'] = 'Carvalhais2014'
+    fig_config['obs_global'] = 23
+    fig_config['gpp_threshold'] = 10  #gC m-2 yr -1
 
     # name of the variable and unit
-    fcfg['varName'] = '$\\tau$'
-    fcfg['varUnit'] = 'yr'
+    fig_config['varName'] = '$\\tau$'
+    fig_config['varUnit'] = 'yr'
 
     # replace default values with those provided in recipe
-    fcfgL = list(fcfg.keys())
-    for _fc in fcfgL:
-        if __cfg.get(_fc) != None:
-            fcfg[_fc] = __cfg.get(_fc)
+    fig_config_list = list(fig_config.keys())
+    for _fc in fig_config_list:
+        if diag_config.get(_fc) != None:
+            fig_config[_fc] = diag_config.get(_fc)
 
     # convert dictionary to dot notation
-    _figSet = dot_dict(fcfg)
+    _figSet = dot_dict(fig_config)
     return _figSet
 
 
 def _get_ratio_colorbar_info():
-    cbInfo_ratio = {}
+    """
+    get the dictionary of colormap and colorbar information needed for plotting the maps of ratios above the diagonal
+    """
+    cb_info_ratio = {}
     border = 0.9
     ncolo = 128
     num = int(ncolo // 4)
     # get the colormap
-    cbInfo_ratio['tickBounds'] = np.concatenate(
+    cb_info_ratio['tickBounds'] = np.concatenate(
         (np.geomspace(0.2, 0.25, num=num), np.geomspace(0.25, 0.33, num=num),
          np.geomspace(0.33, 0.5, num=num), np.geomspace(0.5, border, num=num),
          np.linspace(border, 1 / border, num=int(ncolo / 4)),
@@ -148,15 +156,15 @@ def _get_ratio_colorbar_info():
     # combine them and build a new colormap
     colors1g = np.vstack((colors1, colorsgr))
     colors = np.vstack((colors1g, colors2))
-    cbInfo_ratio['colMap'] = mpl.colors.LinearSegmentedColormap.from_list(
+    cb_info_ratio['colMap'] = mpl.colors.LinearSegmentedColormap.from_list(
         'my_colormap', colors)
-    cbInfo_ratio['ticksLoc'] = [0.2, 0.25, 0.33, 0.5, 0.9, 1.1, 2, 3, 4, 5]
-    cbInfo_ratio['ticksLab'] = [
+    cb_info_ratio['ticksLoc'] = [0.2, 0.25, 0.33, 0.5, 0.9, 1.1, 2, 3, 4, 5]
+    cb_info_ratio['ticksLab'] = [
         '$\\dfrac{1}{5}$', '$\\dfrac{1}{4}$', '$\\dfrac{1}{3}$',
         '$\\dfrac{1}{2}$', '$\\dfrac{1}{1.1}$', '$1.1$', '$2$', '$3$', '$4$',
         '$5$'
     ]
-    return cbInfo_ratio
+    return cb_info_ratio
 
 
 # data and calculation functions
@@ -176,15 +184,17 @@ def _apply_common_mask(dat_1, dat_2):
     dat_2 = np.ma.masked_invalid(dat_2)
     return dat_1, dat_2
 
+
 def _apply_gpp_threshold(gpp_dat, fig_config):
     '''
     returns the input array with values below the threshold of gpp set to nan
-    '''    
+    '''
     # converting gC m-2 yr-1 to kgC m-2 s-1
-    gpp_thres = fig_config.gpp_threshold / (
-        86400.0 * 365 * 1000.)  
-    gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(fig_config.fill_value)
+    gpp_thres = fig_config.gpp_threshold / (86400.0 * 365 * 1000.)
+    gpp_dat = np.ma.masked_less(gpp_dat,
+                                gpp_thres).filled(fig_config.fill_value)
     return gpp_dat
+
 
 def _get_agreement_mask(_mmdat,
                         _dat_5,
@@ -192,6 +202,9 @@ def _get_agreement_mask(_mmdat,
                         _nmodels,
                         fill_val=-9999.,
                         nmodel_reject=2):
+    """
+    get the mask of regiosn where fewer than one quarter of the model simulations are outside the range of observational uncertainty
+    """
     _maskf = np.zeros_like(_mmdat)
     _maskf[(_mmdat < _dat_95) & (_mmdat > _dat_5)] = 1
     nCount = _maskf.sum(0)
@@ -203,33 +216,36 @@ def _get_agreement_mask(_mmdat,
 
 
 def _get_hex_data(dat_1, dat_2):
+    """
+    get the data to be plotted as density plots, which requires that both the arrays have the same mask with regards to valid data points
+    """
     dat_1, dat_2 = _apply_common_mask(dat_1, dat_2)
     dat_1mc = np.ma.masked_equal(dat_1, np.nan).compressed()
     dat_2mc = np.ma.masked_equal(dat_2, np.nan).compressed()
     return dat_1mc, dat_2mc
 
 
-def _get_obs_data(cfg):
+def _get_obs_data(diag_config):
     """
     Get and handle the observations of turnover time from Carvalhais 2014.
 
     Arguments:
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
 
     Returns:
         dictionary with observation data with different variables as keys
     """
-    if not cfg.get('obs_files'):
+    if not diag_config.get('obs_files'):
         raise ValueError('The observation files needs to be specified in the '
                          'recipe (see recipe description for details)')
     else:
         input_files = [
-            os.path.join(cfg['auxiliary_data_dir'], obs_file)
-            for obs_file in cfg.get('obs_files')
+            os.path.join(diag_config['auxiliary_data_dir'], obs_file)
+            for obs_file in diag_config.get('obs_files')
         ]
     all_data = {}
-    fcfg = _get_fig_config(cfg)
-    varList = cfg.get('obs_variables')
+    fcfg = _get_fig_config(diag_config)
+    varList = diag_config.get('obs_variables')
     # varList.append('latitude')
     print(varList)
     for _var in varList:
@@ -246,19 +262,20 @@ def _get_obs_data(cfg):
     return all_data
 
 
-def _get_turnover_data(cfg):
+def _get_turnover_data(diag_config):
     """
     A function to calculate the modelled ecosystem carbon turnover time from
     total carbon stock and gpp.
 
     Arguments:
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
 
     Returns:
         dictionaries for model simulations and observation data
     """
-    fcfg = _get_fig_config(cfg)
-    my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
+    fcfg = _get_fig_config(diag_config)
+    my_files_dict = group_metadata(diag_config['input_data'].values(),
+                                   'dataset')
     _allModdat = {}
     for key, value in my_files_dict.items():
         _allModdat[key] = {}
@@ -276,7 +293,7 @@ def _get_turnover_data(cfg):
         ctau.fill_value = fcfg.fill_val
         ctau.long_name = 'ecosystem_carbon_turnover_time'
         ctau.units = 'yr'
-        ofilename = get_diagnostic_filename(key + '_tau_ctotal', cfg)
+        ofilename = get_diagnostic_filename(key + '_tau_ctotal', diag_config)
         iris.save(ctau, ofilename)
 
         # apply the GPP threshold and set the data in dictionary
@@ -291,14 +308,23 @@ def _get_turnover_data(cfg):
                 86400 * 365)
 
         # plot the map of the turnover time from the model
-        _plot_single_map(_ctau, _allModdat[key]['global'], key, cfg)
+        _plot_single_map(_ctau, _allModdat[key]['global'], key, diag_config)
     # get the data from the observation
-    _allObsdat = _get_obs_data(cfg)
+    _allObsdat = _get_obs_data(diag_config)
 
     return _allModdat, _allObsdat
 
 
 def _load_variable(metadata, var_name):
+    """
+    load the data for the variable based on the metadata of the diagnostic variable
+
+    Arguments:
+        metadata - nested dictionary of metadata
+
+    Returns:
+        iris cube of the data
+    """
     candidates = select_metadata(metadata, short_name=var_name)
     assert len(candidates) == 1
     filename = candidates[0]['filename']
@@ -310,24 +336,30 @@ def _load_variable(metadata, var_name):
 
 
 def _fix_map(axis_obj):
+    """
+    fixes the map boundaries, coast lines, and removes the outline box/circle
+    """
     axis_obj.set_global()
     axis_obj.coastlines(linewidth=0.4, color='grey')
     plt.gca().outline_patch.set_visible(False)
     return axis_obj
 
 
-def _get_data_to_plot(_data, _fcfg):
+def _get_data_to_plot(_data):
+    """
+    get the data to be plotted on the map corrected for the rotations of latitude and longitude
+    """
     xroll = _data.shape[1] / 2
     _data = np.roll(np.flipud(_data), int(xroll), axis=1)
     return _data
 
 
-def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
+def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
     """
     makes the maps of variables
 
     Arguments:
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
         cube - the cube to plot
         dataset - name of the dataset to plot
 
@@ -337,7 +369,7 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
     Note: this function is private; remove the '_'
     so you can make it public.
     """
-    _fcfg = _get_fig_config(cfg)
+    _fcfg = _get_fig_config(diag_config)
     models = list(all_mod_dat.keys())
     models = sorted(models, key=str.casefold)
     models.insert(0, 'obs')
@@ -345,10 +377,10 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
     nmodels = len(models)
 
     # define the data and information for plotting ratios
-    cbInfo_ratio = _get_ratio_colorbar_info()
+    cb_info_ratio = _get_ratio_colorbar_info()
 
     # get the colormap for diagonal maps
-    cbInfo_diagonal = _get_diagonal_colorbar_info()
+    cb_info_diagonal = _get_diagonal_colorbar_info()
 
     plt.figure(figsize=(9, 6))
     for row_m in range(nmodels):
@@ -368,14 +400,14 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
                                projection=ccrs.Robinson(central_longitude=0),
                                frameon=False)
                 plot_dat = dat_row
-                plt.imshow(_get_data_to_plot(plot_dat, _fcfg),
+                plt.imshow(_get_data_to_plot(plot_dat),
                            norm=mpl.colors.BoundaryNorm(
-                               cbInfo_diagonal['tickBounds'],
-                               len(cbInfo_diagonal['tickBounds'])),
-                           cmap=cbInfo_diagonal['colMap'],
+                               cb_info_diagonal['tickBounds'],
+                               len(cb_info_diagonal['tickBounds'])),
+                           cmap=cb_info_diagonal['colMap'],
                            origin='upper',
-                           vmin=cbInfo_diagonal['tickBounds'][0],
-                           vmax=cbInfo_diagonal['tickBounds'][-1],
+                           vmin=cb_info_diagonal['tickBounds'][0],
+                           vmax=cb_info_diagonal['tickBounds'][-1],
                            transform=ccrs.PlateCarree())
                 _fix_map(_ax)
 
@@ -438,14 +470,14 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
                                frameon=False)
                 plot_dat = xu.remove_invalid(dat_row / dat_col,
                                              fill_value=_fcfg.fill_val)
-                _ax.imshow(_get_data_to_plot(plot_dat, _fcfg),
+                _ax.imshow(_get_data_to_plot(plot_dat),
                            norm=mpl.colors.BoundaryNorm(
-                               cbInfo_ratio['tickBounds'],
-                               len(cbInfo_ratio['tickBounds'])),
+                               cb_info_ratio['tickBounds'],
+                               len(cb_info_ratio['tickBounds'])),
                            interpolation='none',
-                           vmin=cbInfo_ratio['tickBounds'][0],
-                           vmax=cbInfo_ratio['tickBounds'][-1],
-                           cmap=cbInfo_ratio['colMap'],
+                           vmin=cb_info_ratio['tickBounds'][0],
+                           vmax=cb_info_ratio['tickBounds'][-1],
+                           cmap=cb_info_ratio['colMap'],
                            origin='upper',
                            transform=ccrs.PlateCarree())
                 _fix_map(_ax)
@@ -475,9 +507,9 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
     _axcol_dia = [_fcfg.x_colo_d, y_colo, _fcfg.wcolo, _fcfg.hcolo]
     cb_tit_d = 'ecosystem_carbon_turnover_time (yr)'
     cb = xu.mk_colo_tau(_axcol_dia,
-                        cbInfo_diagonal['tickBounds'],
-                        cbInfo_diagonal['colMap'],
-                        tick_locs=cbInfo_diagonal['ticksLoc'],
+                        cb_info_diagonal['tickBounds'],
+                        cb_info_diagonal['colMap'],
+                        tick_locs=cb_info_diagonal['ticksLoc'],
                         cbfs=0.86 * _fcfg.ax_fs,
                         cbtitle=cb_tit_d,
                         cbrt=90)
@@ -486,20 +518,20 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
     y_colo = _fcfg.y0 + _fcfg.hp + _fcfg.cb_off_y
     _axcol_rat = [_fcfg.x_colo_r, y_colo, _fcfg.wcolo, _fcfg.hcolo]
     cb = xu.mk_colo_cont(_axcol_rat,
-                         cbInfo_ratio['tickBounds'],
-                         cbInfo_ratio['colMap'],
+                         cb_info_ratio['tickBounds'],
+                         cb_info_ratio['colMap'],
                          cbfs=0.7 * _fcfg.ax_fs,
                          cbrt=90,
                          col_scale='log',
                          cbtitle='ratio ($model_{column}$/$model_{row}$)',
-                         tick_locs=cbInfo_ratio['ticksLoc'])
-    cb.ax.set_xticklabels(cbInfo_ratio['ticksLab'],
+                         tick_locs=cb_info_ratio['ticksLoc'])
+    cb.ax.set_xticklabels(cb_info_ratio['ticksLab'],
                           fontsize=0.86 * _fcfg.ax_fs,
                           ha='center',
                           rotation=0)
 
     # save and close the figure
-    local_path = cfg['plot_dir']
+    local_path = diag_config['plot_dir']
     png_name = 'global_comparison_matrix_models_' + _fcfg.obs_label + '.png'
     plt.savefig(os.path.join(local_path, png_name),
                 bbox_inches='tight',
@@ -510,7 +542,7 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, cfg):
     return 'Plotted full factorial model observation comparison matrix'
 
 
-def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
+def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
     """
     makes the maps of bias of multimodel median turnover time with
     multimodel agreement
@@ -518,14 +550,14 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
     Arguments:
         all_mod_dat - dictionary of all model data
         all_obs_dat - dictionary of observed data
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
 
     Returns:
         string- on completion of plotting and saving
 
     """
     # get the settings for plotting figure
-    _fcfg = _get_fig_config(cfg)
+    _fcfg = _get_fig_config(diag_config)
 
     # get the observation data needed to calculate the bias and multimodel agreement
     tau_obs = all_obs_dat['tau_ctotal']['grid']
@@ -533,7 +565,7 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
     tau_obs_95 = all_obs_dat['tau_ctotal_95']['grid']
 
     # set the information of the colormap used for plotting bias
-    cbInfo = _get_ratio_colorbar_info()
+    cb_info = _get_ratio_colorbar_info()
 
     # calculate the bias of multimodel median turnover time
     models = list(all_mod_dat.keys())
@@ -558,13 +590,13 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
                    frameon=False)
 
     # plot the data of multimodel bias (=bias of multimodel median turnover time)
-    _ax.imshow(_get_data_to_plot(mm_bias_tau, _fcfg),
-               norm=mpl.colors.BoundaryNorm(cbInfo['tickBounds'],
-                                                   len(cbInfo['tickBounds'])),
+    _ax.imshow(_get_data_to_plot(mm_bias_tau),
+               norm=mpl.colors.BoundaryNorm(cb_info['tickBounds'],
+                                            len(cb_info['tickBounds'])),
                interpolation='none',
-               vmin=cbInfo['tickBounds'][0],
-               vmax=cbInfo['tickBounds'][-1],
-               cmap=cbInfo['colMap'],
+               vmin=cb_info['tickBounds'][0],
+               vmax=cb_info['tickBounds'][-1],
+               cmap=cb_info['colMap'],
                origin='upper',
                transform=ccrs.PlateCarree())
     _fix_map(_ax)
@@ -583,10 +615,10 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
     lons = all_obs_dat['coords']['longitude']
     latint = abs(lats[1] - lats[0])
     lonint = abs(lons[1] - lons[0])
-    x, y = np.meshgrid(lons - lonint / 2, lats - latint / 2)
+    x_lat, y_lon = np.meshgrid(lons - lonint / 2, lats - latint / 2)
 
-    _ax.contourf(x,
-                 y,
+    _ax.contourf(x_lat,
+                 y_lon,
                  agreement_mask_tau,
                  levels=[0, 0.5, 1],
                  alpha=0.,
@@ -602,20 +634,20 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
     _axcol_rat = [0.254, _fcfg['y_colo_single'], 0.6, 0.035]
 
     cb = xu.mk_colo_cont(_axcol_rat,
-                         cbInfo['tickBounds'],
-                         cbInfo['colMap'],
+                         cb_info['tickBounds'],
+                         cb_info['colMap'],
                          cbfs=0.8 * _fcfg.ax_fs,
                          cbrt=90,
                          col_scale='log',
                          cbtitle='',
-                         tick_locs=cbInfo['ticksLoc'])
-    cb.ax.set_xticklabels(cbInfo['ticksLab'],
+                         tick_locs=cb_info['ticksLoc'])
+    cb.ax.set_xticklabels(cb_info['ticksLab'],
                           fontsize=0.9586 * _fcfg.ax_fs,
                           ha='center',
                           rotation=0)
 
     # save and close figure
-    local_path = cfg['plot_dir']
+    local_path = diag_config['plot_dir']
     png_name = 'global_multimodelAgreement_turnovertime_' + _fcfg.obs_label + '.png'
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
     plt.savefig(os.path.join(local_path, png_name),
@@ -627,12 +659,12 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, cfg):
     return 'Plotted multimodel bias and agreement of turnover time'
 
 
-def _plot_single_map(_dat, _datglobal, _name, _cfg):
+def _plot_single_map(_dat, _datglobal, _name, diag_config):
     """
     makes the maps of variables
 
     Arguments:
-        cfg - nested dictionary of metadata
+        diag_config - nested dictionary of metadata
         cube - the cube to plot
         dataset - name of the dataset to plot
 
@@ -643,10 +675,10 @@ def _plot_single_map(_dat, _datglobal, _name, _cfg):
     so you can make it public.
     """
     # figure configuration
-    _fcfg = _get_fig_config(_cfg)
+    _fcfg = _get_fig_config(diag_config)
 
     # colormap configuration
-    cbInfo = _get_diagonal_colorbar_info()
+    cb_info = _get_diagonal_colorbar_info()
 
     # define the figure and axis
     plt.figure(figsize=(5, 3))
@@ -654,20 +686,20 @@ def _plot_single_map(_dat, _datglobal, _name, _cfg):
                    projection=ccrs.Robinson(central_longitude=0),
                    frameon=False)
     # plot data over the map
-    plt.imshow(_get_data_to_plot(_dat, _fcfg),
-               norm=mpl.colors.BoundaryNorm(cbInfo['tickBounds'],
-                                                   len(cbInfo['tickBounds'])),
-               cmap=cbInfo['colMap'],
+    plt.imshow(_get_data_to_plot(_dat),
+               norm=mpl.colors.BoundaryNorm(cb_info['tickBounds'],
+                                            len(cb_info['tickBounds'])),
+               cmap=cb_info['colMap'],
                origin='upper',
-               vmin=cbInfo['tickBounds'][0],
-               vmax=cbInfo['tickBounds'][-1],
+               vmin=cb_info['tickBounds'][0],
+               vmax=cb_info['tickBounds'][-1],
                transform=ccrs.PlateCarree())
     _fix_map(_ax)
 
     # get the data and set the title of the map
 
-    _datMedian = np.nanmedian(xu.remove_invalid(_dat,
-                                                fill_value=_fcfg.fill_val))
+    _datMedian = np.nanmedian(
+        xu.remove_invalid(_dat, fill_value=_fcfg.fill_val))
     title_str = _fcfg.varName + ": global = " + str(round(
         _datglobal, 2)) + ", median = " + str(round(_datMedian, 2))
 
@@ -678,15 +710,15 @@ def _plot_single_map(_dat, _datglobal, _name, _cfg):
     # draw the colorbar
     _axcol_dia = [0.254, _fcfg['y_colo_single'], 0.6, 0.035]
     cb = xu.mk_colo_tau(_axcol_dia,
-                        cbInfo['tickBounds'],
-                        cbInfo['colMap'],
-                        tick_locs=cbInfo['ticksLoc'],
+                        cb_info['tickBounds'],
+                        cb_info['colMap'],
+                        tick_locs=cb_info['ticksLoc'],
                         cbfs=0.86 * _fcfg.ax_fs,
                         cbtitle='',
                         cbrt=90)
 
     # save the figure
-    local_path = _cfg['plot_dir']
+    local_path = diag_config['plot_dir']
     png_name = 'global_turnovertime_' + _name + '.png'
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
     plt.savefig(os.path.join(local_path, png_name),
@@ -700,10 +732,10 @@ def _plot_single_map(_dat, _datglobal, _name, _cfg):
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        allModdat, allObsdat = _get_turnover_data(config)
+        mod_dat_all, obs_dat_all = _get_turnover_data(config)
         _fcfg = _get_fig_config(config)
-        _plot_multimodel_agreement(allModdat, allObsdat, config)
-        _plot_matrix_map(allModdat, allObsdat, config)
-        _plot_single_map(allObsdat['tau_ctotal']['grid'],
-                         allObsdat['tau_ctotal']['global'], _fcfg.obs_label,
+        _plot_multimodel_agreement(mod_dat_all, obs_dat_all, config)
+        _plot_matrix_map(mod_dat_all, obs_dat_all, config)
+        _plot_single_map(obs_dat_all['tau_ctotal']['grid'],
+                         obs_dat_all['tau_ctotal']['global'], _fcfg.obs_label,
                          config)
