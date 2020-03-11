@@ -78,3 +78,43 @@ lai:
     cmap: YlOrBr
     vmin: 0.0
     vmax: 0.5
+
+
+# For now the same as LAI, can be adapted
+bdalb:
+  pearsonr:
+    title: pearsonr
+    vmin: -1.
+    vmax: 1.
+    cmap: BrBG
+  ubrmsd:
+    title: ubrmsd
+    vmin: 0.
+    vmax: 1.
+    cmap: YlOrBr
+  rmsd:
+    title: rmsd
+    vmin: 0.
+    vmax: 1.
+    cmap: YlOrBr
+  absdiff:
+    title: absdiff
+    vmin: -.5
+    vmax: .5
+    cmap: BrBG
+  reldiff:
+    title: reldiff
+    cmap: BrBG
+    vmin: -150
+    vmax: 150
+  theilsenmk:
+    title: theilsen
+    cmap: BrBG
+    vmin: -0.05
+    vmax: 0.05
+  timemean:
+    title: timemean
+    cmap: YlOrBr
+    vmin: 0.0
+    vmax: 0.5
+
