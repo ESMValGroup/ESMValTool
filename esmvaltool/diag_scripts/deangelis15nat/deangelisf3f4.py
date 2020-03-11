@@ -41,17 +41,9 @@ from esmvaltool.diag_scripts.shared import (
     variables_available, plot)
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    select_metadata, group_metadata)
+    select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-###############################################################################
-# Setup diagnostic
-###############################################################################
-
-# Experiments
-# 'piControl' and 'abrupt4xCO2'
 
 
 def main(cfg):
@@ -68,26 +60,21 @@ def main(cfg):
     ###########################################################################
     # Get Input data
     input_data = (cfg['input_data'].values())
+    required_vars = ('tas', 'rsnstcs', 'rsnstcsnorm', 'prw')
 
-    if not variables_available(cfg, ['tas', 'rsnstcs',
-                                     'rsnstcsnorm', 'prw']):
-        raise ValueError("This diagnostic needs 'tas', " +
-                         "'rsnstcs', 'rsnstcsnorm', and 'prw' variables")
-
-    available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
+    if not variables_available(cfg, required_vars):
+        raise ValueError(f"This diagnostic needs {required_vars} variables")
+    
+        available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
 
     if 'abrupt-4xCO2' not in available_exp:
         if 'abrupt4xCO2' not in available_exp:
             raise ValueError("The diagnostic needs an experiment with " +
                              "4 times CO2.")
-
+    
     if 'piControl' not in available_exp:
         raise ValueError("The diagnostic needs a pre industrial control " +
                          "experiment.")
-
-    if len(available_exp) != 2:
-        raise ValueError("The diagnostic needs two model experiments: " +
-                         "pre industrial control and 4 times CO2.")
 
     ###########################################################################
     # Read data
@@ -108,8 +95,10 @@ def main(cfg):
                 meas_tub_rsnstcsnorm.append(ctub)
 
     if len(meas_tub_rsnstcsnorm) > 1:
-        raise ValueError("This diagnostic expects one (or no) observation " +
-                         "data set for rsnstcsnorm")
+        raise ValueError(
+            "This diagnostic expects one (or no) observational "
+            "dataset for rsnstcsnorm"
+        )
 
     ###########################################################################
     # Process data
@@ -138,10 +127,6 @@ def main(cfg):
                                              reg_prw_obs)
 
     plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs)
-
-    ###########################################################################
-    # Write data
-    ###########################################################################
 
 
 def _get_sel_files_var(cfg, varnames):
@@ -692,6 +677,16 @@ def substract_and_reg_deangelis(cfg, cubes, grid_pw,
     return data_model
 
 
+###############################################################################
+# Setup diagnostic
+###############################################################################
+
+# Experiments
+# 'piControl' and 'abrupt4xCO2'
+
+    ###########################################################################
+    # Write data
+    ###########################################################################
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
