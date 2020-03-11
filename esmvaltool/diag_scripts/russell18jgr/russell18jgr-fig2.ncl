@@ -50,7 +50,7 @@
 ;    - not tested for any observation models.
 ;
 ; Modification history
-;  20190510 - A_russ_joellen, A_pandde_amarjiit - written and implemented
+;  20190510 - A_russel_joellen, A_pandde_amarjiit - written and implemented
 ;             for ESMValToolv2
 ; ############################################################################
 
@@ -162,7 +162,7 @@ begin
                  "mean", \
                  "sh", \
                  "geo", \
-                 "russ_joellen", \
+                 "russel_joellen", \
                  "russell18jgr", \
                  infile_path)
 
