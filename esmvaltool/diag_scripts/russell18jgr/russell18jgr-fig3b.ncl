@@ -31,7 +31,7 @@
 ;
 ; Required Preprocessor attributes ( no_preprocessor )
 ;   - none (no preprocessing required)
-;       but in the recipe just add (time_average: false)
+;     in the recipe do not keep a preprocessor in variable section
 ;
 ; Caveats
 ;
