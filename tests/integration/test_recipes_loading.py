@@ -11,19 +11,22 @@ import esmvaltool
 from .test_diagnostic_run import write_config_user_file
 
 
-@pytest.fixture
-def config_user(tmp_path):
-    """Generate dummy config-user file for testing purposes."""
-    filename = write_config_user_file(tmp_path)
+@pytest.fixture(scope='module')
+def config_user(tmp_path_factory):
+    """Generate dummy config-user dict for testing purposes."""
+    path = tmp_path_factory.mktemp('recipe-test')
+    filename = write_config_user_file(path)
+    # The fixture scope is set to module to avoid very slow
+    # test runs, as the following line also reads the CMOR tables
     cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
-    cfg['auxiliary_data_dir'] = str(tmp_path / 'auxiliary_data_dir')
+    cfg['auxiliary_data_dir'] = str(path / 'auxiliary_data_dir')
     return cfg
 
 
 def _get_recipes():
     recipes_path = Path(esmvaltool.__file__).absolute().parent / 'recipes'
-    recipes = tuple(recipes_path.glob("**/recipe*.yml"))
+    recipes = sorted(recipes_path.glob("**/recipe*.yml"))
     ids = tuple(str(p.relative_to(recipes_path)) for p in recipes)
     return recipes, ids
 
