@@ -56,6 +56,7 @@
 
 load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
 
@@ -82,7 +83,7 @@ begin
   system("mkdir -p " + config_user_info@work_dir)
   system("mkdir -p " + config_user_info@plot_dir)
 
-  wks = gsn_open_wks("ps", plotpath)
+  wks = gsn_open_wks(output_type(), plotpath)
   plot = new(nDatasets, graphic)
   res                             = True
   res@tmXBLabelFontHeightF        = 0.008

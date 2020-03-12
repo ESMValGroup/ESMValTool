@@ -68,6 +68,7 @@ load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
 load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
 
@@ -84,6 +85,8 @@ begin
   nDatasets = ListCount(tauu_items)
   datasetnames = metadata_att_as_array(fgco2_items, "dataset")
 
+  areacello_items = select_metadata_by_name(input_file_info, "areacello")
+
 end
 
 begin
@@ -95,7 +98,7 @@ begin
   system("mkdir -p " + config_user_info@work_dir)
   system("mkdir -p " + config_user_info@plot_dir)
 
-  wks = gsn_open_wks("ps", plotpath)
+  wks = gsn_open_wks(output_type(), plotpath)
   wks@fullname = plotpath
   plots = new(nDatasets, graphic)
   lat_width = new(nDatasets, double)
@@ -226,11 +229,13 @@ begin
           final_lat = lat1 - ((lat1 - lat2) * tauu_lon(lat_ind)) \
             / (tauu_lon(lat_ind)-tauu_lon(lat_ind+1))
           counter_lat = False
+          delete(lat1)
+          delete(lat2)
         end if
       end if
     end do
-    delete(lat1)
-    delete(lat2)
+;;    delete(lat1)
+;;    delete(lat2)
     do lat_ind1 = a2, a1
       ; loops over each lat from 50S poleward till tauu becomes negative
       if ((tauu_lon(lat_ind1) .lt. 0).and.(tauu_lon(lat_ind1+1).ge.0)) then
@@ -238,10 +243,12 @@ begin
         lat2 = var_lat(lat_ind1+1)
         lower_lat = lat1 - ((lat1 - lat2) * tauu_lon(lat_ind1) \
                             / (tauu_lon(lat_ind1) - tauu_lon(lat_ind1+1)))
+        delete(lat1)
+        delete(lat2)
       end if
     end do
-    delete(lat1)
-    delete(lat2)
+;;    delete(lat1)
+;;    delete(lat2)
     delete(var_lat)
     lat_width(iii) = final_lat - lower_lat
     delete(lower_lat)

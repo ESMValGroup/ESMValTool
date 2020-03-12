@@ -47,6 +47,7 @@ load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
 load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
   enter_msg(DIAG_SCRIPT, "")
@@ -90,7 +91,7 @@ begin
   system("mkdir -p " + config_user_info@work_dir)
   system("mkdir -p " + config_user_info@plot_dir)
 
-  wks = gsn_open_wks("ps", plotpath)
+  wks = gsn_open_wks(output_type(), plotpath)
   wks@fullname = plotpath
   plots = new(nDatasets, graphic)
 

@@ -36,6 +36,7 @@
 
 load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
 
@@ -58,6 +59,8 @@ begin
   colors = project_style(input_file_info, diag_script_info, "colors")
   dashes = project_style(input_file_info, diag_script_info, "dashes")
 
+  var0 = variable_info[0]@short_name
+
   plotpath = config_user_info@plot_dir + "/Russell_figure7i_" + var0 + "_" \
     + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
     + sprinti("%0.4i", max(toint(end_years_data)))
@@ -65,7 +68,7 @@ begin
   system("mkdir -p " + config_user_info@work_dir)
   system("mkdir -p " + config_user_info@plot_dir)
 
-  wks = gsn_open_wks("ps", plotpath)
+  wks = gsn_open_wks(output_type(), plotpath)
   plot = new(nDatasets, graphic)
 
     res = True
@@ -102,7 +105,8 @@ begin
     res@tiYAxisOffsetXF            = 0.01
 
   do iii = 0, nDatasets - 1
-    dataset = read_data(info_items[iii])
+;;    dataset = read_data(info_items[iii])
+    dataset = read_data(fgco2_items[iii])
     infile_path = inputfile_paths(iii)
     infile_iii  = addfile(infile_path, "r")
 
@@ -173,7 +177,7 @@ begin
       delete(area_lat)
 
     end if
-    delete(fx_var)
+;;    delete(fx_var)
     delete(infile_iii)
     delete(carbon_flux)
     delete(carbon_flux_per_lat)

@@ -45,8 +45,8 @@
 ;
 ; Caveats
 ;
-;  - MIROC-ESM and BNU-ESM doesnot work as depth variable is not called lev
-;  - MRI models doesnot work as the data has 0 as fillvalue instead of 1e+20
+;  - MIROC-ESM and BNU-ESM do not work as depth variable is not called lev
+;  - MRI models does not work as the data has 0 as fillvalue instead of 1e+20
 ;  - CCSM4 and CESM1-CAM5 dont work as the units for so is 1,
 ;      which is not accepted by ESMValTool
 ;  - Transport is very small in case of NorESM1-M and ME as volcello
@@ -61,6 +61,7 @@
 
 load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
 
@@ -96,7 +97,7 @@ begin
   system("mkdir -p " + config_user_info@work_dir)
   system("mkdir -p " + config_user_info@plot_dir)
 
-  wks = gsn_open_wks("ps", plotpath)
+  wks = gsn_open_wks(output_type(), plotpath)
   plots = new(nDatasets, graphic)
   plot_1 = new(nDatasets, graphic)
   plot_talley = new(nDatasets, graphic)
@@ -217,7 +218,7 @@ begin
       delete(dataset_thetao)
 
       so_inter   = linint1_n_Wrap(theta_lat(lat2:lat1, 1), \
-                                  dataset_so(:, lat2:lat1, :), False,
+                                  dataset_so(:, lat2:lat1, :), False, \
                                   exact_lat, 0, 1)
       delete(dataset_so)
 
@@ -232,7 +233,7 @@ begin
       end if
       delete(theta_inter)
 
-      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and.
+      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and. \
           (isMonotonic(var_test_lon(a, :)) .eq. 1)) then
         so_new = linint1_n_Wrap(theta_lon(a, :), so_inter, True, \
                                 var_test_lon(a, :), 0, 2)
@@ -274,7 +275,7 @@ begin
 
       ; checking for monotonic nature of lon arrays, as NCL needs
       ;      monotonically increasing lon for interpolations.
-      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and.
+      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and. \
           (isMonotonic(var_test_lon(a, :)) .eq. 1)) then
         theta_new = linint1_n_Wrap(theta_lon(a, :), theta_inter, True, \
                                    var_test_lon(a, :), 0, 2)
@@ -282,7 +283,7 @@ begin
         theta_new = theta_inter
       end if
 
-      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and.
+      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and. \
           (isMonotonic(var_test_lon(a, :)) .eq. 1)) then
         so_new = linint1_n_Wrap(theta_lon(a, :), so_inter, True, \
                                 var_test_lon(a, :), 0, 2)

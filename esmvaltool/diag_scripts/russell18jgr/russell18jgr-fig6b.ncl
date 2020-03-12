@@ -64,6 +64,7 @@
 
 load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
 
@@ -72,7 +73,6 @@ begin
   so_items = select_metadata_by_name(input_file_info, "so")
   thetao_items = select_metadata_by_name(input_file_info, "thetao")
   volcello_items = select_metadata_by_name(input_file_info, "volcello")
-
   vo_datasets = metadata_att_as_array(vo_items, "dataset")
   start_years_data = metadata_att_as_array(vo_items, "start_year")
   end_years_data = metadata_att_as_array(vo_items, "end_year")
@@ -99,7 +99,7 @@ begin
   system("mkdir -p " + config_user_info@work_dir)
   system("mkdir -p " + config_user_info@plot_dir)
 
-  wks = gsn_open_wks("ps", plotpath)
+  wks = gsn_open_wks(output_type(), plotpath)
   plots = new(nDatasets, graphic)
   plot_1 = new(nDatasets, graphic)
   plot_talley = new(nDatasets, graphic)
@@ -154,7 +154,8 @@ begin
     if (all(ismissing(fx_var))) then
       fx_variable = "volcello"
       error_msg("f", "russell_fig-7i.ncl", " ", "areacello file for " + \
-                annots(iii) + " not found in the metadata file, please " + \
+;;                annots(iii) + " not found in the metadata file, please " + \
+                vo_datasets(iii) + " not found in the metadata file, please " + \
                 "add 'fx_files: [volcello]' to the variable dictionary in" + \
                 " the recipe or add the location of file to config-user.yml")
     end if
@@ -235,7 +236,7 @@ begin
                                 exact_lat, 0, 1)
       delete(dataset_so)
 
-      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and.
+      if ((isMonotonic(theta_lon(a, :)) .eq. 1) .and. \
           (isMonotonic(var_test_lon(a, :)) .eq. 1)) then
         so_new = linint1_n_Wrap(theta_lon(a, :), so_inter, True, \
                                 var_test_lon(a, :), 0, 2)
@@ -626,7 +627,7 @@ begin
       end_years_data(iii) + ") at (" + sprintf("%4.2f", exact_lat) + "S)"
     res@gsnRightString = "Net energy out of Southern ocean = " + \
       sprintf("%4.2f", lv(0)) + "PW"
-    res@tiMainString      = datasetnames(iii)
+    res@tiMainString      = vo_datasets(iii)  ;;datasetnames(iii)
     res@gsnXYBarChartColors2 = ("red")
     res@xyLineColors      = (/"black", "black"/)
 
@@ -666,13 +667,14 @@ begin
     out_var@diag_script = "russell_fig-6.ncl"
     out_var@description = "Transport in main layers(blue bars) in i(0-11) " + \
       "and transport in sub layers(red bars) in i(12-55) at " + \
-      exact_lat + "S of model " + datasetnames(iii)
+      exact_lat + "S of model " + vo_datasets(iii)  ;;datasetnames(iii)
     delete(lv)
     delete(lv0)
     delete(exact_lat)
 
     nc_filename = config_user_info@work_dir + "russell18jgr_fig6b_" \
-      + datasetnames(iii) + "_" + (start_years_data(iii)) + "-" + \
+;;      + datasetnames(iii) + "_" + (start_years_data(iii)) + "-" + \
+      + vo_datasets(iii) + "_" + (start_years_data(iii)) + "-" + \
       (end_years_data(iii)) + ".nc"
     ncdf_outfile = ncdf_write(out_var, nc_filename)
 
