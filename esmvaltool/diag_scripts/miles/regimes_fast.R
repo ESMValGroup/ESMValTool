@@ -65,7 +65,8 @@ miles_regimes_fast <-
       namevar = "zg",
       tmonths = timeseason,
       tyears = years,
-      rotate = "full"
+      rotate = "full",
+      fillmiss = TRUE
     )
 
     # extract calendar and time unit from the original file

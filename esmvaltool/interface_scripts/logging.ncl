@@ -265,7 +265,7 @@ begin
   enter_msg(scriptname, funcname)
 
   if (.not.all(isatt(in, reqatts))) then
-    error_msg("f", diag_script, "", "missing required diag_script_info " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing required diag_script_info " + \
               "attribute: " + reqatts(ind(.not.isatt(in, reqatts))))
   end if
 

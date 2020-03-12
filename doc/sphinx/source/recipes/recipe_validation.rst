@@ -45,6 +45,7 @@ User settings
    * observational_datasets: list of at least one element; if no OBS wanted comment out; e.g. ['ERA-Interim'];
    * analysis_type: use any of: lat_lon, meridional_mean, zonal_mean;
    * seasonal_analysis: boolean, if seasonal means are needed e.g. ``true``;
+   * save_cubes: boolean, save each of the plotted cubes in ``/work``; 
 
 Variables
 ---------
