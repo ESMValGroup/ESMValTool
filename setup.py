@@ -62,7 +62,7 @@ REQUIREMENTS = {
         'pytest-cov',
         'pytest-env',
         'pytest-flake8',
-        'pytest-html',
+        'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
     ],
     # Development dependencies
