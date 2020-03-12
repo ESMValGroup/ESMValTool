@@ -55,13 +55,11 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
       ua: &gridded_cmip5_r1i1p1_amon_t3m_pp850
         preprocessor: pp850
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T3M
       va:
         <<: *gridded_cmip5_r1i1p1_amon_t3m_pp850
       ts: &global_mean_cmip5_r1i1p1_amon_t2ms
@@ -69,7 +67,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ACCESS1-0, exp: historical, start_year: 1980, end_year: 2005}
       - {dataset: ACCESS1-0, exp: rcp85, start_year: 2070, end_year: 2099}
@@ -153,13 +150,11 @@ diagnostics:
         project: CMIP6
         ensemble: r1i1p1f1
         mip: Amon
-        field: T2Ms
       ua: &gridded_cmip6_r1i1p1_amon_t3m_pp850
         preprocessor: pp850
         project: CMIP6
         ensemble: r1i1p1f1
         mip: Amon
-        field: T3M
       va:
         <<: *gridded_cmip6_r1i1p1_amon_t3m_pp850
       ts: &global_mean_cmip6_r1i1p1_amon_t2ms
@@ -167,7 +162,6 @@ diagnostics:
         project: CMIP6
         ensemble: r1i1p1f1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ACCESS-ESM1-5, institute: CSIRO, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
       - {dataset: ACCESS-ESM1-5, institute: CSIRO, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
@@ -183,9 +177,6 @@ diagnostics:
 
       - {dataset: MIROC6, institute: MIROC, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
       - {dataset: MIROC6, institute: MIROC, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
-
-      - {dataset: MRI-ESM2-0, institute: MRI, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
-      - {dataset: MRI-ESM2-0, institute: MRI, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
 
     scripts:
       lif1f2:
