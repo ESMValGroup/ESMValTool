@@ -98,3 +98,18 @@ References
 
 Example plots
 -------------
+
+
+.. _bar_all:
+.. figure:: /recipes/figures/deangelis15nat/bar_all.png
+   :align: center
+   :width: 50%
+
+   Global average multi-model mean comparing different model experiments for the sum of upward long wave flux at TOA and net downward long wave flux at the surface (rlnst),  heating from short wave absorption (rsnst), latent heat release from precipitation (lvp), and sensible heat flux (hfss). The panel shows three model experiments, namely the pre-industrial control simulation averaged over 150 years (blue), the RCP8.5 scenario averaged over 2091-2100 (orange) and the abrupt quadrupled CO2 scenario averaged over the years 141-150 after CO2 quadrupling in all models except CNRM-CM5-2 and IPSL-CM5A-MR, where the average is calculated over the years 131-140 (gray). The figure shows that energy sources and sinks readjust in reply to an increase in greenhouse gases, leading to a decrease in the sensible heat flux and an increase in the other fluxes.
+
+.. _fig3b:
+.. figure:: /recipes/figures/deangelis15nat/fig3b.png
+   :align: center
+   :width: 50%
+
+   Scatter plot and regression line the between the ratio of the change of netto short wave radiation (rsnst) and the change of the Water Vapor Path (prw) against the ratio of the change of netto short wave radiation for clear skye (rsnstcs) and the the change of surface temperature (tas).The width of horizontal shading for models and the vertical dashed lines for observations (Obs.) represent statistical uncertainties of the ratio, as the 95% confidence interval (CI) of the regression slope to the rsnst versus prw curve. For the observations the minimum of the lower bounds of all CIs to the maximum of the upper bounds of all CIs is shown.
