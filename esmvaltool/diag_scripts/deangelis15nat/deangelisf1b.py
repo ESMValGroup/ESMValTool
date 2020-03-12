@@ -125,7 +125,8 @@ def plot_bar_deangelis(cfg, data_var_sum, available_exp, available_vars):
     fig.savefig(get_plot_filename('bar_all', cfg), dpi=300)
     plt.close()
 
-    caption = '...'
+    caption = 'Global average multi-model mean comparing different ' + \
+              'model experiments and flux variables.'
 
     provenance_record = get_provenance_record(
         _get_sel_files_var(cfg, available_vars), caption, ['mean'], ['global'])
