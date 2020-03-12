@@ -73,6 +73,7 @@ begin
   end_years_data = metadata_att_as_array(info_items, "end_year")
   nDatasets = ListCount(info_items)
   annots = project_style(input_file_info, diag_script_info, "annots")
+  uo_dataset_name = metadata_att_as_array(info_items, "dataset")
 
   att@mip = "fx"
   volinfo = select_metadata_by_atts(input_file_info, att)  ; area
@@ -180,8 +181,6 @@ begin
 
     dataset_compare = uo_dataset_name(iii) + "$"
     fx_ind = str_match_ind_regex(voldatasets, dataset_compare)
-    print(dataset_compare)
-    print(fx_ind)
     if (ismissing(fx_ind)) then
       fx_var = new(1, float)
       fx_var = fx_var@_FillValue
