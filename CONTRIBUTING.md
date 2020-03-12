@@ -50,7 +50,7 @@ Note that sometimes, if you are under a firewall, the installation of Julia diag
 
 ## Running tests
 
-Go to the directory where the repository is cloned and run `python setup.py test --addopts --installation`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
+Go to the directory where the repository is cloned and run `python setup.py test`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
 
 ## Code style
 

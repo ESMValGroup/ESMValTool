@@ -26,7 +26,7 @@ jobs:
             # Install r-lintr for r linter test
             Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
             # Run tests
-            python setup.py test
+            python setup.py test --addopts '-m "not installation"'
           no_output_timeout: 20m
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
@@ -69,7 +69,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            python setup.py test --addopts --installation
+            python setup.py test
             esmvaltool -h
             ncl -V
             # cdo test, check that it supports hdf5
@@ -129,7 +129,7 @@ jobs:
             pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
-            python setup.py test --addopts --installation
+            python setup.py test
             ncl -V
             cdo --version
           no_output_timeout: 20m
