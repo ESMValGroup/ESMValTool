@@ -49,6 +49,10 @@ diagnostics:
       uncomment variable 'tauu' and add dataset names in additional datasets of
       respective variable. If there are no dataset in a variable, entire variable
       section needs to be commented out.  
+    themes:
+      - phys
+    realms:
+      - ocean
     variables:
       tauu:
         preprocessor: preprocessor_time_land
@@ -99,6 +103,10 @@ diagnostics:
       in this recipe just uncomment variable 'tauu' and add dataset names 
       in additional datasets of respective variable. If there are no dataset
       in a variable, entire variable section needs to be commented out.
+    themes:
+      - phys
+    realms:
+      - ocean
     variables: 
     #  tauu:
     #    preprocessor: preprocessor_time_land
@@ -136,6 +144,8 @@ diagnostics:
       Subantarctic Front. Using definitions from Orsi et al (1995), the 
       Subantarctic Front is defined here as the poleward location of 
       the 4C(277.15K) isotherm at(closest to and less than) 400 m.
+    themes:
+      - phys
     realms:
       - ocean
     variables:
@@ -189,6 +199,8 @@ diagnostics:
       position of Polar Front. Using definitions from Orsi et al (1995). The 
       Polar Front is defined here as the poleward location of the 2C (275.15K) 
       isotherm of the temperature minimum between 0 and 200 m(closest to and less than 200m). 
+    themes:
+      - phys
     realms:
       - ocean
     variables:
@@ -241,6 +253,8 @@ diagnostics:
       Recipe for russell et al figure 4. Plots the zonal velocity through
       Drake Passage (at 69W) and total transport through the passage if the
       volcello file is available.
+    themes:
+      - phys
     realms:
       - ocean
     variables:
@@ -305,6 +319,8 @@ diagnostics:
       sea ice for September(max) in blue and mean extent of sea ice for 
       February(min) in red. The edge of full coverage is defined by the 15%
       areal coverage.
+    themes:
+      - seaIce
     realms:
       - seaIce
     variables:
@@ -362,6 +378,8 @@ diagnostics:
       area in southern ocean. The diag_script manually calculates the 
       areacello for lat-lon models, as some models use different grids
       for areacello and sic files.
+    themes:
+      - seaIce
     realms:
       - seaIce
     variables:
@@ -421,7 +439,9 @@ diagnostics:
       in Talley(2008). The dark blue bars are the integrated totals for each layer
       and can be compared to the magenta lines, which are the observed values from 
       Talley(2008). The narrower red bars are equal subdivisions of each blue layer
-      realms:
+    themes:
+      - phys
+    realms:
       - ocean
     variables:
       thetao:
@@ -497,6 +517,8 @@ diagnostics:
       and can be compared to the magenta lines, which are the observed values 
       from Talley (2008). The narrower red bars are equal subdivisions of each
       blue layer
+    themes:
+      - phys
     realms:
       - ocean
     variables:
@@ -568,6 +590,8 @@ diagnostics:
     description: |
       Diagnostic for russell et al figure 7(polar). Plots Annual mean CO2 flux
       (sea to air, gC/(yr * m^2), positive (red) is out of the ocean).
+    themes:
+      - carbon
     realms:
       - ocean
     variables:
@@ -622,6 +646,8 @@ diagnostics:
     description: |
       Diagnostic for russell et al figure 7h. Plots the zonal mean flux of 
       fgco2 in gC/(yr * m^2). 
+    themes:
+      - carbon
     realms:
       - ocean
     variables:
@@ -661,12 +687,14 @@ diagnostics:
         ncdf: default
 
 
-  Figure7i:
+  Figure_7i:
     description: |
       Diagnostic for russell et al figure 7i. Plots the cumulative integral
       of the net CO2 flux from 90S to 30S (in PgC/yr). The diag_script manually
       calculates the areacello for lat-lon models, as some models use different
       grids for areacello and fgco2 files.
+    themes:
+      - carbon
     realms:
       - ocean
     variables:
@@ -707,9 +735,11 @@ diagnostics:
         ncdf: default 
 
 
-  Fig8:
+  Figure_8:
     description: |
       Diagnostic for russell et al figure 8. Plots Surface pH in polar contour plot.
+    themes:
+      - bgchem
     realms:
       - ocnBgchem
     variables:
@@ -759,6 +789,10 @@ diagnostics:
       along with the line of best fit. The diagnostic script will be updated later
       to include tauu variable and non-hfds datasets 
       hfds = rsds + rlds - (rsus + rlus + hfss + hfls)
+    themes:
+      - phys
+    realms:
+      - ocean
     variables:
     #  tauu:
      #   preprocessor: preprocessor_time_land
@@ -821,6 +855,11 @@ diagnostics:
       of the Southern Hemisphere westerly wind band against the annual-mean integrated
       carbon uptake south of 30S(in Pg C/yr), along with the line of best fit.
       The diagnostic script will be updated later to include tauu variable.
+    themes:
+      - phys
+      - carbon
+    realms:
+      - ocean
     variables:
     #  tauu:
      #   preprocessor: preprocessor_time_land
@@ -884,6 +923,11 @@ diagnostics:
       carbon uptake south of 30S(in Pg C/yr), along with the line of best fit.
       The diagnostic script will be updated later to include non-hfds datasets. 
       hfds = rsds + rlds - (rsus + rlus + hfss + hfls)
+    themes:
+      - phys
+      - carbon
+    realms:
+      - ocean
     variables:
       fgco2:
         preprocessor: preprocessor_time
