@@ -4,7 +4,7 @@ filename: 'APHRO_MA{raw_file_var}_{version}.*.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: APHRO_MA
+  dataset_id: APHRO-MA
   tier: 3
   modeling_realm: ground
   project_id: OBS
@@ -27,7 +27,7 @@ variables:
       v2: '050deg_V1101'
       v3: '025deg_V1101_EXR1'
       v4: '050deg_V1101_EXR1'
-    reference: 'aphro_ma_v1101'
+    reference: 'aphro-ma-v1101'
   tas:
     mip: day
     raw: tave
@@ -38,4 +38,4 @@ variables:
     version:
       v1: '025deg_V1808'
       v2: '050deg_V1808'
-    reference: 'aphro_ma_v1808'
+    reference: 'aphro-ma-v1808'

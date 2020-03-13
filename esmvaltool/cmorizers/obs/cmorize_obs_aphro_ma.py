@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for APHRODITE Monsoon Asia (APHRO_MA) data.
+"""ESMValTool CMORizer for APHRODITE Monsoon Asia (APHRO-MA) data.
 
 Tier
     Tier 3: restricted dataset.
@@ -19,14 +19,14 @@ Download and processing instructions
             025deg_nc/APHRO_MA_TAVE_025deg_V1808.nc.tgz
             050deg_nc/APHRO_MA_TAVE_050deg_V1808.nc.tgz
         APHRO_V1101/APHRO_MA
-            025deg_nc/APHRO_MA_050deg_V1101.1951-2007.nc.gz.tar
-            050deg_nc/APHRO_MA_025deg_V1101.1951-2007.nc.gz.tar
+            025deg_nc/APHRO_MA_025deg_V1101.1951-2007.nc.gz.tar
+            050deg_nc/APHRO_MA_050deg_V1101.1951-2007.nc.gz.tar
         APHRO_V1101EX_R1/APHRO_MA
             025deg_nc/APHRO_MA_025deg_V1101_EXR1.nc.tgz
             050deg_nc/APHRO_MA_050deg_V1101_EXR1.nc.tgz
 
-    Please untar / unzip all *.tar *.tgz *.gz files prior to running the
-    cmorizer!
+    Please untar / unzip all *.tar *.tgz *.gz files in the same directory
+    (no subdirectories!) prior to running the cmorizer!
 
 Refs:
     APHRO_V1101 and APHRO_V1101EX_R1
