@@ -17,17 +17,10 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # helper functions
 import extraUtils as xu
-from .shared import _load_variable
+from shared import _load_variable
 
 
-## Classes and settings
-class Dot_dict(dict):
-    '''dot.notation access to dictionary attributes'''
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
-
-
+# Classes and settings
 def _get_fig_config(diag_config):
     '''
     get the default settings of the figure, and replace default with
@@ -48,13 +41,12 @@ def _get_fig_config(diag_config):
     fig_config['valrange_y'] = (-70, 90)
     fig_config['bandsize'] = 1.86
     fig_config['obs_label'] = 'Carvalhais2014'
-    fig_config['gpp_threshold'] = 10  #gC m-2 yr -1
+    fig_config['gpp_threshold'] = 10  # gC m-2 yr -1
     fig_config_list = list(fig_config.keys())
     for _fc in fig_config_list:
         if diag_config.get(_fc) is not None:
             fig_config[_fc] = diag_config.get(_fc)
-    fig_setting = Dot_dict(fig_config)
-    return fig_setting
+    return fig_config
 
 
 # calculation and data functions
@@ -129,9 +121,10 @@ def _get_zonal_tau(diag_config):
         zonal_tau_mod[key] = {}
         ctotal = _load_variable(value, 'ctotal')
         gpp = _load_variable(value, 'gpp')
-        gpp_dat = xu.remove_invalid(gpp.data, fill_value=fig_config.fill_value)
+        gpp_dat = xu.remove_invalid(gpp.data,
+                                    fill_value=fig_config['fill_value'])
         ctotal_dat = xu.remove_invalid(ctotal.data,
-                                       fill_value=fig_config.fill_value)
+                                       fill_value=fig_config['fill_value'])
         for coord in gpp.coords():
             mod_coords[coord.name()] = coord.points
         zonal_tau_mod[key]['data'] = _calc_zonal_tau(gpp_dat, ctotal_dat,
@@ -145,14 +138,16 @@ def _get_zonal_tau(diag_config):
 
     # get the multimodel median GPP and ctotal and calculate zonal tau from
     # multimodel median
-    mm_ctotal = xu.remove_invalid(np.nanmedian(np.array(
-        [_ctotal for _ctotal in global_ctotal_mod.values()]),
-                                               axis=0),
-                                  fill_value=fig_config.fill_value)
-    mm_gpp = xu.remove_invalid(np.nanmedian(np.array(
-        [_gpp for _gpp in global_gpp_mod.values()]),
-                                            axis=0),
-                               fill_value=fig_config.fill_value)
+    mm_ctotal = xu.remove_invalid(
+        np.nanmedian(
+            np.array([_ctotal for _ctotal in global_ctotal_mod.values()]),
+            axis=0),
+        fill_value=fig_config['fill_value'])
+    mm_gpp = xu.remove_invalid(
+        np.nanmedian(
+            np.array([_gpp for _gpp in global_gpp_mod.values()]),
+            axis=0),
+        fill_value=fig_config['fill_value'])
     zonal_tau_mod['zmultimodel'] = {}
     zonal_tau_mod['zmultimodel']['data'] = _calc_zonal_tau(
         mm_gpp, mm_ctotal, mod_coords['latitude'], fig_config)
@@ -182,22 +177,23 @@ def _calc_zonal_tau(dat_gpp, dat_ctotal, dat_lats, fig_config):
     zonal_tau = np.ones_like(dat_lats) * np.nan
 
     # get the size of the sliding window based on the bandsize in degrees
-    window_size = math.ceil(fig_config.bandsize / (lat_int * 2))
+    window_size = math.ceil(fig_config['bandsize'] / (lat_int * 2))
 
-    dat_gpp = xu.remove_invalid(dat_gpp, fill_value=fig_config.fill_value)
+    dat_gpp = xu.remove_invalid(dat_gpp, fill_value=fig_config['fill_value'])
     dat_ctotal = xu.remove_invalid(dat_ctotal,
-                                   fill_value=fig_config.fill_value)
+                                   fill_value=fig_config['fill_value'])
 
-    min_points = np.shape(dat_gpp)[1] * fig_config.min_points_frac
+    min_points = np.shape(dat_gpp)[1] * fig_config['min_points_frac']
     for lat_index in range(len(zonal_tau)):
         istart = max(0, lat_index - window_size)
         iend = min(np.size(dat_lats), lat_index + window_size + 1)
-        dat_gpp_zone = dat_gpp[istart:iend, :]  #* _area_zone
-        dat_ctotal_zone = dat_ctotal[istart:iend, :]  #* _area_zone
+        dat_gpp_zone = dat_gpp[istart:iend, :]  # * _area_zone
+        dat_ctotal_zone = dat_ctotal[istart:iend, :]  # * _area_zone
         num_valid_points = np.nansum(~np.isnan(dat_gpp_zone + dat_ctotal_zone))
         if num_valid_points > min_points:
-            zonal_tau[lat_index] = (np.nansum(dat_ctotal_zone) /
-                                    np.nansum(dat_gpp_zone)) / (86400 * 365)
+            zonal_tau[lat_index] = (
+                (np.nansum(dat_ctotal_zone) / np.nansum(dat_gpp_zone)) /
+                (86400 * 365))
     return zonal_tau
 
 # Plotting functions
@@ -231,7 +227,8 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
     plt.figure(figsize=(3, 5))
 
     sp0 = plt.subplot(1, 1, 1)
-    sp0.plot(tau_obs, lats_obs, color='k', lw=1.5, label=fig_config.obs_label)
+    sp0.plot(tau_obs, lats_obs, color='k', lw=1.5,
+             label=fig_config['obs_label'])
     sp0.fill_betweenx(lats_obs,
                       tau_obs_5,
                       tau_obs_95,
@@ -254,21 +251,22 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
                      lw=0.5,
                      label=row_mod)
 
-    leg = xu.draw_line_legend(ax_fs=fig_config.ax_fs)
+    leg = xu.draw_line_legend(ax_fs=fig_config['ax_fs'])
 
     plt.gca().set_xscale('log')
-    plt.xlim(fig_config.valrange_x[0], fig_config.valrange_x[1])
-    plt.ylim(fig_config.valrange_y[0], fig_config.valrange_y[1])
+    plt.xlim(fig_config['valrange_x'][0], fig_config['valrange_x'][1])
+    plt.ylim(fig_config['valrange_y'][0], fig_config['valrange_y'][1])
     plt.axhline(y=0, lw=0.48, color='grey')
     x_lab = '$\\tau$'
-    plt.xlabel(x_lab, fontsize=fig_config.ax_fs)
+    plt.xlabel(x_lab, fontsize=fig_config['ax_fs'])
     plt.ylabel('Latitude ($^\\circ N$)',
-               fontsize=fig_config.ax_fs,
+               fontsize=fig_config['ax_fs'],
                ma='center')
     xu.rem_axLine(['top', 'right'])
 
     local_path = diag_config['plot_dir']
-    png_name = 'comparison_zonal_turnovertime_' + fig_config.obs_label + '.png'
+    png_name = ('comparison_zonal_turnovertime_'
+                + fig_config['obs_label'] + '.png')
     plt.savefig(os.path.join(local_path, png_name),
                 bbox_inches='tight',
                 bbox_extra_artists=[leg],

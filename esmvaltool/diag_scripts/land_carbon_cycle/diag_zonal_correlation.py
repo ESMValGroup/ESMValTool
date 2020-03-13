@@ -19,19 +19,10 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # place your module imports here
 import extraUtils as xu
-from .shared import _apply_gpp_threshold, _load_variable
+from shared import _apply_gpp_threshold, _load_variable
 
 
-
-
-## Classes and settings
-
-
-class Dot_dict(dict):
-    '''dot.notation access to dictionary attributes'''
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
+# Classes and settings
 
 
 def _get_fig_config(diag_config):
@@ -63,8 +54,7 @@ def _get_fig_config(diag_config):
     for _fc in fig_config_list:
         if diag_config.get(_fc) is not None:
             fig_config[_fc] = diag_config.get(_fc)
-    fig_setting = Dot_dict(fig_config)
-    return fig_setting
+    return fig_config
 
 
 # data and calculations
@@ -133,7 +123,7 @@ def _get_zonal_correlation(diag_config):
     '''
     my_files_dict = group_metadata(diag_config['input_data'].values(),
                                    'dataset')
-    fcfg = _get_fig_config(diag_config)
+    fig_config = _get_fig_config(diag_config)
     all_mod_dat = {}
     for key, value in my_files_dict.items():
         all_mod_dat[key] = {}
@@ -143,12 +133,12 @@ def _get_zonal_correlation(diag_config):
         precip = _load_variable(value, 'pr')
         tas = _load_variable(value, 'tas')
         _gpp = gpp.data
-        _gpp = _apply_gpp_threshold(_gpp, fcfg)
+        _gpp = _apply_gpp_threshold(_gpp, fig_config)
         ctau = (c_total / _gpp) / (86400 * 365)
         for coord in gpp.coords():
             mod_coords[coord.name()] = coord.points
         zon_corr = _calc_zonal_correlation(ctau.data, precip.data, tas.data,
-                                           mod_coords['latitude'], fcfg)
+                                           mod_coords['latitude'], fig_config)
         all_mod_dat[key]['data'] = zon_corr
         all_mod_dat[key]['latitude'] = mod_coords['latitude']
     all_obs_dat = _get_obs_data(diag_config)
@@ -172,11 +162,11 @@ def _partialCorr(dat_columns, fig_config):
     dat_x = dat_columns[:, 0]
     dat_y = dat_columns[:, 1]
     dat_z = dat_columns[:, 2]
-    if fig_config.correlation_method == 'pearson':
+    if fig_config['correlation_method'] == 'pearson':
         r12 = stats.pearsonr(dat_x, dat_y)[0]
         r13 = stats.pearsonr(dat_x, dat_z)[0]
         r23 = stats.pearsonr(dat_y, dat_z)[0]
-    elif fig_config.correlation_method == 'spearman':
+    elif fig_config['correlation_method'] == 'spearman':
         r12 = stats.spearmanr(dat_x, dat_y)[0]
         r13 = stats.spearmanr(dat_x, dat_z)[0]
         r23 = stats.spearmanr(dat_y, dat_z)[0]
@@ -205,11 +195,11 @@ def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
     corr_dat = np.ones((np.shape(dat_tau)[0], 2)) * np.nan
 
     # get the size of the sliding window based on the bandsize in degrees
-    window_size = int(fig_config.bandsize / (lat_int * 2))
+    window_size = int(fig_config['bandsize'] / (lat_int * 2))
 
     dat_tau, dat_pr, dat_tas = _apply_common_mask(dat_tau, dat_pr, dat_tas)
     # minimum 1/8 of the given window has valid data points
-    min_points = np.shape(dat_tau)[1] * fig_config.min_points_frac
+    min_points = np.shape(dat_tau)[1] * fig_config['min_points_frac']
     for lat_index in range(len(corr_dat)):
         istart = max(0, lat_index - window_size)
         iend = min(np.size(dat_lats), lat_index + window_size + 1)
@@ -282,11 +272,11 @@ def _fix_axis(x_lab, fig_config, axlw=0.4, rem_list=('top', 'right')):
 
     Returns:
     '''
-    plt.xlim(fig_config.valrange_x[0], fig_config.valrange_x[1])
-    plt.ylim(fig_config.valrange_y[0], fig_config.valrange_y[1])
+    plt.xlim(fig_config['valrange_x'][0], fig_config['valrange_x'][1])
+    plt.ylim(fig_config['valrange_y'][0], fig_config['valrange_y'][1])
     plt.axhline(y=0, lw=0.48, color='grey')
     plt.axvline(x=0, lw=0.48, color='grey')
-    plt.xlabel(x_lab, fontsize=fig_config.ax_fs)
+    plt.xlabel(x_lab, fontsize=fig_config['ax_fs'])
     _ax = plt.gca()
     for loc, spine in _ax.spines.items():
         if loc in rem_list:
@@ -309,7 +299,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     Returns:
         string; makes some time-series plots
     '''
-    _fcfg = _get_fig_config(diag_config)
+    fig_config = _get_fig_config(diag_config)
     models = list(all_mod_dat.keys())
     nmodels = len(models)
     models = sorted(models, key=str.casefold)
@@ -318,8 +308,8 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     # tau-tas correlations
     sp1 = plt.subplot(1, 2, 1)
     x_lab = '$r_{\\tau-tas,pr}$'
-    _fix_axis(x_lab, _fcfg)
-    plt.ylabel('Latitude ($^\\circ N$)', fontsize=_fcfg.ax_fs, ma='center')
+    _fix_axis(x_lab, fig_config)
+    plt.ylabel('Latitude ($^\\circ N$)', fontsize=fig_config['ax_fs'], ma='center')
     # get the observations out of the dictionary
     lats_obs = all_obs_dat['latitude']
     r_tau_ctotal_tas = all_obs_dat['r_tau_ctotal_tas']
@@ -340,7 +330,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     # tau-pr correlations
     sp2 = plt.subplot(1, 2, 2)
     x_lab = '$r_{\\tau-pr,tas}$'
-    _fix_axis(x_lab, _fcfg)
+    _fix_axis(x_lab, fig_config)
 
     # get the observations out of the dictionary
     r_tau_ctotal_pr = all_obs_dat['r_tau_ctotal_pr']
@@ -352,7 +342,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
              lats_obs,
              color='k',
              lw=1.1,
-             label=_fcfg.obs_label)
+             label=fig_config['obs_label'])
     sp2.fill_betweenx(lats_obs,
                       r_tau_ctotal_pr_5,
                       r_tau_ctotal_pr_95,
@@ -414,12 +404,14 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
 
     plt.gca().yaxis.set_label_position("right")
     # draw the legend
-    leg = xu.draw_line_legend(ax_fs=_fcfg.ax_fs)
+    leg = xu.draw_line_legend(ax_fs=fig_config['ax_fs'])
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
 
     # save and close the figure
     local_path = diag_config['plot_dir']
-    png_name = 'comparison_zonal_' + _fcfg.correlation_method + '_correlation_turnovertime_climate_' + _fcfg.obs_label + '.png'
+    png_name = ('comparison_zonal_' + fig_config['correlation_method']
+                + '_correlation_turnovertime_climate_'
+                + fig_config['obs_label'] + '.png')
     plt.savefig(os.path.join(local_path, png_name),
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x, leg],
