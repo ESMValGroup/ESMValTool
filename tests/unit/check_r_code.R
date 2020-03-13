@@ -27,9 +27,6 @@ for (path in check_paths) { # nolint
     if (!is.null(errors)) {
       for (error in errors) {
         print(error)
-        if (error["type"] != "warning") {
-          has_errors <- TRUE
-        }
       }
     }
   }

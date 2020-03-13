@@ -22,7 +22,7 @@ using PyPlot
 pygui(false)
 
 # Provides the plotmap() function
-include(joinpath(ENV["diag_scripts"], "shared/external.jl"))
+include(joinpath(dirname(@__DIR__), "shared/external.jl"))
 
 function provenance_record(infile)
     xprov = Dict("ancestors" => infile,
@@ -60,7 +60,7 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
         lat = ncread(infile, "lat")
 
         units = ncgetatt(infile, varname, "units")
-       
+
         # Compute time average and add parameter
         varm = mean(var, dims = 3) .+ parameter
 
@@ -68,8 +68,8 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
         outfile = string(work_dir, "/", varname, "_", dataset, "_", exp, "_",
                          ensemble, "_", start_year, "-",
                          end_year, "_timmean.nc")
- 
-        # Use the RainFARM function write_netcdf2d to write variable to 
+
+        # Use the RainFARM function write_netcdf2d to write variable to
         # output file copying original attributes from infile
         write_netcdf2d(outfile, varm, lon, lat, varname, infile)
 
