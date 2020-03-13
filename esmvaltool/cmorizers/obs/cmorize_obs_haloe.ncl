@@ -46,7 +46,7 @@ begin
   YEAR2 = 2002
 
   ; Selected variable (standard name)
-  VAR = (/"vmrh2o", "tro3"/)
+  VAR = (/"hus", "tro3"/)
 
   ; Name in the raw data
   NAME = (/"H2O", "O3"/)
@@ -75,7 +75,6 @@ begin
     "doi:10.5194/acp-5-2797-2005, 2005."
   COMMENT = ""
 
-
 end
 
 begin
@@ -91,6 +90,12 @@ begin
     date = cd_calendar(time, 1)
 
     xx = f->$NAME(vv)$
+
+    ; Special case H2O: convert mixing ratio to specific humidity
+    if (VAR(vv).eq."H2O") then
+      xx = xx * 18.015 / 28.97  ; [mol/mol] --> [kg/kg]
+      xx = xx / (1. + xx)
+    end if
 
     tmp = new((/dimsizes(time), dimsizes(xx&press), dimsizes(xx&eqlat)/), \
               float)
