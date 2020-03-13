@@ -319,8 +319,8 @@ diagnostics:
   HALOE:
     description: HALOE check
     variables:
+      hus:
       tro3:
-      vmrh2o:
     additional_datasets:
       - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
          type: sat, version: 1, start_year: 1991, end_year: 2002}

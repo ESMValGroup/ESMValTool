@@ -59,7 +59,7 @@ begin
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + \
-    (/"/custom/CMOR_vmrh2o.dat", \
+    (/"/cmip5/Tables/CMIP5_Amon"/)
       "/cmip5/Tables/CMIP5_Amon"/)
 
   ; Type
@@ -91,8 +91,8 @@ begin
 
     xx = f->$NAME(vv)$
 
-    ; Special case H2O: convert mixing ratio to specific humidity
-    if (VAR(vv).eq."H2O") then
+    ; Special case hus: convert mixing ratio to specific humidity
+    if (VAR(vv).eq."hus") then
       xx = xx * 18.015 / 28.97  ; [mol/mol] --> [kg/kg]
       xx = xx / (1. + xx)
     end if
