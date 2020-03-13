@@ -89,7 +89,8 @@ diagnostics:
           - tau_ctotal
           - tau_ctotal_5
           - tau_ctotal_95
-        ax_fs: 8
+        fig_config:
+          ax_fs: 8
       global_turnover_time:
         # evaluate the global distributions of turnover time
         script: land_carbon_cycle/diag_global_turnover.py
@@ -99,7 +100,8 @@ diagnostics:
           - tau_ctotal
           - tau_ctotal_5
           - tau_ctotal_95
-        ax_fs: 8
+        fig_config:
+          ax_fs: 8
       zonal_correlation_spearman:
         # evaluate the zonal correlation (spearman)
         # of turnover time with climate
@@ -115,7 +117,8 @@ diagnostics:
           - r_tau_ctotal_tas
           - r_tau_ctotal_tas_5
           - r_tau_ctotal_tas_95
-        ax_fs: 8
+        fig_config:
+          ax_fs: 8
       zonal_correlation_pearson:
         # evaluate the zonal correlation (pearson)
         # of turnover time with climate
@@ -131,4 +134,5 @@ diagnostics:
           - r_tau_ctotal_tas
           - r_tau_ctotal_tas_5
           - r_tau_ctotal_tas_95
-        ax_fs: 8
+        fig_config:
+          ax_fs: 8

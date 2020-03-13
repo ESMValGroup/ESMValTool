@@ -37,23 +37,20 @@ def _get_fig_config(diag_config):
         a dot dictionary of settings
     '''
 
-    fig_config = {}
-    fig_config['fill_value'] = np.nan
-    fig_config['multimodel'] = False
-    fig_config['correlation_method'] = 'pearson'
-    fig_config['min_points_frac'] = 0.125
-    # define the data and information for plotting ratios
-    fig_config['ax_fs'] = 7.1
-    fig_config['valrange_x'] = (-1, 1)
-    fig_config['valrange_y'] = (-70, 90)
-    fig_config['bandsize'] = 9.5
-    fig_config['obs_label'] = 'Carvalhais2014'
-    fig_config['gpp_threshold'] = 0  # gC m-2 yr -1
-
-    fig_config_list = list(fig_config.keys())
-    for _fc in fig_config_list:
-        if diag_config.get(_fc) is not None:
-            fig_config[_fc] = diag_config.get(_fc)
+    fig_config = {
+        'fill_value': np.nan,
+        'multimodel': False,
+        'correlation_method': 'pearson',
+        'min_points_frac': 0.125,
+        # define the data and information for plotting ratios
+        'ax_fs': 7.1,
+        'valrange_x': (-1, 1),
+        'valrange_y': (-70, 90),
+        'bandsize': 9.5,
+        'obs_label': 'Carvalhais2014',
+        'gpp_threshold': 0,  # gC m-2 yr -1
+    }
+    fig_config.update(diag_config.get('fig_config'))
     return fig_config
 
 

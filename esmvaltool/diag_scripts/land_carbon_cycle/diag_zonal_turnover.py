@@ -32,20 +32,18 @@ def _get_fig_config(diag_config):
     Returns:
         a dot dictionary of settings
     '''
-    fig_config = {}
-    fig_config['fill_value'] = np.nan
-    fig_config['multimodel'] = False
-    fig_config['min_points_frac'] = 0.02
-    fig_config['ax_fs'] = 7.1
-    fig_config['valrange_x'] = (2, 1000)
-    fig_config['valrange_y'] = (-70, 90)
-    fig_config['bandsize'] = 1.86
-    fig_config['obs_label'] = 'Carvalhais2014'
-    fig_config['gpp_threshold'] = 10  # gC m-2 yr -1
-    fig_config_list = list(fig_config.keys())
-    for _fc in fig_config_list:
-        if diag_config.get(_fc) is not None:
-            fig_config[_fc] = diag_config.get(_fc)
+    fig_config = {
+        'fill_value': np.nan,
+        'multimodel': False,
+        'min_points_frac': 0.02,
+        'ax_fs': 7.1,
+        'valrange_x': (2, 1000),
+        'valrange_y': (-70, 90),
+        'bandsize': 1.86,
+        'obs_label': 'Carvalhais2014',
+        'gpp_threshold': 10,  # gC m-2 yr -1
+    }
+    fig_config.update(diag_config.get('fig_config'))
     return fig_config
 
 

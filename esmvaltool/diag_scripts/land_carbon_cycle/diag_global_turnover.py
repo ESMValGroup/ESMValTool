@@ -70,57 +70,49 @@ def _get_fig_config(diag_config):
         a dot dictionary of settings
     '''
 
-    fig_config = {}
+    nmodels = len(group_metadata(diag_config['input_data'].values(),
+                                 'dataset')) + 1
+    wp = 1. / nmodels
+    hp = wp
+    aspect_map = 0.5
 
-    # generic settings
-    fig_config['ax_fs'] = 7.1
-    fig_config['fill_value'] = np.nan
-
-    # settings of the figure and maps
-    nmodels = len(
-        list(
-            group_metadata(diag_config['input_data'].values(),
-                           'dataset').keys())) + 1
-    fig_config['x0'] = 0.02
-    fig_config['y0'] = 1.0
-    fig_config['wp'] = 1. / nmodels
-    fig_config['hp'] = fig_config['wp']
-    fig_config['xsp'] = 0.0
-    fig_config['ysp'] = -0.03
-    fig_config['aspect_map'] = 0.5
-
-    # settings for the location of scatterplots
-    fig_config['xsp_sca'] = fig_config['wp'] / 3 * (fig_config['aspect_map'])
-    fig_config['ysp_sca'] = fig_config['hp'] / 3 * (fig_config['aspect_map'])
-
-    # colorbar specific settings
-    fig_config['hcolo'] = 0.0123
-    fig_config['wcolo'] = 0.25
-    fig_config['cb_off_y'] = 0.06158
-    fig_config['x_colo_d'] = 0.02
-    fig_config['x_colo_r'] = 0.76
-    fig_config['y_colo_single'] = 0.1086
-
-    # the correlation method for metric given in the title of the scatterplot
-    fig_config['correlation_method'] = 'spearman'
-    fig_config['tx_y_corr'] = 1.075
-
-    # define the range of data and masks
-    fig_config['valrange_sc'] = (2, 256)
-    fig_config['obs_label'] = 'Carvalhais2014'
-    fig_config['obs_global'] = 23
-    fig_config['gpp_threshold'] = 10  # gC m-2 yr -1
-
-    # name of the variable and unit
-    fig_config['varName'] = '$\\tau$'
-    fig_config['varUnit'] = 'yr'
-
+    fig_config = {
+        # generic settings
+        'ax_fs': 7.1,
+        'fill_value': np.nan,
+        # settings of the figure and maps
+        'x0': 0.02,
+        'y0': 1.0,
+        'wp': wp,
+        'hp': hp,
+        'xsp': 0.0,
+        'ysp': -0.03,
+        'aspect_map': aspect_map,
+        # settings for the location of scatterplots
+        'xsp_sca': wp / 3 * aspect_map,
+        'ysp_sca': hp / 3 * aspect_map,
+        # colorbar specific settings
+        'hcolo': 0.0123,
+        'wcolo': 0.25,
+        'cb_off_y': 0.06158,
+        'x_colo_d': 0.02,
+        'x_colo_r': 0.76,
+        'y_colo_single': 0.1086,
+        # the correlation method for metric
+        # given in the title of the scatterplot
+        'correlation_method': 'spearman',
+        'tx_y_corr': 1.075,
+        # define the range of data and masks
+        'valrange_sc': (2, 256),
+        'obs_label': 'Carvalhais2014',
+        'obs_global': 23,
+        'gpp_threshold': 10,  # gC m-2 yr -1
+        # name of the variable and unit
+        'varName': '$\\tau$',
+        'varUnit': 'yr',
+    }
     # replace default values with those provided in recipe
-    fig_config_list = list(fig_config.keys())
-    for _fc in fig_config_list:
-        if diag_config.get(_fc) is not None:
-            fig_config[_fc] = diag_config.get(_fc)
-
+    fig_config.update(diag_config.get('fig_config'))
     return fig_config
 
 
