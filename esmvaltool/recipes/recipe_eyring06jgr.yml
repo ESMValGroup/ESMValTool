@@ -322,12 +322,12 @@ diagnostics:
         # e06fig04_reference_yearmax: [1989]
         # e06fig04_multimean: True
 
-  # # =====================================================================================================
-  # # Eyring et al. (2006) - Figure 5 two sets of figures a (vertical profiles) and b (latitudinal profiles)
-  # # Vertical profile climatological mean bias,
-  # # climatological mean for selected seasons and latitudinal region
-  # # this figure and settig is valid for figure 5(CH4) figure 6(H2O) figure 11(HCL) figure 13 (tro3)
-  # # ======================================================================================================
+  # =====================================================================================================
+  # Eyring et al. (2006) - Figure 5 two sets of figures a (vertical profiles) and b (latitudinal profiles)
+  # Vertical profile climatological mean bias,
+  # climatological mean for selected seasons and latitudinal region
+  # this figure and settig is valid for figure 5(CH4) figure 6(H2O) figure 11(HCL) figure 13 (tro3)
+  # ======================================================================================================
 
   # eyring06jgr_fig05a:
     # description: vertical profile climatological seasonal means bias
@@ -341,11 +341,12 @@ diagnostics:
         # reference_dataset: HALOE
         # mip: Amon
     # additional_datasets:
-      # - {dataset: HALOE, project: OBS, type: sat, version: v1,
-         # start_year: 1991, end_year: 2002, tier: 3}
+      # - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         # start_year: 1991, end_year: 2002, tier: 2}
     # scripts:
       # clim: &fig05a_settings
-        # script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig05a.ncl
+        # #script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig05a.ncl
+        # script: eyring06jgr/eyring06jgr_fig05a.ncl
         # projection: CylindricalEquidistant
         # timemean: annualclim
         # showdiff: false
@@ -362,7 +363,7 @@ diagnostics:
         # e06fig05a_multimean: True
 
   # eyring06jgr_fig05b:
-    # description: latirudinal profile climatological seasonal mean
+    # description: latitudinal profile climatological seasonal mean
     # themes:
       # - chem
     # realms:
@@ -373,11 +374,12 @@ diagnostics:
         # reference_dataset: HALOE
         # mip: Amon
     # additional_datasets:
-      # - {dataset: HALOE, project: OBS, type: sat, version: v1,
-         # start_year: 1991, end_year: 2002, tier: 3}
+      # - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         # start_year: 1991, end_year: 2002, tier: 2}
     # scripts:
       # clim: &fig05b_settings 
-        # script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig05b.ncl
+        # #script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig05b.ncl
+        # script: eyring06jgr/eyring06jgr_fig05b.ncl
         # projection: CylindricalEquidistant
         # timemean: annualclim
         # showdiff: false
@@ -390,26 +392,57 @@ diagnostics:
         # e06fig05a_end_year: [2002]  
         # e06fig05b_multimean: True
 
-  # ==============================================================================================
-  # Eyring et al. (2006) - Figure 7,
-  # climatological mean at selected level (100hPa)  and latitudinal region (Equator) a) temperature and b)water vapor
-  # ================================================================================================
-  eyring06jgr_fig07a:
+  # # ==============================================================================================
+  # # Eyring et al. (2006) - Figure 7,
+  # # climatological mean at selected level (100hPa)  and latitudinal region (Equator) a) temperature and b)water vapor
+  # # ================================================================================================
+  # eyring06jgr_fig07a:
+    # description: Annual cycle for temperature or H20 mixing ratio at selected levels and regions
+    # themes:
+      # - chem
+    # realms:
+      # - atmos
+    # variables:
+      # ta:
+        # preprocessor: regrid_extract_lev_mean_lat
+        # reference_dataset: ERA-Interim
+        # mip: Amon
+    # additional_datasets:
+      # - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+         # start_year: 1992, end_year: 2001, tier: 3}
+    # scripts:
+      # clim: &fig07a_settings
+        # #script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig07.ncl
+        # script:  eyring06jgr/eyring06jgr_fig07.ncl
+        # projection: CylindricalEquidistant
+        # showdiff: false
+        # styleset: CMIP5
+        # e06fig07_lev:  "100 hPa"
+        # e06fig07_latrange: "Equator"
+        # e06fig07_Ymin: [185]
+        # e06fig07_Ymax: [200.]
+        # e06fig07_refMode: "ERA-Interim"
+        # e06fig07_multimean: True
+        # e06fig07_start_year: [1991]
+        # e06fig07_end_year: [2002]
+# #
+
+  eyring06jgr_fig07b:
     description: Annual cycle for temperature or H20 mixing ratio at selected levels and regions
     themes:
       - chem
     realms:
       - atmos
     variables:
-      ta:
+      hus:
         preprocessor: regrid_extract_lev_mean_lat
-        reference_dataset: ERA-Interim
+        reference_dataset: HALOE
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
-         start_year: 1992, end_year: 2001, tier: 3}
+        - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         start_year: 1992, end_year: 2001, tier: 2}
     scripts:
-      clim: &fig07a_settings
+      clim: &fig07b_settings 
         #script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig07.ncl
         script:  eyring06jgr/eyring06jgr_fig07.ncl
         projection: CylindricalEquidistant
@@ -417,42 +450,12 @@ diagnostics:
         styleset: CMIP5
         e06fig07_lev:  "100 hPa"
         e06fig07_latrange: "Equator"
-        e06fig07_Ymin: [185]
-        e06fig07_Ymax: [200.]
-        e06fig07_refMode: "ERA-Interim"
+        e06fig07_Ymin: [0]
+        e06fig07_Ymax: [10.]
+        e06fig07_refMode: "HALOE"
         e06fig07_multimean: True
         e06fig07_start_year: [1991]
         e06fig07_end_year: [2002]
-#
-
-  # eyring06jgr_fig07b:
-    # description: Annual cycle for temperature or H20 mixing ratio at selected levels and regions
-    # themes:
-      # - chem
-    # realms:
-      # - atmos
-    # variables:
-      # hus:
-        # preprocessor: regrid_extract_lev_mean_lat
-        # reference_dataset: HALOE
-        # mip: Amon
-    # additional_datasets:
-        # - {dataset: HALOE, project: OBS, type: sat, version: v1,
-         # start_year: 1992, end_year: 2001, tier: 3}
-    # scripts:
-      # clim: &fig07b_settings 
-        # script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig07.ncl
-        # projection: CylindricalEquidistant
-        # showdiff: false
-        # styleset: CMIP5
-        # e06fig07_lev:  "100 hPa"
-        # e06fig07_latrange: "Equator"
-        # e06fig07_Ymin: [0]
-        # e06fig07_Ymax: [10.]
-        # e06fig07_refMode: "ERA-Interim"
-        # e06fig07_multimean: True
-        # e06fig07_start_year: [1991]
-        # e06fig07_end_year: [2002]
 # # ==========================================================================
 # # Eyring et al. (2006) - Figure  8
 # # Tape recorder 
@@ -471,11 +474,12 @@ diagnostics:
         # reference_dataset: MIROC-ESM-CHEM
         # mip: Amon
     # additional_datasets:
-      # - {dataset: HALOE, project: OBS, type: sat, version: v1,
-         # start_year: 1992, end_year: 2001, tier: 3}
+      # - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         # start_year: 1992, end_year: 2001, tier: 2}
     # scripts:
       # clim: &fig08_settings 
-        # script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig08.ncl
+        # #script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig08.ncl
+        # script:  eyring06jgr/eyring06jgr_fig08.ncl
         # projection: CylindricalEquidistant
         # showdiff: false
         # styleset: CMIP5
@@ -504,11 +508,12 @@ diagnostics:
         # reference_dataset: MIROC-ESM-CHEM
         # mip: Amon
     # additional_datasets:
-      # - {dataset: HALOE, project: OBS, type: sat, version: v1,
-         # start_year: 1992, end_year: 2001, tier: 3}
+      # - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         # start_year: 1992, end_year: 2001, tier: 2}
     # scripts:
       # clim: &fig09_settings
-        # script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig09.ncl
+        # #script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig09.ncl
+        # script:  eyring06jgr/eyring06jgr_fig09.ncl
         # projection: CylindricalEquidistant
         # showdiff: false
         # styleset: CMIP5
@@ -569,11 +574,12 @@ diagnostics:
         # reference_dataset: HALOE
         # mip: Amon
     # additional_datasets:
-      # - {dataset: HALOE, project: OBS, type: sat, version: v1,
-         # start_year: 1991, end_year: 2002, tier: 3}
+      # - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         # start_year: 1991, end_year: 2002, tier: 2}
     # scripts:
       # clim: &fig12a_settings
-        # script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig12a.ncl
+        # #script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig12a.ncl
+        # script: eyring06jgr/eyring06jgr_fig12a.ncl
         # projection: CylindricalEquidistant
         # timemean: annualclim
         # showdiff: false
@@ -601,11 +607,12 @@ diagnostics:
         # reference_dataset: HALOE
         # mip: Amon
     # additional_datasets:
-      # - {dataset: HALOE, project: OBS, type: sat, version: v1,
-         # start_year: 1991, end_year: 2002, tier: 3}
+      # - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         # start_year: 1991, end_year: 2002, tier: 2}
     # scripts:
       # clim: &fig12b_settings 
-        # script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig12b.ncl
+        # #script: /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig12b.ncl
+        # script: eyring06jgr/eyring06jgr_fig12b.ncl
         # projection: CylindricalEquidistant
         # showdiff: false
         # e06fig12b_latmin: [ -82.5 ]
@@ -618,10 +625,10 @@ diagnostics:
         # e06fig12b_xMin: [1980]
         # e06fig12b_xMax: [2005]
         # e06fig12b_multimean: True
-  # # ==========================================================================
-  # # Eyring et al. (2006) - Figure 14
-  # # Annual cycle for total ozone
-  # # ==========================================================================
+  # ==========================================================================
+  # Eyring et al. (2006) - Figure 14
+  # Annual cycle for total ozone
+  # ==========================================================================
 
   # eyring06jgr_fig14:
     # description: Annual cycle for total ozone latitudinal map
@@ -634,14 +641,15 @@ diagnostics:
         # derive: true
         # force_derivation: false
         # preprocessor: zonal
-        # reference_dataset: NIWA
+        # reference_dataset: NIWA-BS
         # mip: Amon
     # additional_datasets:
-      # - {dataset: NIWA, project: OBS, type: sat, version: v1,
-         # start_year: 1980, end_year: 1999, tier: 3}
+      # - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3,
+         # start_year: 1980, end_year: 2005, tier: 3}
     # scripts:
       # clim: &fig14_settings
-        # script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig14.ncl
+        # #script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig14.ncl
+        # script:  eyring06jgr/eyring06jgr_fig14.ncl
         # projection: CylindricalEquidistant
         # showdiff: false
         # styleset: CMIP5
@@ -668,14 +676,15 @@ diagnostics:
         # derive: true
         # force_derivation: false
         # preprocessor: zonal
-        # reference_dataset: NIWA
+        # reference_dataset: NIWA-BS
         # mip: Amon
     # additional_datasets:
-      # - {dataset: NIWA, project: OBS, type: sat, version: v1,
+      # - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3,
          # start_year: 1980, end_year: 2005, tier: 3}
     # scripts:
       # clim: &fig15_settings
-        # script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig15.ncl
+        # #script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring06jgr/eyring06jgr_fig15.ncl
+        # script:  eyring06jgr/eyring06jgr_fig15.ncl
         # projection: CylindricalEquidistant
         # showdiff: false
         # styleset: CMIP5
