@@ -112,91 +112,50 @@ def _get_zonal_tau(diag_config):
 
     fig_config = _get_fig_config(diag_config)
     zonal_tau_mod = {}
-    global_gpp_mod = {}
-    global_ctotal_mod = {}
     for key, value in my_files_dict.items():
-        mod_coords = {}
         zonal_tau_mod[key] = {}
         ctotal = _load_variable(value, 'ctotal')
         gpp = _load_variable(value, 'gpp')
-        gpp_dat = xu.remove_invalid(gpp.data,
-                                    fill_value=fig_config['fill_value'])
-        ctotal_dat = xu.remove_invalid(ctotal.data,
-                                       fill_value=fig_config['fill_value'])
-        for coord in gpp.coords():
-            mod_coords[coord.name()] = coord.points
-        zonal_tau_mod[key]['data'] = _calc_zonal_tau(gpp_dat, ctotal_dat,
-                                                     mod_coords['latitude'],
-                                                     fig_config)
-        zonal_tau_mod[key]['latitude'] = mod_coords['latitude']
-        print(key, value)
+        zonal_tau_mod[key]['data'] = _calc_zonal_tau(gpp, ctotal, fig_config)
 
-        global_ctotal_mod[key] = ctotal_dat
-        global_gpp_mod[key] = gpp_dat
-
-    # get the multimodel median GPP and ctotal and calculate zonal tau from
-    # multimodel median
-    mm_ctotal = xu.remove_invalid(
-        np.nanmedian(
-            np.array([_ctotal for _ctotal in global_ctotal_mod.values()]),
-            axis=0),
-        fill_value=fig_config['fill_value'])
-    mm_gpp = xu.remove_invalid(
-        np.nanmedian(
-            np.array([_gpp for _gpp in global_gpp_mod.values()]),
-            axis=0),
-        fill_value=fig_config['fill_value'])
-    zonal_tau_mod['zmultimodel'] = {}
-    zonal_tau_mod['zmultimodel']['data'] = _calc_zonal_tau(
-        mm_gpp, mm_ctotal, mod_coords['latitude'], fig_config)
-    zonal_tau_mod['zmultimodel']['latitude'] = mod_coords['latitude']
-    # get the observation of zonal tau
     zonal_tau_obs = _get_obs_data(diag_config)
     # plot the figure
     _plot_zonal_tau(zonal_tau_mod, zonal_tau_obs, diag_config)
     return 'done plotting the zonal turnover time'
 
 
-def _calc_zonal_tau(dat_gpp, dat_ctotal, dat_lats, fig_config):
+def _calc_zonal_tau(gpp, ctotal, fig_config):
     '''
     calculate zonal turnover time
 
     Arguments:
-        dat_gpp - data of global gpp
-        dat_ctotal - total carbon content
-        dat_lats - latitude of the given model
+        gpp - cube of global gpp
+        ctotal - cube of total carbon content
         fig_config - figure/diagnostic configurations
 
     Returns:
         zonal_tau - zonal turnover time of carbon
     '''
     # get the interval of latitude and create array for partial correlation
+    dat_lats = gpp.coord('latitude').points
     lat_int = abs(dat_lats[1] - dat_lats[0])
-    zonal_tau = np.ones_like(dat_lats) * np.nan
-
     # get the size of the sliding window based on the bandsize in degrees
-    window_size = math.ceil(fig_config['bandsize'] / (lat_int * 2))
+    window_size = max(2, math.ceil(fig_config['bandsize'] / lat_int))
 
-    dat_gpp = xu.remove_invalid(dat_gpp, fill_value=fig_config['fill_value'])
-    dat_ctotal = xu.remove_invalid(dat_ctotal,
-                                   fill_value=fig_config['fill_value'])
+    gpp_zs = gpp.collapsed('longitude', iris.analysis.SUM)
+    ctotal_zs = ctotal.collapsed('longitude', iris.analysis.SUM)
+    gpp_z = gpp_zs.rolling_window('latitude',
+                                  iris.analysis.SUM, window_size)
+    ctotal_z = ctotal_zs.rolling_window('latitude',
+                                        iris.analysis.SUM, window_size)
 
-    min_points = np.shape(dat_gpp)[1] * fig_config['min_points_frac']
-    for lat_index in range(len(zonal_tau)):
-        istart = max(0, lat_index - window_size)
-        iend = min(np.size(dat_lats), lat_index + window_size + 1)
-        dat_gpp_zone = dat_gpp[istart:iend, :]  # * _area_zone
-        dat_ctotal_zone = dat_ctotal[istart:iend, :]  # * _area_zone
-        num_valid_points = np.nansum(~np.isnan(dat_gpp_zone + dat_ctotal_zone))
-        if num_valid_points > min_points:
-            zonal_tau[lat_index] = (
-                (np.nansum(dat_ctotal_zone) / np.nansum(dat_gpp_zone)) /
-                (86400 * 365))
+    zonal_tau = ctotal_z / gpp_z
+    zonal_tau.data = zonal_tau.core_data() / (86400 * 365)
+
     return zonal_tau
 
+
 # Plotting functions
-
-
 def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
     '''
     makes the maps of variables
@@ -236,16 +195,16 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
     for row_m in range(nmodels):
         row_mod = models[row_m]
         dat_mod_tau = all_mod_dat[row_mod]['data']
-        lats_mod = all_mod_dat[row_mod]['latitude']
-        if row_mod == 'zmultimodel':
-            sp0.plot(np.ma.masked_equal(dat_mod_tau, np.nan),
-                     lats_mod,
+        lats_mod = dat_mod_tau.coord('latitude')
+        if row_mod == 'MultiModelMedian':
+            sp0.plot(dat_mod_tau.data,
+                     lats_mod.points,
                      lw=1.5,
                      color='blue',
                      label='Multimodel')
         else:
-            sp0.plot(np.ma.masked_equal(dat_mod_tau, np.nan),
-                     lats_mod,
+            sp0.plot(dat_mod_tau.data,
+                     lats_mod.points,
                      lw=0.5,
                      label=row_mod)
 

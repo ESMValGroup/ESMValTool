@@ -36,9 +36,6 @@ preprocessors:
   # --------------------------------------------------
   preproc_meanRegrid:
     custom_order: true
-    climate_statistics:
-      operator: mean
-      period: full
     regrid:
       target_grid: NorESM1-M
       scheme: nearest
@@ -47,8 +44,9 @@ preprocessors:
     multi_model_statistics:
       span: full
       statistics: [median]
-    mask_landsea:
-      mask_out: sea
+    climate_statistics:
+      operator: mean
+      period: full
 
 diagnostics:
   # --------------------------------------------------
