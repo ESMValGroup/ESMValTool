@@ -73,19 +73,22 @@ load "$diag_scripts/shared/plot/aux_plotting.ncl"
 begin
 
   enter_msg(DIAG_SCRIPT, "")
-  fgco2_var = variable_info[0]@short_name
-  fgco2_items = select_metadata_by_name(input_file_info, fgco2_var)
-  tauu_var = variable_info[1]@short_name
+  fgco2_items = select_metadata_by_name(input_file_info, "fgco2")
+
+  var_names = metadata_att_as_array(variable_info, "short_name")
+  var_ind = str_match_ind(var_names, "tauu")
+  tauu_var = var_names(var_ind)
+  ; to run either tauu or tauuo
   tauu_items = select_metadata_by_name(input_file_info, tauu_var)
   tauu_inputfile_paths = metadata_att_as_array(tauu_items, "filename")
+
+  areacello_items = select_metadata_by_name(input_file_info, "areacello")
 
   fgco2_inputfile_paths = metadata_att_as_array(fgco2_items, "filename")
   start_years_data = metadata_att_as_array(fgco2_items, "start_year")
   end_years_data   = metadata_att_as_array(fgco2_items, "end_year")
   nDatasets = ListCount(tauu_items)
   datasetnames = metadata_att_as_array(fgco2_items, "dataset")
-
-  areacello_items = select_metadata_by_name(input_file_info, "areacello")
 
 end
 
