@@ -93,7 +93,7 @@ begin
 
     ; Special case hus: convert mixing ratio to specific humidity
     if (VAR(vv).eq."hus") then
-      xx = xx * 18.015 / 28.97  ; [mol/mol] --> [kg/kg]
+      xx = xx * 18.015 / 28.97  ; [m3/m3] --> [kg/kg]
       xx = xx / (1. + xx)
     end if
 
