@@ -112,6 +112,12 @@ class ExtremePrecipitation(object):
     def _plot_results(self, filename, season, fevd, rl):
         if not self.cfg[n.WRITE_PLOTS]:
             return
+
+        DEFAULT_PLOT_CONFIG = {
+            'plot_type': 'pcolormesh',
+            'cmap': 'Blues',
+            'coastlines': True,
+        }
         logger.info('Plot results')
         results_subdir = os.path.join(
             self.cfg[n.PLOT_DIR],
@@ -131,10 +137,7 @@ class ExtremePrecipitation(object):
             quickplot(
                 fevd[par],
                 filename=par_ffp,
-                **(self.cfg.get(
-                    'gev_quickplot',
-                    {'plot_type': 'pcolormesh', 'cmap': 'Blues'}
-                ))
+                **(self.cfg.get('gev_quickplot', DEFAULT_PLOT_CONFIG))
             )
         for return_period in rl:
             return_periods_path = os.path.join(
@@ -148,9 +151,7 @@ class ExtremePrecipitation(object):
                 rl[return_period],
                 filename=return_periods_path,
                 **(self.cfg.get(
-                    'return_period_quickplot',
-                    {'plot_type': 'pcolormesh', 'cmap': 'Blues'}
-                ))
+                    'return_period_quickplot', DEFAULT_PLOT_CONFIG))
             )
 
     def _save_results(self, filename, season, fevd, return_periods):
