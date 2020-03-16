@@ -89,7 +89,7 @@ refmsk[!is.na(refmsk)] <- 1
 xprov <- list(
   ancestors = list(""),
   authors = list("berg_peter"),
-  references = list("mckee93"),
+  references = list("mckee93proc"),
   projects = list("c3s-magic"),
   caption = "",
   statistics = list("other"),
@@ -131,7 +131,7 @@ for (mod in 1:nmods) {
   xprov$ancestors <- modfile[mod]
   provenance[[filename]] <- xprov
   # Weight against latitude
-  h <- c(1:length(histnams)) * 0
+  h <- seq_along(histnams) * 0
   for (j in 1:d[2]) {
     h <- h + hist(v1_spi[j, , ],
       breaks = histbrks,

@@ -24,11 +24,13 @@ REQUIREMENTS = {
     'install': [
         'cartopy',
         'cdo',
+        'cdsapi',
         'cf-units',
+        'cmocean',
         'cython',
         'ecmwf-api-client',
         'eofs',
-        'esmvalcore>=2.0.0b3,<2.1',
+        'esmvalcore>=2.0.0b8,<2.1',
         'fiona',
         'jinja2',
         'matplotlib<3',
@@ -36,10 +38,13 @@ REQUIREMENTS = {
         'netCDF4',
         'numpy',
         'pandas',
+        'pyproj>=2.1'
         'pyyaml',
         'rpy2',
         'scitools-iris>=2.2',
         'scikit-learn',
+        'seawater',
+        'seaborn',
         'shapely',
         'stratify',
         'xarray>=0.12',
@@ -58,7 +63,7 @@ REQUIREMENTS = {
         'pytest-cov',
         'pytest-env',
         'pytest-flake8',
-        'pytest-html',
+        'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
     ],
     # Development dependencies
@@ -142,6 +147,7 @@ class RunTests(CustomCommand):
             '--cov-report=xml:{}/coverage.xml'.format(report_dir),
             '--junit-xml={}/report.xml'.format(report_dir),
             '--html={}/report.html'.format(report_dir),
+            '--disable-warnings'
         ]
         if self.installation:
             args.append('--installation')
