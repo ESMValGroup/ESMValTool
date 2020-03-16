@@ -237,8 +237,6 @@ begin
         end if
       end if
     end do
-;;    delete(lat1)
-;;    delete(lat2)
     do lat_ind1 = a2, a1
       ; loops over each lat from 50S poleward till tauu becomes negative
       if ((tauu_lon(lat_ind1) .lt. 0).and.(tauu_lon(lat_ind1+1).ge.0)) then
@@ -250,8 +248,6 @@ begin
         delete(lat2)
       end if
     end do
-;;    delete(lat1)
-;;    delete(lat2)
     delete(var_lat)
     lat_width(iii) = final_lat - lower_lat
     delete(lower_lat)

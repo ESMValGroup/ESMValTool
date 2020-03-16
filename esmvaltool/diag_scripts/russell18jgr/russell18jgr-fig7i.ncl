@@ -105,7 +105,6 @@ begin
     res@tiYAxisOffsetXF            = 0.01
 
   do iii = 0, nDatasets - 1
-;;    dataset = read_data(info_items[iii])
     dataset = read_data(fgco2_items[iii])
     infile_path = inputfile_paths(iii)
     infile_iii  = addfile(infile_path, "r")
@@ -177,7 +176,6 @@ begin
       delete(area_lat)
 
     end if
-;;    delete(fx_var)
     delete(infile_iii)
     delete(carbon_flux)
     delete(carbon_flux_per_lat)

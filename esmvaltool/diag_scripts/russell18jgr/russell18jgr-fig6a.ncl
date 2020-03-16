@@ -144,15 +144,14 @@ begin
 
   do iii = 0, dim_models - 1
 
-;;    fx_var = read_fx_data(vo_items[iii], "volcello")
     fx_var = read_data(volcello_items[iii])
 
     if (all(ismissing(fx_var))) then
     ; to give fatal error if volcello is missing
       fx_variable = "volcello"
       error_msg("f", "russell18jgr-fig6.ncl", " ", "volcello file for "  \
-;;                + annots(iii) + " not found in the metadata file, please add "\
-                + vo_datasets(iii) + " not found in the metadata file, please add "\
+                + vo_datasets(iii) \
+                + " not found in the metadata file, please add "\
                 + "'fx_files: [volcello]' to the variable dictionary in the " \
                 + "recipe or add the location of file to input directory " \
                 + "in config-user.yml ")
@@ -647,7 +646,7 @@ begin
                         + sprintf("%4.2f", exact_lat) + "S)"
     res@gsnRightString  = "Net Transport out of Southern ocean = " + \
                           sprintf("%4.2f", lv(0)) + "Sv"
-    res@tiMainString    = vo_datasets(iii)  ;;datasetnames(iii)
+    res@tiMainString    = vo_datasets(iii)
     res@xyLineColors    = (/"black", "black"/)
     res@gsnXYBarChartColors2 = ("red")
 
@@ -689,13 +688,12 @@ begin
     out_var@diag_script = "russell18jgr_fig6a.ncl"
     out_var@description = "Transport in main layers(blue bars) in i(0-11)" + \
       " and transport in sub layers (red bars) in i(12-55) at " + \
-      exact_lat + "S of model " + vo_datasets(iii)  ;;datasetnames(iii)
+      exact_lat + "S of model " + vo_datasets(iii)
     delete(lv)
     delete(lv0)
     delete(exact_lat)
 
     nc_filename = config_user_info@work_dir + "russell18jgr-figure6a_" \
-;;      + datasetnames(iii) + "_" + (start_years_data(iii)) + "-" + \
       + vo_datasets(iii) + "_" + (start_years_data(iii)) + "-" + \
       (end_years_data(iii)) + ".nc"
     ncdf_outfile = ncdf_write(out_var, nc_filename)
@@ -708,7 +706,7 @@ begin
                    (/"bar", "vert"/),  \
                    "russell_joellen", \
                    "russell18jgr", \
-                   (/ vo_inputfile_paths(iii), thetao_inputfile_paths(iii),\
+                   (/ vo_inputfile_paths(iii), thetao_inputfile_paths(iii), \
                     so_inputfile_paths(iii)/))
   end do
 
