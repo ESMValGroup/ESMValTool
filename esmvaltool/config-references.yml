@@ -724,6 +724,7 @@ references:
   hadcrut3: "Brohan et al., J. Geophys. Res., doi:10.1029/2005JD006548, 2006."
   hadcrut4: "Morice et al., J. Goophys. Res., doi:10.1029/2011JD017187, 2012."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  haloe: "Gross and Russell III, Atmos. Chem. Phys., doi:10.5194/acp-5-2797-2005, 2005."
   hwsd: "Wieder et al., doi:10.3334/ornldaac/1247, 2014."
   isccp-fh: "Zhang et al., Calculation, Evaluation and Application of Long-term, Global Radiative Flux Datasets at ISCCP: Past and Present, https://isccp.giss.nasa.gov/pub/flux-fh/docs/Zhang_etal_flux-cal_at-isccp_v3_2019.pdf, 2019."
   jma-transcom: "Maki et al., Tellus B, doi:10.1111/j.1600-0889.2010.00488.x, 2010."
