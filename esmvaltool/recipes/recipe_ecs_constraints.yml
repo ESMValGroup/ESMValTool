@@ -1,0 +1,1130 @@
+# recipe_ecs_multivariate_constraint.yml
+---
+documentation:
+  description: |
+    Multiple emergent constraints for ECS.
+
+  authors:
+    - schlund_manuel
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - gregory04grl
+    - sherwood14nat
+    - tian15grl
+    - lipat17grl
+    - brient16jclim
+    - cox18nature
+    - volodin08izvestiya
+    - zhai15grl
+    - brient16climdyn
+    - su14jgr
+
+  projects:
+    - crescendo
+
+
+VARIABLE_ANCHOR: &var_settings_cmip5
+  project: CMIP5
+  exp: historical
+  ensemble: r1i1p1
+
+DIAG_NCL: &diag_ncl
+  script: emergent_constraints/ecs_scatter.ncl
+  output_diag_only: true
+
+DIAG_EMERGENT_CONSTRAINT: &diag_emergent_constraint
+  script: emergent_constraints/univariate_constraint.py
+  ancestors: [
+    'ecs_predictor',
+    'diag_y_ecs_cmip5/ecs',
+  ]
+  group_by: project
+  ignore_patterns:
+    - 'ecs_regression_*.nc'
+    - 'lambda.nc'
+    - 'psi_*.nc'
+    - 'su_*.nc'
+    - 'zhai_*.nc'
+  read_external_file: ~/INPUT.yml
+
+
+preprocessors:
+
+  pp500: &pp500
+    extract_levels:
+      levels: 50000
+      scheme: linear
+
+  pp_ltmi_0:
+    extract_levels:
+      levels: [85000, 70000, 60000, 50000, 40000]
+      scheme: linear
+
+  pp_ltmi_1:
+    extract_levels:
+      levels: [85000, 70000]
+      scheme: linear
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+  tropical_mean:
+    extract_region:
+      start_latitude: -28
+      end_latitude: 28
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+
+  southern_midlatitudes_mean:
+    extract_region:
+      start_latitude: -56
+      end_latitude: -36
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+
+  tropical_seamask_30: &tropical_seamask_30_pp
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+    mask_landsea:
+      mask_out: land
+
+  tropical_seamask_30_500hPa:
+    <<: *tropical_seamask_30_pp
+    <<: *pp500
+
+  tropical_mask_40: &tropical_mask_40_pp
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_latitude: -40
+      end_latitude: 40
+      start_longitude: 0
+      end_longitude: 360
+
+  tropical_mask_40_500hPa:
+    <<: *tropical_mask_40_pp
+    <<: *pp500
+
+  zonal_mean:
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    extract_levels:
+      levels: [
+        100000,
+        92500,
+        85000,
+        70000,
+        60000,
+        50000,
+        40000,
+        30000,
+        25000,
+        20000,
+        15000,
+        10000,
+      ]
+      scheme: linear
+    extract_region:
+      start_latitude: -45
+      end_latitude: 40
+      start_longitude: 0
+      end_longitude: 360
+    zonal_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  diag_y_ecs_cmip5:
+    description: Equilibrium Climate Sensitivity for CMIP5.
+    variables:
+      tas_rtnt: &tas_settings_cmip5
+        short_name: tas
+        preprocessor: spatial_mean
+        project: CMIP5
+        mip: Amon
+        ensemble: r1i1p1
+        additional_datasets: &rtnt_datasets_cmip5
+          # Models with missing data (on all ESGF nodes)
+          # EC-EARTH (no rsut)
+          - {dataset: ACCESS1-0,     exp: piControl,   start_year:  300, end_year:  449}
+          - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year:  300, end_year:  449}
+          - {dataset: ACCESS1-3,     exp: piControl,   start_year:  250, end_year:  399}
+          - {dataset: ACCESS1-3,     exp: abrupt4xCO2, start_year:  250, end_year:  399}
+          - {dataset: bcc-csm1-1,    exp: piControl,   start_year:  160, end_year:  309}
+          - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, start_year:  160, end_year:  309}
+          - {dataset: bcc-csm1-1-m,  exp: piControl,   start_year:  240, end_year:  389}
+          - {dataset: bcc-csm1-1-m,  exp: abrupt4xCO2, start_year:  240, end_year:  389}
+          - {dataset: BNU-ESM,       exp: piControl,   start_year: 1850, end_year: 1999}
+          - {dataset: BNU-ESM,       exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: CanESM2,       exp: piControl,   start_year: 2321, end_year: 2470}
+          - {dataset: CanESM2,       exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          # Wrong start year for piControl? (branch_time = 2.)
+          - {dataset: CCSM4,         exp: piControl,   start_year:  250, end_year:  399}
+          - {dataset: CCSM4,         exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: CNRM-CM5,      exp: piControl,   start_year: 1850, end_year: 1999}
+          - {dataset: CNRM-CM5,      exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          # Only 140 years available
+          - {dataset: CNRM-CM5-2,    exp: piControl,   start_year: 1850, end_year: 1989}
+          - {dataset: CNRM-CM5-2,    exp: abrupt4xCO2, start_year: 1850, end_year: 1989}
+          - {dataset: CSIRO-Mk3-6-0, exp: piControl,   start_year:  104, end_year:  253}
+          - {dataset: CSIRO-Mk3-6-0, exp: abrupt4xCO2, start_year:    1, end_year:  150}
+          - {dataset: FGOALS-g2,     exp: piControl,   start_year:  490, end_year:  639}
+          - {dataset: FGOALS-g2,     exp: abrupt4xCO2, start_year:  490, end_year:  639}
+          # branch_time_in_child weird
+          - {dataset: FGOALS-s2,     exp: piControl,   start_year: 1850, end_year: 1999}
+          - {dataset: FGOALS-s2,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: GFDL-CM3,      exp: piControl,   start_year:    1, end_year:  150}
+          - {dataset: GFDL-CM3,      exp: abrupt4xCO2, start_year:    1, end_year:  150}
+          - {dataset: GFDL-ESM2G,    exp: piControl,   start_year:    1, end_year:  150}
+          - {dataset: GFDL-ESM2G,    exp: abrupt4xCO2, start_year:    1, end_year:  150}
+          - {dataset: GFDL-ESM2M,    exp: piControl,   start_year:    1, end_year:  150}
+          - {dataset: GFDL-ESM2M,    exp: abrupt4xCO2, start_year:    1, end_year:  150}
+          - {dataset: GISS-E2-H,     exp: piControl,   start_year: 2660, end_year: 2809}
+          - {dataset: GISS-E2-H,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: GISS-E2-R,     exp: piControl,   start_year: 4200, end_year: 4349}
+          - {dataset: GISS-E2-R,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          # Experiments start at 1859-12-01
+          - {dataset: HadGEM2-ES,    exp: piControl,   start_year: 1860, end_year: 2009}
+          - {dataset: HadGEM2-ES,    exp: abrupt4xCO2, start_year: 1860, end_year: 2009}
+          - {dataset: inmcm4,        exp: piControl,   start_year: 2090, end_year: 2239}
+          - {dataset: inmcm4,        exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+          # Only 140 years available
+          - {dataset: IPSL-CM5A-MR,  exp: piControl,   start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM5A-MR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM5B-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
+          - {dataset: IPSL-CM5B-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: MIROC5,        exp: piControl,   start_year: 2100, end_year: 2249}
+          - {dataset: MIROC5,        exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
+          - {dataset: MIROC-ESM,     exp: piControl,   start_year: 1880, end_year: 2029}
+          - {dataset: MIROC-ESM,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
+          - {dataset: MPI-ESM-LR,    exp: piControl,   start_year: 1880, end_year: 2029}
+          - {dataset: MPI-ESM-LR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: MPI-ESM-MR,    exp: piControl,   start_year: 1850, end_year: 1999}
+          - {dataset: MPI-ESM-MR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: MPI-ESM-P,     exp: piControl,   start_year: 1866, end_year: 2015}
+          - {dataset: MPI-ESM-P,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+          - {dataset: MRI-CGCM3,     exp: piControl,   start_year: 1891, end_year: 2040}
+          - {dataset: MRI-CGCM3,     exp: abrupt4xCO2, start_year: 1851, end_year: 2000}
+          - {dataset: NorESM1-M,     exp: piControl,   start_year:  700, end_year:  849}
+          - {dataset: NorESM1-M,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
+      tas_rtmt:
+        <<: *tas_settings_cmip5
+        additional_datasets: &rtmt_datasets_cmip5
+          - {dataset: IPSL-CM5A-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
+          - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      rtnt:
+        <<: *tas_settings_cmip5
+        short_name: rtnt
+        derive: true
+        additional_datasets: *rtnt_datasets_cmip5
+      rtmt:
+        <<: *tas_settings_cmip5
+        short_name: rtmt
+        additional_datasets: *rtmt_datasets_cmip5
+    scripts:
+      ecs:
+        script: climate_metrics/ecs.py
+        calculate_mmm: false
+        output_attributes:
+          var_type: label
+          tag: ECS
+          plot_ylim: [1.5, 6.0]
+          project: CMIP5
+          provenance_authors: ['schlund_manuel']
+          provenance_domains: ['global']
+          provenance_realms: ['atmos']
+          provenance_references: ['gregory04grl']
+          provenance_statistics: ['mean', 'anomaly']
+          provenance_themes: ['phys']
+
+  diag_x_sherwood_ltmi_cmip5:
+    description: Lower tropospheric mixing index (Sherwood et al., 2014) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      hur:
+        <<: *var_settings_cmip5
+        preprocessor: pp_ltmi_1
+        mip: Amon
+        start_year: 1989
+        end_year: 1998
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      ta:
+        <<: *var_settings_cmip5
+        preprocessor: pp_ltmi_1
+        mip: Amon
+        start_year: 1989
+        end_year: 1998
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      wap:
+        <<: *var_settings_cmip5
+        preprocessor: pp_ltmi_0
+        mip: Amon
+        start_year: 1989
+        end_year: 1998
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No hur
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        <<: *diag_ncl
+        diag: ltmi
+        output_attributes:
+          var_type: feature
+          tag: SHL
+          plot_xlabel: 'LTMI [1]'
+          plot_title: 'Sherwood et al. (2014) constraint'
+          plot_xlim: [0.45, 1.0]
+          project: CMIP5
+          provenance_authors: ['lauer_axel']
+          provenance_references: ['sherwood14nat']
+          provenance_realms: ['atmos']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_sherwood_d_cmip5:
+    description: Sherwood D index (Sherwood et al., 2014) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      wap:
+        <<: *var_settings_cmip5
+        preprocessor: pp_ltmi_0
+        mip: Amon
+        start_year: 1989
+        end_year: 1998
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No wap
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        <<: *diag_ncl
+        diag: sherwood_d
+        output_attributes:
+          var_type: feature
+          tag: SHD
+          plot_xlabel: 'Sherwood D index [1]'
+          plot_title: 'Sherwood et al. (2014) constraint'
+          plot_xlim: [0.15, 0.65]
+          project: CMIP5
+          provenance_authors: ['lauer_axel']
+          provenance_references: ['sherwood14nat']
+          provenance_realms: ['atmos']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_sherwood_s_cmip5:
+    description: Sherwood S index (Sherwood et al., 2014) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      hur:
+        <<: *var_settings_cmip5
+        preprocessor: pp_ltmi_1
+        mip: Amon
+        start_year: 1989
+        end_year: 1998
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      ta:
+        <<: *var_settings_cmip5
+        preprocessor: pp_ltmi_1
+        mip: Amon
+        start_year: 1989
+        end_year: 1998
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      wap:
+        <<: *var_settings_cmip5
+        preprocessor: pp_ltmi_0
+        mip: Amon
+        start_year: 1989
+        end_year: 1998
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No hur
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        <<: *diag_ncl
+        diag: sherwood_s
+        output_attributes:
+          var_type: feature
+          tag: SHS
+          plot_xlabel: 'Sherwood S index [1]'
+          plot_title: 'Sherwood et al. (2014) constraint'
+          plot_xlim: [0.2, 0.6]
+          project: CMIP5
+          provenance_authors: ['lauer_axel']
+          provenance_references: ['sherwood14nat']
+          provenance_realms: ['atmos']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_tian_itcz_cmip5:
+    description: Southern ITCZ index (Tian, 2015) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      pr:
+        <<: *var_settings_cmip5
+        preprocessor: default
+        mip: Amon
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: GPCP-SG
+        additional_datasets:
+          - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No pr
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        <<: *diag_ncl
+        diag: itczidx
+        output_attributes:
+          var_type: feature
+          tag: TII
+          plot_xlabel: 'Southern ITCZ index [mm day$^{-1}$]'
+          plot_title: 'Tian (2015) constraint'
+          plot_xlim: [-1.0, 3.0]
+          project: CMIP5
+          provenance_authors: ['lauer_axel']
+          provenance_references: ['tian15grl']
+          provenance_realms: ['atmos']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_tian_hum_cmip5:
+    description: Humidity index (Tian, 2015) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      hus:
+        <<: *var_settings_cmip5
+        preprocessor: pp500
+        mip: Amon
+        start_year: 2003
+        end_year: 2005
+        reference_dataset: AIRS
+        additional_datasets:
+          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No hus
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        <<: *diag_ncl
+        diag: humidx
+        output_attributes:
+          var_type: feature
+          tag: TIH
+          plot_xlabel: 'Tropical Mid-tropospheric humidity index [%]'
+          plot_title: 'Tian (2015) constraint'
+          plot_xlim: [-10.0, 50.0]
+          project: CMIP5
+          provenance_authors: ['lauer_axel']
+          provenance_references: ['tian15grl']
+          provenance_realms: ['atmos']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_lipat_cmip5:
+    description: Climatological Hadley cell extent (Lipat et al., 2017) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      va:
+        <<: *var_settings_cmip5
+        preprocessor: default
+        mip: Amon
+        start_year: 1980
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No va
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        <<: *diag_ncl
+        diag: shhc
+        output_attributes:
+          var_type: feature
+          tag: LIP
+          plot_xlabel: 'Southern hemisphere Hadley cell extent [°]'
+          plot_title: 'Lipat et al. (2017) constraint'
+          plot_xlim: [-39.0, -30.0]
+          project: CMIP5
+          provenance_authors: ['lauer_axel']
+          provenance_references: ['lipat17grl']
+          provenance_realms: ['atmos']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_brient_alb_cmip5:
+    description: Covariance of shortwave cloud reflection (Brient and Schneider, 2016) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      ts:
+        <<: *var_settings_cmip5
+        mip: Amon
+        preprocessor: default
+        start_year: 2001
+        end_year: 2005
+        reference_dataset: HadISST
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      hur:
+        <<: *var_settings_cmip5
+        preprocessor: pp500
+        mip: Amon
+        start_year: 2001
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      rsut:
+        <<: *var_settings_cmip5
+        preprocessor: default
+        mip: Amon
+        start_year: 2001
+        end_year: 2005
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      rsutcs:
+        <<: *var_settings_cmip5
+        preprocessor: default
+        mip: Amon
+        start_year: 2001
+        end_year: 2005
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      rsdt:
+        <<: *var_settings_cmip5
+        preprocessor: default
+        mip: Amon
+        start_year: 2001
+        end_year: 2005
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No ts
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        <<: *diag_ncl
+        diag: covrefl
+        output_attributes:
+          var_type: feature
+          tag: BRA
+          plot_xlabel: 'Response of SW cloud reflectivity to SST changes [% K$^{-1}$]'
+          plot_title: 'Brient and Schneider (2016) constraint'
+          plot_xlim: [-3.0, 1.5]
+          project: CMIP5
+          provenance_authors: ['lauer_axel']
+          provenance_references: ['brient16jclim']
+          provenance_realms: ['atmos']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_cox_cmip5:
+    description: Temperature variability metric psi (Cox et al., 2018) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      tas:
+        <<: *var_settings_cmip5
+        preprocessor: spatial_mean
+        mip: Amon
+        exp: [historical, rcp85]
+        start_year: 1880
+        end_year: 2014
+        reference_dataset: HadCRUT4
+        additional_datasets:
+          - {dataset: ACCESS1-0}
+          - {dataset: ACCESS1-3}
+          - {dataset: bcc-csm1-1}
+          - {dataset: bcc-csm1-1-m}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CCSM4}
+          - {dataset: CNRM-CM5}
+          # No tas for rcp85
+          # - {dataset: CNRM-CM5-2}
+          - {dataset: CSIRO-Mk3-6-0}
+          - {dataset: FGOALS-g2}
+          # No tas
+          # - {dataset: FGOALS-s2}
+          - {dataset: GFDL-CM3}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: GISS-E2-H}
+          - {dataset: GISS-E2-R}
+          - {dataset: HadGEM2-ES}
+          - {dataset: inmcm4}
+          - {dataset: IPSL-CM5A-LR}
+          - {dataset: IPSL-CM5A-MR}
+          - {dataset: IPSL-CM5B-LR}
+          - {dataset: MIROC5}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MPI-ESM-MR}
+          # No tas for rcp85
+          # - {dataset: MPI-ESM-P}
+          - {dataset: MRI-CGCM3}
+          - {dataset: NorESM1-M}
+      tasa:
+        <<: *var_settings_cmip5
+        preprocessor: spatial_mean
+        mip: Amon
+        start_year: 1880
+        end_year: 2014
+        reference_dataset: HadCRUT4
+        additional_datasets:
+          - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2}
+    scripts:
+      ecs_predictor:
+        script: climate_metrics/psi.py
+        output_attributes:
+          var_type: feature
+          tag: COX
+          plot_xlabel: 'Temperature variability metric $\psi$ [K]'
+          plot_title: 'Cox et al. (2018) constraint'
+          plot_xlim: [0.05, 0.35]
+          project: CMIP5
+          provenance_authors: ['schlund_manuel']
+          provenance_domains: ['global']
+          provenance_realms: ['atmos']
+          provenance_references: ['cox18nature']
+          provenance_statistics: ['var', 'diff', 'corr', 'detrend']
+          provenance_themes: ['EC']
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_volodin_cmip5:
+    description: Difference in total cloud fraction between tropics and Southern midlatitudes (Volodin, 2008) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      trop_clt:
+        <<: *var_settings_cmip5
+        short_name: clt
+        mip: Amon
+        preprocessor: tropical_mean
+        start_year: 1980
+        end_year: 2000
+        reference_dataset: ''
+      southern_midlat_clt:
+        <<: *var_settings_cmip5
+        short_name: clt
+        mip: Amon
+        preprocessor: southern_midlatitudes_mean
+        start_year: 1980
+        end_year: 2000
+        reference_dataset: ''
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No clt
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        script: emergent_constraints/ecs_scatter.py
+        diag: volodin
+        output_attributes:
+          var_type: feature
+          tag: VOL
+          plot_xlim: [-40.0, 10.0]
+          project: CMIP5
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_zhai_cmip5:
+    description: Seasonal MBLC fraction variation (Zhai et al., 2015) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      cl:
+        <<: *var_settings_cmip5
+        preprocessor: tropical_mask_40
+        mip: Amon
+        start_year: 1980
+        end_year: 2004
+        reference_dataset: ''
+      wap:
+        <<: *var_settings_cmip5
+        preprocessor: tropical_mask_40_500hPa
+        mip: Amon
+        start_year: 1980
+        end_year: 2004
+        reference_dataset: ''
+      tos:
+        <<: *var_settings_cmip5
+        preprocessor: tropical_mask_40
+        mip: Omon
+        start_year: 1980
+        end_year: 2004
+        reference_dataset: ''
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      # No tos
+      # - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      # No cl
+      # - {dataset: CNRM-CM5}
+      # - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No cl
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      # latitude and longitude cannot be read for tos
+      # - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      # Irregular regridding of tos fails
+      # - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        script: emergent_constraints/ecs_scatter.py
+        diag: zhai
+        output_attributes:
+          var_type: feature
+          tag: ZHA
+          plot_xlim: [-3.0, 1.0]
+          project: CMIP5
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_brient_shal_cmip5:
+    description: Shallowness of low clouds (Brient et al., 2015) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      cl:
+        <<: *var_settings_cmip5
+        preprocessor: tropical_seamask_30
+        mip: Amon
+        start_year: 1980
+        end_year: 2004
+        reference_dataset: ''
+      wap:
+        <<: *var_settings_cmip5
+        preprocessor: tropical_seamask_30_500hPa
+        mip: Amon
+        start_year: 1980
+        end_year: 2004
+        reference_dataset: ''
+      zg:
+        <<: *var_settings_cmip5
+        preprocessor: tropical_seamask_30
+        mip: Amon
+        start_year: 1980
+        end_year: 2004
+        reference_dataset: ''
+    additional_datasets:
+      # Latitude differs for cl and wap
+      # - {dataset: ACCESS1-0}
+      # - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      # No cl
+      # - {dataset: CNRM-CM5}
+      # - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No cl
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      # Latitude differs for cl and zg
+      # - {dataset: GISS-E2-H}
+      # - {dataset: GISS-E2-R}
+      # Latitude differs for cl and wap
+      # - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        script: emergent_constraints/ecs_scatter.py
+        diag: brient_shal
+        output_attributes:
+          var_type: feature
+          tag: BRS
+          plot_xlim: [30.0, 90.0]
+          project: CMIP5
+      emergent_constraint: *diag_emergent_constraint
+
+  diag_x_su_hur_cmip5:
+    description: Error in relative humidity (Su et al., 2014) for CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      hur:
+        <<: *var_settings_cmip5
+        preprocessor: zonal_mean
+        mip: Amon
+        exp: [historical, rcp85]
+        start_year: 2005
+        end_year: 2010
+        reference_dataset: 'AIRS-2-0|MLS-AURA'
+        additional_datasets:
+          - {dataset: AIRS-2-0, project: obs4mips, level: L3, version: v2, tier: 1}
+          - {dataset: MLS-AURA, project: OBS6, type: sat, version: '004', tier: 3}
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      # No hur for rcp85
+      # - {dataset: CCSM4}
+      - {dataset: CNRM-CM5}
+      # No hur for rcp85
+      # - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # No hur
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      # No hur for rcp85
+      # - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+    scripts:
+      ecs_predictor:
+        script: emergent_constraints/ecs_scatter.py
+        diag: su
+        metric: regression_slope
+        output_attributes:
+          var_type: feature
+          tag: SU
+          plot_xlim: [0.65, 1.3]
+          project: CMIP5
+      emergent_constraint: *diag_emergent_constraint
