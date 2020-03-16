@@ -101,7 +101,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
     # Fix metadata
     attrs = cfg['attributes'].copy()
     attrs['mip'] = var['mip']
-    attrs['version'] = version
+    attrs['version'] = version.replace('_', '-')
     attrs['reference'] = var['reference']
     attrs['source'] = attrs['source']
     utils.set_global_atts(cube, attrs)
