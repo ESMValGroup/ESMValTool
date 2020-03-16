@@ -59,8 +59,7 @@ begin
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + \
-    (/"/cmip5/Tables/CMIP5_Amon"/)
-      "/cmip5/Tables/CMIP5_Amon"/)
+    (/"/cmip5/Tables/CMIP5_Amon", "/cmip5/Tables/CMIP5_Amon"/)
 
   ; Type
   TYPE = "sat"
