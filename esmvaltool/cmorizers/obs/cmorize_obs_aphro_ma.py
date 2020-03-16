@@ -28,6 +28,12 @@ Download and processing instructions
     Please untar / unzip all *.tar *.tgz *.gz files in the same directory
     (no subdirectories!) prior to running the cmorizer!
 
+Issues:
+    In input file APHRO_MA_TAVE_050deg_V1808.2015.nc the input variable is
+    called ta instead of tave as in the other files.
+    Currently resolved using raw_fallback: ta in case of thrown 
+    iris.exceptions.ConstraintMismatchError
+
 Refs:
     APHRO_V1101 and APHRO_V1101EX_R1
     Yatagai, A., K. Kamiguchi, O. Arakawa, A. Hamada, N. Yasutomi, and
@@ -69,10 +75,17 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
             category=UserWarning,
             module='iris',
         )
-        cube = iris.load_cube(
-            str(filepath),
-            constraint=utils.var_name_constraint(var['raw']),
-            )
+        try:
+            cube = iris.load_cube(
+                str(filepath),
+                constraint=utils.var_name_constraint(var['raw']),
+                )
+        except iris.exceptions.ConstraintMismatchError:
+            cube = iris.load_cube(
+                str(filepath),
+                constraint=utils.var_name_constraint(var['raw_fallback']),
+                )
+
 
     # Fix var units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
