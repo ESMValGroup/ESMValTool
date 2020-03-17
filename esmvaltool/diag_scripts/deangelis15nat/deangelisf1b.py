@@ -179,11 +179,10 @@ def main(cfg):
     logging.debug("Found datasets in recipe:\n%s", data)
 
     # Variables
-    var = e.Variables(cfg)
-    logging.debug("Found variables in recipe:\n%s", var)
-
+    # var = e.Variables(cfg)
     available_vars = list(group_metadata(cfg['input_data'].values(),
                                          'short_name'))
+    logging.debug("Found variables in recipe:\n%s", available_vars)
 
     available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
 
