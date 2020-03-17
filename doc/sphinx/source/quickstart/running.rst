@@ -1,8 +1,8 @@
 .. _running:
 
-******************
-Running ESMValTool
-******************
+*******
+Running
+*******
 
 ESMValTool is mostly used as a command line tool. Whenever your
 conda environment for ESMValTool is active, you can just run the command

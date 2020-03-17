@@ -1,7 +1,7 @@
 .. _inputdata:
 
 ********************
-Acquiring input data
+Obtaining input data
 ********************
 
 ESMValTool accepts input data from various models as well as
