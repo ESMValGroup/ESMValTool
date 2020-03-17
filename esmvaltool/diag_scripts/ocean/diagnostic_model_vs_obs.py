@@ -399,6 +399,7 @@ def make_scatter(
         # Create the cubes
         model_data = np.ma.array(cubes['model'][layer].data)
         obs_data = np.ma.array(cubes['obs'][layer].data)
+        units = str(cubes['model'][layer].units)
 
         mask = model_data.mask + obs_data.mask
         model_data = np.ma.masked_where(mask, model_data).compressed()
@@ -408,12 +409,25 @@ def make_scatter(
         zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
-        x_scale = 'log'
+        x_scale = 'log'          
+        mask_neg = False
+        if np.min(zrange) < 0.:
+            if mask_neg:
+                mask = np.ma.masked_where(model_data<=0., model_data).mask 
+                mask += np.ma.masked_where(obs_data<=0., obs_data).mask
+            
+                model_data = np.ma.masked_where(mask, model_data).compressed()
+                obs_data = np.ma.masked_where(mask, obs_data).compressed()  
+                zrange = diagtools.get_array_range([model_data, obs_data])
+                plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]                      
+            else:
+                #logger.info('Skip scatter for %s. Min is < 0', long_name)
+                #return
+                x_scale = 'linear'                
+
         if np.min(zrange) * np.max(zrange) < -1:
             x_scale = 'linear'
-        if np.min(zrange) < 0.:
-            logger.info('Skip scatter for %s. Min is < 0', long_name)
-            return
+            
 
         pyplot.hexbin(
             model_data,
@@ -439,7 +453,7 @@ def make_scatter(
             add_diagonal=True,
             extent=plotrange)
 
-        pyplot.title(long_name)
+        pyplot.title(long_name+ ', '+units)
         pyplot.xlabel(model)
         pyplot.ylabel(obs)
 
