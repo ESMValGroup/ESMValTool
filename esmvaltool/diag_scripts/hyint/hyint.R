@@ -61,11 +61,16 @@ library(tools)
 library(yaml)
 library(ncdf4)
 
+print("ciao2")
 # get path to script and source subroutines (if needed)
-args <- commandArgs(trailingOnly = FALSE)
-spath <- paste0(dirname(unlist(strsplit(grep("--file", args,
-  value = TRUE
-), "="))[2]), "/")
+#args <- commandArgs(trailingOnly = FALSE)
+
+#spath <- paste0(dirname(unlist(strsplit(grep("--file", args,
+#  value = TRUE
+#), "="))[2]), "/")
+
+diag_scripts_dir <- Sys.getenv("diag_scripts")
+spath <- paste0(diag_scripts_dir, "/", "hyint", "/")
 
 source(paste0(spath, "hyint_functions.R"))
 source(paste0(spath, "hyint_metadata.R"))
