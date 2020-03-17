@@ -61,7 +61,6 @@ library(tools)
 library(yaml)
 library(ncdf4)
 
-print("ciao2")
 # get path to script and source subroutines (if needed)
 #args <- commandArgs(trailingOnly = FALSE)
 
@@ -262,7 +261,7 @@ if (write_plots) {
 for (fname in names(prov_info)) {
   xprov <- list(
     ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
-    authors = list("arno_en", "hard_jo"),
+    authors = list("arnone_enrico", "vonhardenberg_jost"),
     references = list("giorgi11jc", "giorgi14jgr"),
     projects = list("c3s-magic"),
     caption = prov_info[[fname]]$caption,
