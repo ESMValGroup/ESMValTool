@@ -31,6 +31,7 @@ Configuration options
 import logging
 import os
 from collections import OrderedDict
+from pprint import pformat
 import iris
 import iris.coord_categorisation as cat
 import numpy as np
@@ -45,13 +46,34 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def _get_sel_files_var(cfg, varnames):
+    """Get filenames from cfg for all model mean and differen variables."""
+    selection = []
+
+    for var in varnames:
+        for hlp in select_metadata(cfg['input_data'].values(), short_name=var):
+            selection.append(hlp['filename'])
+
+    return selection
+
+
+def cube_to_save_matrix(var1, name):
+    """Create cubes to prepare scatter plot data for saving to netCDF."""
+    cubes = iris.cube.CubeList([iris.cube.Cube(var1,
+                                               var_name=name['var_name'],
+                                               long_name=name['long_name'],
+                                               units=name['units'])])
+
+    return cubes
+
+
 def get_provenance_record(ancestor_files, caption, statistics,
-                          domains, plot_type='scatter'):
+                          plot_type='scatter'):
     """Get Provenance record."""
     record = {
         'caption': caption,
         'statistics': statistics,
-        'domains': domains,
+        'domains': ['global'],
         'plot_type': plot_type,
         'themes': ['phys'],
         'authors': [
@@ -219,7 +241,7 @@ def plot_slope_regression(cfg, data_dict):
     plt.close()
 
 
-def plot_slope_regression_all(cfg, data_dict):
+def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
     if not cfg[n.WRITE_PLOTS]:
         return
@@ -322,28 +344,20 @@ def plot_slope_regression_all(cfg, data_dict):
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2a', cfg), dpi=300)
     plt.close()
-    
-    caption = 'Global average multi-model mean comparing different ' + \
-              'model experiments and flux variables.'
+
+    caption = '...'
 
     provenance_record = get_provenance_record(
-        _get_sel_files_var(cfg, available_vars), caption, ['mean'], ['global'])
+        _get_sel_files_var(cfg, available_vars), caption, ['mean'])
 
-    diagnostic_file = get_diagnostic_filename('bar_all', cfg)
+    diagnostic_file = get_diagnostic_filename('exfig2a', cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    list_dict = {}
-    list_dict["data"] = []
-    list_dict["name"] = []
-    for iexp in available_exp:
-        list_dict["data"].append(data_var_sum[iexp])
-        list_dict["name"].append({'var_name': iexp + '_all',
-                                  'long_name': 'Fluxes for ' + iexp +
-                                               ' experiment',
-                                  'units': 'W m-2'})
-
-    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
+    iris.save(cube_to_save_matrix(data_model, {'var_name': 'all',
+                                               'long_name': 'All',
+                                               'units': 'W m-2 K-1'}),
+              target=diagnostic_file)
 
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
@@ -528,12 +542,29 @@ def main(cfg):
 
     # Variables
     var = e.Variables(cfg)
-    logging.debug("Found variables in recipe:\n%s", var)
+    # logging.debug("Found variables in recipe:\n%s", var)
 
-    # Check for tas and rlnst
-    if not var.vars_available('tas', 'lvp', 'rlnst', 'rsnst', 'hfss'):
-        raise ValueError("This diagnostic needs 'tas', 'lvp', 'rlnst'," +
-                         "'rsnst', and 'hfss' variables")
+    available_vars = list(group_metadata(cfg['input_data'].values(),
+                                         'short_name'))
+    logging.debug("Found variables in recipe:\n%s", available_vars)
+
+    available_exp = list(group_metadata(cfg['input_data'].values(), 'exp'))
+
+    # Check for available variables
+    required_vars = ('tas', 'lvp', 'rlnst', 'rsnst', 'rlnstcs',
+                     'rsnstcs', 'hfss')
+    if not e.variables_available(cfg, required_vars):
+        raise ValueError("This diagnostic needs {required_vars} variables")
+
+    # Check for experiments
+    if 'abrupt-4xCO2' not in available_exp:
+        if 'abrupt4xCO2' not in available_exp:
+            raise ValueError("The diagnostic needs an experiment with " +
+                             "4 times CO2.")
+
+    if 'piControl' not in available_exp:
+        raise ValueError("The diagnostic needs a pre industrial control " +
+                         "experiment.")
 
     ###########################################################################
     # Read data
@@ -570,7 +601,7 @@ def main(cfg):
     data_dict = substract_and_reg_deangelis2(cfg, data, var)
 
     plot_slope_regression(cfg, data_dict)
-    plot_slope_regression_all(cfg, data_dict)
+    plot_slope_regression_all(cfg, data_dict, available_vars, available_exp)
 
 
 if __name__ == '__main__':
