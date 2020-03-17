@@ -37,12 +37,12 @@ class ExtremePrecipitation(object):
         return '{}-year level'.format(period)
 
     def compute(self):
-        from rpy2.robjects import r as R, numpy2ri
+        from rpy2.robjects import r, numpy2ri
         from rpy2.robjects.packages import importr
 
-        extRemes = importr('extRemes')
+        extremes = importr('extRemes')
         numpy2ri.activate()
-        R['options'](warn=-1)
+        r['options'](warn=-1)
         for filename in self.filenames:
             logger.info('Processing %s', filename)
             cube = iris.load_cube(filename)
@@ -54,7 +54,7 @@ class ExtremePrecipitation(object):
 
             for season in set(cube.coord('clim_season').points):
                 # Clean R objects
-                R('rm(list = ls())')
+                r('rm(list = ls())')
                 logger.info('Processing season %s', season)
                 season_cube = cube.extract(iris.Constraint(clim_season=season))
 
@@ -69,10 +69,10 @@ class ExtremePrecipitation(object):
 
                 for x in range(shape[0]):
                     for y in range(shape[1]):
-                        data = cube.data[..., x, y]
+                        data = season_cube.data[..., x, y]
                         if np.any(data):
                             self._compute_metric(
-                                data, units, fevd, rl, extRemes, x, y
+                                data, units, fevd, rl, extremes, x, y
                             )
 
                 for par, data in fevd.items():
@@ -87,17 +87,17 @@ class ExtremePrecipitation(object):
                 self._plot_results(filename, season, fevd, rl)
                 self._save_results(filename, season, fevd, rl)
 
-    def _compute_metric(self, data, units, fevd, rl, extRemes, x, y):
-        evdf = extRemes.fevd(data, units=units.origin)
+    def _compute_metric(self, data, units, fevd, rl, extremes, x, y):
+        evdf = extremes.fevd(data, units=units.origin)
         results = evdf.rx2('results').rx2('par')
         # -ve mu/sigma invalid
         if results.rx2('location')[0] > 0. and results.rx2('scale')[0] > 0.:
             for par in self.gev_param_symbols:
                 fevd[par][x, y] = results.rx2(self.gev_param_name[par])[0]
-            r_level = extRemes.return_level(
+            r_level = extremes.return_level(
                 evdf,
                 return_period=self.return_period,
-                qcov=extRemes.make_qcov(evdf)
+                qcov=extremes.make_qcov(evdf)
             )
             for data, period in zip(r_level, self.return_period):
                 rl[period][x, y] = data
@@ -113,7 +113,7 @@ class ExtremePrecipitation(object):
         if not self.cfg[n.WRITE_PLOTS]:
             return
 
-        DEFAULT_PLOT_CONFIG = {
+        default_plot_config = {
             'plot_type': 'pcolormesh',
             'cmap': 'Blues',
             'coastlines': True,
@@ -121,8 +121,7 @@ class ExtremePrecipitation(object):
         logger.info('Plot results')
         results_subdir = os.path.join(
             self.cfg[n.PLOT_DIR],
-            self.filenames.get_info(n.PROJECT, filename),
-            self.filenames.get_info(n.DATASET, filename),
+            self.filenames.get_info(n.ALIAS, filename),
             season,
         )
         os.makedirs(results_subdir, exist_ok=True)
@@ -137,7 +136,7 @@ class ExtremePrecipitation(object):
             quickplot(
                 fevd[par],
                 filename=par_ffp,
-                **(self.cfg.get('gev_quickplot', DEFAULT_PLOT_CONFIG))
+                **(self.cfg.get('gev_quickplot', default_plot_config))
             )
         for return_period in rl:
             return_periods_path = os.path.join(
@@ -151,7 +150,7 @@ class ExtremePrecipitation(object):
                 rl[return_period],
                 filename=return_periods_path,
                 **(self.cfg.get(
-                    'return_period_quickplot', DEFAULT_PLOT_CONFIG))
+                    'return_period_quickplot', default_plot_config))
             )
 
     def _save_results(self, filename, season, fevd, return_periods):
