@@ -45,11 +45,29 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def get_provenance_record(ancestor_files, caption, statistics,
+                          domains, plot_type='scatter'):
+    """Get Provenance record."""
+    record = {
+        'caption': caption,
+        'statistics': statistics,
+        'domains': domains,
+        'plot_type': plot_type,
+        'themes': ['phys'],
+        'authors': [
+            'weigel_katja',
+        ],
+        'references': [
+            'deangelis15nat',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
+
+
 def plot_slope_regression(cfg, data_dict):
     """Scatter plot of linear regression slope, some variables (fig2a)."""
-    # def plot_slope_regression(cfg, dlvpdt, drsnstdt, drsnstcsdt):
-
-    if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
+    if not cfg[n.WRITE_PLOTS]:
         return
 
     data_model = data_dict['regressions']
@@ -199,11 +217,11 @@ def plot_slope_regression(cfg, data_dict):
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2b', cfg), dpi=300)
     plt.close()
-    
+
 
 def plot_slope_regression_all(cfg, data_dict):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
-    if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
+    if not cfg[n.WRITE_PLOTS]:
         return
 
     data_model = data_dict['regressions']
@@ -222,10 +240,6 @@ def plot_slope_regression_all(cfg, data_dict):
     text_rlnstcsdt = '{:.2f}'.format(reg_rlnstcsdt.rvalue)
     text_rlnstdt = '{:.2f}'.format(reg_rlnstdt.rvalue)
     text_hfssdt = '{:.2f}'.format(reg_hfssdt.rvalue)
-
-    # plt.style.use('/work/bd0854/b380216/esmvaltool/v2private/' +
-    #              'ESMValTool-private/esmvaltool/diag_scripts/' +
-    #              'testkw/style_kw_deangelis2.mplstyle')
 
     fig, axx = plt.subplots(figsize=(7, 7))
     axx.plot(np.arange(len(m_all)) + 1, m_all,
@@ -308,15 +322,41 @@ def plot_slope_regression_all(cfg, data_dict):
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2a', cfg), dpi=300)
     plt.close()
+    
+    caption = 'Global average multi-model mean comparing different ' + \
+              'model experiments and flux variables.'
+
+    provenance_record = get_provenance_record(
+        _get_sel_files_var(cfg, available_vars), caption, ['mean'], ['global'])
+
+    diagnostic_file = get_diagnostic_filename('bar_all', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    list_dict = {}
+    list_dict["data"] = []
+    list_dict["name"] = []
+    for iexp in available_exp:
+        list_dict["data"].append(data_var_sum[iexp])
+        list_dict["name"].append({'var_name': iexp + '_all',
+                                  'long_name': 'Fluxes for ' + iexp +
+                                               ' experiment',
+                                  'units': 'W m-2'})
+
+    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
     """Plot linear regression used to calculate ECS."""
-    if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
+    if not cfg[n.WRITE_PLOTS]:
         return
 
-    filepath = os.path.join(cfg[n.PLOT_DIR],
-                            dataset_name + '.' + cfg[n.OUTPUT_FILE_TYPE])
+    filepath = get_plot_filename('dataset_name', cfg)
 
     # Regression line
     # x_reg = np.linspace(0.0, 7.0, 2)
