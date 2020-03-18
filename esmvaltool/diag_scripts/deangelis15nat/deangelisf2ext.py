@@ -101,14 +101,14 @@ def plot_slope_regression(cfg, data_dict):
     m_all = np.array([np.mean(sa_lvpdt), np.mean(sa_rsnstdt),
                       np.mean(sa_rsnstcsdt)])
 
-    # Regression between LvdP/dT and the clr-dSWA/dT and all-dSWA/dT
+    # Regression between LvdP/dtas and the clr-dSWA/dtas and all-dSWA/dtas
     reg_sa = stats.linregress(sa_rsnstcsdt, sa_lvpdt)
     reg_sa_all = stats.linregress(sa_rsnstdt, sa_lvpdt)
     y_reg_sa = reg_sa.slope * np.linspace(0.2, 1.4, 2) + reg_sa.intercept
     text_sa = '{:.2f}'.format(reg_sa.rvalue)
     text_sa_all = '{:.2f}'.format(reg_sa_all.rvalue)
 
-    # Regression between clr-dSWA/dT and all-dSWA/dT
+    # Regression between clr-dSWA/dtas and all-dSWA/dtas
     reg_rsnst = stats.linregress(sa_rsnstcsdt, sa_rsnstdt)
     y_reg_rsnst = reg_rsnst.slope * np.linspace(0.2, 1.4, 2) + \
         reg_rsnst.intercept
@@ -159,7 +159,7 @@ def plot_slope_regression(cfg, data_dict):
     axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.5, 3.5])
     axx.set_xticks(np.linspace(1.0, 3.0, 3))
-    axx.set_xticklabels((r"L$_v$dP/dT", "all-dSWA/dT", "clr-dSWA/dT"),
+    axx.set_xticklabels(("dlvp/dtas", "drsnst/dtas", "rsnstcs/dtas"),
                         rotation=45, ha='right', rotation_mode='anchor')
     axx.set_ylim([0, 3.0])
     axx.set_yticks(np.linspace(0.5, 2.5, 5))
@@ -191,9 +191,9 @@ def plot_slope_regression(cfg, data_dict):
             markeredgewidth=2.0,
             label=model)
 
-    axx.set_xlabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlabel(r'drsnstcs/dtas (W m$^{-2}$ K$^{-1}$)')
     axx.set_title(' ')
-    axx.set_ylabel(r'dL$_{\rm v}$P/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_ylabel(r'dlvp/dtas (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.3, 1.35])
     axx.set_xticks(np.linspace(0.4, 1.2, 5))
     axx.set_ylim([1.75, 2.8])
@@ -224,9 +224,9 @@ def plot_slope_regression(cfg, data_dict):
             markeredgewidth=2.0,
             label=model)
 
-    axx.set_xlabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlabel(r'drsnstcs/dtas (W m$^{-2}$ K$^{-1}$)')
     axx.set_title(' ')
-    axx.set_ylabel(r'all-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
+    axx.set_ylabel(r'drsnst/dtas (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.45, 1.15])
     axx.set_xticks(np.linspace(0.5, 1.1, 7))
     axx.set_ylim([0.45, 1.15])
@@ -327,8 +327,8 @@ def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
     axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.5, 6.5])
     axx.set_xticks(np.linspace(1.0, 6.0, 6))
-    axx.set_xticklabels((r"L$_v$dP/dT", "all-dLWC/dT", "all-dSWA/dT",
-                         "dSH/dT", "clr-dLWC/dT", "clr-dSWA/dT"),
+    axx.set_xticklabels((r"dlvp/dtas", "rlnst/dtas", "rsnst/dtas",
+                         "dhfss/dtas", "drlnstcs/dtas", "drsnstcs/dtas"),
                         rotation=45, ha='right', rotation_mode='anchor')
     axx.set_ylim([-1.5, 4.5])
     axx.set_yticks(np.linspace(-1.0, 4.0, 11))
@@ -383,16 +383,16 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
     y_reg4 = regs["lvp"].slope * np.linspace(0.0, 7.0, 2) + \
         regs["lvp"].intercept
 
-    lab4 = 'LvP: slope (dLvP/dT) = {:.2f}, '.format(regs["lvp"].slope) + \
+    lab4 = 'dlvp/dtas = {:.2f}, '.format(regs["lvp"].slope) + \
         'y−int  = {:.2f}, '.format(regs["lvp"].intercept) + \
         'r = {:.2f}'.format(regs["lvp"].rvalue)
-    lab = 'LWC: slope (dLWC/dT) = {:.2f}, '.format(regs["rlnst"].slope) + \
+    lab = 'drlnst/dtas = {:.2f}, '.format(regs["rlnst"].slope) + \
         'y−int  = {:.2f}, '.format(regs["rlnst"].intercept) + \
         'r = {:.2f}'.format(regs["rlnst"].rvalue)
-    lab2 = 'SWA: slope (dSWA/dT) = {:.2f}, '.format(regs["rsnst"].slope) + \
+    lab2 = 'drsnst/dtas = {:.2f}, '.format(regs["rsnst"].slope) + \
         'y−int  = {:.2f}, '.format(regs["rsnst"].intercept) + \
         'r = {:.2f}'.format(regs["rsnst"].rvalue)
-    lab3 = 'SH: slope (dSH/dT) = {:.2f}, '.format(regs["hfss"].slope) + \
+    lab3 = 'dhfss/dtas = {:.2f}, '.format(regs["hfss"].slope) + \
         'y−int  = {:.2f}, '.format(regs["hfss"].intercept) + \
         'r = {:.2f}'.format(regs["hfss"].rvalue)
 
@@ -404,9 +404,6 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
          data[0], np.linspace(0.0, 7.0, 2), data[0], np.linspace(0.0, 7.0, 2)],
         [data[4], y_reg4, data[1], y_reg, data[2], y_reg2, data[3], y_reg3],
         filepath,
-        mpl_style_file='/work/bd0854/b380216/esmvaltool/v2private/' +
-        'ESMValTool-private/esmvaltool/diag_scripts/testkw/' +
-        'style_kw_deangelisex1.mplstyle',
         plot_kwargs=[{'linestyle': 'none',
                       'marker': 'o',
                       'markerfacecolor': 'g',
@@ -436,7 +433,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                      {'color': 'tab:gray',
                       'linestyle': '-'}],
         save_kwargs={'bbox_inches': 'tight',
-                     'orientation': 'portrait'},
+                     'orientation': 'landscape'},
         axes_functions={'set_title': dataset_name,
                         'set_xlabel': '2−m temperature (T)' +
                                       'global−mean annual anomaly (' +
@@ -452,23 +449,8 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
 
 def substract_and_reg_deangelis2(cfg, data, var):
     """Substract piControl from abrupt4xCO2 for all models and variables."""
-    model_nrs = dict([('ACCESS1-0', 1), ('ACCESS1-3', 2),
-                      ('bcc-csm1-1', 3),
-                      ('bcc-csm1-1-m', 4), ('CanESM2', 5),
-                      ('CCSM4', 6), ('CNRM-CM5', 7),
-                      ('CNRM-CM5-2', 8), ('GFDL-CM3', 9),
-                      ('GFDL-ESM2G', 10),
-                      ('GFDL-ESM2M', 11), ('GISS-E2-H', 12),
-                      ('GISS-E2-R', 13),
-                      ('HadGEM2-ES', 14), ('inmcm4', 15),
-                      ('IPSL-CM5A-LR', 16),
-                      ('IPSL-CM5A-MR', 17), ('IPSL-CM5B-LR', 18),
-                      ('MIROC-ESM', 19), ('MIROC5', 20),
-                      ('MPI-ESM-LR', 21),
-                      ('MPI-ESM-MR', 22), ('MPI-ESM-P', 23),
-                      ('MRI-CGCM3', 24), ('NorESM1-M', 25)])
     pathlist = data.get_path_list(short_name='tas', exp=PICONTROL)
-    regressions = np.zeros((len(pathlist), 7))
+    regressions = np.zeros((len(pathlist), 6))
     datasets = []
 
     data_var = OrderedDict()
@@ -505,8 +487,7 @@ def substract_and_reg_deangelis2(cfg, data, var):
         regressions[iii] = [reg_var["rlnst"].slope, reg_var["rsnst"].slope,
                             reg_var["hfss"].slope, reg_var["lvp"].slope,
                             reg_var["rlnstcs"].slope,
-                            reg_var["rsnstcs"].slope,
-                            model_nrs[dataset]]
+                            reg_var["rsnstcs"].slope]
 
     return dict([('regressions', regressions), ('datasets', datasets)])
 
