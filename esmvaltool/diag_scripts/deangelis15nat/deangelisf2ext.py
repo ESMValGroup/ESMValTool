@@ -370,7 +370,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
     if not cfg[n.WRITE_PLOTS]:
         return
 
-    filepath = get_plot_filename('dataset_name', cfg)
+    filepath = get_plot_filename(dataset_name, cfg)
 
     # Regression line
     # x_reg = np.linspace(0.0, 7.0, 2)
