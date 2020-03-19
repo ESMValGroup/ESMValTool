@@ -79,8 +79,8 @@ obligation if you have taken advantage of the ESMValTool, which
 represents the end product of considerable effort by the development
 team.
 
-Workflow
-========
+What ESMValTool can do for you
+==============================
 
 The ESMValTool applies a great variety of standard diagnostics and
 metrics, and produces a collection of netCDF and graphical files
@@ -124,8 +124,8 @@ depited in the figure below.
 For a generalized run scenario, the tool will perform the following
 ordered procedures.
 
-Data finding:
--------------
+Data finding
+------------
 
 -  read the data requirements from the :ref:`datasets section
    <esmvalcore:Datasets>` of the recipe and assemble the data request to
@@ -135,8 +135,8 @@ Data finding:
    :ref:`data finder
    <esmvalcore:findingdata>`);
 
-Data selection:
----------------
+Data selection
+--------------
 
 -  data selection is performed using the parameters specified in the
    :ref:`datasets section <esmvalcore:Datasets>` (including e.g. type of
@@ -144,8 +144,8 @@ Data selection:
    retrieved and selected for each variable that is specified in the
    :ref:`diagnostics <esmvalcore:Diagnostics>` section of the recipe;
 
-Data fixing:
-------------
+Data fixing
+-----------
 
 -  the ESMValTool requires data to be in CMOR format; since errors in
    the data formatting are not uncommon, the ESMValTool performs
@@ -167,8 +167,8 @@ Variable derivation
    <esmvalcore:Diagnostics>` section (as any other standard variable,
    just setting ``derive: true``).
 
-Run the preprocessor:
----------------------
+Run the preprocessor
+--------------------
 
 -  if any :ref:`preprocessor section <esmvalcore:preprocessor>` is
    specified in the recipe file, then data will be loaded in memory as
@@ -191,8 +191,8 @@ Run the preprocessor:
    writing data to disk between the preprocessing and the diagnostic
    phase is required to ensure multi-language support for the latter.
 
-Run the diagnostics:
---------------------
+Run the diagnostics
+-------------------
 
 -  the last and most important phase can now be run: using output files
    from the preprocessor, the diagnostic scripts are executed using the
