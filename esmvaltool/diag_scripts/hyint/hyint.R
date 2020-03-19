@@ -57,17 +57,18 @@
 #
 # ############################################################################
 
+
 library(tools)
 library(yaml)
 library(ncdf4)
 
 # get path to script and source subroutines (if needed)
 #args <- commandArgs(trailingOnly = FALSE)
-
-#spath <- paste0(dirname(unlist(strsplit(grep("--file", args,
-#  value = TRUE
-#), "="))[2]), "/")
-
+#spath <- paste0(dirname(unlist(strsplit(
+#  grep("--file", args,
+#    value = TRUE
+#  ), "="
+#))[2]), "/")
 diag_scripts_dir <- Sys.getenv("diag_scripts")
 spath <- paste0(diag_scripts_dir, "/", "hyint", "/")
 
@@ -92,7 +93,6 @@ for (myname in names(settings)) {
   temp <- get(myname, settings)
   assign(myname, temp)
 }
-
 metadata <- yaml::read_yaml(settings$input_files[1])
 
 ## check required settings
@@ -114,9 +114,11 @@ climolist0 <- list0
 
 # get variable name
 varname <- paste0("'", climolist$short_name, "'")
+var0 <- varname
 var0 <- "pr"
 
 diag_base <- climolist0$diagnostic
+print(paste0(diag_base, ": starting routine"))
 
 if (etccdi_preproc & !exists("etccdi_dir")) {
   etccdi_dir <- settings$input_files[2]
@@ -130,7 +132,8 @@ setwd(run_dir)
 
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
-reference_model <- unname(sapply(metadata, "[[", "reference_dataset"))[1]
+reference_model <-
+  unname(sapply(metadata, "[[", "reference_dataset"))[1]
 models_start_year <- unname(sapply(metadata, "[[", "start_year"))
 models_end_year <- unname(sapply(metadata, "[[", "end_year"))
 models_experiment <- unname(sapply(metadata, "[[", "exp"))
@@ -147,10 +150,12 @@ if (!anyNA(match(
   models_start_year[ref_idx]:models_end_year[ref_idx],
   norm_years[1]:norm_years[2]
 ))) {
-  stop(paste0(
-    "normalization period covering entire dataset: ",
-    "reduce it to calculate meaningful results"
-  ))
+  stop(
+    paste0(
+      "normalization period covering entire dataset: ",
+      "reduce it to calculate meaningful results"
+    )
+  )
 }
 if (trend_years != F) {
   if (anyNA(match(
@@ -176,17 +181,16 @@ if (anyNA(selfields)) {
 
 ## Run regridding and diagnostic
 if (write_netcdf) {
-
   # loop through models
   for (model_idx in c(1:(length(models_name)))) {
-
     # Setup filenames
     climofile <- climofiles[model_idx]
     sgrid <- "noregrid"
     if (rgrid != F) {
       sgrid <- rgrid
     }
-    regfile <- getfilename_regridded(run_dir, sgrid, var0, model_idx)
+    regfile <-
+      getfilename_regridded(run_dir, sgrid, var0, model_idx)
 
     # If needed, pre-process file and add absolute time axis
     if (run_regridding) {
@@ -220,10 +224,14 @@ if (write_netcdf) {
 ## Preprocess ETCCDI input files and merge them with HyInt indices
 if (write_netcdf & etccdi_preproc) {
   for (model_idx in c(1:(length(models_name)))) {
-    dummy <- hyint_etccdi_preproc(work_dir, etccdi_dir, etccdi_list_import,
-      model_idx, "ALL",
-      yrmon = "yr"
-    )
+    dummy <-
+      hyint_etccdi_preproc(work_dir,
+        etccdi_dir,
+        etccdi_list_import,
+        model_idx,
+        "ALL",
+        yrmon = "yr"
+      )
   }
 }
 
@@ -245,12 +253,21 @@ if (write_plots) {
       if (plot_type <= 10) {
         # Plot maps
         prov_info <- hyint_plot_maps(
-          work_dir, plot_dir, work_dir, ref_idx, seas, prov_info
+          work_dir,
+          plot_dir,
+          work_dir,
+          ref_idx,
+          seas,
+          prov_info
         )
       } else {
         # Plot timeseries and trends
         prov_info <- hyint_plot_trends(
-          work_dir, plot_dir, ref_idx, seas, prov_info
+          work_dir,
+          plot_dir,
+          ref_idx,
+          seas,
+          prov_info
         )
       }
     }
@@ -259,17 +276,18 @@ if (write_plots) {
 
 # Assign provenance information for timeseries&trends figures
 for (fname in names(prov_info)) {
-  xprov <- list(
-    ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
-    authors = list("arnone_enrico", "vonhardenberg_jost"),
-    references = list("giorgi11jc", "giorgi14jgr"),
-    projects = list("c3s-magic"),
-    caption = prov_info[[fname]]$caption,
-    statistics = list("other"),
-    realms = list("atmos"),
-    themes = list("phys"),
-    domains = list("global")
-  )
+  xprov <-
+    list(
+      ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
+      authors = list("arnone_enrico", "vonhardenberg_jost"),
+      references = list("giorgi11jc", "giorgi14jgr"),
+      projects = list("c3s-magic"),
+      caption = prov_info[[fname]]$caption,
+      statistics = list("other"),
+      realms = list("atmos"),
+      themes = list("phys"),
+      domains = list("global")
+    )
   provenance[[fname]] <- xprov
 }
 

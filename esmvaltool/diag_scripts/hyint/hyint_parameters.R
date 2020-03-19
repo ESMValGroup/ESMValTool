@@ -29,12 +29,14 @@ seasons <- c("ALL") # seasons to be analysed: "ALL", "DJF", ...
 
 timedimname <- "time"
 
-rotlongitude <- "full" # a) "full" to convert input arrays from 0/360 to
+rotlongitude <-
+  "full" # a) "full" to convert input arrays from 0/360 to
 # -180/180 longitude grid
 # b) "no" to leave input data on its original grid
 
 grid_file <- "grid_file" # suffix for grid file
-topography_file <- "topo" # suffix for topography file (needed for filtering
+topography_file <-
+  "topo" # suffix for topography file (needed for filtering
 # ocean/land or land elevation)
 
 # Diagnostic options
@@ -45,7 +47,8 @@ external_norm <- F # a) F=use internal data to normalize
 # c) "HIST" to automatically generate the name of the
 #    historical run associated with the model name
 
-external_r95 <- external_norm # a) F=use internal data for r95 threshold
+external_r95 <-
+  external_norm # a) F=use internal data for r95 threshold
 #    over the norm_years period
 # b) list of names of files (one per input
 #    data file or one for all)
@@ -53,8 +56,10 @@ external_r95 <- external_norm # a) F=use internal data for r95 threshold
 #    the historical experiment associated with the
 #    model name
 
-masksealand <- F # T to mask depending on seaLandElevation threshold
-sealandelevation <- 0 # a) 0 land; b) positive value: land above given
+masksealand <-
+  F # T to mask depending on seaLandElevation threshold
+sealandelevation <-
+  0 # a) 0 land; b) positive value: land above given
 # elevation; c) negative value: sea below given depth.
 # The topography/bathymetry file is generated with cdo
 # from ETOPO data.
@@ -75,7 +80,8 @@ rmultiyear_mean <- T # plot multiyear mean (this override ryearplot)
 
 
 
-ryearplot_ref <- c("EXP") # year to be plotted for reference dataset: options
+ryearplot_ref <-
+  c("EXP") # year to be plotted for reference dataset: options
 # a) "EXP" == same as experiments,
 # b) one year only, e.g. c(1998)
 force_ref <- F # set TRUE to force plotting of reference data
@@ -91,44 +97,85 @@ label <- ""
 add_colorbar <- T # T to add colorbar
 
 # timeseries options
-highreselevation <- F # a) F: neglect; b) value: threshold of minimum elevation
+highreselevation <-
+  F # a) F: neglect; b) value: threshold of minimum elevation
 #  to be overplotted with contour lines of elevation
-highreselevation_only <- F # T to plot only high resolution elevation contours
+highreselevation_only <-
+  F # T to plot only high resolution elevation contours
 
 # timeseries and trend plotting options
-add_legend <- 4 # a) F=no legend; b) n>0 list disposed in n column;
+add_legend <-
+  4 # a) F=no legend; b) n>0 list disposed in n column;
 # c) <0 horizontal legend
-xy_legend <- c(0.01, 0.98) # position of legend in fraction of plotting panel
-tag_legend <- c(T, F, F) # 1=model name, 2=model experiment, 3=model ensemble
+xy_legend <-
+  c(0.01, 0.98) # position of legend in fraction of plotting panel
+tag_legend <-
+  c(T, F, F) # 1=model name, 2=model experiment, 3=model ensemble
 # (select one or more)
 
 # define fields for timeseries calculation and plotting
 hyint_list <- c(
-  "int_norm", "dsl_norm", "wsl_norm", "hyint", "int", "dsl",
-  "wsl", "pa_norm", "r95_norm"
+  "int_norm",
+  "dsl_norm",
+  "wsl_norm",
+  "hyint",
+  "int",
+  "dsl",
+  "wsl",
+  "pa_norm",
+  "r95_norm"
 )
 etccdi_yr_list <- c(
-  "altcddETCCDI", "altcsdiETCCDI", "altcwdETCCDI",
-  "altwsdiETCCDI", "cddETCCDI", "csdiETCCDI", "cwdETCCDI",
-  "dtrETCCDI", "fdETCCDI", "gslETCCDI", "idETCCDI",
-  "prcptotETCCDI", "r10mmETCCDI", "r1mmETCCDI", "r20mmETCCDI",
-  "r95pETCCDI", "r99pETCCDI", "rx1dayETCCDI", "rx5dayETCCDI",
-  "sdiiETCCDI", "suETCCDI", "tn10pETCCDI", "tn90pETCCDI",
-  "tnnETCCDI", "tnxETCCDI", "trETCCDI", "tx10pETCCDI",
-  "tx90pETCCDI", "txnETCCDI", "txxETCCDI", "wsdiETCCDI"
+  "altcddETCCDI",
+  "altcsdiETCCDI",
+  "altcwdETCCDI",
+  "altwsdiETCCDI",
+  "cddETCCDI",
+  "csdiETCCDI",
+  "cwdETCCDI",
+  "dtrETCCDI",
+  "fdETCCDI",
+  "gslETCCDI",
+  "idETCCDI",
+  "prcptotETCCDI",
+  "r10mmETCCDI",
+  "r1mmETCCDI",
+  "r20mmETCCDI",
+  "r95pETCCDI",
+  "r99pETCCDI",
+  "rx1dayETCCDI",
+  "rx5dayETCCDI",
+  "sdiiETCCDI",
+  "suETCCDI",
+  "tn10pETCCDI",
+  "tn90pETCCDI",
+  "tnnETCCDI",
+  "tnxETCCDI",
+  "trETCCDI",
+  "tx10pETCCDI",
+  "tx90pETCCDI",
+  "txnETCCDI",
+  "txxETCCDI",
+  "wsdiETCCDI"
 )
-
-if (!exists("etccdi_list_import")) {
-  etccdi_list_import <- etccdi_yr_list
-}
-
+# Select one or more fields to be plotted (with the required order)
+# through the selfields key above
+etccdi_list_import <- etccdi_yr_list
 field_names <- c(hyint_list, etccdi_yr_list)
 
 # region box matrix (predefined following Giorgi et al. 2011,2014):
 # add here further regions and select those needed through iregion
 region_names <- c(
-  "World", "World60", "Tropics", "South-America", "Africa",
-  "North-America", "India", "Europe", "East-Asia", "Australia"
+  "World",
+  "World60",
+  "Tropics",
+  "South-America",
+  "Africa",
+  "North-America",
+  "India",
+  "Europe",
+  "East-Asia",
+  "Australia"
 )
 region_codes <- c(
   "GL", "GL60", "TR", "SA", "AF",
@@ -153,37 +200,54 @@ regions[10, ] <- c(110, 160, -40, -10)
 # define titles and units
 title_unit_m <- matrix(nrow = length(field_names), ncol = 4)
 title_unit_m[1, ] <- c(
-  "SDII", "Norm. annual mean INT",
-  "Norm. annual mean precipitation intensity", ""
+  "SDII",
+  "Norm. annual mean INT",
+  "Norm. annual mean precipitation intensity",
+  ""
 )
 title_unit_m[2, ] <- c(
-  "DSL", "Norm. annual mean DSL",
-  "Norm. annual mean dry spell length", ""
+  "DSL",
+  "Norm. annual mean DSL",
+  "Norm. annual mean dry spell length",
+  ""
 )
 title_unit_m[3, ] <- c(
-  "WSL", "Norm. annual mean WSL",
-  "Norm. annual mean wet spell length", ""
+  "WSL",
+  "Norm. annual mean WSL",
+  "Norm. annual mean wet spell length",
+  ""
 )
-title_unit_m[4, ] <- c("HY-INT", "HY-INT", "Hydroclimatic intensity", "")
+title_unit_m[4, ] <-
+  c("HY-INT", "HY-INT", "Hydroclimatic intensity", "")
 title_unit_m[5, ] <- c(
-  "ABS_INT", "Annual mean INT",
-  "Annual mean precipitation intensity", "(mm/day)"
+  "ABS_INT",
+  "Annual mean INT",
+  "Annual mean precipitation intensity",
+  "(mm/day)"
 )
 title_unit_m[6, ] <- c(
-  "ABS_DSL", "Annual mean DSL",
-  "Annual mean dry spell length", "(days)"
+  "ABS_DSL",
+  "Annual mean DSL",
+  "Annual mean dry spell length",
+  "(days)"
 )
 title_unit_m[7, ] <- c(
-  "ABS_WSL", "Annual mean WSL",
-  "Annual mean wet spell length", "(days)"
+  "ABS_WSL",
+  "Annual mean WSL",
+  "Annual mean wet spell length",
+  "(days)"
 )
 title_unit_m[8, ] <- c(
-  "PA", " Normalized precipitation area",
-  "Norm. precipitation area", ""
+  "PA",
+  " Normalized precipitation area",
+  "Norm. precipitation area",
+  ""
 )
 title_unit_m[9, ] <- c(
-  "R95", "Norm. heavy precipitation index",
-  "Norm. % of total precip. above 95% percentile of reference distribution", ""
+  "R95",
+  "Norm. heavy precipitation index",
+  "Norm. % of total precip. above 95% percentile of reference distribution",
+  ""
 )
 
 
@@ -309,16 +373,46 @@ x11_width_multi <- 4
 palette1 <- colorRampPalette(c("white", "orange", "darkred"))
 palette2 <- colorRampPalette(c("blue", "white", "red"))
 palette3 <- colorRampPalette(c(
-  "darkblue", "blue", "dodgerblue",
-  "white", "orange", "red", "darkred"
+  "darkblue",
+  "blue",
+  "dodgerblue",
+  "white",
+  "orange",
+  "red",
+  "darkred"
 ))
-palette_giorgi2011 <- colorRampPalette(c(
-  "white", "khaki1", "darkseagreen2", "mediumseagreen", "lightskyblue1",
-  "lightskyblue", "deepskyblue2", "dodgerblue2", "dodgerblue3", "royalblue4"
-))
-palette_ts <- c(
-  "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628",
-  "#F781BF", "#E41A1C", "#8DD3C7", "#BEBADA", "#FB8072",
-  "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9",
-  "#BC80BD", "#CCEBC5", "#FFED6F"
+palette_giorgi2011 <- colorRampPalette(
+  c(
+    "white",
+    "khaki1",
+    "darkseagreen2",
+    "mediumseagreen",
+    "lightskyblue1",
+    "lightskyblue",
+    "deepskyblue2",
+    "dodgerblue2",
+    "dodgerblue3",
+    "royalblue4"
+  )
 )
+palette_ts <-
+  c(
+    "#377EB8",
+    "#4DAF4A",
+    "#984EA3",
+    "#FF7F00",
+    "#A65628",
+    "#F781BF",
+    "#E41A1C",
+    "#8DD3C7",
+    "#BEBADA",
+    "#FB8072",
+    "#80B1D3",
+    "#FDB462",
+    "#B3DE69",
+    "#FCCDE5",
+    "#D9D9D9",
+    "#BC80BD",
+    "#CCEBC5",
+    "#FFED6F"
+  )
