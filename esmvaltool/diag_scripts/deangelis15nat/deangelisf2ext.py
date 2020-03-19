@@ -491,25 +491,29 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
 
     # Regression line
     # x_reg = np.linspace(0.0, 7.0, 2)
-    y_reg = regs["rlnst"].slope * np.linspace(0.0, 7.0, 2) + \
+    yreg_dict = {}
+    yreg_dict["rlnst"] = regs["rlnst"].slope * np.linspace(0.0, 7.0, 2) + \
         regs["rlnst"].intercept
-    y_reg2 = regs["rsnst"].slope * np.linspace(0.0, 7.0, 2) + \
+    yreg_dict["rsnst"] = regs["rsnst"].slope * np.linspace(0.0, 7.0, 2) + \
         regs["rsnst"].intercept
-    y_reg3 = regs["hfss"].slope * np.linspace(0.0, 7.0, 2) + \
+    yreg_dict["hfss"] = regs["hfss"].slope * np.linspace(0.0, 7.0, 2) + \
         regs["hfss"].intercept
-    y_reg4 = regs["lvp"].slope * np.linspace(0.0, 7.0, 2) + \
+    yreg_dict["lvp"] = regs["lvp"].slope * np.linspace(0.0, 7.0, 2) + \
         regs["lvp"].intercept
 
-    lab4 = 'dlvp/dtas = {:.2f}, '.format(regs["lvp"].slope) + \
+    yreg_dict["lab_lvp"] = 'dlvp/dtas = {:.2f}, '.format(regs["lvp"].slope) + \
         'y−int  = {:.2f}, '.format(regs["lvp"].intercept) + \
         'r = {:.2f}'.format(regs["lvp"].rvalue)
-    lab = 'drlnst/dtas = {:.2f}, '.format(regs["rlnst"].slope) + \
+    yreg_dict["lab_rlnst"] = 'drlnst' +  \
+        '/dtas = {:.2f}, '.format(regs["rlnst"].slope) + \
         'y−int  = {:.2f}, '.format(regs["rlnst"].intercept) + \
         'r = {:.2f}'.format(regs["rlnst"].rvalue)
-    lab2 = 'drsnst/dtas = {:.2f}, '.format(regs["rsnst"].slope) + \
+    yreg_dict["lab_rsnst"] = 'drsnst' + \
+        '/dtas = {:.2f}, '.format(regs["rsnst"].slope) + \
         'y−int  = {:.2f}, '.format(regs["rsnst"].intercept) + \
         'r = {:.2f}'.format(regs["rsnst"].rvalue)
-    lab3 = 'dhfss/dtas = {:.2f}, '.format(regs["hfss"].slope) + \
+    yreg_dict["lab_hfss"] = 'dhfss' + \
+        '/dtas = {:.2f}, '.format(regs["hfss"].slope) + \
         'y−int  = {:.2f}, '.format(regs["hfss"].intercept) + \
         'r = {:.2f}'.format(regs["hfss"].rvalue)
 
@@ -517,36 +521,39 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                     'linewidth': 2.0}
 
     e.plot.scatterplot(
-        [data[0], np.linspace(0.0, 7.0, 2), data[0], np.linspace(0.0, 7.0, 2),
-         data[0], np.linspace(0.0, 7.0, 2), data[0], np.linspace(0.0, 7.0, 2)],
-        [data[4], y_reg4, data[1], y_reg, data[2], y_reg2, data[3], y_reg3],
+        [data["tas"], np.linspace(0.0, 7.0, 2), data["tas"],
+         np.linspace(0.0, 7.0, 2),
+         data["tas"], np.linspace(0.0, 7.0, 2), data["tas"],
+         np.linspace(0.0, 7.0, 2)],
+        [data["lvp"], yreg_dict["lvp"], data["rlnst"], yreg_dict["rlnst"],
+         data["rsnst"], yreg_dict["rsnst"], data["hfss"], yreg_dict["hfss"]],
         filepath,
         plot_kwargs=[{'linestyle': 'none',
                       'marker': 'o',
                       'markerfacecolor': 'g',
                       'markeredgecolor': 'g',
-                      'label': lab4},
+                      'label': yreg_dict["lab_lvp"]},
                      {'color': 'g',
                       'linestyle': '-'},
                      {'linestyle': 'none',
                       'marker': '^',
                       'markerfacecolor': 'b',
                       'markeredgecolor': 'b',
-                      'label': lab},
+                      'label': yreg_dict["lab_rsnst"]},
                      {'color': 'b',
                       'linestyle': '-'},
                      {'linestyle': 'none',
                       'marker': 's',
                       'markerfacecolor': 'r',
                       'markeredgecolor': 'r',
-                      'label': lab2},
+                      'label': yreg_dict["lab_rlnst"]},
                      {'color': 'r',
                       'linestyle': '-'},
                      {'linestyle': 'none',
                       'marker': '*',
                       'markerfacecolor': 'tab:gray',
                       'markeredgecolor': 'tab:gray',
-                      'label': lab3},
+                      'label': yreg_dict["lab_hfss"]},
                      {'color': 'tab:gray',
                       'linestyle': '-'}],
         save_kwargs={'bbox_inches': 'tight',
@@ -627,12 +634,7 @@ def substract_and_reg_deangelis2(cfg, data, var):
                                                  data_var[jvar])
 
         # Plot ECS regression if desired
-        plot_rlnst_regression(cfg, dataset, [data_var["tas"],
-                                             data_var["rlnst"],
-                                             data_var["rsnst"],
-                                             data_var["hfss"],
-                                             data_var["lvp"]],
-                              var, reg_var)
+        plot_rlnst_regression(cfg, dataset, data_var, var, reg_var)
 
         # Save data
         regressions[iii] = [reg_var["rlnst"].slope, reg_var["rsnst"].slope,
