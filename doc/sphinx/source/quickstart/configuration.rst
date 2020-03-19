@@ -1,8 +1,8 @@
 .. _config-user:
 
-***********************
-Configuring ESMValTool
-***********************
+*************
+Configuration
+*************
 
 The ``config-user.yml`` configuration file contains all the global level
 information needed by ESMValTool. The configuration is passed to ESMValTool

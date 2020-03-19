@@ -1,8 +1,8 @@
 .. _install:
 
-*********************
-Installing ESMValTool
-*********************
+************
+Installation
+************
 
 ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
 
