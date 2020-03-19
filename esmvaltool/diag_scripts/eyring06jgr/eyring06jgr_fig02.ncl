@@ -22,6 +22,8 @@
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    @e06fig02_levmax:   max limit Y axis
 ;;    @e06fig02_levmin:   min limit Y axis
+;;    @e06fig02_start_year: year when start the climatology calculation
+;;    @e06fig02_start_year: year when end the climatology calculation
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -86,6 +88,8 @@ begin
    set_default_att(diag_script_info, "e06fig02_levmax", 1000.)
    set_default_att(diag_script_info, "e06fig02_latrange", "60S")
    set_default_att(diag_script_info, "e06fig02_multimean", False)
+   set_default_att(diag_script_info, "e06fig02_start_year", max(y1))
+   set_default_att(diag_script_info, "e06fig02_end_year",min(y2))
    
    seasons=diag_script_info@e06fig02_season
    print(seasons)
@@ -140,7 +144,8 @@ begin
         dimTot=dim_MOD+dim_OBS-1
     end if
 
-
+    year_start=toint(diag_script_info@e06fig02_start_year)
+    year_end=toint(diag_script_info@e06fig02_end_year)
 
   ; make sure path for (mandatory) netcdf output exists
 
@@ -209,9 +214,10 @@ begin
       ; Extract data
       A0 = read_data(info0[imod])
       Aref = read_data(info0[iref])
-      dummy1 = time_operations(A0,y1(imod),y2(imod),"average","monthlyclim",True)
-      dummy2_b=tofloat(A0)
-      date= yyyymm_time(y1(imod),y2(imod),"integer") 
+      dummy1 = time_operations(A0,year_start,year_end,"average","monthlyclim",True)
+      dummy2_b=time_operations(A0,year_start,year_end,"extract","monthly",True)
+     printVarSummary(dummy2_b)
+      date= yyyymm_time(year_start,year_end,"integer") 
       yyyy  = date/100 
       mm  = date-yyyy*100                ; mmdd = yyyymmdd%10000
       weights = days_in_month(yyyy, mm)
@@ -409,9 +415,12 @@ end do
             
            resR@gsLineColor      = colors(iref)                 ; line color
            resR@gsLineDashPattern=dashes(iref)
-           resR@gsFontThicknessF=thicks(iref)
+            resR@gsFontThicknessF=thicks(iref)
             print(Xref(season|ipanel,day|:,stat|0))
-            plot_R(ipanel)=gsn_add_polyline(wks,plot_d(ipanel),YData,Xref(season|ipanel,day|:,stat|0),resR)
+           print(resR)
+            print(ipanel)
+            print(plot_R(ipanel))
+        ;    plot_R(ipanel)=gsn_add_polyline(wks,plot_d(ipanel),YData,Xref(season|ipanel,day|:,stat|0),resR)
             plot_xp_R_d(ipanel) = gsn_add_polygon(wks,plot_d(ipanel),yp_R(:,ipanel),xp_R(:,ipanel),gsres)
       end if
       ;gsres@gsFillOpacityF = 0.5
@@ -447,5 +456,20 @@ end do
        add_legenda(wks,names,colors,tofloat(dashes),Lin,thicks,"0.2")
 
    frame(wks)
+;**********************common output file**************************
+     nc_filename = work_dir + "eyring06f02_" + var0 + ".nc"
+     Xdata@var = var0
+     Xdata@diag_script="eyring06f02"
+;Xdata(line|:,season|ipanel,day|:,stat|:)
+     printVarSummary(Xdata)
+     Xdata&stat=(/"mean","avg"/)
+     Xdata&season=seasons
+     Xdata&line=plotMod
+     Xdata&day=YData
+
+     printVarSummary(Xdata) 
+     nc_outfile = ncdf_write(Xdata, nc_filename)
+
+
 end
 
