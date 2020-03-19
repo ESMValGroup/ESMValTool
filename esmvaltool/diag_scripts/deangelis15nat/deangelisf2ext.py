@@ -170,9 +170,32 @@ def plot_slope_regression(cfg, data_dict):
     fig.tight_layout()
     fig.savefig(get_plot_filename('fig2a', cfg), dpi=300)
     plt.close()
+    
+    caption = 'The temperature-mediated response of each atmospheric ' + \
+              'energy budget term for each model as blue circles and ' + \
+              'the model mean as a red cross. The numbers above the ' + \
+              'abscissa are the cross-model correlations between ' + \
+              'dlvp/dtas and each other temperature-mediated response.'
 
-    # filepath2 = os.path.join(cfg[n.PLOT_DIR], 'fig2b.' +
-    #                          cfg[n.OUTPUT_FILE_TYPE])
+    provenance_record = get_provenance_record(
+        _get_sel_files_var(cfg, ['lvp', 'rsnst', 'rsnstcs', 'tas']),
+                           caption, ['mean'])
+
+    diagnostic_file = get_diagnostic_filename('fig2a', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_matrix(data_model, {'var_name': 'all',
+                                               'long_name': 'dlvp/dtas, ' + \
+                                                            'drsnst/dtas, ' + \
+                                                            'drsnstcs/dtas',
+                                               'units': 'W m-2 K-1'}),
+              target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
@@ -327,7 +350,7 @@ def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
     axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.5, 6.5])
     axx.set_xticks(np.linspace(1.0, 6.0, 6))
-    axx.set_xticklabels((r"dlvp/dtas", "rlnst/dtas", "rsnst/dtas",
+    axx.set_xticklabels(("dlvp/dtas", "drlnst/dtas", "drsnst/dtas",
                          "dhfss/dtas", "drlnstcs/dtas", "drsnstcs/dtas"),
                         rotation=45, ha='right', rotation_mode='anchor')
     axx.set_ylim([-1.5, 4.5])
@@ -345,7 +368,11 @@ def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
     fig.savefig(get_plot_filename('exfig2a', cfg), dpi=300)
     plt.close()
 
-    caption = '...'
+    caption = 'The temperature-mediated response of each atmospheric ' + \
+              'energy budget term for each model as blue circles and ' + \
+              'the model mean as a red cross. The numbers above the ' + \
+              'abscissa are the cross-model correlations between ' + \
+              'dlvp/dtas and each other temperature-mediated response.'
 
     provenance_record = get_provenance_record(
         _get_sel_files_var(cfg, available_vars), caption, ['mean'])
@@ -355,7 +382,13 @@ def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     iris.save(cube_to_save_matrix(data_model, {'var_name': 'all',
-                                               'long_name': 'All',
+                                               'long_name': 'dlvp/dtas, ' + \
+                                                            'drlnst/dtas, ' + \
+                                                            'drsnst/dtas, ' + \
+                                                            'dhfss/dtas, ' + \
+                                                            'drlnstcs/' + \
+                                                            'dtas, ' + \
+                                                            'drsnstcs/dtas',
                                                'units': 'W m-2 K-1'}),
               target=diagnostic_file)
 
