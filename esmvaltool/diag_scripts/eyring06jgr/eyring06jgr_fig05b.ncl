@@ -16,6 +16,8 @@
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    @e06fig05b_YMax:     max limit Y axis
 ;;    @e06fig05b_YMin:     min limit Y axis
+;;    @e06fig05b_start_year: year when start the climatology calculation
+;;    @e06fig05b_start_year: year when end the climatology calculation
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -49,9 +51,10 @@ begin
           end if
       end do       
    else
-     error_msg("f", DIAG_SCRIPT, "", "no reference dataset  " + \
-              "(variable_info[0]@reference_dataset) needs to be defined.")
-   end if
+;     error_msg("f", DIAG_SCRIPT, "", "no reference dataset  " + \
+;              "(variable_info[0]@reference_dataset) needs to be defined.")
+        iref=0
+  end if
 
    if(isatt(variable_info, "units")) then
         UNITS = variable_info@units
@@ -77,6 +80,8 @@ begin
    set_default_att(diag_script_info, "e06fig05b_lev", 5000.)
    set_default_att(diag_script_info, "e06fig05b_YMax", 10.)
    set_default_att(diag_script_info, "e06fig05b_YMin", 0.)
+   set_default_att(diag_script_info, "e06fig05b_end_year",min(y2))
+   set_default_att(diag_script_info, "e06fig05b_multimean", False)
    set_default_att(diag_script_info, "e06fig05b_multimean", False)
    
    seasons=diag_script_info@e06fig05b_month
@@ -112,7 +117,8 @@ begin
    else
       dimTot=dim_MOD+dim_OBS
    end if
-
+  year_start=toint(diag_script_info@e06fig05b_start_year)
+   year_end=toint(diag_script_info@e06fig05b_end_year)
 
    ; make sure path for (mandatory) netcdf output exists
 
@@ -178,10 +184,16 @@ begin
           end if
        end if
        if (seasons(ipan).ne."ANN") then
-                 dummy2 = time_operations(dummy1,y1(imod),y2(imod),"extract",seasons(ipan),True)
+                 dummy2 = time_operations(dummy1,year_start,year_end,"extract",seasons(ipan),True)
        else
-              dummy2=month_to_annual(dummy1,1)
-       
+             time=dummy1&time
+             years1=cd_calendar(time,0)
+             dummy2a=month_to_annual(dummy1(:,:),1)
+             dummy2a&year=years1(::12,0)
+             dummy2=dummy2a({year_start:year_end},:)
+             delete(time)
+             delete(years1)
+             delete(dummy2a) 
        end if
        delete(dummy1)
        tmp = dim_avg_n_Wrap(dummy2,0)
@@ -216,7 +228,8 @@ begin
        LineScatters(dimTot-1)="Lines"
   end if
 ;**********UNITS CHANGE TO PPMV***********************************
-  if ((UNITS.ne."10e6").or.(UNITS.ne."ppmv")) then
+  
+  if ((UNITS.ne."10e6").or.(UNITS.ne."ppmv").or.(UNITS.ne."yrs").or.(UNITS.ne."years")) then
      Xdata=(/Xdata/10^3/)
      tmpData=(/tmpData/10^3/)
      Xref=(/Xref/10^3/)
@@ -224,7 +237,7 @@ begin
   end if
 
 
-;************************************************
+;*******************************************************************
 
 
 
@@ -297,7 +310,9 @@ begin
 
       gsres = True
       gsres@gsFillColor = "Snow3"
-      plot_xp_R_d(ipanel) = gsn_add_polygon(wks,plot_d(ipanel),xp_R(:,ipanel),yp_R(:,ipanel),gsres)
+      if (isatt(variable_info[0], "reference_dataset")) then
+          plot_xp_R_d(ipanel) = gsn_add_polygon(wks,plot_d(ipanel),xp_R(:,ipanel),yp_R(:,ipanel),gsres)
+      end if
       if (multimean) then
         gsres1=True
         gsres1@gsFillColor       = "cyan"                 ; color chosen
