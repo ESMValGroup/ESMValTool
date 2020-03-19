@@ -96,6 +96,7 @@ begin
       xx = xx / (1. + xx)
     end if
 
+    ; Define output array
     tmp = new((/dimsizes(time), dimsizes(xx&press), dimsizes(xx&eqlat)/), \
               float)
     tmp!0 = "time"
@@ -115,7 +116,7 @@ begin
     output!2 = "lat"
     output!3 = "lon"
     output&time = time
-    output&plev = f->press
+    output&plev = 100 * f->press  ; [hPa] --> [Pa]
     output&lat = f->eqlat
     output&lon = lonGlobeF(nlon, "lon", "latitude", "degrees_East")
     do ii = 0, dimsizes(output&lon) - 1
