@@ -67,6 +67,26 @@ def cube_to_save_matrix(var1, name):
     return cubes
 
 
+def cube_to_save_vars(list_dict):
+    """Create cubes to prepare bar plot data for saving to netCDF."""
+    # cubes = iris.cube.CubeList()
+    for iii, var in enumerate(list_dict["data"]):
+        if iii == 0:
+            cubes = iris.cube.CubeList([
+                iris.cube.Cube(var,
+                               var_name=list_dict["name"][iii]['var_name'],
+                               long_name=list_dict["name"][iii]['long_name'],
+                               units=list_dict["name"][iii]['units'])])
+        else:
+            cubes.append(
+                iris.cube.Cube(var,
+                               var_name=list_dict["name"][iii]['var_name'],
+                               long_name=list_dict["name"][iii]['long_name'],
+                               units=list_dict["name"][iii]['units']))
+
+    return cubes
+
+
 def get_provenance_record(ancestor_files, caption, statistics,
                           plot_type='scatter'):
     """Get Provenance record."""
@@ -170,7 +190,7 @@ def plot_slope_regression(cfg, data_dict):
     fig.tight_layout()
     fig.savefig(get_plot_filename('fig2a', cfg), dpi=300)
     plt.close()
-    
+
     caption = 'The temperature-mediated response of each atmospheric ' + \
               'energy budget term for each model as blue circles and ' + \
               'the model mean as a red cross. The numbers above the ' + \
@@ -179,18 +199,28 @@ def plot_slope_regression(cfg, data_dict):
 
     provenance_record = get_provenance_record(
         _get_sel_files_var(cfg, ['lvp', 'rsnst', 'rsnstcs', 'tas']),
-                           caption, ['mean'])
+        caption, ['corr', 'mean'])
 
     diagnostic_file = get_diagnostic_filename('fig2a', cfg)
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    iris.save(cube_to_save_matrix(data_model, {'var_name': 'all',
-                                               'long_name': 'dlvp/dtas, ' + \
-                                                            'drsnst/dtas, ' + \
-                                                            'drsnstcs/dtas',
-                                               'units': 'W m-2 K-1'}),
-              target=diagnostic_file)
+    list_dict = {}
+    list_dict["data"] = [sa_lvpdt, sa_rsnstdt, sa_rsnstcsdt]
+    list_dict["name"] = [{'var_name': 'dlvp/dtas',
+                          'long_name': 'Temperature mediated latent heat ' +
+                                       'release from precipitation',
+                          'units': 'W m-2 K-1'},
+                         {'var_name': 'drsnst/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption',
+                          'units': 'W m-2 K-1'},
+                         {'var_name': 'drsnstcs/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption for clear skye',
+                          'units': 'W m-2 K-1'}]
+
+    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
 
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
@@ -230,6 +260,33 @@ def plot_slope_regression(cfg, data_dict):
     fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
     plt.close()
 
+    caption = 'Scatterplot of dlvp/dtas versus drsnstcs/dtas with ' + \
+              'corresponding least-squares linear fit (red line).'
+
+    provenance_record = get_provenance_record(
+        _get_sel_files_var(cfg, ['lvp', 'rsnstcs', 'tas']),
+        caption, ['corr'])
+
+    diagnostic_file = get_diagnostic_filename('fig2b', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    list_dict = {}
+    list_dict["data"] = [sa_lvpdt, sa_rsnstcsdt]
+    list_dict["name"] = [{'var_name': 'dlvp/dtas',
+                          'long_name': 'Temperature mediated latent heat ' +
+                                       'release from precipitation',
+                          'units': 'W m-2 K-1'},
+                         {'var_name': 'drsnstcs/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption for clear skye',
+                          'units': 'W m-2 K-1'}]
+
+    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+
     fig, axx = plt.subplots(figsize=(7, 7))
 
     axx.plot(np.linspace(0.2, 1.4, 2), y_reg_rsnst, color='r')
@@ -262,6 +319,33 @@ def plot_slope_regression(cfg, data_dict):
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2b', cfg), dpi=300)
     plt.close()
+
+    caption = 'Scatterplot of drsnstcs/dtas versus drsnst/dtas with ' + \
+              'corresponding least-squares linear fit (red line).'
+
+    provenance_record = get_provenance_record(
+        _get_sel_files_var(cfg, ['rsnstcs', 'rsnst', 'tas']),
+        caption, ['corr'])
+
+    diagnostic_file = get_diagnostic_filename('exfig2b', cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    list_dict = {}
+    list_dict["data"] = [sa_rsnstcsdt, sa_rsnstdt]
+    list_dict["name"] = [{'var_name': 'drsnstcs/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption for clear skye',
+                          'units': 'W m-2 K-1'},
+                         {'var_name': 'drsnst/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption for all skye',
+                          'units': 'W m-2 K-1'}]
+
+    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
 
 
 def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
@@ -382,12 +466,12 @@ def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     iris.save(cube_to_save_matrix(data_model, {'var_name': 'all',
-                                               'long_name': 'dlvp/dtas, ' + \
-                                                            'drlnst/dtas, ' + \
-                                                            'drsnst/dtas, ' + \
-                                                            'dhfss/dtas, ' + \
-                                                            'drlnstcs/' + \
-                                                            'dtas, ' + \
+                                               'long_name': 'dlvp/dtas, ' +
+                                                            'drlnst/dtas, ' +
+                                                            'drsnst/dtas, ' +
+                                                            'dhfss/dtas, ' +
+                                                            'drlnstcs/' +
+                                                            'dtas, ' +
                                                             'drsnstcs/dtas',
                                                'units': 'W m-2 K-1'}),
               target=diagnostic_file)
@@ -478,6 +562,40 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                         'set_yticks': np.linspace(-4, 16, 11),
                         'axhline': axhline_dict,
                         'legend': {'loc': 2}})
+
+    caption = ' Demonstration of the Gregory method for ' + dataset_name + \
+              '. Global-mean annual anomalies (' + ABRUPT4XCO2 + '—' + \
+              PICONTROL + ' in atmospheric energy budget terms ' + \
+              '(latent heat release from precipitation (lvp), ' + \
+              'net longwave cooling (rlnst), shortwave absorption ' + \
+              '(rsnst), and sensible heating (hfss)) are regressed ' + \
+              'against those in 2-m air temperature. For lvp, ' + \
+              'precipitation anomalies are multiplied by the latent ' + \
+              'heat of vaporization. Radiative terms are computed with ' + \
+              'all-sky fluxes. The statistics of the linear regression ' + \
+              '(slope, y-intercept, and correlation coefficient, r) ' + \
+              'are displayed in the key.'
+
+    provenance_record = get_provenance_record(
+        _get_sel_files_var(cfg, ['lvp', 'rlnst', 'rsnst', 'hfss', 'tas']),
+        caption, ['corr'])
+
+    diagnostic_file = get_diagnostic_filename(dataset_name, cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    iris.save(cube_to_save_matrix(data, {'var_name': 'all',
+                                         'long_name': 'dlvp/dtas, ' +
+                                                      'drlnst/dtas, ' +
+                                                      'drsnst/dtas, ' +
+                                                      'dhfss/dtas, ',
+                                         'units': 'W m-2 K-1'}),
+              target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def substract_and_reg_deangelis2(cfg, data, var):
