@@ -15,6 +15,8 @@
 ;; Optional diag_script_info attributes (diagnostic specific)
 ;;    @e06fig07_Ymax:   max limit Y axis
 ;;    @e06fig07_Ymin:   min limit Y axis
+;;    @e06fig07_start_year: year when start the climatology calculation
+;;    @e06fig07_start_year: year when end the climatology calculation
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -92,7 +94,8 @@ begin
    
    set_default_att(diag_script_info, "e06fig07_lev", "100hPa")
    set_default_att(diag_script_info, "e06fig07_latrange", "10S-10N")
-
+   set_default_att(diag_script_info, "e06fig07_start_year", max(y1))
+   set_default_att(diag_script_info, "e06fig07_end_year",min(y2))
    colors = project_style(info0, diag_script_info, "colors")
    dashes = project_style(info0, diag_script_info, "dashes")
    thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
@@ -128,7 +131,8 @@ begin
    print(dim_OBS)
       print(dim_MOD1)
   ; make sure path for (mandatory) netcdf output exists
-
+      year_start=toint(diag_script_info@e06fig07_start_year)
+    year_end=toint(diag_script_info@e06fig07_end_year)
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
@@ -182,10 +186,15 @@ begin
     do ipan=0,nPanel-1
       ; Extract data
       A0 = read_data(info0[imod])
+      if (var0.eq."hus") then
+           A0=(/A0/0.62/)
+           UNITS="ppmv"
+           A0=(/A0*10^6/)
+      end if
   ;    Aref = read_data(info0[iref])
-      dummy1 = time_operations(A0,y1(imod),y2(imod),"average","monthlyclim",True)
-      dummy2_b=tofloat(A0)
-      date= yyyymm_time(y1(imod),y2(imod),"integer") 
+      dummy1 = time_operations(A0,year_start,year_end,"average","monthlyclim",True)
+      dummy2_b=time_operations(A0,year_start,year_end,"extract","monthly",True)
+      date= yyyymm_time(year_start,year_end,"integer") 
       yyyy  = date/100 
       mm  = date-yyyy*100                ; mmdd = yyyymmdd%10000
       weights = days_in_month(yyyy, mm)
@@ -405,5 +414,18 @@ do ipanel=0, nPanel-1
     add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
 
    frame(wks)
+;**********************common output file**************************
+     nc_filename = work_dir + "eyring06f07_" + var0 + ".nc"
+     Xdata@var = var0
+     Xdata@diag_script="eyring06f07"
+     ;printVarSummary(XXdata(line|:,season|ipanel,month|:,stat|0))
+     Xdata=XXdata(line|:,season|0,month|:,stat|:)
+     printVarSummary(Xdata)
+     Xdata&stat=(/"mean","avg"/)
+     Xdata&line=plotMod
+     Xdata&month=month_names
+     printVarSummary(Xdata)
+     nc_outfile = ncdf_write(Xdata, nc_filename)
+
 end
 

@@ -10,6 +10,8 @@
 ;;    @e06fig14_Max:   max limit contour interval
 ;;    @e06fig14_Min:   min limit contour interval
 ;;    @e06fig14_Spacing:  contour interval
+;;    @e06fig14_start_year: year when start the climatology calculation
+;;    @e06fig14_start_year: year when end the climatology calculation
 ;;    @e06fig14_multimean:  multimodel mean 
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -70,7 +72,8 @@ begin
    set_default_att(diag_script_info, "e06fig14_Max", 500.)
    set_default_att(diag_script_info, "e06fig14_Spacing", 25.)
    set_default_att(diag_script_info, "e06fig14_multimean", False)
-   
+   set_default_att(diag_script_info, "e06fig14_start_year", max(y1))
+   set_default_att(diag_script_info, "e06fig14_end_year",min(y2)) 
 
    flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
    index_mod = ind(flag_mod.gt.0)
@@ -95,7 +98,8 @@ begin
    end if
 
   ; make sure path for (mandatory) netcdf output exists
-
+   year_start=toint(diag_script_info@e06fig14_start_year)
+   year_end=toint(diag_script_info@e06fig14_end_year)
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
@@ -146,8 +150,8 @@ begin
     plotMod(imod)=names(imod)
       ; Extract data
       A0 = read_data(info0[imod])
-      dummy1 = time_operations(A0,y1(imod),y2(imod),"average","monthlyclim",True)
-      dummy2_b=tofloat(A0)
+      dummy1 = time_operations(A0,year_start,year_end,"average","monthlyclim",True)
+      dummy2_b=time_operations(A0,year_start,year_end,"extract","monthly",True)
       date= yyyymm_time(y1(imod),y2(imod),"integer") 
       yyyy  = date/100 
       mm  = date-yyyy*100                ; mmdd = yyyymmdd%10000

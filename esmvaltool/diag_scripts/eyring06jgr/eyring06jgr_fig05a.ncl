@@ -20,6 +20,8 @@
 ;;    @e06fig05a_XMin:     min limit X axis
 ;;    @e06fig05a_levmax:   max limit Y axis
 ;;    @e06fig05a_levmin:   min limit Y axis
+;;    @e06fig05a_start_year: year when start the climatology calculation
+;;    @e06fig05a_start_year: year when end the climatology calculation
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -83,6 +85,8 @@ begin
    set_default_att(diag_script_info, "e06fig05a_latmax", 85.)
    set_default_att(diag_script_info, "e06fig05a_XMax", 10.)
    set_default_att(diag_script_info, "e06fig05a_XMin", 0.)
+   set_default_att(diag_script_info, "e06fig05a_start_year", max(y1))
+   set_default_att(diag_script_info, "e06fig05a_end_year",min(y2))
    set_default_att(diag_script_info, "e06fig05a_multimean", False)
    
     seasons=diag_script_info@e06fig05a_month
@@ -123,6 +127,9 @@ begin
     else
         dimTot=dim_MOD+dim_OBS
     end if
+
+   year_start=toint(diag_script_info@e06fig05a_start_year)
+   year_end=toint(diag_script_info@e06fig05a_end_year)
 
 
   ; make sure path for (mandatory) netcdf output exists
@@ -199,9 +206,16 @@ begin
           end if
        end if
        if (seasons(ipan).ne."ANN") then
-                 dummy2 = time_operations(dummy1,y1(imod),y2(imod),"extract",seasons(ipan),True)
+                 dummy2 = time_operations(dummy1,year_start,year_end,"extract",seasons(ipan),True)
        else
-              dummy2=month_to_annual(dummy1,1)
+             time=dummy1&time
+             years1=cd_calendar(time,0)
+             dummy2a=month_to_annual(dummy1(:,:),1)
+             dummy2a&year=years1(::12,0)
+             dummy2=dummy2a({year_start:year_end},:)
+             delete(time)
+             delete(years1)
+             delete(dummy2a)
        
        end if
        delete(dummy1)
@@ -352,5 +366,17 @@ begin
      
     add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks+2.,"0.2")
    frame(wks)
+;**********************common output file**************************
+     nc_filename = work_dir + "eyring06f05a_" + var0 + ".nc"
+     Xdata@var = var0
+     Xdata@diag_script="eyring06f05a"
+     ;Xdata(line|:,season|ipanel,plev|:,stat|0)
+     printVarSummary(Xdata)
+     Xdata&stat=(/"mean","avg"/)
+     Xdata&season=seasons
+     Xdata&line=plotMod
+     Xdata&plev=lev0
+     printVarSummary(Xdata)
+     nc_outfile = ncdf_write(Xdata, nc_filename)
 end
 

@@ -15,13 +15,13 @@
 ;;    @e06fig08_cnMmin:   min contour
 ;;    @e06fig08_cnSpacing: contour interval
 ;;    @e06fig08_latrange: name of the lat range as in the "Equator"
+;;    @e06fig08_start_year: year when start the climatology calculation
+;;    @e06fig08_start_year: year when end the climatology calculation
 ;; Required variable_info attributes (variable specific)
 ;;
-;; Caveats
+;; Caveat
 ;;
 ;; Modification history
-;;    20180320-A_laue_ax: added tags for reporting and call to write_references
-;;    20170315-A_cion_ir: written
 ;;#############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -74,7 +74,8 @@ begin
    set_default_att(diag_script_info, "e06fig08_cnMax", 1.)
    set_default_att(diag_script_info, "e06fig08_cnSpacing", 0.2)
    set_default_att(diag_script_info, "e06fig08_multimean", False)
-   
+   set_default_att(diag_script_info, "e06fig08_start_year", max(y1))
+   set_default_att(diag_script_info, "e06fig08_end_year",min(y2)) 
    set_default_att(diag_script_info, "e06fig08_latrange", "10S-10N")
 
 
@@ -102,7 +103,8 @@ begin
    end if
 
   ; make sure path for (mandatory) netcdf output exists
-
+   year_start=toint(diag_script_info@e06fig08_start_year)
+   year_end=toint(diag_script_info@e06fig08_end_year)
    work_dir = config_user_info@work_dir + "/"
   ; Create work dir
    system("mkdir -p " + work_dir)
@@ -149,14 +151,14 @@ begin
      ; Extract data
      A0 = read_data(info0[imod])
      if (var0.eq."hus") then
-           A0=A0/0.62
+          (/ A0=A0/0.62/)
            UNITS="ppmv"
-           A0=A0*10^6
+           A0=(/A0*10^6/)
      end if
 
-     dummy1 = time_operations(A0,y1(imod),y2(imod),"average","monthlyclim",True)
+     dummy1 = time_operations(A0,year_start,year_end,"average","monthlyclim",True)
      dummy2_b=tofloat(A0)
-     date= yyyymm_time(y1(imod),y2(imod),"integer") 
+     date= yyyymm_time(year_start,year_end,"integer") 
      yyyy  = date/100 
      mm  = date-yyyy*100                ; mmdd = yyyymmdd%10000
      weights = days_in_month(yyyy, mm)
