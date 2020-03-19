@@ -58,8 +58,8 @@ def generate_sidebar(conf, conf_api):
 
     _header("esmvaltool", "ESMValTool")
     _write("esmvaltool", "Introduction", "introduction")
-    _write("esmvaltool", "Gallery", "gallery")
     _write("esmvaltool", "Getting started", "quickstart/index")
+    _write("esmvaltool", "Gallery", "gallery")
     _write("esmvaltool", "Available recipes", "recipes/index")
     _write("esmvaltool", "Obtaining input data", "input")
     _write("esmvaltool", "Making a recipe or diagnostic", "develop/index")
