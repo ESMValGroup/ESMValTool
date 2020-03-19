@@ -6,6 +6,7 @@ import os
 from pprint import pformat
 import numpy as np
 import iris
+import iris.coord_categorisation
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
@@ -37,47 +38,17 @@ def get_provenance_record(attributes, ancestor_files):
     }
     return record
 
-def _count_values_below(data, axis, threshold=273.15):
-    return np.sum(data < threshold, axis=axis, dtype=int)
-
-def _count_values(data, axis, threshold, logic):
-    if logic == 'lower':
-        return np.sum(data < threshold, axis=axis, dtype=int)
-    elif logic == 'greater':
-        return np.sum(data > threshold, axis=axis, dtype=int)
-    else:
-        raise Exception('Not implemented')
-
-def _spell(data, axis, threshold, duration):
-    pass
-
-def _select_value_per_month(data, axis, extreme):
-    pass
-
-def _outlier(data, axis, quantile, threshold, logic):
-    pass
-
-def _mean_diff(data, axis):
-    pass
-
-def _count_calc(data, axis):
-    pass
-
-def _sum(data, axis):
-    pass
-
-def compute_indices(cubes):
-    """Compute indices."""
-    out = {}
-    logger.debug("Computing frost days index for:")
-    count_true = iris.analysis.Aggregator('_count_values_below',
-            _count_values_below, units_func=lambda units: 1)
-    cube_list = iris.cube.CubeList()
-    for name in cubes.keys():
-        logger.debug("%s", name)
-        cube_list.append(cubes[name]['tasmin'].collapsed('time', count_true))
-    out['frost_days'] = cube_list
-    return out
+def _frost_days(cubes):
+    logger.info("Computing the annual number of frost days.")
+    required_variables = ['tasmin']
+    missing = [item for item in required_variables if item not in cubes.keys()]
+    if len(missing):
+        raise Exception(f"Missing required varaible {' and '.join(missing)}.")
+    cube = cubes['tasmin']
+    iris.coord_categorisation.add_year(cube, 'time', name='year')
+    annual_count = cube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values < 273.15)
+    annual_count.rename('number_of_days_with_air_temperature_below_freezing_point')
+    return annual_count
 
 
 def plot_diagnostic(cube, basename, provenance_record, cfg):
@@ -98,28 +69,18 @@ def plot_diagnostic(cube, basename, provenance_record, cfg):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
 
+def write_netcdf(cubes, cfg, filename='test.nc', netcdf_format='NETCDF4'):
+    outdir = cfg['work_dir']
+    with iris.fileformats.netcdf.Saver(os.path.join(outdir, filename), netcdf_format) as sman:
+        for cube in cubes:
+            sman.write(cube)
 
 def main(cfg):
-    """Compute the time average for each input dataset."""
-    # Get a description of the preprocessed data that we will use as input.
+    """Compute Indices."""
     input_data = cfg['input_data'].values()
-
-    # Demonstrate use of metadata access convenience functions.
-    selection = select_metadata(input_data, short_name='pr', project='CMIP5')
-    logger.info("Example of how to select only CMIP5 precipitation data:\n%s",
-                pformat(selection))
-
-    selection = sorted_metadata(selection, sort='dataset')
-    logger.info("Example of how to sort this selection by dataset:\n%s",
-                pformat(selection))
-
     grouped_input_data = group_metadata(
         input_data, 'alias', sort='alias')
-    logger.info(
-        "Example of how to group and sort input data by alias:"
-        "\n%s", pformat(grouped_input_data))
 
-    # Example of how to loop over variables/datasets in alphabetical order
     cubes  = {}
     for alias in grouped_input_data:
         logger.info("Processing alias %s", alias)
@@ -127,19 +88,18 @@ def main(cfg):
         for attributes in grouped_input_data[alias]:
             logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
+            output_basename = os.path.splitext(
+                    os.path.basename(input_file))[0]
             cubes[alias][attributes['short_name']] = iris.load_cube(input_file)
-        # log if all expected short_names are there
-        #call compute idices for alias with all 4 cubes
-    etccdi_indices = compute_indices(cubes)
-    logger.info("Finalized computation for %s", ", ".join(etccdi_indices.keys()))
-    #cube = compute_diagnostic(input_file)
-    #output_basename = os.path.splitext(
-    #        os.path.basename(input_file))[0] + '_mean'
-    #provenance_record = get_provenance_record(
-    #        attributes, ancestor_files=[input_file])
-    #call plot idices
-    #plot_diagnostic(cube, output_basename, provenance_record, cfg)
-
+            provenance_record = get_provenance_record(
+                    attributes, ancestor_files=[input_file]) # TODO: this is wrong here
+        for index in cfg['indices']:
+            if index == 'annual_number_of_frost_days':
+                write_netcdf([_frost_days(cubes[alias])], cfg, filename=f'{alias}_frost-days.nc')
+            elif index == 'annual_number_of_summer_days':
+                pass
+            else:
+                logger.info("Index %s not implemented!", index)
 
 if __name__ == '__main__':
 
