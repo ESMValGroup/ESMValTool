@@ -21,8 +21,8 @@
 ;;    @e06fig01_XMin:     min limit X axis
 ;;    @e06fig01_levmax:   max limit Y axis
 ;;    @e06fig01_levmin:   min limit Y axis
-;;    @e06fig12a_start_year: year when start the climatology calculation
-;;    @e06fig12a_start_year: year when end the climatology calculation
+;;    @e06fig01_start_year: year when start the climatology calculation
+;;    @e06fig01_start_year: year when end the climatology calculation
 ;;
 ;; Required variable_info attributes (variable specific)
 ;;
@@ -256,6 +256,7 @@ begin
        plotColor(dimTot-1)="Black"
        plotDash(dimTot-1)=0
        LineScatters(dimTot-1)="Lines"
+       plotThicks(dimTot-1)=4.
    end if
    X_MMM_std=(/dim_stddev_n(Xdata(index_mod,:,:,:),0)/)
       
@@ -363,7 +364,11 @@ begin
     if (dimsizes (plotMod).gt.21) then
         frame(wks)
     end if
-     
+      print(plotMod)
+      print(plotColor)
+      print(tofloat(plotDash))
+      print(LineScatters)
+      print(plotThicks)     
        add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
 
    frame(wks)
