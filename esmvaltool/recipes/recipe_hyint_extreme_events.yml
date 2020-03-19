@@ -52,7 +52,7 @@ diagnostics:
     scripts:
       extreme_events:
         script: extreme_events/extreme_events.R
-        reference_datasets: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
+        reference_datasets: ["ACCESS1-0", "ACCESS1-0", "ACCESS1-0"]
         regrid_dataset: ACCESS1-0
         mip_name: CMIP
         timeseries_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
@@ -64,7 +64,6 @@ diagnostics:
 
       hyint:
         script: hyint/hyint.R
-
         ancestors: [pr, extreme_events]
  
         # Reference normalization period to be used for normalized indices
@@ -108,7 +107,7 @@ diagnostics:
         # 13) multipanel of indices with timeseries for multiple models
         # 14) multipanel of indices with summary of trend coefficients over multiple regions
         # 15) multipanel of indices with summary of trend coefficients for multiple models
-        plot_type: [15]
+        plot_type: [3, 12, 13, 15]
 
         ## ------- Optional settings ----------
         # Select number of columns and rows in multi-panel figure
