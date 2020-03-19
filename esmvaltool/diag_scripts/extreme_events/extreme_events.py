@@ -38,12 +38,15 @@ def get_provenance_record(attributes, ancestor_files):
     }
     return record
 
+def _check_required_variables(required, available):
+    missing = [item for item in required if item not in available]
+    if len(missing):
+        raise Exception(f"Missing required varaible {' and '.join(missing)}.")
+
 def _frost_days(cubes):
     logger.info("Computing the annual number of frost days.")
     required_variables = ['tasmin']
-    missing = [item for item in required_variables if item not in cubes.keys()]
-    if len(missing):
-        raise Exception(f"Missing required varaible {' and '.join(missing)}.")
+    _check_required_variables(required_variables, cubes.keys())
     cube = cubes['tasmin']
     iris.coord_categorisation.add_year(cube, 'time', name='year')
     annual_count = cube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values < 273.15)
