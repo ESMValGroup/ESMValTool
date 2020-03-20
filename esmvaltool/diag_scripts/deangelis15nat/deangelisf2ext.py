@@ -46,6 +46,30 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def _set_text_fig2(axx, text_dict):
+    """Text for fig2."""
+    axx.set_xlabel(' ')
+    axx.set_title(' ')
+    axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlim([0.5, 6.5])
+    axx.set_xticks(np.linspace(1.0, 6.0, 6))
+    axx.set_xticklabels(("dlvp/dtas", "drlnst/dtas", "drsnst/dtas",
+                         "dhfss/dtas", "drlnstcs/dtas", "drsnstcs/dtas"),
+                        rotation=45, ha='right', rotation_mode='anchor')
+    axx.set_ylim([-1.5, 4.5])
+    axx.set_yticks(np.linspace(-1.0, 4.0, 11))
+    axx.vlines([1.5, 4.5], -2, 5, colors='k', linestyle='solid')
+    axx.hlines(0, 0, 7, colors='k', linestyle='dashed')
+    axx.text(1.9, 0.2, text_dict["rlnstdt"])
+    axx.text(2.9, 0.2, text_dict["rsnstdt"])
+    axx.text(3.9, 0.2, text_dict["hfssdt"])
+    axx.text(4.9, 0.2, text_dict["rlnstcsdt"])
+    axx.text(5.9, 0.2, text_dict["rsnstcsdt"])
+    axx.legend(loc=2)
+
+    return axx
+
+
 def _get_sel_files_var(cfg, varnames):
     """Get filenames from cfg for all model mean and differen variables."""
     selection = []
@@ -348,7 +372,7 @@ def plot_slope_regression(cfg, data_dict):
                 pformat(provenance_record))
 
 
-def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
+def plot_slope_regression_all(cfg, data_dict, available_vars):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
     if not cfg[n.WRITE_PLOTS]:
         return
@@ -358,17 +382,21 @@ def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
                       np.mean(data_model[:, 1]), np.mean(data_model[:, 2]),
                       np.mean(data_model[:, 4]), np.mean(data_model[:, 5])])
 
-    reg_rsnstcsdt = stats.linregress(data_model[:, 5], data_model[:, 3])
-    reg_rsnstdt = stats.linregress(data_model[:, 1], data_model[:, 3])
-    reg_rlnstcsdt = stats.linregress(data_model[:, 4], data_model[:, 3])
-    reg_rlnstdt = stats.linregress(data_model[:, 0], data_model[:, 3])
-    reg_hfssdt = stats.linregress(data_model[:, 2], data_model[:, 3])
+    reg_dict = {}
+    reg_dict["rsnstcsdt"] = stats.linregress(data_model[:, 5],
+                                             data_model[:, 3])
+    reg_dict["rsnstdt"] = stats.linregress(data_model[:, 1], data_model[:, 3])
+    reg_dict["rlnstcsdt"] = stats.linregress(data_model[:, 4],
+                                             data_model[:, 3])
+    reg_dict["rlnstdt"] = stats.linregress(data_model[:, 0], data_model[:, 3])
+    reg_dict["hfssdt"] = stats.linregress(data_model[:, 2], data_model[:, 3])
 
-    text_rsnstcsdt = '{:.2f}'.format(reg_rsnstcsdt.rvalue)
-    text_rsnstdt = '{:.2f}'.format(reg_rsnstdt.rvalue)
-    text_rlnstcsdt = '{:.2f}'.format(reg_rlnstcsdt.rvalue)
-    text_rlnstdt = '{:.2f}'.format(reg_rlnstdt.rvalue)
-    text_hfssdt = '{:.2f}'.format(reg_hfssdt.rvalue)
+    text_dict = {}
+    text_dict["rsnstcsdt"] = '{:.2f}'.format(reg_dict["rsnstcsdt"].rvalue)
+    text_dict["rsnstdt"] = '{:.2f}'.format(reg_dict["rsnstdt"].rvalue)
+    text_dict["rlnstcsdt"] = '{:.2f}'.format(reg_dict["rlnstcsdt"].rvalue)
+    text_dict["rlnstdt"] = '{:.2f}'.format(reg_dict["rlnstdt"].rvalue)
+    text_dict["hfssdt"] = '{:.2f}'.format(reg_dict["hfssdt"].rvalue)
 
     fig, axx = plt.subplots(figsize=(7, 7))
     axx.plot(np.arange(len(m_all)) + 1, m_all,
@@ -429,24 +457,7 @@ def plot_slope_regression_all(cfg, data_dict, available_vars, available_exp):
              markersize=25, markeredgewidth=4.0, markerfacecolor='r',
              markeredgecolor='r')
 
-    axx.set_xlabel(' ')
-    axx.set_title(' ')
-    axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
-    axx.set_xlim([0.5, 6.5])
-    axx.set_xticks(np.linspace(1.0, 6.0, 6))
-    axx.set_xticklabels(("dlvp/dtas", "drlnst/dtas", "drsnst/dtas",
-                         "dhfss/dtas", "drlnstcs/dtas", "drsnstcs/dtas"),
-                        rotation=45, ha='right', rotation_mode='anchor')
-    axx.set_ylim([-1.5, 4.5])
-    axx.set_yticks(np.linspace(-1.0, 4.0, 11))
-    axx.vlines([1.5, 4.5], -2, 5, colors='k', linestyle='solid')
-    axx.hlines(0, 0, 7, colors='k', linestyle='dashed')
-    axx.text(1.9, 0.2, text_rlnstdt)
-    axx.text(2.9, 0.2, text_rsnstdt)
-    axx.text(3.9, 0.2, text_hfssdt)
-    axx.text(4.9, 0.2, text_rlnstcsdt)
-    axx.text(5.9, 0.2, text_rsnstcsdt)
-    axx.legend(loc=2)
+    axx = _set_text_fig2(axx, text_dict)
 
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2a', cfg), dpi=300)
@@ -749,7 +760,7 @@ def main(cfg):
     data_dict = substract_and_reg_deangelis2(cfg, data, var)
 
     plot_slope_regression(cfg, data_dict)
-    plot_slope_regression_all(cfg, data_dict, available_vars, available_exp)
+    plot_slope_regression_all(cfg, data_dict, available_vars)
 
 
 if __name__ == '__main__':
