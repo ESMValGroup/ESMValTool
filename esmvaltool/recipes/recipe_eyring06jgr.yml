@@ -223,16 +223,22 @@ diagnostics:
     scripts:
       fig01:
         script: eyring06jgr/eyring06jgr_fig01.ncl
+        # Time average ('DJF', 'MAM', 'JJA', 'SON', or 'ANN')
+        season: ['DJF', 'MAM', 'JJA', 'SON']
+        # Minimum latitude for region selection
         latmin: [60., 60., -90., -90.]
+        # Maximum latitude for region selection
         latmax: [90., 90., -60., -60.]
-        styleset: CMIP5
-        season: ["DJF", "MAM", "JJA", "SON"]
-        XMin: [-30., -30., -30., -30.]
-        XMax: [20., 20., 20., 20.]
-        levmin: [1., 1., 1., 1.]
-        levmax: [350., 350., 350., 350.]
+        # Lower and upper limits for the X axis
+        Xmin: [-30., -30., -30., -30.]
+        Xmax: [20., 20., 20., 20.]
+        # Lover and upper limits for the Y axis
+        Ymin: [1., 1., 1., 1.]
+        Ymax: [350., 350., 350., 350.]
+        # Climatology time period
         start_year: 1980
         end_year: 1999
+        # Calculate multimodel mean?
         multimean: True
 
 
