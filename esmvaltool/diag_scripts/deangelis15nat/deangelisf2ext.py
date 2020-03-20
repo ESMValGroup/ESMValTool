@@ -46,8 +46,142 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def _set_text_fig2(axx, text_dict):
-    """Text for fig2."""
+def _set_list_dict1(sa_dict):
+    list_dict = {}
+    list_dict["data"] = [sa_dict["rsnstcsdt"], sa_dict["rsnstdt"]]
+    list_dict["name"] = [{'var_name': 'drsnstcs/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption for clear skye',
+                          'units': 'W m-2 K-1'},
+                         {'var_name': 'drsnst/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption for all skye',
+                          'units': 'W m-2 K-1'}]
+    return list_dict
+
+
+def _set_list_dict2(sa_dict):
+    list_dict = {}
+    list_dict["data"] = [sa_dict["lvpdt"], sa_dict["rsnstcsdt"]]
+    list_dict["name"] = [{'var_name': 'dlvp/dtas',
+                          'long_name': 'Temperature mediated latent heat ' +
+                                       'release from precipitation',
+                          'units': 'W m-2 K-1'},
+                         {'var_name': 'drsnstcs/dtas',
+                          'long_name': 'Temperature mediated ' +
+                                       'shortwave absorption for clear skye',
+                          'units': 'W m-2 K-1'}]
+
+    return list_dict
+
+
+def _calculate_regression_sa(sa_dict):
+    """Regression between dlvp/dtas, drsnstcs/dtas, drsnst/dtas."""
+    # Regression between LvdP/dtas and the clr-dSWA/dtas and all-dSWA/dtas
+    reg_dict = {}
+    reg_dict["sa"] = stats.linregress(sa_dict["rsnstcsdt"], sa_dict["lvpdt"])
+    reg_dict["sa_all"] = stats.linregress(sa_dict["rsnstdt"], sa_dict["lvpdt"])
+    reg_dict["y_sa"] = reg_dict["sa"].slope * np.linspace(0.2, 1.4, 2) + \
+        reg_dict["sa"].intercept
+
+    # Regression between clr-dSWA/dtas and all-dSWA/dtas
+    reg_dict["rsnst"] = stats.linregress(sa_dict["rsnstcsdt"],
+                                         sa_dict["rsnstdt"])
+    reg_dict["y_rsnst"] = reg_dict["rsnst"].slope * \
+        np.linspace(0.2, 1.4, 2) + reg_dict["rsnst"].intercept
+
+    return reg_dict
+
+
+def _set_axx_fig2a(cfg, axx, m_all, reg_dict, sa_dict):
+    """Text for fig2a."""
+    text_sa = '{:.2f}'.format(reg_dict["sa"].rvalue)
+    text_sa_all = '{:.2f}'.format(reg_dict["sa_all"].rvalue)
+
+    axx.plot(np.arange(len(m_all)) + 1, m_all,
+             linestyle='none', marker='x',
+             markersize=25, markeredgewidth=4.0, markerfacecolor='r',
+             markeredgecolor='r', label='Model mean')
+    axx.plot(np.arange(len(m_all)) + 1, m_all, linestyle='none', marker='x',
+             markersize=25, markeredgewidth=4.0, markeredgecolor='r')
+
+    if not cfg[n.OUTPUT_FILE_TYPE] == 'eps':
+        axx.plot(np.ones((len(sa_dict["lvpdt"]))), sa_dict["lvpdt"],
+                 linestyle='none', marker='o',
+                 markersize=15, markeredgewidth=1.0, fillstyle='none',
+                 markeredgecolor='b', label='Individual models')
+        axx.plot(np.ones((len(sa_dict["lvpdt"]))) + 1, sa_dict["rsnstdt"],
+                 linestyle='none', marker='o',
+                 markersize=15, markeredgewidth=1.0, fillstyle='none',
+                 markeredgecolor='b')
+        axx.plot(np.ones((len(sa_dict["lvpdt"]))) + 2, sa_dict["rsnstcsdt"],
+                 linestyle='none',
+                 marker='o', markersize=15, markeredgewidth=1.0,
+                 fillstyle='none', markeredgecolor='b')
+    else:
+        axx.plot(np.ones((len(sa_dict["lvpdt"]))), sa_dict["lvpdt"],
+                 linestyle='none', marker='o',
+                 markersize=15, markeredgewidth=1.0,
+                 markerfacecolor='w', markeredgecolor='b',
+                 label='Individual models')
+        axx.plot(np.ones((len(sa_dict["lvpdt"]))) + 1, sa_dict["rsnstdt"],
+                 linestyle='none', marker='o',
+                 markersize=15, markeredgewidth=1.0,
+                 markerfacecolor='w', markeredgecolor='b')
+        axx.plot(np.ones((len(sa_dict["lvpdt"]))) + 2, sa_dict["rsnstcsdt"],
+                 linestyle='none',
+                 marker='o', markersize=15, markeredgewidth=1.0,
+                 markerfacecolor='w', markeredgecolor='b')
+
+    axx.set_xlabel(' ')
+    axx.set_title(' ')
+    axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlim([0.5, 3.5])
+    axx.set_xticks(np.linspace(1.0, 3.0, 3))
+    axx.set_xticklabels(("dlvp/dtas", "drsnst/dtas", "rsnstcs/dtas"),
+                        rotation=45, ha='right', rotation_mode='anchor')
+    axx.set_ylim([0, 3.0])
+    axx.set_yticks(np.linspace(0.5, 2.5, 5))
+    axx.text(1.9, 0.2, text_sa)
+    axx.text(2.9, 0.2, text_sa_all)
+    axx.legend(loc=2)
+
+    return axx
+
+
+def _set_axx_fig2b(axx, reg_dict, datasets, sa_dict):
+    """Text for fig2b."""
+    axx.plot(np.linspace(0.2, 1.4, 2), reg_dict["y_sa"], color='r')
+
+    for iii, model in enumerate(datasets):
+        style = e.plot.get_dataset_style(model)
+        axx.plot(
+            sa_dict["rsnstcsdt"][iii],
+            sa_dict["lvpdt"][iii],
+            marker=style['mark'],
+            color=style['color'],
+            markerfacecolor=style['facecolor'],
+            linestyle='none',
+            markersize=10,
+            markeredgewidth=2.0,
+            label=model)
+
+    axx.set_xlabel(r'drsnstcs/dtas (W m$^{-2}$ K$^{-1}$)')
+    axx.set_title(' ')
+    axx.set_ylabel(r'dlvp/dtas (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlim([0.3, 1.35])
+    axx.set_xticks(np.linspace(0.4, 1.2, 5))
+    axx.set_ylim([1.75, 2.8])
+    axx.set_yticks(np.linspace(1.8, 2.8, 6))
+    axx.text(0.9, 2.75, 'Fit (r={:.2f}, '.format(reg_dict["sa"].rvalue) +
+             ' slope = {:.2f}, '.format(reg_dict["sa"].slope) +
+             ')')
+    axx.legend(loc=3)
+    return axx
+
+
+def _set_text_exfig2a(axx, text_dict):
+    """Text for exfig2a."""
     axx.set_xlabel(' ')
     axx.set_title(' ')
     axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
@@ -65,6 +199,38 @@ def _set_text_fig2(axx, text_dict):
     axx.text(3.9, 0.2, text_dict["hfssdt"])
     axx.text(4.9, 0.2, text_dict["rlnstcsdt"])
     axx.text(5.9, 0.2, text_dict["rsnstcsdt"])
+    axx.legend(loc=2)
+
+    return axx
+
+
+def _set_axx_exfig2b(axx, datasets, reg_dict, sa_dict):
+    """Text for exfig2b."""
+    axx.plot(np.linspace(0.2, 1.4, 2), reg_dict["y_rsnst"], color='r')
+
+    for iii, model in enumerate(datasets):
+        style = e.plot.get_dataset_style(model)
+        axx.plot(
+            sa_dict["rsnstcsdt"][iii],
+            sa_dict["rsnstdt"][iii],
+            marker=style['mark'],
+            color=style['color'],
+            markerfacecolor=style['facecolor'],
+            linestyle='none',
+            markersize=10,
+            markeredgewidth=2.0,
+            label=model)
+
+    axx.set_xlabel(r'drsnstcs/dtas (W m$^{-2}$ K$^{-1}$)')
+    axx.set_title(' ')
+    axx.set_ylabel(r'drsnst/dtas (W m$^{-2}$ K$^{-1}$)')
+    axx.set_xlim([0.45, 1.15])
+    axx.set_xticks(np.linspace(0.5, 1.1, 7))
+    axx.set_ylim([0.45, 1.15])
+    axx.set_yticks(np.linspace(0.5, 1.1, 7))
+    axx.text(0.85, 1.1, 'Fit (r={:.2f}, '.format(reg_dict["rsnst"].rvalue) +
+             ' slope = {:.2f}, '.format(reg_dict["rsnst"].slope) +
+             ')')
     axx.legend(loc=2)
 
     return axx
@@ -136,80 +302,24 @@ def plot_slope_regression(cfg, data_dict):
     if not cfg[n.WRITE_PLOTS]:
         return
 
-    data_model = data_dict['regressions']
-    sa_lvpdt = data_model[:, 3]
-    sa_rsnstdt = data_model[:, 1]
-    sa_rsnstcsdt = data_model[:, 5]
+    sa_dict = {}
+    sa_dict["lvpdt"] = data_dict['regressions'][:, 3]
+    sa_dict["rsnstdt"] = data_dict['regressions'][:, 1]
+    sa_dict["rsnstcsdt"] = data_dict['regressions'][:, 5]
     datasets = data_dict['datasets']
 
-    m_all = np.array([np.mean(sa_lvpdt), np.mean(sa_rsnstdt),
-                      np.mean(sa_rsnstcsdt)])
+    m_all = np.array([np.mean(sa_dict["lvpdt"]), np.mean(sa_dict["rsnstdt"]),
+                      np.mean(sa_dict["rsnstcsdt"])])
 
-    # Regression between LvdP/dtas and the clr-dSWA/dtas and all-dSWA/dtas
-    reg_sa = stats.linregress(sa_rsnstcsdt, sa_lvpdt)
-    reg_sa_all = stats.linregress(sa_rsnstdt, sa_lvpdt)
-    y_reg_sa = reg_sa.slope * np.linspace(0.2, 1.4, 2) + reg_sa.intercept
-    text_sa = '{:.2f}'.format(reg_sa.rvalue)
-    text_sa_all = '{:.2f}'.format(reg_sa_all.rvalue)
-
-    # Regression between clr-dSWA/dtas and all-dSWA/dtas
-    reg_rsnst = stats.linregress(sa_rsnstcsdt, sa_rsnstdt)
-    y_reg_rsnst = reg_rsnst.slope * np.linspace(0.2, 1.4, 2) + \
-        reg_rsnst.intercept
+    reg_dict = _calculate_regression_sa(sa_dict)
 
     # plt.style.use('/work/bd0854/b380216/esmvaltool/v2private/' +
     #               'ESMValTool-private/esmvaltool/diag_scripts/testkw/' +
     #               'style_kw_deangelis2.mplstyle')
 
     fig, axx = plt.subplots(figsize=(7, 7))
-    axx.plot(np.arange(len(m_all)) + 1, m_all,
-             linestyle='none', marker='x',
-             markersize=25, markeredgewidth=4.0, markerfacecolor='r',
-             markeredgecolor='r', label='Model mean')
 
-    if not cfg[n.OUTPUT_FILE_TYPE] == 'eps':
-        axx.plot(np.ones((len(sa_lvpdt))), sa_lvpdt,
-                 linestyle='none', marker='o',
-                 markersize=15, markeredgewidth=1.0, fillstyle='none',
-                 markeredgecolor='b', label='Individual models')
-        axx.plot(np.ones((len(sa_lvpdt))) + 1, sa_rsnstdt,
-                 linestyle='none', marker='o',
-                 markersize=15, markeredgewidth=1.0, fillstyle='none',
-                 markeredgecolor='b')
-        axx.plot(np.ones((len(sa_lvpdt))) + 2, sa_rsnstcsdt,
-                 linestyle='none',
-                 marker='o', markersize=15, markeredgewidth=1.0,
-                 fillstyle='none', markeredgecolor='b')
-    else:
-        axx.plot(np.ones((len(sa_lvpdt))), sa_lvpdt,
-                 linestyle='none', marker='o',
-                 markersize=15, markeredgewidth=1.0,
-                 markerfacecolor='w', markeredgecolor='b',
-                 label='Individual models')
-        axx.plot(np.ones((len(sa_lvpdt))) + 1, sa_rsnstdt,
-                 linestyle='none', marker='o',
-                 markersize=15, markeredgewidth=1.0,
-                 markerfacecolor='w', markeredgecolor='b')
-        axx.plot(np.ones((len(sa_lvpdt))) + 2, sa_rsnstcsdt,
-                 linestyle='none',
-                 marker='o', markersize=15, markeredgewidth=1.0,
-                 markerfacecolor='w', markeredgecolor='b')
-
-    axx.plot(np.arange(len(m_all)) + 1, m_all, linestyle='none', marker='x',
-             markersize=25, markeredgewidth=4.0, markeredgecolor='r')
-
-    axx.set_xlabel(' ')
-    axx.set_title(' ')
-    axx.set_ylabel(r'Temperature-mediated response (W m$^{-2}$ K$^{-1}$)')
-    axx.set_xlim([0.5, 3.5])
-    axx.set_xticks(np.linspace(1.0, 3.0, 3))
-    axx.set_xticklabels(("dlvp/dtas", "drsnst/dtas", "rsnstcs/dtas"),
-                        rotation=45, ha='right', rotation_mode='anchor')
-    axx.set_ylim([0, 3.0])
-    axx.set_yticks(np.linspace(0.5, 2.5, 5))
-    axx.text(1.9, 0.2, text_sa)
-    axx.text(2.9, 0.2, text_sa_all)
-    axx.legend(loc=2)
+    axx = _set_axx_fig2a(cfg, axx, m_all, reg_dict, sa_dict)
 
     fig.tight_layout()
     fig.savefig(get_plot_filename('fig2a', cfg), dpi=300)
@@ -230,7 +340,7 @@ def plot_slope_regression(cfg, data_dict):
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     list_dict = {}
-    list_dict["data"] = [sa_lvpdt, sa_rsnstdt, sa_rsnstcsdt]
+    list_dict["data"] = list(sa_dict.values())
     list_dict["name"] = [{'var_name': 'dlvp/dtas',
                           'long_name': 'Temperature mediated latent heat ' +
                                        'release from precipitation',
@@ -253,32 +363,7 @@ def plot_slope_regression(cfg, data_dict):
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
-    axx.plot(np.linspace(0.2, 1.4, 2), y_reg_sa, color='r')
-
-    for iii, model in enumerate(datasets):
-        style = e.plot.get_dataset_style(model)
-        axx.plot(
-            sa_rsnstcsdt[iii],
-            sa_lvpdt[iii],
-            marker=style['mark'],
-            color=style['color'],
-            markerfacecolor=style['facecolor'],
-            linestyle='none',
-            markersize=10,
-            markeredgewidth=2.0,
-            label=model)
-
-    axx.set_xlabel(r'drsnstcs/dtas (W m$^{-2}$ K$^{-1}$)')
-    axx.set_title(' ')
-    axx.set_ylabel(r'dlvp/dtas (W m$^{-2}$ K$^{-1}$)')
-    axx.set_xlim([0.3, 1.35])
-    axx.set_xticks(np.linspace(0.4, 1.2, 5))
-    axx.set_ylim([1.75, 2.8])
-    axx.set_yticks(np.linspace(1.8, 2.8, 6))
-    axx.text(0.9, 2.75, 'Fit (r={:.2f}, '.format(reg_sa.rvalue) +
-             ' slope = {:.2f}, '.format(reg_sa.slope) +
-             ')')
-    axx.legend(loc=3)
+    axx = _set_axx_fig2b(axx, reg_dict, datasets, sa_dict)
 
     fig.tight_layout()
     fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
@@ -295,16 +380,7 @@ def plot_slope_regression(cfg, data_dict):
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    list_dict = {}
-    list_dict["data"] = [sa_lvpdt, sa_rsnstcsdt]
-    list_dict["name"] = [{'var_name': 'dlvp/dtas',
-                          'long_name': 'Temperature mediated latent heat ' +
-                                       'release from precipitation',
-                          'units': 'W m-2 K-1'},
-                         {'var_name': 'drsnstcs/dtas',
-                          'long_name': 'Temperature mediated ' +
-                                       'shortwave absorption for clear skye',
-                          'units': 'W m-2 K-1'}]
+    list_dict = _set_list_dict2(sa_dict)
 
     iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
 
@@ -313,32 +389,7 @@ def plot_slope_regression(cfg, data_dict):
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
-    axx.plot(np.linspace(0.2, 1.4, 2), y_reg_rsnst, color='r')
-
-    for iii, model in enumerate(datasets):
-        style = e.plot.get_dataset_style(model)
-        axx.plot(
-            sa_rsnstcsdt[iii],
-            sa_rsnstdt[iii],
-            marker=style['mark'],
-            color=style['color'],
-            markerfacecolor=style['facecolor'],
-            linestyle='none',
-            markersize=10,
-            markeredgewidth=2.0,
-            label=model)
-
-    axx.set_xlabel(r'drsnstcs/dtas (W m$^{-2}$ K$^{-1}$)')
-    axx.set_title(' ')
-    axx.set_ylabel(r'drsnst/dtas (W m$^{-2}$ K$^{-1}$)')
-    axx.set_xlim([0.45, 1.15])
-    axx.set_xticks(np.linspace(0.5, 1.1, 7))
-    axx.set_ylim([0.45, 1.15])
-    axx.set_yticks(np.linspace(0.5, 1.1, 7))
-    axx.text(0.85, 1.1, 'Fit (r={:.2f}, '.format(reg_rsnst.rvalue) +
-             ' slope = {:.2f}, '.format(reg_rsnst.slope) +
-             ')')
-    axx.legend(loc=2)
+    axx = _set_axx_exfig2b(axx, datasets, reg_dict, sa_dict)
 
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2b', cfg), dpi=300)
@@ -355,16 +406,7 @@ def plot_slope_regression(cfg, data_dict):
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    list_dict = {}
-    list_dict["data"] = [sa_rsnstcsdt, sa_rsnstdt]
-    list_dict["name"] = [{'var_name': 'drsnstcs/dtas',
-                          'long_name': 'Temperature mediated ' +
-                                       'shortwave absorption for clear skye',
-                          'units': 'W m-2 K-1'},
-                         {'var_name': 'drsnst/dtas',
-                          'long_name': 'Temperature mediated ' +
-                                       'shortwave absorption for all skye',
-                          'units': 'W m-2 K-1'}]
+    list_dict = _set_list_dict1(sa_dict)
 
     iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
 
@@ -457,7 +499,7 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
              markersize=25, markeredgewidth=4.0, markerfacecolor='r',
              markeredgecolor='r')
 
-    axx = _set_text_fig2(axx, text_dict)
+    axx = _set_text_exfig2a(axx, text_dict)
 
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2a', cfg), dpi=300)
