@@ -65,19 +65,19 @@ User settings in recipe
 
    *Required settings for script*
 
-   * ``e06fig01_latmin``: array of float, min lat where variable is averaged, i.e. [ 60., 60., -90., -90. ]
-   * ``e06fig01_latmax``: array of float,and max lat where variable is averaged, i.e. [ 90., 90., -60., -60. ]
-   * ``e06fig01_season``: array of string., season when variable is averaged, i.e. ["DJF", "MAM","JJA","SON"]
-   * ``e06fig01_XMin``: array of float, min limit X axis [-30., -30.,-30.,-30.]
-   * ``e06fig01_XMax``: array of float, max limit X axis [20.,20.,20.,20.]
-   * ``e06fig01_levmin``: array of float, min limit Y axis [1., 1.,1.,1.]
-   * ``e06fig01_levmax``: array of float, max limit Y axis [350., 350.,350.,350.]
+   * ``latmin``: array of float, min lat where variable is averaged, i.e. [ 60., 60., -90., -90. ]
+   * ``latmax``: array of float,and max lat where variable is averaged, i.e. [ 90., 90., -60., -60. ]
+   * ``season``: array of string., season when variable is averaged, i.e. ["DJF", "MAM","JJA","SON"]
+   * ``XMin``: array of float, min limit X axis [-30., -30.,-30.,-30.]
+   * ``XMax``: array of float, max limit X axis [20.,20.,20.,20.]
+   * ``levmin``: array of float, min limit Y axis [1., 1.,1.,1.]
+   * ``levmax``: array of float, max limit Y axis [350., 350.,350.,350.]
 
 
    *Optional settings for script*
-   * ``e06fig01_start_year``: int,  year when start the climatology calculation [1980] (default max among the models start year).
-   * ``e06fig01_end_year``:int, year when end  the climatology calculation [1999] (default min among the models end year).
-   * ``e06fig01_multimean``: bool, calculate multi-model mean, (i.e. False/True) (default False).
+   * ``start_year``: int,  year when start the climatology calculation [1980] (default max among the models start year).
+   * ``end_year``:int, year when end  the climatology calculation [1999] (default min among the models end year).
+   * ``multimean``: bool, calculate multi-model mean, (i.e. False/True) (default False).
 
    *Required settings for variables*
    * ``preprocessor``: regrid_interp_lev.
