@@ -10,8 +10,7 @@ import yaml
 from cf_units import Unit
 from dask import array as da
 
-from esmvalcore._config import get_tag_value
-from esmvalcore._citation import cite_tag_value
+from esmvalcore._citation import _collect_bibtex_citation, REFERENCES_PATH
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvaltool import __version__ as version
 
@@ -179,6 +178,15 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     status = 'lazy' if cube.has_lazy_data() else 'realized'
     logger.info('Cube has %s data [lazy is preferred]', status)
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
+
+
+def cite_tag_value(tags):
+    """Convert tags to bibtex entries."""
+    reference_entries = ''
+    if REFERENCES_PATH:
+        reference_entries = [_collect_bibtex_citation(tag) for tag in [tags]]
+        reference_entries = '\n'.join(reference_entries)
+    return reference_entries
 
 
 def set_global_atts(cube, attrs):
