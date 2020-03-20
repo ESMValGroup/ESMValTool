@@ -3,8 +3,8 @@
 ---
 documentation:
   description: |
-    Diagnostics of stratospheric dynamics and chemistry reproducing selected figures
-    from Eyring et al. JGR (2006).
+    Diagnostics of stratospheric dynamics and chemistry reproducing selected
+    figures from Eyring et al. JGR (2006).
 
   authors:
     - cionni_irene
@@ -17,7 +17,6 @@ documentation:
 
   projects:
     - crescendo 
-
 
 datasets:
 #  - {dataset: ERA-40, project: OBS, type: reanaly, version: v1,
@@ -514,37 +513,38 @@ diagnostics:
         e06fig09_end_year: [1999.]
         e06fig09_multimean: True
 
- # ============================================================================
- # Eyring et al. (2006) - Figure 10 latitudinal profiles of mean age of air
- # climatological mean for selected seasons and levels
- # ============================================================================
- eyring06jgr_fig10:
-    description: latirudinal profile climatological seasonal mean
-   themes:
-     - chem
-   realms:
-     - atmos
-   variables:
-     mean_age:
-       preprocessor: regrid_interp_lev
-       reference_dataset: HALOE
-       mip: Amon
-   additional_datasets:
-     - {dataset: HALOE, project: OBS, type: sat, version: v1,
-        start_year: 1991, end_year: 2002, tier: 3}
-   scripts:
-     clim:
-       projection: CylindricalEquidistant
-       timemean: annualclim
-       showdiff: false
-       styleset: CMIP5
-       e06fig05b_lev: ["500","1000","5000"]
-       e06fig05b_month: ["ANN","ANN","ANN"]
-       e06fig05b_YMin: [0.,0.,0.]
-       e06fig05b_YMax: [8.,8.,8.]
-       e06fig05a_start_year: [1991]
-       e06fig05a_end_year: [2002]
-       e06fig05b_multimean: True
+  # ===========================================================================
+  # Eyring et al. (2006) - Figure 10 latitudinal profiles of mean age of air
+  # climatological mean for selected seasons and levels
+  # ===========================================================================
+  # eyring06jgr_fig10:
+  #   description: latirudinal profile climatological seasonal mean
+  #   themes:
+  #     - chem
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     mean_age:
+  #      preprocessor: regrid_interp_lev
+  #      reference_dataset: HALOE
+  #      mip: Amon
+  #   additional_datasets:
+  #     - {dataset: HALOE, project: OBS, type: sat, version: v1,
+  #        start_year: 1991, end_year: 2002, tier: 3}
+  #   scripts:
+  #     clim:
+  #       script:  eyring06jgr/eyring06jgr_fig10.ncl
+  #       projection: CylindricalEquidistant
+  #       timemean: annualclim
+  #       showdiff: false
+  #       styleset: CMIP5
+  #       e06fig05b_lev: ["500","1000","5000"]
+  #       e06fig05b_month: ["ANN","ANN","ANN"]
+  #       e06fig05b_YMin: [0.,0.,0.]
+  #       e06fig05b_YMax: [8.,8.,8.]
+  #       e06fig05a_start_year: [1991]
+  #       e06fig05a_end_year: [2002]
+  #       e06fig05b_multimean: True
        
 
   # ===========================================================================
