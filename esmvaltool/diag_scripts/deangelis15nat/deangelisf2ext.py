@@ -559,7 +559,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
         save_kwargs={'bbox_inches': 'tight',
                      'orientation': 'landscape'},
         axes_functions={'set_title': dataset_name,
-                        'set_xlabel': '2−m temperature (T)' +
+                        'set_xlabel': '2−m temperature (tas)' +
                                       'global−mean annual anomaly (' +
                                       variables.units('tas') + ')',
                         'set_ylabel': r'Energy budget term global - ' +
@@ -591,13 +591,27 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    iris.save(cube_to_save_matrix(data, {'var_name': 'all',
-                                         'long_name': 'dlvp/dtas, ' +
-                                                      'drlnst/dtas, ' +
-                                                      'drsnst/dtas, ' +
-                                                      'dhfss/dtas, ',
-                                         'units': 'W m-2 K-1'}),
-              target=diagnostic_file)
+    list_dict = {}
+    list_dict["data"] = [data["tas"], data["lvp"], data["rlnst"],
+                         data["rsnst"], data["hfss"]]
+    list_dict["name"] = [{'var_name': 'tas',
+                          'long_name': '2-m air temperature',
+                          'units': 'K'},
+                         {'var_name': 'lvp',
+                          'long_name': 'Latent heat release ' +
+                                       'from precipitation',
+                          'units': 'W m-2'},
+                         {'var_name': 'rlnst',
+                          'long_name': 'Net longwave cooling',
+                          'units': 'W m-2'},
+                         {'var_name': 'rsnst',
+                          'long_name': 'Shortwave absorption',
+                          'units': 'W m-2'},
+                         {'var_name': 'hfss',
+                          'long_name': 'Sensible heating',
+                          'units': 'W m-2'}]
+
+    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
 
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
