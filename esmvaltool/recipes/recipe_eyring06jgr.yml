@@ -350,21 +350,21 @@ diagnostics:
       - {dataset: HALOE, project: OBS, type: sat, version: 1,
          start_year: 1991, end_year: 2002, tier: 2}
     scripts:
-      clim:
+      fig05a:
         script: eyring06jgr/eyring06jgr_fig05a.ncl
         projection: CylindricalEquidistant
         timemean: annualclim
         showdiff: false
-        e06fig05a_latmin: [ 80., -10., -82.5]
-        e06fig05a_latmax: [ 82.5, 10.,-80. ]
+        e06fig05a_latmin: [80., -10., -82.5]
+        e06fig05a_latmax: [82.5, 10., -80. ]
         styleset: CMIP5
-        e06fig05a_month: ["3", "3","9"]
-        e06fig05a_XMin: [0.,0.,0.]
-        e06fig05a_XMax: [7.,12.,7.]
-        e06fig05a_levmin: [1., 1.,1.]
-        e06fig05a_levmax: [200., 200.,200.]
-        e06fig05a_start_year: [1991]
-        e06fig05a_end_year: [2002]
+        e06fig05a_month: ["3", "3", "9"]
+        e06fig05a_XMin: [0., 0., 0.]
+        e06fig05a_XMax: [7., 12., 7.]
+        e06fig05a_levmin: [1., 1., 1.]
+        e06fig05a_levmax: [200., 200., 200.]
+        e06fig05a_start_year: 1991
+        e06fig05a_end_year: 2002
         e06fig05a_multimean: True
 
   eyring06jgr_fig05b:
@@ -382,18 +382,18 @@ diagnostics:
       - {dataset: HALOE, project: OBS, type: sat, version: 1,
          start_year: 1991, end_year: 2002, tier: 2}
     scripts:
-      clim:
+      fig5b:
         script: eyring06jgr/eyring06jgr_fig05b.ncl
         projection: CylindricalEquidistant
         timemean: annualclim
         showdiff: false
         styleset: CMIP5
-        e06fig05b_lev: ["5000","5000"]
-        e06fig05b_month: ["3","9"]
-        e06fig05b_YMin: [0.,0.]
-        e06fig05b_YMax: [5.,5.]
-        e06fig05a_start_year: [1991]
-        e06fig05a_end_year: [2002]
+        e06fig05b_lev: ["5000", "5000"]
+        e06fig05b_month: ["3", "9"]
+        e06fig05b_YMin: [0., 0.]
+        e06fig05b_YMax: [5., 5.]
+        e06fig05a_start_year: 1991
+        e06fig05a_end_year: 2002  
         e06fig05b_multimean: True
 
   # ===========================================================================
