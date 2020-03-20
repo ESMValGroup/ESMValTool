@@ -328,6 +328,9 @@ authors:
   oliveira_arildo:
     name: Oliveira, Arildo
     institute: INPE, Brazil
+  pandde_amarjiit:
+    name: Pandde, Amarjiit
+    institute: Univ. of Arizona, USA
     orcid:
   perez-zanon_nuria:
     name: Perez-Zanon, Nuria
@@ -360,6 +363,13 @@ authors:
   roehrig_romain:
     name: Roehrig, Romain
     institute: MeteoFr, France
+  russell_joellen:
+    name: Russell, Joellen
+    institute: Univ. of Arizona, USA
+    orcid:
+  senftleben_daniel:
+    name: Senftleben, Daniel
+    institute: DLR, Germany
     orcid: https://orcid.org/0000-0002-3903-3841
   serva_federico:
     name: Serva, Federico
@@ -668,6 +678,7 @@ references:
   rk2008bams: "Reichler and Kim, Bull. Amer. Meteor. Soc.,doi:10.1175/BAMS-89-3-303, 2008."
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, doi:10.1175/JCLI-D-12-00505.1, 2013."
+  russell18jgr: "Russell, J.L. et al., J. Geophys. Res., doi: 10.1002/2017JC013461, 2018."
   sherwood14nat: "Sherwood et al., nature, doi:10.1038/nature12829, 2014."
   sillman13jgr: "Sillmann et al., J. Geophys. Res., doi:10.1002/jgrd.50203, 2013"
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., doi:10.1002/asl.378, 2012."
@@ -765,6 +776,7 @@ projects:
   ewatercycle: eWaterCycle project
   primavera: EU H2020 project PRIMAVERA
   qa4ecv: QA4ECV
+  russell_project: US Clivar, Ocean Carbon Biogeochemistry, ESGF, NOAA, NSF, NASA, US Antarctic program
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
 
