@@ -126,13 +126,16 @@ begin
   system("mkdir -p " + config_user_info@work_dir)
   system("mkdir -p " + config_user_info@plot_dir)
 
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
 end
 
 begin
 
-  aux_title_info = ""
-  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f01_" + var0)
-  output_filename = wks@fullname
   nPanel = nseasons
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))
@@ -265,6 +268,9 @@ begin
   end if
 
   ; Plotting
+  plotpath = config_user_info@plot_dir + "eyring06f01_" + var0
+  wks = gsn_open_wks(file_type, plotpath)
+
   do ipanel = 0, nseasons - 1
     res = True
     res@gsnDraw = False
@@ -342,7 +348,7 @@ begin
   if (dimsizes(plotMod).gt.21) then
     frame(wks)
   end if
-  add_legenda(wks, plotMod, plotColor, tofloat(plotDash), \
+  add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
               LineScatters, plotThicks, "0.2")
   frame(wks)
 
