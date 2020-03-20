@@ -325,7 +325,7 @@ end do
   plotDash(index_obs)=plotScatters(index_obs)
 
   plotThicks=plotThicks+2
-  add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
+  add_legend(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
 
   frame(wks)
     ;**********************common output file**************************

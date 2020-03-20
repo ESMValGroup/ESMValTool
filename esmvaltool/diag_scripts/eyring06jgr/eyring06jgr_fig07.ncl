@@ -411,7 +411,7 @@ do ipanel=0, nPanel-1
 ;Lin(:)="Lines"
    
     plotDash(iref)=plotScatters(iref)
-    add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
+    add_legend(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
 
    frame(wks)
 ;**********************common output file**************************

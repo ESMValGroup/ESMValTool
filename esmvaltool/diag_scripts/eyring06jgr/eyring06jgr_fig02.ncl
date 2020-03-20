@@ -453,7 +453,7 @@ end do
     end if
                 Lin=new(dimsizes(names),"string")
                 Lin(:)="Lines"
-       add_legenda(wks,names,colors,tofloat(dashes),Lin,thicks,"0.2")
+       add_legend(wks,names,colors,tofloat(dashes),Lin,thicks,"0.2")
 
    frame(wks)
 ;**********************common output file**************************

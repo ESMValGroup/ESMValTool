@@ -475,7 +475,7 @@ begin
      frame(wks)
    ; the legend is included in a second figure 
      
-    add_legenda(wks,plotMod,plotColor,plotScatters,LineScatters,plotThicks+2.,"0.2")
+    add_legend(wks,plotMod,plotColor,plotScatters,LineScatters,plotThicks+2.,"0.2")
     frame(wks)
 ;**********************common output file var0**************************
      nc_filename1 = work_dir + "eyring06f03_" + var0 + ".nc"

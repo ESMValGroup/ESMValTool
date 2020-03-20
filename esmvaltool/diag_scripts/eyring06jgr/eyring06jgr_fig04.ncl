@@ -336,7 +336,7 @@ begin
         frame(wks)
     end if
      plotThicks=plotThicks+1
-     add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
+     add_legend(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
 
      frame(wks)
 end

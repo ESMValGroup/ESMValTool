@@ -391,7 +391,7 @@ begin
         frame(wks)
    ; end if
      
-    add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks+2.,"0.2")
+    add_legend(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks+2.,"0.2")
    frame(wks)
 ;**********************common output file**************************
      nc_filename = work_dir + "eyring06f12a_" + var0 + ".nc"

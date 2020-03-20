@@ -395,7 +395,7 @@ end do
    Pres=True
    gsn_panel(wks,plot_d,(/1,2/),Pres) 
    plotDash(index_obs)=plotScatters(index_obs)
-   add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks+2.,"0.2") 
+   add_legend(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks+2.,"0.2") 
 
    frame(wks)
 ;**********************common output file amplitude**************************

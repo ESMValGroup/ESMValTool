@@ -327,7 +327,7 @@ begin
   gsn_panel(wks, plot_d, (/1, dimsizes(seasons)/), Pres)
   frame(wks)
   
-  add_legenda(wks, plotMod, plotColor, tofloat(plotDash), LineScatters, plotThicks + 2., "0.2")
+  add_legend(wks, plotMod, plotColor, tofloat(plotDash), LineScatters, plotThicks + 2., "0.2")
   frame(wks)
   
   nc_filename = work_dir + "eyring06f05b_" + var0 + ".nc"

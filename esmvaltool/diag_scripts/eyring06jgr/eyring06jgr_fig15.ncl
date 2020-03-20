@@ -432,7 +432,7 @@ end do ;imod
    end if
    plotThicks=plotThicks+1
    plotDash(index_obs)=plotScatters(index_obs)
-   add_legenda(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
+   add_legend(wks,plotMod,plotColor,tofloat(plotDash),LineScatters,plotThicks,"0.2")
    frame(wks)
 ;**********************common output file Anomalies**************************
    nc_filename = work_dir + "eyring06f15_Anomalies" + var0 + ".nc"
