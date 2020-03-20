@@ -292,7 +292,7 @@ begin
   xp_M = new((/2*dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
   yp_M = new((/2*dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
   do j = 0, dimsizes(lev0) - 1
-    xp_R(j, :) = - ((Xref(:, j, 1)))  ; MR: -1 *   maybe safer
+    xp_R(j, :) = -1. * Xref(:, j, 1)
     yp_R(j, :) = tofloat(lev0(j) / 100.)
     yp_R(dimsizes(lev0) + j, :) = tofloat(lev0(dimsizes(lev0) - 1 - j) / 100)
     xp_R(dimsizes(lev0) + j, :) = (Xref(:, (dimsizes(lev0) - 1 - j), 1))
