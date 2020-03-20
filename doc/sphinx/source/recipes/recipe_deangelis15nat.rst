@@ -63,7 +63,13 @@ any flux variable (W m\ :sup:-2\) should be possible.
 
 deangelisf2ext.py:
 
-To be completed
+* *rsnst* (atmos, monthly, longitude, latitude, time)
+* *rlnst* (atmos, monthly, longitude, latitude, time)
+* *rsnstcs* (atmos, monthly, longitude, latitude, time)
+* *rlnstcs* (atmos, monthly, longitude, latitude, time)
+* *lvp* (atmos, monthly, longitude, latitude, time)
+* *hfss* (atmos, monthly, longitude, latitude, time)
+* *tas* (atmos, monthly, longitude, latitude, time)
 
 deangelisf3f4.py:
 * *rsnstcs* (atmos, monthly, longitude, latitude, time)
@@ -106,6 +112,13 @@ Example plots
    :width: 50%
 
    Global average multi-model mean comparing different model experiments for the sum of upward long wave flux at TOA and net downward long wave flux at the surface (rlnst),  heating from short wave absorption (rsnst), latent heat release from precipitation (lvp), and sensible heat flux (hfss). The panel shows three model experiments, namely the pre-industrial control simulation averaged over 150 years (blue), the RCP8.5 scenario averaged over 2091-2100 (orange) and the abrupt quadrupled CO2 scenario averaged over the years 141-150 after CO2 quadrupling in all models except CNRM-CM5-2 and IPSL-CM5A-MR, where the average is calculated over the years 131-140 (gray). The figure shows that energy sources and sinks readjust in reply to an increase in greenhouse gases, leading to a decrease in the sensible heat flux and an increase in the other fluxes.
+
+.. _exfig2a.png:
+.. figure:: /recipes/figures/deangelis15nat/exfig2a.png.png
+   :align: center
+   :width: 50%
+
+   The temperature-mediated response of each atmospheric energy budget term for each model as blue circles and the model mean as a red cross. The numbers above the abscissa are the cross-model correlations between dlvp/dtas and each other temperature-mediated response.'
 
 .. _fig3b:
 .. figure:: /recipes/figures/deangelis15nat/fig3b.png

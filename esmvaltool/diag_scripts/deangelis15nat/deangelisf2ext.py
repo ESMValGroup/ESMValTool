@@ -340,7 +340,8 @@ def plot_slope_regression(cfg, data_dict):
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     list_dict = {}
-    list_dict["data"] = list(sa_dict.values())
+    list_dict["data"] = [sa_dict["lvpdt"], sa_dict["rsnstdt"],
+                         sa_dict["rsnstcsdt"]]
     list_dict["name"] = [{'var_name': 'dlvp/dtas',
                           'long_name': 'Temperature mediated latent heat ' +
                                        'release from precipitation',

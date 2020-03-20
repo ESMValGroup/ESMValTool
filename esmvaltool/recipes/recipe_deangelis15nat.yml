@@ -74,16 +74,18 @@ diagnostics:
       - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
       - {dataset: ACCESS1-3, exp: rcp85, start_year: 2091, end_year: 2100}
       - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
-      - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2091, end_year: 2100}
-      - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 300, end_year: 309}
-      - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2091, end_year: 2100}
-      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 380,
-         end_year: 389}
+      # Strange values in lvp
+      # - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
+      # - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2091, end_year: 2100}
+      # - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 300, end_year: 309}
+      # - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
+      # - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2091, end_year: 2100}
+      # - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 380,
+      #    end_year: 389}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: rcp85, start_year: 2091, end_year: 2100}
       - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
+      # data not available completely on DKRZ
       # - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
       # - {dataset: CCSM4, exp: rcp85, start_year: 2091, end_year: 2100}
       # - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1990, end_year: 1999}
@@ -178,13 +180,15 @@ diagnostics:
       - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
       - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
       - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
-      - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240,
-         end_year: 389}
+      # strange values in lvp
+      # - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
+      # - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
+      # - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
+      # - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240,
+      #    end_year: 389}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # data not available completely on DKRZ
       # - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
       # - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
@@ -237,7 +241,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
       rsnstcsnorm: &tropical_cmip5_r1i1p1_amon_t2ms
@@ -245,7 +248,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
         additional_datasets:
@@ -270,13 +272,15 @@ diagnostics:
       - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
       - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
       - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
-      - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240,
-         end_year: 389}
+      # strange values in lvp
+      # - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
+      # - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
+      # - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
+      # - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240,
+      #    end_year: 389}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # data not available completely on DKRZ
       # - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
       # - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
