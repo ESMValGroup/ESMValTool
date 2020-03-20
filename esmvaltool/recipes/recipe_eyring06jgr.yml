@@ -206,18 +206,18 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          start_year: 1980, end_year: 1999, tier: 3}
     scripts:
-      clim:
+      fig01:
         script: eyring06jgr/eyring06jgr_fig01.ncl
-        latmin: [ 60., 60., -90., -90. ] 
-        latmax: [ 90., 90., -60., -60. ] 
+        latmin: [60., 60., -90., -90.] 
+        latmax: [90., 90., -60., -60.] 
         styleset: CMIP5
-        season: ["DJF", "MAM","JJA","SON"]
-        XMin: [-30., -30.,-30.,-30.]
-        XMax: [20.,20.,20.,20.]
-        levmin: [1., 1.,1.,1.]
-        levmax: [350., 350.,350.,350.]
-        start_year: [1980]
-        end_year: [1999]
+        season: ["DJF", "MAM", "JJA", "SON"]
+        XMin: [-30., -30., -30., -30.]
+        XMax: [20., 20., 20., 20.]
+        levmin: [1., 1., 1., 1.]
+        levmax: [350., 350., 350., 350.]
+        start_year: 1980
+        end_year: 1999
         multimean: True
 
         
