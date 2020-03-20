@@ -52,6 +52,17 @@ C, C++, or Fortran that you want to re-use, the recommended way to proceed is to
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
 
+Adding references to esmvaltool
+======================
+Note: the ``reference`` section in ``config-references.yaml`` has been replaced by the folder ``esmvaltool/references``.
+How to add a reference entry:
+-  choose a name as a tag that is representative of the reference entry.
+   For example, ``righi15gmd`` shows the last name of the first author, year and journal abbreviation.
+-  add the tag to the ``references`` section in the recipe (or diagnostics).
+-  make a bibtex file for the reference entry. There are some online tools to convert a doi to bibtex format like https://doi2bib.org/
+-  rename the file to the tag.
+-  add the file to the folder esmvaltool/references.
+
 Recording provenance
 ====================
 When ESMValCore (the ``esmvaltool`` command) runs a recipe, it will first find all data and run the default preprocessor steps plus any
