@@ -10,7 +10,7 @@
 ;
 ; Required diag_script_info attributes
 ;    latrange:  minimum and maximum latitude for regional average,
-;               e.g. (/60,90/))
+;               e.g. (/60, 90/))
 ;    season: seasonfor temporal average (e.g, "DJF", "MAM", "JJA", "SON")
 ;    multimean: calculate multi-model mean (i.e. False/True)
 ;    refModel:  name of the reference model or observation for
@@ -62,13 +62,7 @@ begin
   if (variable_info[0]@reference_dataset.eq."None") then
     error_msg("f", DIAG_SCRIPT, "", "no reference dataset is specified")
   end if
-
-  refname = variable_info[0]@reference_dataset
-  do imod = 0, dimsizes(names) - 1  ; MR replace with ind
-    if (names(imod) .eq. refname) then
-      iref = imod
-    end if
-  end do
+  iref = ind(names.eq.variable_info[0]@reference_dataset
 
   ; Check variable attributes
   if(isatt(variable_info, "units")) then
@@ -97,12 +91,10 @@ begin
   latrange(:, 0) = diag_script_info@latmin
   latrange(:, 1) = diag_script_info@latmax
   seasons = diag_script_info@season
-
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
   thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
   markers = project_style(info0, diag_script_info, "markers")
-
   flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
   index_obs = ind(flag_mod.eq.0)
@@ -164,7 +156,7 @@ begin
   nPanel = dimsizes(seasons)
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))
-  rad = 4.0 * atan(1.0) / 180.0
+  rad = acos(-1.) / 180.0
   A0 = read_data(info0[iref])
   lev0 = A0&plev
   dimLev = dimsizes(lev0)
@@ -200,27 +192,24 @@ begin
 
       ; Extract data
       A0 = read_data(info0[imod])
-      if (all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then  ; MR require?
-        dummy1 = area_operations(A0(time|:, plev|:, lat|:, lon|:), \
-                                 latrange(ipan, 0), \
-                                 latrange(ipan, 1), 0., 360., "average", True)
-        coslat = cos(A0&lat * rad)
-        coslat!0 = "lat"
-        coslat&lat = A0&lat
-        delete(coslat)
-        delete(A0)
-      else
-        if (all(isdim(A0, (/"time", "plev", "lat"/)))) then  ; MR not required!
-          coslat = cos(A0&lat * rad)
-          coslat!0 = "lat"
-          coslat&lat = A0&lat
-          dummy1 = \
-            dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), \
-                             coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
-          delete(coslat)
-          delete(A0)
-        end if
+
+      ; Temporary workaround due to ESMValCore/issues/577
+      if (typeof(A0).ne."float") then
+        tmp = tofloat(A0)
+        copy_VarMeta(A0, tmp)
+        A0 := tmp
+        delete(tmp)
       end if
+
+      ; Select latitude range
+      coslat = cos(A0&lat * rad)
+      coslat!0 = "lat"
+      coslat&lat = A0&lat
+      dummy1 = \
+        dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), \
+                            coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
+      delete(coslat)
+      delete(A0)
 
       if (seasons(ipan).ne."ANN") then
         tmp = time_operations(dummy1, \

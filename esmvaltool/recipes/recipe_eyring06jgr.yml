@@ -108,6 +108,18 @@ datasets:
  #    start_year: 1986, end_year: 1999}
 
 preprocessors:
+
+  # Figure 1
+  regrid_interp_lev_zonal:
+    extract_levels:
+      scheme: linear
+      levels: reference_dataset
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    zonal_statistics:
+      operator: mean      
+  
 #regridding and interpolation reference_dataset levels used by fig1,fig5a,fig5b
   regrid_interp_lev:
     extract_levels:
@@ -116,6 +128,8 @@ preprocessors:
     regrid:
       target_grid: reference_dataset
       scheme: linear
+
+
 
 #regridding and interpolation reference_dataset levels selection of lat/lon area and average
   regrid_interp_lev_mean_lat:
@@ -200,7 +214,7 @@ diagnostics:
       - atmos
     variables:
       ta:
-        preprocessor: regrid_interp_lev
+        preprocessor: regrid_interp_lev_zonal
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
