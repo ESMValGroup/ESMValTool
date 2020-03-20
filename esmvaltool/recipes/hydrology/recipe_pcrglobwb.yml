@@ -2,48 +2,72 @@
 # recipe_pcrglobwb.yml
 ---
 documentation:
-  description: |
-    Recipe pre-processes ERA-Interim reanalyses files for use in the PCR-GLOBWB
-    hydrological model.
-
-    PCR-GLOBWB (PCRaster Global Water Balance) is a large-scale hydrological
-    model intended for global to regional studies and developed at the
-    Department of Physical Geography, Utrecht University (Netherlands).
-    PCR-GLOBWB input and output files for the runs made in Sutanudjaja et al.
-    (2018, https://doi.org/10.5194/gmd-11-2429-2018) are available on
-    https://geo.data.uu.nl/research-pcrglobwb/
-    pcr-globwb_gmd_paper_sutanudjaja_et_al_2018/.
-    For requesting access, please send an e-mail to E.H.Sutanudjaja@uu.nl.
-
-    Main reference/paper: Sutanudjaja, E. H. et al., Geosci. Model Dev.,
-    doi:10.5194/gmd-11-2429-2018, 2018.
-
-  authors: ['aerts_jerom', 'andela_bouwe', 'drost_niels']
+  description: Pre-processes climate data for use in the PCR-GLOBWB hydrological model.
+  authors:
+    - aerts_jerom
+    - andela_bouwe
+    - drost_niels
+    - camphuijsen_jaro
+    - alidoost_sarah
+    - kalverla_peter
   projects: ['ewatercycle']
   references: ['acknow_project', 'sutanudjaja2018gmd']
 
 
-datasets:
-  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-
 preprocessors:
-  preprocessor:
-    regrid:
-      target_grid: 0.5x0.5
-      lon_offset: true
-      lat_offset: true
-      scheme: linear
+  crop_basin: &crop_basin
+    extract_region:  # bounding box values depend on catchment
+      start_longitude: 3
+      end_longitude: 13.5
+      start_latitude: 45
+      end_latitude: 54
+  climatology: &climatology
+    climate_statistics:
+      operator: mean
+      period: day
+  preproc_pr: &preproc_pr
+    <<: *crop_basin
+    convert_units:
+      units: kg m-2 d-1
+  preproc_tas: &preproc_tas
+    <<: *crop_basin
+  preproc_pr_clim:
+    <<: *preproc_pr
+    <<: *climatology
+  preproc_tas_clim:
+    <<: *preproc_tas
+    <<: *climatology
 
 diagnostics:
-  diagnostic1:
-    description: PCR-GLOBWB input preprocessor
+  diagnostic_daily:
+    description: PCR-GLOBWB input preprocessor for ERA-Interim and ERA5 data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: &var
+      pr:
         mip: day
-        start_year: 1979
-        end_year: 1979
-        preprocessor: preprocessor
-      pr: *var
+        start_year: 2002
+        end_year: 2016
+        preprocessor: preproc_pr
+      tas:
+        mip: day
+        start_year: 2002
+        end_year: 2016
+        preprocessor: preproc_tas
+      pr_climatology:
+        short_name: pr
+        mip: day
+        start_year: 1990
+        end_year: 2002
+        preprocessor: preproc_pr_clim
+      tas_climatology:
+        short_name: tas
+        mip: day
+        start_year: 1990
+        end_year: 2002
+        preprocessor: preproc_tas_clim
     scripts:
       script:
         script: hydrology/pcrglobwb.py
+        basin: rhine

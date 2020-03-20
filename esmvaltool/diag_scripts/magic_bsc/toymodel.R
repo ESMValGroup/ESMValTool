@@ -146,9 +146,9 @@ ToyModel <- # nolint
     obs_ano <- obsini
 
     forecast <- array(dim = c(length(gamma), nmemb, nstartd, nleadt))
-    for (j in 1:nstartd) {
-      for (f in 1:nleadt) {
-        for (g in 1:length(gamma)) {
+    for (j in seq_len(nstartd)) {
+      for (f in seq_len(nleadt)) {
+        for (g in seq_along(gamma)) {
           auto_term <- obs_ano[1, 1, j, f]
           if (is.numeric(fxerr)) {
             conf_term <- fxerr
