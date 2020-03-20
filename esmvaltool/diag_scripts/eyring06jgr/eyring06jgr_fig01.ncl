@@ -19,10 +19,10 @@
 ; Optional diag_script_info attributes
 ;    latmin: minimum latitude for region selection
 ;    latmax: maximum latitude for region selection
-;    XMin: min limit X axis
-;    XMax: max limit X axis
-;    levmin: min limit Y axis
-;    levmax: max limit Y axis
+;    Xmin: lower limit for the X axis
+;    Xmax: upper limit for the X axis
+;    Ymin: lower limit Y axis
+;    Ymax: upper limit Y axis
 ;    start_year: start year for the climatology calculation
 ;    end_year: end year for the climatology calculation
 ;
@@ -62,7 +62,7 @@ begin
   if (variable_info[0]@reference_dataset.eq."None") then
     error_msg("f", DIAG_SCRIPT, "", "no reference dataset is specified")
   end if
-  iref = ind(names.eq.variable_info[0]@reference_dataset
+  iref = ind(names.eq.variable_info[0]@reference_dataset)
 
   ; Check variable attributes
   if(isatt(variable_info, "units")) then
@@ -82,19 +82,19 @@ begin
   set_default_att(diag_script_info, "styleset", "CMIP5")
   set_default_att(diag_script_info, "latmin", -90.)
   set_default_att(diag_script_info, "latmax", 90.)
+  set_default_att(diag_script_info, "Xmin", -30.)
+  set_default_att(diag_script_info, "Xmax", 20.)
+  set_default_att(diag_script_info, "Ymin", 1.)
+  set_default_att(diag_script_info, "Ymax", 1000.)
   set_default_att(diag_script_info, "multimean", False)
   set_default_att(diag_script_info, "start_year", max(y1))
   set_default_att(diag_script_info, "end_year", min(y2))
 
   seasons = diag_script_info@season
-  latrange = new((/dimsizes(seasons), 2/), "float")
+  nseasons = dimsizes(seasons)
+  latrange = new((/nseasons, 2/), "float")
   latrange(:, 0) = diag_script_info@latmin
   latrange(:, 1) = diag_script_info@latmax
-  seasons = diag_script_info@season
-  colors = project_style(info0, diag_script_info, "colors")
-  dashes = project_style(info0, diag_script_info, "dashes")
-  thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
-  markers = project_style(info0, diag_script_info, "markers")
   flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
   index_obs = ind(flag_mod.eq.0)
@@ -106,41 +106,21 @@ begin
     list_obs_mod = names(index_obs)
   end if
 
-  Max_lev = new((/dimsizes(seasons)/), "float")
-  Min_lev = new((/dimsizes(seasons)/), "float")
-  XMax = new((/dimsizes(seasons)/), "float")
-  XMin = new((/dimsizes(seasons)/), "float")
-
-  if(isatt(diag_script_info, "levmax")) then
-    Max_lev = diag_script_info@levmax
-  else
-    Max_lev = 1000.
-  end if
-  if(isatt(diag_script_info, "levmin")) then
-    Min_lev = diag_script_info@levmin
-  else
-    Min_lev = 1.
-  end if
-  if(isatt(diag_script_info, "XMax")) then
-    XMax = diag_script_info@XMax
-  else
-    XMax = 20.
-  end if
-  if(isatt(diag_script_info, "XMin")) then
-    XMin = diag_script_info@XMin
-  else
-    XMin = -30.
-  end if
-
   multimean = diag_script_info@multimean
   if (multimean)
-    dimTot = dim_MOD+dim_OBS
+    dimTot = dim_MOD + dim_OBS
   else
-    dimTot = dim_MOD+dim_OBS-1
+    dimTot = dim_MOD + dim_OBS - 1
   end if
 
   year_start = toint(diag_script_info@start_year)
   year_end = toint(diag_script_info@end_year)
+
+  ; Styles
+  colors = project_style(info0, diag_script_info, "colors")
+  dashes = project_style(info0, diag_script_info, "dashes")
+  thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
+  markers = project_style(info0, diag_script_info, "markers")
 
   ; Create output directories
   system("mkdir -p " + config_user_info@work_dir)
@@ -153,29 +133,29 @@ begin
   aux_title_info = ""
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f01_" + var0)
   output_filename = wks@fullname
-  nPanel = dimsizes(seasons)
+  nPanel = nseasons
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))
   rad = acos(-1.) / 180.0
   A0 = read_data(info0[iref])
   lev0 = A0&plev
-  dimLev = dimsizes(lev0)
+  nlev0 = dimsizes(lev0)
   delete(A0)
 
-  tmpData = new((/dim_MOD + dim_OBS, nPanel, dimsizes(lev0), 2/), "float")
+  tmpData = new((/dim_MOD + dim_OBS, nPanel, nlev0, 2/), "float")
   tmpData!0 = "line"
   tmpData!1 = "season"
   tmpData!2 = "plev"
   tmpData!3 = "stat"
 
-  Xdata = new((/dimTot, nPanel, dimsizes(lev0), 2/), "float")
+  Xdata = new((/dimTot, nPanel, nlev0, 2/), "float")
   Xdata!0 = "line"
   Xdata!1 = "season"
   Xdata!2 = "plev"
   Xdata!3 = "stat"
   Xdata&plev = lev0
 
-  Xref = new((/nPanel, dimsizes(lev0), 2/), "float")
+  Xref = new((/nPanel, nlev0, 2/), "float")
   plotMod = new(dimTot, typeof(names))
   plotColor = new(dimTot, typeof(names))
   plotDash = new(dimTot, typeof(names))
@@ -188,7 +168,7 @@ begin
   do imod = 0, dim_MOD1 - 1
 
     ; Start seasons loop
-    do ipan = 0, dimsizes(seasons)-1
+    do ipan = 0, nseasons - 1
 
       ; Extract data
       A0 = read_data(info0[imod])
@@ -205,35 +185,22 @@ begin
       coslat = cos(A0&lat * rad)
       coslat!0 = "lat"
       coslat&lat = A0&lat
-      dummy1 = \
+      A0 := \
         dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), \
-                            coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
+                         coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
       delete(coslat)
-      delete(A0)
 
       if (seasons(ipan).ne."ANN") then
-        tmp = time_operations(dummy1, \
-                              year_start, \
-                              year_end, \
-                              "extract", \
-                              seasons(ipan), \
-                              True)  ; MR: No need to extract first I guess
-        dummy2 = time_operations(tmp, \
-                                 year_start, \
-                                 year_end, \
-                                 "average", \
-                                 "yearly", \
-                                 True)
+        tmp = time_operations(A0, year_start, year_end, \
+                              "extract", seasons(ipan), True)
+        dummy2 = time_operations(tmp, year_start, year_end, \
+                                 "average", "yearly", True)
         delete(tmp)
-        delete(dummy1)
       else
-        dummy2 = time_operations(dummy1, \
-                                 year_start, \
-                                 year_end, \
-                                 "average", \
-                                 "yearly", \
-                                 True)
+        dummy2 = time_operations(A0, year_start, year_end, \
+                                 "average", "yearly", True)
       end if
+      delete(A0)
       tmp = dim_avg_n_Wrap(dummy2, 0)
       tmp_st = dim_stddev_n_Wrap(dummy2, 0)
       delete(dummy2)
@@ -258,11 +225,11 @@ begin
 
   end do
 
-  ; Calculate multimodel mean   MR: move to preprocessor??!
+  ; Calculate multimodel mean
   if (multimean) then
-    Xdata(dimTot-1, :, :, :) = (/dim_avg_n(Xdata(index_mod, :, :, :), 0)/)
+    Xdata(dimTot - 1, :, :, :) = (/dim_avg_n(Xdata(index_mod, :, :, :), 0)/)
     plotMod(dimTot - 1) = "MMM"
-    plotColor(dimTot - 1) = "Black"
+    plotColor(dimTot - 1) = "black"
     plotDash(dimTot - 1) = 0
     LineScatters(dimTot - 1) = "Lines"
     plotThicks(dimTot - 1) = 4.
@@ -273,42 +240,40 @@ begin
   Xdata = (/Xdata - conform_dims(dimsizes(Xdata), Xref, (/1, 2, 3/))/)
   Ydata = lev0 / 100.
 
-  plot_d = new(dimsizes(seasons), "graphic")
-  plot_xp_R_d = new(dimsizes(seasons), "graphic")
-  plot_xp_M_d = new(dimsizes(seasons), "graphic")
-  xp_R = new((/2*dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
-  yp_R = new((/2*dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
-  xp_M = new((/2*dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
-  yp_M = new((/2*dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
-  do j = 0, dimsizes(lev0) - 1
+  plot_d = new(nseasons, "graphic")
+  plot_xp_R_d = new(nseasons, "graphic")
+  plot_xp_M_d = new(nseasons, "graphic")
+  xp_R = new((/2 * nlev0, nseasons/), typeof(Xref))
+  yp_R = new((/2 * nlev0, nseasons/), typeof(Xref))
+  xp_M = new((/2 * nlev0, nseasons/), typeof(Xref))
+  yp_M = new((/2 * nlev0, nseasons/), typeof(Xref))
+  do j = 0, nlev0 - 1
     xp_R(j, :) = -1. * Xref(:, j, 1)
     yp_R(j, :) = tofloat(lev0(j) / 100.)
-    yp_R(dimsizes(lev0) + j, :) = tofloat(lev0(dimsizes(lev0) - 1 - j) / 100)
-    xp_R(dimsizes(lev0) + j, :) = (Xref(:, (dimsizes(lev0) - 1 - j), 1))
+    yp_R(nlev0 + j, :) = tofloat(lev0(nlev0 - 1 - j) / 100)
+    xp_R(nlev0 + j, :) = (Xref(:, (nlev0 - 1 - j), 1))
   end do
 
   if (multimean) then
-    do j = 0, dimsizes(lev0) - 1
-      xp_M(j, :) = Xdata(dimTot - 1, :, j, 0) - ((X_MMM_std(:, j, 0)))
+    do j = 0, nlev0 - 1
+      xp_M(j, :) = Xdata(dimTot - 1, :, j, 0) - X_MMM_std(:, j, 0)
       yp_M(j, :) = tofloat(lev0(j) / 100.)
-      yp_M(dimsizes(lev0) + j, :) = \
-        tofloat(lev0(dimsizes(lev0) - 1 - j) / 100.)
-      xp_M(dimsizes(lev0) + j, :) = \
-        Xdata(dimTot - 1, :, (dimsizes(lev0) - 1 - j), 0) + \
-        X_MMM_std(:, (dimsizes(lev0) - 1 - j), 0)
+      yp_M(nlev0 + j, :) = tofloat(lev0(nlev0 - 1 - j) / 100.)
+      xp_M(nlev0 + j, :) = Xdata(dimTot - 1, :, (nlev0 - 1 - j), 0) + \
+        X_MMM_std(:, (nlev0 - 1 - j), 0)
     end do
   end if
 
   ; Plotting
-  do ipanel = 0, dimsizes(seasons) - 1
+  do ipanel = 0, nseasons - 1
     res = True
     res@gsnDraw = False
     res@gsnFrame = False
     res@tfPolyDrawOrder = "Predraw"
-    res@trXMaxF = XMax
-    res@trXMinF = XMin
-    res@trYMaxF = Max_lev
-    res@trYMinF = Min_lev
+    res@trXMinF = diag_script_info@Xmin(ipanel)
+    res@trXMaxF = diag_script_info@Xmax(ipanel)
+    res@trYMinF = diag_script_info@Ymin(ipanel)
+    res@trYMaxF = diag_script_info@Ymax(ipanel)
     res@tmYLMode = "Explicit"
     res@tmYLValues = (/1, 3, 10, 30, 100, 300, 1000/)
     res@tmYLLabels = (/1, 3, 10, 30, 100, 300, 1000/)
@@ -316,12 +281,14 @@ begin
 
     res@tiXAxisString = "Model " + long_name + " bias " + "(" + units + ")"
     res@tiYAxisString = "Pressure (hPa)"
-    res@tiMainString = seasons(ipanel) + " " + \
-      lat_names(latrange(ipanel, 0)) + " - " + lat_names(latrange(ipanel, 1))
+    res@tiMainString = \
+      seasons(ipanel) + " " + \
+      lat_names(latrange(ipanel, 0)) + " - " + \
+      lat_names(latrange(ipanel, 1))
     res@xyMarkLineModes = LineScatters
     res@trYAxisType = "LogAxis"
     res@trYReverse = True
-    res@xyLineThicknessF = 2.0
+    res@xyLineThicknessF = 2.
     res@xyLineDashSegLenF = 0.13
     res@xyLineColors = plotColor
     res@xyDashPatterns = plotDash
@@ -329,7 +296,7 @@ begin
     res@xyMarkerSizeF = 0.004
     res@xyMarkerThicknessF = 1.8
     res@tmXMajorGrid = True
-    res@tmXMajorGridThicknessF = 1.0
+    res@tmXMajorGridThicknessF = 1.
     res@tmXMajorGridLineDashPattern = 2
 
     Xdata&plev = lev0
@@ -342,7 +309,6 @@ begin
                  res)
 
     gsres = True
-
     gsres@gsFillColor = "Snow3"
     plot_xp_R_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), \
                                           xp_R(:, ipanel), \
@@ -361,14 +327,14 @@ begin
   Pres = True
   Pres@gsnFrame = False
   Pres@gsnPanelBottom = 0.2
-  Pres@gsnPanelFigureStrings = plot_num(0:dimsizes(seasons) - 1)
+  Pres@gsnPanelFigureStrings = plot_num(0:nseasons - 1)
   Pres@gsnPanelFigureStringsFontHeightF = 0.025
   Pres@gsnPanelFigureStringsPerimOn = "False"
   Pres@amJust = "TopLeft"
 
   ; Call panel routine
-  if (dimsizes(seasons).gt.1) then
-    gsn_panel(wks, plot_d, (/2, dimsizes(seasons)/2/), Pres)
+  if (nseasons.gt.1) then
+    gsn_panel(wks, plot_d, (/2, nseasons/2/), Pres)
   else
     gsn_panel(wks, plot_d, (/1, 1/), Pres)
   end if
@@ -377,7 +343,7 @@ begin
     frame(wks)
   end if
   add_legenda(wks, plotMod, plotColor, tofloat(plotDash), \
-              LineScatters, plotThicks, "0.2")  ; MR use english name
+              LineScatters, plotThicks, "0.2")
   frame(wks)
 
   nc_filename = config_user_info@work_dir + "eyring06f01_" + var0 + ".nc"
