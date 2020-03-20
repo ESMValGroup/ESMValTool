@@ -17,7 +17,7 @@ documentation:
     - eyring06jgr
 
   projects:
-    - crescendo 
+    - crescendo
 
 datasets:
 #  - {dataset: ERA-40, project: OBS, type: reanaly, version: v1,
@@ -110,21 +110,21 @@ datasets:
 preprocessors:
 #regridding and interpolation reference_dataset levels used by fig1,fig5a,fig5b
   regrid_interp_lev:
-    regrid:
-      target_grid: reference_dataset 
-      scheme: linear
     extract_levels:
       scheme: linear
       levels: reference_dataset
- 
-#regridding and interpolation reference_dataset levels selection of lat/lon area and average 
-  regrid_interp_lev_mean_lat:
     regrid:
       target_grid: reference_dataset
       scheme: linear
+
+#regridding and interpolation reference_dataset levels selection of lat/lon area and average
+  regrid_interp_lev_mean_lat:
     extract_levels:
       scheme: linear
       levels: reference_dataset
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
@@ -136,24 +136,24 @@ preprocessors:
       operator: mean
 #regridding on  reference_dataset  grid and extraction of a Pa level
   regrid_extract_lev:
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
     extract_levels:
       scheme: linear
       levels: 5000
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
 #levels are in Pa
     mask_fillvalues:
       threshold_fraction: 0.95
 
 #regridding on  reference_dataset  grid and extraction of a Pa level and area selection and mean
   regrid_extract_lev_mean_lat:
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
     extract_levels:
       scheme: linear
       levels: 10000
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
     extract_region:
       start_latitude: -10
       end_latitude: 10
@@ -189,7 +189,7 @@ diagnostics:
   # ==========================================================================
   # Eyring et al. (2006) - Figure 1
   # Vertical profile climatological mean bias,
-  # climatological mean for selected seasons and latitudinal region 
+  # climatological mean for selected seasons and latitudinal region
   # ==========================================================================
 
   eyring06jgr_fig01:
@@ -200,7 +200,7 @@ diagnostics:
       - atmos
     variables:
       ta:
-        preprocessor: regrid_interp_lev 
+        preprocessor: regrid_interp_lev
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
@@ -209,8 +209,8 @@ diagnostics:
     scripts:
       fig01:
         script: eyring06jgr/eyring06jgr_fig01.ncl
-        latmin: [60., 60., -90., -90.] 
-        latmax: [90., 90., -60., -60.] 
+        latmin: [60., 60., -90., -90.]
+        latmax: [90., 90., -60., -60.]
         styleset: CMIP5
         season: ["DJF", "MAM", "JJA", "SON"]
         XMin: [-30., -30., -30., -30.]
@@ -221,7 +221,7 @@ diagnostics:
         end_year: 1999
         multimean: True
 
-        
+
   # ==========================================================================
   # Eyring et al. (2006) - Figure 2
   # Transition to easterlies at 60S,
@@ -236,7 +236,7 @@ diagnostics:
       - atmos
     variables:
       ua:
-        preprocessor: regrid_interp_lev_mean_lat 
+        preprocessor: regrid_interp_lev_mean_lat
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
@@ -249,7 +249,7 @@ diagnostics:
         # ----------
         # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
         projection: CylindricalEquidistant
-       # timemean: annualclim  
+       # timemean: annualclim
        # timemean
         # --------
         showdiff: false
@@ -262,12 +262,12 @@ diagnostics:
         e06fig02_end_year: [1999]
         e06fig02_multimean: True
 
-    
+
   # ==========================================================================
   # Eyring et al. (2006) - Figure 4
-  # Time series of monthly anomalies respect to a reference period 
-  # at selected level,trend 
-  # climatological mean for selected seasons and latitudinal region 
+  # Time series of monthly anomalies respect to a reference period
+  # at selected level,trend
+  # climatological mean for selected seasons and latitudinal region
   # ==========================================================================
 
   eyring06jgr_fig04:
@@ -278,7 +278,7 @@ diagnostics:
       - atmos
     variables:
       ta:
-        preprocessor: regrid_extract_lev 
+        preprocessor: regrid_extract_lev
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
@@ -312,7 +312,7 @@ diagnostics:
         e06fig04_reference_yearmax: [1989]
         e06fig04_multimean: True
 
-        
+
   # ===========================================================================
   # Eyring et al. (2006) - Figure 5 two sets of figures a (vertical profiles)
   # and b (latitudinal profiles)
@@ -361,7 +361,7 @@ diagnostics:
       - atmos
     variables:
       tro3:
-        preprocessor: regrid_interp_lev 
+        preprocessor: regrid_interp_lev
         reference_dataset: HALOE
         mip: Amon
     additional_datasets:
@@ -379,7 +379,7 @@ diagnostics:
         e06fig05b_YMin: [0.,0.]
         e06fig05b_YMax: [5.,5.]
         e06fig05a_start_year: [1991]
-        e06fig05a_end_year: [2002]  
+        e06fig05a_end_year: [2002]
         e06fig05b_multimean: True
 
   # ===========================================================================
@@ -449,7 +449,7 @@ diagnostics:
 
 # ==========================================================================
 # Eyring et al. (2006) - Figure  8
-# Tape recorder 
+# Tape recorder
 # climatological mean for l selected atitudinal region
 # ==========================================================================
 
@@ -495,7 +495,7 @@ diagnostics:
       - atmos
     variables:
       hus:
-        preprocessor: interp_lev_mean_lat 
+        preprocessor: interp_lev_mean_lat
         reference_dataset: MIROC-ESM-CHEM
         mip: Amon
     additional_datasets:
@@ -548,12 +548,12 @@ diagnostics:
   #       e06fig05a_end_year: [2002]
   #       e06fig05b_multimean: True
 
-       
+
   # ===========================================================================
   # Eyring et al. (2006) - Figure 12a
   # a)Climatological mean vertical profiles (altitude Km)  at selected latitude
   # and month for chemical tracers
-  # b)Time series at selecte level ad month for chemical tracers 
+  # b)Time series at selecte level ad month for chemical tracers
   # ===========================================================================
 
   eyring06jgr_fig12a:
@@ -596,7 +596,7 @@ diagnostics:
       - atmos
     variables:
       tro3:
-        preprocessor: regrid_extract_lev 
+        preprocessor: regrid_extract_lev
         reference_dataset: HALOE
         mip: Amon
     additional_datasets:
@@ -617,7 +617,7 @@ diagnostics:
         e06fig12b_xMin: [1980]
         e06fig12b_xMax: [2005]
         e06fig12b_multimean: True
-        
+
   # ==========================================================================
   # Eyring et al. (2006) - Figure 14
   # Annual cycle for total ozone
@@ -654,7 +654,7 @@ diagnostics:
 
   # ==========================================================================
   # Eyring et al. (2006) - Figure 15
-  # Timeseries detrended 
+  # Timeseries detrended
   # ==========================================================================
 
   eyring06jgr_fig15:
