@@ -143,26 +143,26 @@ begin
   dimLev = dimsizes(lev0)
   delete(A0)
    
-  tmpData = new((/dim_MOD+dim_OBS, nPanel,dimsizes(lat0),2/), "float")
+  tmpData = new((/dim_MOD+dim_OBS, nPanel, dimsizes(lat0), 2/), "float")
   tmpData!0 = "line"
   tmpData!1 = "season"
   tmpData!2 = "lat"
   tmpData!3 = "stat"
 
-  Xdata = new((/dimTot, nPanel,dimsizes(lat0),2/), "float")
+  Xdata = new((/dimTot, nPanel,dimsizes(lat0), 2/), "float")
   Xdata!0 = "line"
   Xdata!1 = "season"
   Xdata!2 = "lat"
   Xdata!3 = "stat"
   Xdata&lat = lat0
   
-  Xref = new((/ nPanel,dimsizes(lat0),2/), "float")
-  plotMod = new(dimTot,typeof(names))
-  plotColor = new(dimTot,typeof(names))
-  plotDash = new(dimTot,typeof(names))
-  plotThicks = new(dimTot,"float")
-  plotScatters = new(dimTot,typeof(names))
-  LineScatters = new(dimTot,typeof(names)) 
+  Xref = new((/ nPanel,dimsizes(lat0), 2/), "float")
+  plotMod = new(dimTot, typeof(names))
+  plotColor = new(dimTot, typeof(names))
+  plotDash = new(dimTot, typeof(names))
+  plotThicks = new(dimTot, "float")
+  plotScatters = new(dimTot, typeof(names))
+  LineScatters = new(dimTot, typeof(names)) 
   ik = 0
 
   ; Start datasets loop
@@ -338,5 +338,6 @@ begin
   Xdata&lat = lat0
   Xdata&line = plotMod
   nc_outfile = ncdf_write(Xdata, nc_filename)
+
 end
 
