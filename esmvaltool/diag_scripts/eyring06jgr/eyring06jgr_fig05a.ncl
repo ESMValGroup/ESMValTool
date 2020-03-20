@@ -248,6 +248,7 @@ begin
        plotMod(dimTot-1)="MMM"
        plotColor(dimTot-1)="Black"
        plotDash(dimTot-1)=0.
+       plotThicks(dimTot-1)=4.
        LineScatters(dimTot-1)="Lines"
    end if
 ;**********UNITS CHANGE TO PPMV***********************************
