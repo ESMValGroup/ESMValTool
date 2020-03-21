@@ -4,11 +4,11 @@
 ; CCMI Project
 ; #############################################################################
 ;
-; Description
+; Description:
 ;    Vertical profile climatological mean bias and climatological mean for
 ;    selected seasons and latitudinal regions.
 ;
-; Required diag_script_info attributes
+; Required diag_script_info attributes:
 ;    latrange:  minimum and maximum latitude for regional average,
 ;               e.g. (/60, 90/))
 ;    season: seasonfor temporal average (e.g, "DJF", "MAM", "JJA", "SON")
@@ -16,7 +16,7 @@
 ;    refModel:  name of the reference model or observation for
 ;                         bias calculation (e.g. (/"ERA-Interim"/))
 ;
-; Optional diag_script_info attributes
+; Optional diag_script_info attributes:
 ;    latmin: minimum latitude for region selection
 ;    latmax: maximum latitude for region selection
 ;    Xmin: lower limit for the X axis
