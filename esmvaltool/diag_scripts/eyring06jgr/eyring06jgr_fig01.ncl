@@ -349,7 +349,7 @@ begin
     frame(wks)
   end if
   add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-              LineScatters, plotThicks, "0.2")
+             LineScatters, plotThicks, "0.2")
   frame(wks)
 
   nc_filename = config_user_info@work_dir + "eyring06f01_" + var0 + ".nc"
@@ -359,5 +359,16 @@ begin
   Xdata&season = seasons
   Xdata&line = plotMod
   nc_outfile = ncdf_write(Xdata,  nc_filename)
+
+  ; Call provenance logger
+  log_provenance(nc_filename, \
+                 plotpath + "." + file_type, \
+                 "Seasonal vertical profiles of " + var0 + " bias", \
+                 (/"mean", "stddev"/), \
+                 (/"nhpolar", "shpolar"/), \
+                 "vert", \
+                 (/"cionni_irene", "eyring_veronika"/), \
+                 (/"eyring06jgr"/), \
+                 metadata_att_as_array(info0, "filename"))
 
 end
