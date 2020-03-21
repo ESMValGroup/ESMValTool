@@ -198,6 +198,8 @@ preprocessors:
       operator: mean
     mask_fillvalues:
       threshold_fraction: 0.95
+
+
 diagnostics:
 
   # ==========================================================================
@@ -249,7 +251,10 @@ diagnostics:
   # ==========================================================================
 
   eyring06jgr_fig02:
-    description: Descent of the zero zonal mean wind lines at 60°S based on the climatological mean annual cycle calculated from the monthly mean zonal mean winds
+    description: |
+      Descent of the zero zonal mean wind lines at 60S based on the
+      climatological mean annual cycle calculated from the monthly mean zonal
+      mean winds
     themes:
       - chem
     realms:
@@ -265,22 +270,14 @@ diagnostics:
     scripts:
        clim:
         script: eyring06jgr/eyring06jgr_fig02.ncl
-        # projection
-        # ----------
-        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
-        projection: CylindricalEquidistant
-       # timemean: annualclim
-       # timemean
-        # --------
-        showdiff: false
         styleset: CMIP5
-        e06fig02_latrange: ["60S"]
-        e06fig02_season: ["ONDJ"]
-        e06fig02_levmin: [0.1]
-        e06fig02_levmax: [100.]
-        e06fig02_start_year: [1980]
-        e06fig02_end_year: [1999]
-        e06fig02_multimean: True
+        latrange: ["60S"]
+        season: ["ONDJ"]
+        levmin: [0.1]
+        levmax: [100.]
+        start_year: [1980]
+        end_year: [1999]
+        multimean: True
 
 
   # ==========================================================================
