@@ -3,6 +3,10 @@
 Contact information
 ===================
 
+See `www.esmvaltool.org <https://www.esmvaltool.org>`_ for general contact information.
+
+.. _core-team:
+
 Core development team
 ---------------------
 
