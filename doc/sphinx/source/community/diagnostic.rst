@@ -61,7 +61,7 @@ and finally it will store provenance information. Provenance information is stor
 and also plotted in an SVG file for human inspection. In addition to provenance information, a caption is also added
 to the plots.
 
-In order to communicate with the diagnostic script, two interfaces have been defined, which are described below.
+In order to communicate with the diagnostic script, two interfaces have been defined, which are described in the `ESMValCore documentation <https://esmvaltool.readthedocs.io/projects/esmvalcore/en/latest/interfaces.html>`_.
 Note that for Python and NCL diagnostics much more convenient methods are available than
 directly reading and writing the interface files. For other languages these are not implemented (yet).
 
