@@ -2,6 +2,7 @@
 import datetime
 import logging
 import os
+import re
 from contextlib import contextmanager
 
 import iris
@@ -181,12 +182,23 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 
 
 def cite_tag_value(tags):
-    """Convert tags to bibtex entries."""
-    reference_entries = ''
+    """Convert tags to doi."""
+    reference_dois = [extract_doi_value(tag) for tag in [tags]]
+    reference_dois = '\n'.join(reference_dois)
+    return reference_dois
+
+
+def extract_doi_value(tag):
+    """Extract doi from a bibtex entry."""
+    reference_doi = 'doi not found'
+    pattern = r'doi\ = {(.*?)\},'
     if REFERENCES_PATH:
-        reference_entries = [_collect_bibtex_citation(tag) for tag in [tags]]
-        reference_entries = '\n'.join(reference_entries)
-    return reference_entries
+        reference_entry = _collect_bibtex_citation(tag)
+        if re.search("doi", reference_entry):
+            reference_doi = (
+                f'doi:{re.search(pattern, reference_entry).group(1)}'
+            )
+    return reference_doi
 
 
 def set_global_atts(cube, attrs):
