@@ -14,7 +14,7 @@
 ;    @e06fig05a_season:   month when variable is averaged
 ;                         (i.e. "03", "04", "09")
 ;    @e06fig05a_multimean: calculate multi-model mean (i.e. False/True)
-;    @e06fig05a_refModel:  name of the reference model or observation 
+;    @e06fig05a_refModel:  name of the reference model or observation
 ;                          (e.g. (/"ERA-Interim"/))
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
@@ -44,7 +44,7 @@ load "$diag_scripts/shared/plot/style.ncl"
 begin
 
   enter_msg(DIAG_SCRIPT, "")
-   
+
   ; Get variables and datasets
   var0 = variable_info[0]@short_name
   info0 = select_metadata_by_name(input_file_info, var0)
@@ -54,7 +54,7 @@ begin
   exps = metadata_att_as_array(info0, "exp")
   ensembles = metadata_att_as_array(info0, "ensemble")
   y1 = metadata_att_as_array(info0, "start_year")
-  y2 = metadata_att_as_array(info0, "end_year") 
+  y2 = metadata_att_as_array(info0, "end_year")
 
   ; Check for reference dataset definition
   if (isatt(variable_info[0], "reference_dataset")) then
@@ -63,7 +63,7 @@ begin
       if (names(imod) .eq. refname) then
         iref = imod
       end if
-    end do       
+    end do
   else
     error_msg("f", DIAG_SCRIPT, "", "no reference dataset  " + \
               "(variable_info[0]@reference_dataset) needs to be defined.")
@@ -73,15 +73,15 @@ begin
   if(isatt(variable_info, "units")) then
     UNITS = variable_info@units
   else
-    UNITS= "ppmv"
+    UNITS = "ppmv"
   end if
-   
+
   if(isatt(variable_info, "long_name")) then
     LONG_NAME = variable_info@long_name
   else
     LONG_NAME = var0
   end if
-   
+
   ; Set default values for optional diag_script_info attributes
   set_default_att(diag_script_info, "e06fig05a_month", 03)
   set_default_att(diag_script_info, "styleset", "CMIP5")
@@ -92,7 +92,7 @@ begin
   set_default_att(diag_script_info, "e06fig05a_start_year", max(y1))
   set_default_att(diag_script_info, "e06fig05a_end_year", min(y2))
   set_default_att(diag_script_info, "e06fig05a_multimean", False)
-   
+
   seasons = diag_script_info@e06fig05a_month
   print(seasons)
   month_names = \
@@ -107,7 +107,7 @@ begin
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
   thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
-  markers = project_style(info0, diag_script_info, "markers") 
+  markers = project_style(info0, diag_script_info, "markers")
 
   flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
@@ -137,7 +137,7 @@ begin
 
   ; make sure path for (mandatory) netcdf output exists
   work_dir = config_user_info@work_dir + "/"
-  
+
   ; Create work dir
   system("mkdir -p " + work_dir)
 
@@ -152,15 +152,15 @@ begin
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))
   rad = 4.0 * atan(1.0) / 180.0
-  A0 = read_data(info0[iref]) 
+  A0 = read_data(info0[iref])
   lev0 = A0&plev
   dimLev = dimsizes(lev0)
   delete(A0)
-   
-  tmpData = new((/dim_MOD+dim_OBS, nPanel,dimsizes(lev0), 2/), "float")
+
+  tmpData = new((/dim_MOD + dim_OBS, nPanel, dimsizes(lev0), 2/), "float")
   tmpData!0 = "line"
   tmpData!1 = "season"
-  tmpData!2 = "plev" 
+  tmpData!2 = "plev"
   tmpData!3 = "stat"
 
   Xdata = new((/dimTot, nPanel, dimsizes(lev0), 2/), "float")
@@ -169,27 +169,27 @@ begin
   Xdata!2 = "plev"
   Xdata!3 = "stat"
   Xdata&plev = lev0
-  
+
   Xref = new((/ nPanel, dimsizes(lev0), 2/), "float")
   plotMod = new(dimTot, typeof(names))
   plotColor = new(dimTot, typeof(names))
   plotDash = new(dimTot, typeof(names))
   plotThicks = new(dimTot, "float")
   plotScatters = new(dimTot, typeof(names))
-  LineScatters = new(dimTot, typeof(names)) 
+  LineScatters = new(dimTot, typeof(names))
   ik = 0
 
   ; Start datasets loop
   do imod = 0, dim_MOD1 - 1
-  
+
     ; Start seasons loop
     do ipan = 0, dimsizes(seasons) - 1
-    
+
       ; Extract data
       A0 = read_data(info0[imod])
-        
+
       printVarSummary(A0)
-      if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then        
+      if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then
         dummy1 = \
           area_operations(A0(time|:, plev|:, lat|:, lon|:), \
                           latrange(ipan, 0), \
@@ -233,25 +233,25 @@ begin
       tmpData(imod, ipan, :, 1) = (/tmp_st/)
       delete(tmp)
       delete(tmp_st)
-    end do ; end seasons loop
+    end do  ; end seasons loop
 
-    Xdata(imod, :, :, :) = (/tmpData(imod, :, :, :)/) 
+    Xdata(imod, :, :, :) = (/tmpData(imod, :, :, :)/)
     plotMod(imod) = names(imod)
     plotColor(imod) = colors(imod)
     plotDash(imod) = dashes(imod)
     plotThicks(imod) = thicks(imod)
     plotScatters(imod) = 0.
     LineScatters(imod) = "Lines"
-     
-    if (imod.eq.iref) then 
+
+    if (imod.eq.iref) then
       Xref = tmpData(imod, :, :, :)
-      plotDash(imod) = 16. 
+      plotDash(imod) = 16.
       plotScatters(imod) = 16.
       LineScatters(imod) = "Markers"
     end if
-    
-  end do ;end model loop
-  
+
+  end do  ; end model loop
+
   if (multimean) then
     Xdata(dimTot - 1, :, :, :) = \
       (/dim_avg_n(Xdata(index_mod, :, :, :), 0)/)
@@ -261,48 +261,47 @@ begin
     plotThicks(dimTot - 1) = 4.
     LineScatters(dimTot - 1) = "Lines"
   end if
-  
+
   ; change the units to "ppmv"
   if ((UNITS.ne."10e6").or.(UNITS.ne."ppmv")) then
-    Xdata = (/Xdata/10^3/)
-    tmpData = (/tmpData/10^3/)
-    Xref = (/Xref/10^3/)
-    UNITS="ppmv"
+    Xdata = (/Xdata / 10 ^ 3/)
+    tmpData = (/tmpData / 10 ^ 3/)
+    Xref = (/Xref / 10 ^ 3/)
+    UNITS = "ppmv"
   end if
 
-  
   ; Calculate multimodel mean
   X_MMM_std = (/dim_stddev_n(Xdata(index_mod, :, :, :), 0)/)
-      
+
   Ydata = lev0 / 100.
 
   plot_d = new(dimsizes(seasons), "graphic")
-  plot_xp_R_d = new(dimsizes(seasons), "graphic")  
-  plot_xp_M_d = new(dimsizes(seasons), "graphic") 
+  plot_xp_R_d = new(dimsizes(seasons), "graphic")
+  plot_xp_M_d = new(dimsizes(seasons), "graphic")
   xp_R = new((/2 * dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
   yp_R = new((/2 * dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
 
   xp_M = new((/2 * dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
-  yp_M = new((/2 * dimsizes(lev0), dimsizes(seasons)/), typeof(Xref)) 
-  do j = 0, dimsizes(lev0) - 1   
+  yp_M = new((/2 * dimsizes(lev0), dimsizes(seasons)/), typeof(Xref))
+  do j = 0, dimsizes(lev0) - 1
     xp_R(j, :) = (Xref(:, j, 0) - Xref(:, j, 1))
     yp_R(j, :) = tofloat(lev0(j) / 100.)
     yp_R(dimsizes(lev0) + j, :) = \
-      tofloat(lev0(dimsizes(lev0) - 1 - j) / 100)      
+      tofloat(lev0(dimsizes(lev0) - 1 - j) / 100)
     xp_R(dimsizes(lev0) + j, :) = \
-      (Xref(:,(dimsizes(lev0) - 1 - j), 0) + \
-       Xref(:, (dimsizes(lev0) - 1 - j), 1))
+      Xref(:, (dimsizes(lev0) - 1 - j), 0) + \
+      Xref(:, (dimsizes(lev0) - 1 - j), 1)
   end do
-  
-  if (multimean) then 
+
+  if (multimean) then
     do j = 0, dimsizes(lev0) - 1
-      xp_M(j, :) = Xdata(dimTot - 1, :, j, 0) - ((X_MMM_std(:, j, 0)))
+      xp_M(j, :) = Xdata(dimTot - 1, :, j, 0) - X_MMM_std(:, j, 0)
       yp_M(j, :) = tofloat(lev0(j) / 100.)
       yp_M(dimsizes(lev0) + j, :) = \
         tofloat(lev0(dimsizes(lev0) - 1 - j) / 100.)
       xp_M(dimsizes(lev0) + j, :) = \
-        Xdata(dimTot-1, :, (dimsizes(lev0) - 1 - j), 0) + \
-        X_MMM_std(:, (dimsizes(lev0) - 1 - j), 0))
+        Xdata(dimTot - 1, :, dimsizes(lev0) - 1 - j, 0) + \
+        X_MMM_std(:, dimsizes(lev0) - 1 - j, 0)
     end do
   end if
 
@@ -384,7 +383,7 @@ begin
 
   gsn_panel(wks, plot_d, (/1, dimsizes(seasons)/), Pres)
   frame(wks)
-     
+
   add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
              LineScatters, plotThicks + 2., "0.2")
   frame(wks)
