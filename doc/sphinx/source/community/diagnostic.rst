@@ -23,16 +23,18 @@ If you have no preferred programming language yet, Python 3 is highly recommende
 However, NCL, R, and Julia scripts are also supported.
 
 Good example recipes for the different languages are:
-* python: esmvaltool/recipes/examples/recipe_python.yml
-* R: esmvaltool/recipes/examples/recipe_r.yml
-* julia: esmvaltool/recipes/examples/recipe_julia.yml
-* ncl: esmvaltool/recipes/examples/recipe_ncl.yml
+
+-  python: esmvaltool/recipes/examples/recipe_python.yml
+-  R: esmvaltool/recipes/examples/recipe_r.yml
+-  julia: esmvaltool/recipes/examples/recipe_julia.yml
+-  ncl: esmvaltool/recipes/examples/recipe_ncl.yml
 
 Good example diagnostics are:
-* python: esmvaltool/diag_scripts/examples/diagnostic.py
-* R: esmvaltool/diag_scripts/examples/diagnostic.R
-* julia: esmvaltool/diag_scripts/examples/diagnostic.jl
-* ncl: esmvaltool/diag_scripts/examples/diagnostic.ncl
+
+-  python: esmvaltool/diag_scripts/examples/diagnostic.py
+-  R: esmvaltool/diag_scripts/examples/diagnostic.R
+-  julia: esmvaltool/diag_scripts/examples/diagnostic.jl
+-  ncl: esmvaltool/diag_scripts/examples/diagnostic.ncl
 
 Unfortunately not much documentation is available at this stage,
 so have a look at the other recipes and diagnostics for further inspiration.
@@ -51,17 +53,6 @@ If you have existing code in a compiled language like
 C, C++, or Fortran that you want to re-use, the recommended way to proceed is to add Python bindings and publish
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
-
-Adding references to esmvaltool
-======================
-Note: the ``reference`` section in ``config-references.yaml`` has been replaced by the folder ``esmvaltool/references``.
-How to add a reference entry:
--  choose a name as a tag that is representative of the reference entry.
-   For example, ``righi15gmd`` shows the last name of the first author, year and journal abbreviation.
--  add the tag to the ``references`` section in the recipe (or diagnostics).
--  make a bibtex file for the reference entry. There are some online tools to convert a doi to bibtex format like https://doi2bib.org/
--  rename the file to the tag.
--  add the file to the folder esmvaltool/references.
 
 Recording provenance
 ====================
@@ -92,3 +83,18 @@ statistics, domain, plottype, authors and references in the ``config-references.
   log_provenance(nc-file,plot_file,caption,statistics,domain,plottype,authors,references,input-files)
 
 Have a look at the example NCL diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.ncl`` for a complete example.
+
+Adding references
+=================
+Recipe and diagnostic script can include references.
+When ESMValCore (the ``esmvaltool`` command) runs a recipe, it will store citation information in `BibTeX <https://en.wikipedia.org/wiki/BibTeX>`__ format.
+Follow the steps below to add a reference to a recipe (or a diagnostic):
+
+-  make a ``tag`` that is representative of the reference entry.
+   For example, ``righi15gmd`` shows the last name of the first author, year and journal abbreviation.
+-  add the ``tag`` to the ``references`` section in the recipe (or the diagnostic).
+-  make a BibTeX file for the reference entry. There are some online tools to convert a doi to BibTeX format like https://doi2bib.org/
+-  rename the file to the ``tag``.
+-  add the file to the folder ``esmvaltool/references``.
+
+Note: the ``references`` section in ``config-references.yaml`` has been replaced by the folder ``esmvaltool/references``.
