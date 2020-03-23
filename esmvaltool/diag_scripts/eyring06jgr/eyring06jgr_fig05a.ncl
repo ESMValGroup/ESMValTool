@@ -1,8 +1,8 @@
-; #############################################################################
+; ############################################################################
 ; SCRIPT TO REPRODUCE FIG. 5a OF EYRING ET AL. (JGR, 2006)
 ; Authors: Irene Cionni (ENEA, Italy) and Veronika Eyring (DLR, Germany)
 ; CCMI PROJECT
-; #############################################################################
+; ############################################################################
 
 ; Description
 ;    Vertical profile climatological mean ,
@@ -14,7 +14,8 @@
 ;    @e06fig05a_season:   month when variable is averaged
 ;                         (i.e. "03", "04", "09")
 ;    @e06fig05a_multimean: calculate multi-model mean (i.e. False/True)
-;    @e06fig05a_refModel:  name of the reference model or observation (e.g. (/"ERA-Interim"/))
+;    @e06fig05a_refModel:  name of the reference model or observation 
+;                          (e.g. (/"ERA-Interim"/))
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;    @e06fig05a_XMax:     max limit X axis
@@ -94,7 +95,9 @@ begin
    
   seasons = diag_script_info@e06fig05a_month
   print(seasons)
-  month_names = (/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"/)
+  month_names = \
+    (/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", \
+      "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"/)
   seasons_name = month_names(toint(seasons) - 1)
 
   latrange = new((/dimsizes(seasons), 2/), "float")
@@ -187,8 +190,11 @@ begin
         
       printVarSummary(A0)
       if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then        
-        dummy1 = area_operations(A0(time|:, plev|:, lat|:, lon|:), latrange(ipan, 0), \
-                 latrange(ipan, 1), 0., 360., "average", True)
+        dummy1 = \
+          area_operations(A0(time|:, plev|:, lat|:, lon|:), \
+                          latrange(ipan, 0), \
+                          latrange(ipan, 1), 0., 360., \
+                          "average", True)
         coslat   = cos(A0&lat * rad)
         coslat!0 = "lat"
         coslat&lat = A0&lat
@@ -199,13 +205,16 @@ begin
           coslat   = cos(A0&lat * rad)
           coslat!0 = "lat"
           coslat&lat = A0&lat
-          dummy1 = dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
+          dummy1 = \
+            dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), \
+                             coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
           delete(coslat)
           delete(A0)
         end if
       end if
       if (seasons(ipan).ne."ANN") then
-        dummy2 = time_operations(dummy1, year_start, year_end, "extract", seasons(ipan), True)
+        dummy2 = time_operations(dummy1, year_start, year_end, \
+                                 "extract", seasons(ipan), True)
       else
         time = dummy1&time
         years1 = cd_calendar(time, 0)
@@ -244,7 +253,8 @@ begin
   end do ;end model loop
   
   if (multimean) then
-    Xdata(dimTot - 1, :, :, :) = (/dim_avg_n(Xdata(index_mod, :, :, :), 0)/)
+    Xdata(dimTot - 1, :, :, :) = \
+      (/dim_avg_n(Xdata(index_mod, :, :, :), 0)/)
     plotMod(dimTot - 1) = "MMM"
     plotColor(dimTot - 1) = "Black"
     plotDash(dimTot - 1) = 0.
@@ -277,16 +287,22 @@ begin
   do j = 0, dimsizes(lev0) - 1   
     xp_R(j, :) = (Xref(:, j, 0) - Xref(:, j, 1))
     yp_R(j, :) = tofloat(lev0(j) / 100.)
-    yp_R(dimsizes(lev0) + j, :) = tofloat(lev0(dimsizes(lev0) - 1 - j) / 100)      
-    xp_R(dimsizes(lev0) + j, :) = (Xref(:,(dimsizes(lev0) - 1 - j), 0) + Xref(:, (dimsizes(lev0) - 1 - j), 1))
+    yp_R(dimsizes(lev0) + j, :) = \
+      tofloat(lev0(dimsizes(lev0) - 1 - j) / 100)      
+    xp_R(dimsizes(lev0) + j, :) = \
+      (Xref(:,(dimsizes(lev0) - 1 - j), 0) + \
+       Xref(:, (dimsizes(lev0) - 1 - j), 1))
   end do
   
   if (multimean) then 
     do j = 0, dimsizes(lev0) - 1
       xp_M(j, :) = Xdata(dimTot - 1, :, j, 0) - ((X_MMM_std(:, j, 0)))
       yp_M(j, :) = tofloat(lev0(j) / 100.)
-      yp_M(dimsizes(lev0) + j, :) = tofloat(lev0(dimsizes(lev0) - 1 - j) / 100.)
-      xp_M(dimsizes(lev0) + j, :) = Xdata(dimTot-1, :, (dimsizes(lev0) - 1 - j), 0) + (X_MMM_std(:, (dimsizes(lev0) - 1 - j), 0))
+      yp_M(dimsizes(lev0) + j, :) = \
+        tofloat(lev0(dimsizes(lev0) - 1 - j) / 100.)
+      xp_M(dimsizes(lev0) + j, :) = \
+        Xdata(dimTot-1, :, (dimsizes(lev0) - 1 - j), 0) + \
+        X_MMM_std(:, (dimsizes(lev0) - 1 - j), 0))
     end do
   end if
 
@@ -303,16 +319,22 @@ begin
     res@trYMinF = Min_lev(ipanel)
     res@tmYLMode = "Explicit"
     res@tmYLValues = (/1, 2, 3, 5, 7, 10, 20, 30, 50, 70, 100, 200/)
-    res@tmYLLabels = (/"1", "2", "3", "5", "7", "10", "20", "30", "50", "70", "100", "200"/)
+    res@tmYLLabels = \
+      (/"1", "2", "3", "5", "7", "10", \
+        "20", "30", "50", "70", "100", "200"/)
     res@tmLabelAutoStride = True
 
     res@vpHeightF = 0.6                   ; change aspect ratio of plot
     res@vpWidthF = 0.45
 
-    res@tiYAxisString = "Pressure (hPa)"       ; y-axis label
-    res@tiXAxisString = LONG_NAME + " " + "(" + UNITS + ")"     ; y-axis label
+    res@tiYAxisString = "Pressure (hPa)"     ; y-axis label
+    res@tiXAxisString = LONG_NAME + " " + "(" + UNITS + ")"   ; y-axis label
 
-    res@tiMainString = LONG_NAME + " " + lat_names(latrange(ipanel, 0)) + " - " + lat_names(latrange(ipanel, 1)) + " " + seasons_name(ipanel)
+    res@tiMainString = \
+      LONG_NAME + " " + \
+      lat_names(latrange(ipanel, 0)) + " - " + \
+      lat_names(latrange(ipanel, 1)) + " " + \
+      seasons_name(ipanel)
 
     res@xyMarkLineModes = LineScatters
 
@@ -329,20 +351,28 @@ begin
     Xdata&plev = lev0
     Ydata!0 = "plev"
     Ydata&plev = lev0
-    plot_d(ipanel) = gsn_csm_xy(wks, Xdata(line|:, season|ipanel, plev|:, stat|0), Ydata(plev|:), res)
+    plot_d(ipanel) = \
+      gsn_csm_xy(wks, \
+                 Xdata(line|:, season|ipanel, plev|:, stat|0), \
+                 Ydata(plev|:), \
+                 res)
 
     gsres = True
 
     gsres@gsFillColor = "Snow3"
-    plot_xp_R_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), xp_R(:, ipanel), yp_R(:, ipanel), gsres)
+    plot_xp_R_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), \
+                                          xp_R(:, ipanel), \
+                                          yp_R(:, ipanel), gsres)
     if (multimean) then
       gsres1 = True
       gsres1@gsFillColor = "cyan"                 ; color chosen
       gsres1@gsFillOpacityF = 0.2
-      plot_xp_M_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), xp_M(:, ipanel), yp_M(:, ipanel), gsres1)
+      plot_xp_M_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), \
+                                            xp_M(:, ipanel), \
+                                            yp_M(:, ipanel), gsres1)
     end if
   end do
-  
+
   ; Call legend - plotting routine
   Pres = True
   Pres@gsnFrame = False
@@ -351,13 +381,14 @@ begin
   Pres@gsnPanelFigureStringsFontHeightF = 0.025
   Pres@gsnPanelFigureStringsPerimOn = "False"
   Pres@amJust = "TopLeft"
-  
+
   gsn_panel(wks, plot_d, (/1, dimsizes(seasons)/), Pres)
   frame(wks)
      
-  add_legend(wks, plotMod, plotColor, tofloat(plotDash), LineScatters, plotThicks + 2., "0.2")
+  add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
+             LineScatters, plotThicks + 2., "0.2")
   frame(wks)
-  
+
   nc_filename = work_dir + "eyring06f05a_" + var0 + ".nc"
   Xdata@var = var0
   Xdata@diag_script = "eyring06f05a"
@@ -369,5 +400,16 @@ begin
   printVarSummary(Xdata)
   nc_outfile = ncdf_write(Xdata, nc_filename)
 
-end
+  ; Call provenance logger
+  log_provenance(nc_filename, \
+                 plotpath + "." + file_type, \
+                 "Vertical profile climatological means of " + var0, \
+                 (/"mean"/), \
+                 (/"nhpolar", "shpolar", "trop"/), \
+                 "vert", \
+                 (/"cionni_irene", "eyring_veronika"/), \
+                 (/"eyring06jgr"/), \
+                 metadata_att_as_array(info0, "filename"))
 
+
+end

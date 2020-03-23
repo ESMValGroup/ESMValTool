@@ -1,15 +1,16 @@
-; #############################################################################
+; ############################################################################
 ; SCRIPT TO REPRODUCE FIG. 5b OF EYRING ET AL. (JGR, 2006)
 ; Authors: Irene Cionni (ENEA, Italy) and Veronika Eyring (DLR, Germany)
 ; CCMI PROJECT
-; #############################################################################
+; ############################################################################
 
 ; Description
 ;    Vertical profile climatological mean ,
 ;    climatological mean for selected month and latitudinal region
 ;
 ; Required diag_script_info attributes (diagnostics specific)
-;    @e06fig05b_lev:  lev where variable is selected must to be one of the reference dataset
+;    @e06fig05b_lev:  lev where variable is selected must to be one of the 
+;                     reference dataset
 ;    @e06fig05b_month:   month when variable is averaged
 ;                         (i.e. "03", "04", "09")
 ;    @e06fig05ab_multimean: calculate multi-model mean (i.e. False/True)
@@ -27,7 +28,7 @@
 ; Modification history
 ;    20200320-hassler_birgit: cleaned code
 ;    20190228-cionni_irene: written
-; #############################################################################
+; ############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -184,7 +185,9 @@ begin
       end if
       
       if (seasons(ipan).ne."ANN") then
-        dummy2 = time_operations(dummy1,year_start,year_end,"extract",seasons(ipan),True)
+        dummy2 = \
+          time_operations(dummy1, year_start, year_end, \
+                          "extract", seasons(ipan), True)
       else
         time = dummy1&time
         years1 = cd_calendar(time, 0)
@@ -223,7 +226,8 @@ begin
   end do ;end model loop
   
   if (multimean) then
-    Xdata(dimTot-1, :, :, :) = (/dim_avg_n(Xdata(index_mod, :, :, :), 0)/)
+    Xdata(dimTot-1, :, :, :) = \
+      (/dim_avg_n(Xdata(index_mod, :, :, :), 0)/)
     plotMod(dimTot - 1) = "MMM"
     plotColor(dimTot - 1) = "Black"
     plotDash(dimTot - 1) = 0.
@@ -231,7 +235,8 @@ begin
   end if
   
   ; change the units to "ppmv"
-  if ((UNITS.ne."10e6").or.(UNITS.ne."ppmv").or.(UNITS.ne."yrs").or.(UNITS.ne."years")) then
+  if ((UNITS.ne."10e6").or.(UNITS.ne."ppmv").or. \
+     (UNITS.ne."yrs").or.(UNITS.ne."years")) then
     Xdata = (/Xdata/10^3/)
     tmpData = (/tmpData/10^3/)
     Xref = (/Xref/10^3/)
@@ -256,14 +261,18 @@ begin
     yp_R(j, :) = (Xref(:, j, 0) - Xref(:, j, 1))
     xp_R(j, :) = tofloat(lat0(j))
     xp_R(dimsizes(lat0) + j, :) = tofloat(lat0(dimsizes(lat0) - 1 - j))      
-    yp_R(dimsizes(lat0) + j, :) = (Xref(:, (dimsizes(lat0) - 1 - j), 0) + Xref(:, (dimsizes(lat0) - 1 - j), 1))
+    yp_R(dimsizes(lat0) + j, :) = \
+      (Xref(:, (dimsizes(lat0) - 1 - j), 0) + \
+       Xref(:, (dimsizes(lat0) - 1 - j), 1))
   end do
   if (multimean) then 
     do j = 0, dimsizes(lat0)-1
       yp_M(j, :) = Xdata(dimTot-1, :, j, 0) - ((X_MMM_std(:, j, 0)))
       xp_M(j, :) = tofloat(lat0(j))
       xp_M(dimsizes(lat0) + j, :) = tofloat(lat0(dimsizes(lat0) - 1 - j))
-      yp_M(dimsizes(lat0) + j, :) = Xdata(dimTot - 1, :,(dimsizes(lat0) - 1 - j), 0) + (X_MMM_std(:, (dimsizes(lat0) - 1 - j), 0))
+      yp_M(dimsizes(lat0) + j, :) = \
+        Xdata(dimTot - 1, :,(dimsizes(lat0) - 1 - j), 0) + \
+        (X_MMM_std(:, (dimsizes(lat0) - 1 - j), 0))
     end do
   end if
   
@@ -283,9 +292,12 @@ begin
     res@vpHeightF = 0.4                   ; change aspect ratio of plot
     res@vpWidthF = 1. / dimsizes(seasons)
       
-    res@tiYAxisString = LONG_NAME + " " + "(" + UNITS + ")"     ; y-axis label
+    res@tiYAxisString = \
+      LONG_NAME + " " + "(" + UNITS + ")"    ; y-axis label
     lev_nam = (lev(ipanel) / 100)     
-    res@tiMainString = LONG_NAME + " " + lev_nam + " hPa " + seasons_name(ipanel)
+    res@tiMainString = \
+      LONG_NAME + " " + lev_nam + " hPa " + \
+      seasons_name(ipanel)
 
     res@xyMarkLineModes = LineScatters
 
@@ -303,18 +315,26 @@ begin
     Xdata!1 = "season"
     Xdata!2 = "lat"
     Xdata!3 = "stat"
-    plot_d(ipanel) = gsn_csm_xy(wks, Xdata&lat, Xdata(line|:, season|(ipanel), lat|:, stat|0), res)
+    plot_d(ipanel) = \
+      gsn_csm_xy(wks, \
+                 Xdata&lat, \
+                 Xdata(line|:, season|(ipanel), lat|:, stat|0), \
+                 res)
 
     gsres = True
     gsres@gsFillColor = "Snow3"
     if (isatt(variable_info[0], "reference_dataset")) then
-      plot_xp_R_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), xp_R(:, ipanel), yp_R(:, ipanel), gsres)
+      plot_xp_R_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), \
+                                            xp_R(:, ipanel), \
+                                            yp_R(:, ipanel), gsres)
     end if
     if (multimean) then
       gsres1 = True
       gsres1@gsFillColor = "cyan"                 ; color chosen
       gsres1@gsFillOpacityF = 0.2
-      plot_xp_M_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), xp_M(:, ipanel), yp_M(:, ipanel), gsres1)
+      plot_xp_M_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), \
+                                            xp_M(:, ipanel), \
+                                            yp_M(:, ipanel), gsres1)
     end if
   end do ;end loop panel
   
@@ -327,7 +347,8 @@ begin
   gsn_panel(wks, plot_d, (/1, dimsizes(seasons)/), Pres)
   frame(wks)
   
-  add_legend(wks, plotMod, plotColor, tofloat(plotDash), LineScatters, plotThicks + 2., "0.2")
+  add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
+             LineScatters, plotThicks + 2., "0.2")
   frame(wks)
   
   nc_filename = work_dir + "eyring06f05b_" + var0 + ".nc"
@@ -338,6 +359,18 @@ begin
   Xdata&lat = lat0
   Xdata&line = plotMod
   nc_outfile = ncdf_write(Xdata, nc_filename)
+
+    ; Call provenance logger
+  log_provenance(nc_filename, \
+                 plotpath + "." + file_type, \
+                 "Latitudinal profiles at selected pressures of " \
+                 + var0 + " mean", \
+                 (/"mean"/), \
+                 (/"global"/), \
+                 "pro", \
+                 (/"cionni_irene", "eyring_veronika"/), \
+                 (/"eyring06jgr"/), \
+                 metadata_att_as_array(info0, "filename"))
 
 end
 
