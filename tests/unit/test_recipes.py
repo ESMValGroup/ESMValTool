@@ -16,11 +16,11 @@ def test_reference_tags(recipe_file):
     tags = recipe.get('documentation', {}).get('references', [])
     for tag in tags:
         bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
-        error_msg = 'The tag {} is mentioned in the recipe {}.' \
-                    ' Howevere, its reference file {}.bibtex' \
+        error_msg = 'The tag {tag} is mentioned in the recipe {}.' \
+                    ' However, its reference file {tag}.bibtex' \
                     ' is not available in {}.' \
-                    ' Please check instructions about' \
-                    ' "Contributing a new diagnostic or recipe"' \
-                    ' in https://esmvaltool.readthedocs.io/en/latest/' \
-                    ''.format(tag, recipe_file, tag, REFERENCES_PATH)
+                    ' Please check instructions on how to add references' \
+                    ' in "Contributing a new diagnostic or recipe"' \
+                    ' at https://esmvaltool.readthedocs.io/en/latest/' \
+                    ''.format(recipe_file, REFERENCES_PATH, tag=tag)
         assert bibtex_file.is_file(), error_msg
