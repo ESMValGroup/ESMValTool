@@ -19,7 +19,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # place your module imports here
 import extraUtils as xu
-from shared import _apply_gpp_threshold, _load_variable
+from shared import _apply_gpp_threshold, _load_variable, _get_obs_data_zonal
 
 
 # Classes and settings
@@ -76,37 +76,6 @@ def _apply_common_mask(dat_1, dat_2, dat_3):
     return dat_1, dat_2, dat_3
 
 
-def _get_obs_data(diag_config):
-    '''
-    Get and handle the observations of turnover time from Carvalhais 2014.
-
-    Arguments:
-        diag_config - nested dictionary of metadata
-
-    Returns:
-        dictionary with observation data with different variables as keys
-    '''
-    if not diag_config.get('obs_files'):
-        raise ValueError('The observation files needs to be specified in the '
-                         'recipe (see recipe description for details)')
-    else:
-        input_files = [
-            os.path.join(diag_config['auxiliary_data_dir'], obs_file)
-            for obs_file in diag_config.get('obs_files')
-        ]
-    all_data = {}
-    var_list = diag_config.get('obs_variables')
-    for v_ind in range(len(var_list)):
-        var_obs = var_list[v_ind]
-        variable_constraint = iris.Constraint(
-            cube_func=(lambda c: c.var_name == var_obs))
-        cube = iris.load_cube(input_files, constraint=variable_constraint)
-        all_data[var_obs] = cube.data
-        for coord in cube.coords():
-            all_data[coord.name()] = coord.points
-    return all_data
-
-
 def _get_zonal_correlation(diag_config):
     '''
     A diagnostic function to calculate the zonal correlation between ecosystem
@@ -138,7 +107,7 @@ def _get_zonal_correlation(diag_config):
                                            mod_coords['latitude'], fig_config)
         all_mod_dat[key]['data'] = zon_corr
         all_mod_dat[key]['latitude'] = mod_coords['latitude']
-    all_obs_dat = _get_obs_data(diag_config)
+    all_obs_dat = _get_obs_data_zonal(diag_config)
     _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config)
     return 'zonal correlation diagnostic is complete'
 

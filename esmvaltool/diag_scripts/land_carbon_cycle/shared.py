@@ -1,3 +1,5 @@
+import os
+
 import iris
 import numpy as np
 
@@ -31,3 +33,48 @@ def _load_variable(metadata, var_name):
     filename = candidates[0]['filename']
     cube = iris.load_cube(filename)
     return cube
+
+
+def _get_obs_data_zonal(diag_config):
+    '''
+    Get and handle the observations of turnover time from Carvalhais 2014.
+
+    Arguments:
+        diag_config - nested dictionary of metadata
+
+    Returns:
+        dictionary with observation data with different variables as keys
+    '''
+    if not diag_config.get('obs_variable'):
+        raise ValueError((
+            'The observation variable needs to be specified in the recipe '
+            '(see recipe description for details)'
+        ))
+    else:
+        obs_dir = os.path.join(diag_config['auxiliary_data_dir'],
+                               diag_config['obs_info']['obs_data_subdir'])
+
+    var_list = diag_config.get('obs_variable')
+
+    input_files = []
+    for _var in var_list:
+        var_list = np.append(var_list,
+                             '{var}_{perc:d}'.format(var=_var, perc=5))
+        var_list = np.append(var_list,
+                             '{var}_{perc:d}'.format(var=_var, perc=95))
+        obs_filename = ('{variable}_{frequency}_{source_label}_'
+                        '{variant_label}_{grid_label}z.nc'.format(
+                            variable=_var,
+                            **diag_config['obs_info']))
+        input_files = np.append(input_files,
+                                os.path.join(obs_dir, obs_filename))
+
+    all_data = {}
+    for var_obs in var_list:
+        variable_constraint = iris.Constraint(
+            cube_func=(lambda c: c.var_name == var_obs))
+        cube = iris.load_cube(input_files, constraint=variable_constraint)
+        all_data[var_obs] = cube
+    for coord in cube.coords():
+        all_data[coord.name()] = coord
+    return all_data

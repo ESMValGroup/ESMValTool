@@ -17,7 +17,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # helper functions
 import extraUtils as xu
-from shared import _load_variable
+from shared import _load_variable, _get_obs_data_zonal
 
 
 # Classes and settings
@@ -63,37 +63,6 @@ def _apply_common_mask(dat_1, dat_2):
     return dat_1, dat_2
 
 
-def _get_obs_data(diag_config):
-    '''
-    Get and handle the observations of turnover time from Carvalhais 2014.
-
-    Arguments:
-        diag_config - nested dictionary of metadata
-
-    Returns:
-        dictionary with observation data with different variables as keys
-    '''
-    if not diag_config.get('obs_files'):
-        raise ValueError('The observation files needs to be specified in the '
-                         'recipe (see recipe description for details)')
-    else:
-        input_files = [
-            os.path.join(diag_config['auxiliary_data_dir'], obs_file)
-            for obs_file in diag_config.get('obs_files')
-        ]
-    all_data = {}
-    var_list = diag_config.get('obs_variables')
-    for v_ind in range(len(var_list)):
-        var_obs = var_list[v_ind]
-        variable_constraint = iris.Constraint(
-            cube_func=(lambda c: c.var_name == var_obs))
-        cube = iris.load_cube(input_files, constraint=variable_constraint)
-        all_data[var_obs] = cube.data
-    for coord in cube.coords():
-        all_data[coord.name()] = coord.points
-    return all_data
-
-
 def _get_zonal_tau(diag_config):
     '''
     A diagnostic function to calculate the total carbon stock from the list of
@@ -118,7 +87,7 @@ def _get_zonal_tau(diag_config):
         gpp = _load_variable(value, 'gpp')
         zonal_tau_mod[key]['data'] = _calc_zonal_tau(gpp, ctotal, fig_config)
 
-    zonal_tau_obs = _get_obs_data(diag_config)
+    zonal_tau_obs = _get_obs_data_zonal(diag_config)
     # plot the figure
     _plot_zonal_tau(zonal_tau_mod, zonal_tau_obs, diag_config)
     return 'done plotting the zonal turnover time'
