@@ -13,64 +13,39 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  crop_basin: &crop_basin
+  rough_cutout_fx: &cutout
     extract_region: &region
       start_longitude: -0.75
       end_longitude: 6.75
       start_latitude: 47.25
       end_latitude: 52.5
-  hourly_mean:
-    <<: *crop_basin
-    daily_statistics:
-      operator: mean
+  rough_cutout:
+      regrid_time: null
+      <<: *cutout
 
 diagnostics:
-  diagnostic_daily:
+  wflow_daily:
     description: WFlow input preprocessor for daily data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      tas: &var_daily
-        mip: day
-        preprocessor: crop_basin
-        start_year: 1990
-        end_year: 1990
-      pr: *var_daily
-      orog:
-        mip: fx
-        preprocessor: crop_basin
-      # evspsblpot:  # doesn't exist.
-      # Reconstruct evspsblpot using:
-      psl: *var_daily
-      rsds: *var_daily
-      rsdt:
-        <<: *var_daily
-        mip: CFday
-    scripts:
-      script:
-        script: hydrology/wflow.py
-        basin: Meuse
-        region: *region
-        dem_file: 'wflow/wflow_dem_Meuse.nc'
-
-  diagnostic_hourly:
-    description: WFlow input preprocessor for hourly data
-    additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       orog:
         mip: fx
-        preprocessor: crop_basin
-      tas: &var_hourly
-        mip: E1hr
-        preprocessor: hourly_mean
+        preprocessor: rough_cutout_fx
+      tas: &daily_var
+        mip: day
+        preprocessor: rough_cutout
         start_year: 1990
         end_year: 1990
-      pr: *var_hourly
-      # Reconstruct evspsblpot similar to ERA-Interim:
-      psl: *var_hourly
-      rsds: *var_hourly
-      rsdt: *var_hourly
+      pr: *daily_var
+      # evspsblpot:  # doesn't exist for ERA-Interim.
+      # Reconstruct evspsblpot using:
+      psl: *daily_var
+      rsds: *daily_var
+      rsdt:
+        <<: *daily_var
+        mip: CFday
     scripts:
       script:
         script: hydrology/wflow.py
