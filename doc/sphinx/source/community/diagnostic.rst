@@ -94,7 +94,7 @@ Follow the steps below to add a reference to a recipe (or a diagnostic):
    For example, ``righi15gmd`` shows the last name of the first author, year and journal abbreviation.
 -  add the ``tag`` to the ``references`` section in the recipe (or the diagnostic).
 -  make a BibTeX file for the reference entry. There are some online tools to convert a doi to BibTeX format like https://doi2bib.org/
--  rename the file to the ``tag``.
+-  rename the file to the ``tag``, keep the ``.bibtex`` extension.
 -  add the file to the folder ``esmvaltool/references``.
 
 Note: the ``references`` section in ``config-references.yaml`` has been replaced by the folder ``esmvaltool/references``.
