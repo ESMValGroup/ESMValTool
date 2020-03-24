@@ -224,12 +224,13 @@ if (write_netcdf) {
 ## Preprocess ETCCDI input files and merge them with HyInt indices
 if (write_netcdf & etccdi_preproc) {
   for (model_idx in c(1:(length(models_name)))) {
-    dummy <-
+    prov_info <-
       hyint_etccdi_preproc(work_dir,
         etccdi_dir,
         etccdi_list_import,
         model_idx,
         "ALL",
+        prov_info,
         yrmon = "yr"
       )
   }

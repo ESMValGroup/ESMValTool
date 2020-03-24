@@ -495,7 +495,7 @@ hyint_diagnostic <- function(work_dir, # nolint
   # Set provenance for this output file
   caption <-
     paste0(
-      "Hyint indices  for years ",
+      "Hyint indices for years ",
       year1,
       " to ",
       year2,

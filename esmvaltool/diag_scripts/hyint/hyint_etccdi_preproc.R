@@ -13,6 +13,7 @@ hyint_etccdi_preproc <-
              etccdi_list_import,
              model_idx,
              season,
+             prov_info,
              yrmon = "yr") {
     year1 <- toString(models_start_year[model_idx])
     year2 <- toString(models_end_year[model_idx])
@@ -55,5 +56,10 @@ hyint_etccdi_preproc <-
     )
     unlink(c(etccdi_files_tmp, hyint_file_tmp, hyint_file_tmp_sel))
 
-    return(0)
+    # Update provenance with etccdi files
+    if (is.na(match(model_idx, prov_info[[hyint_file]]$model_idx))) {
+          prov_info[[hyint_file]]$ancestors <-
+        c(prov_info[[hyint_file]]$ancestors, etccdi_files_tmp)
+    }
+    return(prov_info)
   }
