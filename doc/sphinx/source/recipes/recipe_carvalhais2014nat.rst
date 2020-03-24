@@ -6,13 +6,16 @@ Turnover time of carbon over land
 Overview
 --------
 
-This recipe evaluates the following aspects of turnover time of carbon over land (tau_ctotal) as in `Carvalhais et al. (2014)` :
+This recipe evaluates the following aspects of turnover time of carbon over
+land (tau_ctotal) as in `Carvalhais et al. (2014)` :
 
-* Global distributions of tau_ctotal from all models against observations and other models
+* Global distributions of tau_ctotal from all models against observations and
+  other models
 * Variation of tau_ctotal along the latitude (zonal distributions)
 * Variation of association of tau_ctotal and climate (zonal correlations)
 
-Additionally, metrics of global turnover times and correlations with observation are plotted over the maps/global distributions.
+Additionally, metrics of global turnover times and correlations with
+observation are plotted over the maps/global distributions.
 
 .. _tau calculation:
 
@@ -24,7 +27,10 @@ First, the total carbon content over the land surface is calculated as,
 
 {ctotal} =  {cSoil + cVeg}
 
-where :math:`cSoil` and :math:`cVeg` are the carbon content of the soil and vegetation over the land surface. **Note that this may be inconsistent with the original publication, as all the carbon pools which respired to the atmosphere were added up to calculate the total carbon content over land surface**.
+where :math:`cSoil` and :math:`cVeg` are the carbon content of the soil and
+vegetation over the land surface. **Note that this may be inconsistent with the
+original publication, as all the carbon pools which respired to the atmosphere
+were added up to calculate the total carbon content over land surface**.
 
 
 The turnover time of carbon is then calculated as,
@@ -69,7 +75,7 @@ User settings in recipe
        *  'gr3': 2.812x2.813, CanESM2
        *  'gr4': 2.5x2.0, GFDL-ESM2G
        *  'gr5': 1.875x1.241, HadGEM2-ES
-       *  'gr6': 2.0x1.5, inmcm4    
+       *  'gr6': 2.0x1.5, inmcm4
        *  'gr7': 2.5x1.259, IPSL-CM5A-MR
        *  'gr8': 2.812x2.813, MIROC-ESM
        *  'gr9': 1.875x1.875, MPI-ESM-LR
@@ -79,7 +85,8 @@ User settings in recipe
 #. Preprocessor
 
    * ``climate_statistics``: mean over full time period
-   * ``regrid``: nearest neighbor regridding to the resolution of the observation data
+   * ``regrid``: nearest neighbor regridding to the resolution of the
+     observation data
    * ``mask_landsea``: mask out all the data points from sea
    * ``multi_model_statistics``: calculate the multimodel median
 
@@ -87,15 +94,18 @@ User settings in recipe
 #. Script land_carbon_cycle/diag_global_turnover.py
 
   * Required settings:
- 
-    * ``obs_variable``: list of the variables to be read from the observation files
+
+    * ``obs_variable``: list of the variables to be read from the observation
+      files
 
   * Optional settings:
 
     * ``ax_fs``: fontsize for the figure (default: 7.1)
     * ``fill_value``: fill value to be used in analysis (default: NaN)
-    * ``x0``: X - coordinate of the lower left corner of the matrix of maps (between 0 and 1)
-    * ``y0``: Y - coordinate of the lower left corner of the matrix of maps (between 0 and 1)
+    * ``x0``: X - coordinate of the lower left corner of the matrix of maps
+      (between 0 and 1)
+    * ``y0``: Y - coordinate of the lower left corner of the matrix of maps
+      (between 0 and 1)
     * ``wp``: width of each map
     * ``hp``: height of each map
     * ``xsp``: spacing betweeen maps in X - direction
@@ -107,19 +117,26 @@ User settings in recipe
     * ``wcolo``: width of the colorbar (length)
     * ``cb_off_y``: distance of colorbar from top the maps
     * ``x_colo_d``: x-coordinate of the colorbar for maps along the diagonal
-    * ``x_colo_r``: x-coordinate of the colorbar for ratio maps above the diagonal
+    * ``x_colo_r``: x-coordinate of the colorbar for ratio maps above the
+      diagonal
     * ``y_colo_single``: y-coordinate of the colorbar in the maps per model
-    * ``correlation_method``: correlation method to be used while calculating the correlation displayed in the scatter plots ({spearman} | pearson)
+    * ``correlation_method``: correlation method to be used while calculating
+      the correlation displayed in the scatter plots ({spearman} | pearson)
     * ``tx_y_corr``: relative y-coordinate of the text of correlation
-    * ``valrange_sc``: The range of values for x- and y- axes limits in the scatterplot
-    * ``obs_global``: global turnover time, provided as additional info for the map of the observation. {23}. For models, they are calculated by the diagnostic.
-    * ``gpp_threshold``: The threshold of gpp in gC m-2 yr-1 for consideration in the calculation. A default value of 10, as in the observation, is set.
+    * ``valrange_sc``: The range of values for x- and y- axes limits in the
+      scatterplot
+    * ``obs_global``: global turnover time, provided as additional info for the
+      map of the observation. {23}. For models, they are calculated by the
+      diagnostic.
+    * ``gpp_threshold``: The threshold of gpp in gC m-2 yr-1 for consideration
+      in the calculation. A default value of 10, as in the observation, is set.
 
 #. Script land_carbon_cycle/diag_zonal_turnover.py
 
   * Required settings:
 
-    * ``obs_variable``: list of the variables to be read from the observation files
+    * ``obs_variable``: list of the variables to be read from the observation
+      files
 
   * Optional settings:
 
@@ -137,7 +154,8 @@ User settings in recipe
 
   * Required settings:
 
-    * ``obs_variable``: list of the variables to be read from the observation files
+    * ``obs_variable``: list of the variables to be read from the observation
+      files
 
   * Optional settings:
 
@@ -165,9 +183,13 @@ Variables
 Observations
 ------------
 
-The observations needed in the diagnostics are publicly available for download from the .. _Data Portal of the Max Planck Institute for Biogeochemistry: https://www.bgc-jena.mpg.de/geodb/projects/Home.php.
+The observations needed in the diagnostics are publicly available for download
+from the .. _Data Portal of the Max Planck Institute for Biogeochemistry:
+https://www.bgc-jena.mpg.de/geodb/projects/Home.php.
 
-Due to inherent dependence of the diagnostic on the uncertainty estimates, the data needed for each diagnostic script are provided as preprocessed netCDF files.
+Due to inherent dependence of the diagnostic on the uncertainty estimates,
+the data needed for each diagnostic script are provided as preprocessed netCDF
+files.
 
 
 
