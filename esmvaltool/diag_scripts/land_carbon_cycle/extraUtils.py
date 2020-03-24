@@ -154,15 +154,15 @@ def rotate_labels(which_ax='both', rot=0, axfs=6):
 
 
 def draw_line_legend(ax_fs=8):
+    '''
+    draws a legend for line plots and puts it outside the plot area in x-direction
+    '''
     leg = plt.legend(loc=(1.00974, .06),
                      fontsize=ax_fs,
                      ncol=1,
                      columnspacing=0.05,
                      fancybox=True,
                      handlelength=1.5)
-    '''
-    draws a legend for line plots and puts it outside the plot area in x-direction
-    '''
     leg.get_frame().set_linewidth(0)
     leg.get_frame().set_facecolor('#eeeeee')
     leg.legendPatch.set_alpha(0.45)
