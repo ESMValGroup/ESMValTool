@@ -92,10 +92,10 @@ diagnostics:
   CT2019:
     description: CT2019 check
     variables:
-      co2:
+      co2_surface:
         mip: Amon
     additional_datasets:
-      - {dataset: CT2019, project: OBS6, tier: 2, type: reanaly, version: TS4.02, start_year: 2000, end_year: 2000}
+      - {dataset: CT2019, project: OBS6, tier: 2, type: reanaly, version: '2019', start_year: 2000, end_year: 2018}
     scripts: null
 
 

@@ -19,7 +19,8 @@ attributes:
 
 # Variables to cmorize
 variables:
-  co2:
+  co2_surface:
     mip: Amon
     add_aux_coords:
       air_pressure: [0, 1, 2, 3]
+    raw_long_name: mole_fraction_of_carbon_dioxide_in_air

@@ -39,9 +39,7 @@ def _add_aux_coords(cube, input_files, coords_to_add):
     for (coord_name, coord_dims) in coords_to_add.items():
         logger.info("Adding auxiliary coordinate '%s' to '%s'", coord_name,
                     cube.var_name)
-        coord_cubes = _load_cubes(input_files, coord_name)
-        _remove_attributes(coord_cubes)
-        coord_cube = coord_cubes.concatenate_cube()
+        coord_cube = _load_cube(input_files, coord_name)
         utils.fix_coords(coord_cube)
         dim_coords = [c.name() for c in coord_cube.coords(dim_coords=True)]
         if 'boundary' in dim_coords:
@@ -54,6 +52,10 @@ def _add_aux_coords(cube, input_files, coords_to_add):
             points = coord_cube.core_data()
             bounds = None
             attributes = {}
+        if coord_cube.long_name == 'air_pressure':
+            coord_cube.long_name = 'pressure'
+            coord_cube.standard_name = 'air_pressure'
+            coord_cube.var_name = 'plev'
         aux_coord = iris.coords.AuxCoord(
             points,
             bounds=bounds,
@@ -122,8 +124,8 @@ def _remove_attributes(cubes):
         cube.attributes.pop('version', None)
 
 
-def _load_cubes(input_files, constraints):
-    """:func:`iris.load` with suppressed warnings."""
+def _load_cube(input_files, constraints):
+    """Load single :class:`iris.cube.Cube`."""
     with warnings.catch_warnings():
         warnings.filterwarnings(
             'ignore',
@@ -132,7 +134,14 @@ def _load_cubes(input_files, constraints):
             module='iris',
         )
         cubes = iris.load(input_files, constraints)
-    return cubes
+    _remove_attributes(cubes)
+    try:
+        cube = cubes.concatenate_cube()
+    except iris.exceptions.ConcatenateError:
+        if cubes[0].coords('time'):
+            raise
+        cube = cubes[0]
+    return cube
 
 
 def _extract_variable(short_name, var, cfg, input_files, out_dir):
@@ -140,12 +149,17 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
     # Extract data
-    cubes = _load_cubes(input_files, cmor_info.standard_name)
-    _remove_attributes(cubes)
-    cube = cubes.concatenate_cube()
+    constraint = var.get('raw_long_name', cmor_info.standard_name)
+    cube = _load_cube(input_files, constraint)
+    cube.var_name = short_name
 
     # Add auxiliary variables
     _add_aux_coords(cube, input_files, var.get('add_aux_coords', {}))
+
+    # Variable specific operations
+    if short_name == 'co2_surface':
+        cube = cube[:, 0, :, :]
+        cube.remove_coord('level')
 
     # Fix units
     cube.convert_units(cmor_info.units)
