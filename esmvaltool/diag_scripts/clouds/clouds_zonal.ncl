@@ -216,6 +216,7 @@ begin
     ; check dimensions
 
     dims = getvardims(A0)
+
     if (dimsizes(dims) .lt. 2) then
       error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
                 " dimensions, need 3")
@@ -241,6 +242,11 @@ begin
 ;    end do
 
     vcoord = dims(1)  ; save name of vertical coordinate variable
+
+    delete(dims)
+
+    ; vertical coordinate is assumed to be the dimension not being
+    ; "time" and "lat"
 
     ; average over time
 
@@ -335,6 +341,7 @@ begin
 
     if (.not. isvar("ref_data")) then
       ref_data = data1
+      vcoord_ref = vcoord
     end if
 
     ; check if data are on same grid (for calculating difference, RMSD,
@@ -344,7 +351,7 @@ begin
 
     if (all(dimsizes(ref_data) .eq. dimsizes(data1))) then
       if (max(abs(ref_data&lat - data1&lat)) .le. 1.0e-6) then
-        if (max(abs(ref_data&$vcoord$ - data1&$vcoord$)) .le. 1.0e-6) then
+        if (max(abs(ref_data&$vcoord_ref$ - data1&$vcoord$)) .le. 1.0e-6) then
           same_grid = True
         end if
       end if
