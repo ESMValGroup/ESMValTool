@@ -30,6 +30,33 @@ datasets:
   - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
 
 
+obs_details: &obs_details
+  obs_info:
+    #
+    # size of the big box in the latitudinal direction.
+    # Recommended value: 5
+    obs_data_subdir: 'data_ESMValTool_Carvalhais2014'
+    source_label: 'Carvalhais2014'
+    variant_label: 'BE'
+    grid_label: 'gn'
+    grid_extent: '0.5x0.5'
+    # grid_label: 'gr'
+    # grid_extent: '2.5x1.875'
+    # 'gn': 0.5x0.5, native observation
+    # 'gr1': 2.812x2.813, bcc-csm1-1
+    # 'gr2': 1.25x0.937, CCSM4
+    # 'gr3': 2.812x2.813, CanESM2
+    # 'gr4': 2.5x2.0, GFDL-ESM2G
+    # 'gr5': 1.875x1.241, HadGEM2-ES
+    # 'gr6': 2.0x1.5, inmcm4
+    # 'gr7': 2.5x1.259, IPSL-CM5A-MR
+    # 'gr8': 2.812x2.813, MIROC-ESM
+    # 'gr9': 1.875x1.875, MPI-ESM-LR
+    # 'gr': 2.5x1.875, NorESM1-M
+    frequency: 'fx'
+
+# tau_ctotal_fx_Carvalhais2014_BE_gr5
+
 preprocessors:
   # --------------------------------------------------
   # preprocessors: time mean, spatial regrid, and mask
@@ -37,12 +64,13 @@ preprocessors:
   preproc_meanRegrid:
     custom_order: true
     regrid:
-      target_grid: NorESM1-M
+      target_grid: 0.5x0.5
+      # target_grid: 2.5x1.875
       scheme: nearest
     mask_landsea:
       mask_out: sea
     multi_model_statistics:
-      span: full
+      span: overlap
       statistics: [median]
     climate_statistics:
       operator: mean
@@ -52,7 +80,7 @@ diagnostics:
   # --------------------------------------------------
   # diagnostics: global and zonal turnover
   # --------------------------------------------------
-  diag_land_carbon_turnover_NorESM:
+  diag_land_carbon_turnover:
     description: diagnose the turnover time of ecosystem carbon.
     variables:
       gpp: &variable_settings
@@ -81,56 +109,27 @@ diagnostics:
       zonal_turnover_time:
         # evaluate the zonal turnover time
         script: land_carbon_cycle/diag_zonal_turnover.py
-        obs_files:
-          - zonal_mean_tau_ctotal_Carvalhais_NorESM.nc
-        obs_variables:
+        <<: *obs_details
+        obs_variable:
           - tau_ctotal
-          - tau_ctotal_5
-          - tau_ctotal_95
         fig_config:
           ax_fs: 8
       global_turnover_time:
         # evaluate the global distributions of turnover time
         script: land_carbon_cycle/diag_global_turnover.py
-        obs_files:
-          - tau_ctotal_Carvalhais_NorESM.nc
-        obs_variables:
+        <<: *obs_details
+        obs_variable:
           - tau_ctotal
-          - tau_ctotal_5
-          - tau_ctotal_95
-        fig_config:
-          ax_fs: 8
-      zonal_correlation_spearman:
-        # evaluate the zonal correlation (spearman)
-        # of turnover time with climate
-        script: land_carbon_cycle/diag_zonal_correlation.py
-        obs_files:
-          - zonal_spearman_correlation_tau_ctotal_pr_Carvalhais_NorESM.nc
-          - zonal_spearman_correlation_tau_ctotal_tas_Carvalhais_NorESM.nc
-        correlation_method: spearman
-        obs_variables:
-          - r_tau_ctotal_pr
-          - r_tau_ctotal_pr_5
-          - r_tau_ctotal_pr_95
-          - r_tau_ctotal_tas
-          - r_tau_ctotal_tas_5
-          - r_tau_ctotal_tas_95
         fig_config:
           ax_fs: 8
       zonal_correlation_pearson:
         # evaluate the zonal correlation (pearson)
         # of turnover time with climate
         script: land_carbon_cycle/diag_zonal_correlation.py
-        obs_files:
-          - zonal_pearson_correlation_tau_ctotal_pr_Carvalhais_NorESM.nc
-          - zonal_pearson_correlation_tau_ctotal_tas_Carvalhais_NorESM.nc
+        <<: *obs_details
         correlation_method: pearson
-        obs_variables:
-          - r_tau_ctotal_pr
-          - r_tau_ctotal_pr_5
-          - r_tau_ctotal_pr_95
+        obs_variable:
           - r_tau_ctotal_tas
-          - r_tau_ctotal_tas_5
-          - r_tau_ctotal_tas_95
+          - r_tau_ctotal_pr
         fig_config:
           ax_fs: 8

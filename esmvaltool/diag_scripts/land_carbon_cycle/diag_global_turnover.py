@@ -104,7 +104,6 @@ def _get_fig_config(diag_config):
         'tx_y_corr': 1.075,
         # define the range of data and masks
         'valrange_sc': (2, 256),
-        'obs_label': 'Carvalhais2014',
         'obs_global': 23,
         'gpp_threshold': 10,  # gC m-2 yr -1
         # name of the variable and unit
@@ -184,11 +183,15 @@ def _get_agreement_mask(mmdat, dat_5, dat_95, nmodel_reject=2):
     return agreement_mask
 
 
-def _get_hex_data(dat_1, dat_2):
+def _get_hex_data(dat_1, dat_2, fig_config):
     '''
     get the data to be plotted as density plots, which requires that both the
     arrays have the same mask with regards to valid data points
     '''
+    dat_1[(dat_1 < fig_config['valrange_sc'][0] * 0.5)] = np.nan
+    dat_1[(dat_1 > fig_config['valrange_sc'][1] * 1.5)] = np.nan
+    dat_2[(dat_2 < fig_config['valrange_sc'][0] * 0.5)] = np.nan
+    dat_2[(dat_2 > fig_config['valrange_sc'][1] * 1.5)] = np.nan
     dat_1, dat_2 = _apply_common_mask(dat_1, dat_2)
     dat_1mc = np.ma.masked_equal(dat_1, np.nan).compressed()
     dat_2mc = np.ma.masked_equal(dat_2, np.nan).compressed()
@@ -205,17 +208,33 @@ def _get_obs_data(diag_config):
     Returns:
         dictionary with observation data with different variables as keys
     '''
-    if not diag_config.get('obs_files'):
-        raise ValueError('The observation files needs to be specified in the '
-                         'recipe (see recipe description for details)')
+    if not diag_config.get('obs_variable'):
+        raise ValueError((
+            'The observation variable needs to be specified in the recipe (see recipe description for details)'
+        ))
     else:
-        input_files = [
-            os.path.join(diag_config['auxiliary_data_dir'], obs_file)
-            for obs_file in diag_config.get('obs_files')
-        ]
+        obs_dir = os.path.join(diag_config['auxiliary_data_dir'],
+                               diag_config['obs_info']['obs_data_subdir'])
+
     all_data = {}
     fig_config = _get_fig_config(diag_config)
-    var_list = diag_config.get('obs_variables')
+    var_list = diag_config.get('obs_variable')
+
+    input_files = []
+    for _var in var_list:
+        var_list = np.append(var_list, '{var}_{perc:d}'.format(var=_var,
+                                                               perc=5))
+        var_list = np.append(var_list, '{var}_{perc:d}'.format(var=_var,
+                                                               perc=95))
+        obs_filename = '{variable}_{frequency}_{source_label}_{variant_label}_{grid_label}.nc'.format(
+            variable=_var,
+            frequency=diag_config['obs_info']['frequency'],
+            source_label=diag_config['obs_info']['source_label'],
+            variant_label=diag_config['obs_info']['variant_label'],
+            grid_label=diag_config['obs_info']['grid_label'])
+        input_files = np.append(input_files,
+                                os.path.join(obs_dir, obs_filename))
+
     for v_ind in range(len(var_list)):
         var_obs = var_list[v_ind]
         all_data[var_obs] = {}
@@ -223,11 +242,39 @@ def _get_obs_data(diag_config):
         variable_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == var_obs))
         cube = iris.load_cube(input_files, constraint=variable_constraint)
-        all_data[var_obs]['grid'] = cube.data
+        all_data[var_obs]['grid'] = cube
         all_data[var_obs]['global'] = fig_config['obs_global']
     for coord in cube.coords():
         all_data['coords'][coord.name()] = coord.points
     return all_data
+
+
+def _calc_turnover(ctotal, gpp, diag_config, _model):
+    '''
+    A function to calculate the turnover time from ctotal and gpp
+
+    Arguments:
+        ctotal- iris cube of total carbon stock
+        gpp - iris cube of gross primary productivity
+        diag_config - nested dictionary of metadata
+
+    Returns:
+        tau_ctotal - iris cube of turnover time in years
+    '''
+    # calculate turnover and convert units to yr
+    tau_ctotal = (ctotal / gpp)
+    tau_ctotal.convert_units('yr')
+
+    # set the attributes
+    tau_ctotal.var_name = 'tau_ctotal'
+    tau_ctotal.standard_name = None
+    tau_ctotal.long_name = 'ecosystem_carbon_turnover_time'
+    tau_ctotal.units = 'yr'
+
+    # save the tau cube
+    ofilename = get_diagnostic_filename(_model + '_tau_ctotal', diag_config)
+    iris.save(tau_ctotal, ofilename)
+    return tau_ctotal
 
 
 def _get_turnover_data(diag_config):
@@ -251,39 +298,23 @@ def _get_turnover_data(diag_config):
         # load the data
         ctotal = _load_variable(value, 'ctotal')
         gpp = _load_variable(value, 'gpp')
-
-        # calculate turnover and convert seconds to yr
-        ctau = (ctotal / gpp) / (86400 * 365)
-
-        # set the attributes and save the cube
-        ctau.var_name = 'tau_ctotal'
-        ctau.standard_name = None
-        ctau.fill_value = fig_config['fill_value']
-        ctau.long_name = 'ecosystem_carbon_turnover_time'
-        ctau.units = 'yr'
-        ofilename = get_diagnostic_filename(key + '_tau_ctotal', diag_config)
-        iris.save(ctau, ofilename)
+        tau_ctotal = _calc_turnover(ctotal, gpp, diag_config, key)
+        _all_mod_dat[key]['grid'] = tau_ctotal
 
         # apply the GPP threshold and set the data in dictionary
-        _gpp = _apply_gpp_threshold(gpp.data, fig_config)
-        _ctotal = ctotal.data
-        _ctau = (_ctotal / _gpp) / (86400 * 365)
-        _all_mod_dat[key]['grid'] = xu.remove_invalid(
-            _ctau, fill_value=fig_config['fill_value'])
-        _all_mod_dat[key]['global'] = (
-            (np.nansum(
-                xu.remove_invalid(_ctotal,
-                                  fill_value=fig_config['fill_value']))
-             / np.nansum(
-                 xu.remove_invalid(_gpp,
-                                   fill_value=fig_config['fill_value'])))
-            / (86400 * 365))
+        gpp_global = gpp.collapsed(['latitude', 'longitude'],
+                                   iris.analysis.SUM)
+        ctotal_global = ctotal.collapsed(['latitude', 'longitude'],
+                                         iris.analysis.SUM)
+        tau_global = ctotal_global / gpp_global
+        tau_global.convert_units('yr')
 
-        # plot the map of the turnover time from the model
-        _plot_single_map(_ctau, _all_mod_dat[key]['global'], key, diag_config)
+        _all_mod_dat[key]['global'] = np.float(tau_global.core_data())
+        _plot_single_map(tau_ctotal, _all_mod_dat[key]['global'], key,
+                         diag_config)
+
     # get the data from the observation
     _all_obs_dat = _get_obs_data(diag_config)
-
     return _all_mod_dat, _all_obs_dat
 
 
@@ -305,9 +336,111 @@ def _get_data_to_plot(_data):
     get the data to be plotted on the map corrected for the rotations of
     latitude and longitude
     '''
+
     xroll = _data.shape[1] / 2
     _data = np.roll(np.flipud(_data), int(xroll), axis=1)
+    # _data = xu.remove_invalid(_data, fill_value=np.nan)
     return _data
+
+
+def _get_matrix_map_axes(_row_m, _col_m, _fig_config):
+    '''
+    returns the axes object for matrix maps
+
+    Arguments:
+        _row_m - row location in the matrix
+        _col_m - column location in the matrix
+        _fig_config - figure settings
+
+    Returns:
+        _ax - an axes object
+    '''
+    if _row_m == _col_m:
+        _ax = plt.axes([
+            _fig_config['x0'] + _row_m * _fig_config['wp'] +
+            _row_m * _fig_config['xsp'], fig_config['y0'] -
+            (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
+            fig_config['wp'], _fig_config['hp']
+        ],
+                       projection=ccrs.Robinson(central_longitude=0),
+                       frameon=False)
+    if _row_m < _col_m:
+        _ax = plt.axes([
+            (_fig_config['x0'] + _row_m * _fig_config['wp'] +
+             _row_m * _fig_config['xsp'] + _fig_config['xsp_sca']),
+            (_fig_config['y0'] -
+             (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']) +
+             _fig_config['ysp_sca']),
+            _fig_config['wp'] * _fig_config['aspect_map'],
+            _fig_config['hp'] * _fig_config['aspect_map']
+        ])
+
+    if _row_m > _col_m:
+        _ax = plt.axes([
+            _fig_config['x0'] + _row_m * _fig_config['wp'] +
+            _row_m * _fig_config['xsp'], _fig_config['y0'] -
+            (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
+            _fig_config['wp'], _fig_config['hp']
+        ],
+                       projection=ccrs.Robinson(central_longitude=0),
+                       frameon=False)
+    return _ax
+
+
+def _fix_matrix_axes(row_m, col_m, models, nmodels, diag_config, fig_config):
+    '''
+    fixes the axes lines and titles in matrix maps
+    '''
+    row_mod = models[row_m]
+    col_mod = models[col_m]
+    if row_m != 0 and col_m != nmodels - 1:
+        xu.ax_clr(axfs=fig_config['ax_fs'])
+        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+    elif row_m == 0 and col_m != nmodels - 1:
+        xu.ax_clrX(axfs=fig_config['ax_fs'])
+        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+    elif col_m == nmodels - 1 and row_m != 0:
+        xu.ax_clrY(axfs=fig_config['ax_fs'])
+        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+    if row_m == 0 and col_m == nmodels - 1:
+        xu.ax_orig(axfs=fig_config['ax_fs'])
+        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+        plt.ylabel('$model_{column}$', fontsize=fig_config['ax_fs'])
+        plt.xlabel('$model_{row}$', fontsize=fig_config['ax_fs'])
+    if col_m == 0:
+        if row_mod == 'obs':
+            _title_sp = diag_config['obs_info']['source_label']
+        else:
+            _title_sp = row_mod
+        plt.title(str(row_m + 1) + ': ' + _title_sp,
+                  fontsize=0.809 * fig_config['ax_fs'])
+    if row_m == nmodels - 1:
+        if col_mod == 'obs':
+            _title_sp = diag_config['obs_info']['source_label']
+        else:
+            _title_sp = col_mod
+        _title_sp = str(col_m + 1)
+        t_x = plt.gca().text(1.1,
+                             0.5,
+                             _title_sp,
+                             fontsize=0.809 * fig_config['ax_fs'],
+                             va='center',
+                             ha='center',
+                             transform=plt.gca().transAxes)
+    else:
+        t_x = ''
+
+    return t_x
+
+
+def _draw_121_line():
+    '''
+    draws a 1:1 line in the current axis
+    '''
+    ymin, ymax = plt.ylim()
+    xmin, xmax = plt.xlim()
+    plt.plot((xmin, xmax), (ymin, ymax), 'k', lw=0.1)
+    return 'plotted 1:1 line'
 
 
 def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
@@ -320,15 +453,17 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
         dataset - name of the dataset to plot
 
     Returns:
-        string; makes some time-series plots
-
-    Note: this function is private; remove the '_'
-    so you can make it public.
+        string - on completion of plotting
     '''
     fig_config = _get_fig_config(diag_config)
     models = list(all_mod_dat.keys())
     models = sorted(models, key=str.casefold)
+    multiModels = 'MultiModelMedian MultiModelMean'.split()
+    for _mm in multiModels:
+        if _mm in models:
+            models.append(models.pop(models.index(_mm)))
     models.insert(0, 'obs')
+
     all_mod_dat['obs'] = all_obs_dat['tau_ctotal']
     nmodels = len(models)
 
@@ -339,26 +474,17 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
     cb_info_diagonal = _get_diagonal_colorbar_info()
 
     plt.figure(figsize=(9, 6))
+    # axes_mat = _get_matrix_map_axes(nmodels, fig_config)
     for row_m in range(nmodels):
-        row_mod = models[row_m]
-        dat_row = all_mod_dat[row_mod]['grid']
+        dat_row = all_mod_dat[models[row_m]]['grid'].data
         for col_m in range(nmodels):
-            col_mod = models[col_m]
-            dat_col = all_mod_dat[col_mod]['grid']
-            print('---' + row_mod + ' vs ' + col_mod + '---')
-
+            dat_col = all_mod_dat[models[col_m]]['grid'].data
+            print('---' + models[row_m] + ' vs ' + models[col_m] + '---')
+            # _ax = axes_mat[row_m, col_m]
+            _ax = _get_matrix_map_axes(row_m, col_m, fig_config)
             # plot the maps along the diagonal
             if row_m == col_m:
-                _ax = plt.axes(
-                    [fig_config['x0']
-                     + row_m * fig_config['wp'] + row_m * fig_config['xsp'],
-                     fig_config['y0']
-                     - (col_m * fig_config['hp'] + col_m * fig_config['ysp']),
-                     fig_config['wp'], fig_config['hp']],
-                    projection=ccrs.Robinson(central_longitude=0),
-                    frameon=False)
-                plot_dat = dat_row
-                plt.imshow(_get_data_to_plot(plot_dat),
+                plt.imshow(_get_data_to_plot(dat_row),
                            norm=mpl.colors.BoundaryNorm(
                                cb_info_diagonal['tickBounds'],
                                len(cb_info_diagonal['tickBounds'])),
@@ -371,16 +497,7 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
 
             # plot the scatterplot/density plot below the diagonal
             if row_m < col_m:
-                _ax = plt.axes(
-                    [(fig_config['x0'] + row_m * fig_config['wp']
-                      + row_m * fig_config['xsp'] + fig_config['xsp_sca']),
-                     (fig_config['y0']
-                      - (col_m * fig_config['hp'] + col_m * fig_config['ysp'])
-                      + fig_config['ysp_sca']),
-                     fig_config['wp'] * fig_config['aspect_map'],
-                     fig_config['hp'] * fig_config['aspect_map']])
-                xdat, ydat = dat_col, dat_row
-                dat1h, dat2h = _get_hex_data(xdat, ydat)
+                dat1h, dat2h = _get_hex_data(dat_col, dat_row, fig_config)
                 _ax.hexbin(dat1h,
                            dat2h,
                            bins='log',
@@ -392,53 +509,22 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
                          fig_config['valrange_sc'][1] * 1.05)
                 plt.xlim(fig_config['valrange_sc'][0],
                          fig_config['valrange_sc'][1] * 1.05)
-                ymin, ymax = plt.ylim()
-                xmin, xmax = plt.xlim()
-                plt.plot((xmin, xmax), (ymin, ymax), 'k', lw=0.1)
+                _draw_121_line()
                 if fig_config['correlation_method'] == 'pearson':
-                    corr = stats.pearsonr(dat1h, dat2h)[0]
+                    corr = (stats.pearsonr(dat1h, dat2h)[0])**2
                 else:
-                    corr = stats.spearmanr(dat1h, dat2h)[0]
-                title_str = "$R^2$=" + str(round(corr**2, 2))
-                plt.title(title_str,
+                    corr = (stats.spearmanr(dat1h, dat2h)[0])**2
+                plt.title('$R^2$={corr:.2f}'.format(corr=corr),
                           fontsize=fig_config['ax_fs'] * 0.953,
                           ma='left',
                           y=fig_config['tx_y_corr'],
                           va="top")
-                if row_m != 0 and col_m != nmodels - 1:
-                    xu.ax_clr(axfs=fig_config['ax_fs'])
-                    xu.rotate_labels(which_ax='x',
-                                     axfs=fig_config['ax_fs'], rot=90)
-                elif row_m == 0 and col_m != nmodels - 1:
-                    xu.ax_clrX(axfs=fig_config['ax_fs'])
-                    xu.rotate_labels(which_ax='x',
-                                     axfs=fig_config['ax_fs'], rot=90)
-                elif col_m == nmodels - 1 and row_m != 0:
-                    xu.ax_clrY(axfs=fig_config['ax_fs'])
-                    xu.rotate_labels(which_ax='x',
-                                     axfs=fig_config['ax_fs'], rot=90)
-                if row_m == 0 and col_m == nmodels - 1:
-                    xu.ax_orig(axfs=fig_config['ax_fs'])
-                    xu.rotate_labels(which_ax='x',
-                                     axfs=fig_config['ax_fs'], rot=90)
-                    plt.ylabel('$model_{column}$',
-                               fontsize=fig_config['ax_fs'])
-                    plt.xlabel('$model_{row}$', fontsize=fig_config['ax_fs'])
 
             # plot the maps of ratio of models and observation above the
             # diagonal
             if row_m > col_m:
-                _ax = plt.axes(
-                    [fig_config['x0']
-                     + row_m * fig_config['wp'] + row_m * fig_config['xsp'],
-                     fig_config['y0']
-                     - (col_m * fig_config['hp'] + col_m * fig_config['ysp']),
-                     fig_config['wp'], fig_config['hp']],
-                    projection=ccrs.Robinson(central_longitude=0),
-                    frameon=False)
                 plot_dat = xu.remove_invalid(
-                    dat_row / dat_col,
-                    fill_value=fig_config['fill_value'])
+                    dat_row / dat_col, fill_value=fig_config['fill_value'])
                 _ax.imshow(_get_data_to_plot(plot_dat),
                            norm=mpl.colors.BoundaryNorm(
                                cb_info_ratio['tickBounds'],
@@ -450,32 +536,19 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
                            origin='upper',
                            transform=ccrs.PlateCarree())
                 _fix_map(_ax)
-            if col_m == 0:
-                if row_mod == 'obs':
-                    _title_sp = fig_config['obs_label']
-                else:
-                    _title_sp = row_mod
-                plt.title(str(row_m + 1) + ': ' + _title_sp,
-                          fontsize=0.809 * fig_config['ax_fs'])
-            if row_m == nmodels - 1:
-                if col_mod == 'obs':
-                    _title_sp = fig_config['obs_label']
-                else:
-                    _title_sp = col_mod
-                _title_sp = str(col_m + 1)
-                t_x = _ax.text(1.1,
-                               0.5,
-                               _title_sp,
-                               fontsize=0.809 * fig_config['ax_fs'],
-                               va='center',
-                               ha='center',
-                               transform=_ax.transAxes)
+            t_x = _fix_matrix_axes(row_m, col_m, models, nmodels, diag_config,
+             fig_config)
 
     # plot the colorbar for maps along the diagonal
     y_colo = fig_config['y0'] + fig_config['hp'] + fig_config['cb_off_y']
-    _axcol_dia = [fig_config['x_colo_d'], y_colo,
-                  fig_config['wcolo'], fig_config['hcolo']]
-    cb_tit_d = 'ecosystem_carbon_turnover_time (yr)'
+    _axcol_dia = [
+        fig_config['x_colo_d'], y_colo, fig_config['wcolo'],
+        fig_config['hcolo']
+    ]
+    cb_tit_d = '{name}, ({unit})'.format(
+        name=all_mod_dat[models[col_m]]['grid'].long_name,
+        unit=all_mod_dat[models[col_m]]['grid'].units)
+    # cb_tit_d = 'ecosystem_carbon_turnover_time (yr)'
     cb = xu.mk_colo_tau(_axcol_dia,
                         cb_info_diagonal['tickBounds'],
                         cb_info_diagonal['colMap'],
@@ -486,8 +559,10 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
 
     # plot the colorbar for maps above the diagonal
     y_colo = fig_config['y0'] + fig_config['hp'] + fig_config['cb_off_y']
-    _axcol_rat = [fig_config['x_colo_r'], y_colo,
-                  fig_config['wcolo'], fig_config['hcolo']]
+    _axcol_rat = [
+        fig_config['x_colo_r'], y_colo, fig_config['wcolo'],
+        fig_config['hcolo']
+    ]
     cb = xu.mk_colo_cont(_axcol_rat,
                          cb_info_ratio['tickBounds'],
                          cb_info_ratio['colMap'],
@@ -502,10 +577,11 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
                           rotation=0)
 
     # save and close the figure
-    local_path = diag_config['plot_dir']
-    png_name = ('global_comparison_matrix_models_'
-                + fig_config['obs_label'] + '.png')
-    plt.savefig(os.path.join(local_path, png_name),
+    png_name = 'global_matrix_map_{name}_{source_label}_{grid_label}.png'.format(name=all_mod_dat[models[col_m]]['grid'].long_name,
+        source_label=diag_config['obs_info']['source_label'],
+        grid_label=diag_config['obs_info']['grid_label'])
+
+    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x],
                 dpi=450)
@@ -526,29 +602,37 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
 
     Returns:
         string- on completion of plotting and saving
-
     '''
     # get the settings for plotting figure
     fig_config = _get_fig_config(diag_config)
 
     # get the observation data needed to calculate the bias and multimodel
     # agreement
-    tau_obs = all_obs_dat['tau_ctotal']['grid']
-    tau_obs_5 = all_obs_dat['tau_ctotal_5']['grid']
-    tau_obs_95 = all_obs_dat['tau_ctotal_95']['grid']
+    obs_var = diag_config.get('obs_variable')[0]
+    tau_obs = all_obs_dat[obs_var]['grid'].data
+    tau_obs_5 = all_obs_dat[obs_var+'_5']['grid'].data
+    tau_obs_95 = all_obs_dat[obs_var+'_95']['grid'].data
 
     # set the information of the colormap used for plotting bias
     cb_info = _get_ratio_colorbar_info()
 
     # calculate the bias of multimodel median turnover time
     models = list(all_mod_dat.keys())
+
+    # remove multimodel estimates from the list of models
+    multiModels = 'MultiModelMedian MultiModelMean'.split()
+    for _mm in multiModels:
+        if _mm in models:
+            models.remove(_mm)
+
     nmodels = len(models)
     dat_tau_full = np.ones((nmodels, np.shape(tau_obs)[0],
                             np.shape(tau_obs)[1])) * fig_config['fill_value']
     for row_m in range(nmodels):
         row_mod = models[row_m]
         dat_tau = all_mod_dat[row_mod]['grid']
-        dat_tau_full[row_m] = dat_tau
+        dat_tau_full[row_m] = xu.remove_invalid(
+            dat_tau.data, fill_value=fig_config['fill_value'])
 
     mm_tau = xu.remove_invalid(np.nanmedian(dat_tau_full, axis=0),
                                fill_value=fig_config['fill_value'])
@@ -599,8 +683,10 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
                  linewidth=0.2,
                  transform=ccrs.PlateCarree())
 
-    plt.title('ecosystem_carbon_turnover_time (yr), ' + fig_config['obs_label']
-              + ',\n' + 'multimodel bias and agreement',
+    title_str = ('multimodel bias and agreement (-)\n{title}, {source_label}'
+        .format(title=all_obs_dat['tau_ctotal']['grid'].long_name,
+                source_label=diag_config['obs_info']['source_label']))
+    plt.title(title_str,
               fontsize=0.98 * fig_config['ax_fs'])
 
     # plot colorbar using extraUtils
@@ -620,12 +706,13 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
                                rotation=0)
 
     # save and close figure
-    local_path = diag_config['plot_dir']
-    png_str = 'global_multimodelAgreement_turnovertime_'
-    png_name = png_str + fig_config['obs_label'] + '.png'
+    png_name = 'global_multimodelAgreement_{title}_{source_label}_{grid_label}.png'.format(
+        title=all_obs_dat['tau_ctotal']['grid'].long_name,
+        source_label=diag_config['obs_info']['source_label'],
+        grid_label=diag_config['obs_info']['grid_label'])
 
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
-    plt.savefig(os.path.join(local_path, png_name),
+    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x],
                 dpi=450)
@@ -661,7 +748,7 @@ def _plot_single_map(_dat, _datglobal, _name, diag_config):
                    projection=ccrs.Robinson(central_longitude=0),
                    frameon=False)
     # plot data over the map
-    plt.imshow(_get_data_to_plot(_dat),
+    plt.imshow(_get_data_to_plot(_dat.data),
                norm=mpl.colors.BoundaryNorm(cb_info['tickBounds'],
                                             len(cb_info['tickBounds'])),
                cmap=cb_info['colMap'],
@@ -674,13 +761,16 @@ def _plot_single_map(_dat, _datglobal, _name, diag_config):
     # get the data and set the title of the map
 
     _dat_median = np.nanmedian(
-        xu.remove_invalid(_dat, fill_value=fig_config['fill_value']))
-    title_str = fig_config['varName'] + ": global = " + str(round(
-        _datglobal, 2)) + ", median = " + str(round(_dat_median, 2))
+        xu.remove_invalid(_dat.data, fill_value=fig_config['fill_value']))
+    title_str = (
+        '{title}, ({unit}), {name},\nglobal = {_glbl:.2f}, median = {_medn:.2f}'
+        .format(title=_dat.long_name,
+                unit=_dat.units,
+                _glbl=_datglobal,
+                _medn=_dat_median,
+                name=_name))
 
-    plt.title('ecosystem_carbon_turnover_time (yr), ' + _name + ',\n'
-              + title_str,
-              fontsize=0.98 * fig_config['ax_fs'])
+    plt.title(title_str, fontsize=0.98 * fig_config['ax_fs'])
 
     # draw the colorbar
     _axcol_dia = [0.254, fig_config['y_colo_single'], 0.6, 0.035]
@@ -693,10 +783,12 @@ def _plot_single_map(_dat, _datglobal, _name, diag_config):
                    cbrt=90)
 
     # save the figure
-    local_path = diag_config['plot_dir']
-    png_name = 'global_turnovertime_' + _name + '.png'
+    png_name = 'global_{title}_{source_label}_{grid_label}.png'.format(
+        title=_dat.long_name,
+        source_label=_name,
+        grid_label=diag_config['obs_info']['grid_label'])
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
-    plt.savefig(os.path.join(local_path, png_name),
+    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x],
                 dpi=450)
@@ -709,9 +801,8 @@ if __name__ == '__main__':
     with run_diagnostic() as config:
         mod_dat_all, Obs_dat_all = _get_turnover_data(config)
         fig_config = _get_fig_config(config)
-        _plot_multimodel_agreement(mod_dat_all, Obs_dat_all, config)
         _plot_matrix_map(mod_dat_all, Obs_dat_all, config)
+        _plot_multimodel_agreement(mod_dat_all, Obs_dat_all, config)
         _plot_single_map(Obs_dat_all['tau_ctotal']['grid'],
                          Obs_dat_all['tau_ctotal']['global'],
-                         fig_config['obs_label'],
-                         config)
+                         config['obs_info']['source_label'], config)

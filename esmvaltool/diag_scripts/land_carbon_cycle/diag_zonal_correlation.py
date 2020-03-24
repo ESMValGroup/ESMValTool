@@ -47,7 +47,6 @@ def _get_fig_config(diag_config):
         'valrange_x': (-1, 1),
         'valrange_y': (-70, 90),
         'bandsize': 9.5,
-        'obs_label': 'Carvalhais2014',
         'gpp_threshold': 0,  # gC m-2 yr -1
     }
     fig_config.update(diag_config.get('fig_config'))
@@ -94,17 +93,23 @@ def _get_zonal_correlation(diag_config):
     for key, value in my_files_dict.items():
         all_mod_dat[key] = {}
         mod_coords = {}
-        c_total = _load_variable(value, 'ctotal')
+        ctotal = _load_variable(value, 'ctotal')
         gpp = _load_variable(value, 'gpp')
         precip = _load_variable(value, 'pr')
         tas = _load_variable(value, 'tas')
-        _gpp = gpp.data
-        _gpp = _apply_gpp_threshold(_gpp, fig_config)
-        ctau = (c_total / _gpp) / (86400 * 365)
+        tau_ctotal = (ctotal / gpp)
+        tau_ctotal.convert_units('yr')
+        # set the attributes
+        tau_ctotal.var_name = 'tau_ctotal'
         for coord in gpp.coords():
-            mod_coords[coord.name()] = coord.points
-        zon_corr = _calc_zonal_correlation(ctau.data, precip.data, tas.data,
-                                           mod_coords['latitude'], fig_config)
+            mod_coords[coord.name()] = coord
+
+        _tau_dat = xu.remove_invalid(tau_ctotal.data, fill_value=np.nan)
+        _precip_dat = xu.remove_invalid(precip.data, fill_value=np.nan)
+        _tas_dat = xu.remove_invalid(tas.data, fill_value=np.nan)
+        zon_corr = _calc_zonal_correlation(_tau_dat, _precip_dat, _tas_dat,
+                                           mod_coords['latitude'].points,
+                                           fig_config)
         all_mod_dat[key]['data'] = zon_corr
         all_mod_dat[key]['latitude'] = mod_coords['latitude']
     all_obs_dat = _get_obs_data_zonal(diag_config)
@@ -161,14 +166,14 @@ def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
     corr_dat = np.ones((np.shape(dat_tau)[0], 2)) * np.nan
 
     # get the size of the sliding window based on the bandsize in degrees
-    window_size = int(fig_config['bandsize'] / (lat_int * 2))
+    window_size = round(fig_config['bandsize'] / (lat_int * 2.))
 
     dat_tau, dat_pr, dat_tas = _apply_common_mask(dat_tau, dat_pr, dat_tas)
     # minimum 1/8 of the given window has valid data points
     min_points = np.shape(dat_tau)[1] * fig_config['min_points_frac']
     for lat_index in range(len(corr_dat)):
-        istart = max(0, lat_index - window_size)
-        iend = min(np.size(dat_lats), lat_index + window_size + 1)
+        istart = np.int(max(0, lat_index - window_size))
+        iend = np.int(min(np.size(dat_lats), lat_index + window_size + 1))
         dat_tau_zone = dat_tau[istart:iend, :]
         dat_pr_zone = dat_pr[istart:iend, :]
         dat_tas_zone = dat_tas[istart:iend, :]
@@ -177,9 +182,9 @@ def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
         dat_z = np.ma.masked_invalid(dat_tas_zone).compressed().flatten()
         num_valid_points = sum(~np.isnan(dat_x + dat_y + dat_z))
         if num_valid_points > min_points:
-            corr_dat[lat_index, 0] = _partialCorr(
-                np.vstack((dat_x, dat_y, dat_z)).T, fig_config)
             corr_dat[lat_index, 1] = _partialCorr(
+                np.vstack((dat_x, dat_y, dat_z)).T, fig_config)
+            corr_dat[lat_index, 0] = _partialCorr(
                 np.vstack((dat_x, dat_z, dat_y)).T, fig_config)
     return corr_dat
 
@@ -269,85 +274,107 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     models = list(all_mod_dat.keys())
     nmodels = len(models)
     models = sorted(models, key=str.casefold)
+    multiModels = 'MultiModelMedian MultiModelMean'.split()
+    for _mm in multiModels:
+        if _mm in models:
+            models.append(models.pop(models.index(_mm)))
 
     plt.figure(figsize=(5, 4))
     # tau-tas correlations
     sp1 = plt.subplot(1, 2, 1)
-    x_lab = '$r_{\\tau-tas,pr}$'
-    _fix_axis(x_lab, fig_config)
-    plt.ylabel('Latitude ($^\\circ N$)', fontsize=fig_config['ax_fs'], ma='center')
+
     # get the observations out of the dictionary
     lats_obs = all_obs_dat['latitude']
-    r_tau_ctotal_tas = all_obs_dat['r_tau_ctotal_tas']
-    r_tau_ctotal_tas_5 = all_obs_dat['r_tau_ctotal_tas_5']
-    r_tau_ctotal_tas_95 = all_obs_dat['r_tau_ctotal_tas_95']
+    obs_var = diag_config.get('obs_variable')[0]
+    r_tau_ctotal_tas = all_obs_dat[obs_var]
+    r_tau_ctotal_tas_5 = all_obs_dat[obs_var+'_5']
+    r_tau_ctotal_tas_95 = all_obs_dat[obs_var+'_95']
     # plot the correlations from observation
-    sp1.plot(r_tau_ctotal_tas,
-             lats_obs,
+
+    _fix_axis(obs_var, fig_config)
+    plt.ylabel('{name}\n({unit})'.format(name=lats_obs.long_name,
+                                         unit=lats_obs.units),
+               fontsize=fig_config['ax_fs'], ma='center')
+
+    sp1.plot(r_tau_ctotal_tas.data,
+             lats_obs.points,
              color='k',
              lw=1.1,
-             label='Observation')
-    sp1.fill_betweenx(lats_obs,
-                      r_tau_ctotal_tas_5,
-                      r_tau_ctotal_tas_95,
+             label=diag_config['obs_info']['source_label'])
+    sp1.fill_betweenx(lats_obs.points,
+                      r_tau_ctotal_tas_5.data,
+                      r_tau_ctotal_tas_95.data,
                       facecolor='grey',
                       alpha=0.40)
 
     # tau-pr correlations
     sp2 = plt.subplot(1, 2, 2)
-    x_lab = '$r_{\\tau-pr,tas}$'
-    _fix_axis(x_lab, fig_config)
 
     # get the observations out of the dictionary
-    r_tau_ctotal_pr = all_obs_dat['r_tau_ctotal_pr']
-    r_tau_ctotal_pr_5 = all_obs_dat['r_tau_ctotal_pr_5']
-    r_tau_ctotal_pr_95 = all_obs_dat['r_tau_ctotal_pr_95']
+    obs_var = diag_config.get('obs_variable')[1]
+    r_tau_ctotal_pr = all_obs_dat[obs_var]
+    r_tau_ctotal_pr_5 = all_obs_dat[obs_var+'_5']
+    r_tau_ctotal_pr_95 = all_obs_dat[obs_var+'_95']
+    _fix_axis(obs_var, fig_config)
 
     # plot the correlations from observation
-    sp2.plot(r_tau_ctotal_pr,
-             lats_obs,
+    sp2.plot(r_tau_ctotal_pr.data,
+             lats_obs.points,
              color='k',
              lw=1.1,
-             label=fig_config['obs_label'])
-    sp2.fill_betweenx(lats_obs,
-                      r_tau_ctotal_pr_5,
-                      r_tau_ctotal_pr_95,
+             label=diag_config['obs_info']['source_label'])
+    sp2.fill_betweenx(lats_obs.points,
+                      r_tau_ctotal_pr_5.data,
+                      r_tau_ctotal_pr_95.data,
                       facecolor='grey',
                       alpha=0.40)
 
     # PLOTTING for models
-
-    # define arrays to store the zonal correlation of each model
-
-    r_tau_pr_c_tas_all = np.ones((len(lats_obs), nmodels)) * np.nan
-    r_tau_tas_c_pr_all = np.ones((len(lats_obs), nmodels)) * np.nan
 
     # loop over models and plot zonal correlations
     for row_m in range(nmodels):
         row_mod = models[row_m]
         r_mod = all_mod_dat[row_mod]['data']
         lats_mod = all_mod_dat[row_mod]['latitude']
-        r_tau_tas_c_pr_mod = r_mod[:, 1]
-        r_tau_tas_c_pr_all[:, row_m] = r_tau_tas_c_pr_mod
+        r_tau_tas_c_pr_mod = r_mod[:, 0]
         sp1.plot(np.ma.masked_equal(r_tau_tas_c_pr_mod, np.nan),
-                 lats_mod,
+                 lats_mod.points,
                  lw=0.3,
                  label=row_mod)
-        r_tau_pr_c_tas_mod = r_mod[:, 0]
-        r_tau_pr_c_tas_all[:, row_m] = r_tau_pr_c_tas_mod
+        r_tau_pr_c_tas_mod = r_mod[:, 1]
         sp2.plot(np.ma.masked_equal(r_tau_pr_c_tas_mod, np.nan),
-                 lats_mod,
+                 lats_mod.points,
                  lw=0.3,
                  label=row_mod)
+
+    # normalized mean correlations from model
+
+    # remove the multimodel estimates
+    models = list(all_mod_dat.keys())
+    for _mm in multiModels:
+        if _mm in models:
+            models.remove(_mm)
+
+    nmodels = len(models)
+
+    r_tau_pr_c_tas_all = np.ones((len(lats_obs.points), nmodels)) * np.nan
+    r_tau_tas_c_pr_all = np.ones((len(lats_obs.points), nmodels)) * np.nan
+    for row_m in range(nmodels):
+        row_mod = models[row_m]
+        r_mod = all_mod_dat[row_mod]['data']
+        lats_mod = all_mod_dat[row_mod]['latitude']
+        r_tau_tas_c_pr_all[:, row_m] = r_mod[:, 0]
+        r_tau_pr_c_tas_all[:, row_m] = r_mod[:, 1]
+
     r_mmod, r_mmod_std_low, r_mmod_std_hi = _get_multimodel_stats(
         r_tau_tas_c_pr_all)
     sp1.plot(np.ma.masked_equal(r_mmod, np.nan),
-             lats_mod,
+             lats_mod.points,
              color='blue',
              ls='--',
              lw=1,
              label='Norm. Mean r')
-    sp1.fill_betweenx(lats_mod,
+    sp1.fill_betweenx(lats_mod.points,
                       np.ma.masked_equal(r_mmod_std_low, np.nan),
                       np.ma.masked_equal(r_mmod_std_hi, np.nan),
                       facecolor='#42d4f4',
@@ -357,28 +384,31 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
         r_tau_pr_c_tas_all)
 
     sp2.plot(np.ma.masked_equal(r_mmod, np.nan),
-             lats_mod,
+             lats_mod.points,
              color='blue',
              ls='--',
              lw=1,
              label='Norm. Mean r')
-    sp2.fill_betweenx(lats_mod,
+    sp2.fill_betweenx(lats_mod.points,
                       np.ma.masked_equal(r_mmod_std_low, np.nan),
                       np.ma.masked_equal(r_mmod_std_hi, np.nan),
                       facecolor='#42d4f4',
                       alpha=0.25)
 
     plt.gca().yaxis.set_label_position("right")
+
     # draw the legend
     leg = xu.draw_line_legend(ax_fs=fig_config['ax_fs'])
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
 
     # save and close the figure
-    local_path = diag_config['plot_dir']
-    png_name = ('comparison_zonal_' + fig_config['correlation_method']
-                + '_correlation_turnovertime_climate_'
-                + fig_config['obs_label'] + '.png')
-    plt.savefig(os.path.join(local_path, png_name),
+    png_name = '{title}_{corr}_{source_label}_{grid_label}z.png'.format(
+        title=r_tau_ctotal_pr.long_name,
+        corr=fig_config['correlation_method'],
+        source_label=diag_config['obs_info']['source_label'],
+        grid_label=diag_config['obs_info']['grid_label'])
+
+    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x, leg],
                 dpi=450)
