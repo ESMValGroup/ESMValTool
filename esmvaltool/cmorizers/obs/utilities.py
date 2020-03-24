@@ -1,4 +1,5 @@
 """Utils module for Python cmorizers."""
+from pathlib import Path
 import datetime
 import logging
 import os
@@ -11,11 +12,12 @@ import yaml
 from cf_units import Unit
 from dask import array as da
 
-from esmvalcore._citation import _collect_bibtex_citation, REFERENCES_PATH
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvaltool import __version__ as version
+from esmvaltool import __version__ as version, __file__ as esmvaltool_file
 
 logger = logging.getLogger(__name__)
+
+REFERENCES_PATH = Path(esmvaltool_file).absolute().parent / 'references'
 
 
 def add_height2m(cube):
@@ -193,7 +195,13 @@ def extract_doi_value(tag):
     reference_doi = 'doi not found'
     pattern = r'doi\ = {(.*?)\},'
     if REFERENCES_PATH:
-        reference_entry = _collect_bibtex_citation(tag)
+        bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
+        if bibtex_file.is_file():
+            reference_entry = bibtex_file.read_text()
+        else:
+            logger.warning(
+                'The reference file %s does not exist.', bibtex_file
+            )
         if re.search("doi", reference_entry):
             reference_doi = (
                 f'doi:{re.search(pattern, reference_entry).group(1)}'
