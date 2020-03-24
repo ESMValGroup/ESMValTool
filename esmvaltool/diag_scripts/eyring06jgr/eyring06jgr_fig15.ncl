@@ -8,7 +8,7 @@
 ;    Time series of seasonal  mean anomalie of total column of ozones
 ;    calculated with a methodology described in Appendix A of Eyring06
 ;    Annual cycle for the reference years are also shown
-;   Ad more bullets if required 
+;   Ad more bullets if required
 ;
 ; Required diag_script_info attributes: (diagnostics specific)
 ;    latrange:  minimum and maximum latitude for regional average,
@@ -50,7 +50,7 @@ load "$diag_scripts/shared/plot/style.ncl"
 begin
 
   enter_msg(DIAG_SCRIPT, "")
-  
+
   ; Get variables and datasets
   var0 = variable_info[0]@short_name
   info0 = select_metadata_by_name(input_file_info, var0)
@@ -60,7 +60,7 @@ begin
   exps = metadata_att_as_array(info0, "exp")
   ensembles = metadata_att_as_array(info0, "ensemble")
   y1 = metadata_att_as_array(info0, "start_year")
-  y2 = metadata_att_as_array(info0, "end_year") 
+  y2 = metadata_att_as_array(info0, "end_year")
 
   ; Check variable attributes
   if(isatt(variable_info, "units")) then
@@ -68,7 +68,7 @@ begin
   else
     UNITS = "DU"
   end if
-   
+
   if(isatt(variable_info, "long_name")) then
     LONG_NAME = variable_info@long_name
   else
@@ -152,7 +152,7 @@ begin
   max_y2 = max(y2)
   years = ispan(min_y1, max_y2, 1)
   years!0 = "years"
-  years&years = years  
+  years&years = years
   nyears = dimsizes(years)
 
   tmpData = new((/dim_MOD1, nPanel, nyears, 2/), "float")
@@ -194,7 +194,7 @@ begin
   plotDash = new(dimTot, typeof(names))
   plotThicks = new(dimTot, "float")
   plotScatters = new(dimTot, typeof(names))
-  LineScatters = new(dimTot, typeof(names)) 
+  LineScatters = new(dimTot, typeof(names))
   ik = 0
 
   ; Start datasets loop
@@ -233,8 +233,7 @@ begin
           dummy1 = \
             dim_avg_wgt_Wrap(A0(:, \
                              {latrange(ipan, 0):latrange(ipan, 1)}), \
-                              coslat({latrange(ipan, 0):latrange(ipan, 1)}), \
-                              1)
+                             coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
           delete(coslat)
           delete(A0)
         end if
@@ -262,7 +261,7 @@ begin
 
       ; Anomalies
       coeff_a1 = coeff_a(0)
-      FMeanAnnCycleMon = calcMeanAnnCycleMonthly(tofloat(coeff_a))  ;monthly
+      FMeanAnnCycleMon = calcMeanAnnCycleMonthly(tofloat(coeff_a))  ; monthly
       FMeanAnnCycleMon@_FillValue = 10e21
 
       ; remove mean annual cycle and calculate anomalies
@@ -295,7 +294,7 @@ begin
         FSeasAnomalies = month_to_annual(FMonthlyAnomalies, 1)
         date = ut_calendar(FMonthlyAnomalies&time, 0)
         year = date(::12, 0)
-        FSeasAnomalies&year = year 
+        FSeasAnomalies&year = year
       end if   ; end of Appendix A methodology
 
       tmpData(imod, ipan, {y1(imod):y2(imod)}, 0) = (/tofloat(FSeasAnomalies)/)
@@ -319,7 +318,7 @@ begin
     plotMod(imod) = names(imod)
     plotColor(imod) = colors(imod)
     plotDash(imod) = dashes(imod)
-    plotThicks(imod) = thicks(imod) 
+    plotThicks(imod) = thicks(imod)
     plotScatters(imod) = markers(imod)
 
   end do  ; imod
@@ -334,7 +333,7 @@ begin
   cyXdata(index_obs, :, ind_mon, 1) = save_obs
   delete(save_obs)
 
-  ;(obs dataset is reduced to monthly data because is plotted as scatters )
+  ; (obs dataset is reduced to monthly data because is plotted as scatters )
   LineScatters(index_mod) = "Lines"
 
   ; Calculate multimodel mean
@@ -411,8 +410,8 @@ begin
     res@tiYAxisString = "Anomaly(%) "  ; y-axis label
     res@tiMainFontHeightF = 0.023
     res@tiMainString = seasons(ipanel) + " " + \
-                       lat_names(latrange(ipanel, 0)) + "-" + \
-                       lat_names(latrange(ipanel, 1))
+      lat_names(latrange(ipanel, 0)) + "-" + \
+      lat_names(latrange(ipanel, 1))
     res@xyMarkLineModes = LineScatters
     res@xyLineThicknessF = 3.0
     res@xyLineDashSegLenF = 0.13
@@ -422,13 +421,13 @@ begin
     res@xyMarkerSizeF = 0.004
     res@xyMarkerThicknessF = 1.8
     plot_d(ipanel) = \
-      gsn_csm_xy (wks, Xdata&years, \
-                  Xdata(line|:, season|ipanel, years|:, stat|0), \
-                  res)
+      gsn_csm_xy(wks, Xdata&years, \
+                 Xdata(line|:, season|ipanel, years|:, stat|0), \
+                 res)
 
     add_line(wks, plot_d(ipanel), \
-            (/years(0), years(dimsizes(years) - 1)/), \
-            (/0., 0./), "gray", 1)
+             (/years(0), years(dimsizes(years) - 1)/), \
+             (/0., 0./), "gray", 1)
 
     if (multimean) then
       gsres = True
@@ -449,29 +448,29 @@ begin
     res2@trYMinF = cycle_min
     res2@tmXBMode = "Explicit"
     res2@tmXBValues = (/1, 32, 61, 92, 122, 153, \
-                        183, 214, 245, 275, 305, 336/)
+                       183, 214, 245, 275, 305, 336/)
     res2@tmXBLabels = (/"J", "F", "M", "A", "M", "J", \
-                        "J", "A", "S", "O", "N", "D"/)
+                       "J", "A", "S", "O", "N", "D"/)
 
     res2@vpHeightF = 0.3    ; change aspect ratio of plot
     res2@vpWidthF = 0.3
     res2@xyMarkerSizeF = 0.004
     res2@xyMarkerThicknessF = 1.8
-    res2@tiYAxisString = "Detrended mean annual cycle (" + \
-                          UNITS + ")"    ; y-axis label
+    ; y-axis label
+    res2@tiYAxisString = "Detrended mean annual cycle (" + UNITS + ")"
 
     res2@xyMarkLineModes = LineScatters(:)
     res2@xyLineThicknessF = 3.0
-    res2@xyLineDashSegLenF =0.13
+    res2@xyLineDashSegLenF = 0.13
     res2@xyLineColors = plotColor(:)   ; line color
     res2@xyDashPatterns = plotDash(:)
     res2@xyMarkers = plotScatters(:)
     res2@xyMarkerSizeF = 0.004
     res2@xyMarkerThicknessF = 1.8
     plot_ann(ipanel) = \
-      gsn_csm_xy (wks, cyXdata&day, \
-                  cyXdata(line|:, season|ipanel, day|:, stat|0), \
-                  res2)
+      gsn_csm_xy(wks, cyXdata&day, \
+                 cyXdata(line|:, season|ipanel, day|:, stat|0), \
+                 res2)
 
     if (multimean) then
       gsres2 = True
@@ -493,12 +492,12 @@ begin
   ; Call legend - plotting routine
   Pres = True
   Pres@gsnFrame = False
-  Pres@gsnPanelXWhiteSpacePercent = 0 
+  Pres@gsnPanelXWhiteSpacePercent = 0
   Pres@gsnPanelBottom = 0.15
   Pres@gsnPanelLeft = 0.15
   gsn_panel(wks, baseplot, (/dimsizes(seasons), 2/), Pres)
 
-  if (dimsizes (plotMod).gt.21) then
+  if (dimsizes(plotMod).gt.21) then
     frame(wks)
   end if
   plotThicks = plotThicks + 1
