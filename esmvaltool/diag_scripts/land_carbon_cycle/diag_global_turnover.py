@@ -26,7 +26,8 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # user-defined functions
 import extraUtils as xu
-from shared import _apply_gpp_threshold, _load_variable
+from shared import _apply_gpp_threshold
+from shared import _load_variable
 
 # set the properties of the lines used for hatching
 mpl.rcParams['hatch.color'] = 'yellow'
@@ -105,10 +106,7 @@ def _get_fig_config(diag_config):
         # define the range of data and masks
         'valrange_sc': (2, 256),
         'obs_global': 23,
-        'gpp_threshold': 10,  # gC m-2 yr -1
-        # name of the variable and unit
-        'varName': '$\\tau$',
-        'varUnit': 'yr',
+        'gpp_threshold': 0.01
     }
     # replace default values with those provided in recipe
     fig_config.update(diag_config.get('fig_config'))
@@ -537,7 +535,7 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
                            transform=ccrs.PlateCarree())
                 _fix_map(_ax)
             t_x = _fix_matrix_axes(row_m, col_m, models, nmodels, diag_config,
-             fig_config)
+                                   fig_config)
 
     # plot the colorbar for maps along the diagonal
     y_colo = fig_config['y0'] + fig_config['hp'] + fig_config['cb_off_y']
@@ -577,7 +575,8 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
                           rotation=0)
 
     # save and close the figure
-    png_name = 'global_matrix_map_{name}_{source_label}_{grid_label}.png'.format(name=all_mod_dat[models[col_m]]['grid'].long_name,
+    png_name = 'global_matrix_map_{name}_{source_label}_{grid_label}.png'.format(
+        name=all_mod_dat[models[col_m]]['grid'].long_name,
         source_label=diag_config['obs_info']['source_label'],
         grid_label=diag_config['obs_info']['grid_label'])
 
@@ -610,8 +609,8 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
     # agreement
     obs_var = diag_config.get('obs_variable')[0]
     tau_obs = all_obs_dat[obs_var]['grid'].data
-    tau_obs_5 = all_obs_dat[obs_var+'_5']['grid'].data
-    tau_obs_95 = all_obs_dat[obs_var+'_95']['grid'].data
+    tau_obs_5 = all_obs_dat[obs_var + '_5']['grid'].data
+    tau_obs_95 = all_obs_dat[obs_var + '_95']['grid'].data
 
     # set the information of the colormap used for plotting bias
     cb_info = _get_ratio_colorbar_info()
@@ -683,11 +682,11 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
                  linewidth=0.2,
                  transform=ccrs.PlateCarree())
 
-    title_str = ('multimodel bias and agreement (-)\n{title}, {source_label}'
-        .format(title=all_obs_dat['tau_ctotal']['grid'].long_name,
-                source_label=diag_config['obs_info']['source_label']))
-    plt.title(title_str,
-              fontsize=0.98 * fig_config['ax_fs'])
+    title_str = (
+        'multimodel bias and agreement (-)\n{title}, {source_label}'.format(
+            title=all_obs_dat['tau_ctotal']['grid'].long_name,
+            source_label=diag_config['obs_info']['source_label']))
+    plt.title(title_str, fontsize=0.98 * fig_config['ax_fs'])
 
     # plot colorbar using extraUtils
     _axcol_rat = [0.254, fig_config['y_colo_single'], 0.6, 0.035]

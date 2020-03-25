@@ -34,13 +34,11 @@ def _get_fig_config(diag_config):
     '''
     fig_config = {
         'fill_value': np.nan,
-        'multimodel': False,
-        'min_points_frac': 0.02,
         'ax_fs': 7.1,
         'valrange_x': (2, 1000),
         'valrange_y': (-70, 90),
-        'bandsize': 1.86,
-        'gpp_threshold': 10,  # gC m-2 yr -1
+        'bandsize': None,
+        'gpp_threshold': 0.01
     }
     fig_config.update(diag_config.get('fig_config'))
     return fig_config
@@ -60,7 +58,6 @@ def _apply_common_mask(dat_1, dat_2):
     dat_1 = np.ma.masked_invalid(dat_1)
     dat_2 = np.ma.masked_invalid(dat_2)
     return dat_1, dat_2
-
 
 def _get_zonal_tau(diag_config):
     '''
@@ -107,8 +104,12 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
     # get the interval of latitude and create array for partial correlation
     dat_lats = gpp.coord('latitude').points
     lat_int = abs(dat_lats[1] - dat_lats[0])
+
     # get the size of the sliding window based on the bandsize in degrees
-    window_size = max(2, math.ceil(fig_config['bandsize'] / lat_int))
+    if fig_config['bandsize'] is None:
+        window_size = 1
+    else:
+        window_size = max(2, np.round(fig_config['bandsize'] / (1.* lat_int)))
 
     gpp_zs = gpp.collapsed('longitude', iris.analysis.SUM)
     ctotal_zs = ctotal.collapsed('longitude', iris.analysis.SUM)
@@ -188,16 +189,14 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
     plt.ylim(fig_config['valrange_y'][0], fig_config['valrange_y'][1])
     plt.axhline(y=0, lw=0.48, color='grey')
     plt.xlabel(tau_obs.standard_name, fontsize=fig_config['ax_fs'])
-    plt.ylabel('{name} ({unit})'.format(name=lats_obs.long_name,
-                                        unit=lats_obs.units),
-               fontsize=fig_config['ax_fs'],
+    plt.ylabel('{name} ({unit})'.format(name=lats_obs.long_name,unit=lats_obs.units), fontsize=fig_config['ax_fs'],
                ma='center')
     xu.rem_axLine(['top', 'right'])
 
     png_name = '{title}_{source_label}_{grid_label}z.png'.format(
-        title=tau_obs.long_name,
-        source_label=diag_config['obs_info']['source_label'],
-        grid_label=diag_config['obs_info']['grid_label'])
+    title=tau_obs.long_name,
+    source_label=diag_config['obs_info']['source_label'],
+    grid_label=diag_config['obs_info']['grid_label'])
 
     plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
                 bbox_inches='tight',

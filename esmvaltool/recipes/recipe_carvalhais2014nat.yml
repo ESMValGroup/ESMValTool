@@ -26,7 +26,7 @@ datasets:
   - {dataset: IPSL-CM5A-MR, project: CMIP5, ensemble: r1i1p1}
   - {dataset: NorESM1-M, project: CMIP5, ensemble: r1i1p1}
   - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-  - {dataset: CCSM4, project: CMIP5, ensemble: r1i1p1}
+  # - {dataset: CCSM4, project: CMIP5, ensemble: r1i1p1}
   - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
 
 
@@ -48,7 +48,7 @@ obs_details: &obs_details
     # 'gr3': 2.812x2.813, CanESM2
     # 'gr4': 2.5x2.0, GFDL-ESM2G
     # 'gr5': 1.875x1.241, HadGEM2-ES
-    # 'gr6': 2.0x1.5, inmcm4
+    # 'gr6': 2.0x1.5, inmcm4    
     # 'gr7': 2.5x1.259, IPSL-CM5A-MR
     # 'gr8': 2.812x2.813, MIROC-ESM
     # 'gr9': 1.875x1.875, MPI-ESM-LR

@@ -19,8 +19,9 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # place your module imports here
 import extraUtils as xu
-from shared import _apply_gpp_threshold, _load_variable, _get_obs_data_zonal
-
+from shared import _apply_gpp_threshold
+from shared import _load_variable
+from shared import _get_obs_data_zonal
 
 # Classes and settings
 
@@ -39,7 +40,6 @@ def _get_fig_config(diag_config):
 
     fig_config = {
         'fill_value': np.nan,
-        'multimodel': False,
         'correlation_method': 'pearson',
         'min_points_frac': 0.125,
         # define the data and information for plotting ratios
@@ -47,7 +47,7 @@ def _get_fig_config(diag_config):
         'valrange_x': (-1, 1),
         'valrange_y': (-70, 90),
         'bandsize': 9.5,
-        'gpp_threshold': 0,  # gC m-2 yr -1
+        'gpp_threshold': 0.01
     }
     fig_config.update(diag_config.get('fig_config'))
     return fig_config
@@ -287,14 +287,15 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     lats_obs = all_obs_dat['latitude']
     obs_var = diag_config.get('obs_variable')[0]
     r_tau_ctotal_tas = all_obs_dat[obs_var]
-    r_tau_ctotal_tas_5 = all_obs_dat[obs_var+'_5']
-    r_tau_ctotal_tas_95 = all_obs_dat[obs_var+'_95']
+    r_tau_ctotal_tas_5 = all_obs_dat[obs_var + '_5']
+    r_tau_ctotal_tas_95 = all_obs_dat[obs_var + '_95']
     # plot the correlations from observation
 
     _fix_axis(obs_var, fig_config)
     plt.ylabel('{name}\n({unit})'.format(name=lats_obs.long_name,
                                          unit=lats_obs.units),
-               fontsize=fig_config['ax_fs'], ma='center')
+               fontsize=fig_config['ax_fs'],
+               ma='center')
 
     sp1.plot(r_tau_ctotal_tas.data,
              lats_obs.points,
@@ -313,8 +314,8 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     # get the observations out of the dictionary
     obs_var = diag_config.get('obs_variable')[1]
     r_tau_ctotal_pr = all_obs_dat[obs_var]
-    r_tau_ctotal_pr_5 = all_obs_dat[obs_var+'_5']
-    r_tau_ctotal_pr_95 = all_obs_dat[obs_var+'_95']
+    r_tau_ctotal_pr_5 = all_obs_dat[obs_var + '_5']
+    r_tau_ctotal_pr_95 = all_obs_dat[obs_var + '_95']
     _fix_axis(obs_var, fig_config)
 
     # plot the correlations from observation

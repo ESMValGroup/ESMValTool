@@ -1,37 +1,33 @@
 .. _recipe_carvalhais2014nat:
 
-Turnover time of carbon over land
-====================================================
+Turnover time of carbon over land ecosystems
+============================================
 
 Overview
 --------
 
-This recipe evaluates the following aspects of turnover time of carbon over
-land (tau_ctotal) as in `Carvalhais et al. (2014)` :
+This recipe evaluates the turnover time of carbon over 
+land ecosystems (tau_ctotal) based on the analysis of `Carvalhais et al. (2014)`. In summary, it provides an overview on:
 
-* Global distributions of tau_ctotal from all models against observations and
-  other models
-* Variation of tau_ctotal along the latitude (zonal distributions)
-* Variation of association of tau_ctotal and climate (zonal correlations)
+    * Comparisons of global distributions of tau_ctotal from all models against observation and other models
+    * Variation of tau_ctotal across latitude (zonal distributions)
+    * Variation of association of tau_ctotal and climate across latitude (zonal correlations)
+    * metrics of global tau_ctotal and correlations
 
-Additionally, metrics of global turnover times and correlations with
-observation are plotted over the maps/global distributions.
 
 .. _tau calculation:
 
 Calculation of turnover time
 ----------------------------
 
-First, the total carbon content over the land surface is calculated as,
+First, the total carbon content of land ecosystems is calculated as,
 .. math::
 
 {ctotal} =  {cSoil + cVeg}
 
-where :math:`cSoil` and :math:`cVeg` are the carbon content of the soil and
-vegetation over the land surface. **Note that this may be inconsistent with the
-original publication, as all the carbon pools which respired to the atmosphere
-were added up to calculate the total carbon content over land surface**.
-
+where :math:`cSoil` and :math:`cVeg` are the carbon contents in soil and 
+vegetation. **Note that this is not fully consistent with `Carvalhais et al. (2014)`, in which `ctotal` includes all carbon storages that 
+respire to the atmosphere. Due to inconsistency across models, it resulted in having different carbon storage components in calculation of ctotal for different models**.
 
 The turnover time of carbon is then calculated as,
 .. math::
@@ -39,10 +35,11 @@ The turnover time of carbon is then calculated as,
 \tau_{ctotal} =  \frac{ctotal}{gpp}
 
 
-where `gpp` is the gross primary productivity. **Note that the above equation
-is valid for steady state, and is only applicable when both the ctotal and gpp
-are long-term averages.** That is why the recipe includes the preprocessor for
-calculating the long term  averages from the monthly time series.
+where `ctotal` and `gpp` are temporal means of total carbon content and 
+gross primary productivity, respectively. **The equation
+is valid for steady state, and is only applicable when both ctotal and gpp
+are long-term averages.** Therefore, the recipe should always include the mean 
+operator of climate_statistics in preprocessor.
 
 
 Available recipes and diagnostics
@@ -64,114 +61,113 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-#. Observation related settings
+Observation-related details
+............................
 
-    * obs_data_subdir: 'data_ESMValTool_Carvalhais2014'
-    * source_label: 'Carvalhais2014'
-    * variant_label: 'BE'
-    * grid_label: 'gn'
-       *  'gr1': 2.812x2.813, bcc-csm1-1
-       *  'gr2': 1.25x0.937, CCSM4
-       *  'gr3': 2.812x2.813, CanESM2
-       *  'gr4': 2.5x2.0, GFDL-ESM2G
-       *  'gr5': 1.875x1.241, HadGEM2-ES
-       *  'gr6': 2.0x1.5, inmcm4
-       *  'gr7': 2.5x1.259, IPSL-CM5A-MR
-       *  'gr8': 2.812x2.813, MIROC-ESM
-       *  'gr9': 1.875x1.875, MPI-ESM-LR
-       *  'gr': 2.5x1.875, NorESM1-M
-    * frequency: 'fx'
+The settings needed for loading the observational dataset in all diagnostics are provided in the recipe through `obs_info` within `obs_details` section. 
 
-#. Preprocessor
+    * ``obs_data_subdir``: subdirectory of auxiliary_data_dir (set in 
+      config-user file) where observation data are stored {e.g., 
+      data_ESMValTool_Carvalhais2014}.
+    * ``source_label``: source data label {'Carvalhais2014'}.
+    * ``variant_label``: variant of the observation {'BE'} for best estimate.
+    * ``grid_label``: label denoting the spatial grid specification {'gn'}.
+    * ``frequency``: temporal frequency of the observation data {'fx'}
 
-   * ``climate_statistics``: mean over full time period
-   * ``regrid``: nearest neighbor regridding to the resolution of the
-     observation data
-   * ``mask_landsea``: mask out all the data points from sea
-   * ``multi_model_statistics``: calculate the multimodel median
+The observation data file used in the recipe should be changed through the 
+fields above, as these are used to generate observation file name and 
+locations. For details, see :ref:`observations` section. 
+
+Preprocessor
+............
+
+   * ``climate_statistics``: {mean} - calculate the mean over full time period.
+   * ``regrid``: {nearest} - nearest neighbor regridding to the selected 
+     observation resolution.
+   * ``mask_landsea``: {sea} - mask out all the data points from sea.
+   * ``multi_model_statistics``: {median} - calculate and include the 
+     multimodel median.
 
 
-#. Script land_carbon_cycle/diag_global_turnover.py
+Script land_carbon_cycle/diag_global_turnover.py
+................................................
 
   * Required settings:
-
-    * ``obs_variable``: list of the variables to be read from the observation
-      files
+ 
+    * ``obs_variable``: {``str``} list of the variable(s) to be read from the observation files
 
   * Optional settings:
 
-    * ``ax_fs``: fontsize for the figure (default: 7.1)
-    * ``fill_value``: fill value to be used in analysis (default: NaN)
-    * ``x0``: X - coordinate of the lower left corner of the matrix of maps
-      (between 0 and 1)
-    * ``y0``: Y - coordinate of the lower left corner of the matrix of maps
-      (between 0 and 1)
-    * ``wp``: width of each map
-    * ``hp``: height of each map
-    * ``xsp``: spacing betweeen maps in X - direction
-    * ``ysp``: spacing between maps in Y -direction
-    * ``aspect_map``: aspect of the map
-    * ``xsp_sca``: spacing between the scatter plots in X - direction
-    * ``ysp_sca``: spacing between the scatter plots in X - direction
-    * ``hcolo``: height of the colorbar (thickness for horizontal orientation)
-    * ``wcolo``: width of the colorbar (length)
-    * ``cb_off_y``: distance of colorbar from top the maps
-    * ``x_colo_d``: x-coordinate of the colorbar for maps along the diagonal
-    * ``x_colo_r``: x-coordinate of the colorbar for ratio maps above the
-      diagonal
-    * ``y_colo_single``: y-coordinate of the colorbar in the maps per model
-    * ``correlation_method``: correlation method to be used while calculating
-      the correlation displayed in the scatter plots ({spearman} | pearson)
-    * ``tx_y_corr``: relative y-coordinate of the text of correlation
-    * ``valrange_sc``: The range of values for x- and y- axes limits in the
-      scatterplot
-    * ``obs_global``: global turnover time, provided as additional info for the
-      map of the observation. {23}. For models, they are calculated by the
-      diagnostic.
-    * ``gpp_threshold``: The threshold of gpp in gC m-2 yr-1 for consideration
-      in the calculation. A default value of 10, as in the observation, is set.
+    * ``ax_fs``: {``float``, 7.1} - fontsize in the figure.
+    * ``fill_value``: {``float``, nan} - fill value to be used in analysis and plotting.
+    * ``x0``: {``float``, 0.02} - X - coordinate of the left edge of the figure. 
+    * ``y0``: {``float``, 1.0} Y - coordinate of the upper edge of the figure. 
+    * ``wp``: {``float``, 1 / number of models} - width of each map.
+    * ``hp``: {``float``, = wp} - height of each map.
+    * ``xsp``: {``float``, 0} - spacing betweeen maps in X - direction.
+    * ``ysp``: {``float``, -0.03} - spacing between maps in Y -direction.       
+      Negative to reduce the spacing below default.
+    * ``aspect_map``: {``float``, 0.5} - aspect of the maps.
+    * ``xsp_sca``: {``float``, wp / 1.5} - spacing between the scatter plots in X - direction.
+    * ``ysp_sca``: {``float``, hp / 1.5} - spacing between the scatter plots in Y - direction.
+    * ``hcolo``: {``float``, 0.0123} - height (thickness for horizontal orientation) of the colorbar .
+    * ``wcolo``: {``float``, 0.25} - width (length) of the colorbar.
+    * ``cb_off_y``: {``float``, 0.06158} - distance of colorbar from top of the maps.
+    * ``x_colo_d``: {``float``, 0.02} - X - coordinate of the colorbar for maps along the diagonal (left).
+    * ``x_colo_r``: {``float``, 0.76} - Y - coordinate of the colorbar for ratio maps above the diagonal (right).
+    * ``y_colo_single``: {``float``, 0.1086} - Y-coordinate of the colorbar in the maps per model (separate figures).
+    * ``correlation_method``: {``str``, spearman | pearson} - correlation method to be used while calculating the correlation displayed in the scatter plots.
+    * ``tx_y_corr``: {``float``, 1.075} - Y - coordinate of the inset text of correlation.
+    * ``valrange_sc``: {``tuple``, (2, 256)} - range of turnover times in X - and Y - axes of scatter plots.
+    * ``obs_global``: {``float``, 23} - global turnover time, provided as additional info for map of the observation.  For models, they are calculated within the diagnostic.
+    * ``gpp_threshold``: {``float``, 0.01} - The threshold of gpp in `kg m^{-2} yr^{-1}` below which the grid cells are masked. 
 
-#. Script land_carbon_cycle/diag_zonal_turnover.py
+
+Script land_carbon_cycle/diag_zonal_turnover.py
+...............................................
 
   * Required settings:
 
-    * ``obs_variable``: list of the variables to be read from the observation
-      files
+    * ``obs_variable``: {``str``} list of the variable(s) to be read from the observation files
 
   * Optional settings:
 
-    * ``ax_fs``: fontsize for the figure (default 7.1)
-    * ``multimodel``: False
-    * ``fill_value``: fill value to be used in analysis (default``: NaN)
-    * ``min_points_frac``:
-    * ``valrange_x``: (2, 256)
-    * ``valrange_y``: (2, 256)
-    * ``bandsize``: 1.0
-    * ``gpp_threshold``: 10  in gC m-2 yr -1
+    * ``ax_fs``: {``float``, 7.1} - fontsize in the figure.
+    * ``fill_value``: {``float``, nan} - fill value to be used in analysis and plotting.
+    * ``valrange_x``: {``tuple``, (2, 1000)} - range of turnover values in the 
+      X - axis.
+    * ``valrange_y``: {``tuple``, (-70, 90)} - range of latitudes in the Y - 
+      axis.
+    * ``bandsize``: {``float``, 9.5} - size of the latitudinal rolling window in degrees. One latitude row if set to ``None``.
+    * ``gpp_threshold``: {``float``, 0.01} - The threshold of gpp in `kg m^{-2} yr^{-1}` below which the grid cells are masked. 
 
 
-#. Script land_carbon_cycle/diag_zonal_correlation.py
+Script land_carbon_cycle/diag_zonal_correlation.py
+..................................................
 
   * Required settings:
 
-    * ``obs_variable``: list of the variables to be read from the observation
-      files
+    * ``obs_variable``: {``str``} list of the variable(s) to be read from the observation files
 
   * Optional settings:
 
-    * ``ax_fs``: fontsize for the figure (default 7.1)
-    * ``multimodel``: False
-    * ``fill_value``: fill value to be used in analysis (default: NaN)
-    * ``correlation_method``: 'spearman'
-    * ``min_points_frac``:
-    * ``valrange_x``: (2, 256)
-    * ``valrange_y``: (2, 256)
-    * ``bandsize``: 1.0
-    * ``gpp_threshold``: 10  #gC m-2 yr -1
-
-
-Variables
----------
+    * ``ax_fs``: {``float``, 7.1} - fontsize in the figure.
+    * ``fill_value``: {``float``, nan} - fill value to be used in analysis and 
+      plotting.
+    * ``correlation_method``: {``str``, pearson | spearman} - correlation 
+      method to be used while calculating the zonal correlation.
+    * ``min_points_frac: {``float``, 0.125} - minimum fraction of valid points 
+      within the latitudinal band for calculation of correlation.
+    * ``valrange_x``: {``tuple``, (-1, 1)} - range of correlation values in the 
+      X - axis.
+    * ``valrange_y``: {``tuple``, (-70, 90)} - range of latitudes in the Y - 
+      axis.
+    * ``bandsize``: {``float``, 9.5} - size of the latitudinal rolling window in degrees. One latitude row if set to ``None``.
+    * ``gpp_threshold``: {``float``, 0.01} - The threshold of gpp in `kg m^{-2} yr^{-1}` below which the grid cells are masked. 
+ 
+ 
+Required Variables
+------------------
 
 * *tas* (atmos, monthly, longitude, latitude, time)
 * *pr* (atmos, monthly, longitude, latitude, time)
@@ -179,19 +175,78 @@ Variables
 * *cVeg* (land, monthly, longitude, latitude, time)
 * *cSoil* (land, monthly, longitude, latitude, time)
 
+.. _observations:
 
 Observations
 ------------
 
-The observations needed in the diagnostics are publicly available for download
-from the .. _Data Portal of the Max Planck Institute for Biogeochemistry:
-https://www.bgc-jena.mpg.de/geodb/projects/Home.php.
+The observations needed in the diagnostics are publicly available for download 
+from the .. _Data Portal of the Max Planck Institute for Biogeochemistry: 
+http://www.bgc-jena.mpg.de/geodb/BGI/tau4ESMValTool.php after registration. 
 
-Due to inherent dependence of the diagnostic on the uncertainty estimates,
-the data needed for each diagnostic script are provided as preprocessed netCDF
-files.
+Due to inherent dependence of the diagnostic on uncertainty estimates in observation, the data needed for each diagnostic script are processed at 
+different spatial resolutions (as in Carvalhais et al., 2014), and provided in 
+11 different resolutions (see Table 1). 
+
+Table 1. A summary of the observation datasets at different resolutions. 
+
++-------------+---------------+-------------+ 
+| Reference   | target_grid   | grid_label* | 
++=============+===============+=============+ 
+| Observation |     0.5x0.5   | gn          | 
++-------------+---------------+-------------+ 
+| NorESM1-M   |   2.5x1.875   | gr          | 
++-------------+---------------+-------------+ 
+| bcc-csm1-1  | 2.812x2.813   | gr1         | 
++-------------+---------------+-------------+ 
+| CCSM4       |   1.25x0.937  | gr2         | 
++-------------+---------------+-------------+ 
+| CanESM2     | 2.812x2.813   | gr3         | 
++-------------+---------------+-------------+ 
+| GFDL-ESM2G  |   2.5x2.0     | gr4         | 
++-------------+---------------+-------------+ 
+| HadGEM2-ES  | 1.875x1.241   | gr5         | 
++-------------+---------------+-------------+ 
+| inmcm4      |   2.0x1.5     | gr6         | 
++-------------+---------------+-------------+ 
+| IPSL-CM5A-MR|   2.5x1.259   | gr7         | 
++-------------+---------------+-------------+ 
+| MIROC-ESM   | 2.812x2.813   | gr8         | 
++-------------+---------------+-------------+ 
+| MPI-ESM-LR  | 1.875x1.875   | gr9         | 
++-------------+---------------+-------------+ 
+
+\* The grid_label is suffixed with z for data in zonal/latitude coordinates: the zonal turnover and zonal correlation.
+
+**To change the spatial resolution of the evaluation, change {grid_label} in 
+obs_details and the corresponding {target_grid} in regrid preprocessor of the 
+recipe**.
 
 
+At each spatial resolution, four data files are provided:
+
+  * ``tau_ctotal_fx_Carvalhais2014_BE_gn.nc`` - global data of tau_ctotal
+  * ``tau_ctotal_fx_Carvalhais2014_BE_gnz.nc`` - zonal data of tau_ctotal
+  * ``r_tau_ctotal_tas_fx_Carvalhais2014_BE_gnz.nc`` - zonal correlation of 
+    tau_ctotal and tas, controlled for pr
+  * ``r_tau_ctotal_pr_fx_Carvalhais2014_BE_gnz.nc`` - zonal correlation of 
+    tau_ctotal 
+    and pr, controlled for tas.
+
+The data is produced in obs4MIPs standards, and provided in netCDF4 format. 
+The filenames use the convention:
+
+``{variable}_{frequency}_{source_label}_{variant_label}_{grid_label}.nc``
+
+  * {variable}: variable name, set in every diagnostic script as obs_variable
+  * {frequency}: temporal frequency of data, set from obs_details
+  * {source_label}: observational source, set from obs_details
+  * {variant_label}: observation variant, set from obs_details
+  * {grid_label}: temporal frequency of data, set from obs_details
+
+Refer to .. _Obs4MIPs Data Specifications: https://esgf-node.llnl.gov/site_media/projects/obs4mips/ODSv2p1.pdf for details of the definitions above.
+
+All data variables have additional variables ({variable}_5 and {variable}_95) in the same file. These variables are necessary for a successful execution of the diagnostics.
 
 References
 ----------
@@ -205,17 +260,23 @@ Example plots
 -------------
 
 .. _fig_carvalhais2014nat_1:
-.. figure:: /recipes/figures/carvalhais2014nat/comparison_zonal_pearson_correlation_turnovertime_climate_Carvalhais2014.png
+.. figure:: /recipes/figures/carvalhais2014nat/ 
+          comparison_zonal_pearson_correlation_turnovertime_climate_Carvalhais20
+          14.png
    :align: center
    :width: 80%
 
-   Time series of global net biome productivity (NBP) over the period
-   1901-2005. Similar to Anav et al.  (2013), Figure 5.
-
+   Comparison of latitudinal (zonal) variations of pearson correlation between 
+   turnover time and climate: turnover time and precipitation, controlled for 
+   temperature (left) and vice-versa (right).
+   
 .. _fig_carvalhais2014nat_2:
-.. figure:: /recipes/figures/carvalhais2014nat/global_comparison_matrix_models_Carvalhais2014.png
+
+.. figure:: /recipes/figures/carvalhais2014nat/ 
+          global_comparison_matrix_models_Carvalhais2014.png
    :align: center
    :width: 80%
 
-   Seasonal cycle plot for nothern hemisphere gross primary production (GPP)
-   over the period 1986-2005. Similar to Anav et al. (2013), Figure 9.
+   Comparison of observation-based and modelled ecosystem carbon turnover time. 
+   Along the diagnonal, tau_ctotal are plotted, above the bias, and below 
+   density plots. The inset text in density plots indicate the correlation.
