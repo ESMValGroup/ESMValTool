@@ -62,13 +62,7 @@ library(tools)
 library(yaml)
 library(ncdf4)
 
-# get path to script and source subroutines (if needed)
-#args <- commandArgs(trailingOnly = FALSE)
-#spath <- paste0(dirname(unlist(strsplit(
-#  grep("--file", args,
-#    value = TRUE
-#  ), "="
-#))[2]), "/")
+# get path to script and source subroutines
 diag_scripts_dir <- Sys.getenv("diag_scripts")
 spath <- paste0(diag_scripts_dir, "/", "hyint", "/")
 
@@ -279,7 +273,7 @@ if (write_plots) {
 for (fname in names(prov_info)) {
   xprov <-
     list(
-      ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
+      ancestors = prov_info[[fname]]$ancestors,
       authors = list("arnone_enrico", "vonhardenberg_jost"),
       references = list("giorgi11jc", "giorgi14jgr"),
       projects = list("c3s-magic"),

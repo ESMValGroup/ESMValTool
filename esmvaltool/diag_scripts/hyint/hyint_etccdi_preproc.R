@@ -57,9 +57,8 @@ hyint_etccdi_preproc <-
     unlink(c(etccdi_files_tmp, hyint_file_tmp, hyint_file_tmp_sel))
 
     # Update provenance with etccdi files
-    if (is.na(match(model_idx, prov_info[[hyint_file]]$model_idx))) {
-          prov_info[[hyint_file]]$ancestors <-
-        c(prov_info[[hyint_file]]$ancestors, etccdi_files_tmp)
-    }
+    prov_info[[hyint_file]]$ancestors <-
+          c(prov_info[[hyint_file]]$ancestors, etccdi_files)
+
     return(prov_info)
   }
