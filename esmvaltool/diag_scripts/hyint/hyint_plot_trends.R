@@ -573,7 +573,7 @@ hyint_plot_trends <- function(work_dir, # nolint
                 figname = figname,
                 caption = caption,
                 model_idx = list(model_idx),
-                ancestors = list(infile)
+                ancestors = infile
               )
               prov_info[[figname]] <- prov_fig_now
             }
@@ -833,7 +833,7 @@ hyint_plot_trends <- function(work_dir, # nolint
           figname = figname,
           caption = caption,
           model_idx = list(model_idx),
-          ancestors = list(infile)
+          ancestors = infile
         )
         prov_info[[figname]] <- prov_fig_now
       }

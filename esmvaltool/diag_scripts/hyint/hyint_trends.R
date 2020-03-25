@@ -314,8 +314,13 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
     " according to ",
     models_name[model_idx]
   )
+
+  ancs <- list(infile)
+  if (length(infile) == 1) {
+    ancs <- infile
+  }  
   xprov <- list(
-    ancestors = list(infile),
+    ancestors = ancs,
     model_idx = list(model_idx),
     caption = caption
   )
