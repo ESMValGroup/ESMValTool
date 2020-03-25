@@ -94,7 +94,6 @@ begin
   set_default_att(diag_script_info, "e06fig05a_multimean", False)
 
   seasons = diag_script_info@e06fig05a_month
-  print(seasons)
   month_names = \
     (/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", \
       "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"/)
@@ -141,13 +140,19 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
 end
 
 begin
 
   aux_title_info = ""
-  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05_" + var0)
-  output_filename = wks@fullname
+  ;wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05a_" + var0)
+  ;output_filename = wks@fullname
   nPanel = dimsizes(seasons)
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))
@@ -189,29 +194,29 @@ begin
       A0 = read_data(info0[imod])
 
       printVarSummary(A0)
-      if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then
-        dummy1 = \
-          area_operations(A0(time|:, plev|:, lat|:, lon|:), \
-                          latrange(ipan, 0), \
-                          latrange(ipan, 1), 0., 360., \
-                          "average", True)
-        coslat   = cos(A0&lat * rad)
-        coslat!0 = "lat"
-        coslat&lat = A0&lat
-        delete(coslat)
-        delete(A0)
-      else
-        if(all(isdim(A0, (/"time", "plev", "lat"/)))) then
-          coslat   = cos(A0&lat * rad)
-          coslat!0 = "lat"
-          coslat&lat = A0&lat
-          dummy1 = \
-            dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), \
-                             coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
-          delete(coslat)
-          delete(A0)
-        end if
-      end if
+      ; if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then
+        ; dummy1 = \
+          ; area_operations(A0(time|:, plev|:, lat|:, lon|:), \
+                          ; latrange(ipan, 0), \
+                          ; latrange(ipan, 1), 0., 360., \
+                          ; "average", True)
+        ; coslat   = cos(A0&lat * rad)
+        ; coslat!0 = "lat"
+        ; coslat&lat = A0&lat
+        ; delete(coslat)
+        ; delete(A0)
+      ; else
+        ; if(all(isdim(A0, (/"time", "plev", "lat"/)))) then
+      coslat   = cos(A0&lat * rad)
+      coslat!0 = "lat"
+      coslat&lat = A0&lat
+      dummy1 = \
+        dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), \
+                        coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
+      delete(coslat)
+      delete(A0)
+        ; end if
+      ; end if
       if (seasons(ipan).ne."ANN") then
         dummy2 = time_operations(dummy1, year_start, year_end, \
                                  "extract", seasons(ipan), True)
@@ -306,6 +311,8 @@ begin
   end if
 
   ; Plotting
+  plotpath = config_user_info@plot_dir + "eyring06f05a_" + var0
+  wks = gsn_open_wks(file_type, plotpath)
   do ipanel = 0, dimsizes(seasons) - 1
     res = True
     res@gsnDraw = False

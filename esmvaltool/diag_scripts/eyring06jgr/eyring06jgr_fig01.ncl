@@ -270,8 +270,9 @@ begin
   ; Plotting
   plotpath = config_user_info@plot_dir + "eyring06f01_" + var0
   wks = gsn_open_wks(file_type, plotpath)
-  plotpath1 = config_user_info@plot_dir + "eyring06f01_legend" + var0
-  wks1 = gsn_open_wks(file_type, plotpath)
+  wks@legendfile = plotpath + "_legend"
+  ;plotpath1 = config_user_info@plot_dir + "eyring06f01_legend" + var0
+  ;wks1 = gsn_open_wks(file_type, plotpath)
   
   do ipanel = 0, nseasons - 1
     res = True
@@ -349,9 +350,10 @@ begin
 
   if (dimsizes(plotMod).gt.21) then
     pos_leg = "0.9"
-    add_legend(wks1, plotMod, plotColor, tofloat(plotDash), \
+    add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
                LineScatters, plotThicks, pos_leg)
-    frame(wks1)
+    ;frame(wks1)
+    frame(wks)
   else
     pos_leg = "0.2"
     add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
@@ -366,9 +368,9 @@ begin
     ; pos_leg = "0.9"
   ; end if
 
-  add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-             LineScatters, plotThicks, pos_leg)
-  frame(wks)
+  ; add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
+             ; LineScatters, plotThicks, pos_leg)
+  ; frame(wks)
 
   nc_filename = config_user_info@work_dir + "eyring06f01_" + var0 + ".nc"
   Xdata@var = var0

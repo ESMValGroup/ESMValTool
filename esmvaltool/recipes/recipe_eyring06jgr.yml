@@ -39,39 +39,39 @@ datasets:
 # was test case     
   - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1960, end_year: 2005}
-  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
+  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
 # was test case     
   - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
      ensemble: r1i1p1, start_year: 1960, end_year: 2005}  
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
-  - {dataset: MRI-ESM1, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1980, end_year: 2005}
+  # - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
+  # - {dataset: MRI-ESM1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     # start_year: 1980, end_year: 2005}
 
 preprocessors:
 
@@ -347,7 +347,8 @@ diagnostics:
       - atmos
     variables:
       tro3:
-        preprocessor: regrid_interp_lev
+        #preprocessor: regrid_interp_lev
+        preprocessor: regrid_interp_lev_zonal
         reference_dataset: HALOE
         mip: Amon
     additional_datasets:

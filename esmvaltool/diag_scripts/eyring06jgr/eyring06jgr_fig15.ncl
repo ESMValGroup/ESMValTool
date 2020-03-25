@@ -175,14 +175,14 @@ begin
   Xref!2 = "stat"
   Xref&years = years
 
-  cytmpData = new((/dim_MOD + dim_OBS, nPanel, 366, 2/), "double")
+  cytmpData = new((/dim_MOD + dim_OBS, nPanel, 366, 2/), "float")
   cytmpData!0 = "line"
   cytmpData!1 = "season"
   cytmpData!2 = "day"
   cytmpData!3 = "stat"
   cytmpData&day = ispan(1, 366, 1)
 
-  cyXdata = new((/dimTot, nPanel, 366, 2/), "double")
+  cyXdata = new((/dimTot, nPanel, 366, 2/), "float")
   cyXdata!0 = "line"
   cyXdata!1 = "season"
   cyXdata!2 = "day"
