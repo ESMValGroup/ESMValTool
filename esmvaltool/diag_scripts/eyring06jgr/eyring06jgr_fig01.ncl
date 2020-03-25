@@ -176,14 +176,6 @@ begin
       ; Extract data
       A0 = read_data(info0[imod])
 
-      ; Temporary workaround due to ESMValCore/issues/577
-      if (typeof(A0).ne."float") then
-        tmp = tofloat(A0)
-        copy_VarMeta(A0, tmp)
-        A0 := tmp
-        delete(tmp)
-      end if
-
       ; Select latitude range
       coslat = cos(A0&lat * rad)
       coslat!0 = "lat"
