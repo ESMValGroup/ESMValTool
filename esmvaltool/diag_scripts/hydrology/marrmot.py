@@ -79,6 +79,18 @@ def _get_extra_info(cube):
     return time_start_end, lat_lon
 
 
+def fix_era5_time_coordinate(cube):
+    """Shift instantaneous variables 30 minutes forward in time.
+
+    After this shift, as an example:
+    time format [1990, 1, 1, 11, 30, 0] will be [1990, 1, 1, 12, 0, 0].
+    For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
+    """
+    time = cube.coord(axis='T')
+    time.points = time.points + 1 / 48
+    return cube
+
+
 def main(cfg):
     """Process data for use as input to the marrmot hydrological model.
 
@@ -92,6 +104,11 @@ def main(cfg):
     input_metadata = cfg['input_data'].values()
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
+
+        # Fix time coordinate of ERA5 instantaneous variables
+        if dataset == 'ERA5':
+            fix_era5_time_coordinate(all_vars['psl'])
+            fix_era5_time_coordinate(all_vars['tas'])
 
         # Processing variables and unit conversion
         # Unit of the fluxes in marrmot should be in kg m-2 day-1 (or mm/day)
