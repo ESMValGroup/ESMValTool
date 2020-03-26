@@ -88,6 +88,8 @@ def fix_era5_time_coordinate(cube):
     """
     time = cube.coord(axis='T')
     time.points = time.points + 1 / 48
+    time.bounds = None
+    time.guess_bounds()
     return cube
 
 
