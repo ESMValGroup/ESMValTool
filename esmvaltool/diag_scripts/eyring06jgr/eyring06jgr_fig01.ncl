@@ -79,7 +79,6 @@ begin
 
   ; Set default values for optional diag_script_info attributes
   set_default_att(diag_script_info, "season", "ANN")
-  set_default_att(diag_script_info, "styleset", "CMIP5")
   set_default_att(diag_script_info, "latmin", -90.)
   set_default_att(diag_script_info, "latmax", 90.)
   set_default_att(diag_script_info, "Xmin", -30.)
@@ -91,6 +90,7 @@ begin
   set_default_att(diag_script_info, "end_year", min(y2))
 
   seasons = diag_script_info@season
+  styleset = diag_script_info@styleset
   nseasons = dimsizes(seasons)
   latrange = new((/nseasons, 2/), "float")
   latrange(:, 0) = diag_script_info@latmin
@@ -262,10 +262,9 @@ begin
   ; Plotting
   plotpath = config_user_info@plot_dir + "eyring06f01_" + var0
   wks = gsn_open_wks(file_type, plotpath)
-  wks@legendfile = plotpath + "_legend"
-  ;plotpath1 = config_user_info@plot_dir + "eyring06f01_legend" + var0
-  ;wks1 = gsn_open_wks(file_type, plotpath)
-  
+  plotpath1 = config_user_info@plot_dir + "eyring06f01_legend_" + var0
+  wks1 = gsn_open_wks(file_type, plotpath1)
+
   do ipanel = 0, nseasons - 1
     res = True
     res@gsnDraw = False
@@ -340,29 +339,11 @@ begin
     gsn_panel(wks, plot_d, (/1, 1/), Pres)
   end if
 
-  if (dimsizes(plotMod).gt.21) then
-    pos_leg = "0.9"
-    add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-               LineScatters, plotThicks, pos_leg)
-    ;frame(wks1)
-    frame(wks)
-  else
-    pos_leg = "0.2"
-    add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-               LineScatters, plotThicks, pos_leg)
-    frame(wks)
-  end if
-  
-  ; pos_leg= "0.2"
-
-  ; if (dimsizes(plotMod).gt.21) then
-    ; frame(wks)
-    ; pos_leg = "0.9"
-  ; end if
-
-  ; add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-             ; LineScatters, plotThicks, pos_leg)
-  ; frame(wks)
+  pos_leg = "0.9"
+  add_legend(wks1, plotMod, plotColor, tofloat(plotDash), \
+             LineScatters, plotThicks, pos_leg)
+  frame(wks1)
+  frame(wks)
 
   nc_filename = config_user_info@work_dir + "eyring06f01_" + var0 + ".nc"
   Xdata@var = var0
