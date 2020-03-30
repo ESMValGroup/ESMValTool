@@ -127,6 +127,7 @@ def _load_pcraster_dem(filename):
     )
     lon_size, lat_size = dataset.RasterXSize, dataset.RasterYSize
     data = dataset.ReadAsArray()
+    data = np.ma.masked_less(data, -1e8)
     dataset = None
 
     lons = lon_offset + lon_step * (np.arange(lon_size) + 0.5)
