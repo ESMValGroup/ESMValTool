@@ -79,7 +79,7 @@ def _get_extra_info(cube):
     return time_start_end, lat_lon
 
 
-def fix_era5_time_coordinate(cube):
+def shift_era5_time_coordinate(cube):
     """Shift instantaneous variables 30 minutes forward in time.
 
     After this shift, as an example:
