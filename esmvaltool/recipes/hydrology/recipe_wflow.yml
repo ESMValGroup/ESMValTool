@@ -13,15 +13,12 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  rough_cutout_fx: &cutout
+  rough_cutout:
     extract_region: &region
       start_longitude: -0.75
       end_longitude: 6.75
       start_latitude: 47.25
       end_latitude: 52.5
-  rough_cutout:
-      regrid_time: null
-      <<: *cutout
 
 diagnostics:
   wflow_daily:
@@ -32,7 +29,7 @@ diagnostics:
     variables:
       orog:
         mip: fx
-        preprocessor: rough_cutout_fx
+        preprocessor: rough_cutout
       tas: &daily_var
         mip: day
         preprocessor: rough_cutout
