@@ -79,7 +79,7 @@ def _get_extra_info(cube):
     return time_start_end, lat_lon
 
 
-def shift_era5_time_coordinate(cube):
+def _shift_era5_time_coordinate(cube):
     """Shift instantaneous variables 30 minutes forward in time.
 
     After this shift, as an example:
@@ -87,7 +87,7 @@ def shift_era5_time_coordinate(cube):
     For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
     """
     time = cube.coord(axis='T')
-    time.points = time.points + 1 / 48
+    time.points = time.points + 30 / (24 * 60)
     time.bounds = None
     time.guess_bounds()
     return cube
@@ -109,8 +109,8 @@ def main(cfg):
 
         # Fix time coordinate of ERA5 instantaneous variables
         if dataset == 'ERA5':
-            fix_era5_time_coordinate(all_vars['psl'])
-            fix_era5_time_coordinate(all_vars['tas'])
+            shift_era5_time_coordinate(all_vars['psl'])
+            shift_era5_time_coordinate(all_vars['tas'])
 
         # Processing variables and unit conversion
         # Unit of the fluxes in marrmot should be in kg m-2 day-1 (or mm/day)
