@@ -19,7 +19,7 @@ attributes:
 
 # Variables to cmorize
 variables:
-  co2_surface:
+  co2s:
     mip: Amon
     add_aux_coords:
       air_pressure: [0, 1, 2, 3]

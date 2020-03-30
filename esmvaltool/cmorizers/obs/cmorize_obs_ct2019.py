@@ -14,7 +14,7 @@ Download and processing instructions
     ``$RAWOBSPATH`` is given by your user configuration file) where the raw
     data will be stored. The download of the data is automatically handled by
     this script. If data is already present in this directory, the download is
-    skipped (to force download delete old files, first).
+    skipped (to force a new download delete your old files).
 
 """
 
@@ -157,7 +157,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     _add_aux_coords(cube, input_files, var.get('add_aux_coords', {}))
 
     # Variable specific operations
-    if short_name == 'co2_surface':
+    if short_name == 'co2s':
         cube = cube[:, 0, :, :]
         cube.remove_coord('level')
 
