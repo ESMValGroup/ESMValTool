@@ -194,18 +194,18 @@ def extract_doi_value(tag):
     """Extract doi from a bibtex entry."""
     reference_doi = 'doi not found'
     pattern = r'doi\ = {(.*?)\},'
-    if REFERENCES_PATH:
-        bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
-        if bibtex_file.is_file():
-            reference_entry = bibtex_file.read_text()
-        else:
-            logger.warning(
-                'The reference file %s does not exist.', bibtex_file
-            )
-        if re.search("doi", reference_entry):
-            reference_doi = (
-                f'doi:{re.search(pattern, reference_entry).group(1)}'
-            )
+
+    bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
+    if bibtex_file.is_file():
+        reference_entry = bibtex_file.read_text()
+    else:
+        logger.warning(
+            'The reference file %s does not exist.', bibtex_file
+        )
+    if re.search("doi", reference_entry):
+        reference_doi = (
+            f'doi:{re.search(pattern, reference_entry).group(1)}'
+        )
     return reference_doi
 
 
