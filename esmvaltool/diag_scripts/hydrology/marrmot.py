@@ -109,8 +109,8 @@ def main(cfg):
 
         # Fix time coordinate of ERA5 instantaneous variables
         if dataset == 'ERA5':
-            shift_era5_time_coordinate(all_vars['psl'])
-            shift_era5_time_coordinate(all_vars['tas'])
+            _shift_era5_time_coordinate(all_vars['psl'])
+            _shift_era5_time_coordinate(all_vars['tas'])
 
         # Processing variables and unit conversion
         # Unit of the fluxes in marrmot should be in kg m-2 day-1 (or mm/day)
