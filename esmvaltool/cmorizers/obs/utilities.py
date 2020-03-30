@@ -183,13 +183,6 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
 
-def cite_tag_value(tags):
-    """Convert tags to doi."""
-    reference_dois = [extract_doi_value(tag) for tag in [tags]]
-    reference_dois = '\n'.join(reference_dois)
-    return reference_dois
-
-
 def extract_doi_value(tag):
     """Extract doi from a bibtex entry."""
     reference_doi = 'doi not found'
@@ -230,7 +223,7 @@ def set_global_atts(cube, attrs):
             'source':
             attrs.pop('source'),
             'reference':
-            cite_tag_value(attrs.pop('reference')),
+            extract_doi_value(attrs.pop('reference')),
             'comment':
             attrs.pop('comment'),
             'user':
