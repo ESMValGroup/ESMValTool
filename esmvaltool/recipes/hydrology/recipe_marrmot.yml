@@ -16,7 +16,7 @@ preprocessors:
   daily: &daily
     extract_shape:
       # Lumped model: needs catchment-aggregated input data
-      shapefile: Meuse/meuse.shp  # In aux (config-user.yml)
+      shapefile: Meuse/Meuse.shp  # In aux (config-user.yml)
       method: contains
       crop: true
 
@@ -42,4 +42,4 @@ diagnostics:
     scripts:
       script:
         script: hydrology/marrmot.py
-        basin: meuse
+        basin: Meuse
