@@ -61,7 +61,7 @@ User settings in recipe
 
 #. recipe_marrmot.yml
 
-   There are two diagnostics, one for daily and one for hourly data.
+   There is one diagnostic ``diagnostic_daily`` for using daily data.
 
    *Required preprocessor settings:*
 
@@ -69,13 +69,9 @@ User settings in recipe
 
       *extract_shape:*
 
-         * shapefile: meuse_hydrosheds.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
+         * shapefile: Meuse.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
          * method: contains
          * crop: true
-
-      *daily_statistics:*
-
-         * operator: mean (MARRMoT needs daily forcing data. Hourly forcing data are converted to daily values by mean operator).
 
    *Required diagnostic script settings:*
 
@@ -103,9 +99,9 @@ User settings in recipe
    * start_year: 1979
    * end_year: 1979
    * shapefile: Meuse_HYPE.shp (expects shapefile with subcatchments)
-   
+
    These settings should not be changed
-   
+
    * method: contains
    * decomposed: true
 
