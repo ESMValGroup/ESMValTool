@@ -45,3 +45,4 @@ or
 
 -  *subscribe esmvaltool YOUR_FIRSTNAME YOUR_LASTNAME*
 
+The mailing list also has an `online public archive <https://www.listserv.dfn.de/sympa/arc/esmvaltool>`_.
