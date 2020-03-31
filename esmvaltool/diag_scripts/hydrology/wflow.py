@@ -196,6 +196,7 @@ def shift_era5_time_coordinate(cube, shift=30):
     time.guess_bounds()
     return cube
 
+
 def main(cfg):
     """Process data for use as input to the wflow hydrological model."""
     input_metadata = cfg['input_data'].values()
