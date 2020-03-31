@@ -18,6 +18,7 @@ def config_user(tmp_path):
     cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
     cfg['auxiliary_data_dir'] = str(tmp_path / 'auxiliary_data_dir')
+    cfg['check_level'] = esmvalcore.cmor.check.CheckLevels['DEFAULT']
     return cfg
 
 
