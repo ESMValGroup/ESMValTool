@@ -22,7 +22,7 @@
 ;    function lat_names
 ;    procedure add_line
 ;    procedure add_scatt
-;    procedure add_legenda
+;    procedure add_legend
 ;    function calcRegCoeffs
 ;    function genZonalMeans
 ;    function calcMeanAnnCycleMonthly
@@ -1141,8 +1141,8 @@ begin
 end
 
 ; #############################################################################
-undef("add_legenda")
-procedure add_legenda(wks,
+undef("add_legend")
+procedure add_legend(wks,
                       model:string,
                       colors:string,
                       dashs:numeric,
