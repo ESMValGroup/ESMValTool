@@ -86,8 +86,8 @@ Have a look at the example NCL diagnostic in ``esmvaltool/diag_scripts/examples/
 
 Adding references
 =================
-Recipe and diagnostic script can include references.
-When ESMValCore (the ``esmvaltool`` command) runs a recipe, it will store citation information in `BibTeX <https://en.wikipedia.org/wiki/BibTeX>`__ format.
+Recipes and diagnostic scripts can include references.
+When a recipe is run, citation information is stored in `BibTeX <https://en.wikipedia.org/wiki/BibTeX>`__ format.
 Follow the steps below to add a reference to a recipe (or a diagnostic):
 
 -  make a ``tag`` that is representative of the reference entry.
