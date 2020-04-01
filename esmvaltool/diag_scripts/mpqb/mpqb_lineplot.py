@@ -26,6 +26,7 @@ dataset_plotnames = {
   'cds-era5-monthly' : 'ERA5',
   'MERRA2' : 'MERRA-2',
   'cds-satellite-lai-fapar' : 'SPOT-VGT',
+  'CDS-SATELLITE-ALBEDO' : 'SPOT-VGT',    
 }
 
 

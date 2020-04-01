@@ -110,8 +110,8 @@ bdalb:
   theilsenmk:
     title: theilsen
     cmap: BrBG
-    vmin: -0.05
-    vmax: 0.05
+    vmin: -0.01
+    vmax: 0.01
   timemean:
     title: timemean
     cmap: YlOrBr
