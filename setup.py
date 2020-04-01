@@ -30,7 +30,7 @@ REQUIREMENTS = {
         'cython',
         'ecmwf-api-client',
         'eofs',
-        'esmvalcore>=2.0.0b8,<2.1',
+        'esmvalcore>=2.0.0b9,<2.1',
         'fiona',
         'jinja2',
         'matplotlib<3',
@@ -62,7 +62,7 @@ REQUIREMENTS = {
         'pytest-cov',
         'pytest-env',
         'pytest-flake8',
-        'pytest-html',
+        'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
     ],
     # Development dependencies
