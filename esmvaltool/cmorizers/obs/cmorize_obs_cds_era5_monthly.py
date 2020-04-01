@@ -129,8 +129,12 @@ def _extract_variable(in_file, var, cfg, out_dir):
         'days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     # Convert units if required
-    cube.convert_units(definition.units)
-
+    try:
+        cube.convert_units(definition.units)
+    except iris.exceptions.UnitConversionError:
+        logger.warning("Can not automatically convert units. Change units without conversion, check if this is fine.")
+        cube.units = definition.units
+            
     # Set global attributes
     utils.set_global_atts(cube, attributes)
 
