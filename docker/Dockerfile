@@ -14,7 +14,8 @@ WORKDIR /source
 
 # install environment packages
 
-RUN conda install -c conda-forge -c esmvalgroup esmvaltool
+RUN conda env update -n base environment.yml
+RUN conda install julia
 RUN pip install .
 RUN Rscript esmvaltool/install/R/setup.R
 RUN julia esmvaltool/install/Julia/setup.jl
