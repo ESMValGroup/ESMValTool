@@ -5,7 +5,7 @@
 # conda build . -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.0.0b2" %}
+{% set version = "2.0.0b3" %}
 
 package:
   name: esmvaltool
@@ -44,13 +44,14 @@ requirements:
     - iris
     # Normally installed via pip:
     - cartopy
+    - cdsapi
     - cf-units
     - cmocean
     - cython
     - ecmwf-api-client  # in esmvalgroup channel
     - eofs
     - esmpy
-    - esmvalcore>=2.0.0b6,<2.1  # in esmvalgroup channel
+    - esmvalcore>=2.0.0b9,<2.1  # in esmvalgroup channel
     - jinja2
     - matplotlib
     - nc-time-axis

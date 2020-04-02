@@ -29,7 +29,7 @@ datasets:
 preprocessors:
   preproc:
     extract_levels:
-      levels: [100000., 50000., 25000., 5000.]
+      levels: [85000., 50000., 25000., 5000.]
       scheme: nearest
     regrid:  
       target_grid: 3x3 
