@@ -5,6 +5,7 @@
 hyint_diagnostic <- function(work_dir, # nolint
                              infile,
                              model_idx,
+                             climofiles,
                              season,
                              prov_info,
                              rewrite = FALSE) {
@@ -503,7 +504,7 @@ hyint_diagnostic <- function(work_dir, # nolint
       models_name[model_idx]
     )
   xprov <- list(
-    ancestors = list(infile),
+    ancestors = climofiles[model_idx],
     model_idx = list(model_idx),
     caption = caption
   )
