@@ -186,7 +186,7 @@ def check_dem(cube, region):
 
 def shift_era5_time_coordinate(cube, shift=30):
     """Shift instantaneous variables (default = 30 minutes forward in time).
-    
+
     After this shift, as an example:
     time format [1990, 1, 1, 11, 30, 0] will be [1990, 1, 1, 12, 0, 0].
     For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
