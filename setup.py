@@ -55,8 +55,6 @@ REQUIREMENTS = {
     # Execute 'python setup.py test' to run tests
     'test': [
         'easytest',
-        'mock',
-        'nose',
         'pycodestyle',
         'pytest>=3.9',
         'pytest-cov',
