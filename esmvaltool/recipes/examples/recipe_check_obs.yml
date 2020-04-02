@@ -89,6 +89,16 @@ diagnostics:
     scripts: null
 
 
+  CT2019:
+    description: CT2019 check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: CT2019, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2019, start_year: 2000, end_year: 2018}
+    scripts: null
+
+
   Duveiller2018:
     description: Duveiller2018 check
     variables:
@@ -244,6 +254,26 @@ diagnostics:
     scripts: null
 
 
+  GHCN-CAMS:
+    description: GHCN-CAMS check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: GHCN-CAMS, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 1, start_year: 1948, end_year: 2020}
+    scripts: null
+
+
+  GISTEMP:
+    description: GISTEMP check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: GISTEMP, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: v4, start_year: 1880, end_year: 2020}
+    scripts: null
+
+
   GPCC:
     description: GPCC check
     variables:
@@ -293,6 +323,17 @@ diagnostics:
     additional_datasets:
       - {dataset: HadISST, project: OBS, tier: 2,
          type: reanaly, version: 1, start_year: 1870, end_year: 2017}
+    scripts: null
+
+
+  HALOE:
+    description: HALOE check
+    variables:
+      hus:
+      tro3:
+    additional_datasets:
+      - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: 1, start_year: 1991, end_year: 2002}
     scripts: null
 
 
