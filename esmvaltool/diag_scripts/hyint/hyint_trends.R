@@ -5,7 +5,7 @@
 
 
 # MAIN TRENDS FUNCTION
-hyint_trends <- function(work_dir, model_idx, climofiles season, prov_info) { # nolint
+hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
   # setup useful strings
   var_type <- c("tseries", "tseries-sd", "trend", "trend-stat")
   var_type_long <- c(
@@ -321,7 +321,7 @@ hyint_trends <- function(work_dir, model_idx, climofiles season, prov_info) { # 
   #  ancs <- infile
   #}  
   xprov <- list(
-    ancestors = prov_info[[infile]]$ancestors
+    ancestors = prov_info[[infile]]$ancestors,
     model_idx = list(model_idx),
     caption = caption
   )
