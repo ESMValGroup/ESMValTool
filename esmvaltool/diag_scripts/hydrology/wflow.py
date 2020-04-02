@@ -127,6 +127,7 @@ def _load_pcraster_dem(filename):
     )
     lon_size, lat_size = dataset.RasterXSize, dataset.RasterYSize
     data = dataset.ReadAsArray()
+    data = np.ma.masked_less(data, -1e8)
     dataset = None
 
     lons = lon_offset + lon_step * (np.arange(lon_size) + 0.5)
@@ -183,12 +184,30 @@ def check_dem(cube, region):
                 "a number at least one grid cell above %s", key, dem[key])
 
 
+def shift_era5_time_coordinate(cube, shift=30):
+    """Shift instantaneous variables (default = 30 minutes forward in time).
+
+    After this shift, as an example:
+    time format [1990, 1, 1, 11, 30, 0] will be [1990, 1, 1, 12, 0, 0].
+    For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
+    """
+    time = cube.coord(axis='T')
+    time.points = time.points + shift / (24 * 60)
+    time.bounds = None
+    time.guess_bounds()
+    return cube
+
+
 def main(cfg):
     """Process data for use as input to the wflow hydrological model."""
     input_metadata = cfg['input_data'].values()
 
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
+
+        if dataset == 'ERA5':
+            shift_era5_time_coordinate(all_vars['tas'])
+            shift_era5_time_coordinate(all_vars['psl'])
 
         # Interpolating variables onto the dem grid
         # Read the target cube, which contains target grid and target elevation
