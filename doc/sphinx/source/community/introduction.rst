@@ -22,14 +22,6 @@ good way to do this is to open an `issue on
 GitHub <https://github.com/ESMValGroup/ESMValTool/issues>`__. This is
 also a good way to get help.
 
-If you have a bug to report, please do so using the `issues tab on the
-ESMValTool github
-repository <https://github.com/ESMValGroup/ESMValTool/issues>`__.
-
-To get started developing, follow the instructions below. More detailed
-instructions can be found in the
-`manual <https://esmvaltool.readthedocs.io>`__ under Developer’s Guide.
-
 Getting started
 ---------------
 
