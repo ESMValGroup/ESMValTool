@@ -124,7 +124,8 @@ code (called ESMValTool if you did not choose a different name) and run
 
     conda env create --name esmvaltool --file environment.yml
 
-This installs ESMValCore as a dependency. 
+This installs the ESMValCore package from conda as a dependency.
+
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option ``--name ENVIRONMENT_NAME`` to define a custom name. You can activate
 the environment using the command:
@@ -155,7 +156,7 @@ the following commands in the directory containing the ESMValTool source code
 
 .. code-block:: bash
 
-    pip install .
+    pip install -e '.[develop]'
 
 If you would like to run Julia diagnostic scripts, you will also need to
 `install Julia <https://julialang.org/downloads/>`_ and the Julia dependencies:
@@ -186,4 +187,4 @@ confirm that no errors are reported:
 
 .. code-block:: bash
 
-    python setup.py test --installation
+    python setup.py test
