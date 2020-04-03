@@ -131,7 +131,7 @@ def _get_ratio_colorbar_info():
     colors1 = plt.cm.Blues(np.linspace(0.15, 0.998, ncolo))[::-1]
     colorsgr = np.tile(np.array([0.8, 0.8, 0.8, 1]),
                        int(ncolo / 4)).reshape(int(ncolo / 4), -1)
-    colors2 = plt.cm.Reds(np.linspace(0.15, 0.998, ncolo))  # [::-1]
+    colors2 = plt.cm.Reds(np.linspace(0.15, 0.998, ncolo))
 
     # combine them and build a new colormap
     colors1g = np.vstack((colors1, colorsgr))
@@ -331,7 +331,6 @@ def _get_data_to_plot(_data):
 
     xroll = _data.shape[1] / 2
     _data = np.roll(np.flipud(_data), int(xroll), axis=1)
-    # _data = xu.remove_invalid(_data, fill_value=np.nan)
     return _data
 
 
@@ -474,13 +473,11 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
     cb_info_diagonal = _get_diagonal_colorbar_info()
 
     plt.figure(figsize=(9, 6))
-    # axes_mat = _get_matrix_map_axes(nmodels, fig_config)
     for row_m in range(nmodels):
         dat_row = all_mod_dat[models[row_m]]['grid'].data
         for col_m in range(nmodels):
             dat_col = all_mod_dat[models[col_m]]['grid'].data
             print('---' + models[row_m] + ' vs ' + models[col_m] + '---')
-            # _ax = axes_mat[row_m, col_m]
             _ax = _get_matrix_map_axes(row_m, col_m, fig_config)
             # plot the maps along the diagonal
             if row_m == col_m:
@@ -548,7 +545,6 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
     cb_tit_d = '{name}, ({unit})'.format(
         name=all_mod_dat[models[col_m]]['grid'].long_name,
         unit=all_mod_dat[models[col_m]]['grid'].units)
-    # cb_tit_d = 'ecosystem_carbon_turnover_time (yr)'
     cb = xu.mk_colo_tau(_axcol_dia,
                         cb_info_diagonal['tickBounds'],
                         cb_info_diagonal['colMap'],
@@ -641,7 +637,6 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
     mm_bias_tau = mm_tau / tau_obs
     mm_bias_tau = xu.remove_invalid(mm_bias_tau,
                                     fill_value=fig_config['fill_value'])
-    # mm_bias_tau[np.isnan(mm_bias_tau)] = 0
 
     # define figure and main axis to plot the map
     plt.figure(figsize=(5, 3))
