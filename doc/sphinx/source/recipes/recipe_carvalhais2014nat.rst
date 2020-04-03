@@ -62,7 +62,6 @@ Diagnostics are stored in diag_scripts/
    * land_carbon_cycle/diag_zonal_turnover.py
    * land_carbon_cycle/diag_zonal_correlation.py
 
-.. _user settings:
 
 User settings in recipe
 -----------------------
