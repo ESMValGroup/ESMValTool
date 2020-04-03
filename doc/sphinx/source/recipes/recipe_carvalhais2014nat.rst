@@ -24,9 +24,10 @@ Calculation of turnover time
 ----------------------------
 
 First, the total carbon content of land ecosystems is calculated as,
+
 .. math::
 
-{ctotal} =  {cSoil + cVeg}
+ ctotal = cSoil + cVeg
 
 where :math:`cSoil` and :math:`cVeg` are the carbon contents in soil and
 vegetation. **Note that this is not fully consistent with `Carvalhais et al.
@@ -35,10 +36,10 @@ atmosphere. Due to inconsistency across models, it resulted in having different
 carbon storage components in calculation of ctotal for different models**.
 
 The turnover time of carbon is then calculated as,
+
 .. math::
 
-\tau_{ctotal} =  \frac{ctotal}{gpp}
-
+ \tau_{ctotal} = \frac{ctotal}{gpp}
 
 where `ctotal` and `gpp` are temporal means of total carbon content and
 gross primary productivity, respectively. **The equation
