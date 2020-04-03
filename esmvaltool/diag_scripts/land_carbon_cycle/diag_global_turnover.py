@@ -223,8 +223,8 @@ def _get_obs_data(diag_config):
         var_list = np.append(var_list, '{var}_{perc:d}'.format(var=_var,
                                                                perc=95))
         obs_filename = (f'{_var}_{{frequency}}_{{source_label}}_'
-                        '{{variant_label}}_{{grid_label}}.nc'.format(
-                            diag_config['obs_info']))
+                        f'{{variant_label}}_{{grid_label}}.nc'.format(
+                            **diag_config['obs_info']))
         input_files = np.append(input_files,
                                 os.path.join(obs_dir, obs_filename))
 
