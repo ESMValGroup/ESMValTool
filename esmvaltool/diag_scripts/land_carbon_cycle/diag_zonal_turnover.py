@@ -189,14 +189,15 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
     plt.ylim(fig_config['valrange_y'][0], fig_config['valrange_y'][1])
     plt.axhline(y=0, lw=0.48, color='grey')
     plt.xlabel(tau_obs.standard_name, fontsize=fig_config['ax_fs'])
-    plt.ylabel('{name} ({unit})'.format(name=lats_obs.long_name,unit=lats_obs.units), fontsize=fig_config['ax_fs'],
+    plt.ylabel(f'{lats_obs.long_name} ({lats_obs.units})',
+               fontsize=fig_config['ax_fs'],
                ma='center')
     xu.rem_axLine(['top', 'right'])
 
     png_name = '{title}_{source_label}_{grid_label}z.png'.format(
-    title=tau_obs.long_name,
-    source_label=diag_config['obs_info']['source_label'],
-    grid_label=diag_config['obs_info']['grid_label'])
+        title=tau_obs.long_name,
+        source_label=diag_config['obs_info']['source_label'],
+        grid_label=diag_config['obs_info']['grid_label'])
 
     plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
                 bbox_inches='tight',
