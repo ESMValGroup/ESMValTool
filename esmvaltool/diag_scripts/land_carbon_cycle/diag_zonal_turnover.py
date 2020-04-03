@@ -101,22 +101,22 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
     Returns:
         zonal_tau - zonal turnover time of carbon
     '''
-    # get the interval of latitude and create array for partial correlation
-    dat_lats = gpp.coord('latitude').points
-    lat_int = abs(dat_lats[1] - dat_lats[0])
-
-    # get the size of the sliding window based on the bandsize in degrees
-    if fig_config['bandsize'] is None:
-        window_size = 1
-    else:
-        window_size = max(2, np.round(fig_config['bandsize'] / (1.* lat_int)))
-
     gpp_zs = gpp.collapsed('longitude', iris.analysis.SUM)
     ctotal_zs = ctotal.collapsed('longitude', iris.analysis.SUM)
-    gpp_z = gpp_zs.rolling_window('latitude',
-                                  iris.analysis.SUM, window_size)
-    ctotal_z = ctotal_zs.rolling_window('latitude',
-                                        iris.analysis.SUM, window_size)
+
+    # get the size of the sliding window based on the bandsize in degrees
+    if fig_config['bandsize'] is not None:
+        # get the interval of latitude and create array for partial correlation
+        dat_lats = gpp.coord('latitude').points
+        lat_int = abs(dat_lats[1] - dat_lats[0])
+        window_size = max(2, np.round(fig_config['bandsize'] / lat_int))
+        gpp_z = gpp_zs.rolling_window('latitude',
+                                      iris.analysis.SUM, window_size)
+        ctotal_z = ctotal_zs.rolling_window('latitude',
+                                            iris.analysis.SUM, window_size)
+    else:
+        gpp_z = gpp_zs
+        ctotal_z = ctotal_zs
 
     zonal_tau = ctotal_z / gpp_z
     zonal_tau.convert_units('yr')
