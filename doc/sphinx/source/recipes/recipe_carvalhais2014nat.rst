@@ -8,7 +8,7 @@ Overview
 
 This recipe evaluates the turnover time of carbon over
 land ecosystems (tau_ctotal) based on the analysis of
-`Carvalhais et al. (2014)`. In summary, it provides an overview on:
+`Carvalhais et al. (2014)`_. In summary, it provides an overview on:
 
     * Comparisons of global distributions of tau_ctotal from all models against
       observation and other models
@@ -287,6 +287,8 @@ References
 * Carvalhais, N., et al. (2014), Global covariation of carbon turnover times
   with climate in terrestrial ecosystems, Nature, 514(7521), 213-217,
   doi: 10.1038/nature13731.
+
+.. _`Carvalhais et al. (2014)`: https://doi.org/10.1038/nature13731
 
 
 Example plots
