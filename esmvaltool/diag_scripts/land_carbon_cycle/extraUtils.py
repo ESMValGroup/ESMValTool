@@ -5,7 +5,9 @@ import matplotlib as mpl
 
 def remove_invalid(tmp, fill_value=-9999.):
     '''
-    removes the invalid non-numeric values from the input array and fills it with fill_value. Also removes all large and small values with magnitude beyond 1e15
+    removes the invalid non-numeric values from the input array and fills it
+    with fill_value. Also removes all large and small values with magnitude
+    beyond 1e15
     '''
     tmp = np.ma.masked_outside(tmp, -1e15, 1e15).filled(fill_value)
     whereisNan = np.isnan(tmp)
@@ -155,7 +157,8 @@ def rotate_labels(which_ax='both', rot=0, axfs=6):
 
 def draw_line_legend(ax_fs=8):
     '''
-    draws a legend for line plots and puts it outside the plot area in x-direction
+    draws a legend for line plots and puts it outside the plot area in
+    x-direction
     '''
     leg = plt.legend(loc=(1.00974, .06),
                      fontsize=ax_fs,
@@ -174,8 +177,8 @@ def draw_line_legend(ax_fs=8):
 # MAPs
 def get_colomap(cmap_nm, bounds__, lowp=0.05, hip=0.95):
     '''
-    Get the list of colors from any official colormaps in matplotlib. 
-    It returns the number of colors based on the number of items in the bounds. 
+    Get the list of colors from any official colormaps in matplotlib.
+    It returns the number of colors based on the number of items in the bounds.
     Bounds is a list of boundary for each color.
     '''
     cmap__ = mpl.cm.get_cmap(cmap_nm)
@@ -211,7 +214,8 @@ def mk_colo_tau(axcol_,
                                    ticks=tick_locs,
                                    spacing=spacing)
     cb.ax.tick_params(labelsize=cbfs, size=2, width=0.3)
-    # hack the lines of the colorbar to make them white, the same color of background so that the colorbar looks broken.
+    # hack the lines of the colorbar to make them white, the same color of
+    # background so that the colorbar looks broken.
     cb.outline.set_alpha(0.)
     cb.outline.set_color('white')
     cb.outline.set_linewidth(0 * cblw)
