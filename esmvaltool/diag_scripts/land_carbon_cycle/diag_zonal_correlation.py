@@ -8,7 +8,6 @@ import os
 import sys
 
 # to manipulate iris cubes
-import iris
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
@@ -19,7 +18,6 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # place your module imports here
 import extraUtils as xu
-from shared import _apply_gpp_threshold
 from shared import _load_variable
 from shared import _get_obs_data_zonal
 

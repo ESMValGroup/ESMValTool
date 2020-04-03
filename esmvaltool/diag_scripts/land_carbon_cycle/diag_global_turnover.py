@@ -26,7 +26,6 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # user-defined functions
 import extraUtils as xu
-from shared import _apply_gpp_threshold
 from shared import _load_variable
 
 # set the properties of the lines used for hatching
@@ -207,9 +206,8 @@ def _get_obs_data(diag_config):
         dictionary with observation data with different variables as keys
     '''
     if not diag_config.get('obs_variable'):
-        raise ValueError((
-            'The observation variable needs to be specified in the recipe (see recipe description for details)'
-        ))
+        raise ValueError('The observation variable needs to be specified in '
+                         'the recipe (see recipe description for details)')
     else:
         obs_dir = os.path.join(diag_config['auxiliary_data_dir'],
                                diag_config['obs_info']['obs_data_subdir'])
@@ -224,12 +222,9 @@ def _get_obs_data(diag_config):
                                                                perc=5))
         var_list = np.append(var_list, '{var}_{perc:d}'.format(var=_var,
                                                                perc=95))
-        obs_filename = '{variable}_{frequency}_{source_label}_{variant_label}_{grid_label}.nc'.format(
-            variable=_var,
-            frequency=diag_config['obs_info']['frequency'],
-            source_label=diag_config['obs_info']['source_label'],
-            variant_label=diag_config['obs_info']['variant_label'],
-            grid_label=diag_config['obs_info']['grid_label'])
+        obs_filename = (f'{_var}_{{frequency}}_{{source_label}}_'
+                        '{{variant_label}}_{{grid_label}}.nc'.format(
+                            diag_config['obs_info']))
         input_files = np.append(input_files,
                                 os.path.join(obs_dir, obs_filename))
 
@@ -286,7 +281,6 @@ def _get_turnover_data(diag_config):
     Returns:
         dictionaries for model simulations and observation data
     '''
-    fig_config = _get_fig_config(diag_config)
     my_files_dict = group_metadata(diag_config['input_data'].values(),
                                    'dataset')
     _all_mod_dat = {}
@@ -354,34 +348,42 @@ def _get_matrix_map_axes(_row_m, _col_m, _fig_config):
         _ax - an axes object
     '''
     if _row_m == _col_m:
-        _ax = plt.axes([
-            _fig_config['x0'] + _row_m * _fig_config['wp'] +
-            _row_m * _fig_config['xsp'], fig_config['y0'] -
-            (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
-            fig_config['wp'], _fig_config['hp']
-        ],
-                       projection=ccrs.Robinson(central_longitude=0),
-                       frameon=False)
+        _ax = plt.axes(
+            [
+                _fig_config['x0'] +
+                _row_m * _fig_config['wp'] + _row_m * _fig_config['xsp'],
+                _fig_config['y0'] -
+                (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
+                _fig_config['wp'],
+                _fig_config['hp'],
+            ],
+            projection=ccrs.Robinson(central_longitude=0),
+            frameon=False)
     if _row_m < _col_m:
-        _ax = plt.axes([
-            (_fig_config['x0'] + _row_m * _fig_config['wp'] +
-             _row_m * _fig_config['xsp'] + _fig_config['xsp_sca']),
-            (_fig_config['y0'] -
-             (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']) +
-             _fig_config['ysp_sca']),
-            _fig_config['wp'] * _fig_config['aspect_map'],
-            _fig_config['hp'] * _fig_config['aspect_map']
-        ])
+        _ax = plt.axes(
+            [
+                _fig_config['x0'] +
+                _row_m * _fig_config['wp'] + _row_m * _fig_config['xsp'] +
+                _fig_config['xsp_sca'],
+                _fig_config['y0'] -
+                (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']) +
+                _fig_config['ysp_sca'],
+                _fig_config['wp'] * _fig_config['aspect_map'],
+                _fig_config['hp'] * _fig_config['aspect_map'],
+            ])
 
     if _row_m > _col_m:
-        _ax = plt.axes([
-            _fig_config['x0'] + _row_m * _fig_config['wp'] +
-            _row_m * _fig_config['xsp'], _fig_config['y0'] -
-            (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
-            _fig_config['wp'], _fig_config['hp']
-        ],
-                       projection=ccrs.Robinson(central_longitude=0),
-                       frameon=False)
+        _ax = plt.axes(
+            [
+                _fig_config['x0'] +
+                _row_m * _fig_config['wp'] + _row_m * _fig_config['xsp'],
+                _fig_config['y0'] -
+                (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
+                _fig_config['wp'],
+                _fig_config['hp'],
+            ],
+            projection=ccrs.Robinson(central_longitude=0),
+            frameon=False)
     return _ax
 
 
@@ -575,10 +577,11 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
                           rotation=0)
 
     # save and close the figure
-    png_name = 'global_matrix_map_{name}_{source_label}_{grid_label}.png'.format(
-        name=all_mod_dat[models[col_m]]['grid'].long_name,
-        source_label=diag_config['obs_info']['source_label'],
-        grid_label=diag_config['obs_info']['grid_label'])
+    png_name = ('global_matrix_map_{name}_{source_label}_{grid_label}.png'
+                ''.format(
+                    name=all_mod_dat[models[col_m]]['grid'].long_name,
+                    source_label=diag_config['obs_info']['source_label'],
+                    grid_label=diag_config['obs_info']['grid_label']))
 
     plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
                 bbox_inches='tight',
@@ -705,10 +708,11 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
                                rotation=0)
 
     # save and close figure
-    png_name = 'global_multimodelAgreement_{title}_{source_label}_{grid_label}.png'.format(
-        title=all_obs_dat['tau_ctotal']['grid'].long_name,
-        source_label=diag_config['obs_info']['source_label'],
-        grid_label=diag_config['obs_info']['grid_label'])
+    png_name = ('global_multimodelAgreement_{title}_{source_label}_'
+                '{grid_label}.png'.format(
+                    title=all_obs_dat['tau_ctotal']['grid'].long_name,
+                    source_label=diag_config['obs_info']['source_label'],
+                    grid_label=diag_config['obs_info']['grid_label']))
 
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
     plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
@@ -761,13 +765,8 @@ def _plot_single_map(_dat, _datglobal, _name, diag_config):
 
     _dat_median = np.nanmedian(
         xu.remove_invalid(_dat.data, fill_value=fig_config['fill_value']))
-    title_str = (
-        '{title}, ({unit}), {name},\nglobal = {_glbl:.2f}, median = {_medn:.2f}'
-        .format(title=_dat.long_name,
-                unit=_dat.units,
-                _glbl=_datglobal,
-                _medn=_dat_median,
-                name=_name))
+    title_str = (f'{_dat.long_name}, ({_dat.units}), {_name},\n'
+                 f'global = {_datglobal:.2f}, median = {_dat_median:.2f}')
 
     plt.title(title_str, fontsize=0.98 * fig_config['ax_fs'])
 

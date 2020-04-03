@@ -7,7 +7,6 @@ Carvalhais et al., 2014
 import os
 
 # to manipulate iris cubes
-import math
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
@@ -58,6 +57,7 @@ def _apply_common_mask(dat_1, dat_2):
     dat_1 = np.ma.masked_invalid(dat_1)
     dat_2 = np.ma.masked_invalid(dat_2)
     return dat_1, dat_2
+
 
 def _get_zonal_tau(diag_config):
     '''
