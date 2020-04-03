@@ -28,9 +28,12 @@
 ; Required variable_info attributes (variable specific)
 ;
 ; Caveats
+;    units for the variable are now handled in the pre-processor which
+;    means that the preprocessor must be adjusted if the variable is
+;    changed in the recipe from ozone to something else
 ;
 ; Modification history
-;    20200320-hassler_birgit: cleaned code
+;    20200403-hassler_birgit: cleaned code
 ;    20180320-lauer_axel: added tags for reporting and call to write_references
 ;    20170315-cionni_irene: written
 ; #############################################################################
@@ -69,13 +72,6 @@ begin
               "(variable_info[0]@reference_dataset) needs to be defined.")
   end if
 
-  ; Check variable attributes
-  if(isatt(variable_info, "units")) then
-    UNITS = variable_info@units
-  else
-    UNITS = "ppmv"
-  end if
-
   if(isatt(variable_info, "long_name")) then
     LONG_NAME = variable_info@long_name
   else
@@ -84,7 +80,6 @@ begin
 
   ; Set default values for optional diag_script_info attributes
   set_default_att(diag_script_info, "e06fig05a_month", 03)
-  set_default_att(diag_script_info, "styleset", "CMIP5")
   set_default_att(diag_script_info, "e06fig05a_latmin", 75.)
   set_default_att(diag_script_info, "e06fig05a_latmax", 85.)
   set_default_att(diag_script_info, "e06fig05a_XMax", 10.)
@@ -103,16 +98,18 @@ begin
   latrange(:, 0) = diag_script_info@e06fig05a_latmin
   latrange(:, 1) = diag_script_info@e06fig05a_latmax
   seasons = diag_script_info@e06fig05a_month
-  colors = project_style(info0, diag_script_info, "colors")
-  dashes = project_style(info0, diag_script_info, "dashes")
-  thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
-  markers = project_style(info0, diag_script_info, "markers")
-
   flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
   index_obs = ind(flag_mod.eq.0)
   dim_MOD = dimsizes(index_mod)
   dim_OBS = 0
+
+  ; Styles
+  styleset = diag_script_info@styleset
+  colors = project_style(info0, diag_script_info, "colors")
+  dashes = project_style(info0, diag_script_info, "dashes")
+  thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
+  markers = project_style(info0, diag_script_info, "markers")
 
   if (.not.all(ismissing(index_obs))) then
     dim_OBS = dimsizes(index_obs)
@@ -151,8 +148,12 @@ end
 begin
 
   aux_title_info = ""
-  ;wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05a_" + var0)
-  ;output_filename = wks@fullname
+  plotpath = config_user_info@plot_dir + "eyring06f05a_" + var0
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05a_" + var0)
+  wks = gsn_open_wks(file_type, plotpath)
+  plotpath1 = config_user_info@plot_dir + "eyring06f05a_legend_" + var0
+  wks1 = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05a_legend_" + var0)
+  wks1 = gsn_open_wks(file_type, plotpath1)
   nPanel = dimsizes(seasons)
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))
@@ -194,29 +195,16 @@ begin
       A0 = read_data(info0[imod])
 
       printVarSummary(A0)
-      ; if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then
-        ; dummy1 = \
-          ; area_operations(A0(time|:, plev|:, lat|:, lon|:), \
-                          ; latrange(ipan, 0), \
-                          ; latrange(ipan, 1), 0., 360., \
-                          ; "average", True)
-        ; coslat   = cos(A0&lat * rad)
-        ; coslat!0 = "lat"
-        ; coslat&lat = A0&lat
-        ; delete(coslat)
-        ; delete(A0)
-      ; else
-        ; if(all(isdim(A0, (/"time", "plev", "lat"/)))) then
       coslat   = cos(A0&lat * rad)
       coslat!0 = "lat"
       coslat&lat = A0&lat
       dummy1 = \
         dim_avg_wgt_Wrap(A0(:, :, {latrange(ipan, 0):latrange(ipan, 1)}), \
-                        coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
+                         coslat({latrange(ipan, 0):latrange(ipan, 1)}), 1)
       delete(coslat)
       delete(A0)
-        ; end if
-      ; end if
+      unit_string = dummy1@units
+
       if (seasons(ipan).ne."ANN") then
         dummy2 = time_operations(dummy1, year_start, year_end, \
                                  "extract", seasons(ipan), True)
@@ -267,14 +255,6 @@ begin
     LineScatters(dimTot - 1) = "Lines"
   end if
 
-  ; change the units to "ppmv"
-  if ((UNITS.ne."10e6").or.(UNITS.ne."ppmv")) then
-    Xdata = (/Xdata / 10 ^ 3/)
-    tmpData = (/tmpData / 10 ^ 3/)
-    Xref = (/Xref / 10 ^ 3/)
-    UNITS = "ppmv"
-  end if
-
   ; Calculate multimodel mean
   X_MMM_std = (/dim_stddev_n(Xdata(index_mod, :, :, :), 0)/)
 
@@ -311,8 +291,6 @@ begin
   end if
 
   ; Plotting
-  plotpath = config_user_info@plot_dir + "eyring06f05a_" + var0
-  wks = gsn_open_wks(file_type, plotpath)
   do ipanel = 0, dimsizes(seasons) - 1
     res = True
     res@gsnDraw = False
@@ -333,8 +311,10 @@ begin
     res@vpHeightF = 0.6                   ; change aspect ratio of plot
     res@vpWidthF = 0.45
 
-    res@tiYAxisString = "Pressure (hPa)"     ; y-axis label
-    res@tiXAxisString = LONG_NAME + " " + "(" + UNITS + ")"   ; y-axis label
+    ; y-axis label
+    res@tiYAxisString = "Pressure (hPa)"
+    ; x-axis label
+    res@tiXAxisString = LONG_NAME + " " + "(" + unit_string + ")"
 
     res@tiMainString = \
       LONG_NAME + " " + \
@@ -391,9 +371,9 @@ begin
   gsn_panel(wks, plot_d, (/1, dimsizes(seasons)/), Pres)
   frame(wks)
 
-  add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-             LineScatters, plotThicks + 2., "0.2")
-  frame(wks)
+  add_legend(wks1, plotMod, plotColor, tofloat(plotDash), \
+             LineScatters, plotThicks + 2., "0.9")
+  frame(wks1)
 
   nc_filename = work_dir + "eyring06f05a_" + var0 + ".nc"
   Xdata@var = var0
