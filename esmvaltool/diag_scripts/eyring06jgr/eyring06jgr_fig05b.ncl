@@ -128,13 +128,24 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
 end
 
 begin
 
   aux_title_info = ""
-  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f0b_" + var0)
-  output_filename = wks@fullname
+  plotpath = config_user_info@plot_dir + "eyring06f05b_" + var0
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05b_" + var0)
+  wks = gsn_open_wks(file_type, plotpath)
+  plotpath1 = config_user_info@plot_dir + "eyring06f05b_legend_" + var0
+  wks1 = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05b_legend_" + var0)
+  wks1 = gsn_open_wks(file_type, plotpath1)
+  ;output_filename = wks@fullname
   nPanel = dimsizes(seasons)
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))
@@ -175,15 +186,15 @@ begin
 
       ; Extract data
       A0 = read_data(info0[imod])
-      if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then
-        dummy1 = dim_avg_Wrap(A0(time|:, {plev|lev(ipan)}, lat|:, lon|:))
-        delete(A0)
-      else
-        if(all(isdim(A0, (/"time", "plev", "lat"/)))) then
-            dummy1 = A0(time|:, {plev|lev(ipan)}, lat|:)
-            delete(A0)
-        end if
-      end if
+      ; if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then
+        ; dummy1 = dim_avg_Wrap(A0(time|:, {plev|lev(ipan)}, lat|:, lon|:))
+        ; delete(A0)
+      ; else
+        ; if(all(isdim(A0, (/"time", "plev", "lat"/)))) then
+          dummy1 = A0(time|:, {plev|lev(ipan)}, lat|:)
+          delete(A0)
+        ; end if
+      ; end if
 
       if (seasons(ipan).ne."ANN") then
         dummy2 = \
@@ -339,6 +350,11 @@ begin
   end do   ; end loop panel
 
   ; Call legend - plotting routine
+  ;plotpath = config_user_info@plot_dir + "eyring06f05b_" + var0
+  ;wks = gsn_open_wks(file_type, plotpath)
+  ;plotpath1 = config_user_info@plot_dir + "eyring06f05b_legend_" + var0
+  ;wks1 = gsn_open_wks(file_type, plotpath1)
+
   Pres = True
   Pres@gsnFrame = False
   Pres@gsnPanelBottom = 0.2
@@ -347,9 +363,9 @@ begin
   gsn_panel(wks, plot_d, (/1, dimsizes(seasons)/), Pres)
   frame(wks)
 
-  add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-             LineScatters, plotThicks + 2., "0.2")
-  frame(wks)
+  add_legend(wks1, plotMod, plotColor, tofloat(plotDash), \
+             LineScatters, plotThicks + 2., "0.9")
+  frame(wks1)
 
   nc_filename = work_dir + "eyring06f05b_" + var0 + ".nc"
   Xdata@var = var0
