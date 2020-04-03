@@ -276,7 +276,7 @@ The filenames use the convention:
   * {variant_label}: observation variant, set from obs_details
   * {grid_label}: temporal frequency of data, set from obs_details
 
-Refer to .. _Obs4MIPs Data Specifications: https://esgf-node.llnl.gov/site_media/projects/obs4mips/ODSv2p1.pdf for details of the definitions above.
+Refer to the `Obs4MIPs Data Specifications`_  for details of the definitions above.
 
 All data variables have additional variables ({variable}_5 and {variable}_95)
 in the same file. These variables are necessary for a successful execution of
@@ -290,6 +290,9 @@ References
   doi: 10.1038/nature13731.
 
 .. _`Carvalhais et al. (2014)`: https://doi.org/10.1038/nature13731
+
+.. _`Obs4MIPs Data Specifications`:
+  https://esgf-node.llnl.gov/site_media/projects/obs4mips/ODSv2p1.pdf
 
 
 Example plots
