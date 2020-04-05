@@ -298,7 +298,7 @@ Example plots
 -------------
 
 .. _fig_carvalhais2014nat_1:
-.. figure:: /recipes/figures/carvalhais2014nat/comparison_zonal_pearson_correlation_turnovertime_climate_Carvalhais2014.png
+.. figure:: /recipes/figures/carvalhais2014nat/zonal_correlation_ecosystem_carbon_turnover_time_precipitation_pearson_Carvalhais2014_gnz.png
    :align: center
    :width: 80%
 
@@ -308,10 +308,26 @@ Example plots
 
 .. _fig_carvalhais2014nat_2:
 
-.. figure:: /recipes/figures/carvalhais2014nat/global_comparison_matrix_models_Carvalhais2014.png
+.. figure:: /recipes/figures/carvalhais2014nat/global_matrix_map_ecosystem_carbon_turnover_time_Carvalhais2014_gn.png
    :align: center
    :width: 80%
 
    Comparison of observation-based and modelled ecosystem carbon turnover time.
    Along the diagnonal, tau_ctotal are plotted, above the bias, and below
    density plots. The inset text in density plots indicate the correlation.
+
+.. _fig_carvalhais2014nat_3:
+
+.. figure:: /recipes/figures/carvalhais2014nat/global_multimodelAgreement_ecosystem_carbon_turnover_time_Carvalhais2014_gn.png
+   :align: center
+   :width: 80%
+
+   Description missing
+
+.. _fig_carvalhais2014nat_4:
+
+.. figure:: /recipes/figures/carvalhais2014nat/zonal_mean_ecosystem_carbon_turnover_time_Carvalhais2014_gnz.png
+   :align: center
+   :width: 80%
+
+   Description missing
