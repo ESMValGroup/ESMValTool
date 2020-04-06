@@ -9,13 +9,13 @@ RUN apt-get update -y && apt-get install -y \
     curl \
     unzip
 
-COPY . /source
-WORKDIR /source
+COPY . /esmvaltool
+WORKDIR /esmvaltool
+RUN ls
 
 # install environment packages
 
 RUN conda env update -n base environment.yml
-RUN conda install julia
 RUN pip install .
 RUN Rscript esmvaltool/install/R/setup.R
 RUN julia esmvaltool/install/Julia/setup.jl
