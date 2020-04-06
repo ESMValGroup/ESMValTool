@@ -76,28 +76,28 @@ begin
   end if
 
   ; Set default values for optional diag_script_info attributes
-  set_default_att(diag_script_info, "e06fig15_season", "ANN")
-  set_default_att(diag_script_info, "styleset", "CMIP5")
-  set_default_att(diag_script_info, "e06fig15_latmin", -90.)
-  set_default_att(diag_script_info, "e06fig15_latmax", 90.)
-  set_default_att(diag_script_info, "e06fig15_multimean", False)
-  set_default_att(diag_script_info, "e06fig15_cycle_yearmin", max(y1))
-  set_default_att(diag_script_info, "e06fig15_cycle_yearmax", min(y2))
-  set_default_att(diag_script_info, "e06fig15_show_trend", "False")
-  set_default_att(diag_script_info, "e06fig15_xMin", 1960)
-  set_default_att(diag_script_info, "e06fig15_xMax", 2005)
-  set_default_att(diag_script_info, "e06fig15_yMin", -10)
-  set_default_att(diag_script_info, "e06fig15_yMax", 10)
-  set_default_att(diag_script_info, "e06fig15_cycle_yMin", 260.)
-  set_default_att(diag_script_info, "e06fig15_cycle_yMax", 380.)
+  set_default_att(diag_script_info, "season", "ANN")
+  ;set_default_att(diag_script_info, "styleset", "CMIP5")
+  set_default_att(diag_script_info, "latmin", -90.)
+  set_default_att(diag_script_info, "latmax", 90.)
+  set_default_att(diag_script_info, "multimean", False)
+  set_default_att(diag_script_info, "cycle_yearmin", max(y1))
+  set_default_att(diag_script_info, "cycle_yearmax", min(y2))
+  ;set_default_att(diag_script_info, "e06fig15_show_trend", "False")
+  set_default_att(diag_script_info, "Xmin", 1960)
+  set_default_att(diag_script_info, "Xmax", 2005)
+  set_default_att(diag_script_info, "Ymin", -10)
+  set_default_att(diag_script_info, "Ymax", 10)
+  set_default_att(diag_script_info, "cycle_Ymin", 260.)
+  set_default_att(diag_script_info, "cycle_Ymax", 380.)
 
-  year_cycle_max = toint(diag_script_info@e06fig15_cycle_yearmax)
-  year_cycle_min = toint(diag_script_info@e06fig15_cycle_yearmin)
+  year_cycle_max = toint(diag_script_info@cycle_yearmax)
+  year_cycle_min = toint(diag_script_info@cycle_yearmin)
 
-  seasons = diag_script_info@e06fig15_season
+  seasons = diag_script_info@season
   latrange = new((/dimsizes(seasons), 2/), "float")
-  latrange(:, 0) = diag_script_info@e06fig15_latmin
-  latrange(:, 1) = diag_script_info@e06fig15_latmax
+  latrange(:, 0) = diag_script_info@latmin
+  latrange(:, 1) = diag_script_info@latmax
 
   ; Styles
   colors = project_style(info0, diag_script_info, "colors")
@@ -116,14 +116,14 @@ begin
     list_obs_mod = names(index_obs)
   end if
 
-  XMax = diag_script_info@e06fig15_xMax
-  XMin = diag_script_info@e06fig15_xMin
-  YMax = diag_script_info@e06fig15_yMax
-  YMin = diag_script_info@e06fig15_yMin
-  cycle_max = toint(diag_script_info@e06fig15_cycle_yMax)
-  cycle_min = toint(diag_script_info@e06fig15_cycle_yMin)
+  XMax = diag_script_info@Xmax
+  XMin = diag_script_info@Xmin
+  YMax = diag_script_info@Ymax
+  YMin = diag_script_info@Ymin
+  cycle_max = toint(diag_script_info@cycle_Ymax)
+  cycle_min = toint(diag_script_info@cycle_Ymin)
 
-  multimean = diag_script_info@e06fig15_multimean
+  multimean = diag_script_info@multimean
   if (multimean)
     dimTot = dim_MOD + dim_OBS + 1
   else
@@ -135,6 +135,12 @@ begin
 
   ; Create output directory
   system("mkdir -p " + work_dir)
+
+    ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
 
 end
 
@@ -205,15 +211,6 @@ begin
 
       ; Extract data
       A0 = read_data(info0[imod])
-
-      ; Temporary workaround due to ESMValCore/issues/577
-      ; copied from eyring06jgr_fig01.ncl
-      if (typeof(A0).ne."float") then
-        tmp = tofloat(A0)
-        copy_VarMeta(A0, tmp)
-        A0 := tmp
-        delete(tmp)
-      end if
 
       if(all(isdim(A0, (/"time", "lat", "lon"/)))) then
         dummy1 = area_operations(A0(time|:, lat|:, lon|:), \
@@ -395,6 +392,12 @@ begin
     end do
   end if
 
+  ; Plotting
+  plotpath_anom = config_user_info@plot_dir + "eyring06f15_Anomalies_" + var0
+  wks = gsn_open_wks(file_type, plotpath_anom)
+  plotpath1_anom = config_user_info@plot_dir + "eyring06f01_legend_" + var0
+  wks1 = gsn_open_wks(file_type, plotpath1_anom)
+
   do ipanel = 0, dimsizes(seasons) - 1
     res = True
     res@gsnDraw = False
@@ -444,8 +447,8 @@ begin
     res2@tfPolyDrawOrder = "Predraw"
     res2@trXMaxF = 366
     res2@trXMinF = 1
-    res2@trYMaxF = cycle_max
-    res2@trYMinF = cycle_min
+    res2@trYMaxF = cycle_max(ipanel)
+    res2@trYMinF = cycle_min(ipanel)
     res2@tmXBMode = "Explicit"
     res2@tmXBValues = (/1, 32, 61, 92, 122, 153, \
                        183, 214, 245, 275, 305, 336/)
@@ -497,17 +500,15 @@ begin
   Pres@gsnPanelLeft = 0.15
   gsn_panel(wks, baseplot, (/dimsizes(seasons), 2/), Pres)
 
-  if (dimsizes(plotMod).gt.21) then
-    frame(wks)
-  end if
   plotThicks = plotThicks + 1
   plotDash(index_obs) = plotScatters(index_obs)
-  add_legend(wks, plotMod, plotColor, tofloat(plotDash), \
-             LineScatters, plotThicks, "0.2")
+  add_legend(wks1, plotMod, plotColor, tofloat(plotDash), \
+             LineScatters, plotThicks, "0.9")
   frame(wks)
+  frame(wks1)
 
   ; Anomalies output
-  nc_filename = work_dir + "eyring06f15_Anomalies" + var0 + ".nc"
+  nc_filename = work_dir + "eyring06f15_Anomalies_" + var0 + ".nc"
   Xdata@var = var0
   Xdata@diag_script = "eyring06f15"
   Xdata&stat = (/"mean", "avg"/)
@@ -516,7 +517,7 @@ begin
   nc_outfile = ncdf_write(Xdata, nc_filename)
 
   ; AnnualCycle output
-  nc_filename1 = work_dir + "eyring06f15_AnnualCycle" + var0 + ".nc"
+  nc_filename1 = work_dir + "eyring06f15_AnnualCycle_" + var0 + ".nc"
   cyXdata@var = var0
   cyXdata@diag_script = "eyring06f15"
   cyXdata&stat = (/"mean", "avg"/)
@@ -526,18 +527,8 @@ begin
 
   ; Call provenance logger
   log_provenance(nc_filename, \
-                 plotpath + "." + file_type, \
-                 "Anomaly time series of " + var0, \
-                 (/"anomaly", "mean"/), \
-                 (/"nhpolar", "shpolar", "global"/), \
-                 "pro", \
-                 (/"cionni_irene", "eyring_veronika"/), \
-                 (/"eyring06jgr"/), \
-                 metadata_att_as_array(info0, "filename"))
-
-  log_provenance(nc_filename1, \
-                 plotpath + "." + file_type, \
-                 "Seasonal anomaly time series of " + var0, \
+                 plotpath_anom + "." + file_type, \
+                 "Anomaly time series and seasonal anomalies of " + var0, \
                  (/"anomaly", "mean"/), \
                  (/"nhpolar", "shpolar", "global"/), \
                  "pro", \
