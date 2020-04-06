@@ -9,21 +9,21 @@
 ;    climatological mean for selected month and latitudinal region
 ;
 ; Required diag_script_info attributes (diagnostics specific)
-;    @e06fig05a_latrange:  min lat and max lat where variable is averaged
-;                         (i.e. (/60, 90/))
-;    @e06fig05a_season:   month when variable is averaged
-;                         (i.e. "03", "04", "09")
-;    @e06fig05a_multimean: calculate multi-model mean (i.e. False/True)
-;    @e06fig05a_refModel:  name of the reference model or observation
-;                          (e.g. (/"ERA-Interim"/))
+;    latrange:  min lat and max lat where variable is averaged
+;               (i.e. (/60, 90/))
+;    season:   month when variable is averaged
+;              (i.e. "03", "04", "09")
+;    multimean: calculate multi-model mean (i.e. False/True)
+;    refModel:  name of the reference model or observation
+;               (e.g. (/"ERA-Interim"/))
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;    @e06fig05a_XMax:     max limit X axis
-;    @e06fig05a_XMin:     min limit X axis
-;    @e06fig05a_levmax:   max limit Y axis
-;    @e06fig05a_levmin:   min limit Y axis
-;    @e06fig05a_start_year: year when start the climatology calculation
-;    @e06fig05a_start_year: year when end the climatology calculation
+;    XMax:     max limit X axis
+;    XMin:     min limit X axis
+;    levmax:   max limit Y axis
+;    levmin:   min limit Y axis
+;    start_year: year when start the climatology calculation
+;    start_year: year when end the climatology calculation
 ;
 ; Required variable_info attributes (variable specific)
 ;
@@ -79,25 +79,25 @@ begin
   end if
 
   ; Set default values for optional diag_script_info attributes
-  set_default_att(diag_script_info, "e06fig05a_month", 03)
-  set_default_att(diag_script_info, "e06fig05a_latmin", 75.)
-  set_default_att(diag_script_info, "e06fig05a_latmax", 85.)
-  set_default_att(diag_script_info, "e06fig05a_XMax", 10.)
-  set_default_att(diag_script_info, "e06fig05a_XMin", 0.)
-  set_default_att(diag_script_info, "e06fig05a_start_year", max(y1))
-  set_default_att(diag_script_info, "e06fig05a_end_year", min(y2))
-  set_default_att(diag_script_info, "e06fig05a_multimean", False)
+  set_default_att(diag_script_info, "month", 03)
+  set_default_att(diag_script_info, "latmin", 75.)
+  set_default_att(diag_script_info, "latmax", 85.)
+  set_default_att(diag_script_info, "Xmax", 10.)
+  set_default_att(diag_script_info, "Xmin", 0.)
+  set_default_att(diag_script_info, "start_year", max(y1))
+  set_default_att(diag_script_info, "end_year", min(y2))
+  set_default_att(diag_script_info, "multimean", False)
 
-  seasons = diag_script_info@e06fig05a_month
+  seasons = diag_script_info@month
   month_names = \
     (/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", \
       "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"/)
   seasons_name = month_names(toint(seasons) - 1)
 
   latrange = new((/dimsizes(seasons), 2/), "float")
-  latrange(:, 0) = diag_script_info@e06fig05a_latmin
-  latrange(:, 1) = diag_script_info@e06fig05a_latmax
-  seasons = diag_script_info@e06fig05a_month
+  latrange(:, 0) = diag_script_info@latmin
+  latrange(:, 1) = diag_script_info@latmax
+  seasons = diag_script_info@month
   flag_mod = where(projects.ne."OBS" .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
   index_obs = ind(flag_mod.eq.0)
@@ -116,20 +116,20 @@ begin
     list_obs_mod = names(index_obs)
   end if
 
-  Max_lev = diag_script_info@e06fig05a_levmax
-  Min_lev = diag_script_info@e06fig05a_levmin
-  XMax = diag_script_info@e06fig05a_XMax
-  XMin = diag_script_info@e06fig05a_XMin
+  Max_lev = diag_script_info@levmax
+  Min_lev = diag_script_info@levmin
+  XMax = diag_script_info@Xmax
+  XMin = diag_script_info@Xmin
 
-  multimean = diag_script_info@e06fig05a_multimean
+  multimean = diag_script_info@multimean
   if (multimean)
     dimTot = dim_MOD + dim_OBS + 1
   else
     dimTot = dim_MOD + dim_OBS
   end if
 
-  year_start = toint(diag_script_info@e06fig05a_start_year)
-  year_end = toint(diag_script_info@e06fig05a_end_year)
+  year_start = toint(diag_script_info@start_year)
+  year_end = toint(diag_script_info@end_year)
 
   ; make sure path for (mandatory) netcdf output exists
   work_dir = config_user_info@work_dir + "/"
