@@ -77,13 +77,11 @@ begin
 
   ; Set default values for optional diag_script_info attributes
   set_default_att(diag_script_info, "season", "ANN")
-  ;set_default_att(diag_script_info, "styleset", "CMIP5")
   set_default_att(diag_script_info, "latmin", -90.)
   set_default_att(diag_script_info, "latmax", 90.)
   set_default_att(diag_script_info, "multimean", False)
   set_default_att(diag_script_info, "cycle_yearmin", max(y1))
   set_default_att(diag_script_info, "cycle_yearmax", min(y2))
-  ;set_default_att(diag_script_info, "e06fig15_show_trend", "False")
   set_default_att(diag_script_info, "Xmin", 1960)
   set_default_att(diag_script_info, "Xmax", 2005)
   set_default_att(diag_script_info, "Ymin", -10)
