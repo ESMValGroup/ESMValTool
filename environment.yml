@@ -5,6 +5,8 @@ channels:
   - esmvalgroup
 
 dependencies:
+  # needs to be built by conda together with scipy
+  - scikit-learn
   # Python packages that cannot be installed from PyPI:
   - gdal
   - esmvalcore>=2.0.0b9,<2.1
