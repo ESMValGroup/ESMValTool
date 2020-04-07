@@ -1,0 +1,300 @@
+# ESMValTool
+# recipe_calipso.yml
+---
+documentation:
+  description: |
+    Diagnostics of 3-d cloud parameters.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  projects:
+    - cmug
+
+
+preprocessors:
+  ppStd:
+#    extract_levels:
+#      levels: reference_dataset
+#      levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000.,
+#               70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 22500.,
+#               20000., 17500., 15000.]
+#               12500., 10000., 7000., 5000., 3000., 2000., 1000., 700., 500.,
+#               300., 200., 100.]
+#      levels: {cmor_table: CMIP6, coordinate: plev19}
+#      coordinate: air_pressure
+#      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+
+  ppStd2:
+    extract_levels:
+#      levels: reference_dataset
+#      levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000.,
+#               70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 22500.,
+#               20000., 17500., 15000.]
+#               12500., 10000., 7000., 5000., 3000., 2000., 1000., 700., 500.,
+#               300., 200., 100.]
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+
+diagnostics:
+
+#  clcalispoZONAL:
+#    description: cloud fraction zonal mean
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clw:
+##      clcalipso:
+##        preprocessor: ppStd
+#        preprocessor: ppStd2
+##        reference_dataset: CALIPSO-GOCCP
+#        mip: Amon
+##        mip: CFmon
+#        project: CMIP6
+#        start_year: 2010
+#        end_year: 2010
+#    additional_datasets:
+##      - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2, mip: cfMon, tier: 2}
+#      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+#      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-FV2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gr}
+#      - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##ERROR_ps_missing      - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r4i1p1f1, grid: gr}
+#      - {dataset: KACE-1-0-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC-ES2L, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NESM3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        plot_diff: false
+##        explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
+#        embracesetup: true
+#        extralegend: false
+#        panel_labels: true
+##        showdiff: true
+#        rel_diff: false
+
+#  clZONAL:
+#    description: cloud fraction zonal mean
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clcalipso:
+#        preprocessor: ppStd
+#        reference_dataset: CALIPSO-GOCCP
+#        mip: CFmon
+#        project: CMIP6
+#        start_year: 2010
+#        end_year: 2014
+#    additional_datasets:
+#      - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2, mip: cfMon, tier: 2}
+#      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r10i1p1f1, grid: gn}
+#      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: E3SM-1-0, project: CMIP6, exp: historical, ensemble: r4i1p1f1, grid: gr}
+#      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+##NODATA      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+#      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r4i1p1f1, grid: gr}
+#      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##NODATA      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        plot_diff: false
+#        explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
+#        embracesetup: true
+#        extralegend: false
+#        panel_labels: true
+#        showdiff: true
+#        rel_diff: false
+
+
+#  cliZONAL:
+#    description: cloud ice content zonal mean
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      cli:
+#        preprocessor: ppStd2
+##        reference_dataset: GFDL-CM4
+#        mip: Amon
+#        project: CMIP6
+##        start_year: 1995
+##        end_year: 2014
+#        start_year: 2010
+#        end_year: 2010
+#    additional_datasets:
+##      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+##OK      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+##OK      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+##OK      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+##ERROR      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r3i1p1f1, grid: gr}
+##OK      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+##OK      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        plot_diff: false
+#        t_test: false
+##        explicit_cn_levels: [0., 0.00002, 0.00004, 0.00006, 0.00008, 0.0001, 0.00012, 0.00014, 0.00016, 0.00018, 0.0002, 0.00022, 0.00024, 0.00026, 0.00028]
+#        embracesetup: true
+#        extralegend: false
+#        panel_labels: true
+##        showdiff: true
+#        rel_diff: false
+
+
+  lifrac:
+    description: zonal mean ice / liquid fraction
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clw:
+        preprocessor: ppStd2
+#        reference_dataset: CALIPSO-GOCCP
+        mip: Amon
+        project: CMIP6
+        start_year: 2010
+        end_year: 2010
+      cli:
+        preprocessor: ppStd2
+#        reference_dataset: CALIPSO-GOCCP
+        mip: Amon
+        project: CMIP6
+        start_year: 2010
+        end_year: 2010
+    additional_datasets:
+      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+
+    scripts:
+      zonal:
+        script: clouds/clouds_lifrac.ncl
+        timemean: annualclim
+        embracesetup: true
+        min_mass: 1.0e-15
+        panel_labels: true
+
+
+#  husZONAL:
+#    description: water vapor zonal mean
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      hus:
+#        preprocessor: ppALL
+#        reference_dataset: AIRS
+#        mip: Amon
+#        project: CMIP6
+#        start_year: 2003
+#        end_year: 2010
+#    additional_datasets:
+#      - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+#      - {dataset: AWI-CM-1-1-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: E3SM-1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r22i1p1f1, grid: gr}
+#      - {dataset: EC-Earth3-Veg, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+##      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+##      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+#    scripts:
+#      zonal:
+#        script: perfmetrics/main.ncl
+#        plot_type: zonal
+#        time_avg: annualclim
+#        region: global
+#        plot_diff: false
+#        t_test: false
+#        conf_level: 0.95
+#        stippling: false
+#        abs_levs: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
+
