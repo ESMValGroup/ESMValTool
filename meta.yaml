@@ -39,7 +39,6 @@ requirements:
   run:
     # esmvaltool
     - python>=3.6
-    - libunwind  #  specifically for Python3.7+
     - graphviz
     - iris
     # Normally installed via pip:
@@ -76,11 +75,10 @@ requirements:
     - imagemagick
     - nco
     # Multi language support:
-    - ncl>=6.5.0
+    - ncl
     - r-base
     - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
     - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
-    - tiledb=1.6.0
 
 test:
   # TODO: add unit tests? This seems to require installing the tests
