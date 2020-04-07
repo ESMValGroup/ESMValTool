@@ -14,7 +14,6 @@ dependencies:
   - imagemagick
   - nco
   - scikit-learn  # install from same installer as scipy
-  #- netcdf4>=1.5.3
 
   # Multi language support:
   - python>=3.6
