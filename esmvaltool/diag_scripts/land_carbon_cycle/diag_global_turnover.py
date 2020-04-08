@@ -175,8 +175,6 @@ def _get_agreement_mask(mmdat, dat_5, dat_95, fig_config, nmodel_reject=2):
     num_count = _maskf.sum(0)
     agreement_mask = np.zeros_like(num_count)
     agreement_mask[num_count < nmodel_reject] = 1
-    dat_5_masked = xu.remove_invalid(dat_5, 
-                    fill_value=fig_config['fill_value'])
     wnan = np.ma.masked_invalid(dat_5).mask
     agreement_mask[wnan] = 0.
     return agreement_mask

@@ -109,7 +109,8 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
         # get the interval of latitude and create array for partial correlation
         dat_lats = gpp.coord('latitude').points
         lat_int = abs(dat_lats[1] - dat_lats[0])
-        window_size = np.int(max(2, np.round(fig_config['bandsize'] / lat_int)))
+        window_size = np.int(max(2, np.round(fig_config['bandsize'] / lat_int))
+                             )
         gpp_z = gpp_zs.rolling_window('latitude',
                                       iris.analysis.SUM, window_size)
         ctotal_z = ctotal_zs.rolling_window('latitude',
