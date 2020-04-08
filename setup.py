@@ -54,8 +54,6 @@ REQUIREMENTS = {
     # Execute 'python setup.py test' to run tests
     'test': [
         'easytest',
-        'mock',
-        'nose',
         'pycodestyle',
         'pytest>=3.9',
         'pytest-cov',
@@ -67,6 +65,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
+        'codespell',
         'isort',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
         'sphinx',
@@ -105,8 +104,17 @@ def discover_python_files(paths, ignore):
                     yield filename
 
 
-class CustomCommand(Command):
-    """Custom Command class."""
+class RunLinter(Command):
+    """Class to run a linter and generate reports."""
+
+    user_options = []
+
+    def initialize_options(self):
+        """Do nothing."""
+
+    def finalize_options(self):
+        """Do nothing."""
+
     def install_deps_temp(self):
         """Try to temporarily install packages needed to run the command."""
         if self.distribution.install_requires:
@@ -115,54 +123,6 @@ class CustomCommand(Command):
         if self.distribution.tests_require:
             self.distribution.fetch_build_eggs(self.distribution.tests_require)
 
-
-class RunTests(CustomCommand):
-    """Class to run tests and generate reports."""
-
-    user_options = [('installation', None,
-                     'Run tests that require installation.')]
-
-    def initialize_options(self):
-        """Initialize custom options."""
-        self.installation = False
-
-    def finalize_options(self):
-        """Do nothing."""
-    def run(self):
-        """Run tests and generate a coverage report."""
-        self.install_deps_temp()
-
-        import pytest
-
-        report_dir = 'test-reports'
-        args = [
-            'tests',
-            'esmvaltool',  # for doctests
-            '--doctest-modules',
-            '--cov=esmvaltool',
-            '--cov-report=term',
-            '--cov-report=html:{}/coverage_html'.format(report_dir),
-            '--cov-report=xml:{}/coverage.xml'.format(report_dir),
-            '--junit-xml={}/report.xml'.format(report_dir),
-            '--html={}/report.html'.format(report_dir),
-            '--disable-warnings'
-        ]
-        if self.installation:
-            args.append('--installation')
-        errno = pytest.main(args)
-
-        sys.exit(errno)
-
-
-class RunLinter(CustomCommand):
-    """Class to run a linter and generate reports."""
-
-    user_options = []
-
-    def initialize_options(self):
-        """Do nothing."""
-    def finalize_options(self):
-        """Do nothing."""
     def run(self):
         """Run prospector and generate a report."""
         check_paths = PACKAGES + [
@@ -247,7 +207,6 @@ setup(
         ],
     },
     cmdclass={
-        'test': RunTests,
         'lint': RunLinter,
     },
     zip_safe=False,

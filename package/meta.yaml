@@ -2,7 +2,7 @@
 ---
 
 # Build commmand:
-# conda build . -c conda-forge -c esmvalgroup
+# conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
 {% set version = "2.0.0b3" %}
@@ -16,7 +16,7 @@ source:
   # git_rev: v{{ version }}
   # git_url: https://github.com/ESMValGroup/ESMValTool.git
   # Use this line instead of the above to test building without a release:
-  path: .
+  path: ..
 
 build:
   # Increment the build number when building a new conda package of the same

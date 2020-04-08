@@ -21,4 +21,3 @@ dependencies:
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
   - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
-  - libblas=3.8.0=12_openblas  # Does build 13_openblas not seem to work with R requirements
