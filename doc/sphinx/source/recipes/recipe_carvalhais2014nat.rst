@@ -31,7 +31,7 @@ First, the total carbon content of land ecosystems is calculated as,
 
 where :math:`cSoil` and :math:`cVeg` are the carbon contents in soil and
 vegetation. **Note that this is not fully consistent with `Carvalhais et al.
-(2014)`, in which `ctotal` includes all carbon storages that respire to the
+(2014)`_, in which `ctotal` includes all carbon storages that respire to the
 atmosphere. Due to inconsistency across models, it resulted in having different
 carbon storage components in calculation of ctotal for different models**.
 
@@ -304,7 +304,8 @@ Example plots
 
    Comparison of latitudinal (zonal) variations of pearson correlation between
    turnover time and climate: turnover time and precipitation, controlled for
-   temperature (left) and vice-versa (right).
+   temperature (left) and vice-versa (right). Reproduces figures 2c and 2d in 
+   `Carvalhais et al. (2014)`_.
 
 .. _fig_carvalhais2014nat_2:
 
@@ -314,7 +315,7 @@ Example plots
 
    Comparison of observation-based and modelled ecosystem carbon turnover time.
    Along the diagnonal, tau_ctotal are plotted, above the bias, and below
-   density plots. The inset text in density plots indicate the correlation.
+   density plots. The inset text in density plots indicate the correlation. 
 
 .. _fig_carvalhais2014nat_3:
 
@@ -322,7 +323,12 @@ Example plots
    :align: center
    :width: 80%
 
-   Description missing
+   Global distributions of multimodel bias and model agreement. Multimodel bias 
+   is calculated as the ratio of multimodel median turnover time and that from 
+   observation.  Stippling indicates the regions where only less than one 
+   quarter of the models fall within the range of observational uncertainties 
+   (`5^{th}` and `95^{th}` percentiles). Reproduces figure 3 in `Carvalhais et 
+   al. (2014)`_.
 
 .. _fig_carvalhais2014nat_4:
 
@@ -330,4 +336,7 @@ Example plots
    :align: center
    :width: 80%
 
-   Description missing
+   Comparison of latitudinal (zonal) variations of observation-based and 
+   modelled ecosystem carbon turnover time. The zonal turnover time is 
+   calculated as the ratio of zonal `ctotal` and `gpp`. Reproduces figures 2a 
+   and 2b in `Carvalhais et al. (2014)`_.
