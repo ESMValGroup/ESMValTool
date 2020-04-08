@@ -3,17 +3,27 @@ compares the zonal turnover time from the models with observation from
 Carvalhais et al., 2014
 '''
 
-import os
-
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
-from esmvaltool.diag_scripts.shared import group_metadata
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
+)
 
-import extraUtils as xu
-from shared import _load_variable, _get_obs_data_zonal
+import esmvaltool.diag_scripts.land_carbon_cycle.extraUtils as xu
+from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
+    _get_obs_data_zonal,
+    _load_variable,
+)
+from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
+    _get_ancestor_files,
+    get_provenance_record,
+)
 
 
 def _get_fig_config(diag_config):
@@ -90,7 +100,7 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
     return zonal_tau
 
 
-def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
+def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
     '''
     makes the maps of variables
 
@@ -153,12 +163,7 @@ def _plot_zonal_tau(all_mod_dat, all_obs_dat, diag_config):
                ma='center')
     xu.rem_axLine(['top', 'right'])
 
-    png_name = '{title}_{source_label}_{grid_label}z.png'.format(
-        title=tau_obs.long_name,
-        source_label=diag_config['obs_info']['source_label'],
-        grid_label=diag_config['obs_info']['grid_label'])
-
-    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 bbox_extra_artists=[leg],
                 dpi=450)
@@ -186,7 +191,43 @@ def main(diag_config):
         zonal_tau_mod[key] = _calc_zonal_tau(gpp, ctotal, fig_config)
 
     zonal_tau_obs = _get_obs_data_zonal(diag_config)
-    _plot_zonal_tau(zonal_tau_mod, zonal_tau_obs, diag_config)
+
+    obs_var = diag_config.get('obs_variable')[0]
+    tau_obs = zonal_tau_obs[obs_var]
+    base_name = '{title}_{source_label}_{grid_label}z'.format(
+        title=tau_obs.long_name,
+        source_label=diag_config['obs_info']['source_label'],
+        grid_label=diag_config['obs_info']['grid_label'])
+
+    provenance_record = get_provenance_record(
+        "Comparison of latitudinal (zonal) variations of observation-based and"
+        "modelled ecosystem carbon turnover time. The zonal turnover time is"
+        "calculated as the ratio of zonal `ctotal` and `gpp`. Reproduces "
+        "figure 2a and 2b in Carvalhais et al. (2014).",
+        ['mean', 'perc'],
+        ['zonal'],
+        _get_ancestor_files(diag_config, obs_var))
+
+    if diag_config['write_netcdf']:
+        model_cubes = [c
+                       for c in zonal_tau_mod.values()
+                       if isinstance(c, iris.cube.Cube)]
+        obs_cubes = [c
+                     for c in zonal_tau_obs.values()
+                     if isinstance(c, iris.cube.Cube)]
+        netcdf_path = get_diagnostic_filename(base_name, diag_config)
+        save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
+        iris.save(save_cubes, netcdf_path)
+    else:
+        netcdf_path = None
+
+    if diag_config['write_plots']:
+        plot_path = get_plot_filename(base_name, diag_config)
+        _plot_zonal_tau(plot_path, zonal_tau_mod, zonal_tau_obs, diag_config)
+        provenance_record['plot_file'] = plot_path
+
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 if __name__ == '__main__':
