@@ -165,7 +165,7 @@ def _apply_common_mask(dat_1, dat_2):
     return dat_1, dat_2
 
 
-def _get_agreement_mask(mmdat, dat_5, dat_95, nmodel_reject=2):
+def _get_agreement_mask(mmdat, dat_5, dat_95, fig_config, nmodel_reject=2):
     '''
     get the mask of regiosn where fewer than one quarter of the model
     simulations are outside the range of observational uncertainty
@@ -175,8 +175,10 @@ def _get_agreement_mask(mmdat, dat_5, dat_95, nmodel_reject=2):
     num_count = _maskf.sum(0)
     agreement_mask = np.zeros_like(num_count)
     agreement_mask[num_count < nmodel_reject] = 1
-    wnan = np.isnan(dat_5)
-    agreement_mask[wnan] = np.nan
+    dat_5_masked = xu.remove_invalid(dat_5, 
+                    fill_value=fig_config['fill_value'])
+    wnan = np.ma.masked_invalid(dat_5).mask
+    agreement_mask[wnan] = 0.
     return agreement_mask
 
 
@@ -662,6 +664,7 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
     agreement_mask_tau = _get_agreement_mask(dat_tau_full,
                                              tau_obs_5,
                                              tau_obs_95,
+                                             fig_config,
                                              nmodel_reject=int(nmodels / 4))
 
     # plot the hatches for uncertainty/multimodel agreement
@@ -794,8 +797,8 @@ if __name__ == '__main__':
     with run_diagnostic() as config:
         mod_dat_all, Obs_dat_all = _get_turnover_data(config)
         fig_config = _get_fig_config(config)
-        _plot_matrix_map(mod_dat_all, Obs_dat_all, config)
         _plot_multimodel_agreement(mod_dat_all, Obs_dat_all, config)
         _plot_single_map(Obs_dat_all['tau_ctotal']['grid'],
                          Obs_dat_all['tau_ctotal']['global'],
                          config['obs_info']['source_label'], config)
+        _plot_matrix_map(mod_dat_all, Obs_dat_all, config)

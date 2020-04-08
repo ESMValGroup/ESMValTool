@@ -38,10 +38,10 @@ obs_details: &obs_details
     obs_data_subdir: 'data_ESMValTool_Carvalhais2014'
     source_label: 'Carvalhais2014'
     variant_label: 'BE'
-    grid_label: 'gn'
-    grid_extent: '0.5x0.5'
-    # grid_label: 'gr'
-    # grid_extent: '2.5x1.875'
+    # grid_label: 'gn'
+    # grid_extent: '0.5x0.5'
+    grid_label: 'gr'
+    grid_extent: '2.5x1.875'
     # 'gn': 0.5x0.5, native observation
     # 'gr1': 2.812x2.813, bcc-csm1-1
     # 'gr2': 1.25x0.937, CCSM4
@@ -64,8 +64,8 @@ preprocessors:
   preproc_meanRegrid:
     custom_order: true
     regrid:
-      target_grid: 0.5x0.5
-      # target_grid: 2.5x1.875
+      # target_grid: 0.5x0.5
+      target_grid: 2.5x1.875
       scheme: nearest
     mask_landsea:
       mask_out: sea

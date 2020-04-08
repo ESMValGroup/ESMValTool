@@ -336,15 +336,27 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
         r_mod = all_mod_dat[row_mod]['data']
         lats_mod = all_mod_dat[row_mod]['latitude']
         r_tau_tas_c_pr_mod = r_mod[:, 0]
-        sp1.plot(np.ma.masked_equal(r_tau_tas_c_pr_mod, np.nan),
-                 lats_mod.points,
-                 lw=0.3,
-                 label=row_mod)
         r_tau_pr_c_tas_mod = r_mod[:, 1]
-        sp2.plot(np.ma.masked_equal(r_tau_pr_c_tas_mod, np.nan),
-                 lats_mod.points,
-                 lw=0.3,
-                 label=row_mod)
+        if row_mod in ['MultiModelMedian', 'MultiModelMean']:
+            sp1.plot(np.ma.masked_equal(r_tau_tas_c_pr_mod, np.nan),
+                    lats_mod.points,
+                    lw=1.1,
+                    color='blue',
+                    label=row_mod)
+            sp2.plot(np.ma.masked_equal(r_tau_pr_c_tas_mod, np.nan),
+                    lats_mod.points,
+                    lw=1.1,
+                    color='blue',
+                    label=row_mod)
+        else:
+            sp1.plot(np.ma.masked_equal(r_tau_tas_c_pr_mod, np.nan),
+                    lats_mod.points,
+                    lw=0.3,
+                    label=row_mod)
+            sp2.plot(np.ma.masked_equal(r_tau_pr_c_tas_mod, np.nan),
+                    lats_mod.points,
+                    lw=0.3,
+                    label=row_mod)
 
     # normalized mean correlations from model
 
@@ -369,7 +381,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
         r_tau_tas_c_pr_all)
     sp1.plot(np.ma.masked_equal(r_mmod, np.nan),
              lats_mod.points,
-             color='blue',
+             color='red',
              ls='--',
              lw=1,
              label='Norm. Mean r')
@@ -384,7 +396,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
 
     sp2.plot(np.ma.masked_equal(r_mmod, np.nan),
              lats_mod.points,
-             color='blue',
+             color='red',
              ls='--',
              lw=1,
              label='Norm. Mean r')

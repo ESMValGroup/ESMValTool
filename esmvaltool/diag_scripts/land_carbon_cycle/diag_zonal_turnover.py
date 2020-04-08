@@ -36,7 +36,7 @@ def _get_fig_config(diag_config):
         'ax_fs': 7.1,
         'valrange_x': (2, 1000),
         'valrange_y': (-70, 90),
-        'bandsize': None,
+        'bandsize': 2.5,
         'gpp_threshold': 0.01
     }
     fig_config.update(diag_config.get('fig_config'))
@@ -109,7 +109,7 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
         # get the interval of latitude and create array for partial correlation
         dat_lats = gpp.coord('latitude').points
         lat_int = abs(dat_lats[1] - dat_lats[0])
-        window_size = max(2, np.round(fig_config['bandsize'] / lat_int))
+        window_size = np.int(max(2, np.round(fig_config['bandsize'] / lat_int)))
         gpp_z = gpp_zs.rolling_window('latitude',
                                       iris.analysis.SUM, window_size)
         ctotal_z = ctotal_zs.rolling_window('latitude',
