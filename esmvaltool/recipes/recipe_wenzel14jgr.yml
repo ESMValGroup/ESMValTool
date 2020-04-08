@@ -1,4 +1,4 @@
-# recipe_wenzel14jgr.xml
+1# recipe_wenzel14jgr.xml
 ---
 documentation:
 
@@ -473,7 +473,7 @@ diagnostics:
         time_avg: "yearly"
         ts_anomaly: "anom"
         run_ave: 2
-        area_opper: "sum"
+        area_opper: "average"
         align: True
         styleset: CMIP5       # Plot style
         
@@ -521,6 +521,7 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1960
         end_year: 2005
+        plot_units: GtC y-1
         reference_dataset: GCP
         additional_datasets:
           - {dataset: CanESM2, start_year: 1960 ,end_year: 2005}
@@ -550,6 +551,7 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1960
         end_year: 2005
+        plot_units: K
         reference_dataset: NCEP
         additional_datasets:
           - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2005}#, frequency: yr}
