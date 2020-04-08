@@ -1,7 +1,7 @@
 """Tests for the module :mod:`esmvaltool.diag_scripts.shared.iris_helpers`."""
+from unittest import mock
 
 import iris
-import mock
 import numpy as np
 import pytest
 
