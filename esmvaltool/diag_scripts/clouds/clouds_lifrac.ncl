@@ -413,7 +413,8 @@ begin
 ;    if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
 ;      res@gsnRightString = ""
 ;    end if
-    maps(imod) = gsn_csm_contour(wks0, data1, res)
+;    maps(imod) = gsn_csm_contour(wks0, data1, res)
+    maps(imod) = gsn_csm_pres_hgt(wks0, data1, res)
 
     ; mandatory netcdf output
 
