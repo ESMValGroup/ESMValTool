@@ -1,11 +1,5 @@
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
-    get_diagnostic_filename,
-    # get_plot_filename,
     group_metadata,
-    # io,
-    # plot,
-    # run_diagnostic,
     select_metadata,
 )
 
