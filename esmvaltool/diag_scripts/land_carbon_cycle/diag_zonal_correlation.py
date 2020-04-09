@@ -2,26 +2,29 @@
 calculates and compares the correlation between the turnover time of carbon and
 climate defined as the partial correlations with precipitation and temperature
 '''
-
-# operating system manipulations (e.g. path constructions)
-import os
 import sys
-
-# to manipulate iris cubes
+import iris
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
 
-# internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import group_metadata
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
+)
 
-# place your module imports here
-import extraUtils as xu
-from shared import _load_variable
-from shared import _get_obs_data_zonal
-
-# Classes and settings
+import esmvaltool.diag_scripts.land_carbon_cycle.extraUtils as xu
+from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
+    _get_obs_data_zonal,
+    _load_variable,
+)
+from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
+    _get_ancestor_files,
+    get_provenance_record,
+)
 
 
 def _get_fig_config(diag_config):
@@ -51,9 +54,6 @@ def _get_fig_config(diag_config):
     return fig_config
 
 
-# data and calculations
-
-
 def _apply_common_mask(dat_1, dat_2, dat_3):
     '''
     apply a common mask to three arrays so that they have the same locations of
@@ -71,48 +71,6 @@ def _apply_common_mask(dat_1, dat_2, dat_3):
     dat_2 = np.ma.masked_invalid(dat_2)
     dat_3 = np.ma.masked_invalid(dat_3)
     return dat_1, dat_2, dat_3
-
-
-def _get_zonal_correlation(diag_config):
-    '''
-    A diagnostic function to calculate the zonal correlation between ecosystem
-    carbon turnover time and climate.
-
-    Arguments:
-        diag_config - nested dictionary of metadata
-
-    Returns:
-        data of the zonal correlations in models and from observations
-    '''
-    my_files_dict = group_metadata(diag_config['input_data'].values(),
-                                   'dataset')
-    fig_config = _get_fig_config(diag_config)
-    all_mod_dat = {}
-    for key, value in my_files_dict.items():
-        all_mod_dat[key] = {}
-        mod_coords = {}
-        ctotal = _load_variable(value, 'ctotal')
-        gpp = _load_variable(value, 'gpp')
-        precip = _load_variable(value, 'pr')
-        tas = _load_variable(value, 'tas')
-        tau_ctotal = (ctotal / gpp)
-        tau_ctotal.convert_units('yr')
-        # set the attributes
-        tau_ctotal.var_name = 'tau_ctotal'
-        for coord in gpp.coords():
-            mod_coords[coord.name()] = coord
-
-        _tau_dat = xu.remove_invalid(tau_ctotal.data, fill_value=np.nan)
-        _precip_dat = xu.remove_invalid(precip.data, fill_value=np.nan)
-        _tas_dat = xu.remove_invalid(tas.data, fill_value=np.nan)
-        zon_corr = _calc_zonal_correlation(_tau_dat, _precip_dat, _tas_dat,
-                                           mod_coords['latitude'].points,
-                                           fig_config)
-        all_mod_dat[key]['data'] = zon_corr
-        all_mod_dat[key]['latitude'] = mod_coords['latitude']
-    all_obs_dat = _get_obs_data_zonal(diag_config)
-    _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config)
-    return 'zonal correlation diagnostic is complete'
 
 
 def _partialCorr(dat_columns, fig_config):
@@ -225,9 +183,6 @@ def _get_multimodel_stats(r_multimodel):
     return r_mean, r_low, r_hi
 
 
-# Plotting functions
-
-
 def _fix_axis(x_lab, fig_config, axlw=0.4, rem_list=('top', 'right')):
     '''
     fixes the axis limits, labels and lines
@@ -256,20 +211,19 @@ def _fix_axis(x_lab, fig_config, axlw=0.4, rem_list=('top', 'right')):
     return
 
 
-def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
+def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
+                            zonal_correlation_obs, diag_config):
     '''
     makes the line plots of zonal correlations from all models
 
     Arguments:
         diag_config - nested dictionary of metadata
-        all_mod_dat - dictionary of correlations from all models
-        all_obs_dat - dictionary of correlations and ranges from observation
-
-    Returns:
-        string; makes some time-series plots
+        zonal_correlation_mod - dictionary of correlations from all models
+        zonal_correlation_obs - dictionary of correlations and ranges from 
+        observation
     '''
     fig_config = _get_fig_config(diag_config)
-    models = list(all_mod_dat.keys())
+    models = list(zonal_correlation_mod.keys())
     nmodels = len(models)
     models = sorted(models, key=str.casefold)
     multiModels = 'MultiModelMedian MultiModelMean'.split()
@@ -282,11 +236,11 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     sp1 = plt.subplot(1, 2, 1)
 
     # get the observations out of the dictionary
-    lats_obs = all_obs_dat['latitude']
+    lats_obs = zonal_correlation_obs['latitude']
     obs_var = diag_config.get('obs_variable')[0]
-    r_tau_ctotal_tas = all_obs_dat[obs_var]
-    r_tau_ctotal_tas_5 = all_obs_dat[obs_var + '_5']
-    r_tau_ctotal_tas_95 = all_obs_dat[obs_var + '_95']
+    r_tau_ctotal_tas = zonal_correlation_obs[obs_var]
+    r_tau_ctotal_tas_5 = zonal_correlation_obs[obs_var + '_5']
+    r_tau_ctotal_tas_95 = zonal_correlation_obs[obs_var + '_95']
     # plot the correlations from observation
 
     _fix_axis(obs_var, fig_config)
@@ -311,9 +265,9 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
 
     # get the observations out of the dictionary
     obs_var = diag_config.get('obs_variable')[1]
-    r_tau_ctotal_pr = all_obs_dat[obs_var]
-    r_tau_ctotal_pr_5 = all_obs_dat[obs_var + '_5']
-    r_tau_ctotal_pr_95 = all_obs_dat[obs_var + '_95']
+    r_tau_ctotal_pr = zonal_correlation_obs[obs_var]
+    r_tau_ctotal_pr_5 = zonal_correlation_obs[obs_var + '_5']
+    r_tau_ctotal_pr_95 = zonal_correlation_obs[obs_var + '_95']
     _fix_axis(obs_var, fig_config)
 
     # plot the correlations from observation
@@ -333,8 +287,8 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     # loop over models and plot zonal correlations
     for row_m in range(nmodels):
         row_mod = models[row_m]
-        r_mod = all_mod_dat[row_mod]['data']
-        lats_mod = all_mod_dat[row_mod]['latitude']
+        r_mod = zonal_correlation_mod[row_mod]['data']
+        lats_mod = zonal_correlation_mod[row_mod]['latitude']
         r_tau_tas_c_pr_mod = r_mod[:, 0]
         r_tau_pr_c_tas_mod = r_mod[:, 1]
         if row_mod in ['MultiModelMedian', 'MultiModelMean']:
@@ -361,7 +315,7 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     # normalized mean correlations from model
 
     # remove the multimodel estimates
-    models = list(all_mod_dat.keys())
+    models = list(zonal_correlation_mod.keys())
     for _mm in multiModels:
         if _mm in models:
             models.remove(_mm)
@@ -372,8 +326,8 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     r_tau_tas_c_pr_all = np.ones((len(lats_obs.points), nmodels)) * np.nan
     for row_m in range(nmodels):
         row_mod = models[row_m]
-        r_mod = all_mod_dat[row_mod]['data']
-        lats_mod = all_mod_dat[row_mod]['latitude']
+        r_mod = zonal_correlation_mod[row_mod]['data']
+        lats_mod = zonal_correlation_mod[row_mod]['latitude']
         r_tau_tas_c_pr_all[:, row_m] = r_mod[:, 0]
         r_tau_pr_c_tas_all[:, row_m] = r_mod[:, 1]
 
@@ -412,22 +366,88 @@ def _plot_zonal_correlation(all_mod_dat, all_obs_dat, diag_config):
     leg = xu.draw_line_legend(ax_fs=fig_config['ax_fs'])
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
 
-    # save and close the figure
-    png_name = '{title}_{corr}_{source_label}_{grid_label}z.png'.format(
-        title=r_tau_ctotal_pr.long_name,
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                bbox_extra_artists=[leg],
+                dpi=450)
+    plt.close()
+
+
+def main(diag_config):
+    '''
+    A diagnostic function to calculate the zonal correlation between turnover 
+    time of carbon and climatic variables.
+
+    Arguments:
+        diag_config - nested dictionary of metadata
+    '''
+    my_files_dict = group_metadata(diag_config['input_data'].values(),
+                                   'dataset')
+    fig_config = _get_fig_config(diag_config)
+    zonal_correlation_mod = {}
+    for key, value in my_files_dict.items():
+        zonal_correlation_mod[key] = {}
+        mod_coords = {}
+        ctotal = _load_variable(value, 'ctotal')
+        gpp = _load_variable(value, 'gpp')
+        precip = _load_variable(value, 'pr')
+        tas = _load_variable(value, 'tas')
+        tau_ctotal = (ctotal / gpp)
+        tau_ctotal.convert_units('yr')
+        # set the attributes
+        tau_ctotal.var_name = 'tau_ctotal'
+        for coord in gpp.coords():
+            mod_coords[coord.name()] = coord
+
+        _tau_dat = xu.remove_invalid(tau_ctotal.data, fill_value=np.nan)
+        _precip_dat = xu.remove_invalid(precip.data, fill_value=np.nan)
+        _tas_dat = xu.remove_invalid(tas.data, fill_value=np.nan)
+        zon_corr = _calc_zonal_correlation(_tau_dat, _precip_dat, _tas_dat,
+                                           mod_coords['latitude'].points,
+                                           fig_config)
+        zonal_correlation_mod[key]['data'] = zon_corr
+        zonal_correlation_mod[key]['latitude'] = mod_coords['latitude']
+    zonal_correlation_obs = _get_obs_data_zonal(diag_config)
+
+    base_name = '{title}_{corr}_{source_label}_{grid_label}z'.format(
+        title='r_tau_ctotal_climate',
         corr=fig_config['correlation_method'],
         source_label=diag_config['obs_info']['source_label'],
         grid_label=diag_config['obs_info']['grid_label'])
 
-    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
-                bbox_inches='tight',
-                bbox_extra_artists=[t_x, leg],
-                dpi=450)
-    plt.close()
+    provenance_record = get_provenance_record(
+        "Comparison of latitudinal (zonal) variations of pearson"
+        "correlation between turnover time and climate: turnover"
+        "time and precipitation, controlled for temperature"
+        "(left) and vice-versa (right). Reproduces figures 2c"
+        "and 2d in Carvalhais et al. (2014).", ['corr'
+        , 'perc'],['zonal'], _get_ancestor_files(diag_config, 'tau_ctotal'))
 
-    return 'Plotting of zonal correlation is complete'
+    if diag_config['write_netcdf']:
+        model_cubes = [
+            c for c in zonal_correlation_mod.values()
+            if isinstance(c, iris.cube.Cube)
+        ]
+        obs_cubes = [
+            c for c in zonal_correlation_obs.values()
+            if isinstance(c, iris.cube.Cube)
+        ]
+        netcdf_path = get_diagnostic_filename(base_name, diag_config)
+        save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
+        iris.save(save_cubes, netcdf_path)
+    else:
+        netcdf_path = None
+
+    if diag_config['write_plots']:
+        plot_path = get_plot_filename(base_name, diag_config)
+        _plot_zonal_correlation(plot_path, zonal_correlation_mod,
+                                zonal_correlation_obs, diag_config)
+        provenance_record['plot_file'] = plot_path
+
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        _get_zonal_correlation(config)
+        main(config)
