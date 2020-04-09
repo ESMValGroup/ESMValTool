@@ -1,0 +1,111 @@
+---
+G:
+  H:
+    '2050':
+      - control: [65.0, 100.0]
+        future: [0.0, 35.0]
+        season: jja
+        var: pr
+      - control: [10.0, 40.0]
+        future: [60.0, 90.0]
+        season: djf
+        var: tas
+      - control: [10.0, 50.0]
+        future: [60.0, 100.0]
+        season: jja
+        var: tas
+    '2085':
+      - control: [70.0, 100.0]
+        future: [0.0, 30.0]
+        season: jja
+        var: pr
+      - control: [10.0, 40.0]
+        future: [60.0, 90.0]
+        season: djf
+        var: tas
+      - control: [10.0, 50.0]
+        future: [60.0, 100.0]
+        season: jja
+        var: tas
+  L:
+    '2050':
+      - control: [25.0, 55.0]
+        future: [45.0, 75.0]
+        season: jja
+        var: pr
+      - control: [50.0, 80.0]
+        future: [20.0, 50.0]
+        season: djf
+        var: tas
+      - control: [0.0, 100.0]
+        future: [0.0, 50.0]
+        season: jja
+        var: tas
+    '2085':
+      - control: [10.0, 40.0]
+        future: [60.0, 90.0]
+        season: jja
+        var: pr
+      - control: [50.0, 80.0]
+        future: [20.0, 50.0]
+        season: djf
+        var: tas
+      - control: [0.0, 100.0]
+        future: [0.0, 50.0]
+        season: jja
+        var: tas
+W:
+  H:
+    '2050':
+      - control: [70.0, 100.0]
+        future: [0.0, 40.0]
+        season: jja
+        var: pr
+      - control: [10.0, 40.0]
+        future: [60.0, 90.0]
+        season: djf
+        var: tas
+      - control: [10.0, 50.0]
+        future: [60.0, 100.0]
+        season: jja
+        var: tas
+    '2085':
+      - control: [60.0, 100.0]
+        future: [0.0, 40.0]
+        season: jja
+        var: pr
+      - control: [20.0, 50.0]
+        future: [50.0, 80.0]
+        season: djf
+        var: tas
+      - control: [10.0, 50.0]
+        future: [60.0, 100.0]
+        season: jja
+        var: tas
+  L:
+    '2050':
+      - control: [0.0, 30.0]
+        future: [70.0, 100.0]
+        season: jja
+        var: pr
+      - control: [50.0, 80.0]
+        future: [20.0, 50.0]
+        season: djf
+        var: tas
+      - control: [0.0, 100.0]
+        future: [0.0, 50.0]
+        season: jja
+        var: tas
+    '2085':
+      - control: [0.0, 30.0]
+        future: [70.0, 100.0]
+        season: jja
+        var: pr
+      - control: [50.0, 90.0]
+        future: [10.0, 50.0]
+        season: djf
+        var: tas
+      - control: [0.0, 100.0]
+        future: [0.0, 50.0]
+        season: jja
+        var: tas

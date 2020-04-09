@@ -1,0 +1,382 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: KNMI Climate Scenarios recipe
+
+  authors:
+    - kalverla_peter
+    # - rol_evert
+
+  maintainer:
+    - xyz
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+
+
+# Below are CMIP5 datasets
+# Datasets commented out with '##%' are temporariliy commented out
+# Datasets commented out with '##%#' have problems, and should not be used
+# Replace ##% with nothing to run with all datasets
+datasets:
+##%  # Starting at year 1961, since some datasets don't have data available before 1961
+  - {dataset: ACCESS1-0, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+  - {dataset: ACCESS1-3, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: BNU-ESM, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+  - {dataset: CCSM4, exp: historical, ensemble: r(1:4)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CCSM4, exp: historical, ensemble: r1i2p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CCSM4, exp: historical, ensemble: r1i2p2, start_year: 1961, end_year: 2005}
+##%  - {dataset: CESM1-BGC, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CESM1-CAM5-1-FV2, exp: historical, ensemble: r(1:4)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CESM1-CAM5, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CESM1-FASTCHEM, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CESM1-WACCM, exp: historical, ensemble: r(1:7)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CMCC-CESM, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CMCC-CM, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CMCC-CMS, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CNRM-CM5-2, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CNRM-CM5, exp: historical, ensemble: r(1:10)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CSIRO-Mk3-6-0, exp: historical, ensemble: r(1:10)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CSIRO-Mk3L-1-2, exp: historical, ensemble: r(1:3)i2p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CanCM4, exp: historical, ensemble: r(1:10)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: CanESM2, exp: historical, ensemble: r(1:5)i1p1, start_year: 1961, end_year: 2005}
+##%# Time is not monotonic for variable pr: 2009 is contained twice.
+##%# This crashes the preprocessor, even if we don't need the year; presumably, the double year makes the
+##%# input too doubtful to ascertain all years are correct.
+##%# Commenting out all EC-EARTH data
+##%# There are too many problems with individual datasets, making the other datasets
+##%# not to be trusted anymore
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r2i1p1, start_year: 1961, end_year: 2005}
+##%# No tas data for year 2005 (only up to Dec 2004) ; no data at all for variable pr
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r5i1p1, start_year: 1961, end_year: 2005}
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r6i1p1, start_year: 1961, end_year: 2005}
+##%# Time is not monotonic for variable tas. Time coordinate data shows
+##%# the sawtooth pattern of incorrectly concatenated datasets
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r7i1p1, start_year: 1961, end_year: 2005}
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r(8:9)i1p1, start_year: 1961, end_year: 2005}
+##%# No data for year 2005 for variable tas
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r11i1p1, start_year: 1961, end_year: 2005}
+##%#  - {dataset: EC-EARTH, exp: historical, ensemble: r(12:14)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: FGOALS-g2, exp: historical, ensemble: r(1:5)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: FGOALS-s2, exp: historical, ensemble: r(2:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: FIO-ESM, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GFDL-CM2p1, exp: historical, ensemble: r(1:10)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GFDL-CM3, exp: historical, ensemble: r(1:5)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GFDL-ESM2G, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GFDL-ESM2M, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-H-CC, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%# Can not concatenate cubes (overlapping datasets for pr: 2001-2005 and 2001-2012)
+##%#  - {dataset: GISS-E2-H, exp: historical, ensemble: r6i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-H, exp: historical, ensemble: r(1:5)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-H, exp: historical, ensemble: r(1:6)i1p2, start_year: 1961, end_year: 2005}
+##%# Can not concatenate cubes (overlapping datasets for pr: 2001-2005 and 2001-2012)
+##%#  - {dataset: GISS-E2-H, exp: historical, ensemble: r6i1p3, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-H, exp: historical, ensemble: r(1:5)i1p3, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R-CC, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r(1:6)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p121, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p122, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p123, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p124, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p125, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p126, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p127, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r1i1p128, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r(1:6)i1p2, start_year: 1961, end_year: 2005}
+##%  - {dataset: GISS-E2-R, exp: historical, ensemble: r(1:6)i1p3, start_year: 1961, end_year: 2005}
+##%  - {dataset: HadCM3, exp: historical, ensemble: r(1:10)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: HadGEM2-AO, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: HadGEM2-CC, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: HadGEM2-ES, exp: historical, ensemble: r(1:5)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: IPSL-CM5A-LR, exp: historical, ensemble: r(1:6)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: IPSL-CM5A-MR, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: IPSL-CM5B-LR, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MIROC-ESM-CHEM, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MIROC-ESM, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MIROC4h, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MIROC5, exp: historical, ensemble: r(1:5)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MPI-ESM-LR, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MPI-ESM-MR, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MPI-ESM-P, exp: historical, ensemble: r(1:2)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MRI-CGCM3, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: MRI-CGCM3, exp: historical, ensemble: r(4:5)i1p2, start_year: 1961, end_year: 2005}
+##%  - {dataset: MRI-ESM1, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: NorESM1-M, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: NorESM1-ME, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%# Missing data for variable pr (data exists for tas)
+##%#  - {dataset: NorESM1-ME, exp: historical, ensemble: r1i1p2, start_year: 1961, end_year: 2005}
+##%  - {dataset: bcc-csm1-1-m, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: bcc-csm1-1, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+##%  - {dataset: inmcm4, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+##%
+##%## Below RCP 26 datasets pass without problems, but we're not using them for analyses
+##%##  - {dataset: BNU-ESM, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: CCSM4, exp: rcp26, ensemble: r(1:6)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: CESM1-CAM5, exp: rcp26, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: CESM1-WACCM, exp: rcp26, ensemble: r2i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: CNRM-CM5, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: CSIRO-Mk3-6-0, exp: rcp26, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: CanESM2, exp: rcp26, ensemble: r(1:5)i1p1, start_year: 2006, end_year: 2099}
+##%###  - {dataset: EC-EARTH, exp: rcp26, ensemble: r8i1p1, start_year: 2006, end_year: 2099}
+##%###  - {dataset: EC-EARTH, exp: rcp26, ensemble: r12i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: FGOALS-g2, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: FIO-ESM, exp: rcp26, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GFDL-CM3, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GFDL-ESM2G, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GFDL-ESM2M, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GISS-E2-H, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GISS-E2-H, exp: rcp26, ensemble: r1i1p2, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GISS-E2-H, exp: rcp26, ensemble: r1i1p3, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GISS-E2-R, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GISS-E2-R, exp: rcp26, ensemble: r1i1p2, start_year: 2006, end_year: 2099}
+##%##  - {dataset: GISS-E2-R, exp: rcp26, ensemble: r1i1p3, start_year: 2006, end_year: 2099}
+##%##  - {dataset: HadGEM2-AO, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: HadGEM2-ES, exp: rcp26, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: IPSL-CM5A-LR, exp: rcp26, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: IPSL-CM5A-MR, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: MIROC-ESM-CHEM, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: MIROC-ESM, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: MIROC5, exp: rcp26, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: MPI-ESM-LR, exp: rcp26, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: MPI-ESM-MR, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: MRI-CGCM3, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: NorESM1-M, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: NorESM1-ME, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: bcc-csm1-1-m, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%##  - {dataset: bcc-csm1-1, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%
+  - {dataset: ACCESS1-0, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: ACCESS1-3, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: BNU-ESM, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: CCSM4, exp: rcp45, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CESM1-BGC, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%# Missing time data: december 2057
+##%#  - {dataset: CESM1-CAM5-1-FV2, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CESM1-CAM5, exp: rcp45, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CESM1-WACCM, exp: rcp45, ensemble: r(2:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CMCC-CM, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CMCC-CMS, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CNRM-CM5, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CSIRO-Mk3-6-0, exp: rcp45, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CSIRO-Mk3L-1-2, exp: rcp45, ensemble: r(1:3)i2p1, start_year: 2006, end_year: 2099}
+##%# Data only available up to 2035
+##%#  - {dataset: CanCM4, exp: rcp45, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CanESM2, exp: rcp45, ensemble: r(1:5)i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp45, ensemble: r2i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp45, ensemble: r6i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp45, ensemble: r(8:9)i1p1, start_year: 2006, end_year: 2099}
+##%# Failed to concatenate cubes: there are overlapping datasets for tas for the year 2099:
+##%# one from Jan to Apr, one from Jan to Dec
+##%#  - {dataset: EC-EARTH, exp: rcp45, ensemble: r11i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp45, ensemble: r12i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp45, ensemble: r14i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: FGOALS-g2, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: FIO-ESM, exp: rcp45, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%# Only data available until 2040
+##%#  - {dataset: GFDL-CM2p1, exp: rcp45, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-CM3, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%# No psl data available for 2086 -- 2090
+##%#  - {dataset: GFDL-CM3, exp: rcp45, ensemble: r3i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-CM3, exp: rcp45, ensemble: r5i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-ESM2G, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-ESM2M, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H-CC, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp45, ensemble: r(1:5)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp45, ensemble: r(1:5)i1p2, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp45, ensemble: r(1:6)i1p3, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R-CC, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp45, ensemble: r(1:6)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp45, ensemble: r(1:5)i1p2, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp45, ensemble: r(1:6)i1p3, start_year: 2006, end_year: 2099}
+##%# Only data available until 2035
+##%#  - {dataset: HadCM3, exp: rcp45, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-AO, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-CC, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-ES, exp: rcp45, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5A-LR, exp: rcp45, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5A-MR, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5B-LR, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC-ESM-CHEM, exp: rcp45, ensemble: r(1:9)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC-ESM, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%# Only data available until 2035
+##%#  - {dataset: MIROC4h, exp: rcp45, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC5, exp: rcp45, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MPI-ESM-LR, exp: rcp45, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MPI-ESM-MR, exp: rcp45, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MRI-CGCM3, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: NorESM1-M, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: NorESM1-ME, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: bcc-csm1-1-m, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: bcc-csm1-1, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: inmcm4, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: CCSM4, exp: rcp60, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CESM1-CAM5, exp: rcp60, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CSIRO-Mk3-6-0, exp: rcp60, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: FIO-ESM, exp: rcp60, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-CM3, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-ESM2G, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-ESM2M, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp60, ensemble: r1i1p2, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp60, ensemble: r1i1p3, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp60, ensemble: r1i1p2, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp60, ensemble: r1i1p3, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-AO, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-ES, exp: rcp60, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5A-LR, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5A-MR, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC-ESM-CHEM, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC-ESM, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC5, exp: rcp60, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MRI-CGCM3, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: NorESM1-M, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: NorESM1-ME, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: bcc-csm1-1-m, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: bcc-csm1-1, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: ACCESS1-0, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: ACCESS1-3, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: BNU-ESM, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  - {dataset: CCSM4, exp: rcp85, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CESM1-BGC, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%# Missing september 2058
+##%#  - {dataset: CESM1-CAM5-1-FV2, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CESM1-CAM5, exp: rcp85, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CESM1-WACCM, exp: rcp85, ensemble: r(2:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CMCC-CESM, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CMCC-CM, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CMCC-CMS, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CNRM-CM5, exp: rcp85, ensemble: r(1:2)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CNRM-CM5, exp: rcp85, ensemble: r4i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CNRM-CM5, exp: rcp85, ensemble: r6i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CNRM-CM5, exp: rcp85, ensemble: r10i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CSIRO-Mk3-6-0, exp: rcp85, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: CanESM2, exp: rcp85, ensemble: r(1:5)i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp85, ensemble: r(1:2)i1p1, start_year: 2006, end_year: 2099}
+##%# Non-continuous time coordinates
+##%#  - {dataset: EC-EARTH, exp: rcp85, ensemble: r6i1p1, start_year: 2006, end_year: 2099}
+##%# Gap in time axis between ~2067 and ~2072
+##%#  - {dataset: EC-EARTH, exp: rcp85, ensemble: r7i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp85, ensemble: r(8:9)i1p1, start_year: 2006, end_year: 2099}
+##%# Overlapping datasets (decadal datasets and yearly datasets)
+##%# Non-continuous time oordinates
+##%#  - {dataset: EC-EARTH, exp: rcp85, ensemble: r11i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: EC-EARTH, exp: rcp85, ensemble: r(12:13)i1p1, start_year: 2006, end_year: 2099}
+##%# Missing year 2082
+##%# - {dataset: EC-EARTH, exp: rcp85, ensemble: r14i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: FGOALS-g2, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%#  - {dataset: FGOALS-s2, exp: rcp85, ensemble: r3i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: FIO-ESM, exp: rcp85, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-CM3, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-ESM2G, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GFDL-ESM2M, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H-CC, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp85, ensemble: r(1:2)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp85, ensemble: r1i1p2, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-H, exp: rcp85, ensemble: r(1:2)i1p3, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R-CC, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp85, ensemble: r(1:2)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp85, ensemble: r1i1p2, start_year: 2006, end_year: 2099}
+##%  - {dataset: GISS-E2-R, exp: rcp85, ensemble: r(1:2)i1p3, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-AO, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-CC, exp: rcp85, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%# Can't concatenate data cubes in this series of datasets: double(?) year 2099 (month Dec)
+##%#  - {dataset: HadGEM2-ES, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: HadGEM2-ES, exp: rcp85, ensemble: r(2:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5A-LR, exp: rcp85, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5A-MR, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: IPSL-CM5B-LR, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC-ESM-CHEM, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC-ESM, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MIROC5, exp: rcp85, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2080}
+##%# Only data available until 2035
+##%#  - {dataset: MIROC5, exp: rcp85, ensemble: r(4:5)i1p1, start_year: 2006, end_year: 2080}
+##%  - {dataset: MPI-ESM-LR, exp: rcp85, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MPI-ESM-MR, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MRI-CGCM3, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: MRI-ESM1, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: NorESM1-M, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: NorESM1-ME, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: bcc-csm1-1-m, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: bcc-csm1-1, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+##%  - {dataset: inmcm4, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+
+
+preprocessors:
+
+  preprocessor_global:
+    area_statistics:
+      operator: mean
+
+  preprocessor_nlpoint:
+    # Extract point in the S-E corner of the Netherlands
+    extract_point:
+      # degrees east & north
+      longitude: 6.25
+      latitude: 51.25
+      scheme: linear
+
+diagnostics:
+  diagnostic1:
+    description: >
+      Calculate the global annual temperature change,
+      across all models, and match the model of interest
+      to its percentiles at given epochs
+    variables:
+      tas:
+        preprocessor: preprocessor_global
+        project: CMIP5
+        mip: Amon
+    scripts:
+      script1:
+        script: kcs/tas_annual_change.py
+        # output: CSV file
+        output: tas-annual-change.csv
+
+      script2:
+        script: kcs/calculate_steering_table.py
+        ancestors: [script1, tas]
+        input: tas-annual-change.csv
+        # output: CSV file
+        output: steering_table.csv
+        model: CCSM4
+        reference_period: [1980, 2009]
+        scenarios:
+          - {'name': 'W', 'epoch': 2050, 'percentile': 90}
+          - {'name': 'G', 'epoch': 2050, 'percentile': 10}
+          - {'name': 'W', 'epoch': 2085, 'percentile': 90}
+          - {'name': 'G', 'epoch': 2085, 'percentile': 10}
+        timespan_years: 30
+        window_rolling_mean: 10
+
+  diagnostic2:
+    description: "Resample the model of interest runs"
+    variables:
+      tas:
+        preprocessor: preprocessor_nlpoint
+        project: CMIP5
+        mip: Amon
+      pr:
+        preprocessor: preprocessor_nlpoint
+        project: CMIP5
+        mip: Amon
+    scripts:
+      script1:
+        script: kcs/resample.py
+        ancestors: [diagnostic1/script2, tas, pr]
+        model: CCSM4
+        # output: CSV file
+        steering_table: steering_table.csv
+        indices_output: indices.h5
+        resamples_output: resamples.h5
+        conditions: conditions.yml
+        penalties:
+          1: 0.0
+          2: 0.0
+          3: 1.0
+          4: 5.0

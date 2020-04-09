@@ -30,6 +30,7 @@ requirements:
     - esmvaltool-ncl
     - esmvaltool-python
     - esmvaltool-r
+    - h5py
 
 test:
   source_files:
