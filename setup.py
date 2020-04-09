@@ -32,6 +32,7 @@ REQUIREMENTS = {
         'eofs',
         'esmvalcore>=2.0.0b9,<2.1',
         'fiona',
+        'h5py',
         'jinja2',
         'matplotlib',
         'nc-time-axis',  # needed by iris.plot
