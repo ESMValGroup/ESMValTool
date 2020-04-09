@@ -120,7 +120,7 @@ Example plots
    Time series of tropical (30S to 30N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
    
    
-.. figure:: /recipes/figures/wenzel14jgr/tas_Global_CMIP5_esmHistorical_anom__1960-2005.png
+.. figure:: /recipes/figures/wenzel14jgr/corr_tas-nbp_anom_1960-2005.png
    :width: 10 cm 
    :align: center
    
