@@ -730,7 +730,6 @@ def main(diag_config):
     '''
     my_files_dict = group_metadata(diag_config['input_data'].values(),
                                    'dataset')
-    fig_config = _get_fig_config(diag_config)
 
     # get the data from the observation
     global_tau_obs = _get_obs_data(diag_config)

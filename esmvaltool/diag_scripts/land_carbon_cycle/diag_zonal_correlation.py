@@ -219,7 +219,7 @@ def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
     Arguments:
         diag_config - nested dictionary of metadata
         zonal_correlation_mod - dictionary of correlations from all models
-        zonal_correlation_obs - dictionary of correlations and ranges from 
+        zonal_correlation_obs - dictionary of correlations and ranges from
         observation
     '''
     fig_config = _get_fig_config(diag_config)
@@ -364,7 +364,6 @@ def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
 
     # draw the legend
     leg = xu.draw_line_legend(ax_fs=fig_config['ax_fs'])
-    t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
 
     plt.savefig(plot_path,
                 bbox_inches='tight',
@@ -375,7 +374,7 @@ def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
 
 def main(diag_config):
     '''
-    A diagnostic function to calculate the zonal correlation between turnover 
+    A diagnostic function to calculate the zonal correlation between turnover
     time of carbon and climatic variables.
 
     Arguments:
