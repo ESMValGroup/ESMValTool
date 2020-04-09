@@ -420,8 +420,8 @@ def main(diag_config):
         "correlation between turnover time and climate: turnover"
         "time and precipitation, controlled for temperature"
         "(left) and vice-versa (right). Reproduces figures 2c"
-        "and 2d in Carvalhais et al. (2014).", ['corr'
-        , 'perc'],['zonal'], _get_ancestor_files(diag_config, 'tau_ctotal'))
+        "and 2d in Carvalhais et al. (2014).", ['corr', 'perc'], ['zonal'],
+        _get_ancestor_files(diag_config, 'tau_ctotal'))
 
     if diag_config['write_netcdf']:
         model_cubes = [

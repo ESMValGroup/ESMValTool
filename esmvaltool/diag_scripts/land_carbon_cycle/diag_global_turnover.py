@@ -3,30 +3,29 @@ A diagnostic function to compare the global distributions of
 ecosystem carbon turnover time
 """
 
-# operating system manipulations (e.g. path constructions)
-import os
 import os.path
-
-# to manipulate iris cubes
 import iris
-# plotting functions
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-
-# map library
-import cartopy.crs as ccrs
-
 import numpy as np
 import scipy.stats as stats
 
-# import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import get_diagnostic_filename
-from esmvaltool.diag_scripts.shared import group_metadata
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
+)
 
-# user-defined functions
-import extraUtils as xu
-from shared import _load_variable
+import esmvaltool.diag_scripts.land_carbon_cycle.extraUtils as xu
+from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
+    _load_variable, )
+from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
+    _get_ancestor_files,
+    get_provenance_record,
+)
 
 # set the properties of the lines used for hatching
 mpl.rcParams['hatch.color'] = 'yellow'
@@ -213,6 +212,8 @@ def _get_obs_data(diag_config):
                                diag_config['obs_info']['obs_data_subdir'])
 
     all_data = {}
+    all_data['global'] = {}
+    all_data['grid'] = {}
     fig_config = _get_fig_config(diag_config)
     var_list = diag_config.get('obs_variable')
 
@@ -230,13 +231,12 @@ def _get_obs_data(diag_config):
 
     for v_ind in range(len(var_list)):
         var_obs = var_list[v_ind]
-        all_data[var_obs] = {}
         all_data['coords'] = {}
         variable_constraint = iris.Constraint(
             cube_func=(lambda c: c.var_name == var_obs))
         cube = iris.load_cube(input_files, constraint=variable_constraint)
-        all_data[var_obs]['grid'] = cube
-        all_data[var_obs]['global'] = fig_config['obs_global']
+        all_data['grid'][var_obs] = cube
+        all_data['global'][var_obs] = fig_config['obs_global']
     for coord in cube.coords():
         all_data['coords'][coord.name()] = coord.points
     return all_data
@@ -264,53 +264,7 @@ def _calc_turnover(ctotal, gpp, diag_config, _model):
     tau_ctotal.long_name = 'ecosystem_carbon_turnover_time'
     tau_ctotal.units = 'yr'
 
-    # save the tau cube
-    ofilename = get_diagnostic_filename(_model + '_tau_ctotal', diag_config)
-    iris.save(tau_ctotal, ofilename)
     return tau_ctotal
-
-
-def _get_turnover_data(diag_config):
-    '''
-    A function to calculate the modelled ecosystem carbon turnover time from
-    total carbon stock and gpp.
-
-    Arguments:
-        diag_config - nested dictionary of metadata
-
-    Returns:
-        dictionaries for model simulations and observation data
-    '''
-    my_files_dict = group_metadata(diag_config['input_data'].values(),
-                                   'dataset')
-    _all_mod_dat = {}
-    for key, value in my_files_dict.items():
-        _all_mod_dat[key] = {}
-
-        # load the data
-        ctotal = _load_variable(value, 'ctotal')
-        gpp = _load_variable(value, 'gpp')
-        tau_ctotal = _calc_turnover(ctotal, gpp, diag_config, key)
-        _all_mod_dat[key]['grid'] = tau_ctotal
-
-        # apply the GPP threshold and set the data in dictionary
-        gpp_global = gpp.collapsed(['latitude', 'longitude'],
-                                   iris.analysis.SUM)
-        ctotal_global = ctotal.collapsed(['latitude', 'longitude'],
-                                         iris.analysis.SUM)
-        tau_global = ctotal_global / gpp_global
-        tau_global.convert_units('yr')
-
-        _all_mod_dat[key]['global'] = np.float(tau_global.core_data())
-        _plot_single_map(tau_ctotal, _all_mod_dat[key]['global'], key,
-                         diag_config)
-
-    # get the data from the observation
-    _all_obs_dat = _get_obs_data(diag_config)
-    return _all_mod_dat, _all_obs_dat
-
-
-# Plotting functions
 
 
 def _fix_map(axis_obj):
@@ -347,42 +301,38 @@ def _get_matrix_map_axes(_row_m, _col_m, _fig_config):
         _ax - an axes object
     '''
     if _row_m == _col_m:
-        _ax = plt.axes(
-            [
-                _fig_config['x0'] +
-                _row_m * _fig_config['wp'] + _row_m * _fig_config['xsp'],
-                _fig_config['y0'] -
-                (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
-                _fig_config['wp'],
-                _fig_config['hp'],
-            ],
-            projection=ccrs.Robinson(central_longitude=0),
-            frameon=False)
+        _ax = plt.axes([
+            _fig_config['x0'] + _row_m * _fig_config['wp'] +
+            _row_m * _fig_config['xsp'],
+            _fig_config['y0'] -
+            (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
+            _fig_config['wp'],
+            _fig_config['hp'],
+        ],
+                       projection=ccrs.Robinson(central_longitude=0),
+                       frameon=False)
     if _row_m < _col_m:
-        _ax = plt.axes(
-            [
-                _fig_config['x0'] +
-                _row_m * _fig_config['wp'] + _row_m * _fig_config['xsp'] +
-                _fig_config['xsp_sca'],
-                _fig_config['y0'] -
-                (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']) +
-                _fig_config['ysp_sca'],
-                _fig_config['wp'] * _fig_config['aspect_map'],
-                _fig_config['hp'] * _fig_config['aspect_map'],
-            ])
+        _ax = plt.axes([
+            _fig_config['x0'] + _row_m * _fig_config['wp'] +
+            _row_m * _fig_config['xsp'] + _fig_config['xsp_sca'],
+            _fig_config['y0'] -
+            (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']) +
+            _fig_config['ysp_sca'],
+            _fig_config['wp'] * _fig_config['aspect_map'],
+            _fig_config['hp'] * _fig_config['aspect_map'],
+        ])
 
     if _row_m > _col_m:
-        _ax = plt.axes(
-            [
-                _fig_config['x0'] +
-                _row_m * _fig_config['wp'] + _row_m * _fig_config['xsp'],
-                _fig_config['y0'] -
-                (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
-                _fig_config['wp'],
-                _fig_config['hp'],
-            ],
-            projection=ccrs.Robinson(central_longitude=0),
-            frameon=False)
+        _ax = plt.axes([
+            _fig_config['x0'] + _row_m * _fig_config['wp'] +
+            _row_m * _fig_config['xsp'],
+            _fig_config['y0'] -
+            (_col_m * _fig_config['hp'] + _col_m * _fig_config['ysp']),
+            _fig_config['wp'],
+            _fig_config['hp'],
+        ],
+                       projection=ccrs.Robinson(central_longitude=0),
+                       frameon=False)
     return _ax
 
 
@@ -442,7 +392,8 @@ def _draw_121_line():
     return 'plotted 1:1 line'
 
 
-def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
+def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
+                     diag_config):
     '''
     makes the maps of variables
 
@@ -450,12 +401,9 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
         diag_config - nested dictionary of metadata
         cube - the cube to plot
         dataset - name of the dataset to plot
-
-    Returns:
-        string - on completion of plotting
     '''
     fig_config = _get_fig_config(diag_config)
-    models = list(all_mod_dat.keys())
+    models = list(global_tau_mod['grid'].keys())
     models = sorted(models, key=str.casefold)
     multiModels = 'MultiModelMedian MultiModelMean'.split()
     for _mm in multiModels:
@@ -463,7 +411,8 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
             models.append(models.pop(models.index(_mm)))
     models.insert(0, 'obs')
 
-    all_mod_dat['obs'] = all_obs_dat['tau_ctotal']
+    global_tau_mod['grid']['obs'] = global_tau_obs['grid']['tau_ctotal']
+    global_tau_mod['global']['obs'] = global_tau_obs['global']['tau_ctotal']
     nmodels = len(models)
 
     # define the data and information for plotting ratios
@@ -474,9 +423,9 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
 
     plt.figure(figsize=(9, 6))
     for row_m in range(nmodels):
-        dat_row = all_mod_dat[models[row_m]]['grid'].data
+        dat_row = global_tau_mod['grid'][models[row_m]].data
         for col_m in range(nmodels):
-            dat_col = all_mod_dat[models[col_m]]['grid'].data
+            dat_col = global_tau_mod['grid'][models[col_m]].data
             print('---' + models[row_m] + ' vs ' + models[col_m] + '---')
             _ax = _get_matrix_map_axes(row_m, col_m, fig_config)
             # plot the maps along the diagonal
@@ -543,8 +492,8 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
         fig_config['hcolo']
     ]
     cb_tit_d = '{name}, ({unit})'.format(
-        name=all_mod_dat[models[col_m]]['grid'].long_name,
-        unit=all_mod_dat[models[col_m]]['grid'].units)
+        name=global_tau_mod['grid'][models[col_m]].long_name,
+        unit=global_tau_mod['grid'][models[col_m]].units)
     cb = xu.mk_colo_tau(_axcol_dia,
                         cb_info_diagonal['tickBounds'],
                         cb_info_diagonal['colMap'],
@@ -573,33 +522,24 @@ def _plot_matrix_map(all_mod_dat, all_obs_dat, diag_config):
                           rotation=0)
 
     # save and close the figure
-    png_name = ('global_matrix_map_{name}_{source_label}_{grid_label}.png'
-                ''.format(
-                    name=all_mod_dat[models[col_m]]['grid'].long_name,
-                    source_label=diag_config['obs_info']['source_label'],
-                    grid_label=diag_config['obs_info']['grid_label']))
 
-    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
+    plt.savefig(plot_path_matrix,
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x],
                 dpi=450)
     plt.close()
 
-    return 'Plotted full factorial model observation comparison matrix'
 
-
-def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
+def _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
+                               global_tau_obs, diag_config):
     '''
     makes the maps of bias of multimodel median turnover time with
     multimodel agreement
 
     Arguments:
-        all_mod_dat - dictionary of all model data
-        all_obs_dat - dictionary of observed data
+        global_tau_mod - dictionary of all model data
+        global_tau_obs - dictionary of observed data
         diag_config - nested dictionary of metadata
-
-    Returns:
-        string- on completion of plotting and saving
     '''
     # get the settings for plotting figure
     fig_config = _get_fig_config(diag_config)
@@ -607,15 +547,15 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
     # get the observation data needed to calculate the bias and multimodel
     # agreement
     obs_var = diag_config.get('obs_variable')[0]
-    tau_obs = all_obs_dat[obs_var]['grid'].data
-    tau_obs_5 = all_obs_dat[obs_var + '_5']['grid'].data
-    tau_obs_95 = all_obs_dat[obs_var + '_95']['grid'].data
+    tau_obs = global_tau_obs['grid'][obs_var].data
+    tau_obs_5 = global_tau_obs['grid'][obs_var + '_5'].data
+    tau_obs_95 = global_tau_obs['grid'][obs_var + '_95'].data
 
     # set the information of the colormap used for plotting bias
     cb_info = _get_ratio_colorbar_info()
 
     # calculate the bias of multimodel median turnover time
-    models = list(all_mod_dat.keys())
+    models = list(global_tau_mod['grid'].keys())
 
     # remove multimodel estimates from the list of models
     multiModels = 'MultiModelMedian MultiModelMean'.split()
@@ -628,7 +568,7 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
                             np.shape(tau_obs)[1])) * fig_config['fill_value']
     for row_m in range(nmodels):
         row_mod = models[row_m]
-        dat_tau = all_mod_dat[row_mod]['grid']
+        dat_tau = global_tau_mod['grid'][row_mod]
         dat_tau_full[row_m] = xu.remove_invalid(
             dat_tau.data, fill_value=fig_config['fill_value'])
 
@@ -666,8 +606,8 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
                                              nmodel_reject=int(nmodels / 4))
 
     # plot the hatches for uncertainty/multimodel agreement
-    lats = all_obs_dat['coords']['latitude']
-    lons = all_obs_dat['coords']['longitude']
+    lats = global_tau_obs['coords']['latitude']
+    lons = global_tau_obs['coords']['longitude']
     latint = abs(lats[1] - lats[0])
     lonint = abs(lons[1] - lons[0])
     x_lat, y_lon = np.meshgrid(lons - lonint / 2, lats - latint / 2)
@@ -683,7 +623,7 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
 
     title_str = (
         'multimodel bias and agreement (-)\n{title}, {source_label}'.format(
-            title=all_obs_dat['tau_ctotal']['grid'].long_name,
+            title=global_tau_obs['grid']['tau_ctotal'].long_name,
             source_label=diag_config['obs_info']['source_label']))
     plt.title(title_str, fontsize=0.98 * fig_config['ax_fs'])
 
@@ -704,23 +644,15 @@ def _plot_multimodel_agreement(all_mod_dat, all_obs_dat, diag_config):
                                rotation=0)
 
     # save and close figure
-    png_name = ('global_multimodelAgreement_{title}_{source_label}_'
-                '{grid_label}.png'.format(
-                    title=all_obs_dat['tau_ctotal']['grid'].long_name,
-                    source_label=diag_config['obs_info']['source_label'],
-                    grid_label=diag_config['obs_info']['grid_label']))
-
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
-    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
+    plt.savefig(plot_path_multimodel,
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x],
                 dpi=450)
     plt.close()
 
-    return 'Plotted multimodel bias and agreement of turnover time'
 
-
-def _plot_single_map(_dat, _datglobal, _name, diag_config):
+def _plot_single_map(plot_path, _dat, _datglobal, _name, diag_config):
     '''
     makes the maps of variables
 
@@ -777,26 +709,125 @@ def _plot_single_map(_dat, _datglobal, _name, diag_config):
                    cbrt=90)
 
     # save the figure
-    png_name = 'global_{title}_{source_label}_{grid_label}.png'.format(
-        title=_dat.long_name,
-        source_label=_name,
-        grid_label=diag_config['obs_info']['grid_label'])
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
-    plt.savefig(os.path.join(diag_config['plot_dir'], png_name),
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 bbox_extra_artists=[t_x],
                 dpi=450)
     plt.close()
 
-    return 'Plotted map of turnover time for the given model/observation'
+
+def main(diag_config):
+    '''
+    A function to calculate the modelled ecosystem carbon turnover time from
+    total carbon stock and gpp.
+
+    Arguments:
+        diag_config - nested dictionary of metadata
+
+    Returns:
+        dictionaries for model simulations and observation data
+    '''
+    my_files_dict = group_metadata(diag_config['input_data'].values(),
+                                   'dataset')
+    fig_config = _get_fig_config(diag_config)
+
+    # get the data from the observation
+    global_tau_obs = _get_obs_data(diag_config)
+    base_name = ('{title}_{source_label}_'
+                 '{grid_label}'.format(
+                     title=global_tau_obs['grid']['tau_ctotal'].long_name,
+                     source_label=diag_config['obs_info']['source_label'],
+                     grid_label=diag_config['obs_info']['grid_label']))
+
+    global_tau_mod = {}
+    global_tau_mod['grid'] = {}
+    global_tau_mod['global'] = {}
+    plot_path_list = []
+    for key, value in my_files_dict.items():
+        global_tau_mod[key] = {}
+
+        # load the data
+        ctotal = _load_variable(value, 'ctotal')
+        gpp = _load_variable(value, 'gpp')
+        tau_ctotal = _calc_turnover(ctotal, gpp, diag_config, key)
+        global_tau_mod['grid'][key] = tau_ctotal
+
+        # apply the GPP threshold and set the data in dictionary
+        gpp_global = gpp.collapsed(['latitude', 'longitude'],
+                                   iris.analysis.SUM)
+        ctotal_global = ctotal.collapsed(['latitude', 'longitude'],
+                                         iris.analysis.SUM)
+        tau_global = ctotal_global / gpp_global
+        tau_global.convert_units('yr')
+
+        global_tau_mod['global'][key] = np.float(tau_global.core_data())
+
+        if diag_config['write_plots']:
+            base_name_mod = (
+                'global_{title}_{source_label}_'
+                '{grid_label}'.format(
+                    title=global_tau_obs['grid']['tau_ctotal'].long_name,
+                    source_label=key,
+                    grid_label=diag_config['obs_info']['grid_label']))
+            plot_path_mod = get_plot_filename(base_name_mod, diag_config)
+            plot_path_list.append(plot_path_mod)
+            _plot_single_map(plot_path_mod, tau_ctotal,
+                             global_tau_mod['global'][key], key, diag_config)
+
+    provenance_record = get_provenance_record(
+        "Comparison of global distributions of turnover time of carbon"
+        "with matrix comparison, maps, and multimodel bias. Reproduces"
+        "figure 3 in Carvalhais et al. (2014).", ['mean', 'perc'], ['global'],
+        _get_ancestor_files(diag_config, 'tau_ctotal'))
+
+    if diag_config['write_netcdf']:
+        model_cubes = [
+            c for c in global_tau_mod['grid'].values()
+            if isinstance(c, iris.cube.Cube)
+        ]
+        obs_cubes = [
+            c for c in global_tau_obs['grid'].values()
+            if isinstance(c, iris.cube.Cube)
+        ]
+        netcdf_path = get_diagnostic_filename(base_name, diag_config)
+        save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
+        iris.save(save_cubes, netcdf_path)
+    else:
+        netcdf_path = None
+
+    if diag_config['write_plots']:
+        # multimodel agreement
+        base_name_multimodel = '{prefix}_{base_name}'.format(
+            prefix='global_multimodelAgreement', base_name=base_name)
+        plot_path_multimodel = get_plot_filename(base_name_multimodel,
+                                                 diag_config)
+        _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
+                                   global_tau_obs, config)
+        plot_path_list.append(plot_path_multimodel)
+
+        # map of observation
+        base_name_obs = '{prefix}_{base_name}'.format(prefix='global',
+                                                      base_name=base_name)
+        plot_path_obs = get_plot_filename(base_name_obs, diag_config)
+        _plot_single_map(plot_path_obs, global_tau_obs['grid']['tau_ctotal'],
+                         global_tau_obs['global']['tau_ctotal'],
+                         config['obs_info']['source_label'], config)
+        plot_path_list.append(plot_path_obs)
+
+        # matrix of maps
+        base_name_matrix = '{prefix}_{base_name}'.format(
+            prefix='global_matrix_map', base_name=base_name)
+        plot_path_matrix = get_plot_filename(base_name_matrix, diag_config)
+        _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
+                         config)
+        plot_path_list.append(plot_path_matrix)
+
+        provenance_record['plot_file'] = ', '.join(plot_path_list)
+    with ProvenanceLogger(diag_config) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
-        mod_dat_all, Obs_dat_all = _get_turnover_data(config)
-        fig_config = _get_fig_config(config)
-        _plot_multimodel_agreement(mod_dat_all, Obs_dat_all, config)
-        _plot_single_map(Obs_dat_all['tau_ctotal']['grid'],
-                         Obs_dat_all['tau_ctotal']['global'],
-                         config['obs_info']['source_label'], config)
-        _plot_matrix_map(mod_dat_all, Obs_dat_all, config)
+        main(config)
