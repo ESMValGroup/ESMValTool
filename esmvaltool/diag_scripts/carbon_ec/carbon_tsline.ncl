@@ -172,7 +172,7 @@ begin
       if ((isatt(diag_script_info, "ref_start") .and. \
           isatt(diag_script_info, "ref_end")) .and. \
           .not. (isatt(diag_script_info, "ridx_start") .and. \
-              isatt(diag_script_info, "ridx_end"))) then
+                 isatt(diag_script_info, "ridx_end"))) then
         ref_start = diag_script_info@ref_start
         ref_end   = diag_script_info@ref_end
         if (ref_start.lt.start_year) then
