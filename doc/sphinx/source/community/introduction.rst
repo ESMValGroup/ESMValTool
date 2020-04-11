@@ -22,7 +22,6 @@ good way to do this is to open an `issue on
 GitHub <https://github.com/ESMValGroup/ESMValTool/issues>`__. This is
 also a good way to get help.
 
-
 Getting started
 ---------------
 
@@ -41,16 +40,16 @@ To install in development mode, follow these instructions.
 -  Update conda: ``conda update -y conda``
 -  Clone the ESMValTool public github repository:
    ``git clone git@github.com:ESMValGroup/ESMValTool``, or one of the
-   private github repositories
-   (e.g. ``git clone git@github.com:ESMValGroup/ESMValTool-private``)
+   private github repositories (e.g.
+   ``git clone git@github.com:ESMValGroup/ESMValTool-private``)
 -  Go to the esmvaltool directory: ``cd ESMValTool``
 -  Create the esmvaltool conda environment
    ``conda env create --name esmvaltool --file environment.yml``
 -  Activate the esmvaltool environment: ``conda activate esmvaltool``
 -  Install in development mode: ``pip install -e '.[develop]'``. If you
    are installing behind a proxy that does not trust the usual pip-urls
-   you can declare them with the option ``--trusted-host``,
-   e.g. \ ``pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]``
+   you can declare them with the option ``--trusted-host``, e.g.
+   ``pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]``
 -  If you want to use R diagnostics, run
    ``Rscript esmvaltool/install/R/setup.R`` to install the R
    dependences. Note that if you only want to run the lint test for R
@@ -124,8 +123,7 @@ Running tests
 -------------
 
 Go to the directory where the repository is cloned and run
-``python setup.py test --installation``. Tests will also be run
-automatically by
+``python setup.py test``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
 
 Code style
@@ -165,7 +163,7 @@ to sort the imports in the standard way and
 to add/remove whitespace as required by the standard.
 
 To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. \ ``cd ESMValTool``. and run
+the repository is cloned, e.g. ``cd ESMValTool``. and run
 
 ::
 
@@ -191,7 +189,9 @@ Because there is no standard best practices document for NCL, we use
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ for NCL code as
 well, with some minor adjustments to accomodate for differences in the
 languages. The most important difference is that for NCL code the
-indentation should be 2 spaces instead of 4.
+indentation should be 2 spaces instead of 4. Use the command
+``nclcodestyle /path/to/file.ncl`` to check if your code follows the
+style guide.
 
 R
 ~
@@ -211,6 +211,12 @@ YAML
 
 Please use ``yamllint`` to check that your YAML files do not contain
 mistakes.
+
+Any text file
+~~~~~~~~~~~~~
+
+A generic tool to check for common spelling mistakes is
+`codespell <https://pypi.org/project/codespell/>`__.
 
 Documentation
 -------------
@@ -285,3 +291,50 @@ name to the list of authors in CITATION.cff and regenerate the file
 
    pip install cffconvert
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
+
+How to make a release
+---------------------
+
+To make a new release of the package, follow these steps:
+
+1. Check that the nightly build on CircleCI was successful
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check the ``nightly`` `build on
+CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/master>`__.
+All tests should pass before making a release.
+
+2. Make a pull request to increase the version number
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The version number is stored in ``esmvaltool/__init__.py``,
+``meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
+https://semver.org for more information on choosing a version number.
+
+3. Make the release on GitHub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Click the `releases
+tab <https://github.com/ESMValGroup/ESMValTool/releases>`__ and draft
+the new release. Do not forget to tick the pre-release box for a beta
+release. Use the script
+```esmvalcore/utils/draft_release_notes.py`` <https://github.com/ESMValGroup/ESMValCore/blob/master/esmvalcore/utils/draft_release_notes.py>`__
+from the ESMValCore project to create a draft version of the release
+notes and edit those.
+
+4. Create and upload the Conda package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Follow these steps to create a new conda package:
+
+-  Check out the tag corresponding to the release, e.g.
+   ``git checkout v2.0.0b2``
+-  Edit package/meta.yaml and uncomment the lines starting with
+   ``git_rev`` and ``git_url``, remove the line starting with ``path``
+   in the ``source`` section.
+-  Activate the base environment ``conda activate base``
+-  Run ``conda build package -c conda-forge -c esmvalgroup`` to build
+   the conda package
+-  If the build was successful, upload the package to the esmvalgroup
+   conda channel, e.g.
+   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.0.0b2-py_0.tar.bz2``.

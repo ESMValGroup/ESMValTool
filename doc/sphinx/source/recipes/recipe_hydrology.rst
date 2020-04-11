@@ -23,12 +23,14 @@ wflow_sbm and wflow_topoflex
 Forcing data for the `wflow_sbm <https://wflow.readthedocs.io/en/latest/wflow_sbm.html>`_
 and `wflow_topoflex <https://wflow.readthedocs.io/en/latest/wflow_topoflex.html>`_
 hydrological models can be prepared using recipe_wflow.yml.
+If PET is not available from the source data (e.g. ERA-Interim), then it can be derived from psl, rsds and rsdt using De Bruin's 2016 formula (De Bruin et al. 2016). For daily ERA5 data, the time points of these variables are shifted 30 minutes with respect to one another. This is because in ERA5, accumulated variables are recorded over the past hour, and in the process of cmorization, we shift the time coordinates to the middle of the interval over which is accumulated. However, computing daily statistics then averages the times, which results in 12:00 UTC for accumulated variables and 11:30 UTC for instantaneous variables. Therefore, in this diagnostic, the time coordinates of the daily instantaneous variables are shifted 30 minutes forward in time.
 
 HYPE
 ****
 
 The hydrological catchment model HYPE simulates water flow and substances on their way from precipitation through soil, river and lakes to the river outlet.
 HYPE is developed at the Swedish Meteorological and Hydrological Institute. The recipe pre-processes ERA-Interim and ERA5 data for use in HYPE.
+
 
 
 Available recipes and diagnostics
@@ -61,7 +63,7 @@ User settings in recipe
 
 #. recipe_marrmot.yml
 
-   There are two diagnostics, one for daily and one for hourly data.
+   There is one diagnostic ``diagnostic_daily`` for using daily data.
 
    *Required preprocessor settings:*
 
@@ -69,13 +71,9 @@ User settings in recipe
 
       *extract_shape:*
 
-         * shapefile: meuse_hydrosheds.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
+         * shapefile: Meuse.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
          * method: contains
          * crop: true
-
-      *daily_statistics:*
-
-         * operator: mean (MARRMoT needs daily forcing data. Hourly forcing data are converted to daily values by mean operator).
 
    *Required diagnostic script settings:*
 
@@ -103,9 +101,9 @@ User settings in recipe
    * start_year: 1979
    * end_year: 1979
    * shapefile: Meuse_HYPE.shp (expects shapefile with subcatchments)
-   
+
    These settings should not be changed
-   
+
    * method: contains
    * decomposed: true
 

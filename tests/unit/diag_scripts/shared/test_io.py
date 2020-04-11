@@ -1,11 +1,10 @@
 """Tests for the module :mod:`esmvaltool.diag_scripts.shared.io`."""
-
 import os
 from collections import OrderedDict
 from copy import deepcopy
+from unittest import mock
 
 import iris
-import mock
 import numpy as np
 import pytest
 import yaml
