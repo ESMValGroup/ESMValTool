@@ -40,6 +40,7 @@ REQUIREMENTS = {
         'pandas',
         'pyproj>=2.1'
         'pyyaml',
+        'scikit-learn',
         'scitools-iris>=2.2',
         'seawater',
         'seaborn',
