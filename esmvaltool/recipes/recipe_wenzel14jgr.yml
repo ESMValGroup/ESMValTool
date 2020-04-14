@@ -568,7 +568,8 @@ diagnostics:
         script: carbon_ec/carbon_gammaHist.ncl 
         start_year: 1960
         end_year: 2005
-        plot_units: GtC y-1
+        plot_units_x: k
+        plot_units_y: GtC y-1
         ec_anom : True 
         ec_volc : True      #(optional)
         scatter_log : False # set logaritmic axes in scatterplot.ncl

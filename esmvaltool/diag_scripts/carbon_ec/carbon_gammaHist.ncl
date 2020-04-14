@@ -162,8 +162,8 @@ begin
     delete([/A1, A1_tmp, A2_tmp, ind_t/])
 
     ; Convert units if appropriate
-    if (isatt(diag_script_info, "plot_units")) then
-      A1 := convert_units(A1_co2flux, diag_script_info@plot_units)
+    if (isatt(diag_script_info, "plot_units_y")) then
+      A1 := convert_units(A1_co2flux, diag_script_info@plot_units_y)
     end if
 
     ; Copute time average
@@ -267,9 +267,9 @@ begin
                  + sprintf("%4.2f", arc(0, imod)) + " GtC/K/yr;  r= " \
                  + sprintf("%4.2f", ccr(imod))
       XStg     = "Anomaly in Trop. Temp. (" \
-                 + variable_info[tas_idx]@plot_units + ")"
+                 + diag_script_info@plot_units_x + ")"
       YStg     = "Anomaly in d(land+ocean CO~B~2~N~ flux)/dt (" \
-                 + variable_info[nbp_idx]@plot_units + ")"
+                 + diag_script_info@plot_units_y + ")"
 
       data_arr = new((/2, dimsizes(aY1reg(imod, :))/), float)
       data_arr!0      = "datasets"
