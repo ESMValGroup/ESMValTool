@@ -13,7 +13,7 @@ dependencies:
   - cdo>=1.9.7
   - imagemagick
   - nco
-  - scikit-learn  # install from same installer as scipy
+  - scikit-learn  # install from same installer as scipy; see issue ESMValTool: 1610
 
   # Multi language support:
   - python>=3.6
