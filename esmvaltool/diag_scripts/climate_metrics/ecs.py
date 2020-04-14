@@ -36,6 +36,7 @@ from pprint import pformat
 
 import cf_units
 import iris
+import iris.coord_categorisation
 import numpy as np
 import seaborn as sns
 import yaml
@@ -58,9 +59,13 @@ RTMT_DATASETS = set()
 def _calculate_anomaly(data_4x, data_pic):
     """Calculate anomaly cube for a dataset."""
     cube_4x = iris.load_cube(data_4x[0]['filename'])
+    iris.coord_categorisation.add_year(cube_4x, 'time')
     cube_4x = cube_4x.aggregated_by('year', iris.analysis.MEAN)
+
     cube_pic = iris.load_cube(data_pic[0]['filename'])
+    iris.coord_categorisation.add_year(cube_pic, 'time')
     cube_pic = cube_pic.aggregated_by('year', iris.analysis.MEAN)
+
     x_data = cube_pic.coord('year').points
     y_data = _get_data_time_last(cube_pic)
     slope = _get_slope(x_data, y_data)

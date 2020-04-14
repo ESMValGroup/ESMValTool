@@ -1,0 +1,24 @@
+,,,,,,,,,,,,,,
+Event Category,Region/Country,Year,Estimated scale  (1-3) [used for selection],Estimated duration (1-3) [used for selection],Estimated impact (1-3) [used for selection],Literature support,V0_Oct18,latest,Time_start,Time_stop,"Latitude extent (start, stop)","Longitude extent (start, stop)",Percentile,"Additional remarks
+"
+Precip,China,2016,2# Yangtze-Huai (China),2# ~2 months,3# Widespread severe flooding and land slides,Sun and Miao 2018,x,x,01/06/2016,31/07/2016,27.5 deg N - 35 deg N,107.5 deg E - 123 deg E,90th,
+Precip,Central Europe,2013,1# Central Europe (Danube/Elbe catchments),1# ~4 days,2# Flooding of Danube and Elbe,Schaller et al 2014,x,x,30/05/2013,02/06/2013,45 deg N - 52 deg N,9.5 deg E - 18 deg E,90th,
+Precip,Australia,2016,2# SE Australia,2# ~3 months,2# Flooding and power blackout,King 2016,x,x,01/07/2016,30/09/2016,33 deg S - 35 deg S,135 deg E - 155 deg E,90th,
+Marine Heatwave,Mediterranean Sea ,2003,2# Central Mediterranean Sea/North Tyrrenian Sea,2# 31 days (peak date on Jun 14 2003),2# (Imax=4.38°C) biological impact over the North Tyrrenian Sea,Hobday et al 2018; Crisci et al 2011; Diaz-Amela et al 2007,,x,01/06/2013,01/07/2013,30 deg N - 50 deg N,0 deg  - 30 deg E,90th ,
+Marine Heatwave,Northwest Atlantic ,2012,2# Northwest Atlantic Sea ,3# 132 days (peak date on May 20 2012),3# (Imax=4.30°C) impact on fisheries pecies ,Hobday et al 2018; Mills et al 2013; Zisserson and Cook 2017,,x,01/02/2012,10/06/2012,35 deg N - 50 deg N,80 deg W - 50 deg W,90th ,
+Marine Heatwave,Western Australia ,2011,2# Australian west coast,3# 66 days (peak date on Feb 28 2011),3# (Imax=4.89°C) significant impacts on marine ecosystem,Hobday et al 2018; Wernberg et al 2013,,x,01/02/2011,15/04/2011,35 deg S - 20 deg S,95 deg E - 120 deg E,90th ,
+Heat ,Asia,2016,3# Scale record-breaking,3# ~10 months,3# Death toll >580 (India),Imada et al 2018,x,x,01/03/2016,31/05/2016,0 deg N - 90 deg N,60 deg E - 180 deg E,90th,"(Extent estimated From Fig 19.1d Imada et al, 2018) (Peak ~3 months in Indian sub-continent)"
+Heat,Australia,2013,2# Australian continent,1# ~1 month,2# No casualties; highest anomaly for any month on record,Arblaster et al 2014; King et al 2014,,x,01/09/2013,30/09/2013,10 deg S - 44 deg S,113 deg E - 154 deg E,90th,
+Heat,Korea,2014,1# South Korea,2# ~3 months,1# Spring flower festivals took place earlier :D influence on plant phenology,Ki Min et al 2014,x,x,01/03/2014,31/05/2014,34 deg N - 39 deg N,126 deg E - 130 deg E,90th,
+Heat,NW China,2015,2# NW China,1# ~1 month,3# 1 in 200 years event,Miao et al 2016,,x,01/07/2015,31/07/2015,37 deg N - 50 deg N,75 deg W - 100 deg E,90th,Longitude extent both for ~Xinjiang Province
+Drought-Heat,Europe,2013,2# Western Europe,2# ~3 months,1# Less than 2010; 2003 events,Dong et al 2014,x,x,01/06/2013,31/08/2013,35 deg N - 60 deg N,10 deg W - 17 deg E,10th [sm]; 90th [ts],
+Drought-Heat,Europe,2015,2# Central Europe,2# ~2 months,2# Comparable to 2003; 2010,Dong et al 2016,,x,01/06/2015,31/07/2015,45 deg N - 55 deg N,0 deg  - 35 deg E,10th [sm]; 90th [ts],
+Drought-Heat,Europe,2003,2# Europe,2# ~3 months,3# ~70000 deaths mainly among elderly,García-Herrera et al 2010,x,x,10/06/2003,20/08/2003,42 deg N - 53 deg N,0 deg  - 20 deg E,10th [sm]; 90th [ts],
+Drought-Heat,W Russia,2010,3# Russia and Eastern Europe,2# ~3 months,3# ~55000 deaths mainly among elderly; USD 15 billion,Barriopedro et al 2011; Hauser et al 2016,x,x,10/07/2010,20/08/2010,50 deg N - 60 deg N,35 deg E - 55 deg E,10th [sm]; 90th [ts],
+Drought-Heat,Europe,2018,3# Europe,3# ~7 months,2# Strong impact on crop yields ,Masante et al 2018; Masante and Vogt 2018,,x,01/07/2018,30/09/2018,45 deg N - 68 deg N,10 deg W - 35 deg E,90th,
+Drought,Middle East,2014,1# Southern Levant,1# ~2 months,3# Potential impact on Syrian destabilization,Bergaoui et al 2015,x,x,01/01/2014,28/02/2014,30.5 deg N - 33.5 deg N,34 deg E - 36.5 deg E,10th,
+Drought,Western USA,2013-2014,2# California,2# ~1 year,"2# Water shortages, high wildfire risks",Swain et al 2014; Wang and Schubert 2014,,x,01/01/2013,31/01/2014,32.3 deg N - 42.9 deg N,116 deg W - 124.6 deg W,10th,
+Cold ,China,2016,2# Eastern China,1# ~5 days,2# Accompanied freezing rain/snow gave widespread disruption,Quian et al 2018; Sun et al 2018,x,x,21/01/2015,25/01/2016,20 deg N - 60 deg N,70 deg E - 135 deg E,10th,
+Cold,United Kingdom,2013,1# UK,3# ~3 months,2# Accompanied snow gave damage,Christidis et al 2014,,x,01/03/2013,31/03/2013,50 deg N - 61 deg N,8 deg W - 2 deg E,10th ,
+Cold,Eastern USA,2013-2014,2# Eastern and Mid US,3# ~3 months,2# USD 4 billion insured losses,Trenary et al 2015; Wolter et al 2015,x,x,01/12/2013,28/02/2014,30 deg N - 45 deg N,70 deg W - 90 deg W,10th,
+Cold,SW Australia,2016,1# Western Australia,2# ~1 month,2# Frost nights in september destroyed crops,Grose et al 2018,,x,01/09/2016,30/09/2016,25 deg S - 35 deg S,112 deg E - 125 deg E,10th,
