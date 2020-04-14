@@ -514,18 +514,7 @@ begin
     res@tiYAxisString = varname + " (" + units + ")"
   end if
 
-  ;res0 = True
-  ;ref_start = diag_script_info@ref_start
-  ;ref_end = diag_script_info@ref_end
-  ;res0@tiYAxisString = tostring(ref_start) + "-" + tostring(ref_end) \
-  ;  + " Mean " + varname + " (" + units + ")"
-
-  ;if (anom .eq. "anom") then
-  ;  xy_line_anom(wks, anom_ref, model_arr, model_arr&time, \
-  ;               model_arr_stddev, ref_start, ref_end, res, res0, info_items)
-  ;else
-    xy_line(wks, model_arr, model_arr&time, model_arr_stddev, res, info_items)
-  ;end if
+  xy_line(wks, model_arr, model_arr&time, model_arr_stddev, res, info_items)
 
   log_info(" wrote " + outfile + "." + file_type)
 

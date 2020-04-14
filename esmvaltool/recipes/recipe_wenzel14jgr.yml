@@ -125,6 +125,7 @@ diagnostics:
         area_opper: "sum"
         align: True
         styleset: CMIP5       # Plot style
+        xy_line_legend: True
 
   diag_tsline_Fig1b: 
     description: Fig 1b integrated NBP in the idealized coupled simulation
@@ -171,6 +172,7 @@ diagnostics:
         area_opper: "sum"
         align: True
         styleset: CMIP5       # Plot style
+        xy_line_legend: True
 
   diag_tsline_Fig1c:
     description: Fig 1c near surface temerature idealized coupled simulation
@@ -214,6 +216,7 @@ diagnostics:
         ts_anomaly: "anom"
         align: True
         styleset: CMIP5       # Plot style
+        xy_line_legend: True
 
   ### Wenzel et al. 2014, Fig. 02: Quantities used to diagnose GAMMA_IAV #########################  
 
@@ -260,6 +263,7 @@ diagnostics:
         volcanoes: True
         styleset: CMIP5       # Plot style
         run_ave: 2
+        xy_line_legend: True
         
   diag_tsline_Fig2b:
     description: Fig 2b integrated NBP in the idealized coupled simulation
@@ -306,6 +310,7 @@ diagnostics:
         align: True
         styleset: CMIP5       # Plot style
         run_ave: 2
+        xy_line_legend: True
               
   diag_tsline_Fig2c: 
     description: Fig 2c integrated FGCO2 in the historical coupled simulation
@@ -346,6 +351,7 @@ diagnostics:
         volcanoes: True
         styleset: CMIP5       # Plot style
         run_ave: 2
+        xy_line_legend: True
         
   diag_tsline_Fig2d: &tsline_fgcos 
     description: Fig 2d integrated NBP in the idealized coupled simulation
@@ -392,6 +398,7 @@ diagnostics:
         align: True
         styleset: CMIP5       # Plot style
         run_ave: 2
+        xy_line_legend: True
 
   diag_tsline_Fig2e: 
     description: Fig 2e near surface temerature historical coupled simulation
@@ -431,6 +438,7 @@ diagnostics:
         volcanoes: True
         styleset: CMIP5       # Plot style
         run_ave: 2
+        xy_line_legend: True
           
   diag_tsline_Fig2f:
     description: Fig 2f near surface temerature idealized coupled simulation
@@ -476,6 +484,7 @@ diagnostics:
         area_opper: "average"
         align: True
         styleset: CMIP5       # Plot style
+        xy_line_legend: True
         
   ### Wenzel et al. 2014, Fig. 03/04: Diagnose GAMMA_IAV from each model #########################
 
