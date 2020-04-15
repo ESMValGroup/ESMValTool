@@ -15,9 +15,23 @@ from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger,
                                                   get_plot_filename)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 import operator
+import yaml
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+index_definition = yaml.load(
+"""
+annual_number_of_frost_days:
+    name: frost days
+    required:
+        - tasmin
+    threshold:
+        value: 273.15
+        logic: lt
+    cf_name: number_of_days_with_air_temperature_below_freezing_point
+""")
+print("INDEX_DEFINITION:")
+print(yaml.dump(index_definition))
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
@@ -56,7 +70,7 @@ def _count_days_by_threshold_annually(cubes, index):
     annual_count = cube.aggregated_by(
         ['year'],
         iris.analysis.COUNT,
-        function=lambda values: index['threshold']['logic']
+        function=lambda values: getattr(operator, index['threshold']['logic'])
         (values, index['threshold']['value']))
     annual_count.rename(index['cf_name'])
     return annual_count
@@ -92,16 +106,6 @@ def main(cfg):
     """Compute Indices."""
     input_data = cfg['input_data'].values()
     grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
-    index_definition = {}
-    index_definition['annual_number_of_frost_days'] = {
-        'name': 'frost days',
-        'required': ['tasmin'],
-        'threshold': {
-            'value': 273.15,
-            'logic': operator.lt
-        },
-        'cf_name': 'number_of_days_with_air_temperature_below_freezing_point'
-    }
     for alias in grouped_input_data:
         cubes = []
         for attributes in grouped_input_data[alias]:
