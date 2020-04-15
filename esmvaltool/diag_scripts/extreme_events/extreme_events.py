@@ -19,8 +19,7 @@ import yaml
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-index_definition = yaml.load(
-"""
+index_definition = yaml.load("""
 annual_number_of_frost_days:
     name: frost days
     required:
@@ -39,9 +38,19 @@ annual_number_of_summer_days:
         unit: K
         logic: gt
     cf_name: number_of_days_with_air_temperature_above_25_degree_Celsius
+annual_number_of_icing_days:
+    name: icing days
+    required:
+        - tasmax
+    threshold:
+        value: 273.15
+        unit: K
+        logic: lt
+    cf_name: number_of_days_where_air_temperature_remains_below_freezing_point
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
+
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
@@ -85,6 +94,7 @@ def _count_days_by_threshold_annually(cubes, index):
     annual_count.rename(index['cf_name'])
     return annual_count
 
+
 def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
     diagnostic_file = get_diagnostic_filename(basename, cfg)
@@ -127,13 +137,17 @@ def main(cfg):
             if index_name not in index_definition.keys():
                 logger.info("Index %s not implemented!", index_name)
                 continue
-            if index_name in ['annual_number_of_frost_days', 'annual_number_of_summer_days']:
+            if index_name in [
+                    'annual_number_of_frost_days',
+                    'annual_number_of_summer_days',
+                    'annual_number_of_icing_days'
+            ]:
                 write_netcdf([
-                    _count_days_by_threshold_annually(cubes,
-                                                  index_definition[index_name])
+                    _count_days_by_threshold_annually(
+                        [c.copy() for c in cubes], index_definition[index_name])
                 ],
-                         cfg,
-                         filename=f'{alias}_{index_name}.nc')
+                             cfg,
+                             filename=f'{alias}_{index_name}.nc')
 
 
 if __name__ == '__main__':
