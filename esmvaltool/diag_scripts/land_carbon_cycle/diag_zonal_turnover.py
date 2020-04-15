@@ -157,7 +157,9 @@ def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
     plt.xlim(fig_config['valrange_x'][0], fig_config['valrange_x'][1])
     plt.ylim(fig_config['valrange_y'][0], fig_config['valrange_y'][1])
     plt.axhline(y=0, lw=0.48, color='grey')
-    plt.xlabel(tau_obs.standard_name, fontsize=fig_config['ax_fs'])
+    plt.xlabel(f'{tau_obs.long_name} ({tau_obs.units})',
+               fontsize=fig_config['ax_fs'],
+               ma='center')
     plt.ylabel(f'{lats_obs.long_name} ({lats_obs.units})',
                fontsize=fig_config['ax_fs'],
                ma='center')

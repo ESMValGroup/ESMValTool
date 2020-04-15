@@ -491,7 +491,7 @@ def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
         fig_config['x_colo_d'], y_colo, fig_config['wcolo'],
         fig_config['hcolo']
     ]
-    cb_tit_d = '{name}, ({unit})'.format(
+    cb_tit_d = '{name} ({unit})'.format(
         name=global_tau_mod['grid'][models[col_m]].long_name,
         unit=global_tau_mod['grid'][models[col_m]].units)
     cb = xu.mk_colo_tau(_axcol_dia,
@@ -622,9 +622,8 @@ def _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
                  transform=ccrs.PlateCarree())
 
     title_str = (
-        'multimodel bias and agreement (-)\n{title}, {source_label}'.format(
-            title=global_tau_obs['grid']['tau_ctotal'].long_name,
-            source_label=diag_config['obs_info']['source_label']))
+        'multimodel bias and agreement (-)\n{title}'.format(
+            title=global_tau_obs['grid']['tau_ctotal'].long_name))
     plt.title(title_str, fontsize=0.98 * fig_config['ax_fs'])
 
     # plot colorbar using extraUtils
@@ -660,12 +659,6 @@ def _plot_single_map(plot_path, _dat, _datglobal, _name, diag_config):
         diag_config - nested dictionary of metadata
         cube - the cube to plot
         dataset - name of the dataset to plot
-
-    Returns:
-        string; makes some time-series plots
-
-    Note: this function is private; remove the '_'
-    so you can make it public.
     '''
     # figure configuration
     fig_config = _get_fig_config(diag_config)
@@ -693,7 +686,7 @@ def _plot_single_map(plot_path, _dat, _datglobal, _name, diag_config):
 
     _dat_median = np.nanmedian(
         xu.remove_invalid(_dat.data, fill_value=fig_config['fill_value']))
-    title_str = (f'{_dat.long_name}, ({_dat.units}), {_name},\n'
+    title_str = (f'{_dat.long_name} ({_dat.units}), {_name},\n'
                  f'global = {_datglobal:.2f}, median = {_dat_median:.2f}')
 
     plt.title(title_str, fontsize=0.98 * fig_config['ax_fs'])
@@ -724,9 +717,6 @@ def main(diag_config):
 
     Arguments:
         diag_config - nested dictionary of metadata
-
-    Returns:
-        dictionaries for model simulations and observation data
     '''
     my_files_dict = group_metadata(diag_config['input_data'].values(),
                                    'dataset')
