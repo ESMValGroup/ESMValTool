@@ -27,8 +27,18 @@ annual_number_of_frost_days:
         - tasmin
     threshold:
         value: 273.15
+        unit: K
         logic: lt
     cf_name: number_of_days_with_air_temperature_below_freezing_point
+annual_number_of_summer_days:
+    name: summer days
+    required:
+        - tasmax
+    threshold:
+        value: 298.15
+        unit: K
+        logic: gt
+    cf_name: number_of_days_with_air_temperature_above_25_degree_Celsius
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -117,7 +127,7 @@ def main(cfg):
             if index_name not in index_definition.keys():
                 logger.info("Index %s not implemented!", index_name)
                 continue
-            if index_name == 'annual_number_of_frost_days':
+            if index_name in ['annual_number_of_frost_days', 'annual_number_of_summer_days']:
                 write_netcdf([
                     _count_days_by_threshold_annually(cubes,
                                                   index_definition[index_name])
