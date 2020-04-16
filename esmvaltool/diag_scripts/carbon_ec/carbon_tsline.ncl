@@ -36,7 +36,7 @@
 ; Caveats
 ;
 ; Modification history
-;    20191219-wenzel_sabrina: added option to coose index instead
+;    20191219-wenzel_sabrina: added option to choose index instead of
 ;                             reference period
 ;    20191019-wenzel_sabrina: copyed tsline.ncl to carbon_tsline and
 ;                             added the option to cumulate variables
