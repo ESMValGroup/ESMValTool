@@ -64,7 +64,7 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
    * end_year: last year (time range)
    * plot_units: units to appear on Figure
    * ec_anom: calculates anomalies with respect to the first 10-year average (anom) 
-   * scatter_log: set logaritmic axes in scatterplot.ncl
+   * scatter_log: set logarithmic axes in scatterplot.ncl
    * styleset: Plot style
 
    *Optional settings (scripts)*
