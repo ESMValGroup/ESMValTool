@@ -228,6 +228,14 @@ def make_model_vs_obs_plots(
                 cmap='bwr',
                 title=' '.join([model, 'over', obs]),
                 log=True)
+        else: 
+            add_map_subplot(
+                224,
+                cube224,
+                logspace4,
+                cmap='bwr',
+                title=' '.join([model, 'over', obs]),
+                log=True)
 
         # Add overall title
         fig.suptitle(long_name + ' [' + units + ']', fontsize=14)
