@@ -48,7 +48,7 @@
 ;                        period for anomaly with refence mean value
 ;    20151027-lauer_axel: moved call to 'write_references' to the beginning
 ;                         of the code
-;    20150622-wenzel_sabrina: added optional anomaly calculation, choise of
+;    20150622-wenzel_sabrina: added optional anomaly calculation, choice of
 ;                             area operations (sum, average) and detrending of
 ;                             time series.
 ;    20150420-righi_mattia: adapted to new structure. Some of the original
