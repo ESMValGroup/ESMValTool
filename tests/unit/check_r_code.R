@@ -5,11 +5,7 @@ check_paths <- list("esmvaltool", "tests")
 
 root_folder <- args[1]
 has_errors <- FALSE
-linters <- with_defaults(line_length_linter(79),
-  object_name_linter = NULL, # TODO: enable and fix issues
-  # disabled because broken: https://github.com/jimhester/lintr/issues/27
-  object_usage_linter = NULL
-)
+linters <- with_defaults(line_length_linter(79))
 
 for (path in check_paths) { # nolint
   check_path <- file.path(root_folder, path)
@@ -27,9 +23,6 @@ for (path in check_paths) { # nolint
     if (!is.null(errors)) {
       for (error in errors) {
         print(error)
-        if (error["type"] != "warning") {
-          has_errors <- TRUE
-        }
       }
     }
   }

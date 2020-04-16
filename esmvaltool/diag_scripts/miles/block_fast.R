@@ -62,7 +62,8 @@ miles_block_fast <- # nolint
       namevar = "zg",
       tmonths = timeseason,
       tyears = years,
-      rotate = "full"
+      rotate = "full",
+      fillmiss = TRUE
     )
     print(str(fieldlist))
 

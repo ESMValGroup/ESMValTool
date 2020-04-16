@@ -22,11 +22,11 @@ import os
 import shutil
 import tarfile
 
-import gdal
 import iris
 import iris.coord_categorisation
 import numpy as np
 from cf_units import Unit
+from osgeo import gdal
 
 from . import utilities as utils
 
