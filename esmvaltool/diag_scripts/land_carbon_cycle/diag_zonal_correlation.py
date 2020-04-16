@@ -64,9 +64,9 @@ def _partialCorr(dat_columns, fig_config):
 
     Arguments:
         dat_columns - an array with different variables in different columns
-        fig_config - configuration with correlation_method. Uses the scipy 
+        fig_config - configuration with correlation_method. Uses the scipy
         stats module to calculate correlation using either pearsons linear
-        (http://tiny.cc/pearsonr) or spearmans rank (http://tiny.cc/spearmanr) 
+        (http://tiny.cc/pearsonr) or spearmans rank (http://tiny.cc/spearmanr)
         correlation coefficients.
 
     Returns:
