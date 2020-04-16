@@ -401,7 +401,7 @@ diagnostics:
         xy_line_legend: True
 
   diag_tsline_Fig2e: 
-    description: Fig 2e near surface temerature historical coupled simulation
+    description: Fig 2e near surface temperature historical coupled simulation
     variables:
       tas: 
         project: CMIP5
@@ -655,4 +655,3 @@ diagnostics:
         con_units: "GtC/K"
         nc_infile: ../../diag_gammaHist_Fig3and4/gammaHist_3and4/
         styleset: CMIP5     # Plot style
-
