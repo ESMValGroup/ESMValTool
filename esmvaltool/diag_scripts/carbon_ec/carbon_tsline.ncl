@@ -274,7 +274,6 @@ begin
 
     ; Anomaly
     if (anom .eq. "anom") then
-      ; calculate monthly mean of ref period if 0.5 data points are available
       if (isatt(diag_script_info, "ridx_start") .and. \
           isatt(diag_script_info, "ridx_end")) then
         tmp_start = cd_calendar(A0&time(ridx_start), 0)
@@ -282,7 +281,8 @@ begin
         ref_start = toint(tmp_start(0, 0))
         ref_end   = toint(tmp_end(0, 0))
       end if
-
+      
+      ; calculate monthly mean of ref period if 0.5 data points are available
       tmp = time_operations(A0, ref_start, ref_end, "extract", "", 0)
       limit  = toint(0.5 * dimsizes(tmp&time))
       do i = 0, dimsizes(tmp!0)-1
