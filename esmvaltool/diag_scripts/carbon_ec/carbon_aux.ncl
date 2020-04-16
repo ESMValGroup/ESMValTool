@@ -1,7 +1,7 @@
 ; #############################################################################
 ; # EXTERNAL CARBON FUNCTIONS
 ; #############################################################################
-;  Please consider using of extending existing routines before adding new ones.
+;  Please consider using rf extending existing routines before adding new ones.
 ;  Check the header of each routine for documentation.
 ;
 ;  Contents:
