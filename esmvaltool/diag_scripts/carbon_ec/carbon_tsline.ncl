@@ -496,7 +496,7 @@ begin
     if (var0 .eq. "tas") then
       varname = "Temperature"
     else
-      varname = variable_info[0]@long_name
+      varname = variable_info[0]@short_name
     end if
   else
     varname = var0
