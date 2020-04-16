@@ -58,15 +58,15 @@ datasets:
 ################################################
 # Define some default parameters using anchors #
 ################################################
-    
+
 plot_pars: &pltpars
   ts_plt: true
   glc_plt: true
-  
+
 range_pars: &rngpars
   base_range: [1981, 1983]
   analysis_range: [1981, 1983]
-  
+
 reference_pars: &refpars
   reference_datasets:
     - MPI-ESM-LR
@@ -79,7 +79,7 @@ regrid_pars: &regpars
 
 mip_definition: &mipdef
   mip: day
-  
+
 ################################################
 # Define preprocessor elements using anchors   #
 ################################################
@@ -87,11 +87,11 @@ mip_definition: &mipdef
 monthly_max: &pp_monmax
   monthly_statistics:
     operator: max
-      
+
 monthly_min: &pp_monmin
   monthly_statistics:
     operator: min
-    
+
 monthly_mean: &pp_monmean
   monthly_statistics:
     operator: min
@@ -102,48 +102,62 @@ filter_5day: &5day_filter
     span: 5
     filter_type: lowpass # TODO: check
     filter_stats: sum
-    
+
 monthly_sum: &pp_monsum
   monthly_statistics:
     operator: sum
-  
+
 ################################################
 # Define preprocessors                         #
 ################################################
-  
+
 preprocessors:
   pp_max:
     <<: *pp_monmax
-    
+
   pp_min:
     <<: *pp_monmin
-    
+
   pp_sum:
     <<: *pp_monsum
 
   pp_5daymax:
     <<: *5day_filter
     <<: *pp_monmax
-    
+
   pp_none:
    {}
-  
+
 ################################################
 # Define diagnostics                           #
 ################################################
 
 diagnostics:
-  FD:
-    description: calculate extreme events idx FD
-    
+  extremeIndices:
+    description: calculate extreme event indices
+
     variables:
+      tas:
+        <<: *mipdef
+        preprocessor: pp_none
+      tasmax:
+        <<: *mipdef
+        preprocessor: pp_none
       tasmin:
         <<: *mipdef
         preprocessor: pp_none
-        
+      pr:
+        <<: *mipdef
+        preprocessor: pp_none
+
     scripts:
-      FD:
+      extremeIndices:
         script: extreme_events/extreme_events.py
+        indices:
+          - annual_number_of_frost_days
+          - annual_number_of_summer_days
+          - annual_number_of_icing_days
+          - annual_number_of_tropical_nights
         quickplot:
           plot_type: pcolormesh
         <<: *refpars
@@ -157,369 +171,92 @@ diagnostics:
           - fdETCCDI_yr
         <<: *pltpars
         <<: *rngpars
-        
-#  SU:
-#    description: calculate extreme events idx SU
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: 
+
+##  SU:
+##    description: calculate extreme events idx SU
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      SU:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - suETCCDI_yr ####
+##        gleckler_idx:
+##          - suETCCDI_yr ####
+##        <<: *pltpars
+##        <<: *rngpars
 #
-#    scripts:
-#      SU:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - suETCCDI_yr ####
-#        gleckler_idx:
-#          - suETCCDI_yr ####
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  ID:
-#    description: calculate extreme events idx ID
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: 
-#        
-#    scripts:
-#      ID:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - idETCCDI_yr
-#        gleckler_idx:
-#          - idETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  TR:
-#    description: calculate extreme events idx TR
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: 
-#        
-#    scripts:
-#      TR:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - trETCCDI_yr
-#        gleckler_idx:
-#          - trETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-        
-  GSL:
-    description: calculate extreme events idx GSL
-    
-    variables:
-      tasmin:
-        <<: *mipdef
-        preprocessor: pp_none
-        
-    scripts:
-      GSL:
-        script: extreme_events/extreme_events.py
-        quickplot:
-          plot_type: pcolormesh
-        <<: *refpars
-        <<: *regpars
-        # TODO: what is that doing? Is this a used text for the plots?
-        mip_name: CMIP
-        # TODO: why is that the same name twice? is this dedicated plots?
-        timeseries_idx:
-          - gslETCCDI_yr
-        gleckler_idx:
-          - gslETCCDI_yr
-        <<: *pltpars
-        <<: *rngpars
-
-#  TXx:
-#    description: calculate extreme events idx TXx
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: pp_max
-#        
-#    scripts:
-#      TXx:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - txxETCCDI_yr
-#        gleckler_idx:
-#          - txxETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-        
-  TNx:
-    description: calculate extreme events idx TNx
-    
-    variables:
-      tasmin:
-        <<: *mipdef
-        preprocessor: pp_max
-        
-    scripts:
-      TNx:
-        script: extreme_events/extreme_events.py
-        quickplot:
-          plot_type: pcolormesh
-        <<: *refpars
-        <<: *regpars
-        # TODO: what is that doing? Is this a used text for the plots?
-        mip_name: CMIP
-        # TODO: why is that the same name twice? is this dedicated plots?
-        timeseries_idx:
-          - tnxETCCDI_yr
-        gleckler_idx:
-          - tnxETCCDI_yr
-        <<: *pltpars
-        <<: *rngpars
-        
-#  TXn:
-#    description: calculate extreme events idx TXn
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: pp_min
-#        
-#    scripts:
-#      TXn:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - txnETCCDI_yr
-#        gleckler_idx:
-#          - txnETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-        
-  TNn:
-    description: calculate extreme events idx TNn
-    
-    variables:
-      tasmin:
-        <<: *mipdef
-        preprocessor: pp_min
-        
-    scripts:
-      TNn:
-        script: extreme_events/extreme_events.py
-        quickplot:
-          plot_type: pcolormesh
-        <<: *refpars
-        <<: *regpars
-        # TODO: what is that doing? Is this a used text for the plots?
-        mip_name: CMIP
-        # TODO: why is that the same name twice? is this dedicated plots?
-        timeseries_idx:
-          - tnnETCCDI_yr
-        gleckler_idx:
-          - tnnETCCDI_yr
-        <<: *pltpars
-        <<: *rngpars
-        
-  TN10p:
-    description: calculate extreme events idx TN10p
-    
-    variables:
-      tasmin:
-        <<: *mipdef
-        preprocessor: pp_none
-
-    scripts:
-      TN10p:
-        script: extreme_events/extreme_events.py
-        quickplot:
-          plot_type: pcolormesh
-        <<: *refpars
-        <<: *regpars
-        # TODO: what is that doing? Is this a used text for the plots?
-        mip_name: CMIP
-        # TODO: why is that the same name twice? is this dedicated plots?
-        timeseries_idx:
-          - tn10pETCCDI_yr
-        gleckler_idx:
-          - tn10pETCCDI_yr
-        <<: *pltpars
-        <<: *rngpars
-
-#  TX10p:
-#    description: calculate extreme events idx TX10p
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: 
+##  ID:
+##    description: calculate extreme events idx ID
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      ID:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - idETCCDI_yr
+##        gleckler_idx:
+##          - idETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
 #
-#    scripts:
-#      TX10p:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - tx10pETCCDI_yr
-#        gleckler_idx:
-#          - tx10pETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-  TN90p:
-    description: calculate extreme events idx TN90p
-    
-    variables:
-      tasmin:
-        <<: *mipdef
-        preprocessor: pp_none
-
-    scripts:
-      TN90p:
-        script: extreme_events/extreme_events.py
-        quickplot:
-          plot_type: pcolormesh
-        <<: *refpars
-        <<: *regpars
-        # TODO: what is that doing? Is this a used text for the plots?
-        mip_name: CMIP
-        # TODO: why is that the same name twice? is this dedicated plots?
-        timeseries_idx:
-          - tn90pETCCDI_yr
-        gleckler_idx:
-          - tn90pETCCDI_yr
-        <<: *pltpars
-        <<: *rngpars
-
-#  TX90p:
-#    description: calculate extreme events idx TX90p
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: 
+##  TR:
+##    description: calculate extreme events idx TR
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      TR:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - trETCCDI_yr
+##        gleckler_idx:
+##          - trETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
 #
-#    scripts:
-#      TX90p:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - tx90pETCCDI_yr
-#        gleckler_idx:
-#          - tx90pETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  WSDI:
-#    description: calculate extreme events idx WSDI
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: 
+#  GSL:
+#    description: calculate extreme events idx GSL
 #
-#    scripts:
-#      WSDI:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - wsdiETCCDI_yr
-#        gleckler_idx:
-#          - wsdiETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  CSDI:
-#    description: calculate extreme events idx CSDI
-#    
 #    variables:
-#      tasmax:
-#        <<: *mipdef
-#        preprocessor: 
-#
-#    scripts:
-#      CSDI:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - csdiETCCDI_yr
-#        gleckler_idx:
-#          - csdiETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  DTR:
-#    description: calculate extreme events idx DTR
-#    
-#    variables:
-#      tasmax:
-#        <<: *mipdef
 #      tasmin:
 #        <<: *mipdef
-#        preprocessor: 
+#        preprocessor: pp_none
 #
 #    scripts:
-#      DTR:
+#      GSL:
 #        script: extreme_events/extreme_events.py
 #        quickplot:
 #          plot_type: pcolormesh
@@ -529,47 +266,47 @@ diagnostics:
 #        mip_name: CMIP
 #        # TODO: why is that the same name twice? is this dedicated plots?
 #        timeseries_idx:
-#          - dtrETCCDI_yr
+#          - gslETCCDI_yr
 #        gleckler_idx:
-#          - dtrETCCDI_yr
+#          - gslETCCDI_yr
 #        <<: *pltpars
 #        <<: *rngpars
-
-#  Rx1day:
-#    description: calculate extreme events idx Rx1day
-#    
-#    variables:
-#      pr:
-#        <<: *mipdef
+#
+##  TXx:
+##    description: calculate extreme events idx TXx
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
 ##        preprocessor: pp_max
+##
+##    scripts:
+##      TXx:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - txxETCCDI_yr
+##        gleckler_idx:
+##          - txxETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
 #
-#    scripts:
-#      Rx1day:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - rx1dayETCCDI_yr
-#        gleckler_idx:
-#          - rx1dayETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-        
-#  Rx5day:
-#    description: calculate extreme events idx Rx5day
-#    
+#  TNx:
+#    description: calculate extreme events idx TNx
+#
 #    variables:
-#      pr:
+#      tasmin:
 #        <<: *mipdef
-##        preprocessor: pp_5daymax
+#        preprocessor: pp_max
 #
 #    scripts:
-#      Rx5day:
+#      TNx:
 #        script: extreme_events/extreme_events.py
 #        quickplot:
 #          plot_type: pcolormesh
@@ -579,22 +316,47 @@ diagnostics:
 #        mip_name: CMIP
 #        # TODO: why is that the same name twice? is this dedicated plots?
 #        timeseries_idx:
-#          - rx5dayETCCDI_yr
+#          - tnxETCCDI_yr
 #        gleckler_idx:
-#          - rx5dayETCCDI_yr
+#          - tnxETCCDI_yr
 #        <<: *pltpars
 #        <<: *rngpars
-        
-#  R10mm:
-#    description: calculate extreme events idx R10mm
-#    
+#
+##  TXn:
+##    description: calculate extreme events idx TXn
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor: pp_min
+##
+##    scripts:
+##      TXn:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - txnETCCDI_yr
+##        gleckler_idx:
+##          - txnETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+#  TNn:
+#    description: calculate extreme events idx TNn
+#
 #    variables:
-#      pr:
+#      tasmin:
 #        <<: *mipdef
-#        preprocessor: 
+#        preprocessor: pp_min
 #
 #    scripts:
-#      R10mm:
+#      TNn:
 #        script: extreme_events/extreme_events.py
 #        quickplot:
 #          plot_type: pcolormesh
@@ -604,22 +366,22 @@ diagnostics:
 #        mip_name: CMIP
 #        # TODO: why is that the same name twice? is this dedicated plots?
 #        timeseries_idx:
-#          - r10mmETCCDI_yr
+#          - tnnETCCDI_yr
 #        gleckler_idx:
-#          - r10mmETCCDI_yr
+#          - tnnETCCDI_yr
 #        <<: *pltpars
 #        <<: *rngpars
-
-#  R20mm:
-#    description: calculate extreme events idx R20mm
-#    
+#
+#  TN10p:
+#    description: calculate extreme events idx TN10p
+#
 #    variables:
-#      pr:
+#      tasmin:
 #        <<: *mipdef
-#        preprocessor: 
+#        preprocessor: pp_none
 #
 #    scripts:
-#      R20mm:
+#      TN10p:
 #        script: extreme_events/extreme_events.py
 #        quickplot:
 #          plot_type: pcolormesh
@@ -629,48 +391,47 @@ diagnostics:
 #        mip_name: CMIP
 #        # TODO: why is that the same name twice? is this dedicated plots?
 #        timeseries_idx:
-#          - r20mmETCCDI_yr
+#          - tn10pETCCDI_yr
 #        gleckler_idx:
-#          - r20mmETCCDI_yr
+#          - tn10pETCCDI_yr
 #        <<: *pltpars
 #        <<: *rngpars
-
-#  Rnnmm:
-#    description: calculate extreme events idx Rnnmm
-#    
+#
+##  TX10p:
+##    description: calculate extreme events idx TX10p
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      TX10p:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - tx10pETCCDI_yr
+##        gleckler_idx:
+##          - tx10pETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+#  TN90p:
+#    description: calculate extreme events idx TN90p
+#
 #    variables:
-#      pr:
+#      tasmin:
 #        <<: *mipdef
-#        preprocessor: 
+#        preprocessor: pp_none
 #
 #    scripts:
-#      Rnnmm:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        nn: 15
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - rnnmmETCCDI_yr
-#        gleckler_idx:
-#          - rnnmmETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  CDD:
-#    description: calculate extreme events idx CDD
-#    
-#    variables:
-#      pr:
-#        <<: *mipdef
-#        preprocessor: 
-#
-#    scripts:
-#      CDD:
+#      TN90p:
 #        script: extreme_events/extreme_events.py
 #        quickplot:
 #          plot_type: pcolormesh
@@ -680,108 +441,361 @@ diagnostics:
 #        mip_name: CMIP
 #        # TODO: why is that the same name twice? is this dedicated plots?
 #        timeseries_idx:
-#          - cddETCCDI_yr
+#          - tn90pETCCDI_yr
 #        gleckler_idx:
-#          - cddETCCDI_yr
+#          - tn90pETCCDI_yr
 #        <<: *pltpars
 #        <<: *rngpars
-        
-#  CWD:
-#    description: calculate extreme events idx CWD
-#    
-#    variables:
-#      pr:
-#        <<: *mipdef
-#        preprocessor: 
 #
-#    scripts:
-#      CWD:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - cwdETCCDI_yr
-#        gleckler_idx:
-#          - cwdETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  R95pTOT:
-#    description: calculate extreme events idx R95pTOT
-#    
-#    variables:
-#      pr:
-#        <<: *mipdef
-#        preprocessor: 
+##  TX90p:
+##    description: calculate extreme events idx TX90p
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      TX90p:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - tx90pETCCDI_yr
+##        gleckler_idx:
+##          - tx90pETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
 #
-#    scripts:
-#      R95pTOT:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - r95pETCCDI_yr
-#        gleckler_idx:
-#          - r95pETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-        
-#  R99pTOT:
-#    description: calculate extreme events idx R99pTOT
-#    
-#    variables:
-#      pr:
-#        <<: *mipdef
-#        preprocessor: 
+##  WSDI:
+##    description: calculate extreme events idx WSDI
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      WSDI:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - wsdiETCCDI_yr
+##        gleckler_idx:
+##          - wsdiETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
 #
-#    scripts:
-#      R99pTOT:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - r99ETCCDI_yr
-#        gleckler_idx:
-#          - r99ETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
-
-#  PRCPTOT:
-#    description: calculate extreme events idx PRCPTOT
-#    
-#    variables:
-#      pr:
-#        <<: *mipdef
-#        preprocessor: pp_sum
+##  CSDI:
+##    description: calculate extreme events idx CSDI
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      CSDI:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - csdiETCCDI_yr
+##        gleckler_idx:
+##          - csdiETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
 #
-#    scripts:
-#      PRCPTOT:
-#        script: extreme_events/extreme_events.py
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *refpars
-#        <<: *regpars
-#        # TODO: what is that doing? Is this a used text for the plots?
-#        mip_name: CMIP
-#        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx:
-#          - prcptotETCCDI_yr
-#        gleckler_idx:
-#          - prcptotETCCDI_yr
-#        <<: *pltpars
-#        <<: *rngpars
+##  DTR:
+##    description: calculate extreme events idx DTR
+##
+##    variables:
+##      tasmax:
+##        <<: *mipdef
+##      tasmin:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      DTR:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - dtrETCCDI_yr
+##        gleckler_idx:
+##          - dtrETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  Rx1day:
+##    description: calculate extreme events idx Rx1day
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+###        preprocessor: pp_max
+##
+##    scripts:
+##      Rx1day:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - rx1dayETCCDI_yr
+##        gleckler_idx:
+##          - rx1dayETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  Rx5day:
+##    description: calculate extreme events idx Rx5day
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+###        preprocessor: pp_5daymax
+##
+##    scripts:
+##      Rx5day:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - rx5dayETCCDI_yr
+##        gleckler_idx:
+##          - rx5dayETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  R10mm:
+##    description: calculate extreme events idx R10mm
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      R10mm:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - r10mmETCCDI_yr
+##        gleckler_idx:
+##          - r10mmETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  R20mm:
+##    description: calculate extreme events idx R20mm
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      R20mm:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - r20mmETCCDI_yr
+##        gleckler_idx:
+##          - r20mmETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  Rnnmm:
+##    description: calculate extreme events idx Rnnmm
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      Rnnmm:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        nn: 15
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - rnnmmETCCDI_yr
+##        gleckler_idx:
+##          - rnnmmETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  CDD:
+##    description: calculate extreme events idx CDD
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      CDD:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - cddETCCDI_yr
+##        gleckler_idx:
+##          - cddETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  CWD:
+##    description: calculate extreme events idx CWD
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      CWD:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - cwdETCCDI_yr
+##        gleckler_idx:
+##          - cwdETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  R95pTOT:
+##    description: calculate extreme events idx R95pTOT
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      R95pTOT:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - r95pETCCDI_yr
+##        gleckler_idx:
+##          - r95pETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  R99pTOT:
+##    description: calculate extreme events idx R99pTOT
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor:
+##
+##    scripts:
+##      R99pTOT:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - r99ETCCDI_yr
+##        gleckler_idx:
+##          - r99ETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars
+#
+##  PRCPTOT:
+##    description: calculate extreme events idx PRCPTOT
+##
+##    variables:
+##      pr:
+##        <<: *mipdef
+##        preprocessor: pp_sum
+##
+##    scripts:
+##      PRCPTOT:
+##        script: extreme_events/extreme_events.py
+##        quickplot:
+##          plot_type: pcolormesh
+##        <<: *refpars
+##        <<: *regpars
+##        # TODO: what is that doing? Is this a used text for the plots?
+##        mip_name: CMIP
+##        # TODO: why is that the same name twice? is this dedicated plots?
+##        timeseries_idx:
+##          - prcptotETCCDI_yr
+##        gleckler_idx:
+##          - prcptotETCCDI_yr
+##        <<: *pltpars
+##        <<: *rngpars

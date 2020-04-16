@@ -47,6 +47,16 @@ annual_number_of_icing_days:
         unit: K
         logic: lt
     cf_name: number_of_days_where_air_temperature_remains_below_freezing_point
+annual_number_of_tropical_nights:
+    name: tropical nights
+    required:
+        - tasmin
+    threshold:
+        value: 293.15
+        unit: K
+        logic: gt
+    cf_name: number_of_days_where_air_temperature_remains_above_20_degre_Celsius
+
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -140,7 +150,8 @@ def main(cfg):
             if index_name in [
                     'annual_number_of_frost_days',
                     'annual_number_of_summer_days',
-                    'annual_number_of_icing_days'
+                    'annual_number_of_icing_days',
+                    'annual_number_of_tropical_nights'
             ]:
                 write_netcdf([
                     _count_days_by_threshold_annually(
