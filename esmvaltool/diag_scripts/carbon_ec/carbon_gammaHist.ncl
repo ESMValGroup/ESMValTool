@@ -142,7 +142,7 @@ begin
       A2_tmp = A2
     end if
 
-    ; allign timeseries first (there might be better ways to do it)
+    ; align timeseries first (there might be better ways to do it)
     if (dimsizes(A1_tmp).ne.dimsizes(A2_tmp))then
       maxt = max((/dimsizes(A1_tmp), dimsizes(A2_tmp)/))
       tmpA = new((/2, maxt/), typeof(A1_tmp&time))
