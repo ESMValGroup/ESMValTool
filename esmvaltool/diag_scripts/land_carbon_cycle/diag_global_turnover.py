@@ -19,9 +19,11 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-import esmvaltool.diag_scripts.land_carbon_cycle.extraUtils as xu
+import esmvaltool.diag_scripts.land_carbon_cycle.plotUtils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
-    _load_variable, )
+    _load_variable,
+    _remove_invalid,
+)
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
     _get_ancestor_files,
     get_provenance_record,
@@ -49,10 +51,10 @@ def _get_diagonal_colorbar_info():
                      num=10)[:-1], np.linspace(256, 1000, num=2,
                                                endpoint=True)))
     cb_info_diagonal['ticksLoc'] = np.array([1, 8, 16, 32, 64, 128, 256])
-    clist_ = xu.get_colomap(cb_name,
-                            cb_info_diagonal['tickBounds'],
-                            lowp=0.,
-                            hip=1)
+    clist_ = plut.get_colomap(cb_name,
+                              cb_info_diagonal['tickBounds'],
+                              lowp=0.,
+                              hip=1)
     cb_info_diagonal['colMap'] = mpl.colors.ListedColormap(clist_)
     return cb_info_diagonal
 
@@ -343,17 +345,17 @@ def _fix_matrix_axes(row_m, col_m, models, nmodels, diag_config, fig_config):
     row_mod = models[row_m]
     col_mod = models[col_m]
     if row_m != 0 and col_m != nmodels - 1:
-        xu.ax_clr(axfs=fig_config['ax_fs'])
-        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+        plut.ax_clr(axfs=fig_config['ax_fs'])
+        plut.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
     elif row_m == 0 and col_m != nmodels - 1:
-        xu.ax_clrX(axfs=fig_config['ax_fs'])
-        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+        plut.ax_clrX(axfs=fig_config['ax_fs'])
+        plut.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
     elif col_m == nmodels - 1 and row_m != 0:
-        xu.ax_clrY(axfs=fig_config['ax_fs'])
-        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+        plut.ax_clrY(axfs=fig_config['ax_fs'])
+        plut.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
     if row_m == 0 and col_m == nmodels - 1:
-        xu.ax_orig(axfs=fig_config['ax_fs'])
-        xu.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
+        plut.ax_orig(axfs=fig_config['ax_fs'])
+        plut.rotate_labels(which_ax='x', axfs=fig_config['ax_fs'], rot=90)
         plt.ylabel('$model_{column}$', fontsize=fig_config['ax_fs'])
         plt.xlabel('$model_{row}$', fontsize=fig_config['ax_fs'])
     if col_m == 0:
@@ -389,7 +391,7 @@ def _draw_121_line():
     ymin, ymax = plt.ylim()
     xmin, xmax = plt.xlim()
     plt.plot((xmin, xmax), (ymin, ymax), 'k', lw=0.1)
-    return 'plotted 1:1 line'
+    return
 
 
 def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
@@ -426,7 +428,6 @@ def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
         dat_row = global_tau_mod['grid'][models[row_m]].data
         for col_m in range(nmodels):
             dat_col = global_tau_mod['grid'][models[col_m]].data
-            print('---' + models[row_m] + ' vs ' + models[col_m] + '---')
             _ax = _get_matrix_map_axes(row_m, col_m, fig_config)
             # plot the maps along the diagonal
             if row_m == col_m:
@@ -469,8 +470,8 @@ def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
             # plot the maps of ratio of models and observation above the
             # diagonal
             if row_m > col_m:
-                plot_dat = xu.remove_invalid(
-                    dat_row / dat_col, fill_value=fig_config['fill_value'])
+                plot_dat = _remove_invalid(dat_row / dat_col,
+                                           fill_value=fig_config['fill_value'])
                 _ax.imshow(_get_data_to_plot(plot_dat),
                            norm=mpl.colors.BoundaryNorm(
                                cb_info_ratio['tickBounds'],
@@ -494,13 +495,13 @@ def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
     cb_tit_d = '{name} ({unit})'.format(
         name=global_tau_mod['grid'][models[col_m]].long_name,
         unit=global_tau_mod['grid'][models[col_m]].units)
-    cb = xu.mk_colo_tau(_axcol_dia,
-                        cb_info_diagonal['tickBounds'],
-                        cb_info_diagonal['colMap'],
-                        tick_locs=cb_info_diagonal['ticksLoc'],
-                        cbfs=0.86 * fig_config['ax_fs'],
-                        cbtitle=cb_tit_d,
-                        cbrt=90)
+    cb = plut.mk_colo_tau(_axcol_dia,
+                          cb_info_diagonal['tickBounds'],
+                          cb_info_diagonal['colMap'],
+                          tick_locs=cb_info_diagonal['ticksLoc'],
+                          cbfs=0.86 * fig_config['ax_fs'],
+                          cbtitle=cb_tit_d,
+                          cbrt=90)
 
     # plot the colorbar for maps above the diagonal
     y_colo = fig_config['y0'] + fig_config['hp'] + fig_config['cb_off_y']
@@ -508,25 +509,21 @@ def _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
         fig_config['x_colo_r'], y_colo, fig_config['wcolo'],
         fig_config['hcolo']
     ]
-    cb = xu.mk_colo_cont(_axcol_rat,
-                         cb_info_ratio['tickBounds'],
-                         cb_info_ratio['colMap'],
-                         cbfs=0.7 * fig_config['ax_fs'],
-                         cbrt=90,
-                         col_scale='log',
-                         cbtitle='ratio ($model_{column}$/$model_{row}$)',
-                         tick_locs=cb_info_ratio['ticksLoc'])
+    cb = plut.mk_colo_cont(_axcol_rat,
+                           cb_info_ratio['tickBounds'],
+                           cb_info_ratio['colMap'],
+                           cbfs=0.7 * fig_config['ax_fs'],
+                           cbrt=90,
+                           col_scale='log',
+                           cbtitle='ratio ($model_{column}$/$model_{row}$)',
+                           tick_locs=cb_info_ratio['ticksLoc'])
     cb.ax.set_xticklabels(cb_info_ratio['ticksLab'],
                           fontsize=0.86 * fig_config['ax_fs'],
                           ha='center',
                           rotation=0)
 
-    # save and close the figure
-
-    plt.savefig(plot_path_matrix,
-                bbox_inches='tight',
-                bbox_extra_artists=[t_x],
-                dpi=450)
+    # save and close figure
+    plut.save_figure(plot_path_matrix, _extr_art=[t_x])
     plt.close()
 
 
@@ -569,14 +566,14 @@ def _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
     for row_m in range(nmodels):
         row_mod = models[row_m]
         dat_tau = global_tau_mod['grid'][row_mod]
-        dat_tau_full[row_m] = xu.remove_invalid(
+        dat_tau_full[row_m] = _remove_invalid(
             dat_tau.data, fill_value=fig_config['fill_value'])
 
-    mm_tau = xu.remove_invalid(np.nanmedian(dat_tau_full, axis=0),
-                               fill_value=fig_config['fill_value'])
+    mm_tau = _remove_invalid(np.nanmedian(dat_tau_full, axis=0),
+                             fill_value=fig_config['fill_value'])
     mm_bias_tau = mm_tau / tau_obs
-    mm_bias_tau = xu.remove_invalid(mm_bias_tau,
-                                    fill_value=fig_config['fill_value'])
+    mm_bias_tau = _remove_invalid(mm_bias_tau,
+                                  fill_value=fig_config['fill_value'])
 
     # define figure and main axis to plot the map
     plt.figure(figsize=(5, 3))
@@ -621,22 +618,21 @@ def _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
                  linewidth=0.2,
                  transform=ccrs.PlateCarree())
 
-    title_str = (
-        'multimodel bias and agreement (-)\n{title}'.format(
-            title=global_tau_obs['grid']['tau_ctotal'].long_name))
+    title_str = ('multimodel bias and agreement (-)\n{title}'.format(
+        title=global_tau_obs['grid']['tau_ctotal'].long_name))
     plt.title(title_str, fontsize=0.98 * fig_config['ax_fs'])
 
     # plot colorbar using extraUtils
     _axcol_rat = [0.254, fig_config['y_colo_single'], 0.6, 0.035]
 
-    col_bar = xu.mk_colo_cont(_axcol_rat,
-                              cb_info['tickBounds'],
-                              cb_info['colMap'],
-                              cbfs=0.8 * fig_config['ax_fs'],
-                              cbrt=90,
-                              col_scale='log',
-                              cbtitle='',
-                              tick_locs=cb_info['ticksLoc'])
+    col_bar = plut.mk_colo_cont(_axcol_rat,
+                                cb_info['tickBounds'],
+                                cb_info['colMap'],
+                                cbfs=0.8 * fig_config['ax_fs'],
+                                cbrt=90,
+                                col_scale='log',
+                                cbtitle='',
+                                tick_locs=cb_info['ticksLoc'])
     col_bar.ax.set_xticklabels(cb_info['ticksLab'],
                                fontsize=0.9586 * fig_config['ax_fs'],
                                ha='center',
@@ -644,10 +640,7 @@ def _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
 
     # save and close figure
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
-    plt.savefig(plot_path_multimodel,
-                bbox_inches='tight',
-                bbox_extra_artists=[t_x],
-                dpi=450)
+    plut.save_figure(plot_path_multimodel, _extr_art=[t_x])
     plt.close()
 
 
@@ -685,7 +678,7 @@ def _plot_single_map(plot_path, _dat, _datglobal, _name, diag_config):
     # get the data and set the title of the map
 
     _dat_median = np.nanmedian(
-        xu.remove_invalid(_dat.data, fill_value=fig_config['fill_value']))
+        _remove_invalid(_dat.data, fill_value=fig_config['fill_value']))
     title_str = (f'{_dat.long_name} ({_dat.units}), {_name},\n'
                  f'global = {_datglobal:.2f}, median = {_dat_median:.2f}')
 
@@ -693,20 +686,17 @@ def _plot_single_map(plot_path, _dat, _datglobal, _name, diag_config):
 
     # draw the colorbar
     _axcol_dia = [0.254, fig_config['y_colo_single'], 0.6, 0.035]
-    xu.mk_colo_tau(_axcol_dia,
-                   cb_info['tickBounds'],
-                   cb_info['colMap'],
-                   tick_locs=cb_info['ticksLoc'],
-                   cbfs=0.86 * fig_config['ax_fs'],
-                   cbtitle='',
-                   cbrt=90)
+    plut.mk_colo_tau(_axcol_dia,
+                     cb_info['tickBounds'],
+                     cb_info['colMap'],
+                     tick_locs=cb_info['ticksLoc'],
+                     cbfs=0.86 * fig_config['ax_fs'],
+                     cbtitle='',
+                     cbrt=90)
 
-    # save the figure
+    # save and close figure
     t_x = plt.figtext(0.5, 0.5, ' ', transform=plt.gca().transAxes)
-    plt.savefig(plot_path,
-                bbox_inches='tight',
-                bbox_extra_artists=[t_x],
-                dpi=450)
+    plut.save_figure(plot_path, _extr_art=[t_x])
     plt.close()
 
 

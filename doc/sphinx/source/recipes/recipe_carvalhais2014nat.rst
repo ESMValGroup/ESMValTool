@@ -298,7 +298,7 @@ Example plots
 -------------
 
 .. _fig_carvalhais2014nat_1:
-.. figure:: /recipes/figures/carvalhais2014nat/zonal_correlation_ecosystem_carbon_turnover_time_precipitation_pearson_Carvalhais2014_gnz.png
+.. figure:: /recipes/figures/carvalhais2014nat/r_tau_ctotal_climate_pearson_Carvalhais2014_gnz.png
    :align: center
    :width: 80%
 

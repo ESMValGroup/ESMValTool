@@ -16,10 +16,12 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-import esmvaltool.diag_scripts.land_carbon_cycle.extraUtils as xu
+import esmvaltool.diag_scripts.land_carbon_cycle.plotUtils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
     _get_obs_data_zonal,
     _load_variable,
+    _apply_common_mask,
+    _remove_invalid,
 )
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
     _get_ancestor_files,
@@ -54,25 +56,6 @@ def _get_fig_config(diag_config):
     return fig_config
 
 
-def _apply_common_mask(dat_1, dat_2, dat_3):
-    '''
-    apply a common mask to three arrays so that they have the same locations of
-    all valid and invalid (non numeric) grid cells
-    '''
-    dat_1_mask = np.ma.getmask(np.ma.masked_invalid(dat_1))
-    dat_2_mask = np.ma.getmask(np.ma.masked_invalid(dat_2))
-    dat_3_mask = np.ma.getmask(np.ma.masked_invalid(dat_3))
-    _val_mask_a = 1 - (1 - dat_1_mask) * (1 - dat_2_mask) * (1 - dat_3_mask)
-    _val_mask = np.ma.nonzero(_val_mask_a)
-    dat_1[_val_mask] = np.nan
-    dat_2[_val_mask] = np.nan
-    dat_3[_val_mask] = np.nan
-    dat_1 = np.ma.masked_invalid(dat_1)
-    dat_2 = np.ma.masked_invalid(dat_2)
-    dat_3 = np.ma.masked_invalid(dat_3)
-    return dat_1, dat_2, dat_3
-
-
 def _partialCorr(dat_columns, fig_config):
     '''
     A function to calculate the linear partial correlation between the
@@ -81,7 +64,10 @@ def _partialCorr(dat_columns, fig_config):
 
     Arguments:
         dat_columns - an array with different variables in different columns
-        fig_config - configuration with correlation_method
+        fig_config - configuration with correlation_method. Uses the scipy 
+        stats module to calculate correlation using either pearsons linear
+        (http://tiny.cc/pearsonr) or spearmans rank (http://tiny.cc/spearmanr) 
+        correlation coefficients.
 
     Returns:
         r123 - correlation between variables 1 and 2 controlled for 3
@@ -99,6 +85,9 @@ def _partialCorr(dat_columns, fig_config):
         r23 = stats.spearmanr(dat_y, dat_z)[0]
     else:
         sys.exit('set a valid correlation_method [pearson/spearman]')
+    # calculate the partial correlation coefficient as,
+    # rxy,z = (rxy - rxz * ryz) / sqrt((1 - rxz^2) * (1 - ryz^2))
+    # https://en.wikipedia.org/wiki/Partial_correlation
     r123 = (r12 - r13 * r23) / np.sqrt((1 - r13**2) * (1 - r23**2))
     return r123
 
@@ -363,12 +352,9 @@ def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
     plt.gca().yaxis.set_label_position("right")
 
     # draw the legend
-    leg = xu.draw_line_legend(ax_fs=fig_config['ax_fs'])
+    leg = plut.draw_line_legend(ax_fs=fig_config['ax_fs'])
 
-    plt.savefig(plot_path,
-                bbox_inches='tight',
-                bbox_extra_artists=[leg],
-                dpi=450)
+    plut.save_figure(plot_path, _extr_art=[leg])
     plt.close()
 
 
@@ -398,9 +384,9 @@ def main(diag_config):
         for coord in gpp.coords():
             mod_coords[coord.name()] = coord
 
-        _tau_dat = xu.remove_invalid(tau_ctotal.data, fill_value=np.nan)
-        _precip_dat = xu.remove_invalid(precip.data, fill_value=np.nan)
-        _tas_dat = xu.remove_invalid(tas.data, fill_value=np.nan)
+        _tau_dat = _remove_invalid(tau_ctotal.data, fill_value=np.nan)
+        _precip_dat = _remove_invalid(precip.data, fill_value=np.nan)
+        _tas_dat = _remove_invalid(tas.data, fill_value=np.nan)
         zon_corr = _calc_zonal_correlation(_tau_dat, _precip_dat, _tas_dat,
                                            mod_coords['latitude'].points,
                                            fig_config)

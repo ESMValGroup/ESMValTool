@@ -15,7 +15,7 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-import esmvaltool.diag_scripts.land_carbon_cycle.extraUtils as xu
+import esmvaltool.diag_scripts.land_carbon_cycle.plotUtils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
     _get_obs_data_zonal,
     _load_variable,
@@ -49,21 +49,6 @@ def _get_fig_config(diag_config):
     return fig_config
 
 
-def _apply_common_mask(dat_1, dat_2):
-    '''
-    apply a common mask of valid grid cells across two input arrays
-    '''
-    dat_1_mask = np.ma.getmask(np.ma.masked_invalid(dat_1))
-    dat_2_mask = np.ma.getmask(np.ma.masked_invalid(dat_2))
-    _val_mask_a = 1 - (1 - dat_1_mask) * (1 - dat_2_mask)
-    _val_mask = np.ma.nonzero(_val_mask_a)
-    dat_1[_val_mask] = np.nan
-    dat_2[_val_mask] = np.nan
-    dat_1 = np.ma.masked_invalid(dat_1)
-    dat_2 = np.ma.masked_invalid(dat_2)
-    return (dat_1, dat_2)
-
-
 def _calc_zonal_tau(gpp, ctotal, fig_config):
     '''
     calculate zonal turnover time
@@ -84,12 +69,12 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
         # get the interval of latitude and create array for partial correlation
         dat_lats = gpp.coord('latitude').points
         lat_int = abs(dat_lats[1] - dat_lats[0])
-        window_size = np.int(max(2, np.round(fig_config['bandsize'] / lat_int))
-                             )
-        gpp_z = gpp_zs.rolling_window('latitude',
-                                      iris.analysis.SUM, window_size)
-        ctotal_z = ctotal_zs.rolling_window('latitude',
-                                            iris.analysis.SUM, window_size)
+        window_size = np.int(max(2,
+                                 np.round(fig_config['bandsize'] / lat_int)))
+        gpp_z = gpp_zs.rolling_window('latitude', iris.analysis.SUM,
+                                      window_size)
+        ctotal_z = ctotal_zs.rolling_window('latitude', iris.analysis.SUM,
+                                            window_size)
     else:
         gpp_z = gpp_zs
         ctotal_z = ctotal_zs
@@ -121,13 +106,16 @@ def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
     lats_obs = all_obs_dat['latitude']
     obs_var = diag_config.get('obs_variable')[0]
     tau_obs = all_obs_dat[obs_var]
-    tau_obs_5 = all_obs_dat[obs_var+'_5']
-    tau_obs_95 = all_obs_dat[obs_var+'_95']
+    tau_obs_5 = all_obs_dat[obs_var + '_5']
+    tau_obs_95 = all_obs_dat[obs_var + '_95']
 
     plt.figure(figsize=(3, 5))
 
     sp0 = plt.subplot(1, 1, 1)
-    sp0.plot(tau_obs.data, lats_obs.points, color='k', lw=1.5,
+    sp0.plot(tau_obs.data,
+             lats_obs.points,
+             color='k',
+             lw=1.5,
              label=diag_config['obs_info']['source_label'])
     sp0.fill_betweenx(lats_obs.points,
                       tau_obs_5.data,
@@ -146,12 +134,9 @@ def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
                      color='blue',
                      label=row_mod)
         else:
-            sp0.plot(dat_mod_tau.data,
-                     lats_mod.points,
-                     lw=0.5,
-                     label=row_mod)
+            sp0.plot(dat_mod_tau.data, lats_mod.points, lw=0.5, label=row_mod)
 
-    leg = xu.draw_line_legend(ax_fs=fig_config['ax_fs'])
+    leg = plut.draw_line_legend(ax_fs=fig_config['ax_fs'])
 
     plt.gca().set_xscale('log')
     plt.xlim(fig_config['valrange_x'][0], fig_config['valrange_x'][1])
@@ -163,12 +148,9 @@ def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
     plt.ylabel(f'{lats_obs.long_name} ({lats_obs.units})',
                fontsize=fig_config['ax_fs'],
                ma='center')
-    xu.rem_axLine(['top', 'right'])
+    plut.rem_axLine(['top', 'right'])
 
-    plt.savefig(plot_path,
-                bbox_inches='tight',
-                bbox_extra_artists=[leg],
-                dpi=450)
+    plut.save_figure(plot_path, _extr_art=[leg])
     plt.close()
 
 
@@ -205,18 +187,16 @@ def main(diag_config):
         "Comparison of latitudinal (zonal) variations of observation-based and"
         "modelled ecosystem carbon turnover time. The zonal turnover time is"
         "calculated as the ratio of zonal `ctotal` and `gpp`. Reproduces "
-        "figure 2a and 2b in Carvalhais et al. (2014).",
-        ['mean', 'perc'],
-        ['zonal'],
-        _get_ancestor_files(diag_config, obs_var))
+        "figure 2a and 2b in Carvalhais et al. (2014).", ['mean', 'perc'],
+        ['zonal'], _get_ancestor_files(diag_config, obs_var))
 
     if diag_config['write_netcdf']:
-        model_cubes = [c
-                       for c in zonal_tau_mod.values()
-                       if isinstance(c, iris.cube.Cube)]
-        obs_cubes = [c
-                     for c in zonal_tau_obs.values()
-                     if isinstance(c, iris.cube.Cube)]
+        model_cubes = [
+            c for c in zonal_tau_mod.values() if isinstance(c, iris.cube.Cube)
+        ]
+        obs_cubes = [
+            c for c in zonal_tau_obs.values() if isinstance(c, iris.cube.Cube)
+        ]
         netcdf_path = get_diagnostic_filename(base_name, diag_config)
         save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
         iris.save(save_cubes, netcdf_path)

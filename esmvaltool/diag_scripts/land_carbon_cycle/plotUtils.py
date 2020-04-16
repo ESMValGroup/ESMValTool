@@ -3,94 +3,6 @@ from matplotlib import pyplot as plt
 import matplotlib as mpl
 
 
-def remove_invalid(tmp, fill_value=-9999.):
-    '''
-    removes the invalid non-numeric values from the input array and fills it
-    with fill_value. Also removes all large and small values with magnitude
-    beyond 1e15
-    '''
-    tmp = np.ma.masked_outside(tmp, -1e15, 1e15).filled(fill_value)
-    whereisNan = np.isnan(tmp)
-    tmp[whereisNan] = fill_value
-    whereisNan = np.isinf(tmp)
-    tmp[whereisNan] = fill_value
-    return tmp
-
-
-# axis lines, ticks, and fontsizes
-def put_ticks(nticks=5, which_ax='both', axlw=0.3):
-    '''
-    puts the ticks on given locations and sets the width of axis lines
-    '''
-    ax = plt.gca()
-    if which_ax == 'x':
-        ax.xaxis.set_ticks_position('bottom')
-        lines = ax.get_xticklines()
-        labels = ax.get_xticklabels()
-        for line in lines:
-            line.set_marker(mpl.lines.TICKDOWN)
-        for label in labels:
-            label.set_y(-0.02)
-        ax.xaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
-
-    if which_ax == 'y':
-        ax.yaxis.set_ticks_position('left')
-        lines = ax.get_yticklines()
-        labels = ax.get_yticklabels()
-        for line in lines:
-            line.set_marker(mpl.lines.TICKLEFT)
-            line.set_linewidth(axlw)
-        ax.yaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
-    if which_ax == 'both':
-        ax.yaxis.set_ticks_position('left')
-        lines = ax.get_yticklines()
-        labels = ax.get_yticklabels()
-        for line in lines:
-            line.set_marker(mpl.lines.TICKLEFT)
-            line.set_linewidth(axlw)
-        ax.yaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
-        ax.xaxis.set_ticks_position('bottom')
-        lines = ax.get_xticklines()
-        labels = ax.get_xticklabels()
-        for line in lines:
-            line.set_marker(mpl.lines.TICKDOWN)
-        ax.xaxis.set_major_locator(
-            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
-    return
-
-
-def rem_ticks(which_ax='both'):
-    '''
-    removes ticks from either x or y axis and preserves the lines
-    '''
-    ax = plt.gca()
-    if which_ax == 'x' or which_ax == 'both':
-        ax.set_xticklabels([])
-        ax.xaxis.set_ticks_position("none")
-    if which_ax == 'y' or which_ax == 'both':
-        ax.set_yticklabels([])
-        ax.yaxis.set_ticks_position("none")
-    return
-
-
-def rem_axLine(rem_list=['top', 'right'], axlw=0.4):
-    '''
-    removes the axis lines from the list of which lines to remove
-    rem_list can be 'left', 'right', 'top', 'bottom'
-    '''
-    ax = plt.gca()
-    for loc, spine in ax.spines.items():
-        if loc in rem_list:
-            spine.set_position(('outward', 0))
-            spine.set_linewidth(0.)
-        else:
-            spine.set_linewidth(axlw)
-    return
-
-
 def ax_clr(axfs=7):
     '''
     removes all the axis lines
@@ -142,19 +54,6 @@ def ax_orig(axfs=7, axlw=0.3, nticks=3):
     return
 
 
-def rotate_labels(which_ax='both', rot=0, axfs=6):
-    '''
-    rotates the ticks labels to rot and sets it fontsize to axfs
-    '''
-    if which_ax == 'x' or which_ax == 'both':
-        locs, labels = plt.xticks()
-        plt.setp(labels, rotation=rot, fontsize=axfs)
-    if which_ax == 'y' or which_ax == 'both':
-        locs, labels = plt.yticks()
-        plt.setp(labels, rotation=rot, fontsize=axfs)
-    return
-
-
 def draw_line_legend(ax_fs=8):
     '''
     draws a legend for line plots and puts it outside the plot area in
@@ -174,7 +73,6 @@ def draw_line_legend(ax_fs=8):
     return leg
 
 
-# MAPs
 def get_colomap(cmap_nm, bounds__, lowp=0.05, hip=0.95):
     '''
     Get the list of colors from any official colormaps in matplotlib.
@@ -309,3 +207,100 @@ def mk_colo_cont(axcol_,
     if cbtitle != '':
         cb.ax.set_title(cbtitle, fontsize=1.3 * cbfs)
     return cb
+
+
+def put_ticks(nticks=5, which_ax='both', axlw=0.3):
+    '''
+    puts the ticks on given locations and sets the width of axis lines
+    '''
+    ax = plt.gca()
+    if which_ax == 'x':
+        ax.xaxis.set_ticks_position('bottom')
+        lines = ax.get_xticklines()
+        labels = ax.get_xticklabels()
+        for line in lines:
+            line.set_marker(mpl.lines.TICKDOWN)
+        for label in labels:
+            label.set_y(-0.02)
+        ax.xaxis.set_major_locator(
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
+
+    if which_ax == 'y':
+        ax.yaxis.set_ticks_position('left')
+        lines = ax.get_yticklines()
+        labels = ax.get_yticklabels()
+        for line in lines:
+            line.set_marker(mpl.lines.TICKLEFT)
+            line.set_linewidth(axlw)
+        ax.yaxis.set_major_locator(
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
+    if which_ax == 'both':
+        ax.yaxis.set_ticks_position('left')
+        lines = ax.get_yticklines()
+        labels = ax.get_yticklabels()
+        for line in lines:
+            line.set_marker(mpl.lines.TICKLEFT)
+            line.set_linewidth(axlw)
+        ax.yaxis.set_major_locator(
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
+        ax.xaxis.set_ticks_position('bottom')
+        lines = ax.get_xticklines()
+        labels = ax.get_xticklabels()
+        for line in lines:
+            line.set_marker(mpl.lines.TICKDOWN)
+        ax.xaxis.set_major_locator(
+            plt.MaxNLocator(nbins=nticks, min_n_ticks=nticks))
+    return
+
+
+def rem_ticks(which_ax='both'):
+    '''
+    removes ticks from either x or y axis and preserves the lines
+    '''
+    ax = plt.gca()
+    if which_ax == 'x' or which_ax == 'both':
+        ax.set_xticklabels([])
+        ax.xaxis.set_ticks_position("none")
+    if which_ax == 'y' or which_ax == 'both':
+        ax.set_yticklabels([])
+        ax.yaxis.set_ticks_position("none")
+    return
+
+
+def rem_axLine(rem_list=['top', 'right'], axlw=0.4):
+    '''
+    removes the axis lines from the list of which lines to remove
+    rem_list can be 'left', 'right', 'top', 'bottom'
+    '''
+    ax = plt.gca()
+    for loc, spine in ax.spines.items():
+        if loc in rem_list:
+            spine.set_position(('outward', 0))
+            spine.set_linewidth(0.)
+        else:
+            spine.set_linewidth(axlw)
+    return
+
+
+def rotate_labels(which_ax='both', rot=0, axfs=6):
+    '''
+    rotates the ticks labels to rot and sets it fontsize to axfs
+    '''
+    if which_ax == 'x' or which_ax == 'both':
+        locs, labels = plt.xticks()
+        plt.setp(labels, rotation=rot, fontsize=axfs)
+    if which_ax == 'y' or which_ax == 'both':
+        locs, labels = plt.yticks()
+        plt.setp(labels, rotation=rot, fontsize=axfs)
+    return
+
+
+def save_figure(plot_path, _extr_art=None):
+    '''
+    writes the figure to a file
+    '''
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                bbox_extra_artists=_extr_art,
+                dpi=450)
+    return
