@@ -171,7 +171,7 @@ begin
     tmp_A1 := time_operations(A1, -1, -1, "average", "yearly", False)
     delete([/A0, A1, A2, A1_co2flux/])
 
-    ; set years with big vulkanic eruptions to _FillValues
+    ; set years with big vulcanic eruptions to _FillValues
     if (diag_script_info@ec_volc .eq. True) then
 
       ; remove 2 yrs after Krakatoa, Santa Maria, Agung, El Chichon, Pinatubo
