@@ -69,7 +69,7 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 
    *Optional settings (scripts)*
 
-   * ec_volc : exklude 2 years after volcanic erruptions (True/False)
+   * ec_volc : exclude 2 years after volcanic erruptions (True/False)
 
 #. carbon_constraint.ncl
 
