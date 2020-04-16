@@ -349,7 +349,7 @@ begin
         y1 = ind(aa(1:n-1).lt.0.0)                  ;only consider values lt 0.0 for integral
         if (.not.all(ismissing(y1))) then
           Yintg(y) = sum(aa);(y1))
-        end
+        end if
         delete(y1)
         y1 = ind(aa(1:n-1).gt.0.0)                  ;only consider values gt 0.0 for integral
         if (.not.all(ismissing(y1))) then

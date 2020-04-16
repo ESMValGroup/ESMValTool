@@ -124,8 +124,8 @@ begin
   thicks  = project_style(info, diag_script_info, "avgstd")
   lgLabels = datasetnames
 
-  ;;================================================================== 
-  ;; setup data holders for plots 
+  ; ================================================================== 
+  ; setup data holders for plots 
   nyMax = max(metadata_att_as_array(info, "end_year"))
   nyMin = min(metadata_att_as_array(info, "start_year"))
   nMax = nyMax - nyMin + 1
@@ -137,26 +137,50 @@ begin
   end do
   pctco!0 = "year"
   pctco&year = ispan(nyMin-10, nyMax, 1)
-;------------------------------------------------------------------
+  ; -----------------------------------------------------------------
   ; define arrey
-    betaGPP = new((/dim_MOD/), float)
-    betaNBP = new((/dim_MOD/), float)
-    delta0  = new((/dim_MOD/), float)
-    delta0_std = new((/dim_MOD/), float)
-    delta1  = new((/dim_MOD/), float)
-    rcgpp   = new((/dim_MOD/), float)
-    aXdata  = new((/dim_MOD,nMax/), double)
-    aY0data = new((/dim_MOD,nMax/), double)
-    aY1data = new((/dim_MOD,nMax/), double)
-    aY2data = new((/dim_MOD,nMax/), double)
-    Yfitd   = new((/dim_MOD,nMax/), double)
-    Yfitda  = new((/dim_MOD,nMax/), double)
+  betaGPP = new((/dim_MOD/), float)
+  betaNBP = new((/dim_MOD/), float)
+  delta0  = new((/dim_MOD/), float)
+  delta0_std = new((/dim_MOD/), float)
+  delta1  = new((/dim_MOD/), float)
+  rcgpp   = new((/dim_MOD/), float)
+  aXdata  = new((/dim_MOD,nMax/), double)
+  aY0data = new((/dim_MOD,nMax/), double)
+  aY1data = new((/dim_MOD,nMax/), double)
+  aY2data = new((/dim_MOD,nMax/), double)
+  Yfitd   = new((/dim_MOD,nMax/), double)
+  Yfitda  = new((/dim_MOD,nMax/), double)
 
-  ;;loop for models
+  ; loop for models
   do imod = 0, dim_MOD-1  
     
     ; Read data
     A0 = read_data(info[imod])
+;printVarSummary(A0&time)
+    ; use common time units
+;    if (any(A0&time@units.eq.(/"days since 0001-01-01 00:00:00", \
+;                               "days since 0001-01-01 00:00", \
+;                               "days since 1-01-01 00:00:00", \
+;                               "days since 0000-01-01 00:00:00"/)))
+;      utc_date = cd_calendar(A0&time, 0)
+;      year   = tointeger(utc_date(:, 0))
+;      month  = tointeger(utc_date(:, 1))
+;      day    = tointeger(utc_date(:, 2))
+;      hour   = tointeger(utc_date(:, 3))
+;      minute = tointeger(utc_date(:, 4))
+;      second = utc_date(:, 5)
+;
+;      if (A0&time@units.eq."days since 0000-01-01 00:00:00") then
+;        units ="days since 1849-01-01 00:00:00"
+;      else
+;        units  = "days since 1850-01-01 00:00:00"
+;      end if
+
+;      A0&time = cd_inv_calendar(year, month, day, hour, \
+;                             minute, second, units, 0)
+;printVarSummary(A0&time)
+;    end if
 
     ; x array (one value per year) 
     tmp = ispan(nyMin, nyMax,1) * 1.
@@ -185,8 +209,8 @@ begin
     ; cange units of VAR1 to GtC/yr
     seas_cyc@Yamp = (seas_cyc@Yamp*3600.*24.*365)/1e12
 
-    rc = reg_multlin_stats(pctco({year|toint(info@start_year(imod)): \
-                                       toint(info@end_year(imod))}), \
+    rc = reg_multlin_stats(pctco({year|toint(info[imod]@start_year): \
+                                       toint(info[imod]@end_year)}), \
                                        aY0data(imod, ymin:ymax), False)
     Yfitd(imod,ymin:ymax) = rc@Yest
 
@@ -195,14 +219,15 @@ begin
     delete(rc)
 
     rc = regline_stats(aY0data(imod, ymin:ymax), \
-                       pctco({year|toint(info@start_year(imod)): \
-                                   toint(info@end_year(imod))}))
+                       pctco({year|toint(info[imod]@start_year): \
+                                   toint(info[imod]@end_year)}))
     Yfitda(imod, ymin:ymax) = rc@Yest
 
     rcgpp(imod) = tofloat(rc)
     delete([/seas_cyc, idx, tmpa0/])
+print(tmp0&year)
 
-     if (xMin_year.ge.info@start_year(imod)) then
+     if (xMin_year.ge.info[imod]@start_year) then
        delta0(imod) = (avg(tmp0({year|xMax_year-4:xMax_year}))/ \
                        avg(tmp0({year|xMin_year:xMin_year+4})))
        delta0_std(imod) = sqrt((stddev(tmp0({year|xMax_year-4:xMax_year}))/ \
@@ -219,9 +244,9 @@ begin
                           avg(tmp0(0:4))^2)^2)
      end if
 
-     if (xMax_year.eq."1989".and.info@name(imod).ne."GFDL-ESM2M") then
+     if (xMax_year.eq."1989".and.datasetnames(imod).ne."GFDL-ESM2M") then
        dco2 = 285*3
-     else if (xMax_year.eq."1920".or.info@name(imod).eq."GFDL-ESM2M") then
+     else if (xMax_year.eq."1920".or.datasetnames(imod).eq."GFDL-ESM2M") then
        dco2 = 285
      else
        dco2 = avg(tmp1({year|xMax_year-9}))-avg(tmp1({year|xMin_year+9}))
