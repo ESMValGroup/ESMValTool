@@ -441,7 +441,7 @@ diagnostics:
         xy_line_legend: True
           
   diag_tsline_Fig2f:
-    description: Fig 2f near surface temerature idealized coupled simulation
+    description: Fig 2f near surface temperature idealized coupled simulation
     themes:
       - phys
     realms:
