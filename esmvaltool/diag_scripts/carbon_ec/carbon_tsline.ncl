@@ -372,8 +372,6 @@ begin
       delete(tmp1)
       delete(tmp2)
     else
-      ; procmod = area_operations(A0_timavg, -90., 90., 0., 360., \
-      ;                          "average", True)
       procmod = area_operations(A0_timavg, diag_script_info@ts_minlat, \
                                 diag_script_info@ts_maxlat, \
                                 diag_script_info@ts_minlon, \
