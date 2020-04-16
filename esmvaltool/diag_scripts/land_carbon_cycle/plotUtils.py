@@ -304,4 +304,3 @@ def save_figure(plot_path, _extr_art=None):
                 bbox_extra_artists=_extr_art,
                 dpi=450)
     return
-    
