@@ -45,7 +45,7 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 
    * multi_model_mean: True for multi-model mean calculation
    * volcanoes: True for marking years with lage volcanic eruptions
-   * align: True for aligning models to have the same start yeart (needed for idealized 2x CO2 Simulations)
+   * align: True for aligning models to have the same start year (needed for idealized 2x CO2 simulations)
    * ts_anomaly: calculates anomalies with respect to a defined time range average (anom)
    * ridx_start: if ts_anomaly is True, define start time index for reference period
    * ridx_end: if ts_anomaly is True, define end time index for reference period
