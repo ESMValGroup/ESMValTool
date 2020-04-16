@@ -10,7 +10,7 @@ Figures from Wenzel et al. (2014) are reproduced with recipe_wenzel14jgr.yml. Va
 Available recipes and diagnostics
 -----------------------------------
 
-Namelists are stored in recipes/
+Recipes are stored in recipes/
 
 * recipe_wenzel14jgr.yml
 
