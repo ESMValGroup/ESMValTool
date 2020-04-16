@@ -5,7 +5,7 @@
 ;
 ; Description:
 ;    Calculates the long term sensitivity GAMMA_LT according to Wenzel et al.
-;    2013 with observations from GCP.
+;    2014 with observations from GCP.
 ;    This plotscript calls a file wich contains the results from calculating
 ;    GAMMA_IAV (carbon_corr_2var.ncl)
 ;
