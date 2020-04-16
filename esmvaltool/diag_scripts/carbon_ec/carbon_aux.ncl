@@ -166,7 +166,7 @@ begin
   Py_pr = (1 / (std_pr * sqrt(2 * Pi))) * exp(-0.5 * (((y - mn_pr) / \
                                                       std_pr) ^ 2))
 
-  ; Asign return values for prior PDF
+  ; Assign return values for prior PDF
   PDF@y  = y
   PDF@Py_pr = Py_pr
   PDF@sigma = sigma
