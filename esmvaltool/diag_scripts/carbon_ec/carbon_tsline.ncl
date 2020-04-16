@@ -317,7 +317,7 @@ begin
         delete(A0_monavg_ref)
 
         ; calculate global mean of reference period
-        ; first for each hemisphere - if choosen
+        ; first for each hemisphere - if chosen
         if (diag_script_info@mean_nh_sh) then
           tmp1 = area_operations(A0_timavg_ref, -90., 0., 0., 360., \
                                  "average", True)
