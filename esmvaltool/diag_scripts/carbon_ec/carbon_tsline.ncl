@@ -153,7 +153,7 @@ begin
     A_ref = read_data(info_items[ref_ind])
   end if
 
-  ; Area opperation
+  ; Area operation
   if (isatt(diag_script_info, "area_opper")) then
     area_opper = diag_script_info@area_opper
     if (all(area_opper.ne.(/"sum", "average"/))) then
