@@ -175,7 +175,7 @@ diagnostics:
         xy_line_legend: True
 
   diag_tsline_Fig1c:
-    description: Fig 1c near surface temerature idealized coupled simulation
+    description: Fig 1c near surface temperature idealized coupled simulation
     themes:
       - phys
     realms:
@@ -655,5 +655,4 @@ diagnostics:
         con_units: "GtC/K"
         nc_infile: ../../diag_gammaHist_Fig3and4/gammaHist_3and4/
         styleset: CMIP5     # Plot style
-
 
