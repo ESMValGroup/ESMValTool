@@ -128,7 +128,7 @@ diagnostics:
         xy_line_legend: True
 
   diag_tsline_Fig1b: 
-    description: Fig 1b integrated NBP in the idealized coupled simulation
+    description: Fig 1b integrated NBP in the idealized uncoupled simulation
     themes:
       - phys
     realms:
@@ -655,6 +655,5 @@ diagnostics:
         con_units: "GtC/K"
         nc_infile: ../../diag_gammaHist_Fig3and4/gammaHist_3and4/
         styleset: CMIP5     # Plot style
-
 
 
