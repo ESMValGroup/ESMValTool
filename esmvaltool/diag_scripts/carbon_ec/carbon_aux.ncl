@@ -1,5 +1,5 @@
 ; #############################################################################
-; # EXTERNAL SEA ICE FUNCTIONS
+; # EXTERNAL CARBON FUNCTIONS
 ; #############################################################################
 ;  Please consider using of extending existing routines before adding new ones.
 ;  Check the header of each routine for documentation.
