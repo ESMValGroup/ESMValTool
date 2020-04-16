@@ -38,7 +38,7 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
    * ts_minyear: first year (time range)
    * plot_units: units to appear on Figure
    * time_avg: currently, only yearly is available
-   * area_opper: type of area operation (sum)ridx_start: 0
+   * area_opper: type of area operation (sum)
    * styleset: Plot style
 
    *Optional settings (scripts)*
