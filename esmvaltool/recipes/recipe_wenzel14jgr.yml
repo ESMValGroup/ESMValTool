@@ -587,7 +587,7 @@ diagnostics:
   ### Wenzel et al. 2014, Fig. 05: Diagnose GAMMA_LT and create Emergent Constraint #############
 
   diag_gammaLT_5: 
-    description: Fig 5 correlates gamma hist vs gammaLT and calculated PDF
+    description: Fig 5 correlates gamma hist vs gammaLT and calculates PDF
     variables:
       nbp_1pct:
         short_name: nbp
@@ -655,7 +655,6 @@ diagnostics:
         con_units: "GtC/K"
         nc_infile: ../../diag_gammaHist_Fig3and4/gammaHist_3and4/
         styleset: CMIP5     # Plot style
-
 
 
 
