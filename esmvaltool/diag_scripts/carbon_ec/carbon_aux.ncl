@@ -25,7 +25,7 @@ function cumulate_carbon(NBP[*][*][*]:numeric)
 ;     array containing cumulated carbon fluxes
 ;
 ;  Description:
-;     Calculatesn cumulated carbon fluxes
+;     Calculates cumulated carbon fluxes
 ;
 ;  Caveats
 ;
