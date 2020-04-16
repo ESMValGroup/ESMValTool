@@ -170,6 +170,7 @@ begin
 
     ; Start seasons loop
     do ipan = 0, dimsizes(seasons) - 1
+    
       ; Extract data
       A0 = read_data(info0[imod])
 

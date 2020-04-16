@@ -218,6 +218,7 @@ begin
     plotDash(dimTot - 1) = 0.
     plotScatters(dimTot - 1) = 0.
     LineScatters(dimTot - 1) = "Lines"
+    plotThicks(dimTot - 1) = 4.
   end if
 
   Ydata = lev0 / 100.

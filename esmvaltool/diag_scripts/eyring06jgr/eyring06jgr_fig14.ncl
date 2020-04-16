@@ -106,9 +106,9 @@ begin
 end
 
 begin
-  plotpath = config_user_info@plot_dir + "eyring06f04_" + var0
+  plotpath = config_user_info@plot_dir + "eyring06f14_" + var0
   wks = gsn_open_wks(file_type, plotpath)
-  plotpath1 = config_user_info@plot_dir + "eyring06f04_legend_" + var0
+  plotpath1 = config_user_info@plot_dir + "eyring06f14_legend_" + var0
   wks1 = gsn_open_wks(file_type, plotpath1)
 
   A0 = read_data(info0[iref])

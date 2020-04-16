@@ -9,17 +9,17 @@
 ;    climatological mean for selected month and latitudinal region
 ;
 ; Required diag_script_info attributes (diagnostics specific)
-;    @e06fig05b_lev:  lev where variable is selected must to be one of the
-;                     reference dataset
-;    @e06fig05b_month:   month when variable is averaged
-;                         (i.e. "03", "04", "09")
-;    @e06fig05ab_multimean: calculate multi-model mean (i.e. False/True)
+;    lev:  lev where variable is selected must to be one of the
+;          reference dataset
+;    month:   month when variable is averaged
+;             (i.e. "03", "04", "09")
+;    multimean: calculate multi-model mean (i.e. False/True)
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;    @e06fig05b_YMax:     max limit Y axis
-;    @e06fig05b_YMin:     min limit Y axis
-;    @e06fig05b_start_year: year when start the climatology calculation
-;    @e06fig05b_start_year: year when end the climatology calculation
+;    Ymax:     max limit Y axis
+;    Ymin:     min limit Y axis
+;    start_year: year when start the climatology calculation
+;    end_year: year when end the climatology calculation
 ;
 ; Required variable_info attributes (variable specific)
 ;
@@ -77,23 +77,23 @@ begin
   end if
 
   ; Set default values for optional diag_script_info attributes
-  set_default_att(diag_script_info, "e06fig05b_month", 03)
-  set_default_att(diag_script_info, "styleset", "CMIP5")
-  set_default_att(diag_script_info, "e06fig05b_lev", 5000.)
-  set_default_att(diag_script_info, "e06fig05b_YMax", 10.)
-  set_default_att(diag_script_info, "e06fig05b_YMin", 0.)
-  set_default_att(diag_script_info, "e06fig05b_end_year", min(y2))
-  set_default_att(diag_script_info, "e06fig05b_multimean", False)
-  set_default_att(diag_script_info, "e06fig05b_multimean", False)
+  set_default_att(diag_script_info, "month", 03)
+  ;set_default_att(diag_script_info, "styleset", "CMIP5")
+  set_default_att(diag_script_info, "lev", 5000.)
+  set_default_att(diag_script_info, "Ymax", 10.)
+  set_default_att(diag_script_info, "Ymin", 0.)
+  set_default_att(diag_script_info, "end_year", min(y2))
+  set_default_att(diag_script_info, "multimean", False)
+  ;set_default_att(diag_script_info, "e06fig05b_multimean", False)
 
-  seasons = diag_script_info@e06fig05b_month
+  seasons = diag_script_info@month
   month_names = \
     (/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", \
       "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"/)
   seasons_name = month_names(toint(seasons) - 1)
 
-  lev = tofloat(diag_script_info@e06fig05b_lev)
-  seasons = diag_script_info@e06fig05b_month
+  lev = tofloat(diag_script_info@lev)
+  seasons = diag_script_info@month
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
   thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
@@ -110,17 +110,17 @@ begin
     list_obs_mod = names(index_obs)
   end if
 
-  YMax = diag_script_info@e06fig05b_YMax
-  YMin = diag_script_info@e06fig05b_YMin
+  YMax = diag_script_info@Ymax
+  YMin = diag_script_info@Ymin
 
-  multimean = diag_script_info@e06fig05b_multimean
+  multimean = diag_script_info@multimean
   if (multimean)
     dimTot = dim_MOD + dim_OBS + 1
   else
     dimTot = dim_MOD + dim_OBS
   end if
-  year_start = toint(diag_script_info@e06fig05b_start_year)
-  year_end = toint(diag_script_info@e06fig05b_end_year)
+  year_start = toint(diag_script_info@start_year)
+  year_end = toint(diag_script_info@e0end_year)
 
   ; make sure path for (mandatory) netcdf output exists
   work_dir = config_user_info@work_dir + "/"

@@ -62,11 +62,11 @@ begin
               "(variable_info[0]@reference_dataset) needs to be defined.")
   end if
     ; Check variable attributes
-  if(isatt(variable_info, "units")) then
+  ;if(isatt(variable_info, "units")) then
     units = variable_info@units
-  else
-    units = "10e9"
-  end if
+  ;else
+    ;units = "10e9"
+  ;end if
 
   if(isatt(variable_info, "long_name")) then
     long_name = variable_info@long_name
@@ -179,8 +179,10 @@ begin
 
   ; Start datasets loop
   do imod = 0, dim_MOD1 - 1
+
     ; Start seasons loop
     do ipan = 0, dimsizes(seasons) - 1
+
       ; Extract data
       A0 = read_data(info0[imod])
 
