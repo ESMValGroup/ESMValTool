@@ -217,7 +217,7 @@ begin
   Py_pr = PDF@Py_pr
   y     = PDF@y
 
-  ; this is for plotting the regression line with confidence intervalls
+  ; this is for plotting the regression line with confidence intervals
   yfit_std = new((/2, dimsizes(yfit)/), typeof(yfit))
   yfit_std(0, :) = yfit+PDF@sigma
   yfit_std(1, :) = yfit-PDF@sigma
