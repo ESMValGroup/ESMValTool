@@ -87,7 +87,7 @@ function Cond_PDF(xfit[*]:numeric,
 ;  * obs_std : 1-D array of the conditional values
 ;
 ; Description:
-;  * calculates the normal (Py_pr) and conditional dirstibution (Py) following
+;  * calculates the normal (Py_pr) and conditional distribution (Py) following
 ;    Wilks, D.S. - Statistical Methods in the Atmospheric Science
 ;
 ; Return value (PDF):
