@@ -7,6 +7,7 @@ from pprint import pformat
 import numpy as np
 import iris
 import iris.coord_categorisation
+import cf_units
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
@@ -56,7 +57,24 @@ annual_number_of_tropical_nights:
         unit: K
         logic: gt
     cf_name: number_of_days_where_air_temperature_remains_above_20_degre_Celsius
-
+annual_number_of_days_where_cumulative_precipitation_is_above_10_mm:
+    name: R10mm
+    required:
+        - pr
+    threshold:
+        value: 10
+        unit: mm day-1
+        logic: ge
+    cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
+annual_number_of_days_where_cumulative_precipitation_is_above_20_mm:
+    name: R20mm
+    required:
+        - pr
+    threshold:
+        value: 20
+        unit: mm day-1
+        logic: ge
+    cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -131,6 +149,11 @@ def write_netcdf(cubes, cfg, filename='test.nc', netcdf_format='NETCDF4'):
         for cube in cubes:
             sman.write(cube)
 
+def _convert_units(cube):
+    if cube.standard_name == 'precipitation_flux' and cube.units == 'kg m-2 s-1':
+        cube.data = cube.data * 24. * 3600.
+        cube.units = cf_units.Unit('mm day-1')
+    return cube
 
 def main(cfg):
     """Compute Indices."""
@@ -151,11 +174,13 @@ def main(cfg):
                     'annual_number_of_frost_days',
                     'annual_number_of_summer_days',
                     'annual_number_of_icing_days',
-                    'annual_number_of_tropical_nights'
+                    'annual_number_of_tropical_nights',
+                    'annual_number_of_days_where_cumulative_precipitation_is_above_10_mm',
+                    'annual_number_of_days_where_cumulative_precipitation_is_above_20_mm'
             ]:
                 write_netcdf([
                     _count_days_by_threshold_annually(
-                        [c.copy() for c in cubes], index_definition[index_name])
+                        [_convert_units(c.copy()) for c in cubes], index_definition[index_name])
                 ],
                              cfg,
                              filename=f'{alias}_{index_name}.nc')
