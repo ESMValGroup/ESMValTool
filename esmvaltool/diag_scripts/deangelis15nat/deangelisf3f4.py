@@ -493,12 +493,14 @@ def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
                  [mdrsnstdts[iii, 0] - 0.01, mdrsnstdts[iii, 0] - 0.01,
                   mdrsnstdts[iii, 0] + 0.01, mdrsnstdts[iii, 0] + 0.01],
                  color=(0.8, 0.8, 0.8))
+        style = (select_metadata(cfg['input_data'].values(),
+                                 dataset=modelkey))[0]['project']
+        style = plot.get_dataset_style(modelkey, style_file=style.lower())
         axx.plot(mdrsnstdts[iii, 1],
                  mdrsnstdts[iii, 0],
-                 marker=(plot.get_dataset_style(modelkey))['mark'],
-                 color=(plot.get_dataset_style(modelkey))['color'],
-                 markerfacecolor=(plot.get_dataset_style(modelkey))
-                 ['facecolor'], linestyle='none',
+                 marker=style['mark'],
+                 color=style['color'],
+                 markerfacecolor=style['facecolor'], linestyle='none',
                  markersize=10, markeredgewidth=2.0, label=modelkey)
 
     prw = {}

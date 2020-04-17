@@ -149,12 +149,14 @@ def _set_axx_fig2a(cfg, axx, m_all, reg_dict, sa_dict):
     return axx
 
 
-def _set_axx_fig2b(axx, reg_dict, datasets, sa_dict):
+def _set_axx_fig2b(axx, cfg, reg_dict, datasets, sa_dict):
     """Text for fig2b."""
     axx.plot(np.linspace(0.2, 1.4, 2), reg_dict["y_sa"], color='r')
 
     for iii, model in enumerate(datasets):
-        style = e.plot.get_dataset_style(model)
+        proj = (select_metadata(cfg['input_data'].values(),
+                                dataset=model))[0]['project']
+        style = e.plot.get_dataset_style(model, style_file=proj.lower())
         axx.plot(
             sa_dict["rsnstcsdt"][iii],
             sa_dict["lvpdt"][iii],
@@ -204,12 +206,14 @@ def _set_text_exfig2a(axx, text_dict):
     return axx
 
 
-def _set_axx_exfig2b(axx, datasets, reg_dict, sa_dict):
+def _set_axx_exfig2b(axx, cfg, datasets, reg_dict, sa_dict):
     """Text for exfig2b."""
     axx.plot(np.linspace(0.2, 1.4, 2), reg_dict["y_rsnst"], color='r')
 
     for iii, model in enumerate(datasets):
-        style = e.plot.get_dataset_style(model)
+        proj = (select_metadata(cfg['input_data'].values(),
+                                dataset=model))[0]['project']
+        style = e.plot.get_dataset_style(model, style_file=proj.lower())
         axx.plot(
             sa_dict["rsnstcsdt"][iii],
             sa_dict["rsnstdt"][iii],
@@ -364,7 +368,7 @@ def plot_slope_regression(cfg, data_dict):
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
-    axx = _set_axx_fig2b(axx, reg_dict, datasets, sa_dict)
+    axx = _set_axx_fig2b(axx, cfg, reg_dict, datasets, sa_dict)
 
     fig.tight_layout()
     fig.savefig(get_plot_filename('fig2b', cfg), dpi=300)
@@ -390,7 +394,7 @@ def plot_slope_regression(cfg, data_dict):
 
     fig, axx = plt.subplots(figsize=(7, 7))
 
-    axx = _set_axx_exfig2b(axx, datasets, reg_dict, sa_dict)
+    axx = _set_axx_exfig2b(axx, cfg, datasets, reg_dict, sa_dict)
 
     fig.tight_layout()
     fig.savefig(get_plot_filename('exfig2b', cfg), dpi=300)
