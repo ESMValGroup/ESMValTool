@@ -129,17 +129,22 @@ def main(cfg):
     
     # if there is no index available: report and break
     if etccdi_index is None:
-        logger.info('There is no index available called: {}'.format(cfg['index']))
-        logger.info('*** calculation failed ***')
+        logger.error('There is no index available called: {}'.format(cfg['index']))
+        logger.error('*** calculation failed ***')
         return
     
     # calculate 
     etccdi_cubes = {}
     for key, cube in cubes.items():
-        logger.info(cube)
+        logger.info("Computing dataset %s", key)
         etccdi_cubes[key] = etccdi_index(cube)
-    logger.info("Finalized computation for %s", ": ".join(etccdi_cubes))
-    #cube = compute_diagnostic(input_file)
+        # save cube
+        iris.save(etccdi_cubes[key],
+                  cfg['work_dir'] + os.sep + key + "_" + cfg['index'] + ".nc")
+        
+    logger.info("Finalized computation for %s", ", ".join(etccdi_cubes))
+    
+    
     #output_basename = os.path.splitext(
     #        os.path.basename(input_file))[0] + '_mean'
     #provenance_record = get_provenance_record(
