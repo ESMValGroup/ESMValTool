@@ -58,6 +58,12 @@ begin
     units_from = var@units
   end if
 
+  if (units_from.eq.units_to) then
+    error_msg("w", scriptname, funcname, "No conversion needed from " + \
+              units_from + " to " + units_to)
+    return(out)
+  end if
+
   if (units_from.eq."1") then
     if (units_to.eq."g/kg") then
       out = out * 1000.
@@ -142,6 +148,15 @@ begin
   if (units_from.eq."kg kg-1") then
     if (any(units_to.eq.(/"ng kg-1", "ng/kg"/))) then
       out = out * 1.e12
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
+  if (units_from.eq."kg s-1") then
+    if (any(units_to.eq.(/"GtC"/))) then
+      out = out * 3600. * 24. / 1.e12
       out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)
@@ -268,5 +283,4 @@ begin
 
   error_msg("f", scriptname, funcname, "conversion from " + units_from + \
             " to " + units_to + " not defined")
-
 end
