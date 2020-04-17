@@ -56,3 +56,42 @@ def fdETCCDI_yr(cube):
     res_cube.units = Unit('days per year')
     
     return res_cube
+
+def suETCCDI_yr(cube):
+    """SU, Number of summer days: Annual count of days when TX (daily maximum temperature) > 25 degC."""
+    logger.info("Computing yearly number of frost days.")
+    
+    # set aggregation level
+    agg = 'year'
+    
+    # add year auxiliary coordinate
+    iris.coord_categorisation.add_year(cube, 'time', name=agg)
+    
+    # get unit
+    c_unit = cube.units
+    logger.info("The cube's unit is {}.".format(c_unit))
+    
+    # set threshold depending on unit
+    if c_unit == "K":
+        threshold = 273.15 + 25
+        
+    elif c_unit == "deg_c":
+        threshold = 25
+        
+    elif c_unit == "deg_f":
+        threshold = 77
+        
+    else:
+        logger.error("The unit {} can not be interpreted as a temperature unit!".format(c_unit))
+        return
+    
+    logger.info("Threshold is {} {}.".format(threshold, c_unit))
+        
+    # compute index 
+    res_cube = event_count_time(cube, threshold, lower=False, aggregate=agg)
+    
+    # adjust variable name and unit
+    res_cube.rename('summer_days')
+    res_cube.units = Unit('days per year')
+    
+    return res_cube

@@ -144,43 +144,37 @@ diagnostics:
     scripts:
       FD:
         script: extreme_events/extreme_events_pp.py
+        # TODO: not sure what this should do
         quickplot:
           plot_type: pcolormesh
         <<: *refpars
         <<: *regpars
         index: fdETCCDI_yr
         # TODO: why is that the same name twice? is this dedicated plots?
-        timeseries_idx:
-          - fdETCCDI_yr
-        gleckler_idx:
-          - fdETCCDI_yr
+        timeseries_idx: True
+        gleckler_idx: True
         <<: *pltpars
-        <<: *rngpars
         
-##  SU:
-##    description: calculate extreme events idx SU
-##    
-##    variables:
-##      tasmax:
-##        <<: *mipdef
-##        preprocessor: 
-##
-##    scripts:
-##      SU:
-##        script: extreme_events/extreme_events_pp.py
-##        quickplot:
-##          plot_type: pcolormesh
-##        <<: *refpars
-##        <<: *regpars
-##        # TODO: what is that doing? Is this a used text for the plots?
-##        mip_name: CMIP
-##        # TODO: why is that the same name twice? is this dedicated plots?
-##        timeseries_idx:
-##          - suETCCDI_yr ####
-##        gleckler_idx:
-##          - suETCCDI_yr ####
-##        <<: *pltpars
-##        <<: *rngpars
+  SU:
+    description: calculate extreme events idx SU
+    
+    variables:
+      tasmax:
+        <<: *mipdef
+        preprocessor: pp_none
+
+    scripts:
+      SU:
+        script: extreme_events/extreme_events_pp.py
+        quickplot:
+          plot_type: pcolormesh
+        <<: *refpars
+        <<: *regpars
+        index: suETCCDI_yr
+        timeseries_idx: True
+        gleckler_idx: True
+        <<: *pltpars
+
 #
 ##  ID:
 ##    description: calculate extreme events idx ID
