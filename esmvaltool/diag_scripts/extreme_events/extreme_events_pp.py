@@ -111,39 +111,29 @@ def main(cfg):
         input_data, 'alias', sort='alias')
 
     # Loop over variables/datasets in alphabetical order of alias
-    cubes = {}
-    for alias in grouped_input_data:
+    for alias, alias_data in grouped_input_data.items():
         logger.info("Processing alias %s", alias)
-        for attributes in grouped_input_data[alias]:
+        for attributes in alias_data:
             logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
-            cubes['{}_{}'.format(alias, attributes['short_name'])] = iris.load_cube(input_file)
-        # log if all expected short_names are there
-        # call compute idices for all cubes
-        
-    # TODO: include checks that variables fit to index
-    logger.info(cubes)
-    
-    # get index function
-    etccdi_index = getattr(extreme_events_indices, cfg['index'], None)
-    
-    # if there is no index available: report and break
-    if etccdi_index is None:
-        logger.error('There is no index available called: {}'.format(cfg['index']))
-        logger.error('*** calculation failed ***')
-        return
-    
-    # calculate 
-    etccdi_cubes = {}
-    for key, cube in cubes.items():
-        logger.info("Computing dataset %s", key)
-        etccdi_cubes[key] = etccdi_index(cube)
-        # save cube
-        iris.save(etccdi_cubes[key],
-                  cfg['work_dir'] + os.sep + key + "_" + cfg['index'] + ".nc")
-        
-    logger.info("Finalized computation for %s", ", ".join(etccdi_cubes))
-    
+            cube = iris.load_cube(input_file)
+            
+            # get index function
+            logger.info("Computing index %s", cfg['index'])
+            etccdi_index = getattr(extreme_events_indices, cfg['index'], None)
+                
+            # if there is no index available: report and break
+            if etccdi_index is None:
+                logger.error('There is no index available called: {}'.format(cfg['index']))
+                logger.error('*** calculation failed ***')
+                return
+            
+            # calculate and save cube
+            logger.info("Saving at %s", cfg['work_dir'] + os.sep + alias + "_" + attributes['short_name'] + "_" + cfg['index'] + '.nc')
+            iris.save(etccdi_index(cube),
+                      cfg['work_dir'] + os.sep + alias + "_" + attributes['short_name'] + "_" + cfg['index'] + ".nc")
+                
+            logger.info("Finalized computation for %s", ", ".join([alias, attributes['dataset'], cfg['index']]))
     
     #output_basename = os.path.splitext(
     #        os.path.basename(input_file))[0] + '_mean'
