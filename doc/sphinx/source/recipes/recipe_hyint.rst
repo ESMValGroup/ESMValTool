@@ -69,7 +69,7 @@ User settings
 
 * etccdi_list_import: specify the list of ETCCDI indices to be imported, e.g.: "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
 
-* select_indices: this required settings should here be revised to included the imported indices, e.g.: "pa_norm", "hyint", "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
+* select_indices: this required settings should here be revised to include the imported indices, e.g.: "pa_norm", "hyint", "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
 
  
 *Optional settings for script (with default setting)*
@@ -111,6 +111,11 @@ Variables
 
 * pr (atmos, daily mean, longitude latitude time)
 
+*Additional variables for recipe_hyint_extreme_events.yml*
+
+* tas (atmos, daily mean, longitude latitude time)
+* tasmin (atmos, daily mean, longitude latitude time)
+* tasmax (atmos, daily mean, longitude latitude time)
 
 Observations and reformat scripts
 ---------------------------------
