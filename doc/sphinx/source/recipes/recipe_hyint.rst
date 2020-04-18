@@ -67,11 +67,9 @@ User settings
 
 * etccdi_preproc: set to true to pre-process and include ETCCDI indices in hyint
 
-* etccdi_list_import: specify the list of ETCCDI indices to be imported, e.g.:
-"tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
+* etccdi_list_import: specify the list of ETCCDI indices to be imported, e.g.: "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
 
-* select_indices: this required settings should here be revised to included the imported indices, e.g.:
-"pa_norm", "hyint", "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
+* select_indices: this required settings should here be revised to included the imported indices, e.g.: "pa_norm", "hyint", "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
 
  
 *Optional settings for script (with default setting)*
