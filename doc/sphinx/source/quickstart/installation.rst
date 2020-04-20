@@ -36,7 +36,7 @@ Once you have installed the above prerequisites, you can install ESMValTool by r
 Installation of subpackages
 ---------------------------
 
-The diagnostics bundled in ESMValTool are scripts in four different programming languages, Python, NCL, R, and Julia.
+The diagnostics bundled in ESMValTool are scripts in four different programming languages: Python, NCL, R, and Julia.
 
 There are four language specific packages available:
 
