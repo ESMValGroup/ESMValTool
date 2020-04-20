@@ -173,8 +173,8 @@ end
 
 ;########################################################################
 undef("seas_cycle")
-function seas_cycle(Xdata[*]:numeric, 
-                    Ydata[*]:numeric, 
+function seas_cycle(Xdata[*], 
+                    Ydata[*], 
                       opt[1]:string)
 ;;
 ;; Arguments:
@@ -235,7 +235,7 @@ begin
   do y = 0,nyr-1 ;0,dimsizes(aYdetr(imod,:))-1
     n = 0
     ttt = ind(toint(Ydata&time).eq.toint(Xann(y))) 
-    aa  = Ydata(ttt) 
+    aa  = tofloat(Ydata(ttt))
     n   = dimsizes(aa)
 
     if (num(ismissing(aa)).le.5) then ;.not.all(ismissing(aa)).or.
