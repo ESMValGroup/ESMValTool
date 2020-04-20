@@ -53,7 +53,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-   * _recipe_carvalhais2014nat.yml
+   * recipe_carvalhais2014nat.yml
 
 
 Diagnostics are stored in diag_scripts/
@@ -210,8 +210,8 @@ Observations
 ------------
 
 The observations needed in the diagnostics are publicly available for download
-from the .. _Data Portal of the Max Planck Institute for Biogeochemistry:
-http://www.bgc-jena.mpg.de/geodb/BGI/tau4ESMValTool.php after registration.
+from the `Data Portal of the Max Planck Institute for Biogeochemistry <http://
+www.bgc-jena.mpg.de/geodb/BGI/tau4ESMValTool.php>`_ after registration.
 
 Due to inherent dependence of the diagnostic on uncertainty estimates in
 observation, the data needed for each diagnostic script are processed at

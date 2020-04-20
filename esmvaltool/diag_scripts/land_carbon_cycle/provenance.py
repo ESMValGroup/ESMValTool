@@ -1,3 +1,5 @@
+"""Handle provenance record of land_carbon_cycle diagnostic."""
+
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     select_metadata,

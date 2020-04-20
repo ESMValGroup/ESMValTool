@@ -1,7 +1,9 @@
-'''
-compares the zonal turnover time from the models with observation from
+"""
+evaluates the zonal distribution of turnover time.
+
+compare the model simulations with observation from
 Carvalhais et al., 2014
-'''
+"""
 
 import iris
 import matplotlib.pyplot as plt
@@ -15,7 +17,7 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-import esmvaltool.diag_scripts.land_carbon_cycle.plotUtils as plut
+import esmvaltool.diag_scripts.land_carbon_cycle.plot_utils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
     _get_obs_data_zonal,
     _load_variable,
@@ -27,16 +29,20 @@ from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
 
 
 def _get_fig_config(diag_config):
-    '''
-    get the default settings of the figure, and replace default with
+    """
+    Get figure setting and configurations.
+
+    default settings of the figure, and replace default with
     runtime settings from recipe
 
-    Arguments:
+    Argument:
+    --------
         diag_config - nested dictionary of metadata
 
-    Returns:
-        a dot dictionary of settings
-    '''
+    Return:
+    ------
+        a dictionary of settings
+    """
     fig_config = {
         'fill_value': np.nan,
         'ax_fs': 7.1,
@@ -50,17 +56,19 @@ def _get_fig_config(diag_config):
 
 
 def _calc_zonal_tau(gpp, ctotal, fig_config):
-    '''
-    calculate zonal turnover time
+    """
+    Calculate zonal turnover time.
 
-    Arguments:
+    Argument:
+    --------
         gpp - cube of global gpp
         ctotal - cube of total carbon content
         fig_config - figure/diagnostic configurations
 
-    Returns:
+    Return:
+    ------
         zonal_tau - zonal turnover time of carbon
-    '''
+    """
     gpp_zs = gpp.collapsed('longitude', iris.analysis.SUM)
     ctotal_zs = ctotal.collapsed('longitude', iris.analysis.SUM)
 
@@ -86,19 +94,19 @@ def _calc_zonal_tau(gpp, ctotal, fig_config):
 
 
 def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
-    '''
-    makes the maps of variables
+    """
+    Plot the zonal distribution of turnover time.
 
-    Arguments:
+    Argument:
+    --------
         diag_config - nested dictionary of metadata
         cube - the cube to plot
         dataset - name of the dataset to plot
-    '''
+    """
     fig_config = _get_fig_config(diag_config)
     models = list(all_mod_dat.keys())
     models = sorted(models, key=str.casefold)
-    multiModels = 'MultiModelMedian MultiModelMean'.split()
-    for _mm in multiModels:
+    for _mm in ['MultiModelMedian', 'MultiModelMean']:
         if _mm in models:
             models.append(models.pop(models.index(_mm)))
     nmodels = len(models)
@@ -126,15 +134,17 @@ def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
     for row_m in range(nmodels):
         row_mod = models[row_m]
         dat_mod_tau = all_mod_dat[row_mod]
-        lats_mod = dat_mod_tau.coord('latitude')
         if row_mod in ['MultiModelMedian', 'MultiModelMean']:
             sp0.plot(dat_mod_tau.data,
-                     lats_mod.points,
+                     dat_mod_tau.coord('latitude').points,
                      lw=1.5,
                      color='blue',
                      label=row_mod)
         else:
-            sp0.plot(dat_mod_tau.data, lats_mod.points, lw=0.5, label=row_mod)
+            sp0.plot(dat_mod_tau.data,
+                     dat_mod_tau.coord('latitude').points,
+                     lw=0.5,
+                     label=row_mod)
 
     leg = plut.draw_line_legend(ax_fs=fig_config['ax_fs'])
 
@@ -148,21 +158,20 @@ def _plot_zonal_tau(plot_path, all_mod_dat, all_obs_dat, diag_config):
     plt.ylabel(f'{lats_obs.long_name} ({lats_obs.units})',
                fontsize=fig_config['ax_fs'],
                ma='center')
-    plut.rem_axLine(['top', 'right'])
+    plut.rem_ax_line(['top', 'right'])
 
     plut.save_figure(plot_path, _extr_art=[leg])
     plt.close()
 
 
 def main(diag_config):
-    '''
-    A diagnostic function to calculate the total carbon stock from the list of
-    variables passed to the diagnostic script.
+    """
+    Diagnostic function to compare the zonal turnover time.
 
-    Arguments:
+    Argument:
+    --------
         diag_config - nested dictionary of metadata
-    '''
-
+    """
     my_files_dict = group_metadata(diag_config['input_data'].values(),
                                    'dataset')
 

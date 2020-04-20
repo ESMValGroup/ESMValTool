@@ -89,12 +89,10 @@ diagnostics:
         start_year: 1982
         end_year: 2005
         preprocessor: preproc_meanRegrid
-        fx_files: [sftlf, areacella]
         mip: Lmon
       ctotal:
         # total carbon stock (cVeg + cSoil)
         <<: *variable_settings
-        fx_files: [sftlf, areacella]
         derive: true
         mip: Lmon
       pr:

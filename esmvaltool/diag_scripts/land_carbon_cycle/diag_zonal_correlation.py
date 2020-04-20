@@ -1,7 +1,10 @@
-'''
-calculates and compares the correlation between the turnover time of carbon and
-climate defined as the partial correlations with precipitation and temperature
-'''
+"""
+Evaluate the correlation between turnover time of carbon and climate.
+
+Use partial correlations between turnover time with precipitation and
+temperature
+"""
+
 import sys
 import iris
 import matplotlib.pyplot as plt
@@ -16,11 +19,11 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-import esmvaltool.diag_scripts.land_carbon_cycle.plotUtils as plut
+import esmvaltool.diag_scripts.land_carbon_cycle.plot_utils as plut
 from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
+    _apply_common_mask,
     _get_obs_data_zonal,
     _load_variable,
-    _apply_common_mask,
     _remove_invalid,
 )
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
@@ -30,17 +33,20 @@ from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
 
 
 def _get_fig_config(diag_config):
-    '''
-    get the default settings of the figure, and replace default with
+    """
+    Get figure setting and configurations.
+
+    default settings of the figure, and replace default with
     runtime settings from recipe
 
-    Arguments:
+    Argument:
+    --------
         diag_config - nested dictionary of metadata
 
-    Returns:
-        a dot dictionary of settings
-    '''
-
+    Return:
+    ------
+        a dictionary of settings
+    """
     fig_config = {
         'fill_value': np.nan,
         'correlation_method': 'pearson',
@@ -56,22 +62,26 @@ def _get_fig_config(diag_config):
     return fig_config
 
 
-def _partialCorr(dat_columns, fig_config):
-    '''
-    A function to calculate the linear partial correlation between the
-    variables in the first and second column of dat_columns controlled for the
-    covariation with that in the third column.
+def partial_corr(dat_columns, fig_config):
+    """
+    Calculate the linear partial correlation.
 
-    Arguments:
+    The correlation between variables in the first and second column of
+    dat_columns is controlled for the covariation with that in the third
+    column.
+
+    Argument:
+    --------
         dat_columns - an array with different variables in different columns
         fig_config - configuration with correlation_method. Uses the scipy
         stats module to calculate correlation using either pearsons linear
         (http://tiny.cc/pearsonr) or spearmans rank (http://tiny.cc/spearmanr)
         correlation coefficients.
 
-    Returns:
+    Return:
+    ------
         r123 - correlation between variables 1 and 2 controlled for 3
-    '''
+    """
     dat_x = dat_columns[:, 0]
     dat_y = dat_columns[:, 1]
     dat_z = dat_columns[:, 2]
@@ -93,19 +103,21 @@ def _partialCorr(dat_columns, fig_config):
 
 
 def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
-    '''
-    calculate zonal partial correlations for sliding windows
+    """
+    Calculate zonal partial correlations for sliding windows.
 
-    Arguments:
+    Argument:
+    --------
         dat_tau - data of global tau
         dat_pr - precipitation
         dat_tas - air temperature
         dat_lats - latitude of the given model
         fig_config - figure/diagnostic configurations
 
-    Returns:
+    Return:
+    ------
         corr_dat zonal correlations
-    '''
+    """
     # get the interval of latitude and create array for partial correlation
     lat_int = abs(dat_lats[1] - dat_lats[0])
     corr_dat = np.ones((np.shape(dat_tau)[0], 2)) * np.nan
@@ -127,26 +139,28 @@ def _calc_zonal_correlation(dat_tau, dat_pr, dat_tas, dat_lats, fig_config):
         dat_z = np.ma.masked_invalid(dat_tas_zone).compressed().flatten()
         num_valid_points = sum(~np.isnan(dat_x + dat_y + dat_z))
         if num_valid_points > min_points:
-            corr_dat[lat_index, 1] = _partialCorr(
+            corr_dat[lat_index, 1] = partial_corr(
                 np.vstack((dat_x, dat_y, dat_z)).T, fig_config)
-            corr_dat[lat_index, 0] = _partialCorr(
+            corr_dat[lat_index, 0] = partial_corr(
                 np.vstack((dat_x, dat_z, dat_y)).T, fig_config)
     return corr_dat
 
 
 def _get_multimodel_stats(r_multimodel):
-    '''
-    returns the mean, low and high correlations of all models using the
-    fisher's z transformation
+    """
+    Compute mean, low and high correlations of all models.
 
-    Arguments:
+    Uses the fisher's z transformation
+
+    Argument:
+    --------
         r_multimodel - zonal correlation from the models in the column
         dimensions
 
-    Returns:
+    Return:
+    ------
         mean, mean - std, and mean + std correlations
-    '''
-
+    """
     # set the threshold of correlation to avoid infinities
     r_multimodel[r_multimodel > 0.99] = 0.99
     r_multimodel[r_multimodel < -0.99] = -0.99
@@ -173,18 +187,17 @@ def _get_multimodel_stats(r_multimodel):
 
 
 def _fix_axis(x_lab, fig_config, axlw=0.4, rem_list=('top', 'right')):
-    '''
-    fixes the axis limits, labels and lines
+    """
+    Fix the axis limits, labels and lines.
 
-    Arguments:
+    Argument:
+    --------
         x_lab - axis labels
         fig_config - figure configurations
         ax_fs - fontsize for axis and tick labels
         ax_lw - linewidth of axis lines
         rem_list - list of axis lines to remove
-
-    Returns:
-    '''
+    """
     plt.xlim(fig_config['valrange_x'][0], fig_config['valrange_x'][1])
     plt.ylim(fig_config['valrange_y'][0], fig_config['valrange_y'][1])
     plt.axhline(y=0, lw=0.48, color='grey')
@@ -197,26 +210,26 @@ def _fix_axis(x_lab, fig_config, axlw=0.4, rem_list=('top', 'right')):
             spine.set_linewidth(0.)
         else:
             spine.set_linewidth(axlw)
-    return
 
 
 def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
                             zonal_correlation_obs, diag_config):
-    '''
-    makes the line plots of zonal correlations from all models
+    """
+    Make the line plots of zonal correlations from all models.
 
-    Arguments:
+    Argument:
+    --------
         diag_config - nested dictionary of metadata
         zonal_correlation_mod - dictionary of correlations from all models
         zonal_correlation_obs - dictionary of correlations and ranges from
         observation
-    '''
+    """
     fig_config = _get_fig_config(diag_config)
     models = list(zonal_correlation_mod.keys())
     nmodels = len(models)
     models = sorted(models, key=str.casefold)
-    multiModels = 'MultiModelMedian MultiModelMean'.split()
-    for _mm in multiModels:
+    multimodel_stats = 'MultiModelMedian MultiModelMean'.split()
+    for _mm in multimodel_stats:
         if _mm in models:
             models.append(models.pop(models.index(_mm)))
 
@@ -305,7 +318,7 @@ def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
 
     # remove the multimodel estimates
     models = list(zonal_correlation_mod.keys())
-    for _mm in multiModels:
+    for _mm in multimodel_stats:
         if _mm in models:
             models.remove(_mm)
 
@@ -359,13 +372,13 @@ def _plot_zonal_correlation(plot_path, zonal_correlation_mod,
 
 
 def main(diag_config):
-    '''
-    A diagnostic function to calculate the zonal correlation between turnover
-    time of carbon and climatic variables.
+    """
+    Diagnostic to evaluate zonal correlation between turnover time and climate.
 
-    Arguments:
+    Argument:
+    --------
         diag_config - nested dictionary of metadata
-    '''
+    """
     my_files_dict = group_metadata(diag_config['input_data'].values(),
                                    'dataset')
     fig_config = _get_fig_config(diag_config)
