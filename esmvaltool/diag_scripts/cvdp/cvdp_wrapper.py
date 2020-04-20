@@ -1,4 +1,5 @@
 """wrapper diagnostic for the NCAR CVDP (p)ackage."""
+import glob
 import logging
 import os
 import re
@@ -6,8 +7,9 @@ import shutil
 import subprocess
 
 from esmvalcore._task import DiagnosticError
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic)
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger, group_metadata,
+                                            run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -295,9 +297,9 @@ def set_provenance(cfg):
         }
 
     ancestors = _get_global_ancestors(cfg)
-    logger.info("Path to work_dir: %s", cfg['work_dir'])
+    logger.info("Path to plot_dir: %s", cfg['plot_dir'])
     with ProvenanceLogger(cfg) as provenance_logger:
-        for root, _, files in os.walk(cfg['work_dir']):
+        for root, _, files in os.walk(cfg['plot_dir']):
             for datei in files:
                 path = os.path.join(root, datei)
                 if _is_png(path):
@@ -313,12 +315,21 @@ def _execute_cvdp(cfg):
                           cwd=os.path.join(cfg['run_dir']))
 
 
+def _move_imagefiles(cfg):
+    suffixes = ['png', 'txt', 'html', 'namelist_*', 'bibtex']
+    paths = []
+    for suffix in suffixes:
+        for _file in glob.glob(os.path.join(cfg['work_dir'], f'*{suffix}')):
+            shutil.move(_file, cfg['plot_dir'])
+
+
 def main(cfg):
     """Set and execute the cvdp package."""
     cfg['lnk_dir'] = os.path.join(cfg['run_dir'], "links")
     setup_driver(cfg)
     setup_namelist(cfg)
     _execute_cvdp(cfg)
+    _move_imagefiles(cfg)
     set_provenance(cfg)
 
 
