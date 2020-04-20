@@ -13,14 +13,11 @@ dependencies:
   - cdo>=1.9.7
   - imagemagick
   - nco
+  - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
 
   # Multi language support:
   - python>=3.6
-  - libunwind  # Needed for Python3.7+
-  - tiledb=1.6.0  # Needed by the new ncl=6.6.2; evolved to 1.6.2 but ncl 6.6.2 still needs libtiledb1.6.0.so
-  - ncl>=6.5.0
+  - ncl>=6.5.0  # this should always install 6.6.0 though
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
   - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
-  # - julia>=1.0.0  # The Julia package on conda is apparently broken
-  - libblas=3.8.0=12_openblas  # Does build 13_openblas not seem to work with R requirements

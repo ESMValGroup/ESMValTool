@@ -430,7 +430,11 @@ authors:
   wenzel_sabrina:
     name: Wenzel, Sabrina
     institute: DLR, Germany
-    orcid:
+    orcid: https://orcid.org/0000-0001-5343-2446
+  zechlau_sabrina:
+    name: Zechlau, Sabrina
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0001-5343-2446
   williams_keith:
     name: Williams, Keith
     institute: MetOffice, UK

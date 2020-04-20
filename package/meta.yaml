@@ -2,7 +2,7 @@
 ---
 
 # Build commmand:
-# conda build . -c conda-forge -c esmvalgroup
+# conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
 {% set version = "2.0.0b3" %}
@@ -16,7 +16,7 @@ source:
   # git_rev: v{{ version }}
   # git_url: https://github.com/ESMValGroup/ESMValTool.git
   # Use this line instead of the above to test building without a release:
-  path: .
+  path: ..
 
 build:
   # Increment the build number when building a new conda package of the same
@@ -39,7 +39,6 @@ requirements:
   run:
     # esmvaltool
     - python>=3.6
-    - libunwind  #  specifically for Python3.7+
     - graphviz
     - iris
     # Normally installed via pip:
@@ -80,7 +79,6 @@ requirements:
     - r-base
     - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
     - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
-    - tiledb=1.6.0
 
 test:
   # TODO: add unit tests? This seems to require installing the tests
