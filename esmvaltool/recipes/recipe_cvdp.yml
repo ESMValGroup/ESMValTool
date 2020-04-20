@@ -24,6 +24,8 @@ datasets:
   - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
   - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
 
+
+
 diagnostics:
 
   diagnostic1:
@@ -40,5 +42,26 @@ diagnostics:
     scripts:
       cvdp:
         script: cvdp/cvdp_wrapper.py
+        cvdp_modules:
+          #- aice.mean_stddev
+          #- aice.trends_timeseries
+          #- amo
+          #- amoc
+          #- ipo
+          #- pdo
+          #- pr.mean_stddev
+          #- pr.trends_timeseries
+          #- psl.mean_stddev
+          #- psl.nam_nao
+          #- psl.pna_npo
+          #- psl.sam_psa
+          #- psl.trends
+          #- snd.mean_stddev
+          #- snd.trends
+          #- sst.indices
+          #- sst.mean_stddev
+          #- sst.trends_timeseries
+          #- tas.mean_stddev
+          - tas.trends_timeseries
         quickplot:
           plot_type: pcolormesh

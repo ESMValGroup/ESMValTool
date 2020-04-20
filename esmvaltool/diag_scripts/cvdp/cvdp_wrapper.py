@@ -23,30 +23,45 @@ def setup_driver(cfg):
         'obs': 'False',
         'zp': os.path.join(cvdp_root, "ncl_scripts/"),
         'run_style': 'serial',
+        'modular': 'False',
         'webpage_title': 'CVDP run via ESMValTool'
     }
+
+    if 'cvdp_modules' in cfg:
+        settings['modular'] = "True"
+        settings['modular_list'] = ','.join(cfg['cvdp_modules'])
+
     settings['output_data'] = "True" if _nco_available() else "False"
 
     def _update_settings(line):
 
+        logger.debug("Line before: %s", line)
         for key, value in settings.items():
-            pattern = r'\s*{0}\s*=.*\n'.format(key)
+            pattern = r'^\s*{0}\s*=.*\n'.format(key)
             search_results = re.findall(pattern, line)
             if search_results == []:
                 continue
+            logger.debug("Search Results: %s", ';'.join(search_results))
             return re.sub(r'".+?"',
                           '"{0}"'.format(value),
                           search_results[0],
                           count=1)
 
+        logger.debug("Line after: %s", line)
         return line
 
     content = []
     driver = os.path.join(cvdp_root, "driver.ncl")
 
     with open(driver, 'r') as driver_file:
+        modify = True
         for line in driver_file:
-            content.append(_update_settings(line))
+            if "END USER MODIFICATIONS" in line:
+                modify = False
+            if modify:
+                content.append(_update_settings(line))
+            else:
+                content.append(line)
 
     new_driver = os.path.join(cfg['run_dir'], "driver.ncl")
 
