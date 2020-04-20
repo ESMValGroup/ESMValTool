@@ -45,78 +45,74 @@ preprocessors:
 diagnostics:
   
   ### Wenzel et al. 2016:  Analysis for Pt. Barrow, Alaska  #########################
-#
-#  diag_co2cycle_Fig1: 
-#    description: Fig 1 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations 
+
+#  diag_beta_Fig2:
+#    description: Fig 2 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations 
 #    themes:
 #      - phys
 #    realms:
 #      - land
 #    variables:
-#      co2:
-#        preprocessor: default #land_fraction_weighting 
+#      gpp: &var_gpp
+#        preprocessor: highlat #land_fraction_weighting 
 #        project: CMIP5
-#        mip: Amon
-#        exp: esmHistorical
+#        mip: Lmon
+#        exp: esmFixClim1
 #        ensemble: r1i1p1
-#        start_year: 1860
-#        end_year: 2005
+#        start_year: 1850
+#        end_year: 1989
 #    additional_datasets: &2xCO2_datastet  
 #      - {dataset: CanESM2}
-#      - {dataset: CESM1-BGC}
-#      - {dataset: GFDL-ESM2M}
-#      - {dataset: HadGEM2-ES}
+#      - {dataset: CESM1-BGC, start_year: 1, end_year: 140}
+#      - {dataset: GFDL-ESM2M, start_year: 1, end_year: 140}
+#      - {dataset: HadGEM2-ES, start_year: 1860, end_year: 1999}
 #      - {dataset: IPSL-CM5A-LR}
-#      #- {dataset: MIROC-ESM}
+#      #- {dataset: MIROC-ESM, start_year: 1, end_year: 140}
 #      - {dataset: MPI-ESM-LR}
-#      - {dataset: NorESM1-ME}
+#      - {dataset: NorESM1-ME, start_year: 1, end_year: 140}
 #    scripts:
 #      carbon_beta: &idealized_carbon
-#        script: carbon_ec/carbon_cycle_co2.ncl
+#        script: carbon_ec/carbon_beta.ncl
 #        station: "60N-90N"
 #        bc_Ytitle: "~F8~b~F21~~B~gpp~N~"
 #        bc_units: "GtC"
-#        bc_lonrange: (/0,360/)
-#        bc_latmin: 60
-#        bc_latmax: 90
 #        cl_mean: False
 #        cl_output: True 
 #        bc_xmax_year: "1920"
 #        bc_xmin_year: "1860"
 #        styleset: CMIP5       # Plot style
-      
-  diag_beta_Fig2:
-    description: Fig 2 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations 
+
+  diag_co2cycle_Fig1: 
+    description: Fig 1 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations and Fig 3 EC on the relative increase of large-scale GPP for 2xCO2
     themes:
       - phys
     realms:
       - land
     variables:
-      gpp: &var_gpp
+      co2:
         preprocessor: highlat #land_fraction_weighting 
         project: CMIP5
-        mip: Lmon
-        exp: esmFixClim1
+        mip: Amon
+        exp: esmHistorical
         ensemble: r1i1p1
-        start_year: 1850
-        end_year: 1989
+        start_year: 1860
+        end_year: 2005
     additional_datasets: &2xCO2_datastet  
       - {dataset: CanESM2}
-      - {dataset: CESM1-BGC, start_year: 1, end_year: 140}
-      - {dataset: GFDL-ESM2M, start_year: 1, end_year: 140}
-      - {dataset: HadGEM2-ES, start_year: 1860, end_year: 1999}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-ES}
       - {dataset: IPSL-CM5A-LR}
-      #- {dataset: MIROC-ESM, start_year: 1, end_year: 140}
+      #- {dataset: MIROC-ESM}
       - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME, start_year: 1, end_year: 140}
+      - {dataset: NorESM1-ME}
     scripts:
       carbon_beta: &idealized_carbon
-        script: carbon_ec/carbon_beta.ncl
+        script: carbon_ec/carbon_cycle_co2.ncl
         station: "60N-90N"
         bc_Ytitle: "~F8~b~F21~~B~gpp~N~"
         bc_units: "GtC"
-        #bc_lonmin: 0
-        #bc_lonmax: 360
+        bc_lonrange: (/0,360/)
         #bc_latmin: 60
         #bc_latmax: 90
         cl_mean: False
@@ -124,144 +120,3 @@ diagnostics:
         bc_xmax_year: "1920"
         bc_xmin_year: "1860"
         styleset: CMIP5       # Plot style
-#
-#  diag_co2cycle_Fig1: 
-#    description: Fig 1 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations and Fig 3 EC on the relative increase of large-scale GPP for 2xCO2
-#    themes:
-#      - phys
-#    realms:
-#      - land
-#    variables:
-#      co2:
-#        preprocessor: default #land_fraction_weighting 
-#        project: CMIP5
-#        mip: Amon
-#        exp: esmHistorical
-#        ensemble: r1i1p1
-#        start_year: 1860
-#        end_year: 2005
-#    additional_datasets: &2xCO2_datastet  
-#      - {dataset: CanESM2}
-#      - {dataset: CESM1-BGC}
-#      - {dataset: GFDL-ESM2M}
-#      - {dataset: HadGEM2-ES}
-#      - {dataset: IPSL-CM5A-LR}
-#      #- {dataset: MIROC-ESM}
-#      - {dataset: MPI-ESM-LR}
-#      - {dataset: NorESM1-ME}
-#    scripts:
-#      carbon_beta: &idealized_carbon
-#        script: carbon_ec/carbon_cycle_co2.ncl
-#        station: "60N-90N"
-#        bc_Ytitle: "~F8~b~F21~~B~gpp~N~"
-#        bc_units: "GtC"
-#        bc_lonrange: (/0,360/)
-#        bc_latmin: 60
-#        bc_latmax: 90
-#        cl_mean: False
-#        cl_output: True 
-#        bc_xmax_year: "1920"
-#        bc_xmin_year: "1860"
-#        styleset: CMIP5       # Plot style
-                  
-#    description: 
-#    themes:
-#      - phys
-#    realms:
-#      - land
-#    variables:
-#      co2:
-#        preprocessor: default 
-#        project: CMIP5
-#        mip: Amon
-#        exp: esmHistorical
-#        ensemble: r1i1p1
-#        start_year: 1860
-#        end_year: 2005
-#      gpp: &var_gpp
-#        preprocessor: default #land_fraction_weighting 
-#        project: CMIP5
-#        mip: Lmon
-#        exp: esmHistorical
-#        ensemble: r1i1p1
-#        start_year: 1860
-#        end_year: 2005
-#      gpp: &var_gpp
-#        preprocessor: default #land_fraction_weighting 
-#        project: CMIP5
-#        mip: Lmon
-#        exp: esmFixClim1
-#        ensemble: r1i1p1
-#        start_year: 1860
-#        end_year: 1920
-#    additional_datasets: &2xCO2_datastet  
-#      - {dataset: CanESM2}
-#      - {dataset: CESM1-BGC}
-#      - {dataset: GFDL-ESM2M}
-#      - {dataset: HadGEM2-ES}
-#      - {dataset: IPSL-CM5A-LR}
-#      - {dataset: MIROC-ESM}
-#      - {dataset: MPI-ESM-LR}
-#      - {dataset: NorESM1-ME}
-#    scripts:
-#      carbon_beta: &idealized_carbon
-#        script: carbon_ec/carbon_cycle_nbp-gpp.ncl
-#        station: "60N-90N"
-#        bc_Ytitle: "~F8~b~F21~~B~gpp~N~"
-#        bc_units: "GtC"
-#        bc_lonrange: (/0,360/)
-#        bc_latmin: 60
-#        bc_latmax: 90
-#        cl_mean: False
-#        cl_output: True 
-#        bc_xmax_year: "1920"
-#        bc_xmin_year: "1860"
-#        styleset: CMIP5       # Plot style
-        
-#  diag_constraint_FigX: 
-#    description: Fig X correlation of CO2 seasonal cycle and GPP
-#    themes:
-#      - phys
-#    realms:
-#      - land
-#    variables:
-#      co2:
-#        preprocessor: default
-#        project: CMIP5
-#        mip: Amon
-#        exp: esmHistorical
-#        ensemble: r1i1p1
-#        start_year: 1860
-#        end_year: 2005
-#      gpp: &var_gpp
-#        preprocessor: default #land_fraction_weighting 
-#        project: CMIP5
-#        mip: Lmon
-#        exp: esmHistorical
-#        ensemble: r1i1p1
-#        start_year: 1860
-#        end_year: 2005
-#    additional_datasets: &2xCO2_datastet  
-#      - {dataset: CanESM2}
-#      - {dataset: CESM1-BGC}
-#      - {dataset: GFDL-ESM2M}
-#      - {dataset: HadGEM2-ES}
-#      - {dataset: IPSL-CM5A-LR}
-#      - {dataset: MIROC-ESM}
-#      - {dataset: MPI-ESM-LR}
-#      - {dataset: NorESM1-ME}
-#    scripts:
-#      carbon_beta: &idealized_carbon
-#        script: carbon_ec/carbon_co2-gpp-correlation.ncl
-#        station: "60N-90N"
-#        bc_Ytitle: "~F8~b~F21~~B~gpp~N~"
-#        bc_units: "GtC"
-#        bc_lonrange: (/0,360/)
-#        bc_latmin: 60
-#        bc_latmax: 90
-#        cl_mean: False
-#        cl_output: True 
-#        bc_xmax_year: "1920"
-#        bc_xmin_year: "1860"
-#        styleset: CMIP5       # Plot style
-#          diag_constraint_FigX:

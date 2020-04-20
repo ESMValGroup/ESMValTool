@@ -1,30 +1,17 @@
 ; #######################################################################
 ; carbon_beta.ncl
 ; Author: Sabrina Zechlau (DLR, Germany)
-; #######################################################################
-;                                                       
+; ####################################################################### 
 ; Description:
-; creates several panels to diagnos beta from CO2 and compares with
-; station data:
-; Panel: a) [co2],
-;        b) detrendet [co2]
-;
-; Required info attributes (from variable_info):
-;   - units
+; creates two panels to diagnos beta GPP at 2x[CO2] increase
+; Panel: a) correlation between GPP and [co2] increase,
+;        b) barchart of the trend of the upper correlation
 ;
 ; Required info attributes (diag_script_info):
 ; - styleset       project for line styles
-; - station        name of station
-; - cl_lonrange    array of p-levels for time series plots if 2D or 3D
-; - cl_latrange    array of latitudes for time series plots if 2D or 3D
-; - cl_levrange    array of pressure levels for time series plots if 3D
 ; - bc_xmax_year   start year for time series plots
 ; - bc_xmin_year   end year for time series plots
-
-;Note: cd_calendar requires NCL v6.0
-; A) This script is based on the tsline.ncl
-; B) The station data file must be of type T0M
-
+;
 ; Modification history
 ;    * 20200406-A_wenz_sa: code rewritten for ESMValTool v2.0
 ;    * 2015xxxx-A_wenz_sa: written
@@ -80,18 +67,17 @@ begin
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "cl_output", False)
-  set_default_att(diag_script_info, "station", 1)
-
-  if(isatt(diag_script_info,"con_units")) then 
-    UNITS = variable_info@units 
-  end if
  
   ; optional input parameters 
   if(isatt(diag_script_info,"bc_xmax_year")) then 
     xMax_year = toint(diag_script_info@bc_xmax_year)
+  else
+    xMax_year = max(metadata_att_as_array(info, "end_year"))
   end if 
   if(isatt(diag_script_info,"bc_xmin_year")) then 
     xMin_year = toint(diag_script_info@bc_xmin_year)
+  else
+    xMin_year = max(metadata_att_as_array(info, "start_year"))
   end if 
 
   if(isatt(diag_script_info,"cl_output")) then 
