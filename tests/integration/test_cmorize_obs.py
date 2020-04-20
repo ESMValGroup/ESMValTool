@@ -99,8 +99,8 @@ def check_output_exists(output_path):
     # 'OBS_WOA_clim_2013v2_Omon_so_200001-200002.nc']
     assert len(output_files) == 2
     assert 'OBS_WOA_clim' in output_files[0]
-    assert '_thetao_' in output_files[0]
-    assert '_so_' in output_files[1]
+    assert 'thetao' in [s.split("_")[5] for s in output_files]
+    assert 'so' in [s.split("_")[5] for s in output_files]
 
 
 def check_conversion(output_path):
