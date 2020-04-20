@@ -267,7 +267,7 @@ def test_set_global_atts_correct():
     assert attrs['version'] == '2'
     assert attrs['tier'] == '3'
     assert attrs['source'] == '4'
-    assert attrs['reference'] == 'Please acknowledge the author(s).'
+    assert attrs['reference'] == 'doi not found'
     assert attrs['comment'] == '6'
     assert attrs['project_id'] == '7'
 
