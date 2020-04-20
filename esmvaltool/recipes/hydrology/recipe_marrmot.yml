@@ -16,19 +16,16 @@ preprocessors:
   daily: &daily
     extract_shape:
       # Lumped model: needs catchment-aggregated input data
-      shapefile: meuse_hydrosheds.shp  # In aux (config-user.yml)
+      shapefile: Meuse/Meuse.shp  # In aux (config-user.yml)
       method: contains
       crop: true
-  hourly:
-    <<: *daily
-    daily_statistics:
-      operator: mean
 
 diagnostics:
   diagnostic_daily:
     description: marrmot input preprocessor for daily data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       tas: &var_daily
         mip: day
@@ -42,26 +39,6 @@ diagnostics:
       rsdt:
         <<: *var_daily
         mip: CFday
-    scripts:
-      script:
-        script: hydrology/marrmot.py
-        basin: Meuse
-
-  diagnostic_hourly:
-    description: marrmot input preprocessor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      tas: &var_hourly
-        mip: E1hr
-        start_year: 1990
-        end_year: 2018
-        preprocessor: hourly
-      pr: *var_hourly
-      # MARRMoT requires PET. Thus, we need psl, rsds, rsdt
-      psl: *var_hourly
-      rsds: *var_hourly
-      rsdt: *var_hourly
     scripts:
       script:
         script: hydrology/marrmot.py

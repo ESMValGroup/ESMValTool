@@ -13,6 +13,17 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  BerkeleyEarth:
+    description: BerkeleyEarth check
+    variables:
+      tas:
+      tasa:
+    additional_datasets:
+      - {dataset: BerkeleyEarth, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: 2020, start_year: 1850, end_year: 2019}
+    scripts: null
+
+
   CALIPSO-GOCCP:
     description: CALIPSO-GOCCP check
     variables:
@@ -50,7 +61,7 @@ diagnostics:
   CowtanWay:
     description: CowtanWay check
     variables:
-      tas:
+      tasa:
     additional_datasets:
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: had4_krig_v1, start_year: 1979,
@@ -75,6 +86,16 @@ diagnostics:
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: had4_krig_v2, start_year: 1850,
          end_year: 2019, end_month: 11}
+    scripts: null
+
+
+  CT2019:
+    description: CT2019 check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: CT2019, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2019, start_year: 2000, end_year: 2018}
     scripts: null
 
 
@@ -233,6 +254,26 @@ diagnostics:
     scripts: null
 
 
+  GHCN-CAMS:
+    description: GHCN-CAMS check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: GHCN-CAMS, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 1, start_year: 1948, end_year: 2020}
+    scripts: null
+
+
+  GISTEMP:
+    description: GISTEMP check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: GISTEMP, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: v4, start_year: 1880, end_year: 2020}
+    scripts: null
+
+
   GPCC:
     description: GPCC check
     variables:
@@ -282,6 +323,17 @@ diagnostics:
     additional_datasets:
       - {dataset: HadISST, project: OBS, tier: 2,
          type: reanaly, version: 1, start_year: 1870, end_year: 2017}
+    scripts: null
+
+
+  HALOE:
+    description: HALOE check
+    variables:
+      hus:
+      tro3:
+    additional_datasets:
+      - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: 1, start_year: 1991, end_year: 2002}
     scripts: null
 
 
@@ -408,6 +460,18 @@ diagnostics:
     scripts: null
 
 
+  REGEN:
+    description: REGEN check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: REGEN, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+    scripts: null
+
+
   WOA:
     description: WOA check
     variables:
@@ -438,6 +502,17 @@ diagnostics:
     additional_datasets:
       - {dataset: AURA-TES, project: OBS, mip: Amon, tier: 3,
          type: sat, version: 1, start_year: 2005, end_year: 2011}
+    scripts: null
+
+
+  CDS-SATELLITE-ALBEDO:
+    description: CDS-SATELLITE-ALBEDO check
+    variables:
+      bdalb:
+      bhalb:
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-ALBEDO, project: OBS6, mip: Lmon, tier: 3,
+         type: sat, version: V1, start_year: 1999, end_year: 2013}
     scripts: null
 
 
