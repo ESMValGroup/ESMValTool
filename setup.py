@@ -54,8 +54,6 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute 'python setup.py test' to run tests
     'test': [
-        'easytest',
-        'pycodestyle',
         'pytest>=3.9',
         'pytest-cov',
         'pytest-env',
