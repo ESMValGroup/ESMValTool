@@ -225,15 +225,26 @@ def main(cfg):
         logger.info("Processing variable potential evapotranspiration")
         if 'evspsblpot' in all_vars:
             pet = all_vars['evspsblpot']
+            pet_dem = regrid(pet, target_grid=dem, scheme='linear')
         else:
             logger.info("Potential evapotransporation not available, deriving")
-            pet = debruin_pet(
-                tas=all_vars['tas'],
-                psl=all_vars['psl'],
-                rsds=all_vars['rsds'],
-                rsdt=all_vars['rsdt'],
+            psl_dem = regrid(all_vars['psl'], target_grid=dem, scheme='linear')
+            rsds_dem = regrid(
+                all_vars['rsds'],
+                target_grid=dem,
+                scheme='linear'
             )
-        pet_dem = regrid(pet, target_grid=dem, scheme='linear')
+            rsdt_dem = regrid(
+                all_vars['rsdt'],
+                target_grid=dem,
+                scheme='linear'
+            )
+            pet_dem = debruin_pet(
+                tas=tas_dem,
+                psl=psl_dem,
+                rsds=rsds_dem,
+                rsdt=rsdt_dem,
+            )
         pet_dem.var_name = 'pet'
 
         logger.info("Converting units")
