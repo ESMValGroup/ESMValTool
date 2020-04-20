@@ -157,25 +157,21 @@ def test_add_scalar_height_coord():
     assert cube.coord("height").attributes["positive"] == "up"
 
 
-def test_convert_time_units():
+@pytest.mark.parametrize('time_units',
+                         ['months since 1950-01-01 00:00:00',
+                          'days since 0000-01-01 00:00:00',
+                          'days since 1950-1-1',
+                          'days since 1950-1-1 00:00:00'])
+def test_convert_time_units(time_units):
     """Test convert time units functionlity."""
     cube = _create_sample_cube()
-    cube.coord("time").units = 'months since 0000-01-01 00:00:00'
+    cube.coord("time").units = time_units
     utils.convert_timeunits(cube, "1950")
     converted_units = cube.coord("time").units
-    assert converted_units == 'months since 1950-01-01 00:00:00'
-    cube.coord("time").units = 'days since 0000-01-01 00:00:00'
-    utils.convert_timeunits(cube, "1950")
-    converted_units = cube.coord("time").units
-    assert converted_units == 'days since 1950-01-01 00:00:00'
-    cube.coord("time").units = 'days since 1950-1-1'
-    utils.convert_timeunits(cube, "1950")
-    converted_units = cube.coord("time").units
-    assert converted_units == 'days since 1950-1-1 00:00:00'
-    cube = _create_sample_cube()
-    utils.convert_timeunits(cube, "1950")
-    not_converted_units = cube.coord("time").units
-    assert not_converted_units == 'days since 1950-01-01 00:00:00'
+    if time_units == 'months since 1950-01-01 00:00:00':
+        assert converted_units == 'months since 1950-01-01 00:00:00'
+    else:
+        assert converted_units == 'days since 1950-01-01 00:00:00'
 
 
 def test_fix_coords():
