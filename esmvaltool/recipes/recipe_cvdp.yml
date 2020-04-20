@@ -19,6 +19,20 @@ documentation:
     - esmval
     - c3s-magic
 
+preprocessors:
+
+  multi_model:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+
+
 datasets:
   - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
   - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
@@ -32,12 +46,16 @@ diagnostics:
     description: Run the NCAR CVDPackage.
     variables:
       ts:
+        preprocessor: multi_model
         mip: Amon
       tas:
+        preprocessor: multi_model
         mip: Amon
       pr:
+        preprocessor: multi_model
         mip: Amon
       psl:
+        preprocessor: multi_model
         mip: Amon
     scripts:
       cvdp:
