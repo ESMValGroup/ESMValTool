@@ -18,7 +18,7 @@ The hydroclimatic indices calculated by the recipe_hyint.yml and included in the
 * R95 = heavy precipitation index (percent of total precipitation above the 95% percentile of the reference distribution)
 * HY-INT = hydroclimatic intensity. HY-INT = normalized(INT) x normalized(DSL).
 
-The recipe_hyint_extreme_events includes an additional call to the extreme_events diagnostics, which allows to calculate the ETCCDI indices and include them in the subsequent analysis together with the hydroclimatic indices. All of the selected indices are then stored in output files and figures.   
+The recipe_hyint_extreme_events.yml includes an additional call to the :ref:`recipes_extreme_events` diagnostics, which allows to calculate the ETCCDI indices and include them in the subsequent analysis together with the hydroclimatic indices. All of the selected indices are then stored in output files and figures.
 
 
 Available recipes and diagnostics
@@ -27,7 +27,7 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_hyint.yml (evaluating the 6 hydroclimatic indices, performing trend analysis and plotting)
-* recipe_hyint_extreme_events.yml (similar to the recipe_hyint.yml but with an additional call to the extreme_events diagnostic for calculation of ETCCDI indices and inclusion of them in the trend analysis and plotting)
+* recipe_hyint_extreme_events.yml (similar to the recipe_hyint.yml but with an additional call to the :ref:`recipes_extreme_events` diagnostic for calculation of ETCCDI indices and inclusion of them in the trend analysis and plotting)
 
 Diagnostics are stored in diag_scripts/hyint/
 
@@ -45,7 +45,7 @@ and subroutines
 * hyint_preproc.R
 * hyint_trends.R
 
-See details of the extreme_events diagnostics under recipe_extreme_events.yml. 
+See details of the extreme_events diagnostics under recipe_extreme_events.yml.
 
 User settings
 -------------
@@ -63,7 +63,7 @@ User settings
 
 *Additional settings for recipe_hyint_extreme_events.yml*
 
-* call to the extreme_events diagnostics: see details in recipe_extreme_events.yml. Make sure that the base_range for extreme_events coincides with the norm_range of hyint and that all ETCCDI indices that are required to be imported in hyint are calculated by the extreme_events diagnostics. 
+* call to the extreme_events diagnostics: see details in recipe_extreme_events.yml. Make sure that the base_range for extreme_events coincides with the norm_range of hyint and that all ETCCDI indices that are required to be imported in hyint are calculated by the extreme_events diagnostics.
 
 * etccdi_preproc: set to true to pre-process and include ETCCDI indices in hyint
 
@@ -71,7 +71,7 @@ User settings
 
 * select_indices: this required settings should here be revised to include the imported indices, e.g.: "pa_norm", "hyint", "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
 
- 
+
 *Optional settings for script (with default setting)*
 
 #. Data
