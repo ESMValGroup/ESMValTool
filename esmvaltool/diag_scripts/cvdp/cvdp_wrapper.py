@@ -317,7 +317,6 @@ def _execute_cvdp(cfg):
 
 def _move_imagefiles(cfg):
     suffixes = ['png', 'txt', 'html', 'namelist_*', 'bibtex']
-    paths = []
     for suffix in suffixes:
         for _file in glob.glob(os.path.join(cfg['work_dir'], f'*{suffix}')):
             shutil.move(_file, cfg['plot_dir'])
