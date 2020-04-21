@@ -81,6 +81,7 @@ def __numdaysyear_base__(cube, threshold=273.15, logic='lt'):
 
 def numdaysyear_wrapper(cubes, specs):
     """Wrapper function for several number of days per year indices"""
+    logger.info(specs)
     
     # test if required variable is in cubes
     fdcube = None
@@ -118,4 +119,10 @@ def numdaysyear_wrapper(cubes, specs):
     res_cube.units = Unit('days per year')
     
     return res_cube
+
+def convert_ETCCDI_units(cube):
+    if cube.standard_name == 'precipitation_flux' and cube.units == 'kg m-2 s-1':
+        cube.data = cube.data * 24. * 3600.
+        cube.units = Unit('mm day-1')
+    return cube
     

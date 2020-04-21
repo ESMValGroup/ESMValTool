@@ -71,7 +71,7 @@ annual_number_of_days_where_cumulative_precipitation_is_above_20_mm:
         - pr
     threshold:
         value: 20
-        unit: mm day-1iris.coord_categorisation.add_year(cube, 'time', name=agg)
+        unit: mm day-1
         logic: ge
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
 """)
@@ -98,7 +98,6 @@ def fdETCCDI_yr(cubes):
     
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    logger.info(specs)
     
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
@@ -111,7 +110,6 @@ def suETCCDI_yr(cubes):
     
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    logger.info(specs)
     
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
@@ -124,19 +122,42 @@ def idETCCDI_yr(cubes):
     
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    logger.info(specs)
     
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
     
     return res_cube
 
+
 def trETCCDI_yr(cubes):
-    """ID, Number of icing days: Annual count of days when TX (daily maximum temperature) < 0 degC."""
+    """TR, Number of tropical nights: Annual count of days when TN (daily minimum temperature) > 20 degC"""
     
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    logger.info(specs)
+    
+    # actual calculation
+    res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    return res_cube
+
+
+def r20mmETCCDI_yr(cubes):
+    """R20mm, Annual count of days when PRCP≥ 20mm"""
+    
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    # actual calculation
+    res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    return res_cube
+
+
+def r10mmETCCDI_yr(cubes):
+    """R10mm, Annual count of days when PRCP≥ 10mm"""
+    
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)

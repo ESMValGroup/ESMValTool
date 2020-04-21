@@ -14,6 +14,8 @@ from esmvaltool.diag_scripts.shared._base import (
 from esmvaltool.diag_scripts.shared.plot import quickplot
 import extreme_events_indices
 
+from extreme_events_utils import convert_ETCCDI_units
+
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -121,7 +123,7 @@ def main(cfg):
         for attributes in alias_data:
             logger.info('Processing dataset {}, {}.'.format(attributes['dataset'], attributes['short_name']))
             input_file = attributes['filename']
-            alias_cubes[attributes['short_name']] = iris.load_cube(input_file)
+            alias_cubes[attributes['short_name']] = convert_ETCCDI_units(iris.load_cube(input_file))
             
         # get index function
         for index_name in cfg['indices']:

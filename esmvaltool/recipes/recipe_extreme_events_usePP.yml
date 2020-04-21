@@ -162,8 +162,8 @@ diagnostics:
           - annual_number_of_summer_days
           - annual_number_of_icing_days
           - annual_number_of_tropical_nights
-#          - annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
-#          - annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
+          - annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
+          - annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
         # TODO: why is that the same name twice? is this dedicated plots?
         timeseries_idx: True
         gleckler_idx: True
