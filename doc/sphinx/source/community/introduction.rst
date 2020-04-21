@@ -308,7 +308,7 @@ All tests should pass before making a release.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The version number is stored in ``esmvaltool/__init__.py``,
-``meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
+``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
 https://semver.org for more information on choosing a version number.
 
 3. Make the release on GitHub
