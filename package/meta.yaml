@@ -23,69 +23,113 @@ build:
   # esmvaltool version, reset to 0 when building a new version.
   number: 0
   noarch: python
-  script: |
-      python setup.py install --single-version-externally-managed --record=/tmp/record.txt
-      POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
-      cp -v ${RECIPE_DIR}/language_support.sh ${POST_LINK};
-      chmod +x ${POST_LINK};
 
 requirements:
-  build:
-    - git
-    - python>=3.6
-    # Normally installed via pip:
-    - pytest-runner
-    - setuptools_scm
   run:
-    # esmvaltool
-    - python>=3.6
-    - graphviz
-    - iris
-    # Normally installed via pip:
-    - cartopy
-    - cdsapi
-    - cf-units
-    - cmocean
-    - cython
-    - ecmwf-api-client  # in esmvalgroup channel
-    - eofs
-    - esmpy
-    - esmvalcore>=2.0.0b9,<2.1  # in esmvalgroup channel
-    - jinja2
-    - matplotlib
-    - nc-time-axis
-    - netCDF4
-    - numpy
-    - pandas
-    - python-cdo
-    - python-stratify
-    - pyyaml
-    - scikit-learn
-    - seawater
-    - seaborn
-    - shapely
-    - xesmf
-    - xarray>=0.12.0
-    - yamale  # in esmvalgroup channel
-    - fiona
-    - xlrd
-    - xlsxwriter
-    # Command line tools used by diagnostic scripts
-    - cdo>=1.9.7
-    - imagemagick
-    - nco
-    # Multi language support:
-    - ncl>=6.5.0
-    - r-base
-    - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
-    - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
+    - esmvaltool-julia
+    - esmvaltool-ncl
+    - esmvaltool-python
+    - esmvaltool-r
 
 test:
-  # TODO: add unit tests? This seems to require installing the tests
+  source_files:
+    - tests
+    - setup.cfg
+  requires:
+    - pytest>=3.9
+    - pytest-cov
+    - pytest-env
+    - pytest-flake8
+    - pytest-html!=2.1.0
+    - pytest-metadata>=1.5.1
   imports:
     - esmvaltool
   commands:
-    - esmvaltool -h
+    - pytest --ignore=run_test.py
+    - cmorize_obs --help
+    - nclcodestyle --help
+    - showcolortables --help
+    - test_recipe --help
+
+outputs:
+
+  - name: esmvaltool-python
+    build:
+      noarch: python
+    script: install.sh
+    requirements:
+      build:
+        - git
+        - pytest-runner
+        - python>=3.6
+        - setuptools_scm
+      run:
+        - cartopy
+        - cdo>=1.9.7
+        - cdsapi
+        - cf-units
+        - cmocean
+        - cython
+        - dask
+        - ecmwf-api-client  # in esmvalgroup channel
+        - eofs
+        - esmpy
+        - esmvalcore>=2.0.0b9,<2.1  # in esmvalgroup channel
+        - fiona
+        - graphviz
+        - iris
+        - jinja2
+        - matplotlib
+        - nc-time-axis
+        - netCDF4
+        - numpy
+        - pandas
+        - pyproj>=2.1
+        - python>=3.6
+        - python-cdo
+        - python-stratify
+        - pyyaml
+        - scikit-learn
+        - seaborn
+        - seawater
+        - shapely
+        - xarray>=0.12.0
+        - xesmf
+        - xlrd
+        - xlsxwriter
+        - yamale  # in esmvalgroup channel
+
+  - name: esmvaltool-julia
+    build:
+      noarch: generic
+      post-link: install-julia-deps
+    requirements:
+      run:
+        - esmvaltool-python
+
+  - name: esmvaltool-ncl
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - cdo
+        - esmvaltool-python
+        - imagemagick
+        - ncl>=6.5.0
+        - nco
+
+  - name: esmvaltool-r
+    build:
+      noarch: generic
+      post-link: install-r-deps
+    requirements:
+      run:
+        - cdo
+        - esmvaltool-python
+        - nco
+        - r-base
+        - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+        - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
 
 about:
   home: https://www.esmvaltool.org

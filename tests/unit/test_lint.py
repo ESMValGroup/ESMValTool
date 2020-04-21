@@ -2,34 +2,30 @@
 import os
 import subprocess
 import textwrap
+from pathlib import Path
 
+import esmvaltool
 from esmvaltool.utils.nclcodestyle import nclcodestyle
 
 
 def test_nclcodestyle():
     """Test that NCL code is formatted according to our standards."""
+    package_root = Path(esmvaltool.__file__).absolute().parent
     check_paths = [
-        'esmvaltool',
-        'tests',
-    ]
-
-    exclude_paths = [
-        'esmvaltool/diag_scripts/cvdp/cvdp',
+        package_root,
     ]
 
     print("Formatting check of NCL code in directories: {}\n".format(
-        ', '.join(check_paths)))
+        ', '.join(str(p) for p in check_paths)))
 
-    # Get paths wrt package root
-    package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    for paths in (check_paths, exclude_paths):
-        for i, path in enumerate(paths):
-            paths[i] = os.path.join(package_root, path)
+    exclude_paths = [
+        package_root / 'diag_scripts' / 'cvdp' / 'cvdp',
+    ]
 
     style = nclcodestyle.StyleGuide()
-    style.options.exclude.extend(exclude_paths)
+    style.options.exclude.extend(str(p) for p in exclude_paths)
 
-    success = style.check_files(check_paths).total_errors == 0
+    success = style.check_files(str(p) for p in check_paths).total_errors == 0
 
     if not success:
         print(

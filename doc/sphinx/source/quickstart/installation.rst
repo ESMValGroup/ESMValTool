@@ -31,9 +31,36 @@ Once you have installed the above prerequisites, you can install ESMValTool by r
 
 .. code-block:: bash
 
+    conda install esmvaltool -c esmvalgroup -c conda-forge
 
-    conda install -c esmvalgroup -c conda-forge esmvaltool
+Installation of subpackages
+---------------------------
 
+The diagnostics bundled in ESMValTool are scripts in four different programming languages: Python, NCL, R, and Julia.
+
+There are four language specific packages available:
+
+* ``esmvaltool-julia``
+* ``esmvaltool-ncl``
+* ``esmvaltool-python``
+* ``esmvaltool-r``
+
+The main ``esmvaltool`` package contains all four subpackages listed above.
+
+If you only need to run a recipe with diagnostics in some of these languages, it is possible to install only the dependencies needed to do just that.
+
+* The diagnostic script(s) used in each recipe, are documented in :ref:`recipes`. The extension of the diagnostic script can be used to see in which language a diagnostic script is written.
+* Some of the CMORization scripts are written in Python, while others are written in  NCL. Therefore, both ``esmvaltool-pyhon`` and ``esmvaltool-ncl`` need to be installed in order to be able to run all CMORization scripts.
+
+For example, to only install support for diagnostics written in Python and NCL, run
+
+.. code-block:: bash
+
+    conda install esmvaltool-python esmvaltool-ncl -c esmvalgroup -c conda-forge
+
+Note that it is only necessary to install Julia prior to the conda installation if you are going to install the ``esmvaltool-julia`` package.
+
+Note that the ESMValTool source code is contained in the ``esmvaltool-python`` package, so this package will always be installed as a dependency if you install one or more of the packages for other languages.
 
 Docker installation
 ===================
@@ -44,7 +71,6 @@ Docker installation
 
 Install from source
 ===================
-
 
 
 Obtaining the source code
@@ -69,7 +95,7 @@ It is also possible to work in one of the ESMValTool private repositories, e.g.:
 By default, this command will create a folder called ESMValTool containing the
 source code of the tool.
 
-GitHub also allows to download the source code in as a tar.gz or zip file. If
+GitHub also allows one to download the source code in as a tar.gz or zip file. If
 you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
