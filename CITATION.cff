@@ -308,5 +308,5 @@ license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.0.0b3"
+version: "v2.0.0b4"
 ...
