@@ -122,7 +122,7 @@ def fdETCCDI_yr(cubes):
     
     # convert depending on unit of cube
     if not c_unit == specs['threshold']['unit']:
-        threshold = Unit.conform(threshold, specs['threshold']['unit'], c_unit)
+        threshold = Unit(specs['threshold']['unit']).convert(threshold, c_unit)
     
     logger.info('Threshold is {} {}.'.format(threshold, c_unit))
         

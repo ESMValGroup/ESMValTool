@@ -141,7 +141,7 @@ def main(cfg):
             logger.info(etccdi_index(alias_cubes))
             # calculate and save cube
             iris.save(etccdi_index(alias_cubes),
-                      cfg['work_dir'] + os.sep + alias + '_' + attributes['short_name'] + '_' + index_name + '.nc')
+                      cfg['work_dir'] + os.sep + alias + '_' + index_name + '.nc')
                     
             logger.info('Finalized computation for %s', ', '.join([alias, attributes['dataset'], index_name]))
     
