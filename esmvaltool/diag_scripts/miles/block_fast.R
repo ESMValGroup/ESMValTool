@@ -143,6 +143,9 @@ miles_block_fast <- # nolint
     north <- central + step0 # lowest north latitude
     south <- central - step0 # lowest sourth latitude
     maxsouth <- central - 2 * step0
+    if (maxsouth <= 0) {
+      stop("Latitude=0 has to be included in the domain.")
+    }
     fin <- ipsilon[north]
     fis <- ipsilon[south]
     range <- (90 - fi0 - jump) / yreso # escursion to the north for
