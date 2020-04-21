@@ -7,7 +7,7 @@ import sys
 from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import numdaysyear_base
+from extreme_events_utils import numdaysyear_wrapper
 from cf_units import Unit
 import yaml
 
@@ -100,121 +100,45 @@ def fdETCCDI_yr(cubes):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     logger.info(specs)
     
-    # test if required variable is in cubes
-    fdcube = None
-    for var, cube in cubes.items():
-        if var in specs['required']:
-            fdcube = cube
-        
-    if fdcube is None:
-        logger.error('Cannot calculate number of {} for any of the following variables: {}'.format(
-                specs['name'], cubes.keys()))
-        return
-    
-    logger.info('Computing yearly number of {}.'.format(specs['name']))
-    
-    # get cube unit
-    c_unit = fdcube.units
-    logger.info("The cube's unit is {}.".format(c_unit))
-    
-    # get threshold
-    threshold = specs['threshold']['value']
-    
-    # convert depending on unit of cube
-    if not c_unit == specs['threshold']['unit']:
-        threshold = Unit(specs['threshold']['unit']).convert(threshold, c_unit)
-    
-    logger.info('Threshold is {} {}.'.format(threshold, c_unit))
-        
-    # compute index 
-    res_cube = numdaysyear_base(fdcube,
-                                threshold,
-                                logic=specs['threshold']['logic'])
-    
-    # adjust variable name and unit
-    res_cube.rename(specs['cf_name'])
-    res_cube.units = Unit('days per year')
+    # actual calculation
+    res_cube = numdaysyear_wrapper(cubes, specs)
     
     return res_cube
 
 
-def suETCCDI_yr(cube):
+def suETCCDI_yr(cubes):
     """SU, Number of summer days: Annual count of days when TX (daily maximum temperature) > 25 degC."""
-    logger.info('Computing yearly number of summer days.')
     
-    # set aggregation level
-    agg = 'year'
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    logger.info(specs)
     
-    # add year auxiliary coordinate
-    if agg not in [cc.long_name for cc in cube.coords()]:
-        iris.coord_categorisation.add_year(cube, 'time', name=agg)
-    
-    # get unit
-    c_unit = cube.units
-    logger.info("The cube's unit is {}.".format(c_unit))
-    
-    # set threshold depending on unit
-    if c_unit == "K":
-        threshold = 273.15 + 25
-        
-    elif c_unit == "deg_c":
-        threshold = 25
-        
-    elif c_unit == "deg_f":
-        threshold = 77
-        
-    else:
-        logger.error('The unit {} can not be interpreted as a temperature unit!'.format(c_unit))
-        return
-    
-    logger.info('Threshold is {} {}.'.format(threshold, c_unit))
-        
-    # compute index 
-    res_cube = event_count_time(cube, threshold, logic='gt', aggregate=agg)
-    
-    # adjust variable name and unit
-    res_cube.rename('summer_days')
-    res_cube.units = Unit('days per year')
+    # actual calculation
+    res_cube = numdaysyear_wrapper(cubes, specs)
     
     return res_cube
 
 
-def idETCCDI_yr(cube):
+def idETCCDI_yr(cubes):
     """ID, Number of icing days: Annual count of days when TX (daily maximum temperature) < 0 degC."""
-    logger.info('Computing yearly number of icing days.')
     
-    # set aggregation level
-    agg = 'year'
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    logger.info(specs)
     
-    # add year auxiliary coordinate
-    if agg not in [cc.long_name for cc in cube.coords()]:
-        iris.coord_categorisation.add_year(cube, 'time', name=agg)
+    # actual calculation
+    res_cube = numdaysyear_wrapper(cubes, specs)
     
-    # get unit
-    c_unit = cube.units
-    logger.info("The cube's unit is {}.".format(c_unit))
+    return res_cube
+
+def trETCCDI_yr(cubes):
+    """ID, Number of icing days: Annual count of days when TX (daily maximum temperature) < 0 degC."""
     
-    # set threshold depending on unit
-    if c_unit == "K":
-        threshold = 273.15
-        
-    elif c_unit == "deg_c":
-        threshold = 0
-        
-    elif c_unit == "deg_f":
-        threshold = 32
-        
-    else:
-        logger.error('The unit {} can not be interpreted as a temperature unit!'.format(c_unit))
-        returniris.coord_categorisation.add_year(cube, 'time', name=agg)
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    logger.info(specs)
     
-    logger.info('Threshold is {} {}.'.format(threshold, c_unit))
-        
-    # compute index 
-    res_cube = event_count_time(cube, threshold, logic='lt', aggregate=agg)
-    
-    # adjust variable name and unit
-    res_cube.rename('icing_days')
-    res_cube.units = Unit('days per year')
+    # actual calculation
+    res_cube = numdaysyear_wrapper(cubes, specs)
     
     return res_cube

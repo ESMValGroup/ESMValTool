@@ -159,9 +159,9 @@ diagnostics:
         <<: *regpars
         indices:  
           - annual_number_of_frost_days
-#          - annual_number_of_summer_days
-#          - annual_number_of_icing_days
-#          - annual_number_of_tropical_nights
+          - annual_number_of_summer_days
+          - annual_number_of_icing_days
+          - annual_number_of_tropical_nights
 #          - annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
 #          - annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
         # TODO: why is that the same name twice? is this dedicated plots?
