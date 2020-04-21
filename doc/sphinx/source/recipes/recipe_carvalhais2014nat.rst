@@ -216,7 +216,12 @@ www.bgc-jena.mpg.de/geodb/BGI/tau4ESMValTool.php>`_ after registration.
 Due to inherent dependence of the diagnostic on uncertainty estimates in
 observation, the data needed for each diagnostic script are processed at
 different spatial resolutions (as in Carvalhais et al., 2014), and provided in
-11 different resolutions (see Table 1).
+11 different resolutions (see Table 1). Note that the uncertainties were
+estimated at the resolution of the selected models, and, thus, only the 
+pre-processed observed data can be used with the recipe. 
+It is not possible to use regridding functionalities of ESMValTool to regrid 
+the observational data to other spatial resolutions, as the uncertainty 
+estimates cannot be regridded.
 
 Table 1. A summary of the observation datasets at different resolutions.
 
