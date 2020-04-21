@@ -27,27 +27,52 @@ agg_wrapper = {
                                          iris.analysis.SUM)),
         }
 
-def event_count_time(cube, threshold, lower=True, aggregate="full"):
+    
+def __event_count_time__(cube, threshold, logic='lt', aggregate='full'):
     """Compute the number of events."""
     
     # compute the binarized version of the cube
-    bin_cube = __binary_translation__(cube, threshold, lower)
+    bin_cube = __binary_translation__(cube, threshold, logic)
     
     # aggregate within the aggregate horizon
     res_cube = agg_wrapper[aggregate](bin_cube)
     
     return res_cube
 
-def __binary_translation__(cube, threshold, lower=True):
+
+def __binary_translation__(cube, threshold, logic='lt'):
     """Compute boolean for exceeding threshold of data in cube."""
     
     #test cube against threshold and write into res_cube
-    if lower:
+    if logic == 'lt':
         thresh_data = cube.core_data() < threshold
-    else:
+    elif logic == 'gt':
         thresh_data = cube.core_data() > threshold
+    elif logic == 'le':
+        thresh_data = cube.core_data() <= threshold   
+    elif logic == 'ge':
+        thresh_data = cube.core_data() >= threshold  
+    else:
+        logger.error('The logic {} is not available!'.format(logic))
         
     #copy cube
     res_cube = cube.copy(data = thresh_data)
     
     return res_cube
+
+
+def numdaysyear_base(cube, threshold=273.15, logic='l'):
+    """Compute number of days per year for specific logic and threshold"""
+    
+    # set aggregation level
+    agg = 'year'
+    
+    # add year auxiliary coordinate
+    if agg not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_year(cube, 'time', name=agg)
+        
+    # calculate event count
+    res_cube = __event_count_time__(cube, threshold, logic='lt', aggregate=agg)
+    
+    return res_cube
+    

@@ -85,16 +85,16 @@ def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
     diagnostic_file = get_diagnostic_filename(basename, cfg)
 
-    logger.info("Saving analysis results to %s", diagnostic_file)
+    logger.info('Saving analysis results to %s', diagnostic_file)
     iris.save(cube, target=diagnostic_file)
 
     if cfg['write_plots'] and cfg.get('quickplot'):
         plot_file = get_plot_filename(basename, cfg)
-        logger.info("Plotting analysis results to %s", plot_file)
+        logger.info('Plotting analysis results to %s', plot_file)
         provenance_record['plot_file'] = plot_file
         quickplot(cube, filename=plot_file, **cfg['quickplot'])
 
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+    logger.info('Recording provenance of %s:\n%s', diagnostic_file,
                 pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
@@ -112,28 +112,38 @@ def main(cfg):
 
     # Loop over variables/datasets in alphabetical order of alias
     for alias, alias_data in grouped_input_data.items():
-        logger.info("Processing alias %s", alias)
+        logger.info('Processing alias %s', alias)
+        
+        logger.info(alias_data)
+        
+        alias_cubes = {}
+        # Save all alias related cubes in dictionary
         for attributes in alias_data:
-            logger.info("Processing dataset %s", attributes['dataset'])
+            logger.info('Processing dataset {}, {}.'.format(attributes['dataset'], attributes['short_name']))
             input_file = attributes['filename']
-            cube = iris.load_cube(input_file)
+            alias_cubes[attributes['short_name']] = iris.load_cube(input_file)
             
-            # get index function
-            logger.info("Computing index %s", cfg['index'])
-            etccdi_index = getattr(extreme_events_indices, cfg['index'], None)
+        # get index function
+        for index_name in cfg['indices']:
+            logger.info('Computing index %s', index_name)
+            etccdi_index = getattr(extreme_events_indices, 
+                                   extreme_events_indices.index_method[
+                                           index_name],
+                                   None)
                 
             # if there is no index available: report and break
             if etccdi_index is None:
-                logger.error('There is no index available called: {}'.format(cfg['index']))
+                logger.error('There is no index available called: {}'.format(index_name))
                 logger.error('*** calculation failed ***')
                 return
             
+            logger.info(alias_cubes)
+            logger.info(etccdi_index(alias_cubes))
             # calculate and save cube
-            logger.info("Saving at %s", cfg['work_dir'] + os.sep + alias + "_" + attributes['short_name'] + "_" + cfg['index'] + '.nc')
-            iris.save(etccdi_index(cube),
-                      cfg['work_dir'] + os.sep + alias + "_" + attributes['short_name'] + "_" + cfg['index'] + ".nc")
-                
-            logger.info("Finalized computation for %s", ", ".join([alias, attributes['dataset'], cfg['index']]))
+            iris.save(etccdi_index(alias_cubes),
+                      cfg['work_dir'] + os.sep + alias + '_' + attributes['short_name'] + '_' + index_name + '.nc')
+                    
+            logger.info('Finalized computation for %s', ', '.join([alias, attributes['dataset'], index_name]))
     
     #output_basename = os.path.splitext(
     #        os.path.basename(input_file))[0] + '_mean'
