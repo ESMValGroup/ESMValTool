@@ -139,10 +139,10 @@ def main(cfg):
                 logger.error('*** calculation failed ***')
                 return
             
-            logger.info(alias_cubes)
-            logger.info(etccdi_index(alias_cubes))
+#            logger.info(alias_cubes)
+#            logger.info(etccdi_index(alias_cubes, cfg))
             # calculate and save cube
-            iris.save(etccdi_index(alias_cubes),
+            iris.save(etccdi_index(alias_cubes, cfg=cfg),
                       cfg['work_dir'] + os.sep + alias + '_' + index_name + '.nc')
                     
             logger.info('Finalized computation for %s', ', '.join([alias, attributes['dataset'], index_name]))
