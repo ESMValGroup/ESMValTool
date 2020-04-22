@@ -472,6 +472,16 @@ diagnostics:
     scripts: null
 
 
+  Scripps-CO2-KUM:
+    description: Scripps-CO2-KUM check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: Scripps-CO2-KUM, project: OBS6, mip: Amon, tier: 2,
+         type: ground, version: 15-Nov-2019, start_year: 1979, end_year: 2019}
+    scripts: null
+
+
   WOA:
     description: WOA check
     variables:
