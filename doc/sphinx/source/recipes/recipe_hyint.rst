@@ -47,6 +47,19 @@ and subroutines
 
 See details of the extreme_events diagnostics under recipe_extreme_events.yml.
 
+Known issues
+------------
+
+*recipe_hyint_extreme_events.yml*
+
+Call to the :ref:`recipes_extreme_events` diagnostic requires the ncdf4.helpers library, which is currently unavailable on CRAN. Users need therefore to install the library manually, e.g. through the following commands to download the package tarball from CRAN archive, install it and remove the package tarball:
+
+  * url <- "https://cran.r-project.org/src/contrib/Archive/ncdf4.helpers/ncdf4.helpers_0.3-3.tar.gz"
+  * pkgFile <- "ncdf4.helpers_0.3-3.tar.gz"
+  * download.file(url = url, destfile = pkgFile)
+  * install.packages(pkgs=pkgFile, type="source", repos=NULL)
+  * unlink(pkgFile)
+
 User settings
 -------------
 
