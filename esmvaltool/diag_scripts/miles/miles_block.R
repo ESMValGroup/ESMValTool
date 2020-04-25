@@ -137,8 +137,8 @@ for (model_idx in c(1:(length(models_dataset)))) {
 ## Make the plots
 ##
 if (write_plots) {
-  if (is.null(reference_exp)) {
-    ref_idx <- which((models_dataset == reference_dataset) &
+  if (!is.null(reference_exp)) {
+    ref_idx <- which((models_dataset == reference_dataset) &&
                      (models_exp == reference_exp))
   } else {
     ref_idx <- which(models_dataset == reference_dataset)

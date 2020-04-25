@@ -70,6 +70,7 @@ diagnostics:
         preprocessor: preproc1
         mip: day
         reference_dataset: "ERA-Interim"
+#       reference_exp: historical
     scripts:
         miles_eof:
             script: miles/miles_eof.R
