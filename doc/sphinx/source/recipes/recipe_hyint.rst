@@ -6,9 +6,9 @@ Hydroclimatic intensity and extremes (HyInt)
 
 Overview
 --------
-The Earth’s hydrological cycle is of key importance both for the climate system and society. For example, the intensity and distribution of precipitation determines the availability or scarcity of fresh water in a certain region, and it is also related to the severity of hazardous events such as flooding or droughts. The simple investigation of average precipitation quantities can clearly hide some of the most relevant aspects of the hydrological cycle and its extremes (e.g., Giorgi et al., 2014). More in general, temperature and precipitation extremes have been the focus of recent climate studies attempting to capture the most relevant component of climate variability and impact on society in a changing climate (e.g., Alexander, 2016. A particular effort has been dedicated to developing and standardising indices that can be adopted for investigation studies with observations and climate models. This tool was developed to calculate a number of hydroclimatic and climate extremes indices and allow a multi-index evaluation of climate models. The tool firstly computes a set of 6 indices that allow to evaluate the response of the hydrological cycle to global warming with a joint view of both wet and dry extremes. The indices were selected following Giorgi et al. (2014) and include the simple precipitation intensity index (SDII), the maximum dry spell length (DSL) and wet spell length (WSL), the hydroclimatic intensity index (HY-INT), which is a measure of the overall behaviour of the hydroclimatic cycle (Giorgi et al., 2011), and the precipitation area (PA), i.e. the area over which at any given day precipitation occurs, (Giorgi et al., 2014). Secondly, also a selection of the 27 temperature and precipitation -based indices of extremes from the Expert Team on Climate Change Detection and Indices (ETCCDI) produced by the climdex (https://www.climdex.org) library can be ingested to produce a multi-index analysis. The tool allows then to perform a subsequent analysis of the selected indices calculating timeseries and trends over predefined continental areas, normalized to a reference period. Trends are calculated using the R `lm` function and significance testing performed with a Student T test on non-null coefficients hypothesis. Trend coefficients are stored together with their statistics which include standard error, t value and Pr(>|t|). The tool can then produce a variety of types of plots including global and regional maps, maps of comparison between models and a reference dataset, timeseries with their spread, trend lines and summary plots of trend coefficients.
+The HyInt tool calculates a suite of hydroclimatic and climate extremes indices to perform a multi-index evaluation of climate models. The tool firstly computes a set of 6 indices that allow to evaluate the response of the hydrological cycle to global warming with a joint view of both wet and dry extremes. The indices were selected following Giorgi et al. (2014) and include the simple precipitation intensity index (SDII) and extreme precipitation index (R95), the maximum dry spell length (DSL) and wet spell length (WSL), the hydroclimatic intensity index (HY-INT), which is a measure of the overall behaviour of the hydroclimatic cycle (Giorgi et al., 2011), and the precipitation area (PA), i.e. the area over which at any given day precipitation occurs, (Giorgi et al., 2014). Secondly, a selection of the 27 temperature and precipitation -based indices of extremes from the Expert Team on Climate Change Detection and Indices (ETCCDI) produced by the climdex (https://www.climdex.org) library can be ingested to produce a multi-index analysis. The tool allows then to perform a subsequent analysis of the selected indices calculating timeseries and trends over predefined continental areas, normalized to a reference period. Trends are calculated using the R `lm` function and significance testing performed with a Student T test on non-null coefficients hypothesis. Trend coefficients are stored together with their statistics which include standard error, t value and Pr(>|t|). The tool can then produce a variety of types of plots including global and regional maps, maps of comparison between models and a reference dataset, timeseries with their spread, trend lines and summary plots of trend coefficients.
 
-The hydroclimatic indices calculated by the diagnostic and included in the output are defined as follows:
+The hydroclimatic indices calculated by the recipe_hyint.yml and included in the output are defined as follows:
 
 * PRY = mean annual precipitation
 * INT = mean annual precipitation intensity (intensity during wet days, or simple precipitation intensity index SDII)
@@ -18,6 +18,7 @@ The hydroclimatic indices calculated by the diagnostic and included in the outpu
 * R95 = heavy precipitation index (percent of total precipitation above the 95% percentile of the reference distribution)
 * HY-INT = hydroclimatic intensity. HY-INT = normalized(INT) x normalized(DSL).
 
+The recipe_hyint_extreme_events.yml includes an additional call to the :ref:`recipes_extreme_events` diagnostics, which allows to calculate the ETCCDI indices and include them in the subsequent analysis together with the hydroclimatic indices. All of the selected indices are then stored in output files and figures.
 
 
 Available recipes and diagnostics
@@ -25,7 +26,8 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_hyint.yml (evaluating the 6 hydroclimatic indices)
+* recipe_hyint.yml (evaluating the 6 hydroclimatic indices, performing trend analysis and plotting)
+* recipe_hyint_extreme_events.yml (similar to the recipe_hyint.yml but with an additional call to the :ref:`recipes_extreme_events` diagnostic for calculation of ETCCDI indices and inclusion of them in the trend analysis and plotting)
 
 Diagnostics are stored in diag_scripts/hyint/
 
@@ -43,12 +45,25 @@ and subroutines
 * hyint_preproc.R
 * hyint_trends.R
 
+See details of the extreme_events diagnostics under recipe_extreme_events.yml.
+
+Known issues
+------------
+
+*recipe_hyint_extreme_events.yml*
+
+Call to the :ref:`recipes_extreme_events` diagnostic requires the ncdf4.helpers library, which is currently unavailable on CRAN. Users need therefore to install the library manually, e.g. through the following commands to download the package tarball from CRAN archive, install it and remove the package tarball:
+
+  * url <- "https://cran.r-project.org/src/contrib/Archive/ncdf4.helpers/ncdf4.helpers_0.3-3.tar.gz"
+  * pkgFile <- "ncdf4.helpers_0.3-3.tar.gz"
+  * download.file(url = url, destfile = pkgFile)
+  * install.packages(pkgs=pkgFile, type="source", repos=NULL)
+  * unlink(pkgFile)
 
 User settings
 -------------
 
 *Required settings for script*
-
 
 * norm_years: first and last year of reference normalization period to be used for normalized indices
 
@@ -57,6 +72,18 @@ User settings
 * select_regions: Select regions for timeseries and maps from the following list: GL=Globe, GL60=Global 60S/60N, TR=Tropics (30S/30N), SA=South America, AF=Africa, NA=North America, IN=India, EU=Europe, EA=East-Asia, AU=Australia
 
 * plot_type: type of figures to be plotted. Select one or more from: 1=lon/lat maps per individual field/exp/multi-year mean, 2=lon/lat maps per individual field exp-ref-diff/multi-year mean, 3=lon/lat maps multi-field/exp-ref-diff/multi-year mean, 11=timeseries over required individual region/exp, 12=timeseries over multiple regions/exp, 13=timeseries with multiple models, 14=summary trend coefficients multiple regions, 15=summary trend coefficients multiple models
+
+
+*Additional settings for recipe_hyint_extreme_events.yml*
+
+* call to the extreme_events diagnostics: see details in recipe_extreme_events.yml. Make sure that the base_range for extreme_events coincides with the norm_range of hyint and that all ETCCDI indices that are required to be imported in hyint are calculated by the extreme_events diagnostics.
+
+* etccdi_preproc: set to true to pre-process and include ETCCDI indices in hyint
+
+* etccdi_list_import: specify the list of ETCCDI indices to be imported, e.g.: "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
+
+* select_indices: this required settings should here be revised to include the imported indices, e.g.: "pa_norm", "hyint", "tn10pETCCDI", "tn90pETCCDI", "tx10pETCCDI", "tx90pETCCDI"
+
 
 *Optional settings for script (with default setting)*
 
@@ -97,6 +124,11 @@ Variables
 
 * pr (atmos, daily mean, longitude latitude time)
 
+*Additional variables for recipe_hyint_extreme_events.yml*
+
+* tas (atmos, daily mean, longitude latitude time)
+* tasmin (atmos, daily mean, longitude latitude time)
+* tasmax (atmos, daily mean, longitude latitude time)
 
 Observations and reformat scripts
 ---------------------------------
