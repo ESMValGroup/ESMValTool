@@ -1,7 +1,9 @@
 """Utils module for Python cmorizers."""
+from pathlib import Path
 import datetime
 import logging
 import os
+import re
 from contextlib import contextmanager
 
 import iris
@@ -10,11 +12,12 @@ import yaml
 from cf_units import Unit
 from dask import array as da
 
-from esmvalcore._config import get_tag_value
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvaltool import __version__ as version
+from esmvaltool import __version__ as version, __file__ as esmvaltool_file
 
 logger = logging.getLogger(__name__)
+
+REFERENCES_PATH = Path(esmvaltool_file).absolute().parent / 'references'
 
 
 def add_height2m(cube):
@@ -74,15 +77,16 @@ def fix_coords(cube):
         # fix longitude
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
-            if cube.coord('longitude').points[0] < 0. and \
-                    cube.coord('longitude').points[-1] < 181.:
-                cube.coord('longitude').points = \
-                    cube.coord('longitude').points + 180.
-                _fix_bounds(cube, cube.coord('longitude'))
-                cube.attributes['geospatial_lon_min'] = 0.
-                cube.attributes['geospatial_lon_max'] = 360.
-                nlon = len(cube.coord('longitude').points)
-                _roll_cube_data(cube, int(nlon / 2), -1)
+            if cube_coord.ndim == 1:
+                if cube_coord.points[0] < 0. and \
+                        cube_coord.points[-1] < 181.:
+                    cube_coord.points = \
+                        cube_coord.points + 180.
+                    _fix_bounds(cube, cube_coord)
+                    cube.attributes['geospatial_lon_min'] = 0.
+                    cube.attributes['geospatial_lon_max'] = 360.
+                    nlon = len(cube_coord.points)
+                    _roll_cube_data(cube, nlon // 2, -1)
 
         # fix latitude
         if cube_coord.var_name == 'lat':
@@ -179,6 +183,25 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
 
+def extract_doi_value(tag):
+    """Extract doi from a bibtex entry."""
+    reference_doi = 'doi not found'
+    pattern = r'doi\ = {(.*?)\},'
+
+    bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
+    if bibtex_file.is_file():
+        reference_entry = bibtex_file.read_text()
+    else:
+        logger.warning(
+            'The reference file %s does not exist.', bibtex_file
+        )
+    if re.search("doi", reference_entry):
+        reference_doi = (
+            f'doi:{re.search(pattern, reference_entry).group(1)}'
+        )
+    return reference_doi
+
+
 def set_global_atts(cube, attrs):
     """Complete the cmorized file with global metadata."""
     logger.debug("Setting global metadata...")
@@ -200,7 +223,7 @@ def set_global_atts(cube, attrs):
             'source':
             attrs.pop('source'),
             'reference':
-            get_tag_value('references', attrs.pop('reference')),
+            extract_doi_value(attrs.pop('reference')),
             'comment':
             attrs.pop('comment'),
             'user':
@@ -247,38 +270,46 @@ def _fix_dim_coordnames(cube):
     for coord in cube.coords():
         # guess the CMOR-standard x, y, z and t axes if not there
         coord_type = iris.util.guess_coord_axis(coord)
+        try:
+            coord = cube.coord(axis=coord_type)
+        except iris.exceptions.CoordinateNotFoundError:
+            logger.warning(
+                'Multiple coordinates for axis %s. '
+                'This may be an error, specially for regular grids',
+                coord_type
+            )
+            continue
 
         if coord_type == 'T':
-            cube.coord(axis=coord_type).var_name = 'time'
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'time'
+            coord.attributes = {}
 
         if coord_type == 'X':
-            cube.coord(axis=coord_type).var_name = 'lon'
-            cube.coord(axis=coord_type).standard_name = 'longitude'
-            cube.coord(axis=coord_type).long_name = 'longitude coordinate'
-            cube.coord(axis=coord_type).units = Unit('degrees')
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'lon'
+            coord.standard_name = 'longitude'
+            coord.long_name = 'longitude coordinate'
+            coord.units = Unit('degrees')
+            coord.attributes = {}
 
         if coord_type == 'Y':
-            cube.coord(axis=coord_type).var_name = 'lat'
-            cube.coord(axis=coord_type).standard_name = 'latitude'
-            cube.coord(axis=coord_type).long_name = 'latitude coordinate'
-            cube.coord(axis=coord_type).units = Unit('degrees')
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'lat'
+            coord.standard_name = 'latitude'
+            coord.long_name = 'latitude coordinate'
+            coord.units = Unit('degrees')
+            coord.attributes = {}
 
         if coord_type == 'Z':
-            if cube.coord(axis=coord_type).var_name == 'depth':
-                cube.coord(axis=coord_type).standard_name = 'depth'
-                cube.coord(axis=coord_type).long_name = \
+            if coord.var_name == 'depth':
+                coord.standard_name = 'depth'
+                coord.long_name = \
                     'ocean depth coordinate'
-                cube.coord(axis=coord_type).var_name = 'lev'
-                cube.coord(axis=coord_type).attributes['positive'] = 'down'
-            if cube.coord(axis=coord_type).var_name == 'pressure':
-                cube.coord(axis=coord_type).standard_name = 'air_pressure'
-                cube.coord(axis=coord_type).long_name = 'pressure'
-                cube.coord(axis=coord_type).var_name = 'air_pressure'
-                cube.coord(axis=coord_type).attributes['positive'] = 'up'
-
+                coord.var_name = 'lev'
+                coord.attributes['positive'] = 'down'
+            if coord.var_name == 'pressure':
+                coord.standard_name = 'air_pressure'
+                coord.long_name = 'pressure'
+                coord.var_name = 'air_pressure'
+                coord.attributes['positive'] = 'up'
     return cube
 
 

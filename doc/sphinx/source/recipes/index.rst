@@ -42,6 +42,7 @@ Future projections
    :maxdepth: 1
 
    recipe_emergent_constraints
+   recipe_wenzel14jgr
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
@@ -61,8 +62,10 @@ Land
 .. toctree::
    :maxdepth: 1
 
+   recipe_albedolandcover
    recipe_hydrology
    recipe_landcover
+   recipe_anav13jclim
    recipe_runoff_et
 
 Ocean
@@ -70,9 +73,11 @@ Ocean
 .. toctree::
    :maxdepth: 1
 
+   recipe_arctic_ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_oceans
+   recipe_russell18jgr
 
 Other
 ^^^^^
@@ -83,6 +88,8 @@ Other
    recipe_ensclus
    recipe_multimodel_products
    recipe_rainfarm
+   recipe_seaice_feedback
    recipe_seaice
+   recipe_seaice_drift
    recipe_shapeselect
    recipe_toymodel

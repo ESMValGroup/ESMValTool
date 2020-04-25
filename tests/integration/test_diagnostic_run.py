@@ -105,7 +105,7 @@ SCRIPTS = {
 }
 
 
-@pytest.mark.install
+@pytest.mark.installation
 @pytest.mark.parametrize('script_file, script', SCRIPTS.items())
 def test_diagnostic_run(tmp_path, script_file, script):
 

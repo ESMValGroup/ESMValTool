@@ -44,13 +44,13 @@ whicher <- function(axis, number) {
 area_weight <- function(ics, ipsilon, root = T) {
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   if (root == T) {
-    for (j in 1:length(ipsilon)) {
+    for (j in seq_along(ipsilon)) {
       field[, j] <- sqrt(cos(pi / 180 * ipsilon[j]))
     }
   }
 
   if (root == F) {
-    for (j in 1:length(ipsilon)) {
+    for (j in seq_along(ipsilon)) {
       field[, j] <- cos(pi / 180 * ipsilon[j])
     }
   }
@@ -333,7 +333,8 @@ ncdf_opener_universal <- # nolint
              tmonths = NULL,
              tyears = NULL,
              rotate = "full",
-             interp2grid = F,
+             interp2grid = FALSE,
+             fillmiss = FALSE,
              grid = "r144x73",
              remap_method = "remapcon2",
              exportlonlat = TRUE,
@@ -374,16 +375,22 @@ ncdf_opener_universal <- # nolint
     # interpolation made with CDO: second order conservative remapping
     if (interp2grid) {
       print(paste("Remapping with CDO on", grid, "grid"))
-      filename <- basename(normalizePath(namefile))
-      filedir <- dirname(normalizePath(namefile))
-      cdo <- Sys.which("cdo")
-      tempfile <-
-        paste0(file.path(filedir, paste0("tempfile_", filename)))
-      system2(
-        cdo,
-        args = c(paste0(remap_method, ",", grid), namefile, tempfile)
-      )
-      namefile <- tempfile
+      if (is.null(namevar)) {
+        namefile <- cdo(remap_method,
+          args = paste0("'", grid, "'"),
+          input = namefile
+        )
+      } else {
+        selectf <- cdo("selvar", args = namevar, input = namefile)
+        gridf <- tempfile()
+        cdo("griddes", input = grid, stdout = gridf)
+        namefile <- cdo(remap_method, args = gridf, input = selectf)
+        unlink(c(selectf, gridf))
+      }
+    }
+
+    if (fillmiss) {
+        namefile <- cdo("fillmiss", input = namefile)
     }
 
     # define rotate function (faster than with apply)
@@ -635,7 +642,8 @@ ncdf_opener <- function(namefile,
                         tmonths = NULL,
                         tyears = NULL,
                         rotate = "full",
-                        interp2grid = F,
+                        interp2grid = FALSE,
+                        fillmiss = FALSE,
                         grid = "r144x73",
                         remap_method = "remapcon2",
                         exportlonlat = TRUE,
@@ -649,6 +657,7 @@ ncdf_opener <- function(namefile,
     tyears,
     rotate,
     interp2grid,
+    fillmiss,
     grid,
     remap_method,
     exportlonlat,
@@ -1354,7 +1363,7 @@ largescale_extension_if <- function(ics, ipsilon, field) {
     # reduce range considering border effect
     new <-
       rbind(field, field, field) # bind domain for cross-date line
-    for (i in 1:length(ics)) {
+    for (i in seq_along(ics)) {
       ii <- i + length(ics)
       # check to speed up
       if (!all(new[(ii - passo):(ii + passo), ] == 0)) {
@@ -1400,7 +1409,7 @@ longitude_filter <- function(ics, ipsilon, field) {
     for (j in startipsilon:((startipsilon + estension))) {
       new[, j] <- time_persistence(new[, j], persistence = passo)
     }
-    field[, , t] <- new[length(ics) + (1:length(ics)), ]
+    field[, , t] <- new[length(ics) + (seq_along(ics)), ]
   }
   return(field)
 }
@@ -1485,8 +1494,6 @@ eofs <-
     if (do_regression) {
       print("Linear Regressions (it can takes a while)... ")
       regression <- array(NA, dim = c(length(lon), length(lat), neof))
-      # for (i in 1:neof) {regression[,,i]=apply(field,c(1,2),
-      #                          function(x) coef(lm(x ~ coefficient[,i]))[2])}
       for (i in 1:neof) {
         regression[, , i] <- apply(
           field, c(1, 2),
