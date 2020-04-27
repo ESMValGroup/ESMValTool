@@ -86,45 +86,6 @@ preprocessors:
     zonal_statistics:
       operator: mean      
   
-#regridding and interpolation reference_dataset levels used by fig1,fig5a,fig5b
-  regrid_interp_lev:
-    extract_levels:
-      scheme: linear
-      levels: reference_dataset
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-
-#regridding and interpolation reference_dataset levels selection of lat/lon area and average
-  regrid_interp_lev_mean_lat:
-    extract_levels:
-      scheme: linear
-      levels: reference_dataset
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    extract_region:
-      start_latitude: -60
-      end_latitude: -55
-      start_longitude: 0
-      end_longitude: 360
-    area_statistics:
-      operator: mean
-      
-#regridding on  reference_dataset  grid and extraction of a Pa level
-  regrid_extract_lev:
-    extract_levels:
-      scheme: linear
-      levels: 5000
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-#levels are in Pa
-    mask_fillvalues:
-      threshold_fraction: 0.95
-
 # zonal mean
   zonal:
     regrid:
