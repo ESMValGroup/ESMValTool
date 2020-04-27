@@ -125,37 +125,6 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
 
-#regridding on  reference_dataset  grid and extraction of a Pa level and area selection and mean
-  regrid_extract_lev_mean_lat:
-    extract_levels:
-      scheme: linear
-      levels: 10000
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-    extract_region:
-      start_latitude: -10
-      end_latitude: 10
-      start_longitude: 0
-      end_longitude: 360
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    area_statistics:
-      operator: mean
-      
-# level interpolation region extraction and mean
-  interp_lev_mean_lat:
-      extract_levels:
-         scheme: linear
-         levels: reference_dataset
-      extract_region:
-         start_latitude: -10
-         end_latitude:  10
-         start_longitude: 0
-         end_longitude: 360
-      area_statistics:
-         operator: mean
-         
 # zonal mean
   zonal:
     regrid:
