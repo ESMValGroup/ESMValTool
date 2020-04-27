@@ -10,16 +10,7 @@ Overview
 This recipe reproduces the figures of `Eyring et al. (2006)`_
 The following plots are reproduced:
  * Vertical profile climatological mean bias of climatological mean for selected seasons and latitudinal region. 
- * Transition to easterlies at 60S, climatological mean for selected seasons and latitudinal region.
- * Scatter plot heat fluxes vs. temperature at selected latitude and month.
- * Time series of monthly anomalies respect to a reference period at selected level, trend climatological mean for selected seasons and latitudinal region.
- * Vertical and latitudinal profile of climatological mean for selected seasons this figure and setting is valid for figure 5 (CH4) figure 6 (H2O) figure 11(HCL) figure 13 (tro3).
- * Climatological mean at selected level (100hPa)  and latitudinal region (Equator) a) temperature and b)water vapor.
- * Time-height sections of water vapor mixing ratio shown as the deviation (in parts per million by volume) from the time mean profile, averaged between 10°S and 10°.
- * Tape recorder phase and amplitude climatological mean for selected latitudinal region at all levels.
- * Latitudinal profiles of mean age of air climatological mean for selected seasons and levels.
- * Climatological mean vertical profiles (altitude Km)  at selected latitude and month for chemical tracers and time series at selected level and month for chemical tracers.
- * Annual cycle for total ozone (month-lat).
+ * Vertical and latitudinal profile of climatological mean for selected seasons this figure and setting is valid for figure 5 (CH4) figure 6 (H2O) figure 11 (HCL) figure 13 (tro3).
  * Total ozone anomalies at different latitudinal band and seasons.
 
 .. _`Eyring et al. (2006)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2006JD007327
@@ -34,17 +25,8 @@ Recipes are stored in esmvaltool/recipes/
 Diagnostics are stored in esmvaltool/diag_scripts/eyring06jgr/
 
     * eyring06jgr_fig01.ncl  
-    * eyring06jgr_fig02.ncl
-    * eyring06jgr_fig03.ncl
-    * eyring06jgr_fig04.ncl
     * eyring06jgr_fig05a.ncl
     * eyring06jgr_fig05b.ncl
-    * eyring06jgr_fig07.ncl
-    * eyring06jgr_fig08.ncl
-    * eyring06jgr_fig09.ncl
-    * eyring06jgr_fig12a.ncl
-    * eyring06jgr_fig12b.ncl
-    * eyring06jgr_fig14.ncl
     * eyring06jgr_fig15.ncl
  
 
@@ -53,12 +35,8 @@ User settings in recipe
 -----------------------
 #. Preprocessor
 
-   * ``regrid_interp_lev``: Regridding and interpolation reference_dataset levels used by eyring06jgr_fig01, eyring06jgr_fig03 eyring06jgr_fig05, eyring06jgr_fig10, eyring06jgr_fig12a
-   * ``regrid_interp_lev_mean_lat``: Regridding and interpolation reference_dataset levels selection of lat/lon area and average  used by eyring06jgr_fig02, eyring06jgr_fig08 and by eyring06jgr_fig09
-   * ``regrid_extract_lev``: Regridding on  reference_dataset  grid and extraction of a Pa level used by used by eyring06jgr_fig04, eyring06jgr_fig12b
-   * ``regrid_extract_lev_mean_lat`` : Regridding on  reference_dataset  grid and extraction of a Pa level and area selection and mean used by eyring06jgr_fig07
-   * ``interp_lev_mean_lat`` : Level interpolation region extraction and mean.
-   * ``zonal mean`` : Regridding and zonal mean used by eyring06jgr_fig14 and eyring06jgr_fig15
+   * ``regrid_interp_lev_zonal``: Regridding and interpolation reference_dataset levels used by eyring06jgr_fig01 and eyring06jgr_fig05
+   * ``zonal`` : Regridding and zonal mean used by eyring06jgr_fig15
 
 
 #. Script <eyring06jgr_fig01.ncl>
