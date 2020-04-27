@@ -1,0 +1,24 @@
+---
+# Filename (will be extended by date and config information)
+extension: nc
+input_file_pattern: 'PERSIANN-CDR_v01r01_*.nc'
+start_year: 1983
+end_year: 2019
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: PERSIANN-CDR
+  version: 'v01r01'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://www.ncei.noaa.gov/data/precipitation-persiann/access/'
+  reference: 'persiann-cdr'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  pr:
+    mip: day
+    raw_standard_name: precipitation_amount
+    raw_units: mm
