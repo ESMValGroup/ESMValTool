@@ -12,6 +12,20 @@ from cf_units import Unit
 from esmvaltool.cmorizers.obs.cmorize_obs import main as run
 
 
+@contextlib.contextmanager
+def keep_cwd():
+    """
+    Use a context manager since the cmorizer enters
+    and stays in the cmorization dir, risking to write
+    test outputs away from test-reports.
+    """
+    curr_path = os.getcwd()
+    try:
+        yield
+    finally:
+        os.chdir(curr_path)
+
+
 def write_config_user_file(dirname):
     config_file = dirname / 'config-user.yml'
     cfg = {
@@ -125,17 +139,16 @@ def test_cmorize_obs_woa_no_data(tmp_path):
 
     config_user_file = write_config_user_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
-    curr_path = os.getcwd()
-    with arguments(
-            'cmorize_obs',
-            '-c',
-            config_user_file,
-            '-o',
-            'WOA',
-    ):
-        run()
+    with keep_cwd():
+        with arguments(
+                'cmorize_obs',
+                '-c',
+                config_user_file,
+                '-o',
+                'WOA',
+        ):
+            run()
 
-    os.chdir(curr_path)
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
                             os.listdir(log_dir)[0], 'run', 'main_log.txt')
@@ -150,17 +163,16 @@ def test_cmorize_obs_woa_data(tmp_path):
     data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
     os.makedirs(data_path)
     put_dummy_data(data_path)
-    curr_path = os.getcwd()
-    with arguments(
-            'cmorize_obs',
-            '-c',
-            config_user_file,
-            '-o',
-            'WOA',
-    ):
-        run()
+    with keep_cwd():
+        with arguments(
+                'cmorize_obs',
+                '-c',
+                config_user_file,
+                '-o',
+                'WOA',
+        ):
+            run()
 
-    os.chdir(curr_path)
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
                             os.listdir(log_dir)[0], 'run', 'main_log.txt')
