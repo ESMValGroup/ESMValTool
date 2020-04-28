@@ -31,7 +31,7 @@ Download and processing instructions
 Issues:
     In input file APHRO_MA_TAVE_050deg_V1808.2015.nc the input variable is
     called ta instead of tave as in the other files.
-    Currently resolved using raw_fallback: ta in case of thrown 
+    Currently resolved using raw_fallback: ta in case of thrown
     iris.exceptions.ConstraintMismatchError
 
 Refs:
@@ -64,9 +64,8 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
     """Extract variable."""
-
-    logger.info("CMORizing variable '%s' from input file '%s'",
-                short_name, filepath)
+    logger.info("CMORizing variable '%s' from input file '%s'", short_name,
+                filepath)
 
     with catch_warnings():
         filterwarnings(
@@ -79,13 +78,12 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
             cube = iris.load_cube(
                 str(filepath),
                 constraint=utils.var_name_constraint(var['raw']),
-                )
+            )
         except iris.exceptions.ConstraintMismatchError:
             cube = iris.load_cube(
                 str(filepath),
                 constraint=utils.var_name_constraint(var['raw_fallback']),
-                )
-
+            )
 
     # Fix var units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
