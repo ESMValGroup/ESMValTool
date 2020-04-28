@@ -13,6 +13,7 @@ Download and processing instructions
     Files are available free for download on the indicated site.
     Files are stored as daily nc-files in individual year
         folders.
+    Please copy all files in a single directory.
 
 """
 
