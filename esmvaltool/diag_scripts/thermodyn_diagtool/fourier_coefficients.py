@@ -25,7 +25,8 @@ P_0 = 10000  # Reference tropospheric pressure
 def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     """Compute Fourier coefficients in lon direction.
 
-    Receive as input:
+    Arguments:
+    ---------
     - tadiagfile: the name of a file to store modified t fields;
     - outfile: the name of a file to store the Fourier coefficients;
     - ta_input: the name of a file containing t,u,v,w fields;
@@ -59,10 +60,10 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
             deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i - 1, :, :] != 0,
                                               deltat[:, i - 1, :, :],
                                               (ta1_fx[:, i, :, :] - tas))
-            deltat[:, i - 1, :, :] = (
-                (1 * np.array(h_1.mask)) * np.array(deltat[:, i - 1, :, :]))
-            d_p = -(
-                (P_0 * G_0 / (GAM * GAS_CON)) * deltat[:, i - 1, :, :] / tas)
+            deltat[:, i - 1, :, :] = ((1 * np.array(h_1.mask)) *
+                                      np.array(deltat[:, i - 1, :, :]))
+            d_p = -((P_0 * G_0 /
+                     (GAM * GAS_CON)) * deltat[:, i - 1, :, :] / tas)
             p_s = np.where(ta1_fx[:, i - 1, :, :] != 0, p_s, lev[i - 1] + d_p)
             for k in np.arange(0, nlev - i - 1, 1):
                 h_3 = np.ma.masked_where(ta1_fx[:, i + k, :, :] != 0,
@@ -84,10 +85,11 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
         deltap[:, i, :, :] = p_s - lev[i]
         h_2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0, ta2_fx[:, i, :, :])
         mask[i, :, :, :] = np.array(h_2.mask)
-        tafr_bar[i, :, :, :] = (1 * np.array(mask[i, :, :, :]) * (
-            tas - GAM * GAS_CON / (G_0 * p_s) * deltap[:, i, :, :] * tas))
-        dat[i, :, :, :] = (
-            ta2_fx[:, i, :, :] * (1 - 1 * np.array(mask[i, :, :, :])))
+        tafr_bar[i, :, :, :] = (1 * np.array(mask[i, :, :, :]) *
+                                (tas - GAM * GAS_CON /
+                                 (G_0 * p_s) * deltap[:, i, :, :] * tas))
+        dat[i, :, :, :] = (ta2_fx[:, i, :, :] *
+                           (1 - 1 * np.array(mask[i, :, :, :])))
         t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
     pr_output_diag(t_a, ta_input, tadiagfile, 'ta')
     tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :int(trunc / 2)] / (nlon)
@@ -117,7 +119,9 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
     Save fields to NetCDF, retrieving information from an existing
     NetCDF file. Metadata are transferred from the existing file to the
     new one.
+
     Arguments:
+    ---------
         - var1, var2, var3, var4: the fields to be stored, with shape
           (time,level,wave,lon);
         - nc_f: the existing dataset, from where the metadata are
@@ -157,7 +161,9 @@ def pr_output_diag(var1, nc_f, fileo, name1):
     Save fields to NetCDF, retrieving information from an existing
     NetCDF file. Metadata are transferred from the existing file to the
     new one.
+
     Arguments:
+    ---------
         - var1: the field to be stored, with shape (time,level,lat,lon);
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Coordinates time,level, lat and lon have to be the
@@ -180,13 +186,13 @@ def pr_output_diag(var1, nc_f, fileo, name1):
                                                 ('time', 'plev', 'lat', 'lon'))
         varatts(var1_nc_var, name1)
         var_nc_fid.variables[name1][:, :, :, :] = var1
-        var_nc_fid.close()  # close the new file
 
 
 def extr_lat(nc_fid, var_nc_fid, latn):
     """Extract lat coord. from NC files and save them to a new NC file.
 
     Arguments:
+    ---------
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
@@ -207,6 +213,7 @@ def extr_lon(nc_fid, var_nc_fid):
     """Extract lat coord. from NC files and save them to a new NC file.
 
     Arguments:
+    ---------
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
@@ -215,8 +222,9 @@ def extr_lon(nc_fid, var_nc_fid):
     # Extract coordinates from NetCDF file
     lons = nc_fid.variables['lon'][:]
     var_nc_fid.createDimension('lon', len(lons))
-    var_nc_dim = var_nc_fid.createVariable(
-        'lon', nc_fid.variables['lon'].dtype, ('lon', ))
+    var_nc_dim = var_nc_fid.createVariable('lon',
+                                           nc_fid.variables['lon'].dtype,
+                                           ('lon', ))
     for ncattr in nc_fid.variables['lon'].ncattrs():
         var_nc_dim.setncattr(ncattr, nc_fid.variables['lon'].getncattr(ncattr))
     var_nc_fid.variables['lon'][:] = lons
@@ -226,6 +234,7 @@ def extr_plev(nc_fid, var_nc_fid):
     """Extract plev coord. from NC files and save them to a new NC file.
 
     Arguments:
+    ---------
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
@@ -233,8 +242,9 @@ def extr_plev(nc_fid, var_nc_fid):
     """
     plev = nc_fid.variables['plev'][:]
     var_nc_fid.createDimension('plev', len(plev))
-    var_nc_dim = var_nc_fid.createVariable(
-        'plev', nc_fid.variables['plev'].dtype, ('plev', ))
+    var_nc_dim = var_nc_fid.createVariable('plev',
+                                           nc_fid.variables['plev'].dtype,
+                                           ('plev', ))
     for ncattr in nc_fid.variables['plev'].ncattrs():
         var_nc_dim.setncattr(ncattr,
                              nc_fid.variables['plev'].getncattr(ncattr))
@@ -245,6 +255,7 @@ def extr_time(nc_fid, var_nc_fid):
     """Extract time coord. from NC files and save them to a new NC file.
 
     Arguments:
+    ---------
         - nc_f: the existing dataset, from where the metadata are
           retrieved. Time,level and lon dimensions
           are retrieved;
@@ -254,8 +265,9 @@ def extr_time(nc_fid, var_nc_fid):
     time = nc_fid.variables['time'][:]
     # Using our previous dimension info, we can create the new dimensions.
     var_nc_fid.createDimension('time', len(time))
-    var_nc_dim = var_nc_fid.createVariable(
-        'time', nc_fid.variables['time'].dtype, ('time', ))
+    var_nc_dim = var_nc_fid.createVariable('time',
+                                           nc_fid.variables['time'].dtype,
+                                           ('time', ))
     for ncattr in nc_fid.variables['time'].ncattrs():
         var_nc_dim.setncattr(ncattr,
                              nc_fid.variables['time'].getncattr(ncattr))
@@ -266,6 +278,7 @@ def varatts(w_nc_var, varname):
     """Add attibutes to the variables, depending on their name.
 
     Arguments:
+    ---------
     - w_nc_var: a variable object;
     - varname: the name of the variable, among ta, ua, va and wap.
     """
@@ -290,7 +303,7 @@ def varatts(w_nc_var, varname):
     elif varname == 'wap':
         w_nc_var.setncatts({
             'long_name': 'Lagrangian tendency of '
-            'air pressure',
+                         'air pressure',
             'units': "Pa s-1",
             'level_desc': 'pressure levels'
         })

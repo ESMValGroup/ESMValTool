@@ -10,7 +10,7 @@ Last access
     20190503
 
 Download and processing instructions
-    To obtain the data sets it is necessary to contanct Ranga B. Myneni
+    To obtain the data sets it is necessary to contact Ranga B. Myneni
     (Department of Earth and Environment, Boston University). See link above
     for more information.
 
@@ -195,7 +195,7 @@ def _unzip(filepath, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']

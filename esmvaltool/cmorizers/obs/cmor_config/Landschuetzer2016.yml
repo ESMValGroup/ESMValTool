@@ -5,7 +5,7 @@ attributes:
   version: 'v2016'
   tier: 2
   modeling_realm: clim
-  project_id: CMIP5
+  project_id: OBS
   source: 'https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/'
   reference: 'landschuetzer2016'
   comment: ''

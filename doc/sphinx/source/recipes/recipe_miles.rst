@@ -123,11 +123,11 @@ Example plots
 -------------
 
 .. figure:: /recipes/figures/miles/miles_block.png
-   :width: 10cm
+   :width: 14cm
 
-   Blocking events frequency for EC-Earth model 1980-1989, compared to ERA-Interim.
+   Blocking Events frequency for a CMIP5 EC-Earth historical run (DJF 1980-1989), compared to ERA-Interim. Units are percentage of blocked days per season.
 
 .. figure:: /recipes/figures/miles/miles_eof1.png
-   :width: 10cm
-
-   Teleconnection indices as Z500 empirical orthogonal functions for the North Atlantic (the figure shows EOF1)
+   :width: 14cm
+   
+   North Atlantic Oscillation for a CMIP5 EC-Earth historical run (DJF 1980-1989) compared to ERA-Interim, shown as the linear regression of the monthly Z500 against the first Principal Component (PC1) of the North Atlantic region.

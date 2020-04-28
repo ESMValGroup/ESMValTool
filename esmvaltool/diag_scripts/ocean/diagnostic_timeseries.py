@@ -286,13 +286,14 @@ def multi_model_time_series(
     model_cubes = {}
     layers = {}
     for filename in sorted(metadata):
-        cube = iris.load_cube(filename)
-        cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+        if metadata[filename]['frequency'] != 'fx':
+            cube = iris.load_cube(filename)
+            cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
 
-        cubes = diagtools.make_cube_layer_dict(cube)
-        model_cubes[filename] = cubes
-        for layer in cubes:
-            layers[layer] = True
+            cubes = diagtools.make_cube_layer_dict(cube)
+            model_cubes[filename] = cubes
+            for layer in cubes:
+                layers[layer] = True
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -409,16 +410,16 @@ def main(cfg):
         )
 
         for filename in sorted(metadatas):
+            if metadatas[filename]['frequency'] != 'fx':
+                logger.info('-----------------')
+                logger.info(
+                    'model filenames:\t%s',
+                    filename,
+                )
 
-            logger.info('-----------------')
-            logger.info(
-                'model filenames:\t%s',
-                filename,
-            )
-
-            ######
-            # Time series of individual model
-            make_time_series_plots(cfg, metadatas[filename], filename)
+                ######
+                # Time series of individual model
+                make_time_series_plots(cfg, metadatas[filename], filename)
     logger.info('Success')
 
 

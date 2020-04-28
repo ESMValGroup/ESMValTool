@@ -18,6 +18,8 @@
 ;    function normalize_metric
 ;    function distrib_stats
 ;    function lognormal_dist
+;    function filter121
+;    function get_average
 ;
 ; #############################################################################
 
@@ -1727,5 +1729,131 @@ begin
 
   leave_msg(scriptname, funcname)
   return(fout)
+
+end
+
+; #############################################################################
+undef("filter121")
+function filter121(var:numeric, \
+                   iter:numeric)
+;
+; Arguments
+;     var: a 1-D array.
+;     iter: number of iterations.
+;
+; Return value
+;     Array of size and type of var.
+;
+; Description
+;     Smoothes a time series by 1-2-1 filter in iter time steps.
+;
+; Modification history
+;     20180807-schlund_manuel: ported to v2.0
+;     20140721-wenzel_sabrina: written.
+;
+local yy_sm, y_sm0, n_max
+begin
+
+  funcname = "filter121"
+  scriptname = "diag_scripts/shared/statistics.ncl"
+  enter_msg(scriptname, funcname)
+
+  rank = dimsizes(dimsizes(var))
+  n_max = dimsizes(var)
+
+  if (rank .eq. 1) then
+    yy_sm = var
+    yy_sm0 = yy_sm
+
+    ; Iteration
+    do ia = 0, iter
+      yy_sm0 = yy_sm
+      do it = 1, n_max - 2
+        yy_sm(it) = (yy_sm0(it - 1) + 2.0 * yy_sm0(it) + yy_sm0(it + 1)) / 4.0
+      end do
+    end do
+    out = yy_sm
+    delete([/yy_sm, yy_sm0/])
+  else
+    error_msg("f", scriptname, funcname, "smooting is currently not " + \
+              "implemented for more than 1 dimension")
+  end if
+
+  leave_msg(scriptname, funcname)
+  return(out)
+end
+
+; #############################################################################
+undef("get_average")
+function get_average(items: list)
+
+;
+; Arguments
+;    items: list of input_file_info metadata
+;
+; Description
+;    Calculates average over M different datasets given by items. All given
+;    datasets must be of the same shape (X1, X2, X3, ..., Xn). This function
+;    creates an intermediate array of shape (M, X1, X2, X3, ..., Xn) with
+;    'dataset' as first dimension. Then, the unweighted mean over this first
+;    dimension is returned.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181217-schlund_manuel: written
+;
+local funcname, scriptname, dim_dat, dim_array, rank, data_array, data
+begin
+
+  funcname = "get_average"
+  scriptname = "diag_scripts/shared/statistics.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Check input list
+  dim_dat = ListCount(items)
+  if (dim_dat .lt. 1) then
+    error_msg("f", scriptname, funcname, "expected at least one dataset, " + \
+              "got empty list")
+  end if
+
+  ; Collect data
+  do idat = 0, dim_dat - 1
+    data = read_data(items[idat])
+
+    ; Create array at first iteration
+    if (.not. isvar("data_array")) then
+      dim_array = dimsizes(data)
+      rank = dimsizes(dim_array)
+      data_array = new(array_append_record(dim_dat, dim_array, 0), \
+                       typeof(data))
+    end if
+    if (rank .eq. 4) then
+      copy_VarCoords(data, data_array(0, :, :, :, :))
+      data_array(idat, :, :, :, :) = (/data/)
+    elseif (rank .eq. 3) then
+      copy_VarCoords(data, data_array(0, :, :, :))
+      data_array(idat, :, :, :) = (/data/)
+    elseif (rank .eq. 2) then
+      copy_VarCoords(data, data_array(0, :, :))
+      data_array(idat, :, :) = (/data/)
+    elseif (rank .eq. 1) then
+      copy_VarCoords(data, data_array(0, :))
+      data_array(idat, :) = (/data/)
+    else
+      error_msg("f", scriptname, funcname, "unsupported rank " + rank)
+    end if
+  end do
+
+  ; Average
+  data_array!0 = "dataset"
+  data_array := dim_avg_n_Wrap(data_array, 0)
+  copy_VarMeta(data, data_array)
+  log_info("Averaged over " + dim_dat + " dataset(s)")
+
+  leave_msg(scriptname, funcname)
+  return(data_array)
 
 end

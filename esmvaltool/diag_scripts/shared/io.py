@@ -80,7 +80,7 @@ def get_ancestor_file(cfg, pattern):
     Returns
     -------
     str or None
-        Full path to the file or `None` if file not found.
+        Full path to the file or ``None`` if file not found.
 
     """
     files = get_all_ancestor_files(cfg, pattern=pattern)
@@ -177,29 +177,51 @@ def metadata_to_netcdf(cube, metadata):
     iris_save(cube, metadata['filename'])
 
 
+def iris_save(source, path):
+    """Save :mod:`iris` objects with correct attributes.
+
+    Parameters
+    ----------
+    source : iris.cube.Cube or iterable of iris.cube.Cube
+        Cube(s) to be saved.
+    path : str
+        Path to the new file.
+
+    """
+    if isinstance(source, iris.cube.Cube):
+        source.attributes['filename'] = path
+    else:
+        for cube in source:
+            cube.attributes['filename'] = path
+    iris.save(source, path)
+    logger.info("Wrote %s", path)
+
+
 def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     """Save 1D data for multiple datasets.
 
-    Create 2D cube with the dimensionsal coordinate `coord_name` and the
-    auxiliary coordinate `dataset` and save 1D data for every dataset given.
+    Create 2D cube with the dimensionsal coordinate ``coord_name`` and the
+    auxiliary coordinate ``dataset`` and save 1D data for every dataset given.
     The cube is filled with missing values where no data exists for a dataset
     at a certain point.
 
     Note
     ----
-    Does not check metadata of the `cubes`, i.e. different names or units
+    Does not check metadata of the ``cubes``, i.e. different names or units
     will be ignored.
 
     Parameters
     ----------
     cubes : dict of iris.cube.Cube
-        1D `iris.cube.Cube`s (values) and corresponding datasets (keys).
+        1D :class.:`iris.cube.Cube`s (values) and corresponding dataset names
+        (keys).
     path : str
         Path to the new file.
     coord_name : str
         Name of the coordinate.
     var_attrs : dict
-        Attributes for the variable (`short_name`, `long_name`, or `units`).
+        Attributes for the variable (``short_name``, ``long_name``, and
+        ``units``).
     attributes : dict, optional
         Additional attributes for the cube.
 
@@ -230,35 +252,15 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     iris_save(cube, path)
 
 
-def iris_save(source, path):
-    """Save :mod:`iris` objects with correct attributes.
-
-    Parameters
-    ----------
-    source : iris.cube.Cube or iterable of iris.cube.Cube
-        Cube(s) to be saved.
-    path : str
-        Path to the new file.
-
-    """
-    if isinstance(source, iris.cube.Cube):
-        source.attributes['filename'] = path
-    else:
-        for cube in source:
-            cube.attributes['filename'] = path
-    iris.save(source, path)
-    logger.info("Wrote %s", path)
-
-
 def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     """Save scalar data for multiple datasets.
 
-    Create 1D cube with the auxiliary dimension `dataset` and save scalar data
-    for every dataset given.
+    Create 1D cube with the auxiliary dimension ``dataset`` and save scalar
+    data for every dataset given.
 
     Note
     ----
-    Missing values can be added by `np.nan`.
+    Missing values can be added by :obj:`numpy.nan`.
 
     Parameters
     ----------
@@ -267,7 +269,8 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     path : str
         Path to the new file.
     var_attrs : dict
-        Attributes for the variable (`short_name`, `long_name` and `units`).
+        Attributes for the variable (``short_name``, ``long_name``, and
+        ``units``).
     aux_coord : iris.coords.AuxCoord, optional
         Optional auxiliary coordinate.
     attributes : dict, optional

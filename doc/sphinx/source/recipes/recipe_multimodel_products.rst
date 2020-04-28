@@ -1,7 +1,7 @@
 .. _recipes_multimodel_products:
 
-Generic multi-model products
-====================================================
+Multi-model products
+====================
 
 Overview
 --------
@@ -24,7 +24,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* multimodel_products.r - script for computing multimodel anomalies and their agreement.
+* multimodel_products.R - script for computing multimodel anomalies and their agreement.
 
 
 
@@ -38,6 +38,8 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
+   * colorbar_lim: positive number specifying the range (-colorbar_lim ... +colorbar_lim) of the colorbar
+     (0 = automatic colorbar scaling)
    * moninf: integer specifying the first month of the seasonal mean period to be computed
    * monsup: integer specifying the last month of the seasonal mean period to be computed, if it's null the anomaly of month indicated in moninf will be computed
    * agreement_threshold: integer between 0 and 100 indicating the threshold in percent for the minimum agreement between models on the sign of the multi-model mean anomaly for the stipling to be plotted
@@ -74,5 +76,4 @@ Example plots
 .. _fig_multimodprod:
 .. figure::  /recipes/figures/multimodel_products/tas_JUN_multimodel-anomaly_2006_2099_1961_1990.png
 
-
-
+Multi-model mean anomaly of 2-m air temperature during the future projection 2006-2099 in June considering the reference period 1961-1990 (colours). Crosses indicate that the 80% of models agree in the sign of the multi-model mean anomaly. The models selected are BCC-CSM1-1, MPI-ESM-MR and MIROC5 in the r1i1p1 ensembles for the RCP 2.6 scenario.

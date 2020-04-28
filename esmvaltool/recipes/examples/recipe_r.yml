@@ -3,8 +3,8 @@
 ---
 documentation:
   description: Recipe for example diagnostic written in R.
-  
-  authors: 
+
+  authors:
     - arnone_enrico
 
   maintainer:
@@ -17,7 +17,7 @@ preprocessors:
     extract_levels: false
 diagnostics:
   example:
-    description: Example diagnostic written in R 
+    description: Example diagnostic written in R
     variables:
       pr:
         preprocessor: preproc
@@ -25,5 +25,5 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: examples/diagnostic.r
-        parameter1:   1    # example parameter
+        script: examples/diagnostic.R
+        parameter1: 1  # example parameter

@@ -1,7 +1,7 @@
 .. _recipes_spei:
 
-SPEI
-====
+Standardized Precipitation-Evapotranspiration Index (SPEI)
+==========================================================
 
 Overview
 --------
@@ -24,9 +24,9 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/droughtindex/
 
-    * diag_spi.r: calculate the SPI index
+    * diag_spi.R: calculate the SPI index
 
-    * diag_spei.r: calculate the SPEI index
+    * diag_spei.R: calculate the SPEI index
 
 
 User settings

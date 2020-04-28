@@ -13,12 +13,17 @@ getmetadata_indices <- function(var, sfile) {
     units <- ""
   }
   nc_close(ncfile)
-  metadata <- list(long_name = long_name, units = units, missval = missval)
+  metadata <-
+    list(
+      long_name = long_name,
+      units = units,
+      missval = missval
+    )
 
   return(metadata)
 }
 
-setmetadata_indices <- function(var) {
+setmetadata_indices <- function(var) { # nolint
   longvar <- ""
   unit <- ""
 
@@ -28,13 +33,15 @@ setmetadata_indices <- function(var) {
     unit <- "days"
   }
   if (var == "pry_mean") {
-    longvar <- "Normalization function: Annual mean precipitation averaged over
- available XX century data"
+    longvar <-
+      "Normalization function: Annual mean precipitation averaged over
+    available XX century data"
     unit <- "days"
   }
   if (var == "pry_mean_sd") {
-    longvar <- "Normalization function: Standard deviation of the annual mean
- precipitation averaged over available XX century data"
+    longvar <-
+      "Normalization function: Standard deviation of the annual mean
+    precipitation averaged over available XX century data"
     unit <- "days"
   }
   if (var == "pry_norm") {
@@ -47,13 +54,15 @@ setmetadata_indices <- function(var) {
     unit <- "days"
   }
   if (var == "dsl_mean") {
-    longvar <- "Normalization function: Annual mean dry spell length averaged
- over available XX century data"
+    longvar <-
+      "Normalization function: Annual mean dry spell length averaged
+    over available XX century data"
     unit <- "days"
   }
   if (var == "dsl_mean_sd") {
-    longvar <- "Normalization function: Standard deviation of the annual mean
- dry spell length averaged over available XX century data"
+    longvar <-
+      "Normalization function: Standard deviation of the annual mean
+    dry spell length averaged over available XX century data"
     unit <- "days"
   }
   if (var == "dsl_norm") {
@@ -84,13 +93,15 @@ setmetadata_indices <- function(var) {
     unit <- "days"
   }
   if (var == "wsl_mean") {
-    longvar <- "Normalization function: Annual mean wet spell length averaged
- over available XX century data"
+    longvar <-
+      "Normalization function: Annual mean wet spell length averaged
+    over available XX century data"
     unit <- "days"
   }
   if (var == "wsl_mean_sd") {
-    longvar <- "Normalization function: Standard deviation of the annual mean
- wet spell length averaged over available XX century data"
+    longvar <-
+      "Normalization function: Standard deviation of the annual mean
+    wet spell length averaged over available XX century data"
     unit <- "days"
   }
   if (var == "wsl_norm") {
@@ -103,13 +114,15 @@ setmetadata_indices <- function(var) {
     unit <- "mm day-1"
   }
   if (var == "int_mean") {
-    longvar <- "Normalization function: Annual mean precipitation intensity
- averaged over available XX century data"
+    longvar <-
+      "Normalization function: Annual mean precipitation intensity
+    averaged over available XX century data"
     unit <- "mm day-1"
   }
   if (var == "int_mean_sd") {
-    longvar <- "Normalization function: Standard deviation of the annual mean
- precipitation intensity averaged over available XX century data"
+    longvar <-
+      "Normalization function: Standard deviation of the annual mean
+    precipitation intensity averaged over available XX century data"
     unit <- "mm day-1"
   }
   if (var == "int_norm") {
@@ -119,17 +132,17 @@ setmetadata_indices <- function(var) {
 
   if (var == "pa") {
     longvar <- "Precipitation area: area over which of any given day
- precipitation occurs."
+    precipitation occurs."
     unit <- "mm day-1 km2"
   }
   if (var == "pa_mean") {
     longvar <- "Normalization function: Precipitation ara averaged over
- available XX century data"
+    available XX century data"
     unit <- "mm day-1"
   }
   if (var == "pa_mean_sd") {
     longvar <- "Normalization function: Standard deviation of the
- precipitation area averaged over available XX century data"
+    precipitation area averaged over available XX century data"
     unit <- "mm day-1"
   }
   if (var == "pa_norm") {

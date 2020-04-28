@@ -752,7 +752,7 @@ begin
     y = array_append_record(y_1, -y_1(::-1), 0)
     x = x + x_ndc(0)
     y = y + y_ndc(0)
-    if (data&models(imod).eq."multi-model-mean") then
+    if (data&models(imod).eq."MultiModelMean") then
       res_circles@gsFillColor = "black"
       res_circles@gsFillOpacityF = 0.8
     else
