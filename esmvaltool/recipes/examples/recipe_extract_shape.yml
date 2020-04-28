@@ -27,6 +27,9 @@ datasets:
 preprocessors:
 
   preproc:
+    regrid:
+      scheme: linear
+      target_grid: 0.25x0.25
     extract_shape:
       shapefile: Elbe.shp
 

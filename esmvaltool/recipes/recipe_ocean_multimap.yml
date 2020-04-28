@@ -1,0 +1,81 @@
+# ESMValTool
+# recipe_ocean_multimap.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate multiple model bias against a reference dataset
+    Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
+
+  authors:
+    - lovato_tomas
+  
+  maintainer:
+    - lovato_tomas
+
+  references:
+    - acknow_project
+
+  projects:
+    - crescendo
+
+
+datasets:
+# working datasets
+# CMIP5
+  - {dataset: CanESM2,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: CESM1-BGC,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: IPSL-CM5A-MR,  project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: IPSL-CM5B-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: HadGEM2-ES,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: CNRM-CM5,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: HadGEM2-CC,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: CMCC-CESM,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: GFDL-ESM2M,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: MPI-ESM-LR,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: MPI-ESM-MR,    project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: MRI-ESM1,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: NorESM1-ME,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: GISS-E2-H-CC,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  - {dataset: MIROC-ESM,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+  # --------------------------------------------------
+  # map preprocessors
+  # --------------------------------------------------
+  # For a 2D global surface map
+  prep_surface_map_2D:
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
+diagnostics:
+
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  diag_surface_multimap:
+    description: Global Ocean Surface maps vs OBS
+    variables:
+      fgco2:
+        preprocessor: prep_surface_map_2D
+        mip: Omon
+        maps_range: [-0.12, 0.12]
+        diff_range: [-0.09, 0.09]
+        layout_rowcol: [4, 4]
+    additional_datasets:
+      - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 1995,  end_year: 2014,  tier: 2}
+    scripts:
+      Global_Ocean_multi_vs_obs:
+        script: ocean/diagnostic_maps_multimodel.py
+        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+

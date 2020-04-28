@@ -30,6 +30,8 @@ function read_data(info_item[1]:logical)
 ; References
 ;
 ; Modification history
+;   20191209-schlund_manuel: attributes from file are now added to the array
+;                            returned by this function.
 ;   20180511-righi_mattia: adapted to the revised list-based metadata
 ;                          structure.
 ;   20180212-righi_mattia: written.
@@ -66,6 +68,15 @@ begin
 
   ; Read data
   data = fin->$info_item@short_name$
+
+  ; Copy attributes from fin (do not overwrite existing ones)
+  fin_atts = getvaratts(fin)
+  do idx_att = 0, dimsizes(fin_atts) - 1
+    att = fin_atts(idx_att)
+    if (.not. isatt(data, att)) then
+      data@$att$ = fin@$att$
+    end if
+  end do
 
   leave_msg(scriptname, funcname)
   return(data)

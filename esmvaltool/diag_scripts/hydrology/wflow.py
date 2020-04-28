@@ -6,8 +6,9 @@ import iris
 import numpy as np
 from osgeo import gdal
 
-from esmvalcore.preprocessor import extract_region, regrid
+from esmvalcore.preprocessor import extract_region
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
+from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_linear_regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -97,7 +98,7 @@ def regrid_temperature(src_temp, src_height, target_height):
     src_slt = src_temp.copy(data=src_temp.core_data() + src_dtemp.core_data())
 
     # Interpolate sea-level temperature to target grid
-    target_slt = regrid(src_slt, target_grid=target_height, scheme='linear')
+    target_slt = lazy_linear_regrid(src_slt, target_height)
 
     # Convert sea-level temperature to new target elevation
     target_dtemp = lapse_rate_correction(target_height)
@@ -127,10 +128,11 @@ def _load_pcraster_dem(filename):
     )
     lon_size, lat_size = dataset.RasterXSize, dataset.RasterYSize
     data = dataset.ReadAsArray()
+    data = np.ma.masked_less(data, -1e8)
     dataset = None
 
-    lons = lon_offset + lon_step * np.arange(lon_size)
-    lats = lat_offset + lat_step * np.arange(lat_size)
+    lons = lon_offset + lon_step * (np.arange(lon_size) + 0.5)
+    lats = lat_offset + lat_step * (np.arange(lat_size) + 0.5)
 
     lon_coord = iris.coords.DimCoord(
         lons,
@@ -157,6 +159,46 @@ def _load_pcraster_dem(filename):
     return cube
 
 
+def check_dem(cube, region):
+    """Check that the DEM and extract_region parameters match."""
+    dem = {
+        'start_longitude': cube.coord('longitude').cell(0).point,
+        'end_longitude': cube.coord('longitude').cell(-1).point,
+        'start_latitude': cube.coord('latitude').cell(0).point,
+        'end_latitude': cube.coord('latitude').cell(-1).point,
+    }
+
+    msg = ("longitude: [{start_longitude}, {end_longitude}] "
+           "latitude: [{start_latitude}, {end_latitude}]")
+    logger.info("DEM region: %s", msg.format(**dem))
+    logger.info("extract_region: %s", msg.format(**region))
+
+    for key in ('start_longitude', 'start_latitude'):
+        if dem[key] < region[key]:
+            logger.warning(
+                "Insufficient data available, decrease extract_region: %s to "
+                "a number at least one grid cell below %s", key, dem[key])
+    for key in ('end_longitude', 'end_latitude'):
+        if dem[key] > region[key]:
+            logger.warning(
+                "Insufficient data available, increase extract_region: %s to "
+                "a number at least one grid cell above %s", key, dem[key])
+
+
+def shift_era5_time_coordinate(cube, shift=30):
+    """Shift instantaneous variables (default = 30 minutes forward in time).
+
+    After this shift, as an example:
+    time format [1990, 1, 1, 11, 30, 0] will be [1990, 1, 1, 12, 0, 0].
+    For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
+    """
+    time = cube.coord(axis='T')
+    time.points = time.points + shift / (24 * 60)
+    time.bounds = None
+    time.guess_bounds()
+    return cube
+
+
 def main(cfg):
     """Process data for use as input to the wflow hydrological model."""
     input_metadata = cfg['input_data'].values()
@@ -164,21 +206,19 @@ def main(cfg):
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
 
+        if dataset == 'ERA5':
+            shift_era5_time_coordinate(all_vars['tas'])
+            shift_era5_time_coordinate(all_vars['psl'])
+
         # Interpolating variables onto the dem grid
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
         dem = load_dem(dem_path)
-        logger.info(
-            "DEM region: lon [%s, %s] lat [%s, %s]",
-            dem.coord('longitude').points[0],
-            dem.coord('longitude').points[-1],
-            dem.coord('latitude').points[0],
-            dem.coord('latitude').points[-1],
-        )
+        check_dem(dem, cfg['region'])
         dem = extract_region(dem, **cfg['region'])
 
         logger.info("Processing variable precipitation_flux")
-        pr_dem = regrid(all_vars['pr'], target_grid=dem, scheme='linear')
+        pr_dem = lazy_linear_regrid(all_vars['pr'], dem)
 
         logger.info("Processing variable temperature")
         tas_dem = regrid_temperature(all_vars['tas'], all_vars['orog'], dem)
@@ -186,15 +226,18 @@ def main(cfg):
         logger.info("Processing variable potential evapotranspiration")
         if 'evspsblpot' in all_vars:
             pet = all_vars['evspsblpot']
+            pet_dem = lazy_linear_regrid(pet, dem)
         else:
             logger.info("Potential evapotransporation not available, deriving")
-            pet = debruin_pet(
-                tas=all_vars['tas'],
-                psl=all_vars['psl'],
-                rsds=all_vars['rsds'],
-                rsdt=all_vars['rsdt'],
+            psl_dem = lazy_linear_regrid(all_vars['psl'], dem)
+            rsds_dem = lazy_linear_regrid(all_vars['rsds'], dem)
+            rsdt_dem = lazy_linear_regrid(all_vars['rsdt'], dem)
+            pet_dem = debruin_pet(
+                tas=tas_dem,
+                psl=psl_dem,
+                rsds=rsds_dem,
+                rsdt=rsdt_dem,
             )
-        pet_dem = regrid(pet, target_grid=dem, scheme='linear')
         pet_dem.var_name = 'pet'
 
         logger.info("Converting units")
@@ -207,6 +250,11 @@ def main(cfg):
         pr_dem.convert_units('mm day-1')
 
         tas_dem.convert_units('degC')
+
+        # Adjust longitude coordinate to wflow convention
+        for cube in [tas_dem, pet_dem, pr_dem]:
+            cube.coord('longitude').points = (cube.coord('longitude').points +
+                                              180) % 360 - 180
 
         cubes = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
         save(cubes, dataset, provenance, cfg)

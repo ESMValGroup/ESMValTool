@@ -30,7 +30,8 @@ diagnostics:
         start_year: 1950
         end_year: 2000
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1980, end_year: 2000}
+          - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly,
+             version: 1, start_year: 1980, end_year: 2000}
     scripts: null
 
   diag_concatenate_exps:
