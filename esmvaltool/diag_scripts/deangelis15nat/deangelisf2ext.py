@@ -32,16 +32,19 @@ import logging
 import os
 from collections import OrderedDict
 from pprint import pformat
+
 import iris
 import iris.coord_categorisation as cat
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
-import matplotlib.pyplot as plt
+
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    select_metadata, group_metadata)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename, group_metadata,
+                                            select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
