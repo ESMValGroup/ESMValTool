@@ -12,7 +12,7 @@ Please discuss your idea with the development team before getting started, to av
 -   [ ] Circle/CI tests pass. Status can be seen below your pull request. If the tests are failing, click the link to find out why.
 -   [ ] Preferably Codacy code quality checks pass, however a few remaining hard to solve Codacy issues are still acceptable. Status can be seen below your pull request. If there is an error, click the link to find out why. If you suspect Codacy may be wrong, please ask by commenting.
 -   [ ] Please use `yamllint` to check that your YAML files do not contain mistakes 
--   [ ] (Only if really necessary) Add any additional dependencies needed for the diagnostic script to setup.py, esmvaltool/install/R/r_requirements.txt or esmvaltool/install/Julia/julia_requirements.txt (depending on the language of your script) and also to meta.yaml for conda dependencies (includes Python and others, but not R/Julia)
+-   [ ] (Only if really necessary) Add any additional dependencies needed for the diagnostic script to setup.py, esmvaltool/install/R/r_requirements.txt or esmvaltool/install/Julia/julia_requirements.txt (depending on the language of your script) and also to package/meta.yaml for conda dependencies (includes Python and others, but not R/Julia)
 -   [ ] If new dependencies are introduced, check that the license is compatible with [Apache2.0](https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE)
 
 New recipe/diagnostic
