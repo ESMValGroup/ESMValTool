@@ -58,7 +58,7 @@ preprocessors:
       extract_region:
         start_longitude: 0.
         end_longitude: 360.
-        start_latitude: 1.25
+        start_latitude: -1.25
         end_latitude: 90.
 
 diagnostics:
