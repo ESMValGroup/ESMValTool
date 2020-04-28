@@ -501,13 +501,13 @@ diagnostics:
       pr:
         additional_datasets:
           - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-             version: 025deg-V1101, start_year: 1950, end_year: 2007}
+             version: 025deg-V1101, start_year: 1951, end_year: 2007}
           - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-             version: 050deg-V1101, start_year: 1950, end_year: 2007}
+             version: 050deg-V1101, start_year: 1951, end_year: 2007}
           - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-             version: 025deg-V1101, start_year: 1950, end_year: 2007}
+             version: 025deg-V1101, start_year: 1951, end_year: 2007}
           - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-             version: 050deg-V1101, start_year: 1950, end_year: 2007}
+             version: 050deg-V1101, start_year: 1951, end_year: 2007}
           - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
              version: 025deg-V1101-EXR1, start_year: 2007, end_year: 2015}
           - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
