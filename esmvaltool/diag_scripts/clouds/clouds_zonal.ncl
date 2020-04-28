@@ -13,7 +13,8 @@
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   embracesetup:       True = 2 plots per line, False = 4 plots per line
 ;                       (default)
-;   explicit_cn_levels: explicit contour levels (array)
+;   explicit_cn_levels: explicit contour levels for mean values (array)
+;   explicit_cn_dlevels: explicit contour levels for differences (array)
 ;   extralegend:        plot legend(s) to extra file(s)
 ;   filename_add:       optionally add this string to plot filesnames
 ;   panel_labels:       label individual panels (true, false)
@@ -27,6 +28,7 @@
 ;                       (in units of input variable)
 ;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON),
 ;                                        "annual" = annual mean
+;   units_to:           target units (automatic conversion)
 ;
 ; Required variable attributes (variable specific)
 ;   none
@@ -48,6 +50,7 @@
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/scaling.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 
@@ -78,6 +81,7 @@ begin
   set_default_att(diag_script_info, "rel_diff_min", -1.0e19)
   set_default_att(diag_script_info, "showdiff", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
+  set_default_att(diag_script_info, "units_to", "")
 
   flag_diff = diag_script_info@showdiff
   flag_rel_diff = diag_script_info@rel_diff
@@ -108,6 +112,8 @@ begin
     delete(season)
     season = (/"DJF", "MAM", "JJA", "SON"/)
   end if
+
+  units_to = diag_script_info@units_to
 
   ; create string for caption (netcdf provenance)
 
@@ -242,6 +248,15 @@ begin
 ;    end do
 
     vcoord = dims(1)  ; save name of vertical coordinate variable
+    if (ii .eq. 0) then
+      vcoord0_var = A0&$vcoord$
+      vcoord0 = vcoord
+      if (isatt(vcoord0_var, "units")) then
+        vcoord0_units = vcoord0_var@units
+      else
+        vcoord0_units = ""
+      end if
+    end if
 
     delete(dims)
 
@@ -252,6 +267,16 @@ begin
 
     data1 = time_operations(A0, -1, -1, "average", timemean, True)
     delete(A0)
+    if (units_to .ne. "") then
+      data0 = convert_units(data1, units_to)
+      delete(data1)
+      data1 = data0
+      delete(data0)
+      ; if attribute is present, overwrite with user specified units
+      if (isatt(variable_info, "units")) then
+        variable_info@units = units_to
+      end if
+    end if
 
     ; ###########################################
     ; # Style dependent annotation              #
@@ -333,8 +358,8 @@ begin
 
     data1@var = var0
 
-    if (isatt(variable_info[0], "units")) then
-      data1@var_units = variable_info[0]@units
+    if (isatt(variable_info, "units")) then
+      data1@var_units = variable_info@units
     else
       data1@var_units = ""
     end if
@@ -448,17 +473,32 @@ begin
           res@gsnRightString = ""
         end if
 
-        if (is.eq.0) then
-          maps(imod, is) = gsn_csm_contour(wks0, data1(is, :, :), res)
-        end if
-        if (is.eq.1) then
-          maps(imod, is) = gsn_csm_contour(wks1, data1(is, :, :), res)
-        end if
-        if (is.eq.2) then
-          maps(imod, is) = gsn_csm_contour(wks2, data1(is, :, :), res)
-        end if
-        if (is.eq.3) then
-          maps(imod, is) = gsn_csm_contour(wks3, data1(is, :, :), res)
+        if (vcoord0_units .eq. "Pa") then
+          if (is.eq.0) then
+            maps(imod, is) = gsn_csm_pres_hgt(wks0, data1(is, :, :), res)
+          end if
+          if (is.eq.1) then
+            maps(imod, is) = gsn_csm_pres_hgt(wks1, data1(is, :, :), res)
+          end if
+          if (is.eq.2) then
+            maps(imod, is) = gsn_csm_pres_hgt(wks2, data1(is, :, :), res)
+          end if
+          if (is.eq.3) then
+            maps(imod, is) = gsn_csm_pres_hgt(wks3, data1(is, :, :), res)
+          end if
+        else
+          if (is.eq.0) then
+            maps(imod, is) = gsn_csm_contour(wks0, data1(is, :, :), res)
+          end if
+          if (is.eq.1) then
+            maps(imod, is) = gsn_csm_contour(wks1, data1(is, :, :), res)
+          end if
+          if (is.eq.2) then
+            maps(imod, is) = gsn_csm_contour(wks2, data1(is, :, :), res)
+          end if
+          if (is.eq.3) then
+            maps(imod, is) = gsn_csm_contour(wks3, data1(is, :, :), res)
+          end if
         end if
       end do
     else
@@ -476,13 +516,26 @@ begin
       if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
         res@gsnRightString = ""
       end if
-      maps(imod, 0) = gsn_csm_contour(wks0, data1, res)
+      if (vcoord0_units .eq. "Pa") then
+        maps(imod, 0) = gsn_csm_pres_hgt(wks0, data1, res)
+      else
+        maps(imod, 0) = gsn_csm_contour(wks0, data1, res)
+      end if
     end if
 
     ; mandatory netcdf output
 
     data1@var = var0 + "_mean_" + names(imod)
-;;;    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+
+    ; vertical coordinate might have a different name, which prevents
+    ; all data to be written to the same netcdf file
+    ; --> rename vertical coordinate to match the one of the first dataset
+    ;     written to the netcdf file
+    delete(data1&$vcoord$)
+    data1!0 = vcoord0
+    data1&$vcoord0$ = vcoord0_var
+
+    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     ; =======================================================================
     ; Create difference plots (if requested)
@@ -633,12 +686,12 @@ begin
 
       ; set explicit contour levels
 
-      if (isatt(diag_script_info, "explicit_cn_levels")) then
+      if (isatt(diag_script_info, "explicit_cn_dlevels")) then
         dres@cnLevelSelectionMode = "ExplicitLevels"
         if (isatt(dres, "cnLevels")) then
           delete(dres@cnLevels)
         end if
-        dres@cnLevels = diag_script_info@explicit_cn_levels
+        dres@cnLevels = diag_script_info@explicit_cn_dlevels
       end if
 
       ; ###########################################
@@ -677,17 +730,32 @@ begin
             dres@gsnLeftString = ""
           end if
 
-          if (is.eq.0) then
-            maps_d(imod, is) = gsn_csm_contour(wks0d, diff(is, :, :), dres)
-          end if
-          if (is.eq.1) then
-            maps_d(imod, is) = gsn_csm_contour(wks1d, diff(is, :, :), dres)
-          end if
-          if (is.eq.2) then
-            maps_d(imod, is) = gsn_csm_contour(wks2d, diff(is, :, :), dres)
-          end if
-          if (is.eq.3) then
-            maps_d(imod, is) = gsn_csm_contour(wks3d, diff(is, :, :), dres)
+          if (vcoord0_units .eq. "Pa") then
+            if (is.eq.0) then
+              maps_d(imod, is) = gsn_csm_pres_hgt(wks0d, diff(is, :, :), dres)
+            end if
+            if (is.eq.1) then
+              maps_d(imod, is) = gsn_csm_pres_hgt(wks1d, diff(is, :, :), dres)
+            end if
+            if (is.eq.2) then
+              maps_d(imod, is) = gsn_csm_pres_hgt(wks2d, diff(is, :, :), dres)
+            end if
+            if (is.eq.3) then
+              maps_d(imod, is) = gsn_csm_pres_hgt(wks3d, diff(is, :, :), dres)
+            end if
+          else
+            if (is.eq.0) then
+              maps_d(imod, is) = gsn_csm_contour(wks0d, diff(is, :, :), dres)
+            end if
+            if (is.eq.1) then
+              maps_d(imod, is) = gsn_csm_contour(wks1d, diff(is, :, :), dres)
+            end if
+            if (is.eq.2) then
+              maps_d(imod, is) = gsn_csm_contour(wks2d, diff(is, :, :), dres)
+            end if
+            if (is.eq.3) then
+              maps_d(imod, is) = gsn_csm_contour(wks3d, diff(is, :, :), dres)
+            end if
           end if
         end do
       else
@@ -701,7 +769,11 @@ begin
         else
           dres@gsnLeftString = ""
         end if
-        maps_d(imod, 0) = gsn_csm_contour(wks0d, diff, dres)
+        if (vcoord0_units .eq. "Pa") then
+          maps_d(imod, 0) = gsn_csm_pres_hgt(wks0d, diff, dres)
+        else
+          maps_d(imod, 0) = gsn_csm_contour(wks0d, diff, dres)
+        end if
       end if
 
       ; mandatory netcdf output

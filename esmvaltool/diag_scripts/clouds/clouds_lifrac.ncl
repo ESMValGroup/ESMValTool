@@ -212,6 +212,11 @@ begin
     do i = 0, dim_VAR - 1
       if (variables(i) .eq. "cli") then
         dims = getvardims(cli)
+        vcoord = dims(1)  ; save name of vertical coordinate variable
+        if (ii .eq. 0) then
+          vcoord0_var = cli&$vcoord$
+          vcoord0 = vcoord
+        end if
       else
         dims = getvardims(clw)
       end if
@@ -223,8 +228,6 @@ begin
       if (ismissing(idx)) then
         error_msg("f", DIAG_SCRIPT, "", variables(i) + ": no time dimension")
       end if
-
-      vcoord = dims(1)  ; save name of vertical coordinate variable
       delete(dims)
     end do
 
@@ -420,7 +423,16 @@ begin
 
 ;    data1@var = var0 + "_mean_" + names(imod)
     data1@var = names(imod)
-;    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+
+    ; vertical coordinate might have a different name, which prevents
+    ; all data to be written to the same netcdf file
+    ; --> rename vertical coordinate to match the one of the first dataset
+    ;     written to the netcdf file
+    delete(data1&$vcoord$)
+    data1!0 = vcoord0
+    data1&$vcoord0$ = vcoord0_var
+
+    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     delete(data1)
 
@@ -554,8 +566,8 @@ begin
     plottype = "zonal"
 
     caption = "Zonal mean values for variable " + var0 + " (annual mean)."
-;;    log_provenance(nc_outfile_mean, outfile, caption, statistics, \
-;;                   domain, plottype, "", "", climofiles)
+    log_provenance(nc_outfile_mean, outfile, caption, statistics, \
+                   domain, plottype, "", "", infiles)
 
     ; ========================================================================
 
