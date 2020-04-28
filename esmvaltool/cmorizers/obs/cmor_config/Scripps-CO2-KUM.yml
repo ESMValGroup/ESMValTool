@@ -18,3 +18,4 @@ attributes:
 variables:
   co2s:
     mip: Amon
+    column_name: ['fit', '', '[ppm]']

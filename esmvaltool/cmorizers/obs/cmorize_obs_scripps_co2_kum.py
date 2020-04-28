@@ -60,12 +60,12 @@ def _get_time_coord(year, month):
     return time_coord
 
 
-def _get_cube(row, fill_value):
+def _get_cube(row, column_name, fill_value):
     """Create :class:`iris.cube.Cube` from :class:`pandas.Series`."""
     time_coord = _get_time_coord(int(row['Yr']), int(row['Mn']))
     lat_coord = LAT_COORD.copy()
     lon_coord = LON_COORD.copy()
-    data = np.ma.masked_equal(row[('CO2', '', '[ppm]')], fill_value)
+    data = np.ma.masked_equal(row[tuple(column_name)], fill_value)
     cube = iris.cube.Cube(
         data.reshape((1, 1, 1)),
         dim_coords_and_dims=[(time_coord, 0), (lat_coord, 1), (lon_coord, 2)],
@@ -82,7 +82,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     # Extract cube
     cubes = iris.cube.CubeList()
     for (_, row) in data_frame.iterrows():
-        cube = _get_cube(row, cfg.get('fill_value', -99.99))
+        cube = _get_cube(row, var['column_name'], cfg['fill_value'])
         cubes.append(cube)
     cube = cubes.concatenate_cube()
     cube.var_name = short_name
