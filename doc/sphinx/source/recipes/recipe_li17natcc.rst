@@ -9,9 +9,9 @@ Overview
 
 Following `Li et al. (2017)`_ the change between present-day and future Indian Summer Monsoon (ISM) precipitation is constrained
 using the precipitation over the tropical western Pacific compared to
-a fixed, observed amount of 6 mm d\ :sup:`-1`\ from Global Precipitation Climatology Project (GPCP) `(Adler et al., 2003)`_ for 1980-2009.
+a fixed, observed amount of 6 mm d\ :sup:`-1` from Global Precipitation Climatology Project (GPCP) `(Adler et al., 2003)`_ for 1980-2009.
 For CMIP6, historical data for 1980-2009 should be used. For CMIP5 historical data from 1980-2005 should be used, due to the length of the data sets.
-At the moment it is not possiible to use a combined [historical, rcp] data set, because the diagnostic requires that a historical data set is given.
+At the moment it is not possible to use a combined ``['historical', 'rcp']`` data set, because the diagnostic requires that a historical data set is given.
 
 .. _`(Adler et al., 2003)`: https://journals.ametsoc.org/doi/abs/10.1175/1525-7541%282003%29004%3C1147%3ATVGPCP%3E2.0.CO%3B2
 .. _`Li et al. (2017)`: https://www.nature.com/articles/nclimate3387
