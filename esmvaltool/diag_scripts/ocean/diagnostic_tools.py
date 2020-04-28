@@ -146,7 +146,7 @@ def bgc_units(cube, name):
         new_units = 'Tg s-1'
 
     if new_units != '':
-        logger.info(' '.join(
+        logger.debug(' '.join(
             ["Changing ", name, "units from",
              str(cube.units), 'to', new_units]))
         cube.convert_units(new_units)

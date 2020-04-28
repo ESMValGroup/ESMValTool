@@ -409,7 +409,7 @@ def rhgt(data_dict):
 
 def frc(data_dict):
     """
-    Calculate exchange from the data dictionary.
+    Calculate total flux to sea floor from the data dictionary.
     """
     #data_dict = fric(data_dict)
     exps = {}
@@ -428,7 +428,7 @@ def frc(data_dict):
     return data_dict
 
 
-def exchange(data_dict):
+def exchange(data_dict, inverse=False):
     """
     Calculate exchange from the data dictionary.
     """
@@ -443,11 +443,25 @@ def exchange(data_dict):
 
     for exp, ensemble in product(exps, ensembles):
         if ('nppgt', exp, ensemble) not in data_dict: continue
-        cube = data_dict[('nppgt', exp, ensemble)].copy()
-        cube2 = data_dict[('rhgt', exp, ensemble)]
-        cube.data = cube.data - cube2.data
-        data_dict[('exchange', exp, ensemble)] = cube
+        if inverse == False:
+            cube = data_dict[('nppgt', exp, ensemble)].copy()
+            cube2 = data_dict[('rhgt', exp, ensemble)]
+            cube.data = cube.data - cube2.data
+            data_dict[('exchange', exp, ensemble)] = cube
+
+        if inverse == True:
+            cube = data_dict[('rhgt', exp, ensemble)].copy()
+            cube2 = data_dict[('nppgt', exp, ensemble)]
+            cube.data = cube.data - cube2.data
+            data_dict[('inverse_exchange', exp, ensemble)] = cube
     return data_dict
+
+
+def inverse_exchange(data_dict,):
+    """
+    reverses calculation of exchange. 
+    """
+    return exchange(data_dict, inverse=True)
 
 
 def tas_norm(data_dict):
@@ -530,6 +544,7 @@ def load_timeseries(cfg, short_names):
         'frc': ['fric', 'froc', 'areacello'],
         'frcgt': ['frc', ],
         'exchange': ['rh', 'npp', 'areacella'],
+        'inverse_exchange': ['rh', 'npp', 'areacella'],
         'tas_norm': ['tas', ],
         'nppgt_norm': ['nppgt', ],
         'rhgt_norm': ['rhgt', ],
@@ -550,6 +565,7 @@ def load_timeseries(cfg, short_names):
         'frc': frc,
         'frcgt': frcgt,
         'exchange': exchange,
+        'inverse_exchange': inverse_exchange, 
         'tas_norm': tas_norm,
         'nppgt_norm':norm_co2_nppgt,
         'rhgt_norm':norm_co2_rhgt,
@@ -740,7 +756,7 @@ def load_co2_forcing(cfg, data_dict):
                        'ssp126':'dodgerblue',
                        'ssp245':'blue',
                        'ssp370':'purple',
-                       'ssp434':'goldenrod',
+                       'ssp434':'magenta',
                        'ssp585': 'red',
                        'ssp534-over':'orange'}
         for key in exp_colours.keys():
@@ -759,7 +775,7 @@ def load_co2_forcing(cfg, data_dict):
                        'historical-ssp126':'dodgerblue',
                        'historical-ssp245':'blue',
                        'historical-ssp370':'purple',
-                       'historical-ssp434':'goldenrod',
+                       'historical-ssp434':'magenta',
                        'historical-ssp585': 'red',
                        'historical-ssp585-ssp534-over':'orange'}
         for key in exp_colours.keys():
@@ -791,6 +807,7 @@ def get_long_name(name):
     """
     longnames = {
         'tas' : 'Temperature',
+        'tas_norm' : 'Temperature',
         'co2' : 'Atmospheric CO2',
         'rh': 'Heterotrophic respiration',
         'intpp' : 'Marine Primary Production',
@@ -837,18 +854,21 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                    'ssp126':'dodgerblue',
                    'ssp245':'blue',
                    'ssp370':'purple',
-                   'ssp434':'goldenrod',
+                   'ssp434':'magenta',
                    'ssp585': 'red',
                    'ssp534-over':'orange',
                    'historical-ssp119':'green',
                    'historical-ssp126':'dodgerblue',
                    'historical-ssp245':'blue',
                    'historical-ssp370':'purple',
-                   'historical-ssp434':'goldenrod',
+                   'historical-ssp434':'magenta',
                    'historical-ssp585': 'red',
                    'historical-ssp585-ssp534-over':'orange'}
 
     marker_styles = {1.5: 'o', 2.:'*', 3.:'^', 4.:'s', 5.:'X'}
+
+    exps = sorted(exps.keys())
+    exps.reverse()
 
     fig = plt.figure()
     x_label,y_label = [], []
@@ -933,10 +953,9 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                          lw=0.5,
                          color=exp_colours[exp_1])
             else:
-                print(exp_1, np.ma.masked_where((2005 > x_times) * (x_times > 2015), x_times)
-                assert 0
-                plt.plot(np.ma.masked_where((2005 > x_times) * (x_times > 2015), x_data),
-                         np.ma.masked_where((2005 > y_times) * (y_times > 2015), y_data),
+                #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
+                plt.plot(np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data),
+                         np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data),
                          lw=0.5,
                          color=exp_colours['historical'])
 
@@ -961,14 +980,28 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
                          fillstyle='none',
                          color=exp_colours[exp_1])
 
+
+#        if x == short_name == 'tas_norm':
+#            for line in [0, 1.5, 2, 3, 4, 5]:
+#                print(line, x,y,'x:',x_data)
+#                plt.axvline(line, 'k', ':')
+
+#        if y == short_name == 'tas_norm':
+#            for line in [0, 1.5, 2, 3, 4, 5]:
+#                print(line, x, y, 'y:',y_data)
+#                plt.axhline(line, 'k', ':')
+    
+
+
     exp_colours_leg = {'historical':'black',
                    'ssp119':'green',
                    'ssp126':'dodgerblue',
                    'ssp245':'blue',
                    'ssp370':'purple',
-                   'ssp434':'goldenrod',
+                   'ssp434':'magenta',
                    'ssp585': 'red',
                    'ssp534-over':'orange'}
+
 
     plot_details = {}
     for exp,color in sorted(exp_colours_leg.items()):
@@ -1030,20 +1063,37 @@ def main(cfg):
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_y = ['tas', 'tas_norm', 'nppgt',  'fgco2gt', 'rhgt', 'exchange']
 
-    # jobtype = 'marine'
+    #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
     jobtype = 'marine'
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
-                       # 'npp', 'nppgt', 'rh', 'rhgt', 'exchange',
-                       # 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
+                       'npp', 'nppgt', 'rh', 'rhgt', 'exchange', 
+                       #'inverse_exchange',
+                       #'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
                        'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'frc',
                        'intppgt','fgco2gt', 'epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt','frcgt',
                        ]
-        short_names_x = ['time', 'co2', 'tas_norm', 'fgco2gt',]
+        short_names_x = ['time', 'co2', 'tas_norm', 'fgco2gt', 'intdicgt']
         #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
         #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
-        short_names_y = ['intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc','frc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt', 'frcgt',]
+        short_names_y = ['tas_norm', 'co2', 'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc','frc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt', 'frcgt',]
+
+
+    if jobtype == 'land':
+        short_names = ['tas', 'tas_norm', 'co2',
+                       'npp', 'nppgt', 
+                       'rhgt', 'exchange',
+                       'nppgt_norm','rhgt_norm','exchange_norm',
+                       ]
+        short_names_x = ['time', 'co2', 'tas', 'tas_norm', 
+                         'rhgt', 'exchange', 'rhgt','nppgt',]
+        short_names_y = ['tas', 'tas_norm', 'co2',
+                         'npp', 'nppgt',
+                         'rh', 'rhgt', 
+                         'exchange',
+                         'nppgt_norm','rhgt_norm','exchange_norm',]
+
 
     if jobtype == 'full':
         short_names = ['tas', 'tas_norm', 'co2',
