@@ -41,4 +41,4 @@ If you need help with any of the tasks above, please do not hesitate to ask by c
 
 * * *
 
-Closes {Link to corresponding issue}
+Closes #issue_number
