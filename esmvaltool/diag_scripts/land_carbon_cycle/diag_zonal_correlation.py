@@ -433,17 +433,18 @@ def main(diag_config):
         netcdf_path = get_diagnostic_filename(base_name, diag_config)
         save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
         iris.save(save_cubes, netcdf_path)
-    else:
-        netcdf_path = None
+
+        with ProvenanceLogger(diag_config) as provenance_logger:
+            provenance_logger.log(netcdf_path, provenance_record)
 
     if diag_config['write_plots']:
         plot_path = get_plot_filename(base_name, diag_config)
         _plot_zonal_correlation(plot_path, zonal_correlation_mod,
                                 zonal_correlation_obs, diag_config)
         provenance_record['plot_file'] = plot_path
-
-    with ProvenanceLogger(diag_config) as provenance_logger:
-        provenance_logger.log(netcdf_path, provenance_record)
+        
+        with ProvenanceLogger(diag_config) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':
