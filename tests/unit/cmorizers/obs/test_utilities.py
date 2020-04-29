@@ -111,7 +111,7 @@ def test_fix_dtype_not_lazy(cube):
     assert not is_lazy(cube)
 
 
-def VarInfoObj(var_dict):
+def mock_var_info(var_dict):
     mock_dict = Mock()
     mock_dict.__dict__ = var_dict
     return mock_dict
@@ -241,7 +241,7 @@ def test_fix_var_metadata():
         "ok_min_mean_abs": "",
         "ok_max_mean_abs": ""
     }
-    var_info = VarInfoObj(var_info)
+    var_info = mock_var_info(var_info)
     utils.fix_var_metadata(cube, var_info)
     assert cube.var_name == "tas"
     assert cube.long_name == "Near-Surface Air Temperature"
