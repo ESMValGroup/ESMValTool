@@ -436,6 +436,16 @@ diagnostics:
     scripts: null
 
 
+  PERSIANN-CDR:
+    description: PERSIANN-CDR check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: PERSIANN-CDR, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: v01r01, start_year: 1983, end_year: 2018}
+    scripts: null
+
+
   PHC:
     description: PHC check
     variables:
