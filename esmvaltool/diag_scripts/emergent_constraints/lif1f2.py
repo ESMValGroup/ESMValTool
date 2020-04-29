@@ -316,7 +316,7 @@ def plot_rain(cfg, titlestr, data, lats, lons):
     axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    if titlestr == 'Multi-model mean rainfall change due to model error.':
+    if titlestr == 'Multi-model mean rainfall change due to model error':
         figname = 'li17natcc_fig2c'
     else:
         figname = 'li17natcc_fig2d'
@@ -396,7 +396,7 @@ def plot_2dcorrelation_li(cfg, reg2d, lats, lons):
     axx.set_xlabel('Longitude')
     axx.set_ylabel('Latitude')
     axx.set_title('Inter-model relationship between ISM rainfall changes' +
-                  'and mean precip.')
+                  ' and mean precip.')
     axx.set_xticks(np.linspace(-150, 60, 8))
     axx.set_xticklabels(
         ['30°E', '60°E', '90°E', '120°E', '150°E', '180°E', '150°W', '120°W'])
@@ -839,9 +839,9 @@ def main(cfg):
     plot_reg_li2(cfg, data_ar["datasets"], data_ar["mism_diff_rain"],
                  data_ar2["mism_diff_cor"], data_ar2["mism_hist_rain"])
 
-    plot_rain(cfg, 'Multi-model mean rainfall change due to model error.',
+    plot_rain(cfg, 'Multi-model mean rainfall change due to model error',
               np.mean(data_ar2["proj_err"], axis=2), lats, lons)
-    plot_rain(cfg, 'Corrected multi-model mean rainfall change.',
+    plot_rain(cfg, 'Corrected multi-model mean rainfall change',
               np.mean(data_ar2["ar_diff_cor"], axis=2), lats, lons)
 
 
