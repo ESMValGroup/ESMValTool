@@ -39,15 +39,28 @@ preprocessors:
       start_latitude: 60.
       end_latitude: 90.
     area_statistics:
-          operator: sum
-
+      operator: sum
+    annual_statistics:
+      operator: mean
+      
+  highlat_amp:
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: 60.
+      end_latitude: 90.
+    area_statistics:
+      operator: mean
+    amplitude:
+      coords: year
+      
 
 diagnostics:
   
   ### Wenzel et al. 2016:  Analysis for Pt. Barrow, Alaska  #########################
 
 #  diag_beta_Fig2:
-#    description: Fig 2 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations 
+ #   description: Fig 2 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations 
 #    themes:
 #      - phys
 #    realms:
@@ -66,7 +79,6 @@ diagnostics:
 #      - {dataset: CESM1-BGC, start_year: 1, end_year: 140}
 #      - {dataset: GFDL-ESM2M, start_year: 1, end_year: 140}
 #      - {dataset: HadGEM2-ES, start_year: 1860, end_year: 1999}
-#      - {dataset: IPSL-CM5A-LR}
 #      #- {dataset: MIROC-ESM, start_year: 1, end_year: 140}
 #      - {dataset: MPI-ESM-LR}
 #      - {dataset: NorESM1-ME, start_year: 1, end_year: 140}
@@ -78,8 +90,8 @@ diagnostics:
 #        bc_units: "GtC"
 #        cl_mean: False
 #        cl_output: True 
-#        bc_xmax_year: "1920"
-#        bc_xmin_year: "1860"
+#        bc_xmax_year: 1920
+ #       bc_xmin_year: 1860
 #        styleset: CMIP5       # Plot style
 
   diag_co2cycle_Fig1: 
@@ -89,34 +101,49 @@ diagnostics:
     realms:
       - land
     variables:
-      co2:
-        preprocessor: highlat #land_fraction_weighting 
+      co2s:
+        preprocessor: highlat #land_fraction_weighting
+        short_name: co2s
+        derive: true
         project: CMIP5
         mip: Amon
         exp: esmHistorical
         ensemble: r1i1p1
-        start_year: 1860
+        start_year: 1850
         end_year: 2005
-    additional_datasets: &2xCO2_datastet  
+      co2s_amp:
+        preprocessor: highlat_amp #land_fraction_weighting
+        short_name: co2s
+        derive: true
+        project: CMIP5
+        mip: Amon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1850
+        end_year: 2005
+    additional_datasets:
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-ES}
-      - {dataset: IPSL-CM5A-LR}
-      #- {dataset: MIROC-ESM}
+      - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
+      #- {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+      - {dataset: MIROC-ESM}
       - {dataset: MPI-ESM-LR}
       - {dataset: NorESM1-ME}
     scripts:
-      carbon_beta: &idealized_carbon
-        script: carbon_ec/carbon_cycle_co2.ncl
-        station: "60N-90N"
-        bc_Ytitle: "~F8~b~F21~~B~gpp~N~"
+      carbon_cycle: 
+        script: carbon_ec/carbon_co2_cycle.ncl
         bc_units: "GtC"
-        bc_lonrange: (/0,360/)
-        #bc_latmin: 60
-        #bc_latmax: 90
-        cl_mean: False
-        cl_output: True 
-        bc_xmax_year: "1920"
-        bc_xmin_year: "1860"
+        bc_xmax_year: 1920
+        bc_xmin_year: 1860
         styleset: CMIP5       # Plot style
+        nc_infile: /mnt/lustre02/work/bd0854/b309145/dev/ESMValTool/public/esmvaltool/tmp_dir/ #../../diag_beta_Fig2/carbon_beta/
+        
+#;;info for carbon_cycle_corr.ncl;
+#diag_script_info@cl_lonrange   = (/204,204/) ; Longitude for Hawaii
+#diag_script_info@cl_latrange   = (/19.5,19.5/)   ; Latitude for Hawaii
+#diag_script_info@plev_obs      = (/100000/)   ;Altitude in (Pa)
+#diag_script_info@cl_lonrange_t = (/0,360/)   ;Lonrange to compare with
+#diag_script_info@cl_latrange_t = (/30,90/)   ;Latrange to compare with
+#diag_script_info@cl_anom       = True        ; (optional) Plot anomalies
+
+

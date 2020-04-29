@@ -85,7 +85,7 @@ begin
   end if 
 
   ; Call plot scripts
-  plot_file = "beta_" + var + "_" + xMin_year + "-" + xMax_year
+  plot_file = "beta_" + xMin_year + "-" + xMax_year
   wks = gsn_open_wks(file_type, plot_dir + plot_file)
   colors  = project_style(info, diag_script_info, "colors")
   markers = project_style(info, diag_script_info, "markers")
