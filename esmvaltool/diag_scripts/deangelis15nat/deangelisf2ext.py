@@ -52,11 +52,11 @@ logger = logging.getLogger(os.path.basename(__file__))
 def _set_list_dict1(sa_dict):
     list_dict = {}
     list_dict["data"] = [sa_dict["rsnstcsdt"], sa_dict["rsnstdt"]]
-    list_dict["name"] = [{'var_name': 'drsnstcs/dtas',
+    list_dict["name"] = [{'var_name': 'drsnstcs_divby_dtas',
                           'long_name': 'Temperature mediated ' +
                                        'shortwave absorption for clear skye',
                           'units': 'W m-2 K-1'},
-                         {'var_name': 'drsnst/dtas',
+                         {'var_name': 'drsnst_divby_dtas',
                           'long_name': 'Temperature mediated ' +
                                        'shortwave absorption for all skye',
                           'units': 'W m-2 K-1'}]
@@ -66,11 +66,11 @@ def _set_list_dict1(sa_dict):
 def _set_list_dict2(sa_dict):
     list_dict = {}
     list_dict["data"] = [sa_dict["lvpdt"], sa_dict["rsnstcsdt"]]
-    list_dict["name"] = [{'var_name': 'dlvp/dtas',
+    list_dict["name"] = [{'var_name': 'dlvp_divby_dtas',
                           'long_name': 'Temperature mediated latent heat ' +
                                        'release from precipitation',
                           'units': 'W m-2 K-1'},
-                         {'var_name': 'drsnstcs/dtas',
+                         {'var_name': 'drsnstcs_divby_dtas',
                           'long_name': 'Temperature mediated ' +
                                        'shortwave absorption for clear skye',
                           'units': 'W m-2 K-1'}]
@@ -349,15 +349,15 @@ def plot_slope_regression(cfg, data_dict):
     list_dict = {}
     list_dict["data"] = [sa_dict["lvpdt"], sa_dict["rsnstdt"],
                          sa_dict["rsnstcsdt"]]
-    list_dict["name"] = [{'var_name': 'dlvp/dtas',
+    list_dict["name"] = [{'var_name': 'dlvp_divby_dtas',
                           'long_name': 'Temperature mediated latent heat ' +
                                        'release from precipitation',
                           'units': 'W m-2 K-1'},
-                         {'var_name': 'drsnst/dtas',
+                         {'var_name': 'drsnst_divby_dtas',
                           'long_name': 'Temperature mediated ' +
                                        'shortwave absorption',
                           'units': 'W m-2 K-1'},
-                         {'var_name': 'drsnstcs/dtas',
+                         {'var_name': 'drsnstcs_divby_dtas',
                           'long_name': 'Temperature mediated ' +
                                        'shortwave absorption for clear skye',
                           'units': 'W m-2 K-1'}]
@@ -527,13 +527,14 @@ def plot_slope_regression_all(cfg, data_dict, available_vars):
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     iris.save(cube_to_save_matrix(data_model, {'var_name': 'all',
-                                               'long_name': 'dlvp/dtas, ' +
-                                                            'drlnst/dtas, ' +
-                                                            'drsnst/dtas, ' +
-                                                            'dhfss/dtas, ' +
-                                                            'drlnstcs/' +
-                                                            'dtas, ' +
-                                                            'drsnstcs/dtas',
+                                               'long_name': 'dlvp, ' +
+                                                            'drlnst, ' +
+                                                            'drsnst, ' +
+                                                            'dhfss, ' +
+                                                            'drlnstcs, and,' +
+                                                            'drsnstcs ' +
+                                                            'divided by ' +
+                                                            'dtas',
                                                'units': 'W m-2 K-1'}),
               target=diagnostic_file)
 
