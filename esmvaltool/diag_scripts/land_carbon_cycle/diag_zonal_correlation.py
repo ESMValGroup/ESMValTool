@@ -442,7 +442,7 @@ def main(diag_config):
         _plot_zonal_correlation(plot_path, zonal_correlation_mod,
                                 zonal_correlation_obs, diag_config)
         provenance_record['plot_file'] = plot_path
-        
+
         with ProvenanceLogger(diag_config) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
 

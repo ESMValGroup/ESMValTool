@@ -725,9 +725,9 @@ def main(diag_config):
 
             # apply the GPP threshold and set the data in dictionary
             gpp_global = gpp.collapsed(['latitude', 'longitude'],
-                                    iris.analysis.SUM)
+                                       iris.analysis.SUM)
             ctotal_global = ctotal.collapsed(['latitude', 'longitude'],
-                                            iris.analysis.SUM)
+                                             iris.analysis.SUM)
             tau_global = ctotal_global / gpp_global
             tau_global.convert_units('yr')
 
@@ -743,7 +743,8 @@ def main(diag_config):
                 plot_path_mod = get_plot_filename(base_name_mod, diag_config)
                 # plot_path_list.append(plot_path_mod)
                 _plot_single_map(plot_path_mod, tau_ctotal,
-                                global_tau_mod['global'][key], key, diag_config)
+                                 global_tau_mod['global'][key], key,
+                                 diag_config)
                 provenance_logger.log(plot_path_mod, provenance_record)
 
         if diag_config['write_netcdf']:
@@ -766,18 +767,19 @@ def main(diag_config):
             base_name_multimodel = '{prefix}_{base_name}'.format(
                 prefix='global_multimodelAgreement', base_name=base_name)
             plot_path_multimodel = get_plot_filename(base_name_multimodel,
-                                                    diag_config)
+                                                     diag_config)
             _plot_multimodel_agreement(plot_path_multimodel, global_tau_mod,
-                                    global_tau_obs, config)
+                                       global_tau_obs, config)
             provenance_logger.log(plot_path_multimodel, provenance_record)
 
             # map of observation
             base_name_obs = '{prefix}_{base_name}'.format(prefix='global',
-                                                        base_name=base_name)
+                                                          base_name=base_name)
             plot_path_obs = get_plot_filename(base_name_obs, diag_config)
-            _plot_single_map(plot_path_obs, global_tau_obs['grid']['tau_ctotal'],
-                            global_tau_obs['global']['tau_ctotal'],
-                            config['obs_info']['source_label'], config)
+            _plot_single_map(plot_path_obs,
+                             global_tau_obs['grid']['tau_ctotal'],
+                             global_tau_obs['global']['tau_ctotal'],
+                             config['obs_info']['source_label'], config)
             provenance_logger.log(plot_path_obs, provenance_record)
 
             # matrix of maps
@@ -785,7 +787,7 @@ def main(diag_config):
                 prefix='global_matrix_map', base_name=base_name)
             plot_path_matrix = get_plot_filename(base_name_matrix, diag_config)
             _plot_matrix_map(plot_path_matrix, global_tau_mod, global_tau_obs,
-                            config)
+                             config)
             provenance_logger.log(plot_path_matrix, provenance_record)
 
         provenance_logger.log(netcdf_path, provenance_record)
