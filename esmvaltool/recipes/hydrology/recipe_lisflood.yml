@@ -9,7 +9,14 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  preprocessor: &general
+  general: &general
+    custom_order: true
+    crop_basin:
+      extract_region:  # bounding box values depend on catchment
+        start_longitude: 3
+        end_longitude: 13.5
+        start_latitude: 45
+        end_latitude: 54
     regrid:
       target_grid: 0.1x0.1  # We're using the lisflood01degree version
       lon_offset: true
@@ -17,13 +24,9 @@ preprocessors:
       scheme: linear
     extract_shape:
       # Perhaps a single shapefile needs to be created covering multiple basins
-      shapefile: rhine_meuse_hydrosheds.shp  # In aux (config-user.yml)
+      shapefile: Meuse/Meuse.shp  # In aux (config-user.yml)
       method: contains
       crop: true  # set to false to keep the entire globe (memory intensive!)
-    extract_time:
-      end_year: 2000
-      end_month: 1
-      end_day: 3
   daily_water:
     <<: *general
     convert_units:
@@ -40,53 +43,20 @@ preprocessors:
     <<: *general
     convert_units:
       units: m s-1
-  hourly_water:
-    <<: *general
-    convert_units:
-      units: kg m-2 d-1
-    daily_statistics:
-      operator: sum
-  hourly_temperature_mean:
-    <<: *general
-    convert_units:
-      units: degC
-    daily_statistics:
-      operator: mean
-  hourly_temperature_min:
-    <<: *general
-    convert_units:
-      units: degC
-    daily_statistics:
-      operator: min
-  hourly_temperature_max:
-    <<: *general
-    convert_units:
-      units: degC
-    daily_statistics:
-      operator: max
-  hourly_radiation:
-    <<: *general
-    convert_units:
-      units: J m-2 day-1
-    daily_statistics:
-      operator: sum
-  hourly_windspeed:
-    <<: *general
-    daily_statistics:
-      operator: mean
 
 diagnostics:
   diagnostic_daily:
-    description: LISFLOOD input preprocessor for daily data
+    description: LISFLOOD input preprocessor for ERA-Interim and ERA5 data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_daily
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+   variables:
+      pr:
         mip: day
         start_year: 2000
         end_year: 2000
         preprocessor: daily_water
-      tas:
+      tas:  &var_daily
         <<: *var_daily
         preprocessor: daily_temperature
       tasmax:
@@ -95,11 +65,9 @@ diagnostics:
       tasmin:
         <<: *var_daily
         preprocessor: daily_temperature
-      # These vars only work with obs6 data (from new ERA-Interim cmorizer):
       tdps:
         <<: *var_daily
         mip: Eday
-        preprocessor: daily_temperature
       uas:
         <<: *var_daily
         preprocessor: daily_windspeed
@@ -112,38 +80,4 @@ diagnostics:
     scripts:
       script:
         script: hydrology/lisflood.py
-
-  diagnostic_hourly:
-    description: LISFLOOD input preprocesor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_hourly
-        mip: E1hr
-        start_year: 2000
-        end_year: 2000
-        preprocessor: hourly_water
-      tas:
-        <<: *var_hourly
-        preprocessor: hourly_temperature_mean
-      tasmax:
-        <<: *var_hourly
-        preprocessor: hourly_temperature_max
-      tasmin:
-        <<: *var_hourly
-        preprocessor: hourly_temperature_min
-      tdps:
-        <<: *var_hourly
-        preprocessor: hourly_temperature_mean
-      uas:
-        <<: *var_hourly
-        preprocessor: hourly_windspeed
-      vas:
-        <<: *var_hourly
-        preprocessor: hourly_windspeed
-      rsds:
-        <<: *var_hourly
-        preprocessor: hourly_radiation
-    scripts:
-      script:
-        script: hydrology/lisflood.py
+        catchment: rhine
