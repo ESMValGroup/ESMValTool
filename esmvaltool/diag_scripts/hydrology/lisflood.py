@@ -2,8 +2,8 @@
 import logging
 from pathlib import Path
 
-# import dask.array as da
 import iris
+from iris.analysis.maths import exp as iris_exp
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -34,21 +34,20 @@ def get_provenance_record(ancestor_files):
 
 def get_input_cubes(metadata):
     """Create a dict with all (preprocessed) input files."""
-    provenance = create_provenance_record()
-    all_vars = {}
+    inputs = {}
+    ancestors = {}
     for attributes in metadata:
         short_name = attributes['short_name']
-        if short_name in all_vars:
-            raise ValueError(
-                f"Multiple input files found for variable '{short_name}'.")
+        if short_name in inputs:
+            raise ValueError(f"Multiple input files found for variable '{short_name}'.")
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
         cube.attributes.clear()
-        all_vars[short_name] = cube
-        provenance['ancestors'].append(filename)
+        inputs[short_name] = cube
+        ancestors[short_name] = [filename]
 
-    return all_vars, provenance
+    return inputs, ancestors
 
 
 def shift_era5_time_coordinate(cube, shift=30):
@@ -65,16 +64,26 @@ def shift_era5_time_coordinate(cube, shift=30):
     return cube
 
 
-def compute_vapour_pressure(tdps):
+def compute_vapour_pressure(d2m):
     """Compute vapour pressure using tetens formula."""
     e0 = 6.11
-    tdps_c = d2m - 273.15
-    e = e0 * np.exp(7.5*(tdps_c) / (237.3 + (tdps_c)))
+    tdps_c = d2m # - 273.15
+    e = e0 * iris_exp(7.5*(tdps_c) / (237.3 + (tdps_c)))
+    e.var_name = 'e'
+    e.long_name = 'Actual water vapour pressure of air near the surface'
+    e.standard_name = 'water_vapor_pressure'
+    e.units = 'hPa'
+    e.attributes['comment'] = 'Calculated from tdps using tetens formula'
     return e
 
 
-def windspeed(u, v):
-    return (u**2+v**2)**.5
+def compute_windspeed(u, v):
+    w = (u**2+v**2)**.5
+    w.var_name = 'sfcWind'
+    w.long_name = 'Daily-Mean Near-Surface Wind Speed'
+    w.standard_name = 'wind_speed'
+    w.attributes['comment'] = 'near-surface (usually, 10 meters) wind speed.'
+    return w
 
 
 def main(cfg):
@@ -83,52 +92,46 @@ def main(cfg):
     logger.info(input_metadata)
 
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
-        all_vars, provenance = get_input_cubes(metadata)
+        cubes, ancestors = get_input_cubes(metadata)
 
         if dataset == 'ERA5':
-            shift_era5_time_coordinate(all_vars['tas'])
-            shift_era5_time_coordinate(all_vars['tdps'])
-            shift_era5_time_coordinate(all_vars['uas'])
-            shift_era5_time_coordinate(all_vars['vas'])
-
-        pr = all_vars['pr']
-        tas = all_vars['tas']
-        tasmax = all_vars['tasmax']
-        tasmin = all_vars['tasmin']
-        rsds = all_vars['rsds']
+            shift_era5_time_coordinate(cubes['tas'])
+            shift_era5_time_coordinate(cubes['tdps'])
+            shift_era5_time_coordinate(cubes['uas'])
+            shift_era5_time_coordinate(cubes['vas'])
 
         # Compute additional variables as input for lisvap
-        tdps = all_vars['tdps']
-        uas = all_vars['uas']
-        vas = all_vars['vas']
-        windspeed_inputs = ['uas', 'vas']
-        e_inputs = ['tdps']
-        e = compute_vapour_pressure(tdps)
-        wspd = compute_windspeed(uas, vas)
+        tdps = cubes.pop('tdps')
+        uas = cubes.pop('uas')
+        vas = cubes.pop('vas')
+        cubes['e'] = compute_vapour_pressure(tdps)
+        ancestors['e'] = ancestors['tdps']
+        cubes['wspd'] = compute_windspeed(uas, vas)
+        ancestors['wspd'] = ancestors['uas'] + ancestors['vas']
 
-        for outvar in (pr, tas, tasmax, tasmin, rsds, e, wspd):
+        for var_name, cube in cubes.items():
             # Target output file
             # In the cdo example, the output format was:
             # 2m_temperature_final_1990-1996.nc
 
             # Save data
-            time_coord = outvar.coord('time')
+            time_coord = cube.coord('time')
             start_year = time_coord.cell(0).point.year
             end_year = time_coord.cell(-1).point.year
-            var_name = outvar.var_name
             basename = '_'.join([
                 'lisflood',
+                dataset,
                 var_name,
                 cfg['catchment'],
                 str(start_year),
                 str(end_year),
             ])
             output_file = get_diagnostic_filename(basename, cfg)
-            iris.save(outvar, output_file, fill_value=1.e20)
+            iris.save(cube, output_file, fill_value=1.e20)
 
             # Store provenance
             provenance_record = get_provenance_record(
-                [outvar['filename']]
+                ancestors[var_name]
             )
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(output_file, provenance_record)

@@ -11,12 +11,11 @@ documentation:
 preprocessors:
   general: &general
     custom_order: true
-    crop_basin:
-      extract_region:  # bounding box values depend on catchment
-        start_longitude: 3
-        end_longitude: 13.5
-        start_latitude: 45
-        end_latitude: 54
+    extract_region:  # bounding box values depend on catchment
+      start_longitude: 0
+      end_longitude: 9
+      start_latitude: 45
+      end_latitude: 54
     regrid:
       target_grid: 0.1x0.1  # We're using the lisflood01degree version
       lon_offset: true
@@ -24,7 +23,7 @@ preprocessors:
       scheme: linear
     extract_shape:
       # Perhaps a single shapefile needs to be created covering multiple basins
-      shapefile: Meuse/Meuse.shp  # In aux (config-user.yml)
+      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp  # In aux (config-user.yml)
       method: contains
       crop: true  # set to false to keep the entire globe (memory intensive!)
   daily_water:
@@ -50,13 +49,13 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-   variables:
-      pr:
+    variables:
+      pr: &var_daily
         mip: day
-        start_year: 2000
-        end_year: 2000
+        start_year: 1990
+        end_year: 1990
         preprocessor: daily_water
-      tas:  &var_daily
+      tas:
         <<: *var_daily
         preprocessor: daily_temperature
       tasmax:
@@ -68,6 +67,7 @@ diagnostics:
       tdps:
         <<: *var_daily
         mip: Eday
+        preprocessor: daily_temperature
       uas:
         <<: *var_daily
         preprocessor: daily_windspeed
