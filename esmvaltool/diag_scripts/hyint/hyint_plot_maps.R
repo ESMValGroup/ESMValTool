@@ -712,7 +712,7 @@ hyint_plot_maps <- # nolint
                 figname = figname,
                 caption = caption,
                 model_idx = list(model_idx),
-                ancestors = list(infile)
+                ancestors = prov_info[[infile]]$ancestors
               )
               prov_info[[figname]] <- prov_fig_now
             }
@@ -733,7 +733,8 @@ hyint_plot_maps <- # nolint
                 figname = figname,
                 caption = caption,
                 model_idx = list(model_idx, ref_idx),
-                ancestors = list(infile, ref_filename)
+                ancestors = list(prov_info[[infile]]$ancestors,
+                  prov_info[[ref_filename]]$ancestors)
               )
               prov_info[[figname]] <- prov_fig_now
             }
@@ -750,7 +751,8 @@ hyint_plot_maps <- # nolint
               figname = figname,
               caption = caption,
               model_idx = list(model_idx, ref_idx),
-              ancestors = list(infile, ref_filename)
+              ancestors = list(prov_info[[infile]]$ancesstors,
+                prov_info[[ref_filename]]$ancestors)
             )
             prov_info[[figname]] <- prov_fig_now
           }
@@ -764,7 +766,7 @@ hyint_plot_maps <- # nolint
             figname = figname,
             caption = caption,
             model_idx = list(model_idx),
-            ancestors = list(infile)
+            ancestors = prov_info[[infile]]$ancestors
           )
           prov_info[[figname]] <- prov_fig_now
         }
