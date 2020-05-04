@@ -308,7 +308,7 @@ All tests should pass before making a release.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The version number is stored in ``esmvaltool/__init__.py``,
-``meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
+``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
 https://semver.org for more information on choosing a version number.
 
 3. Make the release on GitHub
@@ -335,6 +335,6 @@ Follow these steps to create a new conda package:
 -  Activate the base environment ``conda activate base``
 -  Run ``conda build package -c conda-forge -c esmvalgroup`` to build
    the conda package
--  If the build was successful, upload the package to the esmvalgroup
+-  If the build was successful, upload all the packages to the esmvalgroup
    conda channel, e.g.
    ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.0.0b2-py_0.tar.bz2``.

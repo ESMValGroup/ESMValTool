@@ -6,8 +6,9 @@ import iris
 import numpy as np
 from osgeo import gdal
 
-from esmvalcore.preprocessor import extract_region, regrid
+from esmvalcore.preprocessor import extract_region
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
+from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_linear_regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -97,7 +98,7 @@ def regrid_temperature(src_temp, src_height, target_height):
     src_slt = src_temp.copy(data=src_temp.core_data() + src_dtemp.core_data())
 
     # Interpolate sea-level temperature to target grid
-    target_slt = regrid(src_slt, target_grid=target_height, scheme='linear')
+    target_slt = lazy_linear_regrid(src_slt, target_height)
 
     # Convert sea-level temperature to new target elevation
     target_dtemp = lapse_rate_correction(target_height)
@@ -217,7 +218,7 @@ def main(cfg):
         dem = extract_region(dem, **cfg['region'])
 
         logger.info("Processing variable precipitation_flux")
-        pr_dem = regrid(all_vars['pr'], target_grid=dem, scheme='linear')
+        pr_dem = lazy_linear_regrid(all_vars['pr'], dem)
 
         logger.info("Processing variable temperature")
         tas_dem = regrid_temperature(all_vars['tas'], all_vars['orog'], dem)
@@ -225,20 +226,12 @@ def main(cfg):
         logger.info("Processing variable potential evapotranspiration")
         if 'evspsblpot' in all_vars:
             pet = all_vars['evspsblpot']
-            pet_dem = regrid(pet, target_grid=dem, scheme='linear')
+            pet_dem = lazy_linear_regrid(pet, dem)
         else:
             logger.info("Potential evapotransporation not available, deriving")
-            psl_dem = regrid(all_vars['psl'], target_grid=dem, scheme='linear')
-            rsds_dem = regrid(
-                all_vars['rsds'],
-                target_grid=dem,
-                scheme='linear'
-            )
-            rsdt_dem = regrid(
-                all_vars['rsdt'],
-                target_grid=dem,
-                scheme='linear'
-            )
+            psl_dem = lazy_linear_regrid(all_vars['psl'], dem)
+            rsds_dem = lazy_linear_regrid(all_vars['rsds'], dem)
+            rsdt_dem = lazy_linear_regrid(all_vars['rsdt'], dem)
             pet_dem = debruin_pet(
                 tas=tas_dem,
                 psl=psl_dem,
