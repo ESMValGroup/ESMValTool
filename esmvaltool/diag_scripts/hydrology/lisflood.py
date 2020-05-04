@@ -66,9 +66,9 @@ def shift_era5_time_coordinate(cube, shift=30):
 
 def compute_vapour_pressure(d2m):
     """Compute vapour pressure using tetens formula."""
-    e0 = 6.11
-    tdps_c = d2m # - 273.15
-    e = e0 * iris_exp(7.5*(tdps_c) / (237.3 + (tdps_c)))
+    # taken from Eq. 3.21 of Goudriaan (1977; https://library.wur.nl/WebQuery/wurpubs/70980)
+    e0 = 6.10588
+    e = e0 * iris_exp(17.32491 * d2m / (d2m + 238.102))
     e.var_name = 'e'
     e.long_name = 'Actual water vapour pressure of air near the surface'
     e.standard_name = 'water_vapor_pressure'
