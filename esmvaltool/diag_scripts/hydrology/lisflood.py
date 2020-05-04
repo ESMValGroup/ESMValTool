@@ -108,8 +108,8 @@ def main(cfg):
         vas = cubes.pop('vas')
         cubes['e'] = compute_vapour_pressure(tdps)
         ancestors['e'] = ancestors['tdps']
-        cubes['wspd'] = compute_windspeed(uas, vas)
-        ancestors['wspd'] = ancestors['uas'] + ancestors['vas']
+        cubes['sfcWind'] = compute_windspeed(uas, vas)
+        ancestors['sfcWind'] = ancestors['uas'] + ancestors['vas']
 
         for var_name, cube in cubes.items():
             # Target output file
