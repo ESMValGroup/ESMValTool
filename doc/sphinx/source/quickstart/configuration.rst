@@ -9,7 +9,9 @@ information needed by ESMValTool. The configuration is passed to ESMValTool
 as a command line argument (see :ref:`Running ESMValTool <running>`).
 
 An example configuration file can be downloaded `here <https://github.com/ESMValGroup/ESMValTool/blob/master/config-user-example.yml>`_
-and tailored for your system using the explanation below.
+(use the ``raw`` button to download the file; right-click it and ``save 
+linked content`` or left-click it and then just save the page), and 
+tailored for your system using the explanation below.
 
 Most of these settings are fairly self-explanatory, ie:
 
