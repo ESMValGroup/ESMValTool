@@ -67,7 +67,7 @@ def shift_era5_time_coordinate(cube, shift=30):
 def compute_vapour_pressure(tdps):
     """Compute vapour pressure using tetens formula."""
     # taken from Eq. 3.21 of Goudriaan (1977; https://library.wur.nl/WebQuery/wurpubs/70980)
-    if tdps.units == 'degC':
+    if tdps.units != 'degC':
        raise Exception('tdps should be in degC')
     e0 = 6.10588
     e = e0 * iris_exp(17.32491 * tdps / (tdps + 238.102))
