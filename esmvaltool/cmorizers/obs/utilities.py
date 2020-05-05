@@ -148,7 +148,7 @@ def read_cmor_config(dataset):
 
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
-    _fix_dtype(cube)
+    fix_dtype(cube)
     # CMOR standard
     try:
         time = cube.coord('time')
@@ -313,7 +313,7 @@ def fix_dim_coordnames(cube):
     return cube
 
 
-def _fix_dtype(cube):
+def fix_dtype(cube):
     """Fix `dtype` of a cube and its coordinates."""
     if cube.dtype != np.float32:
         logger.info("Converting data type of data from '%s' to 'float32'",
