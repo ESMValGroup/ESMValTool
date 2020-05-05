@@ -86,7 +86,7 @@ def fix_coords(cube):
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
-                    _roll_cube_data(cube, nlon // 2, -1)
+                    roll_cube_data(cube, nlon // 2, -1)
 
         # fix latitude
         if cube_coord.var_name == 'lat':
@@ -334,7 +334,7 @@ def fix_dtype(cube):
                                                       casting='same_kind')
 
 
-def _roll_cube_data(cube, shift, axis):
+def roll_cube_data(cube, shift, axis):
     """Roll a cube data on specified axis."""
     cube.data = da.roll(cube.core_data(), shift, axis=axis)
     return cube
