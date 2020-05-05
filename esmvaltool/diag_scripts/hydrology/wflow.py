@@ -6,8 +6,9 @@ import iris
 import numpy as np
 from osgeo import gdal
 
-from esmvalcore.preprocessor import extract_region, regrid
+from esmvalcore.preprocessor import extract_region
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
+from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_linear_regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -97,7 +98,7 @@ def regrid_temperature(src_temp, src_height, target_height):
     src_slt = src_temp.copy(data=src_temp.core_data() + src_dtemp.core_data())
 
     # Interpolate sea-level temperature to target grid
-    target_slt = regrid(src_slt, target_grid=target_height, scheme='linear')
+    target_slt = lazy_linear_regrid(src_slt, target_height)
 
     # Convert sea-level temperature to new target elevation
     target_dtemp = lapse_rate_correction(target_height)
@@ -127,6 +128,7 @@ def _load_pcraster_dem(filename):
     )
     lon_size, lat_size = dataset.RasterXSize, dataset.RasterYSize
     data = dataset.ReadAsArray()
+    data = np.ma.masked_less(data, -1e8)
     dataset = None
 
     lons = lon_offset + lon_step * (np.arange(lon_size) + 0.5)
@@ -183,12 +185,30 @@ def check_dem(cube, region):
                 "a number at least one grid cell above %s", key, dem[key])
 
 
+def shift_era5_time_coordinate(cube, shift=30):
+    """Shift instantaneous variables (default = 30 minutes forward in time).
+
+    After this shift, as an example:
+    time format [1990, 1, 1, 11, 30, 0] will be [1990, 1, 1, 12, 0, 0].
+    For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
+    """
+    time = cube.coord(axis='T')
+    time.points = time.points + shift / (24 * 60)
+    time.bounds = None
+    time.guess_bounds()
+    return cube
+
+
 def main(cfg):
     """Process data for use as input to the wflow hydrological model."""
     input_metadata = cfg['input_data'].values()
 
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
+
+        if dataset == 'ERA5':
+            shift_era5_time_coordinate(all_vars['tas'])
+            shift_era5_time_coordinate(all_vars['psl'])
 
         # Interpolating variables onto the dem grid
         # Read the target cube, which contains target grid and target elevation
@@ -198,7 +218,7 @@ def main(cfg):
         dem = extract_region(dem, **cfg['region'])
 
         logger.info("Processing variable precipitation_flux")
-        pr_dem = regrid(all_vars['pr'], target_grid=dem, scheme='linear')
+        pr_dem = lazy_linear_regrid(all_vars['pr'], dem)
 
         logger.info("Processing variable temperature")
         tas_dem = regrid_temperature(all_vars['tas'], all_vars['orog'], dem)
@@ -206,15 +226,18 @@ def main(cfg):
         logger.info("Processing variable potential evapotranspiration")
         if 'evspsblpot' in all_vars:
             pet = all_vars['evspsblpot']
+            pet_dem = lazy_linear_regrid(pet, dem)
         else:
             logger.info("Potential evapotransporation not available, deriving")
-            pet = debruin_pet(
-                tas=all_vars['tas'],
-                psl=all_vars['psl'],
-                rsds=all_vars['rsds'],
-                rsdt=all_vars['rsdt'],
+            psl_dem = lazy_linear_regrid(all_vars['psl'], dem)
+            rsds_dem = lazy_linear_regrid(all_vars['rsds'], dem)
+            rsdt_dem = lazy_linear_regrid(all_vars['rsdt'], dem)
+            pet_dem = debruin_pet(
+                tas=tas_dem,
+                psl=psl_dem,
+                rsds=rsds_dem,
+                rsdt=rsdt_dem,
             )
-        pet_dem = regrid(pet, target_grid=dem, scheme='linear')
         pet_dem.var_name = 'pet'
 
         logger.info("Converting units")
