@@ -72,7 +72,7 @@ def fix_coords(cube):
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            _fix_bounds(cube, cube.coord('time'))
+            fix_bounds(cube, cube.coord('time'))
 
         # fix longitude
         if cube_coord.var_name == 'lon':
@@ -82,7 +82,7 @@ def fix_coords(cube):
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
                         cube_coord.points + 180.
-                    _fix_bounds(cube, cube_coord)
+                    fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
@@ -91,17 +91,17 @@ def fix_coords(cube):
         # fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
-            _fix_bounds(cube, cube.coord('latitude'))
+            fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
-            _fix_bounds(cube, cube.coord('depth'))
+            fix_bounds(cube, cube.coord('depth'))
 
         # fix air_pressure
         if cube_coord.var_name == 'air_pressure':
             logger.info("Fixing air pressure...")
-            _fix_bounds(cube, cube.coord('air_pressure'))
+            fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
     cube.coord('latitude').coord_system = None
@@ -251,7 +251,7 @@ def var_name_constraint(var_name):
     return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
 
 
-def _fix_bounds(cube, dim_coord):
+def fix_bounds(cube, dim_coord):
     """Reset and fix all bounds."""
     if len(cube.coord(dim_coord).points) > 1:
         if cube.coord(dim_coord).has_bounds():
