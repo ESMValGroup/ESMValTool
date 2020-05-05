@@ -118,7 +118,7 @@ def fix_var_metadata(cube, var_info):
         cube.standard_name = var_info.standard_name
     cube.var_name = var_info.short_name
     cube.long_name = var_info.long_name
-    _set_units(cube, var_info.units)
+    set_units(cube, var_info.units)
     return cube
 
 
@@ -340,7 +340,7 @@ def roll_cube_data(cube, shift, axis):
     return cube
 
 
-def _set_units(cube, units):
+def set_units(cube, units):
     """Set units in compliance with cf_unit."""
     special = {'psu': 1.e-3, 'Sv': '1e6 m3 s-1'}
     if units in list(special.keys()):
