@@ -25,6 +25,62 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
+def fix_coords_non_symetric_longitude(cube):
+    """Fix the time units and values to CMOR standards."""
+    import numpy as np
+    from cf_units import Unit
+
+    # first fix any completely missing coord var names
+    utils._fix_dim_coordnames(cube)
+    # fix individual coords
+    for cube_coord in cube.coords():
+        # fix time
+        if cube_coord.var_name == 'time':
+            logger.info("Fixing time...")
+            cube.coord('time').convert_units(
+                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+            utils._fix_bounds(cube, cube.coord('time'))
+
+        # fix longitude
+        if cube_coord.var_name == 'lon':
+            logger.info("Fixing longitude...")
+            if cube_coord.ndim == 1:
+                if cube_coord.points[0] < 0. and \
+                        cube_coord.points[-1] < 181.:
+                    lon_coord = cube.coord('longitude').copy()
+                    lons_below_0 = lon_coord.points[lon_coord.points < 0.] + \
+                        360.
+                    lons_above_0 = lon_coord.points[lon_coord.points >= 0.]
+                    lons = np.hstack((lons_above_0, lons_below_0))
+                    cube_coord.points = lons
+
+                    utils._fix_bounds(cube, cube_coord)
+                    cube.attributes['geospatial_lon_min'] = 0.
+                    cube.attributes['geospatial_lon_max'] = 360.
+                    utils._roll_cube_data(cube, len(lons_above_0), -1)
+
+        # fix latitude
+        if cube_coord.var_name == 'lat':
+            logger.info("Fixing latitude...")
+            utils._fix_bounds(cube, cube.coord('latitude'))
+
+        # fix depth
+        if cube_coord.var_name == 'lev':
+            logger.info("Fixing depth...")
+            utils._fix_bounds(cube, cube.coord('depth'))
+
+        # fix air_pressure
+        if cube_coord.var_name == 'air_pressure':
+            logger.info("Fixing air pressure...")
+            utils._fix_bounds(cube, cube.coord('air_pressure'))
+
+    # remove CS
+    cube.coord('latitude').coord_system = None
+    cube.coord('longitude').coord_system = None
+
+    return cube
+
+
 def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
     """Extract variable."""
     raw_var = var.get('raw', short_name)
@@ -37,7 +93,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
-    utils.fix_coords(cube)
+    fix_coords_non_symetric_longitude(cube)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
 
@@ -71,7 +127,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
             attrs['mip'] = 'Amon'
 
             # Fix coordinates
-            utils.fix_coords(cube)
+            fix_coords_non_symetric_longitude(cube)
 
             # Save variable
             utils.save_variable(cube,
