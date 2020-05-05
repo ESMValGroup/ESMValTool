@@ -64,7 +64,7 @@ def convert_timeunits(cube, start_year):
 def fix_coords(cube):
     """Fix the time units and values to CMOR standards."""
     # first fix any completely missing coord var names
-    _fix_dim_coordnames(cube)
+    fix_dim_coordnames(cube)
     # fix individual coords
     for cube_coord in cube.coords():
         # fix time
@@ -264,7 +264,7 @@ def fix_bounds(cube, dim_coord):
     return cube
 
 
-def _fix_dim_coordnames(cube):
+def fix_dim_coordnames(cube):
     """Perform a check on dim coordinate names."""
     # first check for CMOR standard coord;
     for coord in cube.coords():
