@@ -58,7 +58,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
 
     #####
     # also derive monthly data
-    if 'add_mon' in var.keys():
+    if 'add_mon' in var:
         if var['add_mon']:
             logger.info("Building monthly means")
 
