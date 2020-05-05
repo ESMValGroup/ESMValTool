@@ -693,8 +693,8 @@ def main(diag_config):
     --------
         diag_config - nested dictionary of metadata
     """
-    my_files_dict = group_metadata(diag_config['input_data'].values(),
-                                   'dataset')
+    model_data_dict = group_metadata(diag_config['input_data'].values(),
+                                     'dataset')
 
     # get the data from the observation
     global_tau_obs = _get_obs_data(diag_config)
@@ -714,14 +714,14 @@ def main(diag_config):
         _get_ancestor_files(diag_config, 'tau_ctotal'))
 
     with ProvenanceLogger(diag_config) as provenance_logger:
-        for key, value in my_files_dict.items():
-            global_tau_mod[key] = {}
+        for model_name, model_dataset in model_data_dict.items():
+            global_tau_mod[model_name] = {}
 
             # load the data
-            ctotal = _load_variable(value, 'ctotal')
-            gpp = _load_variable(value, 'gpp')
-            tau_ctotal = _calc_turnover(ctotal, gpp, key)
-            global_tau_mod['grid'][key] = tau_ctotal
+            ctotal = _load_variable(model_dataset, 'ctotal')
+            gpp = _load_variable(model_dataset, 'gpp')
+            tau_ctotal = _calc_turnover(ctotal, gpp, model_name)
+            global_tau_mod['grid'][model_name] = tau_ctotal
 
             # apply the GPP threshold and set the data in dictionary
             gpp_global = gpp.collapsed(['latitude', 'longitude'],
@@ -731,19 +731,21 @@ def main(diag_config):
             tau_global = ctotal_global / gpp_global
             tau_global.convert_units('yr')
 
-            global_tau_mod['global'][key] = np.float(tau_global.core_data())
+            global_tau_mod['global'][model_name] = np.float(tau_global
+                                                            .core_data())
 
             if diag_config['write_plots']:
                 base_name_mod = (
                     'global_{title}_{source_label}_'
                     '{grid_label}'.format(
                         title=global_tau_obs['grid']['tau_ctotal'].long_name,
-                        source_label=key,
+                        source_label=model_name,
                         grid_label=diag_config['obs_info']['grid_label']))
                 plot_path_mod = get_plot_filename(base_name_mod, diag_config)
                 # plot_path_list.append(plot_path_mod)
                 _plot_single_map(plot_path_mod, tau_ctotal,
-                                 global_tau_mod['global'][key], key,
+                                 global_tau_mod['global'][model_name],
+                                 model_name,
                                  diag_config)
                 provenance_logger.log(plot_path_mod, provenance_record)
 

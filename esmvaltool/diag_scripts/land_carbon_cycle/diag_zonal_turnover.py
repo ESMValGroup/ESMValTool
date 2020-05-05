@@ -172,16 +172,16 @@ def main(diag_config):
     --------
         diag_config - nested dictionary of metadata
     """
-    my_files_dict = group_metadata(diag_config['input_data'].values(),
-                                   'dataset')
+    model_data_dict = group_metadata(diag_config['input_data'].values(),
+                                     'dataset')
 
     fig_config = _get_fig_config(diag_config)
     zonal_tau_mod = {}
-    for key, value in my_files_dict.items():
-        zonal_tau_mod[key] = {}
-        ctotal = _load_variable(value, 'ctotal')
-        gpp = _load_variable(value, 'gpp')
-        zonal_tau_mod[key] = _calc_zonal_tau(gpp, ctotal, fig_config)
+    for model_name, model_dataset in model_data_dict.items():
+        zonal_tau_mod[model_name] = {}
+        ctotal = _load_variable(model_dataset, 'ctotal')
+        gpp = _load_variable(model_dataset, 'gpp')
+        zonal_tau_mod[model_name] = _calc_zonal_tau(gpp, ctotal, fig_config)
 
     zonal_tau_obs = _get_obs_data_zonal(diag_config)
 

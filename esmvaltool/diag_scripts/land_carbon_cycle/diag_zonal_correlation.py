@@ -379,17 +379,17 @@ def main(diag_config):
     --------
         diag_config - nested dictionary of metadata
     """
-    my_files_dict = group_metadata(diag_config['input_data'].values(),
-                                   'dataset')
+    model_data_dict = group_metadata(diag_config['input_data'].values(),
+                                     'dataset')
     fig_config = _get_fig_config(diag_config)
     zonal_correlation_mod = {}
-    for key, value in my_files_dict.items():
-        zonal_correlation_mod[key] = {}
+    for model_name, model_dataset in model_data_dict.items():
+        zonal_correlation_mod[model_name] = {}
         mod_coords = {}
-        ctotal = _load_variable(value, 'ctotal')
-        gpp = _load_variable(value, 'gpp')
-        precip = _load_variable(value, 'pr')
-        tas = _load_variable(value, 'tas')
+        ctotal = _load_variable(model_dataset, 'ctotal')
+        gpp = _load_variable(model_dataset, 'gpp')
+        precip = _load_variable(model_dataset, 'pr')
+        tas = _load_variable(model_dataset, 'tas')
         tau_ctotal = (ctotal / gpp)
         tau_ctotal.convert_units('yr')
         # set the attributes
@@ -403,8 +403,8 @@ def main(diag_config):
         zon_corr = _calc_zonal_correlation(_tau_dat, _precip_dat, _tas_dat,
                                            mod_coords['latitude'].points,
                                            fig_config)
-        zonal_correlation_mod[key]['data'] = zon_corr
-        zonal_correlation_mod[key]['latitude'] = mod_coords['latitude']
+        zonal_correlation_mod[model_name]['data'] = zon_corr
+        zonal_correlation_mod[model_name]['latitude'] = mod_coords['latitude']
     zonal_correlation_obs = _get_obs_data_zonal(diag_config)
 
     base_name = '{title}_{corr}_{source_label}_{grid_label}z'.format(
