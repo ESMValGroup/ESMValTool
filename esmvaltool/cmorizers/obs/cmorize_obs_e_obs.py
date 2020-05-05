@@ -17,7 +17,8 @@ Download and processing instructions
 import logging
 import os
 import iris
-import iris.coord_categorisation
+import numpy as np
+from cf_units import Unit
 
 from esmvalcore.preprocessor import monthly_statistics
 from . import utilities as utils
@@ -25,10 +26,8 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def fix_coords_non_symetric_longitude(cube):
+def fix_coords_non_symetric_lon(cube):
     """Fix the time units and values to CMOR standards."""
-    import numpy as np
-    from cf_units import Unit
 
     # first fix any completely missing coord var names
     utils._fix_dim_coordnames(cube)
@@ -93,7 +92,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
-    fix_coords_non_symetric_longitude(cube)
+    fix_coords_non_symetric_lon(cube)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
 
@@ -127,7 +126,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
             attrs['mip'] = 'Amon'
 
             # Fix coordinates
-            fix_coords_non_symetric_longitude(cube)
+            fix_coords_non_symetric_lon(cube)
 
             # Save variable
             utils.save_variable(cube,
