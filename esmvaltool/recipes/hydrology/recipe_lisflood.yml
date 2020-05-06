@@ -8,6 +8,10 @@ documentation:
   projects: [ewatercycle]
   references: ['acknow_project']
 
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+
 preprocessors:
   general: &general
     custom_order: true
@@ -23,7 +27,7 @@ preprocessors:
       scheme: linear
     extract_shape:
       # Perhaps a single shapefile needs to be created covering multiple basins
-      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp  # In aux (config-user.yml)
+      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp  # (config-user, aux)
       method: contains
       crop: true  # set to false to keep the entire globe (memory intensive!)
   daily_water:
@@ -46,9 +50,6 @@ preprocessors:
 diagnostics:
   diagnostic_daily:
     description: LISFLOOD input preprocessor for ERA-Interim and ERA5 data
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       pr: &var_daily
         mip: day
