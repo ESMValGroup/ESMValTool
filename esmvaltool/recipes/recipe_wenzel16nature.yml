@@ -33,6 +33,7 @@ preprocessors:
 
           
   highlat:
+    custom_order: true
     extract_region:
       start_longitude: 0.
       end_longitude: 360.
@@ -44,6 +45,7 @@ preprocessors:
       operator: mean
       
   highlat_amp:
+    custom_order: true
     extract_region:
       start_longitude: 0.
       end_longitude: 360.
