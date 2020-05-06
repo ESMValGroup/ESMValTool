@@ -39,7 +39,8 @@ def get_input_cubes(metadata):
     for attributes in metadata:
         short_name = attributes['short_name']
         if short_name in inputs:
-            raise ValueError(f"Multiple input files found for variable '{short_name}'.")
+            raise ValueError(f"Multiple input files found for variable "
+                             f"'{short_name}'.")
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
@@ -66,9 +67,10 @@ def shift_era5_time_coordinate(cube, shift=30):
 
 def compute_vapour_pressure(tdps):
     """Compute vapour pressure using tetens formula."""
-    # taken from Eq. 3.21 of Goudriaan (1977; https://library.wur.nl/WebQuery/wurpubs/70980)
+    # taken from Eq. 3.21 of Goudriaan (1977;
+    # https://library.wur.nl/WebQuery/wurpubs/70980)
     if tdps.units != 'degC':
-       raise Exception('tdps should be in degC')
+        raise Exception('tdps should be in degC')
     e0 = 6.10588
     e = e0 * iris_exp(17.32491 * tdps / (tdps + 238.102))
     e.var_name = 'e'
@@ -80,6 +82,7 @@ def compute_vapour_pressure(tdps):
 
 
 def compute_windspeed(u, v):
+    """Compute absolute wind speed from horizontal components."""
     w = (u**2+v**2)**.5
     w.var_name = 'sfcWind'
     w.long_name = 'Daily-Mean Near-Surface Wind Speed'
@@ -87,6 +90,23 @@ def compute_windspeed(u, v):
     w.attributes['comment'] = 'near-surface (usually, 10 meters) wind speed.'
     return w
 
+
+def save(cube, var_name, dataset, cfg):
+    """Save processed cube to a lisflood-compatible file."""
+    time_coord = cube.coord('time')
+    start_year = time_coord.cell(0).point.year
+    end_year = time_coord.cell(-1).point.year
+    basename = '_'.join([
+        'lisflood',
+        dataset,
+        var_name,
+        cfg['catchment'],
+        str(start_year),
+        str(end_year),
+    ])
+    output_file = get_diagnostic_filename(basename, cfg)
+    iris.save(cube, output_file, fill_value=1.e20)
+    return output_file
 
 def main(cfg):
     """Process data for use as input to the LISFLOOD hydrological model """
@@ -112,24 +132,7 @@ def main(cfg):
         ancestors['sfcWind'] = ancestors['uas'] + ancestors['vas']
 
         for var_name, cube in cubes.items():
-            # Target output file
-            # In the cdo example, the output format was:
-            # 2m_temperature_final_1990-1996.nc
-
-            # Save data
-            time_coord = cube.coord('time')
-            start_year = time_coord.cell(0).point.year
-            end_year = time_coord.cell(-1).point.year
-            basename = '_'.join([
-                'lisflood',
-                dataset,
-                var_name,
-                cfg['catchment'],
-                str(start_year),
-                str(end_year),
-            ])
-            output_file = get_diagnostic_filename(basename, cfg)
-            iris.save(cube, output_file, fill_value=1.e20)
+            output_file = save(cube, var_name, dataset, cfg)
 
             # Store provenance
             provenance_record = get_provenance_record(
