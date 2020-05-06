@@ -108,6 +108,7 @@ def save(cube, var_name, dataset, cfg):
     iris.save(cube, output_file, fill_value=1.e20)
     return output_file
 
+
 def main(cfg):
     """Process data for use as input to the LISFLOOD hydrological model """
     input_metadata = cfg['input_data'].values()
