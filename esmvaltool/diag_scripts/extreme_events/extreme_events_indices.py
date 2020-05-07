@@ -88,6 +88,24 @@ monthly_maximum_value_of_daily_maximum_temperature:
         - tasmax
     logic: max
     cf_name: monthly_maximum_value_of_daily_maximum_temperature
+monthly_maximum_value_of_daily_minimum_temperature:
+    name: TNx
+    required:
+        - tasmin
+    logic: max
+    cf_name: monthly_maximum_value_of_daily_minimum_temperature
+monthly_minimum_value_of_daily_maximum_temperature:
+    name: TXn
+    required:
+        - tasmax
+    logic: min
+    cf_name: monthly_minimum_value_of_daily_maximum_temperature
+monthly_minimum_value_of_daily_minimum_temperature:
+    name: TNn
+    required:
+        - tasmin
+    logic: min
+    cf_name: monthly_minimum_value_of_daily_minimum_temperature
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -104,7 +122,13 @@ index_method = {
         "annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm":
             "rnnmmETCCDI_yr",
         "monthly_maximum_value_of_daily_maximum_temperature":
-            "txxETCCDI_m"
+            "txxETCCDI_m",
+        "monthly_maximum_value_of_daily_minimum_temperature":
+            "tnxETCCDI_m",
+        "monthly_minimum_value_of_daily_maximum_temperature":
+            "txnETCCDI_m",
+        "monthly_minimum_value_of_daily_minimum_temperature":
+            "tnnETCCDI_m"
         }
 
 method_index = {}
@@ -203,3 +227,26 @@ def txxETCCDI_m(alias_cubes, **kwargs):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     res_cube = select_value_monthly(alias_cubes, specs)
     return res_cube
+
+def tnxETCCDI_m(alias_cubes, **kwargs):
+    """TNx, monthly maximum value of daily minimum temperature."""
+    # TODO: Here is a lot of repetition that should be cleaned.
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value_monthly(alias_cubes, specs)
+    return res_cube
+
+def txnETCCDI_m(alias_cubes, **kwargs):
+    """TNx, monthly minimum value of daily maximum temperature."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value_monthly(alias_cubes, specs)
+    return res_cube
+
+def tnnETCCDI_m(alias_cubes, **kwargs):
+    """TNx, monthly minimum value of daily minimum temperature."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value_monthly(alias_cubes, specs)
+    return res_cube
+
