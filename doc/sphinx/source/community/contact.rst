@@ -31,3 +31,20 @@ Recipes and diagnostics
 Contacts for specific diagnostic sets are the respective authors, as
 listed in the corresponding diagnostic documentation and in the source
 code.
+
+.. _mailing-list:
+
+User mailing list
+-----------------
+
+The ESMValTool user mailing list is open for all general and technical questions on the ESMValTool, for example about installation, application, development, etc.
+
+To subscribe send an email to `sympa@listserv.dfn.de <mailto:sympa@listserv.dfn.de?subject=subscribe%20esmvaltool>`_ with the following subject line:
+
+-  *subscribe esmvaltool* 
+
+or
+
+-  *subscribe esmvaltool YOUR_FIRSTNAME YOUR_LASTNAME*
+
+The mailing list also has an `public archive <https://www.listserv.dfn.de/sympa/arc/esmvaltool>`_ online.

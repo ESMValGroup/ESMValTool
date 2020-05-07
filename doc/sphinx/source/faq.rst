@@ -3,6 +3,11 @@
 Frequently Asked Questions
 **************************
 
+Is there a mailing list?
+========================
+
+Yes, you can subscribe to the ESMValTool user mailing list and join the discussion on general topics (installation, configuration, etc). See :ref:`mailing-list`. 
+
 What is YAML?
 =============
 
