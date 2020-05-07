@@ -20,7 +20,7 @@ jobs:
     # Run Python 3 tests
     working_directory: /test
     docker:
-      - image: continuumio/miniconda3
+      - image: esmvalgroup/esmvaltool:development
     steps:
       - checkout
       - run:
@@ -33,14 +33,6 @@ jobs:
       - run:
           # Update/Create Conda environment and run tests
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
-            # conda update -y conda >> /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            conda activate esmvaltool
-            # Install r-lintr for r linter test
-            Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
-            # Run tests
             python setup.py test --addopts '-m "not installation"'
           no_output_timeout: 20m
       - save_cache:
