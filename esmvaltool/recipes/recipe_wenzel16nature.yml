@@ -14,26 +14,11 @@ documentation:
     - crescendo
 
 preprocessors:
-
-  land_fraction_weighting:
+          
+  highlat_gpp:
+    custom_order: true
     weighting_landsea_fraction:
       area_type: land
-      exclude: [
-        'GCP', #'GFDL-ESM2M', 'CanESM2', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME'
-        ]
-
-  #global_land:
-  #  weighting_landsea_fraction:
-  #    area_type: land
-  #    exclude: [
-  #      'GCP', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
-  #      ]
-  #  area_statistics:
-  #        operator: sum
-
-          
-  highlat:
-    custom_order: true
     extract_region:
       start_longitude: 0.
       end_longitude: 360.
@@ -41,6 +26,18 @@ preprocessors:
       end_latitude: 90.
     area_statistics:
       operator: sum
+    annual_statistics:
+      operator: mean
+      
+  highlat_co2:
+    custom_order: true
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: 60.
+      end_latitude: 90.
+    area_statistics:
+      operator: mean
     annual_statistics:
       operator: mean
       
@@ -61,42 +58,39 @@ diagnostics:
   
   ### Wenzel et al. 2016:  Analysis for Pt. Barrow, Alaska  #########################
 
-#  diag_beta_Fig2:
- #   description: Fig 2 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations 
-#    themes:
-#      - phys
-#    realms:
-#      - land
-#    variables:
-#      gpp: &var_gpp
-#        preprocessor: highlat #land_fraction_weighting 
-#        project: CMIP5
-#        mip: Lmon
-#        exp: esmFixClim1
-#        ensemble: r1i1p1
-#        start_year: 1850
-#        end_year: 1989
-#    additional_datasets: &2xCO2_datastet  
-#      - {dataset: CanESM2}
-#      - {dataset: CESM1-BGC, start_year: 1, end_year: 140}
-#      - {dataset: GFDL-ESM2M, start_year: 1, end_year: 140}
-#      - {dataset: HadGEM2-ES, start_year: 1860, end_year: 1999}
-#      #- {dataset: MIROC-ESM, start_year: 1, end_year: 140}
-#      - {dataset: MPI-ESM-LR}
-#      - {dataset: NorESM1-ME, start_year: 1, end_year: 140}
-#    scripts:
-#      carbon_beta: &idealized_carbon
-#        script: carbon_ec/carbon_beta.ncl
-#        station: "60N-90N"
-#        bc_Ytitle: "~F8~b~F21~~B~gpp~N~"
-#        bc_units: "GtC"
-#        cl_mean: False
-#        cl_output: True 
-#        bc_xmax_year: 1920
- #       bc_xmin_year: 1860
-#        styleset: CMIP5       # Plot style
+  diag_beta_Fig2:
+    description: Fig 2 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations 
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      gpp:
+        preprocessor: highlat_gpp
+        project: CMIP5
+        mip: Lmon
+        exp: esmFixClim1
+        ensemble: r1i1p1
+        start_year: 1860
+        end_year: 1989
+    additional_datasets:
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC, start_year: 11, end_year: 140}
+      - {dataset: GFDL-ESM2M, start_year: 11, end_year: 140}
+      - {dataset: HadGEM2-ES}
+      - {dataset: MIROC-ESM, start_year: 11, end_year: 140}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: NorESM1-ME, start_year: 11, end_year: 140}
+    scripts:
+      carbon_beta: &idealized_carbon
+        script: carbon_ec/carbon_beta.ncl
+        cl_mean: False
+        cl_output: True 
+        bc_xmax_year: 1920
+        bc_xmin_year: 1860
+        styleset: CMIP5
 
-  diag_co2cycle_Fig1: 
+  diag_co2cycle_Fig1+3: 
     description: Fig 1 Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC simulations and Fig 3 EC on the relative increase of large-scale GPP for 2xCO2
     themes:
       - phys
@@ -104,7 +98,7 @@ diagnostics:
       - land
     variables:
       co2s:
-        preprocessor: highlat #land_fraction_weighting
+        preprocessor: highlat_co2
         short_name: co2s
         derive: true
         project: CMIP5
@@ -113,8 +107,9 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1850
         end_year: 2005
+        ref_model: ESRL
       co2s_amp:
-        preprocessor: highlat_amp #land_fraction_weighting
+        preprocessor: highlat_amp # land_fraction_weighting
         short_name: co2s
         derive: true
         project: CMIP5
@@ -123,29 +118,22 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1850
         end_year: 2005
+        ref_model: ESRL
     additional_datasets:
+      - {dataset: ESRL, project: OBS, type: ground, version: BRW_T0M, tier: 2, start_year: 1973, end_year: 2012, frequency: yr}
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
-      #- {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+      - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
       - {dataset: MIROC-ESM}
       - {dataset: MPI-ESM-LR}
       - {dataset: NorESM1-ME}
     scripts:
       carbon_cycle: 
         script: carbon_ec/carbon_co2_cycle.ncl
-        bc_units: "GtC"
         bc_xmax_year: 1920
         bc_xmin_year: 1860
-        styleset: CMIP5       # Plot style
-        nc_infile: /mnt/lustre02/work/bd0854/b309145/dev/ESMValTool/public/esmvaltool/tmp_dir/ #../../diag_beta_Fig2/carbon_beta/
-        
-#;;info for carbon_cycle_corr.ncl;
-#diag_script_info@cl_lonrange   = (/204,204/) ; Longitude for Hawaii
-#diag_script_info@cl_latrange   = (/19.5,19.5/)   ; Latitude for Hawaii
-#diag_script_info@plev_obs      = (/100000/)   ;Altitude in (Pa)
-#diag_script_info@cl_lonrange_t = (/0,360/)   ;Lonrange to compare with
-#diag_script_info@cl_latrange_t = (/30,90/)   ;Latrange to compare with
-#diag_script_info@cl_anom       = True        ; (optional) Plot anomalies
+        styleset: CMIP5
+        nc_infile: ../../diag_beta_Fig2/carbon_beta/
 
 

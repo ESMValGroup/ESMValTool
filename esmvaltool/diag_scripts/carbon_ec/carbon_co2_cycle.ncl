@@ -1,15 +1,15 @@
 ; #######################################################################
 ; carbon_co2_cycle.ncl
 ; Author: Sabrina Zechlau (DLR, Germany)
-; ####################################################################### 
+; #######################################################################
 ; Description:
 ; Creates Figure 1 of Wenzel et al. 2016 Nature:
-;         Panel: a) correlation of the [co2] seasonal cycle amplitude and 
+;         Panel: a) correlation of the [co2] seasonal cycle amplitude and
 ;                   [co2] increase
 ;                b) barchart of the trend of the upper correlation
 ; and Figure 3 of Wenzel et al. 2016 Nature:
-;         Panel: a) Emergent Constraint between beta and the trend of the 
-;                   [co2] seasonal cycle amplitude 
+;         Panel: a) Emergent Constraint between beta and the trend of the
+;                   [co2] seasonal cycle amplitude
 ;                b) conditional PDF of the EC
 ;
 ; Required info attributes (diag_script_info):
@@ -44,13 +44,17 @@ begin
   tmp = metadata_att_as_array(input_file_info, "variable_group")
   co2s_ann = ind(tmp.eq."co2s")
   co2s_amp = ind(tmp.eq."co2s_amp")
-  delete(tmp) 
+  delete(tmp)
 
   ; Load var_info
   var = variable_info[0]@short_name
   info = select_metadata_by_name(input_file_info, var)
   info0 = info[co2s_ann]
   info1 = info[co2s_amp]
+
+  ref_model = info[0]@reference_dataset
+  iref = ind(ref_model .eq. datasetnames)
+  idat = ind(ref_model .ne. datasetnames)
 
   datasetnames = metadata_att_as_array(info0, "dataset")
   dim_MOD = ListCount(info0)
@@ -59,7 +63,7 @@ begin
   log_info(DIAG_SCRIPT + " (var: " + var + ")")
   log_info("+++++++++++++++++++++++++++++++++++++++++++++")
 
-  ; ****************************************************************** 
+  ; ******************************************************************
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
@@ -73,18 +77,18 @@ begin
 
   ; Check for required settings
   exit_if_missing_atts(diag_script_info, "styleset")
-  
-  ; optional input parameters 
-  if(isatt(diag_script_info,"cl_xmax_year")) then 
+
+  ; optional input parameters
+  if(isatt(diag_script_info, "cl_xmax_year")) then
     xMax_year = diag_script_info@cl_xmax_year
   else
-    xMax_year = max(metadata_att_as_array(info, "end_year")) 
-  end if 
-  if(isatt(diag_script_info,"cl_xmin_year")) then 
-    xMin_year = diag_script_info@cl_xmin_year 
+    xMax_year = max(metadata_att_as_array(info, "end_year"))
+  end if
+  if(isatt(diag_script_info, "cl_xmin_year")) then
+    xMin_year = diag_script_info@cl_xmin_year
   else
     xMin_year = max(metadata_att_as_array(info, "start_year"))
-  end if 
+  end if
 
   ; Call plot scripts
   plot_file = "amplitude_" + var + "_" + xMin_year + "-" + xMax_year
@@ -95,28 +99,28 @@ begin
   lgLabels = datasetnames
 
   ; path to beta file
-  temp_dir = diag_script_info@nc_infile ;config_user_info@run_dir + diag_script_info@nc_infile
+  temp_dir = config_user_info@run_dir + diag_script_info@nc_infile
   temp_dir = temp_dir + "beta_" \
                       + diag_script_info@bc_xmax_year + "-" \
                       + diag_script_info@bc_xmin_year + ".nc"
   ; ================================================================== 
-  ; setup data holders for plots 
+  ; setup data holders for plots
   nyMax = max(metadata_att_as_array(info0, "end_year"))
   nyMin = min(metadata_att_as_array(info0, "start_year"))
   nMax = nyMax - nyMin + 1
 
-  Ydata  = new((/dim_MOD, nMax/), float) 
+  Ydata  = new((/dim_MOD, nMax/), float)
   Yfitd = new((/dim_MOD, nMax/), float)
-  Xdata = new((/dim_MOD, nMax/), float) 
+  Xdata = new((/dim_MOD, nMax/), float)
   rcc   = new((/dim_MOD, 2/), float)
-  stdrc = new((/dim_MOD, 2/), float)  
-  Xdata!1 = "year" 
+  stdrc = new((/dim_MOD, 2/), float)
+  Xdata!1 = "year"
   Xdata&year = ispan(nyMin+1, nyMax + 1, 1)
 
   ; ##############################################################
   ; loop for models
-  do imod = 0, dim_MOD-1  
-    
+  do imod = 0, dim_MOD-1
+
     ; Read data
     A0 = read_data(info0[imod])
     A1 = read_data(info1[imod])
@@ -124,25 +128,25 @@ begin
     Xdata(imod, :dimsizes(A0)-2) = tofloat(A0(1:))
     Ydata(imod, :dimsizes(A1)-1) = tofloat(A0)
 
-    rc = regline_stats(Xdata(imod,:), Ydata(imod,:))
+    rc = regline_stats(Xdata(imod, :), Ydata(imod, :))
     rcc(imod, 1) = rc
     rcc(imod, 0) = rc@b(0)
     stdrc(imod, :) = rc@stderr
     Yfitd(imod, :dimsizes(rc@Yest)-1) = rc@Yest
 
     delete([/rc,  A1, A0/])
-  end do     ;model loop
+  end do     ; model loop
 
   ; read file with beta values
   beta = ncdf_read(temp_dir, "beta")
-  betaGPP = new((/2,dim_MOD+1/),float)
-  rcGPP   = new((/dim_MOD*2/),float)
+  betaGPP = new((/2, dim_MOD/), float)
+  rcGPP   = new((/dim_MOD*2/), float)
 
   betaGPP(:, :dim_MOD-1) = beta
   rcGPP(1::2) = betaGPP@rcgpp
 
   rcGPP!0 = "models"
-  tmpm = new((/dim_MOD*2/),string)
+  tmpm = new((/dim_MOD*2/), string)
   tmpm(::2) = datasetnames(:dim_MOD-1)
   tmpm(1::2) = datasetnames(:dim_MOD-1)
   rcGPP&models = tmpm
@@ -153,27 +157,23 @@ begin
 
   ; Calculate constraint on BETA_GPP and
   ; amplitude trends
-  minx = min(rcc(:dim_MOD-1, 1))-1.1*(max(rcc(:dim_MOD-1, 1)) \
-         - min(rcc(:dim_MOD-1, 1)))
-  maxx = max(rcc(:dim_MOD-1, 1))+1.1*(max(rcc(:dim_MOD-1, 1)) \
-         - min(rcc(:dim_MOD-1, 1)))
+  minx = min(rcc(idat, 1))-1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
+  maxx = max(rcc(idat, 1))+1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
 
-  rc = regline_stats(rcc(:dim_MOD-1, 1), betaGPP(0, :dim_MOD-1))
+  rc = regline_stats(rcc(idat, 1), betaGPP(0, :dim_MOD-1))
   arc_bco2  = rc@r
   prc_bco2  = rc@F_pval
   xfit_bco2 = minx + (maxx - minx) * nfit/dimsizes(nfit)
   yfit_bco2 = rc * xfit_bco2 + rc@yintercept
-  beta_mco2 = rc * rcc(dim_MOD, 1) + rc@yintercept
-  beta_eco2 = sqrt(stdrc(dim_MOD, 1) ^2 + rc@rstd ^2) 
+  beta_mco2 = rc * rcc(iref, 1) + rc@yintercept
+  beta_eco2 = sqrt(stdrc(iref, 1) ^ 2 + rc@rstd ^ 2)
 
   ; Calculate prior distribution
-  rcc(dim_MOD, 1) = 0.
-  stdrc(dim_MOD, 1) = 0.
-  PDF = Cond_PDF(xfit_bco2, yfit_bco2, rcc(:dim_MOD-1, 1), \
+  PDF = Cond_PDF(xfit_bco2, yfit_bco2, rcc(idat, 1), \
                  betaGPP(0, :dim_MOD-1), rc@MSE, \
-                 (/rcc(dim_MOD, 1), stdrc(dim_MOD, 1)/))
+                 (/rcc(iref, 1), stdrc(iref, 1)/))
 
-  if (stdrc(dim_MOD, 1).ne.0) then
+  if (stdrc(iref, 1).ne.0) then
     co2_Py  = PDF@Py
   else
     co2_Py  = 0.
@@ -182,40 +182,38 @@ begin
   co2_y     = PDF@y
 
   ; this is for plotting the regression line with confidence intervalls
-  yfit_bco2_std = PDF@sigma;yfit_bco2 + PDF@sigma
-  ;yfit_bco2_std = new((/2, dimsizes(yfit_bco2)/), typeof(yfit_bco2))
-  ;yfit_bco2_std(0, :) = PDF@sigma;yfit_bco2 + PDF@sigma
-  ;yfit_bco2_std(1, :) = yfit_bco2 - PDF@sigma
+  yfit_bco2_std = PDF@sigma
 
-  yBETA = new((/2,dim_MOD+2/),float)
+  yBETA = new((/2, dim_MOD+2/), float)
   yBETA(0, 0)  = avg(betaGPP(0, :dim_MOD-1))
   yBETA(0, 1)  = beta_mco2
-  yBETA(0, 2:) = betaGPP(0,:dim_MOD-1)
+  yBETA(0, 2:) = betaGPP(0, :dim_MOD-1)
   yBETA(1, 0)  = stddev(betaGPP(0, :dim_MOD-1))
   yBETA(1, 1)  = beta_eco2
   yBETA(1, 2:) = betaGPP(1, :dim_MOD-1)
-   
+
   xCO2 =  new((/2,dim_MOD+2/), float)
-  xCO2(0, 1)  = rcc(dim_MOD, 1)
-  xCO2(0, 2:) = rcc(:dim_MOD-1, 1)
-  xCO2(1, 1)  = stdrc(dim_MOD, 1)
-  xCO2(1, 2:) = stdrc(:dim_MOD-1, 1)
+  xCO2(0, 1)  = rcc(iref, 1)
+  xCO2(0, 2:) = rcc(idat, 1)
+  xCO2(1, 1)  = stdrc(iref, 1)
+  xCO2(1, 2:) = stdrc(idat, 1)
 
   delete(rc)
   delete(PDF)
   delete(minx)
   delete(maxx)
 
+  ;Plot section
   ; -----------------------------------------------------------
   ; create separate legend
   marker_thicks = datasetnames
   marker_sizes  = datasetnames
-  marker_thicks = 3 
+  marker_thicks = 3
   marker_sizes  = 0.02
-  marker   = new(dim_MOD+1,"graphic")
+  marker   = new(dim_MOD,"graphic")
 
   ; Create Plots 1:
-  ; -----------------------------------------------
+  ; -----------------------------------------------------------
   XStg    = "Annual CO~B~2~N~ [ppmv]"
   YStg    = "CO~B~2~N~ Amplitude [ppmv]"
   data_arr = (/Xdata(0, :), Ydata(0, :)/)
@@ -226,12 +224,12 @@ begin
   data_arr@res_gsnCenterString   = ""
   data_arr@res_gsnMaximize       = True
   data_arr@res_xyMonoMarker      = False
-  data_arr@res_xyMarkers         = thicks 
+  data_arr@res_xyMarkers         = thicks
   data_arr@res_xyMarkerSizeF     = 10.
   data_arr@res_trXMinF           = min(Xdata(:, :))
   data_arr@res_trXMaxF           = max(Xdata(:, :))
   data_arr@res_trYMinF           = 0
-  data_arr@res_trYMaxF           = max(Ydata(:, :)) + 0.25 * max(Ydata(:, :))
+  data_arr@res_trYMaxF = max(Ydata(:, :)) + 0.25 * max(Ydata(:, :))
   data_arr@res_vpWidthF          = 0.5
   data_arr@res_vpHeightF         = 0.4
   data_arr@diag_script = DIAG_SCRIPT
@@ -260,7 +258,7 @@ begin
     lineres@gsLineDashPattern = 0
     lineres@gsLineColor = colors(imod)
     marker(imod) = gsn_add_polyline(wks, plot, Xdata(imod, :), \
-                                      Yfitd(imod, :), lineres)
+                                    Yfitd(imod, :), lineres)
   end do
 
   draw(plot)
@@ -271,17 +269,29 @@ begin
   tmpb = rcc(:dim_MOD-1, 1)
   tmpb_orig = rcc(:, 1)
    
-  rcc(:dim_MOD-1, 1) = tmpb(::-1)   
+  rcc(:dim_MOD-1, 1) = tmpb(::-1)
   rcc@info = info0
   tmpm = datasetnames(:dim_MOD-1)
   datasetnames(:dim_MOD-1) = tmpm(::-1)
 
-  MainStg = ""
-  XStg    = datasetnames
   YStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
-  plot = barchart(rcc(:, 1), MainStg, XStg, YStg, wks, "draw")
 
-  datasetnames = tmp_orig 
+  data_arr = new((/dimsizes(betaGPP), 1/), float)
+  data_arr(:, 0) = rcc(:, 1)
+  data_arr!0 = "datasets"
+  data_arr&datasets(0) = datasetnames
+  data_arr!1 = "yaxis"
+  data_arr&yaxis = YStg
+  data_arr@res_tiMainString    = ""
+  data_arr@res_tiMainFontHeightF = 0.025
+  data_arr@res_gsnCenterString = ""
+
+  plot = barchart(wks, data_arr, var, input_file_info)
+  datasetnames = tmp_orig
+  draw(plot)
+  frame(wks)
+
+  datasetnames = tmp_orig
   delete([/plot, XStg, tmpm, tmpb, tmp_orig/])
 
   tmpm = datasetnames(:dim_MOD-1)
@@ -293,7 +303,7 @@ begin
   delete(tmpm)
 
   ; Create Plots 2:
-  ; -----------------------------------------------
+  ; ----------------------------------------------------------
   MainStg = ""
   XStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
   YStg    = "GPP(2xCO~B~2~N~)/GPP(1xCO~B~2~N~)"
@@ -306,12 +316,12 @@ begin
   data_arr@res_gsnCenterString   = ""
   data_arr@res_gsnMaximize       = True
   data_arr@res_xyMonoMarker      = False
-  data_arr@res_xyMarkers         = thicks 
+  data_arr@res_xyMarkers         = thicks
   data_arr@res_xyMarkerSizeF     = 10.
-  data_arr@res_trXMinF           = min(xCO2(0,:))
-  data_arr@res_trXMaxF           = max(xCO2(0,:))
+  data_arr@res_trXMinF           = min(xCO2(0, :))
+  data_arr@res_trXMaxF           = max(xCO2(0, :))
   data_arr@res_trYMinF           = 0
-  data_arr@res_trYMaxF           = max(yBETA(0,:)) + 0.25 * max(yBETA(0,:))
+  data_arr@res_trYMaxF = max(yBETA(0, :)) + 0.25 * max(yBETA(0, :))
   data_arr@res_vpWidthF          = 0.5
   data_arr@res_vpHeightF         = 0.4
   data_arr@diag_script = DIAG_SCRIPT
@@ -365,15 +375,15 @@ begin
   bres  = True
   bres@gsnDraw          = False
   bres@gsnFrame         = False
-  bres@xyLineThicknessF = 2.        
-  bres@xyLineColor      = (/"black"/)  
+  bres@xyLineThicknessF = 2.
+  bres@xyLineColor      = (/"black"/)
   bres@tiXAxisString    = "GPP(2xCO~B~2~N~)/GPP(1xCO~B~2~N~)"
   bres@tiYAxisString    = "Probability Density"
   bres@trXMinF          = 0.6
   bres@trXMaxF          = 2.0
   bres@trYMinF          = 0.
   bres@trYMaxF          = max(co2_Py)*1.2
-  bres@gsnXYBarChart    = True  
+  bres@gsnXYBarChart    = True
   bres@tiMainString     = ""
   bres@vpWidthF         = 0.5
   bres@vpHeightF        = 0.4
@@ -381,7 +391,7 @@ begin
   bres@tmYLLabelFontHeightF = 0.025
   bres@tiXAxisFontHeightF   = 0.025
   bres@tiYAxisFontHeightF   = 0.022
-  
+
   ; create line plot with PDFs
   diag_script_info@multi_model_mean = False
   diag_script_info@scatter_log = False
@@ -403,13 +413,12 @@ begin
     xy_line(wks, (/co2_Py_pr, co2_Py/), (/co2_y, co2_y/), \
             0., pres, input_file_info)
   end if
-  ;plot = gsn_csm_xy(wks, bin_Py@bin_center, bin_Py, bres)
 
   obsres = True
   obsres@gsLineColor = "red"
   obsres@gsLineThicknessF  = 2
   PDF3 = gsn_add_polyline(wks, plot, co2_y, co2_Py, obsres)
-   
+
   draw(plot)
   frame(wks)
   delete(plot)
@@ -439,8 +448,8 @@ begin
     ncdf_outfile = ncdf_write(CO2var, new_path)
 
    end if
-;-----------------------------------------------------------
 
+  ; -----------------------------------------------------------
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
                  config_user_info@plot_dir + "." + file_type, \
@@ -451,6 +460,6 @@ begin
                  (/"zechlau_sabrina"/), \
                  (/"wenzel16nature"/), \
                  metadata_att_as_array(info, "filename"))
- 
-end 
-; ##############################################################################
+
+end
+; ###############################################################
