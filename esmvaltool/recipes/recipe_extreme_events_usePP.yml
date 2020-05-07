@@ -165,7 +165,8 @@ diagnostics:
           - annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
           - annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
           - annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm
-        cumprec_threshold_nn: 15 
+          - monthly_maximum_value_of_daily_maximum_temperature
+        cumprec_threshold_nn: 15
         # TODO: why is that the same name twice? is this dedicated plots?
         timeseries_idx: True
         gleckler_idx: True

@@ -7,7 +7,7 @@ import sys
 from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import numdaysyear_wrapper
+from extreme_events_utils import numdaysyear_wrapper, select_value_monthly
 from cf_units import Unit
 import yaml
 
@@ -82,6 +82,12 @@ annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm:
         unit: mm day-1
         logic: ge
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_{}_mm
+monthly_maximum_value_of_daily_maximum_temperature:
+    name: TXx
+    required:
+        - tasmax
+    logic: max
+    cf_name: monthly_maximum_value_of_daily_maximum_temperature
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -97,6 +103,8 @@ index_method = {
             "r20mmETCCDI_yr",
         "annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm": 
             "rnnmmETCCDI_yr",
+        "monthly_maximum_value_of_daily_maximum_temperature":
+            "txxETCCDI_m"
         }
 
 method_index = {}
@@ -186,5 +194,12 @@ def rnnmmETCCDI_yr(cubes, **kwargs):
     
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-    
+
+    return res_cube
+
+def txxETCCDI_m(alias_cubes, **kwargs):
+    """TXx, monthly maximum value of daily maximum temperature."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value_monthly(alias_cubes, specs)
     return res_cube
