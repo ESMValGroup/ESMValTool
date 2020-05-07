@@ -107,7 +107,7 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1850
         end_year: 2005
-        ref_model: ESRL
+        reference_dataset: ESRL
       co2s_amp:
         preprocessor: highlat_amp # land_fraction_weighting
         short_name: co2s
@@ -118,7 +118,7 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1850
         end_year: 2005
-        ref_model: ESRL
+        reference_dataset: ESRL
     additional_datasets:
       - {dataset: ESRL, project: OBS, type: ground, version: BRW_T0M, tier: 2, start_year: 1973, end_year: 2012, frequency: yr}
       - {dataset: CanESM2}
