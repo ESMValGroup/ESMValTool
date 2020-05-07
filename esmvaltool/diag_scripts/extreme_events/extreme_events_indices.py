@@ -97,11 +97,11 @@ index_method = {
         "annual_number_of_summer_days": "suETCCDI_yr",
         "annual_number_of_icing_days": "idETCCDI_yr",
         "annual_number_of_tropical_nights": "trETCCDI_yr",
-        "annual_number_of_days_where_cumulative_precipitation_is_above_10_mm": 
+        "annual_number_of_days_where_cumulative_precipitation_is_above_10_mm":
             "r10mmETCCDI_yr",
-        "annual_number_of_days_where_cumulative_precipitation_is_above_20_mm": 
+        "annual_number_of_days_where_cumulative_precipitation_is_above_20_mm":
             "r20mmETCCDI_yr",
-        "annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm": 
+        "annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm":
             "rnnmmETCCDI_yr",
         "monthly_maximum_value_of_daily_maximum_temperature":
             "txxETCCDI_m"
@@ -113,85 +113,85 @@ for index, method in index_method.items():
 
 def fdETCCDI_yr(cubes, **kwargs):
     """FD, Number of frost days: Annual count of days when TN (daily minimum temperature) < 0 degC."""
-    
+
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    
+
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-    
+
     return res_cube
 
 
 def suETCCDI_yr(cubes, **kwargs):
     """SU, Number of summer days: Annual count of days when TX (daily maximum temperature) > 25 degC."""
-    
+
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    
+
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-    
+
     return res_cube
 
 
 def idETCCDI_yr(cubes, **kwargs):
     """ID, Number of icing days: Annual count of days when TX (daily maximum temperature) < 0 degC."""
-    
+
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    
+
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-    
+
     return res_cube
 
 
 def trETCCDI_yr(cubes, **kwargs):
     """TR, Number of tropical nights: Annual count of days when TN (daily minimum temperature) > 20 degC"""
-    
+
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    
+
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-    
+
     return res_cube
 
 
 def r20mmETCCDI_yr(cubes, **kwargs):
     """R20mm, Annual count of days when PRCP≥ 20mm"""
-    
+
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    
+
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-    
+
     return res_cube
 
 
 def r10mmETCCDI_yr(cubes, **kwargs):
     """R10mm, Annual count of days when PRCP≥ 10mm"""
-    
+
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    
+
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-    
+
     return res_cube
 
 def rnnmmETCCDI_yr(cubes, **kwargs):
     """Rnnmm, Annual count of days when PRCP≥ nnmm"""
-    
+
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     threshold_v = kwargs['cfg'].pop('cumprec_threshold_nn', None)
     specs['threshold']['value'] = kwargs['cfg']['cumprec_threshold_nn'] = threshold_v
     specs['name'] = specs['name'].format(threshold_v)
     specs['cf_name'] = specs['cf_name'].format(threshold_v)
-    
+
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
 

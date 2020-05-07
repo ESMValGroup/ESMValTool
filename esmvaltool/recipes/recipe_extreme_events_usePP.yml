@@ -58,15 +58,15 @@ datasets:
 ################################################
 # Define some default parameters using anchors #
 ################################################
-    
+
 plot_pars: &pltpars
   ts_plt: true
   glc_plt: true
-  
+
 range_pars: &rngpars
   base_range: [1981, 1983]
   analysis_range: [1981, 1983]
-  
+
 reference_pars: &refpars
   reference_datasets:
     - MPI-ESM-LR
@@ -79,7 +79,7 @@ regrid_pars: &regpars
 
 mip_definition: &mipdef
   mip: day
-  
+
 ################################################
 # Define preprocessor elements using anchors   #
 ################################################
@@ -87,11 +87,11 @@ mip_definition: &mipdef
 monthly_max: &pp_monmax
   monthly_statistics:
     operator: max
-      
+
 monthly_min: &pp_monmin
   monthly_statistics:
     operator: min
-    
+
 monthly_mean: &pp_monmean
   monthly_statistics:
     operator: min
@@ -102,32 +102,32 @@ filter_5day: &5day_filter
     span: 5
     filter_type: lowpass # TODO: check
     filter_stats: sum
-    
+
 monthly_sum: &pp_monsum
   monthly_statistics:
     operator: sum
-  
+
 ################################################
 # Define preprocessors                         #
 ################################################
-  
+
 preprocessors:
   pp_max:
     <<: *pp_monmax
-    
+
   pp_min:
     <<: *pp_monmin
-    
+
   pp_sum:
     <<: *pp_monsum
 
   pp_5daymax:
     <<: *5day_filter
     <<: *pp_monmax
-    
+
   pp_none:
    {}
-  
+
 ################################################
 # Define diagnostics                           #
 ################################################
@@ -136,7 +136,7 @@ diagnostics:
 
   extremeIndices:
     description: calculate extreme events idx FD
-    
+
     variables:
       tas:
         <<: *mipdef
@@ -151,13 +151,13 @@ diagnostics:
         <<: *mipdef
         preprocessor: pp_none
         # derive: true # TODO: WHY?
-        
+
     scripts:
       extremeIndices:
         script: extreme_events/extreme_events_pp.py
         <<: *refpars
         <<: *regpars
-        indices:  
+        indices:
           - annual_number_of_frost_days
           - annual_number_of_summer_days
           - annual_number_of_icing_days
@@ -174,15 +174,15 @@ diagnostics:
           plot_type: pcolormesh
         <<: *pltpars
 
-#        
+#
 #  GSL:
 #    description: calculate extreme events idx GSL
-#    
+#
 #    variables:
 #      tasmin:
 #        <<: *mipdef
 #        preprocessor: pp_none
-#        
+#
 #    scripts:
 #      GSL:
 #        script: extreme_events/extreme_events_pp.py
@@ -202,12 +202,12 @@ diagnostics:
 #
 ##  TXx:
 ##    description: calculate extreme events idx TXx
-##    
+##
 ##    variables:
 ##      tasmax:
 ##        <<: *mipdef
 ##        preprocessor: pp_max
-##        
+##
 ##    scripts:
 ##      TXx:
 ##        script: extreme_events/extreme_events_pp.py
@@ -224,15 +224,15 @@ diagnostics:
 ##          - txxETCCDI_yr
 ##        <<: *pltpars
 ##        <<: *rngpars
-#        
+#
 #  TNx:
 #    description: calculate extreme events idx TNx
-#    
+#
 #    variables:
 #      tasmin:
 #        <<: *mipdef
 #        preprocessor: pp_max
-#        
+#
 #    scripts:
 #      TNx:
 #        script: extreme_events/extreme_events_pp.py
@@ -249,15 +249,15 @@ diagnostics:
 #          - tnxETCCDI_yr
 #        <<: *pltpars
 #        <<: *rngpars
-#        
+#
 ##  TXn:
 ##    description: calculate extreme events idx TXn
-##    
+##
 ##    variables:
 ##      tasmax:
 ##        <<: *mipdef
 ##        preprocessor: pp_min
-##        
+##
 ##    scripts:
 ##      TXn:
 ##        script: extreme_events/extreme_events_pp.py
@@ -274,15 +274,15 @@ diagnostics:
 ##          - txnETCCDI_yr
 ##        <<: *pltpars
 ##        <<: *rngpars
-#        
+#
 #  TNn:
 #    description: calculate extreme events idx TNn
-#    
+#
 #    variables:
 #      tasmin:
 #        <<: *mipdef
 #        preprocessor: pp_min
-#        
+#
 #    scripts:
 #      TNn:
 #        script: extreme_events/extreme_events_pp.py
@@ -299,10 +299,10 @@ diagnostics:
 #          - tnnETCCDI_yr
 #        <<: *pltpars
 #        <<: *rngpars
-#        
+#
 #  TN10p:
 #    description: calculate extreme events idx TN10p
-#    
+#
 #    variables:
 #      tasmin:
 #        <<: *mipdef
@@ -327,11 +327,11 @@ diagnostics:
 #
 ##  TX10p:
 ##    description: calculate extreme events idx TX10p
-##    
+##
 ##    variables:
 ##      tasmax:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      TX10p:
@@ -352,7 +352,7 @@ diagnostics:
 #
 #  TN90p:
 #    description: calculate extreme events idx TN90p
-#    
+#
 #    variables:
 #      tasmin:
 #        <<: *mipdef
@@ -377,11 +377,11 @@ diagnostics:
 #
 ##  TX90p:
 ##    description: calculate extreme events idx TX90p
-##    
+##
 ##    variables:
 ##      tasmax:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      TX90p:
@@ -402,11 +402,11 @@ diagnostics:
 #
 ##  WSDI:
 ##    description: calculate extreme events idx WSDI
-##    
+##
 ##    variables:
 ##      tasmax:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      WSDI:
@@ -427,11 +427,11 @@ diagnostics:
 #
 ##  CSDI:
 ##    description: calculate extreme events idx CSDI
-##    
+##
 ##    variables:
 ##      tasmax:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      CSDI:
@@ -452,13 +452,13 @@ diagnostics:
 #
 ##  DTR:
 ##    description: calculate extreme events idx DTR
-##    
+##
 ##    variables:
 ##      tasmax:
 ##        <<: *mipdef
 ##      tasmin:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      DTR:
@@ -479,7 +479,7 @@ diagnostics:
 #
 ##  Rx1day:
 ##    description: calculate extreme events idx Rx1day
-##    
+##
 ##    variables:
 ##      pr:
 ##        <<: *mipdef
@@ -501,10 +501,10 @@ diagnostics:
 ##          - rx1dayETCCDI_yr
 ##        <<: *pltpars
 ##        <<: *rngpars
-#        
+#
 ##  Rx5day:
 ##    description: calculate extreme events idx Rx5day
-##    
+##
 ##    variables:
 ##      pr:
 ##        <<: *mipdef
@@ -529,11 +529,11 @@ diagnostics:
 #
 ##  CDD:
 ##    description: calculate extreme events idx CDD
-##    
+##
 ##    variables:
 ##      pr:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      CDD:
@@ -551,14 +551,14 @@ diagnostics:
 ##          - cddETCCDI_yr
 ##        <<: *pltpars
 ##        <<: *rngpars
-#        
+#
 ##  CWD:
 ##    description: calculate extreme events idx CWD
-##    
+##
 ##    variables:
 ##      pr:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      CWD:
@@ -579,11 +579,11 @@ diagnostics:
 #
 ##  R95pTOT:
 ##    description: calculate extreme events idx R95pTOT
-##    
+##
 ##    variables:
 ##      pr:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      R95pTOT:
@@ -601,14 +601,14 @@ diagnostics:
 ##          - r95pETCCDI_yr
 ##        <<: *pltpars
 ##        <<: *rngpars
-#        
+#
 ##  R99pTOT:
 ##    description: calculate extreme events idx R99pTOT
-##    
+##
 ##    variables:
 ##      pr:
 ##        <<: *mipdef
-##        preprocessor: 
+##        preprocessor:
 ##
 ##    scripts:
 ##      R99pTOT:
@@ -629,7 +629,7 @@ diagnostics:
 #
 ##  PRCPTOT:
 ##    description: calculate extreme events idx PRCPTOT
-##    
+##
 ##    variables:
 ##      pr:
 ##        <<: *mipdef

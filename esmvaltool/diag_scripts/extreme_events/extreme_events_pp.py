@@ -115,30 +115,30 @@ def main(cfg):
     # Loop over variables/datasets in alphabetical order of alias
     for alias, alias_data in grouped_input_data.items():
         logger.info('Processing alias %s', alias)
-        
+
         logger.info(alias_data)
-        
+
         alias_cubes = {}
         # Save all alias related cubes in dictionary
         for attributes in alias_data:
             logger.info('Processing dataset {}, {}.'.format(attributes['dataset'], attributes['short_name']))
             input_file = attributes['filename']
             alias_cubes[attributes['short_name']] = convert_ETCCDI_units(iris.load_cube(input_file))
-            
+
         # get index function
         for index_name in cfg['indices']:
             logger.info('Computing index %s', index_name)
-            etccdi_index = getattr(extreme_events_indices, 
+            etccdi_index = getattr(extreme_events_indices,
                                    extreme_events_indices.index_method[
                                            index_name],
                                    None)
-                
+
             # if there is no index available: report and break
             if etccdi_index is None:
                 logger.error('There is no index available called: {}'.format(index_name))
                 logger.error('*** calculation failed ***')
                 return
-            
+
 #            logger.info(alias_cubes)
 #            logger.info(etccdi_index(alias_cubes, cfg))
             # calculate and save cube
@@ -146,9 +146,9 @@ def main(cfg):
                 {k:v.copy() for k,v in alias_cubes.items()}
                 , cfg=cfg),
                       cfg['work_dir'] + os.sep + alias + '_' + index_name + '.nc')
-                    
+
             logger.info('Finalized computation for %s', ', '.join([alias, attributes['dataset'], index_name]))
-    
+
     #output_basename = os.path.splitext(
     #        os.path.basename(input_file))[0] + '_mean'
     #provenance_record = get_provenance_record(
