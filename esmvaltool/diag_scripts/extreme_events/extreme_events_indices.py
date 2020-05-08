@@ -7,7 +7,7 @@ import sys
 from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import numdaysyear_wrapper, select_value
+from extreme_events_utils import numdaysyear_wrapper, select_value, _check_required_variables
 from cf_units import Unit
 import yaml
 
@@ -144,6 +144,14 @@ annual_total_precipitation_in_wet_days:
         - pr
     logic: sum
     cf_name: annual_total_precipitation_in_wet_days
+daily_temperature_range:
+    name: DTR
+    period: daily
+    required:
+        - tasmin
+        - tasmax
+    logic: diff
+    cf_name: daily_temperature_range
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -172,7 +180,9 @@ index_method = {
         "monthly_maximum_5day_precipitation":
             "rx5dayETCCDI_m",
         "annual_total_precipitation_in_wet_days":
-            "prcptot"
+            "prcptot",
+        "daily_temperature_range":
+            "dtr"
         }
 
 method_index = {}
@@ -315,4 +325,13 @@ def prcptot(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     return select_value(alias_cubes, specs)
+
+def dtr(alias_cubes, **kwargs):
+    """Calculates the DTR climate index: Daily temperature range."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
+    result_cube = alias_cubes['tasmax'] - alias_cubes['tasmin']
+    result_cube.rename(specs['cf_name'])
+    return result_cube
 
