@@ -107,9 +107,31 @@ User settings in recipe
 
    *Required preprocessor settings:*
 
-   * A shapefile that specifies the extents of the catchment.
-   * A region bounding box slightly larger than the shapefile. This is run prior to regridding, to save memory.
+      * extract_region: A region bounding box slightly larger than the shapefile. This is run prior to regridding, to save memory.
+      * extract_shape:*
 
+         * shapefile: A shapefile that specifies the extents of the catchment.
+
+         These settings should not be changed
+
+         * method: contains
+         * crop: true
+
+      * regrid:*
+
+         * target_grid: Grid of LISFLOOD input files
+
+         These settings should not be changed
+
+         * lon_offset: true
+         * lat_offset: true
+         * scheme: linear
+
+   There is one diagnostic ``diagnostic_daily`` for using daily data.
+
+   *Required diagnostic script settings:*
+
+      * catchment: Name of the catchment, used in output filenames
 
 #. recipe_hype.yml
 
@@ -159,14 +181,14 @@ Variables
 
 #. recipe_lisflood.ymml
 
-   * pr
-   * tas
-   * tasmax
-   * tasmin
-   * tdps
-   * uas
-   * vas
-   * rsds
+   * pr (atmos, daily, longitude, latitude, time)
+   * tas (atmos, daily, longitude, latitude, time)
+   * tasmax (atmos, daily, longitude, latitude, time)
+   * tasmin (atmos, daily, longitude, latitude, time)
+   * tdps (atmos, daily, longitude, latitude, time)
+   * uas (atmos, daily, longitude, latitude, time)
+   * vas (atmos, daily, longitude, latitude, time)
+   * rsds (atmos, daily, longitude, latitude, time)
 
 #. recipe_hype.yml
 
