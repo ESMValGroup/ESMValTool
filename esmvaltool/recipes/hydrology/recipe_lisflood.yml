@@ -81,4 +81,4 @@ diagnostics:
     scripts:
       script:
         script: hydrology/lisflood.py
-        catchment: rhine
+        catchment: Meuse
