@@ -132,7 +132,7 @@ def main(cfg):
         cubes['sfcWind'] = compute_windspeed(uas, vas)
         ancestors['sfcWind'] = ancestors['uas'] + ancestors['vas']
 
-	cubes['pr'].units = 'mm d-1'
+        cubes['pr'].units = 'mm d-1'
 
         for var_name, cube in cubes.items():
             cube.remove_coord('shape_id')
