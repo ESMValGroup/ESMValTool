@@ -140,7 +140,7 @@ def main(cfg):
             points = cube.coord('longitude').points
             cube.coord('longitude').points = (points + 180) % 360 - 180
             # latitudes decreasing
-            # TODO
+            cube = cube[:, ::-1, ...]
 
             output_file = save(cube, var_name, dataset, cfg)
 
