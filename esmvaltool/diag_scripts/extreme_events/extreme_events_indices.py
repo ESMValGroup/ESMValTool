@@ -7,7 +7,7 @@ import sys
 from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import numdaysyear_wrapper, select_value_monthly
+from extreme_events_utils import numdaysyear_wrapper, select_value
 from cf_units import Unit
 import yaml
 
@@ -22,6 +22,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 index_definition = yaml.load("""
 annual_number_of_frost_days:
     name: frost days
+    period: annual
     required:
         - tasmin
     threshold:
@@ -31,6 +32,7 @@ annual_number_of_frost_days:
     cf_name: number_of_days_with_air_temperature_below_freezing_point
 annual_number_of_summer_days:
     name: summer days
+    period: annual
     required:
         - tasmax
     threshold:
@@ -40,6 +42,7 @@ annual_number_of_summer_days:
     cf_name: number_of_days_with_air_temperature_above_25_degree_Celsius
 annual_number_of_icing_days:
     name: icing days
+    period: annual
     required:
         - tasmax
     threshold:
@@ -49,6 +52,7 @@ annual_number_of_icing_days:
     cf_name: number_of_days_where_air_temperature_remains_below_freezing_point
 annual_number_of_tropical_nights:
     name: tropical nights
+    period: annual
     required:
         - tasmin
     threshold:
@@ -58,6 +62,7 @@ annual_number_of_tropical_nights:
     cf_name: number_of_days_where_air_temperature_remains_above_20_degre_Celsius
 annual_number_of_days_where_cumulative_precipitation_is_above_10_mm:
     name: R10mm
+    period: annual
     required:
         - pr
     threshold:
@@ -67,6 +72,7 @@ annual_number_of_days_where_cumulative_precipitation_is_above_10_mm:
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
 annual_number_of_days_where_cumulative_precipitation_is_above_20_mm:
     name: R20mm
+    period: annual
     required:
         - pr
     threshold:
@@ -76,6 +82,7 @@ annual_number_of_days_where_cumulative_precipitation_is_above_20_mm:
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
 annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm:
     name: R{}mm
+    period: annual
     required:
         - pr
     threshold:
@@ -84,30 +91,35 @@ annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm:
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_{}_mm
 monthly_maximum_value_of_daily_maximum_temperature:
     name: TXx
+    period: monthly
     required:
         - tasmax
     logic: max
     cf_name: monthly_maximum_value_of_daily_maximum_temperature
 monthly_maximum_value_of_daily_minimum_temperature:
     name: TNx
+    period: monthly
     required:
         - tasmin
     logic: max
     cf_name: monthly_maximum_value_of_daily_minimum_temperature
 monthly_minimum_value_of_daily_maximum_temperature:
     name: TXn
+    period: monthly
     required:
         - tasmax
     logic: min
     cf_name: monthly_minimum_value_of_daily_maximum_temperature
 monthly_minimum_value_of_daily_minimum_temperature:
     name: TNn
+    period: monthly
     required:
         - tasmin
     logic: min
     cf_name: monthly_minimum_value_of_daily_minimum_temperature
 monthly_maximum_1day_precipitation:
     name: Rx1day
+    period: monthly
     required:
         - pr
     spell:
@@ -117,6 +129,7 @@ monthly_maximum_1day_precipitation:
     cf_name: monthly_maximum_1day_precipitation
 monthly_maximum_5day_precipitation:
     name: Rx5day
+    period: monthly
     required:
         - pr
     spell:
@@ -124,6 +137,13 @@ monthly_maximum_5day_precipitation:
         unit: day
     logic: max
     cf_name: monthly_maximum_5day_precipitation
+annual_total_precipitation_in_wet_days:
+    name: PRCPTOT
+    period: annual
+    required:
+        - pr
+    logic: sum
+    cf_name: annual_total_precipitation_in_wet_days
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -150,7 +170,9 @@ index_method = {
         "monthly_maximum_1day_precipitation":
             "rx1dayETCCDI_m",
         "monthly_maximum_5day_precipitation":
-            "rx5dayETCCDI_m"
+            "rx5dayETCCDI_m",
+        "annual_total_precipitation_in_wet_days":
+            "prcptot"
         }
 
 method_index = {}
@@ -247,7 +269,7 @@ def txxETCCDI_m(alias_cubes, **kwargs):
     """TXx, monthly maximum value of daily maximum temperature."""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    res_cube = select_value_monthly(alias_cubes, specs)
+    res_cube = select_value(alias_cubes, specs)
     return res_cube
 
 def tnxETCCDI_m(alias_cubes, **kwargs):
@@ -255,28 +277,28 @@ def tnxETCCDI_m(alias_cubes, **kwargs):
     # TODO: Here is a lot of repetition that should be cleaned.
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    res_cube = select_value_monthly(alias_cubes, specs)
+    res_cube = select_value(alias_cubes, specs)
     return res_cube
 
 def txnETCCDI_m(alias_cubes, **kwargs):
     """TNx, monthly minimum value of daily maximum temperature."""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    res_cube = select_value_monthly(alias_cubes, specs)
+    res_cube = select_value(alias_cubes, specs)
     return res_cube
 
 def tnnETCCDI_m(alias_cubes, **kwargs):
     """TNx, monthly minimum value of daily minimum temperature."""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    res_cube = select_value_monthly(alias_cubes, specs)
+    res_cube = select_value(alias_cubes, specs)
     return res_cube
 
 def rx1dayETCCDI_m(alias_cubes, **kwargs):
     """Calulates the Rx1day climate index: Monthly_maximum_1day_precipitation."""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    res_cube = select_value_monthly(alias_cubes, specs)
+    res_cube = select_value(alias_cubes, specs)
     return res_cube
 
 def rx5dayETCCDI_m(alias_cubes, **kwargs):
@@ -285,7 +307,12 @@ def rx5dayETCCDI_m(alias_cubes, **kwargs):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     alias_cubes = {key: cube.rolling_window('time', iris.analysis.SUM, specs['spell']['value'])
             for key, cube in alias_cubes.items()}
-    res_cube = select_value_monthly(alias_cubes, specs)
+    res_cube = select_value(alias_cubes, specs)
     return res_cube
 
+def prcptot(alias_cubes, **kwargs):
+    """Calculates the PRCPTOT climate index: Annual total precipitation in wet days."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    return select_value(alias_cubes, specs)
 

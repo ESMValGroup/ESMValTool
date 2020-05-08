@@ -7,7 +7,7 @@ from pprint import pformat
 import numpy as np
 import iris
 from cf_units import Unit
-from esmvalcore.preprocessor import monthly_statistics
+import esmvalcore.preprocessor
 
 #from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
 #                                            select_metadata, sorted_metadata)
@@ -127,14 +127,19 @@ def convert_ETCCDI_units(cube):
         cube.units = Unit('mm day-1')
     return cube
 
-def select_value_monthly(alias_cubes, specs):
-    """Select value per month according to given logical operator."""
+def select_value(alias_cubes, specs):
+    """Select value per period according to given logical operator."""
     logger.info(f"Computing the {specs['cf_name'].replace('_',' ')}.")
     _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
     # Here we assume that only one variable is required.
     cube = [item for _,item in alias_cubes.items() if item.var_name in specs['required']].pop()
-
-    result_cube = monthly_statistics(cube, specs['logic'])
+    if 'period' not in specs.keys():
+        raise Exception(f"Period needs to be specified.")
+    statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
+    if statistic_function:
+        result_cube = statistic_function(cube, specs['logic'])
+    else:
+        raise Exception(f"Period {specs['period']} not implemented.")
     result_cube.rename(specs['cf_name'])
     return result_cube
 
