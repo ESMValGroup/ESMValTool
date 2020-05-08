@@ -169,6 +169,8 @@ diagnostics:
           - monthly_maximum_value_of_daily_minimum_temperature
           - monthly_minimum_value_of_daily_maximum_temperature
           - monthly_minimum_value_of_daily_minimum_temperature
+          - monthly_maximum_1day_precipitation
+          - monthly_maximum_5day_precipitation
         cumprec_threshold_nn: 15
         # TODO: why is that the same name twice? is this dedicated plots?
         timeseries_idx: True

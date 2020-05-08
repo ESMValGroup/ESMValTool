@@ -106,6 +106,24 @@ monthly_minimum_value_of_daily_minimum_temperature:
         - tasmin
     logic: min
     cf_name: monthly_minimum_value_of_daily_minimum_temperature
+monthly_maximum_1day_precipitation:
+    name: Rx1day
+    required:
+        - pr
+    spell:
+        value: 1
+        unit: day
+    logic: max
+    cf_name: monthly_maximum_1day_precipitation
+monthly_maximum_5day_precipitation:
+    name: Rx5day
+    required:
+        - pr
+    spell:
+        value: 5
+        unit: day
+    logic: max
+    cf_name: monthly_maximum_5day_precipitation
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -128,7 +146,11 @@ index_method = {
         "monthly_minimum_value_of_daily_maximum_temperature":
             "txnETCCDI_m",
         "monthly_minimum_value_of_daily_minimum_temperature":
-            "tnnETCCDI_m"
+            "tnnETCCDI_m",
+        "monthly_maximum_1day_precipitation":
+            "rx1dayETCCDI_m",
+        "monthly_maximum_5day_precipitation":
+            "rx5dayETCCDI_m"
         }
 
 method_index = {}
@@ -249,4 +271,21 @@ def tnnETCCDI_m(alias_cubes, **kwargs):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     res_cube = select_value_monthly(alias_cubes, specs)
     return res_cube
+
+def rx1dayETCCDI_m(alias_cubes, **kwargs):
+    """Calulates the Rx1day climate index: Monthly_maximum_1day_precipitation."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value_monthly(alias_cubes, specs)
+    return res_cube
+
+def rx5dayETCCDI_m(alias_cubes, **kwargs):
+    """Calulates the Rx5day climate index: Monthly_maximum_5day_precipitation."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    alias_cubes = {key: cube.rolling_window('time', iris.analysis.SUM, specs['spell']['value'])
+            for key, cube in alias_cubes.items()}
+    res_cube = select_value_monthly(alias_cubes, specs)
+    return res_cube
+
 
