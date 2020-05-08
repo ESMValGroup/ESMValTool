@@ -44,8 +44,6 @@ preprocessors:
       units: J m-2 day-1
   daily_windspeed:
     <<: *general
-    convert_units:
-      units: m s-1
 
 diagnostics:
   diagnostic_daily:
