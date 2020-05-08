@@ -23,15 +23,11 @@ documentation:
 
 
 
-# TODO select the right datasets
+# TODO select the right datasets and include observations
 datasets:
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r(1:3)i1p1, start_year: 1995, end_year: 2014}
   - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r(1:3)i1p1, start_year: 1995, end_year: 2014}
   - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r(1:4)i1p1, start_year: 1995, end_year: 2014}
-#   - {dataset: ACCESS1-0, exp: rcp45, ensemble: r1i1p1, start_year: 1995, end_year: 2014}
-#   - {dataset: ACCESS1-3, exp: rcp45, ensemble: r1i1p1, start_year: 1995, end_year: 2014}
-#   - {dataset: CCSM4, exp: rcp45, ensemble: r(1:4)i1p1, start_year: 1995, end_year: 2014}
-#   - {dataset: CCSM4, exp: rcp60, ensemble: r(1:4)i1p1, start_year: 1995, end_year: 2014}
   - {dataset: ACCESS1-0, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1995, end_year: 2014}
   - {dataset: ACCESS1-3, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1995, end_year: 2014}
   - {dataset: CCSM4, project: CMIP5, exp: rcp85, ensemble: r(1:4)i1p1, start_year: 1995, end_year: 2014}
@@ -39,24 +35,44 @@ datasets:
 
 # TODO extend this preprocessor to adhere to ClimWIP methods (extract shape / extract points)
 preprocessors:
-
-  preprocessor1:
+  all_methods: &shared
     regrid:
       target_grid: 2.5x2.5
       scheme: linear
-
-
-  preprocessor_nlpoint:
-    # Extract point in the S-E corner of the Netherlands
-    extract_point:
-      # degrees east & north
-      longitude: 6.25
-      latitude: 51.25
-      scheme: linear
+    mask_landsea:
+      mask_out: sea
+    extract_region:
+      start_longitude: -10.0
+      end_longitude: 39.0
+      start_latitude: 30.0
+      end_latitude: 76.25
+  
+  climWip_specific: &climwip
+    extract_season:
+      season: JJA
+    climate_statistics:
+      operator: mean
+  
+  climWip_complete:
+    <<: *shared
+    <<: *climwip
 
 # TODO add another diagnostic for plotting and more variables
 diagnostics:
-  climwip:
+  inspect_preprocessed_files:
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: climWip_complete
+      pr:  
+        mip: Amon
+        preprocessor: climWip_complete
+    scripts:
+      visualize_region:
+        script:
+          weighting/visualize_region.py
+
+  apply_climwip:
     variables:
       tas:
         mip: Amon
@@ -65,3 +81,4 @@ diagnostics:
     scripts:
       climwip: 
         script: weighting/climwip.py
+        shape_params: {D_tas : 0.588, D_pr: 0.658, S: 0.704}
