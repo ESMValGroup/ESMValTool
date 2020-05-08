@@ -99,8 +99,8 @@ def save(cube, var_name, dataset, cfg):
     basename = '_'.join([
         'lisflood',
         dataset,
-        var_name,
         cfg['catchment'],
+        var_name,
         str(start_year),
         str(end_year),
     ])
