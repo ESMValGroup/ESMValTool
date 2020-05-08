@@ -56,7 +56,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/hydrology
     * pcrglobwb.py
     * marrmot.py
     * wflow.py
-    * lisflood.yml
+    * lisflood.py
     * hype.py
 
 
