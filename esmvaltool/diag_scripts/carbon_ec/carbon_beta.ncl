@@ -50,7 +50,7 @@ begin
   log_info(DIAG_SCRIPT + " (var: " + var + ")")
   log_info("+++++++++++++++++++++++++++++++++++++++++++++")
 
-  ; ******************************************************************  
+  ; ******************************************************************
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
@@ -67,7 +67,7 @@ begin
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "cl_output", False)
- 
+
   ; optional input parameters
   if(isatt(diag_script_info, "bc_xmax_year")) then
     xMax_year = toint(diag_script_info@bc_xmax_year)
@@ -130,8 +130,7 @@ begin
     aY0data(imod, ymin:ymax) = (/tmp0/)
 
     rc = regline_stats(aY0data(imod, ymin:ymax), \
-                       pctco({year|nyMin: \ 
-                       nyMax}))
+                       pctco({year|nyMin:nyMax}))
     Yfitda(imod, ymin:ymax) = rc@Yest
 
     rcgpp(imod) = tofloat(rc)
@@ -141,25 +140,30 @@ begin
                       avg(tofloat(tmp0({time|xMin_year:xMin_year+4}))))
 
       delta0_std(imod) = sqrt( \
-                         (stddev(tofloat(tmp0({time|xMax_year-4:xMax_year})))/ \
-                         avg(tofloat(tmp0({time|xMin_year:xMin_year+4})))) ^2+ \
-                         (stddev(tofloat(tmp0({time|xMin_year:xMin_year+4})))* \
-                         avg(tofloat(tmp0({time|xMax_year-4:xMax_year})))/ \
-                         avg(tofloat(tmp0({time|xMin_year:xMin_year+4}))) ^2) ^2)
+                         (stddev(tofloat(tmp0( \
+                             {time|xMax_year-4:xMax_year})))/ \
+                         avg(tofloat(tmp0( \
+                             {time|xMin_year:xMin_year+4})))) ^ 2 + \
+                         (stddev(tofloat(tmp0( \
+                             {time|xMin_year:xMin_year+4})))* \
+                         avg(tofloat(tmp0( \
+                             {time|xMax_year-4:xMax_year})))/ \
+                         avg(tofloat(tmp0( \
+                             {time|xMin_year:xMin_year+4}))) ^ 2) ^ 2)
     else
       delta0(imod) = (avg(tmp0({time|xMax_year-4:xMax_year}))/ \
                       avg(tmp0(0:4)))
 
       delta0_std(imod) = sqrt( \
                          (stddev(tmp0({time|xMax_year-4:xMax_year}))/ \
-                         avg(tmp0(0:4)))^2+(stddev(tmp0(0:4)) * \
+                         avg(tmp0(0:4))) ^2 + (stddev(tmp0(0:4)) * \
                          avg(tmp0({time|xMax_year-4:xMax_year}))/ \
-                         avg(tmp0(0:4))^2)^2)
+                         avg(tmp0(0:4)) ^2) ^2)
     end if
     betaGPP(imod) = delta0(imod) * 1/0.9
 
     delete([/tmp0, ymin, ymax, A0, rc/])
-  end do     ; model loop 
+  end do     ; model loop
 
   ; ---------------------------------------------------------------------
   ; Optional output to NetCDF
@@ -176,9 +180,9 @@ begin
     betavar!1        = "model"
     betavar&model    = datasetnames
     betavar@ncdf     = new_path
-    betavar@var      = "beta"    
+    betavar@var      = "beta"
     betavar@diag_script = (/DIAG_SCRIPT/)
-    betavar@rcgpp    = rcgpp 
+    betavar@rcgpp    = rcgpp
     betavar@betaGPP  = betaGPP
     betavar@delta0_std = delta0_std
 
@@ -229,7 +233,7 @@ begin
     txres@gsMarkerSizeF = MarkerSizeF(imod)
     txres@gsMarkerIndex = markers(imod)
     add_markers(wks, plot, txres, pctco({year|nyMin:nyMax}), aY0data(imod,:))
-       
+
     lineres@gsLineColor = colors(imod)
     plot@$marker$ = gsn_add_polyline(wks, plot, Yfitda(imod, :), \
                                         aY0data(imod, :), lineres)
@@ -276,7 +280,7 @@ begin
   marker_thicks = datasetnames
   marker_sizes  = datasetnames
 
-  marker_thicks = 3 
+  marker_thicks = 3
   marker_sizes  = 0.02
 
   leg = True
@@ -305,6 +309,4 @@ begin
                  (/"wenzel16nature"/), \
                  metadata_att_as_array(info, "filename"))
 
-end 
-; #######################################################################
-
+end

@@ -52,9 +52,9 @@ begin
   info0 = info[co2s_ann]
   info1 = info[co2s_amp]
 
-  ref_model = info[0]@reference_dataset
-  iref = ind(ref_model .eq. datasetnames)
-  idat = ind(ref_model .ne. datasetnames)
+  reference_dataset = variable_info[0]@reference_dataset
+  iref = ind(reference_dataset .eq. datasetnames)
+  idat = ind(reference_dataset .ne. datasetnames)
 
   datasetnames = metadata_att_as_array(info0, "dataset")
   dim_MOD = ListCount(info0)
@@ -103,7 +103,7 @@ begin
   temp_dir = temp_dir + "beta_" \
                       + diag_script_info@bc_xmax_year + "-" \
                       + diag_script_info@bc_xmin_year + ".nc"
-  ; ================================================================== 
+  ; ==================================================================
   ; setup data holders for plots
   nyMax = max(metadata_att_as_array(info0, "end_year"))
   nyMin = min(metadata_att_as_array(info0, "start_year"))
@@ -192,7 +192,7 @@ begin
   yBETA(1, 1)  = beta_eco2
   yBETA(1, 2:) = betaGPP(1, :dim_MOD-1)
 
-  xCO2 =  new((/2,dim_MOD+2/), float)
+  xCO2 =  new((/2, dim_MOD+2/), float)
   xCO2(0, 1)  = rcc(iref, 1)
   xCO2(0, 2:) = rcc(idat, 1)
   xCO2(1, 1)  = stdrc(iref, 1)
@@ -203,14 +203,14 @@ begin
   delete(minx)
   delete(maxx)
 
-  ;Plot section
+  ; Plot section
   ; -----------------------------------------------------------
   ; create separate legend
   marker_thicks = datasetnames
   marker_sizes  = datasetnames
   marker_thicks = 3
   marker_sizes  = 0.02
-  marker   = new(dim_MOD,"graphic")
+  marker   = new(dim_MOD, "graphic")
 
   ; Create Plots 1:
   ; -----------------------------------------------------------
@@ -268,7 +268,7 @@ begin
   tmp_orig = datasetnames
   tmpb = rcc(:dim_MOD-1, 1)
   tmpb_orig = rcc(:, 1)
-   
+
   rcc(:dim_MOD-1, 1) = tmpb(::-1)
   rcc@info = info0
   tmpm = datasetnames(:dim_MOD-1)
@@ -341,9 +341,9 @@ begin
 
   if (rcc(dim_MOD, 1).ne.0) then
       xin = (/rcc(dim_MOD, 1) + stdrc(dim_MOD, 1), \
-              rcc(dim_MOD, 1) + stdrc(dim_MOD, 1), \
-              rcc(dim_MOD, 1) - stdrc(dim_MOD, 1), \
-              rcc(dim_MOD, 1) - stdrc(dim_MOD, 1)/)
+             rcc(dim_MOD, 1) + stdrc(dim_MOD, 1), \
+             rcc(dim_MOD, 1) - stdrc(dim_MOD, 1), \
+             rcc(dim_MOD, 1) - stdrc(dim_MOD, 1)/)
       yin = (/500, -500, -500, 500/)
       add_prediction_error(wks, plot, False, xin, yin)
       delete([/xin, yin/])
@@ -446,8 +446,7 @@ begin
 
     ; Write NetCDF output
     ncdf_outfile = ncdf_write(CO2var, new_path)
-
-   end if
+  end if
 
   ; -----------------------------------------------------------
   ; Call provenance logger

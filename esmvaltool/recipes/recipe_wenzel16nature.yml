@@ -120,7 +120,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: ESRL
     additional_datasets:
-      - {dataset: ESRL, project: OBS, type: ground, version: BRW_T0M, tier: 2, start_year: 1973, end_year: 2012, frequency: yr}
+      #- {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2, start_year: 1973, end_year: 2012, frequency: yr}
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}

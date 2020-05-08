@@ -4,14 +4,15 @@
 ; Plots:
 ; * single_barchart         : one value per model
 ;
-; Written by Sabrina Wenzel (sabrina.wenzel@dlr.de)
+; Written by Sabrina Wenzel (sabrina.zechlau@dlr.de)
 ; #######################################################################
 load "$diag_scripts/../interface_scripts/auxiliary.ncl"
 load "$diag_scripts/../interface_scripts/logging.ncl"
 
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
-;#######################################################################
+; #######################################################################
+
 undef("barchart")
 function barchart(wks_in[1], \
                   source, \
@@ -54,17 +55,11 @@ begin
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
-  ; Define names for x-ticks and dimsizes 
+  ; Define names for x-ticks and dimsizes
   dim_MOD  = dimsizes(data(:, 0))
-  ;newPattern = new(dim_MOD, integer)
-  ;newPattern(:) = 0
-  
+
   XStg = data&datasets(0)
   xValue = ispan(1, dim_MOD, 1)
-
-  do xi = 1,dimsizes(XStg)-1
-    newPattern(xi) = where(XStg(xi-1) .eq. XStg(xi), 16, 0)
-  end do
 
   ; Resources
   res = True
@@ -94,8 +89,7 @@ begin
   res@tiMainString       = var
   res@tiYAxisString      = data&yaxis
   res@gsnYRefLine        = 0.
-  res@gsnXYBarChartColors2  = colors 
-  ;res@gsnXYBarChartPatterns = newPattern
+  res@gsnXYBarChartColors2  = colors
 
   ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")

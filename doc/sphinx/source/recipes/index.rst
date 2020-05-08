@@ -47,6 +47,7 @@ Future projections
    recipe_snowalbedo
    recipe_ecs
    recipe_wenzel16jclim
+   recipe_wenzel16nature
    recipe_tcr
 
 IPCC

@@ -1,11 +1,14 @@
-Emergent constraint on carbon cycle concentration feedback
-===========================================================
+.. _recipes_wenzel16nature:
+
+Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO2
+=============================================================================================
 
 Overview
 --------
 
-Figures from Wenzel et al. (2016) are reproduced with recipe_wenzel16nature.yml. Gross primary productivity (gpp) and atmospheric CO2 (co2) at the surface are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a set of routines to diagnose the long-term carbon cycle - climate feedback parameter (beta) from an ensemble of CMIP5 models. Also included in the recipe is a comparison of the co2 seasonal cycle amplitude for historical simulations used to diagnose the observable sensitivity of the seasonal cycle amplitude to rising [CO2] levels. As a key figure of this recipe, the diagnosed values from the models beta vs. sensitivity of co2 amplitude are compared in a scatter plot constituting an emergent constraint.
+Figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel16nature.yml. Gross primary productivity (gpp) and atmospheric CO2 (co2) at the surface are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a set of routines to diagnose the long-term carbon cycle - concentration feedback parameter (beta) from an ensemble of CMIP5 models and the observable change in the [CO2] seasonal cycle amplitude due to rising atmospheric [CO2] levels. As a key figure of this recipe, the diagnosed values from the models beta vs. he change in [CO2] amplitude are compared in a scatter plot constituting an emergent constraint.
 
+.. _`Wenzel et al. (2016)`: https://www.nature.com/articles/nature19772
 
 Available recipe and diagnostics
 -----------------------------------
