@@ -132,7 +132,16 @@ def main(cfg):
         cubes['sfcWind'] = compute_windspeed(uas, vas)
         ancestors['sfcWind'] = ancestors['uas'] + ancestors['vas']
 
+        cubes['pr'].units = 'mm d-1'
+
         for var_name, cube in cubes.items():
+            cube.remove_coord('shape_id')
+            # Western emisphere longitudes should be negative
+            points = cube.coord('longitude').points
+            cube.coord('longitude').points = (points + 180) % 360 - 180
+            # latitudes decreasing
+            # TODO
+
             output_file = save(cube, var_name, dataset, cfg)
 
             # Store provenance
