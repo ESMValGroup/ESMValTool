@@ -132,6 +132,8 @@ def main(cfg):
         cubes['sfcWind'] = compute_windspeed(uas, vas)
         ancestors['sfcWind'] = ancestors['uas'] + ancestors['vas']
 
+	cubes['pr'].units = 'mm d-1'
+
         for var_name, cube in cubes.items():
             output_file = save(cube, var_name, dataset, cfg)
 
