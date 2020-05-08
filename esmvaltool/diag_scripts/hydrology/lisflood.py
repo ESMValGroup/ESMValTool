@@ -110,7 +110,7 @@ def save(cube, var_name, dataset, cfg):
 
 
 def main(cfg):
-    """Process data for use as input to the LISFLOOD hydrological model """
+    """Process data for use as input to the LISFLOOD hydrological model."""
     input_metadata = cfg['input_data'].values()
     logger.info(input_metadata)
 
