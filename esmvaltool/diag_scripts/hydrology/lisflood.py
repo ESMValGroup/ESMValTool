@@ -73,10 +73,10 @@ def compute_vapour_pressure(tdps):
         raise Exception('tdps should be in degC')
     esat = 6.10588 * iris_exp(17.32491 * tdps / (tdps + 238.102))
     esat.var_name = 'e'
-    esat.long_name = 'Actual water vapour pressure of air near the surface'
+    esat.long_name = 'Daily Actual Water Vapour Pressure'
     esat.standard_name = 'actual_vapour_pressure'
     esat.units = 'hPa'
-    esat.attributes['comment'] = 'Calculated from tdps using tetens formula'
+    esat.attributes['comment'] = 'Actual water vapour pressure of air near the surface calculated from tdps using Tetens formula'
     return esat
 
 
