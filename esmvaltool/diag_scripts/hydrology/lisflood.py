@@ -85,13 +85,13 @@ def compute_vapour_pressure(tdps):
 
 def compute_windspeed(uas, vas):
     """Compute absolute wind speed from horizontal components."""
-    sfcWind = (uas ** 2 + vas ** 2) ** .5
-    sfcWind.var_name = 'sfcWind'
-    sfcWind.long_name = 'Daily-Mean Near-Surface Wind Speed'
-    sfcWind.standard_name = 'wind_speed'
+    sfc_wind = (uas ** 2 + vas ** 2) ** .5
+    sfc_wind.var_name = 'sfcWind'
+    sfc_wind.long_name = 'Daily-Mean Near-Surface Wind Speed'
+    sfc_wind.standard_name = 'wind_speed'
     comment = 'near-surface (usually, 10 meters) wind speed.'
-    sfcWind.attributes['comment'] = comment
-    return sfcWind
+    sfc_wind.attributes['comment'] = comment
+    return sfc_wind
 
 
 def save(cube, var_name, dataset, cfg):
