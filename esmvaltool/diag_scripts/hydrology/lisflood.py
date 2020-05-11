@@ -75,7 +75,7 @@ def compute_vapour_pressure(tdps):
     e = e0 * iris_exp(17.32491 * tdps / (tdps + 238.102))
     e.var_name = 'e'
     e.long_name = 'Actual water vapour pressure of air near the surface'
-    e.standard_name = 'water_vapor_pressure'
+    e.standard_name = 'actual_vapour_pressure'
     e.units = 'hPa'
     e.attributes['comment'] = 'Calculated from tdps using tetens formula'
     return e
