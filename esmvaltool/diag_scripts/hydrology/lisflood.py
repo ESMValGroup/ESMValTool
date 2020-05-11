@@ -76,17 +76,21 @@ def compute_vapour_pressure(tdps):
     esat.long_name = 'Daily Actual Water Vapour Pressure'
     esat.standard_name = 'actual_vapour_pressure'
     esat.units = 'hPa'
-    esat.attributes['comment'] = 'Actual water vapour pressure of air near the surface calculated from tdps using Tetens formula'
+    esat.attributes['comment'] = ''.join((
+        'Actual water vapour pressure of air near the surface calculated',
+        ' from tdps using Tetens formula'
+    ))
     return esat
 
 
 def compute_windspeed(uas, vas):
     """Compute absolute wind speed from horizontal components."""
-    sfcWind = ( uas**2 + vas**2 ) **.5
+    sfcWind = (uas ** 2 + vas ** 2) ** .5
     sfcWind.var_name = 'sfcWind'
     sfcWind.long_name = 'Daily-Mean Near-Surface Wind Speed'
     sfcWind.standard_name = 'wind_speed'
-    sfcWind.attributes['comment'] = 'near-surface (usually, 10 meters) wind speed.'
+    comment = 'near-surface (usually, 10 meters) wind speed.'
+    sfcWind.attributes['comment'] = comment
     return sfcWind
 
 
