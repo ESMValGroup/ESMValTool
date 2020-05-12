@@ -28,9 +28,9 @@ class CDSDownloader():
 
         os.makedirs(self.download_folder, exist_ok=True)
         file_path = os.path.join(
-                self.download_folder,
-                f"{self.dataset}_{date_str}.tar"
-            )
+            self.download_folder,
+            f"{self.dataset}_{date_str}.tar"
+        )
         if os.path.exists(file_path):
             if self.overwrite:
                 os.remove(file_path)

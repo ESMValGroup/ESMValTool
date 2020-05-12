@@ -4,6 +4,9 @@ import os
 import ftplib
 import logging
 
+from progressbar import ProgressBar, Bar, DataSize, Timer, ETA,\
+    FileTransferSpeed
+
 logger = logging.getLogger(__name__)
 
 
@@ -15,6 +18,7 @@ class FTPDownloader():
         self.server = server
         self.dataset = dataset
         self.overwrite = False
+        self.tier = 2
 
     def connect(self):
         self._client = ftplib.FTP(self.server)
@@ -51,22 +55,39 @@ class FTPDownloader():
         logger.info('Downloading %s', server_path)
         logger.debug('Downloading to %s', local_path)
 
+        self._client.sendcmd("TYPE i")
+        size = self._client.size(server_path)
+
+        widgets = [
+            DataSize(), Bar(), ' ', FileTransferSpeed(),
+            ' [', Timer(), '] (', ETA(), ') '
+        ]
+
+        progress = ProgressBar(max_value=size, widgets=widgets)
+        progress.start()
+
         with open(local_path, 'wb') as file_handler:
+            def _file_write(data):
+                file_handler.write(data)
+                nonlocal progress
+                progress += len(data)
+
             try:
                 self._client.retrbinary(
-                    f'RETR {server_path}', file_handler.write)
+                    f'RETR {server_path}', _file_write)
             except:
                 file_handler.close()
                 if os.path.exists(local_path):
                     os.remove(local_path)
                 raise
 
+        progress.finish()
+
 
 class CCIDownloader(FTPDownloader):
 
     def __init__(self, config, dataset):
         super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset)
-        self.tier = 2
 
     def set_cwd(self, path):
         cwd = f'/neodc/esacci/{self.dataset_name[7:]}/data/{path}'
