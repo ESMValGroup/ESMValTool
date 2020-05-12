@@ -30,7 +30,7 @@ Caveats
    - Fails setting standard name for variable FAPAR
 
 Modification history
-   20200512-crezee_bas: adapted to reflect changes in download form done by CDS.
+   20200512-crezee_bas: adapted to reflect changes in download form by CDS.
    20190703-crezee_bas: written.
 """
 
