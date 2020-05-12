@@ -179,7 +179,7 @@ Variables
    * rsds (atmos, daily or hourly mean, longitude, latitude, time)
    * rsdt (atmos, daily or hourly mean, longitude, latitude, time)
 
-#. recipe_lisflood.ymml
+#. recipe_lisflood.yml
 
    * pr (atmos, daily, longitude, latitude, time)
    * tas (atmos, daily, longitude, latitude, time)
