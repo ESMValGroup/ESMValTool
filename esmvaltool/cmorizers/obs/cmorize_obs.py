@@ -23,7 +23,7 @@ import esmvalcore
 from esmvalcore._config import configure_logging, read_config_user_file
 from esmvalcore._task import write_ncl_settings
 
-from .utilities import read_cmor_config
+from esmvaltool.cmorizers.obs.utilities import read_cmor_config
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ def _assemble_datasets(raw_obs, obs_list):
 
     # if user specified obs list
     if obs_list:
-        for dataset_name in obs_list.split(','):
+        for dataset_name in obs_list:
             for tier in tiers:
                 if os.path.isdir(os.path.join(raw_obs, tier, dataset_name)):
                     datasets[tier].append(dataset_name)
@@ -152,6 +152,13 @@ def main():
                         default=os.path.join(os.path.dirname(__file__),
                                              'config-user.yml'),
                         help='Config file')
+    parser.add_argument('-d', '--download', action='store_true')
+    parser.add_argument('--startdate',
+                        '-s',
+                        help='starting date as YYYYMMDD')
+    parser.add_argument('--enddate',
+                        '-e',
+                        help='end date as YYYYMMDD')
     args = parser.parse_args()
 
     # get and read config file
@@ -188,7 +195,7 @@ def main():
     logger.info(70 * "-")
     logger.info("input_dir  = %s", config_user["rootpath"]["RAWOBS"][0])
     # check if the inputdir actually exists
-    if not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
+    if not args.download and not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
         logger.error("Directory %s does not exist",
                      config_user["rootpath"]["RAWOBS"][0])
         raise ValueError
@@ -197,9 +204,20 @@ def main():
 
     # call the reformat function
     if args.obs_list_cmorize:
-        obs_list = args.obs_list_cmorize
+        obs_list = args.obs_list_cmorize.split(',')
     else:
         obs_list = []
+    if args.download:
+        if not obs_list:
+            logger.error(
+                "In order to download automatically, you must provide "
+                "the desired datasets"
+            )
+            raise ValueError
+        start_date = datetime.datetime.strptime(args.startdate, '%Y%m%d')
+        end_date = datetime.datetime.strptime(args.enddate, '%Y%m%d')
+        _download(config_user, obs_list, start_date, end_date)
+    
     _cmor_reformat(config_user, obs_list)
 
     # End time timing
@@ -208,6 +226,38 @@ def main():
                 timestamp2.strftime(timestamp_format))
     logger.info("Time for running the CMORization scripts was: %s",
                 timestamp2 - timestamp1)
+
+def _download(config, obs_list, start_date, end_date):
+    """Automatic download"""
+    logger.info("Downloading RAW data")
+    download_scripts = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "download_scripts"
+    )
+    logger.info("Using cmorizer scripts repository: %s", download_scripts)
+    run_dir = os.path.join(config['output_dir'], 'run')
+
+    # master directory
+    failed_datasets = []
+    for dataset in obs_list:
+        dataset_module = dataset.lower().replace('-', '_')
+        logger.info("Download module: %s", dataset_module)
+        try:
+            downloader = importlib.import_module(
+                f'.{dataset_module}',
+                package='esmvaltool.cmorizers.obs.download_scripts'
+            )
+        except ImportError:
+            logger.exception('Could not find cmorizer for %s', dataset)
+            failed_datasets.append(dataset)
+        else:
+            downloader.download_dataset(config, dataset, start_date, end_date)
+
+    if failed_datasets:
+        raise Exception(
+            'Could not find downloader for %s datasets ' %
+            ' '.join(failed_datasets)
+        )
 
 
 def _cmor_reformat(config, obs_list):
