@@ -76,6 +76,8 @@ for jet speeds and latitudes.
 
 """ + __doc__
 
+obs_pattern = "OBS6_ERA-Interim_reanaly_1_Amon_ua_{}01-{}12.nc"
+obs_dirname = "/group_workspaces/jasmin4/esmeval/obsdata-v2/Tier3/ERA-Interim"
 
 def get_args():
     """Define the `esmvaltool` command line."""
@@ -85,6 +87,9 @@ def get_args():
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
         '-m', '--era-file', type=str, nargs='+', help='ERA files')
+    parser.add_argument(
+        '-y', '--era-years', type=str, nargs='+',
+        help='ERA data years as YYYY1,YYYY2')
     parser.add_argument(
         '-o',
         '--output',
@@ -123,7 +128,10 @@ def _extract_u850(era_file):
     """
     seasonal_data = {}
     # load ERA data
-    era_cube = iris.load_cube(era_file)
+    if not isinstance(era_file, iris.cube.Cube):
+        era_cube = iris.load_cube(era_file)
+    else:
+        era_cube = era_file
     # extract 0-60W lon; 15-75N lat region
     era_cube = extract_region(era_cube, 0., 60., 15., 75.)
     # extract 850 hPa
@@ -175,7 +183,24 @@ def main():
     logger.info("Running main function...")
 
     # get input files
-    era_file = args.era_file
+    # get input files
+    if args.era_file and not args.era_years:
+        era_file = args.era_file
+    elif args.era_years:
+        result = []
+        yr1 = args.era_years[0].split(",")[0]
+        yr2 = args.era_years[0].split(",")[1]
+        filenames = [
+            obs_pattern.format(str(yr), str(yr)) for yr in range(int(yr1), int(yr2) + 1)
+        ]
+        for path, _, files in os.walk(obs_dirname, followlinks=True):
+            for filename in filenames:
+                matches = fnmatch.filter(files, filename)
+                result.extend(os.path.join(path, f) for f in matches)
+
+        # load cubes and concatenate
+        cubes = [iris.load_cube(era_file) for era_file in result]
+        era_file = concatenate(cubes)
 
     # compute and save
     season_dict = _extract_u850(era_file)
