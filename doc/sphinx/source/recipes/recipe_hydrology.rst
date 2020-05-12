@@ -81,6 +81,10 @@ User settings in recipe
 
 #. recipe_wflow.yml
 
+   *Optional preprocessor settings:*
+
+      * extract_region: the region specified here should match the catchment
+
    *Required diagnostic script settings:*
 
 	    * basin: name of the catchment

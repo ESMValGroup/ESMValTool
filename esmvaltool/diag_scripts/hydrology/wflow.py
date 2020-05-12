@@ -162,6 +162,27 @@ def _load_pcraster_dem(filename):
     return cube
 
 
+def check_dem(dem, cube):
+    """Check that the DEM and extract_region parameters match."""
+    for coord in ('longitude', 'latitude'):
+        start_dem_coord = dem.coord(coord).cell(0).point
+        end_dem_coord = dem.coord(coord).cell(-1).point
+        start_cube_coord = cube.coord(coord).cell(0).point
+        end_cube_coord = cube.coord(coord).cell(-1).point
+        if start_dem_coord < start_cube_coord:
+            logger.warning(
+                "Insufficient data available, input data starts at %s "
+                "degrees %s, but should be at least one grid "
+                "cell larger than the DEM start at %s degrees %s.",
+                start_cube_coord, coord, start_dem_coord, coord)
+        if end_dem_coord > end_cube_coord:
+            logger.warning(
+                "Insufficient data available, input data ends at %s "
+                "degrees %s, but should be at least one grid "
+                "cell larger than the DEM end at %s degrees %s.",
+                end_cube_coord, coord, end_dem_coord, coord)
+
+
 def shift_era5_time_coordinate(cube, shift=30):
     """Shift instantaneous variables (default = 30 minutes forward in time).
 
@@ -191,6 +212,7 @@ def main(cfg):
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
         dem = load_dem(dem_path)
+        check_dem(dem, all_vars['pr'])
 
         logger.info("Processing variable precipitation_flux")
         scheme = cfg['regrid']

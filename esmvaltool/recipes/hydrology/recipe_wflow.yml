@@ -12,6 +12,14 @@ documentation:
   projects: ['ewatercycle']
   references: ['acknow_project']
 
+preprocessors:
+  rough_cutout:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 6.75
+      start_latitude: 47.25
+      end_latitude: 52.5
+
 diagnostics:
   wflow_daily:
     description: WFlow input preprocessor for daily data
@@ -21,8 +29,10 @@ diagnostics:
     variables:
       orog:
         mip: fx
+        preprocessor: rough_cutout
       tas: &daily_var
         mip: day
+        preprocessor: rough_cutout
         start_year: 1990
         end_year: 1990
       pr: *daily_var
