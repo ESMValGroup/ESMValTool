@@ -1,0 +1,7 @@
+0.5-4: Updated maintainer and license and added users and contributors guides.
+
+0.5-3: Fix issue with data in rotated pole projection where attempting to run the code produces the error "squared eccentricity < 0".
+
+0.5-2: Fix problems when only tavg supplied.
+
+0.5-1: Initial release version.

@@ -29,12 +29,13 @@ import os
 
 import cf_units
 import iris
+import iris.coord_categorisation
 import numpy as np
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger, get_diagnostic_filename, group_metadata, io,
-    run_diagnostic, variables_available)
+    run_diagnostic, select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -86,7 +87,7 @@ def get_provenance_record(caption, ancestor_files):
         'caption': caption,
         'statistics': ['var', 'diff', 'corr', 'detrend'],
         'domains': ['global'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['cox18nature'],
         'realms': ['atmos'],
         'themes': ['phys'],
@@ -97,11 +98,11 @@ def get_provenance_record(caption, ancestor_files):
 
 def main(cfg):
     """Run the diagnostic."""
-    input_data = cfg['input_data'].values()
-
-    # Check if tas is available
-    if not variables_available(cfg, ['tas']):
-        raise ValueError("This diagnostics needs 'tas' variable")
+    input_data = (
+        select_metadata(cfg['input_data'].values(), short_name='tas') +
+        select_metadata(cfg['input_data'].values(), short_name='tasa'))
+    if not input_data:
+        raise ValueError("This diagnostics needs 'tas' or 'tasa' variable")
 
     # Calculate psi for every dataset
     psis = {}
@@ -114,6 +115,7 @@ def main(cfg):
     for (dataset, [data]) in grouped_data.items():
         logger.info("Processing %s", dataset)
         cube = iris.load_cube(data['filename'])
+        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
         data.update(psi_attrs)

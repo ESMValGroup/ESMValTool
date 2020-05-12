@@ -1,0 +1,28 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Landschuetzer2016
+  version: 'v2016'
+  tier: 2
+  modeling_realm: clim
+  project_id: OBS
+  source: 'https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/'
+  reference: 'landschuetzer2016'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  fgco2:
+    mip: Omon
+    # Match CMOR variables with input file one
+    raw: fgco2_smoothed
+    # input file name
+    file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc
+  spco2:
+    mip: Omon
+    raw: spco2_smoothed
+    file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc
+  dpco2:
+    mip: Omon
+    raw: dco2_smoothed
+    file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc

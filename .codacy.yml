@@ -20,17 +20,6 @@ engines:
 
 exclude_paths: [
     'doc/sphinx/**',
-    'esmvaltool/doc/sphinx/**',
-    # cmor tables
     'esmvaltool/cmor/tables/**',
-    # old stuff
-    'backend/**',
-    'diag_scripts/**',
-    'interface_data/**',
-    'interface_scripts/**',
-    'main.py',
-    'nml/**',
-    'plot_scripts/**',
-    'reformat_scripts/**',
-    'variable_defs/**',
+    'tests/**'
 ]

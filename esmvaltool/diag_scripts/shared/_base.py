@@ -32,7 +32,7 @@ def get_plot_filename(basename, cfg):
     """
     return os.path.join(
         cfg['plot_dir'],
-        basename + '.' + cfg['output_file_type'],
+        f"{basename}.{cfg['output_file_type']}",
     )
 
 
@@ -56,11 +56,11 @@ def get_diagnostic_filename(basename, cfg, extension='nc'):
     """
     return os.path.join(
         cfg['work_dir'],
-        basename + '.' + extension,
+        f"{basename}.{extension}",
     )
 
 
-class ProvenanceLogger(object):
+class ProvenanceLogger:
     """Open the provenance logger.
 
     Parameters
@@ -317,6 +317,8 @@ def extract_variables(cfg, as_iris=False):
         # Replace short_name by var_name if desired
         if as_iris:
             info['var_name'] = info.pop('short_name')
+            if info['standard_name'] == '':
+                info['standard_name'] = None
 
     return variables
 

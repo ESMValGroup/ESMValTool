@@ -4,7 +4,7 @@ import os
 import logging
 import numpy as np
 import iris
-from esmvaltool.preprocessor._regrid import regrid
+from esmvalcore.preprocessor._regrid import regrid
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 

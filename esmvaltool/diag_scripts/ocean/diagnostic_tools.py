@@ -131,6 +131,15 @@ def bgc_units(cube, name):
     if name in ['chl', ]:
         new_units = 'mg m-3'
 
+    if name in ['intpp', ]:
+        new_units = 'mol m-2 d-1'
+
+    if name in ['fgco2', ]:
+        new_units = 'g m-2 d-1'
+
+    if name in ['spco2', 'dpco2', ]:
+        new_units = 'uatm'
+
     if name in ['mfo', 'amoc', 'msftmyz']:
         # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
         new_units = 'Tg s-1'

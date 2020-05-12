@@ -1,16 +1,16 @@
 # ESMValTool
 # recipe_correlation.yml
 ---
-documentation: 
+documentation:
   description: |
     Calculate the Pearsons r correlation coefficient over specified dimensions.
-    
+
   authors:
-    - ande_bo
+    - andela_bouwe
 
   maintainer:
-    - ande_bo
-    
+    - andela_bouwe
+
   projects:
     - c3s-magic
 
@@ -40,7 +40,6 @@ diagnostics:
       ta:
         preprocessor: preprocess_3d_data
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 2000
         end_year: 2002
         project: CMIP5
@@ -51,7 +50,7 @@ diagnostics:
           # One or more datasets can be added here
           - {dataset: bcc-csm1-1}
           # The reference dataset is required
-          - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
+          - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     scripts:
       correlation_pressure:
         script: examples/correlate.py

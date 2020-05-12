@@ -1,0 +1,48 @@
+# ESMValTool
+# recipe_diurnal_temperature_index.yml
+---
+documentation:
+  description: |
+    Tool to compute the  diurnal temperature indicator.
+
+  authors:
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
+    - caron_louis-philippe
+
+  projects:
+    - c3s-magic
+
+
+datasets:
+ # - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+ # - {dataset: IPSL-CM5A-MR, type: exp,  project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+ #  - {dataset: bcc-csm1-1, type: exp, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1971, end_year: 2000}
+ # - {dataset: bcc-csm1-1, type: exp, project: CMIP5, mip: day, exp: rcp45, ensemble: r1i1p1, start_year: 2040, end_year: 2060}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 1990}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp26, ensemble: r1i1p1, start_year: 2030, end_year: 2080}
+
+
+preprocessors:
+  preproc:
+    extract_region:
+      start_longitude: -10
+      end_longitude: 40
+      start_latitude: 27
+      end_latitude: 70
+    mask_landsea:
+      mask_out: sea
+diagnostics:
+  diurnal_temperature_indicator:
+    description: Calculate the diurnal temperature indicator.
+    variables:
+      tasmax:
+        preprocessor: preproc
+        mip: day
+      tasmin:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      main:
+        script: magic_bsc/diurnal_temp_index.R

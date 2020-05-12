@@ -1,6 +1,7 @@
 """Provides tests for the cvdp diagnostic."""
 
 import os
+
 import pytest
 
 from esmvaltool.diag_scripts.cvdp.cvdp_wrapper import create_link

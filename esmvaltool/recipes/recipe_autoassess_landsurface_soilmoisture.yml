@@ -11,10 +11,10 @@ documentation:
     mass_fraction_of_frozen_water_in_soil_moisture.
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: IPSL-CM5A-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
@@ -32,7 +32,6 @@ diagnostics:
     variables:
       mrsos: # moisture_content_of_soil_layer
         mip: Lmon
-        field: T2Ms
       # TODO: mass_fraction_of_unfrozen_water_in_soil_moisture
       # TODO: mass_fraction_of_frozen_water_in_soil_moisture
     scripts:

@@ -66,11 +66,12 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
     zg_mo = np.array(in_file.variables['zg'][:])
 
     # Record attributes for output netCDFs
-    time_nam = in_file.variables['time'].long_name
+    time_lnam = getattr(in_file.variables['time'], 'long_name', '')
+    time_snam = getattr(in_file.variables['time'], 'standard_name', '')
     time_uni = in_file.variables['time'].units
     time_cal = in_file.variables['time'].calendar
-
-    lev_nam = in_file.variables['plev'].long_name
+    lev_lnam = getattr(in_file.variables['plev'], 'long_name', '')
+    lev_snam = getattr(in_file.variables['plev'], 'standard_name', '')
     lev_uni = in_file.variables['plev'].units
     lev_pos = in_file.variables['plev'].positive
     lev_axi = in_file.variables['plev'].axis
@@ -185,20 +186,24 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
         mpl.rcParams['contour.negative_linestyle'] = 'solid'
         plt.contour(lonw, lat, slopew, levels=regr_levs,
                     colors='k', transform=ccrs.PlateCarree(),
-                    zorder=5)
+                    zorder=1)
 
         # Invisible contours, only for labels.
-        # Workaround for cartopy issue, as of Dec 18
+        # Change zorder for cartopy/matplotlib label issue, as of June 2019
         inv_map = plt.contour(lonw, lat, slopew, levels=regr_levs,
                               colors='k', transform=ccrs.PlateCarree(),
-                              zorder=10)
+                              zorder=15)
 
         mpl.rcParams['contour.negative_linestyle'] = 'dashed'
 
         for cmap in inv_map.collections:
             cmap.set_visible(False)
 
-        plt.clabel(inv_map, fontsize=8, fmt='%1.0f', zorder=15)
+        # Add contour labels over white boxes
+        clabs = plt.clabel(inv_map, fontsize=8, fmt='%1.0f', zorder=30)
+        bbox_dict = dict(boxstyle='square,pad=0',
+                         edgecolor='none', fc='white', zorder=25)
+        clabs = [txt.set_bbox(bbox_dict) for txt in clabs]
 
         axis.coastlines()
         axis.set_global()
@@ -226,7 +231,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
                            mode='w', format='NETCDF3_CLASSIC')
 
     file_out.title = 'Zonal mean annular mode (4)'
-    file_out.contact = 'F. Serva (federico.serva@artov.isac.cnr.it); \
+    file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
     C. Cagnazzo (chiara.cagnazzo@cnr.it)'
 
     #
@@ -236,13 +241,19 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
     file_out.createDimension('lon', np.size(lon))
     #
     time_var = file_out.createVariable('time', 'd', ('time', ))
-    time_var.setncattr('long_name', time_nam)
+    if time_lnam:
+        time_var.setncattr('long_name', time_lnam)
+    if time_snam:
+        time_var.setncattr('standard_name', time_snam)
     time_var.setncattr('units', time_uni)
     time_var.setncattr('calendar', time_cal)
     time_var[:] = 0  # singleton
     #
     lev_var = file_out.createVariable('plev', 'd', ('plev', ))
-    lev_var.setncattr('long_name', lev_nam)
+    if lev_lnam:
+        lev_var.setncattr('long_name', lev_lnam)
+    if lev_snam:
+        lev_var.setncattr('standard_name', lev_snam)
     lev_var.setncattr('units', lev_uni)
     lev_var.setncattr('positive', lev_pos)
     lev_var.setncattr('axis', lev_axi)

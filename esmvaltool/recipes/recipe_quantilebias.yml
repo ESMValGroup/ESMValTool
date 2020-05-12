@@ -1,0 +1,45 @@
+# recipe_quantilebias.yml
+---
+
+documentation:
+  description: |
+    Tool for calculation of precipitation quantile bias
+
+  authors:
+    - arnone_enrico
+    - vonhardenberg_jost
+
+  maintainer:
+    - vonhardenberg_jost
+
+  references:
+    - mehran14jgr
+
+  projects:
+    - c3s-magic
+
+datasets:
+   - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979, end_year: 2005}
+
+preprocessors:
+  mask_regrid_preproc:
+    regrid:
+      target_grid: 2x2
+      scheme: area_weighted
+    mask_landsea:
+      mask_out: sea
+
+diagnostics:
+  quantilebias:
+    description: Tool for calculation of precipitation quantile bias 
+    variables:
+      pr:
+        preprocessor: mask_regrid_preproc 
+        reference_dataset: "GPCP-SG"
+        mip: Amon
+
+    scripts:
+      main:
+        script: quantilebias/quantilebias.R
+        perc_lev: 75

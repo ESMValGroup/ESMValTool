@@ -41,5 +41,5 @@ NCEP                  | orange1              |   1  |   2   |  16  |   1
 AIRS                  | orange1              |   1  |   2   |  16  |   1
 AURA-TES              | orange1              |   1  |   2   |  16  |   1
 AURA-MLS-OMI          | orange1              |   1  |   2   |  16  |   1
-NIWA                  | orange1              |   1  |   2   |  16  |   1
+NIWA-BS               | orange1              |   1  |   2   |  16  |   1
 model_mean            | black                |   0  |   3   |  16  |   1

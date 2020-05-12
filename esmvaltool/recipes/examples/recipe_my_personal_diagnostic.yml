@@ -1,0 +1,45 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    This is an example recipe for a personal diagnostic.
+    You can run any Python diagnostic of your choice
+    without installing ESMValTool as developer or git pushing.
+    An example personal diagnostic can be found in
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+
+  authors:
+    - predoi_valeriu
+
+  maintainer:
+    - predoi_valeriu
+
+datasets:
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+  pp:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+  simple:
+    description: "Simple personal diagnostic"
+    variables:
+      ta:
+        preprocessor: pp
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+      sftlf:
+        mip: fx
+      sftof:
+        mip: fx
+      areacello:
+        mip: fx
+    scripts:
+      my_diagnostic:
+        # Replace this path with the absolute path to your diagnostic (eg. /path/to/your/my_little_diagnostic.py)
+        script: examples/my_little_diagnostic.py

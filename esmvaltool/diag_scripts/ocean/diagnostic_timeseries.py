@@ -21,10 +21,9 @@ An approproate preprocessor for a 3D+time field would be::
 
   preprocessors:
     prep_timeseries_1:# For Global Volume Averaged
-      average_volume:
-        coord1: longitude
-        coord2: latitude
-        coordz: depth
+      volume_statistics:
+        operator: mean
+
 
 An approproate preprocessor for a 3D+time field at the surface would be::
 
@@ -32,16 +31,16 @@ An approproate preprocessor for a 3D+time field at the surface would be::
       extract_levels:
         levels:  [0., ]
         scheme: linear_extrap
-      average_area:
-        coord1: longitude
-        coord2: latitude
+      area_statistics:
+        operator: mean
+
 
 An approproate preprocessor for a 2D+time field would be::
 
     prep_timeseries_2: # For Global surface Averaged
-      average_area:
-        coord1: longitude
-        coord2: latitude
+      area_statistics:
+        operator: mean
+
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
@@ -287,13 +286,14 @@ def multi_model_time_series(
     model_cubes = {}
     layers = {}
     for filename in sorted(metadata):
-        cube = iris.load_cube(filename)
-        cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+        if metadata[filename]['frequency'] != 'fx':
+            cube = iris.load_cube(filename)
+            cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
 
-        cubes = diagtools.make_cube_layer_dict(cube)
-        model_cubes[filename] = cubes
-        for layer in cubes:
-            layers[layer] = True
+            cubes = diagtools.make_cube_layer_dict(cube)
+            model_cubes[filename] = cubes
+            for layer in cubes:
+                layers[layer] = True
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -410,16 +410,16 @@ def main(cfg):
         )
 
         for filename in sorted(metadatas):
+            if metadatas[filename]['frequency'] != 'fx':
+                logger.info('-----------------')
+                logger.info(
+                    'model filenames:\t%s',
+                    filename,
+                )
 
-            logger.info('-----------------')
-            logger.info(
-                'model filenames:\t%s',
-                filename,
-            )
-
-            ######
-            # Time series of individual model
-            make_time_series_plots(cfg, metadatas[filename], filename)
+                ######
+                # Time series of individual model
+                make_time_series_plots(cfg, metadatas[filename], filename)
     logger.info('Success')
 
 

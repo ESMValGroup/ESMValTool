@@ -1,0 +1,63 @@
+# ESMValTool
+# recipe_extreme_index.yml
+---
+documentation:
+  description: |
+    Tool to compute time series of a number of extreme events: heatwave,
+    coldwave, heavy precipitation, drought and high wind.
+
+  authors:
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
+    - caron_louis-philippe
+
+  projects:
+    - c3s-magic
+
+  references:
+    - alexander06jgr
+
+datasets:
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+
+preprocessors:
+  preproc:
+    extract_region:
+      start_longitude: -20
+      end_longitude: 40
+      start_latitude: 30
+      end_latitude: 70
+    mask_landsea:
+      mask_out: sea
+
+diagnostics:
+  extreme_index:
+    description: Calculate insurance extreme indices and their combination.
+    variables:
+      tasmax:
+        preprocessor: preproc
+        mip: day
+      tasmin:
+        preprocessor: preproc
+        mip: day
+      sfcWind:
+        preprocessor: preproc
+        mip: day
+      pr:
+        preprocessor: preproc
+        mip: day
+
+    scripts:
+      metric:
+        script: magic_bsc/extreme_index.R
+
+        weight_t90p: 0.2
+        weight_t10p: 0.2
+        weight_Wx: 0.2
+        weight_rx5day: 0.2
+        weight_cdd: 0.2
+
+        # Compute running mean?
+        running_mean: 5 #3

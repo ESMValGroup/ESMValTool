@@ -1,3 +1,5 @@
+.. _recipes_crem:
+
 Cloud Regime Error Metric (CREM)
 ================================
 
@@ -62,15 +64,15 @@ Variables
 * rlutcs (atmos, daily mean, longitude latitude time)
 * rsut (atmos, daily mean, longitude latitude time)
 * rsutcs (atmos, daily mean, longitude latitude time)
-* sic (atmos, daily mean, longitude latitude time)
+* sic/siconc (seaice, daily mean, longitude latitude time)
 * snc (atmos, daily mean, longitude latitude time)
 
 If snc is not available then snw can be used instead. For AMIP simulations,
-sic is often not submitted as it a boundary condition and effectively
+sic/siconc is often not submitted as it a boundary condition and effectively
 the same for every model. In this case the same daily sic data set can be
 used for each model.
 
-**Note: in case of using sic data from a different model (AMIP), it has to
+**Note: in case of using sic/siconc data from a different model (AMIP), it has to
 be checked by the user that the calendar definitions of all data sets are
 compatible, in particular whether leap days are included or not.**
 

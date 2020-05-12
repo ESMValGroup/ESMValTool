@@ -152,23 +152,11 @@ def _get_filelists(cfg):
         fullpath_file = filename
         if base_file.split('_')[1] == cfg['control_model']:
             metrics_dict['control_model'].append(fullpath_file)
-            if 'fx_files' in attributes:
-                for fx_file in cfg['fx']:
-                    metrics_dict['control_model'].append(
-                        attributes['fx_files'][fx_file])
         if base_file.split('_')[1] == cfg['exp_model']:
             metrics_dict['exp_model'].append(fullpath_file)
-            if 'fx_files' in attributes:
-                for fx_file in cfg['fx']:
-                    metrics_dict['exp_model'].append(
-                        attributes['fx_files'][fx_file])
         if additional_metrics and base_file.split(
                 '_')[1] in cfg['additional_metrics']:
             metrics_dict[base_file.split('_')[1]].append(fullpath_file)
-            if 'fx_files' in attributes:
-                for fx_file in cfg['fx']:
-                    metrics_dict[base_file.split('_')[1]].append(
-                        attributes['fx_files'][fx_file])
         if obs_types and base_file.split('_')[1] in obs_types:
             obs_list.append(fullpath_file)
 
@@ -213,15 +201,21 @@ def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
 
         `out_dir`/`exp_suite_id`_vs_`ref_suite_id`/`area`
 
-    If the leaf directory `area` exists raises OSError.
+    Parameters
+    ----------
+    out_dir: str
+        Base directory for output.
+    suite_id1: str
+        Suite Id of reference model run.
+    suite_id2: str
+        Suite Id of test model run.
+    area: str
+        Name of asssessment area.
 
-    :param str out_dir: Base directory for output.
-    :param str suite_id1: Suite Id of reference model run.
-    :param str suite_id2: Suite Id of test model run.
-    :param str area: Name of asssessment area.
-    :returns: Path to area output directory.
-    :rtype: str
-    :raises: OSError.
+    Returns
+    -------
+    Path to area output directory.
+
     """
     assessment_name = exp_suite_id + '_vs_' + ref_suite_id
     # make sure out_dir exists in output folder
@@ -238,16 +232,27 @@ def create_output_tree(out_dir, ref_suite_id, exp_suite_id, area):
 
 def create_tmp_dir(tmp_dir, ref_suite_id, exp_suite_id, area):
     """
-    Create directory tree for temporary data according to the following scheme.
+    Create directory tree for temporary data.
+
+    The structure is:
 
         `tmp_dir`/`exp_suite_id`_vs_`ref_suite_id`_random/`area`_random
 
-    :param str tmp_dir: Base temporary directory.
-    :param str suite_id1: Suite ID of reference model run.
-    :param str suite_id2: Suite ID of test model run.
-    :param str area: Name of asssessment area.
-    :returns: Path to area temporary directory.
-    :rtype: str.
+    Parameters
+    ----------
+    tmp_dir: str
+        Base temporary directory.
+    suite_id1: str
+        Suite ID of reference model run.
+    suite_id2: str
+        Suite ID of test model run.
+    area: str
+        Name of asssessment area.
+
+    Returns
+    -------
+    Path to area temporary directory.
+
     """
     assessment_name = exp_suite_id + '_vs_' + ref_suite_id
     # create unique temporary folder in tmp dir
@@ -287,8 +292,9 @@ def _setup_input(cfg):
     logger.info("Saved control data cubes: %s", str(all_cubelists))
 
     # separately process the obs's that dont need metrics
-    if cfg['obs_models']:
-        _process_obs(cfg, obs_list, obs_loc)
+    if 'obs_models' in cfg:
+        if cfg['obs_models']:
+            _process_obs(cfg, obs_list, obs_loc)
 
     return tmp_dir, obs_loc, ancil_dir
 
@@ -341,7 +347,26 @@ def _create_run_dict(cfg):
 
 
 def run_area(cfg):
-    """Kick start the area diagnostic."""
+    """
+    Kick start the area diagnostic.
+
+    Takes the settings metadata file with all the diagnostic
+    and preprocessing settings and sets up the running workflow
+    for any of the autoassess assessment areas.
+
+    All the assessment area-specific parameters (mandatory and optional)
+    are set in _create_run_dict; that function is the main gateway for
+    this function.
+
+    Available assessment areas: stratosphere.
+
+    Parameters
+    ----------
+    cfg: dict
+        contents of the metadata file as produced by the preprocessor
+        in dictionary format.
+
+    """
     run_obj = _create_run_dict(cfg)
     area_out_dir = create_output_tree(run_obj['out_dir'], run_obj['suite_id1'],
                                       run_obj['suite_id2'], run_obj['_area'])

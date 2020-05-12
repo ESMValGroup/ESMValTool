@@ -42,6 +42,20 @@ An approproate preprocessor would be::
         start_latitude: 0.
         end_latitude: 90.
 
+
+Note that this recipe may not function on machines with no access to the
+internet, as cartopy may try to download the shapefiles. The solution to
+this issue is the put the relevant cartopy shapefiles on a disk visible to your
+machine, then link that path to ESMValTool via the `auxiliary_data_dir`
+variable. The cartopy masking files can be downloaded from::
+
+    https://www.naturalearthdata.com/downloads/
+
+Here, cartopy uses the 1:10, physical coastlines and land files::
+
+        110m_coastline.dbf  110m_coastline.shp  110m_coastline.shx
+        110m_land.dbf  110m_land.shp  110m_land.shx
+
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
 Author: Lee de Mora (PML)
@@ -54,6 +68,7 @@ from itertools import product
 
 import cartopy
 import iris
+import iris.coord_categorisation
 import iris.quickplot as qplt
 import matplotlib
 import matplotlib.pyplot as plt
@@ -69,7 +84,6 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 # Note that this recipe may not function on machines with no access to
 # the internet, as cartopy may try to download geographic files.
-# TODO: This recipe needs to be fixed to manage cartopy's download. issue #795
 
 
 def create_ice_cmap(threshold=0.15):
@@ -164,6 +178,7 @@ def make_ts_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 
@@ -398,6 +413,7 @@ def make_map_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 
@@ -512,6 +528,7 @@ def make_map_extent_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 
@@ -652,6 +669,8 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+    cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s',
