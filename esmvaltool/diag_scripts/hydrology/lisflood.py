@@ -74,7 +74,7 @@ def compute_vapour_pressure(tdps):
     esat = 6.10588 * iris_exp(17.32491 * tdps / (tdps + 238.102))
     esat.var_name = 'e'
     esat.long_name = 'Daily Actual Water Vapour Pressure'
-    esat.standard_name = 'actual_vapour_pressure'
+    esat.standard_name = 'water_vapor_pressure'
     esat.units = 'hPa'
     esat.attributes['comment'] = ''.join((
         'Actual water vapour pressure of air near the surface calculated',
