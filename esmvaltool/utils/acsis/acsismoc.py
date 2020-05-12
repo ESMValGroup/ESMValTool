@@ -38,12 +38,14 @@ Valeriu Predoi, UREAD, valeriu.predoi@ncas.ac.uk
 First working version: November 2018
 """
 import argparse
-from datetime import datetime
+import collections
 import logging
 import os
-import collections
-import numpy as np
+from datetime import datetime
+
 import iris
+import numpy as np
+
 from esmvalcore.preprocessor._area import extract_region
 from esmvalcore.preprocessor._time import extract_season
 from esmvaltool.utils.acsis._utils import _save_cubes, _set_logger
