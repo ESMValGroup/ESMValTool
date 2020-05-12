@@ -22,7 +22,7 @@ or for OBS data in
 group_workspaces
 jasmin4
 esmeval
-obsdata
+obsdata-v2
 
 Specifically for ERA-Interim:
 In obsdata - Tier3 - ERA-Interim -
@@ -52,8 +52,9 @@ import os
 import numpy as np
 import yaml
 import iris
-from esmvaltool.preprocessor import extract_region, \
-    extract_levels, extract_season
+from esmvalcore.preprocessor._area import extract_region
+from esmvalcore.preprocessor._regrid import extract_levels
+from esmvalcore.preprocessor._time import extract_season
 from esmvaltool.utils.acsis._utils import _save_cubes, _set_logger
 
 seasons = ['DJF', 'MAM', 'JJA', 'SON']
