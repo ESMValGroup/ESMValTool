@@ -46,6 +46,7 @@ Valeriu Predoi, UREAD, valeriu.predoi@ncas.ac.uk
 First working version: November 2018
 """
 import argparse
+import fnmatch
 import logging
 import os
 from datetime import datetime
@@ -55,6 +56,7 @@ import numpy as np
 import yaml
 
 from esmvalcore.preprocessor._area import extract_region
+from esmvalcore.preprocessor._io import concatenate
 from esmvalcore.preprocessor._regrid import extract_levels
 from esmvalcore.preprocessor._time import extract_season
 from esmvaltool.utils.acsis._utils import _save_cubes, _set_logger
