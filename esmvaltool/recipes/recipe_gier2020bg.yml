@@ -24,16 +24,34 @@ preprocessors:
   noop:
     {}
 
-  regrid_mask:
+  mmm_ref:
     regrid:
       target_grid: reference_dataset
       scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     multi_model_statistics:
       span: overlap
       statistics: [mean]
       exclude: [reference_dataset]
+
+  mmm_2x2:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+  mmm:
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    extract_levels:
+      levels: [100000., 92500., 85000., 70000., 60000., 50000., 40000., 30000., 25000., 20000., 15000.,
+               10000., 7000., 5000., 3000., 2000., 1000.]
+      scheme: nearest
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
 
 
 diagnostics:
@@ -53,13 +71,15 @@ diagnostics:
           - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1} #hus, zg retracted
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
           - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
           - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
           - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
     scripts:
       xco2_maps:
         script: xco2_analysis/global_maps.ncl
+        contour_max_level: 14
 
       xco2_main:
         script: xco2_analysis/main.ncl
@@ -98,7 +118,7 @@ diagnostics:
         masking: ["sciamachy"]
         # Possible area averaging options: full-area, lat-first
         area_avg: "full-area"
-        obs_in_panel: true
+        obs_in_panel: false
         plot_var2_mean: true
 
       xco2_panels_gosat:
@@ -109,7 +129,7 @@ diagnostics:
         masking: ["gosat"]
         # Possible area averaging options: full-area, lat-first
         area_avg: "full-area"
-        obs_in_panel: true
+        obs_in_panel: false
         plot_var2_mean: true
 
       xco2_panels_obs_lonavg:
@@ -178,6 +198,7 @@ diagnostics:
     description: Plots XCO2 IAV against growing season temperature anomaly
     variables:
       xco2:
+        preprocessor: mmm_ref
         project: CMIP6
         mip: Amon
         exp: esm-hist
@@ -190,30 +211,37 @@ diagnostics:
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
           - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
           - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
           - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       tas:
+        preprocessor: mmm_2x2
         project: CMIP6
         mip: Amon
         exp: esm-hist
         start_year: 2003
         end_year: 2014
-        reference_dataset: GISS
         additional_datasets:
-          - {dataset: GISS, project: OBS, type: reanaly, version: 2, tier: 2}
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
           - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
           - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
           - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      tasa:
+        mip: Amon
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: GISTEMP, project: OBS, type: ground, version: v4, tier: 2}
     scripts:
       delta_T:
         script: xco2_analysis/delta_T.ncl
         styleset: CMIP6
         masking: obs
-        var_order: ["xco2", "tas"]
+        var_order: ["xco2", "tas", "tasa"]
         region: [-30, 30]
         modis_path: /work/bd0854/b309137/data_ext/Land_Cover_Class_1degree.nc4
 
@@ -221,6 +249,7 @@ diagnostics:
     description: Comparison of CO2 and XCO2 at select NOAA-ESRL stations
     variables:
       xco2:
+        preprocessor: mmm_ref
         project: CMIP6
         mip: Amon
         exp: esm-hist
@@ -233,10 +262,12 @@ diagnostics:
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
           - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
           - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
           - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       co2:
+        preprocessor: mmm
         project: CMIP6
         mip: Amon
         exp: esm-hist
@@ -246,6 +277,7 @@ diagnostics:
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
           - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
           - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
           - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}

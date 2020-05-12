@@ -359,11 +359,15 @@ begin
     res@cnMinLevelValF = -maxlev
     res@cnMaxLevelValF = maxlev
     res@cnLevelSpacingF = 1.
+    mean_plot = avg(seasamp_obsdiff)
+    res@gsnRightString = sprintf("%1.2f", mean_plot) + " ppmv"
     plot_seasamp_diff = gsn_csm_contour_map(wks, seasamp_obsdiff, res)
 
 
     res@gsnLeftString = "Unsampled to sampled " + DATASETS(imod) + " difference";"Relative Difference (mv - no mv)"
     res@lbTitleString = "Seasonal cycle amplitude difference [ppmv]"
+    mean_plot = avg(seasamp_diff)
+    res@gsnRightString = sprintf("%1.2f", mean_plot) + " ppmv"
 
     seasamp_plots(3) = gsn_csm_contour_map(wks, seasamp_diff, res)
 
@@ -377,15 +381,24 @@ begin
     res@cnLevelSpacingF      = 1.
 
     res@gsnLeftString = "Sampled " + DATASETS(imod)
+
+    mean_plot = avg(mod_mv_seasamp)
+    res@gsnRightString = sprintf("%1.2f", mean_plot) + " ppmv"
     seasamp_plots(0) = gsn_csm_contour_map(wks, \
                                    dim_avg_n_Wrap(mod_mv_seasamp, 0), res)
 
+
+    mean_plot = avg(mod_nomv_seasamp)
+    res@gsnRightString = sprintf("%1.2f", mean_plot) + " ppmv"
     res@gsnLeftString = "Unsampled " + DATASETS(imod)
     seasamp_plots(1) = gsn_csm_contour_map(wks, \
                                    dim_avg_n_Wrap(mod_nomv_seasamp, 0), res)
 
 
     res@gsnLeftString = "OBS"
+
+    mean_plot = avg(obs_seasamp)
+    res@gsnRightString = sprintf("%1.2f", mean_plot) + " ppmv"
     seasamp_plots(2) = gsn_csm_contour_map(wks, \
                                       dim_avg_n_Wrap(obs_seasamp, 0), res)
 
@@ -456,7 +469,7 @@ begin
       res_sca_panel_plots@gsnFrame = False
       res_sca_panel_plots@cnLevelSelectionMode = "ManualLevels"
       res_sca_panel_plots@cnMinLevelValF = 0.
-      res_sca_panel_plots@cnMaxLevelValF = 13.
+      res_sca_panel_plots@cnMaxLevelValF = diag_script_info@contour_max_level ;13.
       res_sca_panel_plots@cnLevelSpacingF = 1.
       res_sca_panel_plots@gsnStringFontHeightF = 0.03
       res_sca_panel_plots@tmXBLabelFontHeightF = 0.025

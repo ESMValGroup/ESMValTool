@@ -45,15 +45,15 @@ begin
   ; Variable
   var0 = diag_script_info@var_order(0)
   var1 = diag_script_info@var_order(1)
+  var2 = diag_script_info@var_order(2)
 
   ; Input data
   INFO0 = select_metadata_by_name(input_file_info, var0)
   INFO1 = select_metadata_by_name(input_file_info, var1)
+  INFO2 = select_metadata_by_name(input_file_info, var2)
   DATASETS = metadata_att_as_array(INFO0, "dataset")
-  DATASETS := array_append_record(DATASETS, "multi-model mean", 0)
   DATASETS2 = metadata_att_as_array(INFO1, "dataset")
-  DATASETS2 := array_append_record(DATASETS2, "multi-model mean", 0)
-  ALL_FILES = metadata_att_as_array(INFO0, "filename")
+  ;ALL_FILES = metadata_att_as_array(INFO0, "filename")
   experiments = metadata_att_as_array(INFO0, "exp") ; Careful! OBS also has exp: esm-hist
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -132,26 +132,17 @@ begin
   end if
   mapping_array1(mod_inds) = ispan(1, dimsizes(DATASETS)-1, 1)
 
-  if (isatt(INFO0[1], "reference_dataset")) then
-    ref_ind2 = ind(DATASETS2.eq.INFO1[0]@reference_dataset)
-  else
-    ref_ind2 = -999
-  end if
+  ;if (isatt(INFO0[1], "reference_dataset")) then
+  ;  ref_ind2 = ind(DATASETS2.eq.INFO1[0]@reference_dataset)
+  ;else
+  ;  ref_ind2 = -999
+  ;end if
 
   ; Need array that maps obs to index 0, the other models to following indizes
-  mapping_array2 = new(dimsizes(DATASETS2), integer)
-  if ref_ind2.ne.-999 then
-    mapping_array2(ref_ind) = 0
-  end if
-  mod_inds2 = ind(DATASETS2.ne.INFO1[0]@reference_dataset)
-  mapping_array2(mod_inds2) = ispan(1, dimsizes(DATASETS2)-1, 1)
-
-  ; For MMM calculation
-  if ref_ind.eq."-999" then
-    subtract_mmm = 1
-  else
-    subtract_mmm = 2
-  end if
+  mapping_array2 = new(dimsizes(DATASETS2) + 1, integer)
+  mapping_array2(dimsizes(DATASETS2)) = 0
+  ;mod_inds2 = ind(DATASETS2)
+  mapping_array2(:dimsizes(DATASETS2)-1) = ispan(1, dimsizes(DATASETS2), 1)
 
   ; set up needed arrays
   growth_series = new((/dimsizes(DATASETS), nyear/), float)
@@ -160,10 +151,10 @@ begin
   growth_series&model = DATASETS(mapping_array1)
   growth_series&time = ispan(start_year, end_year, 1)
 
-  delta_t = new((/dimsizes(DATASETS2), nyear/), float)
+  delta_t = new((/dimsizes(DATASETS2)+1, nyear/), float)
   delta_t!0 = "model"
   delta_t!1 = "time"
-  delta_t&model = DATASETS2(mapping_array2)
+  delta_t&model = array_append_record("GISTEMP", DATASETS2, 0)
   delta_t&time = growth_series&time
 
   ; Temp Anomalies with reference to 2000 - 2010 (-> diag script attribute for timeframe?)
@@ -208,26 +199,11 @@ begin
       continue
     end if
 
-    if DATASETS(imod).eq."multi-model mean" then
-      var0_mod = mmm_array / tofloat(dimsizes(DATASETS) - subtract_mmm)
-      copy_VarMeta(mmm_array, var0_mod)
-    else
-      tmp = read_data(INFO0[imod])
-      var0_mod = tofloat(tmp)
-      copy_VarMeta(tmp, var0_mod)
-      delete(tmp)
-      var0_mod = convert_units(var0_mod, "ppmv")
-
-      if .not. isdefined("mmm_array") then
-        mmm_array =  area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, var0_mod, \
-                                        True,1, obs_data&lon, obs_data&lat, False)
-      else
-        var_reg = area_hi2lores(var0_mod&lon, var0_mod&lat, var0_mod, \
-                                True,1, mmm_array&lon, mmm_array&lat, False)
-        mmm_array = mmm_array + (/var_reg/)
-        delete(var_reg)
-      end if
-    end if
+    tmp = read_data(INFO0[imod])
+    var0_mod = tofloat(tmp)
+    copy_VarMeta(tmp, var0_mod)
+    delete(tmp)
+    var0_mod = convert_units(var0_mod, "ppmv")
 
     var0_reg = area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, var0_mod, True, \
                                       1, obs_data&lon, obs_data&lat, False)
@@ -239,27 +215,17 @@ begin
   end do
 
   ; ---------------------- Secondly tas data
-  do imod = 0, dimsizes(DATASETS2) - 1
-    if DATASETS2(imod).eq."multi-model mean" then
-      var1_mod = mmmt_array / tofloat(dimsizes(DATASETS2) - subtract_mmm)
-      copy_VarMeta(mmmt_array, var1_mod)
+  do imod = 0, dimsizes(DATASETS2)
+  ; +1 as ref dataset is in tasa, another variable
+    if imod.eq.(dimsizes(DATASETS2)) then
+      tmp = read_data(INFO2[0])
     else
       tmp = read_data(INFO1[imod])
-      var1_mod = tofloat(tmp)
-      copy_VarMeta(tmp, var1_mod)
-      delete(tmp)
-
-      if imod.ne.ref_ind2 then
-        if .not. isdefined("mmmt_array") then
-          mmmt_array =  var1_mod
-        else
-          var_reg = linint2(var1_mod&lon, var1_mod&lat, var1_mod, \
-                                  True, mmmt_array&lon, mmmt_array&lat, 0)
-          mmmt_array = mmmt_array + (/var_reg/)
-          delete(var_reg)
-        end if
-      end if
     end if
+
+    var1_mod = tofloat(tmp)
+    copy_VarMeta(tmp, var1_mod)
+    delete(tmp)
 
     time_coord = cd_calendar(var1_mod&time, 0)
     temp_anom = var1_mod

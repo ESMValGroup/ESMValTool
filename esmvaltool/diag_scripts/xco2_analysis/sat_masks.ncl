@@ -309,7 +309,7 @@ begin
   overlay(plot_sgj, plot_sgjs)
 
   res@gsnLeftString = "GOSAT"
-  res@gsnRightString = "2013 - 2016"
+  res@gsnRightString = "2013 - " + end_year
   ;mv_cmap = read_colormap_file("WhiteGreen")
   ;res@cnFillPalette    = mv_cmap ; (::-1, :)   ; set color map
   plot_gosat = gsn_csm_contour_map(wks, plot_gosat_l_mask, res)

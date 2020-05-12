@@ -114,11 +114,12 @@ begin
         ;mod_inds = get1Dindex(source1&model,source1&model(1:))
         colors := array_append_record("black", colors(1:), 0);colors(mod_inds), 0)
     else
-        mod_inds = get1Dindex(source1&model,source1&model)
-        colors := colors(mod_inds)
+        ;mod_inds = get1Dindex(models@name,source1&model)
+        colors := colors(1:)
     end if
     ; Add multi-model mean as it's not in diag_script_info
     colors := array_append_record(colors, "red", 0)
+    print(colors)
 
     ; calc min and max dT,
     min_X = min(source1)

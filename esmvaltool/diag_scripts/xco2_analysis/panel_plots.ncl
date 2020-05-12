@@ -112,6 +112,7 @@ begin
     ref_ind = -999
   end if
 
+
   mod_inds = ind(DATASETS.ne.INFO0[0]@reference_dataset)
 
   ; Need array that maps obs to index 0, the other models to following indizes
@@ -294,8 +295,8 @@ begin
   ; -------------------------------------------------------------------------------
   obs_pres = diag_script_info@obs_in_panel
   if .not. obs_pres then
-    var0_yr = var0_yr(1:, :)
-    amp_series = amp_series(1:, :)
+    var0_yr := var0_yr(1:, :)
+    amp_series := amp_series(1:, :)
   end if
   outfile_dtgr_detr = plot_dir + "/" + var0 + "_" + experiments(0) \
                + "_" + region + "_" + (start_year) + "-" + (end_year) + "_" + var0 + "_SCA_panels" \
