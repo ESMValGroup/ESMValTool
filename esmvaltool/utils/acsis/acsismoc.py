@@ -44,7 +44,8 @@ import os
 import collections
 import numpy as np
 import iris
-from esmvaltool.preprocessor import extract_region, extract_season
+from esmvalcore.preprocessor._area import extract_region
+from esmvalcore.preprocessor._time import extract_season
 from esmvaltool.utils.acsis._utils import _save_cubes, _set_logger
 
 # decalre the global variables for analysis
