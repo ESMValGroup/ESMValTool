@@ -3,17 +3,16 @@
 import os
 import cdsapi
 
+from .downloader import BaseDownloader
 
-class CDSDownloader():
+
+class CDSDownloader(BaseDownloader):
 
     def __init__(self, product_name, config, request_dictionary, dataset):
+        super().__init__(config, dataset)
         self._client = cdsapi.Client()
         self._product_name = product_name
         self._request_dict = request_dictionary
-        self._config = config
-        self.tier = 3
-        self.dataset = dataset
-        self.overwrite = True
 
     def download(self, year, month, day=None):
         request_dict = self._request_dict.copy()
@@ -26,9 +25,9 @@ class CDSDownloader():
         if day:
             date_str += f"{day:02d}"
 
-        os.makedirs(self.download_folder, exist_ok=True)
+        os.makedirs(self.local_folder, exist_ok=True)
         file_path = os.path.join(
-            self.download_folder,
+            self.local_folder,
             f"{self.dataset}_{date_str}.tar"
         )
         if os.path.exists(file_path):
@@ -41,11 +40,3 @@ class CDSDownloader():
             request_dict,
             file_path,
         )
-
-    @property
-    def download_folder(self):
-        return os.path.join(self._rawobs, f'Tier{self.tier}', self.dataset)
-
-    @property
-    def _rawobs(self):
-        return self._config['rootpath']['RAWOBS'][0]

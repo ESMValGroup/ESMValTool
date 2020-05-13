@@ -8,17 +8,18 @@ import re
 from progressbar import ProgressBar, Bar, DataSize, ETA,\
     FileTransferSpeed, Percentage
 
+from .downloader import BaseDownloader
+
+
 logger = logging.getLogger(__name__)
 
 
-class FTPDownloader():
+class FTPDownloader(BaseDownloader):
 
     def __init__(self, config, server, dataset):
+        super().__init__(config, dataset)
         self._client = None
-        self.config = config
         self.server = server
-        self.dataset = dataset
-        self.overwrite = False
         self.tier = 2
 
     def connect(self):
@@ -39,15 +40,7 @@ class FTPDownloader():
             if facts['type'] == 'dir'
         ]
 
-    @property
-    def local_folder(self):
-        return os.path.join(
-            self.config['rootpath']['RAWOBS'][0],
-            f'Tier{self.tier}',
-            self.dataset
-        )
-
-    def download_folder(self, server_path, filter_files=None):
+    def download_folder(self, server_path, sub_folder, filter_files=None):
         # get filenames within the directory
         filenames = self._client.nlst(server_path)
         logger.info('Downloading files in %s', server_path)
@@ -58,13 +51,13 @@ class FTPDownloader():
                 if expression.match(os.path.basename(filename))
             ]
         for filename in filenames:
-            self.download_file(filename)
+            self.download_file(filename, sub_folder)
 
-    def download_file(self, server_path):
-        os.makedirs(self.local_folder, exist_ok=True)
+    def download_file(self, server_path, sub_folder=''):
+        os.makedirs(os.path.join(self.local_folder, sub_folder), exist_ok=True)
         local_path = os.path.join(
-            self.local_folder, os.path.basename(server_path))
-        if os.path.isfile(local_path):
+            self.local_folder, sub_folder, os.path.basename(server_path))
+        if not self.overwrite and os.path.isfile(local_path):
             logger.info('File %s already downloaded. Skipping...', server_path)
             return
         logger.info('Downloading %s', server_path)

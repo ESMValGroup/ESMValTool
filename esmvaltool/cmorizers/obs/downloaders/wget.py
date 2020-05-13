@@ -4,23 +4,12 @@ import os
 import logging
 import subprocess
 
+from .downloader import BaseDownloader
+
 logger = logging.getLogger(__name__)
 
 
 class WGetDownloader():
-
-    def __init__(self, config, dataset):
-        self.config = config
-        self.dataset = dataset
-        self.tier = 2
-
-    @property
-    def local_folder(self):
-        return os.path.join(
-            self.config['rootpath']['RAWOBS'][0],
-            f'Tier{self.tier}',
-            self.dataset
-        )
 
     def download_folder(self, server_path, wget_options):
         # get filenames within the directory
