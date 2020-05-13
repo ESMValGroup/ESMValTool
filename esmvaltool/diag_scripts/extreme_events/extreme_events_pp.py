@@ -12,6 +12,7 @@ from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 from esmvaltool.diag_scripts.shared.plot import quickplot
+
 import extreme_events_indices
 
 from extreme_events_utils import convert_ETCCDI_units
@@ -40,47 +41,12 @@ def get_provenance_record(attributes, ancestor_files):
     }
     return record
 
-def _count_values_below(data, axis, threshold=273.15):
-    return np.sum(data < threshold, axis=axis, dtype=int)
 
-def _count_values(data, axis, threshold, logic):
-    if logic == 'lower':
-        return np.sum(data < threshold, axis=axis, dtype=int)
-    elif logic == 'greater':
-        return np.sum(data > threshold, axis=axis, dtype=int)
-    else:
-        raise Exception('Not implemented')
-
-def _spell(data, axis, threshold, duration):
-    pass
-
-def _select_value_per_month(data, axis, extreme):
-    pass
-
-def _outlier(data, axis, quantile, threshold, logic):
-    pass
-
-def _mean_diff(data, axis):
-    pass
-
-def _count_calc(data, axis):
-    pass
-
-def _sum(data, axis):
-    pass
-
-def compute_indices(cubes):
-    """Compute indices."""
-    out = {}
-    logger.debug("Computing frost days index for:")
-    count_true = iris.analysis.Aggregator('_count_values_below',
-            _count_values_below, units_func=lambda units: 1)
-    cube_list = iris.cube.CubeList()
-    for name in cubes.keys():
-        logger.debug("%s", name)
-        cube_list.append(cubes[name]['tasmin'].collapsed('time', count_true))
-    out['frost_days'] = cube_list
-    return out
+def write_netcdf(cube, cfg, filename='test.nc', netcdf_format='NETCDF4'):
+    outdir = cfg['work_dir']
+    with iris.fileformats.netcdf.Saver(os.path.join(outdir, filename),
+                                       netcdf_format) as sman:
+        sman.write(cube)
 
 
 def plot_diagnostic(cube, basename, provenance_record, cfg):

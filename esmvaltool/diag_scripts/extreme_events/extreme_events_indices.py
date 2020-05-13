@@ -4,12 +4,18 @@
 import logging
 import os
 import sys
-from pprint import pformat
+#from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import numdaysyear_wrapper, select_value, _check_required_variables
+from extreme_events_utils import numdaysyear_wrapper, select_value, _check_required_variables, gsl_check_units, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
 from cf_units import Unit
 import yaml
+#import dask.dataframe as dd
+#import dask.array as da
+#import datetime
+#from calendar import monthrange
+
+import esmvalcore.preprocessor as prep
 
 #from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
 #                                            select_metadata, sorted_metadata)
@@ -28,7 +34,7 @@ annual_number_of_frost_days:
     threshold:
         value: 273.15
         unit: K
-        logic: lt
+        logic: less
     cf_name: number_of_days_with_air_temperature_below_freezing_point
 annual_number_of_summer_days:
     name: summer days
@@ -38,7 +44,7 @@ annual_number_of_summer_days:
     threshold:
         value: 298.15
         unit: K
-        logic: gt
+        logic: greater
     cf_name: number_of_days_with_air_temperature_above_25_degree_Celsius
 annual_number_of_icing_days:
     name: icing days
@@ -48,7 +54,7 @@ annual_number_of_icing_days:
     threshold:
         value: 273.15
         unit: K
-        logic: lt
+        logic: less
     cf_name: number_of_days_where_air_temperature_remains_below_freezing_point
 annual_number_of_tropical_nights:
     name: tropical nights
@@ -58,7 +64,7 @@ annual_number_of_tropical_nights:
     threshold:
         value: 293.15
         unit: K
-        logic: gt
+        logic: greater
     cf_name: number_of_days_where_air_temperature_remains_above_20_degre_Celsius
 annual_number_of_days_where_cumulative_precipitation_is_above_10_mm:
     name: R10mm
@@ -68,7 +74,7 @@ annual_number_of_days_where_cumulative_precipitation_is_above_10_mm:
     threshold:
         value: 10
         unit: mm day-1
-        logic: ge
+        logic: greater_equal
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
 annual_number_of_days_where_cumulative_precipitation_is_above_20_mm:
     name: R20mm
@@ -78,7 +84,7 @@ annual_number_of_days_where_cumulative_precipitation_is_above_20_mm:
     threshold:
         value: 20
         unit: mm day-1
-        logic: ge
+        logic: greater_equal
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
 annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm:
     name: R{}mm
@@ -87,7 +93,7 @@ annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm:
         - pr
     threshold:
         unit: mm day-1
-        logic: ge
+        logic: greater_equal
     cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_{}_mm
 monthly_maximum_value_of_daily_maximum_temperature:
     name: TXx
@@ -152,6 +158,44 @@ daily_temperature_range:
         - tasmax
     logic: diff
     cf_name: daily_temperature_range
+annual_growing_season_length:
+    name: growing season length
+    required:
+        - tas
+    start:
+        threshold:
+            value: 278.15
+            unit: K
+            logic: greater
+        span:
+            value: 6
+            unit: days
+            logic: equal
+        time:
+            delay: 0
+            len: 6
+            unit: month
+    end:
+        threshold:
+            value: 278.15
+            unit: K
+            logic: less
+        span:
+            value: 6
+            unit: days
+            logic: equal
+        time:
+            delay: 6
+            len: 6
+            unit: month
+    spatial_subsets:
+        NH:
+            latitude: [0, 90]
+            longitude: [0, 360]
+        SH:
+            latitude: [0, -90]
+            longitude: [0, 360]
+    cf_name: annual_growing_season_length
 """)
 print("INDEX_DEFINITION:")
 print(yaml.dump(index_definition))
@@ -182,7 +226,8 @@ index_method = {
         "annual_total_precipitation_in_wet_days":
             "prcptot",
         "daily_temperature_range":
-            "dtr"
+            "dtr",
+        "annual_growing_season_length": "gslETCCDI_yr"
         }
 
 method_index = {}
@@ -335,3 +380,55 @@ def dtr(alias_cubes, **kwargs):
     result_cube.rename(specs['cf_name'])
     return result_cube
 
+def gslETCCDI_yr(cubes, **kwargs):
+    """GSL, Growing season length: Annual (1st Jan to 31st Dec in Northern Hemisphere (NH), 1st July to 30th June in Southern Hemisphere (SH)) count between first span of at least 6 days with daily mean temperature TG>5 degC and first span after July 1st (Jan 1st in SH) of 6 days with TG<5 degC. """
+
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    specs = gsl_check_units(cubes, specs)
+    
+    # hemispheric split  
+    res_cubes = []
+    for hemisphere in ['NH', 'SH']:
+        logger.info('Computing hemisphere: {}'.format(hemisphere))
+        cube = cubes[specs['required'][0]]
+        # constrain hemispheres
+        regional_constraints = specs['spatial_subsets'][hemisphere]
+        cube = cube.extract(iris.Constraint(
+                latitude = lambda cell: 
+                    np.min(regional_constraints['latitude'])
+                    <= cell <=
+                    np.max(regional_constraints['latitude']), 
+                longitude = lambda cell:
+                    np.min(regional_constraints['longitude'])
+                    <= cell <=
+                    np.max(regional_constraints['longitude']),
+                ))
+        
+        thresh_specs = {'start': specs['start'], 'end': specs['end']}
+        
+        # add year auxiliary coordinate
+        agg = 'year'
+        
+        if hemisphere == 'NH':
+            # possibly using time information for start and end
+            if agg not in [cc.long_name for cc in cube.coords()]:
+                iris.coord_categorisation.add_year(cube, 'time', name=agg)
+        else:
+            if agg not in [cc.long_name for cc in cube.coords()]:
+                iris.coord_categorisation.add_season_year(cube, 'time', name=agg, seasons=('jasondj','fmamj'))
+        
+        # actual calculation
+        res_cube = gsl_aggregator(cube, thresh_specs)
+        
+        res_cubes.append(res_cube)
+        
+    # combine hemispheres
+    res_cube = merge_SH_NH_cubes(res_cubes)
+    
+    # adjust cube information
+    res_cube.rename(specs['cf_name'])
+    res_cube.units = Unit('days per year')
+
+    return res_cube

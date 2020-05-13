@@ -74,8 +74,11 @@ reference_pars: &refpars
 #    - BNU-ESM
 
 regrid_pars: &regpars
-  regrid_dataset: MPI-ESM-LR
-#  regrid_dataset: ERA-Interim
+  regrid:
+    target_grid: MPI-ESM-LR
+    scheme: area_weighted
+#  target_grid: MPI-ESM-LR
+#  target_grid: ERA-Interim
 
 mip_definition: &mipdef
   mip: day
@@ -113,20 +116,26 @@ monthly_sum: &pp_monsum
 
 preprocessors:
   pp_max:
+    <<: *regpars
     <<: *pp_monmax
 
   pp_min:
+    <<: *regpars
     <<: *pp_monmin
 
   pp_sum:
+    <<: *regpars
     <<: *pp_monsum
 
   pp_5daymax:
+    <<: *regpars
     <<: *5day_filter
     <<: *pp_monmax
 
-  pp_none:
-   {}
+  pp_standard:
+    <<: *regpars
+    mask_landsea:
+      mask_out: sea
 
 ################################################
 # Define diagnostics                           #
@@ -140,23 +149,22 @@ diagnostics:
     variables:
       tas:
         <<: *mipdef
-        preprocessor: pp_none
+        preprocessor: pp_standard
       tasmax:
         <<: *mipdef
-        preprocessor: pp_none
+        preprocessor: pp_standard
       tasmin:
         <<: *mipdef
-        preprocessor: pp_none
+        preprocessor: pp_standard
       pr:
         <<: *mipdef
-        preprocessor: pp_none
+        preprocessor: pp_standard
         # derive: true # TODO: WHY?
 
     scripts:
       extremeIndices:
         script: extreme_events/extreme_events_pp.py
         <<: *refpars
-        <<: *regpars
         indices:
           - annual_number_of_frost_days
           - annual_number_of_summer_days
@@ -173,6 +181,7 @@ diagnostics:
           - monthly_maximum_5day_precipitation
           - daily_temperature_range
           - annual_total_precipitation_in_wet_days
+          - annual_growing_season_length
         cumprec_threshold_nn: 15
         # TODO: why is that the same name twice? is this dedicated plots?
         timeseries_idx: True
