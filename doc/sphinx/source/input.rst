@@ -62,6 +62,8 @@ The path to the raw data to be cmorized must be specified in the CONFIG_FILE as 
 
 At the moment, cmorize_obs supports Python and NCL scripts.
 
+.. _cmorization_as_fix:
+
 Cmorization as a fix
 --------------------
 As of early 2020, ESMValTool also provides (limited) support for data in their native format. In this case, the steps needed to reformat the data are executed as datasets fixes during the execution of an ESMValTool recipe, as one of the first preprocessor steps. Compared to the workflow described above, this has the advantage that the user does not need to store a duplicate (cmorized) copy of the data. Instead, the cmorization is performed 'on the fly' when running a recipe. ERA5 is the first dataset for which this 'cmorization on the fly' is supported.

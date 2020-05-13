@@ -23,8 +23,8 @@ data set for the use in ESMValTool.
   *fixes*. As compared to the workflow described below, this has the advantage that
   the user does not need to store a duplicate (CMORized) copy of the data. Instead, the
   CMORization is performed 'on the fly' when running a recipe. **ERA5** is the first dataset
-  for which this 'CMORization on the fly' is supported. For more information, see: 
-  `obtaining input data <https://esmvaltool.readthedocs.io/en/latest/input.html#observations>`_.
+  for which this 'CMORization on the fly' is supported. For more information, see:
+  :ref:`cmorization_as_fix`.
 
 
 1. Check if your variable is CMOR standard
