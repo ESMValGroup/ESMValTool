@@ -53,10 +53,11 @@ class FTPDownloader():
         logger.info('Downloading files in %s', server_path)
         if filter_files:
             expression = re.compile(filter_files)
+            filenames = [
+                filename for filename in filenames
+                if expression.match(os.path.basename(filename))
+            ]
         for filename in filenames:
-            if not expression.match(os.path.basename(filename)):
-                logger.debug('Skipping %s due to filter', filename)
-                continue
             self.download_file(filename)
 
     def download_file(self, server_path):
@@ -102,9 +103,10 @@ class CCIDownloader(FTPDownloader):
 
     def __init__(self, config, dataset):
         super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset)
+        self.ftp_name = self.dataset_name
 
     def set_cwd(self, path):
-        cwd = f'/neodc/esacci/{self.dataset_name[7:]}/data/{path}'
+        cwd = f'/neodc/esacci/{self.ftp_name}/data/{path}'
         super().set_cwd(cwd)
 
     @ property
