@@ -19,3 +19,4 @@ def download_dataset(config, dataset, start_date, end_date):
     while loop_date <= end_date:
         year = loop_date.year
         downloader.download_year(f'{year}')
+        loop_date += relativedelta.relativedelta(years=1)

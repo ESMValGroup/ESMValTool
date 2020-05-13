@@ -4,8 +4,8 @@ import os
 import ftplib
 import logging
 
-from progressbar import ProgressBar, Bar, DataSize, Timer, ETA,\
-    FileTransferSpeed
+from progressbar import ProgressBar, Bar, DataSize, ETA,\
+    FileTransferSpeed, Percentage
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +59,7 @@ class FTPDownloader():
         size = self._client.size(server_path)
 
         widgets = [
-            DataSize(), Bar(), ' ', FileTransferSpeed(),
-            ' [', Timer(), '] (', ETA(), ') '
+            DataSize(), Bar(), Percentage(), ' ', FileTransferSpeed(), ' (', ETA(), ')'
         ]
 
         progress = ProgressBar(max_value=size, widgets=widgets)
