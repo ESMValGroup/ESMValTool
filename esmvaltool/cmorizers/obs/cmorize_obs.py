@@ -232,12 +232,6 @@ def main():
 def _download(config, obs_list, start_date, end_date):
     """Automatic download"""
     logger.info("Downloading RAW data")
-    download_scripts = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "download_scripts"
-    )
-    logger.info("Using cmorizer scripts repository: %s", download_scripts)
-
     # master directory
     failed_datasets = []
     for dataset in obs_list:
@@ -246,7 +240,7 @@ def _download(config, obs_list, start_date, end_date):
         try:
             downloader = importlib.import_module(
                 f'.{dataset_module}',
-                package='esmvaltool.cmorizers.obs.download_scripts'
+                package='esmvaltool.cmorizers.obs.downloaders.datasets'
             )
         except ImportError:
             logger.exception('Could not find cmorizer for %s', dataset)
