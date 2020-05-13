@@ -14,16 +14,16 @@ def download_dataset(config, dataset, start_date, end_date):
         dataset=dataset
     )
     downloader.connect()
-
+    end_of_file = 'ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc'
     filler_data = {
         1994: [
-            'AVHRR_NOAA_12/1994/199409-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc',
-            'AVHRR_NOAA_12/1994/199410-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc',
-            'AVHRR_NOAA_12/1994/199411-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc',
-            'AVHRR_NOAA_12/1994/199412-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc',
+            f'AVHRR_NOAA_12/1994/199409-{end_of_file}',
+            f'AVHRR_NOAA_12/1994/199410-{end_of_file}',
+            f'AVHRR_NOAA_12/1994/199411-{end_of_file}',
+            f'AVHRR_NOAA_12/1994/199412-{end_of_file}',
         ],
         1995:  [
-            'AVHRR_NOAA_12/1995/199501-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc',
+            f'AVHRR_NOAA_12/1995/199501-{end_of_file}',
         ],
     }
 

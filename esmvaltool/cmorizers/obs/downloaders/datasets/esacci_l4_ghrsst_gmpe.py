@@ -2,7 +2,8 @@
 
 from dateutil import relativedelta
 
-from ..downloaders.cds import CDSDownloader
+from ..cds import CDSDownloader
+
 
 def download_dataset(config, dataset, start_date, end_date):
     """Download dataset cds-satellite-albedo."""

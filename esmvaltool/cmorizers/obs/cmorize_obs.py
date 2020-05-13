@@ -195,7 +195,8 @@ def main():
     logger.info(70 * "-")
     logger.info("input_dir  = %s", config_user["rootpath"]["RAWOBS"][0])
     # check if the inputdir actually exists
-    if not args.download and not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
+    if not args.download and \
+       not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
         logger.error("Directory %s does not exist",
                      config_user["rootpath"]["RAWOBS"][0])
         raise ValueError
@@ -217,7 +218,7 @@ def main():
         start_date = datetime.datetime.strptime(args.startdate, '%Y%m%d')
         end_date = datetime.datetime.strptime(args.enddate, '%Y%m%d')
         _download(config_user, obs_list, start_date, end_date)
-    
+
     _cmor_reformat(config_user, obs_list)
 
     # End time timing
@@ -227,6 +228,7 @@ def main():
     logger.info("Time for running the CMORization scripts was: %s",
                 timestamp2 - timestamp1)
 
+
 def _download(config, obs_list, start_date, end_date):
     """Automatic download"""
     logger.info("Downloading RAW data")
@@ -235,7 +237,6 @@ def _download(config, obs_list, start_date, end_date):
         "download_scripts"
     )
     logger.info("Using cmorizer scripts repository: %s", download_scripts)
-    run_dir = os.path.join(config['output_dir'], 'run')
 
     # master directory
     failed_datasets = []

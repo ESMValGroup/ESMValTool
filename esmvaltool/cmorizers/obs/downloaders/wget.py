@@ -1,12 +1,8 @@
 """Downloader for the Climate Data Store"""
 
 import os
-import ftplib
 import logging
 import subprocess
-
-from progressbar import ProgressBar, Bar, DataSize, ETA,\
-    FileTransferSpeed, Percentage
 
 logger = logging.getLogger(__name__)
 

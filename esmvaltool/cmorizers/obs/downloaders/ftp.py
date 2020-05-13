@@ -28,7 +28,9 @@ class FTPDownloader():
     def list_folders(self, server_path='.'):
         filenames = self._client.mlsd(server_path, facts=['type'])
         return [
-            filename for filename, facts in filenames if facts['type'] == 'dir']
+            filename for filename, facts in filenames
+            if facts['type'] == 'dir'
+        ]
 
     @property
     def local_folder(self):
@@ -59,7 +61,8 @@ class FTPDownloader():
         size = self._client.size(server_path)
 
         widgets = [
-            DataSize(), Bar(), Percentage(), ' ', FileTransferSpeed(), ' (', ETA(), ')'
+            DataSize(), Bar(), Percentage(), ' ', FileTransferSpeed(),
+            ' (', ETA(), ')'
         ]
 
         progress = ProgressBar(max_value=size, widgets=widgets)
@@ -74,7 +77,7 @@ class FTPDownloader():
             try:
                 self._client.retrbinary(
                     f'RETR {server_path}', _file_write)
-            except:
+            except Exception:
                 file_handler.close()
                 if os.path.exists(local_path):
                     os.remove(local_path)
