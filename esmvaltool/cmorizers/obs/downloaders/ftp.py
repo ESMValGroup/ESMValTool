@@ -3,6 +3,7 @@
 import os
 import ftplib
 import logging
+import re
 
 from progressbar import ProgressBar, Bar, DataSize, ETA,\
     FileTransferSpeed, Percentage
@@ -25,6 +26,12 @@ class FTPDownloader():
         logger.info(self._client.getwelcome())
         self._client.login()
 
+    def set_cwd(self, path):
+        logger.debug('Current working directory: %s', self._client.pwd())
+        logger.debug('Setting working directory to %s', path)
+        self._client.cwd(path)
+        logger.debug('New working directory: %s', self._client.pwd())
+
     def list_folders(self, server_path='.'):
         filenames = self._client.mlsd(server_path, facts=['type'])
         return [
@@ -40,11 +47,16 @@ class FTPDownloader():
             self.dataset
         )
 
-    def download_folder(self, server_path):
+    def download_folder(self, server_path, filter_files=None):
         # get filenames within the directory
         filenames = self._client.nlst(server_path)
         logger.info('Downloading files in %s', server_path)
+        if filter_files:
+            expression = re.compile(filter_files)
         for filename in filenames:
+            if not expression.match(os.path.basename(filename)):
+                logger.debug('Skipping %s due to filter', filename)
+                continue
             self.download_file(filename)
 
     def download_file(self, server_path):
@@ -93,10 +105,7 @@ class CCIDownloader(FTPDownloader):
 
     def set_cwd(self, path):
         cwd = f'/neodc/esacci/{self.dataset_name[7:]}/data/{path}'
-        logger.debug('Current working directory: %s', self._client.pwd())
-        logger.debug('Setting working directory to %s', cwd)
-        self._client.cwd(cwd)
-        logger.debug('New working directory: %s', self._client.pwd())
+        super().set_cwd(cwd)
 
     @ property
     def dataset_name(self):
