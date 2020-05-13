@@ -152,4 +152,7 @@ def cmorization(in_dir, out_dir, cfg, _):
             # Now get list of files
             filepattern = os.path.join(in_dir, var['file'].format(year=year))
             in_files = glob.glob(filepattern)
+            if not in_files:
+                logger.warning('Year %s data not found', year)
+                continue
             _extract_variable(in_files, var, cfg, out_dir)
