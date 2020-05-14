@@ -315,5 +315,70 @@ def _cmor_reformat(config, obs_list):
                 )
 
 
+class DataCommand():
+
+    def _start(self, config_file):
+        # get and read config file
+        config_file = os.path.abspath(
+            os.path.expandvars(os.path.expanduser(config_file)))
+
+        # Read user config file
+        if not os.path.exists(config_file):
+            logger.error("Config file %s does not exist", config_file)
+
+        # read the file in
+        config_user = read_config_user_file(config_file, 'cmorize_obs')
+
+        # set the run dir to hold the settings and log files
+        run_dir = os.path.join(config_user['output_dir'], 'run')
+        if not os.path.isdir(run_dir):
+            os.makedirs(run_dir)
+
+        # configure logging
+        log_files = configure_logging(
+            output=run_dir, console_log_level=config_user['log_level'])
+        logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+
+        # print header
+        logger.info(HEADER)
+
+        # run
+        timestamp1 = datetime.datetime.utcnow()
+        timestamp_format = "%Y-%m-%d %H:%M:%S"
+
+        logger.info("Starting the CMORization Tool at time: %s UTC",
+                    timestamp1.strftime(timestamp_format))
+
+        logger.info(70 * "-")
+        logger.info("input_dir  = %s", config_user["rootpath"]["RAWOBS"][0])
+        # check if the inputdir actually exists
+        if not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
+            logger.error("Directory %s does not exist",
+                         config_user["rootpath"]["RAWOBS"][0])
+            raise ValueError
+        logger.info("output_dir = %s", config_user["output_dir"])
+        logger.info(70 * "-")
+        return config_user
+
+    def _parse_datasets(self, datasets):
+        if datasets:
+            return datasets.split(',')
+        return []
+
+    def download(self, datasets, config_file, start_date=None, end_date=None,
+                 overwrite=False):
+        config_user = self._start(config_file)
+        datasets = self._parse_datasets(datasets)
+        if not datasets:
+            logger.error(
+                "In order to download automatically, you must provide "
+                "the desired datasets"
+            )
+            raise ValueError
+        start_date = datetime.datetime.strptime(str(start_date), '%Y%m%d')
+        end_date = datetime.datetime.strptime(str(end_date), '%Y%m%d')
+        _download(config_user, datasets, start_date, end_date)
+
+
 if __name__ == '__main__':
     main()
