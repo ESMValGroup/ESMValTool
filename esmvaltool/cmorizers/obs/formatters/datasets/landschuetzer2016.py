@@ -25,8 +25,9 @@ from warnings import catch_warnings, filterwarnings
 import iris
 from dask import array as da
 
-from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
-                        save_variable, set_global_atts)
+from esmvaltool.cmorizers.obs.utilities import (
+    constant_metadata, fix_coords, fix_var_metadata, save_variable,
+    set_global_atts)
 
 logger = logging.getLogger(__name__)
 

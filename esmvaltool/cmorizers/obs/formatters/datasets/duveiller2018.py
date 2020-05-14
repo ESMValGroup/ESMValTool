@@ -35,8 +35,8 @@ import iris
 import numpy as np
 
 
-from .utilities import (fix_coords, fix_var_metadata, save_variable,
-                        set_global_atts)
+from esmvaltool.cmorizers.obs.utilities import (
+    fix_coords, fix_var_metadata, save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 

@@ -9,7 +9,8 @@ from iris.coords import AuxCoord
 from iris.cube import Cube
 
 
-from .utilities import fix_var_metadata, save_variable, set_global_atts
+from esmvaltool.cmorizers.obs.utilities import fix_var_metadata, \
+    save_variable, set_global_atts
 
 logger = logging.getLogger(__name__)
 

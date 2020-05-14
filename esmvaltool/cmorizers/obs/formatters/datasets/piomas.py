@@ -31,7 +31,7 @@ from cf_units import Unit
 import iris
 from iris.coords import AuxCoord, DimCoord
 
-from .utilities import save_variable, set_global_atts
+from esmvaltool.cmorizers.obs.utilities import save_variable, set_global_atts
 
 logger = logging.getLogger(__name__)
 

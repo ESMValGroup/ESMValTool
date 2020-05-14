@@ -30,8 +30,9 @@ import os
 
 import iris
 
-from .utilities import (constant_metadata, convert_timeunits, fix_coords,
-                        fix_var_metadata, save_variable, set_global_atts)
+from esmvaltool.cmorizers.obs.utilities import (
+    constant_metadata, convert_timeunits, fix_coords,
+    fix_var_metadata, save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 

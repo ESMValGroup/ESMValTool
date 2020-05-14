@@ -22,8 +22,8 @@ import xarray as xr
 import numpy as np
 import seawater as sw
 
-from .utilities import (fix_coords, fix_var_metadata, save_variable,
-                        set_global_atts)
+from esmvaltool.cmorizers.obs.utilities import (
+    fix_coords, fix_var_metadata, save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +48,9 @@ def _fix_fx_areacello(xr_time, var):
                                  coords={
                                      'lat': xr_time.temp.coords['lat'],
                                      'lon': xr_time.temp.coords['lon']
-                                 },
-                                 dims=['lat', 'lon'],
-                                 name=var)
+    },
+        dims=['lat', 'lon'],
+        name=var)
     grid_areas_xr.attrs = OrderedDict([('cell_area', 'Ocean Grid-Cell Area'),
                                        ('units', 'm2')])
     cube = grid_areas_xr.to_iris()

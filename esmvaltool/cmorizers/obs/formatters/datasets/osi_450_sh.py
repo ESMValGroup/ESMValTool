@@ -23,7 +23,7 @@ Download and processing instructions
     files belonging to the other hemisphere.
 
 """
-from .osi_common import OSICmorizer
+from esmvaltool.cmorizers.obs.formatters.osi_common import OSICmorizer
 
 
 def cmorization(in_dir, out_dir, cfg, _):

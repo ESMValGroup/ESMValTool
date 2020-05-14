@@ -18,7 +18,7 @@ Download and processing instructions
 
 
 """
-from .nsidc_common import cmorize
+from esmvaltool.cmorizers.obs.formatters.nsidc_common import cmorize
 
 
 def cmorization(in_dir, out_dir, cfg, _):

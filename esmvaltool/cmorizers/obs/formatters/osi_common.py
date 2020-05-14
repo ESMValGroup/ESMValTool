@@ -14,8 +14,8 @@ from iris.coords import AuxCoord
 from iris.coord_categorisation import add_day_of_year
 from esmvalcore.preprocessor import monthly_statistics
 
-from .utilities import (set_global_atts, convert_timeunits, fix_var_metadata,
-                        save_variable)
+from esmvaltool.cmorizers.obs.utilities import (
+    set_global_atts, convert_timeunits, fix_var_metadata, save_variable)
 
 logger = logging.getLogger(__name__)
 

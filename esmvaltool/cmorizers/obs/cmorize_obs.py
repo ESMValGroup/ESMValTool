@@ -381,7 +381,7 @@ class DataCommand():
         end_date = datetime.datetime.strptime(str(end_date), '%Y%m%d')
         _download(config_user, datasets, start_date, end_date)
 
-    def format(self, dataset=None, config_file=None):
+    def format(self, datasets=None, config_file=None):
         config_user = self._start(config_file)
         datasets = self._parse_datasets(datasets)
         if not datasets:
@@ -390,8 +390,6 @@ class DataCommand():
                 "the desired datasets"
             )
             raise ValueError
-        start_date = datetime.datetime.strptime(str(start_date), '%Y%m%d')
-        end_date = datetime.datetime.strptime(str(end_date), '%Y%m%d')
         _format(config_user, datasets)
 
     def prepare(self, datasets, config_file, start_date=None, end_date=None,
