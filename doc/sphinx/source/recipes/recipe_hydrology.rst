@@ -90,18 +90,16 @@ User settings in recipe
 
 #. recipe_wflow.yml
 
-   *Required preprocessor settings:*
+   *Optional preprocessor settings:*
 
       * extract_region: the region specified here should match the catchment
-      * daily_statistics: if the frequency of the input data is not daily, it
-        should be converted to daily using the preprocessor function
-        daily_statistics with ``operator: mean``.
 
    *Required diagnostic script settings:*
 
 	    * basin: name of the catchment
 	    * dem_file: netcdf file containing a digital elevation model with
 	      elevation in meters and coordinates latitude and longitude.
+	    * regrid: the regridding scheme for regridding to the digital elevation model. Choose ``area_weighted`` (slow) or ``linear``.
 
 #. recipe_lisflood.yml
 
