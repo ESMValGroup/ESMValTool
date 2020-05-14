@@ -50,7 +50,7 @@ Other datasets not available in these archives can be obtained by the user from 
 Using a cmorizer script
 -----------------------
 
-The cmorizers are dataset-specific scripts that can be run once to generate a local pool of observational datasets for usage with the ESMValTool. The necessary information to download and process the data is provided in the header of each cmorizing script. These scripts also serve as template to create new cmorizers for datasets not yet included. Note that dataset cmorized for ESMValTool v1 may not be working with v2, due to the much stronger constraints on metadata set by the Iris library.
+The cmorizers are dataset-specific scripts that can be run once to generate a local pool of observational datasets for usage with the ESMValTool. The necessary information to download and process the data is provided in the header of each cmorizing script. These scripts also serve as template to create new cmorizers for datasets not yet included. Note that dataset cmorized for ESMValTool v1 may not be working with v2, due to the much stronger constraints on metadata set by the iris library.
 
 To cmorize one or more datasets, run:
 
@@ -68,7 +68,7 @@ Cmorization as a fix
 --------------------
 As of early 2020, ESMValTool also provides (limited) support for data in their native format. In this case, the steps needed to reformat the data are executed as datasets fixes during the execution of an ESMValTool recipe, as one of the first preprocessor steps. Compared to the workflow described above, this has the advantage that the user does not need to store a duplicate (cmorized) copy of the data. Instead, the cmorization is performed 'on the fly' when running a recipe. ERA5 is the first dataset for which this 'cmorization on the fly' is supported.
 
-To use this functionality, users need to provide a path for the ``native6`` project data in their ``config-user.yml``. Then, in the recipe, they can refer to the native6 project. For an example recipe, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, and in that sense, it just replaces the cmorizer script. However, you can also use the native data directly in your recipe.
+To use this functionality, users need to provide a path for the ``native6`` project data in the configuration file, see for example ``config-user-example.yml``. Then, in the recipe, they can refer to the native6 project. For an example recipe, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, and in that sense, it just replaces the cmorizer script. However, you can also use the native data directly in your recipe.
 
 (Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
 
