@@ -68,7 +68,7 @@ Cmorization as a fix
 --------------------
 As of early 2020, ESMValTool also provides (limited) support for data in their native format. In this case, the steps needed to reformat the data are executed as datasets fixes during the execution of an ESMValTool recipe, as one of the first preprocessor steps. Compared to the workflow described above, this has the advantage that the user does not need to store a duplicate (cmorized) copy of the data. Instead, the cmorization is performed 'on the fly' when running a recipe. ERA5 is the first dataset for which this 'cmorization on the fly' is supported.
 
-To use this functionality, users need to provide a path for the ``native6`` project data in the configuration file, see for example ``config-user-example.yml``. Then, in the recipe, they can refer to the native6 project. For an example recipe, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, and in that sense, it just replaces the cmorizer script. However, you can also use the native data directly in your recipe.
+To use this functionality, users need to provide a path for the ``native6`` project data in the :ref:`user configuration file<config-user>`. Then, in the recipe, they can refer to the native6 project. For an example recipe, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that operates on the data. In this example, the diagnostic renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, that can be used through the OBS6 project. As such, this example recipe does exactly the same as the cmorizer scripts described above: create a local pool of cmorized data (the advantage, in this case, is that the daily aggregation has already been performed). However, with the support of native data format, it is no longer *necessary* to save the intermediate data. You can just copy the dataset specification from this example recipe to your own recipe, and ESMValTool will be able to read the data in their native format.
 
 (Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
 
@@ -78,7 +78,7 @@ Currently, the native6 project only supports ERA5 data in the format defined in 
 
 Supported datasets
 ------------------
-A list of the datasets for which a cmorizers is available is provided in the following table. Language 'ESMValTool' means cmorization has been implemented as dataset fixes.
+A list of the datasets for which a cmorizers is available is provided in the following table.
 
 .. tabularcolumns:: |p{3cm}|p{6cm}|p{3cm}|p{3cm}|
 
@@ -122,7 +122,7 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | ESMValTool      |
+| ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | n/a             |
 |                              | tasmax, tasmin, tdps, ts, tsn (E1hr), orog (fx)                                                      |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
@@ -215,3 +215,5 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | WOA                          | no3, o2, po4, si (Oyr), so, thetao (Omon)                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+
+.. [*] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
