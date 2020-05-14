@@ -40,7 +40,7 @@ class FTPDownloader(BaseDownloader):
             if facts['type'] == 'dir'
         ]
 
-    def download_folder(self, server_path, sub_folder, filter_files=None):
+    def download_folder(self, server_path, sub_folder='', filter_files=None):
         # get filenames within the directory
         filenames = self._client.nlst(server_path)
         logger.info('Downloading files in %s', server_path)

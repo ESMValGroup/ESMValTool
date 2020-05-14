@@ -1,7 +1,5 @@
 """Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
 
-from dateutil import relativedelta
-
 from esmvaltool.cmorizers.obs.downloaders.wget import WGetDownloader
 
 
