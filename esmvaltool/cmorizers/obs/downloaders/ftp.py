@@ -96,7 +96,7 @@ class CCIDownloader(FTPDownloader):
 
     def __init__(self, config, dataset):
         super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset)
-        self.ftp_name = self.dataset_name
+        self.ftp_name = self.dataset_name[7:]
 
     def set_cwd(self, path):
         cwd = f'/neodc/esacci/{self.ftp_name}/data/{path}'

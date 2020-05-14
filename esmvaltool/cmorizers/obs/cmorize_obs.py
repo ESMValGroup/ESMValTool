@@ -127,7 +127,7 @@ def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
 
 def _run_pyt_script(in_dir, out_dir, dataset, user_cfg):
     """Run the Python cmorization mechanism."""
-    module_name = 'esmvaltool.cmorizers.obs.cmorize_obs_{}'.format(
+    module_name = 'esmvaltool.cmorizers.obs.formatters.datasets.{}'.format(
         dataset.lower().replace("-", "_"))
     module = importlib.import_module(module_name)
     logger.info("CMORizing dataset %s using Python script %s",
@@ -219,7 +219,7 @@ def main():
         end_date = datetime.datetime.strptime(args.enddate, '%Y%m%d')
         _download(config_user, obs_list, start_date, end_date)
 
-    _cmor_reformat(config_user, obs_list)
+    _format(config_user, obs_list)
 
     # End time timing
     timestamp2 = datetime.datetime.utcnow()
@@ -255,7 +255,7 @@ def _download(config, obs_list, start_date, end_date):
         )
 
 
-def _cmor_reformat(config, obs_list):
+def _format(config, obs_list):
     """Run the cmorization routine."""
     logger.info("Running the CMORization scripts.")
 
@@ -263,7 +263,9 @@ def _cmor_reformat(config, obs_list):
     raw_obs = config["rootpath"]["RAWOBS"][0]
 
     # set the reformat scripts dir
-    reformat_scripts = os.path.dirname(os.path.abspath(__file__))
+    reformat_scripts = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), 'formatters', 'datasets'
+    )
     logger.info("Using cmorizer scripts repository: %s", reformat_scripts)
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
@@ -279,7 +281,7 @@ def _cmor_reformat(config, obs_list):
         for dataset in datasets[tier]:
             reformat_script_root = os.path.join(
                 reformat_scripts,
-                'cmorize_obs_' + dataset.lower().replace('-', '_'),
+                dataset.lower().replace('-', '_'),
             )
             # in-data dir; build out-dir tree
             in_data_dir = os.path.join(raw_obs, tier, dataset)
@@ -378,6 +380,34 @@ class DataCommand():
         start_date = datetime.datetime.strptime(str(start_date), '%Y%m%d')
         end_date = datetime.datetime.strptime(str(end_date), '%Y%m%d')
         _download(config_user, datasets, start_date, end_date)
+
+    def format(self, dataset=None, config_file=None):
+        config_user = self._start(config_file)
+        datasets = self._parse_datasets(datasets)
+        if not datasets:
+            logger.error(
+                "In order to download automatically, you must provide "
+                "the desired datasets"
+            )
+            raise ValueError
+        start_date = datetime.datetime.strptime(str(start_date), '%Y%m%d')
+        end_date = datetime.datetime.strptime(str(end_date), '%Y%m%d')
+        _format(config_user, datasets)
+
+    def prepare(self, datasets, config_file, start_date=None, end_date=None,
+                overwrite=False):
+        config_user = self._start(config_file)
+        datasets = self._parse_datasets(datasets)
+        if not datasets:
+            logger.error(
+                "In order to download automatically, you must provide "
+                "the desired datasets"
+            )
+            raise ValueError
+        start_date = datetime.datetime.strptime(str(start_date), '%Y%m%d')
+        end_date = datetime.datetime.strptime(str(end_date), '%Y%m%d')
+        _download(config_user, datasets, start_date, end_date)
+        _format(config_user, datasets)
 
 
 if __name__ == '__main__':
