@@ -319,17 +319,10 @@ def _format(config, obs_list):
 
 class DataCommand():
 
-    def _start(self, config_file):
-        # get and read config file
-        config_file = os.path.abspath(
-            os.path.expandvars(os.path.expanduser(config_file)))
-
-        # Read user config file
-        if not os.path.exists(config_file):
-            logger.error("Config file %s does not exist", config_file)
-
+    def _start(self, config_file, options):
         # read the file in
-        config_user = read_config_user_file(config_file, 'cmorize_obs')
+        config_user = read_config_user_file(
+            config_file, 'cmorize_obs', options)
 
         # set the run dir to hold the settings and log files
         run_dir = os.path.join(config_user['output_dir'], 'run')
@@ -368,8 +361,8 @@ class DataCommand():
         return []
 
     def download(self, datasets, config_file, start_date=None, end_date=None,
-                 overwrite=False):
-        config_user = self._start(config_file)
+                 overwrite=False, **kwargs):
+        config_user = self._start(config_file, kwargs)
         datasets = self._parse_datasets(datasets)
         if not datasets:
             logger.error(
@@ -381,8 +374,8 @@ class DataCommand():
         end_date = datetime.datetime.strptime(str(end_date), '%Y%m%d')
         _download(config_user, datasets, start_date, end_date)
 
-    def format(self, datasets=None, config_file=None):
-        config_user = self._start(config_file)
+    def format(self, datasets=None, config_file=None, **kwargs):
+        config_user = self._start(config_file, kwargs)
         datasets = self._parse_datasets(datasets)
         if not datasets:
             logger.error(
@@ -393,8 +386,8 @@ class DataCommand():
         _format(config_user, datasets)
 
     def prepare(self, datasets, config_file, start_date=None, end_date=None,
-                overwrite=False):
-        config_user = self._start(config_file)
+                overwrite=False, **kwargs):
+        config_user = self._start(config_file, kwargs)
         datasets = self._parse_datasets(datasets)
         if not datasets:
             logger.error(
