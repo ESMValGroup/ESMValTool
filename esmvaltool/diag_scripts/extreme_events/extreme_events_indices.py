@@ -7,11 +7,11 @@ import sys
 #from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import numdaysyear_wrapper, select_value, _check_required_variables, gsl_check_units, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
+from extreme_events_utils import numdaysyear_wrapper, var_perc_ex, select_value, __nonzero_mod__, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
 from cf_units import Unit
 import yaml
 #import dask.dataframe as dd
-#import dask.array as da
+import dask.array as da
 #import datetime
 #from calendar import monthrange
 
@@ -150,6 +150,46 @@ annual_total_precipitation_in_wet_days:
         - pr
     logic: sum
     cf_name: annual_total_precipitation_in_wet_days
+monthly_number_of_days_where_daily_minimum_temperature_below_10%:
+    name: TN10p
+    period: monthly
+    required:
+        - tasmin
+    threshold:
+        value: 10
+        unit: percent
+        logic: less
+    cf_name: monthly_number_of_days_where_daily_minimum_temperature_below_10%
+monthly_number_of_days_where_daily_minimum_temperature_above_90%:
+    name: TN90p
+    period: monthly
+    required:
+        - tasmin
+    threshold:
+        value: 90
+        unit: percent
+        logic: greater
+    cf_name: monthly_number_of_days_where_daily_minimum_temperature_above_90%
+monthly_number_of_days_where_daily_maximum_temperature_below_10%:
+    name: TX10p
+    period: monthly
+    required:
+        - tasmax
+    threshold:
+        value: 10
+        unit: percent
+        logic: less
+    cf_name: monthly_number_of_days_where_daily_maximum_temperature_below_10%
+monthly_number_of_days_where_daily_maximum_temperature_above_90%:
+    name: TX90p
+    period: monthly
+    required:
+        - tasmax
+    threshold:
+        value: 90
+        unit: percent
+        logic: greater
+    cf_name: monthly_number_of_days_where_daily_maximum_temperature_above_90%
 daily_temperature_range:
     name: DTR
     period: daily
@@ -159,7 +199,7 @@ daily_temperature_range:
     logic: diff
     cf_name: daily_temperature_range
 annual_growing_season_length:
-    name: growing season length
+    name: GSL
     required:
         - tas
     start:
@@ -167,7 +207,7 @@ annual_growing_season_length:
             value: 278.15
             unit: K
             logic: greater
-        span:
+        spell:
             value: 6
             unit: days
             logic: equal
@@ -180,7 +220,7 @@ annual_growing_season_length:
             value: 278.15
             unit: K
             logic: less
-        span:
+        spell:
             value: 6
             unit: days
             logic: equal
@@ -227,7 +267,15 @@ index_method = {
             "prcptot",
         "daily_temperature_range":
             "dtr",
-        "annual_growing_season_length": "gslETCCDI_yr"
+        "annual_growing_season_length": "gslETCCDI_yr",
+        "monthly_number_of_days_where_daily_minimum_temperature_below_10%":
+            "tn10pETCCDI_m",
+        "monthly_number_of_days_where_daily_maximum_temperature_above_90%":
+            "tx90pETCCDI_m",
+        "monthly_number_of_days_where_daily_minimum_temperature_above_90%":
+            "tn90pETCCDI_m",
+        "monthly_number_of_days_where_daily_maximum_temperature_below_10%":
+            "tx10pETCCDI_m",
         }
 
 method_index = {}
@@ -380,13 +428,41 @@ def dtr(alias_cubes, **kwargs):
     result_cube.rename(specs['cf_name'])
     return result_cube
 
+def tn10pETCCDI_m(alias_cubes, **kwargs):
+    """TN10p, Percentage of days when TN < 10th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    return result_cube
+
+def tx10pETCCDI_m(alias_cubes, **kwargs):
+    """TX10p, Percentage of days when TX < 10th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    return result_cube
+
+def tn90pETCCDI_m(alias_cubes, **kwargs):
+    """TN90p, Percentage of days when TN > 90th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    return result_cube
+
+def tx90pETCCDI_m(alias_cubes, **kwargs):
+    """TX90p, Percentage of days when TX > 90th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    return result_cube
+
 def gslETCCDI_yr(cubes, **kwargs):
     """GSL, Growing season length: Annual (1st Jan to 31st Dec in Northern Hemisphere (NH), 1st July to 30th June in Southern Hemisphere (SH)) count between first span of at least 6 days with daily mean temperature TG>5 degC and first span after July 1st (Jan 1st in SH) of 6 days with TG<5 degC. """
 
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     
-    specs = gsl_check_units(cubes, specs)
+    specs = gsl_check_specs(cubes, specs)
     
     # hemispheric split  
     res_cubes = []
