@@ -26,6 +26,8 @@
 ;   ref_diff_min:       lower cutoff value in case of calculating relative
 ;                       differences
 ;                       (in units of input variable)
+;   t_test:             perform t-test when calculating differences
+;                       (default = False)
 ;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON),
 ;                                        "annual" = annual mean
 ;   units_to:           target units (automatic conversion)
@@ -80,16 +82,25 @@ begin
   set_default_att(diag_script_info, "rel_diff", False)
   set_default_att(diag_script_info, "rel_diff_min", -1.0e19)
   set_default_att(diag_script_info, "showdiff", False)
+  set_default_att(diag_script_info, "t_test", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
   set_default_att(diag_script_info, "units_to", "")
 
   flag_diff = diag_script_info@showdiff
   flag_rel_diff = diag_script_info@rel_diff
   flag_rel_diff_min = diag_script_info@rel_diff_min
+  t_test = diag_script_info@t_test
 
-  if (.not.flag_diff .and. flag_rel_diff) then
-    log_info("flag_rel_diff = True has no effect until flag_diff is also " \
-             + "set to True")
+  if (.not.flag_diff) then
+    if (flag_rel_diff) then
+      log_info("rel_diff = True has no effect until showdiff is also " \
+               + "set to True")
+    end if
+    if (t_test) then
+      log_info("t_test = True has no effect until showdiff is also " \
+               + "set to True")
+      t_test = False
+    end if
   end if
 
   if (diag_script_info@filename_add .ne. "") then
@@ -266,7 +277,25 @@ begin
     ; average over time
 
     data1 = time_operations(A0, -1, -1, "average", timemean, True)
+
+    if (t_test) then
+      start_year = info0[imod]@start_year
+      end_year = info0[imod]@end_year
+      nyears = end_year - start_year + 1
+
+      if (nyears .lt. 3) then
+        log_info("warning: cannot calculate t-test for dataset " \
+          + names(imod) + "; need at least 3 years, dataset length = " \
+          + tostring(nyears) + " years; disabling t-test")
+        t_test = False
+      else
+        data1_t_stddev = interannual_variability(A0, -1, -1, timemean, "None")
+        data1_t_mean = data1
+      end if
+    end if
+
     delete(A0)
+
     if (units_to .ne. "") then
       data0 = convert_units(data1, units_to)
       delete(data1)
@@ -367,6 +396,11 @@ begin
     if (.not. isvar("ref_data")) then
       ref_data = data1
       vcoord_ref = vcoord
+      if (t_test) then  ; save mean in same units as stddev
+        ref_data_t_stddev = data1_t_stddev
+        ref_data_t_mean = data1_t_mean
+        nyears_ref = nyears
+      end if
     end if
 
     ; check if data are on same grid (for calculating difference, RMSD,
@@ -781,6 +815,102 @@ begin
       diff@var = var0 + "_bias_" + names(imod)
       nc_outfile_bias = ncdf_write(diff, nc_filename_bias)
 
+      ; ---------------------------------------------------------------------
+      ; optionally mask non-significant grid cells
+      ; ---------------------------------------------------------------------
+
+      if (t_test) then
+        n1 = nyears
+        n2 = nyears_ref
+
+        tres = True
+
+        tres@cnMissingValFillColor = -1
+        tres@gsnDraw = False
+        tres@gsnFrame = False
+        tres@cnLevelSelectionMode = "ExplicitLevels"
+        tres@cnLevels = 0.95
+        tres@cnFillColors = (/"gray70", "transparent"/)
+;        tres@cnFillColors = (/"black", "transparent"/)
+;        tres@cnFillPattern = 17
+        tres@cnFillOn       = True      ; color plot desired
+        tres@cnInfoLabelOn = False
+        tres@cnLinesOn = False
+        tres@cnLineLabelsOn = False
+        tres@lbLabelBarOn = False
+        tres@gsnRightString   = ""    
+        tres@gsnLeftString    = ""
+        tres@gsnCenterString  = ""
+
+        if (numseas.gt.1) then
+          do is = 0, numseas - 1
+            x1 = data1_t_mean(is, :, :)
+            x2 = ref_data_t_mean(is, :, :)
+            s1 = data1_t_stddev(is, :, :) ^ 2
+            s2 = ref_data_t_stddev(is, :, :) ^ 2
+
+            prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
+            plot_var = 1. - prob
+            copy_VarCoords(data1_t_mean, plot_var)
+
+            if (vcoord0_units .eq. "Pa") then
+              if (is.eq.0) then
+                tmask = gsn_csm_pres_hgt(wks0d, plot_var, tres)
+              end if
+              if (is.eq.1) then
+                tmask = gsn_csm_pres_hgt(wks1d, plot_var, tres)
+              end if
+              if (is.eq.2) then
+                tmask = gsn_csm_pres_hgt(wks2d, plot_var, tres)
+              end if
+              if (is.eq.3) then
+                tmask = gsn_csm_pres_hgt(wks3d, plot_var, tres)
+              end if
+            else
+              if (is.eq.0) then
+                tmask = gsn_csm_contour(wks0d, plot_var, tres)
+              end if
+              if (is.eq.1) then
+                tmask = gsn_csm_contour(wks1d, plot_var, tres)
+              end if
+              if (is.eq.2) then
+                tmask = gsn_csm_contour(wks2d, plot_var, tres)
+              end if
+              if (is.eq.3) then
+                tmask = gsn_csm_contour(wks3d, plot_var, tres)
+              end if
+            end if
+
+            overlay(maps_d(imod, is), tmask)
+
+            delete(tmask)
+          end do
+        else
+          x1 = data1_t_mean
+          x2 = ref_data_t_mean
+          s1 = data1_t_stddev ^ 2
+          s2 = ref_data_t_stddev ^ 2
+
+          prob = ttest(x1, s1, n1, x2, s2, n2, True, False)
+          plot_var = 1. - prob
+          copy_VarCoords(data1_t_mean, plot_var)
+
+          if (vcoord0_units .eq. "Pa") then
+            tmask = gsn_csm_pres_hgt(wks0d, plot_var, tres)
+          else
+            tmask = gsn_csm_contour(wks0d, plot_var, tres)
+          end if
+
+          overlay(maps_d(imod, 0), tmask)
+
+          delete(tmask)
+        end if
+
+        delete([/x1, x2, s1, s2, prob/])
+      end if  ; if t_test
+
+      ; ---------------------------------------------------------------------
+
     end if  ; if flag_diff
 
     ; =======================================================================
@@ -956,8 +1086,8 @@ begin
     do is = 0, numseas - 1
       caption = "Zonal mean values for variable " + var0 \
                 + " (" + allseas + ")."
-;;      log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
-;;                     domain, plottype, "", "", climofiles)
+      log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
+                     domain, plottype, "", "", climofiles)
     end do
 
     ; ========================================================================
@@ -1118,6 +1248,12 @@ begin
 
         caption = "Differences for zonally averaged variable " + var0 \
                   + " (" + allseas + "), reference = " + refname + "."
+
+        if (t_test) then
+          caption = caption \
+            + " Non-significant grid cells are masked out in gray."
+        end if
+
         log_provenance(nc_outfile_bias, outfile_d(is), caption, statistics, \
                        domain, plottype, "", "", climofiles)
       end do
