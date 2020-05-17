@@ -7,7 +7,7 @@ import sys
 #from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import numdaysyear_wrapper, var_perc_ex, select_value, __nonzero_mod__, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
+from extreme_events_utils import sum_perc_ex_wd, numdaysyear_wrapper, var_perc_ex, select_value, __nonzero_mod__, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
 from cf_units import Unit
 import yaml
 #import dask.dataframe as dd
@@ -150,6 +150,28 @@ annual_total_precipitation_in_wet_days:
         - pr
     logic: sum
     cf_name: annual_total_precipitation_in_wet_days
+annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%:
+    name: R95pTOT
+    period: annual
+    required:
+        - pr
+    threshold:
+        value: 95
+        unit: percent
+        logic: greater
+    logic: sum
+    cf_name: annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
+annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%:
+    name: R99pTOT
+    period: annual
+    required:
+        - pr
+    threshold:
+        value: 99
+        unit: percent
+        logic: greater
+    logic: sum
+    cf_name: annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%
 monthly_number_of_days_where_daily_minimum_temperature_below_10%:
     name: TN10p
     period: monthly
@@ -276,6 +298,10 @@ index_method = {
             "tn90pETCCDI_m",
         "monthly_number_of_days_where_daily_maximum_temperature_below_10%":
             "tx10pETCCDI_m",
+        "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%":
+            "r99ptotETCCDI_yr",
+        "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%":
+            "r95ptotETCCDI_yr",
         }
 
 method_index = {}
@@ -454,6 +480,24 @@ def tx90pETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    return result_cube
+
+def r95ptotETCCDI_yr(alias_cubes, **kwargs):
+    """Annual total PRCP when RR > 95th percentile."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+
+    result_cube = sum_perc_ex_wd(alias_cubes, specs, kwargs['cfg'])
+    
+    return result_cube
+
+def r99ptotETCCDI_yr(alias_cubes, **kwargs):
+    """Annual total PRCP when RR > 99th percentile."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+
+    result_cube = sum_perc_ex_wd(alias_cubes, specs, kwargs['cfg'])
+    
     return result_cube
 
 def gslETCCDI_yr(cubes, **kwargs):

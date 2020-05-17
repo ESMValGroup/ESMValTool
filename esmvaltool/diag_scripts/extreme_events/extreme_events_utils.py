@@ -533,3 +533,53 @@ def var_perc_ex(alias_cubes, specs, cfg):
     result_cube.units = Unit('days')
 
     return result_cube
+
+def sum_perc_ex_wd(alias_cubes, specs, cfg):
+    """Calculate the sum of exceeding values above/below percentual threshold [precipitation only, wet days]"""
+    _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
+    if len(specs['required'])!=1:
+        logger.error('Searching too many cubes (should be one):'.format(
+                specs['required']))
+        raise Exception(f'Wrong data.')
+    if specs['threshold']['unit'] != 'percent':
+        logger.error('Threshold has wrong unit. Expected "percent":'.format(
+                specs['threshold']['unit']))
+        raise Exception(f'Wrong unit.')
+        
+    cube = alias_cubes[specs['required'][0]]
+    
+    base_range = cfg.copy().pop('base_range', None)
+    analysis_range = cfg.copy().pop('analysis_range', None)
+        
+    if not base_range is None:
+        base_cube = cube.extract(iris.Constraint(time = lambda cell:
+            np.min(base_range) <= cell.point.year <= np.max(base_range)))
+    else: 
+        base_cube = cube.copy()
+        
+    if not analysis_range is None:
+        analysis_cube = cube.extract(iris.Constraint(time = lambda cell:
+            np.min(analysis_range) <= cell.point.year <= np.max(analysis_range)))
+    else: 
+        analysis_cube = cube.copy()
+        
+    base_cube.data = da.ma.masked_less(base_cube.core_data(), 1)
+    base_percentiles = lazy_percentiles(base_cube, [specs['threshold']['value']], dims='time')
+    
+    analysis_percentiles = []
+    for cs in analysis_cube.slices(['latitude', 'longitude']):
+        thresh_data = getattr(da, specs['threshold']['logic'])(
+                                      cs.core_data(),
+                                      base_percentiles[specs['threshold']['value']].core_data())
+        cs_threshold = cs.copy(data=da.where(da.logical_or(da.logical_not(da.ma.getdata(thresh_data)), da.ma.getmaskarray(thresh_data)),0,cs.core_data()))
+        cs_threshold = iris.util.new_axis(cs_threshold, 'time')
+        analysis_percentiles.append(cs_threshold)
+    
+    statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
+    if statistic_function:
+        result_cube = statistic_function(iris.cube.CubeList(analysis_percentiles).concatenate_cube(), specs['logic'])
+    
+    result_cube.rename(specs['cf_name'])
+    result_cube.units = Unit('mm per year')
+    
+    return result_cube
