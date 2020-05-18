@@ -13,16 +13,13 @@ import os
 from pathlib import Path
 from datetime import datetime
 import functools
-import multiprocessing
 import logging
 import warnings
 from pprint import pformat
 import iris
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvalcore.preprocessor import area_statistics
 import kcsutils
 
 
