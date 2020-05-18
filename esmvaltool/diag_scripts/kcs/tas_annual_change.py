@@ -29,7 +29,6 @@ import kcsutils
 PERIOD = (1961, 2099)
 MINDATA = {'historical': 20, 'future': 4}
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -125,7 +124,7 @@ class ModelReferencePointCalculation:
         ndata = {}
         mean = {}
         for key, values in avs.items():
-            n = len(values)  # pylint: disable=invalid-name
+            n = len(values)
             # Weighted time average for each section
             ndata[key] = sum(value[1] for value in values) / n
             mean[key] = sum(value[0].data for value in values) / n
@@ -357,7 +356,6 @@ def main(cfg):
     logger.debug("\n\n\nCONFIG:\n %s\n\n\n", cfg)
 
     my_files_dict = group_metadata(cfg['input_data'].values(), 'filename')
-    #from pprint import pprint
     #pprint(my_files_dict)
     paths = [Path(filename) for filename in my_files_dict.keys()]
     dataset = kcsutils.read_data(paths)
@@ -378,8 +376,5 @@ def main(cfg):
 
 
 if __name__ == '__main__':
-    # always use run_diagnostic() to get the config (the preprocessor
-    # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
-        # list here the functions that need to run
         main(config)
