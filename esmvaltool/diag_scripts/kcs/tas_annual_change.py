@@ -375,36 +375,6 @@ def main(cfg):
                      average_experiments=False)
     result.to_csv(cfg['output'], index_label="date")
 
-    return
-    # iterate over key(dataset) and values(list of vars)
-    for key, value in my_files_dict.items():
-        print(key)
-        print(value)
-        # load the cube from data files only
-        # using a single variable here so just grab the first (and only)
-        # list element
-        for val in value:
-            cube = iris.load_cube(val['filename'])
-
-            # the first data analysis bit: simple cube difference:
-            # perform a difference between ground and first levels
-            #diff_cube = cube[:, 0, :, :] - cube[:, 1, :, :]
-            # square the difference'd cube just for fun
-            squared_cube = cube.data ** cfg['power']
-
-        # the second data analysis bit (slightly more advanced):
-        # compute an area average over the squared cube
-        # to apply the area average use a preprocessor function
-        # rather than writing your own function
-        #area_avg_cube = area_statistics(squared_cube, 'mean')
-
-        # finalize your analysis by plotting a time series of the
-        # diffed, squared and area averaged cube; call the plot function:
-        #_plot_time_series(cfg, area_avg_cube, key)
-
-    # that's it, we're done!
-    return 'I am done with my first ESMValTool diagnostic!'
-
 
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
