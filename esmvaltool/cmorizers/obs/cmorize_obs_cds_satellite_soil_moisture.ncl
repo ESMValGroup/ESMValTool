@@ -44,7 +44,7 @@ begin
 
   ; Period
   YEAR1 = 1979
-  YEAR2 = 2019
+  YEAR2 = 2020
 
   ; Selected variable (standard name)
   VAR = (/"sm", "smStderr"/)
@@ -65,7 +65,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "CUSTOM-MERGED-C3S-511-SPQB-Apr2019"
+  VERSION = "CUSTOM-MERGED-C3S-511-SPQB-Jun2020"
 
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
