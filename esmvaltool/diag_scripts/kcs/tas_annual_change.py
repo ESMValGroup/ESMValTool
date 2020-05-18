@@ -353,7 +353,6 @@ def main(cfg):
     logger.debug("\n\n\nCONFIG:\n %s\n\n\n", cfg)
 
     my_files_dict = group_metadata(cfg['input_data'].values(), 'filename')
-    #pprint(my_files_dict)
     paths = [Path(filename) for filename in my_files_dict.keys()]
     dataset = kcsutils.read_data(paths)
     dataset = kcsutils.match(
