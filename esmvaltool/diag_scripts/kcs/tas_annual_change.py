@@ -1,9 +1,9 @@
-"""A script to obtain the global mean temperature rise.
+"""A script to obtain the global mean temperature rise (change).
 
 The global mean temperature rise is one of the two steering variables,
 used in the interpolation of the regional climate model.
 
-The minimum data for this script is one dataset with two different experiment:
+The minimum data for this script is one dataset with two different experiments:
 historical and rcp (Representative Concentration Pathways).
 For example:
 - {dataset: ACCESS1-0, exp: historical, ensemble: r1i1p1, ...}
