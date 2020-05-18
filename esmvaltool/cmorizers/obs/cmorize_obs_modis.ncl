@@ -212,7 +212,7 @@ begin
 
       ; Format coordinates
       format_coords(output, year + sprinti("%0.2i", month) + "01", \
-                    year + sprinti("%0.2i", month) + dm, FREQ(vv))
+                    year + sprinti("%0.2i", month) + dm, FREQ(vv), True)
 
       ; Set variable attributes
       tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))

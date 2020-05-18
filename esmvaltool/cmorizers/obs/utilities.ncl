@@ -75,13 +75,16 @@ undef("format_time")
 procedure format_time(var:numeric,
                       start_date:string,
                       end_date:string,
-                      frequency:string)
+                      frequency:string,
+                      ntime_check:logical)
 ;
 ; Arguments
 ;    var: input variable
 ;    start_date: start date as YYYYMMDD
 ;    end_date: end date as YYYYMMDD
 ;    frequency: time frequency ("3hr", "6hr", "day", "mon", "yr")
+;    ntime_check: check consistency of number of timesteps with time range
+;                 (set to False for non-complete years)
 ;
 ; Description
 ;    Check the time range of the time coordinate, set the values depending on
@@ -92,6 +95,7 @@ procedure format_time(var:numeric,
 ; References
 ;
 ; Modification history
+;    20200518-righi_mattia: add flag for timesteps consistency check.
 ;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, ctime, ntime, year1, month1, day1, year2, month2, \
@@ -155,11 +159,13 @@ begin
   if (frequency.eq."yr") then
 
     ; Check size
-    exp_ntime = year2 - year1 + 1
-    if (ntime.ne.exp_ntime) then
-      error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                " expected, " + ntime + " found")
+    if (ntime_check) then
+      exp_ntime = year2 - year1 + 1
+      if (ntime.ne.exp_ntime) then
+        error_msg("f", scriptname, funcname, \
+                  "incorrect number of timesteps in input data: " + \
+                  exp_ntime + " expected, " + ntime + " found")
+      end if
     end if
 
     ; Reset date (1st of July)
@@ -176,16 +182,18 @@ begin
   if (frequency.eq."mon") then
 
     ; Check size
-    if (year1.eq.year2) then
-      exp_ntime = month2 - month1 + 1
-    else
-      exp_ntime = (12 - month1 + 1) + month2 + \
-        12 * where((year2 - year1 - 1).gt.0, year2 - year1 - 1, 0)
-    end if
-    if (ntime.ne.exp_ntime) then
-      error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+    if (ntime_check) then
+      if (year1.eq.year2) then
+        exp_ntime = month2 - month1 + 1
+      else
+        exp_ntime = (12 - month1 + 1) + month2 + \
+          12 * where((year2 - year1 - 1).gt.0, year2 - year1 - 1, 0)
+      end if
+      if (ntime.ne.exp_ntime) then
+        error_msg("f", scriptname, funcname, \
+                  "incorrect number of timesteps in input data: " + \
+                  exp_ntime + " expected, " + ntime + " found")
+      end if
     end if
 
     ; Reset date (middle of the month)
@@ -212,17 +220,19 @@ begin
   if (frequency.eq."day") then
 
     ; Check size
-    opt = 0
-    opt@calendar = calendar
-    exp_ntime = \
-      cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
-      cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
-    if (ntime.ne.exp_ntime) then
-      error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+    if (ntime_check) then
+      opt = 0
+      opt@calendar = calendar
+      exp_ntime = \
+        cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
+        cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
+      if (ntime.ne.exp_ntime) then
+        error_msg("f", scriptname, funcname, \
+                  "incorrect number of timesteps in input data: " + \
+                  exp_ntime + " expected, " + ntime + " found")
+      end if
+      delete(opt)
     end if
-    delete(opt)
 
     ; Reset date (middle of the day)
     tt = 0
@@ -247,18 +257,20 @@ begin
   if (frequency.eq."6hr") then
 
     ; Check size
-    opt = 0
-    opt@calendar = calendar
-    exp_ntime = \
-      cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
-      cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
-    exp_ntime = 4 * exp_ntime
-    if (ntime.ne.exp_ntime) then
-      error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+    if (ntime_check) then
+      opt = 0
+      opt@calendar = calendar
+      exp_ntime = \
+        cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
+        cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
+      exp_ntime = 4 * exp_ntime
+      if (ntime.ne.exp_ntime) then
+        error_msg("f", scriptname, funcname, \
+                  "incorrect number of timesteps in input data: " + \
+                  exp_ntime + " expected, " + ntime + " found")
+      end if
+      delete(opt)
     end if
-    delete(opt)
 
   end if
 
@@ -266,18 +278,20 @@ begin
   if (frequency.eq."3hr") then
 
     ; Check size
-    opt = 0
-    opt@calendar = calendar
-    exp_ntime = \
-      cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
-      cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
-    exp_ntime = 8 * exp_ntime
-    if (ntime.ne.exp_ntime) then
-      error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+    if (ntime_check) then
+      opt = 0
+      opt@calendar = calendar
+      exp_ntime = \
+        cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
+        cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
+      exp_ntime = 8 * exp_ntime
+      if (ntime.ne.exp_ntime) then
+        error_msg("f", scriptname, funcname, \
+                  "incorrect number of timesteps in input data: " + \
+                  exp_ntime + " expected, " + ntime + " found")
+      end if
+      delete(opt)
     end if
-    delete(opt)
 
   end if
 
@@ -640,14 +654,16 @@ undef("format_coords")
 procedure format_coords(var:numeric,
                         date1:string,
                         date2:string,
-                        frequency:string)
+                        frequency:string,
+                        ntime_check:logical)
 ;
 ; Arguments
 ;    var: input variable with named dimensions and assiociated coordinates.
 ;    date1: start date as YYYYMMDD
 ;    date2: end date as YYYYMMDD
 ;    frequency: time frequency ("3hr", "6hr", "day", "mon", "yr")
-
+;    ntime_check: check consistency of number of timesteps with time range
+;                 (set to False for non-complete years)
 ;
 ; Description
 ;    Format the coordinate according to the CF/CMOR standard.
@@ -657,6 +673,7 @@ procedure format_coords(var:numeric,
 ; References
 ;
 ; Modification history
+;    20200518-righi_mattia: add flag for timesteps consistency check.
 ;    20190216-righi_mattia: written.
 ;
 begin
@@ -673,7 +690,7 @@ begin
     found = False
 
     if (dnames(dd).eq."time") then
-      format_time(var, date1, date2, frequency)
+      format_time(var, date1, date2, frequency, ntime_check)
       found = True
     end if
 

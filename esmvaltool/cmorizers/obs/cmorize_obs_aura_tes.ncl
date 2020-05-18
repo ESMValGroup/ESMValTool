@@ -150,7 +150,7 @@ begin
   output@units = "1e-9"
 
   ; Format coordinates
-  format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
+  format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ, True)
 
   ; Set variable attributes
   tmp = format_variable(output, VAR, CMOR_TABLE)

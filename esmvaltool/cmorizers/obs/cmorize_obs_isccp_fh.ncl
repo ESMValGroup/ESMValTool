@@ -149,7 +149,7 @@ begin
     delete(input)
 
     ; format time coordinate
-    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
+    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv), True)
 
     ; Set variable attributes
     tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
