@@ -12,6 +12,7 @@ import dask.array as da
 import dask.dataframe as dd
 import datetime
 import collections
+from scipy.stats.mstats import mquantiles
 
 
 #from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
@@ -424,13 +425,26 @@ def lazy_percentiles(cube, percentiles, dims="time"):
     dask_data[da.ma.getmaskarray(dask_data)] = np.nan
     
     if dims == "time":
-        dask_perc = da.apply_along_axis(np.nanpercentile,
-                                                0,dask_data,percentiles)
+#        dask_perc = da.apply_along_axis(np.nanpercentile,
+#                                                0,dask_data,percentiles)
+        dask_perc = da.apply_along_axis(mquantiles,
+                                        0,
+                                        dask_data,
+                                        percentiles,
+                                        alphap=1/3,
+                                        betap=1/3)
     elif np.all(np.sort(dims) == np.sort(["latitude","longitude"])):
-        dask_perc = da.apply_along_axis(np.nanpercentile,
-                                                1,dask_data.reshape(
-                                                        dask_data.shape[0],-1),
-                                                        percentiles)  
+#        dask_perc = da.apply_along_axis(np.nanpercentile,
+#                                                1,dask_data.reshape(
+#                                                        dask_data.shape[0],-1),
+#                                                        percentiles)
+        dask_perc = da.apply_along_axis(mquantiles,
+                                        1,
+                                        dask_data.reshape(dask_data.shape[0],
+                                                          -1),
+                                        percentiles,
+                                        alphap=1/3,
+                                        betap=1/3)
     else:
         logger.error("other dimensions not implemented yet")
     
@@ -581,5 +595,98 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
     
     result_cube.rename(specs['cf_name'])
     result_cube.units = Unit('mm per year')
+    
+    return result_cube
+
+def spell_perc_ex_thresh(alias_cubes, specs, cfg):
+    """Calculate the number of days if 6+ days have exceeding values above/below percentual threshold"""
+
+    _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
+    if len(specs['required'])!=1:
+        logger.error('Searching too many cubes (should be one):'.format(
+                specs['required']))
+        raise Exception(f'Wrong data.')
+    if specs['threshold']['unit'] != 'percent':
+        logger.error('Threshold has wrong unit. Expected "percent":'.format(
+                specs['threshold']['unit']))
+        raise Exception(f'Wrong unit.')
+        
+    cube = alias_cubes[specs['required'][0]]
+    if 'doy' not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_day_of_year(cube, 'time', name='doy')
+        
+    base_range = cfg.copy().pop('base_range', None)
+    analysis_range = cfg.copy().pop('analysis_range', None)
+    
+    if not base_range is None:
+        base_cube = cube.extract(iris.Constraint(time = lambda cell:
+            np.min(base_range) <= cell.point.year <= np.max(base_range)))
+    else: 
+        base_cube = cube.copy()
+        
+    if not analysis_range is None:
+        analysis_cube = cube.extract(iris.Constraint(time = lambda cell:
+            np.min(analysis_range) <= cell.point.year <= np.max(analysis_range)))
+    else: 
+        analysis_cube = cube.copy()
+    
+    percentiles = []
+    for doy in np.arange(1,367):
+        doy_set = [__nonzero_mod__(doy-2, 365), __nonzero_mod__(doy+2, 365)]
+        if doy_set[0] < doy_set[1]:
+            constraint_5day = iris.Constraint(doy = lambda cell:
+                doy_set[0] <= cell <= doy_set[1])
+        else:
+            constraint_5day = iris.Constraint(doy = lambda cell:
+                doy_set[0] <= cell <= 366 or 0 <= cell <= doy_set[1])
+        loc_cube = lazy_percentiles(
+                base_cube.extract(constraint_5day),
+                [specs['threshold']['value']], dims='time')
+        loc_cube = loc_cube[specs['threshold']['value']]
+        loc_cube.remove_coord('doy')
+        loc_cube.remove_coord('height')
+        new_coord = iris.coords.AuxCoord(doy, long_name='doy', units='1')
+        loc_cube.add_aux_coord(new_coord)
+        loc_cube = iris.util.new_axis(loc_cube, 'doy')
+        loc_cube.remove_coord('time')
+        percentiles.append(loc_cube)
+        
+    percentiles_doy = iris.cube.CubeList(percentiles).concatenate_cube()
+    
+    analysis_percentiles = []
+
+    for cs in analysis_cube.slices(['latitude', 'longitude']):
+        thresh_data = getattr(da, specs['threshold']['logic'])(
+                                      cs.core_data(),
+                                      percentiles_doy.extract(iris.Constraint(
+                                              doy = lambda cell:
+                                                  cell == cs.coord(
+                                                          'doy').points[0])).core_data())
+        cs_threshold = cs.copy(data=thresh_data)
+        cs_threshold.remove_coord('doy')
+        cs_threshold = iris.util.new_axis(cs_threshold, 'time')
+        analysis_percentiles.append(cs_threshold)
+        
+    percentiles_threshold = iris.cube.CubeList(analysis_percentiles).concatenate_cube()
+    
+    perc_thresh_cube = percentiles_threshold.copy(data=__cumsum_with_setback_multiD__(percentiles_threshold.core_data(), 0))
+    
+    if 'year' not in [cc.long_name for cc in perc_thresh_cube.coords()]:
+        iris.coord_categorisation.add_year(perc_thresh_cube, 'time', name='year')
+    
+    spells_logic = __boolean_translation__(perc_thresh_cube, specs['spell']['value'], logic=specs['spell']['logic'])
+    spells_equal = __boolean_translation__(perc_thresh_cube, specs['spell']['value'], logic='equal')
+    
+    spells_inc = spells_logic + 5 * spells_equal
+    
+    statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
+    if statistic_function:
+        result_cube = statistic_function(spells_inc, 'sum')
+    else:
+        raise Exception(f"Period {specs['period']} not implemented.")
+        
+    # adjust cube information
+    result_cube.rename(specs['cf_name'])
+    result_cube.units = Unit('days per year')
     
     return result_cube

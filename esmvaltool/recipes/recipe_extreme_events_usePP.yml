@@ -65,7 +65,7 @@ plot_pars: &pltpars
 
 range_pars: &rngpars
   base_range: [1981, 1983]
-#  analysis_range: [1981, 1983]
+#  analysis_range: [1998, 2000]
 
 reference_pars: &refpars
   reference_datasets:
@@ -159,7 +159,7 @@ diagnostics:
       pr:
         <<: *mipdef
         preprocessor: pp_standard
-#        # derive: true # TODO: WHY?
+        # derive: true # TODO: WHY?
 
     scripts:
       extremeIndices:
@@ -188,6 +188,8 @@ diagnostics:
           - monthly_number_of_days_where_daily_minimum_temperature_above_90%
           - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%
           - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
+          - annual_warm_speel_duration_index
+          - annual_cold_speel_duration_index
         cumprec_threshold_nn: 15
         <<: *rngpars
         # TODO: why is that the same name twice? is this dedicated plots?

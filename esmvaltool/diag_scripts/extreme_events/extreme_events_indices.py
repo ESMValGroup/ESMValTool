@@ -7,7 +7,7 @@ import sys
 #from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import sum_perc_ex_wd, numdaysyear_wrapper, var_perc_ex, select_value, __nonzero_mod__, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
+from extreme_events_utils import spell_perc_ex_thresh, sum_perc_ex_wd, numdaysyear_wrapper, var_perc_ex, select_value, __nonzero_mod__, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
 from cf_units import Unit
 import yaml
 #import dask.dataframe as dd
@@ -16,6 +16,9 @@ import dask.array as da
 #from calendar import monthrange
 
 import esmvalcore.preprocessor as prep
+
+import warnings
+warnings.filterwarnings("ignore")
 
 #from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
 #                                            select_metadata, sorted_metadata)
@@ -212,6 +215,34 @@ monthly_number_of_days_where_daily_maximum_temperature_above_90%:
         unit: percent
         logic: greater
     cf_name: monthly_number_of_days_where_daily_maximum_temperature_above_90%
+annual_warm_speel_duration_index:
+    name: WSDI
+    period: annual
+    required:
+        - tasmax
+    threshold:
+        value: 90
+        unit: percent
+        logic: greater
+    spell:
+        value: 6
+        unit: days
+        logic: greater_equal
+    cf_name: annual_warm_speel_duration_index 
+annual_cold_speel_duration_index:
+    name: CSDI
+    period: annual
+    required:
+        - tasmin
+    threshold:
+        value: 10
+        unit: percent
+        logic: less
+    spell:
+        value: 6
+        unit: days
+        logic: greater_equal
+    cf_name: annual_cold_speel_duration_index
 daily_temperature_range:
     name: DTR
     period: daily
@@ -302,6 +333,10 @@ index_method = {
             "r99ptotETCCDI_yr",
         "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%":
             "r95ptotETCCDI_yr",
+        "annual_warm_speel_duration_index":
+            "wsdiETCCDI_yr",
+        "annual_cold_speel_duration_index":
+            "csdiETCCDI_yr",
         }
 
 method_index = {}
@@ -497,6 +532,24 @@ def r99ptotETCCDI_yr(alias_cubes, **kwargs):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
 
     result_cube = sum_perc_ex_wd(alias_cubes, specs, kwargs['cfg'])
+    
+    return result_cube
+
+def wsdiETCCDI_yr(alias_cubes, **kwargs):
+    """Warm speel duration index: Annual count of days with at least 6 consecutive days when TX > 90th percentile."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    result_cube = spell_perc_ex_thresh(alias_cubes, specs, kwargs['cfg'])
+    
+    return result_cube
+
+def csdiETCCDI_yr(alias_cubes, **kwargs):
+    """Cold speel duration index: Annual count of days with at least 6 consecutive days when TN < 10th percentile."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    result_cube = spell_perc_ex_thresh(alias_cubes, specs, kwargs['cfg'])
     
     return result_cube
 
