@@ -1,18 +1,13 @@
-"""
-Look at this module for guidance how to write your own.
+"""A script to obtain the global mean temperature rise.
 
-Read the README_PERSONAL_DIAGNOSTIC file associated with this example;
+The global mean temperature rise is one of the two steering variables,
+used in the interpolation of the regional climate model.
 
-Module for personal diagnostics (example).
-Internal imports from exmvaltool work e.g.:
-
-from esmvalcore.preprocessor import regrid
-from esmvaltool.diag_scripts.shared.supermeans import get_supermean
-
-Pipe output through logger;
-
-Please consult the documentation for help with esmvaltool's functionalities
-and best coding practices.
+The minimum data for this script is one dataset with two different experiment:
+historical and rcp (Representative Concentration Pathways).
+For example:
+- {dataset: ACCESS1-0, exp: historical, ensemble: r1i1p1, ...}
+- {dataset: ACCESS1-0, exp: rcp45, ensemble: r1i1p1, ...}
 """
 import os
 from pathlib import Path
