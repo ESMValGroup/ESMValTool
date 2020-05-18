@@ -340,7 +340,13 @@ def calc(dataset, reference_period, historical_key=None, season=None, average_ye
 
 
 def main(cfg):
-    """
+    """Return percentiles of temperature at each year.
+
+    Four steps:
+    1- obtain average values per each year,
+    2- obtain the total average that is called reference_value,
+    3- normalize temperature using refernce_value,
+    4- calculate percentile for 5-95 perentage per each year.
 
     """
     # assemble the data dictionary keyed by dataset name
