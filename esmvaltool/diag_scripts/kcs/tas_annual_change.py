@@ -191,7 +191,7 @@ class ModelReferencePointCalculation:
         return averages
 
 
-def calc_reference_values(dataset, reference_period, yearly=False, season=None,
+def calculate_reference_values(dataset, reference_period, yearly=False, season=None,
                           historical_key=None,
                           normby='run'):
     """Calculate reference values
@@ -199,8 +199,15 @@ def calc_reference_values(dataset, reference_period, yearly=False, season=None,
     model:  *per model*, so that each realization is
     scaled to the reference period following the average *model* reference
     value
+    Also performs extracting of season (optional), averaging of years
+    (optional).
 
     """
+    if season:
+        dataset['cube'] = extract_season(dataset['cube'], season)
+
+    if yearly:
+        dataset['cube'] = average_year(dataset['cube'], season=season)
 
     if not historical_key:
         historical_key = default_config['data']['historical_experiment']
@@ -231,7 +238,8 @@ def calc_reference_values(dataset, reference_period, yearly=False, season=None,
     else:
         ref_values = pd.concat([pd.Series(values) for values in reference_values])
 
-    return ref_values
+    dataset['reference_value'] = ref_values
+    return dataset
 
 
 def normalize_cube(item, relative=False):
@@ -316,8 +324,8 @@ def calc_percentile_year(dataset, year, average_experiments=False):
                     [mean] + percs.tolist()))
 
 
-def calc_percentiles(dataset, period=PERIOD, average_experiments=False):
-    """DUMMY DOC-STRING"""
+def calculate_percentiles(dataset, period=PERIOD, average_experiments=False):
+    """Calculate the percentile yearly change distribution for the input data"""
 
     logger.info("Calculating percentiles")
 
@@ -326,47 +334,6 @@ def calc_percentiles(dataset, period=PERIOD, average_experiments=False):
     percs = list(map(func, years))
     return pd.DataFrame(
         percs, index=pd.DatetimeIndex([datetime(year, 1, 1) for year in years]))
-
-
-def calc(dataset, reference_period, historical_key=None, season=None, average_years=True,
-         relative=False, period=PERIOD, normby='run', average_experiments=False):
-    """Calculate the percentile yearly change distribution for the input data
-
-    Also performs extracting of season (optional), averaging of years
-    (optional) and normalization to a common reference period (needed
-    for a better inter-model comparison), before the percentiles are
-    calculated.
-
-    Returns
-      2-tuple of
-
-      - Percentiles, as Pandas DataFrame
-
-      - Input dataset, but with possibly extracted seasons and
-        averaged years, and normalized data
-
-    """
-
-    if not historical_key:
-        historical_key = default_config['data']['attributes']['historical_experiment']
-
-    if season:
-        dataset['cube'] = extract_season(dataset['cube'], season)
-
-    if average_years:
-        dataset['cube'] = average_year(dataset['cube'], season=season)
-
-    reference_values = calc_reference_values(
-        dataset, reference_period, yearly=average_years, season=season,
-        historical_key=historical_key,
-        normby=normby)
-    dataset['reference_value'] = reference_values
-    dataset = normalize(dataset, relative=relative, normby=normby)
-
-    percentiles = calc_percentiles(dataset, period=period,
-                                   average_experiments=average_experiments)
-
-    return percentiles, dataset
 
 
 def main(cfg):
@@ -401,13 +368,23 @@ def main(cfg):
         dataset, match_by='ensemble', on_no_match='randomrun',
         historical_key='historical')
 
-    result, _ = calc(dataset,
-                     reference_period=(1980, 2009),
-                     historical_key="historical",
-                     relative=False,
-                     period=(1961, 2099), normby='run',
-                     average_experiments=False)
-    result.to_csv(cfg['output'], index_label="date")
+    # Calculate reference values
+    dataset = calculate_reference_values(
+        dataset, reference_period=(1980, 2009), yearly=False, season=None,
+        historical_key="historical", normby='run'
+    )
+
+    # Normalize data using reference values
+    dataset = normalize(dataset, relative=False, normby='run')
+
+    # Get the percentiles
+    percentiles = calculate_percentiles(
+        dataset, period=(1961, 2099),
+        average_experiments=False
+    )
+
+    # Write output as a csv file
+    percentiles.to_csv(cfg['output'], index_label="date")
 
     # Make provenance records
     provenance = create_provenance_record()
