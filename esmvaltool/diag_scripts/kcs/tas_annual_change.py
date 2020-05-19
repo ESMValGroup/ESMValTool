@@ -192,13 +192,12 @@ class ModelReferencePointCalculation:
 
 
 def calculate_reference_values(dataset, reference_period, yearly=False, season=None,
-                          historical_key=None,
-                          normby='run'):
-    """Calculate reference values
+                          historical_key=None, normby='run'):
+    """Calculate reference values.
 
     model:  *per model*, so that each realization is
     scaled to the reference period following the average *model* reference
-    value
+    value.
     Also performs extracting of season (optional), averaging of years
     (optional).
 
@@ -209,15 +208,14 @@ def calculate_reference_values(dataset, reference_period, yearly=False, season=N
     if yearly:
         dataset['cube'] = average_year(dataset['cube'], season=season)
 
+    # Undefined variable default_config
     if not historical_key:
         historical_key = default_config['data']['historical_experiment']
-    logger.info("Calculating reference values (period = %s)", reference_period)
 
     index = dataset['index_match_run']
     hindex = index[index > -1]
-    cubes = dataset.loc[hindex, 'cube'].array
     future_data = dataset[index > -1].copy()
-    future_data['match_historical_run'] = cubes
+    future_data['match_historical_run'] = dataset.loc[hindex, 'cube'].array
 
     calculation = ModelReferencePointCalculation(
         future_data, reference_period, yearly=yearly, season=season,
@@ -227,18 +225,16 @@ def calculate_reference_values(dataset, reference_period, yearly=False, season=N
     reference_values = filter(None, map(calculation, models))
 
     if normby == 'model':
-        ref_values = dataset['model'].map(dict(zip(models, reference_values)))
+        dataset['reference_value'] = dataset['model'].map(dict(zip(models, reference_values)))
     elif normby == 'experiment':
         ref_values = []
         for model, values in zip(models, reference_values):
             sel = (dataset['model'] == model)
             experiments = dataset.loc[sel, 'experiment']
             ref_values.append(experiments.map(values))
-        ref_values = pd.concat(ref_values)
+        dataset['reference_value'] = pd.concat(ref_values)
     else:
-        ref_values = pd.concat([pd.Series(values) for values in reference_values])
-
-    dataset['reference_value'] = ref_values
+        dataset['reference_value'] = pd.concat([pd.Series(values) for values in reference_values])
     return dataset
 
 
