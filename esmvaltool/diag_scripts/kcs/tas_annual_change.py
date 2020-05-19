@@ -19,14 +19,37 @@ from pprint import pformat
 import iris
 import pandas as pd
 import numpy as np
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import (group_metadata,
+                                            run_diagnostic,
+                                            ProvenanceLogger)
 import kcsutils
 
 
 PERIOD = (1961, 2099)
 MINDATA = {'historical': 20, 'future': 4}
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
+
+
+def create_provenance_record():
+    """Create a provenance record."""
+    record = {
+        'caption': "Global mean temperature rise (change).",
+        'domains': ['global'],
+        'authors': [
+            'kalverla_peter',
+            # 'rol_evert',
+            'alidoost_sarah',
+        ],
+        'projects': [
+            'esmval',
+        ],
+        'references': [
+            'acknow_project',
+        ],
+        'ancestors': [],
+    }
+    return record
 
 
 def extract_season(cubes, season):
@@ -369,6 +392,12 @@ def main(cfg):
                      period=(1961, 2099), normby='run',
                      average_experiments=False)
     result.to_csv(cfg['output'], index_label="date")
+
+    # Make provenance records
+    provenance = create_provenance_record()
+    provenance['ancestors'] = [path.name for path in paths]
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(cfg['output'], provenance)
 
 
 if __name__ == '__main__':
