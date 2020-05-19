@@ -59,19 +59,21 @@ datasets:
 # Define some default parameters using anchors #
 ################################################
 
-plot_pars: &pltpars
-  ts_plt: true
-  glc_plt: true
+### NOT used
+#plot_pars: &pltpars
+#  ts_plt: true
+#  glc_plt: true
 
 range_pars: &rngpars
   base_range: [1981, 1983]
 #  analysis_range: [1998, 2000]
 
-reference_pars: &refpars
-  reference_datasets:
-    - MPI-ESM-LR
-#    - ERA-Interim
-#    - BNU-ESM
+### NOT used
+#reference_pars: &refpars
+#  reference_datasets:
+#    - MPI-ESM-LR
+##    - ERA-Interim
+##    - BNU-ESM
 
 regrid_pars: &regpars
   regrid:
@@ -84,54 +86,10 @@ mip_definition: &mipdef
   mip: day
 
 ################################################
-# Define preprocessor elements using anchors   #
-################################################
-
-monthly_max: &pp_monmax
-  monthly_statistics:
-    operator: max
-
-monthly_min: &pp_monmin
-  monthly_statistics:
-    operator: min
-
-monthly_mean: &pp_monmean
-  monthly_statistics:
-    operator: min
-
-filter_5day: &5day_filter
-  timeseries_filter:
-    window: 5
-    span: 5
-    filter_type: lowpass # TODO: check
-    filter_stats: sum
-
-monthly_sum: &pp_monsum
-  monthly_statistics:
-    operator: sum
-
-################################################
 # Define preprocessors                         #
 ################################################
 
 preprocessors:
-  pp_max:
-    <<: *regpars
-    <<: *pp_monmax
-
-  pp_min:
-    <<: *regpars
-    <<: *pp_monmin
-
-  pp_sum:
-    <<: *regpars
-    <<: *pp_monsum
-
-  pp_5daymax:
-    <<: *regpars
-    <<: *5day_filter
-    <<: *pp_monmax
-
   pp_standard:
     <<: *regpars
     mask_landsea:
