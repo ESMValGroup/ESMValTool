@@ -22,6 +22,7 @@ from esmvaltool.diag_scripts.shared import (group_metadata,
                                             run_diagnostic,
                                             ProvenanceLogger)
 import kcsutils
+from kcsutils.attributes import get as get_attrs
 
 
 PERIOD = (1961, 2099)
@@ -49,6 +50,17 @@ def create_provenance_record():
         'ancestors': [],
     }
     return record
+
+
+def add_extra_coord(cube):
+    """Adda some coordinates to cube."""
+    if not cube.coords('season'):
+        iris.coord_categorisation.add_season(cube, 'time')
+    if not cube.coords('year'):
+        iris.coord_categorisation.add_year(cube, 'time')
+    if not cube.coords('season_year'):
+        iris.coord_categorisation.add_season_year(cube, 'time',
+                                                name='season_year')
 
 
 def extract_season(cubes, season):
@@ -375,8 +387,20 @@ def main(cfg):
     logger.debug("\n\n\nCONFIG:\n %s\n\n\n", cfg)
 
     my_files_dict = group_metadata(cfg['input_data'].values(), 'filename')
-    paths = [Path(filename) for filename in my_files_dict.keys()]
-    dataset = kcsutils.read_data(paths)
+    # the function get_attrs() needs paths and cubes as lists
+    paths = []
+    cubes = []
+    for filename in my_files_dict.keys():
+        path = Path(filename)
+        cube = iris.load_cube(str(path))
+        add_extra_coord(cube)
+        cubes.append(cube)
+        paths.append(path)
+    # Get the attributes, and create a dataframe with cubes & attributes
+    dataset = get_attrs(
+        cubes, paths, info_from=('attributes', 'filename'),
+        attributes=None, filename_pattern=None
+    )
     dataset = kcsutils.match(
         dataset, match_by='ensemble', on_no_match='randomrun',
         historical_key='historical')
