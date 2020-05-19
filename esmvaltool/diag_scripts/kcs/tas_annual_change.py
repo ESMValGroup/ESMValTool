@@ -386,11 +386,11 @@ def main(cfg):
     # where var1, var2 are dicts holding all needed information per variable
     logger.debug("\n\n\nCONFIG:\n %s\n\n\n", cfg)
 
-    my_files_dict = group_metadata(cfg['input_data'].values(), 'filename')
+    files = group_metadata(cfg['input_data'].values(), 'filename')
     # the function get_attrs() needs paths and cubes as lists
     paths = []
     cubes = []
-    for filename in my_files_dict.keys():
+    for filename in files.keys():
         path = Path(filename)
         cube = iris.load_cube(str(path))
         add_extra_coord(cube)
