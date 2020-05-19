@@ -9,7 +9,6 @@ For example:
 - {dataset: ACCESS1-0, exp: historical, ensemble: r1i1p1, ...}
 - {dataset: ACCESS1-0, exp: rcp45, ensemble: r1i1p1, ...}
 """
-import os
 from pathlib import Path
 from datetime import datetime
 import functools
