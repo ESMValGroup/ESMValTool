@@ -7,291 +7,19 @@ import sys
 #from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_utils import spell_perc_ex_thresh, sum_perc_ex_wd, numdaysyear_wrapper, var_perc_ex, select_value, __nonzero_mod__, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
+from extreme_events_def import index_definition
+from extreme_events_utils import max_span_yr, __adjust_threshold__, __boolean_translation__, spell_perc_ex_thresh, sum_perc_ex_wd, numdaysyear_wrapper, var_perc_ex, select_value, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
 from cf_units import Unit
-import yaml
 #import dask.dataframe as dd
 import dask.array as da
 #import datetime
 #from calendar import monthrange
-
-import esmvalcore.preprocessor as prep
+import esmvalcore.preprocessor
 
 import warnings
 warnings.filterwarnings("ignore")
 
-#from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-#                                            select_metadata, sorted_metadata)
-#from esmvaltool.diag_scripts.shared._base import (
-#    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
-#from esmvaltool.diag_scripts.shared.plot import quickplot
-
 logger = logging.getLogger(os.path.basename(__file__))
-
-index_definition = yaml.load("""
-annual_number_of_frost_days:
-    name: frost days
-    period: annual
-    required:
-        - tasmin
-    threshold:
-        value: 273.15
-        unit: K
-        logic: less
-    cf_name: number_of_days_with_air_temperature_below_freezing_point
-annual_number_of_summer_days:
-    name: summer days
-    period: annual
-    required:
-        - tasmax
-    threshold:
-        value: 298.15
-        unit: K
-        logic: greater
-    cf_name: number_of_days_with_air_temperature_above_25_degree_Celsius
-annual_number_of_icing_days:
-    name: icing days
-    period: annual
-    required:
-        - tasmax
-    threshold:
-        value: 273.15
-        unit: K
-        logic: less
-    cf_name: number_of_days_where_air_temperature_remains_below_freezing_point
-annual_number_of_tropical_nights:
-    name: tropical nights
-    period: annual
-    required:
-        - tasmin
-    threshold:
-        value: 293.15
-        unit: K
-        logic: greater
-    cf_name: number_of_days_where_air_temperature_remains_above_20_degre_Celsius
-annual_number_of_days_where_cumulative_precipitation_is_above_10_mm:
-    name: R10mm
-    period: annual
-    required:
-        - pr
-    threshold:
-        value: 10
-        unit: mm day-1
-        logic: greater_equal
-    cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
-annual_number_of_days_where_cumulative_precipitation_is_above_20_mm:
-    name: R20mm
-    period: annual
-    required:
-        - pr
-    threshold:
-        value: 20
-        unit: mm day-1
-        logic: greater_equal
-    cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
-annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm:
-    name: R{}mm
-    period: annual
-    required:
-        - pr
-    threshold:
-        unit: mm day-1
-        logic: greater_equal
-    cf_name: annual_number_of_days_where_cumulative_precipitation_is_above_{}_mm
-monthly_maximum_value_of_daily_maximum_temperature:
-    name: TXx
-    period: monthly
-    required:
-        - tasmax
-    logic: max
-    cf_name: monthly_maximum_value_of_daily_maximum_temperature
-monthly_maximum_value_of_daily_minimum_temperature:
-    name: TNx
-    period: monthly
-    required:
-        - tasmin
-    logic: max
-    cf_name: monthly_maximum_value_of_daily_minimum_temperature
-monthly_minimum_value_of_daily_maximum_temperature:
-    name: TXn
-    period: monthly
-    required:
-        - tasmax
-    logic: min
-    cf_name: monthly_minimum_value_of_daily_maximum_temperature
-monthly_minimum_value_of_daily_minimum_temperature:
-    name: TNn
-    period: monthly
-    required:
-        - tasmin
-    logic: min
-    cf_name: monthly_minimum_value_of_daily_minimum_temperature
-monthly_maximum_1day_precipitation:
-    name: Rx1day
-    period: monthly
-    required:
-        - pr
-    spell:
-        value: 1
-        unit: day
-    logic: max
-    cf_name: monthly_maximum_1day_precipitation
-monthly_maximum_5day_precipitation:
-    name: Rx5day
-    period: monthly
-    required:
-        - pr
-    spell:
-        value: 5
-        unit: day
-    logic: max
-    cf_name: monthly_maximum_5day_precipitation
-annual_total_precipitation_in_wet_days:
-    name: PRCPTOT
-    period: annual
-    required:
-        - pr
-    logic: sum
-    cf_name: annual_total_precipitation_in_wet_days
-annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%:
-    name: R95pTOT
-    period: annual
-    required:
-        - pr
-    threshold:
-        value: 95
-        unit: percent
-        logic: greater
-    logic: sum
-    cf_name: annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
-annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%:
-    name: R99pTOT
-    period: annual
-    required:
-        - pr
-    threshold:
-        value: 99
-        unit: percent
-        logic: greater
-    logic: sum
-    cf_name: annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%
-monthly_number_of_days_where_daily_minimum_temperature_below_10%:
-    name: TN10p
-    period: monthly
-    required:
-        - tasmin
-    threshold:
-        value: 10
-        unit: percent
-        logic: less
-    cf_name: monthly_number_of_days_where_daily_minimum_temperature_below_10%
-monthly_number_of_days_where_daily_minimum_temperature_above_90%:
-    name: TN90p
-    period: monthly
-    required:
-        - tasmin
-    threshold:
-        value: 90
-        unit: percent
-        logic: greater
-    cf_name: monthly_number_of_days_where_daily_minimum_temperature_above_90%
-monthly_number_of_days_where_daily_maximum_temperature_below_10%:
-    name: TX10p
-    period: monthly
-    required:
-        - tasmax
-    threshold:
-        value: 10
-        unit: percent
-        logic: less
-    cf_name: monthly_number_of_days_where_daily_maximum_temperature_below_10%
-monthly_number_of_days_where_daily_maximum_temperature_above_90%:
-    name: TX90p
-    period: monthly
-    required:
-        - tasmax
-    threshold:
-        value: 90
-        unit: percent
-        logic: greater
-    cf_name: monthly_number_of_days_where_daily_maximum_temperature_above_90%
-annual_warm_speel_duration_index:
-    name: WSDI
-    period: annual
-    required:
-        - tasmax
-    threshold:
-        value: 90
-        unit: percent
-        logic: greater
-    spell:
-        value: 6
-        unit: days
-        logic: greater_equal
-    cf_name: annual_warm_speel_duration_index 
-annual_cold_speel_duration_index:
-    name: CSDI
-    period: annual
-    required:
-        - tasmin
-    threshold:
-        value: 10
-        unit: percent
-        logic: less
-    spell:
-        value: 6
-        unit: days
-        logic: greater_equal
-    cf_name: annual_cold_speel_duration_index
-daily_temperature_range:
-    name: DTR
-    period: daily
-    required:
-        - tasmin
-        - tasmax
-    logic: diff
-    cf_name: daily_temperature_range
-annual_growing_season_length:
-    name: GSL
-    required:
-        - tas
-    start:
-        threshold:
-            value: 278.15
-            unit: K
-            logic: greater
-        spell:
-            value: 6
-            unit: days
-            logic: equal
-        time:
-            delay: 0
-            len: 6
-            unit: month
-    end:
-        threshold:
-            value: 278.15
-            unit: K
-            logic: less
-        spell:
-            value: 6
-            unit: days
-            logic: equal
-        time:
-            delay: 6
-            len: 6
-            unit: month
-    spatial_subsets:
-        NH:
-            latitude: [0, 90]
-            longitude: [0, 360]
-        SH:
-            latitude: [0, -90]
-            longitude: [0, 360]
-    cf_name: annual_growing_season_length
-""")
-print("INDEX_DEFINITION:")
-print(yaml.dump(index_definition))
 
 index_method = {
         "annual_number_of_frost_days": "fdETCCDI_yr",
@@ -333,10 +61,18 @@ index_method = {
             "r99ptotETCCDI_yr",
         "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%":
             "r95ptotETCCDI_yr",
-        "annual_warm_speel_duration_index":
+        "annual_warm_spell_duration_index":
             "wsdiETCCDI_yr",
-        "annual_cold_speel_duration_index":
+        "annual_cold_spell_duration_index":
             "csdiETCCDI_yr",
+        "annual_warm_spell_duration_index":
+            "wsdiETCCDI_yr",
+        "annual_maximum_length_of_wet_spell":
+            "cwdETCCDI_yr",
+        "annual_maximum_length_of_dry_spell":
+            "cddETCCDI_yr",
+        "monthly_simple_precipitation_intensity_index":
+            "sdiiETCCDI_m",
         }
 
 method_index = {}
@@ -550,6 +286,74 @@ def csdiETCCDI_yr(alias_cubes, **kwargs):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     
     result_cube = spell_perc_ex_thresh(alias_cubes, specs, kwargs['cfg'])
+    
+    return result_cube
+
+def sdiiETCCDI_m(alias_cubes, **kwargs):
+    """ Simple precipitation intensity index: Let RRwj be the daily precipitation amount on wet days, w (RR ≥ 1mm) in period j."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
+    
+    cube = alias_cubes[specs['required'][0]]
+    
+    specs['threshold']['value'] = __adjust_threshold__(specs['threshold'], cube.units)
+    
+    boolean_cube = __boolean_translation__(cube, specs['threshold']['value'], logic = specs['threshold']['logic'])
+    
+    wd_selection = cube.copy(data = da.where(boolean_cube.core_data(), cube.core_data(),0))
+    
+    statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
+    if statistic_function:
+        result_cube = statistic_function(wd_selection, 'sum') / statistic_function(boolean_cube, 'sum')
+    else:
+        raise Exception(f"Period {specs['period']} not implemented.")
+    
+    result_cube.rename(specs['cf_name'])
+    result_cube.units = Unit('mm month-1')
+    
+    return result_cube
+
+def cddETCCDI_yr(alias_cubes, **kwargs):
+    """Maximum length of dry spell, maximum number of consecutive days with RR < 1mm."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
+    
+    cube = alias_cubes[specs['required'][0]]
+    
+    agg = 'year'
+    
+    if agg not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_year(cube, 'time', name=agg)
+    
+    result_cube = max_span_yr(cube, specs['threshold'], agg)
+    
+    result_cube.rename(specs['cf_name'])
+    result_cube.units = Unit(f'days per {agg}')
+    
+    return result_cube
+
+def cwdETCCDI_yr(alias_cubes, **kwargs):
+    """Cold speel duration index: Annual count of days with at least 6 consecutive days when TN < 10th percentile."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
+    
+    cube = alias_cubes[specs['required'][0]]
+    
+    agg = 'year'
+    
+    if agg not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_year(cube, 'time', name=agg)
+    
+    result_cube = max_span_yr(cube, specs['threshold'], agg)
+    
+    result_cube.rename(specs['cf_name'])
+    result_cube.units = Unit(f'days per {agg}')
     
     return result_cube
 

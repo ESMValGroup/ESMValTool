@@ -105,22 +105,41 @@ def __cumsum_without_setback_multiD__(arrayMD, axis):
                                shape=(arrayMD.shape[axis],),
                                dtype=int)
 
-
 def threshold_span(cube, threshold_specs, span_specs):
     """Gets the binary for any exceeding of thresholds within the respective span"""
 
     # cumulative summation of the booleans depending of threshold
     cum_bin = __cumsum_of_boolean__(cube, threshold=threshold_specs['value'], logic=threshold_specs['logic'])
 
-    # boolean translatioon of the cummation depending on span
+    # boolean translation of the cummation depending on span
     span_bin = __boolean_translation__(cum_bin, threshold=span_specs['value'], logic=span_specs['logic'])
 
     return span_bin
 
+def max_span_yr(cube, threshold_specs, agg):
+    """Gets the maximum value for a cube per year exceeding the threshold"""
+
+    threshold_specs['value'] = __adjust_threshold__(threshold_specs, cube.units)
+
+    if agg != 'year':
+        raise Exception(f"Period {agg} not implemented.")
+    
+    cum_bin_per_agg = []
+    # cumulative summation of the booleans depending of threshold for each agg increment
+    for years in np.unique(cube.coord('year').points):
+        loc_cube = cube.extract(iris.Constraint(year = lambda cell: cell == years))
+        cum_bin_per_agg.append(__cumsum_of_boolean__(loc_cube, threshold=threshold_specs['value'], logic=threshold_specs['logic']))
+        
+    cum_bin = iris.cube.CubeList(cum_bin_per_agg).concatenate_cube()
+
+    # calculation of maximum span    
+    max_span = cum_bin.aggregated_by(agg, iris.analysis.MAX)
+
+    return max_span
+
 
 def __first_appearence_data__(data, fill_value):
     """Get the first appearence of True and assign the respective time"""
-#    data = da.ma.masked_where(da.logical_not(data), data)
 
     time_rec = __argmax_wrapper__(data, fill_value)
 
