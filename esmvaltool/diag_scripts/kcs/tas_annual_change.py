@@ -22,7 +22,7 @@ from esmvaltool.diag_scripts.shared import (group_metadata,
                                             run_diagnostic,
                                             ProvenanceLogger)
 import kcsutils
-from kcsutils.attributes import get as get_attrs
+from kcsutils.attributes import get as get_attributes
 
 
 PERIOD = (1961, 2099)
@@ -397,7 +397,7 @@ def main(cfg):
         cubes.append(cube)
         paths.append(path)
     # Get the attributes, and create a dataframe with cubes & attributes
-    dataset = get_attrs(
+    dataset = get_attributes(
         cubes, paths, info_from=('attributes', 'filename'),
         attributes=None, filename_pattern=None
     )
