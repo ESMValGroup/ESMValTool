@@ -379,14 +379,10 @@ def main(cfg):
     4- calculate percentile for 5-95 perentage per each year.
 
     """
-    # assemble the data dictionary keyed by dataset name
-    # this makes use of the handy group_metadata function that
-    # orders the data by 'dataset'; the resulting dictionary is
-    # keyed on datasets e.g. dict = {'MPI-ESM-LR': [var1, var2...]}
-    # where var1, var2 are dicts holding all needed information per variable
+    # Group input files based on filenames
     files = group_metadata(cfg['input_data'].values(), 'filename')
 
-    # the function get_attrs() needs paths and cubes as lists
+    # Make two lists of paths and cubes for the function get_attrs()
     paths = []
     cubes = []
     for filename in files.keys():
