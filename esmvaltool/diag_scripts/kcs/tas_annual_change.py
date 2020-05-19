@@ -384,9 +384,8 @@ def main(cfg):
     # orders the data by 'dataset'; the resulting dictionary is
     # keyed on datasets e.g. dict = {'MPI-ESM-LR': [var1, var2...]}
     # where var1, var2 are dicts holding all needed information per variable
-    logger.debug("\n\n\nCONFIG:\n %s\n\n\n", cfg)
-
     files = group_metadata(cfg['input_data'].values(), 'filename')
+
     # the function get_attrs() needs paths and cubes as lists
     paths = []
     cubes = []
@@ -396,6 +395,7 @@ def main(cfg):
         add_extra_coord(cube)
         cubes.append(cube)
         paths.append(path)
+
     # Get the attributes, and create a dataframe with cubes & attributes
     dataset = get_attributes(
         cubes, paths, info_from=('attributes', 'filename'),
@@ -404,9 +404,6 @@ def main(cfg):
     dataset = kcsutils.match(
         dataset, match_by='ensemble', on_no_match='randomrun',
         historical_key='historical')
-    logger.debug("%s", dataset.columns)
-    columns = ['model', 'experiment', 'realization', 'initialization', 'physics', 'prip', 'var', 'index_match_run']
-    logger.debug("%s", dataset[columns])
 
     result, _ = calc(dataset,
                      reference_period=(1980, 2009),
