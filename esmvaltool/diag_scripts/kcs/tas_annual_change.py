@@ -26,6 +26,7 @@ from kcsutils.attributes import get as get_attributes
 
 
 PERIOD = (1961, 2099)
+REFERENCE_PERIOD = (1980, 2009)
 MINDATA = {'historical': 20, 'future': 4}
 
 logger = logging.getLogger(Path(__file__).name)
@@ -117,7 +118,7 @@ def average_year(cubes, season=None):
 class ModelReferencePointCalculation:
     """DUMMY DOC-STRING"""
 
-    def __init__(self, dataset, reference_period,
+    def __init__(self, dataset,
                  historical_key="historical", yearly=True, season=None,
                  normby='run'):
         self.dataset = dataset
@@ -131,7 +132,7 @@ class ModelReferencePointCalculation:
         else:
             # Twelve months a year
             self.mindata = {key: 12*value for key, value in MINDATA.items()}
-        self.constraint = kcsutils.make_year_constraint_all_calendars(*reference_period)
+        self.constraint = kcsutils.make_year_constraint_all_calendars(*REFERENCE_PERIOD)
 
     def __call__(self, model):
         """DUMMY DOC-STRING"""
@@ -205,7 +206,7 @@ class ModelReferencePointCalculation:
         return averages
 
 
-def calculate_reference_values(dataset, reference_period, yearly=False, season=None,
+def calculate_reference_values(dataset, yearly=False, season=None,
                           historical_key=None, normby='run'):
     """Calculate reference values.
 
@@ -224,7 +225,7 @@ def calculate_reference_values(dataset, reference_period, yearly=False, season=N
     future_data['match_historical_run'] = dataset.loc[hindex, 'cube'].array
 
     calculation = ModelReferencePointCalculation(
-        future_data, reference_period, yearly=yearly, season=season,
+        future_data, yearly=yearly, season=season,
         historical_key=historical_key, normby=normby)
 
     models = dataset['model'].unique()
@@ -356,7 +357,7 @@ def main(cfg):
 
     # Calculate reference values
     dataset = calculate_reference_values(
-        dataset, reference_period=(1980, 2009), yearly=False, season=None,
+        dataset, yearly=False, season=None,
         historical_key="historical", normby='run'
     )
 
