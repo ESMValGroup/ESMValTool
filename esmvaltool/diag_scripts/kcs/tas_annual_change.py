@@ -238,23 +238,6 @@ def calculate_reference_values(dataset, reference_period, yearly=False, season=N
     return dataset
 
 
-def normalize_cube(item, relative=False):
-    """Normalize a single cube to its reference value
-
-    If the value is a relative value, i.e., a percentual change, set
-    the 'relative' parameter to `True`.
-
-    """
-
-    cube, ref_value = item
-    cube.data -= ref_value
-    if relative:
-        cube.data /= ref_value
-        cube.data *= 100
-        cube.units = '%'
-    return cube
-
-
 def normalize(dataset, relative=False, normby='run'):
     """Normalize cubes to their reference values
 
@@ -291,12 +274,15 @@ def normalize(dataset, relative=False, normby='run'):
         hist_data['matched_exp'] = dataset.loc[sel, 'experiment'].array
         dataset = pd.concat([dataset, hist_data])
         dataset.dropna(axis=0, subset=['reference_value'], inplace=True)
-    logger.info("Normalizing data to the reference period")
-    # Tempting, but it's not possible to simply do dataset['cube'] =
-    # dataset['cube'] / data['reference_value']
-    func = functools.partial(normalize_cube, relative=relative)
-    data = zip(dataset['cube'], dataset['reference_value'])
-    dataset['cube'] = list(map(func, data))
+
+    # Normalization to the reference period
+    for cube, value in zip(dataset['cube'], dataset['reference_value']):
+        cube.data -= value
+        if relative:
+            cube.data /= value
+            cube.data *= 100
+            cube.units = '%'
+
     return dataset
 
 
@@ -360,6 +346,7 @@ def main(cfg):
         cubes, paths, info_from=('attributes', 'filename'),
         attributes=None, filename_pattern=None
     )
+
     dataset = kcsutils.match(
         dataset, match_by='ensemble', on_no_match='randomrun',
         historical_key='historical')
