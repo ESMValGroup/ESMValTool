@@ -286,36 +286,30 @@ def normalize(dataset, relative=False, normby='run'):
     return dataset
 
 
-def calc_percentile_year(dataset, year, average_experiments=False):
-    """Calculate the percentile distribution of the cubes for a given year"""
-
-    constraint = iris.Constraint(year=kcsutils.EqualConstraint(year))
-
-    if average_experiments:
-        data = []
-        for _, group in dataset.groupby(['model', 'experiment', 'matched_exp']):
-            cubes = list(filter(None, map(constraint.extract, group['cube'])))
-            if cubes:
-                data.append(np.mean([cube.data for cube in cubes]))
-    else:
-        cubes = list(filter(None, map(constraint.extract, dataset['cube'])))
-        data = [cube.data for cube in cubes]
-    mean = np.mean(data)
-    percs = np.percentile(data, [5, 10, 25, 50, 75, 90, 95], overwrite_input=True)
-    return dict(zip(['mean', '5', '10', '25', '50', '75', '90', '95'],
-                    [mean] + percs.tolist()))
-
-
 def calculate_percentiles(dataset, period=PERIOD, average_experiments=False):
     """Calculate the percentile yearly change distribution for the input data"""
+    time = []
+    percentile_as_list = []
+    for year in list(range(*period)):
+        constraint = iris.Constraint(year=kcsutils.EqualConstraint(year))
+        if average_experiments:
+            data = []
+            for _, group in dataset.groupby(['model', 'experiment', 'matched_exp']):
+                cubes = list(filter(None, map(constraint.extract, group['cube'])))
+                if cubes:
+                    data.append(np.mean([cube.data for cube in cubes]))
+        else:
+            cubes = list(filter(None, map(constraint.extract, dataset['cube'])))
+            data = [cube.data for cube in cubes]
+        mean = np.mean(data)
+        percentile = np.percentile(data, [5, 10, 25, 50, 75, 90, 95], overwrite_input=True)
+        percentile_as_dict = dict(zip(['mean', '5', '10', '25', '50', '75', '90', '95'],
+                                    [mean] + percentile.tolist()))
+        percentile_as_list.append(percentile_as_dict)
+        time.append(datetime(year, 1, 1))
 
-    logger.info("Calculating percentiles")
-
-    years = list(range(*period))
-    func = functools.partial(calc_percentile_year, dataset, average_experiments=average_experiments)
-    percs = list(map(func, years))
-    return pd.DataFrame(
-        percs, index=pd.DatetimeIndex([datetime(year, 1, 1) for year in years]))
+    percentile_as_dataframe = pd.DataFrame(percentile_as_list, index=pd.DatetimeIndex(time))
+    return percentile_as_dataframe
 
 
 def main(cfg):
