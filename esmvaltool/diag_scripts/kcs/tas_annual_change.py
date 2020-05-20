@@ -236,8 +236,9 @@ def calculate_reference_values(dataset, yearly=False, season=None,
     elif normby == 'experiment':
         ref_values = []
         for model, values in zip(models, reference_values):
-            sel = (dataset['model'] == model)
-            experiments = dataset.loc[sel, 'experiment']
+            experiments = dataset.loc[
+                (dataset['model'] == model),
+                'experiment']
             ref_values.append(experiments.map(values))
         dataset['reference_value'] = pd.concat(ref_values)
     else:
