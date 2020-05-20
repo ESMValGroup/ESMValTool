@@ -293,11 +293,11 @@ def normalize(dataset, relative=False, normby='run'):
     return dataset
 
 
-def calculate_percentiles(dataset, period=PERIOD, average_experiments=False):
+def calculate_percentiles(dataset, average_experiments=False):
     """Calculate the percentile yearly change distribution for the input data"""
     time = []
     percentile_as_list = []
-    for year in list(range(*period)):
+    for year in list(range(*PERIOD)):
         constraint = iris.Constraint(year=kcsutils.EqualConstraint(year))
         if average_experiments:
             data = []
@@ -365,10 +365,7 @@ def main(cfg):
     dataset = normalize(dataset, relative=False, normby='run')
 
     # Get the percentiles
-    percentiles = calculate_percentiles(
-        dataset, period=(1961, 2099),
-        average_experiments=False
-    )
+    percentiles = calculate_percentiles(dataset, average_experiments=False)
 
     # Write output as a csv file
     percentiles.to_csv(cfg['output'], index_label="date")
