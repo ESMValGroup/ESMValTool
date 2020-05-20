@@ -76,6 +76,20 @@ def extract_season(cubes, season):
     return cubes
 
 
+def perform_optional_operations(dataset, yearly=False, season=None):
+    """Perform extracting of season, and averaging of years.
+
+    These are optional steps before calculation of reference values.
+
+    """
+    if season:
+        dataset['cube'] = extract_season(dataset['cube'], season)
+
+    if yearly:
+        dataset['cube'] = average_year(dataset['cube'], season=season)
+    return dataset
+
+
 def average_year_cube(cube, season=None):
     """DUMMY DOC-STRING"""
     if season:
@@ -198,16 +212,8 @@ def calculate_reference_values(dataset, reference_period, yearly=False, season=N
     model:  *per model*, so that each realization is
     scaled to the reference period following the average *model* reference
     value.
-    Also performs extracting of season (optional), averaging of years
-    (optional).
 
     """
-    if season:
-        dataset['cube'] = extract_season(dataset['cube'], season)
-
-    if yearly:
-        dataset['cube'] = average_year(dataset['cube'], season=season)
-
     # Undefined variable default_config
     if not historical_key:
         historical_key = default_config['data']['historical_experiment']
@@ -344,6 +350,9 @@ def main(cfg):
     dataset = kcsutils.match(
         dataset, match_by='ensemble', on_no_match='randomrun',
         historical_key='historical')
+
+    # Perform extracting of season, or averaging of years (optional).
+    dataset = perform_optional_operations(dataset, yearly=False, season=None)
 
     # Calculate reference values
     dataset = calculate_reference_values(
