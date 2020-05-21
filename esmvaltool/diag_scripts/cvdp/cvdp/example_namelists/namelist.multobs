@@ -1,0 +1,3 @@
+OBS2   | /project/cas/asphilli/CVDP/Obs_Data/ | 1900 | 2013
+CCSM3  | /home/fasullo/CMIP3_links/20c3m/{atm,land}/mo/*/ncar_ccsm3_0/run1/ | 1900 | 1999
+CESM1-BGC | /project/cmip5/ETH/cmip5/{historical,rcp85}/Amon/*/CESM1-BGC/r1i1p1/ | 1900 | 2005

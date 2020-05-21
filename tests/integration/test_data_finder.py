@@ -1,3 +1,4 @@
+"""Tests for _data_finder.py."""
 import os
 import shutil
 import tempfile
@@ -11,7 +12,7 @@ from esmvaltool.cmor.table import read_cmor_tables
 
 # Initialize with standard config developer file
 esmvaltool._config.CFG = esmvaltool._config.read_config_developer_file()
-# Initialzie CMOR tables
+# Initialize CMOR tables
 read_cmor_tables(esmvaltool._config.CFG)
 
 # Load test configuration
@@ -20,6 +21,7 @@ with open(os.path.join(os.path.dirname(__file__), 'data_finder.yml')) as file:
 
 
 def print_path(path):
+    """Print path."""
     txt = path
     if os.path.isdir(path):
         txt += '/'
@@ -60,6 +62,7 @@ def create_tree(path, filenames=None, symlinks=None):
 
 @pytest.fixture
 def root():
+    """Root function for tests."""
     dirname = tempfile.mkdtemp()
     yield os.path.join(dirname, 'output1')
     print("Directory structure was:")
@@ -69,7 +72,7 @@ def root():
 
 @pytest.mark.parametrize('cfg', CONFIG['get_input_filelist'])
 def test_get_input_filelist(root, cfg):
-
+    """Test retrieving input filelist."""
     create_tree(root, cfg.get('available_files'),
                 cfg.get('available_symlinks'))
 
@@ -85,7 +88,7 @@ def test_get_input_filelist(root, cfg):
 
 @pytest.mark.parametrize('cfg', CONFIG['get_input_fx_filelist'])
 def test_get_input_fx_filelist(root, cfg):
-
+    """Test retrieving fx filelist."""
     create_tree(root, cfg.get('available_files'),
                 cfg.get('available_symlinks'))
 

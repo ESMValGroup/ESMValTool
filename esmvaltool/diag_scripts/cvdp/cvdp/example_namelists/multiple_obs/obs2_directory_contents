@@ -1,0 +1,12 @@
+Soft links are used to point to the original file names. Note that variable names pr, slp, ts, and tas are inserted
+into the soft link names to help the CVDP better identify the files.
+
+--------------------------------------------------------------------------------
+-rw-r--r-- 1 root cgdcas 447907648 Feb  7 14:42 hadisst.187001-201312.nc
+-rw-r--r-- 1 root cgdcas  20724308 Feb  7 14:43 hadslp2r.185001-201112.nc
+-rw-r--r-- 1 root cgdcas  17176260 Feb  7 14:43 gpcp.mon.mean.197901-201306.nc
+-rw------- 1 root cgdcas  20422396 Feb  7 14:44 HadCRUT.4.2.0.0.temps.185001-201312.nc
+lrwxrwxrwx 1 root cgdcas        30 Feb  7 14:45 gpcp.mon.mean.pr.197901-201306.nc -> gpcp.mon.mean.197901-201306.nc
+lrwxrwxrwx 1 root cgdcas        25 Feb  7 14:46 hadslp2r.slp.185001-201112.nc -> hadslp2r.185001-201112.nc
+lrwxrwxrwx 1 root cgdcas        24 Feb  7 14:51 hadisst.ts.187001-201312.nc -> hadisst.187001-201312.nc
+lrwxrwxrwx 1 root cgdcas        38 Feb  7 14:56 HadCRUT.4.2.0.0.tas.185001-201312.nc -> HadCRUT.4.2.0.0.temps.185001-201312.nc

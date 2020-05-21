@@ -1,0 +1,35 @@
+###############################################################################
+# CMIP5 STYLES
+###############################################################################
+# This file defines the plot attributes for the GO models.
+#
+# MODEL NAME: must be the same as given in the main recipe.
+# COLOR: can be either an NCL named color, a RGB code (size 3) on a 0-255 scale
+#        or a RGBA code (size 4) with the last element indicating the opacity
+#        on a 0-1 scale (0 = transparent, 1 = full), see
+#        http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#        https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+#        https://www.ncl.ucar.edu/Document/Graphics/create_color_table.shtml
+# DASH: the dash pattern index lines, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/dashpatterns.png
+# THICK: the line thickness (NCL default is 1)
+# MARK: marker index for markers, see
+#       https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# AVG-STD: 0 = takes part in the calculation of mean and stddev
+#          1 = does not take part in the calculation of mean and stddev
+#          (usually 0 for models, 1 for observations/reanalysis)
+#
+# Mind the formatting: columns are separated by the | symbol , colors given
+# as RGB/RGBA must be comma-separated.
+###############################################################################
+MODEL NAME            # COLOR                # DASH # THICK # MARK # AVG-STD
+###############################################################################
+PlankTOM5             | 153,   0,   2        |   0  |   1   |   0  |   0
+PlankTOM10            | 196, 121,   0        |   1  |   1   |   0  |   0
+medusa                | 152, 251, 152        |   1  |   1   |   0  |   0
+hadocc                | 239,  85,  15        |   1  |   1   |   0  |   0
+ersem                 |  15   85, 239        |   1  |   1   |   0  |   0
+ref                   |   0   79,   0        |   0  |   1   |   0  |   0
+model_mean            | 153,   0,   2        |   0  |   3   |   1  |   0
+unknown               |   0,   0,   0        |   0  |   1   |   1  |   0

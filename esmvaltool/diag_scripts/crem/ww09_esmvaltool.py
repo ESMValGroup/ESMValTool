@@ -42,15 +42,14 @@ Cloud Regime Error Metrics (CREM).
     20150903-A_laue_ax: ESMValTool implementation.
     20150521-A_will_ke: CREM routines written.
 """
-import sys
 import logging
 import os
-import numpy as np
-from scipy.ndimage.interpolation import map_coordinates as interp2d
-from netCDF4 import Dataset
-import matplotlib
-matplotlib.use('Agg')  # noqa
+import sys
+
 import matplotlib.pyplot as plt
+import numpy as np
+from netCDF4 import Dataset
+from scipy.ndimage.interpolation import map_coordinates as interp2d
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)

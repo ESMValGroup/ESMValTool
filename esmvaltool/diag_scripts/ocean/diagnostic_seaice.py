@@ -50,16 +50,14 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import numpy as np
 from itertools import product
 
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
+import cartopy
 import iris
 import iris.quickplot as qplt
-
-import cartopy
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic

@@ -1,0 +1,32 @@
+TS | ERSST v5 | /glade/p/cgd/cas/asphilli/CVDP-OBS/ersstv5.185401-201812.nc | 1920 | 2017
+PSL | ERA20C_ERAI | /glade/p/cgd/cas/asphilli/CVDP-OBS/era20c_erai.mon.mean.msl.190001-201802.nc | 1920 | 2017
+TREFHT | BEST | /glade/p/cgd/cas/asphilli/CVDP-OBS/best.tas.185001-201801.nc | 1920 | 2017
+PRECT | GPCC | /glade/p/cgd/cas/asphilli/CVDP-OBS/gpcc.precip.10.comb_v7v5mon.190101-201802.nc | 1920 | 2017
+aice_nh | Walsh and Chapman | /glade/p/cgd/cas/asphilli/CVDP-OBS/walsh_chapman.NH.seaice.187001-201112.nc | 1953 | 2011
+aice_sh | NASA Bootstrap SH | /glade/p/cgd/cas/asphilli/CVDP-OBS/seaice_conc_monthly_sh_NASA_Bootstrap.nsidc.v03r01.197811-201702.nc | 1979 | 2016
+MOC | CESM1 Forced Ocean Simulation | /glade/p/cgd/cas/asphilli/CVDP-OBS/g.e11_LENS.GECOIAF.T62_g16.009.pop.h.MOC.194801-201512.nc | 1948 | 2015
+
+TS | HadISST | /glade/p/cgd/cas/asphilli/CVDP-OBS/hadisst.187001-201812.nc | 1920 | 2017
+PSL | CERA20C_ERAI | /glade/p/cgd/cas/asphilli/CVDP-OBS/cera20c_erai.mon.mean.msl.190101-201802.nc | 1920 | 2017
+TREFHT | GISTEMP | /glade/p/cgd/cas/asphilli/CVDP-OBS/gistemp.tas.188001-201812.nc | 1920 | 2017
+PRECT | GPCC | /glade/p/cgd/cas/asphilli/CVDP-OBS/gpcc.precip.10.comb_v7v5mon.190101-201802.nc | 1920 | 2017
+aice_nh | Walsh and Chapman | /glade/p/cgd/cas/asphilli/CVDP-OBS/walsh_chapman.NH.seaice.187001-201112.nc | 1953 | 2011
+aice_sh | NASA Bootstrap SH | /glade/p/cgd/cas/asphilli/CVDP-OBS/seaice_conc_monthly_sh_NASA_Bootstrap.nsidc.v03r01.197811-201702.nc | 1979 | 2016
+MOC | CESM1 Forced Ocean Simulation | /glade/p/cgd/cas/asphilli/CVDP-OBS/g.e11_LENS.GECOIAF.T62_g16.009.pop.h.MOC.194801-201512.nc | 1948 | 2015
+
+TS | ERSST v5 | /glade/p/cgd/cas/asphilli/CVDP-OBS/ersstv5.185401-201812.nc | 1979 | 2017
+PSL | ERAI | /glade/p/cgd/cas/asphilli/CVDP-OBS/erai.mon.mean.msl.197901-201802.nc | 1979 | 2017
+TREFHT | BEST | /glade/p/cgd/cas/asphilli/CVDP-OBS/best.tas.185001-201801.nc | 1979 | 2017
+PRECT | GPCP | /glade/p/cgd/cas/asphilli/CVDP-OBS/gpcp.mon.mean.197901-201801.nc | 1979 | 2017
+aice_nh | NASA CDR NH | /glade/p/cgd/cas/asphilli/CVDP-OBS/seaice_conc_monthly_nh_NOAA_NSIDC_CDR.v03r01.197811-201702.nc | 1979 | 2016
+aice_sh | NASA CDR SH | /glade/p/cgd/cas/asphilli/CVDP-OBS/seaice_conc_monthly_sh_NOAA_NSIDC_CDR.v03r01.197811-201702.nc | 1979 | 2016
+MOC | CESM1 Forced Ocean Simulation | /glade/p/cgd/cas/asphilli/CVDP-OBS/g.e11_LENS.GECOIAF.T62_g16.009.pop.h.MOC.194801-201512.nc | 1979 | 2015
+
+TS | HadISST | /glade/p/cgd/cas/asphilli/CVDP-OBS/hadisst.187001-201812.nc | 1980 | 2017
+PSL | MERRA2 | /glade/p/cgd/cas/asphilli/CVDP-OBS/merra2.mon.SLP.198001-201803.nc | 1980 | 2017
+TREFHT | GISTEMP | /glade/p/cgd/cas/asphilli/CVDP-OBS/gistemp.tas.188001-201812.nc | 1980 | 2017
+PRECT | GPCP | /glade/p/cgd/cas/asphilli/CVDP-OBS/gpcp.mon.mean.197901-201801.nc | 1980 | 2017
+aice_nh | NASA Bootstrap NH | /glade/p/cgd/cas/asphilli/CVDP-OBS/seaice_conc_monthly_nh_NASA_Bootstrap.nsidc.v03r01.197811-201702.nc | 1980 | 2016
+aice_sh | NASA Bootstrap SH | /glade/p/cgd/cas/asphilli/CVDP-OBS/seaice_conc_monthly_sh_NASA_Bootstrap.nsidc.v03r01.197811-201702.nc | 1980 | 2016
+MOC | CESM1 Forced Ocean Simulation | /glade/p/cgd/cas/asphilli/CVDP-OBS/g.e11_LENS.GECOIAF.T62_g16.009.pop.h.MOC.194801-201512.nc | 1979 | 2015
+

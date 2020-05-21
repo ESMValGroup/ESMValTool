@@ -19,18 +19,11 @@ and best coding practices.
 # operating system manipulations (e.g. path constructions)
 import os
 
-# for plotting
-import matplotlib
-# use this everytime you import matplotlib
-# modules; some machines dont have graphical interface (X)
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
-
 # to manipulate iris cubes
 import iris
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
+from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.preprocessor import average_region
 
 

@@ -52,13 +52,10 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
 import iris.quickplot as qplt
-
+import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
@@ -106,10 +103,10 @@ def multi_model_maps(
     Makes the four pane model vs model vs obs comparison plot.
 
     Parameters
-     ----------
-     cfg: dict
+    ----------
+    cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-     input_files: dict
+    input_files: dict
         the metadata dictionairy
 
     """
