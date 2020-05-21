@@ -43,9 +43,14 @@ users can now continue with :ref:`Running ESMValTool <running>`.
 Observations
 ============
 
-Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4mips (https://esgf-node.llnl.gov/projects/obs4mips/) and ana4mips (https://esgf.nccs.nasa.gov/projects/ana4mips/) proejcts, respectively. Their use is strongly recommended, when possible.
+Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4mips (https://esgf-node.llnl.gov/projects/obs4mips/) and ana4mips (https://esgf.nccs.nasa.gov/projects/ana4mips/) projects, respectively. Their use is strongly recommended, when possible.
 
-Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard using the cmorizers included in the ESMValTool. The cmorizers are dataset-specific scripts that can be run once to generate a local pool of observational datasets for usage with the ESMValTool. The necessary information to download and process the data is provided in the header of each cmorizing script. These scripts also serve as template to create new cmorizers for datasets not yet included. Note that dataset cmorized for ESMValTool v1 may not be working with v2, due to the much stronger constraints on metadata set by the Iris library.
+Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'cmorization'). The first is to use a cmorizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'cmor checks and fixes'). Below, both methods are explained in more detail.
+
+Using a cmorizer script
+-----------------------
+
+ESMValTool comes with a set of cmorizers readily available. The cmorizers are dataset-specific scripts that can be run once to generate a local pool of CMOR-compliant data. The necessary information to download and process the data is provided in the header of each cmorizing script. These scripts also serve as template to create new cmorizers for datasets not yet included. Note that datasets cmorized for ESMValTool v1 may not be working with v2, due to the much stronger constraints on metadata set by the iris library.
 
 To cmorize one or more datasets, run:
 
@@ -55,9 +60,38 @@ To cmorize one or more datasets, run:
 
 The path to the raw data to be cmorized must be specified in the CONFIG_FILE as RAWOBS. Within this path, the data are expected to be organized in subdirectories corresponding to the data tier: Tier2 for freely-available datasets (other than obs4mips and ana4mips) and Tier3 for restricted datasets (i.e., dataset which requires a registration to be retrieved or provided upon request to the respective contact or PI). The cmorization follows the CMIP5 CMOR tables. The resulting output is saved in the output_dir, again following the Tier structure. The output file names follow the definition given in ``config-developer.yml`` for the ``OBS`` project: ``OBS_[dataset]_[type]_[version]_[mip]_[short_name]_YYYYMM_YYYYMM.nc``, where ``type`` may be ``sat`` (satellite data), ``reanaly`` (reanalysis data), ``ground`` (ground observations), ``clim`` (derived climatologies), ``campaign`` (aircraft campaign).
 
-
 At the moment, cmorize_obs supports Python and NCL scripts.
 
+.. _cmorization_as_fix:
+
+Cmorization as a fix
+--------------------
+As of early 2020, ESMValTool also provides (limited) support for data in their native format. In this case, the steps needed to reformat the data are executed as datasets fixes during the execution of an ESMValTool recipe, as one of the first preprocessor steps. Compared to the workflow described above, this has the advantage that the user does not need to store a duplicate (cmorized) copy of the data. Instead, the cmorization is performed 'on the fly' when running a recipe. ERA5 is the first dataset for which this 'cmorization on the fly' is supported.
+
+To use this functionality, users need to provide a path for the ``native6`` project data in the :ref:`user configuration file<config-user>`. Then, in the recipe, they can refer to the native6 project, like so:
+
+.. code-block:: yaml
+
+    datasets:
+    - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
+
+Currently, the native6 project only supports ERA5 data in the format defined in the `config-developer file <https://github.com/ESMValGroup/ESMValCore/blob/a9312a7d5be4fa3aac55c0b2ef089c6b4e1a61a9/esmvalcore/config-developer.yml#L191-L201>`_. The filenames correspond to the default filenames from `era5cli <https://era5cli.readthedocs.io>`_ To support other datasets as well, we need to make it possible to have a dataset specific DRS. This is still on the horizon.
+
+While it is not strictly necessary, it may still be useful in some cases to create a local pool of cmorized observations. This can be achieved by using a cmorizer *recipe*. For an example, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that operates on the data. In this example, the diagnostic renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, that can be used through the OBS6 project. As such, this example recipe does exactly the same as the cmorizer scripts described above: create a local pool of cmorized data. The advantage, in this case, is that the daily aggregation is performed only once, which can save a lot of time and compute if it is used often.
+
+The example cmorizer recipe can be run like any other ESMValTool recipe:
+
+.. code-block:: bash
+
+    esmvaltool -c [CONFIG_FILE] cmorizers/recipe_era5.yml
+
+(Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
+
+To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://esmvaltool.readthedocs.io/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
+
+
+Supported datasets
+------------------
 A list of the datasets for which a cmorizers is available is provided in the following table.
 
 .. tabularcolumns:: |p{3cm}|p{6cm}|p{3cm}|p{3cm}|
@@ -102,8 +136,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | Python          |
-|                              | tasmax, tasmin, tdps, ts, tsn (E1hr), orog (fx)                                                      |      |                 |
+| ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | n/a             |
+|                              | tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx)                                                 |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
 |                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, ta, tas,      |      |                 |
@@ -195,3 +229,5 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | WOA                          | no3, o2, po4, si (Oyr), so, thetao (Omon)                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+
+.. [*] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
