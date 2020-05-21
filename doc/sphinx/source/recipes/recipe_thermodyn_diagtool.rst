@@ -1,7 +1,7 @@
 .. _recipes_thermodyn_diagtool:
 
-TheDiaTo v1.0 - A Diagnostic Tool for the Thermodynamics of the Climate System
-==============================================================================
+Thermodynamics of the Climate System - The Diagnostic Tool TheDiaTo v1.0
+========================================================================
 
 Overview
 --------

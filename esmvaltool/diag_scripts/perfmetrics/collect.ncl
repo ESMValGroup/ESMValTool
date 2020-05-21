@@ -68,15 +68,16 @@ begin
 
   ; Filter out non-existing files
   input_files := input_files(ind(isfilepresent(input_files)))
+  data_files = new(dimsizes(input_files), string)
 
   ; Loop over files in the list, read and append data
   do ii = 0, dimsizes(input_files) - 1
 
     f = addfile(input_files(ii), "r")
-    curr_file = tostring(f->temp_list)
+    data_files(ii) = tostring(f->temp_list)
 
     if (diag_script_info@metric.eq."SMPI") then
-      data_temp_smpi = ncdf_read(curr_file, "performance_index")
+      data_temp_smpi = ncdf_read(data_files(ii), "performance_index")
 
       if (.not.isdefined("data_all_smpi")) then
 
@@ -96,21 +97,6 @@ begin
         data_all_smpi&bootstrap_member = data_temp_smpi&bootstrap_member
 
       end if
-
-      ; Define the string array for input file provenance
-      if (.not.isdefined("preproc_files")) then
-        preproc_files = new(dimsizes(input_files) * \
-                            data_all_smpi@num_preproc_files, string)
-      end if
-
-      ; Add the input file info to the file for provenance
-      do ipf = 0, toint(data_all_smpi@num_preproc_files) - 1
-        num_preproc = "preproc_file_" + ipf
-        preproc_idx = ipf + ii * data_all_smpi@num_preproc_files
-        if (isatt(data_temp_smpi, num_preproc)) then
-          preproc_files(preproc_idx) = data_temp_smpi@$num_preproc$
-        end if
-      end do
 
       ; Make sure dataset coordinate is consistent
       consistent = False
@@ -161,7 +147,7 @@ begin
 
     else  ; metric not SMPI
 
-      data_temp = ncdf_read(curr_file, "grade")
+      data_temp = ncdf_read(data_files(ii), "grade")
 
       ; Change to 3 dimensional
       if (dimsizes(dimsizes(data_temp)).eq.2) then
@@ -181,21 +167,6 @@ begin
         data_all!1 = "models"
         data_all&models = data_temp&models
       end if
-
-      ; Define the string array for input file provenance
-      if (.not.isdefined("preproc_files")) then
-        preproc_files = new(dimsizes(input_files) * \
-                            data_all@num_preproc_files, string)
-      end if
-
-      ; Add the input file info to the file for provenance
-      do ipf = 0, toint(data_all@num_preproc_files) - 1
-        num_preproc = "preproc_file_" + ipf
-        preproc_idx = ipf + ii * data_all@num_preproc_files
-        if (isatt(data_temp, num_preproc)) then
-          preproc_files(preproc_idx) = data_temp@$num_preproc$
-        end if
-      end do
 
       ; Make sure model coordinate is consistent
       consistent = False
@@ -468,9 +439,8 @@ begin
   domains = (/"global"/)
 
   ; Call provenance logger
-  preproc_files := preproc_files(ind(.not.ismissing(preproc_files)))
   log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, preproc_files)
+                 plottype, authors, references, data_files)
 
   leave_msg(DIAG_SCRIPT, "")
 

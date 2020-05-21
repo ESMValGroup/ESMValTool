@@ -50,8 +50,8 @@ User settings in recipe
 
 #. Script emergent_constraints/cox18nature.py
 
-   * ``confidence_level``, *float*, optional (default: 0.66): Confidence level for
-     ECS error estimation.
+   * ``confidence_level``, *float*, optional (default: 0.66): Confidence level
+     for ECS error estimation.
 
 #. Script climate_metrics/ecs.py
 

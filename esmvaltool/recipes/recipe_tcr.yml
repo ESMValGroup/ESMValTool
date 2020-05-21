@@ -1,0 +1,179 @@
+# recipe_tcr.yml
+---
+documentation:
+
+  description: |
+    Calculate Transient Climate Response (TCR).
+
+  authors:
+    - schlund_manuel
+
+  references:
+    - gregory08jgr
+
+  projects:
+    - crescendo
+
+
+preprocessors:
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  cmip5:
+    description: Calculate TCR for all available CMIP5 models.
+    variables:
+      1pctCO2: &variable_settings
+        short_name: tas
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        exp: 1pctCO2
+        mip: Amon
+        additional_datasets:
+          - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
+          - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
+          - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
+          - {dataset: CanESM2,       start_year: 1850, end_year: 1989}
+          - {dataset: CCSM4,         start_year: 1850, end_year: 1989}
+          - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
+          - {dataset: CSIRO-Mk3-6-0, start_year:    1, end_year:  140}
+          - {dataset: GFDL-CM3,      start_year:    1, end_year:  140}
+          - {dataset: GISS-E2-H,     start_year: 1850, end_year: 1989}
+          - {dataset: GISS-E2-R,     start_year: 1850, end_year: 1989}
+          - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
+          - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM5B-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: MIROC5,        start_year: 2200, end_year: 2339}
+          - {dataset: MIROC-ESM,     start_year:    1, end_year:  140}
+          - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 1989}
+      piControl:
+        <<: *variable_settings
+        exp: piControl
+        additional_datasets:
+          - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
+          - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
+          - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
+          - {dataset: CanESM2,       start_year: 2321, end_year: 2460}
+          - {dataset: CCSM4,         start_year:  251, end_year:  390}
+          - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
+          - {dataset: CSIRO-Mk3-6-0, start_year:  104, end_year:  243}
+          - {dataset: GFDL-CM3,      start_year:    1, end_year:  140}
+          - {dataset: GISS-E2-H,     start_year: 2410, end_year: 2549}
+          - {dataset: GISS-E2-R,     start_year: 3981, end_year: 4120}
+          - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
+          - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM5B-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: MIROC5,        start_year: 2400, end_year: 2539}
+          - {dataset: MIROC-ESM,     start_year: 1880, end_year: 2019}
+          - {dataset: MPI-ESM-LR,    start_year: 1880, end_year: 2019}
+    scripts:
+      tcr: &tcr_script
+        script: climate_metrics/tcr.py
+      scatterplot: &scatterplot_script
+        script: climate_metrics/create_scatterplot.py
+        ancestors: ['cmip5/tcr']
+        dataset_style: cmip5
+        pattern: 'tcr.nc'
+        seaborn_settings:
+          style: ticks
+        y_range: [0.0, 3.0]
+
+  cmip6:
+    description: Calculate TCR for all available CMIP6 models.
+    variables:
+      1pctCO2:
+        <<: *variable_settings
+        project: CMIP6
+        additional_datasets:
+          # No monthly data (parent_time_units not correct)
+          # - {dataset: AWI-CM-1-1-MR,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989, mip: day}
+          - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3169}
+          - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140}
+          - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140, institute: NCAR}
+          - {dataset: CNRM-CM6-1,      ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: CNRM-ESM2-1,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: E3SM-1-0,        ensemble: r1i1p1f1, grid: gr,  start_year:    1, end_year:  140}
+          # No 1pctCO2 available
+          # - {dataset: EC-Earth3,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: EC-Earth3-Veg,   ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1989}
+          # Only mixed ensemble members available, parent_time_units messed up
+          # - {dataset: FGOALS-f3-L,     ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
+          - {dataset: GFDL-CM4,        ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
+          - {dataset: GFDL-ESM4,       ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
+          - {dataset: GISS-E2-1-G,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: GISS-E2-1-H,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn,  start_year: 1850, end_year: 1989}
+          # Data withdrawn
+          # - {dataset: INM-CM4-8,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM6A-LR,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: MIROC6,          ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3339}
+          - {dataset: MIROC-ES2L,      ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+          - {dataset: MPI-ESM1-2-HR,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          # parent_time_units not correct, incorrect start year for piControl
+          - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: UKESM1-0-LL,     ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1989}
+      piControl:
+        <<: *variable_settings
+        project: CMIP6
+        exp: piControl
+        additional_datasets:
+          # No monthly data (parent_time_units not correct)
+          # - {dataset: AWI-CM-1-1-MR,   ensemble: r1i1p1f1, grid: gn,  start_year: 2650, end_year: 2789, mip: day}
+          - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3169}
+          - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5340}
+          - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn,  start_year:  501, end_year:  640}
+          - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn,  start_year:   70, end_year:  209, institute: NCAR}
+          - {dataset: CNRM-CM6-1,      ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: CNRM-ESM2-1,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: E3SM-1-0,        ensemble: r1i1p1f1, grid: gr,  start_year:  101, end_year:  240}
+          # No 1pctCO2 available
+          # - {dataset: EC-Earth3,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: EC-Earth3-Veg,   ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1989}
+          # Only mixed ensemble members available, parent_time_units messed up
+          # - {dataset: FGOALS-f3-L,     ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
+          # Wrong start year (must be 101)
+          - {dataset: GFDL-CM4,        ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  290}
+          - {dataset: GFDL-ESM4,       ensemble: r1i1p1f1, grid: gr1, start_year:  101, end_year:  240}
+          - {dataset: GISS-E2-1-G,     ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4289}
+          - {dataset: GISS-E2-1-H,     ensemble: r1i1p1f1, grid: gn,  start_year: 3180, end_year: 3319}
+          - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          # Data withdrawn
+          # - {dataset: INM-CM4-8,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year: 1947, end_year: 2086}
+          - {dataset: IPSL-CM6A-LR,    ensemble: r1i1p1f1, grid: gr,  start_year: 1870, end_year: 2009}
+          - {dataset: MIROC6,          ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3339}
+          - {dataset: MIROC-ES2L,      ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+          - {dataset: MPI-ESM1-2-HR,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          # parent_time_units not correct, incorrect start year for piControl
+          - {dataset: NESM3,           ensemble: r1i1p1f1, grid: gn,  start_year:  550, end_year:  689}
+          - {dataset: SAM0-UNICON,     ensemble: r1i1p1f1, grid: gn,  start_year:  274, end_year:  413}
+          - {dataset: UKESM1-0-LL,     ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2099}
+    scripts:
+      tcr:
+        <<: *tcr_script
+      scatterplot:
+        <<: *scatterplot_script
+        ancestors: ['cmip6/tcr']
+        dataset_style: cmip6
+
+  barplot:
+    description: Create barplot of TCR.
+    scripts:
+      barplot:
+        script: climate_metrics/create_barplot.py
+        ancestors: ['*/tcr']
+        label_attribute: project
+        patterns: ['tcr.nc']
+        y_range: [0.0, 3.5]

@@ -1,0 +1,21 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: ERA-Interim-Land
+  project_id: OBS6
+  tier: 3
+  version: '1'
+  modeling_realm: reanaly
+  source: 'https://apps.ecmwf.int/datasets/data/interim-land/type=an/'
+  reference: 'era-interim-land'
+  comment: |
+    'Contains modified Copernicus Climate Change Service Information {year}'
+
+# Variables to CMORize
+variables:
+  sm_monthly:
+    short_name: sm
+    mip: Lmon
+    raw: swvl1
+    file: 'ERA-Interim-Land_swvl1_6hourly_????.nc'
+

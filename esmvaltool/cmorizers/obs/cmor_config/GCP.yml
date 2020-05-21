@@ -1,0 +1,27 @@
+---
+# Filename
+filename: 'Global_Carbon_Budget_2018v1.0.xlsx'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GCP
+  version: '2018'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://www.icos-cp.eu/GCP/2018'
+  reference: 'gcp'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  nbp:
+    mip: Lmon
+    area: 148300000000000.0
+    positive: down
+    comment: 'The original unit of this dataset is GtC/yr. To be CMOR-compliant, the units are given relative to the land surface area of the Earth (given by the attribute area in m2 in this file).'
+  fgco2:
+    mip: Omon
+    area: 360000000000000.0
+    positive: down
+    comment: 'The original unit of this dataset is GtC/yr. To be CMOR-compliant, the units are given relative to the ocean surface area of the Earth (given by the attribute area in m2 in this file).'

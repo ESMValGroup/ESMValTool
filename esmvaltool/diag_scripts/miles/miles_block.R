@@ -22,17 +22,23 @@ library(tools)
 library(yaml)
 
 provenance_record <- function(infile) {
-  xprov <- list(ancestors = infile,
-                authors = list("vonhardenberg_jost", "davini_paolo",
-                               "arnone_enrico"),
-                references = list("davini18", "davini12jclim",
-                                  "tibaldi90tel"),
-                projects = list("c3s-magic"),
-                caption = "MiLES blocking statistics",
-                statistics = list("other"),
-                realms = list("atmos"),
-                themes = list("phys"),
-                domains = list("nh"))
+  xprov <- list(
+    ancestors = infile,
+    authors = list(
+      "vonhardenberg_jost", "davini_paolo",
+      "arnone_enrico"
+    ),
+    references = list(
+      "davini18", "davini12jclim",
+      "tibaldi90tel"
+    ),
+    projects = list("c3s-magic"),
+    caption = "MiLES blocking statistics",
+    statistics = list("other"),
+    realms = list("atmos"),
+    themes = list("phys"),
+    domains = list("nh")
+  )
   return(xprov)
 }
 
@@ -42,6 +48,7 @@ source(paste0(diag_scripts_dir, "/miles/basis_functions.R"))
 source(paste0(diag_scripts_dir, "/miles/block_figures.R"))
 source(paste0(diag_scripts_dir, "/miles/block_fast.R"))
 source(paste0(diag_scripts_dir, "/miles/miles_parameters.R"))
+source(paste0(diag_scripts_dir, "/shared/external.R")) # nolint
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -71,18 +78,25 @@ work_dir <- settings$work_dir
 regridding_dir <- settings$run_dir
 plot_dir <- settings$plot_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
-dir.create(regridding_dir, recursive = T, showWarnings = F)
+dir.create(regridding_dir,
+  recursive = T,
+  showWarnings = F
+)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # setup provenance file and list
-provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance_file <-
+  paste0(regridding_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 # extract metadata
 models_dataset <- unname(sapply(list0, "[[", "dataset"))
 models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
 models_exp <- unname(sapply(list0, "[[", "exp"))
-reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
+reference_dataset <-
+  unname(sapply(list0, "[[", "reference_dataset"))[1]
+reference_exp <-
+  unname(sapply(list0, "[[", "reference_exp"))[1]
 models_start_year <- unname(sapply(list0, "[[", "start_year"))
 models_end_year <- unname(sapply(list0, "[[", "end_year"))
 models_experiment <- unname(sapply(list0, "[[", "exp"))
@@ -101,9 +115,15 @@ for (model_idx in c(1:(length(models_dataset)))) {
   infile <- climofiles[model_idx]
   for (seas in seasons) {
     filenames <- miles_block_fast(
-      year1 = year1, year2 = year2, expid = exp, ens = ensemble,
-      dataset = dataset, season = seas, z500filename = infile,
-      FILESDIR = work_dir, doforce = TRUE
+      year1 = year1,
+      year2 = year2,
+      expid = exp,
+      ens = ensemble,
+      dataset = dataset,
+      season = seas,
+      z500filename = infile,
+      FILESDIR = work_dir,
+      doforce = TRUE
     )
     # Set provenance for output files
     xprov <- provenance_record(list(infile))
@@ -117,7 +137,12 @@ for (model_idx in c(1:(length(models_dataset)))) {
 ## Make the plots
 ##
 if (write_plots) {
-  ref_idx <- which(models_dataset == reference_model)
+  if (!is.null(reference_exp)) {
+    ref_idx <- which((models_dataset == reference_dataset) &&
+                     (models_exp == reference_exp))
+  } else {
+    ref_idx <- which(models_dataset == reference_dataset)
+  }
   if (length(ref_idx) == 0) {
     ref_idx <- length(models_dataset)
   }
@@ -136,17 +161,26 @@ if (write_plots) {
       year2 <- models_end_year[model_idx]
       for (seas in seasons) {
         filenames <- miles_block_figures(
-          year1 = year1, year2 = year2, expid = exp,
-          dataset = dataset, ens = ensemble,
-          dataset_ref = dataset_ref, year1_ref = year1_ref,
-          year2_ref = year2_ref, expid_ref = exp_ref,
-          ens_ref = ensemble_ref, season = seas,
-          FIGDIR = plot_dir, FILESDIR = work_dir,
+          year1 = year1,
+          year2 = year2,
+          expid = exp,
+          dataset = dataset,
+          ens = ensemble,
+          dataset_ref = dataset_ref,
+          year1_ref = year1_ref,
+          year2_ref = year2_ref,
+          expid_ref = exp_ref,
+          ens_ref = ensemble_ref,
+          season = seas,
+          FIGDIR = plot_dir,
+          FILESDIR = work_dir,
           REFDIR = work_dir
         )
         # Set provenance for output files (same as diagnostic files)
-        xprov <- provenance_record(list(climofiles[model_idx],
-                                        climofiles[ref_idx]))
+        xprov <- provenance_record(list(
+          climofiles[model_idx],
+          climofiles[ref_idx]
+        ))
         for (fname in filenames$figs) {
           provenance[[fname]] <- xprov
         }

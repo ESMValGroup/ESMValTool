@@ -23,12 +23,10 @@ python esmvt_rose_wrapper.py -c /home/users/valeriu/input/config-user.yml \
 
 Base suite:
 -----------
-The base suite to run esmvaltool via rose-cylc is u-bd684; for now (Nov 2018)
-the base suite comes with esmvaltool package by default; this suite will be,
-in the near future, included in the Rose repository. The location inside
-esmvaltool is standardized to:
+The base suite to run esmvaltool via rose-cylc is u-bd684; you can find
+this suite in the Met Office Rose repository at:
 
-$ESMVALTOOL/esmvaltool/utils/rose-cylc/
+https://code.metoffice.gov.uk/svn/roses-u/b/d/6/8/4/trunk/
 
 When rose (exec.) will be working with python3.x, this location will become
 default and the pipeline will aceess it independently of user, unless, of
@@ -58,7 +56,7 @@ export PATH=/home/users/valeriu/miniconda2/bin:$PATH
 mkdir esmvaltool_rose
 cd esmvaltool_rose
 cp $esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py .
-[get u-abd684 in $HOME, get your recipes and the config]
+[get u-bd684 in $HOME, get your recipes and the config]
 python esmvt_rose_wrapper.py -c config-user.yml \
 -r recipe_autoassess_stratosphere.yml recipe_OceanPhysics.yml \
 -d $HOME/esmvaltool_rose
