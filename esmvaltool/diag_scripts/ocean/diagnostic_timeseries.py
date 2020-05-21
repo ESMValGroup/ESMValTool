@@ -194,21 +194,24 @@ def calculate_anomaly(cube, anomaly):
     iris.cube.Cube:
         A cube with the anomaly calculated.
     """
-    start_year = int(np.array(anomaly).min())
-    end_year = int(np.array(anomaly).max())
-    start_month = 1
-    end_month = 12
-    start_day = 1
-    end_day = 31
+    #start_year = int(np.array(anomaly).min())
+    #end_year = int(np.array(anomaly).max())
+    #start_month = 1
+    #end_month = 12
+    #start_day = 1
+    #end_day = 31
+
+    start = [int(np.array(anomaly).min()), 1, 1]
+    end = [int(np.array(anomaly).max()), 12, 31]
 
     time_units = cube.coord('time').units
     if time_units.calendar == '360_day':
-        start_day = 30
-        end_day = 30
+        start[2] = 30
+        end[2] = 30
 
     start_date = datetime.datetime(
-        int(start_year), int(start_month), int(start_day))
-    end_date = datetime.datetime(int(end_year), int(end_month), int(end_day))
+        int(start[0]), int(start[1]), int(start[2]))
+    end_date = datetime.datetime(int(end[0]), int(end[1]), int(end[2]))
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)

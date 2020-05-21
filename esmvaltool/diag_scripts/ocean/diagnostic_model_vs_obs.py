@@ -417,7 +417,7 @@ def make_scatter(
         zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
-        x_scale = 'log' 
+        x_scale = 'log'
         mask_neg = False
         if np.min(zrange) < 0.:
             if mask_neg:
@@ -433,7 +433,6 @@ def make_scatter(
 
         if np.min(zrange) * np.max(zrange) < -1:
             x_scale = 'linear'
-            
 
         pyplot.hexbin(
             model_data,
