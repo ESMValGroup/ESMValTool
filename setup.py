@@ -40,8 +40,8 @@ REQUIREMENTS = {
         'pandas',
         'pyproj>=2.1'
         'pyyaml',
-        'scitools-iris>=2.2',
         'scikit-learn',
+        'scitools-iris>=2.2',
         'seawater',
         'seaborn',
         'shapely',
@@ -54,8 +54,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute 'python setup.py test' to run tests
     'test': [
-        'easytest',
-        'pycodestyle',
+        'flake8<3.8.0',
         'pytest>=3.9',
         'pytest-cov',
         'pytest-env',

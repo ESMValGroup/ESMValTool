@@ -6,8 +6,8 @@ import iris
 import numpy as np
 from osgeo import gdal
 
-from esmvalcore.preprocessor import extract_region, regrid
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
+from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -90,14 +90,14 @@ def lapse_rate_correction(height):
     return height * gamma
 
 
-def regrid_temperature(src_temp, src_height, target_height):
+def regrid_temperature(src_temp, src_height, target_height, scheme):
     """Convert temperature to target grid with lapse rate correction."""
     # Convert 2m temperature to sea-level temperature (slt)
     src_dtemp = lapse_rate_correction(src_height)
     src_slt = src_temp.copy(data=src_temp.core_data() + src_dtemp.core_data())
 
     # Interpolate sea-level temperature to target grid
-    target_slt = regrid(src_slt, target_grid=target_height, scheme='linear')
+    target_slt = lazy_regrid(src_slt, target_height, scheme)
 
     # Convert sea-level temperature to new target elevation
     target_dtemp = lapse_rate_correction(target_height)
@@ -111,13 +111,17 @@ def load_dem(filename):
     """Load DEM into iris cube."""
     logger.info("Reading digital elevation model from %s", filename)
     if filename.suffix.lower() == '.nc':
-        return iris.load_cube(str(filename))
-
-    if filename.suffix.lower() == '.map':
-        return _load_pcraster_dem(filename)
-
-    raise ValueError(f"Unknown file format {filename}. Supported formats are "
-                     "'.nc' and '.map'.")
+        cube = iris.load_cube(str(filename))
+    elif filename.suffix.lower() == '.map':
+        cube = _load_pcraster_dem(filename)
+    else:
+        raise ValueError(f"Unknown file format {filename}. Supported formats "
+                         "are '.nc' and '.map'.")
+    for coord in 'longitude', 'latitude':
+        if not cube.coord(coord).has_bounds():
+            logger.warning("Guessing DEM %s bounds", coord)
+            cube.coord(coord).guess_bounds()
+    return cube
 
 
 def _load_pcraster_dem(filename):
@@ -158,30 +162,25 @@ def _load_pcraster_dem(filename):
     return cube
 
 
-def check_dem(cube, region):
+def check_dem(dem, cube):
     """Check that the DEM and extract_region parameters match."""
-    dem = {
-        'start_longitude': cube.coord('longitude').cell(0).point,
-        'end_longitude': cube.coord('longitude').cell(-1).point,
-        'start_latitude': cube.coord('latitude').cell(0).point,
-        'end_latitude': cube.coord('latitude').cell(-1).point,
-    }
-
-    msg = ("longitude: [{start_longitude}, {end_longitude}] "
-           "latitude: [{start_latitude}, {end_latitude}]")
-    logger.info("DEM region: %s", msg.format(**dem))
-    logger.info("extract_region: %s", msg.format(**region))
-
-    for key in ('start_longitude', 'start_latitude'):
-        if dem[key] < region[key]:
+    for coord in ('longitude', 'latitude'):
+        start_dem_coord = dem.coord(coord).cell(0).point
+        end_dem_coord = dem.coord(coord).cell(-1).point
+        start_cube_coord = cube.coord(coord).cell(0).point
+        end_cube_coord = cube.coord(coord).cell(-1).point
+        if start_dem_coord < start_cube_coord:
             logger.warning(
-                "Insufficient data available, decrease extract_region: %s to "
-                "a number at least one grid cell below %s", key, dem[key])
-    for key in ('end_longitude', 'end_latitude'):
-        if dem[key] > region[key]:
+                "Insufficient data available, input data starts at %s "
+                "degrees %s, but should be at least one grid "
+                "cell larger than the DEM start at %s degrees %s.",
+                start_cube_coord, coord, start_dem_coord, coord)
+        if end_dem_coord > end_cube_coord:
             logger.warning(
-                "Insufficient data available, increase extract_region: %s to "
-                "a number at least one grid cell above %s", key, dem[key])
+                "Insufficient data available, input data ends at %s "
+                "degrees %s, but should be at least one grid "
+                "cell larger than the DEM end at %s degrees %s.",
+                end_cube_coord, coord, end_dem_coord, coord)
 
 
 def shift_era5_time_coordinate(cube, shift=30):
@@ -213,27 +212,35 @@ def main(cfg):
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
         dem = load_dem(dem_path)
-        check_dem(dem, cfg['region'])
-        dem = extract_region(dem, **cfg['region'])
+        check_dem(dem, all_vars['pr'])
 
         logger.info("Processing variable precipitation_flux")
-        pr_dem = regrid(all_vars['pr'], target_grid=dem, scheme='linear')
+        scheme = cfg['regrid']
+        pr_dem = lazy_regrid(all_vars['pr'], dem, scheme)
 
         logger.info("Processing variable temperature")
-        tas_dem = regrid_temperature(all_vars['tas'], all_vars['orog'], dem)
+        tas_dem = regrid_temperature(
+            all_vars['tas'],
+            all_vars['orog'],
+            dem,
+            scheme,
+        )
 
         logger.info("Processing variable potential evapotranspiration")
         if 'evspsblpot' in all_vars:
             pet = all_vars['evspsblpot']
+            pet_dem = lazy_regrid(pet, dem, scheme)
         else:
             logger.info("Potential evapotransporation not available, deriving")
-            pet = debruin_pet(
-                tas=all_vars['tas'],
-                psl=all_vars['psl'],
-                rsds=all_vars['rsds'],
-                rsdt=all_vars['rsdt'],
+            psl_dem = lazy_regrid(all_vars['psl'], dem, scheme)
+            rsds_dem = lazy_regrid(all_vars['rsds'], dem, scheme)
+            rsdt_dem = lazy_regrid(all_vars['rsdt'], dem, scheme)
+            pet_dem = debruin_pet(
+                tas=tas_dem,
+                psl=psl_dem,
+                rsds=rsds_dem,
+                rsdt=rsdt_dem,
             )
-        pet_dem = regrid(pet, target_grid=dem, scheme='linear')
         pet_dem.var_name = 'pet'
 
         logger.info("Converting units")

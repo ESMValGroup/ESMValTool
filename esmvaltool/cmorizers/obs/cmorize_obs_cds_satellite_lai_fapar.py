@@ -10,9 +10,11 @@ Last access
 Download and processing instructions
    - Open in a browser the data source as specified above
    - Put the right ticks:
-      - Tick variables FAPAR and LAI
-      - Tick SPOT
-      - Tick V1
+      - Tick variables LAI and FAPAR
+      - Tick satellite SPOT (System Pour l'Observation de la Terre)
+      - Tick sensor VGT (Vegetation)
+      - Tick horizontal resolution 1km
+      - Tick product version V1
       - Tick all available years
       - Tick all available months
       - Tick Nominal day 20
@@ -28,6 +30,7 @@ Caveats
    - Fails setting standard name for variable FAPAR
 
 Modification history
+   20200512-crezee_bas: adapted to reflect changes in download form by CDS.
    20190703-crezee_bas: written.
 """
 
