@@ -228,7 +228,7 @@ def make_model_vs_obs_plots(
                 cmap='bwr',
                 title=' '.join([model, 'over', obs]),
                 log=True)
-        else: 
+        else:
             add_map_subplot(
                 224,
                 cube224,
@@ -417,21 +417,19 @@ def make_scatter(
         zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
-        x_scale = 'log'          
+        x_scale = 'log' 
         mask_neg = False
         if np.min(zrange) < 0.:
             if mask_neg:
-                mask = np.ma.masked_where(model_data<=0., model_data).mask 
-                mask += np.ma.masked_where(obs_data<=0., obs_data).mask
-            
+                mask = np.ma.masked_where(model_data <= 0., model_data).mask
+                mask += np.ma.masked_where(obs_data <= 0., obs_data).mask
+
                 model_data = np.ma.masked_where(mask, model_data).compressed()
-                obs_data = np.ma.masked_where(mask, obs_data).compressed()  
+                obs_data = np.ma.masked_where(mask, obs_data).compressed()
                 zrange = diagtools.get_array_range([model_data, obs_data])
-                plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]                      
+                plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
             else:
-                #logger.info('Skip scatter for %s. Min is < 0', long_name)
-                #return
-                x_scale = 'linear'                
+                x_scale = 'linear'
 
         if np.min(zrange) * np.max(zrange) < -1:
             x_scale = 'linear'
