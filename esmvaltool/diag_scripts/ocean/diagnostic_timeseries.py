@@ -55,7 +55,6 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
-from esmvalcore.preprocessor._time import extract_time
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
@@ -204,8 +203,8 @@ def calculate_anomaly(cube, anomaly):
 
     time_units = cube.coord('time').units
     if time_units.calendar == '360_day':
-            start_day = 30
-            end_day = 30
+        start_day = 30
+        end_day = 30
 
     start_date = datetime.datetime(
         int(start_year), int(start_month), int(start_day))
@@ -217,8 +216,8 @@ def calculate_anomaly(cube, anomaly):
         time=lambda t: t_1 < time_units.date2num(t.point) < t_2)
 
     new_cube = cube.extract(constraint)
-    if new_cube == None:
-         return None
+    if new_cube is None:
+        return None
     mean = new_cube.data.mean()
     cube.data = cube.data - mean
     return cube
@@ -371,7 +370,6 @@ def multi_model_time_series(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
-            print(index,filename)
             if len(metadata) > 1:
                 color = cmap(index / (len(metadata) - 1.))
             else:
@@ -387,12 +385,12 @@ def multi_model_time_series(
             if 'anomaly' in cfg:
                 cube = calculate_anomaly(cube, cfg['anomaly'])
                 if cube is None:
-                   print('Not enough time for anomaly calculation', metadata[filename]['dataset'])
-                   continue
-
+                    logger.info(' '.join(['Not enough time for anomaly',
+                                          'calculation',
+                                          metadata[filename]['dataset']]))
+                    continue
 
             if metadata[filename]['dataset'].lower().find('multimodel') > -1:
-                print('plotting - Multi:',metadata[filename]['dataset'])
                 timeplot(
                     cube,
                     c='black',
@@ -407,7 +405,6 @@ def multi_model_time_series(
                     'label': metadata[filename]['dataset']
                 }
             else:
-                print('plotting',metadata[filename]['dataset'])
                 timeplot(
                     cube,
                     c=color,
@@ -464,7 +461,7 @@ def multi_model_time_series(
             )
 
         # Resize and add legend outside thew axes.
-        if len(plot_details) <25:
+        if len(plot_details) < 25:
             plt.gcf().set_size_inches(9., 6.)
             diagtools.add_legend_outside_right(
                 plot_details, plt.gca(), column_width=0.15)

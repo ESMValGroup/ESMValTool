@@ -122,7 +122,7 @@ def bgc_units(cube, name):
         the cube with the new units.
     """
     new_units = ''
-    if name in ['tos', 'thetao', 'thetaoga',]:
+    if name in ['tos', 'thetao', 'thetaoga', ]:
         new_units = 'celsius'
 
     if name in ['no3', ]:
