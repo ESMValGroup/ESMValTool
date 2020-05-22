@@ -137,6 +137,9 @@ authors:
     name: Cortesi, Nicola
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0002-1442-9225
+  cowtan_kevin:
+    name: Cowtan, Kevin
+    institute: University of York 
   crezee_bas:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
@@ -189,6 +192,10 @@ authors:
     name: Gier, Bettina
     institute: University of Bremen, Germany
     orcid:
+  gillett_nathan:
+    name: Gillett, Nathan
+    institute: Environment and Climate Change Canada, Canada
+    orcid: https://orcid.org/0000-0002-2957-0002
   gottschaldt_klaus-dirk:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
@@ -241,6 +248,10 @@ authors:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
     orcid: https://orcid.org/0000-0001-9335-1093
+  kirchmeier-young_megan:
+    name: Kirchmeier-Young, Megan
+    institute: Environment and Climate Change Canada
+    orcid:
   krasting_john:
     name: Krasting, John
     institute: NOAA, USA
