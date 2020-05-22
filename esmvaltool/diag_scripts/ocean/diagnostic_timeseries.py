@@ -138,33 +138,33 @@ def moving_average(cube, window):
 
     times = cube.coord('time').units.num2date(cube.coord('time').points)
 
-    datetime = diagtools.guess_calendar_datetime(cube)
+    guessed_dt = diagtools.guess_calendar_datetime(cube)
 
     output = []
 
     times = np.array([
-        datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
+        guessed_dt(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
                  time_itr.minute) for time_itr in times
     ])
 
     for time_itr in times:
         if win_units in ['years', 'yrs', 'year', 'yr']:
-            tmin = datetime(time_itr.year - window_len, time_itr.month,
+            tmin = guessed_dt(time_itr.year - window_len, time_itr.month,
                             time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year + window_len, time_itr.month,
+            tmax = guessed_dt(time_itr.year + window_len, time_itr.month,
                             time_itr.day, time_itr.hour, time_itr.minute)
 
         if win_units in ['months', 'month', 'mn']:
-            tmin = datetime(time_itr.year, time_itr.month - window_len,
+            tmin = guessed_dt(time_itr.year, time_itr.month - window_len,
                             time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month + window_len,
+            tmax = guessed_dt(time_itr.year, time_itr.month + window_len,
                             time_itr.day, time_itr.hour, time_itr.minute)
 
         if win_units in ['days', 'day', 'dy']:
-            tmin = datetime(time_itr.year, time_itr.month,
+            tmin = guessed_dt(time_itr.year, time_itr.month,
                             time_itr.day - window_len, time_itr.hour,
                             time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month,
+            tmax = guessed_dt(time_itr.year, time_itr.month,
                             time_itr.day + window_len, time_itr.hour,
                             time_itr.minute)
 
@@ -264,40 +264,32 @@ def make_time_series_plots(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
+        title = ' '.join([metadata['dataset'], metadata['long_name']])
+
         if 'moving_average' in cfg:
             cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if 'anomaly' in cfg:
-
+            title = ' '.join([title, 'anomaly'])
             cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
             if cube_layer is None:
                 return
 
-        if multi_model:
-            timeplot(cube_layer, label=metadata['dataset'], ls=':')
-        else:
-            timeplot(cube_layer, label=metadata['dataset'])
-
         # Add title, legend to plots
-        title = ' '.join([metadata['dataset'], metadata['long_name']])
-        if 'anomaly' in cfg:
-            title = ' '.join([title, 'anomaly'])
         if layer != '':
             if cube_layer.coords('depth'):
                 z_units = cube_layer.coord('depth').units
             else:
                 z_units = ''
             title = ' '.join([title, '(', layer, str(z_units), ')'])
-        plt.title(title)
-        plt.legend(loc='best')
 
         ylabel = str(cube_layer.units)
         if 'ylabel' in cfg:
             ylabel = cfg['ylabel']
-        plt.ylabel(ylabel)
 
         # Determine image filename:
         if multi_model:
+            timeplot(cube_layer, label=metadata['dataset'], ls=':')
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
@@ -309,17 +301,21 @@ def make_time_series_plots(
                     'start_year', 'end_year'
                 ],
             )
-
         else:
+            timeplot(cube_layer, label=metadata['dataset'])
+
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
                 suffix='timeseries_' + str(layer_index) + image_extention,
             )
 
+        plt.title(title)
+        plt.legend(loc='best')
+        plt.ylabel(ylabel)
+
         # Saving files:
         if cfg['write_plots']:
-
             logger.info('Saving plots to %s', path)
             plt.savefig(path)
 
