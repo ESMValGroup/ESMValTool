@@ -370,9 +370,8 @@ def make_scatter(
     obs_filename: str
         the preprocessed observations file.
     """
-
     filenames = {'model': model_filename, 'obs': obs_filename}
-    logger.debug('make_model_vs_obs_plots: \t%s', filenames)
+
     # ####
     # Load the data for each layer as a separate cube
     layers = {}
@@ -384,9 +383,6 @@ def make_scatter(
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
             layers[layer] = True
-
-    logger.debug('layers: %s', layers)
-    logger.debug('cubes: %s', ', '.join(cubes))
 
     # ####
     # load names:
@@ -400,7 +396,6 @@ def make_scatter(
 
     # Make a plot for each layer
     for layer in layers:
-
         fig = plt.figure()
         fig.set_size_inches(7, 6)
 
@@ -413,7 +408,6 @@ def make_scatter(
         model_data = np.ma.masked_where(mask, model_data).compressed()
         obs_data = np.ma.masked_where(mask, obs_data).compressed()
 
-        colours = 'gist_yarg'
         zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
@@ -442,7 +436,7 @@ def make_scatter(
             bins='log',
             # extent=np.log10(plotrange),
             gridsize=50,
-            cmap=pyplot.get_cmap(colours),
+            cmap=pyplot.get_cmap('gist_yarg'),
             mincnt=0)
         cbar = pyplot.colorbar()
         cbar.set_label('log10(N)')
