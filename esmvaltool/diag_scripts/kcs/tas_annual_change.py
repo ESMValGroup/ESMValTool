@@ -14,7 +14,6 @@ from datetime import datetime
 import functools
 import logging
 import warnings
-from pprint import pformat
 import iris
 import pandas as pd
 import numpy as np
@@ -61,11 +60,11 @@ def add_extra_coord(cube):
         iris.coord_categorisation.add_year(cube, 'time')
     if not cube.coords('season_year'):
         iris.coord_categorisation.add_season_year(cube, 'time',
-                                                name='season_year')
+                                                  name='season_year')
 
 
 def extract_season(cubes, season):
-    """DUMMY DOC-STRING"""
+    """Extract season."""
     # Use a class instead of a lambda function, so we can pass the
     # constraint to multiprocessing (which doesn't handle lambdas).
     constraint = iris.Constraint(season=kcsutils.EqualConstraint(season))
@@ -92,7 +91,7 @@ def perform_optional_operations(dataset, yearly=False, season=None):
 
 
 def average_year_cube(cube, season=None):
-    """DUMMY DOC-STRING"""
+    """Averaging over year in one cube."""
     if season:
         if not cube.coords('season_year'):
             iris.coord_categorisation.add_season_year(cube, 'time')
@@ -105,7 +104,7 @@ def average_year_cube(cube, season=None):
 
 
 def average_year(cubes, season=None):
-    """DUMMY DOC-STRING"""
+    """Averaging over year."""
     if season:
         logger.info("Calculating %s averages", season)
     else:
@@ -115,8 +114,7 @@ def average_year(cubes, season=None):
     return cubes
 
 
-def calculate_reference_values(dataset, yearly=False, season=None,
-                          historical_key=None, normby='run'):
+def calculate_reference_values(dataset, historical_key=None, normby='run'):
     """Calculate reference values.
 
     model:  *per model*, so that each realization is
@@ -149,7 +147,7 @@ def calculate_reference_values(dataset, yearly=False, season=None,
 
 
 def get_statistics(cubes, mindata, model):
-    """It returns averages and weights."""
+    """Return averages and weights."""
     constraint = kcsutils.make_year_constraint_all_calendars(*REFERENCE_PERIOD)
     averages = []
     numbers = []
@@ -158,13 +156,13 @@ def get_statistics(cubes, mindata, model):
         excube = constraint[calendar].extract(cube)
         if excube is None:
             logger.warning("A cube of %s does not support time range: %s",
-                            model, cube.coord('time'))
+                           model, cube.coord('time'))
             continue
         ndata = len(excube.coord('time').points)
         # Not enough of data? Ignore
         if ndata < mindata:
             logger.warning("A cube of %s has only %d data points for its time range",
-                            model, ndata)
+                           model, ndata)
             continue
         with warnings.catch_warnings():
             warnings.filterwarnings(
@@ -180,28 +178,37 @@ def get_statistics(cubes, mindata, model):
 
 
 def get_mindata(yearly=False, season=None):
+    """Get minimum required data."""
     if yearly:
         mindata = MINDATA
     elif season:  # in ['djf', 'mam', 'jja', 'son']:
         # Three months a year
-        mindata = {key: 3*value for key, value in MINDATA.items()}
+        mindata = {key: 3 * value for key, value in MINDATA.items()}
     else:
         # Twelve months a year
-        mindata = {key: 12*value for key, value in MINDATA.items()}
+        mindata = {key: 12 * value for key, value in MINDATA.items()}
     return mindata
 
 
 def get_mean_value(cubes, histcubes, model, yearly=False, season=None):
-    "Calculating time-weighted reference value."
+    """Calculate time-weighted reference value."""
     mindata = get_mindata(yearly=yearly, season=season)
-    mean_future, weight_future = get_statistics(cubes, mindata['future'], model)
-    mean_historical, weight_historical = get_statistics(histcubes, mindata['historical'], model)
+    mean_future, weight_future = get_statistics(
+        cubes, mindata['future'], model
+    )
+    mean_historical, weight_historical = get_statistics(
+        histcubes, mindata['historical'], model
+    )
 
-    weighted_mean = np.average([mean_future, mean_historical], weights=[weight_future, weight_historical])
+    weighted_mean = np.average(
+        [mean_future, mean_historical],
+        weights=[weight_future, weight_historical]
+    )
     return weighted_mean
 
 
 def reference_value_by_model(dataset, models):
+    """Calculate reference value for normby = model."""
     values = {}
     for model in models:
         selected_dataset = dataset[dataset['model'] == model]
@@ -212,6 +219,7 @@ def reference_value_by_model(dataset, models):
 
 
 def reference_value_by_experiment(dataset, models):
+    """Calculate reference value for normby = experiment."""
     values = []
     for model in models:
         value = {}
@@ -221,13 +229,14 @@ def reference_value_by_experiment(dataset, models):
             histcubes = group['match_historical_run']
             value[exp] = get_mean_value(cubes, histcubes, model)
         experiments = dataset.loc[
-                (dataset['model'] == model),
-                'experiment']
+            (dataset['model'] == model),
+            'experiment']
         values.append(experiments.map(value))
     return values
 
 
 def reference_value_by_run(dataset, models):
+    """Calculate reference value for normby = run."""
     values = []
     for model in models:
         value = {}
@@ -247,12 +256,11 @@ def normalize(dataset, relative=False, normby='run'):
     the 'relative' parameter to `True`.
 
     This returns a new, modified dataset.
-
     """
-
     dataset['matched_exp'] = ''
     if normby != 'model':
-        # Add the (double/triple/etc) historical runs for the future experiments,
+        # Add the (double/triple/etc) historical runs for
+        # the future experiments,
         # and get rid of the old historical runs
         # We do this by
         # - selecting the indices & reference values for the matching runs
@@ -289,7 +297,7 @@ def normalize(dataset, relative=False, normby='run'):
 
 
 def calculate_percentiles(dataset, average_experiments=False):
-    """Calculate the percentile yearly change distribution for the input data"""
+    """Calculate the percentile in each year."""
     time = []
     percentile_as_list = []
     for year in list(range(*PERIOD)):
@@ -306,7 +314,7 @@ def calculate_percentiles(dataset, average_experiments=False):
         mean = np.mean(data)
         percentile = np.percentile(data, [5, 10, 25, 50, 75, 90, 95], overwrite_input=True)
         percentile_as_dict = dict(zip(['mean', '5', '10', '25', '50', '75', '90', '95'],
-                                    [mean] + percentile.tolist()))
+                                      [mean] + percentile.tolist()))
         percentile_as_list.append(percentile_as_dict)
         time.append(datetime(year, 1, 1))
 
@@ -348,12 +356,12 @@ def main(cfg):
         historical_key='historical')
 
     # Perform extracting of season, or averaging of years (optional).
+    # TODO make these settingsyearly=False, season=None, normby
     dataset = perform_optional_operations(dataset, yearly=False, season=None)
 
     # Calculate reference values
     dataset = calculate_reference_values(
-        dataset, yearly=False, season=None,
-        historical_key="historical", normby='run'
+        dataset, historical_key="historical", normby='run'
     )
 
     # Normalize data using reference values
