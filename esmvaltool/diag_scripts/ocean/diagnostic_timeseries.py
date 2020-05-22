@@ -144,29 +144,29 @@ def moving_average(cube, window):
 
     times = np.array([
         guessed_dt(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
-                 time_itr.minute) for time_itr in times
+                   time_itr.minute) for time_itr in times
     ])
 
     for time_itr in times:
         if win_units in ['years', 'yrs', 'year', 'yr']:
             tmin = guessed_dt(time_itr.year - window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+                              time_itr.day, time_itr.hour, time_itr.minute)
             tmax = guessed_dt(time_itr.year + window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+                              time_itr.day, time_itr.hour, time_itr.minute)
 
         if win_units in ['months', 'month', 'mn']:
             tmin = guessed_dt(time_itr.year, time_itr.month - window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+                              time_itr.day, time_itr.hour, time_itr.minute)
             tmax = guessed_dt(time_itr.year, time_itr.month + window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+                              time_itr.day, time_itr.hour, time_itr.minute)
 
         if win_units in ['days', 'day', 'dy']:
             tmin = guessed_dt(time_itr.year, time_itr.month,
-                            time_itr.day - window_len, time_itr.hour,
-                            time_itr.minute)
+                              time_itr.day - window_len, time_itr.hour,
+                              time_itr.minute)
             tmax = guessed_dt(time_itr.year, time_itr.month,
-                            time_itr.day + window_len, time_itr.hour,
-                            time_itr.minute)
+                              time_itr.day + window_len, time_itr.hour,
+                              time_itr.minute)
 
         arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
         output.append(arr.mean())
