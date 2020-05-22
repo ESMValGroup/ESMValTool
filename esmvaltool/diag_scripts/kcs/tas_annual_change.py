@@ -148,10 +148,11 @@ def calculate_reference_values(dataset, yearly=False, season=None,
     return dataset
 
 
-def calc_mean(cubes, mindata, model):
-    """DUMMY DOC-STRING"""
+def get_statistics(cubes, mindata, model):
+    """It returns averages and weights."""
     constraint = kcsutils.make_year_constraint_all_calendars(*REFERENCE_PERIOD)
     averages = []
+    numbers = []
     for cube in cubes:
         calendar = cube.coord('time').units.calendar
         excube = constraint[calendar].extract(cube)
@@ -170,12 +171,15 @@ def calc_mean(cubes, mindata, model):
                 "ignore", category=UserWarning,
                 message="Collapsing a non-contiguous coordinate. "
                 "Metadata may not be fully descriptive for 'year'")
-            averages.append((excube.collapsed('time', iris.analysis.MEAN), ndata))
-    return averages
+            mean_cube = excube.collapsed('time', iris.analysis.MEAN)
+            averages.append(mean_cube.data)
+            numbers.append(ndata)
+    average = np.sum(averages) / len(averages)
+    weight = np.sum(numbers) / len(averages)
+    return average, weight
 
 
-def calc_refvalue(cubes, histcubes, model, yearly=False, season=None):
-    """DUMMY DOC-STRING"""
+def get_mindata(yearly=False, season=None):
     if yearly:
         mindata = MINDATA
     elif season:  # in ['djf', 'mam', 'jja', 'son']:
@@ -184,27 +188,17 @@ def calc_refvalue(cubes, histcubes, model, yearly=False, season=None):
     else:
         # Twelve months a year
         mindata = {key: 12*value for key, value in MINDATA.items()}
+    return mindata
 
-    avs = {}
-    avs['historical'] = calc_mean(histcubes, mindata['historical'], model)
-    avs['future'] = calc_mean(cubes, mindata['future'], model)
-    if not avs['historical'] or not avs['future']:  # Too few data to calculate a decent bias
-        logger.warning("%s does not have enough data to compute a reference", model)
-        return None
-    logger.info("Calculating time-weighted reference value")
-    ndata = {}
-    mean = {}
-    for key, values in avs.items():
-        n = len(values)
-        # Weighted time average for each section
-        ndata[key] = sum(value[1] for value in values) / n
-        mean[key] = sum(value[0].data for value in values) / n
-    logger.debug("Reference data values: %s , with weights %s", pformat(mean), pformat(ndata))
-    value = ((mean['historical'] * ndata['historical'] +
-                mean['future'] * ndata['future']) /
-                (ndata['historical'] + ndata['future']))
 
-    return value
+def get_mean_value(cubes, histcubes, model, yearly=False, season=None):
+    "Calculating time-weighted reference value."
+    mindata = get_mindata(yearly=yearly, season=season)
+    mean_future, weight_future = get_statistics(cubes, mindata['future'], model)
+    mean_historical, weight_historical = get_statistics(histcubes, mindata['historical'], model)
+
+    weighted_mean = np.average([mean_future, mean_historical], weights=[weight_future, weight_historical])
+    return weighted_mean
 
 
 def reference_value_by_model(dataset, models):
@@ -213,7 +207,7 @@ def reference_value_by_model(dataset, models):
         selected_dataset = dataset[dataset['model'] == model]
         cubes = selected_dataset['cube']
         histcubes = selected_dataset['match_historical_run']
-        values[model] = calc_refvalue(cubes, histcubes, model)
+        values[model] = get_mean_value(cubes, histcubes, model)
     return values
 
 
@@ -225,7 +219,7 @@ def reference_value_by_experiment(dataset, models):
         for exp, group in selected_dataset.groupby('experiment'):
             cubes = group['cube']
             histcubes = group['match_historical_run']
-            value[exp] = calc_refvalue(cubes, histcubes, model)
+            value[exp] = get_mean_value(cubes, histcubes, model)
         experiments = dataset.loc[
                 (dataset['model'] == model),
                 'experiment']
@@ -241,7 +235,7 @@ def reference_value_by_run(dataset, models):
         for index, row in selected_dataset.iterrows():
             cubes = [row['cube']]
             histcubes = [row['match_historical_run']]
-            value[index] = calc_refvalue(cubes, histcubes, model)
+            value[index] = get_mean_value(cubes, histcubes, model)
         values.append(pd.Series(value))
     return values
 
