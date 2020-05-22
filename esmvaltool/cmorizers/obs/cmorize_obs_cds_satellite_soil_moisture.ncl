@@ -13,18 +13,10 @@
 ;    20190314
 ;
 ; Download and processing instructions
-;    Download the data from source as follows:
-;      Variable: Volumetric surface soil moisture
-;      Time aggregation: Day average
-;      All Years, Month and Days
-;      Format: 'tar.gz' (recommended)
-;      Type of sensor: Combined passive and active
-;      Type of record: CDR
-;      Version: v201812.0.0
-;    Decompress the files and put them in a single directory (no subdirectories
-;    with years)
+;    Use the download script to retrieve the data.
 ;
 ; Modification history
+;    20190522-creeze_bas: time period extended.
 ;    20190314-crezee_bas: written based on cmorize_obs_esacci_soilmoisture.ncl.
 ;
 ; #############################################################################
