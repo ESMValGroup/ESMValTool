@@ -115,97 +115,6 @@ def average_year(cubes, season=None):
     return cubes
 
 
-class ModelReferencePointCalculation:
-    """DUMMY DOC-STRING"""
-
-    def __init__(self, dataset,
-                 historical_key="historical", yearly=True, season=None,
-                 normby='run'):
-        self.dataset = dataset
-        self.historical_key = historical_key
-        self.normby = normby
-        if yearly:
-            self.mindata = MINDATA
-        elif season:  # in ['djf', 'mam', 'jja', 'son']:
-            # Three months a year
-            self.mindata = {key: 3*value for key, value in MINDATA.items()}
-        else:
-            # Twelve months a year
-            self.mindata = {key: 12*value for key, value in MINDATA.items()}
-        self.constraint = kcsutils.make_year_constraint_all_calendars(*REFERENCE_PERIOD)
-
-    def __call__(self, model):
-        """DUMMY DOC-STRING"""
-        dataset = self.dataset[self.dataset['model'] == model]
-
-        if self.normby == 'model':
-            cubes = dataset['cube']
-            histcubes = dataset['match_historical_run']
-
-            value = self.calc_refvalue(cubes, histcubes, model)
-        elif self.normby == 'experiment':
-            value = {}
-            for exp, group in dataset.groupby('experiment'):
-                cubes = group['cube']
-                histcubes = group['match_historical_run']
-                value[exp] = self.calc_refvalue(cubes, histcubes, model)
-        else:
-            value = {}
-            for index, row in dataset.iterrows():
-                cubes = [row['cube']]
-                histcubes = [row['match_historical_run']]
-                value[index] = self.calc_refvalue(cubes, histcubes, model)
-
-        return value
-
-    def calc_refvalue(self, cubes, histcubes, model):
-        """DUMMY DOC-STRING"""
-        avs = {}
-        avs['historical'] = self.calc_mean(histcubes, self.mindata['historical'], model)
-        avs['future'] = self.calc_mean(cubes, self.mindata['future'], model)
-        if not avs['historical'] or not avs['future']:  # Too few data to calculate a decent bias
-            logger.warning("%s does not have enough data to compute a reference", model)
-            return None
-        logger.info("Calculating time-weighted reference value")
-        ndata = {}
-        mean = {}
-        for key, values in avs.items():
-            n = len(values)
-            # Weighted time average for each section
-            ndata[key] = sum(value[1] for value in values) / n
-            mean[key] = sum(value[0].data for value in values) / n
-        logger.debug("Reference data values: %s , with weights %s", pformat(mean), pformat(ndata))
-        value = ((mean['historical'] * ndata['historical'] +
-                  mean['future'] * ndata['future']) /
-                 (ndata['historical'] + ndata['future']))
-
-        return value
-
-    def calc_mean(self, cubes, mindata, model):
-        """DUMMY DOC-STRING"""
-        averages = []
-        for cube in cubes:
-            calendar = cube.coord('time').units.calendar
-            excube = self.constraint[calendar].extract(cube)
-            if excube is None:
-                logger.warning("A cube of %s does not support time range: %s",
-                               model, cube.coord('time'))
-                continue
-            ndata = len(excube.coord('time').points)
-            # Not enough of data? Ignore
-            if ndata < mindata:
-                logger.warning("A cube of %s has only %d data points for its time range",
-                               model, ndata)
-                continue
-            with warnings.catch_warnings():
-                warnings.filterwarnings(
-                    "ignore", category=UserWarning,
-                    message="Collapsing a non-contiguous coordinate. "
-                    "Metadata may not be fully descriptive for 'year'")
-                averages.append((excube.collapsed('time', iris.analysis.MEAN), ndata))
-        return averages
-
-
 def calculate_reference_values(dataset, yearly=False, season=None,
                           historical_key=None, normby='run'):
     """Calculate reference values.
@@ -224,26 +133,117 @@ def calculate_reference_values(dataset, yearly=False, season=None,
     future_data = dataset[index > -1].copy()
     future_data['match_historical_run'] = dataset.loc[hindex, 'cube'].array
 
-    calculation = ModelReferencePointCalculation(
-        future_data, yearly=yearly, season=season,
-        historical_key=historical_key, normby=normby)
-
     models = dataset['model'].unique()
-    reference_values = filter(None, map(calculation, models))
 
+    # Obtain reference_values  based on different settings
     if normby == 'model':
-        dataset['reference_value'] = dataset['model'].map(dict(zip(models, reference_values)))
+        reference_values = reference_value_by_model(future_data, models)
+        dataset['reference_value'] = dataset['model'].map(reference_values)
     elif normby == 'experiment':
-        ref_values = []
-        for model, values in zip(models, reference_values):
-            experiments = dataset.loc[
+        reference_values = reference_value_by_experiment(future_data, models)
+        dataset['reference_value'] = pd.concat(reference_values)
+    else:
+        reference_values = reference_value_by_run(future_data, models)
+        dataset['reference_value'] = pd.concat(reference_values)
+    return dataset
+
+
+def calc_mean(cubes, mindata, model):
+    """DUMMY DOC-STRING"""
+    constraint = kcsutils.make_year_constraint_all_calendars(*REFERENCE_PERIOD)
+    averages = []
+    for cube in cubes:
+        calendar = cube.coord('time').units.calendar
+        excube = constraint[calendar].extract(cube)
+        if excube is None:
+            logger.warning("A cube of %s does not support time range: %s",
+                            model, cube.coord('time'))
+            continue
+        ndata = len(excube.coord('time').points)
+        # Not enough of data? Ignore
+        if ndata < mindata:
+            logger.warning("A cube of %s has only %d data points for its time range",
+                            model, ndata)
+            continue
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore", category=UserWarning,
+                message="Collapsing a non-contiguous coordinate. "
+                "Metadata may not be fully descriptive for 'year'")
+            averages.append((excube.collapsed('time', iris.analysis.MEAN), ndata))
+    return averages
+
+
+def calc_refvalue(cubes, histcubes, model, yearly=False, season=None):
+    """DUMMY DOC-STRING"""
+    if yearly:
+        mindata = MINDATA
+    elif season:  # in ['djf', 'mam', 'jja', 'son']:
+        # Three months a year
+        mindata = {key: 3*value for key, value in MINDATA.items()}
+    else:
+        # Twelve months a year
+        mindata = {key: 12*value for key, value in MINDATA.items()}
+
+    avs = {}
+    avs['historical'] = calc_mean(histcubes, mindata['historical'], model)
+    avs['future'] = calc_mean(cubes, mindata['future'], model)
+    if not avs['historical'] or not avs['future']:  # Too few data to calculate a decent bias
+        logger.warning("%s does not have enough data to compute a reference", model)
+        return None
+    logger.info("Calculating time-weighted reference value")
+    ndata = {}
+    mean = {}
+    for key, values in avs.items():
+        n = len(values)
+        # Weighted time average for each section
+        ndata[key] = sum(value[1] for value in values) / n
+        mean[key] = sum(value[0].data for value in values) / n
+    logger.debug("Reference data values: %s , with weights %s", pformat(mean), pformat(ndata))
+    value = ((mean['historical'] * ndata['historical'] +
+                mean['future'] * ndata['future']) /
+                (ndata['historical'] + ndata['future']))
+
+    return value
+
+
+def reference_value_by_model(dataset, models):
+    values = {}
+    for model in models:
+        selected_dataset = dataset[dataset['model'] == model]
+        cubes = selected_dataset['cube']
+        histcubes = selected_dataset['match_historical_run']
+        values[model] = calc_refvalue(cubes, histcubes, model)
+    return values
+
+
+def reference_value_by_experiment(dataset, models):
+    values = []
+    for model in models:
+        value = {}
+        selected_dataset = dataset[dataset['model'] == model]
+        for exp, group in selected_dataset.groupby('experiment'):
+            cubes = group['cube']
+            histcubes = group['match_historical_run']
+            value[exp] = calc_refvalue(cubes, histcubes, model)
+        experiments = dataset.loc[
                 (dataset['model'] == model),
                 'experiment']
-            ref_values.append(experiments.map(values))
-        dataset['reference_value'] = pd.concat(ref_values)
-    else:
-        dataset['reference_value'] = pd.concat([pd.Series(values) for values in reference_values])
-    return dataset
+        values.append(experiments.map(value))
+    return values
+
+
+def reference_value_by_run(dataset, models):
+    values = []
+    for model in models:
+        value = {}
+        selected_dataset = dataset[dataset['model'] == model]
+        for index, row in selected_dataset.iterrows():
+            cubes = [row['cube']]
+            histcubes = [row['match_historical_run']]
+            value[index] = calc_refvalue(cubes, histcubes, model)
+        values.append(pd.Series(value))
+    return values
 
 
 def normalize(dataset, relative=False, normby='run'):
