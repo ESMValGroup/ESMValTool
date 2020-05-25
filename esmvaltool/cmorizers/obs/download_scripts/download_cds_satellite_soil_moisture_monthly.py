@@ -34,7 +34,7 @@ def download_cds_satellite_sm():
 
     rawobs_dir = os.path.abspath(
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
-    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE/'
+    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE_tmp/'
     os.makedirs(savedir, exist_ok=True)
 
     client = cdsapi.Client()
@@ -82,12 +82,12 @@ def download_cds_satellite_sm():
         }
         client.retrieve('satellite-soil-moisture', request_dictionary,
                         savename)
-    # Unpack the file
-    tar = tarfile.open(savename)
-    tar.extractall(path=os.path.split(savename)[0])
-    tar.close()
-    # Remove the tar file since it has been extracted
-    os.remove(savename)
+        # Unpack the file
+        tar = tarfile.open(savename)
+        tar.extractall(path=os.path.split(savename)[0])
+        tar.close()
+        # Remove the tar file since it has been extracted
+        os.remove(savename)
 
     # Now ICDR v201812.0.1 (identical to v201812.0.0 according
     # to data provider except for dates covered)
@@ -158,4 +158,4 @@ def download_cds_satellite_sm():
 
 
 if __name__ == "__main__":
-    download_cds_satellite_soil_moisture()
+    download_cds_satellite_sm()
