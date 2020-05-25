@@ -23,11 +23,6 @@ def download_cds_satellite_soil_moisture():
                         default=os.path.join(os.path.dirname(__file__),
                                              'config-user.yml'),
                         help='config file')
-    parser.add_argument('--frequency',
-                        '-f',
-                        default=None,
-                        choices=['daily', 'monthly'],
-                        help="frequency of the data")
 
     args = parser.parse_args()
 
@@ -90,7 +85,7 @@ def download_cds_satellite_soil_moisture():
                         savename)
     # Unpack the file
     tar = tarfile.open(savename)
-    tar.extractall()
+    tar.extractall(path=os.path.split(savename)[0])
     tar.close()
     # Remove the tar file since it has been extracted
     os.remove(savename)
@@ -123,7 +118,7 @@ def download_cds_satellite_soil_moisture():
         }, savename)
     # Unpack the file
     tar = tarfile.open(savename)
-    tar.extractall()
+    tar.extractall(path=os.path.split(savename)[0])
     tar.close()
     # Remove the tar file since it has been extracted
     os.remove(savename)
@@ -157,7 +152,7 @@ def download_cds_satellite_soil_moisture():
         }, savename)
     # Unpack the file
     tar = tarfile.open(savename)
-    tar.extractall()
+    tar.extractall(path=os.path.split(savename)[0])
     tar.close()
     # Remove the tar file since it has been extracted
     os.remove(savename)
