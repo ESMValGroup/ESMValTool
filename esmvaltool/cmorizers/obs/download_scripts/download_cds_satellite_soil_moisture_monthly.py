@@ -38,7 +38,7 @@ def download_cds_satellite_soil_moisture():
 
     rawobs_dir = os.path.abspath(
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
-    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE_tmp/'
+    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE/'
     os.makedirs(savedir, exist_ok=True)
 
     client = cdsapi.Client()
