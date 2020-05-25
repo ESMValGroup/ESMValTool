@@ -89,7 +89,7 @@ def download_cds_satellite_soil_moisture():
     # Unpack the file
     subprocess.check_call(["tar", "-xvf", savename, '--directory', savedir])
     # Remove the tar file since it has been extracted
-    subprocess.check_call(["rm", savename])
+    os.remove(savename)
 
     # Now ICDR v201812.0.1 (identical to v201812.0.0 according
     # to data provider except for dates covered)
