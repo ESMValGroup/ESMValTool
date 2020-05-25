@@ -127,7 +127,7 @@ def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
 
 def _run_pyt_script(in_dir, out_dir, dataset, user_cfg):
     """Run the Python cmorization mechanism."""
-    module_name = 'esmvaltool.cmorizers.obs.cmorize_obs_{}'.format(
+    module_name = 'esmvaltool.cmorizers.obs.cmorize_{}'.format(
         dataset.lower().replace("-", "_"))
     module = importlib.import_module(module_name)
     logger.info("CMORizing dataset %s using Python script %s",
@@ -163,7 +163,7 @@ def main():
         logger.error("Config file %s does not exist", config_file)
 
     # read the file in
-    config_user = read_config_user_file(config_file, 'cmorize_obs')
+    config_user = read_config_user_file(config_file, 'cmorize')
 
     # set the run dir to hold the settings and log files
     run_dir = os.path.join(config_user['output_dir'], 'run')
@@ -234,7 +234,7 @@ def _cmor_reformat(config, obs_list):
         for dataset in datasets[tier]:
             reformat_script_root = os.path.join(
                 reformat_scripts,
-                'cmorize_obs_' + dataset.lower().replace('-', '_'),
+                'cmorize_' + dataset.lower().replace('-', '_'),
             )
             # in-data dir; build out-dir tree
             in_data_dir = os.path.join(raw_obs, tier, dataset)

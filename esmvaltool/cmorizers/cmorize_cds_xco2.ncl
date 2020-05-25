@@ -23,12 +23,12 @@
 ;
 ; ############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_cds_xco2.ncl"
+  DIAG_SCRIPT = "cmorize_cds_xco2.ncl"
 
   ; Source name
   OBSNAME = "CDS-XCO2"

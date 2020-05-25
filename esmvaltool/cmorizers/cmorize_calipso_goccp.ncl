@@ -23,12 +23,12 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_calipso-goccp.ncl"
+  DIAG_SCRIPT = "cmorize_calipso-goccp.ncl"
 
   ; Source name
   OBSNAME = "CALIPSO-GOCCP"

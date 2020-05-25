@@ -25,12 +25,12 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_hadcrut3.ncl"
+  DIAG_SCRIPT = "cmorize_hadcrut3.ncl"
 
   ; Source name
   OBSNAME = "HadCRUT3"

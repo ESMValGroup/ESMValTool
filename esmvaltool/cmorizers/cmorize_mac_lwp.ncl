@@ -23,11 +23,11 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_MAC-LWP.ncl"
+  DIAG_SCRIPT = "cmorize_MAC-LWP.ncl"
 
   ; Source name
   OBSNAME = "MAC-LWP"

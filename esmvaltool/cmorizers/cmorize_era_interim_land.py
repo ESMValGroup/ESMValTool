@@ -11,10 +11,10 @@ Last access
     20191104
 
 Download and processing instructions
-     See script cmorize_obs_era_interim.py
+     See script cmorize_era_interim.py
 
 """
 
-from .cmorize_obs_era_interim import cmorization
+from .cmorize_era_interim import cmorization
 
 __all__ = ['cmorization']

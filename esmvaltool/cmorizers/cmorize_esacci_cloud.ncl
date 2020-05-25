@@ -32,16 +32,16 @@
 ;    20181116-lauer_axel: changed to use CLOUD-CCI v3.0 data (AVHRR-PM), gaps
 ;                         (1994/09 - 1995/01) are filled with AVHRR-AM data
 ;    20180522-righi_mattia: changed to use AVHRR-PM data.
-;    20160519-laue_axel: written (reformat_obs_ESACCI-AEROSOL.ncl).
+;    20160519-laue_axel: written (reformat_ESACCI-AEROSOL.ncl).
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_esacci_cloud.ncl"
+  DIAG_SCRIPT = "cmorize_esacci_cloud.ncl"
 
   ; Source name
   OBSNAME = "ESACCI-CLOUD"

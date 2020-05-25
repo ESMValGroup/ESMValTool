@@ -20,11 +20,11 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_UWISC.ncl"
+  DIAG_SCRIPT = "cmorize_UWISC.ncl"
 
   ; Source name
   OBSNAME = "UWisc"

@@ -18,16 +18,16 @@
 ;
 ; Modification history
 ;    20190201-righi_mattia: adapted to v2 and replace NaN/inf with FillValue.
-;    20160224-wenzel_sabrina: written based on reformat_obs_ESACCI-AEROSOL.ncl.
+;    20160224-wenzel_sabrina: written based on reformat_ESACCI-AEROSOL.ncl.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_esacci_ozone.ncl"
+  DIAG_SCRIPT = "cmorize_esacci_ozone.ncl"
 
   ; Source name
   OBSNAME = "ESACCI-OZONE"

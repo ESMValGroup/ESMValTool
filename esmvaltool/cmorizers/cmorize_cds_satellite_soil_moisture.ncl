@@ -25,16 +25,16 @@
 ;    with years)
 ;
 ; Modification history
-;    20190314-crezee_bas: written based on cmorize_obs_esacci_soilmoisture.ncl.
+;    20190314-crezee_bas: written based on ESMValTool v1 reformatter.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_cds_satellite_soil_moisture.ncl"
+  DIAG_SCRIPT = "cmorize_cds_satellite_soil_moisture.ncl"
 
   ; Source name
   OBSNAME = "CDS-SATELLITE-SOIL-MOISTURE"

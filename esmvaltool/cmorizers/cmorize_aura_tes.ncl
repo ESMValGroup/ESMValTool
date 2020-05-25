@@ -25,12 +25,12 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/esmvaltool/cmorizers/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_aura_tes.ncl"
+  DIAG_SCRIPT = "cmorize_aura_tes.ncl"
 
   ; Source name
   OBSNAME = "AURA-TES"

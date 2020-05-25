@@ -28,7 +28,7 @@ Download and processing instructions
         https://confluence.ecmwf.int/display/WEBAPI/Python+ERA-interim+examples
     A registration is required for downloading the data.
     It is alo possible to use the script in:
-    esmvaltool/cmorizers/obs/download_scripts/download_era-interim.py
+    esmvaltool/cmorizers/download_scripts/download_era-interim.py
     This cmorization script currently supports daily and monthly data of
 the following variables:
         10m u component of wind

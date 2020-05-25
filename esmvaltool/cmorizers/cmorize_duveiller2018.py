@@ -14,10 +14,10 @@ Download and processing instructions
      according to ESMValTool practices.
    - Complete the CMOR-config specifications (see instructions in the file
      itself)
-   - Run cmorize_obs
+   - Run cmorize
 
 Modification history
-   20190430-crezee_bas: written based on cmorize_obs_Landschuetzer2016.py.
+   20190430-crezee_bas: written based on cmorize_Landschuetzer2016.py.
 
 Caveats
    Please be aware that the selected vegetation transition code is not written
