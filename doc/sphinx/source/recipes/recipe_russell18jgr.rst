@@ -243,8 +243,8 @@ Variables
 * uo (ocean, monthly mean, longitude latitude lev time)
 * sic (seaIce, monthly mean, longitude latitude time)
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 Note: WOA data has not been tested with reciepe_russell18jgr.yml and
       corresponding diagnostic scripts.

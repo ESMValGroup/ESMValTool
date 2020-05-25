@@ -57,8 +57,8 @@ Variables
 * any variable (atmos/ocean, daily-monthly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *None*
 

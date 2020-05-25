@@ -17,7 +17,7 @@ scaling) as in Collins et al., 2013.
 
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -389,8 +389,8 @@ Variables
 * thetao (ocean, monthly mean, longitude latitude lev time)
 * ua (atmos, monthly mean, longitude latitude lev time)
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 * HadISST (sic - esmvaltool/utils/cmorizers/cmorize_HadISST.ncl)
 

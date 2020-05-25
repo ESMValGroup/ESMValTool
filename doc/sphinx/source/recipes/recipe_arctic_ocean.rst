@@ -250,8 +250,8 @@ Variables
 * so (ocean, monthly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 * PHC3 climatology
 

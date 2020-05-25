@@ -156,8 +156,8 @@ Variables
 * *fgco2* (ocean, monthly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 * CRU (*tas*, *pr*)
 * JMA-TRANSCOM (*nbp*, *fgco2*)

@@ -15,7 +15,7 @@ The output of the recipe consists of a colored map showing the time average of t
 
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -53,8 +53,8 @@ Variables
 * any Amon variable (atmos, monthly mean, longitude latitude time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *None*
 

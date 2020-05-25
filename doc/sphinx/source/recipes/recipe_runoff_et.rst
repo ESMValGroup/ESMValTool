@@ -74,8 +74,8 @@ Variables
 * mrro    (land,  monthly mean, time latitude longitude)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 Default reference data based on GRDC and WFDEI are included in the diagnostic script
 as catchment averages. They can be replaced with any gridded dataset by defining a

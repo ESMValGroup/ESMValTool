@@ -63,8 +63,8 @@ Variables
 * chosen by user (e.g., precipitation as in the example)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 None.
 

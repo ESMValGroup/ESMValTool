@@ -196,8 +196,8 @@ Variables
    * pr (atmos, daily or hourly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 *Note: see headers of cmorization scripts (in esmvaltool/cmorizers/obs) for download instructions.*
 
 *  ERA-Interim (esmvaltool/cmorizers/cmorize_era_interim.py)

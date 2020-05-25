@@ -78,8 +78,8 @@ deangelisf3f4.py:
 * *tas* (atmos, monthly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 deangelisf1b.py:
 * None

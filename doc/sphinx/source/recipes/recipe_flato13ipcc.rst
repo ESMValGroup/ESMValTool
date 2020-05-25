@@ -361,11 +361,11 @@ Variables
 * tos (ocean, monthly mean, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *Note: (1) obs4mips data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4mips data for download
+(2) see headers of cmorizers for non-obs4mips data for download
 instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)

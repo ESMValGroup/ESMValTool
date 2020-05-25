@@ -11,7 +11,7 @@ The goal is to create a standard recipe for the calculation of performance metri
 The recipe can be used to calculate performance metrics at different vertical levels (e.g., 5, 30, 200, 850 hPa as in `Gleckler et al. (2008) <http://dx.doi.org/10.1029/2007JD008972>`_ and in different regions. As an additional reference, we consider `Righi et al. (2015) <https://doi.org/10.5194/gmd-8-733-2015>`_.
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -108,10 +108,10 @@ Variables
 * va (atmos, monthly mean, longitude latitude lev time)
 * zg (atmos, monthly mean, longitude latitude lev time)
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective cmorizers in parentheses. Please note that obs4mips data can be used directly without any cmoring. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/
 <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/>`_) for downloading and processing instructions.
 
 * AIRS (hus - obs4mips)

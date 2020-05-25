@@ -20,7 +20,7 @@ or ensemble) for both CONTROL and EXPERIMENT (the use case for comparison betwee
 will be implemented in a future release).
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -52,8 +52,8 @@ Variables
 
 * any variable
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *Note: (1) obs4mips or OBS or ana4mips can be used.*
 

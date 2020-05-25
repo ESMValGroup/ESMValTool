@@ -74,8 +74,8 @@ Variables
 * *tasa* (atmos, monthly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 * HadCRUT4_ (*tasa*)
 

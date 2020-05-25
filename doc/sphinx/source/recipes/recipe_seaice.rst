@@ -108,8 +108,8 @@ Variables
 * sic (ocean-ice, monthly mean, longitude latitude time)
 * areacello (fx, longitude latitude)
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for non-obs4mips data for download instructions.*
 

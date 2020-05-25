@@ -21,7 +21,7 @@ In recipe_extreme_index.yml, after defining the area and reference and projectio
 * weight_rx5day the weight of the maximum precipitation accumulated during 5 consecutive days.
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -57,8 +57,8 @@ Variables
 * pr (atmos, daily, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *None*
 

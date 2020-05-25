@@ -11,7 +11,7 @@ This diagnostic calculates the Single Model Performance Index (SMPI) following R
 Note: The SMPI diagnostic needs all indicated variables from all added models for exactly the same time period to be calculated correctly. If one model does not provide a specific variable, either that model cannot be added to the SMPI calculations, or the missing variable has to be removed from the diagnostics all together.
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -69,10 +69,10 @@ Variables
 * va (atmos, monthly mean, longitude latitude lev time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective cmorizers in parentheses. Please note that obs4mips data can be used directly without any cmoring. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/
 <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/>`_) for downloading and processing instructions.
 
 * ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va - esmvaltool/utils/cmorizers/cmorize_ERA-Interim.ncl)

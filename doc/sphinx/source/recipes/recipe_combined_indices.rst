@@ -18,7 +18,7 @@ future projection), the variable is selected. The predefined areas are:
 * Southern Oscillation Index (SOI)
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -58,8 +58,8 @@ Variables
 * all variables (atmos/ocean, monthly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *None*
 

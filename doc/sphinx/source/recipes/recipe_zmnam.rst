@@ -49,8 +49,8 @@ Variables
 * zg (atmos, daily mean, longitude latitude time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 None.
 

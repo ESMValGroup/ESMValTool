@@ -8,7 +8,7 @@ Figures from Wenzel et al. (2014) are reproduced with recipe_wenzel14jgr.yml. Va
 
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -96,8 +96,8 @@ Variables
 * fgco2 (ocean, monthly mean, longitude latitude time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 * GCP: Global Carbon Budget including land (nbp) and ocean (fgco2) carbon fluxes
 * NCEP: National Centers for Environmental Prediction reanalysis data for near surface temperature

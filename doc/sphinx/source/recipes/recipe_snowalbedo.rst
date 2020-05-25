@@ -94,8 +94,8 @@ Variables
 * rsuscs, rsdscs (atmos, monthly mean, longitude latitude time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 * ERA-Interim (tas - esmvaltool/utils/cmorizers/cmorize_ERA-Interim.ncl)
 * ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/utils/cmorizers/cmorize_isccp_fh.ncl)

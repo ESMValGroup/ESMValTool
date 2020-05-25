@@ -55,8 +55,8 @@ Variables
 * cropFrac     (land, monthly mean, time latitude longitude)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 ESA-CCI land cover data (Defourny et al., 2015) needs to be downloaded manually by the user and converted to netCDF files
 containing the grid cell fractions for the five major land cover types. The data and a conversion tool

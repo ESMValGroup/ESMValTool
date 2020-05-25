@@ -43,8 +43,8 @@ Variables
 * tasmin and tasmax (atmos, daily, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *None*
 

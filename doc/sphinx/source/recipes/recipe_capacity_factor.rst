@@ -44,8 +44,8 @@ Variables
 * sfcWind (atmos, daily, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 Main features of the selected turbines:
 

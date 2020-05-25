@@ -67,8 +67,8 @@ Variables
 * *tas* (atmos, monthly, longitude, latitude, time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 *None*
 

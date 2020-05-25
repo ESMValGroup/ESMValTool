@@ -92,11 +92,11 @@ Variables
 * wap (atmos, monthly mean, longitude latitude level time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 .. note:: (1) Obs4mips data can be used directly without any preprocessing.
-          (2) See headers of reformat scripts for non-obs4mips data for download instructions.
+          (2) See headers of cmorizers for non-obs4mips data for download instructions.
 
 * AIRS (obs4mips): hus, husStderr
 * CERES-EBAF (obs4mips): rsdt, rsut, rsutcs

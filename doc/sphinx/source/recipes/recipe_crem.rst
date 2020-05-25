@@ -78,8 +78,8 @@ compatible, in particular whether leap days are included or not.**
 
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 All observational data have been pre-processed and included within the
 routine. These are ISCCP, ISCCP-FD, MODIS, ERBE. No additional observational

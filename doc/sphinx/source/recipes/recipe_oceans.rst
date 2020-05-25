@@ -780,7 +780,7 @@ In these recipes, cartopy uses the 1:10, physical coastlines and land files::
 
 
 Associated Observational datasets
-........................................
+.................................
 
 The following observations datasets are used by these recipes:
 
@@ -800,7 +800,7 @@ The following WOA datasets are used by the ocean diagnostics:
  - Silicate
  - Dissolved Oxygen
 
-These files need to be reformatted using the `cmorize -o WOA` command.
+These files need to be cmorized using the `cmorize -o WOA` command.
 
 
 Landschuetzer 2016
@@ -814,7 +814,7 @@ The following variables are used by the ocean diagnostics:
  - spco2, Surface Aqueous Partial Pressure of CO2
  - dpco2, Delta CO2 Partial Pressure
 
-The file needs to be reformatted using the `cmorize -o Landschuetzer2016` command.
+The file needs to be cmorized using the `cmorize -o Landschuetzer2016` command.
 
 
 

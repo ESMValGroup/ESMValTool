@@ -41,10 +41,10 @@ Variables
 * pastureFrac (land, monthly mean, time latitude longitude)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
-A reformatting script for observational data is available here:
+A cmoring script for observational data is available here:
     * cmorize_duveiller2018.py
 
 

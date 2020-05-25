@@ -36,8 +36,8 @@ Variables
 * pr (atmos, monthly, longitude latitude time)
 
 
-Observations and reformat scripts
----------------------------------
+Observations and cmorizers
+--------------------------
 
 * GPCP-SG observations (accessible via the obs4mips project)
 
