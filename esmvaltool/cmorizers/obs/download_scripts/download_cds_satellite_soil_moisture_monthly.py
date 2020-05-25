@@ -7,7 +7,6 @@ from the Climate Data Store(CDS).
 
 import argparse
 import os
-import subprocess
 import tarfile
 
 import yaml
