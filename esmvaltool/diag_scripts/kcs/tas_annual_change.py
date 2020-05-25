@@ -11,7 +11,6 @@ For example:
 """
 from pathlib import Path
 from datetime import datetime
-import functools
 import logging
 import warnings
 import iris
@@ -27,6 +26,8 @@ from kcsutils.attributes import get as get_attributes
 PERIOD = (1961, 2099)
 REFERENCE_PERIOD = (1980, 2009)
 MINDATA = {'historical': 20, 'future': 4}
+YEARLY = True
+SEASON = None
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -63,54 +64,19 @@ def add_extra_coord(cube):
                                                   name='season_year')
 
 
-def extract_season(cubes, season):
-    """Extract season."""
-    # Use a class instead of a lambda function, so we can pass the
-    # constraint to multiprocessing (which doesn't handle lambdas).
-    constraint = iris.Constraint(season=kcsutils.EqualConstraint(season))
-    logger.info("Extracting season %s", season)
-    for cube in cubes:
-        if not cube.coords('season'):
-            iris.coord_categorisation.add_season(cube, 'time')
-    cubes = list(map(constraint.extract, cubes))
-    return cubes
-
-
-def perform_optional_operations(dataset, yearly=False, season=None):
-    """Perform extracting of season, and averaging of years.
-
-    These are optional steps before calculation of reference values.
-
-    """
-    if season:
-        dataset['cube'] = extract_season(dataset['cube'], season)
-
-    if yearly:
-        dataset['cube'] = average_year(dataset['cube'], season=season)
-    return dataset
-
-
-def average_year_cube(cube, season=None):
-    """Averaging over year in one cube."""
-    if season:
-        if not cube.coords('season_year'):
-            iris.coord_categorisation.add_season_year(cube, 'time')
-        mean = cube.aggregated_by('season_year', iris.analysis.MEAN)
-    else:
-        if not cube.coords('year'):
-            iris.coord_categorisation.add_year(cube, 'time')
-        mean = cube.aggregated_by('year', iris.analysis.MEAN)
-    return mean
-
-
-def average_year(cubes, season=None):
-    """Averaging over year."""
-    if season:
-        logger.info("Calculating %s averages", season)
-    else:
-        logger.info("Calculating yearly averages")
-    func = functools.partial(average_year_cube, season=season)
-    cubes = list(map(func, cubes))
+def calculate_yearly_average(dataset):
+    """Perform averaging over each year."""
+    cubes = []
+    for cube in dataset['cube']:
+        if SEASON:
+            if not cube.coords('season_year'):
+                iris.coord_categorisation.add_season_year(cube, 'time')
+            mean = cube.aggregated_by('season_year', iris.analysis.MEAN)
+        else:
+            if not cube.coords('year'):
+                iris.coord_categorisation.add_year(cube, 'time')
+            mean = cube.aggregated_by('year', iris.analysis.MEAN)
+        cubes.append(mean)
     return cubes
 
 
@@ -177,11 +143,11 @@ def get_statistics(cubes, mindata, model):
     return average, weight
 
 
-def get_mindata(yearly=False, season=None):
+def get_mindata():
     """Get minimum required data."""
-    if yearly:
+    if YEARLY:
         mindata = MINDATA
-    elif season:  # in ['djf', 'mam', 'jja', 'son']:
+    elif SEASON:  # in ['djf', 'mam', 'jja', 'son']:
         # Three months a year
         mindata = {key: 3 * value for key, value in MINDATA.items()}
     else:
@@ -190,9 +156,9 @@ def get_mindata(yearly=False, season=None):
     return mindata
 
 
-def get_mean_value(cubes, histcubes, model, yearly=False, season=None):
+def get_mean_value(cubes, histcubes, model):
     """Calculate time-weighted reference value."""
-    mindata = get_mindata(yearly=yearly, season=season)
+    mindata = get_mindata()
     mean_future, weight_future = get_statistics(
         cubes, mindata['future'], model
     )
@@ -355,11 +321,13 @@ def main(cfg):
         dataset, match_by='ensemble', on_no_match='randomrun',
         historical_key='historical')
 
-    # Perform extracting of season, or averaging of years (optional).
-    # TODO make these settingsyearly=False, season=None, normby
-    dataset = perform_optional_operations(dataset, yearly=False, season=None)
+    # Global variables are YEARLY = True, SEASON = None
+    # TODO make those variables as settings in the recipe
+    if YEARLY:
+        dataset['cube'] = calculate_yearly_average(dataset)
 
     # Calculate reference values
+    # TODO make normby as a setting
     dataset = calculate_reference_values(
         dataset, historical_key="historical", normby='run'
     )
