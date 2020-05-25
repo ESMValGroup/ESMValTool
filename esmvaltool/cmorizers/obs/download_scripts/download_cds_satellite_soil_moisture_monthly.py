@@ -14,7 +14,7 @@ import yaml
 import cdsapi
 
 
-def download_cds_satellite_soil_moisture():
+def download_cds_satellite_sm():
     """Download dataset cds-satellite-albedo."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config_file',
