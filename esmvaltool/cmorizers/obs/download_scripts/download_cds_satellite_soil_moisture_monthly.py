@@ -94,7 +94,7 @@ def download_cds_satellite_soil_moisture():
     # Now ICDR v201812.0.1 (identical to v201812.0.0 according
     # to data provider except for dates covered)
     savename = os.path.join(savedir,
-                            f"cds-satellite-soil-moisture_v201812.0.1.tar.gz")
+                            "cds-satellite-soil-moisture_v201812.0.1.tar.gz")
     client.retrieve(
         'satellite-soil-moisture', {
             'format': 'tgz',
