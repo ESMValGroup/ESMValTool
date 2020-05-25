@@ -95,7 +95,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'{0}, ESMValTool Core Development Team'.format(
+copyright = u'{0}, ESMValTool Development Team'.format(
     datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
