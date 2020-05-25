@@ -1,4 +1,4 @@
-"""Tests for the module :mod:`esmvaltool.cmorizers.obs.utilities`."""
+"""Tests for the module :mod:`esmvaltool.cmorizers.utilities`."""
 
 from unittest.mock import Mock
 
@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 from cf_units import Unit
 
-import esmvaltool.cmorizers.obs.utilities as utils
+import esmvaltool.cmorizers.utilities as utils
 
 
 def np_to_da(array, lazy):

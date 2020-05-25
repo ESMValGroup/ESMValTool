@@ -127,7 +127,7 @@ def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
 
 def _run_pyt_script(in_dir, out_dir, dataset, user_cfg):
     """Run the Python cmorization mechanism."""
-    module_name = 'esmvaltool.cmorizers.obs.cmorize_{}'.format(
+    module_name = 'esmvaltool.cmorizers.cmorize_{}'.format(
         dataset.lower().replace("-", "_"))
     module = importlib.import_module(module_name)
     logger.info("CMORizing dataset %s using Python script %s",
