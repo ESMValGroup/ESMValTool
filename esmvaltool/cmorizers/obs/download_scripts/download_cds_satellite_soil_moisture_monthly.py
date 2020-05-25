@@ -25,6 +25,7 @@ def download_cds_satellite_soil_moisture():
     parser.add_argument('--frequency',
                         '-f',
                         default=None,
+                        choices=['daily', 'monthly'],
                         help="Either monthly or daily")
 
     args = parser.parse_args()
