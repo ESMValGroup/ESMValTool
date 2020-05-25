@@ -230,16 +230,10 @@ Observations and reformat scripts
 (2) see headers of reformat scripts for non-obs4mips data for download
 instructions.*
 
-* CERES-EBAF (obs4mips) - CERES TOA radiation fluxes (used for calculation of
-  cloud forcing)
-* GPCP-SG (obs4mips) - Global Precipitation Climatology Project total
-  precipitation
-* MODIS (obs4mips) - MODIS total cloud fraction
-* UWisc - University of Wisconsin-Madison liquid water path climatology, based
-  on satellite observbations from TMI, SSM/I, and AMSR-E, reference: O'Dell et
-  al. (2008), J. Clim.
-
-  *Reformat script:* reformat_scripts/obs/reformat_obs_UWisc.ncl
+* CERES-EBAF (obs4mips)
+* GPCP-SG (obs4mips)
+* MODIS (obs4mips)
+* UWisc (esmvaltool/cmorizers/cmorize_UWisc.ncl)
 
 References
 ----------
