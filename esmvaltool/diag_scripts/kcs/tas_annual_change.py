@@ -80,7 +80,7 @@ def calculate_yearly_average(dataset):
     return cubes
 
 
-def calculate_reference_values(dataset, historical_key=None, normby='run'):
+def calculate_reference_values(dataset, normby, historical_key=None):
     """Calculate reference values.
 
     model:  *per model*, so that each realization is
@@ -215,7 +215,7 @@ def reference_value_by_run(dataset, models):
     return values
 
 
-def normalize(dataset, relative=False, normby='run'):
+def normalize(dataset, normby, relative=False):
     """Normalize cubes to their reference values
 
     If the value is a relative value, i.e., a percentual change, set
@@ -327,13 +327,13 @@ def main(cfg):
         dataset['cube'] = calculate_yearly_average(dataset)
 
     # Calculate reference values
-    # TODO make normby as a setting
+    normby = cfg['normby']
     dataset = calculate_reference_values(
-        dataset, historical_key="historical", normby='run'
+        dataset, normby, historical_key="historical"
     )
 
     # Normalize data using reference values
-    dataset = normalize(dataset, relative=False, normby='run')
+    dataset = normalize(dataset, normby, relative=False)
 
     # Get the percentiles
     percentiles = calculate_percentiles(dataset, average_experiments=False)
