@@ -196,7 +196,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'cmorize_obs = esmvaltool.cmorizers.obs.cmorize_obs:main',
+            'cmorize = esmvaltool.cmorizers.cmorize:main',
             'mip_convert_setup = '
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',

@@ -1,4 +1,4 @@
-"""Tests for the module :mod:`esmvaltool.cmorizers.obs.cmorize_obs`."""
+"""Tests for the module :mod:`esmvaltool.cmorizers.cmorize`."""
 
 import contextlib
 import os
@@ -9,7 +9,7 @@ import numpy as np
 import yaml
 from cf_units import Unit
 
-from esmvaltool.cmorizers.obs.cmorize_obs import main as run
+from esmvaltool.cmorizers.cmorize import main as run
 
 
 @contextlib.contextmanager
@@ -107,7 +107,7 @@ def check_log_file(log_file, no_data=False):
 
 def check_output_exists(output_path):
     """Check if cmorizer outputted."""
-    # eg Tier2/WOA/OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc
+    # e.g. Tier2/WOA/OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc
     output_files = os.listdir(output_path)
     # ['OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc',
     # 'OBS_WOA_clim_2013v2_Omon_so_200001-200002.nc']
@@ -134,14 +134,14 @@ def arguments(*args):
     sys.argv = backup
 
 
-def test_cmorize_obs_woa_no_data(tmp_path):
-    """Test for example run of cmorize_obs command."""
+def test_cmorize_woa_no_data(tmp_path):
+    """Test for example run of cmorize command."""
 
     config_user_file = write_config_user_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
     with keep_cwd():
         with arguments(
-                'cmorize_obs',
+                'cmorize',
                 '-c',
                 config_user_file,
                 '-o',
@@ -155,8 +155,8 @@ def test_cmorize_obs_woa_no_data(tmp_path):
     check_log_file(log_file, no_data=True)
 
 
-def test_cmorize_obs_woa_data(tmp_path):
-    """Test for example run of cmorize_obs command."""
+def test_cmorize_woa_data(tmp_path):
+    """Test for example run of cmorize command."""
 
     config_user_file = write_config_user_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff'))
@@ -165,7 +165,7 @@ def test_cmorize_obs_woa_data(tmp_path):
     put_dummy_data(data_path)
     with keep_cwd():
         with arguments(
-                'cmorize_obs',
+                'cmorize',
                 '-c',
                 config_user_file,
                 '-o',

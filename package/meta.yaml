@@ -47,7 +47,7 @@ test:
     - esmvaltool
   commands:
     - pytest --ignore=run_test.py
-    - cmorize_obs --help
+    - cmorize --help
     - nclcodestyle --help
     - showcolortables --help
     - test_recipe --help
