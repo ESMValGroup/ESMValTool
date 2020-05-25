@@ -230,10 +230,10 @@ Observations and reformat scripts
 (2) see headers of reformat scripts for non-obs4mips data for download
 instructions.*
 
-* CERES-EBAF (obs4mips)
-* GPCP-SG (obs4mips)
-* MODIS (obs4mips)
-* UWisc (esmvaltool/cmorizers/cmorize_UWisc.ncl)
+* CERES-EBAF (rsut, rsutcs, rlut, rlutcs - obs4mips)
+* GPCP-SG (pr - obs4mips)
+* MODIS (clt - obs4mips)
+* UWisc (lwp, lwpStderr - esmvaltool/cmorizers/cmorize_UWisc.ncl)
 
 References
 ----------
