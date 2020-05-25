@@ -15,7 +15,7 @@ import cdsapi
 
 
 def download_cds_satellite_sm():
-    """Download dataset cds-satellite-albedo."""
+    """Download dataset cds-satellite-soil-moisture."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config_file',
                         '-c',
