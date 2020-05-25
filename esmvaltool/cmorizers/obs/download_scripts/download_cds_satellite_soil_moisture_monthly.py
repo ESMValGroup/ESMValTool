@@ -7,7 +7,6 @@ from the Climate Data Store(CDS).
 
 import argparse
 import os
-import subprocess
 import tarfile
 
 import yaml
@@ -15,8 +14,8 @@ import yaml
 import cdsapi
 
 
-def download_cds_satellite_soil_moisture():
-    """Download dataset cds-satellite-albedo."""
+def download_cds_satellite_sm():
+    """Download dataset cds-satellite-soil-moisture."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config_file',
                         '-c',
