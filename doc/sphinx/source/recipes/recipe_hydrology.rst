@@ -200,8 +200,8 @@ Observations and reformat scripts
 ---------------------------------
 *Note: see headers of cmorization scripts (in esmvaltool/cmorizers/obs) for download instructions.*
 
-*  ERA-Interim (esmvaltool/cmorizers/obs/cmorize_obs_era_interim.py)
-*  ERA5 (esmvaltool/cmorizers/obs/cmorize_obs_era5.py)
+*  ERA-Interim (esmvaltool/cmorizers/cmorize_era_interim.py)
+*  ERA5 (esmvaltool/cmorizers/cmorize_era5.py)
 
 Output
 ---------

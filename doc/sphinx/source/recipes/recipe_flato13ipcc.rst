@@ -369,13 +369,13 @@ Observations and reformat scripts
 instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* GCP (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp.py)
+* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/cmorize_ERA-Interim.ncl)
+* GCP (fgco2, nbp - esmvaltool/cmorizers/cmorize_gcp.py)
 * GPCP-SG (pr - obs4mips)
-* JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
-* HadCRUT4 (tas - esmvaltool/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
-* HadISST (sic, tos - esmvaltool/cmorizers/obs/cmorize_obs_hadisst.ncl)
-* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/cmorizers/obs/cmorize_obs_isccp_fh.ncl)
+* JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/cmorize_jma_transcom.py)
+* HadCRUT4 (tas - esmvaltool/cmorizers/cmorize_hadcrut4.ncl)
+* HadISST (sic, tos - esmvaltool/cmorizers/cmorize_hadisst.ncl)
+* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/cmorizers/cmorize_isccp_fh.ncl)
 
 
 References

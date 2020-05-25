@@ -111,23 +111,23 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/
+<https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/>`_) for downloading and processing instructions.
 
 * AIRS (hus - obs4mips)
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-AEROSOL.ncl)
-* ESACCI-CLOUD (clt - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-CLOUD.ncl)
-* ESACCI-OZONE (toz - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-OZONE.ncl)
-* ESACCI-SOILMOISTURE (sm - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
-* ESACCI-SST (ts - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-SST.ncl)
+* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/cmorize_ERA-Interim.ncl)
+* ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/utils/cmorizers/cmorize_ESACCI-AEROSOL.ncl)
+* ESACCI-CLOUD (clt - esmvaltool/utils/cmorizers/cmorize_ESACCI-CLOUD.ncl)
+* ESACCI-OZONE (toz - esmvaltool/utils/cmorizers/cmorize_ESACCI-OZONE.ncl)
+* ESACCI-SOILMOISTURE (sm - esmvaltool/utils/cmorizers/cmorize_ESACCI-SOILMOISTURE.ncl)
+* ESACCI-SST (ts - esmvaltool/utils/cmorizers/cmorize_ESACCI-SST.ncl)
 * GPCP-SG (pr - obs4mips)
-* HadISST (ts - esmvaltool/utils/cmorizers/obs/cmorize_obs_HadISST.ncl)
-* MODIS (od550aer - esmvaltool/utils/cmorizers/obs/cmorize_obs_MODIS.ncl)
-* NCEP (tas, ta, ua, va, zg - esmvaltool/utils/cmorizers/obs/cmorize_obs_NCEP.ncl)
-* NIWA-BS (toz - esmvaltool/utils/cmorizers/obs/cmorize_obs_NIWA-BS.ncl)
-* PATMOS-x (clt - esmvaltool/utils/cmorizers/obs/cmorize_obs_PATMOS-x.ncl)
+* HadISST (ts - esmvaltool/utils/cmorizers/cmorize_HadISST.ncl)
+* MODIS (od550aer - esmvaltool/utils/cmorizers/cmorize_MODIS.ncl)
+* NCEP (tas, ta, ua, va, zg - esmvaltool/utils/cmorizers/cmorize_NCEP.ncl)
+* NIWA-BS (toz - esmvaltool/utils/cmorizers/cmorize_NIWA-BS.ncl)
+* PATMOS-x (clt - esmvaltool/utils/cmorizers/cmorize_PATMOS-x.ncl)
 
 References
 ----------
