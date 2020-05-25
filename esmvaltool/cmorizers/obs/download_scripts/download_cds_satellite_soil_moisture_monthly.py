@@ -21,7 +21,7 @@ def download_cds_satellite_soil_moisture():
                         '-c',
                         default=os.path.join(os.path.dirname(__file__),
                                              'config-user.yml'),
-                        help='Config file')
+                        help='config file')
     parser.add_argument('--frequency',
                         '-f',
                         default=None,
