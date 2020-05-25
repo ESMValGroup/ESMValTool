@@ -127,8 +127,10 @@ def get_statistics(cubes, mindata, model):
         ndata = len(excube.coord('time').points)
         # Not enough of data? Ignore
         if ndata < mindata:
-            logger.warning("A cube of %s has only %d data points for its time range",
-                           model, ndata)
+            logger.warning(
+                "A cube of %s has only %d data points for its time range",
+                model, ndata
+                        )
             continue
         with warnings.catch_warnings():
             warnings.filterwarnings(
@@ -270,21 +272,32 @@ def calculate_percentiles(dataset, average_experiments=False):
         constraint = iris.Constraint(year=kcsutils.EqualConstraint(year))
         if average_experiments:
             data = []
-            for _, group in dataset.groupby(['model', 'experiment', 'matched_exp']):
-                cubes = list(filter(None, map(constraint.extract, group['cube'])))
+            selected_columns = ['model', 'experiment', 'matched_exp']
+            for _, group in dataset.groupby(selected_columns):
+                cubes = list(
+                    filter(None, map(constraint.extract, group['cube']))
+                )
                 if cubes:
                     data.append(np.mean([cube.data for cube in cubes]))
         else:
-            cubes = list(filter(None, map(constraint.extract, dataset['cube'])))
+            cubes = list(
+                filter(None, map(constraint.extract, dataset['cube']))
+            )
             data = [cube.data for cube in cubes]
         mean = np.mean(data)
-        percentile = np.percentile(data, [5, 10, 25, 50, 75, 90, 95], overwrite_input=True)
-        percentile_as_dict = dict(zip(['mean', '5', '10', '25', '50', '75', '90', '95'],
-                                      [mean] + percentile.tolist()))
+        percentile = np.percentile(
+            data, [5, 10, 25, 50, 75, 90, 95], overwrite_input=True
+        )
+        percentile_as_dict = dict(
+            zip(['mean', '5', '10', '25', '50', '75', '90', '95'],
+                [mean] + percentile.tolist())
+            )
         percentile_as_list.append(percentile_as_dict)
         time.append(datetime(year, 1, 1))
 
-    percentile_as_dataframe = pd.DataFrame(percentile_as_list, index=pd.DatetimeIndex(time))
+    percentile_as_dataframe = pd.DataFrame(
+        percentile_as_list, index=pd.DatetimeIndex(time)
+    )
     return percentile_as_dataframe
 
 
