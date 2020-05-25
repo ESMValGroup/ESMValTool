@@ -34,7 +34,7 @@ def download_cds_satellite_sm():
 
     rawobs_dir = os.path.abspath(
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
-    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE_tmp/'
+    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE/'
     os.makedirs(savedir, exist_ok=True)
 
     client = cdsapi.Client()
@@ -84,7 +84,7 @@ def download_cds_satellite_sm():
                         savename)
         # Unpack the file
         tar = tarfile.open(savename)
-        tar.extractall(path=os.path.split(savename)[0])
+        tar.extractall(path=os.path.dirname(savename))
         tar.close()
         # Remove the tar file since it has been extracted
         os.remove(savename)
@@ -117,7 +117,7 @@ def download_cds_satellite_sm():
         }, savename)
     # Unpack the file
     tar = tarfile.open(savename)
-    tar.extractall(path=os.path.split(savename)[0])
+    tar.extractall(path=os.path.dirname(savename))
     tar.close()
     # Remove the tar file since it has been extracted
     os.remove(savename)
@@ -151,7 +151,7 @@ def download_cds_satellite_sm():
         }, savename)
     # Unpack the file
     tar = tarfile.open(savename)
-    tar.extractall(path=os.path.split(savename)[0])
+    tar.extractall(path=os.path.dirname(savename))
     tar.close()
     # Remove the tar file since it has been extracted
     os.remove(savename)
