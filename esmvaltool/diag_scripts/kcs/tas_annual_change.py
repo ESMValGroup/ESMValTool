@@ -89,8 +89,9 @@ def calculate_reference_values(dataset, normby, historical_key=None):
 
     """
     # Undefined variable default_config
-    if not historical_key:
-        historical_key = default_config['data']['historical_experiment']
+    # TODO add it from https://github.com/eucp-project/kcs/blob/master/kcs/config/default.py
+    # if not historical_key:
+    #     historical_key = default_config['data']['historical_experiment']
 
     index = dataset['index_match_run']
     hindex = index[index > -1]
