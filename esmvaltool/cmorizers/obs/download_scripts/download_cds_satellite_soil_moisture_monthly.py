@@ -8,6 +8,7 @@ from the Climate Data Store(CDS).
 import argparse
 import os
 import subprocess
+import tarfile
 
 import yaml
 
@@ -88,7 +89,9 @@ def download_cds_satellite_soil_moisture():
         client.retrieve('satellite-soil-moisture', request_dictionary,
                         savename)
     # Unpack the file
-    subprocess.check_call(["tar", "-xvf", savename, '--directory', savedir])
+    tar = tarfile.open(savename)
+    tar.extractall()
+    tar.close()
     # Remove the tar file since it has been extracted
     os.remove(savename)
 
@@ -119,9 +122,11 @@ def download_cds_satellite_soil_moisture():
             'day': '01',
         }, savename)
     # Unpack the file
-    subprocess.check_call(["tar", "-xvf", savename, '--directory', savedir])
+    tar = tarfile.open(savename)
+    tar.extractall()
+    tar.close()
     # Remove the tar file since it has been extracted
-    subprocess.check_call(["rm", savename])
+    os.remove(savename)
 
     # Now ICDR v201812.0.0 (identical to v201812.0.1 according
     # to data provider except for dates covered)
@@ -151,9 +156,11 @@ def download_cds_satellite_soil_moisture():
             'day': '01',
         }, savename)
     # Unpack the file
-    subprocess.check_call(["tar", "-xvf", savename, '--directory', savedir])
+    tar = tarfile.open(savename)
+    tar.extractall()
+    tar.close()
     # Remove the tar file since it has been extracted
-    subprocess.check_call(["rm", savename])
+    os.remove(savename)
 
 
 if __name__ == "__main__":
