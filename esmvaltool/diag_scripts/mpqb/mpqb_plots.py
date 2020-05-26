@@ -32,8 +32,8 @@ def get_ecv_plot_config(ecv_name):
 def get_plottitle_timeperiod(cube):
     time_coord = cube.coord('time')
     time_asdatetime = time_coord.units.num2date(time_coord.bounds).flatten()
-    starttime = min(time_asdatetime) + datetime.timedelta(seconds=1)
-    endtime = max(time_asdatetime) - datetime.timedelta(seconds=1)
+    starttime = min(time_asdatetime) + datetime.timedelta(days=1)
+    endtime = max(time_asdatetime) - datetime.timedelta(days=1)
     start, end = starttime.year, endtime.year
     return f"{start} - {end}"
 
