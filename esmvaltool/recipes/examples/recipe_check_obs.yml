@@ -598,7 +598,7 @@ diagnostics:
     additional_datasets:
       - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, mip: Lmon,
          tier: 3, type: sat, version: COMBINED-CUSTOM-MERGED-20200518,
-         start_year: 1979, end_year: 2019}
+         start_year: 1978, end_year: 2020}
     scripts: null
 
 
