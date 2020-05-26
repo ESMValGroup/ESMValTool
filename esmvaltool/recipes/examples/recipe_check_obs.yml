@@ -577,7 +577,6 @@ diagnostics:
     additional_datasets:
       - {dataset: CDS-SATELLITE-ALBEDO, project: OBS6, mip: Lmon, tier: 3,
          type: sat, version: COMBINED-CUSTOM-MERGED-20200518,
-         start_year: 1999, end_year: 2013}
     scripts: null
 
 
