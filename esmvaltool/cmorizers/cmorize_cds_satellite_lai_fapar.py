@@ -45,7 +45,7 @@ import cf_units
 import iris
 
 from esmvalcore.preprocessor import regrid
-from esmvaltool.cmorizers.obs import utilities as utils
+from esmvaltool.cmorizers import utilities as utils
 
 logger = logging.getLogger(__name__)
 
