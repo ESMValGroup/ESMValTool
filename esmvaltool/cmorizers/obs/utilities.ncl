@@ -92,7 +92,7 @@ procedure format_time(var:numeric,
 ; References
 ;
 ; Modification history
-;    20200518-righi_mattia: add flag for timesteps consistency check.
+;    20200518-righi_mattia: improve timesteps consistency check.
 ;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, ctime, ntime, year1, month1, day1, year2, month2, \
