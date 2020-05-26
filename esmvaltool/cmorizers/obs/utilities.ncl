@@ -177,11 +177,9 @@ begin
   if (frequency.eq."mon") then
 
     ; Check size
-    exp_ntime = 12 - month1 + 1
-    do yy = year1 + 1, year2 - 1
-      exp_ntime = exp_ntime + 12
-    end do
-    exp_ntime = exp_ntime + month2
+    exp_ntime = 12 * (year2 - year1 + 1)
+    exp_ntime = exp_ntime - (month1 - 1)
+    exp_ntime = exp_ntime - (12 - month2)
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
                 "incorrect number of timesteps in input data: " + \
