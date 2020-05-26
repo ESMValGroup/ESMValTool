@@ -130,11 +130,11 @@ begin
   output1!0 = "time"
   output1!1 = "lat"
   output1!2 = "lon"
-  format_coords(output1, YEAR1 + "0101", YEAR2 + "1231", FREQ, True)
+  format_coords(output1, YEAR1 + "0101", YEAR2 + "1231", FREQ)
   output2!0 = "time"
   output2!1 = "lat"
   output2!2 = "lon"
-  format_coords(output2, YEAR1 + "0101", YEAR2 + "1231", FREQ, True)
+  format_coords(output2, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
   ; Calculate coordinate bounds
   bounds1 = guess_coord_bounds(output1, FREQ)

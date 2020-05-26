@@ -85,7 +85,7 @@ begin
     output = f->xch4
 
     ; Format coordinates
-    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv), True)
+    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes
     tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))

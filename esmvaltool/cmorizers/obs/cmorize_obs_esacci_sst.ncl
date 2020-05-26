@@ -125,11 +125,11 @@ begin
       sstavg!0 = "time"
       sstavg!1 = "lat"
       sstavg!2 = "lon"
-      format_coords(sstavg, yy + mo + "01", yy + mo + dm, FREQ, True)
+      format_coords(sstavg, yy + mo + "01", yy + mo + dm, FREQ)
       erravg!0 = "time"
       erravg!1 = "lat"
       erravg!2 = "lon"
-      format_coords(erravg, yy + mo + "01", yy + mo + dm, FREQ, True)
+      format_coords(erravg, yy + mo + "01", yy + mo + dm, FREQ)
 
       ; Format variable metadata
       table = CMOR_TABLE + "/cmip5/Tables/CMIP5_Amon"

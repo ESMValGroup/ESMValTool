@@ -190,7 +190,7 @@ begin
       output!0 = "time"
       output!1 = "lat"
       output!2 = "lon"
-      format_coords(output, yy + "0101", yy + "1231", FREQ(vv), True)
+      format_coords(output, yy + "0101", yy + "1231", FREQ(vv))
 
       ; Set variable attributes
       tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))

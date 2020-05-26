@@ -93,7 +93,7 @@ begin
       output&time = create_timec(yr, yr)
       output&lat = lat
       output&lon = lon
-      format_coords(output, yr + "0101", yr + "1231", FREQ(vv), True)
+      format_coords(output, yr + "0101", yr + "1231", FREQ(vv))
 
       ; Set variable attributes
       tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
