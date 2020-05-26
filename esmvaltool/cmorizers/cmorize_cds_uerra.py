@@ -43,7 +43,7 @@ import xarray as xr
 import xesmf as xe
 
 from esmvalcore.preprocessor._regrid import _stock_cube
-from esmvaltool.cmorizers.obs import utilities as utils
+from esmvaltool.cmorizers import utilities as utils
 
 logger = logging.getLogger(__name__)
 
