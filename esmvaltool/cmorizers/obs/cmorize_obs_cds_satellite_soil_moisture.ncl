@@ -16,6 +16,7 @@
 ;    Use the download script to retrieve the data.
 ;
 ; Modification history
+;    20200525-righi_mattia: fix time checker.
 ;    20190522-creeze_bas: time period extended.
 ;    20190314-crezee_bas: written based on cmorize_obs_esacci_soilmoisture.ncl.
 ;
@@ -34,21 +35,17 @@ begin
   ; Tier
   TIER = 3
 
-  ; Period
-  YEAR1 = 1978
-  YEAR2 = 2020
-
-  ; Selected variable (standard name)
-  VAR = (/"sm", "smStderr"/)
+  ; Selected variables (standard name)
+  VAR = (/"sm"/)
 
   ; Name in the raw data
-  NAME = (/"sm", "sm_uncertainty"/)
+  NAME = (/"sm"/)
 
   ; MIP
-  MIP = (/"Lmon", "Lmon"/)
+  MIP = (/"Lmon"/)
 
   ; Frequency
-  FREQ = (/"mon", "mon"/)
+  FREQ = (/"mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
@@ -74,51 +71,53 @@ begin
 
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
-    do yy = YEAR1, YEAR2
+    ; Set list of files
+    files = systemfunc("ls " + input_dir_path + \
+                       "C3S-SOILMOISTURE-L3S-SSMV-" + \
+                       "COMBINED-MONTHLY-????????000000-" + \
+                       "?CDR-v201812.0.?.nc")
 
-      ; Set list of files
-      files = systemfunc("ls " + input_dir_path + \
-                         "C3S-SOILMOISTURE-L3S-SSMV-" + \
-                         "COMBINED-MONTHLY-" + yy + "????000000-" + \
-                         "?CDR-v201812.0.?.nc")
-      f = addfiles(files, "r")
-      delete(files)
+    ; Retrieve start and end date (YYYYMM)
+    start_date = systemfunc("basename " + files(0))
+    start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 5)
+    end_date = systemfunc("basename " + files(dimsizes(files) - 1))
+    end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 5)
 
-      ; Read data
-      output = f[:]->$NAME(vv)$
-      delete(f)
+    ; Read data
+    f = addfiles(files, "r")
+    delete(files)
+    output = f[:]->$NAME(vv)$
+    delete(f)
 
-      ; Format coordinates
-      output!0 = "time"
-      output!1 = "lat"
-      output!2 = "lon"
-      format_coords(output, yy + "0101", yy + "1231", FREQ(vv), False)
+    ; Format coordinates
+    output!0 = "time"
+    output!1 = "lat"
+    output!2 = "lon"
+    format_coords(output, start_date + "01", end_date + "31", FREQ(vv))
 
-      ; Set variable attributes
-      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
-      delete(output)
-      output = tmp
-      delete(tmp)
+    ; Set variable attributes
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
+    delete(output)
+    output = tmp
+    delete(tmp)
 
-      ; Calculate coordinate bounds
-      bounds = guess_coord_bounds(output, FREQ(vv))
+    ; Calculate coordinate bounds
+    bounds = guess_coord_bounds(output, FREQ(vv))
 
-      ; Set global attributes
-      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+    ; Set global attributes
+    gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
-      ; Output file
-      DATESTR = yy + "01-" + yy + "12"
-      fout = output_dir_path + \
-        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+    ; Output file
+    DATESTR = start_date + "-" + end_date
+    fout = output_dir_path + \
+      str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
-      ; Write variable
-      write_nc(fout, VAR(vv), output, bounds, gAtt)
-      delete(gAtt)
-      delete(output)
-      delete(bounds)
-
-    end do
+    ; Write variable
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
+    delete(gAtt)
+    delete(output)
+    delete(bounds)
 
   end do
 
