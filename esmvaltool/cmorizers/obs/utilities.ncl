@@ -656,7 +656,7 @@ procedure format_coords(var:numeric,
 ; References
 ;
 ; Modification history
-;    20200518-righi_mattia: add flag for timesteps consistency check.
+;    20200518-righi_mattia: improve timesteps consistency check.
 ;    20190216-righi_mattia: written.
 ;
 begin
