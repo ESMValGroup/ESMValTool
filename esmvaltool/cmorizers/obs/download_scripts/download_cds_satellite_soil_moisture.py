@@ -22,6 +22,11 @@ def download_cds_satellite_sm():
                         default=os.path.join(os.path.dirname(__file__),
                                              'config-user.yml'),
                         help='config file')
+    parser.add_argument('--frequency',
+                        '-f',
+                        default=None,
+                        help='either monthly or daily',
+                        required=True)
 
     args = parser.parse_args()
 
@@ -37,6 +42,19 @@ def download_cds_satellite_sm():
     savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE/'
     os.makedirs(savedir, exist_ok=True)
 
+    # This dictionary contains the data request part that is specific to
+    # the frequency (either daily/monthly) requested.
+    freq_specific_kwargs = {
+        'monthly': {
+            'time_aggregation': 'month_average',
+            'day': ['01']
+        },
+        'daily': {
+            'time_aggregation': 'day_average',
+            'day': [f'{i:02d}' for i in range(1, 32)],
+        }
+    }
+
     client = cdsapi.Client()
 
     # Download per year
@@ -46,7 +64,7 @@ def download_cds_satellite_sm():
             savedir,
             # Although tgz is requested, the file
             # actually is a tar (issue has been opened on CDS)
-            f"cds-satellite-soil-moisture_{year}.tar")
+            f"cds-satellite-soil-moisture_{args.frequency}_{year}.tar")
         request_dictionary = {
             'format':
             'tgz',
@@ -79,6 +97,7 @@ def download_cds_satellite_sm():
             'cdr',
             'version':
             'v201812.0.0',
+            **freq_specific_kwargs[args.frequency]
         }
         client.retrieve('satellite-soil-moisture', request_dictionary,
                         savename)
@@ -91,14 +110,14 @@ def download_cds_satellite_sm():
 
     # Now ICDR v201812.0.1 (identical to v201812.0.0 according
     # to data provider except for dates covered)
-    savename = os.path.join(savedir,
-                            "cds-satellite-soil-moisture_v201812.0.1.tar.gz")
+    savename = os.path.join(
+        savedir,
+        "cds-satellite-soil-moisture_{args.frequency}_v201812.0.1.tar.gz")
     client.retrieve(
         'satellite-soil-moisture', {
             'format': 'tgz',
             'variable': 'volumetric_surface_soil_moisture',
             'type_of_sensor': 'combined_passive_and_active',
-            'time_aggregation': 'month_average',
             'year': '2019',
             'type_of_record': 'icdr',
             'month': [
@@ -113,7 +132,7 @@ def download_cds_satellite_sm():
                 '09',
             ],
             'version': 'v201812.0.1',
-            'day': '01',
+            **freq_specific_kwargs[args.frequency]
         }, savename)
     # Unpack the file
     tar = tarfile.open(savename)
@@ -124,8 +143,10 @@ def download_cds_satellite_sm():
 
     # Now ICDR v201812.0.0 (identical to v201812.0.1 according
     # to data provider except for dates covered)
-    savename = os.path.join(savedir,
-                            "cds-satellite-soil-moisture_v201812.0.0.tar")
+    savename = os.path.join(
+        savedir,
+        "cds-satellite-soil-moisture_{args.frequency}_v201812.0.0.tar")
+
     client.retrieve(
         'satellite-soil-moisture', {
             'format': 'tgz',
@@ -147,7 +168,7 @@ def download_cds_satellite_sm():
                 '12',
             ],
             'version': 'v201812.0.0',
-            'day': '01',
+            **freq_specific_kwargs[args.frequency]
         }, savename)
     # Unpack the file
     tar = tarfile.open(savename)
