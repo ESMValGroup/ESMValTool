@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 class FTPDownloader(BaseDownloader):
 
-    def __init__(self, config, server, dataset):
-        super().__init__(config, dataset)
+    def __init__(self, config, server, dataset, overwrite):
+        super().__init__(config, dataset, overwrite)
         self._client = None
         self.server = server
         self.tier = 2
@@ -94,8 +94,8 @@ class FTPDownloader(BaseDownloader):
 
 class CCIDownloader(FTPDownloader):
 
-    def __init__(self, config, dataset):
-        super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset)
+    def __init__(self, config, dataset, overwrite):
+        super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset, overwrite)
         self.ftp_name = self.dataset_name[7:]
 
     def set_cwd(self, path):

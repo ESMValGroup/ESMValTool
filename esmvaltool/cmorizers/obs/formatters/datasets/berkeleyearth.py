@@ -36,7 +36,10 @@ logger = logging.getLogger(__name__)
 
 
 def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
-    """ the time coordinates are a big mess (given as floats in years A.D.)
+    """
+    Fix broken time.
+
+    The time coordinates are a big mess (given as floats in years A.D.)
     best to reinitialize them from scratch
     """
     logger.info("Reinitializing broken time coordinate")
@@ -85,9 +88,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
 
 
 def calc_abs_temperature(cube_anom, cube_clim, short_name):
-    """
-    derive absolute tas values
-    """
+    """Derive absolute tas values."""
     logger.info("Deriving absolute temperature fields")
 
     # prepare cubes

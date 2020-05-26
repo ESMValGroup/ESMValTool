@@ -1,15 +1,19 @@
 """Downloader for the Climate Data Store"""
 
 import os
+import logging
 import cdsapi
 
 from .downloader import BaseDownloader
 
+logger = logging.getLogger(__name__)
+
 
 class CDSDownloader(BaseDownloader):
 
-    def __init__(self, product_name, config, request_dictionary, dataset):
-        super().__init__(config, dataset)
+    def __init__(self, product_name, config, request_dictionary, dataset,
+                 overwrite):
+        super().__init__(config, dataset, overwrite)
         self._client = cdsapi.Client()
         self._product_name = product_name
         self._request_dict = request_dictionary
@@ -34,6 +38,8 @@ class CDSDownloader(BaseDownloader):
             if self.overwrite:
                 os.remove(file_path)
             else:
+                logger.info(
+                    'File %s already downloaded. Skipping...', file_path)
                 return
         self._client.retrieve(
             self._product_name,

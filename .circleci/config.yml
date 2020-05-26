@@ -80,8 +80,8 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            pytest
-            esmvaltool -h
+            python setup.py test
+            esmvaltool version
             ncl -V
             # cdo test, check that it supports hdf5
             cdo --version
@@ -129,7 +129,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            esmvaltool -h
+            esmvaltool version
             python setup.py test
             ncl -V
             cdo --version
@@ -217,7 +217,7 @@ jobs:
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation
-            esmvaltool -h
+            esmvaltool version
             ncl -V
             cdo --version
 

@@ -3,11 +3,12 @@
 from esmvaltool.cmorizers.obs.downloaders.wget import WGetDownloader
 
 
-def download_dataset(config, dataset, start_date, end_date):
+def download_dataset(config, dataset, start_date, end_date, overwrite):
     """Download dataset cds-satellite-albedo."""
     downloader = WGetDownloader(
         config=config,
-        dataset=dataset
+        dataset=dataset,
+        overwrite=overwrite,
     )
 
     downloader.download_file(

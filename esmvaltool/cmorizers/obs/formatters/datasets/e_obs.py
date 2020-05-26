@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 def fix_coords_non_symetric_lon(cube):
     """Fix the time units and values to CMOR standards."""
-
     # first fix any completely missing coord var names
     utils._fix_dim_coordnames(cube)
     # fix individual coords

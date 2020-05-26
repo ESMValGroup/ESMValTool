@@ -5,11 +5,11 @@ import os
 
 class BaseDownloader():
 
-    def __init__(self, config, dataset):
+    def __init__(self, config, dataset, overwrite):
         self._config = config
         self.tier = 3
         self.dataset = dataset
-        self.overwrite = False
+        self.overwrite = overwrite
 
     @property
     def local_folder(self):

@@ -5,13 +5,14 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.obs.downloaders.ftp import CCIDownloader
 
 
-def download_dataset(config, dataset, start_date, end_date):
+def download_dataset(config, dataset, start_date, end_date, overwrite):
     """Download dataset cds-satellite-albedo."""
     loop_date = start_date
 
     downloader = CCIDownloader(
         config=config,
-        dataset=dataset
+        dataset=dataset,
+        overwrite=overwrite,
     )
     downloader.connect()
 

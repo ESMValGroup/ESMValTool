@@ -1,4 +1,4 @@
-"""Downloader for the Climate Data Store"""
+"""wget based downloader."""
 
 import logging
 import subprocess
@@ -9,32 +9,58 @@ logger = logging.getLogger(__name__)
 
 
 class WGetDownloader(BaseDownloader):
+    """Data downloader based on wget."""
 
     def download_folder(self, server_path, wget_options):
-        # get filenames within the directory
+        """
+        Download folder.
+
+        Parameters
+        ----------
+        server_path: str
+            Path to remote folder
+        wget_options: list(str)
+            Extra options for wget
+        """
         subprocess.check_output(
-            ['wget'] + wget_options + [
+            ['wget'] + wget_options + self.overwrite_options + [
                 f'--directory-prefix={self.local_folder}',
                 '--recursive',
                 '--no-directories',
-                '--no-clobber',
                 f'{server_path}',
             ]
         )
 
     def download_file(self, server_path, wget_options):
-        # get filenames within the directory
+        """
+        Download file.
+
+        Parameters
+        ----------
+        server_path: str
+            Path to remote file
+        wget_options: list(str)
+            Extra options for wget
+        """
         subprocess.check_output(
-            ['wget'] + wget_options + [
+            ['wget'] + wget_options + self.overwrite_options + [
                 f'--directory-prefix={self.local_folder}',
                 '--no-directories',
-                '--no-clobber',
                 server_path,
             ]
         )
 
+    @property
+    def overwrite_options(self):
+        """Get overwrite options as configured in downloader."""
+        if self.overwrite:
+            return ['--no-clobber', ]
+        else:
+            []
+
 
 class NASADownloader(WGetDownloader):
+    """Downloader for the NASA repository."""
 
     def __init__(self, config, dataset):
         super().__init__(config, dataset)
@@ -47,12 +73,28 @@ class NASADownloader(WGetDownloader):
             "--keep-session-cookies",
         ]
 
-    def download_folder(self, folder_path):
+    def download_folder(self, server_path):
+        """
+        Download folder.
+
+        Parameters
+        ----------
+        folder_path: str
+            Path to remote folder
+        """
         wget_options = self._wget_common_options + [
             "-np",
             "--accept=nc,nc4"
         ]
-        super().download_folder(folder_path, wget_options)
+        super().download_folder(server_path, wget_options)
 
-    def download_file(self, folder_path):
-        super().download_file(folder_path, self._wget_common_options)
+    def download_file(self, server_path):
+        """
+        Download file.
+
+        Parameters
+        ----------
+        folder_path: str
+            Path to remote folder
+        """
+        super().download_file(server_path, self._wget_common_options)

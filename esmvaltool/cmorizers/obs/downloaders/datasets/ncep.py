@@ -5,12 +5,13 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.obs.downloaders.ftp import FTPDownloader
 
 
-def download_dataset(config, dataset, start_date, end_date):
+def download_dataset(config, dataset, start_date, end_date, overwrite):
     """Download dataset cds-satellite-albedo."""
     downloader = FTPDownloader(
         config=config,
         server='ftp.cdc.noaa.gov',
-        dataset=dataset
+        dataset=dataset,
+        overwrite=overwrite,
     )
     downloader.connect()
 

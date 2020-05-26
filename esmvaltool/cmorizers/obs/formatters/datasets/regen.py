@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(short_name, var, cfg, file_path, out_dir):
     """Extract variable."""
-
     raw_var = var.get('raw', short_name)
     cube = iris.load_cube(file_path, utils.var_name_constraint(raw_var))
 
