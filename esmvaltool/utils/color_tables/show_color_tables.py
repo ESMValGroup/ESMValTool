@@ -16,13 +16,6 @@ from jinja2 import Template
 from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-CONSOLE_HANDLER = logging.StreamHandler()
-CONSOLE_HANDLER.setLevel(logging.INFO)
-CONSOLE_HANDLER.setFormatter(
-    logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(CONSOLE_HANDLER)
-
 PATH_TO_COLORTABLES = os.path.join(os.path.dirname(plot_path), "rgb")
 
 NCL_SCRIPT = """
@@ -135,67 +128,122 @@ def main_plot_ncl_cm(colorpath, outpath):
         subprocess.check_call(["ncl", fname.name])
 
 
-def get_args():
-    """Define the commandline arguments."""
-    parser = argparse.ArgumentParser(description="""
-        Utility module for inspecting and converting
-        ncl color tables.""")
-    parser.add_argument(
-        '-c',
-        '--colorpath',
-        metavar='COLOR_TABLE_DIR',
-        default=PATH_TO_COLORTABLES,
-        help="Set directory to <COLOR_TABLE_DIR>. Default is {0}".format(
-            PATH_TO_COLORTABLES))
-    parser.add_argument(
-        '-n',
-        '--ncl',
-        dest='n',
-        action='store_true',
-        help="""
-            Create report of all ncl color maps in
-            <COLOR_TABLE_DIR> using ncl.""")
-    parser.add_argument(
-        '-p',
-        '--python',
-        dest='p',
-        action='store_true',
-        help="""Create example plots of all ncl color maps
-        in <COLOR_TABLE_DIR> using python.""")
-    parser.add_argument(
-        '-o',
-        '--outpath',
-        metavar='OUTDIR',
-        default='./',
-        help="Set out directory to <OUTDIR>. Default is the current directory")
-    return parser.parse_args()
+# def get_args():
+#     """Define the commandline arguments."""
+#     parser = argparse.ArgumentParser(description="""
+#         Utility module for inspecting and converting
+#         ncl color tables.""")
+#     parser.add_argument(
+#         '-c',
+#         '--colorpath',
+#         metavar='COLOR_TABLE_DIR',
+#         default=PATH_TO_COLORTABLES,
+#         help="Set directory to <COLOR_TABLE_DIR>. Default is {0}".format(
+#             PATH_TO_COLORTABLES))
+#     parser.add_argument(
+#         '-n',
+#         '--ncl',
+#         dest='n',
+#         action='store_true',
+#         help="""
+#             Create report of all ncl color maps in
+#             <COLOR_TABLE_DIR> using ncl.""")
+#     parser.add_argument(
+#         '-p',
+#         '--python',
+#         dest='p',
+#         action='store_true',
+#         help="""Create example plots of all ncl color maps
+#         in <COLOR_TABLE_DIR> using python.""")
+#     parser.add_argument(
+#         '-o',
+#         '--outpath',
+#         metavar='OUTDIR',
+#         default='./',
+#         help="Set out directory to <OUTDIR>. Default is the current directory")
+#     return parser.parse_args()
 
 
-def main(args):
-    """Call functions according to command line arguments."""
-    colorpath = args.colorpath
-    outpath = args.outpath
+# def main(args):
+#     """Call functions according to command line arguments."""
+#     colorpath = args.colorpath
+#     outpath = args.outpath
 
-    if not os.path.isdir(colorpath):
-        logger.warning("Path '%s' is invalid", colorpath)
-        raise OSError
+#     if not os.path.isdir(colorpath):
+#         logger.warning("Path '%s' is invalid", colorpath)
+#         raise OSError
 
-    if not os.path.isdir(outpath) and not os.path.exists(outpath):
-        logger.info("Creating directory '%s'", outpath)
-        os.mkdir(outpath)
+#     if not os.path.isdir(outpath) and not os.path.exists(outpath):
+#         logger.info("Creating directory '%s'", outpath)
+#         os.mkdir(outpath)
 
-    if args.n:
-        logger.info("Creating report with ncl")
-        main_plot_ncl_cm(colorpath, outpath)
-    if args.p:
-        logger.info("Creating report with python")
-        main_plot_python_cm(colorpath, outpath)
+#     if args.n:
+#         logger.info("Creating report with ncl")
+#         main_plot_ncl_cm(colorpath, outpath)
+#     if args.p:
+#         logger.info("Creating report with python")
+#         main_plot_python_cm(colorpath, outpath)
 
 
-def run():
-    """Run the program."""
-    args = get_args()
-    main(args)
+# =
+
+
+class ColorTables():
+    """
+    Generate colormap samples for ESMValTool's default colormaps.
+    """
+
+    def __init__(self):
+        logger.setLevel(logging.DEBUG)
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(
+            logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        logger.addHandler(console_handler)
+
+    def _prepare_paths(self, colorpath, outpath):
+        if not os.path.isdir(colorpath):
+            logger.warning("Path '%s' is invalid", colorpath)
+            raise OSError
+        self._colorpath = colorpath
+
+        if not os.path.isdir(outpath) and not os.path.exists(outpath):
+            logger.info("Creating directory '%s'", outpath)
+            os.mkdir(outpath)
+        self._outpath = outpath
+
+    def python(self, colorpath=PATH_TO_COLORTABLES, outpath="./"):
+        """
+        Generate samples for Python colormaps
+
+        Parameters
+        ----------
+
+        colorpath: str
+            Folder to search for colormaps. Default is installed colormaps
+        outpath: str
+            Out directory. Default is the current directory
+        """
+        self._prepare_paths(colorpath, outpath)
+        logger.info("Creating report with Python")
+        main_plot_python_cm(self._colorpath, self._outpath)
+
+    def ncl(self, colorpath=PATH_TO_COLORTABLES, outpath="./"):
+        """
+        Generate samples for NCL colormaps
+
+        Parameters
+        ----------
+
+        colorpath: str
+            Folder to search for colormaps. Default is installed colormaps
+        outpath: str
+            Out directory. Default is the current directory
+        """
+        self._prepare_paths(colorpath, outpath)
+        logger.info("Creating report with NCL")
+        main_plot_ncl_cm(self._colorpath, self._outpath)
 
 
 if __name__ == '__main__':
