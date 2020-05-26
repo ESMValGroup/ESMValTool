@@ -596,10 +596,9 @@ diagnostics:
     description: CDS-SATELLITE-SOIL-MOISTURE check
     variables:
       sm:
-      smStderr:
     additional_datasets:
-      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, mip: day, tier: 3,
-         type: sat, version: COMBINED-TCDR-v201812.0.0,
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, mip: Lmon,
+         tier: 3, type: sat, version: COMBINED-CUSTOM-MERGED-20200518,
          start_year: 1979, end_year: 2019}
     scripts: null
 
