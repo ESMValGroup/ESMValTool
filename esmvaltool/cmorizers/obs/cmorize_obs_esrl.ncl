@@ -66,7 +66,7 @@ begin
   TYPE = "ground"
 
   ; Stations list
-  FILE_STAT = INDIR + OBSNAME + "_stations.csv"
+  FILE_STAT = input_dir_path + OBSNAME + "_stations.csv"
 
   ; Global attributes
   SOURCE = "http://www.esrl.noaa.gov/gmd/dv/data/index.php"
@@ -79,11 +79,6 @@ begin
 end
 
 begin
-
-  ; Create output dir
-  if (.not.isfilepresent(OUTDIR)) then
-    system("mkdir -p " + OUTDIR)
-  end if
 
   ; Create time coordinate
   timec = create_timec(YEAR1, YEAR2)
