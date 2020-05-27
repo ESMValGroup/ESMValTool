@@ -36,7 +36,7 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1978
+  YEAR1 = 2019
   YEAR2 = 2020
 
   ; Selected variables (standard name)
@@ -46,10 +46,12 @@ begin
   NAME = (/"sm"/)
 
   ; MIP
-  MIP = (/"Lmon"/)
-
+  ;MIP = (/"Lmon"/)
+  MIP = (/"day"/)
+  
   ; Frequency
-  FREQ = (/"mon"/)
+  ;FREQ = (/"mon"/)
+  FREQ = (/"day"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
@@ -80,7 +82,8 @@ begin
       ; Set list of files
       files = systemfunc("ls " + input_dir_path + \
                          "C3S-SOILMOISTURE-L3S-SSMV-" + \
-                         "COMBINED-MONTHLY-" + yy + \
+                         "COMBINED-DAILY-" + yy + \
+;                         "COMBINED-MONTHLY-" + yy + \
                          "????000000-?CDR-v201812.0.?.nc")
 
       ; Retrieve start and end date (YYYYMM)
