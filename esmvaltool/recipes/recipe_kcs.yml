@@ -24,10 +24,12 @@ documentation:
 # Replace ##% with nothing to run with all datasets
 datasets:
 ##%  # Starting at year 1961, since some datasets don't have data available before 1961
-  - {dataset: ACCESS1-0, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
-  - {dataset: ACCESS1-3, exp: historical, ensemble: r(1:3)i1p1, start_year: 1961, end_year: 2005}
+  - {dataset: ACCESS1-0, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
+  # - {dataset: ACCESS1-0, exp: historical, ensemble: r2i1p1, start_year: 1961, end_year: 2005}
+  # - {dataset: ACCESS1-0, exp: historical, ensemble: r3i1p1, start_year: 1961, end_year: 2005}
+  - {dataset: ACCESS1-3, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
 ##%  - {dataset: BNU-ESM, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
-  - {dataset: CCSM4, exp: historical, ensemble: r(1:4)i1p1, start_year: 1961, end_year: 2005}
+  # - {dataset: CCSM4, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
 ##%  - {dataset: CCSM4, exp: historical, ensemble: r1i2p1, start_year: 1961, end_year: 2005}
 ##%  - {dataset: CCSM4, exp: historical, ensemble: r1i2p2, start_year: 1961, end_year: 2005}
 ##%  - {dataset: CESM1-BGC, exp: historical, ensemble: r1i1p1, start_year: 1961, end_year: 2005}
@@ -153,7 +155,7 @@ datasets:
   - {dataset: ACCESS1-0, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
   - {dataset: ACCESS1-3, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: BNU-ESM, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
-  - {dataset: CCSM4, exp: rcp45, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+  # - {dataset: CCSM4, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: CESM1-BGC, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%# Missing time data: december 2057
 ##%#  - {dataset: CESM1-CAM5-1-FV2, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
@@ -214,7 +216,7 @@ datasets:
 ##%  - {dataset: bcc-csm1-1-m, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: bcc-csm1-1, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: inmcm4, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
-  - {dataset: CCSM4, exp: rcp60, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+  # - {dataset: CCSM4, exp: rcp60, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: CESM1-CAM5, exp: rcp60, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: CSIRO-Mk3-6-0, exp: rcp60, ensemble: r(1:10)i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: FIO-ESM, exp: rcp60, ensemble: r(1:3)i1p1, start_year: 2006, end_year: 2099}
@@ -239,10 +241,10 @@ datasets:
 ##%  - {dataset: NorESM1-ME, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: bcc-csm1-1-m, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: bcc-csm1-1, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
-  - {dataset: ACCESS1-0, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
-  - {dataset: ACCESS1-3, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  # - {dataset: ACCESS1-0, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+  # - {dataset: ACCESS1-3, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: BNU-ESM, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
-  - {dataset: CCSM4, exp: rcp85, ensemble: r(1:4)i1p1, start_year: 2006, end_year: 2099}
+  # - {dataset: CCSM4, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%  - {dataset: CESM1-BGC, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
 ##%# Missing september 2058
 ##%#  - {dataset: CESM1-CAM5-1-FV2, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
@@ -335,48 +337,50 @@ diagnostics:
     scripts:
       script1:
         script: kcs/tas_annual_change.py
+        # Settings, it can get values of run, experiment or model
+        normby: run
         # output: CSV file
         output: tas-annual-change.csv
 
-      script2:
-        script: kcs/calculate_steering_table.py
-        ancestors: [script1, tas]
-        input: tas-annual-change.csv
-        # output: CSV file
-        output: steering_table.csv
-        model: CCSM4
-        reference_period: [1980, 2009]
-        scenarios:
-          - {'name': 'W', 'epoch': 2050, 'percentile': 90}
-          - {'name': 'G', 'epoch': 2050, 'percentile': 10}
-          - {'name': 'W', 'epoch': 2085, 'percentile': 90}
-          - {'name': 'G', 'epoch': 2085, 'percentile': 10}
-        timespan_years: 30
-        window_rolling_mean: 10
+      # script2:
+      #   script: kcs/calculate_steering_table.py
+      #   ancestors: [script1, tas]
+      #   input: tas-annual-change.csv
+      #   # output: CSV file
+      #   output: steering_table.csv
+      #   model: CCSM4
+      #   reference_period: [1980, 2009]
+      #   scenarios:
+      #     - {'name': 'W', 'epoch': 2050, 'percentile': 90}
+      #     - {'name': 'G', 'epoch': 2050, 'percentile': 10}
+      #     - {'name': 'W', 'epoch': 2085, 'percentile': 90}
+      #     - {'name': 'G', 'epoch': 2085, 'percentile': 10}
+      #   timespan_years: 30
+      #   window_rolling_mean: 10
 
-  diagnostic2:
-    description: "Resample the model of interest runs"
-    variables:
-      tas:
-        preprocessor: preprocessor_nlpoint
-        project: CMIP5
-        mip: Amon
-      pr:
-        preprocessor: preprocessor_nlpoint
-        project: CMIP5
-        mip: Amon
-    scripts:
-      script1:
-        script: kcs/resample.py
-        ancestors: [diagnostic1/script2, tas, pr]
-        model: CCSM4
-        # output: CSV file
-        steering_table: steering_table.csv
-        indices_output: indices.h5
-        resamples_output: resamples.h5
-        conditions: conditions.yml
-        penalties:
-          1: 0.0
-          2: 0.0
-          3: 1.0
-          4: 5.0
+  # diagnostic2:
+  #   description: "Resample the model of interest runs"
+  #   variables:
+  #     tas:
+  #       preprocessor: preprocessor_nlpoint
+  #       project: CMIP5
+  #       mip: Amon
+  #     pr:
+  #       preprocessor: preprocessor_nlpoint
+  #       project: CMIP5
+  #       mip: Amon
+  #   scripts:
+  #     script1:
+  #       script: kcs/resample.py
+  #       ancestors: [diagnostic1/script2, tas, pr]
+  #       model: CCSM4
+  #       # output: CSV file
+  #       steering_table: steering_table.csv
+  #       indices_output: indices.h5
+  #       resamples_output: resamples.h5
+  #       conditions: conditions.yml
+  #       penalties:
+  #         1: 0.0
+  #         2: 0.0
+  #         3: 1.0
+  #         4: 5.0
