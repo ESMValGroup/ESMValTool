@@ -1,0 +1,61 @@
+# ESMValTool
+# recipe_kcs.yml
+---
+documentation:
+  description: This recipe reproduces the basic steps described in Lenderink 2014.
+
+  references:
+    - Lenderink 2014: https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/meta
+
+  authors:
+    - rol_evert
+    - kalverla_peter
+    - alidoost_sarah
+
+
+datasets:
+  # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+
+preprocessors:
+  timeseries_ensemble:
+    area_statistics:
+      operator: mean
+
+    anomalies:
+      period: month  # 'full' requires https://github.com/ESMValGroup/ESMValCore/pull/652, use # 'month' for now.
+      reference:
+        start_year: 1980
+        start_month: 1
+        start_day: 1
+        end_year: 2009
+        end_month: 12
+        end_day: 31
+      standardize: false
+
+    annual_statistics:
+      operator: mean
+
+    multi_model_statistics:
+      span: full
+      statistics: [mean, median]   # might want to add percentiles here, but not supported
+
+
+diagnostics:
+  timeseries_ensemble:
+    description: >
+      Plot the typical graph of temperature change according to different cmip models/runs
+      Also exports the statistics (mean, median) data to a CSV file
+      # TODO: add reference points for 2050/2080 10/90-percentiles
+
+    variables:
+      tas:
+        preprocessor: timeseries_ensemble
+
+    scripts:
+      plot_pdf:
+        script: kcs/timeseries_ensemble.py
+
