@@ -17,6 +17,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         },
         config=config,
         dataset=dataset,
+        overwrite=overwrite,
     )
 
     while loop_date <= end_date:

@@ -40,8 +40,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 1979
-  YEAR2 = 2016
+  YEAR1 = get_year(start_year, 1979)
+  YEAR2 = get_year(end_year, 2016)
 
   ; Selected variable (standard name)
   VAR = (/"sm", "smStderr", "dos", "dosStderr"/)

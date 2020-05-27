@@ -39,8 +39,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 1850
-  YEAR2 = 2013
+  YEAR1 = get_year(start_year, 1850)
+  YEAR2 = get_year(end_year, 2013)
 
   ; Selected variable (standard name)
   VAR = "tasa"

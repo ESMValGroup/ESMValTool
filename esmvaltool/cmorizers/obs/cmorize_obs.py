@@ -16,6 +16,7 @@ import importlib
 import logging
 import os
 import subprocess
+import shutil
 from pathlib import Path
 
 import esmvalcore
@@ -160,7 +161,7 @@ class Formatter():
             self.config, dataset, start_date, end_date, overwrite)
         logger.info('%s downloaded', dataset)
 
-    def format(self):
+    def format(self, start, end, install):
         """Format all available datasets."""
         logger.info("Running the CMORization scripts.")
         # datsets dictionary of Tier keys
@@ -174,13 +175,12 @@ class Formatter():
         failed_datasets = []
         for tier in datasets:
             for dataset in datasets:
-                if not self.format_dataset(dataset):
+                if not self.format_dataset(dataset, start, end, install):
                     failed_datasets.append(dataset)
 
             if failed_datasets:
                 raise Exception(
-                    'Could not find cmorizers for %s datasets ' %
-                    ' '.join(failed_datasets)
+                    f'Format failed for datasets {" ".join(failed_datasets)}'
                 )
 
     def _assemble_datasets(self):
@@ -205,7 +205,7 @@ class Formatter():
 
         return datasets
 
-    def format_dataset(self, dataset):
+    def format_dataset(self, dataset, start, end, install):
         """
         Format a single dataset.
 
@@ -239,16 +239,37 @@ class Formatter():
         logger.info("Reformat script: %s", reformat_script_root)
         if os.path.isfile(reformat_script_root + '.ncl'):
             reformat_script = reformat_script_root + '.ncl'
-            return self._run_ncl_script(
+            success = self._run_ncl_script(
                 in_data_dir,
                 out_data_dir,
                 dataset,
                 reformat_script,
+                start,
+                end
             )
         elif os.path.isfile(reformat_script_root + '.py'):
-            return self._run_pyt_script(in_data_dir, out_data_dir, dataset)
-        logger.error('Could not find cmorizer for %s', dataset)
-        return False
+            success = self._run_pyt_script(
+                in_data_dir, out_data_dir, dataset, start, end)
+        else:
+            logger.error('Could not find formatter for %s', dataset)
+            return False
+        if not success:
+            logger.error('Foramtting failed for datset %s', dataset)
+            return False
+        if install:
+            rootpath = self.config['rootpath']
+            target_dir = rootpath.get('OBS', rootpath['default'])[0]
+            target_dir = os.path.join(target_dir, tier, dataset)
+            if os.path.isdir(target_dir):
+                logger.info(
+                    'Automatic installation of dataset %s skipped: '
+                    'target folder %s already exists',
+                    dataset, target_dir)
+            else:
+                logger.info(
+                    'Installing dataset %s in folder %s', dataset, target_dir)
+                shutil.copytree(out_data_dir, target_dir)
+        return True
 
     def _get_dataset_tier(self, dataset):
         for tier in [2, 3]:
@@ -258,8 +279,16 @@ class Formatter():
         return None
 
     def _write_ncl_settings(self, project_info, dataset, run_dir,
-                            reformat_script):
+                            reformat_script, start_year, end_year):
         """Write the information needed by the ncl reformat script."""
+        if start_year is None:
+            start_year = 0
+        else:
+            start_year = start_year.year
+        if end_year is None:
+            end_year = 0
+        else:
+            end_year = end_year.year
         settings = {
             'cmorization_script': reformat_script,
             'input_dir_path': project_info[dataset]['indir'],
@@ -267,6 +296,8 @@ class Formatter():
             'config_user_info': {
                 'log_level': self.config['log_level'],
             },
+            'start_year': start_year,
+            'end_year': end_year,
         }
         settings_filename = os.path.join(run_dir, dataset, 'settings.ncl')
         if not os.path.isdir(os.path.join(run_dir, dataset)):
@@ -275,7 +306,7 @@ class Formatter():
         write_ncl_settings(settings, settings_filename)
         return settings_filename
 
-    def _run_ncl_script(self, in_dir, out_dir, dataset, script):
+    def _run_ncl_script(self, in_dir, out_dir, dataset, script, start, end):
         """Run the NCL cmorization mechanism."""
         logger.info("CMORizing dataset %s using NCL script %s",
                     dataset, script)
@@ -284,7 +315,7 @@ class Formatter():
         project[dataset]['indir'] = in_dir
         project[dataset]['outdir'] = out_dir
         settings_file = self._write_ncl_settings(
-            project, dataset, self.run_dir, script)
+            project, dataset, self.run_dir, script, start, end)
         esmvaltool_root = os.path.dirname(
             os.path.dirname(os.path.dirname(os.path.dirname(script))))
 
@@ -306,9 +337,11 @@ class Formatter():
         for oline in str(output.decode('utf-8')).split('\n'):
             logger.info('[NCL] %s', oline)
         if err:
-            logger.info('[NCL][subprocess.Popen ERROR] %s', err)
+            logger.error('[NCL][subprocess.Popen ERROR] %s', err)
+            return False
+        return True
 
-    def _run_pyt_script(self, in_dir, out_dir, dataset):
+    def _run_pyt_script(self, in_dir, out_dir, dataset, start, end):
         """Run the Python cmorization mechanism."""
         module_name = 'esmvaltool.cmorizers.obs.formatters.datasets.{}'.format(
             dataset.lower().replace("-", "_"))
@@ -316,7 +349,8 @@ class Formatter():
         logger.info("CMORizing dataset %s using Python script %s",
                     dataset, module.__file__)
         cmor_cfg = read_cmor_config(dataset)
-        module.cmorization(in_dir, out_dir, cmor_cfg, self.config)
+        module.cmorization(in_dir, out_dir, cmor_cfg, self.config, start, end)
+        return True
 
 
 class DataCommand():
@@ -340,14 +374,18 @@ class DataCommand():
         formatter.start('download', datasets, config_file, kwargs)
         formatter.download(start, end, overwrite)
 
-    def format(self, datasets=None, config_file=None, **kwargs):
+    def format(self, datasets=None, config_file=None, start=None, end=None,
+               install=False, **kwargs):
+        start = self._parse_date(start)
+        end = self._parse_date(end)
+
         formatter = Formatter()
         formatter.start('download', datasets, config_file, kwargs)
-        formatter.format()
+        formatter.format(start, end, install)
 
     def prepare(self, datasets=None, config_file=None,
                 start=None, end=None,
-                overwrite=False, **kwargs):
+                overwrite=False, install=False, **kwargs):
         """
         Download a format a set of datasets.
 
@@ -361,7 +399,7 @@ class DataCommand():
         formatter = Formatter()
         formatter.start('download', datasets, config_file, kwargs)
         formatter.download(start, end, overwrite)
-        formatter.format()
+        formatter.format(start, end, install)
 
     @staticmethod
     def _parse_date(date):

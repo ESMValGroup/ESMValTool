@@ -35,8 +35,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 2005
-  YEAR2 = 2011
+  YEAR1 = get_year(start_year, 2005)
+  YEAR2 = get_year(end_year, 2011)
 
   ; Selected variable (standard name)
   VAR = "burntArea"

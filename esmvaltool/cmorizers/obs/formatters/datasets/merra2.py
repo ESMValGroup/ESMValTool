@@ -141,11 +141,18 @@ def _extract_variable(in_files, var, cfg, out_dir):
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, start, end):
     """Run CMORizer for MERRA2."""
     cfg.pop('cmor_table')
-
-    for year in range(1980, 2019):
+    if start is None:
+        start = 1980
+    else:
+        start = start.year
+    if end is None:
+        end = 2018
+    else:
+        end = end.year
+    for year in range(start, end + 1):
         for short_name, var in cfg['variables'].items():
             if 'short_name' not in var:
                 var['short_name'] = short_name

@@ -36,8 +36,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 1870
-  YEAR2 = 2017
+  YEAR1 = get_year(start_year, 1870)
+  YEAR2 = get_year(end_year, 2017)
 
   ; Selected variable (standard name)
   VAR = (/"ts", "tos", "sic"/)

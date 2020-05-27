@@ -36,8 +36,8 @@ begin
   TIER = 2
 
   ; Period (only complete years)
-  YEAR1 = 1984
-  YEAR2 = 2016
+  YEAR1 = get_year(start_year, 1984)
+  YEAR2 = get_year(end_year, 2016)
 
   ; Selected variables (standard names)
   VAR = (/"rlut", "rlutcs", "rsut", "rsutcs", "rsus", \

@@ -37,8 +37,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 2007
-  YEAR2 = 2015
+  YEAR1 = get_year(start_year, 2007)
+  YEAR2 = get_year(end_year, 2015)
 
   ; Selected variable (standard name)
   VAR = (/"clcalipso"/)

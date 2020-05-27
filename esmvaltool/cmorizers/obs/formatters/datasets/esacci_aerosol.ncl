@@ -42,8 +42,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 1997
-  YEAR2 = 2011
+  YEAR1 = get_year(start_year, 1997)
+  YEAR2 = get_year(end_year, 2011)
 
   ; Selected variable (standard name)
   VAR = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer", \

@@ -38,8 +38,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 1992
-  YEAR2 = 2010
+  YEAR1 = get_year(start_year, 1992)
+  YEAR2 = get_year(end_year, 2010)
 
   ; MIP
   MIP = "Amon"

@@ -1,4 +1,4 @@
-"""Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
+"""Script to download CALIPSO-GOCCP from IPSL ftp."""
 
 from dateutil import relativedelta
 
@@ -6,7 +6,7 @@ from esmvaltool.cmorizers.obs.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """Download dataset cds-satellite-albedo."""
+    """Download dataset CALIPSO-GOCCP."""
     downloader = FTPDownloader(
         config=config,
         server='ftp.climserv.ipsl.polytechnique.fr',

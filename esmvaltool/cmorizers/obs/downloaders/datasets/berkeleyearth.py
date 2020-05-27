@@ -1,10 +1,10 @@
-"""Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
+"""Script to download BerkeleyEarth from its webpage."""
 
 from esmvaltool.cmorizers.obs.downloaders.wget import WGetDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """Download dataset cds-satellite-albedo."""
+    """Download dataset BerkeleyEarth."""
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,

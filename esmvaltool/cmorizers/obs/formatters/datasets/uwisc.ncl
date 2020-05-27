@@ -33,8 +33,8 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1988
-  YEAR2 = 2007
+  YEAR1 = get_year(start_year, 1988)
+  YEAR2 = get_year(end_year, 2007)
 
   ; Selected variable (standard name)
   VAR = (/"lwp", "lwpStderr"/)

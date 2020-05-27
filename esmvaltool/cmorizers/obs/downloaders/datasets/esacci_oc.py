@@ -11,7 +11,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
 
     downloader = CCIDownloader(
         config=config,
-        dataset=dataset
+        dataset=dataset,
+        overwrite=overwrite,
     )
     downloader.ftp_name = 'ocean_colour'
     downloader.connect()

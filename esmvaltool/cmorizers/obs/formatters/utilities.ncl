@@ -34,6 +34,26 @@ TUNITS = "days since 1950-01-01 00:00:00"
 ; CMOR FillValue
 FILL = 1.e+20
 
+undef("get_year")
+function get_year(year:integer, default:integer)
+;
+; Arguments
+;   year: year recived for cmorizer
+;   default:
+;
+; Return value
+;    An integer with year or default if year is 0
+;
+; Description
+;   Get passed year an default date if not provided
+begin
+  if year.ne.0 then
+    return(default)
+  else
+    return(year)
+  end if
+end
+
 ; #############################################################################
 undef("create_timec")
 function create_timec(y1:integer,
