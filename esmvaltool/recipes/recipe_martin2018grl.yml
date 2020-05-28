@@ -34,27 +34,9 @@ diagnostics:
          version: 1, start_year: 1979, end_year: 2005, tier: 3}
       - {dataset: MIROC-ESM, project: CMIP5, mip: Amon, exp: historical,
          ensemble: r1i1p1, start_year: 1979, end_year: 2005}
-#      - {dataset: MIROC6, institute: MIROC, mip: Amon,
-#         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-#         grid: gn, start_year: 1979, end_year: 2014}
-#      - {dataset: GFDL-CM4, institute: NOAA-GFDL, mip: Amon,
-#         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-#         grid: gr1, start_year: 1979, end_year: 2014}
-#      - {dataset: IPSL-CM6A-LR, institute: IPSL, mip: Amon,
-#         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-#         grid: gr, start_year: 1979, end_year: 2014}
-#      - {dataset: MRI-ESM2-0, institute: MRI, mip: Amon,
-#         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-#         grid: gn, start_year: 1979, end_year: 2014}
-#      - {dataset: CNRM-ESM2-1, institute: CNRM-CERFACS,
-#         mip: Amon, project: CMIP6, exp: historical,
-#         ensemble: r1i1p1f2, grid: gr, start_year: 1979, end_year: 2014}
-#      - {dataset: CNRM-CM6-1, institute: CNRM-CERFACS, mip: Amon,
-#         project: CMIP6, exp: historical, ensemble: r1i1p1f2,
-#         grid: gr, start_year: 1979, end_year: 2014}
-#      - {dataset: BCC-CSM2-MR, institute: BCC, mip: Amon,
-#         project: CMIP6, exp: historical, ensemble: r1i1p1f1,
-#         grid: gn, start_year: 1979, end_year: 2014}
+      - {dataset: GFDL-CM3, project: CMIP5, mip: Amon,
+         exp: historical, ensemble: r1i1p1,
+         start_year: 1979, end_year: 2005}
 
     scripts:
       script1:
@@ -78,9 +60,15 @@ diagnostics:
         preprocessor: preprocessor2
         field: T2Ms
     additional_datasets:
-      - {dataset: MIROC-ESM, project: CMIP5, mip: Amon, exp:  [historical, rcp85], ensemble: r1i1p1, start_year: 1950, end_year: 2100}
-      - {dataset: GFDL-CM3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1950, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1950, end_year: 2100}
+      - {dataset: MIROC-ESM, project: CMIP5, mip: Amon,
+         exp:  [historical, rcp85], ensemble: r1i1p1,
+         start_year: 1950, end_year: 2100}
+      - {dataset: GFDL-CM3, project: CMIP5, mip: Amon,
+         exp: [historical, rcp85], ensemble: r1i1p1,
+         start_year: 1950, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon,
+         exp: [historical, rcp85], ensemble: r1i1p1,
+         start_year: 1950, end_year: 2100}
       # - {dataset: MRI-ESM1, project: CMIP5, mip: Amon, exp: [esmHistorical, esmrcp85], ensemble: r1i1p1, start_year: 1950, end_year: 2100}
     scripts:
       script2:

@@ -37,7 +37,7 @@ import numpy as np
 # import matplotlib.dates as mda
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
-from esmvaltool.diag_scripts.droughtindex.collect_spei_func import (
+from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
     count_spells, plot_map_spei_multi, plot_map_spei)
 
 
