@@ -1467,6 +1467,9 @@ begin
       data_arr@trYMinF = min((/ymin, yregmin/))
       data_arr@trYMaxF = max((/ymax, yregmax/))
 
+      data_arr@res_gsnRightString = "R~S~2~N~ = " \
+        + tostring_with_format(rc@r2, "%3.2f")
+
       delete(yyy)
       delete(mean_se_fit)
       delete(x)
