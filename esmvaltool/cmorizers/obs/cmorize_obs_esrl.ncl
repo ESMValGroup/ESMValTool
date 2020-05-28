@@ -31,7 +31,7 @@
 ;    20200508-zechlau_sabrina: adapted to v2.
 ;    20140122-righi_mattia: written.
 ;
-; #######################################################################
+; ######################################################################
 loadscript(getenv("esmvaltool_root") + \
            "/esmvaltool/cmorizers/obs/interface.ncl")
 
@@ -97,10 +97,11 @@ begin
   ; Loop over stations
   do stID = 0, nstats - 1
 
-    infile = input_dir_path + VAR + "_" + str_lower(st_code(stID)) + \
+    infile = input_dir_path + "/" + OBSNAME + "/" + \
+             VAR + "_" + str_lower(st_code(stID)) + \
              "_surface-insitu_1_ccgg_month.txt"
 
-    if (isfilepresent_esmval(infile)) then
+    if (.not.isfilepresent(infile)) then
 
       head = readAsciiHead(infile, "# data_field")
       data = readAsciiTable(infile, 1, "string", dimsizes(head))
@@ -109,8 +110,7 @@ begin
       ; Read site name
       tmp = str_get_field(data(:, 0), 1, " ")
       if (.not.all(tmp(0).eq.tmp)) then
-        info_output("Inconsistent site name in " + files(ii), \
-                    verbosity, 1)
+          log_info("Inconsistent site name in " + files(ii))
       else
         site = tmp(0)
       end if
