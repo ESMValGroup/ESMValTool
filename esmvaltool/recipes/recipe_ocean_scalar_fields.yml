@@ -1,12 +1,14 @@
 # ESMValTool
-# recipe_ocean_scarlar_fields.yml
+# recipe_ocean_scalar_fields.yml
 ---
 documentation:
   description: |
-    Recipe to demonstrate several simple plots based on the scalar fields.
+    Recipe to calculate the scalar fields from marine
+    models for CMIP5 models.
+    These include the global average temperature,
+    global average salinity and 
+    sea level rise. 
 
-    Please use this file as a template for adding additional
-    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
 
   authors:
     - demora_lee
@@ -16,6 +18,7 @@ documentation:
 
   references:
     - demora2018gmd
+    # Some plots also appear in ESMValtoo2 paper 2.
 
   projects:
     - ukesm
@@ -25,20 +28,21 @@ preprocessors:
   # --------------------------------------------------
   # Time series preprocessors
   # --------------------------------------------------
-  prep_timeseries_1: # For 0D fields
+  prep_timeseries: # For 0D fields
     multi_model_statistics:
       span: full
       statistics: [mean ]
+
+
 
 diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
   # --------------------------------------------------
-  diag_timeseries:
-    description: sea_water_transport_across_line
+  diag_timeseries_temperature:
     variables:
-      thetaoga: # Global Average Sea Water Potential Temperature
-        preprocessor: prep_timeseries_1
+      thetaoga:
+        preprocessor: prep_timeseries
         additional_datasets:
           - {dataset: ACCESS1-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: ACCESS1-3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -57,7 +61,7 @@ diagnostics:
           - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-#          - {dataset: FGOALS-g2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
+          - {dataset: FGOALS-g2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
           - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
           - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1859, end_year: 2005, }
@@ -79,8 +83,16 @@ diagnostics:
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           # - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+        anomaly: [1850, 1900]
+
+  diag_timeseries_salinity:
+    variables:
       soga: # Global Mean Sea Water Salinity
-        preprocessor: prep_timeseries_1
+        preprocessor: prep_timeseries
         additional_datasets:
           - {dataset: ACCESS1-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: ACCESS1-3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -99,7 +111,7 @@ diagnostics:
           - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-#          - {dataset: FGOALS-g2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
+          - {dataset: FGOALS-g2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
           - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
           - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1859, end_year: 2005, }
@@ -121,8 +133,16 @@ diagnostics:
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #          - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+        anomaly: [1850, 1900]
+
+  diag_timeseries_sealevel:
+    variables:
       zostoga: # Global Average Thermosteric Sea Level Change
-        preprocessor: prep_timeseries_1
+        preprocessor: prep_timeseries
         additional_datasets:
           - {dataset: ACCESS1-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: ACCESS1-3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -155,9 +175,9 @@ diagnostics:
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #          - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-
     scripts:
       Regional_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
         moving_average: 6 years
         anomaly: [1850, 1900]
+
