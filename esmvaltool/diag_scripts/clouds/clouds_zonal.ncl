@@ -830,9 +830,9 @@ begin
         tres@gsnFrame = False
         tres@cnLevelSelectionMode = "ExplicitLevels"
         tres@cnLevels = 0.95
-        tres@cnFillColors = (/"gray70", "transparent"/)
-;        tres@cnFillColors = (/"black", "transparent"/)
-;        tres@cnFillPattern = 17
+;        tres@cnFillColors = (/"gray70", "transparent"/)
+        tres@cnFillColors = (/"black", "transparent"/)
+        tres@cnFillPattern = 17
         tres@cnFillOn       = True      ; color plot desired
         tres@cnInfoLabelOn = False
         tres@cnLinesOn = False
@@ -971,6 +971,7 @@ begin
       ; print dataset name on each panel
       pres@gsnPanelFigureStrings = names(plotind)
     end if
+    pres@gsnPanelFigureStringsJust = "TopRight"
     pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
                                                 / tofloat((dim_MOD + 1) / 2)/))
     pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 \
@@ -1251,7 +1252,8 @@ begin
 
         if (t_test) then
           caption = caption \
-            + " Non-significant grid cells are masked out in gray."
+            + " Non-significant grid cells are hatched."  ;masked out in gray."
+;;            + " Non-significant grid cells are masked out in gray."
         end if
 
         log_provenance(nc_outfile_bias, outfile_d(is), caption, statistics, \
