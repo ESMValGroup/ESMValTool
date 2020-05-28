@@ -2,7 +2,9 @@
 # recipe_kcs.yml
 ---
 documentation:
-  description: This recipe reproduces the basic steps described in Lenderink 2014.
+  description: >
+    This recipe reproduces the basic steps described in Lenderink 2014.
+    We just do one scenario at a time; maybe extend later.
 
   references:
     - Lenderink 2014: https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/meta
@@ -21,13 +23,13 @@ datasets:
 
 
 preprocessors:
-  timeseries_ensemble:
+  scenarios_table:
     area_statistics:
       operator: mean
 
     anomalies:
       period: month  # 'full' requires https://github.com/ESMValGroup/ESMValCore/pull/652, use # 'month' for now.
-      reference:
+      reference: &reference
         start_year: 1980
         start_month: 1
         start_day: 1
@@ -41,21 +43,66 @@ preprocessors:
 
     multi_model_statistics:
       span: full
-      statistics: [mean, median]   # might want to add percentiles here, but not supported
+      statistics: [mean, median, std, min, max]   # might want to add percentiles here, but not supported
+
+    # timeseries_filter:
+    #   window: 3650  # 365*10
+    #   span: 3650  # 365*10
+    #   filter_type: lowpass
+    #   filter_stats: mean
+
+  control_period:  # All other functions need to be applied to the 'resampled' times
+    area_statistics:
+      operator: mean
+
+  validation:
+      extract_point:
+      longitude: 6.25
+      latitude: 51.21
+      scheme: linear
+
 
 
 diagnostics:
-  timeseries_ensemble:
+  scenarios_table:
     description: >
-      Plot the typical graph of temperature change according to different cmip models/runs
-      Also exports the statistics (mean, median) data to a CSV file
-      # TODO: add reference points for 2050/2080 10/90-percentiles
+      - Make a plot of the global mean temperature change according to all datasets (defined above)
+      - Get the global mean temperature change for specified years and specified percentiles (Delta T). These define our scenarios.
+      - Select the 30-year period from the target model (all ensemble members) where they match the Delta T for each scenario.
 
     variables:
       tas:
-        preprocessor: timeseries_ensemble
+        preprocessor: scenarios_table
 
     scripts:
       plot_pdf:
-        script: kcs/timeseries_ensemble.py
+        script: kcs/scenarios_table.py
+        scenario_years: 2050  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
+        scenario_percentiles: [min, max]
+        target_model: ACCESS1-0
+        plot: True
 
+
+  resampling:
+    description: >
+      - Divide the 30-year dataset into 5-year blocks
+      - Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
+      - Determine the 1000 best ...
+      - Determine the final best
+
+    variables:
+      control:
+        tas:
+          preprocessor: resampling
+        pr:
+          preprocessor: resampling
+
+    scripts:
+      resample:
+        script: kcs/resampling.py
+        scenario_year: 2050
+        scenario_temperature_change: [1, 1, 2, 2]
+        scenario_precipitation_change: [4, 8, 8, 16]  # theory predicts approximately 6-7 % per degree global temperature change (K).
+        control_period_bounds: [1980, 2010]
+        scenario_period_bounds: [2010, 2030]  # This comes from the first diagnostic
+        target_dataset: ACCESS1-0
