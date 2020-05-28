@@ -21,7 +21,8 @@ def download_cds_satellite_sm():
                         '-c',
                         default=os.path.join(os.path.dirname(__file__),
                                              'config-user.yml'),
-                        help='config file')
+                        help='config file',
+                        required=True)
     parser.add_argument('--frequency',
                         '-f',
                         default=None,
@@ -39,7 +40,7 @@ def download_cds_satellite_sm():
 
     rawobs_dir = os.path.abspath(
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
-    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE/'
+    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE_new/'
     os.makedirs(savedir, exist_ok=True)
 
     # This dictionary contains the data request part that is specific to
@@ -58,13 +59,13 @@ def download_cds_satellite_sm():
     client = cdsapi.Client()
 
     # Download per year
-    # CDR from 1978-2018 (including 2018)
-    for year in range(1978, 2019):
+    # CDR from 1978-2019 (including 2019)
+    for year in range(1978, 2020):
         savename = os.path.join(
             savedir,
             # Although tgz is requested, the file
             # actually is a tar (issue has been opened on CDS)
-            f"cds-satellite-soil-moisture_{args.frequency}_{year}.tar")
+            f"cds-satellite-soil-moisture_cdr_{args.frequency}_{year}.tar")
         request_dictionary = {
             'format':
             'tgz',
@@ -72,8 +73,6 @@ def download_cds_satellite_sm():
             'volumetric_surface_soil_moisture',
             'type_of_sensor':
             'combined_passive_and_active',
-            'time_aggregation':
-            'month_average',
             'year': [
                 f'{year}',
             ],
@@ -96,7 +95,7 @@ def download_cds_satellite_sm():
             'type_of_record':
             'cdr',
             'version':
-            'v201812.0.0',
+            'v201912.0.0',
             **freq_specific_kwargs[args.frequency]
         }
         client.retrieve('satellite-soil-moisture', request_dictionary,
@@ -108,17 +107,19 @@ def download_cds_satellite_sm():
         # Remove the tar file since it has been extracted
         os.remove(savename)
 
-    # Now ICDR v201812.0.1 (identical to v201812.0.0 according
-    # to data provider except for dates covered)
+    # Now ICDR v201812.0.0 for 2020
     savename = os.path.join(
         savedir,
-        "cds-satellite-soil-moisture_{args.frequency}_v201812.0.1.tar.gz")
+        f"cds-satellite-soil-moisture_icdr_{args.frequency}_v201812.0.0.tar")
+
     client.retrieve(
         'satellite-soil-moisture', {
             'format': 'tgz',
             'variable': 'volumetric_surface_soil_moisture',
             'type_of_sensor': 'combined_passive_and_active',
-            'year': '2019',
+            'year': [
+                '2020',
+            ],
             'type_of_record': 'icdr',
             'month': [
                 '01',
@@ -130,41 +131,7 @@ def download_cds_satellite_sm():
                 '07',
                 '08',
                 '09',
-            ],
-            'version': 'v201812.0.1',
-            **freq_specific_kwargs[args.frequency]
-        }, savename)
-    # Unpack the file
-    tar = tarfile.open(savename)
-    tar.extractall(path=os.path.dirname(savename))
-    tar.close()
-    # Remove the tar file since it has been extracted
-    os.remove(savename)
-
-    # Now ICDR v201812.0.0 (identical to v201812.0.1 according
-    # to data provider except for dates covered)
-    savename = os.path.join(
-        savedir,
-        "cds-satellite-soil-moisture_{args.frequency}_v201812.0.0.tar")
-
-    client.retrieve(
-        'satellite-soil-moisture', {
-            'format': 'tgz',
-            'variable': 'volumetric_surface_soil_moisture',
-            'type_of_sensor': 'combined_passive_and_active',
-            'time_aggregation': 'month_average',
-            'year': [
-                '2019',
-                '2020',
-            ],
-            'type_of_record': 'icdr',
-            'month': [
-                '01',
-                '02',
-                '03',
-                '04',
-                '05',
-                '10',
+                '10',                
                 '11',
                 '12',
             ],
