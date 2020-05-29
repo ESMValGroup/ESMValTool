@@ -6,11 +6,11 @@ documentation:
     This recipe reproduces the basic steps described in Lenderink 2014.
     We just do one scenario at a time; maybe extend later.
 
-  references:
-    - Lenderink 2014: https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/meta
+  references: # TODO add this as a bibtex file
+    - Lenderink 2014, https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/meta
 
   authors:
-    - rol_evert
+    # - rol_evert
     - kalverla_peter
     - alidoost_sarah
 
@@ -27,8 +27,11 @@ preprocessors:
     area_statistics:
       operator: mean
 
+    annual_statistics:
+        operator: mean
+
     anomalies:
-      period: month  # 'full' requires https://github.com/ESMValGroup/ESMValCore/pull/652, use # 'month' for now.
+      period: full  # 'full' requires https://github.com/ESMValGroup/ESMValCore/pull/652, use # 'month' for now.
       reference: &reference
         start_year: 1980
         start_month: 1
@@ -38,14 +41,11 @@ preprocessors:
         end_day: 31
       standardize: false
 
-    annual_statistics:
-      operator: mean
-
     multi_model_statistics:
       span: full
-      statistics: [mean, median, std, min, max]   # might want to add percentiles here, but not supported
+      statistics: [mean, median]   # might want to add percentiles here, but not supported
 
-    # timeseries_filter:
+    # timeseries_filter: # should be applied on percentiles
     #   window: 3650  # 365*10
     #   span: 3650  # 365*10
     #   filter_type: lowpass
@@ -77,8 +77,8 @@ diagnostics:
     scripts:
       plot_pdf:
         script: kcs/scenarios_table.py
-        scenario_years: 2050  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
-        scenario_percentiles: [min, max]
+        scenario_years: [2050]  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
+        scenario_percentiles: [Mean, Median]
         target_model: ACCESS1-0
         plot: True
 
