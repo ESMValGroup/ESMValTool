@@ -36,22 +36,23 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 2019
+  YEAR1 = 1978
   YEAR2 = 2020
 
   ; Selected variables (standard name)
-  VAR = (/"sm"/)
+  VAR = (/"sm","sm"/)
 
   ; Name in the raw data
-  NAME = (/"sm"/)
+  NAME = (/"sm","sm"/)
 
   ; MIP
-  ;MIP = (/"Lmon"/)
-  MIP = (/"day"/)
-  
+  MIP = (/"day","Lmon"/)
+
   ; Frequency
-  ;FREQ = (/"mon"/)
-  FREQ = (/"day"/)
+  FREQ = (/"day","mon"/)
+
+  ; Name of frequency in filename
+  FREQNAME = (/"-DAILY-","-MONTHLY-"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
@@ -60,7 +61,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "COMBINED-CUSTOM-MERGED-20200518"
+  VERSION = "COMBINED-TCDR-ICDR-v201912.0.0"
 
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
@@ -73,18 +74,17 @@ end
 
 begin
 
-  do vv = 0, dimsizes(VAR) - 1
-
+;  do vv = 0, dimsizes(VAR) - 1
+  do vv = 1, dimsizes(VAR) - 1
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     do yy = YEAR1, YEAR2
 
       ; Set list of files
       files = systemfunc("ls " + input_dir_path + \
-                         "C3S-SOILMOISTURE-L3S-SSMV-" + \
-                         "COMBINED-DAILY-" + yy + \
-;                         "COMBINED-MONTHLY-" + yy + \
-                         "????000000-?CDR-v201812.0.?.nc")
+                         "C3S-SOILMOISTURE-L3S-SSMV-COMBINED" + \
+                         FREQNAME(vv) + yy + \
+                         "????000000-?CDR-v201?12.0.0.nc")
 
       ; Retrieve start and end date (YYYYMM)
       start_date = systemfunc("basename " + files(0))
