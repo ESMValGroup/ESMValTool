@@ -1,0 +1,55 @@
+# ESMValTool
+# globwat.yml
+---
+documentation:
+  description: |
+    Recipe pre-processes ERA-Interim and ERA-5 data
+    for use in the GlobWat hydrological model.
+
+    GlobWat is a Global Hydrological Model provided by FAO
+    http: //www.fao.org/nr/water/aquamaps/
+  authors: ['abdollahi_banafsheh', 'alidoost_sarah']
+  projects: ['ewatercycle']
+  references: ['acknow_project']
+
+preprocessors:
+  preprocessor: &general
+    regrid:
+      target_grid: 0.08333x0.08333
+      lon_offset: true
+      lat_offset: true
+      scheme: area_weighted
+    mask:
+      mask_landsea:
+        mask_out: sea
+    convert_units:
+      units: mm
+
+diagnostics:
+  diagnostic_monthly:
+    description: calculate monthly ERA-Interim pet 
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+    variables:
+      pr: &var_monthly
+        mip: Amon
+        start_year: 2004
+        end_year: 2004
+        preprocessor: general
+      evspsblpot: *var_monthly
+      # globwat requires reference ET. Thus, we need tas, psl, rsds, and rsdt 
+      tas: *var_monthly
+      psl: *var_monthly
+      rsds: *var_monthly
+      rsdt: *var_monthly
+
+      pr: &daily_var
+        mip: day
+        start_year: 2004
+        end_year: 2004
+        preprocessor: general
+
+    scripts:
+      script:
+        script: hydrology/globwat_diag.py
