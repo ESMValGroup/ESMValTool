@@ -30,6 +30,9 @@ def main(cfg):
             end_year = basename[-4:]
             basename = basename.replace(end_year, f'{int(end_year) - 1}')
 
+        if info['diagnostic'] == 'monthly':
+            basename = stem.replace('native', 'OBS')
+
         outfile = get_diagnostic_filename(basename, cfg)
         logger.info('Moving %s to %s', file, outfile)
         shutil.move(file, outfile)

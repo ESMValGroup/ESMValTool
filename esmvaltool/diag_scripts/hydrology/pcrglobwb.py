@@ -28,7 +28,7 @@ def get_provenance_record(ancestor_files):
         'projects': [
             'ewatercycle',
         ],
-        'references': [
+        'references': [ 
             'acknow_project',
         ],
         'ancestors': ancestor_files,
