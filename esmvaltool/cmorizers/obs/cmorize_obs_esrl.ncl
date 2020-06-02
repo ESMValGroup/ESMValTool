@@ -48,7 +48,7 @@ begin
 
   ; Period
   YEAR1 = 1973
-  YEAR2 = 2012
+  YEAR2 = 2014
 
   ; Selected variable (standard name)
   VAR = "co2"
@@ -81,51 +81,51 @@ end
 begin
 
   ; Create time coordinate
-  timec = create_timec(YEAR1, YEAR2)
-  datec = ut_calendar(timec, 1)
+  ;timec = create_timec(YEAR1, YEAR2)
+  ;datec = ut_calendar(timec, 1)
 
   ; Read station info
-  stat = readAsciiTable(FILE_STAT, 1, "string", 0)
-  st_code = str_squeeze(str_get_field(stat(:, 0), 1, ","))
-  st_name = str_squeeze(str_get_field(stat(:, 0), 2, ","))
-  st_lat  = tofloat(str_get_field(stat(:, 0), 3, ","))
-  st_lon  = tofloat(str_get_field(stat(:, 0), 4, ","))
-  st_alt  = toint(str_get_field(stat(:, 0), 5, ","))
+  stat = asciiread(FILE_STAT,-1,"string")
+  st_code = str_squeeze(str_get_field(stat(:), 1, ","))
+  st_name = str_squeeze(str_get_field(stat(:), 2, ","))
+  st_lat  = tofloat(str_get_field(stat(:), 3, ","))
+  st_lon  = tofloat(str_get_field(stat(:), 4, ","))
+  st_alt  = toint(str_get_field(stat(:), 5, ","))
   nstats  = dimsizes(st_code)
   delete(stat)
 
   ; Loop over stations
   do stID = 0, nstats - 1
 
-    infile = input_dir_path + "/" + OBSNAME + "/" + \
-             VAR + "_" + str_lower(st_code(stID)) + \
+    infile = input_dir_path + VAR + "_" + str_lower(st_code(stID)) + \
              "_surface-insitu_1_ccgg_month.txt"
 
-    if (.not.isfilepresent(infile)) then
+    if (fileexists(infile)) then
 
-      head = readAsciiHead(infile, "# data_field")
-      data = readAsciiTable(infile, 1, "string", dimsizes(head))
+      raw = asciiread(infile, -1, "string") 
+      head = str_get_field(raw(0), 3, " ")
+      data = raw(toint(head):)
       delete(head)
 
       ; Read site name
-      tmp = str_get_field(data(:, 0), 1, " ")
+      tmp = str_get_field(data(:), 1, " ")
       if (.not.all(tmp(0).eq.tmp)) then
-          log_info("Inconsistent site name in " + files(ii))
+          log_info("Inconsistent site name in " + infiles(ii))
       else
         site = tmp(0)
       end if
       delete(tmp)
 
       ; Read time and extract full years only
-      year = str_squeeze(str_get_field(data(:, 0), 2, " "))
-      month = str_squeeze(str_get_field(data(:, 0), 3, " "))
+      year = str_squeeze(str_get_field(data(:), 2, " "))
+      month = str_squeeze(str_get_field(data(:), 3, " "))
       date = toint(year + month)
-      var = tofloat(str_get_field(data(:, 0), 4, " "))
+      var = tofloat(str_get_field(data(:), 4, " "))
       delete(data)
 
       ; Check time range
       if (min(toint(year)).lt.YEAR1 .or. max(toint(year)).gt.YEAR2) then
-        error_msg("f", diag_script, "", "given time range (" + \
+        error_msg("f", DIAG_SCRIPT, "", "given time range (" + \
                   YEAR1 + "-" + YEAR2 + ")" + \
                   " not consistent with data (" + \
                   min(toint(year)) + "-" + max(toint(year)) + ")")
