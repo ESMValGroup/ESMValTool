@@ -81,8 +81,8 @@ end
 begin
 
   ; Create time coordinate
-  ; timec = create_timec(YEAR1, YEAR2)
-  ; datec = ut_calendar(timec, 1)
+  timec = create_timec(YEAR1, YEAR2)
+  datec = cd_calendar(timec, 1)
 
   ; Read station info
   stat = asciiread(FILE_STAT, -1, "string")
@@ -105,7 +105,7 @@ begin
       raw = asciiread(infile, -1, "string")
       head = str_get_field(raw(0), 3, " ")
       data = raw(toint(head):)
-      delete(head)
+      delete([/head, raw/])
 
       ; Read site name
       tmp = str_get_field(data(:), 1, " ")
@@ -133,10 +133,6 @@ begin
       delete(year)
       delete(month)
 
-      ; Create time coordinate
-      timec = create_timec(YEAR1, YEAR2)
-      datec = cd_calendar(timec, 1)
-
       ; Create output variable
       output = new(dimsizes(timec), float)
       output!0 = "time"
@@ -159,12 +155,6 @@ begin
       ; Calculate coordinate bounds
       bounds = guess_coord_bounds(output, FREQ)
 
-      ; Reformat time coordinate
-      ctime = time_attrib(output&time)
-      delete(output&time)
-      output&time = ctime
-      delete(ctime)
-
       ; Set global attributes
       gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
@@ -174,13 +164,13 @@ begin
 
       fout = output_dir_path + \
              str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                        MIP, VAR, DATESTR/), "_") + ".nc"
+                       MIP, VAR, DATESTR/), "_") + ".nc"
 
       ; Write variable
       write_nc(fout, VAR, output, bounds, gAtt)
       delete(gAtt)
       delete(output)
-
+print(fout)
     end if
 
   end do
