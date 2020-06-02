@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
-"""Collects data produced by diag_save_spei.r to plot/process them further.
+"""Collects SPI or SPEI data comparing historic and future model scenarios.
+
+Applies drought characteristics based on Martin (2018).
 
 ###############################################################################
 droughtindex/collect_spei.py
@@ -12,11 +14,15 @@ EVal4CMIP project
 
 Description
 -----------
-    Collects data produced by diag_save_spei.r to plot/process them further.
+    Collects data produced by diag_save_spi.R or diad_save_spei_all.R
+    to plot/process them further.
 
 Configuration options
 ---------------------
-    TBD
+    indexname: "SPI" or "SPEI"
+    start_year: year, start of historical time series
+    end_year: year, end of future scenario
+    comparison_period: should be < (end_year - start_year)/2
 
 ###############################################################################
 
@@ -41,10 +47,32 @@ from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
     count_spells, plot_map_spei_multi, plot_map_spei)
 
 
+def _make_new_cube(tscube, number_drought_charac):
+    """Make a new cube with an extra dimension for result of spell count."""
+    # make a new cube to increase the size of the data array
+    # get two (instead of one) values from the aggregator spell_no
+    new_shape = tscube.shape + (number_drought_charac,)
+    new_data = iris.util.broadcast_to_shape(
+        tscube.data, new_shape, [0, 1, 2])
+    new_cube = iris.cube.Cube(new_data)
+
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        tscube.coord('time').points, long_name='time'), 0)
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        tscube.coord('latitude').points, long_name='latitude'), 1)
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        tscube.coord('longitude').points, long_name='longitude'), 2)
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        np.arange(0, number_drought_charac, 1), long_name='z'), 3)
+    return new_cube
+
+
 def main(cfg):
     """Run the diagnostic.
-    Parameters
-    ----------
+
+    Parameters :
+
+    ------------
     cfg : dict
     """
     ######################################################################
@@ -96,27 +124,13 @@ def main(cfg):
             # extract time series from historical model data
             # cfg['start_year'] to cfg['start_year'] + cfg['comparison_period']
             start = datetime.datetime(cfg['start_year'], 1, 15, 0, 0, 0)
-            end = datetime.datetime(cfg['start_year'] + 
+            end = datetime.datetime(cfg['start_year'] +
                                     cfg['comparison_period'], 12, 16, 0, 0, 0)
             stime = time.nearest_neighbour_index(time.units.date2num(start))
             etime = time.nearest_neighbour_index(time.units.date2num(end))
             tscube = cube[stime:etime, :, :]
 
-            # make a new cube to increase the size of the data array
-            # aggregator spell number
-            new_shape = tscube.shape + (number_drought_charac,)
-            new_data = iris.util.broadcast_to_shape(tscube.data, new_shape,
-                                                    [0, 1, 2])
-            new_cube = iris.cube.Cube(new_data)
-
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                tscube.coord('time').points, long_name='time'), 0)
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                tscube.coord('latitude').points, long_name='latitude'), 1)
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                tscube.coord('longitude').points, long_name='longitude'), 2)
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                np.arange(0, number_drought_charac, 1), long_name='z'), 3)
+            new_cube = _make_new_cube(tscube, number_drought_charac)
 
             # calculate the number of drought events and average duration
             drought_show = new_cube.collapsed('time', spell_no,
@@ -164,21 +178,7 @@ def main(cfg):
             etime = time.nearest_neighbour_index(time.units.date2num(end))
             tscube = cube[stime:etime, :, :]
 
-            # make a new cube to increase the size of the data array
-            # get two (instead of one) values from the aggregator spell_no
-            new_shape = tscube.shape + (number_drought_charac,)
-            new_data = iris.util.broadcast_to_shape(
-                tscube.data, new_shape, [0, 1, 2])
-            new_cube = iris.cube.Cube(new_data)
-
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                tscube.coord('time').points, long_name='time'), 0)
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                tscube.coord('latitude').points, long_name='latitude'), 1)
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                tscube.coord('longitude').points, long_name='longitude'), 2)
-            new_cube.add_dim_coord(iris.coords.DimCoord(
-                np.arange(0, number_drought_charac, 1), long_name='z'), 3)
+            new_cube = _make_new_cube(tscube, number_drought_charac)
 
             # calculate the number of drought events and their average duration
             drought_show = new_cube.collapsed('time', spell_no,
@@ -196,24 +196,24 @@ def main(cfg):
             # use cube2 to get metadata
             cube2.data = drought_show.data[:, :, 0]
             plot_map_spei(cfg, cube2, drought_numbers_level,
-                         add_to_filename='RCP85_No_of_Events_per_year',
-                         name='RCP85_Number of Events per year')
+                          add_to_filename='RCP85_No_of_Events_per_year',
+                          name='RCP85_Number of Events per year')
 
             # plot the average duration of drought events
             drought_numbers_level = np.arange(0, 6, 1)
             # use cube2 to get metadata
             cube2.data = drought_show.data[:, :, 1]
             plot_map_spei(cfg, cube2, drought_numbers_level,
-                         add_to_filename='RCP85_Dur_of_Events',
-                         name='RCP85_Duration of Events(month)')
+                          add_to_filename='RCP85_Dur_of_Events',
+                          name='RCP85_Duration of Events(month)')
 
             # plot the average severity index of drought events
             drought_numbers_level = np.arange(0, 9, 1)
             # use cube2 to get metadata
             cube2.data = drought_show.data[:, :, 2]
             plot_map_spei(cfg, cube2, drought_numbers_level,
-                         add_to_filename='RCP85_Sev_index_of_Events',
-                         name='RCP85_Severity Index of Events')
+                          add_to_filename='RCP85_Sev_index_of_Events',
+                          name='RCP85_Severity Index of Events')
 
             # plot the average spei of drought events
             drought_numbers_level = np.arange(-2.8, -1.8, 0.2)
@@ -225,8 +225,6 @@ def main(cfg):
                           name='RCP85_Average ' + cfg['indexname'] +
                           ' of Events')
     # Calculating multi model mean and plot it
-    print("all_drought_hist")
-    print(all_drought_hist)
     all_drought_hist_mean = np.nanmean(all_drought_hist, axis=-1)
     # to 3D multi model mean
     all_drought_rcp85_mean = np.nanmean(all_drought_rcp85, axis=-1)

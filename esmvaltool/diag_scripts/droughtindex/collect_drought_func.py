@@ -2,21 +2,22 @@
 # -*- coding: utf-8 -*-
 
 
-"""Collects data produced by diag_save_spei.r to plot/process them further.
+"""Drought characteristics and plots based on  Martin (2018).
 
 ###############################################################################
-droughtindex/collect_spei.py
+droughtindex/collect_drought_obs_multi.py
 Author: Katja Weigel (IUP, Uni Bremen, Germany)
 EVal4CMIP project
 ###############################################################################
 
 Description
 -----------
-    Collects data produced by diag_save_spei.r to plot/process them further.
+    Functions for:
+        collect_drought_obs_multi.py and droughtindex/collect_drought_model.py.
 
 Configuration options
 ---------------------
-    TBD
+    None
 
 ###############################################################################
 
@@ -25,11 +26,11 @@ Configuration options
 import os
 # import glob
 # import datetime
-import iris
-from iris.util import rolling_window
-from iris.analysis import Aggregator
-from iris.time import PartialDateTime
-import cf_units as unit
+# import iris
+# from iris.util import rolling_window
+# from iris.analysis import Aggregator
+# from iris.time import PartialDateTime
+# import cf_units as unit
 import numpy as np
 import cartopy.crs as cart
 import matplotlib.pyplot as plt
@@ -38,17 +39,20 @@ import matplotlib.dates as mda
 import esmvaltool.diag_scripts.shared.names as n
 
 
-def runs_of_ones_array(bits):
-    # make sure all runs of ones are well-bounded
-    bounded = np.hstack(([0], bits, [0]))
-    # get 1 at run starts and -1 at run ends
-    difs = np.diff(bounded)
-    run_starts, = np.where(difs > 0)
-    run_ends, = np.where(difs < 0)
-    return run_ends - run_starts
+def _get_data_hlp(axis, data, ilat, ilon):
+    """Get data_help dependend on axis."""
+    if axis == 0:
+        data_help = (data[:, ilat, ilon])[:, 0]
+    elif axis == 1:
+        data_help = (data[ilat, :, ilon])[:, 0]
+    elif axis == 2:
+        data_help = data[ilat, ilon, :]
+
+    return data_help
 
 
 def runs_of_ones_array_spei(bits, spei):
+    """Set 1 at beginning ond -1 at the end of events."""
     # make sure all runs of ones are well-bounded
     bounded = np.hstack(([0], bits, [0]))
     # get 1 at run starts and -1 at run ends
@@ -61,17 +65,12 @@ def runs_of_ones_array_spei(bits, spei):
 
     return [run_ends - run_starts, spei_sum]
 
-# Define a function to perform the custom statistical operation.
-# Note: in order to meet the requirements of iris.analysis.Aggregator,
-# it must do the calculation over an arbitrary (given) data axis.
-
 
 def count_spells(data, threshold, axis):
-
+    """Functions for Iris Aggregator to count spells."""
     if axis < 0:
         # just cope with negative axis numbers
         axis += data.ndim
-        # Threshold the data to find the 'significant' points.
     data = data[:, :, 0, :]
     if axis > 2:
         axis = axis - 1
@@ -82,34 +81,15 @@ def count_spells(data, threshold, axis):
         if iii != axis:
             listshape.append(ishape)
             inoax.append(iii)
-        # else:
-        #     listshape.append(1)
 
     listshape.append(4)
     return_var = np.zeros(tuple(listshape))
-    # return_var[:, :, 0] = spell_point_counts_new
-    # return_var[:, :, 1] = spell_point_duration_new
-    # return_var[:, :, 2] = spell_point_severity_index
-    # return_var[:, :, 3] = spell_point_average_spei
 
-    # spell_point_counts_new = np.zeros((listshape[0], listshape[1]))
-    # spell_point_duration_new = np.zeros((listshape[0], listshape[1]))
-    # spell_point_severity_index = np.zeros((listshape[0], listshape[1]))
-    # spell_point_average_spei = np.zeros((listshape[0], listshape[1]))
     for ilat in range(listshape[0]):
         for ilon in range(listshape[1]):
-            if axis == 0:
-                data_help = (data[:, ilat, ilon])[:, 0]
-            if axis == 1:
-                data_help = (data[ilat, :, ilon])[:, 0]
-            if axis == 2:
-                data_help = data[ilat, ilon, :]
-            # if np.all(np.isnan(data_help)):
+            data_help = _get_data_hlp(axis, data, ilat, ilon)
 
-            # print("data_help.count")
-            # print(data_help.count)
             if data_help.count() == 0:
-                # print("No data")
                 return_var[ilat, ilon, 0] = data_help[0]
                 return_var[ilat, ilon, 1] = data_help[0]
                 return_var[ilat, ilon, 2] = data_help[0]
@@ -117,10 +97,9 @@ def count_spells(data, threshold, axis):
             else:
                 data_hits = data_help < threshold
                 [events, spei_sum] = runs_of_ones_array_spei(data_hits,
-                                                           data_help)
+                                                             data_help)
 
                 return_var[ilat, ilon, 0] = np.count_nonzero(events)
-                # np.sum(np.isfinite(events))
                 return_var[ilat, ilon, 1] = np.mean(events)
                 return_var[ilat, ilon, 2] = np.mean((spei_sum * events) /
                                                     (np.mean(data_help
@@ -128,18 +107,11 @@ def count_spells(data, threshold, axis):
                                                      * np.mean(events)))
                 return_var[ilat, ilon, 3] = np.mean(spei_sum / events)
 
-    # listshape.append(4)
-    # return_var = np.zeros(tuple(listshape))
-    # return_var[:, :, 0] = spell_point_counts_new
-    # return_var[:, :, 1] = spell_point_duration_new
-    # return_var[:, :, 2] = spell_point_severity_index
-    # return_var[:, :, 3] = spell_point_average_spei
     return return_var
 
 
 def get_latlon_index(coords, lim1, lim2):
-    """Get index for given values (1D vector, e.g. lats or lons)
-    between two limits"""
+    """Get index for given values between two limits (1D), e.g. lats, lons."""
     index = (np.where(np.absolute(coords - (lim2 + lim1)
                                   / 2.0) <= (lim2 - lim1)
                       / 2.0))[0]
@@ -249,8 +221,8 @@ def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
     # Get data set name from cube
     print("cube.metadata.attributes")
     print(cube.metadata.attributes)
-    
-    # Get data set name from cube    
+
+    # Get data set name from cube
     try:
         dataset_name = cube.metadata.attributes['model_id']
     except KeyError:
@@ -258,16 +230,6 @@ def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
             dataset_name = cube.metadata.attributes['source_id']
         except KeyError:
             dataset_name = 'Observations'
-    # try:
-    #     dataset_name = cube.metadata.attributes['model_id']
-    # except KeyError:
-    #    dataset_name = 'Observations'
-    #     # continue
-    # dataset_name = cube.metadata.attributes['project_id']
-    # if dataset_name in ['CMIP5', 'CMIP6']:
-    #     dataset_name = cube.metadata.attributes['model_id']
-
-
     print(dataset_name)
 
     # Plot data
@@ -313,7 +275,8 @@ def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
 
     fig.tight_layout()
     fig.savefig(os.path.join(cfg[n.PLOT_DIR],
-                             cfg['indexname'] + '_map' + add_to_filename + '_' +
+                             cfg['indexname'] + '_map' +
+                             add_to_filename + '_' +
                              dataset_name + '.' +
                              cfg[n.OUTPUT_FILE_TYPE]))
     plt.close()
@@ -321,7 +284,6 @@ def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
 
 def plot_time_series_spei(cfg, cube, add_to_filename=''):
     """Plot time series."""
-
     # SPEI vector to plot
     spei = cube.data
     # Get time from cube
@@ -332,7 +294,7 @@ def plot_time_series_spei(cfg, cube, add_to_filename=''):
     add_m_delta = mda.datestr2num('1850-01-01 00:00:00')
     time = time + add_m_delta
 
-    # Get data set name from cube    
+    # Get data set name from cube
     try:
         dataset_name = cube.metadata.attributes['model_id']
     except KeyError:
@@ -341,18 +303,6 @@ def plot_time_series_spei(cfg, cube, add_to_filename=''):
         except KeyError:
             dataset_name = 'Observations'
 
-    
-    # Get data set name from cube
-    # try:
-    #     dataset_name = cube.metadata.attributes['model_id']
-    # except KeyError:
-    #     dataset_name = 'Observations'
-    # dataset_name = cube.metadata.attributes['project_id']
-    # if dataset_name in ['CMIP5', 'CMIP6']:
-    #     dataset_name = cube.metadata.attributes['model_id']
-
-    # Plot data
-    # Create figure and axes instances
     fig, axx = plt.subplots(figsize=(16, 4))
     axx.plot_date(time, spei, '-', tz=None, xdate=True, ydate=False,
                   color='r', linewidth=4., linestyle='-', alpha=1.,

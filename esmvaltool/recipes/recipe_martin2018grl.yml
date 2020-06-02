@@ -42,7 +42,10 @@ diagnostics:
       script1:
         script: droughtindex/diag_save_spi.R
         smooth_month: 6
-        distribution: "Gamma"  # "Gamma" usually for SPI, "log-Logistic" usually for SPEI, also available "PearsonIII"
+        # distribution: "Gamma" usually for SPI.
+        # distribution: "log-Logistic" usually for SPEI-
+        # Also available distribution: "PearsonIII"
+        distribution: "Gamma"
 
   spi_collect:
     description: Wrapper to collect and plot previously calculated SPEI index
@@ -61,7 +64,7 @@ diagnostics:
         field: T2Ms
     additional_datasets:
       - {dataset: MIROC-ESM, project: CMIP5, mip: Amon,
-         exp:  [historical, rcp85], ensemble: r1i1p1,
+         exp: [historical, rcp85], ensemble: r1i1p1,
          start_year: 1950, end_year: 2100}
       - {dataset: GFDL-CM3, project: CMIP5, mip: Amon,
          exp: [historical, rcp85], ensemble: r1i1p1,
@@ -69,13 +72,17 @@ diagnostics:
       - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon,
          exp: [historical, rcp85], ensemble: r1i1p1,
          start_year: 1950, end_year: 2100}
-      # - {dataset: MRI-ESM1, project: CMIP5, mip: Amon, exp: [esmHistorical, esmrcp85], ensemble: r1i1p1, start_year: 1950, end_year: 2100}
+      - {dataset: MRI-ESM1, project: CMIP5, mip: Amon,
+         exp: [esmHistorical, esmrcp85], ensemble: r1i1p1,
+         start_year: 1950, end_year: 2100}
     scripts:
       script2:
         script: droughtindex/diag_save_spi.R
         smooth_month: 6
-        distribution: "Gamma"  # "Gamma" usually for SPI, "log-Logistic" usually for SPEI, also available "PearsonIII"
-
+        # distribution: "Gamma" usually for SPI.
+        # distribution: "log-Logistic" usually for SPEI-
+        # Also available distribution: "PearsonIII"
+        distribution: "Gamma"
 
   spi_collect2:
     description: Wrapper to collect and plot previously calculated SPI index
@@ -84,6 +91,7 @@ diagnostics:
         script: droughtindex/collect_drought_model.py
         start_year: 1950
         end_year: 2100
-        comparison_period: 50 # should be < (end_year - start_year)/2
+        # comparison_period should be < (end_year - start_year)/2
+        comparison_period: 50
         indexname: "SPI"
         ancestors: ['diagnostic2/script2']
