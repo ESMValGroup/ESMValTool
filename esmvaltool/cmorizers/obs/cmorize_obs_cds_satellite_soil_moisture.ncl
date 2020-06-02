@@ -16,8 +16,9 @@
 ;    Use the download script to retrieve the data.
 ;
 ; Modification history
+;    20200602-crezee_bas: include ICDR
 ;    20200525-righi_mattia: fix time checker.
-;    20190522-creeze_bas: time period extended.
+;    20190522-crezee_bas: time period extended.
 ;    20190314-crezee_bas: written based on cmorize_obs_esacci_soilmoisture.ncl.
 ;
 ; #############################################################################
@@ -61,7 +62,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "COMBINED-TCDR-ICDR-v201912.0.0"
+  VERSION = "CUSTOM-TCDR-ICDR-20200602"
 
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
