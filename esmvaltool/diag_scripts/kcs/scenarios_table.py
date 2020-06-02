@@ -34,6 +34,7 @@ def get_target_delta_t(metadata, year, percentile):
 
 def get_mean_ensemble(metadata, model):
     """Compute average of ensembles for target model."""
+    #TODO: We could use add_aux_coord/concatenate/collapse instead
     target_dataset = select_metadata(metadata, dataset=model)
     sum_cube = 0
     for ensemble in target_dataset:
@@ -52,6 +53,8 @@ def get_target_model_time_bounds(target_dataset, delta_t, span=30):
     # Possibly, apply/report a (pattern) scaling factor
     # in order to match the target delta T more closely.
 
+    #TODO: Apply rolling mean to target dataset.
+    #TODO: Use "absolute" difference
     cube = target_dataset - delta_t
     min_cube = cube.collapsed('time', iris.analysis.MIN)
     coord = min_cube.coord('time')
@@ -74,6 +77,7 @@ def make_plot(metadata, scenario):
     for info_dict in metadata:
 
         # Open file and add timeseries to figure
+        # TODO: Add color to this figure according to RCP scenario
         ds = xr.open_dataset(info_dict['filename'])
         ds.tas.plot(ax=ax, label=info_dict['alias'])
 

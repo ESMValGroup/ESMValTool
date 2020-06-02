@@ -10,6 +10,7 @@ documentation:
     - Lenderink 2014, https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/meta
 
   authors:
+    #TODO: Add Evert to config_developers
     # - rol_evert
     - kalverla_peter
     - alidoost_sarah
@@ -45,6 +46,7 @@ preprocessors:
       span: full
       statistics: [mean, median]   # might want to add percentiles here, but not supported
 
+    #TODO: remove this filter once the rolling mean is used inside the diagnostic.
     # timeseries_filter: # should be applied on percentiles
     #   window: 3650  # 365*10
     #   span: 3650  # 365*10
@@ -97,19 +99,18 @@ diagnostics:
       resample:
         script: kcs/resampling.py
         control_period: [1980, 2010]
-        target_dataset: ACCESS1-0
+        target_model: ACCESS1-0
 
-        scenarios:
+        scenarios:  # see Table 1 of the supplementary material
           Gl:
-            scenario_year: 2050
-            resampling_period: [2010, 2030]  # This comes from the first diagnostic
-            dpr_winter: 4
-            dpr_summer: 0
-            dtas_DFJ_JJA: 10
-          Gh:
-            scenario_year: 2050
-            resampling_period: [2010, 2030]  # This comes from the first diagnostic
-            dpr_winter: 4
-            dpr_summer: 0
-            dtas_DFJ_JJA: 10
-
+            description: "Gematigd / low changes in seasonal temperature & precipitation"
+            global_dT: 1.0  # This is an approximate number that comes from the first diagnostic (not used)
+            scenario_year: 2050  # Middle of century/MOC
+            resampling_period: [2021, 2050]  # This also comes from the first diagnostic
+            dpr_winter: 4  # 4% per global_dT (8*dT for the "h" scenarios)
+            dpr_summer_control: [25, 55]
+            dpr_summer_future: [45, 75]
+            dtas_winter_control: [50, 80]
+            dtas_winter_future: [20, 50]
+            dtas_summer_control: [0, 100]
+            dtas_summer_future: [0, 50]

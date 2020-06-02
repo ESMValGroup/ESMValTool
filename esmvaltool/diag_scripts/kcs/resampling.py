@@ -22,6 +22,46 @@ from esmvaltool.diag_scripts.shared import (run_diagnostic, get_plot_filename,
 
 
 
+def segment_datasets(datasetlist, start=1981, end=2010, step=5):
+    """Return a nested list with [[x segments of n-year periods] for each input dataset]."""
+    segmented_datasets = []
+    for dataset in datasetlist:
+        filename = dataset['input_file']
+        cube = iris.load_cube('filename')
+        segments = [
+            cube.extract(iris.Constraint(time=lambda cell: year <= cell.point.year < year+step))
+            for year in range(start, end, step)
+        ]
+        segmented_datasets.append(segments)
+
+    return segmented_datasets
+
+
+def recombine_cubes(segments, combination):
+    """
+
+    segments: a nested list with [6 segments of 5-year periods] for each ensemble member.
+    combination: a specific order to reconstruct a new climate, e.g.
+        [1, 3, 4, 1, 6, 8] means:
+        - take the first 5 years of the 1st ensemble member,
+        - the second 5 years of the 3rd ensemble member,
+        - etc.
+    """
+    cubelist = iris.cube.CubeList(controls[i][j] for i, j in enumerate(combination))
+    return cubelist.concatenate()
+
+
+def get_change(control, future, season):
+    """Return the difference in mean between future and control period.
+
+    e.g. control = precipitation cubes for 1981-2010
+         future = precipitation cubes for 2030-2059
+         season = 'DJF'
+         returns change in mean winter precipitation between future and control
+    """
+
+    dpr = control.extract_season(season).mean() - future.extract_season(season).mean()
+    return dpr
 
 def filter1(pr_diffs_winter, target_dpr):
     """Get the 1000 combinations that are closest to the target.
@@ -45,82 +85,74 @@ def filter2():
     return ...
 
 
-def filter3():
+def get_filter2_variables(combination):
+    resampled_control_tas = recombine_cubes(tas_controls, combination)
+    resampled_future_tas = recombine_cubes(tas_futures, combination)
 
-    return ...
+    resampled_control_tas = recombine_cubes(tas_controls, combination)
+    resampled_future_tas = recombine_cubes(tas_futures, combination)
 
+    pr_diff_summer = get_change(resampled_future_pr, resampled_control_pr, season='JJA')
+    tas_diff_summer = get_change(resampled_future_tas, resampled_control_tas, season='JJA')
+    tas_diff_winter = get_change(resampled_future_tas, resampled_control_tas, season='DJF')
 
-def get_recombined_cube(segments, combination):
-    """
-
-    segments: a nested list with [6 segments of 5-year periods] for each ensemble member.
-    combination: a specific order to reconstruct a new climate, e.g.
-        [1, 3, 4, 1, 6, 8] means:
-        - take the first 5 years of the 1st ensemble member,
-        - the second 5 years of the 3rd ensemble member,
-        - etc.
-    """
-    iris.cube.CubeList(controls[i][j] for i, j in enumerate(combination)).concatenate()
-    return
+    return pr_diff_summer, tas_diff_summer, tas_diff_winter
 
 
-def get_change(control, future, season):
-    """Return the difference in mean between future and control period.
-
-    e.g. control = precipitation cubes for 1981-2010
-         future = precipitation cubes for 2030-2059
-         season = 'DJF'
-         returns change in mean winter precipitation between future and control
-    """
-
-    dpr = control.extract_season(season).mean() - future.extract_season(season).mean()
-    return dpr
+def filter3(df, n=8):
+    """Sort by the number of unique elements in 'combination' and return the top n."""
+    df['n_datasets'] = df.combination.map(lambda x: len(set(x)))
+    return df.sort('n_datasets', descending=True).head(n)
 
 
 def main():
-
 
     # a list of dictionaries describing all datasets passed on to the recipe
     dataset_dicts = cfg['input_data'].values()
 
     # Only keep datasets from the target model:
-    datasetlist = select_metadata(dataset_dicts, dataset=target_model, short_name='pr')
+    pr = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name='pr')
+    tas = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name='tas')
 
-    controls = []
-    futures = []
-    for dataset in datasetlist():
-        filename = dataset['input_file']
-        cube = iris.read_cube('filename')
-        control = cube.select(....)  # iris.Constraint(time=lambda cell: cell.point.year == year)
-        future =
+    pr_controls = segment_datasets(pr, *cfg['control_period'])
+    tas_controls = segment_datasets(tas, *cfg['control_period'])
 
-        control_segments = [control.select(...), control.select(...)]
-        future_segments = [control.select(...), control.select(...)]
-        controls.append(cube)
-        futures.append(cube)
+    for scenario_name, info,  in cfg['scenarios']:
+        print('Working on scenario:', scenario_name)
 
-    # Make a lot of different combinations of the datasets
+        pr_futures = segment_datasets(target_pr_datasets, *info['resampling_period'])
+        tas_futures = segment_datasets(target_tas_datasets, *info['resampling_period'])
+
+    # Make a lot of different re-combinations of the datasets
     n_ensemble_members = len(datasetlist)
-    pr_diffs_winter = pd.DataFrame(columns=['combination', 'pr_diff_winter'] )
+    pr_diffs_winter = pd.DataFrame(columns=['combination', 'pr_diff_winter'])
     for combination in itertools.product(n_ensemble_members, repeat=6):
-        resampled_control = get_recombined_cube(controls, combination)
-        resampled_future = get_recombined_cube(futures, combination)
+        resampled_control = recombine_cubes(pr_controls, combination)
+        resampled_future = recombine_cubes(pr_futures, combination)
 
         pr_diff_winter = get_change(resampled_future, resampled_control, season='DJF')
         pr_diffs_winter.append([combination, pr_diff_winter])
 
 
     # Filter 1
-    filter1 = pr_diffs_winter.sort('pr_diff_winter').head(1000)
+    top1000 = filter1(pr_diffs_winter, target_dpr)
 
     # Filter 2
-    filter2 = filter1.#dostuff
+    # Create additional columns in the dataframe by applying the following steps:
+    for combi in top1000.combinations:
+        pr_diff_summer, tas_diff_summer, tas_diff_winter = get_filter2_variables(combination)
+        # somehow append to dataframe: ['pr_diff_summer, tas_diff_summer, tas_diff_winter]
 
-
+    # I think this function can also be applied using (avoiding the loop):
+    # top1000['pr_diff_summer, tas_diff_summer, tas_diff_winter] = top1000.apply(get_filter2_variables)
+    top1000.filter(tas_diff_summer - target_percentile_tas_summer < ...)
+    top1000.filter(tas_diff_winter - target_percentile_tas_winter < ...)
+    top1000.filter(pr_diff_summer - target_percentile_pr_summer < ...)
 
 
 
     return
+
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
