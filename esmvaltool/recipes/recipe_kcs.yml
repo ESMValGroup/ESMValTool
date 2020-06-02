@@ -51,12 +51,8 @@ preprocessors:
     #   filter_type: lowpass
     #   filter_stats: mean
 
-  control_period:  # All other functions need to be applied to the 'resampled' times
-    area_statistics:
-      operator: mean
-
-  validation:
-      extract_point:
+  resampling:
+    extract_point:
       longitude: 6.25
       latitude: 51.21
       scheme: linear
@@ -100,9 +96,20 @@ diagnostics:
     scripts:
       resample:
         script: kcs/resampling.py
-        scenario_year: 2050
-        scenario_temperature_change: [1, 1, 2, 2]
-        scenario_precipitation_change: [4, 8, 8, 16]  # theory predicts approximately 6-7 % per degree global temperature change (K).
-        control_period_bounds: [1980, 2010]
-        scenario_period_bounds: [2010, 2030]  # This comes from the first diagnostic
+        control_period: [1980, 2010]
         target_dataset: ACCESS1-0
+
+        scenarios:
+          Gl:
+            scenario_year: 2050
+            resampling_period: [2010, 2030]  # This comes from the first diagnostic
+            dpr_winter: 4
+            dpr_summer: 0
+            dtas_DFJ_JJA: 10
+          Gh:
+            scenario_year: 2050
+            resampling_period: [2010, 2030]  # This comes from the first diagnostic
+            dpr_winter: 4
+            dpr_summer: 0
+            dtas_DFJ_JJA: 10
+

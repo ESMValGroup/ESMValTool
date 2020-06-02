@@ -23,6 +23,59 @@ from esmvaltool.diag_scripts.shared import (run_diagnostic, get_plot_filename,
 
 
 
+def filter1(pr_diffs_winter, target_dpr):
+    """Get the 1000 combinations that are closest to the target.
+
+    pr_diffs_winter: a pandas dataframe with two columns:
+        1. the code for the combination
+        2. the winter precipitation differences
+
+    targed_dpr: target precipitation change (dependent on the scenario)
+    """
+
+    top1000 (pr_diffs_winter - target_dpr).sort('pr_diff_winter').head(1000)
+    return top1000
+
+
+def filter2():
+    # These are needed only for the 1000 best samples from the step above, so may do it later, outside this superloop
+    # pr_diff_summer = get_precipitation_change(resampled_future, resample_control, variable='tas', season='JJA') # Maybe use esmvaltool's seasonal statistics preprocessor
+    # tas_diff_winter = ..
+    # tas_diff_summer = ..
+    return ...
+
+
+def filter3():
+
+    return ...
+
+
+def get_recombined_cube(segments, combination):
+    """
+
+    segments: a nested list with [6 segments of 5-year periods] for each ensemble member.
+    combination: a specific order to reconstruct a new climate, e.g.
+        [1, 3, 4, 1, 6, 8] means:
+        - take the first 5 years of the 1st ensemble member,
+        - the second 5 years of the 3rd ensemble member,
+        - etc.
+    """
+    iris.cube.CubeList(controls[i][j] for i, j in enumerate(combination)).concatenate()
+    return
+
+
+def get_change(control, future, season):
+    """Return the difference in mean between future and control period.
+
+    e.g. control = precipitation cubes for 1981-2010
+         future = precipitation cubes for 2030-2059
+         season = 'DJF'
+         returns change in mean winter precipitation between future and control
+    """
+
+    dpr = control.extract_season(season).mean() - future.extract_season(season).mean()
+    return dpr
+
 
 def main():
 
@@ -38,7 +91,7 @@ def main():
     for dataset in datasetlist():
         filename = dataset['input_file']
         cube = iris.read_cube('filename')
-        control = cube.select(....)
+        control = cube.select(....)  # iris.Constraint(time=lambda cell: cell.point.year == year)
         future =
 
         control_segments = [control.select(...), control.select(...)]
@@ -49,17 +102,12 @@ def main():
     # Make a lot of different combinations of the datasets
     n_ensemble_members = len(datasetlist)
     pr_diffs_winter = pd.DataFrame(columns=['combination', 'pr_diff_winter'] )
-    for combination in itertools.product(n_ensamble_members, repeat=6):
-        resampled_control = iris.cube.CubeList(controls[i][j] for i, j in enumerate(combination)).concatenate()
-        resampled_future = iris.cube.CubeList(futures[i] for i, j in enumerate(combination)).concatenate()
+    for combination in itertools.product(n_ensemble_members, repeat=6):
+        resampled_control = get_recombined_cube(controls, combination)
+        resampled_future = get_recombined_cube(futures, combination)
 
-        pr_diff_winter = get_precipitation_change(resampled_future, resample_control, variable='pr', season='DJF')
+        pr_diff_winter = get_change(resampled_future, resampled_control, season='DJF')
         pr_diffs_winter.append([combination, pr_diff_winter])
-
-        # These are needed only for the 1000 best samples from the step above, so may do it later, outside this superloop
-        pr_diff_summer = get_precipitation_change(resampled_future, resample_control, variable='tas', season='JJA') # Maybe use esmvaltool's seasonal statistics preprocessor
-        tas_diff_winter = ..
-        tas_diff_summer = ..
 
 
     # Filter 1
@@ -67,6 +115,7 @@ def main():
 
     # Filter 2
     filter2 = filter1.#dostuff
+
 
 
 
