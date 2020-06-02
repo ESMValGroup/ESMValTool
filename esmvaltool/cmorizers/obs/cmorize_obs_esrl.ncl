@@ -57,7 +57,7 @@ begin
   MIP = "Amon"
 
   ; Frequency
-  FREQ = "yr"
+  FREQ = "mon"
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + "/cmip5/Tables/CMIP5_" + MIP
@@ -134,18 +134,28 @@ begin
       delete(month)
 
       ; Create output variable
-      output = new(dimsizes(timec), float)
+      output = new((/dimsizes(timec), 1, 1, 1/), float)
       output!0 = "time"
       output&time = timec
+      output!1 = "lon"
+      output&lon = st_lon(stID)
+      output!2 = "lat"
+      output&lat = st_lat(stID)
+      output!3 = "plev"
+      output&plev = st_alt(stID)
+      output&plev@units = "Pa"
       output@_FillValue = FILL
 
       do ii = 0, dimsizes(var) - 1
-        output(ind(datec.eq.date(ii))) = (/var(ii)/)
+        output(ind(datec.eq.date(ii)),0 ,0 ,0) = (/var(ii)/)
       end do
       delete(var)
       delete(date)
       output = where(output.lt.0., output@_FillValue, output)
 
+      ; Format coordinates
+      format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
+      
       ; Set variable attributes (CMOR)
       tmp = format_variable(output, VAR, CMOR_TABLE)
       delete(output)
@@ -170,7 +180,7 @@ begin
       write_nc(fout, VAR, output, bounds, gAtt)
       delete(gAtt)
       delete(output)
-print(fout)
+
     end if
 
   end do

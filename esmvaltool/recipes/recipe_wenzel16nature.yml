@@ -53,6 +53,13 @@ preprocessors:
     amplitude:
       coords: year
       
+  OBS_co2:
+    annual_statistics:
+      operator: mean
+      
+  OBS_amp:
+    amplitude:
+      coords: year
 
 diagnostics:
   
@@ -107,9 +114,28 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1850
         end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
+          - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+      co2_obs:
+        preprocessor: OBS_co2
+        short_name: co2
+        project: CMIP5
+        mip: Amon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1973
+        end_year: 2014
         reference_dataset: ESRL
+        additional_datasets:
+          - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2, start_year: 1973, end_year: 2014}
       co2s_amp:
-        preprocessor: highlat_amp # land_fraction_weighting
+        preprocessor: highlat_amp 
         short_name: co2s
         derive: true
         project: CMIP5
@@ -118,16 +144,26 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1850
         end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
+          - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+      co2_amp_obs:
+        preprocessor: OBS_amp
+        short_name: co2
+        project: CMIP5
+        mip: Amon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1973
+        end_year: 2014
         reference_dataset: ESRL
-    additional_datasets:
-      - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2, start_year: 1973, end_year: 2012, frequency: yr}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
-      - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
-      - {dataset: MIROC-ESM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: NorESM1-ME}
+        additional_datasets:
+          - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2, start_year: 1973, end_year: 2014}
     scripts:
       carbon_cycle: 
         script: carbon_ec/carbon_co2_cycle.ncl

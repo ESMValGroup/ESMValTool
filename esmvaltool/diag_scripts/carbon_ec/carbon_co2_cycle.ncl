@@ -44,13 +44,15 @@ begin
   tmp = metadata_att_as_array(input_file_info, "variable_group")
   co2s_ann = ind(tmp.eq."co2s")
   co2s_amp = ind(tmp.eq."co2s_amp")
+  co2_ann_obs = ind(tmp.eq."co2_obs")
+  co2_amp_obs = ind(tmp.eq."co2_amp_obs")
   delete(tmp)
 
   ; Load var_info
   var = variable_info[0]@short_name
   info = select_metadata_by_name(input_file_info, var)
-  info0 = info[co2s_ann]
-  info1 = info[co2s_amp]
+  info0 = (/info[co2s_ann], info[co2_ann_obs]/)
+  info1 = (/info[co2s_amp], info[co2_amp_obs]/)
 
   reference_dataset = variable_info[0]@reference_dataset
   iref = ind(reference_dataset .eq. datasetnames)

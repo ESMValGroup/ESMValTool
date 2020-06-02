@@ -142,13 +142,13 @@ begin
       delta0_std(imod) = sqrt( \
                          (stddev(tofloat(tmp0( \
                              {time|xMax_year-4:xMax_year})))/ \
-                             avg(tofloat(tmp0( \
+                         avg(tofloat(tmp0( \
                              {time|xMin_year:xMin_year+4})))) ^ 2 + \
                          (stddev(tofloat(tmp0( \
                              {time|xMin_year:xMin_year+4}))) * \
-                             avg(tofloat(tmp0( \
+                         avg(tofloat(tmp0( \
                              {time|xMax_year-4:xMax_year})))/ \
-                             avg(tofloat(tmp0( \
+                         avg(tofloat(tmp0( \
                              {time|xMin_year:xMin_year+4}))) ^ 2) ^ 2)
     else
       delta0(imod) = (avg(tmp0({time|xMax_year-4:xMax_year}))/ \
@@ -257,7 +257,7 @@ begin
   datasetnames = tmpm
 
   YStg = str_upper(var) + "(2xCO~B~2~N~)/" + \
-        str_upper(var) + "(1xCO~B~2~N~)"
+         str_upper(var) + "(1xCO~B~2~N~)"
 
   data_arr = new((/dimsizes(betaGPP), 1/), float)
   data_arr(:, 0) = betaGPP
