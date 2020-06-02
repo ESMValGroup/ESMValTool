@@ -169,3 +169,104 @@ def main():
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
+
+
+
+
+
+
+
+
+
+
+
+# Only keep datasets from the target model:
+pr = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name='pr')
+
+
+def segment_datasets(cubes, start=1981, end=2010, step=5):
+    """Return a nested cubelist with [[x segments of n-year periods] for each input dataset]."""
+    segmented_cubes = iris.cube.CubeList([
+        [
+            cube.extract(iris.Constraint(time=lambda cell: year <= cell.point.year < year+step))
+            for year in range(start, end, step)
+        ] for cube in cubes
+    ])
+    return segmented_cubes
+
+
+
+
+
+
+
+
+
+def segment(cube, start=1981, end=2010, step=5):
+    """Split the cube into x segments of n-year periods"""
+    segments = iris.cube.CubeList()
+    for i, year in enumerate(range(start, end, step)):
+        segment = cube.extract(iris.Constraint(time=lambda cell: year <= cell.point.year < year+step))
+        segment.add_aux_coord(iris.coords.AuxCoord(i, long_name='segment', units='no_unit'))
+        segments.append(segment)
+    return segments
+
+
+
+def precompute_lookup_table(segmented_datasets):
+
+
+    for period, variable in product(['control', 'future'], ['pr', 'tas']):
+
+            # >> a dict with keys like 'controlprDJF' and values: pandas dataframes with 5-year blocks as columns and ensemble members as rows.
+
+
+# Load all precipitation datasets from the target model
+from iris.experimental.equalise_cubes import equalise_attributes
+from esmvalcore.preprocessor import climate_statistics
+
+for variable in ['pr', 'tas']:
+
+    datasets = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name=variable)
+    cubes = iris.cube.CubeList()
+    for i, ds in enumerate(datasets):
+        print(f"Realization index {i} represents filename {ds['filename']}.")
+        cube = iris.load_cube(ds['filename'])
+        cube.add_aux_coord(iris.coords.AuxCoord(i, long_name='ensemble_member', units='no_unit'))
+        cubes.append(cube)
+    equalise_attributes(cubes)
+    cubes = cubes.merge_cube()
+    # <iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8)>
+
+    segmented_cubes = segment(cubes)
+    # [<iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8)>,
+    # <iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8)>,
+    # ...]
+    # Each cube has a scalar aux-coord 'segment', but they cannot be merged yet, because time is not equal for all segments
+
+    segment_seasonal_means = iris.cube.CubeList()
+    for segment in segmented_cubes:
+        means = climate_statistics(segment, period='season')
+        segment_seasonal_means.append(means)
+    segment_seasonal_means.merge_cube()
+    # <iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8, season_number: 4, segment: 6)>
+
+
+
+
+# xarray alternative implementation (in xarray it is possible to have non-scalar dimension coords)
+
+import xarray as xr
+
+lookup_table.append(segmented_seasonal_means)
+for period, variable in product(['control', 'future'], ['pr', 'tas']):
+    datasets = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name=variable)
+    ds = xr.open_mfdataset([metadata['filename'] for metadata in datasets], concat_dim='ensemble_member', combine='nested')
+    segmented = xr.concat([ds.sel(time = slice(str(year), str(year+step)))
+                              for year in range(start, stop, step)], dim='segment')
+    segmented_seasonal_means = ds_segmented.groupby('time.season').mean()
+    segmented_seasonal_means.assign_coords(period=period, variable=variable)
+    lookup_table.append(segmented_seasonal_means)
+lookup_table = xr.concatenate(lookup_table, dim=period)
+lookup_table = xr.concatenate(lookup_table, dim=variable)
+
