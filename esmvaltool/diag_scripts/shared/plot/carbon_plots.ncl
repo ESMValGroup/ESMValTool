@@ -95,7 +95,7 @@ begin
   res_new = att2var(data, "res_")
   copy_VarMeta(res_new, res)
 
-  plot = gsn_csm_xy(wks, xValue , data(:, 0), res)
+  plot = gsn_csm_xy(wks, xValue, data(:, 0), res)
 
   return(plot)
 

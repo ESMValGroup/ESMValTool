@@ -142,13 +142,13 @@ begin
       delta0_std(imod) = sqrt( \
                          (stddev(tofloat(tmp0( \
                              {time|xMax_year-4:xMax_year})))/ \
-                         avg(tofloat(tmp0( \
+                             avg(tofloat(tmp0( \
                              {time|xMin_year:xMin_year+4})))) ^ 2 + \
                          (stddev(tofloat(tmp0( \
-                             {time|xMin_year:xMin_year+4})))* \
-                         avg(tofloat(tmp0( \
+                             {time|xMin_year:xMin_year+4}))) * \
+                             avg(tofloat(tmp0( \
                              {time|xMax_year-4:xMax_year})))/ \
-                         avg(tofloat(tmp0( \
+                             avg(tofloat(tmp0( \
                              {time|xMin_year:xMin_year+4}))) ^ 2) ^ 2)
     else
       delta0(imod) = (avg(tmp0({time|xMax_year-4:xMax_year}))/ \
@@ -156,9 +156,9 @@ begin
 
       delta0_std(imod) = sqrt( \
                          (stddev(tmp0({time|xMax_year-4:xMax_year}))/ \
-                         avg(tmp0(0:4))) ^2 + (stddev(tmp0(0:4)) * \
-                         avg(tmp0({time|xMax_year-4:xMax_year}))/ \
-                         avg(tmp0(0:4)) ^2) ^2)
+                          avg(tmp0(0:4))) ^ 2 + (stddev(tmp0(0:4)) * \
+                          avg(tmp0({time|xMax_year-4:xMax_year}))/ \
+                          avg(tmp0(0:4)) ^ 2) ^ 2)
     end if
     betaGPP(imod) = delta0(imod) * 1/0.9
 
@@ -190,7 +190,7 @@ begin
     ncdf_outfile = ncdf_write(betavar, new_path)
 
   end if
-;-----------------------------------------------------------
+; -----------------------------------------------------------
   ; creat plots
 
   ; PLOT - Panel A
@@ -232,11 +232,11 @@ begin
     txres@gsMarkerColor = colors(imod)
     txres@gsMarkerSizeF = MarkerSizeF(imod)
     txres@gsMarkerIndex = markers(imod)
-    add_markers(wks, plot, txres, pctco({year|nyMin:nyMax}), aY0data(imod,:))
+    add_markers(wks, plot, txres, pctco({year|nyMin:nyMax}), aY0data(imod, :))
 
     lineres@gsLineColor = colors(imod)
     plot@$marker$ = gsn_add_polyline(wks, plot, Yfitda(imod, :), \
-                                        aY0data(imod, :), lineres)
+                                     aY0data(imod, :), lineres)
   end do
   draw(plot)
   frame(wks)
@@ -257,7 +257,7 @@ begin
   datasetnames = tmpm
 
   YStg = str_upper(var) + "(2xCO~B~2~N~)/" + \
-         str_upper(var) + "(1xCO~B~2~N~)"
+        str_upper(var) + "(1xCO~B~2~N~)"
 
   data_arr = new((/dimsizes(betaGPP), 1/), float)
   data_arr(:, 0) = betaGPP

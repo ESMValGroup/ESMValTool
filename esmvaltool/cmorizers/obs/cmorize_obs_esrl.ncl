@@ -1,7 +1,7 @@
 ; ######################################################################
 ;  ESMValTool CMORizer for ESRL observational data
 ; ######################################################################
-; 
+;
 ; Tier
 ;    Tier 2: other freely-available dataset.
 ;
@@ -21,7 +21,7 @@
 ;    Convert the data to unix format using dos2unix.
 ;    Get the list of stations at:
 ;        http://www.esrl.noaa.gov/gmd/obop/
-;    This list must be manually formatted in a comma-separated table, 
+;    This list must be manually formatted in a comma-separated table,
 ;    given as
 ;   FILE_STAT below.
 ;    Check the period covered by the data and give it below as YEAR1 and
@@ -81,11 +81,11 @@ end
 begin
 
   ; Create time coordinate
-  ;timec = create_timec(YEAR1, YEAR2)
-  ;datec = ut_calendar(timec, 1)
+  ; timec = create_timec(YEAR1, YEAR2)
+  ; datec = ut_calendar(timec, 1)
 
   ; Read station info
-  stat = asciiread(FILE_STAT,-1,"string")
+  stat = asciiread(FILE_STAT, -1, "string")
   st_code = str_squeeze(str_get_field(stat(:), 1, ","))
   st_name = str_squeeze(str_get_field(stat(:), 2, ","))
   st_lat  = tofloat(str_get_field(stat(:), 3, ","))
@@ -102,7 +102,7 @@ begin
 
     if (fileexists(infile)) then
 
-      raw = asciiread(infile, -1, "string") 
+      raw = asciiread(infile, -1, "string")
       head = str_get_field(raw(0), 3, " ")
       data = raw(toint(head):)
       delete(head)
@@ -174,8 +174,8 @@ begin
 
       fout = output_dir_path + \
              str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-             MIP, VAR, DATESTR/), "_") + ".nc"
-      
+                        MIP, VAR, DATESTR/), "_") + ".nc"
+
       ; Write variable
       write_nc(fout, VAR, output, bounds, gAtt)
       delete(gAtt)
