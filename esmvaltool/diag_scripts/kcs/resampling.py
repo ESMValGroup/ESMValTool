@@ -101,6 +101,9 @@ def get_filter2_variables(combination):
 
 def filter3(df, n=8):
     """Sort by the number of unique elements in 'combination' and return the top n."""
+    # This would take the lowest penalty directly for each resampled version, but
+    # instead we need to select the (random) combination of 8 samples that has the
+    # overall lowest re-use of individual members.
     df['n_datasets'] = df.combination.map(lambda x: len(set(x)))
     return df.sort('n_datasets', descending=True).head(n)
 
@@ -123,31 +126,40 @@ def main():
         pr_futures = segment_datasets(target_pr_datasets, *info['resampling_period'])
         tas_futures = segment_datasets(target_tas_datasets, *info['resampling_period'])
 
-    # Make a lot of different re-combinations of the datasets
-    n_ensemble_members = len(datasetlist)
-    pr_diffs_winter = pd.DataFrame(columns=['combination', 'pr_diff_winter'])
-    for combination in itertools.product(n_ensemble_members, repeat=6):
-        resampled_control = recombine_cubes(pr_controls, combination)
-        resampled_future = recombine_cubes(pr_futures, combination)
 
-        pr_diff_winter = get_change(resampled_future, resampled_control, season='DJF')
-        pr_diffs_winter.append([combination, pr_diff_winter])
+        # Rather than computing seasonal means over all 8^6 resamples, create pre-computed
+        # means for each segment (6*8). These can then be recombined for each combination.
+        lookup_table = {}
+        for period, variable, season in product(['control', 'future'], ['pr', 'tas'], ['DJF', 'JJA']):
+            lookup_table[period+variable+season] = precompute_means()
+            # >> a dict with keys like 'controlprDJF' and values: pandas dataframes with 5-year blocks as columns and ensemble members as rows.
+
+        # Make a lot of different re-combinations of the datasets
+        # TODO: don't do this on datasets; do this on precomputed means.
+        n_ensemble_members = len(datasetlist)
+        pr_diffs_winter = pd.DataFrame(columns=['combination', 'pr_diff_winter'])
+        for combination in itertools.product(n_ensemble_members, repeat=6):
+            resampled_control = recombine_cubes(pr_controls, combination)
+            resampled_future = recombine_cubes(pr_futures, combination)
+
+            pr_diff_winter = get_change(resampled_future, resampled_control, season='DJF')
+            pr_diffs_winter.append([combination, pr_diff_winter])
 
 
-    # Filter 1
-    top1000 = filter1(pr_diffs_winter, target_dpr)
+        # Filter 1
+        top1000 = filter1(pr_diffs_winter, target_dpr)
 
-    # Filter 2
-    # Create additional columns in the dataframe by applying the following steps:
-    for combi in top1000.combinations:
-        pr_diff_summer, tas_diff_summer, tas_diff_winter = get_filter2_variables(combination)
-        # somehow append to dataframe: ['pr_diff_summer, tas_diff_summer, tas_diff_winter]
+        # Filter 2
+        # Create additional columns in the dataframe by applying the following steps:
+        for combi in top1000.combinations:
+            pr_diff_summer, tas_diff_summer, tas_diff_winter = get_filter2_variables(combination)
+            # somehow append to dataframe: ['pr_diff_summer, tas_diff_summer, tas_diff_winter]
 
-    # I think this function can also be applied using (avoiding the loop):
-    # top1000['pr_diff_summer, tas_diff_summer, tas_diff_winter] = top1000.apply(get_filter2_variables)
-    top1000.filter(tas_diff_summer - target_percentile_tas_summer < ...)
-    top1000.filter(tas_diff_winter - target_percentile_tas_winter < ...)
-    top1000.filter(pr_diff_summer - target_percentile_pr_summer < ...)
+        # I think this function can also be applied using (avoiding the loop):
+        # top1000['pr_diff_summer, tas_diff_summer, tas_diff_winter] = top1000.apply(get_filter2_variables)
+        top1000.filter(tas_diff_summer - target_percentile_tas_summer < ...)
+        top1000.filter(tas_diff_winter - target_percentile_tas_winter < ...)
+        top1000.filter(pr_diff_summer - target_percentile_pr_summer < ...)
 
 
 
