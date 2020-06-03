@@ -16,52 +16,28 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
 
-
 from esmvaltool.diag_scripts.shared import (run_diagnostic, get_plot_filename,
                                             get_diagnostic_filename, select_metadata)
 
 
 
-def segment_datasets(datasetlist, start=1981, end=2010, step=5):
-    """Return a nested list with [[x segments of n-year periods] for each input dataset]."""
-    segmented_datasets = []
-    for dataset in datasetlist:
-        filename = dataset['input_file']
-        cube = iris.load_cube('filename')
-        segments = [
-            cube.extract(iris.Constraint(time=lambda cell: year <= cell.point.year < year+step))
-            for year in range(start, end, step)
-        ]
-        segmented_datasets.append(segments)
-
-    return segmented_datasets
+def segment(dataset, start_year, end_year, block_size):
+    segmented_dataset = xr.concat([
+        ds.sel(time = slice(str(year), str(year+block_size)))
+        for year in range(start_year, end_year, block_size)
+    ], dim='segment')
+    return segmented_dataset
 
 
-def recombine_cubes(segments, combination):
-    """
+def _recombine(segments, combination):
+    # use a helper 'indices' dataarray to select one single ensemble member for each segment.
+    indices = xr.DataArray(
+        data = combination,
+        dims = ['segment'],
+        coords = {'segment': segments.segment})
+    recombined = segments.sel(ensemble_member=indices)
+    return recombined
 
-    segments: a nested list with [6 segments of 5-year periods] for each ensemble member.
-    combination: a specific order to reconstruct a new climate, e.g.
-        [1, 3, 4, 1, 6, 8] means:
-        - take the first 5 years of the 1st ensemble member,
-        - the second 5 years of the 3rd ensemble member,
-        - etc.
-    """
-    cubelist = iris.cube.CubeList(controls[i][j] for i, j in enumerate(combination))
-    return cubelist.concatenate()
-
-
-def get_change(control, future, season):
-    """Return the difference in mean between future and control period.
-
-    e.g. control = precipitation cubes for 1981-2010
-         future = precipitation cubes for 2030-2059
-         season = 'DJF'
-         returns change in mean winter precipitation between future and control
-    """
-
-    dpr = control.extract_season(season).mean() - future.extract_season(season).mean()
-    return dpr
 
 def filter1(pr_diffs_winter, target_dpr):
     """Get the 1000 combinations that are closest to the target.
@@ -85,20 +61,6 @@ def filter2():
     return ...
 
 
-def get_filter2_variables(combination):
-    resampled_control_tas = recombine_cubes(tas_controls, combination)
-    resampled_future_tas = recombine_cubes(tas_futures, combination)
-
-    resampled_control_tas = recombine_cubes(tas_controls, combination)
-    resampled_future_tas = recombine_cubes(tas_futures, combination)
-
-    pr_diff_summer = get_change(resampled_future_pr, resampled_control_pr, season='JJA')
-    tas_diff_summer = get_change(resampled_future_tas, resampled_control_tas, season='JJA')
-    tas_diff_winter = get_change(resampled_future_tas, resampled_control_tas, season='DJF')
-
-    return pr_diff_summer, tas_diff_summer, tas_diff_winter
-
-
 def filter3(df, n=8):
     """Sort by the number of unique elements in 'combination' and return the top n."""
     # This would take the lowest penalty directly for each resampled version, but
@@ -108,58 +70,55 @@ def filter3(df, n=8):
     return df.sort('n_datasets', descending=True).head(n)
 
 
+
 def main():
 
     # a list of dictionaries describing all datasets passed on to the recipe
     dataset_dicts = cfg['input_data'].values()
 
-    # Only keep datasets from the target model:
-    pr = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name='pr')
-    tas = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name='tas')
+    # Get all datasets for the target model; load all at once; concatenate along
+    # a new dimension 'ensemble_member'; and only keep variables pr and tas
+    target_model_metadata = select_metadata(dataset_dicts, dataset=cfg['target_model'])
+    files = [metadata['filename'] for metadata in target_model_metadata]
+    datasets = xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
 
-    pr_controls = segment_datasets(pr, *cfg['control_period'])
-    tas_controls = segment_datasets(tas, *cfg['control_period'])
+    segments_control = segment(dataset, *cfg['control_period'], step=5)
 
-    for scenario_name, info,  in cfg['scenarios']:
+    winter_pr_mean_segments = ds_segmented.pr.groupby('time.season').mean().sel(season='DJF')
+
+    # Find combinations of the control segments where the average is very close to the overall mean of all ensemble members in the control period
+    controlmean = segments_control.pr.mean()
+    recombined_climates = pd.DataFrame(columns=['combination', 'winter_mean_pr'])
+
+    for combination in itertools.product(n_ensemble_members, repeat=6):
+
+        # For now, only look at winter mean precipitation:
+        recombined_winter_mean_pr_segments = _recombine(winter_pr_mean_segments, combination)
+        recombined_winter_mean_pr_overal = resampled.mean('segment')
+
+        # store them in a dataframe
+        # keep the 1000 that are closest to controlmean.
+        recombined_climates.append([combination, recombined_winter_mean)
+
+    # Only keep the 1000 that are closest to controlmean
+    recombined_climates.apply(lambda row: np.abs(row.winter_mean_pr - controlmean)).sort(ascending=True).head(1000)
+
+
+
+
+
+
+
+    for scenario_name, info, in cfg['scenarios']:
         print('Working on scenario:', scenario_name)
-
-        pr_futures = segment_datasets(target_pr_datasets, *info['resampling_period'])
-        tas_futures = segment_datasets(target_tas_datasets, *info['resampling_period'])
+        segments_future = segment(dataset, *info['resampling'], step=5)
 
 
-        # Rather than computing seasonal means over all 8^6 resamples, create pre-computed
-        # means for each segment (6*8). These can then be recombined for each combination.
-        lookup_table = {}
-        for period, variable, season in product(['control', 'future'], ['pr', 'tas'], ['DJF', 'JJA']):
-            lookup_table[period+variable+season] = precompute_means()
-            # >> a dict with keys like 'controlprDJF' and values: pandas dataframes with 5-year blocks as columns and ensemble members as rows.
+        segmented_seasonal_means = ds_segmented.groupby('time.season').mean()
+        segmented_seasonal_means.assign_coords(period=period, variable=variable)
+        lookup_table.append(segmented_seasonal_means)
+    lookup_table = xr.concatenate(lookup_table, dim=period)
 
-        # Make a lot of different re-combinations of the datasets
-        # TODO: don't do this on datasets; do this on precomputed means.
-        n_ensemble_members = len(datasetlist)
-        pr_diffs_winter = pd.DataFrame(columns=['combination', 'pr_diff_winter'])
-        for combination in itertools.product(n_ensemble_members, repeat=6):
-            resampled_control = recombine_cubes(pr_controls, combination)
-            resampled_future = recombine_cubes(pr_futures, combination)
-
-            pr_diff_winter = get_change(resampled_future, resampled_control, season='DJF')
-            pr_diffs_winter.append([combination, pr_diff_winter])
-
-
-        # Filter 1
-        top1000 = filter1(pr_diffs_winter, target_dpr)
-
-        # Filter 2
-        # Create additional columns in the dataframe by applying the following steps:
-        for combi in top1000.combinations:
-            pr_diff_summer, tas_diff_summer, tas_diff_winter = get_filter2_variables(combination)
-            # somehow append to dataframe: ['pr_diff_summer, tas_diff_summer, tas_diff_winter]
-
-        # I think this function can also be applied using (avoiding the loop):
-        # top1000['pr_diff_summer, tas_diff_summer, tas_diff_winter] = top1000.apply(get_filter2_variables)
-        top1000.filter(tas_diff_summer - target_percentile_tas_summer < ...)
-        top1000.filter(tas_diff_winter - target_percentile_tas_winter < ...)
-        top1000.filter(pr_diff_summer - target_percentile_pr_summer < ...)
 
 
 
@@ -169,104 +128,4 @@ def main():
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-
-
-
-
-
-
-
-
-
-
-
-# Only keep datasets from the target model:
-pr = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name='pr')
-
-
-def segment_datasets(cubes, start=1981, end=2010, step=5):
-    """Return a nested cubelist with [[x segments of n-year periods] for each input dataset]."""
-    segmented_cubes = iris.cube.CubeList([
-        [
-            cube.extract(iris.Constraint(time=lambda cell: year <= cell.point.year < year+step))
-            for year in range(start, end, step)
-        ] for cube in cubes
-    ])
-    return segmented_cubes
-
-
-
-
-
-
-
-
-
-def segment(cube, start=1981, end=2010, step=5):
-    """Split the cube into x segments of n-year periods"""
-    segments = iris.cube.CubeList()
-    for i, year in enumerate(range(start, end, step)):
-        segment = cube.extract(iris.Constraint(time=lambda cell: year <= cell.point.year < year+step))
-        segment.add_aux_coord(iris.coords.AuxCoord(i, long_name='segment', units='no_unit'))
-        segments.append(segment)
-    return segments
-
-
-
-def precompute_lookup_table(segmented_datasets):
-
-
-    for period, variable in product(['control', 'future'], ['pr', 'tas']):
-
-            # >> a dict with keys like 'controlprDJF' and values: pandas dataframes with 5-year blocks as columns and ensemble members as rows.
-
-
-# Load all precipitation datasets from the target model
-from iris.experimental.equalise_cubes import equalise_attributes
-from esmvalcore.preprocessor import climate_statistics
-
-for variable in ['pr', 'tas']:
-
-    datasets = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name=variable)
-    cubes = iris.cube.CubeList()
-    for i, ds in enumerate(datasets):
-        print(f"Realization index {i} represents filename {ds['filename']}.")
-        cube = iris.load_cube(ds['filename'])
-        cube.add_aux_coord(iris.coords.AuxCoord(i, long_name='ensemble_member', units='no_unit'))
-        cubes.append(cube)
-    equalise_attributes(cubes)
-    cubes = cubes.merge_cube()
-    # <iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8)>
-
-    segmented_cubes = segment(cubes)
-    # [<iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8)>,
-    # <iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8)>,
-    # ...]
-    # Each cube has a scalar aux-coord 'segment', but they cannot be merged yet, because time is not equal for all segments
-
-    segment_seasonal_means = iris.cube.CubeList()
-    for segment in segmented_cubes:
-        means = climate_statistics(segment, period='season')
-        segment_seasonal_means.append(means)
-    segment_seasonal_means.merge_cube()
-    # <iris 'Cube' of precipitation_flux / (kg m-3 day-1) (ensemble_member: 8, season_number: 4, segment: 6)>
-
-
-
-
-# xarray alternative implementation (in xarray it is possible to have non-scalar dimension coords)
-
-import xarray as xr
-
-lookup_table.append(segmented_seasonal_means)
-for period, variable in product(['control', 'future'], ['pr', 'tas']):
-    datasets = select_metadata(dataset_dicts, dataset=cfg['target_model'], short_name=variable)
-    ds = xr.open_mfdataset([metadata['filename'] for metadata in datasets], concat_dim='ensemble_member', combine='nested')
-    segmented = xr.concat([ds.sel(time = slice(str(year), str(year+step)))
-                              for year in range(start, stop, step)], dim='segment')
-    segmented_seasonal_means = ds_segmented.groupby('time.season').mean()
-    segmented_seasonal_means.assign_coords(period=period, variable=variable)
-    lookup_table.append(segmented_seasonal_means)
-lookup_table = xr.concatenate(lookup_table, dim=period)
-lookup_table = xr.concatenate(lookup_table, dim=variable)
 
