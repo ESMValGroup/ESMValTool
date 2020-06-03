@@ -28,12 +28,11 @@ import os
 import glob
 import iris
 from iris.analysis import Aggregator
-# import datetime
 import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
-    _plot_single_maps, get_latlon_index, count_spells, plot_map_spei_multi,
+    _plot_multi_model_maps, _plot_single_maps, get_latlon_index, count_spells,
     plot_time_series_spei)
 
 
@@ -116,6 +115,8 @@ def main(cfg):
         cube = iris.load(spei_file)[0]
         cube.coord('latitude').guess_bounds()
         cube.coord('longitude').guess_bounds()
+        lats = cube.coord('latitude').points
+        lons = cube.coord('longitude').points
         # time = cube.coord('time')
 
         # The data are 3D (time x latitude x longitude)
@@ -170,93 +171,11 @@ def main(cfg):
     perc_diff = ((all_drought_obs - all_drought_hist_mean)
                  / (all_drought_obs + all_drought_hist_mean) * 200)
 
-    # Historic MultiModelMean
-    data_dict = {}
-    data_dict['data'] = all_drought_hist_mean[:, :, 0]
-    data_dict['datasetname'] = 'MultiModelMean'
-    # This is only possible because all data must be on the same grid
-    data_dict['latitude'] = drought_show.coord('latitude').points
-    data_dict['longitude'] = drought_show.coord('longitude').points
-    data_dict['model_kind'] = 'Historic'
-    data_dict['drought_char'] = 'Number of Events per year'
-    data_dict['filename'] = 'Historic_No_of_Events_per_year'
-    data_dict['drought_numbers_level'] = np.arange(0, 0.4, 0.05)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    data_dict['data'] = all_drought_hist_mean[:, :, 1]
-    data_dict['drought_char'] = 'Duration of Events [month]'
-    data_dict['filename'] = 'Historic_Dur_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(0, 7, 1)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    data_dict['data'] = all_drought_hist_mean[:, :, 2]
-    data_dict['drought_char'] = 'Severity Index of Events'
-    data_dict['filename'] = 'Historic_Sev_index_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(0, 9, 1)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    data_dict['data'] = all_drought_hist_mean[:, :, 3]
-    data_dict['drought_char'] = 'Average ' + cfg['indexname'] + ' of Events'
-    data_dict['filename'] = 'Historic_Avr_' + cfg['indexname'] + '_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(-2.8, -1.8, 0.2)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    # CRU_OBS MultiModelMean
-    data_dict['data'] = all_drought_obs[:, :, 0]
-    data_dict['datasetname'] = 'Observations'
-    data_dict['model_kind'] = 'Era-Interim'
-    data_dict['drought_char'] = 'Number of Events per year'
-    data_dict['filename'] = 'Era-Interim_No_of_Events_per_year'
-    data_dict['drought_numbers_level'] = np.arange(0, 0.4, 0.05)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    data_dict['data'] = all_drought_obs[:, :, 1]
-    data_dict['drought_char'] = 'Duration of Events [month]'
-    data_dict['filename'] = 'Era-Interim_Dur_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(0, 7, 1)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    data_dict['data'] = all_drought_obs[:, :, 2]
-    data_dict['drought_char'] = 'Severity Index of Events'
-    data_dict['filename'] = 'Era-Interim_Sev_index_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(0, 9, 1)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    data_dict['data'] = all_drought_obs[:, :, 3]
-    data_dict['drought_char'] = 'Average ' + cfg['indexname'] + ' of Events'
-    data_dict['filename'] = 'Era-Interim_Avr_' + cfg['indexname'] + \
-        '_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(-2.8, -1.8, 0.2)
-    plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
-
-    # Perc_diff Multimodelmean
-    data_dict['data'] = perc_diff[:, :, 0]
-    data_dict['datasetname'] = 'Percentage'
-    data_dict['model_kind'] = 'Difference'
-    data_dict['drought_char'] = 'Number of Events [%]'
-    data_dict['filename'] = 'Percentage_difference_of_No_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(-100, 110, 10)
-    plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
-
-    data_dict['data'] = perc_diff[:, :, 1]
-    data_dict['drought_char'] = 'Duration of Events [%]'
-    data_dict['filename'] = 'Percentage_difference_of_Dur_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(-100, 110, 10)
-    plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
-
-    data_dict['data'] = perc_diff[:, :, 2]
-    data_dict['drought_char'] = 'Severity Index of Events [%]'
-    data_dict['filename'] = 'Percentage_difference_of_Sev_index_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(-50, 60, 10)
-    plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
-
-    data_dict['data'] = perc_diff[:, :, 3]
-    data_dict['drought_char'] = 'Average ' + cfg['indexname'] + \
-        ' of Events [%]'
-    data_dict['filename'] = 'Percentage_difference_of_Avr_' + \
-        cfg['indexname'] + '_of_Events'
-    data_dict['drought_numbers_level'] = np.arange(-50, 60, 10)
-    plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
+    # Plot multi model means
+    _plot_multi_model_maps(cfg, all_drought_hist_mean, lats, lons, 'Historic')
+    _plot_multi_model_maps(cfg, all_drought_obs, lats, lons,
+                           'Observations')
+    _plot_multi_model_maps(cfg, perc_diff, lats, lons, 'Difference')
 
 
 if __name__ == '__main__':
