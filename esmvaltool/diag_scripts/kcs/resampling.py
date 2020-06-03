@@ -186,8 +186,10 @@ def main(cfg):
 
         del selected_indices['control']  # No longer needed; we now have a control subset for each scenario
 
-    # Step 3:
 
+    # Step 3:
+   """Calculate the subset S3: find a subset with the least re-use of
+    segments, using random sampling"""
 
     return
 

@@ -25,6 +25,7 @@ datasets:
 
 preprocessors:
   scenarios_table:
+    #TODO: Add regrid time preprocessor to make sure all datasets are on the same grid
     area_statistics:
       operator: mean
 
