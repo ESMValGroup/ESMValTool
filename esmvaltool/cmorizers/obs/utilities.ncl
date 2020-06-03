@@ -606,7 +606,7 @@ begin
 
   ; Check monotonicity
   if (isMonotonic(var&lon) .eq. 0) then
-    error_msg("f", scriptname, funcname, "non-monotonic lonfitude coordinate")
+    error_msg("f", scriptname, funcname, "non-monotonic longitude coordinate")
   end if
 
   ; Check that lon is 0:360
