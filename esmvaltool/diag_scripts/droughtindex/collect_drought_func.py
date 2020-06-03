@@ -26,7 +26,7 @@ Configuration options
 import os
 import numpy as np
 import iris
-# import cartopy.crs as cart
+import cartopy.crs as cart
 import matplotlib.pyplot as plt
 import matplotlib.dates as mda
 import esmvaltool.diag_scripts.shared.names as n
@@ -87,7 +87,6 @@ def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, tstype):
         # RCP85 Percentage difference
         data_dict['data'] = all_drought_mean[:, :, 0]
         data_dict['datasetname'] = 'Percentage'
-        data_dict['model_kind'] = 'Difference'
         data_dict['drought_char'] = 'Number of Events [%]'
         data_dict['filename'] = 'Percentage_difference_of_No_of_Events'
         data_dict['drought_numbers_level'] = np.arange(-100, 110, 10)
@@ -117,7 +116,6 @@ def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, tstype):
             data_dict['datasetname'] = 'Mean'
         else:
             data_dict['datasetname'] = 'MultiModelMean'
-        data_dict['model_kind'] = tstype
         data_dict['drought_char'] = 'Number of Events per year'
         data_dict['filename'] = tstype + '_No_of_Events_per_year'
         data_dict['drought_numbers_level'] = np.arange(0, 0.4, 0.05)
