@@ -20,8 +20,11 @@ from esmvaltool.diag_scripts.shared import (run_diagnostic, get_plot_filename,
                                             get_diagnostic_filename, select_metadata)
 
 
-
 def segment(dataset, start_year, end_year, block_size):
+    """Segment (part of) a dataset into x blocks of n years each.
+
+    Returns a new dataset with additional coordinate 'segment'.
+    """
     segmented_dataset = xr.concat([
         ds.sel(time = slice(str(year), str(year+block_size)))
         for year in range(start_year, end_year, block_size)
@@ -29,14 +32,50 @@ def segment(dataset, start_year, end_year, block_size):
     return segmented_dataset
 
 
-def _recombine(segments, combination):
-    # use a helper 'indices' dataarray to select one single ensemble member for each segment.
+def all_possible_combinations(n_ensemble_members, n_segments):
+    """Generate indexer for all possible combinations of segmented dataset."""
+
+    # Create a DataArray once...
     indices = xr.DataArray(
-        data = combination,
+        data = np.zeros(n_segments),
         dims = ['segment'],
-        coords = {'segment': segments.segment})
-    recombined = segments.sel(ensemble_member=indices)
-    return recombined
+        coords = {'segment': np.arange(n_segments)})
+
+    # ...and update its values for all possible combinations
+    for combination in product(range(n_ensemble_members), repeat=n_segments):
+        indices.values = list(update)
+        yield indices
+
+
+def selected_combinations(combinations):
+    """Generate indexer for all selected combinations of segmented dataset.
+
+    combinations: a list of combinations
+    """
+    n_segments = len(combinations[0])
+
+    # Create a DataArray once...
+    indices = xr.DataArray(
+        data = np.zeros(n_segments),
+        dims = ['segment'],
+        coords = {'segment': np.arange(n_segments)})
+
+    # ...and update its values for each selected combinations
+    for combination in combinations:
+        indices.values = combination
+        yield indices
+
+
+def most_promising_combinations(segment_means, target, n=1000):
+    """Get n out of all possible combinations that are closest to the target."""
+    promising_combinations = []
+    for combination in all_possible_combinations(n_ensemble_members, n_segments=6):
+        recombined_segment_means = segment_means.sel(ensemble_member=combination)
+        new_overall_mean = recombined_segment_means.mean('segment')
+        distance_to_target = (new_overall_mean - target).abs()
+        promising_combinations.append([combination.values, distance_to_target])
+    top_all = pd.DataFrame(promising_combinations, columns=['combination', 'distance_to_target'])
+    return top_all.sort_by('distance_to_target').head(n)
 
 
 def filter1(pr_diffs_winter, target_dpr):
@@ -71,55 +110,49 @@ def filter3(df, n=8):
 
 
 
-def main():
+def main(cfg):
 
-    # a list of dictionaries describing all datasets passed on to the recipe
+    # Step 0: Read the data, extract segmented subsets for both the control
+    # and future periods, and precompute seasonal means for each segment.
     dataset_dicts = cfg['input_data'].values()
-
-    # Get all datasets for the target model; load all at once; concatenate along
-    # a new dimension 'ensemble_member'; and only keep variables pr and tas
     target_model_metadata = select_metadata(dataset_dicts, dataset=cfg['target_model'])
     files = [metadata['filename'] for metadata in target_model_metadata]
-    datasets = xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
+    dataset = xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
+    segments_season_means = {}
 
-    segments_control = segment(dataset, *cfg['control_period'], step=5)
+    # First precompute the segment season means for the control period ...
+    segments = segment(dataset, *cfg['control_period'], step=5)
+    season_means = segments.groupby('time.season').mean()
+    segments_season_means['control'] = season_means
 
-    winter_pr_mean_segments = ds_segmented.pr.groupby('time.season').mean().sel(season='DJF')
+    # ... then for all the future scenarios
+    for name, info, in cfg['scenarios']:
+        segments = segment(dataset, *info['resampling_period'], step=5)
+        season_means = segments.groupby('time.season').mean()
+        segments_season_means[name] = season_means
 
-    # Find combinations of the control segments where the average is very close to the overall mean of all ensemble members in the control period
-    controlmean = segments_control.pr.mean()
-    recombined_climates = pd.DataFrame(columns=['combination', 'winter_mean_pr'])
+    # Step 1a: Get 1000 combinations for the control period
+    # These samples should have the same mean winter precipitation as the mean of the x ensemble members
+    winter_mean_pr_segments = segments_season_means['control'].pr.sel(season='DJF')
+    target_winter_mean_pr = winter_mean_pr_segments.mean()
+    top1000 = most_promising_combinations(winter_mean_pr_segments, target_winter_mean_pr)
 
-    for combination in itertools.product(n_ensemble_members, repeat=6):
+    # Step 1b: Get 1000 combinations for the future period
+    # The target value is a relative change wrt the overall mean of the control period
+    control_period_winter_mean_pr = target_winter_mean_pr
+    for scenario, info, in cfg['scenarios']:
+        target_winter_mean_pr = control_period_winter_mean_pr * (1 + info['dpr_winter']/100)
+        winter_mean_pr_segments = segments_season_means[scenario].pr.sel(season='DJF')
+        top1000 = most_promising_combinations(winter_mean_pr_segments, target_winter_mean_pr)
 
-        # For now, only look at winter mean precipitation:
-        recombined_winter_mean_pr_segments = _recombine(winter_pr_mean_segments, combination)
-        recombined_winter_mean_pr_overal = resampled.mean('segment')
-
-        # store them in a dataframe
-        # keep the 1000 that are closest to controlmean.
-        recombined_climates.append([combination, recombined_winter_mean)
-
-    # Only keep the 1000 that are closest to controlmean
-    recombined_climates.apply(lambda row: np.abs(row.winter_mean_pr - controlmean)).sort(ascending=True).head(1000)
-
-
-
-
-
-
-
-    for scenario_name, info, in cfg['scenarios']:
-        print('Working on scenario:', scenario_name)
-        segments_future = segment(dataset, *info['resampling'], step=5)
-
-
-        segmented_seasonal_means = ds_segmented.groupby('time.season').mean()
-        segmented_seasonal_means.assign_coords(period=period, variable=variable)
-        lookup_table.append(segmented_seasonal_means)
-    lookup_table = xr.concatenate(lookup_table, dim=period)
+    # Step 2a: From the 1000 samples in 1a, select those for which summer pr,
+    # and summer and winter tas are within the percentile bounds specified
+    # in the recipe for each scenario for the control period
 
 
+    # Step 2b: From the 1000 samples in 1a, select those for which summer pr,
+    # and summer and winter tas are within the percentile bounds specified
+    # in the recipe for each scenario for the future period
 
 
     return
@@ -129,3 +162,48 @@ if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
 
+
+
+# Speed test for generating xarray indexer arrays over and over, or updating them on the fly.
+###############################################################################################3
+def _get_helper_array(combination):
+    # use a helper 'indices' dataarray to select one single ensemble member for each segment.
+    indices = xr.DataArray(
+        data = list(combination),
+        dims = ['segment'],
+        coords = {'segment': np.arange(6)})
+    return indices
+
+# %timeit [_get_helper_array(x) for x in product(range(8), repeat=6)]
+# 35 s ± 4.45 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
+###############################################################################################3
+indices = xr.DataArray(
+    data = np.zeros(6),
+    dims = ['segment'],
+    coords = {'segment': np.arange(6)})
+
+def update(indices, values):
+    indices.values = list(values)
+    return indices
+
+# %timeit [update(indices, x) for x in product(range(8), repeat=6)]
+# 1.23 s ± 35 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+
+###############################################################################################3
+def all_possible_combinations(n_ensemble_members, n_segments):
+    """Generate indexer for all possible combinations of segmented dataset."""
+
+    # Create a DataArray once...
+    indices = xr.DataArray(
+        data = np.zeros(n_segments),
+        dims = ['segment'],
+        coords = {'segment': np.arange(n_segments)})
+
+    # ...and update its values for all possible combinations
+    for x in product(range(n_ensemble_members), repeat=n_segments):
+        indices.values = list(x)
+        yield indices
+
+# %timeit [x for x in all_possible_combinations(8, 6)]
+# 1.21 s ± 11.3 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
