@@ -78,26 +78,10 @@ def most_promising_combinations(segment_means, target, n=1000):
     return top_all.sort_by('distance_to_target').head(n)
 
 
-def filter1(pr_diffs_winter, target_dpr):
-    """Get the 1000 combinations that are closest to the target.
-
-    pr_diffs_winter: a pandas dataframe with two columns:
-        1. the code for the combination
-        2. the winter precipitation differences
-
-    targed_dpr: target precipitation change (dependent on the scenario)
-    """
-
-    top1000 (pr_diffs_winter - target_dpr).sort('pr_diff_winter').head(1000)
-    return top1000
-
-
-def filter2():
-    # These are needed only for the 1000 best samples from the step above, so may do it later, outside this superloop
-    # pr_diff_summer = get_precipitation_change(resampled_future, resample_control, variable='tas', season='JJA') # Maybe use esmvaltool's seasonal statistics preprocessor
-    # tas_diff_winter = ..
-    # tas_diff_summer = ..
-    return ...
+def within_bounds(values, bounds):
+        """Return true if value is within percentile bounds."""
+        low, high = np.percentile(values, bounds)
+        return (low <= values) & (values <= high)
 
 
 def filter3(df, n=8):
@@ -120,39 +104,89 @@ def main(cfg):
     dataset = xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
     segments_season_means = {}
 
-    # First precompute the segment season means for the control period ...
+    # Precompute the segment season means for the control period ...
     segments = segment(dataset, *cfg['control_period'], step=5)
     season_means = segments.groupby('time.season').mean()
     segments_season_means['control'] = season_means
 
-    # ... then for all the future scenarios
+    # ... and for all the future scenarios
     for name, info, in cfg['scenarios']:
         segments = segment(dataset, *info['resampling_period'], step=5)
         season_means = segments.groupby('time.season').mean()
         segments_season_means[name] = season_means
 
+    # Create a dictionary to store the selected indices later on.
+    selected_indices = {}
+
+
     # Step 1a: Get 1000 combinations for the control period
-    # These samples should have the same mean winter precipitation as the mean of the x ensemble members
+    # These samples should have the same mean winter precipitation as the
+    # overall mean of the x ensemble members
     winter_mean_pr_segments = segments_season_means['control'].pr.sel(season='DJF')
-    target_winter_mean_pr = winter_mean_pr_segments.mean()
-    top1000 = most_promising_combinations(winter_mean_pr_segments, target_winter_mean_pr)
+    target = winter_mean_pr_segments.mean()
+    top1000 = most_promising_combinations(winter_mean_pr_segments, target)
+    selected_indices['control'] = top1000
 
     # Step 1b: Get 1000 combinations for the future period
     # The target value is a relative change wrt the overall mean of the control period
-    control_period_winter_mean_pr = target_winter_mean_pr
+    control_period_winter_mean_pr = target
+
     for scenario, info, in cfg['scenarios']:
-        target_winter_mean_pr = control_period_winter_mean_pr * (1 + info['dpr_winter']/100)
+        target = control_period_winter_mean_pr * (1 + info['dpr_winter']/100)
         winter_mean_pr_segments = segments_season_means[scenario].pr.sel(season='DJF')
-        top1000 = most_promising_combinations(winter_mean_pr_segments, target_winter_mean_pr)
-
-    # Step 2a: From the 1000 samples in 1a, select those for which summer pr,
-    # and summer and winter tas are within the percentile bounds specified
-    # in the recipe for each scenario for the control period
+        top1000 = most_promising_combinations(winter_mean_pr_segments, target)
+        selected_indices[scenario] = top1000
 
 
-    # Step 2b: From the 1000 samples in 1a, select those for which summer pr,
-    # and summer and winter tas are within the percentile bounds specified
-    # in the recipe for each scenario for the future period
+    # Step 2a: For each set of 1000 samples from 1a-b, compute summer pr,
+    # and summer and winter tas.
+    for name, dataframe in selected_indices.items():
+        top1000 = dataframe.combination
+        segment_means = segments_season_means[name]
+
+        filter2_variables = []
+        columns = ['combination', 'pr_summer', 'tas_winter', 'tas_summer']
+        for combination in selected_combinations(top1000):
+            recombined_segment_means = segment_means.sel(ensemble_member=combination)
+            new_overall_season_means = recombined_segment_means.mean('segment')
+
+            filter2_variables.append([
+                combination.values,
+                new_overall_season_means.pr.sel(season='JJA')
+                new_overall_season_means.tas.sel(season='DJF')
+                new_overall_season_means.tas.sel(season='JJA')
+                ])
+
+        top1000 = pd.DataFrame(filter2_variables, columns=columns)
+        selected_indices[scenario] = top1000
+
+    # Step 2b: For each scenario, select samples for which summer pr,and
+    # summer and winter tas are within the percentile bounds specified
+    # in the recipe
+    top1000_control = selected_indices['control']
+    for scenario, info, in cfg['scenarios']:
+        top1000 = selected_indices[scenario]
+
+        # Get relatively high/low values for the control period ...
+        pr_summer = within_bounds(top1000_control['pr_summer'], info['pr_summer_control'])
+        tas_winter = within_bounds(top1000_control['tas_winter'], info['tas_winter_control'])
+        tas_summer = within_bounds(top1000_control['tas_summer'], info['tas_summer_control'])
+        subset_control = top1000_control[np.all(pr_summer, tas_winter, tas_summer)]
+
+        # ... combined with relatively high/low values for the future period
+        pr_summer = within_bounds(top1000['pr_summer'], info['pr_summer_future'])
+        tas_winter = within_bounds(top1000['tas_winter'], info['tas_winter_future'])
+        tas_summer = within_bounds(top1000['tas_summer'], info['tas_summer_future'])
+        subset_future = top1000[np.all(pr_summer, tas_winter, tas_summer)]
+
+        selected_indices[scenario] = {
+            'control': subset_control,
+            'future': subset_future
+        }
+
+        del selected_indices['control']  # No longer needed; we now have a control subset for each scenario
+
+    # Step 3:
 
 
     return
@@ -161,49 +195,3 @@ def main(cfg):
 if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
-
-
-
-# Speed test for generating xarray indexer arrays over and over, or updating them on the fly.
-###############################################################################################3
-def _get_helper_array(combination):
-    # use a helper 'indices' dataarray to select one single ensemble member for each segment.
-    indices = xr.DataArray(
-        data = list(combination),
-        dims = ['segment'],
-        coords = {'segment': np.arange(6)})
-    return indices
-
-# %timeit [_get_helper_array(x) for x in product(range(8), repeat=6)]
-# 35 s ± 4.45 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
-###############################################################################################3
-indices = xr.DataArray(
-    data = np.zeros(6),
-    dims = ['segment'],
-    coords = {'segment': np.arange(6)})
-
-def update(indices, values):
-    indices.values = list(values)
-    return indices
-
-# %timeit [update(indices, x) for x in product(range(8), repeat=6)]
-# 1.23 s ± 35 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-
-###############################################################################################3
-def all_possible_combinations(n_ensemble_members, n_segments):
-    """Generate indexer for all possible combinations of segmented dataset."""
-
-    # Create a DataArray once...
-    indices = xr.DataArray(
-        data = np.zeros(n_segments),
-        dims = ['segment'],
-        coords = {'segment': np.arange(n_segments)})
-
-    # ...and update its values for all possible combinations
-    for x in product(range(n_ensemble_members), repeat=n_segments):
-        indices.values = list(x)
-        yield indices
-
-# %timeit [x for x in all_possible_combinations(8, 6)]
-# 1.21 s ± 11.3 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)

@@ -89,11 +89,10 @@ diagnostics:
       - Determine the final best
 
     variables:
-      control:
-        tas:
-          preprocessor: resampling
-        pr:
-          preprocessor: resampling
+      tas:
+        preprocessor: resampling
+      pr:
+        preprocessor: resampling
 
     scripts:
       resample:
@@ -108,9 +107,9 @@ diagnostics:
             scenario_year: 2050  # Middle of century/MOC
             resampling_period: [2021, 2050]  # This also comes from the first diagnostic
             dpr_winter: 4  # 4% per global_dT (8*dT for the "h" scenarios)
-            dpr_summer_control: [25, 55]
-            dpr_summer_future: [45, 75]
-            dtas_winter_control: [50, 80]
-            dtas_winter_future: [20, 50]
-            dtas_summer_control: [0, 100]
-            dtas_summer_future: [0, 50]
+            pr_summer_control: [25, 55]
+            pr_summer_future: [45, 75]
+            tas_winter_control: [50, 80]
+            tas_winter_future: [20, 50]
+            tas_summer_control: [0, 100]
+            tas_summer_future: [0, 50]
