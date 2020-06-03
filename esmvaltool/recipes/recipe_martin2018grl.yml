@@ -53,6 +53,9 @@ diagnostics:
       spi_collect:
         script: droughtindex/collect_drought_obs_multi.py
         indexname: "SPI"
+        # Threshold under which an event is defined as drought.
+        # Usually -2.0 for SPI and SPEI.
+        threshold: -2.0
         ancestors: ['diagnostic1/script1']
 
 
@@ -94,4 +97,7 @@ diagnostics:
         # comparison_period should be < (end_year - start_year)/2
         comparison_period: 50
         indexname: "SPI"
+        # Threshold under which an event is defined as drought.
+        # Usually -2.0 for SPI and SPEI.
+        threshold: -2.0
         ancestors: ['diagnostic2/script2']

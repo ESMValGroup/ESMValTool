@@ -38,27 +38,7 @@ import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
-    _plot_multi_model_maps, _plot_single_maps, count_spells)
-
-
-def _make_new_cube(tscube, number_drought_charac):
-    """Make a new cube with an extra dimension for result of spell count."""
-    # make a new cube to increase the size of the data array
-    # get two (instead of one) values from the aggregator spell_no
-    new_shape = tscube.shape + (number_drought_charac,)
-    new_data = iris.util.broadcast_to_shape(
-        tscube.data, new_shape, [0, 1, 2])
-    new_cube = iris.cube.Cube(new_data)
-
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        tscube.coord('time').points, long_name='time'), 0)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        tscube.coord('latitude').points, long_name='latitude'), 1)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        tscube.coord('longitude').points, long_name='longitude'), 2)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        np.arange(0, number_drought_charac, 1), long_name='z'), 3)
-    return new_cube
+    _get_drought_data, _plot_multi_model_maps, _plot_single_maps, count_spells)
 
 
 def _set_tscube(cfg, cube, time, tstype):
@@ -98,8 +78,6 @@ def main(cfg):
                           units_func=lambda units: 1)
 
     # Define the parameters of the test.
-    threshold_spei = -2.0
-    number_drought_charac = 4
     first_run = 1
 
     # Get filenames of input files produced by diag_spei.r
@@ -112,8 +90,8 @@ def main(cfg):
         # which allows us to access the data and additional information
         # with python.
         cube = iris.load(spei_file)[0]
-        lats = cube.coord('latitude').points
-        lons = cube.coord('longitude').points
+        # lats = cube.coord('latitude').points
+        # lons = cube.coord('longitude').points
         time = cube.coord('time')
         # The data are 3D (time x latitude x longitude)
         # To plot them, we need to reduce them to 2D or 1D
@@ -121,56 +99,41 @@ def main(cfg):
         cube2 = cube.collapsed('time', iris.analysis.MEAN)  # 3D to 2D
 
         if first_run == 1:
-            files = os.listdir((cfg[n.INPUT_FILES])[0])
-            ncfiles = list(filter(lambda f: f.endswith('.nc'), files))
-            shape_all = cube2.data.shape + (number_drought_charac,) + \
-                (len(ncfiles),)
-            all_drought_hist = np.full(shape_all, np.nan)
-            all_drought_rcp85 = np.full(shape_all, np.nan)
+            ncfiles = list(filter(lambda f: f.endswith('.nc'),
+                                  os.listdir((cfg[n.INPUT_FILES])[0])))
+            all_drought = {}
+            all_drought['Historic'] = np.full(cube2.data.shape + (4,) +
+                                              (len(ncfiles),), np.nan)
+            all_drought['Future'] = np.full(cube2.data.shape + (4,) +
+                                            (len(ncfiles),), np.nan)
             first_run = 0
         # Test if time series goes until cfg['end_year']/12
         timecheck = time.units.date2num(datetime.datetime(cfg['end_year'],
                                                           11, 30, 0, 0, 0))
 
-        if cube.coord('time').points[-1] > timecheck:
-            tscube = _set_tscube(cfg, cube, time, 'Historic')
-            new_cube = _make_new_cube(tscube, number_drought_charac)
-            # calculate the number of drought events and average duration
-            drought_show = new_cube.collapsed('time', spell_no,
-                                              threshold=threshold_spei)
-            drought_show.rename('Drought characteristics')
-            time_len = len(new_cube.coord('time').points) / 12.0
-            # Convert number of droughtevents to frequency (per year)
-            drought_show.data[:, :, 0] = drought_show.data[:, :,
-                                                           0] / time_len
-            all_drought_hist[:, :, :, iii] = drought_show.data
-            _plot_single_maps(cfg, cube2, drought_show, 'Historic')
-
-            tscube = _set_tscube(cfg, cube, time, 'Future')
-            new_cube = _make_new_cube(tscube, number_drought_charac)
-            # calculate the number of drought events and their average duration
-            drought_show = new_cube.collapsed('time', spell_no,
-                                              threshold=threshold_spei)
-            drought_show.rename('Drought characteristics')
-            # length of time series
-            time_len = len(new_cube.coord('time').points) / 12.0
-            drought_show.data[:, :, 0] = drought_show.data[:, :,
-                                                           0] / time_len
-            all_drought_rcp85[:, :, :, iii] = drought_show.data
-            _plot_single_maps(cfg, cube2, drought_show, 'Future')
+        if time.points[-1] > timecheck:
+            for tstype in ['Historic', 'Future']:
+                tscube = _set_tscube(cfg, cube, time, tstype)
+                drought_show = _get_drought_data(cfg, tscube, spell_no)
+                all_drought[tstype][:, :, :, iii] = drought_show.data
+                _plot_single_maps(cfg, cube2, drought_show, tstype)
 
     # Calculating multi model mean and plot it
-    all_drought_hist_mean = np.nanmean(all_drought_hist, axis=-1)
-    # to 3D multi model mean
-    all_drought_rcp85_mean = np.nanmean(all_drought_rcp85, axis=-1)
-    # to 3D multi model mean
-    perc_diff = ((all_drought_rcp85_mean - all_drought_hist_mean)
-                 / (all_drought_rcp85_mean + all_drought_hist_mean) * 200)
+    all_drought_mean = {}
+    for tstype in ['Historic', 'Future']:
+        all_drought_mean[tstype] = np.nanmean(all_drought[tstype], axis=-1)
+
+    all_drought_mean['Difference'] = ((all_drought_mean['Future'] -
+                                       all_drought_mean['Historic']) /
+                                      (all_drought_mean['Future'] +
+                                       all_drought_mean['Historic']) * 200)
 
     # Plot multi model means
-    _plot_multi_model_maps(cfg, all_drought_hist_mean, lats, lons, 'Historic')
-    _plot_multi_model_maps(cfg, all_drought_rcp85_mean, lats, lons, 'Future')
-    _plot_multi_model_maps(cfg, perc_diff, lats, lons, 'Difference')
+    for tstype in ['Historic', 'Future', 'Difference']:
+        _plot_multi_model_maps(cfg, all_drought_mean[tstype],
+                               cube.coord('latitude').points,
+                               cube.coord('longitude').points,
+                               tstype)
 
 
 if __name__ == '__main__':

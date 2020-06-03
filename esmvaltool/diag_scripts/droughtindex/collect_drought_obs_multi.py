@@ -32,8 +32,8 @@ import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
-    _plot_multi_model_maps, _plot_single_maps, get_latlon_index, count_spells,
-    plot_time_series_spei)
+    _get_drought_data, _plot_multi_model_maps, _plot_single_maps,
+    get_latlon_index, count_spells, plot_time_series_spei)
 
 
 def ini_time_series_plot(cfg, cube, area):
@@ -59,22 +59,6 @@ def ini_time_series_plot(cfg, cube, area):
     plot_time_series_spei(cfg, cube4, area)
 
 
-def _make_new_cube(cube):
-    """Make a new cube with an extra dimension for result of spell count."""
-    new_shape = cube.shape + (4,)
-    new_data = iris.util.broadcast_to_shape(cube.data, new_shape, [0, 1, 2])
-    new_cube = iris.cube.Cube(new_data)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        cube.coord('time').points, long_name='time'), 0)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        cube.coord('latitude').points, long_name='latitude'), 1)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        cube.coord('longitude').points, long_name='longitude'), 2)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        [0, 1, 2, 3], long_name='z'), 3)
-    return new_cube
-
-
 def main(cfg):
     """Run the diagnostic.
 
@@ -95,8 +79,6 @@ def main(cfg):
     input_filenames = (cfg[n.INPUT_FILES])[0] + "/*_" + \
         (cfg['indexname']).lower() + "_*.nc"
     print(cfg.keys())
-    threshold_spei = -2.0
-    number_drought_charac = 4
     first_run = 1
     iobs = 0
 
@@ -129,7 +111,7 @@ def main(cfg):
         if first_run == 1:
             files = os.listdir((cfg[n.INPUT_FILES])[0])
             ncfiles = list(filter(lambda f: f.endswith('.nc'), files))
-            shape_all = cube2.data.shape + (number_drought_charac,) + \
+            shape_all = cube2.data.shape + (4,) + \
                 (len(ncfiles) - 1, )
             all_drought = np.full(shape_all, np.nan)
             first_run = 0
@@ -137,18 +119,7 @@ def main(cfg):
         ini_time_series_plot(cfg, cube, 'Bremen')
         ini_time_series_plot(cfg, cube, 'Nigeria')
 
-        # make a new cube to increase the size of the data array
-        new_cube = _make_new_cube(cube)
-
-        # calculate the number of drought events and their average duration
-        drought_show = new_cube.collapsed('time', spell_no,
-                                          threshold=threshold_spei)
-        drought_show.rename('Drought characteristics')
-        # length of time series
-        time_length = len(new_cube.coord('time').points) / 12.0
-        # Convert number of droughtevents to frequency (per year)
-        drought_show.data[:, :, 0] = drought_show.data[:, :,
-                                                       0] / time_length
+        drought_show = _get_drought_data(cfg, cube, spell_no)
 
         # Distinguish between model and observations/reanalysis.
         # Collest all model data in one array.

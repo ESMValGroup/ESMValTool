@@ -25,7 +25,8 @@ Configuration options
 
 import os
 import numpy as np
-import cartopy.crs as cart
+import iris
+# import cartopy.crs as cart
 import matplotlib.pyplot as plt
 import matplotlib.dates as mda
 import esmvaltool.diag_scripts.shared.names as n
@@ -41,6 +42,40 @@ def _get_data_hlp(axis, data, ilat, ilon):
         data_help = data[ilat, ilon, :]
 
     return data_help
+
+
+def _get_drought_data(cfg, cube, spell_no):
+    """Prepare data and calculate characteristics."""
+    # make a new cube to increase the size of the data array
+    new_cube = _make_new_cube(cube)
+
+    # calculate the number of drought events and their average duration
+    drought_show = new_cube.collapsed('time', spell_no,
+                                      threshold=cfg['threshold'])
+    drought_show.rename('Drought characteristics')
+    # length of time series
+    time_length = len(new_cube.coord('time').points) / 12.0
+    # Convert number of droughtevents to frequency (per year)
+    drought_show.data[:, :, 0] = drought_show.data[:, :,
+                                                   0] / time_length
+    return drought_show
+
+
+def _make_new_cube(cube):
+    """Make a new cube with an extra dimension for result of spell count."""
+    new_shape = cube.shape + (4,)
+    new_data = iris.util.broadcast_to_shape(cube.data, new_shape, [0, 1, 2])
+    new_cube = iris.cube.Cube(new_data)
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        cube.coord('time').points, long_name='time'), 0)
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        cube.coord('latitude').points, long_name='latitude'), 1)
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        cube.coord('longitude').points, long_name='longitude'), 2)
+    new_cube.add_dim_coord(iris.coords.DimCoord(
+        [0, 1, 2, 3], long_name='z'), 3)
+    return new_cube
+
 
 def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, tstype):
     """Prepare plots for multi-model mean."""
