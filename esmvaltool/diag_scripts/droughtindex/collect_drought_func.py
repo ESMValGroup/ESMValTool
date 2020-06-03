@@ -50,6 +50,33 @@ def _get_data_hlp(axis, data, ilat, ilon):
 
     return data_help
 
+def _plot_single_maps(cfg, cube2, drought_show, tstype):
+    """Plot map of drought characteristics for individual models and times."""
+    cube2.data = drought_show.data[:, :, 0]
+    plot_map_spei(cfg, cube2, np.arange(0, 0.4, 0.05),
+                  add_to_filename=tstype + '_No_of_Events_per_year',
+                  name=tstype + ' Number of Events per year')
+
+    # plot the average duration of drought events
+    cube2.data = drought_show.data[:, :, 1]
+    plot_map_spei(cfg, cube2, np.arange(0, 6, 1),
+                  add_to_filename=tstype + '_Dur_of_Events',
+                  name=tstype + ' Duration of Events(month)')
+
+    # plot the average severity index of drought events
+    cube2.data = drought_show.data[:, :, 2]
+    plot_map_spei(cfg, cube2, np.arange(0, 9, 1),
+                  add_to_filename=tstype + '_Sev_index_of_Events',
+                  name=tstype + ' Severity Index of Events')
+
+    # plot the average spei of drought events
+    cube2.data = drought_show.data[:, :, 3]
+    plot_map_spei(cfg, cube2, np.arange(-2.8, -1.8, 0.2),
+                  add_to_filename=tstype + '_Avr_' +
+                  cfg['indexname'] + '_of_Events',
+                  name=tstype + ' Average ' + cfg['indexname'] +
+                  ' of Events')
+
 
 def runs_of_ones_array_spei(bits, spei):
     """Set 1 at beginning ond -1 at the end of events."""

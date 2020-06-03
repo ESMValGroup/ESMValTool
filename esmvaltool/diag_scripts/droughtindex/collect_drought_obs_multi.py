@@ -33,8 +33,8 @@ import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
-    get_latlon_index, count_spells, plot_map_spei_multi,
-    plot_map_spei, plot_time_series_spei)
+    _plot_single_maps, get_latlon_index, count_spells, plot_map_spei_multi,
+    plot_time_series_spei)
 
 
 def ini_time_series_plot(cfg, cube, area):
@@ -122,8 +122,7 @@ def main(cfg):
         # To plot them, we need to reduce them to 2D or 1D
         # First here is an average over time, i.e. data you need
         # to plot the average over the time series of SPEI on a map
-        coords = ('time')
-        cube2 = cube.collapsed(coords, iris.analysis.MEAN)
+        cube2 = cube.collapsed('time', iris.analysis.MEAN)
 
         # This is only possible because all data must be on the same grid
         if first_run == 1:
@@ -164,31 +163,7 @@ def main(cfg):
                 all_drought_obs = drought_show.data
                 iobs = 1
         print(dataset_name)
-
-        # plot the number of events
-        # use cube2 to get metadata
-        cube2.data = drought_show.data[:, :, 0]
-        plot_map_spei(cfg, cube2, np.arange(0, 0.4, 0.05),
-                      add_to_filename='No_of_Events',
-                      name='Number of Events per year')
-
-        # plot the average duration of drought events
-        cube2.data = drought_show.data[:, :, 1]
-        plot_map_spei(cfg, cube2, np.arange(0, 7, 1),
-                      add_to_filename='Dur_of_Events',
-                      name='Duration of Events(month)')
-
-        # plot the average severity index of drought events
-        cube2.data = drought_show.data[:, :, 2]
-        plot_map_spei(cfg, cube2, np.arange(0, 9, 1),
-                      add_to_filename='Sev_index_of_Events',
-                      name='Severity Index of Events')
-
-        # plot the average spei of drought events
-        cube2.data = drought_show.data[:, :, 3]
-        plot_map_spei(cfg, cube2, np.arange(-2.8, -1.8, 0.2),
-                      add_to_filename='Avr_' + cfg['indexname'] + '_of_Events',
-                      name='Average ' + cfg['indexname'] + ' of Events')
+        _plot_single_maps(cfg, cube2, drought_show, 'Historic')
 
     # Calculating multi model mean and plot it
     all_drought_hist_mean = np.nanmean(all_drought, axis=-1)

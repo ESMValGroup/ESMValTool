@@ -44,7 +44,7 @@ import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
-    count_spells, plot_map_spei_multi, plot_map_spei)
+    _plot_single_maps, count_spells, plot_map_spei_multi)
 
 
 def _make_new_cube(tscube, number_drought_charac):
@@ -65,6 +65,26 @@ def _make_new_cube(tscube, number_drought_charac):
     new_cube.add_dim_coord(iris.coords.DimCoord(
         np.arange(0, number_drought_charac, 1), long_name='z'), 3)
     return new_cube
+
+
+def _set_tscube(cfg, cube, time, tstype):
+    """Time slice from a cube with start/end given by cfg."""
+    if tstype == 'Future':
+        # extract time series from rcp model data
+        # cfg['end_year'] - cfg['comparison_period'] to cfg['end_year']
+        start = datetime.datetime(cfg['end_year'] -
+                                  cfg['comparison_period'], 1, 15, 0, 0, 0)
+        end = datetime.datetime(cfg['end_year'], 12, 16, 0, 0, 0)
+    elif tstype == 'Historic':
+        # extract time series from historical model data
+        # cfg['start_year'] to cfg['start_year'] + cfg['comparison_period']
+        start = datetime.datetime(cfg['start_year'], 1, 15, 0, 0, 0)
+        end = datetime.datetime(cfg['start_year'] +
+                                cfg['comparison_period'], 12, 16, 0, 0, 0)
+    stime = time.nearest_neighbour_index(time.units.date2num(start))
+    etime = time.nearest_neighbour_index(time.units.date2num(end))
+    tscube = cube[stime:etime, :, :]
+    return tscube
 
 
 def main(cfg):
@@ -104,8 +124,7 @@ def main(cfg):
         # The data are 3D (time x latitude x longitude)
         # To plot them, we need to reduce them to 2D or 1D
         # First here is an average over time.
-        coords = ('time')
-        cube2 = cube.collapsed(coords, iris.analysis.MEAN)  # 3D to 2D
+        cube2 = cube.collapsed('time', iris.analysis.MEAN)  # 3D to 2D
 
         if first_run == 1:
             files = os.listdir((cfg[n.INPUT_FILES])[0])
@@ -121,17 +140,8 @@ def main(cfg):
         lasttime = cube.coord('time').points[-1]
 
         if lasttime > timecheck:
-            # extract time series from historical model data
-            # cfg['start_year'] to cfg['start_year'] + cfg['comparison_period']
-            start = datetime.datetime(cfg['start_year'], 1, 15, 0, 0, 0)
-            end = datetime.datetime(cfg['start_year'] +
-                                    cfg['comparison_period'], 12, 16, 0, 0, 0)
-            stime = time.nearest_neighbour_index(time.units.date2num(start))
-            etime = time.nearest_neighbour_index(time.units.date2num(end))
-            tscube = cube[stime:etime, :, :]
-
+            tscube = _set_tscube(cfg, cube, time, 'Historic')
             new_cube = _make_new_cube(tscube, number_drought_charac)
-
             # calculate the number of drought events and average duration
             drought_show = new_cube.collapsed('time', spell_no,
                                               threshold=threshold_spei)
@@ -141,45 +151,10 @@ def main(cfg):
             drought_show.data[:, :, 0] = drought_show.data[:, :,
                                                            0] / time_len
             all_drought_hist[:, :, :, iii] = drought_show.data
-            drought_numbers_level = np.arange(0, 0.4, 0.05)
-            cube2.data = drought_show.data[:, :, 0]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='Historic_No_of_Events_per_year',
-                          name='Historic_Number of Events per year')
+            _plot_single_maps(cfg, cube2, drought_show, 'Historic')
 
-            # plot the average duration of drought events
-            drought_numbers_level = np.arange(0, 6, 1)
-            cube2.data = drought_show.data[:, :, 1]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='Historic_Dur_of_Events',
-                          name='Historic_Duration of Events(month)')
-
-            # plot the average severity index of drought events
-            drought_numbers_level = np.arange(0, 9, 1)
-            cube2.data = drought_show.data[:, :, 2]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='Historic_Sev_index_of_Events',
-                          name='Historic_Severity Index of Events')
-
-            # plot the average spei of drought events
-            drought_numbers_level = np.arange(-2.8, -1.8, 0.2)
-            cube2.data = drought_show.data[:, :, 3]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='Historic_Avr_' +
-                          cfg['indexname'] + '_of_Events',
-                          name='Historic_Average ' + cfg['indexname'] +
-                          ' of Events')
-            # extract time series from rcp model data
-            # cfg['end_year'] - cfg['comparison_period'] to cfg['end_year']
-            start = datetime.datetime(cfg['end_year'] -
-                                      cfg['comparison_period'], 1, 15, 0, 0, 0)
-            end = datetime.datetime(cfg['end_year'], 12, 16, 0, 0, 0)
-            stime = time.nearest_neighbour_index(time.units.date2num(start))
-            etime = time.nearest_neighbour_index(time.units.date2num(end))
-            tscube = cube[stime:etime, :, :]
-
+            tscube = _set_tscube(cfg, cube, time, 'Future')
             new_cube = _make_new_cube(tscube, number_drought_charac)
-
             # calculate the number of drought events and their average duration
             drought_show = new_cube.collapsed('time', spell_no,
                                               threshold=threshold_spei)
@@ -189,41 +164,8 @@ def main(cfg):
             drought_show.data[:, :, 0] = drought_show.data[:, :,
                                                            0] / time_len
             all_drought_rcp85[:, :, :, iii] = drought_show.data
+            _plot_single_maps(cfg, cube2, drought_show, 'Future')
 
-            # plot the number of drought events
-            drought_numbers_level = np.arange(0, 0.4, 0.05)
-            # set color levels
-            # use cube2 to get metadata
-            cube2.data = drought_show.data[:, :, 0]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='RCP85_No_of_Events_per_year',
-                          name='RCP85_Number of Events per year')
-
-            # plot the average duration of drought events
-            drought_numbers_level = np.arange(0, 6, 1)
-            # use cube2 to get metadata
-            cube2.data = drought_show.data[:, :, 1]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='RCP85_Dur_of_Events',
-                          name='RCP85_Duration of Events(month)')
-
-            # plot the average severity index of drought events
-            drought_numbers_level = np.arange(0, 9, 1)
-            # use cube2 to get metadata
-            cube2.data = drought_show.data[:, :, 2]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='RCP85_Sev_index_of_Events',
-                          name='RCP85_Severity Index of Events')
-
-            # plot the average spei of drought events
-            drought_numbers_level = np.arange(-2.8, -1.8, 0.2)
-            # use cube2 to get metadata
-            cube2.data = drought_show.data[:, :, 3]
-            plot_map_spei(cfg, cube2, drought_numbers_level,
-                          add_to_filename='RCP85_Avr_' + cfg['indexname'] +
-                          '_of_Events',
-                          name='RCP85_Average ' + cfg['indexname'] +
-                          ' of Events')
     # Calculating multi model mean and plot it
     all_drought_hist_mean = np.nanmean(all_drought_hist, axis=-1)
     # to 3D multi model mean
@@ -231,8 +173,6 @@ def main(cfg):
     # to 3D multi model mean
     perc_diff = ((all_drought_rcp85_mean - all_drought_hist_mean)
                  / (all_drought_rcp85_mean + all_drought_hist_mean) * 200)
-    print("all_drought_rcp85_mean")
-    print(all_drought_rcp85_mean)
 
     # Historic
     data_dict = {}
