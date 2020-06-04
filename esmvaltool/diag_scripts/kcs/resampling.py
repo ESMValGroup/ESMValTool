@@ -1,24 +1,20 @@
 
 """
-- Divide the 30-year dataset into 5-year blocks
-- Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
-- Determine the 1000 best ...
-- Determine the 50 best
-- Determine the final best
-
-From the paper:
-1. We first select 1000 re-samples (out of the total 86) that have a change in mean winter precipitation of 4% (for the 'L' scenarios) and 8% (for the 'H' scenarios) per degree rise in global mean temperature. These two rates of the precipitation change are primarily based results with EC-Earth shown in figure 1. They are also consistent with expectations related to the increased moisture of the atmosphere following from the Clausius–Clapeyron relation (Trenberth et al 2003). This would imply an increase of 6–7% per degree temperature rise, considering that the local temperature rise is approximately equal to global temperature rise and that changes in relative humidity are small (see also Lenderink and Attema, this issue).
-2. From the subset of 1000 re-samples, we select approximately 50 re-samples based on changes in summer precipitation, and changes in summer and winter temperature (i.e. targets 3–5 in table 2). This is not done by imposing an absolute constraint (like in step 1), but by selecting a percentage range from the remaining re-samples (see supplementary material). These percentile ranges are chosen in an iterative way doing the evaluation with the CMIP5 range (as discussed in the next section) a number of times.
-3. From approximately 50 re-samples obtained above, we finally sub-select eight re-samples that have a minimal re-use of the same model data. It is e.g. not allowed that a 5 yr period from an ensemble member is re-used more than three times in the set of eight re-samples that form a scenario.
+In the second step (see sections 4.2 and 4.3) we resample the results of
+ENS-EC for the selected time periods (from the previous step). This is done
+by recombining 5 yr periods of the eight members of ENSEC into new resampled
+climates, and selecting combinations that match with the spread in CMIP5.
+This provides eight resampled EC-Earth time series for each of the scenarios.
 """
 
 from itertools import combinations
-import matplotlib.pyplot as plt
+
 import pandas as pd
 import xarray as xr
 
-from esmvaltool.diag_scripts.shared import (run_diagnostic, get_plot_filename,
-                                            get_diagnostic_filename, select_metadata)
+from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
+                                            get_plot_filename, run_diagnostic,
+                                            select_metadata)
 
 
 def segment(dataset, start_year, end_year, block_size):
@@ -86,10 +82,10 @@ def within_bounds(values, bounds):
 
 
 def determine_penalties(overlap):
-"""Determine penalties dependent on the number of overlaps."""
-return np.piecwise(x = overlap,
-    condlist = [x<3, x==3, x==4, x>4],
-    funclist = [0, 1, 5, 100])
+    """Determine penalties dependent on the number of overlaps."""
+    return np.piecwise(x = overlap,
+        condlist = [x<3, x==3, x==4, x>4],
+        funclist = [0, 1, 5, 100])
 
 
 def select_final_subset(combinations, n=8):
@@ -121,8 +117,9 @@ def select_final_subset(combinations, n=8):
     _, n_segments = best_combination.shape
     best_combination = pd.DataFrame(
         data = best_combination,
-        columns = [f'Segment {x}' for x in range(n_segments)]
+        columns = [f'Segment {x}' for x in range(n_segments)],
         index = [f'Combination {x}' for x in range(n)]
+    )
 
     return best_combination
 
@@ -185,8 +182,8 @@ def main(cfg):
 
             filter2_variables.append([
                 combination.values,
-                new_overall_season_means.pr.sel(season='JJA')
-                new_overall_season_means.tas.sel(season='DJF')
+                new_overall_season_means.pr.sel(season='JJA'),
+                new_overall_season_means.tas.sel(season='DJF'),
                 new_overall_season_means.tas.sel(season='JJA')
                 ])
 
