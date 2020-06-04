@@ -1,22 +1,9 @@
 """Utility script for inspecting and converting ncl color tables."""
-import argparse
-import glob
 import logging
 import os
-import subprocess
-import tempfile
-
-import matplotlib
-matplotlib.use("Agg")  # noqa
-import matplotlib.pyplot as plt
-import numpy as np
-import yaml
-from jinja2 import Template
-
-from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 
 logger = logging.getLogger(__name__)
-PATH_TO_COLORTABLES = os.path.join(os.path.dirname(plot_path), "rgb")
+
 
 NCL_SCRIPT = """
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
@@ -68,6 +55,8 @@ def get_color_map(name, colorpath):
     -------
     matplotlib.colors.ListedColorMap object
     """
+    import matplotlib
+    import yaml
     colors = load_ncl_color_map(name, colorpath)
     logger.debug("RGB values for '%s':\n%s", name, yaml.dump(colors))
     return matplotlib.colors.ListedColormap(colors, name=name, N=None)
@@ -92,6 +81,10 @@ def list_ncl_color_maps(colorpath):
 def plot_example_for_colormap(name, colorpath, outdir='./'):
     """Create plots of given color map using python."""
     logger.info("Plotting example for '%s'", name)
+    import matplotlib
+    matplotlib.use("Agg")  # noqa
+    import matplotlib.pyplot as plt
+    import numpy as np
     fig = plt.figure(1)
     axis = fig.add_axes([0.1, 0.3, 0.5, 0.5])
     np.random.seed(12345678)
@@ -115,9 +108,13 @@ def main_plot_python_cm(colorpath, outpath):
 
 def main_plot_ncl_cm(colorpath, outpath):
     """Execute functions for ncl plots."""
+    from jinja2 import Template
     t_color_snippet = Template(COLOR_SNIPPET)
     template = Template(NCL_SCRIPT)
     list_of_snippets = []
+    import glob
+    import subprocess
+    import tempfile
     for path in glob.glob(colorpath + "/*rgb"):
         _, tail = os.path.split(path)
         list_of_snippets.append(t_color_snippet.render(path=path, name=tail))
@@ -126,66 +123,6 @@ def main_plot_ncl_cm(colorpath, outpath):
             template.render(
                 list_of_snippets=sorted(list_of_snippets), outdir=outpath))
         subprocess.check_call(["ncl", fname.name])
-
-
-# def get_args():
-#     """Define the commandline arguments."""
-#     parser = argparse.ArgumentParser(description="""
-#         Utility module for inspecting and converting
-#         ncl color tables.""")
-#     parser.add_argument(
-#         '-c',
-#         '--colorpath',
-#         metavar='COLOR_TABLE_DIR',
-#         default=PATH_TO_COLORTABLES,
-#         help="Set directory to <COLOR_TABLE_DIR>. Default is {0}".format(
-#             PATH_TO_COLORTABLES))
-#     parser.add_argument(
-#         '-n',
-#         '--ncl',
-#         dest='n',
-#         action='store_true',
-#         help="""
-#             Create report of all ncl color maps in
-#             <COLOR_TABLE_DIR> using ncl.""")
-#     parser.add_argument(
-#         '-p',
-#         '--python',
-#         dest='p',
-#         action='store_true',
-#         help="""Create example plots of all ncl color maps
-#         in <COLOR_TABLE_DIR> using python.""")
-#     parser.add_argument(
-#         '-o',
-#         '--outpath',
-#         metavar='OUTDIR',
-#         default='./',
-#         help="Set out directory to <OUTDIR>. Default is the current directory")
-#     return parser.parse_args()
-
-
-# def main(args):
-#     """Call functions according to command line arguments."""
-#     colorpath = args.colorpath
-#     outpath = args.outpath
-
-#     if not os.path.isdir(colorpath):
-#         logger.warning("Path '%s' is invalid", colorpath)
-#         raise OSError
-
-#     if not os.path.isdir(outpath) and not os.path.exists(outpath):
-#         logger.info("Creating directory '%s'", outpath)
-#         os.mkdir(outpath)
-
-#     if args.n:
-#         logger.info("Creating report with ncl")
-#         main_plot_ncl_cm(colorpath, outpath)
-#     if args.p:
-#         logger.info("Creating report with python")
-#         main_plot_python_cm(colorpath, outpath)
-
-
-# =
 
 
 class ColorTables():
@@ -203,6 +140,11 @@ class ColorTables():
         logger.addHandler(console_handler)
 
     def _prepare_paths(self, colorpath, outpath):
+        if colorpath is None:
+            from esmvaltool.diag_scripts.shared.plot  \
+                import __file__ as plot_path
+            colorpath = os.path.join(os.path.dirname(plot_path), "rgb")
+
         if not os.path.isdir(colorpath):
             logger.warning("Path '%s' is invalid", colorpath)
             raise OSError
@@ -213,7 +155,7 @@ class ColorTables():
             os.mkdir(outpath)
         self._outpath = outpath
 
-    def python(self, colorpath=PATH_TO_COLORTABLES, outpath="./"):
+    def python(self, colorpath=None, outpath="./"):
         """
         Generate samples for Python colormaps
 
@@ -229,7 +171,7 @@ class ColorTables():
         logger.info("Creating report with Python")
         main_plot_python_cm(self._colorpath, self._outpath)
 
-    def ncl(self, colorpath=PATH_TO_COLORTABLES, outpath="./"):
+    def ncl(self, colorpath=None, outpath="./"):
         """
         Generate samples for NCL colormaps
 
@@ -244,7 +186,3 @@ class ColorTables():
         self._prepare_paths(colorpath, outpath)
         logger.info("Creating report with NCL")
         main_plot_ncl_cm(self._colorpath, self._outpath)
-
-
-if __name__ == '__main__':
-    run()
