@@ -27,26 +27,38 @@ Configuration options
 import os
 import glob
 import iris
-from iris.analysis import Aggregator
 import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
     _get_drought_data, _plot_multi_model_maps, _plot_single_maps,
-    get_latlon_index, count_spells, plot_time_series_spei)
+    get_latlon_index, plot_time_series_spei)
+
+
+def _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs):
+    """Calculate multi-model mean and compare it to observations."""
+    lats = cube.coord('latitude').points
+    lons = cube.coord('longitude').points
+    all_drought_hist_mean = np.nanmean(all_drought, axis=-1)
+    perc_diff = ((all_drought_obs - all_drought_hist_mean)
+                 / (all_drought_obs + all_drought_hist_mean) * 200)
+
+    # Plot multi model means
+    _plot_multi_model_maps(cfg, all_drought_hist_mean, lats, lons, 'Historic')
+    _plot_multi_model_maps(cfg, all_drought_obs, lats, lons,
+                           'Observations')
+    _plot_multi_model_maps(cfg, perc_diff, lats, lons, 'Difference')
 
 
 def ini_time_series_plot(cfg, cube, area):
     """Set up cube for time series plot."""
-    lats = cube.coord('latitude').points
-    lons = cube.coord('longitude').points
     coords = ('longitude', 'latitude')
     if area == 'Bremen':
-        index_lat = get_latlon_index(lats, 52, 53)
-        index_lon = get_latlon_index(lons, 7, 9)
+        index_lat = get_latlon_index(cube.coord('latitude').points, 52, 53)
+        index_lon = get_latlon_index(cube.coord('longitude').points, 7, 9)
     elif area == 'Nigeria':
-        index_lat = get_latlon_index(lats, 7, 9)
-        index_lon = get_latlon_index(lons, 8, 10)
+        index_lat = get_latlon_index(cube.coord('latitude').points, 7, 9)
+        index_lon = get_latlon_index(cube.coord('longitude').points, 8, 10)
 
     cube_grid_areas = iris.analysis.cartography.area_weights(
         cube[:, index_lat[0]:index_lat[-1] + 1,
@@ -82,10 +94,6 @@ def main(cfg):
     first_run = 1
     iobs = 0
 
-    # Make an aggregator from the user function.
-    spell_no = Aggregator('spell_count',
-                          count_spells,
-                          units_func=lambda units: 1)
 
     # For loop: "glob.iglob" findes all files which match the
     # pattern of "input_filenames".
@@ -97,8 +105,6 @@ def main(cfg):
         cube = iris.load(spei_file)[0]
         cube.coord('latitude').guess_bounds()
         cube.coord('longitude').guess_bounds()
-        lats = cube.coord('latitude').points
-        lons = cube.coord('longitude').points
         # time = cube.coord('time')
 
         # The data are 3D (time x latitude x longitude)
@@ -119,7 +125,7 @@ def main(cfg):
         ini_time_series_plot(cfg, cube, 'Bremen')
         ini_time_series_plot(cfg, cube, 'Nigeria')
 
-        drought_show = _get_drought_data(cfg, cube, spell_no)
+        drought_show = _get_drought_data(cfg, cube)
 
         # Distinguish between model and observations/reanalysis.
         # Collest all model data in one array.
@@ -138,15 +144,7 @@ def main(cfg):
         _plot_single_maps(cfg, cube2, drought_show, 'Historic')
 
     # Calculating multi model mean and plot it
-    all_drought_hist_mean = np.nanmean(all_drought, axis=-1)
-    perc_diff = ((all_drought_obs - all_drought_hist_mean)
-                 / (all_drought_obs + all_drought_hist_mean) * 200)
-
-    # Plot multi model means
-    _plot_multi_model_maps(cfg, all_drought_hist_mean, lats, lons, 'Historic')
-    _plot_multi_model_maps(cfg, all_drought_obs, lats, lons,
-                           'Observations')
-    _plot_multi_model_maps(cfg, perc_diff, lats, lons, 'Difference')
+    _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs)
 
 
 if __name__ == '__main__':

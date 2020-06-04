@@ -26,6 +26,7 @@ Configuration options
 import os
 import numpy as np
 import iris
+from iris.analysis import Aggregator
 import cartopy.crs as cart
 import matplotlib.pyplot as plt
 import matplotlib.dates as mda
@@ -44,9 +45,13 @@ def _get_data_hlp(axis, data, ilat, ilon):
     return data_help
 
 
-def _get_drought_data(cfg, cube, spell_no):
+def _get_drought_data(cfg, cube):
     """Prepare data and calculate characteristics."""
     # make a new cube to increase the size of the data array
+    # Make an aggregator from the user function.
+    spell_no = Aggregator('spell_count',
+                          count_spells,
+                          units_func=lambda units: 1)
     new_cube = _make_new_cube(cube)
 
     # calculate the number of drought events and their average duration
@@ -79,10 +84,10 @@ def _make_new_cube(cube):
 
 def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, tstype):
     """Prepare plots for multi-model mean."""
-    data_dict = {}
-    data_dict['latitude'] = lats
-    data_dict['longitude'] = lons
-    data_dict['model_kind'] = tstype
+    data_dict = {'latitude': lats,
+                 'longitude': lons,
+                 'model_kind': tstype
+                 }
     if tstype == 'Difference':
         # RCP85 Percentage difference
         data_dict['data'] = all_drought_mean[:, :, 0]

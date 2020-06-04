@@ -33,12 +33,30 @@ import os
 import glob
 import datetime
 import iris
-from iris.analysis import Aggregator
 import numpy as np
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
-    _get_drought_data, _plot_multi_model_maps, _plot_single_maps, count_spells)
+    _get_drought_data, _plot_multi_model_maps, _plot_single_maps)
+
+
+def _get_and_plot_multimodel(cfg, cube, all_drought):
+    """Calculate multi-model mean and compare historic and future."""
+    all_drought_mean = {}
+    for tstype in ['Historic', 'Future']:
+        all_drought_mean[tstype] = np.nanmean(all_drought[tstype], axis=-1)
+
+    all_drought_mean['Difference'] = ((all_drought_mean['Future'] -
+                                       all_drought_mean['Historic']) /
+                                      (all_drought_mean['Future'] +
+                                       all_drought_mean['Historic']) * 200)
+
+    # Plot multi model means
+    for tstype in ['Historic', 'Future', 'Difference']:
+        _plot_multi_model_maps(cfg, all_drought_mean[tstype],
+                               cube.coord('latitude').points,
+                               cube.coord('longitude').points,
+                               tstype)
 
 
 def _set_tscube(cfg, cube, time, tstype):
@@ -74,8 +92,8 @@ def main(cfg):
     ######################################################################
 
     # Make an aggregator from the user function.
-    spell_no = Aggregator('spell_count', count_spells,
-                          units_func=lambda units: 1)
+    # spell_no = Aggregator('spell_count', count_spells,
+    #                       units_func=lambda units: 1)
 
     # Define the parameters of the test.
     first_run = 1
@@ -114,26 +132,12 @@ def main(cfg):
         if time.points[-1] > timecheck:
             for tstype in ['Historic', 'Future']:
                 tscube = _set_tscube(cfg, cube, time, tstype)
-                drought_show = _get_drought_data(cfg, tscube, spell_no)
+                drought_show = _get_drought_data(cfg, tscube)
                 all_drought[tstype][:, :, :, iii] = drought_show.data
                 _plot_single_maps(cfg, cube2, drought_show, tstype)
 
     # Calculating multi model mean and plot it
-    all_drought_mean = {}
-    for tstype in ['Historic', 'Future']:
-        all_drought_mean[tstype] = np.nanmean(all_drought[tstype], axis=-1)
-
-    all_drought_mean['Difference'] = ((all_drought_mean['Future'] -
-                                       all_drought_mean['Historic']) /
-                                      (all_drought_mean['Future'] +
-                                       all_drought_mean['Historic']) * 200)
-
-    # Plot multi model means
-    for tstype in ['Historic', 'Future', 'Difference']:
-        _plot_multi_model_maps(cfg, all_drought_mean[tstype],
-                               cube.coord('latitude').points,
-                               cube.coord('longitude').points,
-                               tstype)
+    _get_and_plot_multimodel(cfg, cube, all_drought)
 
 
 if __name__ == '__main__':
