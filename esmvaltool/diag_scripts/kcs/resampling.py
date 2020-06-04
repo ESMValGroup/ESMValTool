@@ -3,6 +3,7 @@
 - Divide the 30-year dataset into 5-year blocks
 - Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
 - Determine the 1000 best ...
+- Determine the 50 best
 - Determine the final best
 
 From the paper:
@@ -84,14 +85,46 @@ def within_bounds(values, bounds):
         return (low <= values) & (values <= high)
 
 
-def filter3(df, n=8):
-    """Sort by the number of unique elements in 'combination' and return the top n."""
-    # This would take the lowest penalty directly for each resampled version, but
-    # instead we need to select the (random) combination of 8 samples that has the
-    # overall lowest re-use of individual members.
-    df['n_datasets'] = df.combination.map(lambda x: len(set(x)))
-    return df.sort('n_datasets', descending=True).head(n)
+def determine_penalties(overlap):
+"""Determine penalties dependent on the number of overlaps."""
+return np.piecwise(x = overlap,
+    condlist = [x<3, x==3, x==4, x>4],
+    funclist = [0, 1, 5, 100])
 
+
+def select_final_subset(combinations, n=8):
+    """Find n samples with minimal reuse of ensemble members per segment.
+
+    combinations: a pandas series with the remaining candidates
+    n: the final number of samples drawn from the remaining set.
+    """
+    # Convert series of tuples to 2d numpy array (much faster!)
+    combinations = np.array(
+        [list(combination) for combination in combinations]
+    )
+
+    # Random number generator
+    rng = np.random.default_rng()
+
+    lowest_penalty = 500  # just a random high value
+    for i in range(10000):
+        sample = rng.choice(combinations, size=n)
+        penalty = 0
+        for segment in sample.T:
+            _, counts = np.unique(segment, return_counts=True)
+            penalty += determine_penalties(counts).sum()
+        if penalty < lowest_penalty:
+            lowest_penalty = penalty
+            best_combination = sample
+
+    # Store the indices in a nice dataframe
+    _, n_segments = best_combination.shape
+    best_combination = pd.DataFrame(
+        data = best_combination,
+        columns = [f'Segment {x}' for x in range(n_segments)]
+        index = [f'Combination {x}' for x in range(n)]
+
+    return best_combination
 
 
 def main(cfg):
@@ -184,12 +217,28 @@ def main(cfg):
             'future': subset_future
         }
 
-        del selected_indices['control']  # No longer needed; we now have a control subset for each scenario
+        del selected_indices['control']  # No longer needed
 
 
     # Step 3:
-   """Calculate the subset S3: find a subset with the least re-use of
-    segments, using random sampling"""
+    # Select final set of eight samples with minimal reuse of the same
+    # ensemble member for the same period.
+    #
+    # From 10.000 randomly selected sets of 8 samples, count
+    # and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
+    # Chose the set with the lowest penalty.
+    for scenario, dataframes in selected_indices.items():
+        scenario_output_tables = []
+        for period in ['control', 'future']:
+            remaining_combinations = dataframes[period].combination
+            result = select_final_subset(remaining_combinations)
+            scenario_output_tables.append(result)
+
+        scenario_output_tables = pd.concat(scenario_output_tables, axis=1, keys=['control', 'future'])
+        print(f"Selected recombinations for scenario {scenario}:")
+        print(scenario_output_tables)
+        filename = f'indices_{scenario}'
+        scenario_output_tables.to_csv(filename)
 
     return
 
