@@ -1,91 +1,81 @@
-"""Visualize temperature accross datasets.
+"""Align the target model with the CMIP ensemble.
+
+1. Get the global mean temperature change for specified years and
+specified percentiles (CMIP Delta T). These define the scenarios.
+
+- Select 30-year periods from the target model (all ensemble members)
+where they match the CMIP Delta T for each scenario.
 
 - Make a plot of the global mean temperature change
-according to all datasets (defined above),
+according to all datasets, and indicate the scenario's.
 
-- Get the global mean temperature change for specified years
-and specified percentiles (Delta T). These define our scenarios.
-
-- Select the 30-year period from the target model (all ensemble members)
-where they match the Delta T for each scenario.
 """
 
 from itertools import product
-from datetime import timedelta
+
 import matplotlib.pyplot as plt
-import iris
+import pandas as pd
 import xarray as xr
 
-from esmvaltool.diag_scripts.shared import (run_diagnostic,
-                                            get_plot_filename,
+from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
+                                            get_plot_filename, run_diagnostic,
                                             select_metadata)
 
 
-def get_target_delta_t(metadata, year, percentile):
+def mean_of_target_models(metadata, model):
+    """Get the average delta T of the target model ensemble members."""
+    target_model_datasets = select_metadata(metadata, dataset=model)
+    files = [tmd['filename'] for tmd in target_model_datasets]
+    datasets = xr.open_mfdataset(files, combine='nested', concat_dim='ens')
+    return datasets.tas.mean(dim='ens')
+
+
+def get_cmip_dt(metadata, year, percentile):
     """Compute target delta T for KNMI scenarios."""
-    # Read the 10th percentile dataset from the preprocessed data
-    # Return the value for the scenario year.
     attribute = f'MultiModel{percentile}'
-    multimodelstat = select_metadata(metadata, alias=attribute)
-    cube = iris.load_cube(multimodelstat[0]['filename'])
-    time = iris.Constraint(time=lambda cell: cell.point.year == year)
-    return cube.extract(time).data.data
+    multimodelstat = select_metadata(metadata, alias=attribute)[0]
+    dataset = xr.open_dataset(multimodelstat['filename'])
+    return dataset.tas.sel(time=str(year)).values[0]
 
 
-def get_mean_ensemble(metadata, model):
-    """Compute average of ensembles for target model."""
-    #TODO: We could use add_aux_coord/concatenate/collapse instead
-    target_dataset = select_metadata(metadata, dataset=model)
-    sum_cube = 0
-    for ensemble in target_dataset:
-        cube = iris.load_cube(ensemble['filename'])
-        sum_cube += cube
-    return sum_cube / len(target_dataset)
+def get_resampling_period(target_dts, cmip_dt):
+    """Return 30-year time bounds of the resampling period.
 
-
-def get_target_model_time_bounds(target_dataset, delta_t, span=30):
-    """Return 30-year time bounds.
-
-    Get the 30-year time bounds for which the target model delta T
-    matches the target delta T for a specific scenario.
+    This is the period for which the target model delta T
+    matches the cmip delta T for a specific year.
+    Uses a 30-year rolling window to get the best match.
     """
-    # Compute rolling average delta T of the target dataset?!
-    # Possibly, apply/report a (pattern) scaling factor
-    # in order to match the target delta T more closely.
-
-    #TODO: Apply rolling mean to target dataset.
-    #TODO: Use "absolute" difference
-    cube = target_dataset - delta_t
-    min_cube = cube.collapsed('time', iris.analysis.MIN)
-    coord = min_cube.coord('time')
-    start = coord.cell(0).point - timedelta(span / 2 * 365.24)
-    end = coord.cell(0).point + timedelta(span / 2 * 365.24)
-    return [start.year, end.year], min_cube.data
+    target_dts = target_dts.rolling(time=30, center=True, min_periods=1).mean()
+    time_idx = abs(target_dts - cmip_dt).argmin(dim='time').values
+    year = target_dts.isel(time=time_idx).year.values.astype(int)
+    target_dt = target_dts.isel(time=time_idx).values.astype(float)
+    return [year-14, year+15], target_dt
 
 
-def make_plot(metadata, scenario):
+def make_plot(metadata, scenario, cfg):
     """Make figure 3, left graph.
 
     Multimodel values as line, reference value in black square,
     steering variables in dark dots.
     """
-    # Create a figure and a list that we'll use to store output data to csv
-
     fig, ax = plt.subplots()
 
     # Loop over all datasets
     for info_dict in metadata:
 
         # Open file and add timeseries to figure
-        # TODO: Add color to this figure according to RCP scenario
+        linewidth = 0.5
+        if 'rcp45' in info_dict['alias']:
+            color = 'red'
+        elif 'rcp60'in info_dict['alias']:
+            color = 'blue'
+        elif 'rcp85'in info_dict['alias']:
+            color = 'green'
+        else:
+            color = 'lightgrey'
+            linewidth = 2
         ds = xr.open_dataset(info_dict['filename'])
-        ds.tas.plot(ax=ax, label=info_dict['alias'])
-
-        # Add statistics to list for later saving
-        if 'MultiModel' in info_dict['alias']:
-            s = ds.tas.to_series()
-            s.name = info_dict['alias']
-            statistics.append(s)
+        ds.tas.plot(ax=ax, label=info_dict['alias'], c=color, lw=linewidth)
 
     # Save figure
     ax.legend()
@@ -93,41 +83,45 @@ def make_plot(metadata, scenario):
     fig.savefig(filename, bbox_inches='tight', dpi=300)
 
 
+def save(output, cfg):
+    """Save the output as csv file."""
+    scenarios = pd.DataFrame(output)
+    filename = get_diagnostic_filename('scenarios', cfg, extension='csv')
+    scenarios.to_csv(filename)
+    print(scenarios)
+    print(f"Output written to {filename}")
+
+
 def main(cfg):
     """Return scenarios tables."""
-    # a list of dictionaries describing all datasets passed on to the recipe
+    # A list of dictionaries describing all datasets passed on to the recipe
     metadata = cfg['input_data'].values()
-    print(metadata)
+    target_dts = mean_of_target_models(metadata, cfg['target_model'])
+
     # Define the different scenario's
     scenarios = []
     combinations = product(cfg['scenario_years'], cfg['scenario_percentiles'])
     for year, percentile in combinations:
-        cmip_dt = get_target_delta_t(metadata, year, percentile)
+        cmip_dt = get_cmip_dt(metadata, year, percentile)
+        bounds, target_dt = get_resampling_period(
+            target_dts, cmip_dt
+        )
+
         scenario = {
             'year': year,
             'percentile': percentile,
-            'CMIP_delta_T_global': cmip_dt
+            'cmip_dt': cmip_dt,
+            'period_bounds': bounds,
+            'target_dt': target_dt,
+            'pattern_scaling_factor': cmip_dt / target_dt
         }
         scenarios.append(scenario)
-    print(scenarios)
-    # find all ensemble members (datasets) of the target_model
-    # average them TODO check for ensembles in different rcp
-    average = get_mean_ensemble(metadata, cfg['target_model'])
 
-    # use the average temperature change to get the time bounds
-    for scenario in scenarios:
-        cmip_dt = scenario['CMIP_delta_T_global']
-        period_bounds, target_dt = get_target_model_time_bounds(
-            average, scenario['CMIP_delta_T_global']
-        )
-        scenario['period_bounds'] = period_bounds
-        scenario['target_model_delta_T'] = target_dt
-        scenario['pattern_scaling_factor'] = cmip_dt / target_dt
-    print(scenarios)
+    save(scenarios, cfg)
 
-    # TODO Make a nice plot
-    # if cfg['write_plots']:
-    #     make_plot()
+    if cfg['write_plots']:
+        make_plot(metadata, scenarios, cfg)
+
     # TODO add provenance
 
 
