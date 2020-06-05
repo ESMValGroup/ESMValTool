@@ -150,7 +150,7 @@ def main(cfg):
     Step 3
     """
 
-    # Start step 0:
+    # Step 0:
     # Read the data
     # TODO define a function to get input data
     dataset_dicts = cfg['input_data'].values()
@@ -158,8 +158,7 @@ def main(cfg):
         dataset_dicts, dataset=cfg['target_model']
     )
     files = [metadata['filename'] for metadata in target_model_metadata]
-
-    # TODO nor working, it needs another dimension for variables!
+    # TODO not working, it needs another dimension for variables!
     dataset = xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
     n_ensemble_members = len(dataset.ensemble_member)
 
@@ -175,7 +174,7 @@ def main(cfg):
         season_means = segments.groupby('time.season').mean()
         segments_season_means[name] = season_means
 
-    # Start step 1:
+    # Step 1:
     # Create a dictionary to store the selected indices later on.
     selected_indices = {}
 
