@@ -7,31 +7,35 @@ climates, and selecting combinations that match with the spread in CMIP5.
 This provides eight resampled EC-Earth time series for each of the scenarios.
 """
 
-from itertools import combinations
+from itertools import product
 
 import pandas as pd
 import xarray as xr
+import numpy as np
 
-from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
-                                            get_plot_filename, run_diagnostic,
+from esmvaltool.diag_scripts.shared import (run_diagnostic,
                                             select_metadata)
 
 
-def segment(dataset, start_year, end_year, block_size):
+def segment(dataset, period, step=5):
     """Segment (part of) a dataset into x blocks of n years each.
 
     Returns a new dataset with additional coordinate 'segment'.
     """
-    segmented_dataset = xr.concat([
-        ds.sel(time=slice(str(year), str(year+block_size)))
-        for year in range(start_year, end_year, block_size)
-    ], dim='segment')
+
+    for year in range(*period, step):
+        segmented_dataset = xr.concat(
+            [dataset.sel(time=slice(str(year), str(year+step)))], dim='segment'
+        )
     return segmented_dataset
 
 
 def all_possible_combinations(n_ensemble_members, n_segments):
-    """Generate indexer for all possible combinations of segmented dataset."""
+    """Generate indexer.
 
+    Returns indices for all possible combinations of
+    segments and ensembles.
+    """
     # Create a DataArray once...
     indices = xr.DataArray(
         data=np.zeros(n_segments),
@@ -39,8 +43,9 @@ def all_possible_combinations(n_ensemble_members, n_segments):
         coords={'segment': np.arange(n_segments)})
 
     # ...and update its values for all possible combinations
+    # TODO DataArray does not have update but Dataset.
     for combination in product(range(n_ensemble_members), repeat=n_segments):
-        indices.values = list(update)
+        indices.values = list(combination)
         yield indices
 
 
@@ -63,7 +68,7 @@ def selected_combinations(combinations):
         yield indices
 
 
-def most_promising_combinations(segment_means, target, n=1000):
+def most_promising_combinations(segment_means, target, n_ensemble_members, n=1000):
     """Get n out of all possible combinations that are closest to the target."""
     promising_combinations = []
     for combination in all_possible_combinations(n_ensemble_members, n_segments=6):
@@ -127,50 +132,74 @@ def select_final_subset(combinations, n=8):
 
 
 def main(cfg):
+    """Resample the model of interest.
 
-    # Step 0: Read the data, extract segmented subsets for both the control
-    # and future periods, and precompute seasonal means for each segment.
+    Step 0: Read the data, extract segmented subsets for both the control
+    and future periods, and precompute seasonal means for each segment.
+
+    Step 1a: Get 1000 combinations for the control period.
+    These samples should have the same mean winter precipitation as the
+    overall mean of the x ensemble members.
+
+    Step 1b: Get 1000 combinations for the future period.
+    The target value is a relative change wrt,
+    the overall mean of the control period.
+
+    Step 2a
+    Step 2b
+    Step 3
+    """
+
+    # Start step 0:
+    # Read the data
+    # TODO define a function to get input data
     dataset_dicts = cfg['input_data'].values()
     target_model_metadata = select_metadata(
-        dataset_dicts, dataset=cfg['target_model'])
+        dataset_dicts, dataset=cfg['target_model']
+    )
     files = [metadata['filename'] for metadata in target_model_metadata]
-    dataset = xr.open_mfdataset(
-        files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
-    segments_season_means = {}
+
+    # TODO nor working, it needs another dimension for variables!
+    dataset = xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
+    n_ensemble_members = len(dataset.ensemble_member)
 
     # Precompute the segment season means for the control period ...
-    segments = segment(dataset, *cfg['control_period'], step=5)
+    segments_season_means = {}
+    segments = segment(dataset, cfg['control_period'], step=5)
     season_means = segments.groupby('time.season').mean()
     segments_season_means['control'] = season_means
 
     # ... and for all the future scenarios
     for name, info, in cfg['scenarios']:
-        segments = segment(dataset, *info['resampling_period'], step=5)
+        segments = segment(dataset, info['resampling_period'], step=5)
         season_means = segments.groupby('time.season').mean()
         segments_season_means[name] = season_means
 
+    # Start step 1:
     # Create a dictionary to store the selected indices later on.
     selected_indices = {}
 
     # Step 1a: Get 1000 combinations for the control period
-    # These samples should have the same mean winter precipitation as the
-    # overall mean of the x ensemble members
+    # Get mean winter precipitation per segment
     winter_mean_pr_segments = segments_season_means['control'].pr.sel(
         season='DJF')
+    # Get overall mean of segments
     target = winter_mean_pr_segments.mean()
-    top1000 = most_promising_combinations(winter_mean_pr_segments, target)
-    selected_indices['control'] = top1000
+    # Select top1000 values
+    selected_indices['control'] = most_promising_combinations(
+        winter_mean_pr_segments, target, n_ensemble_members
+    )
 
     # Step 1b: Get 1000 combinations for the future period
-    # The target value is a relative change wrt the overall mean of the control period
+    # The target value is the overall mean of the control period
     control_period_winter_mean_pr = target
-
     for scenario, info, in cfg['scenarios']:
         target = control_period_winter_mean_pr * (1 + info['dpr_winter']/100)
         winter_mean_pr_segments = segments_season_means[scenario].pr.sel(
             season='DJF')
-        top1000 = most_promising_combinations(winter_mean_pr_segments, target)
-        selected_indices[scenario] = top1000
+        selected_indices[scenario] = most_promising_combinations(
+            winter_mean_pr_segments, target, n_ensemble_members
+        )
 
     # Step 2a: For each set of 1000 samples from 1a-b, compute summer pr,
     # and summer and winter tas.
