@@ -6,61 +6,51 @@ documentation:
     This recipe reproduces the basic steps described in Lenderink 2014.
     We just do one scenario at a time; maybe extend later.
 
-  references: # TODO add this as a bibtex file
+  references:   # TODO add this as a bibtex file
     - Lenderink 2014, https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/meta
 
   authors:
-    #TODO: Add Evert to config_developers
+    # TODO: Add Evert to config_developers
     # - rol_evert
     - kalverla_peter
     - alidoost_sarah
 
-
 datasets:
-  # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}   # Calendar bug: https://github.com/ESMValGroup/ESMValCore/issues/669
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
-
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}      # No-leap calendar!
 
 preprocessors:
-  scenarios_table:
-    #TODO: Add regrid time preprocessor to make sure all datasets are on the same grid
+  preproc1:
+    custom_order: true
     area_statistics:
       operator: mean
-
-    annual_statistics:
-        operator: mean
-
     anomalies:
-      period: full  # 'full' requires https://github.com/ESMValGroup/ESMValCore/pull/652, use # 'month' for now.
+      period: full
       reference: &reference
-        start_year: 1980
+        start_year: 1981
         start_month: 1
         start_day: 1
-        end_year: 2009
+        end_year: 2010
         end_month: 12
         end_day: 31
       standardize: false
-
     multi_model_statistics:
       span: full
-      statistics: [mean, median]   # might want to add percentiles here, but not supported
-
-    #TODO: remove this filter once the rolling mean is used inside the diagnostic.
-    # timeseries_filter: # should be applied on percentiles
-    #   window: 3650  # 365*10
-    #   span: 3650  # 365*10
-    #   filter_type: lowpass
-    #   filter_stats: mean
-
-  resampling:
+      statistics: [mean, median]   # might want to add percentiles here, but not (yet) supported
+    annual_statistics:
+      # must come after multimodelstats: https://github.com/ESMValGroup/ESMValCore/issues/665
+      operator: mean
+    regrid_time:
+      # try to get homogeneous time arrays back; calendar issues persist.
+      frequency: yr
+  preproc2:
     extract_point:
       longitude: 6.25
       latitude: 51.21
       scheme: linear
-
-
 
 diagnostics:
   scenarios_table:
@@ -68,19 +58,15 @@ diagnostics:
       - Make a plot of the global mean temperature change according to all datasets (defined above)
       - Get the global mean temperature change for specified years and specified percentiles (Delta T). These define our scenarios.
       - Select the 30-year period from the target model (all ensemble members) where they match the Delta T for each scenario.
-
     variables:
       tas:
-        preprocessor: scenarios_table
-
+        preprocessor: preproc1
     scripts:
       scenarios_table:
         script: kcs/scenarios_table.py
         scenario_years: [2050]  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
         scenario_percentiles: [Mean, Median]
         target_model: ACCESS1-0
-        plot: True
-
 
   resampling:
     description: >
@@ -88,19 +74,16 @@ diagnostics:
       - Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
       - Determine the 1000 best ...
       - Determine the final best
-
     variables:
       tas:
-        preprocessor: resampling
+        preprocessor: preproc2
       pr:
-        preprocessor: resampling
-
+        preprocessor: preproc2
     scripts:
       resample:
         script: kcs/resampling.py
         control_period: [1980, 2010]
         target_model: ACCESS1-0
-
         scenarios:  # see Table 1 of the supplementary material
           Gl:
             description: "Gematigd / low changes in seasonal temperature & precipitation"
