@@ -51,7 +51,7 @@ begin
   YEAR2 = 2014
 
   ; Selected variable (standard name)
-  VAR = "co2"
+  VAR = "co2s"
 
   ; Field
   MIP = "Amon"
@@ -60,7 +60,7 @@ begin
   FREQ = "mon"
 
   ; CMOR table
-  CMOR_TABLE = getenv("cmor_tables") + "/cmip5/Tables/CMIP5_" + MIP
+  CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_co2s.dat"
 
   ; Type
   TYPE = "ground"
@@ -97,7 +97,7 @@ begin
   ; Loop over stations
   do stID = 0, nstats - 1
 
-    infile = input_dir_path + VAR + "_" + str_lower(st_code(stID)) + \
+    infile = input_dir_path + "co2_" + str_lower(st_code(stID)) + \
              "_surface-insitu_1_ccgg_month.txt"
 
     if (fileexists(infile)) then
@@ -134,20 +134,17 @@ begin
       delete(month)
 
       ; Create output variable
-      output = new((/dimsizes(timec), 1, 1, 1/), float)
+      output = new((/dimsizes(timec), 1, 1/), float)
       output!0 = "time"
       output&time = timec
       output!1 = "lon"
       output&lon = st_lon(stID)
       output!2 = "lat"
       output&lat = st_lat(stID)
-      output!3 = "plev"
-      output&plev = st_alt(stID)
-      output&plev@units = "Pa"
       output@_FillValue = FILL
 
       do ii = 0, dimsizes(var) - 1
-        output(ind(datec.eq.date(ii)),0 ,0 ,0) = (/var(ii)/)
+        output(ind(datec.eq.date(ii)),0 ,0) = (/var(ii)/)
       end do
       delete(var)
       delete(date)
@@ -163,7 +160,26 @@ begin
       delete(tmp)
 
       ; Calculate coordinate bounds
-      bounds = guess_coord_bounds(output, FREQ)
+      ;bounds = guess_coord_bounds(output, FREQ)
+      bounds = NewList("fifo")
+      time_bnds = guess_bounds_time(output&time, FREQ)
+      ListPush(bounds, time_bnds)
+
+      lat_bnds = new((/1, 2/), double)
+      lat_bnds!0 = "lat"
+      lat_bnds&lat = output&lat
+      lat_bnds!1 = "bnds"
+      lat_bnds(0, 0) = -90.
+      lat_bnds(0, 1) = 90.
+      ListPush(bounds, lat_bnds)
+
+      lon_bnds = new((/1, 2/), double)
+      lon_bnds!0 = "lon"
+      lon_bnds&lon = output&lon
+      lon_bnds!1 = "bnds"
+      lon_bnds(0, 0) = 0.
+      lon_bnds(0, 1) = 360.
+      ListPush(bounds, lon_bnds)
 
       ; Set global attributes
       gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
