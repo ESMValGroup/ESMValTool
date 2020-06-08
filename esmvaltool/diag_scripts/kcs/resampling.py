@@ -1,10 +1,11 @@
+"""Resampling.
 
-"""
 In the second step (see sections 4.2 and 4.3) we resample the results of
 ENS-EC for the selected time periods (from the previous step). This is done
 by recombining 5 yr periods of the eight members of ENSEC into new resampled
 climates, and selecting combinations that match with the spread in CMIP5.
 This provides eight resampled EC-Earth time series for each of the scenarios.
+
 """
 
 from itertools import product
@@ -17,16 +18,31 @@ from esmvaltool.diag_scripts.shared import (run_diagnostic,
                                             select_metadata)
 
 
+def get_input_data(cfg):
+    """Load ensembles for each variable and merge."""
+    dataset_dicts = cfg['input_data'].values()
+    target_model_metadata = select_metadata(
+        dataset_dicts, dataset=cfg['target_model']
+    )
+    dataset = []
+    for short_name in "pr", "tas":
+        var = select_metadata(target_model_metadata, variable_group=short_name)
+        files = [metadata['filename'] for metadata in var]
+        dataset.append(
+            xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')
+        )
+    return xr.merge(dataset)
+
+
 def segment(dataset, period, step=5):
     """Segment (part of) a dataset into x blocks of n years each.
 
     Returns a new dataset with additional coordinate 'segment'.
     """
-
+    segments = []
     for year in range(*period, step):
-        segmented_dataset = xr.concat(
-            [dataset.sel(time=slice(str(year), str(year+step)))], dim='segment'
-        )
+        segments.append(dataset.sel(time=slice(str(year), str(year + step))))
+    segmented_dataset = xr.concat(segments, dim='segment')
     return segmented_dataset
 
 
@@ -75,27 +91,27 @@ def most_promising_combinations(segment_means, target, n_ensemble_members, n=100
         recombined_segment_means = segment_means.sel(
             ensemble_member=combination)
         new_overall_mean = recombined_segment_means.mean('segment')
-        distance_to_target = (new_overall_mean - target).abs()
+        distance_to_target = abs(new_overall_mean - target)
         promising_combinations.append([combination.values, distance_to_target])
-    top_all = pd.DataFrame(promising_combinations, columns=[
-                           'combination', 'distance_to_target'])
-    return top_all.sort_by('distance_to_target').head(n)
+    top_all = pd.DataFrame(promising_combinations,
+                           columns=['combination', 'distance_to_target'])
+    return top_all.sort_values('distance_to_target').head(n)
 
 
 def within_bounds(values, bounds):
     """Return true if value is within percentile bounds."""
     low, high = np.percentile(values, bounds)
-    return (low <= values) & (values <= high)
+    return values.between(low, high)
 
 
 def determine_penalties(overlap):
     """Determine penalties dependent on the number of overlaps."""
-    return np.piecwise(x=overlap,
-                       condlist=[x < 3, x == 3, x == 4, x > 4],
-                       funclist=[0, 1, 5, 100])
+    return np.piecewise(overlap,
+                        condlist=[overlap < 3, overlap == 3, overlap == 4, overlap > 4],
+                        funclist=[0, 1, 5, 100])
 
 
-def select_final_subset(combinations, n=8):
+def select_final_subset(combinations, n_sample=8):
     """Find n samples with minimal reuse of ensemble members per segment.
 
     combinations: a pandas series with the remaining candidates
@@ -106,27 +122,28 @@ def select_final_subset(combinations, n=8):
         [list(combination) for combination in combinations]
     )
 
+    # Store the indices in a nice dataframe
+    _, n_segments = combinations.shape
+    best_combination = pd.DataFrame(
+        data=None,
+        columns=[f'Segment {x}' for x in range(n_segments)],
+        index=[f'Combination {x}' for x in range(n_sample)]
+    )
+
     # Random number generator
     rng = np.random.default_rng()
 
     lowest_penalty = 500  # just a random high value
+    # TODO check the loop because i is unused!
     for i in range(10000):
-        sample = rng.choice(combinations, size=n)
+        sample = rng.choice(combinations, size=n_sample)
         penalty = 0
         for segment in sample.T:
             _, counts = np.unique(segment, return_counts=True)
             penalty += determine_penalties(counts).sum()
         if penalty < lowest_penalty:
             lowest_penalty = penalty
-            best_combination = sample
-
-    # Store the indices in a nice dataframe
-    _, n_segments = best_combination.shape
-    best_combination = pd.DataFrame(
-        data=best_combination,
-        columns=[f'Segment {x}' for x in range(n_segments)],
-        index=[f'Combination {x}' for x in range(n)]
-    )
+            best_combination.loc[:, :] = sample
 
     return best_combination
 
@@ -142,24 +159,25 @@ def main(cfg):
     overall mean of the x ensemble members.
 
     Step 1b: Get 1000 combinations for the future period.
-    The target value is a relative change wrt,
+    Now, for future period, the target value is a relative change with respect to
     the overall mean of the control period.
 
-    Step 2a
-    Step 2b
-    Step 3
-    """
+    Step 2a: For each set of 1000 samples from 1a-b, compute summer precipitation,
+    and summer and winter temperature.
 
+    Step 2b: For each scenario, select samples for which summer precipitation,
+    and summer and winter temperature are within the percentile bounds specified
+    in the recipe.
+
+    Step 3: Select final set of eight samples with minimal reuse of the same
+    ensemble member for the same period.
+    From 10.000 randomly selected sets of 8 samples, count
+    and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
+    Chose the set with the lowest penalty.
+    """
     # Step 0:
     # Read the data
-    # TODO define a function to get input data
-    dataset_dicts = cfg['input_data'].values()
-    target_model_metadata = select_metadata(
-        dataset_dicts, dataset=cfg['target_model']
-    )
-    files = [metadata['filename'] for metadata in target_model_metadata]
-    # TODO not working, it needs another dimension for variables!
-    dataset = xr.open_mfdataset(files, concat_dim='ensemble_member', combine='nested')[['pr', 'tas']]
+    dataset = get_input_data(cfg)
     n_ensemble_members = len(dataset.ensemble_member)
 
     # Precompute the segment season means for the control period ...
@@ -169,10 +187,10 @@ def main(cfg):
     segments_season_means['control'] = season_means
 
     # ... and for all the future scenarios
-    for name, info, in cfg['scenarios']:
+    for scenario, info in cfg['scenarios'].items():
         segments = segment(dataset, info['resampling_period'], step=5)
         season_means = segments.groupby('time.season').mean()
-        segments_season_means[name] = season_means
+        segments_season_means[scenario] = season_means
 
     # Step 1:
     # Create a dictionary to store the selected indices later on.
@@ -190,10 +208,11 @@ def main(cfg):
     )
 
     # Step 1b: Get 1000 combinations for the future period
-    # The target value is the overall mean of the control period
     control_period_winter_mean_pr = target
-    for scenario, info, in cfg['scenarios']:
-        target = control_period_winter_mean_pr * (1 + info['dpr_winter']/100)
+    for scenario, info in cfg['scenarios'].items():
+        # The target value is a relative change with respect to
+        # the overall mean of the control period
+        target = control_period_winter_mean_pr * (1 + info['dpr_winter'] / 100)
         winter_mean_pr_segments = segments_season_means[scenario].pr.sel(
             season='DJF')
         selected_indices[scenario] = most_promising_combinations(
@@ -220,14 +239,13 @@ def main(cfg):
                 new_overall_season_means.tas.sel(season='JJA')
             ])
 
-        top1000 = pd.DataFrame(filter2_variables, columns=columns)
-        selected_indices[scenario] = top1000
+        selected_indices[name] = pd.DataFrame(filter2_variables, columns=columns)
 
-    # Step 2b: For each scenario, select samples for which summer pr,and
+    # Step 2b: For each scenario, select samples for which summer pr, and
     # summer and winter tas are within the percentile bounds specified
     # in the recipe
     top1000_control = selected_indices['control']
-    for scenario, info, in cfg['scenarios']:
+    for scenario, info in cfg['scenarios'].items():
         top1000 = selected_indices[scenario]
 
         # Get relatively high/low values for the control period ...
@@ -237,8 +255,9 @@ def main(cfg):
             top1000_control['tas_winter'], info['tas_winter_control'])
         tas_summer = within_bounds(
             top1000_control['tas_summer'], info['tas_summer_control'])
-        subset_control = top1000_control[np.all(
-            pr_summer, tas_winter, tas_summer)]
+        subset_control = top1000_control[
+            np.all([pr_summer, tas_winter, tas_summer], axis=0)
+        ]
 
         # ... combined with relatively high/low values for the future period
         pr_summer = within_bounds(
@@ -247,7 +266,7 @@ def main(cfg):
             top1000['tas_winter'], info['tas_winter_future'])
         tas_summer = within_bounds(
             top1000['tas_summer'], info['tas_summer_future'])
-        subset_future = top1000[np.all(pr_summer, tas_winter, tas_summer)]
+        subset_future = top1000[np.all([pr_summer, tas_winter, tas_summer], axis=0)]
 
         selected_indices[scenario] = {
             'control': subset_control,
@@ -256,13 +275,8 @@ def main(cfg):
 
         del selected_indices['control']  # No longer needed
 
-    # Step 3:
-    # Select final set of eight samples with minimal reuse of the same
+    # Step 3: Select final set of eight samples with minimal reuse of the same
     # ensemble member for the same period.
-    #
-    # From 10.000 randomly selected sets of 8 samples, count
-    # and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
-    # Chose the set with the lowest penalty.
     for scenario, dataframes in selected_indices.items():
         scenario_output_tables = []
         for period in ['control', 'future']:
@@ -274,10 +288,8 @@ def main(cfg):
             scenario_output_tables, axis=1, keys=['control', 'future'])
         print(f"Selected recombinations for scenario {scenario}:")
         print(scenario_output_tables)
-        filename = f'indices_{scenario}'
+        filename = f'indices_{scenario}.csv'
         scenario_output_tables.to_csv(filename)
-
-    return
 
 
 if __name__ == '__main__':
