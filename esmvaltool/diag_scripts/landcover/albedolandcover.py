@@ -340,6 +340,10 @@ def main(cfg):
         # Now get albedo change due to landcover change
         alb_lc = _get_reconstructed_albedos(model_data, cfg)
 
+        # Now mask where albedo values are physically impossible
+        alb_lc[alb_lc < 0] = np.nan
+        alb_lc[alb_lc > 1] = np.nan
+
         # Calculate differences between them
         _write_albedochanges_to_disk(alb_lc, model_data['snc'],
                                      datadict, cfg)
