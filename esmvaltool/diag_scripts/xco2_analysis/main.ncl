@@ -266,7 +266,7 @@ begin
   res@trXMaxF = dimsizes(growth_series&model)
   res@tiMainString = "" ;"Mean Growth Rate from " + tostring(start_year) + \
                      ;" - " + tostring(end_year) + ", " + region
-  res@tiYAxisString = "Average growth rate [ppmv / yr]"
+  res@tiYAxisString = "Average growth rate [ppmv yr~S~-1~N~]"
   res@tiYAxisFontHeightF = 0.02
   res@gsnXYBarChartBarWidth = 0.75
   res@gsnXYBarChartColors = bp_colors

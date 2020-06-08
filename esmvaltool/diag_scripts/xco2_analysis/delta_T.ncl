@@ -52,7 +52,9 @@ begin
   INFO1 = select_metadata_by_name(input_file_info, var1)
   INFO2 = select_metadata_by_name(input_file_info, var2)
   DATASETS = metadata_att_as_array(INFO0, "dataset")
+  DATASETS = where(DATASETS.eq."MultiModelMean", "multi-model mean", DATASETS)
   DATASETS2 = metadata_att_as_array(INFO1, "dataset")
+  DATASETS2 = where(DATASETS2.eq."MultiModelMean", "multi-model mean", DATASETS2)
   ;ALL_FILES = metadata_att_as_array(INFO0, "filename")
   experiments = metadata_att_as_array(INFO0, "exp") ; Careful! OBS also has exp: esm-hist
 
@@ -290,7 +292,7 @@ begin
   obs_pres = True
   delta_t@units = "K"
   delta_t@long_name = "Growing Season Temperature"
-  growth_series@units = "ppmv / yr"
+  growth_series@units = "ppmv yr~S~-1~N~"
   growth_series@long_name = "Growth Rate"
   delta_t@region = region
   outfile_dtgr_detr = plot_dir + "/" + var0 + "_" + experiments(0) \
