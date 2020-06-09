@@ -15,6 +15,8 @@ documentation:
     - kalverla_peter
     - alidoost_sarah
 
+
+
 datasets:
   # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}   # Calendar bug: https://github.com/ESMValGroup/ESMValCore/issues/669
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
@@ -46,11 +48,17 @@ preprocessors:
     regrid_time:
       # try to get homogeneous time arrays back; calendar issues persist.
       frequency: yr
-  preproc2:
+  preproc2: &extract_NL
     extract_point:
       longitude: 6.25
       latitude: 51.21
       scheme: linear
+  preproc3: &cmip_control
+    <<: *&extract_NL
+    extract_time:
+      <<: *reference
+
+
 
 diagnostics:
   scenarios_table:
