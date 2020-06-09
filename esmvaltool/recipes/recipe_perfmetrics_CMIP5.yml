@@ -1940,7 +1940,8 @@ diagnostics:
                      'ts-global', 'pr-global', 'clt-global', 'rlut-global',
                      'rsut-global', 'lwcre-global', 'swcre-global',
                      'od550aer-global', 'od870aer-global', 'abs550aer-global',
-                     'od550lt1aer-global', 'toz-global', 'toz-shpolar',
+#                     'od550lt1aer-global', 'toz-global', 'toz-shpolar',
+                     'toz-global', 'toz-shpolar',
                      'sm-global']
       taylor:
         script: perfmetrics/collect.ncl
