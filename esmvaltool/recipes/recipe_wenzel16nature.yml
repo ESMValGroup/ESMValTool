@@ -48,8 +48,8 @@ preprocessors:
   BRW_co2:
     custom_order: true
     extract_point: &extract_point
-      latitude: 71.32
-      longitude: 203.38
+      latitude: 71
+      longitude: 203
       scheme: nearest
     annual_statistics:
       operator: mean
@@ -114,7 +114,7 @@ diagnostics:
         start_year: 1850
         end_year: 2005
         additional_datasets:
-         - {dataset: CanESM2}
+          - {dataset: CanESM2}
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
           #- {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}

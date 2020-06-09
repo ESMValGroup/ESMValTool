@@ -128,11 +128,12 @@ begin
     ; Read data
     A0 = read_data(info0[imod])
     A1 = read_data(info1[imod])
-print(A0)
-print(A1)
+
+    ; Save input data with one year leap
     Xdata(imod, :dimsizes(A0)-2) = tofloat(A0(1:))
     Ydata(imod, :dimsizes(A1)-1) = tofloat(A0)
 
+    ; Regression between [CO2] Amplitude (x) and [CO2] ann mean (Y)
     rc = regline_stats(Xdata(imod, :), Ydata(imod, :))
 print(rc)
     rcc(imod, 1) = rc

@@ -160,26 +160,9 @@ begin
       delete(tmp)
 
       ; Calculate coordinate bounds
-      ;bounds = guess_coord_bounds(output, FREQ)
       bounds = NewList("fifo")
       time_bnds = guess_bounds_time(output&time, FREQ)
       ListPush(bounds, time_bnds)
-
-      lat_bnds = new((/1, 2/), double)
-      lat_bnds!0 = "lat"
-      lat_bnds&lat = output&lat
-      lat_bnds!1 = "bnds"
-      lat_bnds(0, 0) = -90.
-      lat_bnds(0, 1) = 90.
-      ListPush(bounds, lat_bnds)
-
-      lon_bnds = new((/1, 2/), double)
-      lon_bnds!0 = "lon"
-      lon_bnds&lon = output&lon
-      lon_bnds!1 = "bnds"
-      lon_bnds(0, 0) = 0.
-      lon_bnds(0, 1) = 360.
-      ListPush(bounds, lon_bnds)
 
       ; Set global attributes
       gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
