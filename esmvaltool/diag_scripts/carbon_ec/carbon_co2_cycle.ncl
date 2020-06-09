@@ -44,22 +44,24 @@ begin
   tmp = metadata_att_as_array(input_file_info, "variable_group")
   co2s_ann = ind(tmp.eq."co2s")
   co2s_amp = ind(tmp.eq."co2s_amp")
-  co2_ann_obs = ind(tmp.eq."co2_obs")
-  co2_amp_obs = ind(tmp.eq."co2_amp_obs")
+  co2s_ann_obs = ind(tmp.eq."co2s_obs")
+  co2s_amp_obs = ind(tmp.eq."co2s_amp_obs")
   delete(tmp)
 
   ; Load var_info
   var = variable_info[0]@short_name
   info = select_metadata_by_name(input_file_info, var)
-  info0 = (/info[co2s_ann], info[co2_ann_obs]/)
-  info1 = (/info[co2s_amp], info[co2_amp_obs]/)
+  info0 = info[co2s_ann]
+  ListPush(info0,info[co2s_ann_obs])
+  info1 = info[co2s_amp]
+  ListPush(info1,info[co2s_amp_obs])
+
+  datasetnames = metadata_att_as_array(info0, "dataset")
+  dim_MOD = ListCount(info0)
 
   reference_dataset = variable_info[0]@reference_dataset
   iref = ind(reference_dataset .eq. datasetnames)
   idat = ind(reference_dataset .ne. datasetnames)
-
-  datasetnames = metadata_att_as_array(info0, "dataset")
-  dim_MOD = ListCount(info0)
 
   log_info("+++++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var + ")")
@@ -126,31 +128,35 @@ begin
     ; Read data
     A0 = read_data(info0[imod])
     A1 = read_data(info1[imod])
-
+print(A0)
+print(A1)
     Xdata(imod, :dimsizes(A0)-2) = tofloat(A0(1:))
     Ydata(imod, :dimsizes(A1)-1) = tofloat(A0)
 
     rc = regline_stats(Xdata(imod, :), Ydata(imod, :))
+print(rc)
     rcc(imod, 1) = rc
     rcc(imod, 0) = rc@b(0)
     stdrc(imod, :) = rc@stderr
     Yfitd(imod, :dimsizes(rc@Yest)-1) = rc@Yest
-
+break
     delete([/rc,  A1, A0/])
   end do     ; model loop
 
   ; read file with beta values
   beta = ncdf_read(temp_dir, "beta")
-  betaGPP = new((/2, dim_MOD/), float)
-  rcGPP   = new((/dim_MOD*2/), float)
 
-  betaGPP(:, :dim_MOD-1) = beta
+  ; Save in array w/o OBS
+  betaGPP = new((/2, dim_MOD-1/), float)
+  rcGPP   = new((/(dim_MOD-1)*2/), float)
+
+  betaGPP(:, :dim_MOD-2) = beta
   rcGPP(1::2) = betaGPP@rcgpp
 
   rcGPP!0 = "models"
-  tmpm = new((/dim_MOD*2/), string)
-  tmpm(::2) = datasetnames(:dim_MOD-1)
-  tmpm(1::2) = datasetnames(:dim_MOD-1)
+  tmpm = new((/(dim_MOD-1)*2/), string)
+  tmpm(::2) = datasetnames(idat)
+  tmpm(1::2) = datasetnames(idat)
   rcGPP&models = tmpm
 
   delete(beta)
@@ -162,7 +168,7 @@ begin
   minx = min(rcc(idat, 1))-1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
   maxx = max(rcc(idat, 1))+1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
 
-  rc = regline_stats(rcc(idat, 1), betaGPP(0, :dim_MOD-1))
+  rc = regline_stats(rcc(idat, 1), betaGPP(0, :))
   arc_bco2  = rc@r
   prc_bco2  = rc@F_pval
   xfit_bco2 = minx + (maxx - minx) * nfit/dimsizes(nfit)
@@ -172,7 +178,7 @@ begin
 
   ; Calculate prior distribution
   PDF = Cond_PDF(xfit_bco2, yfit_bco2, rcc(idat, 1), \
-                 betaGPP(0, :dim_MOD-1), rc@MSE, \
+                 betaGPP(0, :), rc@MSE, \
                  (/rcc(iref, 1), stdrc(iref, 1)/))
 
   if (stdrc(iref, 1).ne.0) then
@@ -187,12 +193,12 @@ begin
   yfit_bco2_std = PDF@sigma
 
   yBETA = new((/2, dim_MOD+2/), float)
-  yBETA(0, 0)  = avg(betaGPP(0, :dim_MOD-1))
+  yBETA(0, 0)  = avg(betaGPP(0, :))
   yBETA(0, 1)  = beta_mco2
-  yBETA(0, 2:) = betaGPP(0, :dim_MOD-1)
-  yBETA(1, 0)  = stddev(betaGPP(0, :dim_MOD-1))
+  yBETA(0, 2:) = betaGPP(0, :)
+  yBETA(1, 0)  = stddev(betaGPP(0, :))
   yBETA(1, 1)  = beta_eco2
-  yBETA(1, 2:) = betaGPP(1, :dim_MOD-1)
+  yBETA(1, 2:) = betaGPP(1, :)
 
   xCO2 =  new((/2, dim_MOD+2/), float)
   xCO2(0, 1)  = rcc(iref, 1)

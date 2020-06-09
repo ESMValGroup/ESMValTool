@@ -19,7 +19,7 @@ preprocessors:
     custom_order: true
     weighting_landsea_fraction:
       area_type: land
-    extract_region:
+    extract_region: &extract_region
       start_longitude: 0.
       end_longitude: 360.
       start_latitude: 60.
@@ -31,11 +31,7 @@ preprocessors:
       
   highlat_co2:
     custom_order: true
-    extract_region:
-      start_longitude: 0.
-      end_longitude: 360.
-      start_latitude: 60.
-      end_latitude: 90.
+    extract_region: *extract_region
     area_statistics:
       operator: mean
     annual_statistics:
@@ -43,21 +39,24 @@ preprocessors:
       
   highlat_amp:
     custom_order: true
-    extract_region:
-      start_longitude: 0.
-      end_longitude: 360.
-      start_latitude: 60.
-      end_latitude: 90.
+    extract_region: *extract_region
     area_statistics:
       operator: mean
     amplitude:
       coords: year
-      
-  OBS_co2:
+
+  BRW_co2:
+    custom_order: true
+    extract_point: &extract_point
+      latitude: 71.32
+      longitude: 203.38
+      scheme: nearest
     annual_statistics:
       operator: mean
       
-  OBS_amp:
+  BRW_amp:
+    custom_order: true
+    extract_point: *extract_point
     amplitude:
       coords: year
 
@@ -84,12 +83,12 @@ diagnostics:
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC, start_year: 11, end_year: 140}
       - {dataset: GFDL-ESM2M, start_year: 11, end_year: 140}
-      - {dataset: HadGEM2-ES}
+      #- {dataset: HadGEM2-ES}
       - {dataset: MIROC-ESM, start_year: 11, end_year: 140}
       - {dataset: MPI-ESM-LR}
       - {dataset: NorESM1-ME, start_year: 11, end_year: 140}
     scripts:
-      carbon_beta: &idealized_carbon
+      carbon_beta:
         script: carbon_ec/carbon_beta.ncl
         cl_mean: False
         cl_output: True 
@@ -105,8 +104,8 @@ diagnostics:
       - land
     variables:
       co2s:
-        preprocessor: highlat_co2
         short_name: co2s
+        preprocessor: highlat_co2
         derive: true
         project: CMIP5
         mip: Amon
@@ -115,28 +114,28 @@ diagnostics:
         start_year: 1850
         end_year: 2005
         additional_datasets:
-          - {dataset: CanESM2}
+         - {dataset: CanESM2}
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
-          - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+          #- {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
           - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: NorESM1-ME}
-      co2_obs:
-        preprocessor: OBS_co2
-        short_name: co2
+      co2s_obs:
+        short_name: co2s
+        preprocessor: BRW_co2
         project: CMIP5
         mip: Amon
         exp: esmHistorical
         ensemble: r1i1p1
-        start_year: 1973
+        start_year: 1974
         end_year: 2014
         reference_dataset: ESRL
         additional_datasets:
           - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2, start_year: 1973, end_year: 2014}
       co2s_amp:
-        preprocessor: highlat_amp 
         short_name: co2s
+        preprocessor: highlat_amp 
         derive: true
         project: CMIP5
         mip: Amon
@@ -148,18 +147,18 @@ diagnostics:
           - {dataset: CanESM2}
           - {dataset: CESM1-BGC}
           - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
-          - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+          #- {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
           - {dataset: MIROC-ESM}
           - {dataset: MPI-ESM-LR}
           - {dataset: NorESM1-ME}
-      co2_amp_obs:
-        preprocessor: OBS_amp
-        short_name: co2
+      co2s_amp_obs:
+        short_name: co2s
+        preprocessor: BRW_amp
         project: CMIP5
         mip: Amon
         exp: esmHistorical
         ensemble: r1i1p1
-        start_year: 1973
+        start_year: 1974
         end_year: 2014
         reference_dataset: ESRL
         additional_datasets:
