@@ -10,6 +10,7 @@ This provides eight resampled EC-Earth time series for each of the scenarios.
 
 from itertools import product
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -146,6 +147,49 @@ def select_final_subset(combinations, n_sample=8):
             best_combination.loc[:, :] = sample
 
     return best_combination
+
+
+def make_plot(cfg):
+    """Reproduce figure 5 from the paper."""
+    # note that quantile is applied twice!
+    # Once to get the pdf's of seasonal tas/pr
+    # and once to get the multimodel pdf of the quantile changes
+    # TODO: Add variable group tas_cmip to recipe:
+    # variables:
+    #   tas_cmip:
+    #     short_name: tas
+    #     preprocessor: preproc2 (extract NL point)
+    #     additional_datasets: *cmip5_datasets
+
+    metadata = cfg['input_data'].values()
+    tas_cmip = select_metadata(metadata, variable_group='tas_cmip')
+    envelope = []
+    for data_dict in tas_cmip:
+        dataset = xr.open_dataset(data_dict['filename'])
+        grouped_control = (dataset
+                           .sel(time=slice('1981', '2010'))
+                           .groupby('time.season'))
+        grouped_future = (dataset
+                          .sel(time='2050')
+                          .groupby('time.season'))
+
+        quantiles = [.05, .1, .25, .5, .75, .90, .95]
+        qcontrol = grouped_control.quantile(quantiles)
+        qfuture = grouped_future.quantile(quantiles)
+        qchange = qfuture - qcontrol
+        envelope.append(qchange)
+    cmip5 = xr.concat(envelope, dim='multimodel')
+
+    fig, ax = plt.subplots()
+    for high, low in [[0.9, 0.1], [0.75, 0.25]]:
+        ax.fill_between(quantiles,
+                        cmip5.quantile(high, dim='multimodel'),
+                        cmip5.quantile(low, dim='multimodel'),
+                        color='k',
+                        alpha=0.5)
+    filename = get_plot_filename('envelope_figure', cfg)
+    fig.savefig(filename, bbox_inches='tight', dpi=300)
+    return filename
 
 
 def main(cfg):
@@ -290,6 +334,10 @@ def main(cfg):
         print(scenario_output_tables)
         filename = f'indices_{scenario}.csv'
         scenario_output_tables.to_csv(filename)
+
+    # Step 4: Plot the results
+    if cfg['write_plots']:
+        make_plot(cfg)
 
 
 if __name__ == '__main__':
