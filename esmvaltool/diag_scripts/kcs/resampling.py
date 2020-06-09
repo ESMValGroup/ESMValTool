@@ -67,14 +67,14 @@ def get_input_data(cfg):
 
 
 def get_season_means_per_segment(dataset, period, step=5):
-    """Segment (part of) a dataset into x blocks of n years each.
+    """Segment (part of) a dataset into x blocks of 5 years each.
 
     Returns a new dataset with additional coordinate 'segment',
     and values as season means.
     """
     segments = []
     for year in range(*period, step):
-        segments.append(dataset.sel(time=slice(str(year), str(year + step))))
+        segments.append(dataset.sel(time=slice(str(year), str(year + step -1))))
     segmented_dataset = xr.concat(segments, dim='segment')
     season_means = segmented_dataset.groupby('time.season').mean()
     return season_means
@@ -166,7 +166,7 @@ def within_bounds(values, bounds):
     return values.between(low, high)
 
 
-def get_relative_values(top1000, info, period):
+def select_percentile_bounds(top1000, info, period):
     """Select samples based on the percentile bounds.
 
     Select samples for which summer pr, and summer and winter tas
@@ -186,18 +186,9 @@ def get_relative_values(top1000, info, period):
 
 def determine_penalties(overlap):
     """Determine penalties dependent on the number of overlaps."""
-    return np.piecewise(
-        overlap,
-        condlist=[
-            overlap < 3,
-            overlap == 3,
-            overlap == 4,
-            overlap > 4],
-        funclist=[
-            0,
-            1,
-            5,
-            100])
+    return np.piecewise(overlap,
+                        condlist=[overlap < 3, overlap == 3, overlap == 4, overlap > 4],
+                        funclist=[0, 1, 5, 100])
 
 
 def select_final_subset(combinations, n_sample=8):
@@ -239,7 +230,7 @@ def select_final_subset(combinations, n_sample=8):
 def make_scenario_tables(dataset):
     """Make a table of final set of eight samples.
 
-    Secetion is done based on minimal reuse of the same
+    Selection is done based on minimal reuse of the same
     ensemble member for the same period.
     """
     scenario_output_tables = []
@@ -388,11 +379,11 @@ def main(cfg):
     for scenario, info in cfg['scenarios'].items():
         selected_indices[scenario] = {
             # Get relatively high/low values for the control period ...
-            'control': get_relative_values(
+            'control': select_percentile_bounds(
                 selected_indices['control'], info, 'control'
             ),
             # Get relatively high/low values for the future period
-            'future': get_relative_values(
+            'future': select_percentile_bounds(
                 selected_indices[scenario], info, 'future'
             )
         }
