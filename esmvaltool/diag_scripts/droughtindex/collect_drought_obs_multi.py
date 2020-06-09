@@ -35,7 +35,8 @@ from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
     get_latlon_index, plot_time_series_spei)
 
 
-def _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs):
+def _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
+                           input_filenames):
     """Calculate multi-model mean and compare it to observations."""
     lats = cube.coord('latitude').points
     lons = cube.coord('longitude').points
@@ -44,10 +45,12 @@ def _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs):
                  / (all_drought_obs + all_drought_hist_mean) * 200)
 
     # Plot multi model means
-    _plot_multi_model_maps(cfg, all_drought_hist_mean, lats, lons, 'Historic')
+    _plot_multi_model_maps(cfg, all_drought_hist_mean, lats, lons,
+                           input_filenames, 'Historic')
     _plot_multi_model_maps(cfg, all_drought_obs, lats, lons,
-                           'Observations')
-    _plot_multi_model_maps(cfg, perc_diff, lats, lons, 'Difference')
+                           input_filenames, 'Observations')
+    _plot_multi_model_maps(cfg, perc_diff, lats, lons,
+                           input_filenames, 'Difference')
 
 
 def ini_time_series_plot(cfg, cube, area):
@@ -93,7 +96,6 @@ def main(cfg):
     print(cfg.keys())
     first_run = 1
     iobs = 0
-
 
     # For loop: "glob.iglob" findes all files which match the
     # pattern of "input_filenames".
@@ -144,7 +146,8 @@ def main(cfg):
         _plot_single_maps(cfg, cube2, drought_show, 'Historic')
 
     # Calculating multi model mean and plot it
-    _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs)
+    _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
+                           input_filenames)
 
 
 if __name__ == '__main__':

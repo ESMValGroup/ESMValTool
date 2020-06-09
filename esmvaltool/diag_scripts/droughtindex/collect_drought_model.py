@@ -40,7 +40,7 @@ from esmvaltool.diag_scripts.droughtindex.collect_drought_func import (
     _get_drought_data, _plot_multi_model_maps, _plot_single_maps)
 
 
-def _get_and_plot_multimodel(cfg, cube, all_drought):
+def _get_and_plot_multimodel(cfg, cube, all_drought, input_filenames):
     """Calculate multi-model mean and compare historic and future."""
     all_drought_mean = {}
     for tstype in ['Historic', 'Future']:
@@ -56,6 +56,7 @@ def _get_and_plot_multimodel(cfg, cube, all_drought):
         _plot_multi_model_maps(cfg, all_drought_mean[tstype],
                                cube.coord('latitude').points,
                                cube.coord('longitude').points,
+                               input_filenames,
                                tstype)
 
 
@@ -137,7 +138,7 @@ def main(cfg):
                 _plot_single_maps(cfg, cube2, drought_show, tstype)
 
     # Calculating multi model mean and plot it
-    _get_and_plot_multimodel(cfg, cube, all_drought)
+    _get_and_plot_multimodel(cfg, cube, all_drought, input_filenames)
 
 
 if __name__ == '__main__':

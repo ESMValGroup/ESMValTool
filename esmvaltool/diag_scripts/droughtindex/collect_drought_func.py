@@ -23,7 +23,10 @@ Configuration options
 
 """
 
+
+import logging
 import os
+from pprint import pformat
 import numpy as np
 import iris
 from iris.analysis import Aggregator
@@ -31,6 +34,11 @@ import cartopy.crs as cart
 import matplotlib.pyplot as plt
 import matplotlib.dates as mda
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename)
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 def _get_data_hlp(axis, data, ilat, ilon):
@@ -66,6 +74,43 @@ def _get_drought_data(cfg, cube):
     return drought_show
 
 
+def cube_to_save_ploted(var, lats, lons, names):
+    """Create cube to prepare plotted data for saving to netCDF."""
+    plot_cube = iris.cube.Cube(var, var_name=names['var_name'],
+                               long_name=names['long_name'],
+                               units=names['units'])
+    plot_cube.add_dim_coord(iris.coords.DimCoord(lats,
+                                                 var_name='lat',
+                                                 long_name='latitude',
+                                                 units='degrees_north'), 0)
+    plot_cube.add_dim_coord(iris.coords.DimCoord(lons,
+                                                 var_name='lon',
+                                                 long_name='longitude',
+                                                 units='degrees_east'), 1)
+
+    return plot_cube
+
+
+def get_provenance_record(ancestor_files, caption, statistics,
+                          domains, plot_type='geo'):
+    """Get Provenance record."""
+    record = {
+        'caption': caption,
+        'statistics': statistics,
+        'domains': domains,
+        'plot_type': plot_type,
+        'themes': ['phys'],
+        'authors': [
+            'weigel_katja',
+        ],
+        'references': [
+            'martin2018grl',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
+
+
 def _make_new_cube(cube):
     """Make a new cube with an extra dimension for result of spell count."""
     new_shape = cube.shape + (4,)
@@ -82,7 +127,8 @@ def _make_new_cube(cube):
     return new_cube
 
 
-def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, tstype):
+def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, input_filenames,
+                           tstype):
     """Prepare plots for multi-model mean."""
     data_dict = {'latitude': lats,
                  'longitude': lons,
@@ -90,61 +136,82 @@ def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, tstype):
                  }
     if tstype == 'Difference':
         # RCP85 Percentage difference
-        data_dict['data'] = all_drought_mean[:, :, 0]
-        data_dict['datasetname'] = 'Percentage'
-        data_dict['drought_char'] = 'Number of Events [%]'
-        data_dict['filename'] = 'Percentage_difference_of_No_of_Events'
-        data_dict['drought_numbers_level'] = np.arange(-100, 110, 10)
-        plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
+        data_dict.update({'data': all_drought_mean[:, :, 0],
+                          'var': 'diffnumber',
+                          'datasetname': 'Percentage',
+                          'drought_char': 'Number of Events',
+                          'unit': '%',
+                          'filename': 'Percentage_difference_of_No_of_Events',
+                          'drought_numbers_level': np.arange(-100, 110, 10)})
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='rainbow')
 
-        data_dict['data'] = all_drought_mean[:, :, 1]
-        data_dict['drought_char'] = 'Duration of Events [%]'
-        data_dict['filename'] = 'Percentage_difference_of_Dur_of_Events'
-        data_dict['drought_numbers_level'] = np.arange(-100, 110, 10)
-        plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
+        data_dict.update({'data': all_drought_mean[:, :, 1],
+                          'var': 'diffduration',
+                          'drought_char': 'Duration of Events',
+                          'filename': 'Percentage_difference_of_Dur_of_Events',
+                          'drought_numbers_level': np.arange(-100, 110, 10)})
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='rainbow')
 
-        data_dict['data'] = all_drought_mean[:, :, 2]
-        data_dict['drought_char'] = 'Severity Index of Events [%]'
-        data_dict['filename'] = 'Percentage_difference_of_Sev_of_Events'
-        data_dict['drought_numbers_level'] = np.arange(-50, 60, 10)
-        plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
+        data_dict.update({'data': all_drought_mean[:, :, 2],
+                          'var': 'diffseverity',
+                          'drought_char': 'Severity Index of Events [%]',
+                          'filename': 'Percentage_difference_of_Sev_of_Events',
+                          'drought_numbers_level': np.arange(-50, 60, 10)})
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='rainbow')
 
-        data_dict['data'] = all_drought_mean[:, :, 3]
-        data_dict['drought_char'] = 'Average ' + cfg['indexname'] + \
-            ' of Events [%]'
-        data_dict['filename'] = 'Percentage_difference_of_Avr_of_Events'
-        data_dict['drought_numbers_level'] = np.arange(-50, 60, 10)
-        plot_map_spei_multi(cfg, data_dict, colormap='rainbow')
+        data_dict.update({'data': all_drought_mean[:, :, 3],
+                          'var': 'diff' + (cfg['indexname']).lower(),
+                          'drought_char': 'Average ' + cfg['indexname'] +
+                                          ' of Events',
+                          'filename': 'Percentage_difference_of_Avr_of_Events',
+                          'drought_numbers_level': np.arange(-50, 60, 10)})
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='rainbow')
     else:
-        data_dict['data'] = all_drought_mean[:, :, 0]
+        data_dict.update({'data': all_drought_mean[:, :, 0],
+                          'var': 'frequency',
+                          'unit': 'year-1',
+                          'drought_char': 'Number of Events per year',
+                          'filename': tstype + '_No_of_Events_per_year',
+                          'drought_numbers_level': np.arange(0, 0.4, 0.05)})
         if tstype == 'Observations':
             data_dict['datasetname'] = 'Mean'
         else:
             data_dict['datasetname'] = 'MultiModelMean'
-        data_dict['drought_char'] = 'Number of Events per year'
-        data_dict['filename'] = tstype + '_No_of_Events_per_year'
-        data_dict['drought_numbers_level'] = np.arange(0, 0.4, 0.05)
-        plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='gnuplot')
 
-        data_dict['data'] = all_drought_mean[:, :, 1]
-        data_dict['drought_char'] = 'Duration of Events [month]'
-        data_dict['filename'] = tstype + '_Dur_of_Events'
-        data_dict['drought_numbers_level'] = np.arange(0, 6, 1)
-        plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
+        data_dict.update({'data': all_drought_mean[:, :, 1],
+                          'var': 'duration',
+                          'unit': 'month',
+                          'drought_char': 'Duration of Events [month]',
+                          'filename': tstype + '_Dur_of_Events',
+                          'drought_numbers_level': np.arange(0, 6, 1)})
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='gnuplot')
 
-        data_dict['data'] = all_drought_mean[:, :, 2]
-        data_dict['drought_char'] = 'Severity Index of Events'
-        data_dict['filename'] = tstype + '_Sev_index_of_Events'
-        data_dict['drought_numbers_level'] = np.arange(0, 9, 1)
-        plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
+        data_dict.update({'data': all_drought_mean[:, :, 2],
+                          'var': 'severity',
+                          'unit': '1',
+                          'drought_char': 'Severity Index of Events',
+                          'filename': tstype + '_Sev_index_of_Events',
+                          'drought_numbers_level': np.arange(0, 9, 1)})
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='gnuplot')
 
-        data_dict['data'] = all_drought_mean[:, :, 3]
-        data_dict['drought_char'] = 'Average ' + cfg['indexname'] + \
-            ' of Events'
-        data_dict['filename'] = tstype + '_Average_' + cfg['indexname'] + \
-            '_of_Events'
-        data_dict['drought_numbers_level'] = np.arange(-2.8, -1.8, 0.2)
-        plot_map_spei_multi(cfg, data_dict, colormap='gnuplot')
+        data_dict.update({'data': all_drought_mean[:, :, 3],
+                          'var': (cfg['indexname']).lower(),
+                          'unit': '1',
+                          'drought_char': 'Average ' + cfg['indexname'] +
+                                          ' of Events',
+                          'filename': tstype + '_Average_' + cfg['indexname'] +
+                                      '_of_Events',
+                          'drought_numbers_level': np.arange(-2.8, -1.8, 0.2)})
+        plot_map_spei_multi(cfg, data_dict, input_filenames,
+                            colormap='gnuplot')
 
 
 def _plot_single_maps(cfg, cube2, drought_show, tstype):
@@ -242,7 +309,7 @@ def get_latlon_index(coords, lim1, lim2):
     return index
 
 
-def plot_map_spei_multi(cfg, data_dict, colormap='jet'):
+def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
     """Plot contour maps for multi model mean."""
     print("data_dict['data']")
     print(data_dict['data'])
@@ -309,12 +376,39 @@ def plot_map_spei_multi(cfg, data_dict, colormap='jet'):
                          '30°N', '60°N', '90°N'])
 
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg[n.PLOT_DIR],
-                             cfg['indexname'] + '_map' +
-                             data_dict['filename'] + '_' +
-                             dataset_name + '.' +
-                             cfg[n.OUTPUT_FILE_TYPE]))
+    # fig.savefig(os.path.join(cfg[n.PLOT_DIR],
+    #                         cfg['indexname'] + '_map' +
+    #                         data_dict['filename'] + '_' +
+    #                         dataset_name + '.' +
+    #                         cfg[n.OUTPUT_FILE_TYPE]))
+    fig.savefig(get_plot_filename(cfg['indexname'] + '_map' +
+                                  data_dict['filename'] + '_' +
+                                  dataset_name, cfg), dpi=300)
     plt.close()
+
+    caption = 'Global average multi-model mean ...' + \
+              'based on' + cfg['indexname'] + '.'
+
+    provenance_record = get_provenance_record(input_filenames, caption,
+                                              ['mean'], ['global'])
+
+    diagnostic_file = get_diagnostic_filename(cfg['indexname'] + '_map' +
+                                              data_dict['filename'] + '_' +
+                                              dataset_name, cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    cubelist = iris.cube.CubeList([cube_to_save_ploted(spei, lats, lons,
+                                                       {'var_name': data_dict['var'],
+                                                        'long_name': data_dict['drought_char'],
+                                                        'units': data_dict['unit']})])
+
+    iris.save(cubelist, target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
