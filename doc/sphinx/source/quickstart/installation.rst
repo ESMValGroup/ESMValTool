@@ -25,7 +25,27 @@ In order to install the Conda package, you will need both conda and Julia
 pre-installed, this is because Julia cannot be installed from conda.
 For a minimal conda installation go to https://conda.io/miniconda.html.
 Installation instructions for Julia can be found on the
-`Julia download page <https://julialang.org/downloads/>`_.
+`Julia download page <https://julialang.org/downloads/>`_. To install and link Julia
+follow these steps:
+
+* First get and extract Julia (here we get Julia 1.0.3):
+
+.. code-block:: bash
+
+    wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+    tar xfz julia-*-linux-x86_64.tar.gz
+
+* Then link the executable to your miniconda ``bin`` where all other executables are:
+
+.. code-block:: bash
+    ln -s $(pwd)/julia-*/bin/julia $(home)/miniconda3/bin/julia
+
+With Julia now installed we can go ahead and install first ``esmvalcore`` (it is needed
+by ESMValTool and its installation in advance of ``esmvaltool`` helps ``conda`` solve the
+environment much faster):
+
+.. code-block:: bash
+    conda install -c conda-forge -c esmvalgroup esmvalcore
 
 Once you have installed the above prerequisites, you can install ESMValTool by running:
 
