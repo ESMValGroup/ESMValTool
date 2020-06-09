@@ -143,7 +143,7 @@ def main(cfg):
                 all_drought_obs = drought_show.data
                 iobs = 1
         print(dataset_name)
-        _plot_single_maps(cfg, cube2, drought_show, 'Historic')
+        _plot_single_maps(cfg, cube2, drought_show, 'Historic', spei_file)
 
     # Calculating multi model mean and plot it
     _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,

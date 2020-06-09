@@ -135,7 +135,7 @@ def main(cfg):
                 tscube = _set_tscube(cfg, cube, time, tstype)
                 drought_show = _get_drought_data(cfg, tscube)
                 all_drought[tstype][:, :, :, iii] = drought_show.data
-                _plot_single_maps(cfg, cube2, drought_show, tstype)
+                _plot_single_maps(cfg, cube2, drought_show, tstype, spei_file)
 
     # Calculating multi model mean and plot it
     _get_and_plot_multimodel(cfg, cube, all_drought, input_filenames)

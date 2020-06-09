@@ -208,38 +208,55 @@ def _plot_multi_model_maps(cfg, all_drought_mean, lats, lons, input_filenames,
                           'drought_char': 'Average ' + cfg['indexname'] +
                                           ' of Events',
                           'filename': tstype + '_Average_' + cfg['indexname'] +
-                                      '_of_Events',
+                                     '_of_Events',
                           'drought_numbers_level': np.arange(-2.8, -1.8, 0.2)})
         plot_map_spei_multi(cfg, data_dict, input_filenames,
                             colormap='gnuplot')
 
 
-def _plot_single_maps(cfg, cube2, drought_show, tstype):
+def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
     """Plot map of drought characteristics for individual models and times."""
     cube2.data = drought_show.data[:, :, 0]
+    name_dict = {'add_to_filename': tstype + '_No_of_Events_per_year',
+                 'name': tstype + ' Number of Events per year',
+                 'var': 'frequency',
+                 'unit': 'year-1',
+                 'drought_char': 'Number of Events per year',
+                 'input_filenames': input_filenames}
     plot_map_spei(cfg, cube2, np.arange(0, 0.4, 0.05),
-                  add_to_filename=tstype + '_No_of_Events_per_year',
-                  name=tstype + ' Number of Events per year')
+                  name_dict)
 
     # plot the average duration of drought events
     cube2.data = drought_show.data[:, :, 1]
-    plot_map_spei(cfg, cube2, np.arange(0, 6, 1),
-                  add_to_filename=tstype + '_Dur_of_Events',
-                  name=tstype + ' Duration of Events(month)')
+    name_dict.update({'add_to_filename': tstype + '_Dur_of_Events',
+                      'name': tstype + ' Duration of Events(month)',
+                      'var': 'duration',
+                      'unit': 'month',
+                      'drought_char': 'Number of Events per year',
+                      'input_filenames': input_filenames})
+    plot_map_spei(cfg, cube2, np.arange(0, 6, 1), name_dict)
 
     # plot the average severity index of drought events
     cube2.data = drought_show.data[:, :, 2]
-    plot_map_spei(cfg, cube2, np.arange(0, 9, 1),
-                  add_to_filename=tstype + '_Sev_index_of_Events',
-                  name=tstype + ' Severity Index of Events')
+    name_dict.update({'add_to_filename': tstype + '_Sev_index_of_Events',
+                      'name': tstype + ' Severity Index of Events',
+                      'var': 'severity',
+                      'unit': '1',
+                      'drought_char': 'Number of Events per year',
+                      'input_filenames': input_filenames})
+    plot_map_spei(cfg, cube2, np.arange(0, 9, 1), name_dict)
 
     # plot the average spei of drought events
     cube2.data = drought_show.data[:, :, 3]
-    plot_map_spei(cfg, cube2, np.arange(-2.8, -1.8, 0.2),
-                  add_to_filename=tstype + '_Avr_' +
-                  cfg['indexname'] + '_of_Events',
-                  name=tstype + ' Average ' + cfg['indexname'] +
-                  ' of Events')
+    name_dict.update({'add_to_filename': tstype + '_Avr_' +
+                                         cfg['indexname'] + '_of_Events',
+                      'name': tstype + ' Average ' + cfg['indexname'] +
+                             ' of Events',
+                      'var': 'severity',
+                      'unit': '1',
+                      'drought_char': 'Number of Events per year',
+                      'input_filenames': input_filenames})
+    plot_map_spei(cfg, cube2, np.arange(-2.8, -1.8, 0.2), name_dict)
 
 
 def runs_of_ones_array_spei(bits, spei):
@@ -386,7 +403,9 @@ def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
                                   dataset_name, cfg), dpi=300)
     plt.close()
 
-    caption = 'Global average multi-model mean ...' + \
+    caption = 'Global average multi-model mean of ' + \
+              data_dict['drought_char'] + \
+              ' [' + data_dict['unit'] + '] ' + \
               'based on' + cfg['indexname'] + '.'
 
     provenance_record = get_provenance_record(input_filenames, caption,
@@ -398,12 +417,12 @@ def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
-    cubelist = iris.cube.CubeList([cube_to_save_ploted(spei, lats, lons,
-                                                       {'var_name': data_dict['var'],
-                                                        'long_name': data_dict['drought_char'],
-                                                        'units': data_dict['unit']})])
+    cubesave = cube_to_save_ploted(spei, lats, lons,
+                                   {'var_name': data_dict['var'],
+                                    'long_name': data_dict['drought_char'],
+                                    'units': data_dict['unit']})
 
-    iris.save(cubelist, target=diagnostic_file)
+    iris.save(cubesave, target=diagnostic_file)
 
     logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                 pformat(provenance_record))
@@ -411,7 +430,8 @@ def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
+# def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
+def plot_map_spei(cfg, cube, levels, name_dict):
     """Plot contour map."""
     print("hello map 1")
     # SPEI array to plot
@@ -472,12 +492,12 @@ def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
     cbar = fig.colorbar(cnplot, ax=axx, shrink=0.6, orientation='horizontal')
 
     # Add colorbar title string
-    cbar.set_label(name)
+    cbar.set_label(name_dict['name'])
 
     # Set labels and title to each plot
     axx.set_xlabel('Longitude')
     axx.set_ylabel('Latitude')
-    axx.set_title(dataset_name + ' ' + name)
+    axx.set_title(dataset_name + ' ' + name_dict['name'])
 
     # Sets number and distance of x ticks
     axx.set_xticks(np.linspace(-180, 180, 7))
@@ -492,12 +512,44 @@ def plot_map_spei(cfg, cube, levels, add_to_filename='', name=''):
                          '30°N', '60°N', '90°N'])
 
     fig.tight_layout()
-    fig.savefig(os.path.join(cfg[n.PLOT_DIR],
-                             cfg['indexname'] + '_map' +
-                             add_to_filename + '_' +
-                             dataset_name + '.' +
-                             cfg[n.OUTPUT_FILE_TYPE]))
+    # fig.savefig(os.path.join(cfg[n.PLOT_DIR],
+    #                          cfg['indexname'] + '_map' +
+    #                          add_to_filename + '_' +
+    #                          dataset_name + '.' +
+    #                          cfg[n.OUTPUT_FILE_TYPE]))
+
+    fig.savefig(get_plot_filename(cfg['indexname'] + '_map' +
+                                  name_dict['add_to_filename'] + '_' +
+                                  dataset_name, cfg), dpi=300)
     plt.close()
+
+    caption = 'Global average multi-model mean of ' + \
+              name_dict['drought_char'] + \
+              ' [' + name_dict['unit'] + '] ' + \
+              'based on' + cfg['indexname'] + '.'
+
+    provenance_record = get_provenance_record(name_dict['input_filenames'],
+                                              caption,
+                                              ['mean'], ['global'])
+
+    diagnostic_file = get_diagnostic_filename(cfg['indexname'] + '_map' +
+                                              name_dict['add_to_filename'] +
+                                              '_' +
+                                              dataset_name, cfg)
+
+    logger.info("Saving analysis results to %s", diagnostic_file)
+
+    cubesave = cube_to_save_ploted(spei, lats, lons,
+                                   {'var_name': name_dict['var'],
+                                    'long_name': name_dict['drought_char'],
+                                    'units': name_dict['unit']})
+
+    iris.save(cubesave, target=diagnostic_file)
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def plot_time_series_spei(cfg, cube, add_to_filename=''):
