@@ -20,7 +20,8 @@ import numpy as np
 from esmvaltool.diag_scripts.shared import (run_diagnostic,
                                             select_metadata,
                                             get_diagnostic_filename,
-                                            ProvenanceLogger)
+                                            ProvenanceLogger,
+                                            get_plot_filename)
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -259,6 +260,8 @@ def save_scenario_tables(scenario, tables, cfg, provenance):
     tables.to_csv(output_file)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance)
+
+
 def make_plot(cfg):
     """Reproduce figure 5 from the paper."""
     # note that quantile is applied twice!
