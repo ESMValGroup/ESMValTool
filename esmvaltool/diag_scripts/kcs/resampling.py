@@ -74,7 +74,9 @@ def get_season_means_per_segment(dataset, period, step=5):
     """
     segments = []
     for year in range(*period, step):
-        segments.append(dataset.sel(time=slice(str(year), str(year + step -1))))
+        segments.append(
+            dataset.sel(time=slice(str(year), str(year + step - 1)))
+        )
     segmented_dataset = xr.concat(segments, dim='segment')
     season_means = segmented_dataset.groupby('time.season').mean()
     return season_means
@@ -186,9 +188,8 @@ def select_percentile_bounds(top1000, info, period):
 
 def determine_penalties(overlap):
     """Determine penalties dependent on the number of overlaps."""
-    return np.piecewise(overlap,
-                        condlist=[overlap < 3, overlap == 3, overlap == 4, overlap > 4],
-                        funclist=[0, 1, 5, 100])
+    conditions = [overlap < 3, overlap == 3, overlap == 4, overlap > 4]
+    return np.piecewise(overlap, condlist=conditions, funclist=[0, 1, 5, 100])
 
 
 def select_final_subset(combinations, n_sample=8):
