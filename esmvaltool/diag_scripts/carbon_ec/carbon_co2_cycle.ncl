@@ -131,16 +131,15 @@ begin
 
     ; Save input data with one year leap
     Xdata(imod, :dimsizes(A0)-2) = tofloat(A0(1:))
-    Ydata(imod, :dimsizes(A1)-1) = tofloat(A0)
+    Ydata(imod, :dimsizes(A1)-1) = tofloat(A1)
 
     ; Regression between [CO2] Amplitude (x) and [CO2] ann mean (Y)
     rc = regline_stats(Xdata(imod, :), Ydata(imod, :))
-print(rc)
     rcc(imod, 1) = rc
     rcc(imod, 0) = rc@b(0)
     stdrc(imod, :) = rc@stderr
     Yfitd(imod, :dimsizes(rc@Yest)-1) = rc@Yest
-break
+
     delete([/rc,  A1, A0/])
   end do     ; model loop
 
@@ -162,9 +161,10 @@ break
 
   delete(beta)
   delete(tmpm)
-  nfit = fspan(0, 50, 50)
 
   ; Calculate constraint on BETA_GPP and
+  nfit = fspan(0, 50, 50)
+
   ; amplitude trends
   minx = min(rcc(idat, 1))-1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
   maxx = max(rcc(idat, 1))+1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
@@ -193,7 +193,7 @@ break
   ; this is for plotting the regression line with confidence intervalls
   yfit_bco2_std = PDF@sigma
 
-  yBETA = new((/2, dim_MOD+2/), float)
+  yBETA = new((/2, dim_MOD+1/), float)
   yBETA(0, 0)  = avg(betaGPP(0, :))
   yBETA(0, 1)  = beta_mco2
   yBETA(0, 2:) = betaGPP(0, :)
@@ -201,7 +201,7 @@ break
   yBETA(1, 1)  = beta_eco2
   yBETA(1, 2:) = betaGPP(1, :)
 
-  xCO2 =  new((/2, dim_MOD+2/), float)
+  xCO2 =  new((/2, dim_MOD+1/), float)
   xCO2(0, 1)  = rcc(iref, 1)
   xCO2(0, 2:) = rcc(idat, 1)
   xCO2(1, 1)  = stdrc(iref, 1)
@@ -278,14 +278,14 @@ break
   tmpb = rcc(:dim_MOD-1, 1)
   tmpb_orig = rcc(:, 1)
 
-  rcc(:dim_MOD-1, 1) = tmpb(::-1)
+  rcc(:, 1) = tmpb(::-1)
   rcc@info = info0
-  tmpm = datasetnames(:dim_MOD-1)
-  datasetnames(:dim_MOD-1) = tmpm(::-1)
+  tmpm = datasetnames
+  datasetnames = tmpm(::-1)
 
   YStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
 
-  data_arr = new((/dimsizes(betaGPP), 1/), float)
+  data_arr = new((/dim_MOD, 1/), float)
   data_arr(:, 0) = rcc(:, 1)
   data_arr!0 = "datasets"
   data_arr&datasets(0) = datasetnames
@@ -301,18 +301,18 @@ break
   frame(wks)
 
   datasetnames = tmp_orig
-  delete([/plot, XStg, tmpm, tmpb, tmp_orig/])
+  delete([/plot, tmpm, tmpb, tmp_orig, data_arr/])
 
-  tmpm = datasetnames(:dim_MOD-1)
+  ; Create Plots 2:
+  ; ----------------------------------------------------------
+  tmpm = datasetnames(idat)
   delete(datasetnames)
-  datasetnames = new(dim_MOD+2, typeof(tmpm))
+  datasetnames = new(dim_MOD+1, typeof(tmpm))
   datasetnames(0) = "OBS"
   datasetnames(1) = "constraint mean"
   datasetnames(2:) = tmpm
   delete(tmpm)
 
-  ; Create Plots 2:
-  ; ----------------------------------------------------------
   MainStg = ""
   XStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
   YStg    = "GPP(2xCO~B~2~N~)/GPP(1xCO~B~2~N~)"
@@ -348,11 +348,11 @@ break
   add_prediction_error(wks, plot, peres, xin, yin)
   delete([/xin, yin/])
 
-  if (rcc(dim_MOD, 1).ne.0) then
-      xin = (/rcc(dim_MOD, 1) + stdrc(dim_MOD, 1), \
-             rcc(dim_MOD, 1) + stdrc(dim_MOD, 1), \
-             rcc(dim_MOD, 1) - stdrc(dim_MOD, 1), \
-             rcc(dim_MOD, 1) - stdrc(dim_MOD, 1)/)
+  if (rcc(iref, 1).ne.0) then
+      xin = (/rcc(iref, 1) + stdrc(iref, 1), \
+             rcc(iref, 1) + stdrc(iref, 1), \
+             rcc(iref, 1) - stdrc(iref, 1), \
+             rcc(iref, 1) - stdrc(iref, 1)/)
       yin = (/500, -500, -500, 500/)
       add_prediction_error(wks, plot, False, xin, yin)
       delete([/xin, yin/])
@@ -374,10 +374,11 @@ break
 
   ; add xy error bars
   eres = True
-  eres@gsLineColor = colors
+  eres@gsLineColor = colors(idat)
   add_errorbar(wks, plot, eres, xCO2(:, 2:), yBETA(:, 2:))
   draw(plot)
   frame(wks)
+  delete(plot)
 
   ; Create Plots 3:
   ; -----------------------------------------------
@@ -410,7 +411,7 @@ break
   pres@tiXAxisString      = XStg
   pres@tiYAxisString      = "Probability Density"
   pres@vpWidthF           = 0.4
-  if (rcc(dim_MOD, 1).eq.0) then
+  if (rcc(iref, 1).eq.0) then
     pres@xyLineColors   = "black"
     pres@xyDashPatterns = 2
     pres@trYMinF        = 0
@@ -441,7 +442,7 @@ break
                         + diag_script_info@bc_xmin_year + ".nc"
 
     ; Attach attributes to the results
-    CO2var = new((/2, dim_MOD+2/), float)
+    CO2var = new((/2, dim_MOD+1/), float)
     CO2var(0, :) = xCO2(0, :)
     CO2var(1, :) = xCO2(1, :)
     CO2var!0        = "case"

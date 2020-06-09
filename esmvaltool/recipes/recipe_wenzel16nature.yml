@@ -31,26 +31,22 @@ preprocessors:
       
   highlat_co2:
     custom_order: true
-    extract_region: *extract_region
-    area_statistics:
-      operator: mean
+    extract_point: &extract_point
+      latitude: 71.322998046875
+      longitude: 203.3885955810546875
+      scheme: nearest
     annual_statistics:
       operator: mean
       
   highlat_amp:
     custom_order: true
-    extract_region: *extract_region
-    area_statistics:
-      operator: mean
+    extract_point: *extract_point
     amplitude:
       coords: year
 
   BRW_co2:
     custom_order: true
-    extract_point: &extract_point
-      latitude: 71
-      longitude: 203
-      scheme: nearest
+    extract_point: *extract_point
     annual_statistics:
       operator: mean
       

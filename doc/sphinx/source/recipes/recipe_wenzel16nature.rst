@@ -6,7 +6,7 @@ Projected land photosynthesis constrained by changes in the seasonal cycle of at
 Overview
 --------
 
-Figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel16nature.yml. Gross primary productivity (gpp) and atmospheric CO2 (co2) at the surface are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a set of routines to diagnose the long-term carbon cycle - concentration feedback parameter (beta) from an ensemble of CMIP5 models and the observable change in the [CO2] seasonal cycle amplitude due to rising atmospheric [CO2] levels. As a key figure of this recipe, the diagnosed values from the models beta vs. he change in [CO2] amplitude are compared in a scatter plot constituting an emergent constraint.
+Figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel16nature.yml. Gross primary productivity (gpp) and atmospheric CO2 concentrations at the surface  (co2s) are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a set of routines to diagnose the long-term carbon cycle - concentration feedback parameter (beta) from an ensemble of CMIP5 models and the observable change in the [CO2] seasonal cycle amplitude due to rising atmospheric CO2 levels. As a key figure of this recipe, the diagnosed values from the models beta vs. the change in CO2 amplitude are compared in a scatter plot constituting an emergent constraint.
 
 .. _`Wenzel et al. (2016)`: https://www.nature.com/articles/nature19772
 
@@ -57,7 +57,7 @@ User setting files (cfg files) are stored in nml/cfg_carbon/
 Variables
 ---------
 
-* co2 (atmos, monthly mean, plev longitude latitude time)
+* co2s (atmos, monthly mean, plev longitude latitude time)
 * gpp (land, monthly mean, longitude latitude time)
 
 
@@ -76,23 +76,21 @@ References
 Example plots
 -------------
 
-.. figure:: /recipes/figures/wenzel14jgr/tas_Global_CMIP5_1pctCO2_anom__1-1999.png
+.. figure:: /recipes/figures/wenzel16nature/
    :width: 10 cm 
    :align: center
    
-   XXXX Time series of tropical (30S to 30N) mean near surface temperature (tas) change between year 30 and year 110 for the CMIP5 models simulated with prescribed CO2 (1%/yr CO2 increase) coupled simulation (1pctCO2).
-   
-   
-.. figure:: /recipes/figures/wenzel14jgr/corr_tas-nbp_anom_1960-2005.png
+   XXXX Comparison of CO2 seasonal amplitudes for CMIP5 historical simulations and observations showing Annual mean atmospheric CO2 versus the amplitudes of the CO2 seasonal cycle at Pt. Barrow, Alaska 
+      
+.. figure:: /recipes/figures/wenzel16nature/
    :width: 10 cm 
    :align: center
    
-   XXXX Correlations between the interannual variability of global co2flux (nbp+fgco2) and tropical temperature for the individual CMIP5 models using esmHistorical simulations, and for observations.
+   XXXX Histogram showing the gradient of the linear correlations for the comparison of CO2 seasonal amplitudes for CMIP5 historical for at Pt. Barrow, Alaska 
 
-
-.. figure:: /recipes/figures/wenzel14jgr/constr_tas-nbp_30-1960.000001.png
+.. figure:: /recipes/figures/wenzel16nature/
    :scale: 50 %
    :align: center
 
-   XXXX Carbon cycle-climate feedback of tropical land carbon vs. the sensitivity of co2flux to interannual temperature variability in the tropics (30S to 30N). The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
+   XXXX Emergent constraints on the relative increase of large-scale GPP for a doubling of CO2, showing the correlations between the sensitivity of the CO2 amplitude to annual mean CO2 increases at Pt. Barrow (x axis) and the high-latitude (60 N - 90 N) CO2 fertilization on GPP at 2 x CO2. The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
       
