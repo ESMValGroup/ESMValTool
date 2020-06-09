@@ -6,8 +6,8 @@ documentation:
     This recipe reproduces the basic steps described in Lenderink 2014.
     We just do one scenario at a time; maybe extend later.
 
-  references:   # TODO add this as a bibtex file
-    - Lenderink 2014, https://iopscience.iop.org/article/10.1088/1748-9326/9/11/115008/meta
+  references:
+    - lenderink14erl
 
   authors:
     # TODO: Add Evert to config_developers
@@ -82,7 +82,7 @@ diagnostics:
     scripts:
       resample:
         script: kcs/resampling.py
-        control_period: [1980, 2010]
+        control_period: [1981, 2010]
         target_model: ACCESS1-0
         scenarios:  # see Table 1 of the supplementary material
           Gl:
