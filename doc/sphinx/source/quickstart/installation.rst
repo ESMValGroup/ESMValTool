@@ -38,6 +38,7 @@ follow these steps:
 * Then link the executable to your miniconda ``bin`` where all other executables are:
 
 .. code-block:: bash
+
     ln -s $(pwd)/julia-*/bin/julia $(home)/miniconda3/bin/julia
 
 With Julia now installed we can go ahead and install first ``esmvalcore`` (it is needed
@@ -45,6 +46,7 @@ by ESMValTool and its installation in advance of ``esmvaltool`` helps ``conda`` 
 environment much faster):
 
 .. code-block:: bash
+
     conda install -c conda-forge -c esmvalgroup esmvalcore
 
 Once you have installed the above prerequisites, you can install ESMValTool by running:
