@@ -42,6 +42,44 @@ sm:
     vmin: 0.
     vmax: 0.6
 
+sm1m:
+  pearsonr:
+    title: pearsonr
+    vmin: -1.
+    vmax: 1.
+    cmap: BrBG
+  ubrmsd:
+    title: ubrmsd
+    vmin: 0.
+    vmax: .1
+    cmap: YlGn
+  rmsd:
+    title: rmsd
+    vmin: 0.
+    vmax: .4
+    cmap: YlGn
+  absdiff:
+    title: absdiff
+    vmin: -.5
+    vmax: .5
+    cmap: BrBG
+  reldiff:
+    title: reldiff
+    cmap: BrBG
+    vmin: -150
+    vmax: 150
+  theilsenmk:
+    title: theilsen
+    cmap: BrBG
+    vmin: -0.001
+    vmax: 0.001
+  timemean:
+    title: timemean
+    cmap: YlGn
+    vmin: 0.
+    vmax: 0.6
+
+
 lai:
   pearsonr:
     title: pearsonr
