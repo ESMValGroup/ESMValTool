@@ -95,10 +95,12 @@ diagnostics:
       pr:
         <<: *target_settings
       tas_cmip: &cmip_settings
+        short_name: tas
         preprocessor: preproc2
       pr_cmip:
-        <<: *cmip_settings
-scripts:
+        short_name: pr
+        preprocessor: preproc2
+    scripts:
       resample:
         script: kcs/resampling.py
         control_period: [1981, 2010]
