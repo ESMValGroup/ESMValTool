@@ -10,7 +10,8 @@ where they match the CMIP Delta T for each scenario.
 according to all datasets, and indicate the scenario's.
 
 """
-
+import logging
+from pathlib import Path
 from itertools import product
 
 import matplotlib.pyplot as plt
@@ -19,7 +20,25 @@ import xarray as xr
 
 from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
                                             get_plot_filename, run_diagnostic,
-                                            select_metadata)
+                                            select_metadata, ProvenanceLogger)
+
+logger = logging.getLogger(Path(__file__).name)
+
+
+def create_provenance_record(ancestor_files):
+    """Create a provenance record."""
+    record = {
+        'caption':
+        "Resampling of local climate model.",
+        'domains': ['global'],
+        'authors': [
+            'kalverla_peter',
+            'alidoost_sarah',
+            # 'rol_evert',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
 
 
 def mean_of_target_models(metadata, model):
@@ -27,7 +46,8 @@ def mean_of_target_models(metadata, model):
     target_model_datasets = select_metadata(metadata, dataset=model)
     files = [tmd['filename'] for tmd in target_model_datasets]
     datasets = xr.open_mfdataset(files, combine='nested', concat_dim='ens')
-    return datasets.tas.mean(dim='ens')
+    provenance = create_provenance_record(files)
+    return datasets.tas.mean(dim='ens'), provenance
 
 
 def get_cmip_dt(metadata, year, percentile):
@@ -49,7 +69,7 @@ def get_resampling_period(target_dts, cmip_dt):
     time_idx = abs(target_dts - cmip_dt).argmin(dim='time').values
     year = target_dts.isel(time=time_idx).year.values.astype(int)
     target_dt = target_dts.isel(time=time_idx).values.astype(float)
-    return [year-14, year+15], target_dt
+    return [year - 14, year + 15], target_dt
 
 
 def make_plot(metadata, scenario, cfg):
@@ -84,20 +104,24 @@ def make_plot(metadata, scenario, cfg):
     fig.savefig(filename, bbox_inches='tight', dpi=300)
 
 
-def save(output, cfg):
+def save(output, cfg, provenance):
     """Save the output as csv file."""
     scenarios = pd.DataFrame(output)
     filename = get_diagnostic_filename('scenarios', cfg, extension='csv')
     scenarios.to_csv(filename)
     print(scenarios)
     print(f"Output written to {filename}")
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance)
 
 
 def main(cfg):
     """Return scenarios tables."""
     # A list of dictionaries describing all datasets passed on to the recipe
     metadata = cfg['input_data'].values()
-    target_dts = mean_of_target_models(metadata, cfg['target_model'])
+    target_dts, provenance = mean_of_target_models(
+        metadata, cfg['target_model']
+    )
 
     # Define the different scenario's
     scenarios = []
@@ -118,12 +142,10 @@ def main(cfg):
         }
         scenarios.append(scenario)
 
-    save(scenarios, cfg)
+    save(scenarios, cfg, provenance)
 
     if cfg['write_plots']:
         make_plot(metadata, scenarios, cfg)
-
-    # TODO add provenance
 
 
 if __name__ == '__main__':

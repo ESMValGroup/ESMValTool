@@ -37,12 +37,6 @@ def create_provenance_record(ancestor_files):
             'alidoost_sarah',
             # 'rol_evert',
         ],
-        'projects': [
-            'ewatercycle',
-        ],
-        'references': [
-            'esmval',
-        ],
         'ancestors': ancestor_files,
     }
     return record
@@ -55,6 +49,7 @@ def get_input_data(cfg):
         dataset_dicts, dataset=cfg['target_model']
     )
     dataset = []
+    ancestor_files = []
     for short_name in "pr", "tas":
         var = select_metadata(target_model_metadata, variable_group=short_name)
         files = [metadata['filename'] for metadata in var]
@@ -62,7 +57,8 @@ def get_input_data(cfg):
             xr.open_mfdataset(files, concat_dim='ensemble_member',
                               combine='nested')
         )
-        provenance = create_provenance_record(files)
+        ancestor_files.extend(files)
+    provenance = create_provenance_record(ancestor_files)
     return xr.merge(dataset), provenance
 
 
@@ -188,8 +184,10 @@ def select_percentile_bounds(top1000, info, period):
 
 def determine_penalties(overlap):
     """Determine penalties dependent on the number of overlaps."""
-    conditions = [overlap < 3, overlap == 3, overlap == 4, overlap > 4]
-    return np.piecewise(overlap, condlist=conditions, funclist=[0, 1, 5, 100])
+    return np.piecewise(
+        overlap,
+        condlist=[overlap < 3, overlap == 3, overlap == 4, overlap > 4],
+        funclist=[0, 1, 5, 100])
 
 
 def select_final_subset(combinations, n_sample=8):
