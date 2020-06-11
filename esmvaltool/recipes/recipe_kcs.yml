@@ -16,13 +16,18 @@ documentation:
     - alidoost_sarah
 
 
-
 datasets:
   # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}   # Calendar bug: https://github.com/ESMValGroup/ESMValCore/issues/669
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
-  # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
-  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}      # No-leap calendar!
+  - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+target_datasets: &target_datasets
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}      # No-leap calendar!
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r2i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r3i1p1, start_year: 1961, end_year: 2099}
+
 
 preprocessors:
   preproc1:
@@ -54,7 +59,7 @@ preprocessors:
       latitude: 51.21
       scheme: linear
   preproc3: &cmip_control
-    <<: *&extract_NL
+    <<: *extract_NL
     extract_time:
       <<: *reference
 
@@ -69,12 +74,13 @@ diagnostics:
     variables:
       tas:
         preprocessor: preproc1
+        additional_datasets: *target_datasets
     scripts:
       scenarios_table:
         script: kcs/scenarios_table.py
         scenario_years: [2050]  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
         scenario_percentiles: [Mean, Median]
-        target_model: ACCESS1-0
+        target_model: CCSM4
 
   resampling:
     description: >
@@ -83,15 +89,16 @@ diagnostics:
       - Determine the 1000 best ...
       - Determine the final best
     variables:
-      tas:
+      tas: &variable_settings
         preprocessor: preproc2
+        additional_datasets: *target_datasets
       pr:
-        preprocessor: preproc2
+        <<: *variable_settings
     scripts:
       resample:
         script: kcs/resampling.py
         control_period: [1981, 2010]
-        target_model: ACCESS1-0
+        target_model: CCSM4
         scenarios:  # see Table 1 of the supplementary material
           Gl:
             description: "Gematigd / low changes in seasonal temperature & precipitation"
