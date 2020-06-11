@@ -30,7 +30,7 @@ target_datasets: &target_datasets
 
 
 preprocessors:
-  preproc1:
+  preprocessor_global:
     custom_order: true
     area_statistics:
       operator: mean
@@ -53,36 +53,31 @@ preprocessors:
     regrid_time:
       # try to get homogeneous time arrays back; calendar issues persist.
       frequency: yr
-  preproc2: &extract_NL
+  preprocessor_local: &extract_NL
     extract_point:
       longitude: 6.25
       latitude: 51.21
       scheme: linear
-  preproc3: &cmip_control
-    <<: *extract_NL
-    extract_time:
-      <<: *reference
-
 
 
 diagnostics:
-  scenarios_table:
+  global_matching:
     description: >
       - Make a plot of the global mean temperature change according to all datasets (defined above)
       - Get the global mean temperature change for specified years and specified percentiles (Delta T). These define our scenarios.
       - Select the 30-year period from the target model (all ensemble members) where they match the Delta T for each scenario.
     variables:
       tas:
-        preprocessor: preproc1
+        preprocessor: preprocessor_global
         additional_datasets: *target_datasets
     scripts:
-      scenarios_table:
-        script: kcs/scenarios_table.py
+      global_matching:
+        script: kcs/global_matching.py
         scenario_years: [2050]  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
         scenario_percentiles: [Mean, Median]
         target_model: CCSM4
 
-  resampling:
+  local_resampling:
     description: >
       - Divide the 30-year dataset into 5-year blocks
       - Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
@@ -96,13 +91,13 @@ diagnostics:
         <<: *target_settings
       tas_cmip: &cmip_settings
         short_name: tas
-        preprocessor: preproc2
+        preprocessor: preprocessor_local
       pr_cmip:
         short_name: pr
-        preprocessor: preproc2
+        preprocessor: preprocessor_local
     scripts:
       resample:
-        script: kcs/resampling.py
+        script: kcs/local_resampling.py
         control_period: [1981, 2010]
         target_model: CCSM4
         scenarios:  # see Table 1 of the supplementary material
