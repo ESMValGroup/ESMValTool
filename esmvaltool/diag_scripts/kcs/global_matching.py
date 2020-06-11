@@ -75,8 +75,7 @@ def make_plot(metadata, scenario, cfg):
             color = 'lightgrey'
             linewidth = 2
         ds = xr.open_dataset(info_dict['filename'])
-        print(ds.time)
-        ds.tas.plot(ax=ax, label=info_dict['alias'], c=color, lw=linewidth)
+        ax.plot(ds.time.year, ds.tas.values, label=info_dict['alias'], c=color, lw=linewidth)
 
     # Save figure
     ax.legend()

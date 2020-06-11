@@ -77,39 +77,39 @@ diagnostics:
         scenario_percentiles: [Mean, Median]
         target_model: CCSM4
 
-  local_resampling:
-    description: >
-      - Divide the 30-year dataset into 5-year blocks
-      - Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
-      - Determine the 1000 best ...
-      - Determine the final best
-    variables:
-      tas: &target_settings
-        preprocessor: preproc2
-        additional_datasets: *target_datasets
-      pr:
-        <<: *target_settings
-      tas_cmip: &cmip_settings
-        short_name: tas
-        preprocessor: preprocessor_local
-      pr_cmip:
-        short_name: pr
-        preprocessor: preprocessor_local
-    scripts:
-      resample:
-        script: kcs/local_resampling.py
-        control_period: [1981, 2010]
-        target_model: CCSM4
-        scenarios:  # see Table 1 of the supplementary material
-          Gl:
-            description: "Gematigd / low changes in seasonal temperature & precipitation"
-            global_dT: 1.0  # This is an approximate number that comes from the first diagnostic (not used)
-            scenario_year: 2050  # Middle of century/MOC
-            resampling_period: [2021, 2050]  # This also comes from the first diagnostic
-            dpr_winter: 4  # 4% per global_dT (8*dT for the "h" scenarios)
-            pr_summer_control: [25, 55]
-            pr_summer_future: [45, 75]
-            tas_winter_control: [50, 80]
-            tas_winter_future: [20, 50]
-            tas_summer_control: [0, 100]
-            tas_summer_future: [0, 50]
+  # local_resampling:
+  #   description: >
+  #     - Divide the 30-year dataset into 5-year blocks
+  #     - Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
+  #     - Determine the 1000 best ...
+  #     - Determine the final best
+  #   variables:
+  #     tas: &target_settings
+  #       preprocessor: preproc2
+  #       additional_datasets: *target_datasets
+  #     pr:
+  #       <<: *target_settings
+  #     tas_cmip: &cmip_settings
+  #       short_name: tas
+  #       preprocessor: preprocessor_local
+  #     pr_cmip:
+  #       short_name: pr
+  #       preprocessor: preprocessor_local
+  #   scripts:
+  #     resample:
+  #       script: kcs/local_resampling.py
+  #       control_period: [1981, 2010]
+  #       target_model: CCSM4
+  #       scenarios:  # see Table 1 of the supplementary material
+  #         Gl:
+  #           description: "Gematigd / low changes in seasonal temperature & precipitation"
+  #           global_dT: 1.0  # This is an approximate number that comes from the first diagnostic (not used)
+  #           scenario_year: 2050  # Middle of century/MOC
+  #           resampling_period: [2021, 2050]  # This also comes from the first diagnostic
+  #           dpr_winter: 4  # 4% per global_dT (8*dT for the "h" scenarios)
+  #           pr_summer_control: [25, 55]
+  #           pr_summer_future: [45, 75]
+  #           tas_winter_control: [50, 80]
+  #           tas_winter_future: [20, 50]
+  #           tas_summer_control: [0, 100]
+  #           tas_summer_future: [0, 50]
