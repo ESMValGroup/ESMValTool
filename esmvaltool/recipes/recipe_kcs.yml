@@ -89,12 +89,16 @@ diagnostics:
       - Determine the 1000 best ...
       - Determine the final best
     variables:
-      tas: &variable_settings
+      tas: &target_settings
         preprocessor: preproc2
         additional_datasets: *target_datasets
       pr:
-        <<: *variable_settings
-    scripts:
+        <<: *target_settings
+      tas_cmip: &cmip_settings
+        preprocessor: preproc2
+      pr_cmip:
+        <<: *cmip_settings
+scripts:
       resample:
         script: kcs/resampling.py
         control_period: [1981, 2010]
