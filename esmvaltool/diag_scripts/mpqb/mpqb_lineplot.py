@@ -26,7 +26,7 @@ dataset_plotnames = {
   'cds-era5-monthly' : 'ERA5',
   'MERRA2' : 'MERRA-2',
   'cds-satellite-lai-fapar' : 'SPOT-VGT',
-  'CDS-SATELLITE-ALBEDO' : 'SPOT-VGT',    
+  'CDS-SATELLITE-ALBEDO' : 'SPOT-VGT',
 }
 
 
@@ -37,6 +37,7 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
+
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
 
@@ -46,7 +47,7 @@ def main(cfg):
 
     # In order to get the right line colors for MPQB soil moisture
     # here we put ERA-Interim-Land at the end of the dictionary if
-    # it is included. 
+    # it is included.
     if 'ERA-Interim-Land' in grouped_input_data.keys():
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
@@ -72,7 +73,13 @@ def main(cfg):
         ax.xaxis.set_major_locator(years)
         ax.xaxis.set_major_formatter(years_fmt)
         ax.grid(True, which='major', axis='x')
-        filename = get_plot_filename('lineplot', cfg)
+
+        # Get the first key
+        firstkey = list(cfg['input_data'].keys())[0]
+        metadict = cfg['input_data'][firstkey]
+        baseplotname = f"lineplot_{metadict['variable_group']}_{metadict['start_year']}-{metadict['end_year']}"
+
+        filename = get_plot_filename(baseplotname, cfg)
         logger.info("Saving as %s", filename)
         fig.savefig(filename)
         plt.close(fig)

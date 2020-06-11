@@ -73,7 +73,11 @@ def main(cfg):
                 logger.error("Metric %s is not defined. ", metricname)
                 continue
             # Plot the results (if configured to plot)
-            plot_file = get_plot_filename(metricname + '_' + dataset, cfg)
+            firstkey = list(cfg['input_data'].keys())[0]
+            metadict = cfg['input_data'][firstkey]
+            baseplotname = f"{metricname}_{metadict['variable_group']}_{metadict['start_year']}-{metadict['end_year']}"
+
+            plot_file = get_plot_filename(baseplotname, cfg)
             if cfg['write_plots']:
                 metrics_plot_dictionary = get_ecv_plot_config(
                     dataset_cfg[0]['short_name'])
