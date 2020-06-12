@@ -122,7 +122,7 @@ def make_plot(metadata, scenarios, cfg):
     ax.set_ylabel(r'Global mean $\Delta T$ (K) w.r.t. reference period')
 
     # Save figure
-    filename = get_plot_filename('temperature_change_pdf', cfg)
+    filename = get_plot_filename('global_matching', cfg)
     fig.savefig(filename, bbox_inches='tight', dpi=300)
 
 
