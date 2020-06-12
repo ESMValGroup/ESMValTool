@@ -16,14 +16,17 @@ documentation:
     - alidoost_sarah
 
 
-cmip5: &cmip5
+cmip5: &cmip5 #TODO: run the second diagnostics with this selection
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
-  - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
   - {dataset: CanESM2, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p1", start_year: 1961, end_year: 2099}
-  - {dataset: EC-EARTH, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: [r1i1p1, r8i1p1], start_year: 1961, end_year: 2099}
+
   - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: "r(1:10)i1p1", start_year: 1961, end_year: 2099}
+
   - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
@@ -31,6 +34,7 @@ cmip5: &cmip5
 target: &target
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
 
 
 preprocessors:
@@ -45,7 +49,7 @@ preprocessors:
       frequency: yr
     anomalies:
       period: full
-      reference: &reference
+      reference:
         start_year: 1981
         start_month: 1
         start_day: 1
