@@ -85,6 +85,26 @@ Diagnostics:
 Example output
 --------------
 
+The diagnostic :code:`global matching` produces a scenarios table like the one below
+
+.. code-block:: python
+
+         year percentile   cmip_dt period_bounds           target_dt  pattern_scaling_factor
+      0  2050       Mean  1.494123  [2055, 2084]   1.496281513828891                0.998557
+      1  2050     Median  1.434082  [2051, 2080]  1.4258415170339225                1.005779
+      2  2085       Mean  1.916866  [2085, 2114]   1.877538437763913                1.020946
+      3  2085     Median  1.383674  [2049, 2078]  1.3914389868132169                0.994419
+
+which is printed to the log file and also saved as a csv-file :code:`scenarios.csv`.
+Additionally, a figure is created showing the CMIP spread in global temperature change,
+AND highlighting the selected steering parameters and resampling periods:
+
+.. _fig_kcs_global_matching:
+.. figure::  /recipes/figures/kcs/global_matching.png
+   :align:   center
+
+
+.. TODO Add second diagnostic output
 
 
 
