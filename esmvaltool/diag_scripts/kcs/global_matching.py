@@ -72,33 +72,56 @@ def get_resampling_period(target_dts, cmip_dt):
     return [year - 14, year + 15], target_dt
 
 
-def make_plot(metadata, scenario, cfg):
+def make_plot(metadata, scenarios, cfg):
     """Make figure 3, left graph.
 
     Multimodel values as line, reference value in black square,
     steering variables in dark dots.
     """
     fig, ax = plt.subplots()
+    cmip_legend_label = 'CMIP members'
+    target_legend_label = cfg['target_model']
+    dotlabel = 'Scenario $\Delta T_{CMIP}$'
+    barlabel = 'Selected resamping period'
 
-    # Loop over all datasets
-    for info_dict in metadata:
-
-        # Open file and add timeseries to figure
-        linewidth = 0.5
-        if 'rcp45' in info_dict['alias']:
-            color = 'red'
-        elif 'rcp60'in info_dict['alias']:
-            color = 'blue'
-        elif 'rcp85'in info_dict['alias']:
-            color = 'green'
+    for member in select_metadata(metadata, variable_group='tas_cmip'):
+        filename = member['filename']
+        dataset = xr.open_dataset(filename)
+        if not 'MultiModel' in filename:
+            ax.plot(dataset.time.dt.year, dataset.tas.values,
+                    c='lightgrey', lw=.5, label=cmip_legend_label)
+            cmip_legend_label = "_nolegend_"  # prevent repeated labels
         else:
-            color = 'lightgrey'
-            linewidth = 2
-        ds = xr.open_dataset(info_dict['filename'])
-        ax.plot(ds.time.year, ds.tas.values, label=info_dict['alias'], c=color, lw=linewidth)
+            statistic = 'CMIP ' + Path(filename).stem.split('_')[0][10:]
+            # e.g. get "CMIP Mean" from "path_to/file/MultiModelMean_Amon_tas....nc"
+
+            # Only display stats for the future period:
+            dataset = dataset.sel(time=slice('2010', None, None))
+            ax.plot(dataset.time.dt.year, dataset.tas.values,
+                    c='k', lw=2, label=statistic)
+
+    for member in select_metadata(metadata, variable_group='tas_target'):
+        filename = member['filename']
+        dataset = xr.open_dataset(filename)
+        if not 'MultiModel' in filename:
+            ax.plot(dataset.time.dt.year, dataset.tas.values,
+                    c='blue', lw=1, label=target_legend_label)
+            target_legend_label = "_nolegend_"  # prevent repeated labels
+
+    # Add the scenario's with dots at the cmip dt and bars for the periods
+    for scenario in scenarios:
+        start, end = scenario['period_bounds']
+        dot = ax.scatter(scenario['year'],
+                         scenario['cmip_dt'], s=50, zorder=10, label=dotlabel)
+        ax.hlines(scenario['target_dt'], start, end, lw=3,  ls='--',
+                  colors=dot.get_facecolor()[0], zorder=10, label=barlabel)
+        dotlabel = barlabel = "_nolegend_"  # prevent repeated labels
+
+    ax.legend()
+    ax.set_xlabel('Year')
+    ax.set_ylabel(r'Global mean $\Delta T$ (K) w.r.t. reference period')
 
     # Save figure
-    ax.legend()
     filename = get_plot_filename('temperature_change_pdf', cfg)
     fig.savefig(filename, bbox_inches='tight', dpi=300)
 
