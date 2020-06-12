@@ -17,7 +17,7 @@ documentation:
 
 
 cmip5: &cmip5
-  # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}   # Calendar bug: https://github.com/ESMValGroup/ESMValCore/issues/669
+  # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
@@ -34,6 +34,11 @@ preprocessors:
     custom_order: true
     area_statistics:
       operator: mean
+    annual_statistics:
+      operator: mean
+    regrid_time:
+      # try to get back homogeneous time arrays; https://github.com/ESMValGroup/ESMValCore/issues/665
+      frequency: yr
     anomalies:
       period: full
       reference: &reference
@@ -47,12 +52,6 @@ preprocessors:
     multi_model_statistics:
       span: full
       statistics: [mean, median]   # might want to add percentiles here, but not (yet) supported
-    annual_statistics:
-      # must come after multimodelstats: https://github.com/ESMValGroup/ESMValCore/issues/665
-      operator: mean
-    regrid_time:
-      # try to get homogeneous time arrays back; calendar issues persist.
-      frequency: yr
   preprocessor_local: &extract_NL
     extract_point:
       longitude: 6.25
@@ -78,7 +77,7 @@ diagnostics:
     scripts:
       global_matching:
         script: kcs/global_matching.py
-        scenario_years: [2050]  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
+        scenario_years: [2050, 2085]  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
         scenario_percentiles: [Mean, Median]
         target_model: CCSM4
 
