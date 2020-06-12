@@ -16,14 +16,14 @@ documentation:
     - alidoost_sarah
 
 
-datasets:
+cmip5: &cmip5
   # - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}   # Calendar bug: https://github.com/ESMValGroup/ESMValCore/issues/669
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
 
-target_datasets: &target_datasets
+target: &target
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}      # No-leap calendar!
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r2i1p1, start_year: 1961, end_year: 2099}
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r3i1p1, start_year: 1961, end_year: 2099}
@@ -67,9 +67,14 @@ diagnostics:
       - Get the global mean temperature change for specified years and specified percentiles (Delta T). These define our scenarios.
       - Select the 30-year period from the target model (all ensemble members) where they match the Delta T for each scenario.
     variables:
-      tas:
+      tas_cmip:
+        short_name: tas
         preprocessor: preprocessor_global
-        additional_datasets: *target_datasets
+        additional_datasets: *cmip5
+      tas_target:
+        short_name: tas
+        preprocessor: preprocessor_global
+        additional_datasets: *target
     scripts:
       global_matching:
         script: kcs/global_matching.py
@@ -84,17 +89,20 @@ diagnostics:
       - Determine the 1000 best ...
       - Determine the final best
     variables:
-      tas: &target_settings
-        preprocessor: preprocessor_local
-        additional_datasets: *target_datasets
-      pr:
-        <<: *target_settings
-      tas_cmip:
+      tas_target: &target_variable
         short_name: tas
         preprocessor: preprocessor_local
-      pr_cmip:
+        additional_datasets: *target
+      pr_target:
+        <<: *target_variable
         short_name: pr
+      tas_cmip: &cmip_variable
+        short_name: tas
         preprocessor: preprocessor_local
+        additional_datasets: *cmip5
+      pr_cmip:
+        <<: *cmip_variable
+        short_name: pr
     scripts:
       resample:
         script: kcs/local_resampling.py

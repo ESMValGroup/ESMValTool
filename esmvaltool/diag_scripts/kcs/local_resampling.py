@@ -51,7 +51,8 @@ def get_input_data(cfg):
     dataset = []
     ancestor_files = []
     for short_name in "pr", "tas":
-        var = select_metadata(target_model_metadata, variable_group=short_name)
+        group = f'{short_name}_target'
+        var = select_metadata(target_model_metadata, variable_group=group)
         files = [metadata['filename'] for metadata in var]
         dataset.append(
             xr.open_mfdataset(files, concat_dim='ensemble_member',
