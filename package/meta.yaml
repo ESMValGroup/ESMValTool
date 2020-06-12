@@ -36,7 +36,6 @@ test:
     - tests
     - setup.cfg
   requires:
-    - flake8
     - pytest>=3.9
     - pytest-cov
     - pytest-env
