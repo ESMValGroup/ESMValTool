@@ -40,7 +40,7 @@ def download_cds_satellite_sm():
 
     rawobs_dir = os.path.abspath(
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
-    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE_new/'
+    savedir = f'{rawobs_dir}/Tier3/CDS-SATELLITE-SOIL-MOISTURE/'
     os.makedirs(savedir, exist_ok=True)
 
     # This dictionary contains the data request part that is specific to
