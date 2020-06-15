@@ -19,13 +19,10 @@ def download_cds_satellite_sm():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config_file',
                         '-c',
-                        default=os.path.join(os.path.dirname(__file__),
-                                             'config-user.yml'),
                         help='config file',
                         required=True)
     parser.add_argument('--frequency',
                         '-f',
-                        default=None,
                         help='either monthly or daily',
                         required=True)
 
