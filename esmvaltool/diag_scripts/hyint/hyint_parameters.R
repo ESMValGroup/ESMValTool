@@ -23,9 +23,6 @@ if (!exists("write_plots")) {
 if (!exists("etccdi_preproc")) {
   etccdi_preproc <- F
 }
-if (!exists("etccdi_dir")) {
-  etccdi_dir <- ""
-}
 
 # basic settings
 seasons <- c("ALL") # seasons to be analysed: "ALL", "DJF", ...

@@ -42,8 +42,6 @@ Diagnostics are stored in diag_scripts/
    * mder/select_for_mder.ncl
 
 
-.. _user settings:
-
 User settings in recipe
 -----------------------
 

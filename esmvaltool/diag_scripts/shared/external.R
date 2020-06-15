@@ -17,7 +17,7 @@ cdo <-
       noout <- T
     }
     if (input[1] != "") {
-      for (i in 1:length(input)) {
+      for (i in seq_along(input)) {
         input[i] <- paste0("'", input[i], "'")
       }
       input <- paste(input, collapse = " ")

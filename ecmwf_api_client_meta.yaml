@@ -1,0 +1,36 @@
+{% set name = "ecmwf-api-client" %}
+{% set version = "1.5.4" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "5b31c4c8c6d0c344dfaed038b388d1b70e8b9d4ea6ad732e5d827a25d5acc573" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  noarch: python
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - pip
+    - python
+    - setuptools
+  run:
+    - python
+
+test:
+  imports:
+    - ecmwfapi
+
+about:
+  home: https://software.ecmwf.int/wiki/display/WEBAPI
+  license: Apache 2.0
+  summary: 'Python client for ECMWF web services API.'

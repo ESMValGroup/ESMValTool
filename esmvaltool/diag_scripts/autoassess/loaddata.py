@@ -139,6 +139,7 @@ def annual_mean(mycube):
     Chunks time in 365-day periods and computes means over them;
     Returns a cube.
     """
+    coord_cat.add_year(mycube, 'time')
     yr_mean = mycube.aggregated_by('year', iris.analysis.MEAN)
 
     def spans_year(time):

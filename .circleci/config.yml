@@ -1,5 +1,20 @@
 ---
 version: 2
+
+aliases:
+  check_changes: &check_changes
+    name: Check changes
+    command: |
+      if (test "$CIRCLE_BRANCH" = master ||
+          git --no-pager diff --name-only origin/master... |
+          grep -q -E -f .circleci/install_triggers)
+      then
+        echo Running installation tests
+      else
+        echo Skipping installation tests
+        circleci step halt
+      fi
+
 jobs:
   test:
     # Run Python 3 tests
@@ -26,7 +41,8 @@ jobs:
             # Install r-lintr for r linter test
             Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
             # Run tests
-            python setup.py test
+            python setup.py test --addopts '-m "not installation"'
+          no_output_timeout: 20m
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -46,6 +62,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *check_changes
       - restore_cache:
           key: test-install-{{ .Branch }}
       - run:
@@ -68,7 +85,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            python setup.py test --installation
+            python setup.py test
             esmvaltool -h
             ncl -V
             # cdo test, check that it supports hdf5
@@ -76,6 +93,7 @@ jobs:
             echo 0 | cdo -f nc input,r1x1 tmp.nc
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
+          no_output_timeout: 20m
       - save_cache:
           key: test-install-{{ .Branch }}
           paths:
@@ -106,6 +124,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *check_changes
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -127,9 +146,10 @@ jobs:
             pip freeze > /logs/requirements.txt
             # Test installation
             esmvaltool -h
-            python setup.py test --installation
+            python setup.py test
             ncl -V
             cdo --version
+          no_output_timeout: 20m
       - store_artifacts:
           path: /logs
 
@@ -167,6 +187,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *check_changes
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -183,7 +204,8 @@ jobs:
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
             apt update && apt install time
-            \time -v conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
+            \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
+          no_output_timeout: 30m
       - store_artifacts:
           path: /logs
 
@@ -245,11 +267,11 @@ workflows:
   version: 2
   commit:
     jobs:
-      - documentation
       - test
-      - test_installation:
-          requires:
-            - test
+      - test_installation
+      - develop
+      - documentation
+      - conda_build
   nightly:
     triggers:
       - schedule:
@@ -257,8 +279,7 @@ workflows:
           filters:
             branches:
               only:
-                - version2_development
-                - version2_master
+                - master
     jobs:
       - test
       - test_installation
