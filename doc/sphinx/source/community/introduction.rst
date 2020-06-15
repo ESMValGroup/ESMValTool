@@ -145,7 +145,7 @@ The standard document on best practices for Python code is
 documentation. We make use of `numpy style
 docstrings <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html>`__
 to document Python functions that are visible on
-`readthedocs <https://esmvaltool.readthedocs.io>`__.
+`readthedocs <https://docs.esmvaltool.org>`__.
 
 Most formatting issues in Python code can be fixed automatically by
 running the commands
@@ -225,7 +225,7 @@ What should be documented
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Any code documentation that is visible on
-`readthedocs <https://esmvaltool.readthedocs.io>`__ should be well
+`readthedocs <https://docs.esmvaltool.org>`__ should be well
 written and adhere to the standards for documentation for the respective
 language. Recipes should have a page in the *Recipes* section on
 readthedocs. This is also the place to document recipe options for the
