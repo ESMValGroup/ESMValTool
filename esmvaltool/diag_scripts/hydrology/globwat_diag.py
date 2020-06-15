@@ -3,8 +3,14 @@ import logging
 from pathlib import Path
 
 import iris
-# import subprocess
+import calendar
+import dask.array as da
+import numpy
+import pandas as pd 
+import os
+import os.path
 
+# import subprocess
 from esmvalcore import preprocessor as preproc
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -103,80 +109,142 @@ def main(cfg):
     rsdt (toa_incoming_shortwave_flux)
     """
     input_metadata = cfg['input_data'].values()
+    print(input_metadata)
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
 
         
-        # Processing variables and unit conversion
-        # Unit of the fluxes in GlobWat should be in mm
-        logger.info("Processing variable PET")
-        pet = debruin_pet(
-            psl=all_vars['psl'],
-            rsds=all_vars['rsds'],
-            rsdt=all_vars['rsdt'],
-            tas=all_vars['tas'],
-        )
-        # Unit conversion 'kg m-3 s-1' to 'mm' precip (multiplied by second)
-        for short_name == "pr":
-            if mip == "Amon":
-                cube.data = cube.core_data() * 2592000
-            if mip == "day"
-                cube.data = cube.core_data() * 86400
+    #     # Processing variables and unit conversion
+    #     # Unit of the fluxes in GlobWat should be in mm
+    #     logger.info("Processing variable PET")
+    #     pet = debruin_pet(
+    #         psl=all_vars['psl'],
+    #         rsds=all_vars['rsds'],
+    #         rsdt=all_vars['rsdt'],
+    #         tas=all_vars['tas'],
+    #     )
+    #     # Unit conversion 'kg m-3 s-1' to 'mm' precip (multiplied by second)
+    #     # get start year and end year 
 
-        # Unit conversion 'kg m-3 s-1' to 'mm' evspsblpot (multiplied by second)
-        for short_name == "evspsblpot":
-            if dataset == 'ERA5':
-        # to make potential evaporation by ERA5 positive,multiplied by -1
-            cube.data = cube.core_data() * -2592000
-
-        # Unit conversion 'kg m-3 s-1' to 'mm' pet calculated &
-        # by debruin from ERA-Interim(multiplied by second)
-            else:
-            cube.data = cube.core_data() * 2592000                  
-
-        # get start year and end year 
-        coord_time = pet.coord('time')
-        start_year = coord_time.cell(0).point.year
-        end_year = coord_time.cell(-1).point.year     
-
-        # Save to netcdf file 
-        basename = '_'.join([
-            'globwat_input',
-            dataset,
-            str(start_year),  
-            str(end_year), 
-        ])
-
-        # output_data = {
-        #     'forcing': {
-        #         'precip': precip.data,
-        #         'temp': temp.data,
-        #         'pet': pet.data,
-        #         'delta_t_days': float(1),
-        #         'time_unit': 'day',
-        #     },
-        #     'time_start': time_start_end[0],
-        #     'time_end': time_start_end[1],
-        #     'data_origin': lat_lon,
-        # }        
+    #     coord_time = pet.coord('time')
+    #     start_year = coord_time.cell(0).point.year
+    #     end_year = coord_time.cell(-1).point.year 
         
-        output_name = get_diagnostic_filename(basename, cfg, extension='nc')
-        iris.save(pet, output_name, fill_value=-9999)
+    #     # TODO: check the unit conversion by the preprocessor 
+    #     # TODO: if needed make a function for unit conversion 
+    #     year = start_year - 1
+    #     for j in range (end_year - start_year + 1):
+    #         year = year + 1
+    #         for i in range (0, 11):
+    #             nday = calendar.monthrange(year,i)[1]
+    #             if short_name == "pr" and mip == "Amon":
+    #                 cube.units = cube.units / 'mm'
+    #                 cube.data = cube.core_data() * nday * 86400
+    #             elif short_name == "evspsblpot":
+    #                 # to make potential evaporation by ERA5 positive,multiplied by -1
+    #                 if dataset == "ERA5":
+    #                     cube.units = cube.units / 'mm'
+    #                     cube.data = cube.core_data() * nday * -86400
+    #                 else:
+    #                     cube.units = cube.units / 'mm'
+    #                     cube.data = cube.core_data() * nday * 86400
+        
+    #     if short_name == "pr": 
+    #         if mip == "day":
+    #             cube.units = cube.units / 'mm'
+    #             cube.data = cube.core_data() * 86400
+        
+    #     #looping over time dimention, get time and data for each time
+    #     for i in range(0, len(cube.coord('time').points)):
+    #         n_month = str(coord_time.cell(i).point.month).zfill(2)
+    #         n_day_month = n_month + str(coord_time.cell(i).point.day).zfill(2)
 
-        #  # slice data and save in ascii format
-        # if short_name == "pr":
-        #     for sub_data in data.slices_over('time'):
-        #     subprocess.call('gdal_translate -of AAIGrid NETCDF:"sub_data":pr sub_data.asc')
-        # if short_name == "evspsblpot":
-        #     for sub_data in data.slices_over('time'):
-        #     subprocess.call('gdal_translate -of AAIGrid NETCDF:"sub_data":evspsblpot sub_data.asc')
+    #         df = pandas.DataFrame(cube.data[i])
+    #         data_slice = df.replace(numpy.nan, -9999)
+    #         # make data structure
+    #         for nyear in range (start_year , end_year+1)
+    #             if dataset == "ERA5":
+    #             dir_name = 'ERA5_' + str(nyear) 
+    #             os.mkdir(dir_name)
+    #                 if mip == 'Amon':
+    #                     for var in range (0, len(data_slice)):
+    #                         if data_slice[var] == 'pr':
+    #                             output = pr.data_slice
+    #                             basename = '_'.join([
+    #                                 'prc',
+    #                                 n_month,
+    #                                 'wb' 
+    #                             ])
+    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+    #                             file_path = os.path.join(dir_name, output_name)
+    #                             output.to_csv(basename)
 
-        # Store provenance
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(output_name, provenance)
+    #                         if all_vars[var] == 'evspsblpot':
+    #                             output = evspsblpot.data_slice
+    #                             basename = '_'.join([
+    #                                 'eto',
+    #                                 n_month,
+    #                                 'wb' 
+    #                             ])
+    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+    #                             file_path = os.path.join(dir_name, output_name)
+    #                             output.to_csv(basename)
+    #                 else:
+    #                     for var in range (0, len(data_slice)):
+    #                         if data_slice[var] == 'pr':
+    #                             output = pr.data_slice
+    #                             basename = '_'.join([
+    #                                 'prc',
+    #                                 n_day_month,
+    #                                 'wb' 
+    #                             ])
+    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+    #                             file_path = os.path.join(dir_name, output_name)
+    #                             output.to_csv(basename)
+
+    #             if dataset == 'ERA-Interim'
+    #             dir_name = 'ERA-Interim_' + str(nyear) 
+    #             os.mkdir(dir_name)
+    #                 if mip == 'Amon':
+    #                     for var in range (0, len(data_slice)):
+    #                         if data_slice[var] == 'pr':
+    #                             output = pr.data_slice
+    #                             basename = '_'.join([
+    #                                 'prc',
+    #                                 n_month,
+    #                                 'wb' 
+    #                             ])
+    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+    #                             file_path = os.path.join(dir_name, output_name)
+    #                             output.to_csv(basename)
+    #                         else:
+    #                             output = pet
+    #                             basename = '_'.join([
+    #                                 'eto',
+    #                                 n_month,
+    #                                 'wb' 
+    #                             ])
+    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+    #                             file_path = os.path.join(dir_name, output_name)
+    #                             output.to_csv(basename)
+    #                 else:
+    #                     for var in range (0, len(data_slice)):
+    #                         if data_slice[var] == 'pr':
+    #                             output = pr.data_slice
+    #                             basename = '_'.join([
+    #                                 'prc',
+    #                                 n_day_month,
+    #                                 'wb' 
+    #                             ])
+    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+    #                             file_path = os.path.join(dir_name, output_name)
+    #                             output.to_csv(basename)
+
+    #     # Store provenance
+    #     with ProvenanceLogger(cfg) as provenance_logger:
+    #         provenance_logger.log(output_name, provenance)
 
 
 if __name__ == '__main__':
-
     with run_diagnostic() as config:
         main(config)
