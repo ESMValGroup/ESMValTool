@@ -17,20 +17,20 @@ import pandas as pd
 import xarray as xr
 import numpy as np
 
-from esmvaltool.diag_scripts.shared import (run_diagnostic,
-                                            select_metadata,
+from esmvaltool.diag_scripts.shared import (run_diagnostic, select_metadata,
                                             get_diagnostic_filename,
                                             ProvenanceLogger,
                                             get_plot_filename)
 
-logger = logging.getLogger(Path(__file__).name)
+from tqdm import tqdm
+
+LOGGER = logging.getLogger(Path(__file__).name)
 
 
 def create_provenance_record(ancestor_files):
     """Create a provenance record."""
     record = {
-        'caption':
-        "Resampling of local climate model.",
+        'caption': "Resampling of local climate model.",
         'domains': ['global'],
         'authors': [
             'kalverla_peter',
@@ -44,10 +44,10 @@ def create_provenance_record(ancestor_files):
 
 def get_input_data(cfg):
     """Load ensembles for each variable and merge."""
+    LOGGER.info("Reading input data for target model")
     dataset_dicts = cfg['input_data'].values()
-    target_model_metadata = select_metadata(
-        dataset_dicts, dataset=cfg['target_model']
-    )
+    target_model_metadata = select_metadata(dataset_dicts,
+                                            dataset=cfg['target_model'])
     dataset = []
     ancestor_files = []
     for short_name in "pr", "tas":
@@ -55,28 +55,29 @@ def get_input_data(cfg):
         var = select_metadata(target_model_metadata, variable_group=group)
         files = [metadata['filename'] for metadata in var]
         dataset.append(
-            xr.open_mfdataset(files, concat_dim='ensemble_member',
-                              combine='nested')
-        )
+            xr.open_mfdataset(files,
+                              concat_dim='ensemble_member',
+                              combine='nested'))
         ancestor_files.extend(files)
     provenance = create_provenance_record(ancestor_files)
     return xr.merge(dataset), provenance
 
 
-def get_season_means_per_segment(dataset, period, step=5):
-    """Segment (part of) a dataset into x blocks of 5 years each.
+def compute_segment_season_means(dataset, period, step, filename):
+    """Compute season means for each n-year segment of input dataset.
 
-    Returns a new dataset with additional coordinate 'segment',
-    and values as season means.
+    Saves the seasonal means to filename
     """
+    LOGGER.info("Computing seasonal means for segmented dataset")
     segments = []
     for year in range(*period, step):
         segments.append(
-            dataset.sel(time=slice(str(year), str(year + step - 1)))
-        )
+            dataset.sel(time=slice(str(year), str(year + step - 1))))
     segmented_dataset = xr.concat(segments, dim='segment')
     season_means = segmented_dataset.groupby('time.season').mean()
-    return season_means
+    season_means.to_netcdf(filename)
+    LOGGER.info("Intermediate results stored as %s.", filename)
+    # TODO store provenance?
 
 
 def all_possible_combinations(n_ensemble_members, n_segments):
@@ -86,56 +87,63 @@ def all_possible_combinations(n_ensemble_members, n_segments):
     segments and ensembles.
     """
     # Create a DataArray once...
-    indices = xr.DataArray(
-        data=np.zeros(n_segments),
-        dims=['segment'],
-        coords={'segment': np.arange(n_segments)})
+    indices = xr.DataArray(data=np.zeros(n_segments),
+                           dims=['segment'],
+                           coords={'segment': np.arange(n_segments)})
 
     # ...and update its values for all possible combinations
     for combination in product(range(n_ensemble_members), repeat=n_segments):
         indices.values = list(combination)
-        yield indices
+        name = ''.join([str(x) for x in combination])
+        yield name, indices
+
+
+def find_and_save_top1000(segment_means, target, filename):
+    """Select n_combinations that are closest to the target.
+
+    First, get all possible combinations, then select n_combinations.
+    Store the result under 'filename'
+    """
+    n_segments = len(segment_means.segment)
+    n_members = len(segment_means.ensemble_member)
+    total = n_members**n_segments
+    all_combinations = all_possible_combinations(n_members, n_segments)
+
+    results = []
+    for combination, idx in tqdm(all_combinations, total=total):
+        results.append([
+            combination,
+            abs(
+                segment_means.sel(ensemble_member=idx).mean('segment') -
+                target).values.tolist()
+        ])
+
+    # Create a pandas dataframe with the combinations and distance to target
+    top1000 = pd.DataFrame(results,
+                           columns=['combination', 'distance_to_target'
+                                    ]).sort_values('distance_to_target').head(
+                                        1000).set_index('combination')
+    top1000.to_csv(filename)
+    LOGGER.info("Intermediate results stored as %s.", filename)
+    # TODO: store provenance?
 
 
 def selected_combinations(combinations):
     """Generate indexer for all selected combinations of segmented dataset.
 
-    combinations: a list of combinations
+    combinations: a list of combinations (dtype: str !)
     """
     n_segments = len(combinations[0])
 
     # Create a DataArray once...
-    indices = xr.DataArray(
-        data=np.zeros(n_segments),
-        dims=['segment'],
-        coords={'segment': np.arange(n_segments)})
+    indices = xr.DataArray(data=np.zeros(n_segments),
+                           dims=['segment'],
+                           coords={'segment': np.arange(n_segments)})
 
-    # ...and update its values for each selected combinations
+    # ...and update its values for each selected combination
     for combination in combinations:
-        indices.values = combination
+        indices.values = [int(x) for x in combination]
         yield indices
-
-
-def most_promising_combinations(
-        segment_means,
-        target,
-        n_ensemble_members,
-        n_combination=1000):
-    """Select n_combination that are closest to the target.
-
-    First, get all possible combinations, then select n_combination.
-    """
-    promising_combinations = []
-    for combination in all_possible_combinations(
-            n_ensemble_members, n_segments=6):
-        recombined_segment_means = segment_means.sel(
-            ensemble_member=combination)
-        new_overall_mean = recombined_segment_means.mean('segment')
-        distance_to_target = abs(new_overall_mean - target)
-        promising_combinations.append([combination.values, distance_to_target])
-    top_all = pd.DataFrame(promising_combinations,
-                           columns=['combination', 'distance_to_target'])
-    return top_all.sort_values('distance_to_target').head(n_combination)
 
 
 def seasonal_mean_characteristics(top1000, segment_means):
@@ -152,9 +160,9 @@ def seasonal_mean_characteristics(top1000, segment_means):
 
         filter2_variables.append([
             combination.values,
-            new_overall_season_means.pr.sel(season='JJA'),
-            new_overall_season_means.tas.sel(season='DJF'),
-            new_overall_season_means.tas.sel(season='JJA')
+            new_overall_season_means.pr.sel(season='JJA').values,
+            new_overall_season_means.tas.sel(season='DJF').values,
+            new_overall_season_means.tas.sel(season='JJA').values
         ])
     return pd.DataFrame(filter2_variables, columns=columns)
 
@@ -165,21 +173,19 @@ def within_bounds(values, bounds):
     return values.between(low, high)
 
 
-def select_percentile_bounds(top1000, info, period):
+def percentile_based_subset(top1000, info, period):
     """Select samples based on the percentile bounds.
 
     Select samples for which summer pr, and summer and winter tas
     are within the percentile bounds specified in the recipe.
     """
-    pr_summer = within_bounds(
-        top1000['pr_summer'], info[f'pr_summer_{period}'])
-    tas_winter = within_bounds(
-        top1000['tas_winter'], info[f'tas_winter_{period}'])
-    tas_summer = within_bounds(
-        top1000['tas_summer'], info[f'tas_summer_{period}'])
-    subset = top1000[
-        np.all([pr_summer, tas_winter, tas_summer], axis=0)
-    ]
+    pr_summer = within_bounds(top1000['pr_summer'],
+                              info[f'pr_summer_{period}'])
+    tas_winter = within_bounds(top1000['tas_winter'],
+                               info[f'tas_winter_{period}'])
+    tas_summer = within_bounds(top1000['tas_summer'],
+                               info[f'tas_summer_{period}'])
+    subset = top1000[np.all([pr_summer, tas_winter, tas_summer], axis=0)]
     return subset
 
 
@@ -199,16 +205,14 @@ def select_final_subset(combinations, n_sample=8):
     """
     # Convert series of tuples to 2d numpy array (much faster!)
     combinations = np.array(
-        [list(combination) for combination in combinations]
-    )
+        [list(combination) for combination in combinations])
 
     # Store the indices in a nice dataframe
     _, n_segments = combinations.shape
     best_combination = pd.DataFrame(
         data=None,
         columns=[f'Segment {x}' for x in range(n_segments)],
-        index=[f'Combination {x}' for x in range(n_sample)]
-    )
+        index=[f'Combination {x}' for x in range(n_sample)])
 
     # Random number generator
     rng = np.random.default_rng()
@@ -239,16 +243,20 @@ def make_scenario_tables(dataset):
         result = select_final_subset(remaining_combinations)
         scenario_output_tables.append(result)
 
-    scenario_output_tables = pd.concat(
-        scenario_output_tables, axis=1, keys=['control', 'future'])
+    scenario_output_tables = pd.concat(scenario_output_tables,
+                                       axis=1,
+                                       keys=['control', 'future'])
     return scenario_output_tables
 
 
 def save_scenario_tables(scenario, tables, cfg, provenance):
     """Save the scenario tables as a csv file."""
-    basename = f'indices_{scenario}'
-    output_file = get_diagnostic_filename(basename, cfg, extension='csv')
+    output_file = get_diagnostic_filename(f'final_indices_{scenario}',
+                                          cfg,
+                                          extension='csv')
     tables.to_csv(output_file)
+    LOGGER.info('Final output for scenario %s stored as %s', scenario,
+                output_file)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance)
 
@@ -258,24 +266,14 @@ def make_plot(cfg):
     # note that quantile is applied twice!
     # Once to get the pdf's of seasonal tas/pr
     # and once to get the multimodel pdf of the quantile changes
-    # TODO: Add variable group tas_cmip to recipe:
-    # variables:
-    #   tas_cmip:
-    #     short_name: tas
-    #     preprocessor: preproc2 (extract NL point)
-    #     additional_datasets: *cmip5_datasets
-
     metadata = cfg['input_data'].values()
     tas_cmip = select_metadata(metadata, variable_group='tas_cmip')
     envelope = []
     for data_dict in tas_cmip:
-        dataset = xr.open_dataset(data_dict['filename'])
-        grouped_control = (dataset
-                           .sel(time=slice('1981', '2010'))
-                           .groupby('time.season'))
-        grouped_future = (dataset
-                          .sel(time='2050')
-                          .groupby('time.season'))
+        dataset = xr.open_dataset(data_dict['filename']).tas
+        grouped_control = dataset.sel(
+            time=slice('1981', '2010')).groupby('time.season')
+        grouped_future = dataset.sel(time='2050').groupby('time.season')
 
         quantiles = [.05, .1, .25, .5, .75, .90, .95]
         qcontrol = grouped_control.quantile(quantiles)
@@ -283,17 +281,28 @@ def make_plot(cfg):
         qchange = qfuture - qcontrol
         envelope.append(qchange)
     cmip5 = xr.concat(envelope, dim='multimodel')
+    # prevent confusion between dimension 'quantile' and method 'quantile'
+    cmip5 = cmip5.rename({'quantile': 'percentile'})
 
     fig, ax = plt.subplots()
+    x_locs = np.arange(len(quantiles))
     for high, low in [[0.9, 0.1], [0.75, 0.25]]:
-        ax.fill_between(quantiles,
-                        cmip5.quantile(high, dim='multimodel'),
-                        cmip5.quantile(low, dim='multimodel'),
+        ax.fill_between(x_locs,
+                        cmip5.sel(season='DJF').quantile(high,
+                                                         dim='multimodel'),
+                        cmip5.sel(season='DJF').quantile(low,
+                                                         dim='multimodel'),
                         color='k',
-                        alpha=0.5)
+                        alpha=0.3)
+
+    ax.set_xticks(x_locs)
+    ax.set_xticklabels([f'P{100*x:02.0f}' for x in quantiles])
     filename = get_plot_filename('envelope_figure', cfg)
     fig.savefig(filename, bbox_inches='tight', dpi=300)
-    return filename
+    LOGGER.info("Envelope figure stored as %s", filename)
+    # TODO: Add multiple subplots for summer/winter and pr/tas
+    # TODO: Add final selection of scenario to figure
+    # TODO: Add provenance for figure?
 
 
 def main(cfg):
@@ -323,69 +332,93 @@ def main(cfg):
     and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
     Chose the set with the lowest penalty.
     """
-    # Step 0:
-    # Read the data
+
+    # Step 0: Read the data and compute segment season means
     dataset, provenance = get_input_data(cfg)
-
-    # Precompute the segment season means for the control period ...
     segments_season_means = {}
-    segments_season_means['control'] = get_season_means_per_segment(
-        dataset, cfg['control_period'], step=5
-    )
-    # ... and for all the future scenarios
-    for scenario, info in cfg['scenarios'].items():
-        segments_season_means[scenario] = get_season_means_per_segment(
-            dataset, info['resampling_period'], step=5
-        )
 
-    # Step 1:
-    # Create a dictionary to store the selected indices later on.
+    # First for control ...
+    LOGGER.info("Precompute segment season means for the control period ...")
+    filename = get_diagnostic_filename('season_means_control', cfg, 'nc')
+    if Path(filename).exists():
+        LOGGER.info("Found intermediate file %s", filename)
+    else:
+        compute_segment_season_means(dataset,
+                                     cfg['control_period'],
+                                     step=5,
+                                     filename=filename)
+    segments_season_means['control'] = xr.open_dataset(filename)
+
+    # ... then for each scenario
+    for scenario, info in cfg['scenarios'].items():
+        LOGGER.info("Precompute segment season means for the scenario %s",
+                    scenario)
+        filename = get_diagnostic_filename(f'season_means_{scenario}', cfg,
+                                           'nc')
+        if Path(filename).exists():
+            LOGGER.info(f"Found intermediate file %s", filename)
+        else:
+            compute_segment_season_means(dataset,
+                                         info['resampling_period'],
+                                         step=5,
+                                         filename=filename)
+        segments_season_means[scenario] = xr.open_dataset(filename)
+
+    # Step 1: Get 1000 recombinations and compute their winter mean pr
     selected_indices = {}
 
-    # Step 1a: Get 1000 combinations for the control period
-    # Get mean winter precipitation per segment
-    winter_mean_pr_segments = segments_season_means['control'].pr.sel(
-        season='DJF')
-    # Get overall mean of segments
-    control_period_winter_mean_pr = winter_mean_pr_segments.mean()
-    # Select top1000 values
-    selected_indices['control'] = most_promising_combinations(
-        winter_mean_pr_segments, control_period_winter_mean_pr,
-        len(dataset.ensemble_member)
-    )
+    # First for the control ...
+    LOGGER.info('Get 1000 recombinations for the control'
+                ' period based on mean winter precipitation')
+    djf_pr_control = segments_season_means['control'].pr.sel(season='DJF')
+    djf_pr_control_mean = djf_pr_control.mean().values  # the target value
+    filename = get_diagnostic_filename("top1000_control", cfg, 'csv')
+    if Path(filename).exists():
+        LOGGER.info("Found intermediate file %s", filename)
+    else:
+        find_and_save_top1000(djf_pr_control, djf_pr_control_mean, filename)
+    selected_indices['control'] = pd.read_csv(filename,
+                                              dtype={'combination': 'str'})
 
-    # Step 1b: Get 1000 combinations for the future period
+    # ... then for each scenario
     for scenario, info in cfg['scenarios'].items():
-        # The target value is a relative change with respect to
-        # the overall mean of the control period
-        target = control_period_winter_mean_pr * (1 + info['dpr_winter'] / 100)
-        winter_mean_pr_segments = segments_season_means[scenario].pr.sel(
-            season='DJF')
-        selected_indices[scenario] = most_promising_combinations(
-            winter_mean_pr_segments, target, len(dataset.ensemble_member)
-        )
+        LOGGER.info(
+            'Get 1000 recombinations for the'
+            ' resampling period of scenario %s', scenario)
+        filename = get_diagnostic_filename(f"top1000_{scenario}", cfg, 'csv')
+        if Path(filename).exists():
+            LOGGER.info("Found intermediate file %s", filename)
+        else:
+            # Target is a relative change with respect to the control period
+            target = djf_pr_control_mean * (1 + info['dpr_winter'] / 100)
+            djf_pr_segments = segments_season_means[scenario].pr.sel(
+                season='DJF')
+            find_and_save_top1000(djf_pr_segments, target, filename)
+        selected_indices[scenario] = pd.read_csv(filename,
+                                                 dtype={'combination': 'str'})
 
-    # Step 2a: For each set of 1000 samples from 1a-b, compute summer pr,
-    # and summer and winter tas.
+    # Step 2a: For each set of 1000 samples from 1a-b
     for name, dataframe in selected_indices.items():
+        LOGGER.info("Compute summer mean pr and summer and winter "
+                    "mean tas for 1000 selected combinations for %s" % name)
         segment_means = segments_season_means[name]
         selected_indices[name] = seasonal_mean_characteristics(
-            dataframe.combination, segment_means
-        )
+            dataframe.combination, segment_means)
 
     # Step 2b: For each scenario, select samples for which summer pr, and
     # summer and winter tas are within the percentile bounds specified
     # in the recipe
     for scenario, info in cfg['scenarios'].items():
+        LOGGER.info("Getting percentile-based subsets for scenario %s",
+                    scenario)
         selected_indices[scenario] = {
             # Get relatively high/low values for the control period ...
-            'control': select_percentile_bounds(
-                selected_indices['control'], info, 'control'
-            ),
+            'control':
+            percentile_based_subset(selected_indices['control'], info,
+                                    'control'),
             # Get relatively high/low values for the future period
-            'future': select_percentile_bounds(
-                selected_indices[scenario], info, 'future'
-            )
+            'future':
+            percentile_based_subset(selected_indices[scenario], info, 'future')
         }
 
         del selected_indices['control']  # No longer needed
@@ -393,14 +426,16 @@ def main(cfg):
     # Step 3: Select final set of eight samples with minimal reuse of the same
     # ensemble member for the same period.
     for scenario, dataframes in selected_indices.items():
+        LOGGER.info("Selecting 8 final samples for scenario %s", scenario)
         scenario_output_tables = make_scenario_tables(dataframes)
-        print(f"Selected recombinations for scenario {scenario}:")
-        print(scenario_output_tables)
+        LOGGER.info("Selected recombinations for scenario %s: \n %s", scenario,
+                    scenario_output_tables)
         save_scenario_tables(scenario, scenario_output_tables, cfg, provenance)
 
     # Step 4: Plot the results
     if cfg['write_plots']:
         make_plot(cfg)
+        plt.show()
 
 
 if __name__ == '__main__':
