@@ -82,6 +82,7 @@ def mpqb_mapplot(cube,filename,**plotkwargs):
 
     # Colorbar
     cb = plt.colorbar(pcols, orientation='horizontal')
+    cb.set_label(cube.units)
     cb.ax.tick_params(labelsize=8)
 
     # Add timeperiod to plot title

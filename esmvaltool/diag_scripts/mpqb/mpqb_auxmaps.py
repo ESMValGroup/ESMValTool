@@ -59,11 +59,11 @@ def main(cfg):
 
     # Loop through all datasets
     for dataset in grouped_input_data.keys():
-        dataset_cfg = grouped_input_data[dataset]
+        dataset_cfg = grouped_input_data[dataset][0]
 
         logger.info("Opening dataset: %s", dataset)
         # Opening the pair
-        cube = iris.load_cube(dataset_cfg[0]['filename'])
+        cube = iris.load_cube(dataset_cfg['filename'])
 
         for metricname in metrics_to_calculate:
             try:
@@ -73,14 +73,12 @@ def main(cfg):
                 logger.error("Metric %s is not defined. ", metricname)
                 continue
             # Plot the results (if configured to plot)
-            firstkey = list(cfg['input_data'].keys())[0]
-            metadict = cfg['input_data'][firstkey]
-            baseplotname = f"{metricname}_{metadict['variable_group']}_{metadict['start_year']}-{metadict['end_year']}"
+            baseplotname = f"{dataset}_{metricname}_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
             plot_file = get_plot_filename(baseplotname, cfg)
             if cfg['write_plots']:
                 metrics_plot_dictionary = get_ecv_plot_config(
-                    dataset_cfg[0]['short_name'])
+                    dataset_cfg['short_name'])
                 plot_kwargs = metrics_plot_dictionary[metricname]
                 # Overwrite plot title to be dataset name
                 plot_kwargs['title'] = dataset

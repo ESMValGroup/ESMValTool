@@ -30,6 +30,11 @@ dataset_plotnames = {
 }
 
 
+ylims = {
+    'sm' : (0.22,0.28),
+    'sm1m' : (0.22,0.28)
+}
+
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -56,13 +61,14 @@ def main(cfg):
         fig = plt.figure(figsize=(10,4))
         ax = fig.add_subplot()
         for dataset in grouped_input_data:
+            dataset_cfg = grouped_input_data[dataset][0]
             logger.info("Opening dataset: {0}".format(dataset))
-            cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
+            cube = iris.load_cube(dataset_cfg['filename'])
             iris.quickplot.plot(cube, label=dataset_plotnames[dataset])
         plt.legend()
         plt.xticks(rotation=90)
         # Add the zero line when plotting anomalies
-        if 'ano' in grouped_input_data[dataset][0]['preprocessor']:
+        if 'ano' in dataset_cfg['preprocessor']:
             plt.axhline(y=0, linestyle=':', color='k')
         plt.tight_layout()
         # Time axis formatting
@@ -74,10 +80,11 @@ def main(cfg):
         ax.xaxis.set_major_formatter(years_fmt)
         ax.grid(True, which='major', axis='x')
 
-        # Get the first key
-        firstkey = list(cfg['input_data'].keys())[0]
-        metadict = cfg['input_data'][firstkey]
-        baseplotname = f"lineplot_{metadict['variable_group']}_{metadict['start_year']}-{metadict['end_year']}"
+        # set ylims if specified
+        if dataset_cfg['variable_group'] in ylims:
+            ax.set_ylim(ylims[dataset_cfg['variable_group']])
+
+        baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
         filename = get_plot_filename(baseplotname, cfg)
         logger.info("Saving as %s", filename)
