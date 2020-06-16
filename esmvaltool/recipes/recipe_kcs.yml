@@ -32,7 +32,7 @@ cmip5: &cmip5 #TODO: run the second diagnostics with this selection
   - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
 
 target: &target
-  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  # - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
 
@@ -116,8 +116,8 @@ diagnostics:
         control_period: [1981, 2010]
         target_model: CCSM4
         scenarios:  # see Table 1 of the supplementary material
-          Gl:
-            description: "Gematigd / low changes in seasonal temperature & precipitation"
+          ML_MOC:
+            description: "Moderate warming / low changes in seasonal temperature & precipitation"
             global_dT: 1.0  # This is an approximate number that comes from the first diagnostic (not used)
             scenario_year: 2050  # Middle of century/MOC
             resampling_period: [2021, 2050]  # This also comes from the first diagnostic

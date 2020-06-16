@@ -41,17 +41,15 @@ def _create_provenance_record(ancestor_files):
     return record
 
 
-def _get_input_data(cfg):
+def _get_data_target_model(cfg):
     """Load ensembles for each variable and merge."""
     LOGGER.info("Reading input data for target model")
     dataset_dicts = cfg['input_data'].values()
-    target_model_metadata = select_metadata(dataset_dicts,
-                                            dataset=cfg['target_model'])
     dataset = []
     ancestor_files = []
     for short_name in "pr", "tas":
         group = f'{short_name}_target'
-        var = select_metadata(target_model_metadata, variable_group=group)
+        var = select_metadata(dataset_dicts, variable_group=group)
         files = [metadata['filename'] for metadata in var]
         dataset.append(
             xr.open_mfdataset(files,
@@ -59,17 +57,17 @@ def _get_input_data(cfg):
                               combine='nested'))
         ancestor_files.extend(files)
     provenance = _create_provenance_record(ancestor_files)
-    return xr.merge(dataset), provenance
+    return xr.merge(dataset).load(), provenance
 
 
-def _compute_means(dataset, period, step=5):
+def _segment(dataset, period, step=5):
     """Compute season means for each n-year segment of input dataset."""
     segments = []
     for year in range(*period, step):
         segments.append(
             dataset.sel(time=slice(str(year), str(year + step - 1))))
     segmented_dataset = xr.concat(segments, dim='segment')
-    return segmented_dataset.groupby('time.season').mean()
+    return segmented_dataset
 
 
 def get_segment_season_means(cfg):
@@ -80,7 +78,7 @@ def get_segment_season_means(cfg):
 
     Store intermediate results; if files already exist, load them instead.
     """
-    dataset, provenance = _get_input_data(cfg)
+    dataset, provenance = _get_data_target_model(cfg)
 
     # Combine the future scenarios (name and resampling period)
     # with the control period in a single dictionary
@@ -99,7 +97,7 @@ def get_segment_season_means(cfg):
             LOGGER.info("Found intermediate file %s", filename)
         else:
             LOGGER.info("Computing seasonal means for segmented dataset")
-            means = _compute_means(dataset, period)
+            means = _segment(dataset, period).groupby('time.season').mean()
             means.to_netcdf(filename)
             LOGGER.info("Intermediate results stored as %s", filename)
         segments_season_means[name] = xr.open_dataset(filename)
@@ -148,7 +146,6 @@ def _find_single_top1000(segment_means, target):
     dataframe = pd.DataFrame(results, columns=['combination', 'distance'])
     top1000 = dataframe.sort_values('distance').head(1000)
 
-    # TODO: store provenance?
     return top1000.set_index('combination')
 
 
@@ -315,7 +312,8 @@ def select_final_subset(cfg, subsets, n_samples=8):
     all_scenarios = {}
     for scenario, dataframes in subsets.items():
         # Make a table with the final indices
-        LOGGER.info("Selecting %s final samples for scenario %s", n_samples, scenario)
+        LOGGER.info("Selecting %s final samples for scenario %s", n_samples,
+                    scenario)
         control = _best_subset(dataframes['control'].combination, n_samples)
         future = _best_subset(dataframes['future'].combination, n_samples)
         table = pd.concat([control, future],
@@ -335,51 +333,124 @@ def select_final_subset(cfg, subsets, n_samples=8):
     return all_scenarios
 
 
-def make_plots(cfg, scenarios):
-    """Reproduce figure 5 from the paper."""
+def _cmip_envelope(datasetlist, variable, target_year, relative=False):
+    """Determine the change in <variable> PDF of each CMIP model.
 
-    # import IPython; IPython.embed()
-
-    # note that quantile is applied twice!
-    # Once to get the pdf's of seasonal tas/pr
-    # and once to get the multimodel pdf of the quantile changes
-    metadata = cfg['input_data'].values()
-    tas_cmip = select_metadata(metadata, variable_group='tas_cmip')
+    Note: using mf_dataset not possible due to different calendars.
+    """
+    group = f'{variable}_cmip'
+    cmip = select_metadata(datasetlist, variable_group=group)
     envelope = []
-    for data_dict in tas_cmip:
-        dataset = xr.open_dataset(data_dict['filename']).tas
-        grouped_control = dataset.sel(
-            time=slice('1981', '2010')).groupby('time.season')
-        grouped_future = dataset.sel(time='2050').groupby('time.season')
+    ancestors = []
+    for data_dict in cmip:
+        dataset = xr.open_dataset(data_dict['filename'])[variable]
+        control = dataset.sel(time=slice('1981', '2010'))
+        future = dataset.sel(time=slice(str(target_year -
+                                            15), str(target_year + 15)))
 
         quantiles = [.05, .1, .25, .5, .75, .90, .95]
-        qcontrol = grouped_control.quantile(quantiles)
-        qfuture = grouped_future.quantile(quantiles)
-        qchange = qfuture - qcontrol
+        qcontrol = control.groupby('time.season').quantile(quantiles)
+        qfuture = future.groupby('time.season').quantile(quantiles)
+
+        if relative is False:
+            qchange = qfuture - qcontrol
+        else:
+            qchange = (qfuture - qcontrol) / qcontrol * 100
         envelope.append(qchange)
-    cmip5 = xr.concat(envelope, dim='multimodel')
-    # prevent confusion between dimension 'quantile' and method 'quantile'
-    cmip5 = cmip5.rename({'quantile': 'percentile'})
+        ancestors.append(data_dict['filename'])
 
-    fig, ax = plt.subplots()
-    x_locs = np.arange(len(quantiles))
-    for high, low in [[0.9, 0.1], [0.75, 0.25]]:
-        ax.fill_between(x_locs,
-                        cmip5.sel(season='DJF').quantile(high,
-                                                         dim='multimodel'),
-                        cmip5.sel(season='DJF').quantile(low,
-                                                         dim='multimodel'),
-                        color='k',
-                        alpha=0.3)
+    cmip = xr.concat(envelope, dim='multimodel')
+    provenance = _create_provenance_record(ancestors)
 
-    ax.set_xticks(x_locs)
-    ax.set_xticklabels([f'P{100*x:02.0f}' for x in quantiles])
-    filename = get_plot_filename('envelope_figure', cfg)
-    fig.savefig(filename, bbox_inches='tight', dpi=300)
-    LOGGER.info("Envelope figure stored as %s", filename)
-    # TODO: Add multiple subplots for summer/winter and pr/tas
-    # TODO: Add final selection of scenario to figure
-    # TODO: Add provenance for figure?
+    # Prevent confusion between dimension 'quantile' and method 'quantile'
+    return cmip.rename({'quantile': 'percentile'}), provenance
+
+
+def _recombine(segments, combinations):
+    """Recombine segments according to the final combinations."""
+    n_segments = len(segments.segment)
+    new_climates = []
+    for _, indices in combinations.iterrows():
+        # Create indexer array
+        indexer = xr.DataArray(indices,
+                               dims=['segment'],
+                               coords={'segment': range(n_segments)})
+
+        # Recombine the segments using the indexer
+        resample = segments.sel(ensemble_member=indexer).mean('segment')
+        new_climates.append(resample)
+    return xr.concat(new_climates, dim='sample')
+
+
+def _get_climatology(cfg, scenario_name, table):
+    """Determine the change in <variable> PDF of each scenario."""
+    dataset, _ = _get_data_target_model(cfg)
+
+    future = cfg['scenarios'][scenario_name]['resampling_period']
+    segments_control = _segment(dataset, cfg['control_period'])
+    segments_future = _segment(dataset, future)
+
+    resampled_control = _recombine(segments_control, table['control'])
+    resampled_future = _recombine(segments_future, table['future'])
+
+    quantiles = [.05, .1, .25, .5, .75, .90, .95]
+    qcontrol = resampled_control.groupby('time.season').quantile(
+        quantiles, dim=['sample', 'time'])
+    qfuture = resampled_future.groupby('time.season').quantile(
+        quantiles, dim=['sample', 'time'])
+
+    qchange_tas = (qfuture - qcontrol).tas
+    qchange_pr = ((qfuture - qcontrol) / qcontrol * 100).pr
+    return xr.merge([qchange_tas, qchange_pr])
+
+
+def make_plots(cfg, scenario_tables):
+    """Reproduce figure 5 from the paper."""
+    # Note that quantile is applied twice! Once to get the pdf's of seasonal
+    # tas/pr and once to get the multimodel pdf of the quantile changes
+    metadata = cfg['input_data'].values()
+
+    climates = {}
+    for name, info in cfg['scenarios'].items():
+        climatology = _get_climatology(cfg, name, table=scenario_tables[name])
+        climates[name] = climatology
+
+    for year in [2050, 2085]:
+        fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
+
+        for row, variable in zip(subplots, ['pr', 'tas']):
+            relative = True if variable == 'pr' else False
+            cmip, prov = _cmip_envelope(metadata, variable, year, relative)
+
+            for axes, season in zip(row, ['DJF', 'JJA']):
+                percentiles = cmip.percentile.values
+                xlocs = np.arange(len(percentiles))
+
+                # Plot the cmip envelope
+                seasondata = cmip.sel(season=season)
+                for high, low in [[0.9, 0.1], [0.75, 0.25]]:
+                    upper = seasondata.quantile(high, dim='multimodel')
+                    lower = seasondata.quantile(low, dim='multimodel')
+                    axes.fill_between(xlocs, upper, lower, color='k', alpha=.3)
+                    axes.set_title(f'{variable} / {season}')
+
+                # Plot the recombined scenarios
+                for name, info in cfg['scenarios'].items():
+                    if year == info['scenario_year']:
+                        climate = climates[name].sel(season=season)[variable]
+                        axes.plot(xlocs, climate, label=name)
+
+                axes.set_xticks(xlocs)
+                axes.set_xticklabels([f'P{100*x:02.0f}' for x in percentiles])
+        subplots[0, 0].set_ylabel('change (%)')
+        subplots[1, 0].set_ylabel('change (K)')
+        subplots[1, 1].legend()
+        filename = get_plot_filename(f'envelope_figure_{year}', cfg)
+        fig.suptitle(f'Year: {year}')
+        fig.savefig(filename, bbox_inches='tight', dpi=300)
+        LOGGER.info("Envelope figure stored as %s", filename)
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(filename, prov)
 
 
 def main(cfg):
@@ -430,7 +501,6 @@ def main(cfg):
     # Step 4: Plot the results
     if cfg['write_plots']:
         make_plots(cfg, scenarios)
-
 
 
 if __name__ == '__main__':
