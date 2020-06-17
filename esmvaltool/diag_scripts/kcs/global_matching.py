@@ -131,7 +131,6 @@ def save(output, cfg, provenance):
     scenarios = pd.DataFrame(output)
     filename = get_diagnostic_filename('scenarios', cfg, extension='csv')
     scenarios.to_csv(filename)
-    import IPython; IPython.embed()
     print(scenarios.round(2))
     print(f"Output written to {filename}")
     with ProvenanceLogger(cfg) as provenance_logger:
