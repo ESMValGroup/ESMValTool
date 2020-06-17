@@ -33,8 +33,7 @@ def _create_provenance_record(ancestor_files):
         'authors': [
             'kalverla_peter',
             'alidoost_sarah',
-            # TODO: add Evert to config references
-            # 'rol_evert',
+            'rol_evert',
         ],
         'ancestors': ancestor_files,
     }
@@ -251,7 +250,7 @@ def get_percentile_subsets(cfg, segment_season_means, top1000s):
     # Overwrite top1000s with seasonal mean characteristics
     for name, dataframe in top1000s.items():
         LOGGER.info("Compute summer mean pr and summer and winter "
-                    "mean tas for 1000 selected combinations for %s" % name)
+                    "mean tas for 1000 selected combinations for %s", name)
         segment_means = segment_season_means[name]
         top1000s[name] = _season_means(dataframe.combination, segment_means)
 
@@ -334,8 +333,6 @@ def select_final_subset(cfg, subsets, n_samples=8, prov=None):
         # Write provenance information
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(filename, prov)
-
-
     return all_scenarios
 
 
@@ -344,8 +341,7 @@ def _cmip_envelope(datasetlist, variable, target_year, relative=False):
 
     Note: using mf_dataset not possible due to different calendars.
     """
-    group = f'{variable}_cmip'
-    cmip = select_metadata(datasetlist, variable_group=group)
+    cmip = select_metadata(datasetlist, variable_group=f'{variable}_cmip')
     envelope = []
     ancestors = []
     for data_dict in cmip:
@@ -359,10 +355,9 @@ def _cmip_envelope(datasetlist, variable, target_year, relative=False):
         qfuture = future.groupby('time.season').quantile(quantiles)
 
         if relative is False:
-            qchange = qfuture - qcontrol
+            envelope.append(qfuture - qcontrol)
         else:
-            qchange = (qfuture - qcontrol) / qcontrol * 100
-        envelope.append(qchange)
+            envelope.append((qfuture - qcontrol) / qcontrol * 100)
         ancestors.append(data_dict['filename'])
 
     cmip = xr.concat(envelope, dim='multimodel')
@@ -486,7 +481,6 @@ def main(cfg):
     and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
     Chose the set with the lowest penalty.
     """
-
     # Step 0
     segment_season_means, provenance = get_segment_season_means(cfg)
 
