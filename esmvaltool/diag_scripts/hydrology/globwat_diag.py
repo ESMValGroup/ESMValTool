@@ -17,7 +17,7 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
 
-logger = logging.getLogger(Path(__file__).name)
+logger = logging.getLogger(Path(__file__).name) #for test in python use '__file__'
 
 
 def create_provenance_record():
@@ -114,15 +114,16 @@ def main(cfg):
         all_vars, provenance = get_input_cubes(metadata)
 
         
-    #     # Processing variables and unit conversion
-    #     # Unit of the fluxes in GlobWat should be in mm
-    #     logger.info("Processing variable PET")
-    #     pet = debruin_pet(
-    #         psl=all_vars['psl'],
-    #         rsds=all_vars['rsds'],
-    #         rsdt=all_vars['rsdt'],
-    #         tas=all_vars['tas'],
-    #     )
+        # Processing variables and unit conversion
+        # Unit of the fluxes in GlobWat should be in mm
+        # logger.info("Processing variable PET")
+        # pet = debruin_pet(
+        #     psl=all_vars['psl'],
+        #     rsds=all_vars['rsds'],
+        #     rsdt=all_vars['rsdt'],
+        #     tas=all_vars['tas'],
+        # )
+        # print(pet)
     #     # Unit conversion 'kg m-3 s-1' to 'mm' precip (multiplied by second)
     #     # get start year and end year 
 
@@ -240,9 +241,9 @@ def main(cfg):
     #                             file_path = os.path.join(dir_name, output_name)
     #                             output.to_csv(basename)
 
-    #     # Store provenance
-    #     with ProvenanceLogger(cfg) as provenance_logger:
-    #         provenance_logger.log(output_name, provenance)
+        # # Store provenance
+        # with ProvenanceLogger(cfg) as provenance_logger:
+        #     provenance_logger.log(output_name, provenance)
 
 
 if __name__ == '__main__':
