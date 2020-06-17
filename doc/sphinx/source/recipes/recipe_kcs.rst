@@ -31,6 +31,10 @@ In the second diagnostic, for for both the control and future periods, the 8 EC-
 3. Use a monte-carlo method to make a final selection of 8 resamples with minimal reuse of the same ensemble member/segment.
 
 
+.. note::
+    We highly recommend using the options described in :ref:`rerunning`. The speed bottleneck for the first diagnostic is the preprocessor. In the second diagnostic, step 1 is most time consuming, whereas steps 2 and 3 are likely to be repeated several times. Therefore, intermediate files are saved after step 1, and the diagnostic will automatically detect and use them if the :code:`-i` flag is used.
+
+
 Available recipes and diagnostics
 ---------------------------------
 
@@ -67,7 +71,7 @@ Diagnostics:
     .. code-block:: yaml
 
         scenarios:
-          ML:
+          ML_MOC:
             description: "Moderate / low changes in seasonal temperature & precipitation"
             global_dT: 1.0
             scenario_year: 2050
@@ -89,11 +93,12 @@ The diagnostic :code:`global matching` produces a scenarios table like the one b
 
 .. code-block:: python
 
-         year percentile   cmip_dt period_bounds           target_dt  pattern_scaling_factor
-      0  2050       Mean  1.494123  [2055, 2084]   1.496281513828891                0.998557
-      1  2050     Median  1.434082  [2051, 2080]  1.4258415170339225                1.005779
-      2  2085       Mean  1.916866  [2085, 2114]   1.877538437763913                1.020946
-      3  2085     Median  1.383674  [2049, 2078]  1.3914389868132169                0.994419
+       year percentile  cmip_dt period_bounds  target_dt  pattern_scaling_factor
+    0  2050       Mean     1.45  [2039, 2068]       1.44                    1.01
+    1  2050     Median     1.41  [2038, 2067]       1.41                    1.00
+    2  2085       Mean     2.44  [2073, 2102]       2.44                    1.00
+    3  2085     Median     2.28  [2067, 2096]       2.29                    1.00
+
 
 which is printed to the log file and also saved as a csv-file :code:`scenarios.csv`.
 Additionally, a figure is created showing the CMIP spread in global temperature change,
@@ -103,9 +108,32 @@ AND highlighting the selected steering parameters and resampling periods:
 .. figure::  /recipes/figures/kcs/global_matching.png
    :align:   center
 
+The diagnostic :code:`local_resampling` procudes a number of output files:
 
-.. TODO Add second diagnostic output
+* :code:`season_means_<scenario>.nc`: intermediate results, containing the season means for each segment of the original target model ensemble.
+* :code:`top1000_<scenario>.csv`: intermediate results, containing the 1000 combinations that have been selected based on winter mean precipitation.
+* :code:`indices_<scenario>.csv`: final resuls, showing the final set of resamples as a table:
 
+  .. code-block:: python
+
+                      control                                                      future
+                    Segment 0 Segment 1 Segment 2 Segment 3 Segment 4 Segment 5 Segment 0 Segment 1 Segment 2 Segment 3 Segment 4 Segment 5
+      Combination 0         0         1         6         1         4         6         6         4         1         5         5         6
+      Combination 1         4         6         0         2         1         3         6         5         7         2         5         6
+      Combination 2         2         0         2         7         3         4         4         7         5         5         5         2
+      Combination 3         6         7         0         6         7         7         4         7         6         0         5         4
+      Combination 4         5         1         6         6         4         6         6         7         7         2         5         6
+      Combination 5         2         6         5         2         1         3         7         5         5         1         5         5
+      Combination 6         6         3         5         1         7         7         7         4         6         0         5         5
+      Combination 7         4         0         4         7         3         4         4         4         5         6         5         2
+
+* Provenance information: bibtex, xml, and/or text files containing citation information are stored alongside the final result and the final figure.
+  The final combinations only derive from the target model data, whereas the figure also uses CMIP data.
+* A figure used to validate the final result, reproducing figures 5 and 6 from Lenderink et al.:
+
+.. _fig_kcs_local_validation:
+.. figure::  /recipes/figures/kcs/local_validation_2085.png
+   :align:   center
 
 
 References

@@ -286,7 +286,7 @@ def _best_subset(combinations, n_sample=8):
 
     # Store the indices in a nice dataframe
     _, n_segments = combinations.shape
-    best_combination = pd.DataFrame(
+    best_subset = pd.DataFrame(
         data=None,
         columns=[f'Segment {x}' for x in range(n_segments)],
         index=[f'Combination {x}' for x in range(n_sample)])
@@ -303,12 +303,13 @@ def _best_subset(combinations, n_sample=8):
             penalty += _penalties(counts).sum()
         if penalty < lowest_penalty:
             lowest_penalty = penalty
-            best_combination.loc[:, :] = subset
+            best_subset.loc[:, :] = subset
 
-    return best_combination
+    return best_subset
 
 
-def select_final_subset(cfg, subsets, n_samples=8):
+def select_final_subset(cfg, subsets, n_samples=8, prov=None):
+    """Select sample with minimal reuse of ensemble segments."""
     all_scenarios = {}
     for scenario, dataframes in subsets.items():
         # Make a table with the final indices
@@ -329,6 +330,11 @@ def select_final_subset(cfg, subsets, n_samples=8):
         LOGGER.info("Selected recombinations for scenario %s: \n %s", scenario,
                     table)
         LOGGER.info('Output stored as %s', filename)
+
+        # Write provenance information
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(filename, prov)
+
 
     return all_scenarios
 
@@ -438,14 +444,14 @@ def make_plots(cfg, scenario_tables):
                 for name, info in cfg['scenarios'].items():
                     if year == info['scenario_year']:
                         climate = climates[name].sel(season=season)[variable]
-                        axes.plot(xlocs, climate, label=name)
+                        axes.plot(xlocs, climate, lw=3, label=name)
 
                 axes.set_xticks(xlocs)
                 axes.set_xticklabels([f'P{100*x:02.0f}' for x in percentiles])
         subplots[0, 0].set_ylabel('change (%)')
         subplots[1, 0].set_ylabel('change (K)')
         subplots[1, 1].legend()
-        filename = get_plot_filename(f'envelope_figure_{year}', cfg)
+        filename = get_plot_filename(f'local_validation_{year}', cfg)
         fig.suptitle(f'Year: {year}')
         fig.savefig(filename, bbox_inches='tight', dpi=300)
         LOGGER.info("Envelope figure stored as %s", filename)
@@ -491,12 +497,7 @@ def main(cfg):
     subsets = get_percentile_subsets(cfg, segment_season_means, top1000s)
 
     # Step 3
-    scenarios = select_final_subset(cfg, subsets, n_samples=8)
-
-    # Write provenance information (only used target model data so far)
-    filename = get_diagnostic_filename('all_scenarios', cfg)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance)
+    scenarios = select_final_subset(cfg, subsets, n_samples=8, prov=provenance)
 
     # Step 4: Plot the results
     if cfg['write_plots']:

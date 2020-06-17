@@ -89,7 +89,7 @@ def make_plot(metadata, scenarios, cfg):
         dataset = xr.open_dataset(filename)
         if not 'MultiModel' in filename:
             ax.plot(dataset.time.dt.year, dataset.tas.values,
-                    c='lightgrey', lw=.5, label=cmip_legend_label)
+                    c='grey', alpha=0.3, lw=.5, label=cmip_legend_label)
             cmip_legend_label = "_nolegend_"  # prevent repeated labels
         else:
             statistic = 'CMIP ' + Path(filename).stem.split('_')[0][10:]
@@ -131,7 +131,8 @@ def save(output, cfg, provenance):
     scenarios = pd.DataFrame(output)
     filename = get_diagnostic_filename('scenarios', cfg, extension='csv')
     scenarios.to_csv(filename)
-    print(scenarios)
+    import IPython; IPython.embed()
+    print(scenarios.round(2))
     print(f"Output written to {filename}")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance)
@@ -159,7 +160,7 @@ def main(cfg):
             'percentile': percentile,
             'cmip_dt': cmip_dt,
             'period_bounds': bounds,
-            'target_dt': target_dt,
+            'target_dt': float(target_dt),
             'pattern_scaling_factor': cmip_dt / target_dt
         }
         scenarios.append(scenario)

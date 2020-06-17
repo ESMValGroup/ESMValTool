@@ -17,19 +17,181 @@ documentation:
 
 
 cmip5: &cmip5 #TODO: run the second diagnostics with this selection
+    # for historical r(1:3)i1p1 but not for future
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
 
+    # for historical r(1:3)i1p1 but not for future
   - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
 
-  - {dataset: CanESM2, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p1", start_year: 1961, end_year: 2099}
-
-  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: "r(1:10)i1p1", start_year: 1961, end_year: 2099}
-
-  - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
-  - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: BNU-ESM,project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+    # for historical r1i2p2 and  r1i2p1 but not for future
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: CESM1-BGC, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: CESM1-BGC, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: CESM1-CAM5, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CESM1-CAM5, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CESM1-CAM5, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+
+    # for historical r(1:7)i1p1 but not for future
+  - {dataset: CESM1-WACCM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(2:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CESM1-WACCM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(2:4)i1p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: CMCC-CESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: CMCC-CM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: CMCC-CM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: CMCC-CMS, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: CMCC-CMS, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+    # for historical r(1:10)i1p1 but not for future
+  - {dataset: CNRM-CM5, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: CNRM-CM5, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:2)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CNRM-CM5, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r4i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: CNRM-CM5, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r6i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: CNRM-CM5, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r10i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:10)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:10)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:10)i1p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: CSIRO-Mk3L-1-2, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:3)i2p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: CanESM2, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CanESM2, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r(1:5)i1p1, start_year: 1961, end_year: 2099}
+
+    # for historical r(1:5)i1p1 but not for future
+  - {dataset: FGOALS-g2, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: FGOALS-g2, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: FIO-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: FIO-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: FIO-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+
+    # for historical r(1:5)i1p1 but not for future
+  - {dataset: GFDL-CM3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GFDL-CM3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r5i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GFDL-CM3, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GFDL-CM3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: GFDL-ESM2G, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GFDL-ESM2G, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GFDL-ESM2G, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: GFDL-ESM2M, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GFDL-ESM2M, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GFDL-ESM2M, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: GISS-E2-H-CC, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-H-CC, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p1", start_year: 1961, end_year: 2099}
+    # for historical r(1:6)i1p2 but not for future
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p2", start_year: 1961, end_year: 2099}
+  # for future r(1:6)i1p3 but not for historical
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p3", start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p2, start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p3, start_year: 1961, end_year: 2099}
+    # for future r(1:2)i1p1 but not for historical
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p2, start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:2)i1p3", start_year: 1961, end_year: 2099}
+
+  - {dataset: GISS-E2-R-CC, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-R-CC, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:6)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:2)i1p1", start_year: 1961, end_year: 2099}
+    # for historical r(1:6)i1p2 but not for future
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p2", start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p2, start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:6)i1p3", start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r1i1p(1:3)", start_year: 1961, end_year: 2099}
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:2)i1p3", start_year: 1961, end_year: 2099}
+
+  - {dataset: HadGEM2-AO, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: HadGEM2-AO, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: HadGEM2-AO, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: HadGEM2-CC, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: HadGEM2-CC, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+
+    # for historical r(1:5)i1p1 but not for future
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(2:4)i1p1", start_year: 1961, end_year: 2099}
+
+    # for historical r(1:6)i1p1 but not for future
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+
+    # for historical r(1:3)i1p1 but not for future
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+     # for rcp45 r(1:9)i1p1 but not for historical
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: MIROC-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: MIROC-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: MIROC-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+     # for historical r(1:5)i1p1 but not for future
+  # - {dataset: MIROC5, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}  # historical ends in 2012!
+  # - {dataset: MIROC5, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+  # - {dataset: MIROC5, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2080}
+
+    # for historical r(1:5)i1p1 but not for future
+  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: MPI-ESM-MR, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:3)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: MPI-ESM-MR, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+    # for historical r(1:3)i1p1 but not for future
+  - {dataset: MRI-CGCM3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: MRI-CGCM3, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: MRI-CGCM3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: MRI-ESM1, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+    # for historical r(1:3)i1p1 but not for future
+  - {dataset: NorESM1-M, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: NorESM1-M, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: NorESM1-M, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: NorESM1-ME, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: NorESM1-ME, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: NorESM1-ME, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+    # for historical r(1:3)i1p1 but not for future
+  - {dataset: bcc-csm1-1-m, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+    # for historical r(1:3)i1p1 but not for future
+  - {dataset: bcc-csm1-1, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: bcc-csm1-1, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: bcc-csm1-1, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: inmcm4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: inmcm4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
 
 target: &target
   # - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
@@ -118,13 +280,39 @@ diagnostics:
         scenarios:  # see Table 1 of the supplementary material
           ML_MOC:
             description: "Moderate warming / low changes in seasonal temperature & precipitation"
-            global_dT: 1.0  # This is an approximate number that comes from the first diagnostic (not used)
-            scenario_year: 2050  # Middle of century/MOC
-            resampling_period: [2021, 2050]  # This also comes from the first diagnostic
-            dpr_winter: 4  # 4% per global_dT (8*dT for the "h" scenarios)
+            global_dT: 1.0
+            scenario_year: 2050
+            resampling_period: [2021, 2050]
+            dpr_winter: 4
             pr_summer_control: [25, 55]
             pr_summer_future: [45, 75]
             tas_winter_control: [50, 80]
             tas_winter_future: [20, 50]
             tas_summer_control: [0, 100]
             tas_summer_future: [0, 50]
+
+          ML_EOC:
+            description: "Moderate warming / low changes in seasonal temperature & precipitation"
+            global_dT: 1.5
+            scenario_year: 2085
+            resampling_period: [2031, 2060]
+            dpr_winter: 6
+            pr_summer_control: [10, 40]
+            pr_summer_future: [60, 90]
+            tas_winter_control: [50, 80]
+            tas_winter_future: [20, 50]
+            tas_summer_control: [0, 100]
+            tas_summer_future: [0, 50]
+
+          WH_EOC:
+            description: "High warming / high changes in seasonal temperature & precipitation"
+            global_dT: 3.0
+            scenario_year: 2085
+            resampling_period: [2066, 2095]
+            dpr_winter: 24
+            pr_summer_control: [60, 100]
+            pr_summer_future: [0, 40]
+            tas_winter_control: [20, 50]
+            tas_winter_future: [50, 80]
+            tas_summer_control: [10, 50]
+            tas_summer_future: [60, 100]
