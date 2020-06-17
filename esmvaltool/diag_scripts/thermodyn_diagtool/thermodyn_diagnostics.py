@@ -68,7 +68,8 @@ production related to the kinetic energy dissipation is provided.
 PREREQUISITES
 
 The program shares the same prerequisites with the overall ESMValTool
-architecture (see http://esmvaltool.readthedocs.io/en/latest/install.html)
+architecture
+(see https://docs.esmvaltool.org/en/latest/quickstart/installation.html)
 
 USAGE
 
@@ -98,7 +99,7 @@ USAGE
    The pre-processing modules of ESMValTool scheme will take care of
    converting known grids and recognized datasets to CMOR standards. For a
    a list of known formats, see
-      http://esmvaltool.readthedocs.io/en/latest/running.html#tab-obs-dat
+      https://docs.esmvaltool.org/en/latest/input.html#observations
 
 2: A configuration template is available in the ESMValTool release. Set your
   own paths to local directories here. Input datasets are read in MODELPATH,
