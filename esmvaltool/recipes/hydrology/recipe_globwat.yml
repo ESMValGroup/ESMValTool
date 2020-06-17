@@ -16,15 +16,15 @@ documentation:
 
 preprocessors:
   general: &general
-    # mask_landsea:
-    #   mask_out: sea
+    mask_landsea:
+      mask_out: "sea"
       # fx_variables: [{'short_name': 'sftlf', 'exp': 'piControl'}, {'short_name':
                     # 'sftof', 'exp': 'piControl'}]
-    regrid:
-      target_grid: 0.1x0.1 # TODO: change the target to 0.083333*0.083333
-      lon_offset: true
-      lat_offset: true
-      scheme: nearest
+    # regrid:
+    #   target_grid: 0.1x0.1 # TODO: change the target to 0.083333*0.083333
+    #   lon_offset: true
+    #   lat_offset: true
+    #   scheme: nearest
     # TODO: check the units 
     # As stated by the model developers the input rasters are in mm
     # convert_units:
