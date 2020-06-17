@@ -10,13 +10,12 @@ documentation:
     - lenderink14erl
 
   authors:
-    # TODO: Add Evert to config_developers
-    # - rol_evert
+    - rol_evert
     - kalverla_peter
     - alidoost_sarah
 
 
-cmip5: &cmip5 #TODO: run the second diagnostics with this selection
+cmip5: &cmip5
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
 
