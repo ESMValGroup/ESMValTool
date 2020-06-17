@@ -10,7 +10,7 @@ documentation:
     http: //www.fao.org/nr/water/aquamaps/
   # TODO: add abdolllahi_banafsheh to authors 
   # I added abdollahi_banafsheh to config-references.yml
-  authors: ['alidoost_sarah']
+  authors: ['abdollahi_banafsheh','alidoost_sarah']
   projects: ['ewatercycle']
   references: ['acknow_project']
 
