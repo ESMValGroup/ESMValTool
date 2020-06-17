@@ -87,7 +87,7 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 (Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
 
-To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://esmvaltool.readthedocs.io/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
+To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
 
 
 Supported datasets
