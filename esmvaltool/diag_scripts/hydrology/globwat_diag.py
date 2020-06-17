@@ -10,7 +10,7 @@ import pandas as pd
 import os
 import os.path
 
-# import subprocess
+import subprocess
 from esmvalcore import preprocessor as preproc
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
