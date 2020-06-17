@@ -45,15 +45,15 @@ def _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
                  / (all_drought_obs + all_drought_hist_mean) * 200)
 
     # Plot multi model means
-    _plot_multi_model_maps(cfg, all_drought_hist_mean, lats, lons,
+    _plot_multi_model_maps(cfg, all_drought_hist_mean, [lats, lons],
                            input_filenames, 'Historic')
-    _plot_multi_model_maps(cfg, all_drought_obs, lats, lons,
+    _plot_multi_model_maps(cfg, all_drought_obs, [lats, lons],
                            input_filenames, 'Observations')
-    _plot_multi_model_maps(cfg, perc_diff, lats, lons,
+    _plot_multi_model_maps(cfg, perc_diff, [lats, lons],
                            input_filenames, 'Difference')
 
 
-def ini_time_series_plot(cfg, cube, area):
+def ini_time_series_plot(cfg, cube, area, filename):
     """Set up cube for time series plot."""
     coords = ('longitude', 'latitude')
     if area == 'Bremen':
@@ -71,7 +71,7 @@ def ini_time_series_plot(cfg, cube, area):
                    1]).collapsed(coords, iris.analysis.MEAN,
                                  weights=cube_grid_areas))
 
-    plot_time_series_spei(cfg, cube4, area)
+    plot_time_series_spei(cfg, cube4, filename, area)
 
 
 def main(cfg):
@@ -124,8 +124,8 @@ def main(cfg):
             all_drought = np.full(shape_all, np.nan)
             first_run = 0
 
-        ini_time_series_plot(cfg, cube, 'Bremen')
-        ini_time_series_plot(cfg, cube, 'Nigeria')
+        ini_time_series_plot(cfg, cube, 'Bremen', spei_file)
+        ini_time_series_plot(cfg, cube, 'Nigeria', spei_file)
 
         drought_show = _get_drought_data(cfg, cube)
 

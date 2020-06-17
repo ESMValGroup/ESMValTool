@@ -54,8 +54,8 @@ def _get_and_plot_multimodel(cfg, cube, all_drought, input_filenames):
     # Plot multi model means
     for tstype in ['Historic', 'Future', 'Difference']:
         _plot_multi_model_maps(cfg, all_drought_mean[tstype],
-                               cube.coord('latitude').points,
-                               cube.coord('longitude').points,
+                               [cube.coord('latitude').points,
+                                cube.coord('longitude').points],
                                input_filenames,
                                tstype)
 
