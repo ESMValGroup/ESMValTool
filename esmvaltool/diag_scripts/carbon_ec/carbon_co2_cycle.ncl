@@ -150,7 +150,7 @@ begin
   betaGPP = new((/2, dim_MOD-1/), float)
   rcGPP   = new((/(dim_MOD-1)*2/), float)
 
-  betaGPP(:, :dim_MOD-2) = beta
+  betaGPP(:, :) = beta
   rcGPP(1::2) = betaGPP@rcgpp
 
   rcGPP!0 = "models"
@@ -211,6 +211,8 @@ begin
   delete(PDF)
   delete(minx)
   delete(maxx)
+print(yBETA)
+print(xCO2)
 
   ; Plot section
   ; -----------------------------------------------------------
@@ -221,7 +223,7 @@ begin
   marker_sizes  = 0.02
   marker   = new(dim_MOD, "graphic")
 
-  ; Create Plots 1:
+  ; Create Plots 1a:
   ; -----------------------------------------------------------
   XStg    = "Annual CO~B~2~N~ [ppmv]"
   YStg    = "CO~B~2~N~ Amplitude [ppmv]"
@@ -274,14 +276,25 @@ begin
   frame(wks)
   delete([/plot, XStg, data_arr/])
 
+  ; Create Plot 1b:
+  ; ----------------------------------------------------------
   tmp_orig = datasetnames
-  tmpb = rcc(:dim_MOD-1, 1)
-  tmpb_orig = rcc(:, 1)
-
-  rcc(:, 1) = tmpb(::-1)
-  rcc@info = info0
   tmpm = datasetnames
-  datasetnames = tmpm(::-1)
+  tmpb = rcc(:, 1)
+  tmpb_orig = rcc(:, 1)
+  qsort(rcc(:, 1))
+
+  do imod = 0, dim_MOD-1
+    id         = ind(tmpb .eq. rcc(imod, 1))
+    tmpm(imod) = datasetnames(id)
+    delete(id)
+  end do
+  datasetnames = tmpm
+
+  ;rcc(:, 1) = tmpb(::-1)
+  rcc@info = info0
+  ;tmpm = datasetnames
+  ;datasetnames = tmpm(::-1)
 
   YStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
 
@@ -297,13 +310,14 @@ begin
 
   plot = barchart(wks, data_arr, var, input_file_info)
   datasetnames = tmp_orig
+  rcc(:, 1) = tmpb_orig
   draw(plot)
   frame(wks)
 
   datasetnames = tmp_orig
   delete([/plot, tmpm, tmpb, tmp_orig, data_arr/])
 
-  ; Create Plots 2:
+  ; Create Plots 3a:
   ; ----------------------------------------------------------
   tmpm = datasetnames(idat)
   delete(datasetnames)
@@ -346,15 +360,17 @@ begin
   xin = array_append_record(xfit_bco2, xfit_bco2(::-1), 0)
   yin = array_append_record(yfit_bco2_std, yfit_bco2_std(::-1), 0)
   add_prediction_error(wks, plot, peres, xin, yin)
-  delete([/xin, yin/])
+  delete([/data_arr, xin, yin, peres/])
 
   if (rcc(iref, 1).ne.0) then
+print(rcc(iref, 1))
+print(stdrc(iref, 1))
       xin = (/rcc(iref, 1) + stdrc(iref, 1), \
              rcc(iref, 1) + stdrc(iref, 1), \
              rcc(iref, 1) - stdrc(iref, 1), \
              rcc(iref, 1) - stdrc(iref, 1)/)
       yin = (/500, -500, -500, 500/)
-      add_prediction_error(wks, plot, False, xin, yin)
+      add_prediction_error(wks, plot, peres, xin, yin)
       delete([/xin, yin/])
   end if
 
@@ -367,7 +383,7 @@ begin
   ; add colored markers
   mres = True
   mres@xyMarker      = 0
-  do imod = 0, dim_MOD-1
+  do imod = 2, dim_MOD-1
     mres@xyMarkerColor = colors(imod)
     add_markers(wks, plot, mres, xCO2(0, imod), yBETA(0, imod))
   end do
@@ -378,9 +394,9 @@ begin
   add_errorbar(wks, plot, eres, xCO2(:, 2:), yBETA(:, 2:))
   draw(plot)
   frame(wks)
-  delete(plot)
+  delete([/eres, mres, lres/])
 
-  ; Create Plots 3:
+  ; Create Plots 3b:
   ; -----------------------------------------------
   bres  = True
   bres@gsnDraw          = False
