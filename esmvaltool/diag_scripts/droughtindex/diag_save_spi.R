@@ -43,6 +43,7 @@ ncwritespi <- function(yml, m, data, wdir){
   }
   nc_close(idw)
   nc_close(ncid_in)
+  return(onam)
 }
 
 whfcn <- function(x, ilow, ihigh){
@@ -51,8 +52,11 @@ whfcn <- function(x, ilow, ihigh){
 
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
+metadata <- read_yaml(params$input_files)
+modfile <- names(metadata)
 wdir <- params$work_dir
 dir.create(wdir, recursive = TRUE)
+rundir <- params$run_dir
 pdir <- params$plot_dir
 dir.create(pdir, recursive = TRUE)
 var1_input <- read_yaml(params$input_files[1])
@@ -61,6 +65,11 @@ nmods <- length(names(var1_input))
 
 fillfloat <- 1.e+20
 as.single(fillfloat)
+
+# setup provenance file and list
+provenance_file <- paste0(rundir, "/", "diagnostic_provenance.yml")
+provenance <- list()
+
 
 refnam <- var1_input[1][[1]]$reference_dataset
 n <- 1
@@ -79,6 +88,18 @@ ref <- getnc(var1_input, nref, lat = FALSE)
 refmsk <- apply(ref, c(1, 2), FUN = mean, na.rm = TRUE)
 refmsk[refmsk > 10000] <- fillfloat
 refmsk[!is.na(refmsk)] <- 1
+
+xprov <- list(
+  ancestors = list(""),
+  authors = list("weigel_katja"),
+  references = list("mckee93proc"),
+  projects = list("eval4cmip"),
+  caption = "",
+  statistics = list("other"),
+  realms = list("atmos"),
+  themes = list("phys"),
+  domains = list("global")
+)
 
 for (mod in 1:nmods){
    v1 <- getnc(var1_input, mod)
@@ -101,5 +122,9 @@ for (mod in 1:nmods){
    v1_spi[is.infinite(v1_spi)] <- fillfloat
    v1_spi[is.na(v1_spi)] <- fillfloat
    v1_spi[v1_spi > 10000] <- fillfloat
-   ncwritespi(var1_input, mod, v1_spi, wdir)
+   filename <- ncwritespi(var1_input, mod, v1_spi, wdir)
+   xprov$caption <- "SPI index per grid point."
+   xprov$ancestors <- modfile[mod]
+   provenance[[filename]] <- xprov
 }
+write_yaml(provenance, provenance_file)
