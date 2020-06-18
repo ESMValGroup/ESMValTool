@@ -31,10 +31,6 @@ In the second diagnostic, for both the control and future periods, the 8 EC-Eart
 3. Use a Monte-Carlo method to make a final selection of 8 resamples with minimal reuse of the same ensemble member/segment.
 
 
-.. note::
-    We highly recommend using the options described in :ref:`rerunning`. The speed bottleneck for the first diagnostic is the preprocessor. In the second diagnostic, step 1 is most time consuming, whereas steps 2 and 3 are likely to be repeated several times. Therefore, intermediate files are saved after step 1, and the diagnostic will automatically detect and use them if the :code:`-i` flag is used.
-
-
 Available recipes and diagnostics
 ---------------------------------
 
@@ -47,6 +43,8 @@ Diagnostics are stored in diag_scripts/kcs/
 - global_matching.py
 - local_resampling.py
 
+.. note::
+    We highly recommend using the options described in :ref:`rerunning`. The speed bottleneck for the first diagnostic is the preprocessor. In the second diagnostic, step 1 is most time consuming, whereas steps 2 and 3 are likely to be repeated several times. Therefore, intermediate files are saved after step 1, and the diagnostic will automatically detect and use them if the :code:`-i` flag is used.
 
 User settings
 -------------
