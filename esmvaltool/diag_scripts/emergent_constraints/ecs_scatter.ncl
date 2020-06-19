@@ -553,256 +553,6 @@ begin
 end
 
 ; =============================================================================
-; Function ltmi
-; Calculate lower tropospheric mixing index (LTMI) for one dataset.
-;
-; Arguments
-; - dataset: names of datasets
-; - variables: names of available variables
-; - ldebug: output debug data as netCDF (true, false)
-;
-; Reference
-; - Sherwood et al. (2014)
-; =============================================================================
-
-function ltmi(dataset[*]:string, variables[*]:string, ldebug:logical)
-begin
-  hur_idx = ind(variables.eq."hur")
-  ta_idx = ind(variables.eq."ta")
-  wap_idx = ind(variables.eq."wap")
-
-  ; vertical velocity (at 850, 700, 600, 500, 400 hPa)
-
-  atts = True
-  atts@short_name = variables(wap_idx)
-  atts@dataset = dataset(wap_idx)
-  info = select_metadata_by_atts(input_file_info, atts)
-  delete(atts)
-
-  omega = read_data(info[0])
-  delete(info)
-
-  omega_mean = time_operations(omega, -1, -1, "average", "annualclim", True)
-
-  ; grid boxes with upward motion at 500 hPa (annual mean)
-  ascend = where(omega_mean({50000}, :, :).lt.0, \
-                 -1.0 * omega_mean({50000}, :, :), omega_mean@_FillValue)
-  ascend@_FillValue = omega_mean@_FillValue
-  ascend!0 = "lat"
-  ascend!1 = "lon"
-  ascend&lat = omega_mean&lat
-  ascend&lon = omega_mean&lon
-
-  ; generate land-/sea-mask
-  a = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
-  lsdata = a->LSMASK
-  lsm0  = landsea_mask(lsdata, omega_mean&lat, omega_mean&lon)
-  lsm = where(lsm0.eq.0, 0, lsm0@_FillValue)
-  copy_VarMeta(lsm0, lsm)
-  delete(lsdata)
-  delete(lsm0)
-  delete(omega_mean)
-
-  ; upper quartile of the annual mean mid-tropospheric (500 hPa) ascent rate
-  ; in ascending regions (over the tropical ocean 30S-30N only)
-
-  ascend = ascend + lsm
-  ascend({-90.:-30.}, :) = ascend@_FillValue
-  ascend({30.:90.}, :) = ascend@_FillValue
-
-  statb = stat_dispersion(ascend, False)
-  q25 = statb(10)
-
-  ; mask all grid cells with ascend rates lower than the upper quartile
-  omgmask = where(ascend.ge.q25, 0.0, ascend@_FillValue)
-  omgmask@_FillValue = ascend@_FillValue
-
-  ; temperature
-  atts = True
-  atts@short_name = variables(ta_idx)
-  atts@dataset = dataset(ta_idx)
-  info = select_metadata_by_atts(input_file_info, atts)
-  delete(atts)
-
-  ta = read_data(info[0])
-  delete(info)
-
-  ta_mean = time_operations(ta, -1, -1, "average", "annualclim", True)
-  delete(ta)
-
-  ; relative humidity
-  atts = True
-  atts@short_name = variables(hur_idx)
-  atts@dataset = dataset(hur_idx)
-  info = select_metadata_by_atts(input_file_info, atts)
-  delete(atts)
-
-  rh = read_data(info[0])
-  delete(info)
-
-  rh_mean = time_operations(rh, -1, -1, "average", "annualclim", True)
-  delete(rh)
-
-  ; -------------------------------------------------------------------------
-  ; if needed, regrid (horizontally) all fields to common grid
-  ; (needed since some models provide variables on inconsistent grids)
-  ; for definition of the common grid, the grid used for omega (mask) is used
-  ; -------------------------------------------------------------------------
-
-  do i = 0, 1
-    if (i.eq.0) then
-      var = ta_mean
-      delete(ta_mean)
-    else
-      var = rh_mean
-      delete(rh_mean)
-    end if
-
-    xregrid = False  ; lon
-    yregrid = False  ; lat
-    dnames = getVarDimNames(var)
-    if (any(dnames.eq."lon")) then
-      xregrid = True
-      if (dimsizes(var&lon).eq.dimsizes(omega&lon)) then
-        if (max(abs(var&lon - omega&lon)).lt.1.0d-5) then
-          xregrid = False
-        end if
-      end if
-    end if
-    if (any(dnames.eq."lat")) then
-      yregrid = True
-      if (dimsizes(var&lat).eq.dimsizes(omega&lat)) then
-        if (max(abs(var&lat - omega&lat)).lt.1.0d-5) then
-          yregrid = False
-        end if
-      end if
-    end if
-    ; regrid horizontally (if necessary)
-    if (xregrid.and.yregrid) then
-      var_hreg = linint2_Wrap(var&lon, var&lat, var, True, \
-                              omega&lon, omega&lat, 0)
-    else if (xregrid.and..not.yregrid) then
-      dx = ind(dnames.eq."lon")
-      var_hreg = linint1_n_Wrap(var&lon, var, True, omega&lon, 0, dx)
-    else if (.not.xregrid.and.yregrid) then
-      dx = ind(dnames.eq."lat")
-      var_hreg = linint1_n_Wrap(var&lat, var, False, omega&lat, 0, dx)
-    else if (.not.xregrid .and. .not.yregrid) then
-      var_hreg = var
-    end if
-    end if
-    end if
-    end if
-
-    delete(var)
-    delete(dnames)
-
-    if (i.eq.0) then
-      ta_mean = var_hreg
-    else
-      rh_mean = var_hreg
-    end if
-
-    delete(var_hreg)
-  end do
-
-  ; -------------------------------------------------------------------------
-
-  ; calculate "S" = small-scale lower-tropospheric mixing
-  ; (CMOR standard unit for relative humidity (hur) is percent (%))
-
-  ; ((rh(700)-rh(850))/ 100% - (T(700)-T(850)) / 9) / 2
-
-  S = ((rh_mean({70000}, :, :) - rh_mean({85000}, :, :)) / 100.0 \
-       - (ta_mean({70000}, :, :) - ta_mean({85000}, :, :)) / 9.0) / 2.0
-
-  ; apply udraft mask + land-/sea-mask
-
-  S = S + omgmask + lsm
-  S!0 = "lat"
-  S!1 = "lon"
-  S&lat = ta_mean&lat
-  S&lon = ta_mean&lon
-
-  S_avg = area_operations(S, -90., 90., 0., 360., "average", True)
-
-  ; average omega at 850 hPa, 700 hPa
-  omega1 = (omega(:, {85000}, :, :) + omega(:, {70000}, :, :)) / 2.0
-  ; average omega at 600 hPa, 500 hPa, 400 hPa
-  omega2 = (omega(:, {60000}, :, :) + omega(:, {50000}, :, :) \
-            + omega(:, {40000}, :, :)) / 3.0
-  delta = omega2 - omega1
-
-  D1 = where((delta.gt.0.).and.(omega1.lt.0.), delta, 0.)
-  D2 = where(omega2.lt.0., -1. * omega2, 0.)
-
-  D1!0 = "time"
-  D1!1 = "lat"
-  D1!2 = "lon"
-  D1&time = omega&time
-  D1&lat = omega&lat
-  D1&lon = omega&lon
-
-  D2!0 = "time"
-  D2!1 = "lat"
-  D2!2 = "lon"
-  D2&time = omega&time
-  D2&lat = omega&lat
-  D2&lon = omega&lon
-
-  ; average over tropical ocean regions: 160W-30E, 30S-30N
-  ; (ocean grid cells only)
-
-  lsmC = conform_dims(dimsizes(D1), lsm, (/1, 2/))
-  D1 = D1 + lsmC
-  D2 = D2 + lsmC
-  delete(lsmC)
-
-  D1_avg = avg(area_operations(D1, -30., 30., 200., 30., "average", True))
-  D2_avg = avg(area_operations(D2, -30., 30., 200., 30., "average", True))
-
-  if (D2_avg.ne.0.) then
-    D_avg = D1_avg / D2_avg
-  else
-    D_avg = D@_FillValue
-  end if
-
-  ; optionally write debug output
-
-  if (ldebug) then
-    tmp = get_unique_values(dataset)
-    if (dimsizes(tmp) .eq. 1) then
-      refstr = tmp
-    else
-      refstr = tmp(0)
-      do i = 1, dimsizes(tmp) - 1
-        refstr = refstr + "_" + tmp(i)
-      end do
-    end if
-    fname = config_user_info@work_dir + "/debug_" + refstr + ".nc"
-    system("rm " + fname)
-    debugfile = addfile(fname, "c")
-    debugfile->S = S
-    debugfile->omgmask = omgmask
-    debugfile->ascend = ascend
-    debugfile->lsm = lsm
-    debugfile->delta = delta
-    debugfile->D1 = D1
-    debugfile->D2 = D2
-  end if
-
-  result = D_avg + S_avg  ; lower tropospheric mixing index
-
-  result@standard_name = "LTMI"
-  result@long_name = "lower_tropospheric_mixing_index"
-  result@units = "1"
-  result@S = S_avg
-  result@D = D_avg
-
-  return(result)
-end
-
-; =============================================================================
 ; Function sherwood_d
 ; Calculate Sherwood D index.
 ;
@@ -906,11 +656,32 @@ begin
     result = D@_FillValue
   end if
 
-  ; optionally write debug output
-
   result@standard_name = "Sherwood_D"
   result@long_name = "Sherwood D index"
   result@units = "1"
+
+  ; optionally write debug output
+
+  if (ldebug) then
+    tmp = get_unique_values(dataset)
+    if (dimsizes(tmp) .eq. 1) then
+      refstr = tmp
+    else
+      refstr = tmp(0)
+      do i = 1, dimsizes(tmp) - 1
+        refstr = refstr + "_" + tmp(i)
+      end do
+    end if
+    fname = config_user_info@work_dir + "/debug_D_" + refstr + ".nc"
+    system("rm " + fname)
+    debugfile = addfile(fname, "c")
+    debugfile->omgmask = omgmask
+    debugfile->ascend = ascend
+    debugfile->lsm = lsm
+    debugfile->delta = delta
+    debugfile->D1 = D1
+    debugfile->D2 = D2
+  end if
 
   return(result)
 end
@@ -1092,6 +863,57 @@ begin
   result@standard_name = "Sherwood_S"
   result@long_name = "Sherwood S index"
   result@units = "1"
+
+  ; optionally write debug output
+
+  if (ldebug) then
+    tmp = get_unique_values(dataset)
+    if (dimsizes(tmp) .eq. 1) then
+      refstr = tmp
+    else
+      refstr = tmp(0)
+      do i = 1, dimsizes(tmp) - 1
+        refstr = refstr + "_" + tmp(i)
+      end do
+    end if
+    fname = config_user_info@work_dir + "/debug_S_" + refstr + ".nc"
+    system("rm " + fname)
+    debugfile = addfile(fname, "c")
+    debugfile->S = S
+    debugfile->omgmask = omgmask
+    debugfile->ascend = ascend
+    debugfile->lsm = lsm
+  end if
+
+  return(result)
+end
+
+; =============================================================================
+; Function ltmi
+; Calculate lower tropospheric mixing index (LTMI) for one dataset.
+;
+; Arguments
+; - dataset: names of datasets
+; - variables: names of available variables
+; - ldebug: output debug data as netCDF (true, false)
+;
+; Reference
+; - Sherwood et al. (2014)
+; =============================================================================
+
+function ltmi(dataset[*]:string, variables[*]:string, ldebug:logical)
+begin
+
+  D_idx = sherwood_d(dataset, variables, ldebug)
+  S_idx = sherwood_s(dataset, variables, ldebug)
+
+  result = D_idx + S_idx  ; lower tropospheric mixing index
+
+  result@standard_name = "LTMI"
+  result@long_name = "lower_tropospheric_mixing_index"
+  result@units = "1"
+  result@S = S_idx
+  result@D = D_idx
 
   return(result)
 end
