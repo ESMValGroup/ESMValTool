@@ -99,8 +99,8 @@ def _get_cube(datasets, short_name):
     datasets = select_metadata(datasets, short_name=short_name)
     if len(datasets) != 1:
         raise ValueError(
-            f"Expected exactly one dataset with short_name '%s', got %d:\n%s",
-            short_name, len(datasets), datasets)
+            f"Expected exactly one dataset with short_name '{short_name}', "
+            f"got {len(datasets):d}:\n{datasets}")
     return iris.load_cube(datasets[0]['filename'],
                           ih.var_name_constraint(short_name))
 
