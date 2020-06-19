@@ -41,19 +41,19 @@ begin
   YEAR2 = 2020
 
   ; Selected variables (standard name)
-  VAR = (/"sm","sm"/)
+  VAR = (/"sm", "sm"/)
 
   ; Name in the raw data
-  NAME = (/"sm","sm"/)
+  NAME = (/"sm", "sm"/)
 
   ; MIP
-  MIP = (/"day","Lmon"/)
+  MIP = (/"day", "Lmon"/)
 
   ; Frequency
-  FREQ = (/"day","mon"/)
+  FREQ = (/"day", "mon"/)
 
   ; Name of frequency in filename
-  FREQNAME = (/"-DAILY-","-MONTHLY-"/)
+  FREQNAME = (/"-DAILY-", "-MONTHLY-"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
