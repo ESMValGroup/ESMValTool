@@ -65,7 +65,7 @@ def get_resampling_period(target_dts, cmip_dt):
     matches the cmip delta T for a specific year.
     Uses a 30-year rolling window to get the best match.
     """
-    target_dts = target_dts.rolling(time=30, center=True, min_periods=1).mean()
+    target_dts = target_dts.rolling(time=30, center=True, min_periods=30).mean()
     time_idx = abs(target_dts - cmip_dt).argmin(dim='time').values
     year = target_dts.isel(time=time_idx).year.values.astype(int)
     target_dt = target_dts.isel(time=time_idx).values.astype(float)
@@ -76,7 +76,7 @@ def _timeline(ax, yloc, interval, text):
     """Plot an interval near the bottom right of the plot."""
     xmin, xmax = interval
     xcenter = (xmin + xmax) / 2
-    xspan = xmax - xmin
+    xspan = (xmax - xmin) / 2  # use 'error bar: extends to both sides.
 
     # Later years should be located slightly higher:
     yloc = 0.05 + yloc/20
