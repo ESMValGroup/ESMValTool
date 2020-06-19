@@ -307,8 +307,9 @@ def _best_subset(combinations, n_sample=8):
     return best_subset
 
 
-def select_final_subset(cfg, subsets, n_samples=8, prov=None):
+def select_final_subset(cfg, subsets, prov=None):
     """Select sample with minimal reuse of ensemble segments."""
+    n_samples = cfg['n_samples']
     all_scenarios = {}
     for scenario, dataframes in subsets.items():
         # Make a table with the final indices
@@ -491,7 +492,7 @@ def main(cfg):
     subsets = get_percentile_subsets(cfg, segment_season_means, top1000s)
 
     # Step 3
-    scenarios = select_final_subset(cfg, subsets, n_samples=8, prov=provenance)
+    scenarios = select_final_subset(cfg, subsets, prov=provenance)
 
     # Step 4: Plot the results
     if cfg['write_plots']:
