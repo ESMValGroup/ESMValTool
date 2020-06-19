@@ -72,6 +72,18 @@ def get_resampling_period(target_dts, cmip_dt):
     return [year - 14, year + 15], target_dt
 
 
+def _timeline(ax, yloc, interval, text):
+    """Plot an interval near the bottom right of the plot."""
+    xmin, xmax = interval
+    xcenter = (xmin + xmax) / 2
+    xspan = xmax - xmin
+
+    # Later years should be located slightly higher:
+    yloc = 0.05 + yloc/20
+    ax.errorbar(xcenter, yloc, xerr=xspan, capsize=5, lw=2, capthick=2,
+                transform=ax.get_xaxis_transform(), c='r', label='Resampling periods')
+
+
 def make_plot(metadata, scenarios, cfg):
     """Make figure 3, left graph.
 
@@ -79,18 +91,12 @@ def make_plot(metadata, scenarios, cfg):
     steering variables in dark dots.
     """
     fig, ax = plt.subplots()
-    cmip_legend_label = 'CMIP members'
-    target_legend_label = cfg['target_model']
-    dotlabel = 'Scenario $\Delta T_{CMIP}$'
-    barlabel = 'Selected resamping period'
-
     for member in select_metadata(metadata, variable_group='tas_cmip'):
         filename = member['filename']
         dataset = xr.open_dataset(filename)
         if not 'MultiModel' in filename:
             ax.plot(dataset.time.dt.year, dataset.tas.values,
-                    c='grey', alpha=0.3, lw=.5, label=cmip_legend_label)
-            cmip_legend_label = "_nolegend_"  # prevent repeated labels
+                    c='grey', alpha=0.3, lw=.5, label='CMIP members')
         else:
             statistic = 'CMIP ' + Path(filename).stem.split('_')[0][10:]
             # e.g. get "CMIP Mean" from "path_to/file/MultiModelMean_Amon_tas....nc"
@@ -105,19 +111,18 @@ def make_plot(metadata, scenarios, cfg):
         dataset = xr.open_dataset(filename)
         if not 'MultiModel' in filename:
             ax.plot(dataset.time.dt.year, dataset.tas.values,
-                    c='blue', lw=1, label=target_legend_label)
-            target_legend_label = "_nolegend_"  # prevent repeated labels
+                    c='blue', lw=1, label=cfg['target_model'])
 
     # Add the scenario's with dots at the cmip dt and bars for the periods
-    for scenario in scenarios:
-        start, end = scenario['period_bounds']
-        dot = ax.scatter(scenario['year'],
-                         scenario['cmip_dt'], s=50, zorder=10, label=dotlabel)
-        ax.hlines(scenario['target_dt'], start, end, lw=3,  ls='--',
-                  colors=dot.get_facecolor()[0], zorder=10, label=barlabel)
-        dotlabel = barlabel = "_nolegend_"  # prevent repeated labels
+    dotlabel = r"Scenarios' steering $\Delta T_{CMIP}$"
+    for i, scenario in enumerate(scenarios):
+        ax.scatter(scenario['year'], scenario['cmip_dt'], s=50,
+                         zorder=10, color='r', label=dotlabel)
+        _timeline(ax, i, scenario['period_bounds'], scenario)
 
-    ax.legend()
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))  # dict removes dupes
+    ax.legend(by_label.values(), by_label.keys())
     ax.set_xlabel('Year')
     ax.set_ylabel(r'Global mean $\Delta T$ (K) w.r.t. reference period')
 
