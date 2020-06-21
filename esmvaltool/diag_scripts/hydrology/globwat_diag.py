@@ -15,9 +15,11 @@ from esmvalcore import preprocessor as preproc
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
-                                            group_metadata, run_diagnostic)
+                                            group_metadata, run_diagnostic,
+                                            select_metadata)
 
-logger = logging.getLogger(Path(__file__).name) #for test in python use '__file__'
+
+logger = logging.getLogger(Path('__file__').name) #for test in python use '__file__'
 
 
 def create_provenance_record():
@@ -109,57 +111,75 @@ def main(cfg):
     rsdt (toa_incoming_shortwave_flux)
     """
     input_metadata = cfg['input_data'].values()
+    # for checking the code in ipython I added print(input_metadata).
+    # Run the script and use print(input_metadata) in the log.txt as input_metadata
     print(input_metadata)
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
-
         
         # Processing variables and unit conversion
         # Unit of the fluxes in GlobWat should be in mm
-        # logger.info("Processing variable PET")
-        # pet = debruin_pet(
-        #     psl=all_vars['psl'],
-        #     rsds=all_vars['rsds'],
-        #     rsdt=all_vars['rsdt'],
-        #     tas=all_vars['tas'],
-        # )
-        # print(pet)
-    #     # Unit conversion 'kg m-3 s-1' to 'mm' precip (multiplied by second)
-    #     # get start year and end year 
+        logger.info("Processing variable PET")
+        pet = debruin_pet(
+            psl=all_vars['psl'],
+            rsds=all_vars['rsds'],
+            rsdt=all_vars['rsdt'],
+            tas=all_vars['tas'],
+        )
+        # Unit conversion 'kg m-3 s-1' to 'mm' precip (multiplied by second)
+        # get start year and end year 
 
-    #     coord_time = pet.coord('time')
-    #     start_year = coord_time.cell(0).point.year
-    #     end_year = coord_time.cell(-1).point.year 
+        coord_time = pet.coord('time')
+        start_year = coord_time.cell(0).point.year
+        end_year = coord_time.cell(-1).point.year 
         
-    #     # TODO: check the unit conversion by the preprocessor 
-    #     # TODO: if needed make a function for unit conversion 
-    #     year = start_year - 1
-    #     for j in range (end_year - start_year + 1):
-    #         year = year + 1
-    #         for i in range (0, 11):
-    #             nday = calendar.monthrange(year,i)[1]
-    #             if short_name == "pr" and mip == "Amon":
-    #                 cube.units = cube.units / 'mm'
-    #                 cube.data = cube.core_data() * nday * 86400
-    #             elif short_name == "evspsblpot":
-    #                 # to make potential evaporation by ERA5 positive,multiplied by -1
-    #                 if dataset == "ERA5":
-    #                     cube.units = cube.units / 'mm'
-    #                     cube.data = cube.core_data() * nday * -86400
-    #                 else:
-    #                     cube.units = cube.units / 'mm'
-    #                     cube.data = cube.core_data() * nday * 86400
-        
-    #     if short_name == "pr": 
-    #         if mip == "day":
-    #             cube.units = cube.units / 'mm'
-    #             cube.data = cube.core_data() * 86400
-        
-    #     #looping over time dimention, get time and data for each time
-    #     for i in range(0, len(cube.coord('time').points)):
-    #         n_month = str(coord_time.cell(i).point.month).zfill(2)
-    #         n_day_month = n_month + str(coord_time.cell(i).point.day).zfill(2)
+        # TODO: check the unit conversion by the preprocessor 
+        # TODO: if needed make a function for unit conversion 
+        year = start_year - 1
+        for j in range (end_year - start_year + 1):
+            year = year + 1
+            for i in range (1, 12):
+                nday = calendar.monthrange(year,i)[1]
+                for short_name in "pr", "evspsblpot":
+                    logger.info("Processing variable %s for dataset %s", short_name,
+                                dataset)
+                    for mip in "Amon", "day":
+                        logger.info("Processing variable %s for dataset %s", mip,
+                                    dataset)
+                        # Load preprocessed cubes for normal data 
+                        var = select_metadata(metadata, variable_group=short_name)[0]
+                        cube = iris.load_cube(var['filename'])
+                        print('cube.name', cube.name)
+                        print("cube banafsheh=",cube)
+                        if short_name == "pr" and mip == "Amon":
+                            cube.units = cube.units / 'mm'
+                            cube.data = cube.core_data() * nday * 86400
+                        elif short_name == "evspsblpot":
+                            # to make potential evaporation by ERA5 positive,multiplied by -1
+                            if dataset == "ERA5":
+                                cube.units = cube.units / 'mm'
+                                cube.data = cube.core_data() * nday * -86400
+                            else:
+                                cube.units = cube.units / 'mm'
+                                cube.data = cube.core_data() * nday * 86400
+            
+                        if short_name == "pr" and mip == "day":
+                                cube.units = cube.units / 'mm'
+                                cube.data = cube.core_data() * 86400
+                            
+        # # Load preprocessed cubes for normal data 
+        # var = select_metadata(metadata, variable_group=short_name)[0]
+        # cube = iris.load_cube(var['filename'])
+        # print("cube banafsheh=",cube)
 
+        # #looping over time dimention, get time and data for each time
+        # for i in range(0, len(cube.coord('time').points)):
+        #     n_month = str(coord_time.cell(i).point.month).zfill(2)
+        #     # n_day_month = n_month + str(coord_time.cell(i).point.day).zfill(2)
+        #     nday = calendar.monthrange(year,n_month)[1]         
+        #     for daynumber in range(1, nday+1): 
+        #         n_day_month = str(n_month) + str(daynumber).zfill(2)      
+        #         print(n_day_month)
     #         df = pandas.DataFrame(cube.data[i])
     #         data_slice = df.replace(numpy.nan, -9999)
     #         # make data structure
