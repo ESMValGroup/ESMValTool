@@ -28,7 +28,7 @@ from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
 )
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
     _get_ancestor_files,
-    get_provenance_record,
+    _get_provenance_record,
 )
 
 
@@ -413,12 +413,12 @@ def main(diag_config):
         source_label=diag_config['obs_info']['source_label'],
         grid_label=diag_config['obs_info']['grid_label'])
 
-    provenance_record = get_provenance_record(
+    provenance_record = _get_provenance_record(
         "Comparison of latitudinal (zonal) variations of pearson"
-        "correlation between turnover time and climate: turnover"
-        "time and precipitation, controlled for temperature"
-        "(left) and vice-versa (right). Reproduces figures 2c"
-        "and 2d in Carvalhais et al. (2014).", ['corr', 'perc'], ['zonal'],
+        " correlation between turnover time and climate: turnover"
+        " time and precipitation, controlled for temperature"
+        " (left) and vice-versa (right). Reproduces figures 2c"
+        " and 2d in Carvalhais et al. (2014).", ['corr', 'perc'], ['zonal'],
         _get_ancestor_files(diag_config, 'tau_ctotal'))
 
     if diag_config['write_netcdf']:

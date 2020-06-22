@@ -24,7 +24,7 @@ from esmvaltool.diag_scripts.land_carbon_cycle.shared import (
 )
 from esmvaltool.diag_scripts.land_carbon_cycle.provenance import (
     _get_ancestor_files,
-    get_provenance_record,
+    _get_provenance_record,
 )
 
 
@@ -192,11 +192,11 @@ def main(diag_config):
         source_label=diag_config['obs_info']['source_label'],
         grid_label=diag_config['obs_info']['grid_label'])
 
-    provenance_record = get_provenance_record(
+    provenance_record = _get_provenance_record(
         "Comparison of latitudinal (zonal) variations of observation-based and"
-        "modelled ecosystem carbon turnover time. The zonal turnover time is"
-        "calculated as the ratio of zonal `ctotal` and `gpp`. Reproduces "
-        "figure 2a and 2b in Carvalhais et al. (2014).", ['mean', 'perc'],
+        " modelled ecosystem carbon turnover time. The zonal turnover time is"
+        " calculated as the ratio of zonal `ctotal` and `gpp`. Reproduces "
+        " figure 2a and 2b in Carvalhais et al. (2014).", ['mean', 'perc'],
         ['zonal'], _get_ancestor_files(diag_config, obs_var))
 
     if diag_config['write_netcdf']:
