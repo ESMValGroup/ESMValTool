@@ -28,8 +28,7 @@ logger = logging.getLogger(Path(__file__).name)
 def create_provenance_record(ancestor_files):
     """Create a provenance record."""
     record = {
-        'caption':
-        "Resampling of local climate model.",
+        'caption': "Resampling of local climate model.",
         'domains': ['global'],
         'authors': [
             'kalverla_peter',
@@ -41,11 +40,13 @@ def create_provenance_record(ancestor_files):
     return record
 
 
-def mean_of_target_models(metadata, model):
+def mean_of_target_models(metadata):
     """Get the average delta T of the target model ensemble members."""
     target_model_data = select_metadata(metadata, variable_group='tas_target')
-    files = [tmd['filename'] for tmd in target_model_data
-             if not 'MultiModel' in tmd['dataset']]
+    files = [
+        tmd['filename'] for tmd in target_model_data
+        if 'MultiModel' not in tmd['dataset']
+    ]
     datasets = xr.open_mfdataset(files, combine='nested', concat_dim='ens')
     provenance = create_provenance_record(files)
     return datasets.tas.mean(dim='ens'), provenance
@@ -66,28 +67,29 @@ def get_resampling_period(target_dts, cmip_dt):
     matches the cmip delta T for a specific year.
     Uses a 30-year rolling window to get the best match.
     """
-    target_dts = target_dts.rolling(time=30, center=True, min_periods=30).mean()
+    target_dts = target_dts.rolling(time=30, center=True,
+                                    min_periods=30).mean()
     time_idx = abs(target_dts - cmip_dt).argmin(dim='time').values
     year = target_dts.isel(time=time_idx).year.values.astype(int)
     target_dt = target_dts.isel(time=time_idx).values.astype(float)
     return [year - 14, year + 15], target_dt
 
 
-def _timeline(ax, yloc, interval, text):
-    """Plot an interval near the bottom right of the plot."""
+def _timeline(axes, yloc, interval):
+    """Plot an interval near the bottom of the plot."""
     xmin, xmax = interval
-    # xcenter = (xmin + xmax) / 2
-    # xspan = (xmax - xmin) / 2  # use 'error bar: extends to both sides.
 
     # Later years should be located slightly higher:
-    yloc = 0.05 + yloc/20
+    # yloc is relative to the axes, not in data coordinates.
+    yloc = 0.05 + yloc / 20
 
-    ax.plot([xmin, xmax], [yloc, yloc], lw=2, transform=ax.get_xaxis_transform(), c='r', label='Resampling periods')
-    ax.plot([xmin, xmin], [yloc-0.01, yloc+0.01], lw=2, transform=ax.get_xaxis_transform(), c='r')
-    ax.plot([xmax, xmax], [yloc-0.01, yloc+0.01], lw=2, transform=ax.get_xaxis_transform(), c='r')
+    plot_args = dict(transform=axes.get_xaxis_transform(),
+                     linewidth=2,
+                     color='red')
 
-    # ax.errorbar(xcenter, yloc, xerr=xspan, capsize=5, lw=2, capthick=2,
-    #             transform=ax.get_xaxis_transform(), c='r', label='Resampling periods')
+    axes.plot([xmin, xmax], [yloc] * 2, **plot_args, label='Selected periods')
+    axes.plot([xmin] * 2, [yloc - 0.01, yloc + 0.01], **plot_args)
+    axes.plot([xmax] * 2, [yloc - 0.01, yloc + 0.01], **plot_args)
 
 
 def make_plot(metadata, scenarios, cfg):
@@ -96,41 +98,51 @@ def make_plot(metadata, scenarios, cfg):
     Multimodel values as line, reference value in black square,
     steering variables in dark dots.
     """
-    fig, ax = plt.subplots()
+    fig, axes = plt.subplots()
     for member in select_metadata(metadata, variable_group='tas_cmip'):
         filename = member['filename']
         dataset = xr.open_dataset(filename)
-        if not 'MultiModel' in filename:
-            ax.plot(dataset.time.dt.year, dataset.tas.values,
-                    c='grey', alpha=0.3, lw=.5, label='CMIP members')
+        if 'MultiModel' not in filename:
+            axes.plot(dataset.time.dt.year,
+                      dataset.tas.values,
+                      c='grey',
+                      alpha=0.3,
+                      lw=.5,
+                      label='CMIP members')
         else:
-            statistic = 'CMIP ' + Path(filename).stem.split('_')[0][10:]
-            # e.g. get "CMIP Mean" from "path_to/file/MultiModelMean_Amon_tas....nc"
-
             # Only display stats for the future period:
             dataset = dataset.sel(time=slice('2010', None, None))
-            ax.plot(dataset.time.dt.year, dataset.tas.values,
-                    c='k', lw=2, label=statistic)
+            axes.plot(dataset.time.dt.year,
+                      dataset.tas.values,
+                      color='k',
+                      linewidth=2,
+                      label='CMIP ' + Path(filename).stem.split('_')[0][10:])
 
     for member in select_metadata(metadata, variable_group='tas_target'):
         filename = member['filename']
         dataset = xr.open_dataset(filename)
-        if not 'MultiModel' in filename:
-            ax.plot(dataset.time.dt.year, dataset.tas.values,
-                    c='blue', lw=1, label=member['dataset'])
+        if 'MultiModel' not in filename:
+            axes.plot(dataset.time.dt.year,
+                      dataset.tas.values,
+                      color='blue',
+                      linewidth=1,
+                      label=member['dataset'])
 
     # Add the scenario's with dots at the cmip dt and bars for the periods
-    dotlabel = r"Scenarios' steering $\Delta T_{CMIP}$"
     for i, scenario in enumerate(scenarios):
-        ax.scatter(scenario['year'], scenario['cmip_dt'], s=50,
-                         zorder=10, color='r', label=dotlabel)
-        _timeline(ax, i, scenario['period_bounds'], scenario)
+        axes.scatter(scenario['year'],
+                     scenario['cmip_dt'],
+                     s=50,
+                     zorder=10,
+                     color='r',
+                     label=r"Scenarios' steering $\Delta T_{CMIP}$")
+        _timeline(axes, i, scenario['period_bounds'])
 
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))  # dict removes dupes
-    ax.legend(by_label.values(), by_label.keys())
-    ax.set_xlabel('Year')
-    ax.set_ylabel(r'Global mean $\Delta T$ (K) w.r.t. reference period')
+    axes.legend(by_label.values(), by_label.keys())
+    axes.set_xlabel('Year')
+    axes.set_ylabel(r'Global mean $\Delta T$ (K) w.r.t. reference period')
 
     # Save figure
     filename = get_plot_filename('global_matching', cfg)
@@ -152,18 +164,14 @@ def main(cfg):
     """Return scenarios tables."""
     # A list of dictionaries describing all datasets passed on to the recipe
     metadata = cfg['input_data'].values()
-    target_dts, provenance = mean_of_target_models(
-        metadata, cfg['target_model']
-    )
+    target_dts, provenance = mean_of_target_models(metadata)
 
     # Define the different scenario's
     scenarios = []
     combinations = product(cfg['scenario_years'], cfg['scenario_percentiles'])
     for year, percentile in combinations:
         cmip_dt = get_cmip_dt(metadata, year, percentile)
-        bounds, target_dt = get_resampling_period(
-            target_dts, cmip_dt
-        )
+        bounds, target_dt = get_resampling_period(target_dts, cmip_dt)
 
         scenario = {
             'year': year,

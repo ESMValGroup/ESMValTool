@@ -249,8 +249,9 @@ def get_percentile_subsets(cfg, segment_season_means, top1000s):
     """
     # Overwrite top1000s with seasonal mean characteristics
     for name, dataframe in top1000s.items():
-        LOGGER.info("Compute summer mean pr and summer and winter "
-                    "mean tas for 1000 selected combinations for %s", name)
+        LOGGER.info(
+            "Compute summer mean pr and summer and winter "
+            "mean tas for 1000 selected combinations for %s", name)
         segment_means = segment_season_means[name]
         top1000s[name] = _season_means(dataframe.combination, segment_means)
 
@@ -284,7 +285,7 @@ def _best_subset(combinations, n_sample=8):
         [list(combination) for combination in combinations])
 
     # Store the indices in a nice dataframe
-    _, n_segments = combinations.shape
+    n_segments = combinations.shape[1]
     best_subset = pd.DataFrame(
         data=None,
         columns=[f'Segment {x}' for x in range(n_segments)],
@@ -337,7 +338,7 @@ def select_final_subset(cfg, subsets, prov=None):
     return all_scenarios
 
 
-def _cmip_envelope(datasetlist, variable, target_year, relative=False):
+def _cmip_envelope(datasetlist, variable, target_year):
     """Determine the change in <variable> PDF of each CMIP model.
 
     Note: using mf_dataset not possible due to different calendars.
@@ -355,9 +356,11 @@ def _cmip_envelope(datasetlist, variable, target_year, relative=False):
         qcontrol = control.groupby('time.season').quantile(quantiles)
         qfuture = future.groupby('time.season').quantile(quantiles)
 
-        if relative is False:
+        if variable == 'tas':
+            # absolute diff
             envelope.append(qfuture - qcontrol)
         else:
+            # pr; relative diff
             envelope.append((qfuture - qcontrol) / qcontrol * 100)
         ancestors.append(data_dict['filename'])
 
@@ -421,8 +424,7 @@ def make_plots(cfg, scenario_tables):
         fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
 
         for row, variable in zip(subplots, ['pr', 'tas']):
-            relative = True if variable == 'pr' else False
-            cmip, prov = _cmip_envelope(metadata, variable, year, relative)
+            cmip, prov = _cmip_envelope(metadata, variable, year)
 
             for axes, season in zip(row, ['DJF', 'JJA']):
                 percentiles = cmip.percentile.values
