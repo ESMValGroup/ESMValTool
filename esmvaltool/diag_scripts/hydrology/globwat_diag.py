@@ -99,6 +99,19 @@ def _shift_era5_time_coordinate(cube):
     time.guess_bounds()
     return cube
 
+def dtype_change(cube):
+    """GlobWat input types are float32.
+    """
+    # fix dtype
+    cube.data = cube.core_data().astype('float32')
+
+    for coord_name in 'latitude', 'longitude', 'time':
+        coord = cube.coord(coord_name)
+        coord.points = coord.core_points().astype('float32')
+        coord.bounds = None
+        coord.guess_bounds()
+    
+    return cube
 
 def main(cfg):
     """Process data for use as input to the GlobWat hydrological model.
@@ -114,9 +127,23 @@ def main(cfg):
     # for checking the code in ipython I added print(input_metadata).
     # Run the script and use print(input_metadata) in the log.txt as input_metadata
     print(input_metadata)
-    for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
+    # for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
+    #     all_vars, provenance = get_input_cubes(metadata)
+
+    for dataset, metadata in group_metadata(input_metadata,
+                                            'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
-        
+        for short_name in "pr", "tas":
+            logger.info("Processing variable %s for dataset %s", short_name,
+                        dataset)
+
+            # Load preprocessed cubes for normal data and climatology
+            var = select_metadata(metadata, variable_group=short_name)[0]
+            cube = iris.load_cube(var['filename'])
+
+        #change cube dtype to float32
+            cube = dtype_change(cube)
+
         # Processing variables and unit conversion
         # Unit of the fluxes in GlobWat should be in mm
         logger.info("Processing variable PET")
@@ -128,10 +155,14 @@ def main(cfg):
         )
         # Unit conversion 'kg m-3 s-1' to 'mm' precip (multiplied by second)
         # get start year and end year 
+        coord_time = cube.coord('time')
 
-        coord_time = pet.coord('time')
+
+        # coord_time = pet.coord('time')
         start_year = coord_time.cell(0).point.year
         end_year = coord_time.cell(-1).point.year 
+        print(start_year)
+        print(end_year)
         
         # TODO: check the unit conversion by the preprocessor 
         # TODO: if needed make a function for unit conversion 
@@ -146,11 +177,15 @@ def main(cfg):
                     for mip in "Amon", "day":
                         logger.info("Processing variable %s for dataset %s", mip,
                                     dataset)
+
                         # Load preprocessed cubes for normal data 
-                        var = select_metadata(metadata, variable_group=short_name)[0]
-                        cube = iris.load_cube(var['filename'])
-                        print('cube.name', cube.name)
-                        print("cube banafsheh=",cube)
+                        # print(len(select_metadata(metadata, variable_group=short_name)))
+                        # var = select_metadata(metadata, variable_group=short_name)[0]
+                        # cube = iris.load_cube(var['filename'])
+                        # cube = dtype_change(cube)
+
+                        # print('cube.name', cube.name)
+                        # print("cube banafsheh=",cube)
                         if short_name == "pr" and mip == "Amon":
                             cube.units = cube.units / 'mm'
                             cube.data = cube.core_data() * nday * 86400
@@ -167,99 +202,104 @@ def main(cfg):
                                 cube.units = cube.units / 'mm'
                                 cube.data = cube.core_data() * 86400
                             
-        # # Load preprocessed cubes for normal data 
+        # Load preprocessed cubes for normal data 
         # var = select_metadata(metadata, variable_group=short_name)[0]
         # cube = iris.load_cube(var['filename'])
-        # print("cube banafsheh=",cube)
+        print("cube shape=",cube.shape)
+        print("cube ndim=",cube.ndim)
 
-        # #looping over time dimention, get time and data for each time
-        # for i in range(0, len(cube.coord('time').points)):
-        #     n_month = str(coord_time.cell(i).point.month).zfill(2)
-        #     # n_day_month = n_month + str(coord_time.cell(i).point.day).zfill(2)
-        #     nday = calendar.monthrange(year,n_month)[1]         
-        #     for daynumber in range(1, nday+1): 
-        #         n_day_month = str(n_month) + str(daynumber).zfill(2)      
-        #         print(n_day_month)
-    #         df = pandas.DataFrame(cube.data[i])
-    #         data_slice = df.replace(numpy.nan, -9999)
-    #         # make data structure
-    #         for nyear in range (start_year , end_year+1)
-    #             if dataset == "ERA5":
-    #             dir_name = 'ERA5_' + str(nyear) 
-    #             os.mkdir(dir_name)
-    #                 if mip == 'Amon':
-    #                     for var in range (0, len(data_slice)):
-    #                         if data_slice[var] == 'pr':
-    #                             output = pr.data_slice
-    #                             basename = '_'.join([
-    #                                 'prc',
-    #                                 n_month,
-    #                                 'wb' 
-    #                             ])
-    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-    #                             file_path = os.path.join(dir_name, output_name)
-    #                             output.to_csv(basename)
 
-    #                         if all_vars[var] == 'evspsblpot':
-    #                             output = evspsblpot.data_slice
-    #                             basename = '_'.join([
-    #                                 'eto',
-    #                                 n_month,
-    #                                 'wb' 
-    #                             ])
-    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-    #                             file_path = os.path.join(dir_name, output_name)
-    #                             output.to_csv(basename)
-    #                 else:
-    #                     for var in range (0, len(data_slice)):
-    #                         if data_slice[var] == 'pr':
-    #                             output = pr.data_slice
-    #                             basename = '_'.join([
-    #                                 'prc',
-    #                                 n_day_month,
-    #                                 'wb' 
-    #                             ])
-    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-    #                             file_path = os.path.join(dir_name, output_name)
-    #                             output.to_csv(basename)
+        #looping over time dimention, get time and data for each time
+        for i in range(0, len(cube.coord('time').points)):
+            n_month = str(coord_time.cell(i).point.month).zfill(2)
+            nday = calendar.monthrange(year,int(n_month))[1]
+            for daynumber in range(1, nday+1): 
+                n_day_month = str(n_month) + str(daynumber).zfill(2) 
 
-    #             if dataset == 'ERA-Interim'
-    #             dir_name = 'ERA-Interim_' + str(nyear) 
-    #             os.mkdir(dir_name)
-    #                 if mip == 'Amon':
-    #                     for var in range (0, len(data_slice)):
-    #                         if data_slice[var] == 'pr':
-    #                             output = pr.data_slice
-    #                             basename = '_'.join([
-    #                                 'prc',
-    #                                 n_month,
-    #                                 'wb' 
-    #                             ])
-    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-    #                             file_path = os.path.join(dir_name, output_name)
-    #                             output.to_csv(basename)
-    #                         else:
-    #                             output = pet
-    #                             basename = '_'.join([
-    #                                 'eto',
-    #                                 n_month,
-    #                                 'wb' 
-    #                             ])
-    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-    #                             file_path = os.path.join(dir_name, output_name)
-    #                             output.to_csv(basename)
-    #                 else:
-    #                     for var in range (0, len(data_slice)):
-    #                         if data_slice[var] == 'pr':
-    #                             output = pr.data_slice
-    #                             basename = '_'.join([
-    #                                 'prc',
-    #                                 n_day_month,
-    #                                 'wb' 
-    #                             ])
-    #                             output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-    #                             file_path = os.path.join(dir_name, output_name)
-    #                             output.to_csv(basename)
+            # df = pd.DataFrame(cube.data[i])
+            # data_slice = df.replace(numpy.nan, -9999)
+
+        # for sub_cube in cube.slices_over('time'):
+        #     df = pd.DataFrame(sub_cube)
+        #     data_slice = df.replace(numpy.nan, -9999)
+            # make data structure
+        for nyear in range (start_year , end_year+1):
+            if dataset == "ERA5":
+                dir_name = 'ERA5_' + str(nyear) 
+                os.mkdir(dir_name)
+                if mip == 'Amon':
+                    for var in range (0, len(data_slice)):
+                        if data_slice[var] == 'pr':
+                            output = pr.data_slice
+                            basename = '_'.join([
+                                'prc',
+                                n_month,
+                                'wb' 
+                            ])
+                            output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                            file_path = os.path.join(dir_name, output_name)
+                            output.to_csv(basename)
+
+                            if all_vars[var] == 'evspsblpot':
+                                output = evspsblpot.data_slice
+                                basename = '_'.join([
+                                    'eto',
+                                    n_month,
+                                    'wb' 
+                                ])
+                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                file_path = os.path.join(dir_name, output_name)
+                                output.to_csv(basename)
+                    else:
+                        for var in range (0, len(data_slice)):
+                            if data_slice[var] == 'pr':
+                                output = pr.data_slice
+                                basename = '_'.join([
+                                    'prc',
+                                    n_day_month,
+                                    'wb' 
+                                ])
+                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                file_path = os.path.join(dir_name, output_name)
+                                output.to_csv(basename)
+
+                if dataset == 'ERA-Interim':
+                    dir_name = 'ERA-Interim_' + str(nyear) 
+                    os.mkdir(dir_name)
+                    if mip == 'Amon':
+                        for var in range (0, len(data_slice)):
+                            if data_slice[var] == 'pr':
+                                output = pr.data_slice
+                                basename = '_'.join([
+                                    'prc',
+                                    n_month,
+                                    'wb' 
+                                ])
+                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                file_path = os.path.join(dir_name, output_name)
+                                output.to_csv(basename)
+                            else:
+                                output = pet
+                                basename = '_'.join([
+                                    'eto',
+                                    n_month,
+                                    'wb' 
+                                ])
+                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                file_path = os.path.join(dir_name, output_name)
+                                output.to_csv(basename)
+                    else:
+                        for var in range (0, len(data_slice)):
+                            if data_slice[var] == 'pr':
+                                output = pr.data_slice
+                                basename = '_'.join([
+                                    'prc',
+                                    n_day_month,
+                                    'wb' 
+                                ])
+                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                file_path = os.path.join(dir_name, output_name)
+                                output.to_csv(basename)
 
         # # Store provenance
         # with ProvenanceLogger(cfg) as provenance_logger:
