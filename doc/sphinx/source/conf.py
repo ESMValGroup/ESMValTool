@@ -58,14 +58,16 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'autodocsumm',
 ]
 
-autodoc_default_flags = [
-    'members',
-    'undoc-members',
-    'inherited-members',
-    'show-inheritance',
-]
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+    'autosummary': True,
+}
 
 autodoc_mock_imports = [
     'cartopy',
