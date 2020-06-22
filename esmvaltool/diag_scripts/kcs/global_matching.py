@@ -43,8 +43,9 @@ def create_provenance_record(ancestor_files):
 
 def mean_of_target_models(metadata, model):
     """Get the average delta T of the target model ensemble members."""
-    target_model_datasets = select_metadata(metadata, dataset=model)
-    files = [tmd['filename'] for tmd in target_model_datasets]
+    target_model_data = select_metadata(metadata, variable_group='tas_target')
+    files = [tmd['filename'] for tmd in target_model_data
+             if not 'MultiModel' in tmd['dataset']]
     datasets = xr.open_mfdataset(files, combine='nested', concat_dim='ens')
     provenance = create_provenance_record(files)
     return datasets.tas.mean(dim='ens'), provenance
@@ -111,7 +112,7 @@ def make_plot(metadata, scenarios, cfg):
         dataset = xr.open_dataset(filename)
         if not 'MultiModel' in filename:
             ax.plot(dataset.time.dt.year, dataset.tas.values,
-                    c='blue', lw=1, label=cfg['target_model'])
+                    c='blue', lw=1, label=member['dataset'])
 
     # Add the scenario's with dots at the cmip dt and bars for the periods
     dotlabel = r"Scenarios' steering $\Delta T_{CMIP}$"

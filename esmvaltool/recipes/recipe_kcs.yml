@@ -86,7 +86,6 @@ diagnostics:
         script: kcs/global_matching.py
         scenario_years: [2050, 2085]  # TODO: Adapt diagnostic to plot and print these points (like in figure 3a)
         scenario_percentiles: [P10, P90]
-        target_model: CCSM4
 
   local_resampling:
     description: >
