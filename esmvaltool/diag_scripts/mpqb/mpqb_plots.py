@@ -58,21 +58,31 @@ def mpqb_mapplot(cube,filename,**plotkwargs):
     if np.abs(plotkwargs['vmin'])==np.abs(plotkwargs['vmax']):
         # Diverging colorbar centred around zero
         discrete=True
-        N=7 # number of colors
+        N=9 # number of colors
         if discrete:
             color_list = cmap(np.linspace(0, 1, N))
             cmap_name = cmap.name + str(N)
             cmap = cmap.from_list(cmap_name, color_list, N)
 
-        levels = MaxNLocator(nbins=cmap.N+1, symmetric=True).tick_values(plotkwargs['vmin'],plotkwargs['vmax'])
+        levels = MaxNLocator(nbins=cmap.N-1, symmetric=True).tick_values(plotkwargs['vmin'],plotkwargs['vmax'])
+
         # Remove zero from levels
         levels = np.delete(levels, len(levels)/2)
 
+        color_list = list(color_list)
+
+        color_under = color_list.pop(0)
+        color_over = color_list.pop(-1)
+
         cmap, norm = from_levels_and_colors(levels, color_list)
         cmap.set_bad("grey", 0.1)
+        cmap.set_under(color_under)
+        cmap.set_over(color_over)
+
         plotkwargs['norm'] = norm
 
     plotkwargs['rasterized'] = True
+
     plotkwargs['cmap'] = cmap
 
     pcols = iris.plot.pcolormesh(cube, **plotkwargs)
@@ -81,7 +91,7 @@ def mpqb_mapplot(cube,filename,**plotkwargs):
     plt.gca().coastlines()
 
     # Colorbar
-    cb = plt.colorbar(pcols, orientation='horizontal')
+    cb = plt.colorbar(pcols, orientation='horizontal', extend='both')
     cb.set_label(cube.units)
     cb.ax.tick_params(labelsize=8)
 
