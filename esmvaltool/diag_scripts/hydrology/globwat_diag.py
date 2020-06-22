@@ -219,87 +219,92 @@ def main(cfg):
             # df = pd.DataFrame(cube.data[i])
             # data_slice = df.replace(numpy.nan, -9999)
 
-        # for sub_cube in cube.slices_over('time'):
+        for sub_cube in cube.slices_over('time'):
+            for i in range(0, len(cube.coord('time').points)):
+                data_slice = sub_cube.data[i]
+                df = pd.DataFrame(data_slice)
+                data_ch_nan = df.replace(numpy.nan, -9999)
+
         #     df = pd.DataFrame(sub_cube)
         #     data_slice = df.replace(numpy.nan, -9999)
             # make data structure
-        for nyear in range (start_year , end_year+1):
-            if dataset == "ERA5":
-                dir_name = 'ERA5_' + str(nyear) 
-                os.mkdir(dir_name)
-                if mip == 'Amon':
-                    for var in range (0, len(data_slice)):
-                        if data_slice[var] == 'pr':
-                            output = pr.data_slice
-                            basename = '_'.join([
-                                'prc',
-                                n_month,
-                                'wb' 
-                            ])
-                            output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-                            file_path = os.path.join(dir_name, output_name)
-                            output.to_csv(basename)
+                for nyear in range (start_year , end_year+1):
+                    if dataset == "ERA5":
+                        dir_name = 'ERA5_' + str(nyear) 
+                        os.mkdir(dir_name)
+                        if mip == 'Amon':
+                            for var in range (0, len(data_slice)):
+                                if data_slice[var] == 'pr':
+                                    output = pr.data_slice
+                                    basename = '_'.join([
+                                        'prc',
+                                        n_month,
+                                        'wb' 
+                                    ])
+                                    output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                    file_path = os.path.join(dir_name, output_name)
+                                    output.to_csv(basename)
 
-                            if all_vars[var] == 'evspsblpot':
-                                output = evspsblpot.data_slice
-                                basename = '_'.join([
-                                    'eto',
-                                    n_month,
-                                    'wb' 
-                                ])
-                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-                                file_path = os.path.join(dir_name, output_name)
-                                output.to_csv(basename)
-                    else:
-                        for var in range (0, len(data_slice)):
-                            if data_slice[var] == 'pr':
-                                output = pr.data_slice
-                                basename = '_'.join([
-                                    'prc',
-                                    n_day_month,
-                                    'wb' 
-                                ])
-                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-                                file_path = os.path.join(dir_name, output_name)
-                                output.to_csv(basename)
-
-                if dataset == 'ERA-Interim':
-                    dir_name = 'ERA-Interim_' + str(nyear) 
-                    os.mkdir(dir_name)
-                    if mip == 'Amon':
-                        for var in range (0, len(data_slice)):
-                            if data_slice[var] == 'pr':
-                                output = pr.data_slice
-                                basename = '_'.join([
-                                    'prc',
-                                    n_month,
-                                    'wb' 
-                                ])
-                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-                                file_path = os.path.join(dir_name, output_name)
-                                output.to_csv(basename)
+                                    if all_vars[var] == 'evspsblpot':
+                                        output = evspsblpot.data_slice
+                                        basename = '_'.join([
+                                            'eto',
+                                            n_month,
+                                            'wb' 
+                                        ])
+                                        output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                        file_path = os.path.join(dir_name, output_name)
+                                        output.to_csv(basename)
                             else:
-                                output = pet
-                                basename = '_'.join([
-                                    'eto',
-                                    n_month,
-                                    'wb' 
-                                ])
-                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-                                file_path = os.path.join(dir_name, output_name)
-                                output.to_csv(basename)
-                    else:
-                        for var in range (0, len(data_slice)):
-                            if data_slice[var] == 'pr':
-                                output = pr.data_slice
-                                basename = '_'.join([
-                                    'prc',
-                                    n_day_month,
-                                    'wb' 
-                                ])
-                                output_name = get_diagnostic_filename(basename, cfg, extension='asc')
-                                file_path = os.path.join(dir_name, output_name)
-                                output.to_csv(basename)
+                                for var in range (0, len(data_slice)):
+                                    if data_slice[var] == 'pr':
+                                        output = pr.data_slice
+                                        basename = '_'.join([
+                                            'prc',
+                                            n_day_month,
+                                            'wb' 
+                                        ])
+                                        output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                        file_path = os.path.join(dir_name, output_name)
+                                        output.to_csv(basename)
+
+                        if dataset == 'ERA-Interim':
+                            dir_name = 'ERA-Interim_' + str(nyear) 
+                            os.mkdir(dir_name)
+                            if mip == 'Amon':
+                                for var in range (0, len(data_slice)):
+                                    if data_slice[var] == 'pr':
+                                        output = pr.data_slice
+                                        basename = '_'.join([
+                                            'prc',
+                                            n_month,
+                                            'wb' 
+                                        ])
+                                        output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                        file_path = os.path.join(dir_name, output_name)
+                                        output.to_csv(basename)
+                                    else:
+                                        output = pet
+                                        basename = '_'.join([
+                                            'eto',
+                                            n_month,
+                                            'wb' 
+                                        ])
+                                        output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                        file_path = os.path.join(dir_name, output_name)
+                                        output.to_csv(basename)
+                            else:
+                                for var in range (0, len(data_slice)):
+                                    if data_slice[var] == 'pr':
+                                        output = pr.data_slice
+                                        basename = '_'.join([
+                                            'prc',
+                                            n_day_month,
+                                            'wb' 
+                                        ])
+                                        output_name = get_diagnostic_filename(basename, cfg, extension='asc')
+                                        file_path = os.path.join(dir_name, output_name)
+                                        output.to_csv(basename)
 
         # # Store provenance
         # with ProvenanceLogger(cfg) as provenance_logger:
