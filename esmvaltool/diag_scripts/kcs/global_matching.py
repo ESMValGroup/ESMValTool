@@ -76,13 +76,18 @@ def get_resampling_period(target_dts, cmip_dt):
 def _timeline(ax, yloc, interval, text):
     """Plot an interval near the bottom right of the plot."""
     xmin, xmax = interval
-    xcenter = (xmin + xmax) / 2
-    xspan = (xmax - xmin) / 2  # use 'error bar: extends to both sides.
+    # xcenter = (xmin + xmax) / 2
+    # xspan = (xmax - xmin) / 2  # use 'error bar: extends to both sides.
 
     # Later years should be located slightly higher:
     yloc = 0.05 + yloc/20
-    ax.errorbar(xcenter, yloc, xerr=xspan, capsize=5, lw=2, capthick=2,
-                transform=ax.get_xaxis_transform(), c='r', label='Resampling periods')
+
+    ax.plot([xmin, xmax], [yloc, yloc], lw=2, transform=ax.get_xaxis_transform(), c='r', label='Resampling periods')
+    ax.plot([xmin, xmin], [yloc-0.01, yloc+0.01], lw=2, transform=ax.get_xaxis_transform(), c='r')
+    ax.plot([xmax, xmax], [yloc-0.01, yloc+0.01], lw=2, transform=ax.get_xaxis_transform(), c='r')
+
+    # ax.errorbar(xcenter, yloc, xerr=xspan, capsize=5, lw=2, capthick=2,
+    #             transform=ax.get_xaxis_transform(), c='r', label='Resampling periods')
 
 
 def make_plot(metadata, scenarios, cfg):
