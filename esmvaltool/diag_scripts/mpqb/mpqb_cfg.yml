@@ -71,8 +71,8 @@ sm1m:
   theilsenmk:
     title: theilsen
     cmap: BrBG
-    vmin: -0.001
-    vmax: 0.001
+    vmin: -0.0015
+    vmax: 0.0015
   timemean:
     title: timemean
     cmap: YlGn
