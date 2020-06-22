@@ -1,3 +1,5 @@
+.. _recipe_ecs_scatter:
+
 Emergent constraints for equilibrium climate sensitivity
 ========================================================
 
