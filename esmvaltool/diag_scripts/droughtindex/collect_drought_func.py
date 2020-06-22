@@ -6,7 +6,7 @@
 
 ###############################################################################
 droughtindex/collect_drought_obs_multi.py
-Author: Katja Weigel (IUP, Uni Bremen, Germany)
+Author: Katja Weigel, Kemisola Adeniyi (IUP, Uni Bremen, Germany)
 EVal4CMIP project
 ###############################################################################
 
@@ -216,6 +216,7 @@ def get_provenance_record(ancestor_files, caption,
         'themes': ['phys'],
         'authors': [
             'weigel_katja',
+            'adeniyi_kemisola',
         ],
         'references': refs,
         'ancestors': ancestor_files,
