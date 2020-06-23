@@ -39,6 +39,7 @@ def main(cfg):
     logger.info(pformat(res_data))
 
     # Now do the actual plotting
+    logger.info("Plotting")
     _make_plot_from_res_data(res_data, cfg)
 
     logger.info("Finished!")
@@ -132,13 +133,13 @@ def shinescale_0_1(l):
     vmax = (np.ceil(vmax * 10**rounder) + 1) / 10**rounder
     levels = np.round(np.linspace(vmin, vmax, num=4), rounder)
 
-    l0 = (l0 - vmin) / (vmax - vmin)
+    l_0 = (l_0 - vmin) / (vmax - vmin)
 
     labels = list(levels)
     levels = (levels - np.min(levels)) / \
         (np.max(levels) - np.min(levels))
 
-    return ((list(l0), levels, labels))
+    return ((list(l_0), levels, labels))
 
 
 def __get_tim_res__(datasets, names):
