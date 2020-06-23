@@ -186,15 +186,8 @@ begin
 
       ; Extract data
       A0 = read_data(info0[imod])
-      ; if(all(isdim(A0, (/"time", "plev", "lat", "lon"/)))) then
-        ; dummy1 = dim_avg_Wrap(A0(time|:, {plev|lev(ipan)}, lat|:, lon|:))
-        ; delete(A0)
-      ; else
-        ; if(all(isdim(A0, (/"time", "plev", "lat"/)))) then
-          dummy1 = A0(time|:, {plev|lev(ipan)}, lat|:)
-          delete(A0)
-        ; end if
-      ; end if
+      dummy1 = A0(time|:, {plev|lev(ipan)}, lat|:)
+      delete(A0)
 
       if (seasons(ipan).ne."ANN") then
         dummy2 = \
@@ -243,17 +236,9 @@ begin
     plotMod(dimTot - 1) = "MMM"
     plotColor(dimTot - 1) = "Black"
     plotDash(dimTot - 1) = 0.
+    plotThicks(dimTot - 1) = 4.
     LineScatters(dimTot - 1) = "Lines"
   end if
-
-  ; change the units to "ppmv"
-  ;if ((UNITS.ne."10e6").or.(UNITS.ne."ppmv").or. \
-  ;   (UNITS.ne."yrs").or.(UNITS.ne."years")) then
-  ;  Xdata = (/Xdata / 10 ^ 3/)
-  ;  tmpData = (/tmpData / 10 ^ 3/)
-  ;  Xref = (/Xref / 10 ^ 3/)
-  ;  UNITS = "ppmv"
-  ;end if
 
   ; Calculate multimodel mean
   X_MMM_std = (/dim_stddev_n(Xdata(index_mod, :, :, :), 0)/)
@@ -304,7 +289,7 @@ begin
     res@trYMinF = YMin(ipanel)
     res@tmLabelAutoStride = True
 
-    res@vpHeightF = 0.4                   ; change aspect ratio of plot
+    res@vpHeightF = 0.4    ; change aspect ratio of plot
     res@vpWidthF = 1. / dimsizes(seasons)
 
     res@tiYAxisString = \
@@ -352,12 +337,6 @@ begin
                                             yp_M(:, ipanel), gsres1)
     end if
   end do   ; end loop panel
-
-  ; Call legend - plotting routine
-  ;plotpath = config_user_info@plot_dir + "eyring06f05b_" + var0
-  ;wks = gsn_open_wks(file_type, plotpath)
-  ;plotpath1 = config_user_info@plot_dir + "eyring06f05b_legend_" + var0
-  ;wks1 = gsn_open_wks(file_type, plotpath1)
 
   Pres = True
   Pres@gsnFrame = False
