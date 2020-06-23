@@ -20,7 +20,7 @@ The configuration settings for these scenarios can be found in table 1 of Lender
 Implementation
 --------------
 
-The implementation is such that application to other datasets, regions, etc. is relatively straightforward. The description below focuses on the reference use case of Lenderink et al., 2014, where the target model was EC-Earth. An external set of EC-Earth data was used, for which 3D fields were available as well. However, for reproducibility, and because of problems with the EC-Earth data in CMIP5, we replaced the target model with CCSM4. The percentile ranges still reflect the values for EC-Earth, though. These would have to be tuned again for CCSM4.
+The implementation is such that application to other datasets, regions, etc. is relatively straightforward. The description below focuses on the reference use case of Lenderink et al., 2014, where the target model was EC-Earth. An external set of EC-Earth data was used, for which 3D fields were available as well. In the recipe shipped with ESMValTool, however, the target model is CCSM4, so that it works out of the box with ESGF data only.
 
 In the first diagnostic, the spread of the full CMIP ensemble is used to obtain 4 values of a *global* :math:`{\Delta}T_{CMIP}`, corresponding to the 10th and 90th percentiles for the M and W scenarios, respectively, for both MOC and EOC. Subsequently, for each of these 4 *steering parameters*, 30-year periods are selected from the target model ensemble, where :math:`{\Delta}T_{target}{\approx}{\Delta}T_{CMIP}`.
 
@@ -49,7 +49,7 @@ Diagnostics are stored in diag_scripts/kcs/
 User settings
 -------------
 
-Datasets: Datasets have been split in two parts: the CMIP datasets and the target model datasets. So, the recipe can work with a target model that is not part of CMIP. In that case the target model data should be stored alongside the CMIP data in the exact same format. One use case for this recipe is to compare between CMIP5 and CMIP6.
+Datasets: Datasets have been split in two parts: the CMIP datasets and the target model datasets. An example use case for this recipe is to compare between CMIP5 and CMIP6, for example. The recipe can work with a target model that is not part of CMIP, provided that the data are CMOR compatible, and using the same data referece syntax as the CMIP data. Note that you can specify :ref:`multiple data paths<config-user-rootpath>` in the user configuration file.
 
 Preprocessors: We've tried to use built-in preprocessor functions as much as possible. The first diagnostic requires global mean temperature anomalies for each dataset, both CMIP and the target model, and some multimodel statistics. The second diagnostic requires data on a point in the Netherlands. However, the ``extract_point`` preprocessor can be changed to ``extract_shape`` or ``extract_region``, in conjunction with an area mean. And of course, the coordinates can be changed to analyze a different region.
 
@@ -59,17 +59,17 @@ Diagnostics:
 
   * ``scenario_years``: a list of time horizons. Default: ``[2050, 2085]``
   * ``scenario_percentiles``: a list of percentiles for the steering table. Default: ``[p10, p90]``
-  * ``target_model``: the name of the target model. Default: ``CCSM4``
 
 * local_resampling
 
-  * ``target_model``: the name of the target model. Default: ``CCSM4``
+  * ``control_period``: the control period shared between all scenarios. Default: ``[1981, 2010]``
+  * ``n_samples``: the final number of recombinations to be selected. Default: ``8``
   * ``scenarios``: a scenario name and list of options. The default setting is a single scenario:
 
     .. code-block:: yaml
 
         scenarios:
-          ML_MOC:
+          ML_MOC:  # scenario name; can be chosen by the user
             description: "Moderate / low changes in seasonal temperature & precipitation"
             global_dT: 1.0
             scenario_year: 2050
@@ -92,10 +92,10 @@ The diagnostic ``global_matching`` produces a scenarios table like the one below
 .. code-block:: python
 
        year percentile  cmip_dt period_bounds  target_dt  pattern_scaling_factor
-    0  2050       Mean     1.45  [2039, 2068]       1.44                    1.01
-    1  2050     Median     1.41  [2038, 2067]       1.41                    1.00
-    2  2085       Mean     2.44  [2073, 2102]       2.44                    1.00
-    3  2085     Median     2.28  [2067, 2096]       2.29                    1.00
+    0  2050        P10     0.98  [2019, 2048]       0.99                    1.00
+    1  2050        P90     2.01  [2045, 2074]       2.02                    0.99
+    2  2085        P10     1.38  [2030, 2059]       1.38                    1.00
+    3  2085        P90     3.89  [2071, 2100]       3.28                    1.18
 
 
 which is printed to the log file and also saved as a csv-file ``scenarios.csv``.
