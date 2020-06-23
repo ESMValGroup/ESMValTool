@@ -24,6 +24,7 @@ Atmosphere
    recipe_modes_of_variability
    recipe_quantilebias
    recipe_spei
+   recipe_martin2018grl
    recipe_autoassess_stratosphere
    recipe_zmnam
    recipe_thermodyn_diagtool
