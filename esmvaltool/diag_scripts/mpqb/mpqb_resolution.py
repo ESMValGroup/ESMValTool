@@ -23,6 +23,7 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -32,7 +33,7 @@ def main(cfg):
     logger.info(
         "Example of how to group and sort input data by standard_name:"
         "\n%s", pformat(grouped_input_data))
-    
+
     # calculate resolution
     logger.info("Calculating the resolution.")
     datasets = []
@@ -40,17 +41,17 @@ def main(cfg):
     for dataset in grouped_input_data:
         logger.info("Opening dataset: {0}".format(dataset))
         datasets.append(
-                iris.load_cube(grouped_input_data[dataset][0]['filename']))
+            iris.load_cube(grouped_input_data[dataset][0]['filename']))
         names.append(dataset)
-        
+
     res_data = __get_tim_res__(datasets, names)
-    
+
     logger.info("The extracted resolution information is:")
     logger.info(pformat(res_data))
 
     if cfg['write_plots']:
         plt.clf()
-        fig, ax = plt.subplots(1,1)
+        fig, ax = plt.subplots(1, 1)
         fig.set_figwidth(1.3*fig.get_figwidth())
         ax.plot()
         plt.quiver([0] * len(res_data["units"]),
@@ -80,10 +81,10 @@ def main(cfg):
                         marker='|',
                         s=1000,
                         alpha=1.)
-            
+
             for l, v in enumerate(plot_info[1]):
                 plt.text(v, arrow + 0.3, str(plot_info[2][l]), ha="center")
-                
+
             plt.scatter(list(reversed(plot_info[0])),
                         [arrow - 0.15] * len(plot_info[0]),
                         color=list(reversed(cycle[0:len(plot_info[0])])),
@@ -93,7 +94,7 @@ def main(cfg):
             arrow += 1
 
         for ind, lab in enumerate(res_data["names"]):
-            plt.plot(-100, -100, 
+            plt.plot(-100, -100,
                      marker="^",
                      markersize=7+1.8*ind,
                      linewidth=0,
@@ -119,6 +120,7 @@ def main(cfg):
         logger.warning("This diagnostic wants to plot, but isn't allowed to")
     logger.info("Finished!")
 
+
 def shinescale_0_1(l):
     l0 = np.array(l)
 
@@ -139,32 +141,34 @@ def shinescale_0_1(l):
         (np.max(levels) - np.min(levels))
 
     return((list(l0), levels, labels))
-    
+
+
 def __get_tim_res__(datasets, names):
-        
+
     tim_res_dict = {}
     # We assume respective coords of all datasets in the same unit!
-    unitdict={}
-    
+    unitdict = {}
+
     loc_mpdata = datasets.copy()
     [__remove_all_aux_coords__(mpdats) for mpdats in loc_mpdata]
-    
-    coords = list(set("/".join([c.name() for c in mpd.coords()]) 
-        for mpd in datasets))[0].split("/")
-    
+
+    coords = list(set("/".join([c.name() for c in mpd.coords()])
+                      for mpd in datasets))[0].split("/")
+
     for c in coords:
 
-        tim_res_dict.update({c:[np.mean(np.diff(mpd.coord(c).points)) 
-            for mpd in datasets]})
-        unitdict.update({c:[str(datasets[0].coord(c).units) 
-            if not datasets[0].coord(c).units.is_time_reference() 
-            else str(datasets[0].coord(c).units).split(" ")[0]][0]})
-        
-    tim_res_dict.update({"names":names})
-    
-    tim_res_dict.update({"units":unitdict})
-    
+        tim_res_dict.update({c: [np.mean(np.diff(mpd.coord(c).points))
+                                 for mpd in datasets]})
+        unitdict.update({c: [str(datasets[0].coord(c).units)
+                             if not datasets[0].coord(c).units.is_time_reference()
+                             else str(datasets[0].coord(c).units).split(" ")[0]][0]})
+
+    tim_res_dict.update({"names": names})
+
+    tim_res_dict.update({"units": unitdict})
+
     return tim_res_dict
+
 
 def __remove_all_aux_coords__(cube):
     """
@@ -172,9 +176,10 @@ def __remove_all_aux_coords__(cube):
     """
     for dim in cube.coords():
         if isinstance(dim, iris.coords.AuxCoord):
-             cube.remove_coord(dim)
-            
+            cube.remove_coord(dim)
+
     return
+
 
 if __name__ == '__main__':
     with run_diagnostic() as cfg:

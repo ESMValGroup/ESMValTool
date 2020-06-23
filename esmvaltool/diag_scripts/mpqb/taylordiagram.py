@@ -23,20 +23,19 @@ from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import paralle
 logger = logging.getLogger(os.path.basename(__file__))
 
 dataset_plotnames = {
-  'ERA-Interim-Land' : 'ERA-Interim/Land',
-  'CDS-SATELLITE-SOIL-MOISTURE' : 'ESA-CCI',
-  'cds-era5-land-monthly' : 'ERA5-Land',
-  'cds-era5-monthly' : 'ERA5',
-  'MERRA2' : 'MERRA-2',
-  'cds-satellite-lai-fapar' : 'SPOT-VGT',
+    'ERA-Interim-Land': 'ERA-Interim/Land',
+    'CDS-SATELLITE-SOIL-MOISTURE': 'ESA-CCI',
+    'cds-era5-land-monthly': 'ERA5-Land',
+    'cds-era5-monthly': 'ERA5',
+    'MERRA2': 'MERRA-2',
+    'cds-satellite-lai-fapar': 'SPOT-VGT',
 }
-
 
 
 def main(cfg):
     # read referenece data set
     reference_dataset = cfg['reference_dataset']
-    
+
     # Read all datasets that are provided.
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -50,13 +49,15 @@ def main(cfg):
     all_datasets = list(grouped_input_data.keys())
 
     # Put reference to the front of list
-    all_datasets.insert(0, all_datasets.pop(all_datasets.index(reference_dataset)))
+    all_datasets.insert(0, all_datasets.pop(
+        all_datasets.index(reference_dataset)))
     ordered = OrderedDict()
     for k in all_datasets:
         ordered[k] = grouped_input_data[k]
 
     # Create a pair of two datasets for inter-comparison
-    refdat = iris.load_cube(grouped_input_data[reference_dataset][0]['filename'])
+    refdat = iris.load_cube(
+        grouped_input_data[reference_dataset][0]['filename'])
     rvalue_list = []
     rmsd_list = []
     std_list = []
@@ -68,34 +69,30 @@ def main(cfg):
         dat.data.mask |= refdat.data.mask
         a = refdat.data.compressed()
         b = dat.data.compressed()
-        rvalue_list.append(pearsonr(a,b)[0])
-        rmsd_list.append(sm.centered_rms_dev(a,b))
+        rvalue_list.append(pearsonr(a, b)[0])
+        rmsd_list.append(sm.centered_rms_dev(a, b))
         std_list.append(np.std(b))
         labels.append(dataset_plotnames[dataset])
 
-
     sm.taylor_diagram(np.array(std_list),
-                                 np.array(rmsd_list),
-                                 np.array(rvalue_list),
-                                 markerLabel=labels,
-                                 markerLegend='on',
-                                 markerColor='r',
-                                 markerSize=7,
-                                 rmsLabelFormat='0:.2f',
-                                 colObs='k',
-                                 markerObs='x',
-                                 titleOBS=dataset_plotnames[reference_dataset],
-                                 checkstats='on')
+                      np.array(rmsd_list),
+                      np.array(rvalue_list),
+                      markerLabel=labels,
+                      markerLegend='on',
+                      markerColor='r',
+                      markerSize=7,
+                      rmsLabelFormat='0:.2f',
+                      colObs='k',
+                      markerObs='x',
+                      titleOBS=dataset_plotnames[reference_dataset],
+                      checkstats='on')
     if cfg['write_plots']:
-        plot_filename = get_plot_filename('taylordiagram',cfg)
+        plot_filename = get_plot_filename('taylordiagram', cfg)
         logger.info(
-                "Writing plot to: %s", plot_filename)
+            "Writing plot to: %s", plot_filename)
         plt.savefig(plot_filename)
 
     logger.info("Finished!")
-
-
-
 
 
 if __name__ == '__main__':

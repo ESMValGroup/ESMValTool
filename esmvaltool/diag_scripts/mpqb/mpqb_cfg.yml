@@ -71,14 +71,13 @@ sm1m:
   theilsenmk:
     title: theilsen
     cmap: BrBG
-    vmin: -0.0015
-    vmax: 0.0015
+    vmin: -0.001
+    vmax: 0.001
   timemean:
     title: timemean
     cmap: YlGn
     vmin: 0.
     vmax: 0.6
-
 
 lai:
   pearsonr:
@@ -117,7 +116,6 @@ lai:
     vmin: 0.0
     vmax: 0.5
 
-
 # For now the same as LAI, can be adapted
 bdalb:
   pearsonr:
@@ -155,4 +153,3 @@ bdalb:
     cmap: YlOrBr
     vmin: 0.0
     vmax: 0.5
-

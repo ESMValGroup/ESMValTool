@@ -7,11 +7,13 @@ import cf_units
 import iris
 import numpy as np
 
-from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import mannkendall1d, theilslopes1d
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (
+    mannkendall1d, theilslopes1d)
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import \
+    parallel_apply_along_axis
 from mpqb_plots import get_ecv_plot_config, mpqb_mapplot
-from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import parallel_apply_along_axis
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -34,6 +36,7 @@ def theilsenmk(cube):
     outcube.rename('theil-sen trend of ' + outcube.name())
     outcube.units = cf_units.Unit(str(outcube.units) + ' year-1')
     return outcube
+
 
 def timemean(cube):
     """Calculate mean over time."""
@@ -73,7 +76,10 @@ def main(cfg):
                 logger.error("Metric %s is not defined. ", metricname)
                 continue
             # Plot the results (if configured to plot)
-            baseplotname = f"{dataset}_{metricname}_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
+            baseplotname = f"{dataset}_{metricname}" \
+                           f"_{dataset_cfg['variable_group']}_" \
+                           f"_{dataset_cfg['start_year']}-" \
+                           f"{dataset_cfg['end_year']}"
 
             plot_file = get_plot_filename(baseplotname, cfg)
             if cfg['write_plots']:
