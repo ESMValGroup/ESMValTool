@@ -43,9 +43,6 @@ preprocessors:
       operator: mean
     annual_statistics:
       operator: mean
-    regrid_time:
-      # try to get back homogeneous time arrays; https://github.com/ESMValGroup/ESMValCore/issues/665
-      frequency: yr
     anomalies:
       period: full
       reference:
