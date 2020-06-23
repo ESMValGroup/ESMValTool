@@ -145,7 +145,6 @@ begin
   plotpath1 = config_user_info@plot_dir + "eyring06f05b_legend_" + var0
   wks1 = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring06f05b_legend_" + var0)
   wks1 = gsn_open_wks(file_type, plotpath1)
-  ;output_filename = wks@fullname
   nPanel = dimsizes(seasons)
   plot = new(nPanel, "graphic")
   plot_num = integertochar(ispan(97, 122, 1))

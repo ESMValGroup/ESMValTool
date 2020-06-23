@@ -1143,12 +1143,12 @@ end
 ; #############################################################################
 undef("add_legend")
 procedure add_legend(wks,
-                      model:string,
-                      colors:string,
-                      dashs:numeric,
-                      scatters:string,
-                      ticknesses:numeric,
-                      place:string)
+                     model:string,
+                     colors:string,
+                     dashs:numeric,
+                     scatters:string,
+                     ticknesses:numeric,
+                     place:string)
 ;
 ; Arguments
 ;
