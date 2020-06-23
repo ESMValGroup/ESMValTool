@@ -84,7 +84,6 @@ diagnostics:
         exp: historical
         start_year: 2000
         end_year: 2004
-        fx_files: [areacella]
         <<: *CMIP5_landcover
       snc:
         <<: *variable_settings_cmip5
@@ -116,7 +115,6 @@ diagnostics:
         exp: historical
         start_year: 2000
         end_year: 2004
-        fx_files: [areacella]
         <<: *CMIP6_landcover
       snc:
         <<: *variable_settings_cmip6

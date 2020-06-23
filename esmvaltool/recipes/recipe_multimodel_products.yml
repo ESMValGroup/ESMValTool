@@ -16,7 +16,7 @@ documentation:
     - c3s-magic
 
   references:
-    - manubens
+    - manubens18ems
 
 datasets:
   - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}

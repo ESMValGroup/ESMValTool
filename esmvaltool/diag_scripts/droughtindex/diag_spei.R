@@ -217,7 +217,7 @@ for (mod in 1:nmods) {
   pme_spei[is.infinite(pme_spei)] <- NA
   pme_spei[pme_spei > 10000] <- NA
   # Weight against latitude
-  h <- c(1:length(histnams)) * 0
+  h <- seq_along(histnams) * 0
   for (j in 1:d[2]) {
     h <- h + hist(pme_spei[j, , ],
       breaks = histbrks,
