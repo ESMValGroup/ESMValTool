@@ -77,7 +77,7 @@ def main(cfg):
                 continue
             # Plot the results (if configured to plot)
             baseplotname = f"{dataset}_{metricname}" \
-                           f"_{dataset_cfg['variable_group']}_" \
+                           f"_{dataset_cfg['variable_group']}" \
                            f"_{dataset_cfg['start_year']}-" \
                            f"{dataset_cfg['end_year']}"
 

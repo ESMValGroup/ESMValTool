@@ -50,7 +50,7 @@ def _parse_cmap(plotkwargs):
     if np.abs(plotkwargs['vmin']) == np.abs(plotkwargs['vmax']):
         # Diverging colorbar centred around zero
         discrete = True
-        n_colors = 9  # number of colors
+        n_colors = 11  # number of colors
         if discrete:
             color_list = cmap(np.linspace(0, 1, n_colors))
             cmap_name = cmap.name + str(n_colors)
@@ -80,7 +80,8 @@ def _parse_cmap(plotkwargs):
 
 def mpqb_mapplot(cube, filename, **plotkwargs):
     """Plot maps."""
-    fig, _ = plt.subplots(dpi=200, projection=iris.plot.default_projection(cube))
+    fig = plt.figure(dpi=200)
+    fig.add_subplot(projection=iris.plot.default_projection(cube))
 
     plottitle = DATASET_PLOTNAMES[plotkwargs.pop('title')]
 
