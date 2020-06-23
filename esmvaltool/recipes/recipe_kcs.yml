@@ -94,20 +94,22 @@ diagnostics:
       - Determine the 1000 best ...
       - Determine the final best
     variables:
-      tas_target: &target_variable
+      pr_target:
+        short_name: pr
+        preprocessor: preprocessor_local
+        additional_datasets: *target
+      tas_target:
         short_name: tas
         preprocessor: preprocessor_local
         additional_datasets: *target
-      pr_target:
-        <<: *target_variable
+      pr_cmip:
         short_name: pr
-      tas_cmip: &cmip_variable
+        preprocessor: preprocessor_local
+        additional_datasets: *cmip5
+      tas_cmip:
         short_name: tas
         preprocessor: preprocessor_local
         additional_datasets: *cmip5
-      pr_cmip:
-        <<: *cmip_variable
-        short_name: pr
     scripts:
       resample:
         script: kcs/local_resampling.py
