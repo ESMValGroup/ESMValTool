@@ -48,7 +48,7 @@ DIAG_EMERGENT_CONSTRAINT: &diag_emergent_constraint
     - 'psi_*.nc'
     - 'su_*.nc'
     - 'zhai_*.nc'
-  read_external_file: ~/INPUT.yml
+  read_external_file: ecs_emergent_constraints.yml
 
 
 preprocessors:
@@ -1058,6 +1058,7 @@ diagnostics:
       ecs_predictor:
         script: emergent_constraints/ecs_scatter.py
         diag: brient_shal
+        n_jobs: 2
         output_attributes:
           var_type: feature
           tag: BRS

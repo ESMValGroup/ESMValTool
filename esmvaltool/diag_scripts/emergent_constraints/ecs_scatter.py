@@ -24,6 +24,8 @@ metric : str, optional (default: 'regression_slope')
     Metric to measure model error. Only relevant for Su et al. (2014)
     constraint. Must be one of ``'regression_slope'``,
     ``'correlation_coefficient'``.
+n_jobs : int, optional (default: 1)
+    Maximum number of jobs spawned by this class.
 output_attributes : dict, optional
     Write additional attributes to netcdf files.
 pattern : str, optional
@@ -40,7 +42,6 @@ import logging
 import os
 from copy import deepcopy
 from inspect import isfunction
-from multiprocessing import Pool
 from pprint import pformat
 
 import dask.array as da
@@ -49,6 +50,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from joblib import Parallel, delayed
 from scipy.interpolate import interp1d
 from scipy.stats import linregress
 
@@ -119,7 +121,7 @@ def _get_level_width(air_pressure_bounds, ref_lev, ref_zg):
     return np.array(level_widths)
 
 
-def _get_level_widths(cube, zg_cube):
+def _get_level_widths(cube, zg_cube, n_jobs=1):
     """Get all level widths for whole :class:`iris.cube.Cube`."""
     logger.info("Calculating level widths from 'air_pressure' coordinate")
 
@@ -156,21 +158,23 @@ def _get_level_widths(cube, zg_cube):
                          f"{air_pressure_bounds.shape} and {ref_zg.shape}")
 
     # Cacluate level widths in parallel
-    pool = Pool(64)
-    level_widths = np.ma.masked_invalid(
-        pool.starmap(_get_level_width, zip(air_pressure_bounds, ref_lev,
-                                           ref_zg)))
+    parallel = Parallel(n_jobs=n_jobs)
+    level_widths = parallel(
+        [delayed(_get_level_width)(b, l, z) for (b, l, z) in zip(
+            air_pressure_bounds, ref_lev, ref_zg)]
+    )
+    level_widths = np.ma.masked_invalid(level_widths)
     level_widths = level_widths.reshape(air_pressure_shape)
     level_widths = np.moveaxis(level_widths, -1, z_idx)
     return level_widths
 
 
-def _get_level_width_coord(cube, zg_cube):
+def _get_level_width_coord(cube, zg_cube, n_jobs=1):
     """Get auxiliary coordinate which describes vertical level widths [m]."""
     try:
         altitude_coord = cube.coord('altitude')
     except iris.exceptions.CoordinateNotFoundError:
-        level_widths = _get_level_widths(cube, zg_cube)
+        level_widths = _get_level_widths(cube, zg_cube, n_jobs=n_jobs)
     else:
         logger.info("Calculating level widths from 'altitude' coordinate")
         if altitude_coord.bounds is None:
@@ -321,9 +325,9 @@ def _get_su_variable(grouped_data):
     return (var_name, reference_datasets)
 
 
-def _get_weighted_cloud_fractions(cl_cube, zg_cube, level_limits):
+def _get_weighted_cloud_fractions(cl_cube, zg_cube, level_limits, n_jobs=1):
     """Calculate mass-weighted cloud fraction."""
-    level_width_coord = _get_level_width_coord(cl_cube, zg_cube)
+    level_width_coord = _get_level_width_coord(cl_cube, zg_cube, n_jobs=n_jobs)
     cl_cube.add_aux_coord(level_width_coord, np.arange(cl_cube.ndim))
 
     # Mask data appropriately
@@ -430,7 +434,7 @@ def _similarity_metric(cube, ref_cube, metric):
                        np.ma.array(ref_data, mask=mask).compressed())
 
 
-def brient_shal(grouped_data, _):
+def brient_shal(grouped_data, cfg):
     """Brient et al. (2016) constraint."""
     diag_data = {}
 
@@ -500,7 +504,8 @@ def brient_shal(grouped_data, _):
         [cf_950,
          cf_850] = _get_weighted_cloud_fractions(cl_cube, zg_cube,
                                                  [(100000, 90000),
-                                                  (90000, 80000)])
+                                                  (90000, 80000)],
+                                                 n_jobs=cfg['n_jobs'])
         diag_data[dataset_name] = 100.0 * cf_950 / (cf_950 + cf_850)
 
     return (diag_data, var_attrs, attrs)
@@ -748,11 +753,13 @@ def check_input_data(input_data):
 def get_default_settings(cfg):
     """Get default configuration settings."""
     cfg.setdefault('metric', 'regression_slope')
+    cfg.setdefault('n_jobs', 1)
     cfg.setdefault('savefig_kwargs', {
         'bbox_inches': 'tight',
         'dpi': 600,
         'orientation': 'landscape',
     })
+    logger.info("Using at most %i processes", cfg['n_jobs'])
     return cfg
 
 
