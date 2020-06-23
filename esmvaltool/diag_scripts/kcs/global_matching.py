@@ -153,6 +153,8 @@ def main(cfg):
     """Return scenarios tables."""
     # A list of dictionaries describing all datasets passed on to the recipe
     metadata = cfg['input_data'].values()
+
+    # Get the average delta T of the target model
     target_dts, provenance = mean_of_target_models(metadata)
 
     # Define the different scenario's
@@ -172,7 +174,7 @@ def main(cfg):
         }
         scenarios.append(scenario)
 
-    # Save scenarios tables as a csv file
+    # Save scenarios tables as csv file
     save(scenarios, cfg, provenance)
 
     # Plot the results
