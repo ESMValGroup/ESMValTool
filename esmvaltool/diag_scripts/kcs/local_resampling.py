@@ -1,12 +1,4 @@
-"""Resampling.
-
-In the second step (see sections 4.2 and 4.3) we resample the results of
-ENS-EC for the selected time periods (from the previous step). This is done
-by recombining 5 yr periods of the eight members of ENSEC into new resampled
-climates, and selecting combinations that match with the spread in CMIP5.
-This provides eight resampled EC-Earth time series for each of the scenarios.
-
-"""
+"""Resample the target model for the selected time periods."""
 import logging
 from itertools import product
 from pathlib import Path
@@ -240,10 +232,9 @@ def _get_subset(top1000, info, period):
 def get_percentile_subsets(cfg, segment_season_means, top1000s):
     """Get subsets based on percentile ranges.
 
-    Step 2a: For each set of 1000 samples from 1a-b, compute
-    summer precipitation, and summer and winter temperature.
-
-    Step 2b: For each scenario, select samples for which
+    For each set of 1000 samples, compute summer precipitation,
+    and summer and winter temperature.
+    Then, for each scenario, select samples for which
     summer precipitation, and summer and winter temperature are
     within the percentile bounds specified in the recipe.
     """
@@ -309,7 +300,14 @@ def _best_subset(combinations, n_sample=8):
 
 
 def select_final_subset(cfg, subsets, prov=None):
-    """Select sample with minimal reuse of ensemble segments."""
+    """Select sample with minimal reuse of ensemble segments.
+
+    Final set of eight samples should have with minimal reuse
+    of the same ensemble member for the same period.
+    From 10.000 randomly selected sets of 8 samples, count
+    and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
+    Choose the set with the lowest penalty.
+    """
     n_samples = cfg['n_samples']
     all_scenarios = {}
     for scenario, dataframes in subsets.items():
@@ -458,45 +456,20 @@ def make_plots(cfg, scenario_tables):
 
 
 def main(cfg):
-    """Resample the model of interest.
-
-    Step 0: Read the data, extract segmented subsets for both the control
-    and future periods, and precompute seasonal means for each segment.
-
-    Step 1a: Get 1000 combinations for the control period.
-    These samples should have the same mean winter precipitation as the
-    overall mean of the x ensemble members.
-
-    Step 1b: Get 1000 combinations for the future period.
-    Now, for future period, the target value is a relative change
-    with respect to the overall mean of the control period.
-
-    Step 2a: For each set of 1000 samples from 1a-b, compute
-    summer precipitation, and summer and winter temperature.
-
-    Step 2b: For each scenario, select samples for which
-    summer precipitation, and summer and winter temperature are
-    within the percentile bounds specified in the recipe.
-
-    Step 3: Select final set of eight samples with minimal reuse of the same
-    ensemble member for the same period.
-    From 10.000 randomly selected sets of 8 samples, count
-    and penalize re-used segments (1 for 3*reuse, 5 for 4*reuse).
-    Chose the set with the lowest penalty.
-    """
-    # Step 0
+    """Resample the model of interest."""
+    # Step 0: extract segmented subsets and precompute seasonal means
     segment_season_means, provenance = get_segment_season_means(cfg)
 
-    # Step 1
+    # Step 1: get 1000 combinations
     top1000s = get_all_top1000s(cfg, segment_season_means)
 
-    # Step 2
+    # Step 2: select samples based on the the percentile bounds
     subsets = get_percentile_subsets(cfg, segment_season_means, top1000s)
 
-    # Step 3
+    # Step 3: select final set of eight samples
     scenarios = select_final_subset(cfg, subsets, prov=provenance)
 
-    # Step 4: Plot the results
+    # Step 4: plot the results
     if cfg['write_plots']:
         make_plots(cfg, scenarios)
 

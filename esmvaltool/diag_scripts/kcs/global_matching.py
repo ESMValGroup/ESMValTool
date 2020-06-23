@@ -1,15 +1,4 @@
-"""Align the target model with the CMIP ensemble.
-
-1. Get the global mean temperature change for specified years and
-specified percentiles (CMIP Delta T). These define the scenarios.
-
-- Select 30-year periods from the target model (all ensemble members)
-where they match the CMIP Delta T for each scenario.
-
-- Make a plot of the global mean temperature change
-according to all datasets, and indicate the scenario's.
-
-"""
+"""Align the target model with the CMIP ensemble."""
 import logging
 from pathlib import Path
 from itertools import product
@@ -183,8 +172,10 @@ def main(cfg):
         }
         scenarios.append(scenario)
 
+    # Save scenarios tables as a csv file
     save(scenarios, cfg, provenance)
 
+    # Plot the results
     if cfg['write_plots']:
         make_plot(metadata, scenarios, cfg)
 
