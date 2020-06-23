@@ -113,7 +113,6 @@ diagnostics:
         script: kcs/local_resampling.py
         control_period: [1981, 2010]
         n_samples: 8
-        target_model: CCSM4
         scenarios:
           ML_MOC:
             description: "Moderate warming / low changes in seasonal temperature & precipitation"
