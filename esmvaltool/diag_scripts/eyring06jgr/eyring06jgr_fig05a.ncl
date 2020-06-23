@@ -72,7 +72,7 @@ begin
               "(variable_info[0]@reference_dataset) needs to be defined.")
   end if
 
-  if(isatt(variable_info, "long_name")) then
+  if (isatt(variable_info, "long_name")) then
     LONG_NAME = variable_info@long_name
   else
     LONG_NAME = var0
@@ -122,7 +122,7 @@ begin
   XMin = diag_script_info@Xmin
 
   multimean = diag_script_info@multimean
-  if (multimean)
+  if (multimean) then
     dimTot = dim_MOD + dim_OBS + 1
   else
     dimTot = dim_MOD + dim_OBS
@@ -351,7 +351,7 @@ begin
                                           yp_R(:, ipanel), gsres)
     if (multimean) then
       gsres1 = True
-      gsres1@gsFillColor = "cyan"                 ; color chosen
+      gsres1@gsFillColor = "cyan"
       gsres1@gsFillOpacityF = 0.2
       plot_xp_M_d(ipanel) = gsn_add_polygon(wks, plot_d(ipanel), \
                                             xp_M(:, ipanel), \

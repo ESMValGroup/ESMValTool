@@ -63,13 +63,13 @@ begin
   y2 = metadata_att_as_array(info0, "end_year")
 
   ; Check variable attributes
-  if(isatt(variable_info, "units")) then
+  if (isatt(variable_info, "units")) then
     UNITS = variable_info@units
   else
     UNITS = "DU"
   end if
 
-  if(isatt(variable_info, "long_name")) then
+  if (isatt(variable_info, "long_name")) then
     LONG_NAME = variable_info@long_name
   else
     LONG_NAME = var0
@@ -122,7 +122,7 @@ begin
   cycle_min = toint(diag_script_info@cycle_Ymin)
 
   multimean = diag_script_info@multimean
-  if (multimean)
+  if (multimean) then
     dimTot = dim_MOD + dim_OBS + 1
   else
     dimTot = dim_MOD + dim_OBS
@@ -210,7 +210,7 @@ begin
       ; Extract data
       A0 = read_data(info0[imod])
 
-      if(all(isdim(A0, (/"time", "lat", "lon"/)))) then
+      if (all(isdim(A0, (/"time", "lat", "lon"/)))) then
         dummy1 = area_operations(A0(time|:, lat|:, lon|:), \
                                  latrange(ipan, 0), \
                                  latrange(ipan, 1), 0., 360., \
@@ -221,7 +221,7 @@ begin
         delete(coslat)
         delete(A0)
       else
-        if(all(isdim(A0, (/"time", "lat"/)))) then
+        if (all(isdim(A0, (/"time", "lat"/)))) then
           coslat = cos(A0&lat * rad)
           coslat!0 = "lat"
           coslat&lat = A0&lat
