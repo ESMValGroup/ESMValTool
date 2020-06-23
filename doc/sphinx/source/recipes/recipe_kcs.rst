@@ -116,14 +116,15 @@ The diagnostic ``local_resampling`` procudes a number of output files:
 
                       control                                                      future
                     Segment 0 Segment 1 Segment 2 Segment 3 Segment 4 Segment 5 Segment 0 Segment 1 Segment 2 Segment 3 Segment 4 Segment 5
-      Combination 0         0         1         6         1         4         6         6         4         1         5         5         6
-      Combination 1         4         6         0         2         1         3         6         5         7         2         5         6
-      Combination 2         2         0         2         7         3         4         4         7         5         5         5         2
-      Combination 3         6         7         0         6         7         7         4         7         6         0         5         4
-      Combination 4         5         1         6         6         4         6         6         7         7         2         5         6
-      Combination 5         2         6         5         2         1         3         7         5         5         1         5         5
-      Combination 6         6         3         5         1         7         7         7         4         6         0         5         5
-      Combination 7         4         0         4         7         3         4         4         4         5         6         5         2
+     Combination 0          5         7         6         3         1         3         2         4         2         4         7         7
+     Combination 1          0         3         0         4         3         2         4         1         6         1         3         0
+     Combination 2          2         4         3         7         4         2         5         4         6         6         4         2
+     Combination 3          1         4         7         2         3         6         5         3         1         7         4         1
+     Combination 4          5         7         6         3         1         3         2         3         0         6         1         7
+     Combination 5          7         2         1         4         5         1         6         0         4         2         3         3
+     Combination 6          7         2         2         0         6         6         5         2         1         5         4         2
+     Combination 7          6         3         2         1         6         1         2         1         0         2         1         3
+
 
 * Provenance information: bibtex, xml, and/or text files containing citation information are stored alongside the final result and the final figure.
   The final combinations only derive from the target model data, whereas the figure also uses CMIP data.
