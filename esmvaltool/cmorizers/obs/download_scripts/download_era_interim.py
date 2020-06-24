@@ -87,6 +87,8 @@ DAY_PARAMS = [
     ('212.128', 'tisr', 'accu'),  # TOA incident solar radiation
     ('164.128', 'tcc', 'an'),  # Total cloud cover
     ('129.128', 'z', '3d'),  # Geopotential
+    ('132.128', 'v', '3d'),  # V component of wind
+    ('130.128', 't', '3d'),  # Temperature
 ]
 
 

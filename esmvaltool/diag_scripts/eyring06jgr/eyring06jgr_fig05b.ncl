@@ -64,13 +64,13 @@ begin
   end if
 
   ; Check variable attributes
-  if(isatt(variable_info, "units")) then
+  if (isatt(variable_info, "units")) then
     UNITS = variable_info@units
   else
     UNITS = "ppmv"
   end if
 
-  if(isatt(variable_info, "long_name")) then
+  if (isatt(variable_info, "long_name")) then
     LONG_NAME = variable_info@long_name
   else
     LONG_NAME = var0
@@ -114,7 +114,7 @@ begin
   YMin = diag_script_info@YMin
 
   multimean = diag_script_info@multimean
-  if (multimean)
+  if (multimean) then
     dimTot = dim_MOD + dim_OBS + 1
   else
     dimTot = dim_MOD + dim_OBS

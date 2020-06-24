@@ -58,7 +58,7 @@ preprocessors:
       extract_region:
         start_longitude: 0.
         end_longitude: 360.
-        start_latitude: 1.25
+        start_latitude: -1.25
         end_latitude: 90.
 
 diagnostics:
@@ -70,6 +70,7 @@ diagnostics:
         preprocessor: preproc1
         mip: day
         reference_dataset: "ERA-Interim"
+#       reference_exp: historical
     scripts:
         miles_block:
             script: miles/miles_block.R

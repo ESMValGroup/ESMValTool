@@ -65,13 +65,13 @@ begin
   iref = ind(names.eq.variable_info[0]@reference_dataset)
 
   ; Check variable attributes
-  if(isatt(variable_info, "units")) then
+  if (isatt(variable_info, "units")) then
     units = variable_info@units
   else
     units = "K"
   end if
 
-  if(isatt(variable_info, "long_name")) then
+  if (isatt(variable_info, "long_name")) then
     long_name = variable_info@long_name
   else
     long_name = var0
@@ -107,7 +107,7 @@ begin
   end if
 
   multimean = diag_script_info@multimean
-  if (multimean)
+  if (multimean) then
     dimTot = dim_MOD + dim_OBS
   else
     dimTot = dim_MOD + dim_OBS - 1

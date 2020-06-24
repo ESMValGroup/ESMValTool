@@ -209,7 +209,7 @@ hyint_plot_trends <- function(work_dir, # nolint
       }
 
       # ----- Loop over label when plotting more files in the same panel ----
-      for (ilabel in 1:length(store_label)) {
+      for (ilabel in seq_along(store_label)) {
         label <- store_label[ilabel]
         #-----------------Loading data-----------------------#
 
@@ -238,7 +238,7 @@ hyint_plot_trends <- function(work_dir, # nolint
               figname = figname,
               caption = caption,
               model_idx = list(model_idx),
-              ancestors = list(infile)
+              ancestors = prov_info[[infile]]$ancestors
             )
             prov_info[[figname]] <- prov_fig_now
           } else {
@@ -246,7 +246,8 @@ hyint_plot_trends <- function(work_dir, # nolint
               prov_info[[figname]]$model_idx <-
                 c(prov_info[[figname]]$model_idx, model_idx)
               prov_info[[figname]]$ancestors <-
-                c(prov_info[[figname]]$ancestors, infile)
+                c(prov_info[[figname]]$ancestors,
+                  prov_info[[infile]]$ancestors)
             }
           }
         }
@@ -573,7 +574,7 @@ hyint_plot_trends <- function(work_dir, # nolint
                 figname = figname,
                 caption = caption,
                 model_idx = list(model_idx),
-                ancestors = list(infile)
+                ancestors = prov_info[[infile]]$ancestors
               )
               prov_info[[figname]] <- prov_fig_now
             }
@@ -833,7 +834,7 @@ hyint_plot_trends <- function(work_dir, # nolint
           figname = figname,
           caption = caption,
           model_idx = list(model_idx),
-          ancestors = list(infile)
+          ancestors = prov_info[[infile]]$ancestors
         )
         prov_info[[figname]] <- prov_fig_now
       }

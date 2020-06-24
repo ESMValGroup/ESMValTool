@@ -1,0 +1,983 @@
+# ESMValTool
+# recipe_russell18jgr.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figures 1, 2, 3a, 3b, 4, 5, 5g, 6a,
+                                     6b, 7, 7h, 7i, 8, 9a, 9b, 9c.
+    Russell, J.L.,et al., 2018, J. Geophysical Research - Oceans,
+    123, 3120-3143, https://doi.org/10.1002/2017JC013461
+
+    Please read individual description in diagnostics section.
+
+  authors:
+    - russell_joellen
+    - pandde_amarjiit
+
+  maintainer:
+    - russell_joellen
+    - pandde_amarjiit
+
+  references:
+    - russell18jgr
+
+  projects:
+    - russell_project
+
+preprocessors:
+  preprocessor_time_land:
+    climate_statistics:
+      operator: mean
+      period: full
+    mask_landsea:
+      mask_out: "land"
+
+  preprocessor_time:
+    climate_statistics:
+      operator: mean
+      period: full
+
+
+diagnostics:
+
+  Figure_1:
+    description: |
+      Diagnostic for russell et al figure 1. Plots Annual-mean zonal wind
+       stress as polar contour map. Here, we are using tauuo. Figures in
+      russell18jgr paper were  made using tauuo, but tauu can also be used if
+      tauuo file is not availble. To use tauu variable in this recipe just
+      uncomment variable 'tauu' and add dataset names in additional datasets of
+      respective variable. If there are no dataset in a variable, entire
+      variable section needs to be commented out.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      tauu:
+        preprocessor: preprocessor_time_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: GFDL-ESM2M}
+    #  tauuo:
+    #    preprocessor: preprocessor_time
+    #    mip: Omon
+    #    project: CMIP5
+    #    exp: historical
+    #    ensemble: r1i1p1
+    #    start_year: 1986
+    #    end_year: 2005
+    #    additional_datasets:
+    #      - {dataset: CanESM2}
+    #      - {dataset: GFDL-ESM2M}
+    scripts:
+      polar-tauu:
+        script: russell18jgr/russell18jgr-polar.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+        grid_min: -0.4
+        grid_max: 0.4
+        grid_step: 0.1
+        colors: [[237.6, 237.6, 0.], [255, 255, 66.4], [255, 255, 119.6],
+                 [255, 255, 191.8], [223.8, 191.8, 223.8],
+                 [192.8, 127.5, 190.8],
+                 [161.6, 65.3, 158.6], [129.5, 1.0, 126.5]]
+        labelBar_end_type: ExcludeOuterBoxes
+        max_lat: -30.
+        max_vert: 2
+        max_hori: 1
+
+
+  Figure_2:
+    description: |
+      Diagnostic for russell et al Figure 2. Plots The zonal and annual means
+      of the zonal wind stress (N/m^2). Here, we are using tauuo,
+      figures in russell18jgr paper were  made using tauuo, but tauu can
+      also be used if tauuo file is not availble. To use tauu variable
+      in this recipe just uncomment variable 'tauu' and add dataset names
+      in additional datasets of respective variable. If there are no dataset
+      in a variable, entire variable section needs to be commented out.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      # tauu:
+      #   preprocessor: preprocessor_time_land
+      #   mip: Amon
+      #   project: CMIP5
+      #   exp: historical
+      #   ensemble: r1i1p1
+      #   start_year: 1986
+      #   end_year: 2005
+      #   additional_datasets:
+      #     - {dataset: CanESM2}
+      #     - {dataset: GFDL-ESM2M}
+      tauuo:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: GFDL-ESM2M}
+    scripts:
+      tauu-lineplot:
+        script: russell18jgr/russell18jgr-fig2.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_3b:
+    description: |
+      Diagnostic for russell et al figure 3b. Plots the latitudinal position of
+      Subantarctic Front. Using definitions from Orsi et al (1995), the
+      Subantarctic Front is defined here as the poleward location of
+      the 4C(277.15K) isotherm at(closest to and less than) 400 m.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC-ESM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      Subantarctic-Front:
+        script: russell18jgr/russell18jgr-fig3b.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: CMIP5
+
+
+  Figure_3b-2:
+    description: |
+      Diagnostic for russell et al figure 3b-2 (Polar fronts). Plots the
+      latitudinal position of Polar Front. Using definitions from Orsi et
+      al. (1995). The Polar Front is defined here as the poleward location
+      of the 2C (275.15K) isotherm of the temperature minimum between 0 and
+      200 m (closest to and less than 200m).
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: ACCESS1-0}
+      # - {dataset: ACCESS1-3}
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
+      # - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      # - {dataset: CCSM4}
+      # - {dataset: CESM1-CAM5}
+      # - {dataset: CNRM-CM5}
+      # - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: FGOALS-g2}
+      # - {dataset: FGOALS-s2}
+      # - {dataset: GFDL-CM3}
+      # - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      # - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+      # - {dataset: IPSL-CM5A-LR}
+      # - {dataset: IPSL-CM5A-MR}
+      # - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC-ESM}
+      # - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      # - {dataset: NorESM1-M}
+      # - {dataset: NorESM1-ME}
+    scripts:
+      Polar-front:
+        script: russell18jgr/russell18jgr-fig3b-2.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_4:
+    description: |
+      Recipe for russell et al figure 4. Plots the zonal velocity through
+      Drake Passage (at 69W) and total transport through the passage if the
+      volcello file is available.
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      uo:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      volcello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # - {dataset: FGOALS-s2}
+      # - {dataset: GFDL-CM3}
+      # - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC-ESM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      Drake-passage:
+        script: russell18jgr/russell18jgr-fig4.ncl
+        styleset: CMIP5
+        ncdf: default
+        max_vert: 2
+        max_hori: 1
+        # unit conversion factor from (m/s) to (cm/s)
+        unitCorrectionalFactor: 100
+        new_units: "cm/s"
+
+
+  Figure_5:
+    description: |
+      Diagnostic for russell et al figure 5 (polar). Plots the mean extent of
+      sea ice for September(max) in blue and mean extent of sea ice for
+      February(min) in red. The edge of full coverage is defined by the 15%
+      areal coverage.
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      sic-polar:
+        script: russell18jgr/russell18jgr-fig5.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+        max_lat: -45.0
+        max_vert: 2
+        max_hori: 2
+
+
+  Figure_5g:
+    description: |
+      Recipe for russell et al figure 5g. Plots the annual cycle of sea ice
+      area in southern ocean. The diag_script manually calculates the
+      areacello for lat-lon models, as some models use different grids
+      for areacello and sic files.
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      # - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      sic-line:
+        script: russell18jgr/russell18jgr-fig5g.ncl
+        # Plot style
+        styleset: CMIP5
+
+
+  Figure_6a:
+    description: |
+      Diagnostic for russell et al Figure 6 (volume transport). Plots the
+      density layer based volume transport(in Sv) across 30S based on the
+      layer definitions in Talley (2008). The dark blue bars are the
+      integrated totals for each layer and can be compared to the magenta
+      lines, which are the observed values from Talley( 2008). The narrower
+      red bars are equal subdivisions of each blue layer
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      so:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      vo:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      volcello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: ACCESS1-0}
+      # - {dataset: ACCESS1-3}
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
+      # - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      # - {dataset: CCSM4}
+      # - {dataset: CESM1-CAM5}
+      # - {dataset: CNRM-CM5}
+      # - {dataset: CNRM-CM5-2}
+      # - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: FGOALS-g2}
+      # - {dataset: FGOALS-s2}
+      # - {dataset: GFDL-CM3}
+      # - {dataset: GFDL-ESM2G}
+      # - {dataset: GFDL-ESM2M}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      # - {dataset: HadCM3}
+      # - {dataset: HadGEM2-ES}
+      # - {dataset: IPSL-CM5A-LR}
+      # - {dataset: IPSL-CM5A-MR}
+      # - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC-ESM}
+      # - {dataset: MRI-CGCM3}
+      # - {dataset: MRI-ESM1}
+      # - {dataset: NorESM1-M}
+      # - {dataset: NorESM1-ME}
+    scripts:
+      Figure6a:
+        script: russell18jgr/russell18jgr-fig6a.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_6b:
+    description: |
+      Diagnostic for russell et al Figure 6b(heat transport). Plots the
+      density layer based heat transport (in PW) across 30S based on the layer
+      definitions in Talley (2008). The dark blue bars are the integrated
+      totals for each layer and can be compared to the magenta lines, which
+      are the observed values from Talley (2008). The narrower red bars are
+      equal subdivisions of each blue layer
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      thetao:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      so:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      vo:
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      volcello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: ACCESS1-0}
+      # - {dataset: ACCESS1-3}
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: bcc-csm1-1-m}
+      # - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      # - {dataset: CCSM4}
+      # - {dataset: CESM1-CAM5}
+      # - {dataset: CNRM-CM5}
+      # - {dataset: CNRM-CM5-2}
+      # - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: FGOALS-g2}
+      # - {dataset: FGOALS-s2}
+      # - {dataset: GFDL-CM3}
+      # - {dataset: GFDL-ESM2G}
+      # - {dataset: GFDL-ESM2M}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      # - {dataset: HadCM3}
+      # - {dataset: HadGEM2-ES}
+      # - {dataset: IPSL-CM5A-LR}
+      # - {dataset: IPSL-CM5A-MR}
+      # - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC-ESM}
+      # - {dataset: MRI-CGCM3}
+      # - {dataset: MRI-ESM1}
+      # - {dataset: NorESM1-M}
+      # - {dataset: NorESM1-ME}
+    scripts:
+      Figure6b:
+        script: russell18jgr/russell18jgr-fig6b.ncl
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_7:
+    description: |
+      Diagnostic for russell et al figure 7(polar). Plots Annual mean CO2 flux
+      (sea to air, gC/(yr * m^2), positive (red) is out of the ocean).
+    themes:
+      - carbon
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        preprocessor: preprocessor_time_land
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        # areacello:
+        #   mip: fx
+        #   project: CMIP5
+        #   exp: historical
+        #   ensemble: r0i0p0
+        #   start_year: 1986
+        #   end_year: 2005
+    additional_datasets:
+      - {dataset: bcc-csm1-1}
+      # - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+    scripts:
+      fgco2-polar:
+        script: russell18jgr/russell18jgr-polar.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+        grid_min: -30
+        grid_max: 30
+        grid_step: 2.5
+        colormap: BlWhRe
+        labelBar_end_type: both_triangle
+        max_lat: -30.
+        max_vert: 2
+        max_hori: 1
+        unitCorrectionalFactor: -3.154e+10
+        # unit conversion factor from kg /(m^2 * sec) to g / (m^2 * yr)
+        new_units: "gC/ (m~S~2~N~ * yr)"
+
+
+  Figure_7h:
+    description: |
+      Diagnostic for russell et al figure 7h. Plots the zonal mean flux of
+      fgco2 in gC/(yr * m^2).
+    themes:
+      - carbon
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        preprocessor: preprocessor_time_land
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        # areacello:
+        #   mip: fx
+        #   project: CMIP5
+        #   exp: historical
+        #   ensemble: r0i0p0
+        #   start_year: 1986
+        #   end_year: 2005
+    additional_datasets:
+      - {dataset: bcc-csm1-1}
+      # - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+    scripts:
+      fgco2_line:
+        script: russell18jgr/russell18jgr-fig7h.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_7i:
+    description: |
+      Diagnostic for russell et al figure 7i. Plots the cumulative integral
+      of the net CO2 flux from 90S to 30S (in PgC/yr). The diag_script manually
+      calculates the areacello for lat-lon models, as some models use different
+      grids for areacello and fgco2 files.
+    themes:
+      - carbon
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        preprocessor: preprocessor_time_land
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: bcc-csm1-1}
+      # - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CNRM-CM5}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+    scripts:
+      fgco2_cumulative_line:
+        script: russell18jgr/russell18jgr-fig7i.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_8:
+    description: |
+      Diagnostic for russell et al figure 8. Plots Surface pH in polar
+      contour plot.
+    themes:
+      - bgchem
+    realms:
+      - ocnBgchem
+    variables:
+      ph:
+        preprocessor: preprocessor_time_land
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC-ESM, ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-ME}
+    scripts:
+      Polar-ph:
+        script: russell18jgr/russell18jgr-polar.ncl
+        styleset: CMIP5
+        ncdf: default
+        grid_min: 8.0
+        grid_max: 8.2
+        grid_step: 0.01
+        labelBar_end_type: both_triangle
+        max_lat: -30.
+        max_vert: 2
+        max_hori: 1
+        grid_color: blue4
+        colors: [[132, 12, 127], [147, 5, 153], [172, 12, 173], [195, 33, 196],
+                 [203, 63, 209], [215, 89, 225], [229, 117, 230],
+                 [243, 129, 238], [253, 155, 247], [255, 178, 254],
+                 [255, 255, 255], [255, 255, 255], [126, 240, 138],
+                 [134, 234, 138], [95, 219, 89], [57, 201, 54], [39, 182, 57],
+                 [33, 161, 36], [16, 139, 22], [0, 123, 10], [6, 96, 6],
+                 [12, 77, 9.0]]
+
+
+  Figure_9a:
+    description: |
+      Diagnostic for russell et al figure 9a. Plots the scatter plot of the
+      width of the Southern Hemisphere westerly wind band against the
+      annual-mean integrated heat uptake south of 30S (in PW—negative uptake
+      is heat lost from the ocean), along with the line of best fit. The
+      diagnostic script will be updated later to include tauu variable and
+      non-hfds datasets
+      hfds = rsds + rlds - (rsus + rlus + hfss + hfls)
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      # tauu:
+      #   preprocessor: preprocessor_time_land
+      #   mip: Amon
+      #   project: CMIP5
+      #   exp: historical
+      #   ensemble: r1i1p1
+      #   start_year: 1986
+      #   end_year: 2005
+      tauuo:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      hfds:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: CanESM2}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2G}
+      # - {dataset: GFDL-ESM2M}
+      # - {dataset: HadGEM2-ES, end_year: 2004}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      # - {dataset: IPSL-CM5A-LR}
+      # - {dataset: IPSL-CM5A-MR}
+      # - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+      # - {dataset: NorESM1-ME}
+    scripts:
+      Figure9a:
+        script: russell18jgr/russell18jgr-fig9a.ncl
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_9b:
+    description: |
+      Diagnostic for russell et al figure 9b. Plots the scatter plot of the
+      width of the Southern Hemisphere westerly wind band against the
+      annual-mean integrated carbon uptake south of 30S(in Pg C/yr), along
+      with the line of best fit. The diagnostic script will be updated later
+      to include tauu variable.
+    themes:
+      - phys
+      - carbon
+    realms:
+      - ocean
+    variables:
+      # tauu:
+      #   preprocessor: preprocessor_time_land
+      #   mip: Amon
+      #   project: CMIP5
+      #   exp: historical
+      #   ensemble: r1i1p1
+      #   start_year: 1986
+      #   end_year: 2005
+      tauuo:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      fgco2:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: CanESM2}
+      - {dataset: CNRM-CM5}
+      # - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2G}
+      # - {dataset: GFDL-ESM2M}
+      # - {dataset: HadGEM2-ES, end_year: 2004}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      # - {dataset: IPSL-CM5A-LR}
+      # - {dataset: IPSL-CM5A-MR}
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}  # , ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+      # - {dataset: NorESM1-ME}
+    scripts:
+      Figure9b:
+        script: russell18jgr/russell18jgr-fig9b.ncl
+        styleset: CMIP5
+        ncdf: default
+
+
+  Figure_9c:
+    description: |
+      Diagnostic for russell et al Figure 9c. Plots the scatter plot of the
+      net heat uptake south of 30S(in PW) against the annual-mean integrated
+      carbon uptake south of 30S(in Pg C/yr), along with the line of best fit.
+      The diagnostic script will be updated later to include non-hfds datasets.
+      hfds = rsds + rlds - (rsus + rlus + hfss + hfls)
+    themes:
+      - phys
+      - carbon
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      hfds:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      # - {dataset: bcc-csm1-1}
+      # - {dataset: CanESM2}
+      - {dataset: CNRM-CM5}
+      # - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2G}
+      # - {dataset: GFDL-ESM2M}
+      # - {dataset: HadGEM2-ES, end_year: 2004}
+      # - {dataset: GISS-E2-H-CC}
+      # - {dataset: GISS-E2-R-CC}
+      # - {dataset: IPSL-CM5A-LR}
+      # - {dataset: IPSL-CM5A-MR}
+      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      # - {dataset: MRI-ESM1}
+      # - {dataset: NorESM1-ME}
+    scripts:
+      Figure9c:
+        script: russell18jgr/russell18jgr-fig9c.ncl
+        styleset: CMIP5
+        ncdf: default

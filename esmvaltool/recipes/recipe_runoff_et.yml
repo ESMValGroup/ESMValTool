@@ -3,10 +3,11 @@
 ---
 documentation:
   description: |
-    Recipe for plotting runoff and ET diagnostics. The diagnostics calculates water
-    balance components for different catchments and compares the results against
-    observations. Currently, the required catchment mask needs to be downloaded manually
-    at https://doi.org/10.5281/zenodo.2025776
+    Recipe for plotting runoff and ET diagnostics. The diagnostics calculates
+    water balance components for different catchments and compares the results
+    against observations. Currently, the required catchment mask needs to be
+    downloaded manually at https://doi.org/10.5281/zenodo.2025776 and saved in
+    the auxiliary_data_dir defined in config-user.yml.
 
   authors:
     - hagemann_stefan
@@ -26,8 +27,10 @@ documentation:
     - crescendo
 
 datasets:
-  - {dataset: MPI-ESM-LR,    project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
-  - {dataset: IPSL-CM5B-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1970,  end_year: 2000}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1970, end_year: 2000}
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1970, end_year: 2000}
 
 diagnostics:
   catchment_analysis:
@@ -42,5 +45,4 @@ diagnostics:
     scripts:
       catchment_analysis:
         script: runoff_et/catchment_analysis.py
-        catchmentmask: ~/catchmentmask_v1.nc
-
+        catchmentmask: catchmentmask_v1.nc

@@ -47,22 +47,38 @@ def generate_sidebar(conf, conf_api):
             args = desc, link
             lines.append("    %s <%s>" % args)
 
+    def _header(project, text):
+        if project == conf_api or do_gen:
+            lines.extend([".. toctree::", "   :maxdepth: 2"])
+            lines.extend(["   :caption: %s" % text, ""])
+
     #
     # Specify the sidebar contents here
     #
 
-    _toctree()
-    _write("esmvaltool", "Preface", "preface/index")
+    _header("esmvaltool", "ESMValTool")
+    _write("esmvaltool", "Introduction", "introduction")
+    _write("esmvaltool", "Getting started", "quickstart/index")
     _write("esmvaltool", "Gallery", "gallery")
-    _write("esmvaltool", "Getting started", "getting_started/index")
-    _write("esmvaltool", "Recipes", "recipes/index")
-    _write("esmvalcore", "ESMValCore", "esmvalcore/index")
-    _write("esmvaltool", "Guidelines for diagnostic developers",
-           "esmvaldiag/index")
-    _write("esmvalcore", "ESMValCore API Reference",
-           "api/esmvalcore")
-    _write("esmvaltool", "Diagnostics API Reference",
-           "api/esmvaltool")
+    _write("esmvaltool", "Available recipes", "recipes/index")
+    _write("esmvaltool", "Obtaining input data", "input")
+    _write("esmvaltool", "Making a recipe or diagnostic", "develop/index")
+    _write("esmvaltool", "Contributing to the community", "community/index")
+    _write("esmvaltool", "Utilities", "utils")
+    _write("esmvaltool", "Diagnostics API Reference", "api/esmvaltool")
+    _write("esmvaltool", "Frequently Asked Questions", "faq")
+    _write("esmvaltool", "Changelog", "changelog")
+    _endl()
+
+    _header("esmvalcore", "ESMValCore")
+    _write("esmvalcore", "Getting started", "quickstart/index")
+    _write("esmvalcore", "The recipe format", "recipe/index")
+    _write("esmvalcore", "Diagnostic script interfaces", "interfaces")
+    _write("esmvalcore", "Development", "develop/index")
+    _write("esmvalcore", "Contributing", "contributing")
+    _write("esmvalcore", "Utilities", "utils")
+    _write("esmvalcore", "ESMValCore API Reference", "api/esmvalcore")
+    _write("esmvalcore", "Changelog", "changelog")
     _endl()
 
     _write_if_changed("_sidebar.rst.inc", "\n".join(lines))
