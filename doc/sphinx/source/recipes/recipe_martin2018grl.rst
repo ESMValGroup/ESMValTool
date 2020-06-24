@@ -81,13 +81,13 @@ Example plots
    :align: center
    :width: 50%
 
-   Percentage difference between multi-model mean of 15 CMIP models and the CRU data for the number of drought events [%] based on SPI.
+   Global map of the percentage difference between multi-model mean of 15 CMIP models and the CRU data for the number of drought events [%] based on SPI.
 
 .. _martin2018grl_fig1:
 .. figure:: /recipes/figures/droughtindex/martin2018grl_fig2.png
    :align: center
    :width: 50%
 
-   Percentage difference between multi-model mean for RCP8.5 scenarios (2050-2100) runs and historical data (1950-2000) for 15 CMIP models for the number of drought events [%] based on SPI.
+   Global map of the percentage difference between multi-model mean for RCP8.5 scenarios (2050-2100) runs and historical data (1950-2000) for 15 CMIP models for the number of drought events [%] based on SPI.
 
 

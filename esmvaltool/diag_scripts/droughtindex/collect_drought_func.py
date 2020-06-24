@@ -75,10 +75,10 @@ def _get_drought_data(cfg, cube):
 
 def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
     """Set provenance for plot_map_spei."""
-    caption = 'Global average of ' + \
+    caption = 'Global map of ' + \
               name_dict['drought_char'] + \
               ' [' + name_dict['unit'] + '] ' + \
-              'based on' + cfg['indexname'] + '.'
+              'based on ' + cfg['indexname'] + '.'
 
     if cfg['indexname'].lower == "spei":
         set_refs = ['martin2018grl', 'vicente10jclim', ]
@@ -110,10 +110,10 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
 
 def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
     """Set provenance for plot_map_spei_multi."""
-    caption = 'Global average multi-model mean of ' + \
+    caption = 'Global map of the multi-model mean of ' + \
               data_dict['drought_char'] + \
               ' [' + data_dict['unit'] + '] ' + \
-              'based on' + cfg['indexname'] + '.'
+              'based on ' + cfg['indexname'] + '.'
 
     if cfg['indexname'].lower == "spei":
         set_refs = ['martin2018grl', 'vicente10jclim', ]
