@@ -46,8 +46,7 @@ There are two python diagnostics, which can use the SPI data to calculate the dr
 * To compare these ccharacteristics between different time periods in model data use droughtindex/collect_drought_model.py
   Here, the user can set:
   * indexname: Necessary to identify data produced by droughtindex/diag_save_spi.R as well as write captions and filenames. At the moment only indexname: 'SPI' is supported.
-  * threshold: Threshold for this index below which an event is considered to be a drought, the setting for SPI should be usually threshold: -2.0 but any other value will be accepted.
-    Values should not be < - 3.0 or > 3.0 for SPI (else it will identify none/always drought conditions).
+  * threshold: Threshold for this index below which an event is considered to be a drought, the setting for SPI should be usually threshold: -2.0 but any other value will be accepted. Values should not be < - 3.0 or > 3.0 for SPI (else it will identify none/always drought conditions).
   * start_year: Needs to be equal or larger than the start_year for droughtindex/diag_save_spi.R.
   * end_year: Needs to be equal or smaller than the end_year for droughtindex/diag_save_spi.R.
   * comparison_period: should be < (end_year - start_year)/2 to have non overlapping time series in the comparison.
