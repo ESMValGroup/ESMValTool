@@ -33,8 +33,8 @@ colors:
       cmap: YlGn
     absdiff:
       title: absdiff
-      vmin: -.5
-      vmax: .5
+      vmin: -0.5
+      vmax: 0.5
       cmap: BrBG
     reldiff:
       title: reldiff
@@ -70,7 +70,7 @@ colors:
       cmap: YlGn
     absdiff:
       title: absdiff
-      vmin: -.5
+      vmin: -0.5
       vmax: .5
       cmap: BrBG
     reldiff:
@@ -107,7 +107,7 @@ colors:
       cmap: YlOrBr
     absdiff:
       title: absdiff
-      vmin: -.5
+      vmin: -0.5
       vmax: .5
       cmap: BrBG
     reldiff:
@@ -145,7 +145,7 @@ colors:
       cmap: YlOrBr
     absdiff:
       title: absdiff
-      vmin: -.5
+      vmin: -0.5
       vmax: .5
       cmap: BrBG
     reldiff:

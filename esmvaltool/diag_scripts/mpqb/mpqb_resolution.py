@@ -10,6 +10,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
+from mpqb_plots import read_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -28,11 +29,14 @@ def main(cfg):
     logger.info("Calculating the resolution.")
     datasets = []
     names = []
+
+    datasetnames = read_mpqb_cfg()['datasetnames']
+
     for dataset in grouped_input_data:
         logger.info("Opening dataset: %s", dataset)
         datasets.append(
             iris.load_cube(grouped_input_data[dataset][0]['filename']))
-        names.append(dataset)
+        names.append(datasetnames[dataset])
 
     res_data = _get_tim_res(datasets, names)
 

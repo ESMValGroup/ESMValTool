@@ -20,15 +20,6 @@ def read_mpqb_cfg():
     return mpqb_cfg
 
 
-def get_ecv_plot_config(ecv_name):
-    """Read from mpqb_cfg.yml file."""
-    cfg_filename = os.path.join(os.path.split(__file__)[0], 'mpqb_cfg.yml')
-    with open(cfg_filename, 'r') as handle:
-        plot_config = yaml.safe_load(handle)
-    ecv_plot_config = plot_config[ecv_name]
-    return ecv_plot_config
-
-
 def _get_plottitle_timeperiod(cube):
     time_coord = cube.coord('time')
     time_asdatetime = time_coord.units.num2date(time_coord.bounds).flatten()
