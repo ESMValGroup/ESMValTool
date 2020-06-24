@@ -1,13 +1,13 @@
 .. _recipes_martin2018grl:
 
-Drough characteristics following Martin (2018)
+Drought characteristics following Martin (2018)
 ==============================================
 
 Overview
 --------
 
 
-Following `Martin (2018)`_ drough characteristica are calculated based on the standard precipitation index (SPI), see `Mckee et al. (1993)`_. These characteristics are frequency, average duration, SPI index and severity index of drought events.
+Following `Martin (2018)`_ drought characteristics are calculated based on the standard precipitation index (SPI), see `Mckee et al. (1993)`_. These characteristics are frequency, average duration, SPI index and severity index of drought events.
 
 .. _`Martin (2018)`: https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2018GL079807
 .. _`Mckee et al. (1993)`: https://www.nature.com/articles/nclimate3387
@@ -41,13 +41,13 @@ There are two python diagnostics, which can use the SPI data to calculate the dr
 * To compare these characteristics between model data and observations or renanalysis data use droughtindex/collect_drought_obs_multi.py
   Here, the user can set:
   * indexname: Necessary to identify data produced by droughtindex/diag_save_spi.R as well as write captions and filenames. At the moment only indexname: 'SPI' is supported.
-  * threshold: Threshold for this index below which an event is considered to be a drought, the setting for SPI should be usually threshold: -2.0 but any other value will be accepted. Values should not be < - 3.0 or > 3.0 for SPI (else it will identify none/allways drougth conditions).
+  * threshold: Threshold for this index below which an event is considered to be a drought, the setting for SPI should be usually threshold: -2.0 but any other value will be accepted. Values should not be < - 3.0 or > 3.0 for SPI (else it will identify none/always drought conditions).
 
 * To compare these ccharacteristics between different time periods in model data use droughtindex/collect_drought_model.py
   Here, the user can set:
   * indexname: Necessary to identify data produced by droughtindex/diag_save_spi.R as well as write captions and filenames. At the moment only indexname: 'SPI' is supported.
   * threshold: Threshold for this index below which an event is considered to be a drought, the setting for SPI should be usually threshold: -2.0 but any other value will be accepted.
-    Values should not be < - 3.0 or > 3.0 for SPI (else it will identify none/allways drougth conditions).
+    Values should not be < - 3.0 or > 3.0 for SPI (else it will identify none/always drought conditions).
   * start_year: Needs to be equal or larger than the start_year for droughtindex/diag_save_spi.R.
   * end_year: Needs to be equal or smaller than the end_year for droughtindex/diag_save_spi.R.
   * comparison_period: should be < (end_year - start_year)/2 to have non overlapping time series in the comparison.
