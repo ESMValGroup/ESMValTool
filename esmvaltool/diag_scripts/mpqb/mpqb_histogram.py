@@ -26,8 +26,12 @@ logger = logging.getLogger(os.path.basename(__file__))
 def calculate_histograms(cube, numbars, lower_upper):
     # returns a dictionary for histogram plotting
     hist, bins = da.histogram(cube.core_data(), bins=numbars, range=lower_upper)
+    print(hist)
     hist = hist.compute()
+    print(hist)
     hist = hist/np.sum(hist)
+    print(hist)
+    print(bins)
     return {"hist": hist, "bins": bins}
     
 def calculate_min_max(cube):
