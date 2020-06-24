@@ -11,15 +11,13 @@ from matplotlib.ticker import MaxNLocator
 import numpy as np
 import yaml
 
-DATASET_PLOTNAMES = {
-    'ERA-Interim-Land': 'ERA-Interim/Land',
-    'CDS-SATELLITE-SOIL-MOISTURE': 'ESA-CCI',
-    'cds-era5-land-monthly': 'ERA5-Land',
-    'cds-era5-monthly': 'ERA5',
-    'MERRA2': 'MERRA-2',
-    'cds-satellite-lai-fapar': 'SPOT-VGT',
-    'CDS-SATELLITE-ALBEDO': 'SPOT-VGT',
-}
+
+def read_mpqb_cfg():
+    """Read from mpqb_cfg.yml file."""
+    cfg_filename = os.path.join(os.path.split(__file__)[0], 'mpqb_cfg.yml')
+    with open(cfg_filename, 'r') as handle:
+        mpqb_cfg = yaml.safe_load(handle)
+    return mpqb_cfg
 
 
 def get_ecv_plot_config(ecv_name):
@@ -83,7 +81,8 @@ def mpqb_mapplot(cube, filename, **plotkwargs):
     fig = plt.figure(dpi=200)
     fig.add_subplot(projection=iris.plot.default_projection(cube))
 
-    plottitle = DATASET_PLOTNAMES[plotkwargs.pop('title')]
+    datasetnames = read_mpqb_cfg()['datasetnames']
+    plottitle = datasetnames[plotkwargs.pop('title')]
 
     plotkwargs = _parse_cmap(plotkwargs)
 

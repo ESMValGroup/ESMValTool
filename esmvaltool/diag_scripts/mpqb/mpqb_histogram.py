@@ -12,23 +12,16 @@ import numpy as np
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
+from mpqb_plots import read_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-DATASET_PLOTNAMES = {
-    'ERA-Interim-Land': 'ERA-Interim/Land',
-    'CDS-SATELLITE-SOIL-MOISTURE': 'ESA-CCI',
-    'cds-era5-land-monthly': 'ERA5-Land',
-    'cds-era5-monthly': 'ERA5',
-    'MERRA2': 'MERRA-2',
-    'cds-satellite-lai-fapar': 'SPOT-VGT',
-}
 
 
 def _calculate_histograms(cube, numbars, lower_upper):
     # returns a dictionary for histogram plotting
-    hist, bins = da.histogram(
-        cube.core_data(), bins=numbars, range=lower_upper)
+    hist, bins = da.histogram(cube.core_data(),
+                              bins=numbars,
+                              range=lower_upper)
     hist = hist.compute()
     hist = hist / np.sum(hist)
     return {"hist": hist, "bins": bins}
@@ -39,8 +32,10 @@ def _get_lower_upper(input_data):
     for dataset in input_data:
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(input_data[dataset][0]['filename'])
-        l_u = [da.min(cube.core_data().flatten()).compute(),
-               da.max(cube.core_data().flatten()).compute()]
+        l_u = [
+            da.min(cube.core_data().flatten()).compute(),
+            da.max(cube.core_data().flatten()).compute()
+        ]
         if l_u[0] < lower_upper[0]:
             lower_upper[0] = l_u[0]
         if l_u[1] > lower_upper[1]:
@@ -52,47 +47,49 @@ def _plot_histograms(hists, cfg, grouped_input_data):
     histtype = cfg.pop('histtype', 'bar')  # default type is 'bar'
     dataset = None  # needed to avoid pylint error
 
+    datasetnames = read_mpqb_cfg()['datasetnames']
+
     plt.clf()
     fig, ax1 = plt.subplots(1, 1)
 
     for dataset, hist in hists.items():
 
         width = np.diff(hist["bins"]) / len(hists)
-        xvals = hist["bins"][:-1] + width * (list(
-            hists.keys()).index(dataset) + 0.5)
+        xvals = hist["bins"][:-1] + width * (
+            list(hists.keys()).index(dataset) + 0.5)
 
         if histtype == 'bar':
-            ax1.bar(xvals,
-                    hist["hist"],
-                    width,
-                    label=DATASET_PLOTNAMES[dataset],
-                    )
+            ax1.bar(
+                xvals,
+                hist["hist"],
+                width,
+                label=datasetnames[dataset],
+            )
             plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha=0.3)
             plt.legend()
         elif histtype == 'step':
             ax1.hist(hist["bins"][:-1],
                      hist["bins"],
                      weights=hist["hist"],
-                     label=DATASET_PLOTNAMES[dataset],
+                     label=datasetnames[dataset],
                      histtype='step',
-                     linewidth=2
-                     )
+                     linewidth=2)
             handles, labels = ax1.get_legend_handles_labels()
-            handles = [Line2D([], [], c=h.get_edgecolor())
-                       for h in handles]
+            handles = [Line2D([], [], c=h.get_edgecolor()) for h in handles]
             plt.legend(handles=handles, labels=labels)
         else:
-            logger.warning(
-                "Unsupported argument for histtype: %s", histtype)
+            logger.warning("Unsupported argument for histtype: %s", histtype)
 
-    plt.xlabel(grouped_input_data[dataset][0]['long_name'] +
-               " [" + grouped_input_data[dataset][0]['units'] + "]")
+    plt.xlabel(grouped_input_data[dataset][0]['long_name'] + " [" +
+               grouped_input_data[dataset][0]['units'] + "]")
     plt.ylabel("frequency")
     if cfg.pop('logarithmic', False):
         ax1.set_yscale('log', nonposy='clip')
 
-    plt.ylim(0, 1.1 * np.max(
-        [np.max(content["hist"]) for _, content in hists.items()]))
+    plt.ylim(
+        0,
+        1.1 * np.max([np.max(content["hist"])
+                      for _, content in hists.items()]))
     plt.ylim(cfg.pop('y0', None), cfg.pop('y1', None))
     plt.tight_layout()
     filename = get_plot_filename('histogram', cfg)
@@ -107,8 +104,9 @@ def main(cfg):
     lower_upper = [cfg.pop('vmin', None), cfg.pop('vmax', None)]
     nbars = cfg.pop('number_of_bars', 10)
 
-    grouped_input_data = group_metadata(
-        cfg['input_data'].values(), 'dataset', sort='dataset')
+    grouped_input_data = group_metadata(cfg['input_data'].values(),
+                                        'dataset',
+                                        sort='dataset')
     logger.info(
         "Example of how to group and sort input data by standard_name:"
         "\n%s", pformat(grouped_input_data))
@@ -123,9 +121,8 @@ def main(cfg):
     for dataset in grouped_input_data:
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
-        hists.update({dataset: _calculate_histograms(cube,
-                                                     nbars,
-                                                     lower_upper)})
+        hists.update(
+            {dataset: _calculate_histograms(cube, nbars, lower_upper)})
     logger.info("Plotting the histograms.")
     _plot_histograms(hists, cfg, grouped_input_data)
     logger.info("Finished!")

@@ -10,17 +10,7 @@ import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-
-
-DATASET_PLOTNAMES = {
-    'ERA-Interim-Land': 'ERA-Interim/Land',
-    'CDS-SATELLITE-SOIL-MOISTURE': 'ESA-CCI',
-    'cds-era5-land-monthly': 'ERA5-Land',
-    'cds-era5-monthly': 'ERA5',
-    'MERRA2': 'MERRA-2',
-    'cds-satellite-lai-fapar': 'SPOT-VGT',
-    'CDS-SATELLITE-ALBEDO': 'SPOT-VGT',
-}
+from mpqb_plots import read_mpqb_cfg
 
 YLIMS = {'sm': (0.22, 0.28), 'sm1m': (0.22, 0.28)}
 
@@ -31,6 +21,8 @@ def main(cfg):
     """Create lineplot."""
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
+
+    datasetnames = read_mpqb_cfg()['datasetnames']
 
     grouped_input_data = group_metadata(input_data, 'dataset', sort='dataset')
 
@@ -51,7 +43,7 @@ def main(cfg):
         dataset_cfg = grouped_input_data[dataset][0]
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
-        iris.quickplot.plot(cube, label=DATASET_PLOTNAMES[dataset])
+        iris.quickplot.plot(cube, label=datasetnames[dataset])
     plt.legend()
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies

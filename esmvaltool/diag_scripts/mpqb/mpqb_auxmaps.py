@@ -13,7 +13,7 @@ from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (
     mannkendall1d, theilslopes1d)
 from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import \
     parallel_apply_along_axis
-from mpqb_plots import get_ecv_plot_config, mpqb_mapplot
+from mpqb_plots import read_mpqb_cfg, mpqb_mapplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -57,8 +57,7 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    grouped_input_data = group_metadata(
-        input_data, 'dataset', sort='dataset')
+    grouped_input_data = group_metadata(input_data, 'dataset', sort='dataset')
 
     # Loop through all datasets
     for dataset in grouped_input_data.keys():
@@ -76,20 +75,18 @@ def main(cfg):
                 logger.error("Metric %s is not defined. ", metricname)
                 continue
             # Plot the results (if configured to plot)
-            baseplotname = f"{dataset}_{metricname}" \
-                           f"_{dataset_cfg['variable_group']}" \
-                           f"_{dataset_cfg['start_year']}-" \
-                           f"{dataset_cfg['end_year']}"
-
-            plot_file = get_plot_filename(baseplotname, cfg)
             if cfg['write_plots']:
-                metrics_plot_dictionary = get_ecv_plot_config(
-                    dataset_cfg['short_name'])
+                baseplotname = f"{dataset}_{metricname}" \
+                               f"_{dataset_cfg['variable_group']}" \
+                               f"_{dataset_cfg['start_year']}-" \
+                               f"{dataset_cfg['end_year']}"
+                plot_file = get_plot_filename(baseplotname, cfg)
+                metrics_plot_dictionary = read_mpqb_cfg()['colors'][
+                    dataset_cfg['short_name']]
                 plot_kwargs = metrics_plot_dictionary[metricname]
                 # Overwrite plot title to be dataset name
                 plot_kwargs['title'] = dataset
-                mpqb_mapplot(resultcube, plot_file, **
-                             plot_kwargs)
+                mpqb_mapplot(resultcube, plot_file, **plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
 
