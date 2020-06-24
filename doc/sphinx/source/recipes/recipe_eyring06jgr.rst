@@ -74,7 +74,7 @@ Variables
 Example plots
 -------------
 
-.. _fig_mynewdiag_1:
+.. _fig_eyring06jgr_01:
 .. figure::  recipes/figures/eyring06jgr/fig_diagn01.png
    :align:   center
 
