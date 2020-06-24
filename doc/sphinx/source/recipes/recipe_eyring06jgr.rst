@@ -1,4 +1,4 @@
-.. _recipes_<mynewrecipe>:
+.. _recipes_eyring06jgr:
 
 Diagnostics of stratospheric dynamics and chemistry reproducing selected figures from Eyring et al. JGR (2006).
 
@@ -75,7 +75,7 @@ Example plots
 -------------
 
 .. _fig_mynewdiag_1:
-.. figure::  /recipes/figures/<mynewdiagnostic>/awesome1.png
+.. figure::  /recipes/figures/eyring06jgr/fig_diagn01.png
    :align:   center
 
-   Add figure caption here.
+   Climatological mean temperature biases for (top) 60–90N and (bottom) 60–90S for the (left) winter and (right) spring seasons. The climatological means for the CCMs and NCEP data from 1980 to 1999 and for UKMO from 1992 to 2001 are included. Biases are calculated relative to ERA-Interim reanalyses. The grey area shows ERA-Interim plus and minus 1 standard deviation (s) about the climatological mean.
