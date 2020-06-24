@@ -82,7 +82,7 @@ Example plots
 
    Global map of the percentage difference between multi-model mean of 15 CMIP models and the CRU data for the number of drought events [%] based on SPI.
 
-.. _martin2018grl_fig1:
+.. _martin2018grl_fig2:
 .. figure:: /recipes/figures/droughtindex/martin2018grl_fig2.png
    :align: center
    :width: 50%
