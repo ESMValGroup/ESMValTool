@@ -9,9 +9,10 @@ Overview
 
 This recipe reproduces the figures of `Eyring et al. (2006)`_
 The following plots are reproduced:
-    * Vertical profile climatological mean bias of climatological mean for selected seasons and latitudinal region. 
-    * Vertical and latitudinal profile of climatological mean for selected seasons this figure and setting is valid for figure 5 (CH4) figure 6 (H2O) figure 11 (HCL) figure 13 (tro3).
-    * Total ozone anomalies at different latitudinal band and seasons.
+
+* Vertical profile climatological mean bias of climatological mean for selected seasons and latitudinal region.
+* Vertical and latitudinal profile of climatological mean for selected seasons this figure and setting is valid for figure 5 (CH4) figure 6 (H2O) figure 11 (HCL) figure 13 (tro3).
+* Total ozone anomalies at different latitudinal band and seasons.
 
 .. _`Eyring et al. (2006)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2006JD007327
 
@@ -20,16 +21,14 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_eyring06jgr.yml
+* recipe_eyring06jgr.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/eyring06jgr/
 
-    * eyring06jgr_fig01.ncl  
-    * eyring06jgr_fig05a.ncl
-    * eyring06jgr_fig05b.ncl
-    * eyring06jgr_fig15.ncl
- 
-
+* eyring06jgr_fig01.ncl
+* eyring06jgr_fig05a.ncl
+* eyring06jgr_fig05b.ncl
+* eyring06jgr_fig15.ncl
 
 User settings in recipe
 -----------------------
