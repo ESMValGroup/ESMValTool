@@ -19,6 +19,7 @@ Atmosphere
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_extreme_events
+   recipe_eyring06jgr
    recipe_heatwaves_coldwaves
    recipe_hyint
    recipe_modes_of_variability
