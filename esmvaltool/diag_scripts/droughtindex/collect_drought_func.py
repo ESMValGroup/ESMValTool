@@ -360,7 +360,7 @@ def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
 
     # plot the average spei of drought events
     cube2.data = drought_show.data[:, :, 3]
-    
+
     namehlp = tstype + '_Avr_' + cfg['indexname'] + '_of_Events'
     namehlp2 = tstype + '_Average_' + cfg['indexname'] + '_of_Events'
     name_dict.update({'add_to_filename': namehlp,
