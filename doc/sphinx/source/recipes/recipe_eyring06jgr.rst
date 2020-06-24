@@ -42,13 +42,13 @@ User settings in recipe
 
    *Required settings for script*
 
-   * ``latmin``: array of float, min lat where variable is averaged, i.e. [ 60., 60., -90., -90. ]
-   * ``latmax``: array of float,and max lat where variable is averaged, i.e. [ 90., 90., -60., -60. ]
-   * ``season``: array of string., season when variable is averaged, i.e. ["DJF", "MAM","JJA","SON"]
-   * ``XMin``: array of float, min limit X axis [-30., -30.,-30.,-30.]
-   * ``XMax``: array of float, max limit X axis [20.,20.,20.,20.]
-   * ``levmin``: array of float, min limit Y axis [1., 1.,1.,1.]
-   * ``levmax``: array of float, max limit Y axis [350., 350.,350.,350.]
+   * ``latmin``: array of float, min lat where variable is averaged, i.e. [60., 60., -90., -90. ]
+   * ``latmax``: array of float,and max lat where variable is averaged, i.e. [90., 90., -60., -60. ]
+   * ``season``: array of string., season when variable is averaged, i.e. ["DJF", "MAM", "JJA", "SON"]
+   * ``XMin``: array of float, min limit X axis [-30., -30., -30., -30.]
+   * ``XMax``: array of float, max limit X axis [20., 20., 20., 20.]
+   * ``levmin``: array of float, min limit Y axis [1., 1., 1., 1.]
+   * ``levmax``: array of float, max limit Y axis [350., 350., 350., 350.]
 
 
    *Optional settings for script*
