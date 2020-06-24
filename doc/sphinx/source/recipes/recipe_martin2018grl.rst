@@ -1,7 +1,7 @@
 .. _recipes_martin2018grl:
 
 Drought characteristics following Martin (2018)
-==============================================
+===============================================
 
 Overview
 --------
