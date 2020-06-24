@@ -75,7 +75,7 @@ Example plots
 -------------
 
 .. _fig_eyring06jgr_01:
-.. figure::  recipes/figures/eyring06jgr/fig_diag01.png
+.. figure::  recipes/figures/eyring06jgr/fig_diagn01.png
    :align:   center
 
    Climatological mean temperature biases for (top) 60–90N and (bottom) 60–90S for the (left) winter and (right) spring seasons. The climatological means for the CCMs and ERA-Interim data from 1980 to 1999 are included. Biases are calculated relative to ERA-Interim reanalyses. The grey area shows ERA-Interim plus and minus 1 standard deviation (s) about the climatological mean. The turquoise area shows plus and minus 1 standard deviation about the multi-model mean.
