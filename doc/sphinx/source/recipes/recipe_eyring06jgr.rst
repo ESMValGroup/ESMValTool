@@ -1,4 +1,4 @@
-.. _recipes_eyring06jgr:
+.. _recipe_eyring06jgr:
 
 Diagnostics of stratospheric dynamics and chemistry reproducing selected figures from Eyring et al. JGR (2006).
 
