@@ -321,7 +321,7 @@ def _plot_multi_model_maps(cfg, all_drought_mean, lats_lons, input_filenames,
                           'drought_char': 'Average ' + cfg['indexname'] +
                                           ' of Events',
                           'filename': tstype + '_Average_' +
-                                      cfg['indexname'] + '_of_Events',
+                                     cfg['indexname'] + '_of_Events',
                           'drought_numbers_level': np.arange(-2.8, -1.8, 0.2)})
         plot_map_spei_multi(cfg, data_dict, input_filenames,
                             colormap='gnuplot')
@@ -364,7 +364,7 @@ def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
     name_dict.update({'add_to_filename': tstype + '_Avr_' +
                                          cfg['indexname'] + '_of_Events',
                       'name': tstype + ' Average ' +
-                              cfg['indexname'] + ' of Events',
+                             cfg['indexname'] + ' of Events',
                       'var': 'severity',
                       'unit': '1',
                       'drought_char': 'Number of Events per year',
