@@ -100,10 +100,22 @@ begin
     infile = input_dir_path + "co2_" + str_lower(st_code(stID)) + \
              "_surface-insitu_1_ccgg_month.txt"
 
+    if (.not.fileexists(infile)) then
+      infile = input_dir_path + "co2_" + str_lower(st_code(stID)) + \
+               "_surface-insitu_1_ccgg_MonthlyData.txt"
+    end if
+
     if (fileexists(infile)) then
 
+      log_info("Processing " + VAR + " (" + st_code(stID) + ")")
+
       raw = asciiread(infile, -1, "string")
+
       head = str_get_field(raw(0), 3, " ")
+      if (typeof(head).eq. "string") then
+        head = str_get_field(raw(0), 4, " ")
+      end if
+
       data = raw(toint(head):)
       delete([/head, raw/])
 
@@ -179,6 +191,8 @@ begin
       delete(gAtt)
       delete(output)
 
+    else
+       error_msg("f", DIAG_SCRIPT, "", infile + " does not exist!")
     end if
 
   end do

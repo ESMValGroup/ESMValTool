@@ -245,8 +245,7 @@ begin
   ; PLOT - Panel B
   print(datasetnames + " " + betaGPP)
 
-  YStg = str_upper(var) + "(2xCO~B~2~N~)/" + \
-        str_upper(var) + "(1xCO~B~2~N~)"
+  YStg = str_upper(var) + "(2xCO~B~2~N~)/" + str_upper(var) + "(1xCO~B~2~N~)"
 
   data_arr = new((/dimsizes(betaGPP), 1/), float)
   data_arr(:, 0) = betaGPP
