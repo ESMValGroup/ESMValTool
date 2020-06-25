@@ -48,7 +48,7 @@ begin
 
   ; Period
   YEAR1 = 1973
-  YEAR2 = 2014
+  YEAR2 = 2019
 
   ; Selected variable (standard name)
   VAR = "co2s"
@@ -131,6 +131,7 @@ begin
       ; Read time and extract full years only
       year = str_squeeze(str_get_field(data(:), 2, " "))
       month = str_squeeze(str_get_field(data(:), 3, " "))
+      month = sprinti("%2.2i", toint(month))
       date = toint(year + month)
       var = tofloat(str_get_field(data(:), 4, " "))
       delete(data)
@@ -192,7 +193,8 @@ begin
       delete(output)
 
     else
-       error_msg("f", DIAG_SCRIPT, "", infile + " does not exist!")
+       error_msg("w", DIAG_SCRIPT, "", infile + " does not exist!")
+       continue
     end if
 
   end do
