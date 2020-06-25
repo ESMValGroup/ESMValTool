@@ -294,13 +294,10 @@ begin
   data_arr@res_gsnCenterString = ""
 
   plot = barchart(wks, data_arr, var, info0)
-  datasetnames = tmp_orig
-  rcc(:, 1) = tmpb_orig
   draw(plot)
   frame(wks)
 
-  datasetnames = tmp_orig
-  delete([/plot, tmpm, tmpb, tmp_orig, data_arr/])
+  delete([/plot, tmpm, tmpb, data_arr/])
 
   ; Create Plots 3a:
   ; ----------------------------------------------------------
