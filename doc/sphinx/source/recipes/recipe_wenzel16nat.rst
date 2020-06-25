@@ -76,19 +76,19 @@ References
 Example plots
 -------------
 
-.. figure:: /recipes/figures/wenzel16nature/
+.. figure:: /recipes/figures/wenzel16nat/
    :width: 10 cm 
    :align: center
    
    XXXX Comparison of CO2 seasonal amplitudes for CMIP5 historical simulations and observations showing Annual mean atmospheric CO2 versus the amplitudes of the CO2 seasonal cycle at Pt. Barrow, Alaska 
       
-.. figure:: /recipes/figures/wenzel16nature/
+.. figure:: /recipes/figures/wenzel16nat/
    :width: 10 cm 
    :align: center
    
    XXXX Histogram showing the gradient of the linear correlations for the comparison of CO2 seasonal amplitudes for CMIP5 historical for at Pt. Barrow, Alaska 
 
-.. figure:: /recipes/figures/wenzel16nature/
+.. figure:: /recipes/figures/wenzel16nat/
    :scale: 50 %
    :align: center
 

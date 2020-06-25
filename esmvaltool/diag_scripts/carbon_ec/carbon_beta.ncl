@@ -163,29 +163,25 @@ begin
 
   ; ---------------------------------------------------------------------
   ; Output to NetCDF
-  if (config_user_info@write_netcdf) then
-    new_path = config_user_info@work_dir + "/"
-    ; make sure path for netcdf output exists
-    system("mkdir -p " + new_path)
-    new_path = new_path + "beta_" + xMax_year + "-" + xMin_year + ".nc"
+  new_path = config_user_info@work_dir + "/"
+  new_path = new_path + "beta_" + xMax_year + "-" + xMin_year + ".nc"
 
-    ; Attach attributes to the results
-    betavar = (/betaGPP, delta0_std/)
-    betavar!0        = "case"
-    betavar&case     = (/"mean", "stddev"/)
-    betavar!1        = "model"
-    betavar&model    = datasetnames
-    betavar@ncdf     = new_path
-    betavar@var      = "beta"
-    betavar@diag_script = (/DIAG_SCRIPT/)
-    betavar@rcgpp    = rcgpp
-    betavar@betaGPP  = betaGPP
-    betavar@delta0_std = delta0_std
+  ; Attach attributes to the results
+  betavar = (/betaGPP, delta0_std/)
+  betavar!0        = "case"
+  betavar&case     = (/"mean", "stddev"/)
+  betavar!1        = "model"
+  betavar&model    = datasetnames
+  betavar@ncdf     = new_path
+  betavar@var      = "beta"
+  betavar@diag_script = (/DIAG_SCRIPT/)
+  betavar@rcgpp    = rcgpp
+  betavar@betaGPP  = betaGPP
+  betavar@delta0_std = delta0_std
 
-    ; Write NetCDF output
-    ncdf_outfile = ncdf_write(betavar, new_path)
+  ; Write NetCDF output
+  ncdf_outfile = ncdf_write(betavar, new_path)
 
-  end if
   ; -----------------------------------------------------------
   ; creat plots
 
@@ -281,9 +277,11 @@ begin
   create_legend_lines(leg@annots, leg, plot_dir + \
                       DIAG_SCRIPT + "_legend", "markers")
 
+  plotname = plot_dir + plot_file + "." + file_type
+
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
-                 config_user_info@plot_dir + "." + file_type, \
+                 plotname, \
                  "Climate models vs " + YStg, \
                  (/"anomaly", "corr", "stddev"/), \
                  (/"global"/),\

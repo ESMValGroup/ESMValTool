@@ -298,7 +298,7 @@ begin
   draw(plot)
   frame(wks)
 
-  delete([/plot, tmpm, tmpb, data_arr/])
+  delete([/plot, data_arr/])
 
   ; Create Plots 3a:
   ; ----------------------------------------------------------
@@ -438,32 +438,32 @@ begin
   delete(plot)
 
   ; ---------------------------------------------------------------
-  ; Optional output to NetCDF
-  if (config_user_info@write_netcdf) then
-    new_path = config_user_info@work_dir
-    new_path = new_path + "amplitude_" + xMax_year + "-" + xMin_year + ".nc"
+  ; Output to NetCDF
+  new_path = config_user_info@work_dir
+  new_path = new_path + "amplitude_" + xMax_year + "-" + xMin_year + ".nc"
 
-    ; Attach attributes to the results
-    CO2var = new((/2, dim_MOD+1/), float)
-    CO2var(0, :) = xCO2(0, :)
-    CO2var(1, :) = xCO2(1, :)
-    CO2var!0        = "case"
-    CO2var&case     = (/"mean", "stddev"/)
-    CO2var!1        = "model"
-    CO2var&model    = datasetnames
-    CO2var@ncdf     = new_path
-    CO2var@var      = var
+  ; Attach attributes to the results
+  CO2var = new((/2, dim_MOD+1/), float)
+  CO2var(0, :) = xCO2(0, :)
+  CO2var(1, :) = xCO2(1, :)
+  CO2var!0        = "case"
+  CO2var&case     = (/"mean", "stddev"/)
+  CO2var!1        = "model"
+  CO2var&model    = datasetnames
+  CO2var@ncdf     = new_path
+  CO2var@var      = var
 
-    CO2var@diag_script = (/DIAG_SCRIPT/)
+  CO2var@diag_script = (/DIAG_SCRIPT/)
 
-    ; Write NetCDF output
-    ncdf_outfile = ncdf_write(CO2var, new_path)
-  end if
+  ; Write NetCDF output
+  ncdf_outfile = ncdf_write(CO2var, new_path)
+
+  plotname = plot_dir + plot_file + "." + file_type
 
   ; -----------------------------------------------------------
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
-                 config_user_info@plot_dir + "." + file_type, \
+                 plotname, \
                  XStg + " vs " + YStg, \
                  (/"anomaly", "corr", "stddev"/), \
                  (/"global"/),\

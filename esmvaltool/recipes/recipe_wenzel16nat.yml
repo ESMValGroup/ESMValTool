@@ -169,7 +169,7 @@ diagnostics:
     scripts:
       carbon_cycle:
         script: carbon_ec/carbon_co2_cycle.ncl
-        ancestors: [diag_beta_Fig2/carbon_beta]
+        ancestors: [diag_beta_Fig2/carbon_beta, co2s, co2s_obs, co2s_amp, co2s_amp_obs]
         bc_xmax_year: 1920
         bc_xmin_year: 1860
         styleset: CMIP5
