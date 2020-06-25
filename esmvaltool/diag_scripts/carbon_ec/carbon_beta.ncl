@@ -244,17 +244,17 @@ begin
 
   ; PLOT - Panel B
   print(datasetnames + " " + betaGPP)
-  tmpb = betaGPP
-  qsort(betaGPP)
-  tmpm = datasetnames
-  tmp_orig = datasetnames
+  ;tmpb = betaGPP
+  ;qsort(betaGPP)
+  ;tmpm = datasetnames
+  ;tmp_orig = datasetnames
 
-  do imod = 0, dim_MOD-1
-    id         = ind(tmpb.eq.betaGPP(imod))
-    tmpm(imod) = datasetnames(id)
-    delete(id)
-  end do
-  datasetnames = tmpm
+  ;do imod = 0, dim_MOD-1
+  ;  id         = ind(tmpb.eq.betaGPP(imod))
+  ;  tmpm(imod) = datasetnames(id)
+  ;  delete(id)
+  ;end do
+  ;datasetnames = tmpm
 
   YStg = str_upper(var) + "(2xCO~B~2~N~)/" + \
          str_upper(var) + "(1xCO~B~2~N~)"
@@ -269,8 +269,8 @@ begin
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString = ""
 
-  plot = barchart(wks, data_arr, var, input_file_info)
-  datasetnames = tmp_orig
+  plot = barchart(wks, data_arr, var, info)
+  ;datasetnames = tmp_orig
   draw(plot)
   frame(wks)
 

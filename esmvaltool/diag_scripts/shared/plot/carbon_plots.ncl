@@ -89,7 +89,7 @@ begin
   res@tiMainString       = var
   res@tiYAxisString      = data&yaxis
   res@gsnYRefLine        = 0.
-  res@gsnXYBarChartColors2  = colors
+  res@gsnXYBarChartColors2  = ispan(2, dimsizes(colors) + 1, 1)
 
   ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")

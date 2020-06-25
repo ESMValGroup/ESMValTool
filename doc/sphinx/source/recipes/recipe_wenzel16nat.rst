@@ -1,4 +1,4 @@
-.. _recipes_wenzel16nature:
+.. _recipes_wenzel16nat:
 
 Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO2
 =============================================================================================
@@ -6,7 +6,7 @@ Projected land photosynthesis constrained by changes in the seasonal cycle of at
 Overview
 --------
 
-Figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel16nature.yml. Gross primary productivity (gpp) and atmospheric CO2 concentrations at the surface  (co2s) are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a set of routines to diagnose the long-term carbon cycle - concentration feedback parameter (beta) from an ensemble of CMIP5 models and the observable change in the [CO2] seasonal cycle amplitude due to rising atmospheric CO2 levels. As a key figure of this recipe, the diagnosed values from the models beta vs. the change in CO2 amplitude are compared in a scatter plot constituting an emergent constraint.
+Figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel16nature.yml. Gross primary productivity (gpp) and atmospheric CO2 concentrations at the surface  (co2s) are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a set of routines to diagnose the long-term carbon cycle - concentration feedback parameter (beta) from an ensemble of CMIP5 models and the observable change in the CO2 seasonal cycle amplitude due to rising atmospheric CO2 levels. As a key figure of this recipe, the diagnosed values from the models beta vs. the change in CO2 amplitude are compared in a scatter plot constituting an emergent constraint.
 
 .. _`Wenzel et al. (2016)`: https://www.nature.com/articles/nature19772
 
@@ -15,7 +15,7 @@ Available recipe and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_wenzel16nature.yml
+* recipe_wenzel16nat.yml
 
 Diagnostics are stored in diag_scripts/
 

@@ -211,8 +211,6 @@ begin
   delete(PDF)
   delete(minx)
   delete(maxx)
-print(yBETA)
-print(xCO2)
 
   ; Plot section
   ; -----------------------------------------------------------
@@ -290,11 +288,7 @@ print(xCO2)
     delete(id)
   end do
   datasetnames = tmpm
-
-  ;rcc(:, 1) = tmpb(::-1)
   rcc@info = info0
-  ;tmpm = datasetnames
-  ;datasetnames = tmpm(::-1)
 
   YStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
 
@@ -307,8 +301,9 @@ print(xCO2)
   data_arr@res_tiMainString    = ""
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString = ""
+  ;data_arr@res_gsnXYBarChartColors2 = colors
 
-  plot = barchart(wks, data_arr, var, input_file_info)
+  plot = barchart(wks, data_arr, var, info0)
   datasetnames = tmp_orig
   rcc(:, 1) = tmpb_orig
   draw(plot)
@@ -342,8 +337,8 @@ print(xCO2)
   data_arr@res_xyMarkers         = thicks
   data_arr@res_xyMarkerSizeF     = 10.
   data_arr@res_trXMinF           = min(xCO2(0, :))
-  data_arr@res_trXMaxF           = max(xCO2(0, :))
-  data_arr@res_trYMinF           = 0
+  data_arr@res_trXMaxF           = 0.1 ;max(xCO2(0, :))
+  data_arr@res_trYMinF           = 1.1 ;0
   data_arr@res_trYMaxF = max(yBETA(0, :)) + 0.25 * max(yBETA(0, :))
   data_arr@res_vpWidthF          = 0.5
   data_arr@res_vpHeightF         = 0.4
@@ -360,18 +355,20 @@ print(xCO2)
   xin = array_append_record(xfit_bco2, xfit_bco2(::-1), 0)
   yin = array_append_record(yfit_bco2_std, yfit_bco2_std(::-1), 0)
   add_prediction_error(wks, plot, peres, xin, yin)
-  delete([/data_arr, xin, yin, peres/])
+  delete([/xin, yin/])
 
   if (rcc(iref, 1).ne.0) then
-print(rcc(iref, 1))
-print(stdrc(iref, 1))
-      xin = (/rcc(iref, 1) + stdrc(iref, 1), \
-             rcc(iref, 1) + stdrc(iref, 1), \
-             rcc(iref, 1) - stdrc(iref, 1), \
-             rcc(iref, 1) - stdrc(iref, 1)/)
-      yin = (/500, -500, -500, 500/)
-      add_prediction_error(wks, plot, peres, xin, yin)
-      delete([/xin, yin/])
+    ores = True
+    ores@tfPolyDrawOrder = "PreDraw"
+    ores@xyLineColor     = "grey"
+    ores@gsFillColor     = "grey"
+    xinobs = (/rcc(iref, 1) + stdrc(iref, 1), \
+            rcc(iref, 1) + stdrc(iref, 1), \
+            rcc(iref, 1) - stdrc(iref, 1), \
+            rcc(iref, 1) - stdrc(iref, 1)/)
+    yinobs = (/500, -500, -500, 500/)
+    add_prediction_error(wks, plot, ores, xinobs, yinobs)
+    delete([/xinobs, yinobs, ores/])
   end if
 
   ; add regression line
@@ -393,11 +390,13 @@ print(stdrc(iref, 1))
   eres@gsLineColor = colors(idat)
   add_errorbar(wks, plot, eres, xCO2(:, 2:), yBETA(:, 2:))
   draw(plot)
-  frame(wks)
-  delete([/eres, mres, lres/])
+  ;frame(wks)
+  delete([/peres, eres, mres, lres, data_arr/])
 
   ; Create Plots 3b:
   ; -----------------------------------------------
+  ;plot = new(1, graphic)
+
   bres  = True
   bres@gsnDraw          = False
   bres@gsnFrame         = False
@@ -422,6 +421,7 @@ print(stdrc(iref, 1))
   diag_script_info@multi_model_mean = False
   diag_script_info@scatter_log = False
   diag_script_info@xy_line_legend = False
+
   pres = True
   pres@tiMainString       = ""
   pres@tiXAxisString      = XStg
@@ -431,13 +431,13 @@ print(stdrc(iref, 1))
     pres@xyLineColors   = "black"
     pres@xyDashPatterns = 2
     pres@trYMinF        = 0
-    xy_line(wks, co2_Py_pr, co2_y, 0., pres, input_file_info)
+      xy_line(wks, co2_Py_pr, co2_y, 0., pres, input_file_info)
   else
     pres@xyLineColors   = (/"black", "red"/)
     pres@xyDashPatterns = (/2, 0/)
     pres@trYMinF        = 0
-    xy_line(wks, (/co2_Py_pr, co2_Py/), (/co2_y, co2_y/), \
-            0., pres, input_file_info)
+      xy_line(wks, (/co2_Py_pr, co2_Py/), (/co2_y, co2_y/), \
+              0., pres, input_file_info)
   end if
 
   obsres = True
