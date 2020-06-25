@@ -9,12 +9,14 @@
 ;
 ; Required info attributes (diag_script_info):
 ; - styleset       project for line styles
+;
+; Optional info attributes (diag_script_info):
 ; - bc_xmax_year   start year for time series plots
 ; - bc_xmin_year   end year for time series plots
 ;
 ; Modification history
-;    * 20200406-A_wenz_sa: code rewritten for ESMValTool v2.0
-;    * 2015xxxx-A_wenz_sa: written
+;    * 20200406-zechlau_sabrina: code rewritten for ESMValTool v2.0
+;    * 2015xxxx-wenzel_sabrina: written
 ; ########################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -65,23 +67,16 @@ begin
   ; Check for required settings
   exit_if_missing_atts(diag_script_info, "styleset")
 
-  ; Set default values for non-required diag_script_info attributes
-  set_default_att(diag_script_info, "cl_output", False)
-
   ; optional input parameters
-  if(isatt(diag_script_info, "bc_xmax_year")) then
+  if (isatt(diag_script_info, "bc_xmax_year")) then
     xMax_year = toint(diag_script_info@bc_xmax_year)
   else
     xMax_year = max(metadata_att_as_array(info, "end_year"))
   end if
-  if(isatt(diag_script_info, "bc_xmin_year")) then
+  if (isatt(diag_script_info, "bc_xmin_year")) then
     xMin_year = toint(diag_script_info@bc_xmin_year)
   else
     xMin_year = max(metadata_att_as_array(info, "start_year"))
-  end if
-
-  if(isatt(diag_script_info, "cl_output")) then
-    Output = diag_script_info@cl_output
   end if
 
   ; Call plot scripts
@@ -155,10 +150,11 @@ begin
                       avg(tmp0(0:4)))
 
       delta0_std(imod) = sqrt( \
-                         (stddev(tmp0({time|xMax_year-4:xMax_year}))/ \
-                          avg(tmp0(0:4))) ^ 2 + (stddev(tmp0(0:4)) * \
-                          avg(tmp0({time|xMax_year-4:xMax_year}))/ \
-                          avg(tmp0(0:4)) ^ 2) ^ 2)
+        (stddev(tmp0({time|xMax_year-4:xMax_year}))/ \
+          avg(tmp0(0:4))) ^ 2 + (stddev(tmp0(0:4)) * \
+                                 avg(tmp0({time|xMax_year-4:xMax_year}))/ \
+                                 avg(tmp0(0:4)) ^ 2) ^ 2)
+
     end if
     betaGPP(imod) = delta0(imod) * 1/0.9
 
@@ -166,12 +162,12 @@ begin
   end do     ; model loop
 
   ; ---------------------------------------------------------------------
-  ; Optional output to NetCDF
+  ; Output to NetCDF
   if (config_user_info@write_netcdf) then
-    new_path = config_user_info@run_dir
-    new_path = new_path + "beta_" \
-                        + diag_script_info@bc_xmax_year + "-" \
-                        + diag_script_info@bc_xmin_year + ".nc"
+    new_path = config_user_info@work_dir + "/"
+    ; make sure path for netcdf output exists
+    system("mkdir -p " + new_path)
+    new_path = new_path + "beta_" + xMax_year + "-" + xMin_year + ".nc"
 
     ; Attach attributes to the results
     betavar = (/betaGPP, delta0_std/)
@@ -190,7 +186,7 @@ begin
     ncdf_outfile = ncdf_write(betavar, new_path)
 
   end if
-; -----------------------------------------------------------
+  ; -----------------------------------------------------------
   ; creat plots
 
   ; PLOT - Panel A
@@ -245,8 +241,7 @@ begin
   ; PLOT - Panel B
   print(datasetnames + " " + betaGPP)
 
-  YStg = str_upper(var) + "(2xCO~B~2~N~)/" + \
-         str_upper(var) + "(1xCO~B~2~N~)"
+  YStg = str_upper(var) + "(2xCO~B~2~N~)/" + str_upper(var) + "(1xCO~B~2~N~)"
 
   data_arr = new((/dimsizes(betaGPP), 1/), float)
   data_arr(:, 0) = betaGPP
@@ -294,7 +289,7 @@ begin
                  (/"global"/),\
                  (/""/), \
                  (/"zechlau_sabrina"/), \
-                 (/"wenzel16nature"/), \
+                 (/"wenzel16nat"/), \
                  metadata_att_as_array(info, "filename"))
 
 end

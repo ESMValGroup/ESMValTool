@@ -14,12 +14,16 @@
 ;
 ; Required info attributes (diag_script_info):
 ; - styleset       project for line styles
+; - nc_infile      path of netCDF file containing beta
+;                  (output from carbon_beta.ncl)
+;
+; Optional info attributes (diag_script_info):
 ; - bc_xmax_year   start year for time series plots
 ; - bc_xmin_year   end year for time series plots
 ;
 ; Modification history
-;    * 20200406-A_wenz_sa: code rewritten for ESMValTool v2.0
-;    * 2015xxxx-A_wenz_sa: written
+;    * 20200406-zechlau_sabrina: code rewritten for ESMValTool v2.0
+;    * 2015xxxx-wenzel_sabrina: written
 ; ########################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -83,15 +87,15 @@ begin
   exit_if_missing_atts(diag_script_info, "styleset")
 
   ; optional input parameters
-  if(isatt(diag_script_info, "cl_xmax_year")) then
-    xMax_year = diag_script_info@cl_xmax_year
+  if(isatt(diag_script_info, "bc_xmax_year")) then
+    xMax_year = toint(diag_script_info@bc_xmax_year)
   else
     xMax_year = max(metadata_att_as_array(info, "end_year"))
   end if
-  if(isatt(diag_script_info, "cl_xmin_year")) then
-    xMin_year = diag_script_info@cl_xmin_year
+  if(isatt(diag_script_info, "bc_xmin_year")) then
+    xMin_year = toint(diag_script_info@bc_xmin_year)
   else
-    xMin_year = max(metadata_att_as_array(info, "start_year"))
+    xMin_year = min(metadata_att_as_array(info, "start_year"))
   end if
 
   ; Call plot scripts
@@ -103,10 +107,8 @@ begin
   lgLabels = datasetnames
 
   ; path to beta file
-  temp_dir = config_user_info@run_dir + diag_script_info@nc_infile
-  temp_dir = temp_dir + "beta_" \
-                      + diag_script_info@bc_xmax_year + "-" \
-                      + diag_script_info@bc_xmin_year + ".nc"
+  temp_dir = config_user_info@work_dir + "/" + diag_script_info@nc_infile
+  temp_dir = temp_dir + "beta_" + xMax_year + "-" + xMin_year + ".nc"
   ; ==================================================================
   ; setup data holders for plots
   nyMax = max(metadata_att_as_array(info0, "end_year"))
@@ -194,7 +196,6 @@ begin
   yfit_bco2_std = new((/2, dimsizes(yfit_bco2)/), typeof(yfit_bco2))
   yfit_bco2_std(0, :) = yfit_bco2 + PDF@sigma
   yfit_bco2_std(1, :) = yfit_bco2 - PDF@sigma
-
 
   yBETA = new((/2, dim_MOD+1/), float)
   yBETA(0, 0)  = avg(betaGPP(0, :))
@@ -350,9 +351,9 @@ begin
     ores@xyLineColor     = "grey"
     ores@gsFillColor     = "grey"
     xinobs = (/rcc(iref, 1) + stdrc(iref, 1), \
-               rcc(iref, 1) + stdrc(iref, 1), \
-               rcc(iref, 1) - stdrc(iref, 1), \
-               rcc(iref, 1) - stdrc(iref, 1)/)
+              rcc(iref, 1) + stdrc(iref, 1), \
+              rcc(iref, 1) - stdrc(iref, 1), \
+              rcc(iref, 1) - stdrc(iref, 1)/)
     yinobs = (/500, -500, -500, 500/)
     add_prediction_error(wks, plot, ores, xinobs, yinobs)
     delete([/xinobs, yinobs, ores/])
@@ -436,13 +437,11 @@ begin
   frame(wks)
   delete(plot)
 
-; ---------------------------------------------------------------
+  ; ---------------------------------------------------------------
   ; Optional output to NetCDF
   if (config_user_info@write_netcdf) then
     new_path = config_user_info@work_dir
-    new_path = new_path + "amplitude_" \
-                        + diag_script_info@bc_xmax_year + "-" \
-                        + diag_script_info@bc_xmin_year + ".nc"
+    new_path = new_path + "amplitude_" + xMax_year + "-" + xMin_year + ".nc"
 
     ; Attach attributes to the results
     CO2var = new((/2, dim_MOD+1/), float)
@@ -470,7 +469,7 @@ begin
                  (/"global"/),\
                  (/""/), \
                  (/"zechlau_sabrina"/), \
-                 (/"wenzel16nature"/), \
+                 (/"wenzel16nat"/), \
                  metadata_att_as_array(info, "filename"))
 
 end
