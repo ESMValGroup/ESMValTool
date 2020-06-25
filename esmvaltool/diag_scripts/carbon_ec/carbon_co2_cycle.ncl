@@ -195,7 +195,6 @@ begin
   yfit_bco2_std(0, :) = yfit_bco2 + PDF@sigma
   yfit_bco2_std(1, :) = yfit_bco2 - PDF@sigma
 
-
   yBETA = new((/2, dim_MOD+1/), float)
   yBETA(0, 0)  = avg(betaGPP(0, :))
   yBETA(0, 1)  = beta_mco2
@@ -297,7 +296,7 @@ begin
   draw(plot)
   frame(wks)
 
-  delete([/plot, tmpm, tmpb, data_arr/])
+  delete([/plot, data_arr/])
 
   ; Create Plots 3a:
   ; ----------------------------------------------------------
@@ -350,9 +349,9 @@ begin
     ores@xyLineColor     = "grey"
     ores@gsFillColor     = "grey"
     xinobs = (/rcc(iref, 1) + stdrc(iref, 1), \
-               rcc(iref, 1) + stdrc(iref, 1), \
-               rcc(iref, 1) - stdrc(iref, 1), \
-               rcc(iref, 1) - stdrc(iref, 1)/)
+              rcc(iref, 1) + stdrc(iref, 1), \
+              rcc(iref, 1) - stdrc(iref, 1), \
+              rcc(iref, 1) - stdrc(iref, 1)/)
     yinobs = (/500, -500, -500, 500/)
     add_prediction_error(wks, plot, ores, xinobs, yinobs)
     delete([/xinobs, yinobs, ores/])
