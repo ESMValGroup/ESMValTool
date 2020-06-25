@@ -144,7 +144,7 @@ begin
       output@_FillValue = FILL
 
       do ii = 0, dimsizes(var) - 1
-        output(ind(datec.eq.date(ii)),0 ,0) = (/var(ii)/)
+        output(ind(datec.eq.date(ii)), 0, 0) = (/var(ii)/)
       end do
       delete(var)
       delete(date)
@@ -152,7 +152,7 @@ begin
 
       ; Format coordinates
       format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
-      
+
       ; Set variable attributes (CMOR)
       tmp = format_variable(output, VAR, CMOR_TABLE)
       delete(output)
@@ -171,9 +171,8 @@ begin
       VERSION = st_code(stID)
       DATESTR = YEAR1 + "01-" + YEAR2 + "12"
 
-      fout = output_dir_path + \
-             str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                       MIP, VAR, DATESTR/), "_") + ".nc"
+      fout = output_dir_path + str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                                        MIP, VAR, DATESTR/), "_") + ".nc"
 
       ; Write variable
       write_nc(fout, VAR, output, bounds, gAtt)

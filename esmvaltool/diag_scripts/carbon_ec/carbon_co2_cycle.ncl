@@ -52,9 +52,9 @@ begin
   var = variable_info[0]@short_name
   info = select_metadata_by_name(input_file_info, var)
   info0 = info[co2s_ann]
-  ListPush(info0,info[co2s_ann_obs])
+  ListPush(info0, info[co2s_ann_obs])
   info1 = info[co2s_amp]
-  ListPush(info1,info[co2s_amp_obs])
+  ListPush(info1, info[co2s_amp_obs])
 
   datasetnames = metadata_att_as_array(info0, "dataset")
   dim_MOD = ListCount(info0)
@@ -191,7 +191,10 @@ begin
   co2_y     = PDF@y
 
   ; this is for plotting the regression line with confidence intervalls
-  yfit_bco2_std = PDF@sigma
+  yfit_bco2_std = new((/2, dimsizes(yfit_bco2)/), typeof(yfit_bco2))
+  yfit_bco2_std(0, :) = yfit_bco2 + PDF@sigma
+  yfit_bco2_std(1, :) = yfit_bco2 - PDF@sigma
+
 
   yBETA = new((/2, dim_MOD+1/), float)
   yBETA(0, 0)  = avg(betaGPP(0, :))
@@ -276,18 +279,6 @@ begin
 
   ; Create Plot 1b:
   ; ----------------------------------------------------------
-  tmp_orig = datasetnames
-  tmpm = datasetnames
-  tmpb = rcc(:, 1)
-  tmpb_orig = rcc(:, 1)
-  qsort(rcc(:, 1))
-
-  do imod = 0, dim_MOD-1
-    id         = ind(tmpb .eq. rcc(imod, 1))
-    tmpm(imod) = datasetnames(id)
-    delete(id)
-  end do
-  datasetnames = tmpm
   rcc@info = info0
 
   YStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
@@ -301,7 +292,6 @@ begin
   data_arr@res_tiMainString    = ""
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString = ""
-  ;data_arr@res_gsnXYBarChartColors2 = colors
 
   plot = barchart(wks, data_arr, var, info0)
   datasetnames = tmp_orig
@@ -337,8 +327,8 @@ begin
   data_arr@res_xyMarkers         = thicks
   data_arr@res_xyMarkerSizeF     = 10.
   data_arr@res_trXMinF           = min(xCO2(0, :))
-  data_arr@res_trXMaxF           = 0.1 ;max(xCO2(0, :))
-  data_arr@res_trYMinF           = 1.1 ;0
+  data_arr@res_trXMaxF           = 0.1  ; max(xCO2(0, :))
+  data_arr@res_trYMinF           = 1.1  ; 0
   data_arr@res_trYMaxF = max(yBETA(0, :)) + 0.25 * max(yBETA(0, :))
   data_arr@res_vpWidthF          = 0.5
   data_arr@res_vpHeightF         = 0.4
@@ -353,7 +343,7 @@ begin
   peres@xyLineColor     = "orange"
   peres@gsFillColor     = "orange"
   xin = array_append_record(xfit_bco2, xfit_bco2(::-1), 0)
-  yin = array_append_record(yfit_bco2_std, yfit_bco2_std(::-1), 0)
+  yin = array_append_record(yfit_bco2_std(0, :), yfit_bco2_std(1, ::-1), 0)
   add_prediction_error(wks, plot, peres, xin, yin)
   delete([/xin, yin/])
 
@@ -363,9 +353,9 @@ begin
     ores@xyLineColor     = "grey"
     ores@gsFillColor     = "grey"
     xinobs = (/rcc(iref, 1) + stdrc(iref, 1), \
-            rcc(iref, 1) + stdrc(iref, 1), \
-            rcc(iref, 1) - stdrc(iref, 1), \
-            rcc(iref, 1) - stdrc(iref, 1)/)
+               rcc(iref, 1) + stdrc(iref, 1), \
+               rcc(iref, 1) - stdrc(iref, 1), \
+               rcc(iref, 1) - stdrc(iref, 1)/)
     yinobs = (/500, -500, -500, 500/)
     add_prediction_error(wks, plot, ores, xinobs, yinobs)
     delete([/xinobs, yinobs, ores/])
@@ -390,12 +380,12 @@ begin
   eres@gsLineColor = colors(idat)
   add_errorbar(wks, plot, eres, xCO2(:, 2:), yBETA(:, 2:))
   draw(plot)
-  ;frame(wks)
-  delete([/peres, eres, mres, lres, data_arr/])
+  frame(wks)
+  delete([/plot, peres, eres, mres, lres, data_arr/])
 
   ; Create Plots 3b:
   ; -----------------------------------------------
-  ;plot = new(1, graphic)
+  plot = new(1, graphic)
 
   bres  = True
   bres@gsnDraw          = False

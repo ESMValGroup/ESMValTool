@@ -142,14 +142,14 @@ begin
       delta0_std(imod) = sqrt( \
                          (stddev(tofloat(tmp0( \
                              {time|xMax_year-4:xMax_year})))/ \
-                         avg(tofloat(tmp0( \
-                             {time|xMin_year:xMin_year+4})))) ^ 2 + \
+                          avg(tofloat(tmp0( \
+                              {time|xMin_year:xMin_year+4})))) ^ 2 + \
                          (stddev(tofloat(tmp0( \
                              {time|xMin_year:xMin_year+4}))) * \
-                         avg(tofloat(tmp0( \
-                             {time|xMax_year-4:xMax_year})))/ \
-                         avg(tofloat(tmp0( \
-                             {time|xMin_year:xMin_year+4}))) ^ 2) ^ 2)
+                          avg(tofloat(tmp0( \
+                              {time|xMax_year-4:xMax_year})))/ \
+                          avg(tofloat(tmp0( \
+                              {time|xMin_year:xMin_year+4}))) ^ 2) ^ 2)
     else
       delta0(imod) = (avg(tmp0({time|xMax_year-4:xMax_year}))/ \
                       avg(tmp0(0:4)))
@@ -244,17 +244,6 @@ begin
 
   ; PLOT - Panel B
   print(datasetnames + " " + betaGPP)
-  ;tmpb = betaGPP
-  ;qsort(betaGPP)
-  ;tmpm = datasetnames
-  ;tmp_orig = datasetnames
-
-  ;do imod = 0, dim_MOD-1
-  ;  id         = ind(tmpb.eq.betaGPP(imod))
-  ;  tmpm(imod) = datasetnames(id)
-  ;  delete(id)
-  ;end do
-  ;datasetnames = tmpm
 
   YStg = str_upper(var) + "(2xCO~B~2~N~)/" + \
          str_upper(var) + "(1xCO~B~2~N~)"
@@ -270,11 +259,10 @@ begin
   data_arr@res_gsnCenterString = ""
 
   plot = barchart(wks, data_arr, var, info)
-  ;datasetnames = tmp_orig
   draw(plot)
   frame(wks)
 
-  delete([/betaGPP, plot, delta0, plot, Yfitda, tmpm/])
+  delete([/betaGPP, plot, delta0, plot, Yfitda/])
 
   ; create separate legend
   marker_thicks = datasetnames
