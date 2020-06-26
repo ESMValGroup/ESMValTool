@@ -383,7 +383,7 @@ begin
 
   ; Create Plots 3b:
   ; -----------------------------------------------
-  plot = new(1, graphic)
+  plot_pdf = new(1, graphic)
 
   bres  = True
   bres@gsnDraw          = False
@@ -431,11 +431,11 @@ begin
   obsres = True
   obsres@gsLineColor = "red"
   obsres@gsLineThicknessF  = 2
-  PDF3 = gsn_add_polyline(wks, plot, co2_y, co2_Py, obsres)
+  PDF3 = gsn_add_polyline(wks, plot_pdf, co2_y, co2_Py, obsres)
 
-  draw(plot)
+  draw(plot_pdf)
   frame(wks)
-  delete(plot)
+  delete(plot_pdf)
 
   ; ---------------------------------------------------------------
   ; Output to NetCDF

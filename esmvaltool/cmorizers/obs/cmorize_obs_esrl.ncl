@@ -48,7 +48,7 @@ begin
 
   ; Period
   YEAR1 = 1973
-  YEAR2 = 2014
+  YEAR2 = 2019
 
   ; Selected variable (standard name)
   VAR = "co2s"
@@ -100,10 +100,22 @@ begin
     infile = input_dir_path + "co2_" + str_lower(st_code(stID)) + \
              "_surface-insitu_1_ccgg_month.txt"
 
+    if (.not.fileexists(infile)) then
+      infile = input_dir_path + "co2_" + str_lower(st_code(stID)) + \
+               "_surface-insitu_1_ccgg_MonthlyData.txt"
+    end if
+
     if (fileexists(infile)) then
 
+      log_info("Processing " + VAR + " (" + st_code(stID) + ")")
+
       raw = asciiread(infile, -1, "string")
+
       head = str_get_field(raw(0), 3, " ")
+      if (typeof(head).eq. "string") then
+        head = str_get_field(raw(0), 4, " ")
+      end if
+
       data = raw(toint(head):)
       delete([/head, raw/])
 
@@ -119,6 +131,7 @@ begin
       ; Read time and extract full years only
       year = str_squeeze(str_get_field(data(:), 2, " "))
       month = str_squeeze(str_get_field(data(:), 3, " "))
+      month = sprinti("%2.2i", toint(month))
       date = toint(year + month)
       var = tofloat(str_get_field(data(:), 4, " "))
       delete(data)
@@ -179,6 +192,9 @@ begin
       delete(gAtt)
       delete(output)
 
+    else
+       error_msg("w", DIAG_SCRIPT, "", infile + " does not exist!")
+       continue
     end if
 
   end do
