@@ -34,10 +34,6 @@ ncwritespi <- function(yml, m, data, wdir){
   ncvar_put(idw, "spi", data)
   cntatt <- 1
   for (thisattname in names(globat)){
-    print("thisattname")
-    print(thisattname)
-    print("globat[[cntatt]]")
-    print(globat[[cntatt]])
     ncatt_put(idw, 0, thisattname, globat[[cntatt]])
     cntatt <- cntatt + 1
   }
@@ -103,18 +99,12 @@ xprov <- list(
 
 for (mod in 1:nmods){
    v1 <- getnc(var1_input, mod)
-   print("var1_input[mod][[1]]$cmor_table")
-   print(var1_input[mod][[1]]$cmor_table)
    d <- dim(v1)
    v1_spi <- array(fillfloat, dim=d)
    for (i in 1:d[1]){
      wh <- which(!is.na(refmsk[i,]))
      if (length(wh) > 0){
        tmp <- v1[i,wh,]
-       print("params$smooth_month")
-       print(params$smooth_month)
-       print("params$distribution")
-       print(params$distribution)
        v1_spi[i,wh,] <- t(spi(t(tmp), params$smooth_month, na.rm = TRUE,
                         distribution = params$distribution)$fitted)
      }
@@ -124,7 +114,14 @@ for (mod in 1:nmods){
    v1_spi[v1_spi > 10000] <- fillfloat
    filename <- ncwritespi(var1_input, mod, v1_spi, wdir)
    xprov$caption <- "SPI index per grid point."
-   xprov$ancestors <- modfile[mod]
+   xprov$ancestors <- list(modfile[mod])
    provenance[[filename]] <- xprov
+   print("provenance[[filename]] kwnew")
+   print(provenance[[filename]])
 }
+
+print("provenance_file kwnew")
+print(provenance_file)
+print("provenance kwnew")
+print(provenance)
 write_yaml(provenance, provenance_file)

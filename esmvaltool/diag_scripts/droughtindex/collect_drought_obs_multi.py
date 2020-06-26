@@ -147,7 +147,7 @@ def main(cfg):
 
     # Calculating multi model mean and plot it
     _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
-                           input_filenames)
+                           glob.glob(input_filenames))
 
 
 if __name__ == '__main__':

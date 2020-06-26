@@ -138,7 +138,8 @@ def main(cfg):
                 _plot_single_maps(cfg, cube2, drought_show, tstype, spei_file)
 
     # Calculating multi model mean and plot it
-    _get_and_plot_multimodel(cfg, cube, all_drought, input_filenames)
+    _get_and_plot_multimodel(cfg, cube, all_drought,
+                             glob.glob(input_filenames))
 
 
 if __name__ == '__main__':

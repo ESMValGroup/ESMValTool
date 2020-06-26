@@ -87,7 +87,7 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
     else:
         set_refs = ['martin2018grl', ]
 
-    provenance_record = get_provenance_record(name_dict['input_filenames'],
+    provenance_record = get_provenance_record([name_dict['input_filenames']],
                                               caption,
                                               ['global'],
                                               set_refs)
@@ -153,7 +153,7 @@ def _provenance_time_series_spei(cfg, data_dict):
     else:
         set_refs = ['martin2018grl', ]
 
-    provenance_record = get_provenance_record(data_dict['filename'],
+    provenance_record = get_provenance_record([data_dict['filename']],
                                               caption,
                                               ['reg'], set_refs,
                                               plot_type='times')
