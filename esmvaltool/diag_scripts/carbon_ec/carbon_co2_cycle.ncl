@@ -218,9 +218,9 @@ begin
 
   ; Plot section
   ; -----------------------------------------------------------
-  ; create separate legend
-  marker_thicks = datasetnames
-  marker_sizes  = datasetnames
+
+  marker_thicks = new(dimsizes(datasetnames), float)
+  marker_sizes  = new(dimsizes(datasetnames), float)
   marker_thicks = 3
   marker_sizes  = 0.02
   marker   = new(dim_MOD, "graphic")
@@ -236,9 +236,7 @@ begin
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString   = ""
   data_arr@res_gsnMaximize       = True
-  data_arr@res_xyMonoMarker      = False
-  data_arr@res_xyMarkers         = thicks
-  data_arr@res_xyMarkerSizeF     = 10.
+  data_arr@res_xyMarkerSizeF     = 1.
   data_arr@res_trXMinF           = min(Xdata(:, :))
   data_arr@res_trXMaxF           = max(Xdata(:, :))
   data_arr@res_trYMinF           = 0
@@ -248,6 +246,8 @@ begin
   data_arr@diag_script = DIAG_SCRIPT
   diag_script_info@scatter_log = False
 
+  data_arr@res_xyMarkLineMode = "Markers"
+
   plot = scatterplot(wks, data_arr, var, False, False, input_file_info)
 
   txres = True
@@ -256,7 +256,7 @@ begin
 
   ; Add year strings as markers
   lineres = True
-  do imod  = 0, dim_MOD-1
+  do imod  = 0, dim_MOD - 1
     idx := ind(.not.ismissing(Xdata(imod, :)))
     idy := ind(.not.ismissing(Ydata(imod, :)))
     if (datasetnames(imod).eq."OBS") then
@@ -265,7 +265,7 @@ begin
       lineres@gsLineThicknessF  = 3
     end if
     txres@gsMarkerColor      = colors(imod)
-    txres@gsMarkerIndex      = thicks(imod)
+    txres@gsMarkerIndex      = markers(imod)
     add_markers(wks, plot, txres, Xdata(imod, idx), Ydata(imod, idy))
 
     lineres@gsLineDashPattern = 0
@@ -310,6 +310,16 @@ begin
   datasetnames(2:) = tmpm
   delete(tmpm)
 
+  xmarkers = new(dim_MOD+1, typeof(markers))
+  xmarkers(0) = 16
+  xmarkers(1) = 3
+  xmarkers(2:) = markers(idat)
+
+  xcolors = new(dim_MOD+1, typeof(colors))
+  xcolors(0) = "black"
+  xcolors(1) = "red"
+  xcolors(2:) = colors(idat)
+
   MainStg = ""
   XStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
   YStg    = "GPP(2xCO~B~2~N~)/GPP(1xCO~B~2~N~)"
@@ -321,9 +331,7 @@ begin
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString   = ""
   data_arr@res_gsnMaximize       = True
-  data_arr@res_xyMonoMarker      = False
-  data_arr@res_xyMarkers         = thicks
-  data_arr@res_xyMarkerSizeF     = 10.
+  data_arr@res_xyMarkerSizeF     = 1.
   data_arr@res_trXMinF           = min(xCO2(0, :))
   data_arr@res_trXMaxF           = 0.1  ; max(xCO2(0, :))
   data_arr@res_trYMinF           = 1.1  ; 0
@@ -367,9 +375,11 @@ begin
 
   ; add colored markers
   mres = True
-  mres@xyMarker      = 0
-  do imod = 2, dim_MOD-1
-    mres@xyMarkerColor = colors(imod)
+  mres@gsMarkerSizeF = 20.
+  mres@gsMarkerThicknessF = 3.
+  do imod = 1, dim_MOD - 1
+    mres@gsMarkerColor = xcolors(imod)
+    mres@gsMarkerIndex = xmarkers(imod)
     add_markers(wks, plot, mres, xCO2(0, imod), yBETA(0, imod))
   end do
 
@@ -377,8 +387,10 @@ begin
   eres = True
   eres@gsLineColor = colors(idat)
   add_errorbar(wks, plot, eres, xCO2(:, 2:), yBETA(:, 2:))
+
   draw(plot)
   frame(wks)
+
   delete([/plot, peres, eres, mres, lres, data_arr/])
 
   ; Create Plots 3b:
@@ -436,6 +448,23 @@ begin
   draw(plot_pdf)
   frame(wks)
   delete(plot_pdf)
+
+  ; create separate legend
+
+  leg = True
+  leg@txFontQuality = "High"
+  leg@txFont        = 25
+  leg@txFontHeightF = 0.02
+  leg@diag_script   = DIAG_SCRIPT
+  leg@annots        = lgLabels(::-1)
+  leg@markers       = markers(::-1)
+  leg@thicks        = marker_thicks
+  leg@sizes         = marker_sizes
+  leg@ncols         = 1
+  leg@colors        = colors(::-1)  ; rgbcolors
+
+  create_legend_lines(leg@annots, leg, plot_dir + \
+                      DIAG_SCRIPT + "_legend", "markers")
 
   ; ---------------------------------------------------------------
   ; Output to NetCDF
