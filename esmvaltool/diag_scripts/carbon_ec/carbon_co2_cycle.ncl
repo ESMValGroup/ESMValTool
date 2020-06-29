@@ -12,14 +12,19 @@
 ;                   [co2] seasonal cycle amplitude
 ;                b) conditional PDF of the EC
 ;
-; Required info attributes (diag_script_info):
-; - styleset       project for line styles
+; Required info attributes (scripts):
+; - styleset       project for line, color, symbol styles
 ; - nc_infile      path of netCDF file containing beta
 ;                  (output from carbon_beta.ncl)
 ;
-; Optional info attributes (diag_script_info):
-; - bc_xmax_year   start year for time series plots
-; - bc_xmin_year   end year for time series plots
+; Optional info attributes (scripts):
+; - bc_xmax_year   end year (default = last year of all model datasets
+;                  available)
+; - bc_xmin_year   start year (default = first year of all model datasets
+;                  available)
+;
+; Required variable attributes (variables):
+; - reference_dataset: name of reference datatset (observations)
 ;
 ; Modification history
 ;    * 20200406-zechlau_sabrina: code rewritten for ESMValTool v2.0

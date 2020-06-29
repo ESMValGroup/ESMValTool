@@ -7,12 +7,14 @@
 ; Panel: a) correlation between GPP and [co2] increase,
 ;        b) barchart of the trend of the upper correlation
 ;
-; Required info attributes (diag_script_info):
-; - styleset       project for line styles
+; Required info attributes (scripts):
+; - styleset       project for line, color, symbol styles
 ;
-; Optional info attributes (diag_script_info):
-; - bc_xmax_year   start year for time series plots
-; - bc_xmin_year   end year for time series plots
+; Optional info attributes (scripts):
+; - bc_xmax_year   end year (default = last year of all model datasets
+;                  available)
+; - bc_xmin_year   start year (default = first year of all model datasets
+;                  available)
 ;
 ; Modification history
 ;    * 20200406-zechlau_sabrina: code rewritten for ESMValTool v2.0
