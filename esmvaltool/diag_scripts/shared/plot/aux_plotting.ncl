@@ -143,8 +143,8 @@ begin
 ;      resL@gsLineColor = styles@colors(ii, :)
 ;      resL@gsMarkerColor = styles@colors(ii, :)
 ;    else
-      resL@gsLineColor = styles@colors(ii)
-      resL@gsMarkerColor = styles@colors(ii)
+    resL@gsLineColor = styles@colors(ii)
+    resL@gsMarkerColor = styles@colors(ii)
 ;    end if
     ; Set dash pattern
     if (isatt(styles, "dashes")) then
