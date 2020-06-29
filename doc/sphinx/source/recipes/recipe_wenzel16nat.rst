@@ -1,12 +1,12 @@
 .. _recipes_wenzel16nat:
 
-Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO2
-=============================================================================================
+Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO\ :sub:`2`
+======================================================================================================
 
 Overview
 --------
 
-Figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel16nature.yml. Gross primary productivity (gpp) and atmospheric CO2 concentrations at the surface  (co2s) are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The standard namelist includes a set of routines to diagnose the long-term carbon cycle - concentration feedback parameter (beta) from an ensemble of CMIP5 models and the observable change in the CO2 seasonal cycle amplitude due to rising atmospheric CO2 levels. As a key figure of this recipe, the diagnosed values from the models beta vs. the change in CO2 amplitude are compared in a scatter plot constituting an emergent constraint.
+Selected figures from `Wenzel et al. (2016)`_ are reproduced with recipe_wenzel16nat.yml. Gross primary productivity (gpp) and atmospheric CO\ :sub:`2` concentrations at the surface  (co2s) are analyzed for the carbon cycle - concentration feedback in the historical (esmHistorical) and uncoupled (esmFixCLim1, here the carbon cycle is uncoupled to the climate response) simulations. The recipe includes a set of routines to diagnose the long-term carbon cycle - concentration feedback parameter (beta) from an ensemble of CMIP5 models and the observable change in the CO\ :sub:`2` seasonal cycle amplitude due to rising atmospheric CO\ :sub:`2` levels. As a key figure of this recipe, the diagnosed values from the models beta vs. the change in CO\ :sub:`2` amplitude are compared in a scatter plot constituting an emergent constraint.
 
 .. _`Wenzel et al. (2016)`: https://www.nature.com/articles/nature19772
 
@@ -15,43 +15,62 @@ Available recipe and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_wenzel16nat.yml
+    * recipe_wenzel16nat.yml
 
-Diagnostics are stored in diag_scripts/
+Diagnostics are stored in diag_scripts/carbon_ec/
 
-* carbon_beta: scatter plot of ; diagnosing beta for later use in EC plot
-* carbon_co2_cycle.ncl: scatter plot of time line plots of annual means for spatial averages
+    * carbon_beta: (1) scatter plot of annual gpp vs. annual CO\ :sub:`2` and
+      (2) barchart of gpp(2xCO\ :sub:`2`)/gpp(1xCO\ :sub:`2`); calculates beta
+      for emergent constraint (carbon_co2_cycle.ncl)
+    * carbon_co2_cycle.ncl: (1) scatter plot of CO\ :sub:`2` amplitude vs.
+      annual CO\ :sub:`2`, (2) barchart of sensitivity of CO\ :sub:`2` amplitude
+      to CO\ :sub:`2`, (3) emergent constraint:
+      gpp(2xCO\ :sub:`2`)/gpp(1xCO\ :sub:`2`) vs. sensitivity of CO\ :sub:`2`
+      amplitude to CO\ :sub:`2`, (4) probability density function of constrained
+      and unconstrained sensitivity of CO\ :sub:`2` amplitude to CO\ :sub:`2`
 
 
 User settings
 -------------
 
-User setting files (cfg files) are stored in nml/cfg_carbon/
-
 #. carbon_beta 
 
    *Required Settings (scripts)*
 
-   * styleset: CMIP5
+   * styleset: project style for lines, colors and symbols
 
    *Optional Settings (scripts)*
 
-   * cl_mean: if true calculates mean of beta
-   * bc_xmax_year: end year to calculate beta, else end_year is used
-   * bc_xmin_year: start year to calculate beta, else start_year is used
+   * bc_xmax_year: end year (default = last year of all model datasets available)
+   * bc_xmin_year: start year (default = first year of all model datasets available)
 
    *Required settings (variables)*
 
-   * reference_dataset: name of reference data set
+   none
+
+   *Optional settings (variables)*
+
+   none
 
 #. carbon_co2_cycle.ncl 
 
    *Required Settings (scripts)*
 
-   * bc_xmax_year: same end year as in carbon_beta
-   * bc_xmin_year: same start year as in carbon_beta
-   * styleset: CMIP5
-   * nc_infile: path were to find file with beta values
+   * nc_infile: path of netCDF file containing beta (output from carbon_beta.ncl)
+   * styleset: project style for lines, colors and symbols
+
+   *Optional Settings (scripts)*
+
+   * bc_xmax_year: end year (default = last year of all model datasets available)
+   * bc_xmin_year: start year (default = first year of all model datasets available)
+
+   *Required settings (variables)*
+
+   * reference_dataset: name of reference datatset (observations)
+
+   *Optional settings (variables)*
+
+   none
 
 
 Variables
@@ -76,21 +95,20 @@ References
 Example plots
 -------------
 
-.. figure:: /recipes/figures/wenzel16nat/
-   :width: 10 cm 
+.. figure:: /recipes/figures/wenzel16nat/fig_1.png
+   :width: 12 cm 
    :align: center
    
-   XXXX Comparison of CO2 seasonal amplitudes for CMIP5 historical simulations and observations showing Annual mean atmospheric CO2 versus the amplitudes of the CO2 seasonal cycle at Pt. Barrow, Alaska 
+   Comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical simulations and observations showing annual mean atmospheric CO\ :sub:`2` versus the amplitudes of the CO\ :sub:`2` seasonal cycle at Pt. Barrow, Alaska.
       
-.. figure:: /recipes/figures/wenzel16nat/
-   :width: 10 cm 
+.. figure:: /recipes/figures/wenzel16nat/fig_2.png
+   :width: 12 cm 
    :align: center
    
-   XXXX Histogram showing the gradient of the linear correlations for the comparison of CO2 seasonal amplitudes for CMIP5 historical for at Pt. Barrow, Alaska 
+   Barchart showing the gradient of the linear correlations for the comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical for at Pt. Barrow, Alaska.
 
-.. figure:: /recipes/figures/wenzel16nat/
-   :scale: 50 %
+.. figure:: /recipes/figures/wenzel16nat/fig_3.png
+   :width: 12 cm
    :align: center
 
-   XXXX Emergent constraints on the relative increase of large-scale GPP for a doubling of CO2, showing the correlations between the sensitivity of the CO2 amplitude to annual mean CO2 increases at Pt. Barrow (x axis) and the high-latitude (60 N - 90 N) CO2 fertilization on GPP at 2 x CO2. The red line shows the linear best fit of the regression together with the prediction error (orange shading) and the gray shading shows the observed range.
-      
+   Emergent constraint on the relative increase of large-scale GPP for a doubling of CO\ :sub:`2`, showing the correlations between the sensitivity of the CO\ :sub:`2` amplitude to annual mean CO\ :sub:`2` increases at Pt. Barrow (x-axis) and the high-latitude (60N - 90N) CO\ :sub:`2` fertilization on GPP at 2xCO\ :sub:`2`. The red line shows the linear best fit of the regression together with the prediction error (orange shading), the gray shading shows the observed range.
