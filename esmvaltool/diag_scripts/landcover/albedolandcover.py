@@ -106,6 +106,7 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
     return model_data
 
 
+
 def _reconstruct_albedo_pixel(x_0, y_0, lc_logical):
     # Check that the system is not over_parameterised
     alb_lc_pixel = np.zeros((3, ))
@@ -118,14 +119,22 @@ def _reconstruct_albedo_pixel(x_0, y_0, lc_logical):
         intercept = linreg.intercept_
         coefficients = linreg.coef_
 
+        # Estimate standard error of reconstructed albedo. Taken from:
+        # https://stackoverflow.com/questions/20938154/standard-errors-for-
+        # multivariate-regression-coefficients/20939624#20939624
+        MSE = np.mean((y_0 - linreg.predict(x_0).T)**2)
+        var_est = MSE * np.diag(np.linalg.pinv(np.dot(x_0.T,x_0)))
+        SE_est = np.sqrt(var_est)
+
         # Now loop again and reconstruct albedo's
         lc_reg = 0
         for i_0 in range(3):
             if lc_logical[i_0]:
-                alb_lc_pixel[i_0] = intercept\
-                    + coefficients[lc_reg] * 100.
-                lc_reg = lc_reg + 1
-    return alb_lc_pixel
+                if SE_est[i_0] < 0.01:
+                    alb_lc_pixel[i_0] = intercept\
+                        + coefficients[lc_reg] * 100.
+                    lc_reg = lc_reg + 1
+    return alb_lc_pixel, SE_est
 
 
 def _prepare_data_for_linreg(model_data, islice, jslice):
@@ -166,6 +175,9 @@ def _get_reconstructed_albedos(model_data, cfg):
     alb_lc = np.zeros((3, ) + model_data['alb'].shape)
     alb_lc[...] = np.nan
 
+    est_se = np.zeros((3, ) + model_data['alb'].shape)
+    est_se[...] = np.nan
+
     # Now loop over these arrays and do the math
     for (indices, maskbool) in np.ndenumerate(model_data['alb'].data.mask):
         if not maskbool:  # Only if not masked we need to check neighbourhood
@@ -185,10 +197,9 @@ def _get_reconstructed_albedos(model_data, cfg):
                                                                 islice,
                                                                 jslice)
 
-                alb_lc[:, i, j] = _reconstruct_albedo_pixel(x_0, y_0,
-                                                            lc_logical)
+                alb_lc[:, i, j], est_se[:, i, j] = _reconstruct_albedo_pixel(x_0, y_0, lc_logical)
 
-    return alb_lc
+    return alb_lc, est_se
 
 
 def _write_albedochanges_to_disk(alb_lc, template_cube,
@@ -338,15 +349,30 @@ def main(cfg):
                                                 cfg)
 
         # Now get albedo change due to landcover change
-        alb_lc = _get_reconstructed_albedos(model_data, cfg)
+        alb_lc, est_se = _get_reconstructed_albedos(model_data, cfg)
 
         # Now mask where albedo values are physically impossible
         alb_lc[alb_lc < 0] = np.nan
         alb_lc[alb_lc > 1] = np.nan
 
-        # Calculate differences between them
+        # Calculate differences between them and save
         _write_albedochanges_to_disk(alb_lc, model_data['snc'],
                                      datadict, cfg)
+
+        # Also save the estimated standard error on rec. albedo values
+        se_cube = model_data['snc'].copy()
+
+#         # Remove attributes that are not applicable to derived data
+#         for att in ['comment', 'modeling_realm', 'table_id']:
+#             if att in se_cube.attributes:
+#                 se_cube.attributes.pop(att)
+#         # Set correct unit and add data
+#         se_cube.units = '1'
+#         se_cube.data = est_se
+#         # Save it
+#         savename_nc = os.path.join(cfg['work_dir'], 'rec_albedo_est_standard_error.nc')
+#         logger.info("Saving file as: %s", savename_nc)
+#         iris.save(se_cube, savename_nc)
 
         # Loop through all nc files and plot them
         for ncfile in glob.glob(os.path.join(cfg['work_dir'], '*.nc')):
