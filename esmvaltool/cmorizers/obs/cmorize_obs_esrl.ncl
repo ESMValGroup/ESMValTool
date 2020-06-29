@@ -193,8 +193,8 @@ begin
       delete(output)
 
     else
-       error_msg("w", DIAG_SCRIPT, "", infile + " does not exist!")
-       continue
+      error_msg("w", DIAG_SCRIPT, "", infile + " does not exist!")
+      continue
     end if
 
   end do
