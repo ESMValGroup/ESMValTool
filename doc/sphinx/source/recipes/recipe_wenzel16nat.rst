@@ -33,7 +33,7 @@ Diagnostics are stored in diag_scripts/carbon_ec/
 User settings
 -------------
 
-#. carbon_beta 
+#. Script carbon_beta.ncl
 
    *Required Settings (scripts)*
 
@@ -41,8 +41,8 @@ User settings
 
    *Optional Settings (scripts)*
 
-   * bc_xmax_year: end year (default = last year of all model datasets available)
-   * bc_xmin_year: start year (default = first year of all model datasets available)
+   * bc_xmax_year: end year to calculate beta (default: use last available year of all models)
+   * bc_xmin_year: start year to calculate beta (default: use first available year of all models)
 
    *Required settings (variables)*
 
@@ -52,7 +52,7 @@ User settings
 
    none
 
-#. carbon_co2_cycle.ncl 
+#. Script carbon_co2_cycle.ncl 
 
    *Required Settings (scripts)*
 
@@ -83,13 +83,13 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* ESRL: Earth System Research Laboratory, ground mased co2 measuremends
+* ESRL: Earth System Research Laboratory, ground-based CO\ :sub:`2` measurements
 
 
 References
 ----------
 
-* Wenzel, S., Cox, P., Eyring, V. et al., 2016, Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO2. Nature 538, 499501, doi: doi.org/10.1038/nature19772
+* Wenzel, S., Cox, P., Eyring, V. et al., 2016, Projected land photosynthesis constrained by changes in the seasonal cycle of atmospheric CO\ :sub:`2`. Nature 538, 499501, doi: doi.org/10.1038/nature19772
 
 
 Example plots
@@ -99,16 +99,16 @@ Example plots
    :width: 12 cm 
    :align: center
    
-   Comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical simulations and observations showing annual mean atmospheric CO\ :sub:`2` versus the amplitudes of the CO\ :sub:`2` seasonal cycle at Pt. Barrow, Alaska.
+   Comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical simulations and observations showing annual mean atmospheric CO\ :sub:`2` versus the amplitudes of the CO\ :sub:`2` seasonal cycle at Pt. Barrow, Alaska (produced with carbon_co2_cycle.ncl, similar to Fig. 1a from Wenzel et al. (2016)).
       
 .. figure:: /recipes/figures/wenzel16nat/fig_2.png
    :width: 12 cm 
    :align: center
    
-   Barchart showing the gradient of the linear correlations for the comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical for at Pt. Barrow, Alaska.
+   Barchart showing the gradient of the linear correlations for the comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical for at Pt. Barrow, Alaska (produced with carbon_co2_cycle.ncl, similar to Fig. 1b from Wenzel et al. (2016)).
 
 .. figure:: /recipes/figures/wenzel16nat/fig_3.png
    :width: 12 cm
    :align: center
 
-   Emergent constraint on the relative increase of large-scale GPP for a doubling of CO\ :sub:`2`, showing the correlations between the sensitivity of the CO\ :sub:`2` amplitude to annual mean CO\ :sub:`2` increases at Pt. Barrow (x-axis) and the high-latitude (60N - 90N) CO\ :sub:`2` fertilization on GPP at 2xCO\ :sub:`2`. The red line shows the linear best fit of the regression together with the prediction error (orange shading), the gray shading shows the observed range.
+   Emergent constraint on the relative increase of large-scale GPP for a doubling of CO\ :sub:`2`, showing the correlations between the sensitivity of the CO\ :sub:`2` amplitude to annual mean CO\ :sub:`2` increases at Pt. Barrow (x-axis) and the high-latitude (60N - 90N) CO\ :sub:`2` fertilization on GPP at 2xCO\ :sub:`2`. The red line shows the linear best fit of the regression together with the prediction error (orange shading), the gray shading shows the observed range (produced with carbon_co2_cycle.ncl, similar to Fig. 3a from Wenzel et al. (2016)).
