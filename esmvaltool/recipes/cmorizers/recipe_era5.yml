@@ -264,26 +264,26 @@ diagnostics:
       #   mip: Amon
       #   era5_name: evaporation
       #   era5_freq: monthly
-      evspsblpot:
-        mip: Amon
-        era5_name: potential_evaporation
-        era5_freq: monthly
+      # evspsblpot:
+      #   mip: Amon
+      #   era5_name: potential_evaporation
+      #   era5_freq: monthly
       # mrro:
       #   mip: Amon
       #   era5_name: runoff
       #   era5_freq: monthly
-      pr:
-        mip: Amon
-        era5_name: total_precipitation
-        era5_freq: monthly
+      # pr:
+      #   mip: Amon
+      #   era5_name: total_precipitation
+      #   era5_freq: monthly
       # prsn:
       #   mip: Amon
       #   era5_name: snowfall
       #   era5_freq: monthly
-      # psl:
-      #   mip: Amon
-      #   era5_name: mean_sea_level_pressure
-      #   era5_freq: monthly
+      psl:
+        mip: Amon
+        era5_name: mean_sea_level_pressure
+        era5_freq: monthly
       # ps:
       #   mip: Amon
       #   era5_name: surface_pressure
@@ -300,22 +300,22 @@ diagnostics:
       #   mip: Amon
       #   era5_name: mean_surface_net_long_wave_radiation_flux
       #   era5_freq: monthly
-      # rsds:
-      #   mip: Amon
-      #   era5_name: surface_solar_radiation_downwards
-      #   era5_freq: monthly
-      # rsdt:
-      #   mip: Amon
-      #   era5_name: toa_incident_solar_radiation
-      #   era5_freq: monthly
+      rsds:
+        mip: Amon
+        era5_name: surface_solar_radiation_downwards
+        era5_freq: monthly
+      rsdt:
+        mip: Amon
+        era5_name: toa_incident_solar_radiation
+        era5_freq: monthly
       # rss:
       #   mip: Amon
       #   era5_name: surface_net_solar_radiation
       #   era5_freq: monthly
-      # tas:
-      #   mip: Amon
-      #   era5_name: 2m_temperature
-      #   era5_freq: monthly
+      tas:
+        mip: Amon
+        era5_name: 2m_temperature
+        era5_freq: monthly
       # tdps:
       #   mip: Amon
       #   era5_name: 2m_dewpoint_temperature

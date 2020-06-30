@@ -18,11 +18,11 @@ preprocessors:
   general: &general
     mask_landsea:
       mask_out: "sea"
-    regrid:
-      target_grid: 0.1x0.1 # TODO: change the target to 0.083333*0.083333
-      lon_offset: true
-      lat_offset: true
-      scheme: nearest #area_weighted and linear results in memory issues 
+    # regrid:
+    #   target_grid: 0.1x0.1 # TODO: change the target to 0.08333*0.08333
+    #   lon_offset: true
+    #   lat_offset: true
+    #   scheme: nearest #area_weighted and linear results in memory issues 
     # TODO: check the units 
     # As stated by the model developers the input rasters are in mm
     # convert_units:
@@ -34,29 +34,29 @@ diagnostics:
 # Currently, the model reads monthly reference evaporation and then multiplies it by kc and then 
 # divide it by the number of days in each month and uses it as daily actual evaporation in the model. 
 # We can change the model code to read daily reference evaporation and does the calculation, but we
-# did not change it yet. 
+# did not change the model code for this aim yet. 
 # """
-  # diagnostic_daily_GlobWat:
-  #   description: daily precipitation of ERA5 & ERA-Interim
-  #   additional_datasets:
-  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #     - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
-  #   variables:
-  #     # TODO: check if the model needs daily pet 
-  #     pr: &daily_var
-  #       mip: day
-  #       start_year: 2004
-  #       end_year: 2004
-  #       preprocessor: general
-  #   scripts:
-  #     script:
-  #       script: hydrology/globwat_diag.py
+  diagnostic_daily_GlobWat:
+    description: daily precipitation of ERA5 & ERA-Interim
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
+    variables:
+      # TODO: check if the model needs daily pet 
+      pr: &daily_var
+        mip: day
+        start_year: 2004
+        end_year: 2004
+        preprocessor: general
+    scripts:
+      script:
+        script: hydrology/globwat_diag.py
 
   diagnostic_monthly_GlobWat:
       description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
       additional_datasets:
         - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-        # - {dataset: ERA5, project: native6, type: reanaly, version: 1, tier: 3, era5_freq: monthly}
+        - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
       variables:
         pr: &var_monthly
           mip: Amon
