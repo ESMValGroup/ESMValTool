@@ -9,7 +9,7 @@
 ;    http://www.esrl.noaa.gov/gmd/dv/data/index.php
 ;
 ; Last access
-;    20140115
+;    20200630
 ;
 ; Download and processing instructions
 ;    Select the following filters:
@@ -19,11 +19,22 @@
 ;        Frequency: Monthly Averages.
 ;        Site: BRW, MLO, SMO, SPO.
 ;    Convert the data to unix format using dos2unix.
-;    Get the list of stations at:
-;        http://www.esrl.noaa.gov/gmd/obop/
-;    This list must be manually formatted in a comma-separated table,
-;    given as
-;   FILE_STAT below.
+;    Get stations properties at http://www.esrl.noaa.gov/gmd/obop/
+;    and compile a station list as comma separated value table containing:
+;    station code, station name, latitude, longitude (0-360), elevation (m)
+;
+;    Example (ESRL_stations.csv):
+;    ----------------------------
+; BRW,    Barrow Alaska,        71.3230,       203.3886,        11
+; THD,    Trinidad Head,        41.0541,       235.849,        107
+; SUM,    Summit Greenland,     72.5962,       321.578,       3210
+; MLO,    Mauna Loa,            19.5362,       204.4237,      3397
+; SMO,    American Samoa,       -14.2474,      189.4356,        42
+; SPO,    South Pole,           -90.00,        301.0,         2840
+;
+;    This list must be manually created (format: comma separated values) and
+;    saved to the path + filename given by "FILE_STAT" below.
+;
 ;    Check the period covered by the data and give it below as YEAR1 and
 ;    YEAR2.
 ;
@@ -133,7 +144,7 @@ begin
       month = str_squeeze(str_get_field(data(:), 3, " "))
       month = sprinti("%2.2i", toint(month))
       date = toint(year + month)
-      var = tofloat(str_get_field(data(:), 4, " "))
+      var = tofloat(str_get_field(data(:), 9, " "))
       delete(data)
 
       ; Check time range
