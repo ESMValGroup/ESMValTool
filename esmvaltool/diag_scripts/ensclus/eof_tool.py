@@ -54,8 +54,8 @@ def eof_plots(neof, pcs_scal1, eofs_scal2, var, varunits, lat, lon,
     """
     print('_________________________________________________________')
     print('Plotting the EOFs and PCs')
-    print('Variable: {1} Units: {2}'.format(var, varunits))
-    print('Ensemble members: {1}'.format(numens))
+    print('Variable: {0} Units: {1}'.format(var, varunits))
+    print('Ensemble members: {0}'.format(numens))
 
     # ------------------------------------------PCs scaled  (case 1 of scaling)
     figpc_scal1 = plt.figure(figsize=(24, 14))
