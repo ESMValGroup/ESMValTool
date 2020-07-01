@@ -4,7 +4,6 @@ import os
 
 logger = logging.getLogger(__name__)
 
-
 NCL_SCRIPT = """
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
 
@@ -89,12 +88,11 @@ def plot_example_for_colormap(name, colorpath, outdir='./'):
     axis = fig.add_axes([0.1, 0.3, 0.5, 0.5])
     np.random.seed(12345678)
     data = np.random.randn(30, 30)
-    psm = axis.pcolormesh(
-        data,
-        cmap=get_color_map(name, colorpath),
-        rasterized=True,
-        vmin=-4,
-        vmax=4)
+    psm = axis.pcolormesh(data,
+                          cmap=get_color_map(name, colorpath),
+                          rasterized=True,
+                          vmin=-4,
+                          vmax=4)
     fig.colorbar(psm, ax=axis)
     plt.savefig(os.path.join(outdir, "{0}.png".format(name)))
     plt.close()
@@ -120,8 +118,8 @@ def main_plot_ncl_cm(colorpath, outpath):
         list_of_snippets.append(t_color_snippet.render(path=path, name=tail))
     with tempfile.NamedTemporaryFile(mode='w', suffix='ncl') as fname:
         fname.write(
-            template.render(
-                list_of_snippets=sorted(list_of_snippets), outdir=outpath))
+            template.render(list_of_snippets=sorted(list_of_snippets),
+                            outdir=outpath))
         subprocess.check_call(["ncl", fname.name])
 
 
@@ -129,7 +127,6 @@ class ColorTables():
     """
     Generate colormap samples for ESMValTool's default colormaps.
     """
-
     def __init__(self):
         logger.setLevel(logging.DEBUG)
         console_handler = logging.StreamHandler()
@@ -159,6 +156,9 @@ class ColorTables():
         """
         Generate samples for Python colormaps
 
+        Create a series of png images  with examples of ESMValTool's available
+        Python colormaps
+
         Parameters
         ----------
 
@@ -174,6 +174,8 @@ class ColorTables():
     def ncl(self, colorpath=None, outpath="./"):
         """
         Generate samples for NCL colormaps
+
+        Create a pdf with examples of ESMValTool's available NCL colormaps
 
         Parameters
         ----------
