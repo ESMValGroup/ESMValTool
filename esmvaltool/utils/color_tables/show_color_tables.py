@@ -135,6 +135,8 @@ class ColorTables():
             logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logger.addHandler(console_handler)
+        self._colorpath = None
+        self._outpath = None
 
     def _prepare_paths(self, colorpath, outpath):
         if colorpath is None:
