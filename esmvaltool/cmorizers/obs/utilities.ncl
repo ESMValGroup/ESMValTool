@@ -92,6 +92,7 @@ procedure format_time(var:numeric,
 ; References
 ;
 ; Modification history
+;    20200518-righi_mattia: improve timesteps consistency check.
 ;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, ctime, ntime, year1, month1, day1, year2, month2, \
@@ -158,8 +159,8 @@ begin
     exp_ntime = year2 - year1 + 1
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                " expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
 
     ; Reset date (1st of July)
@@ -176,16 +177,13 @@ begin
   if (frequency.eq."mon") then
 
     ; Check size
-    if (year1.eq.year2) then
-      exp_ntime = month2 - month1 + 1
-    else
-      exp_ntime = (12 - month1 + 1) + month2 + \
-        12 * where((year2 - year1 - 1).gt.0, year2 - year1 - 1, 0)
-    end if
+    exp_ntime = 12 * (year2 - year1 + 1)
+    exp_ntime = exp_ntime - (month1 - 1)
+    exp_ntime = exp_ntime - (12 - month2)
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
 
     ; Reset date (middle of the month)
@@ -219,8 +217,8 @@ begin
       cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
     delete(opt)
 
@@ -255,8 +253,8 @@ begin
     exp_ntime = 4 * exp_ntime
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
     delete(opt)
 
@@ -274,8 +272,8 @@ begin
     exp_ntime = 8 * exp_ntime
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
     delete(opt)
 
@@ -647,7 +645,6 @@ procedure format_coords(var:numeric,
 ;    date1: start date as YYYYMMDD
 ;    date2: end date as YYYYMMDD
 ;    frequency: time frequency ("3hr", "6hr", "day", "mon", "yr")
-
 ;
 ; Description
 ;    Format the coordinate according to the CF/CMOR standard.
