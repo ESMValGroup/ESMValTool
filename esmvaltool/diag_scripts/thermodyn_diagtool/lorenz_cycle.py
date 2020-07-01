@@ -931,12 +931,12 @@ def preproc_lec(model, wdir, pdir, input_data):
                    options='-b F32',
                    output=maskorog)
     cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
-                   '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                   '-setmisstoc,0 -mul -selvar,uas {} -selvar,ua {}').format(
                        ua_file, uas_file, maskorog),
             options='-b F32',
             output=ua_file_mask)
     cdo.add(input=('-setmisstoc,0 -selvar,va {} '
-                   '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                   '-setmisstoc,0 -mul -selvar,vas {} -selvar,ua {}').format(
                        va_file, vas_file, maskorog),
             options='-b F32',
             output=va_file_mask)
