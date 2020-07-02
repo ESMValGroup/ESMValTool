@@ -8,8 +8,6 @@ documentation:
 
     GlobWat is a Global Hydrological Model provided by FAO
     http: //www.fao.org/nr/water/aquamaps/
-  # TODO: add abdolllahi_banafsheh to authors 
-  # I added abdollahi_banafsheh to config-references.yml
   authors: ['abdollahi_banafsheh','alidoost_sarah']
   projects: ['ewatercycle']
   references: ['acknow_project']
@@ -23,10 +21,6 @@ preprocessors:
     #   lon_offset: true
     #   lat_offset: true
     #   scheme: nearest #area_weighted and linear results in memory issues 
-    # TODO: check the units 
-    # As stated by the model developers the input rasters are in mm
-    # convert_units:
-    #   units: mm
 
 diagnostics:
 # TODO: can we use the daily reference evaporation in the model as well?
@@ -36,29 +30,30 @@ diagnostics:
 # We can change the model code to read daily reference evaporation and does the calculation, but we
 # did not change the model code for this aim yet. 
 # """
-  diagnostic_daily_GlobWat:
-    description: daily precipitation of ERA5 & ERA-Interim
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-      - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
-      # - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
-    variables:
-      # TODO: check if the model needs daily pet 
-      pr: &daily_var
-        mip: day
-        start_year: 2004
-        end_year: 2004
-        preprocessor: general
-    scripts:
-      script:
-        script: hydrology/globwat_diag.py
+  # diagnostic_daily_GlobWat:
+  #   description: daily precipitation of ERA5 & ERA-Interim
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #     - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
+  #   variables:
+  #     pr: &daily_var
+  #       mip: day
+  #       start_year: 2004
+  #       end_year: 2004
+  #       preprocessor: general
+  #     tas: *daily_var
+  #     psl: *daily_var
+  #     rsds: *daily_var
+  #     rsdt: *daily_var
+  #   scripts:
+  #     script:
+  #       script: hydrology/globwat_diag.py
 
   diagnostic_monthly_GlobWat:
       description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
       additional_datasets:
         - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
         - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
-        # - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
       variables:
         pr: &var_monthly
           mip: Amon
