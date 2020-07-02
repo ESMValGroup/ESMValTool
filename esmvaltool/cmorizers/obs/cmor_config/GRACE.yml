@@ -23,3 +23,6 @@ auxfiles:
     'LAND_MASK.CRI.nc'
   scale_factor:
     'CLM4.SCALE_FACTOR.JPL.MSCNv02CRI.nc'
+
+grace_table:
+  'https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv'

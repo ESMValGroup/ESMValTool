@@ -39,14 +39,11 @@ from esmvaltool.cmorizers.obs import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _make_monthly_data_contiguous(in_file, out_file, raw_varname):
-    original = xr.open_dataset(in_file)
-    original = original[raw_varname]
+def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
+    original = xr.open_dataset(in_file)[raw_varname]
 
-    response = urllib.request.urlopen(
-        'https://podaac-tools.jpl.nasa.gov/drive/files/\
-       allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv')
-    grace_months_table = pd.read_csv(response)
+    with urllib.request.urlopen(cfg['grace_table']) as response:
+        grace_months_table = pd.read_csv(response)
 
     # Construct the time axis
     time_axis = []
@@ -56,22 +53,14 @@ def _make_monthly_data_contiguous(in_file, out_file, raw_varname):
         time_axis.append(start_date)
         start_date += relativedelta.relativedelta(months=1)
 
-    # Determine grid shape from original file
-    gridshape = list(original.shape[1:])
-    # Add the time dimension to the shape
-    gridshape.insert(0, len(time_axis))
-    gridshape = tuple(gridshape)
-
     # Initialize data array with nan
-    data = np.ones(gridshape)
+    data = np.ones((len(time_axis),) + original.shape[1:])
     data[:] = np.nan
 
     # Now fill the array with grace data
     for nmonth, recindex in enumerate(
             grace_months_table['GRACE/GRACE-FO record index']):
-        if np.isnan(recindex):  # no grace data so skip
-            continue
-        else:
+        if not np.isnan(recindex):
             data[nmonth, :, :] = original[int(recindex - 1), :, :].data
     data_array = xr.DataArray(data,
                               coords={
@@ -162,7 +151,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         logger.info("Structure monthly data")
         out_file = os.path.join(cfg['work_dir'],
                                 'grace_monthly_data_contiguous.nc')
-        _make_monthly_data_contiguous(in_file, out_file, var['raw'])
+        _make_monthly_data_contiguous(in_file, out_file, var['raw'], cfg)
         in_file = out_file
         out_file = os.path.join(
             cfg['work_dir'],
