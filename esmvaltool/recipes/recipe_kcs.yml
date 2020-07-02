@@ -24,6 +24,10 @@ cmip5: &cmip5
 
   - {dataset: CanESM2, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p1", start_year: 1961, end_year: 2099}
 
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+
   - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: "r(1:10)i1p1", start_year: 1961, end_year: 2099}
 
   - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
@@ -31,8 +35,6 @@ cmip5: &cmip5
   - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
 
 target: &target
-  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
-  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
   - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
 
 
@@ -114,7 +116,7 @@ diagnostics:
         n_samples: 8
         scenarios:
           ML_MOC:
-            description: "Moderate warming / low changes in seasonal temperature & precipitation"
+            description: "Moderate warming / low changes in seasonal temperature & precipitation, mid-century"
             global_dT: 1.0
             scenario_year: 2050
             resampling_period: [2021, 2050]
@@ -127,7 +129,7 @@ diagnostics:
             tas_summer_future: [0, 50]
 
           ML_EOC:
-            description: "Moderate warming / low changes in seasonal temperature & precipitation"
+            description: "Moderate warming / low changes in seasonal temperature & precipitation, mid-century"
             global_dT: 1.5
             scenario_year: 2085
             resampling_period: [2031, 2060]
@@ -140,7 +142,7 @@ diagnostics:
             tas_summer_future: [0, 50]
 
           WH_EOC:
-            description: "High warming / high changes in seasonal temperature & precipitation"
+            description: "High warming / high changes in seasonal temperature & precipitation, end of century"
             global_dT: 3.0
             scenario_year: 2085
             resampling_period: [2066, 2095]
