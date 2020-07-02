@@ -1,0 +1,25 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: GRACE
+  project_id: OBS6
+  tier: 3
+  version: '1'
+  modeling_realm: satellite
+  source: ''
+  reference: 'grace'
+  comment: |
+    'Grace'
+
+# Variables to CMORize
+variables:
+  lweGrace:
+    mip: Lmon
+    raw: lwe_thickness
+    file: 'GRCTellus.JPL.200204_202003.GLO.RL06M.MSCNv02CRI.nc'
+
+auxfiles:
+  land_mask:
+    'LAND_MASK.CRI.nc'
+  scale_factor:
+    'CLM4.SCALE_FACTOR.JPL.MSCNv02CRI.nc'
