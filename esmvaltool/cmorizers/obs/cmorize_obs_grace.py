@@ -24,6 +24,7 @@ Modification history
 import logging
 import os
 import urllib
+from cf_units import Unit
 from copy import deepcopy
 from datetime import datetime
 
@@ -125,6 +126,12 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
     # Setting time right
     cube = regrid_time(cube, 'mon')
+
+    # Set calendar to gregorian instead of proleptic gregorian
+    # matplotlib does not correctly format years in proleptic gregorian
+    old_unit = cube.coord('time').units
+    new_unit = Unit(old_unit.origin, calendar='gregorian')
+    cube.coord('time').units = new_unit
 
     logger.info("Saving CMORized cube for variable %s", cube.var_name)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
