@@ -36,6 +36,7 @@ def main(cfg):
     if 'ERA-Interim-Land' in grouped_input_data.keys():
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
+
     plt.clf()
     fig = plt.figure(figsize=(10, 4))
     ax1 = fig.add_subplot()
@@ -43,6 +44,7 @@ def main(cfg):
         dataset_cfg = grouped_input_data[dataset][0]
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
+        import IPython;IPython.embed()
         iris.quickplot.plot(cube, label=datasetnames[dataset])
     plt.legend()
     plt.xticks(rotation=90)
@@ -62,9 +64,7 @@ def main(cfg):
     if dataset_cfg['variable_group'] in YLIMS:
         ax1.set_ylim(YLIMS[dataset_cfg['variable_group']])
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}\
-                    _{dataset_cfg['start_year']}\
-                    -{dataset_cfg['end_year']}"
+    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
