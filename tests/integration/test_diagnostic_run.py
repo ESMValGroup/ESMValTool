@@ -135,7 +135,7 @@ def test_diagnostic_run(tmp_path, script_file, script):
     with arguments(
             'esmvaltool',
             'run',
-            '-c',
+            '--config_file',
             config_user_file,
             str(recipe_file),
     ):
