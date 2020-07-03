@@ -7,7 +7,6 @@ import subprocess
 import tempfile
 
 import matplotlib
-matplotlib.use("Agg")  # noqa
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml

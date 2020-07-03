@@ -14,8 +14,8 @@ documentation:
 
 preprocessors:
   rough_cutout:
-    extract_region: &region
-      start_longitude: -0.75
+    extract_region:
+      start_longitude: 0
       end_longitude: 6.75
       start_latitude: 47.25
       end_latitude: 52.5
@@ -47,5 +47,5 @@ diagnostics:
       script:
         script: hydrology/wflow.py
         basin: Meuse
-        region: *region
         dem_file: 'wflow/wflow_dem_Meuse.nc'
+        regrid: area_weighted
