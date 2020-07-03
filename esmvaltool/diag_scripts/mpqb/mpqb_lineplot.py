@@ -44,7 +44,7 @@ def main(cfg):
         dataset_cfg = grouped_input_data[dataset][0]
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
-        import IPython;IPython.embed()
+
         iris.quickplot.plot(cube, label=datasetnames[dataset])
     plt.legend()
     plt.xticks(rotation=90)
