@@ -2,12 +2,10 @@
 name: esmvaltool
 channels:
   - conda-forge
-  - esmvalgroup
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
   - gdal
-  - esmvalcore>=2.0.0b9,<2.1
   - esmf
   # Non-Python dependencies
   - cdo>=1.9.7
@@ -21,5 +19,4 @@ dependencies:
   - r-base>=3.5
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
   - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
-  - julia>=1.0.0
   - libblas=3.8.0=12_openblas  # Does build 13_openblas not seem to work with R requirements

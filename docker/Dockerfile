@@ -2,16 +2,16 @@ FROM esmvalgroup/esmvalcore:latest
 
 COPY . /esmvaltool
 WORKDIR /esmvaltool
-RUN ls
 
 # install environment packages
-RUN conda env update -n base environment.yml
+RUN apt install julia -y
+RUN conda env update --name base --file environment.yml && conda clean --all -y
 RUN pip install .
 RUN Rscript esmvaltool/install/R/setup.R
 RUN julia esmvaltool/install/Julia/setup.jl
 
 # run tests
-RUN esmvaltool -h
+RUN esmvaltool version
 
 ENTRYPOINT ["esmvaltool"]
 CMD ["-h"]
