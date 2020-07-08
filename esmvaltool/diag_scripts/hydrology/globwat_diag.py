@@ -50,27 +50,52 @@ def change_data_type(cube):
         coord.guess_bounds()
     return cube
 
-def get_input_cubes(metadata):
-    """Return a dict with all (preprocessed) input files."""
-    provenance = create_provenance_record()
-    all_vars = {}
-    for attributes in metadata:
-        short_name = attributes['short_name']
-        if short_name in all_vars:
-            raise ValueError(
-                f"Multiple input files found for variable '{short_name}'.")
-        filename = attributes['filename']
-        logger.info("Loading variable %s", short_name)
-        cube = iris.load_cube(filename)
-        #set filling values to -9999
-        cube.data.set_fill_value(-9999)
-        #change cube dtype to float32
-        all_vars[short_name] = change_data_type(cube)
-        # Since the code faces memory error escaped change to floaat 32
-        # all_vars[short_name] = cube
-        provenance['ancestors'].append(filename)
-    return all_vars, provenance
+# def get_input_cubes(metadata):
+#     """Return a dict with all (preprocessed) input files."""
+#     provenance = create_provenance_record()
+#     all_vars = {}
+#     for attributes in metadata:
+#         short_name = attributes['short_name']
+#         if short_name in all_vars:
+#             raise ValueError(
+#                 f"Multiple input files found for variable '{short_name}'.")
+#         filename = attributes['filename']
+#         logger.info("Loading variable %s", short_name)
+#         cube = iris.load_cube(filename)
+#         #set filling values to -9999
+#         cube.data.set_fill_value(-9999)
+#         #change cube dtype to float32
+#         all_vars[short_name] = change_data_type(cube)
+#         # Since the code faces memory error escaped change to floaat 32
+#         # all_vars[short_name] = cube
+#         provenance['ancestors'].append(filename)
+#     return all_vars, provenance
 
+def get_input_cubes(metadata): 
+    """Return a dict with all (preprocessed) input files.""" 
+    provenance = create_provenance_record() 
+    all_vars = {} 
+    time_step = {} 
+    for attributes in metadata: 
+        short_name = attributes['short_name'] 
+        time_step['mip'] = attributes['mip'] 
+        for key,value in time_step.items():  
+            if value not in time_step.values():  
+                time_step[key] = value  
+        if short_name in all_vars: 
+            raise ValueError( 
+                f"Multiple input files found for variable '{short_name}'.") 
+        filename = attributes['filename'] 
+        logger.info("Loading variable %s", short_name) 
+        cube = iris.load_cube(filename) 
+        #set filling values to -9999 
+        cube.data.set_fill_value(-9999) 
+        #change cube dtype to float32 
+        all_vars[short_name] = change_data_type(cube) 
+        # Since the code faces memory error escaped change to floaat 32 
+        # all_vars[short_name] = cube 
+        provenance['ancestors'].append(filename)     
+    return all_vars, provenance, time_step                                                                                                                                       
 
 def _get_extra_info(cube):
     """Get start/end time and origin of cube.
@@ -172,7 +197,7 @@ def main(cfg):
     # Run the script and use print(input_metadata) in the log.txt as input_metadata
     print(input_metadata)
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
-        all_vars, provenance = get_input_cubes(metadata)
+        all_vars, provenance, time_step = get_input_cubes(metadata)
         
         cube = all_vars['pr']  
         logger.info("Potential evapotransporation not available, deriving and adding to all_vars dictionary")
@@ -190,17 +215,14 @@ def main(cfg):
         pr.data = pr.core_data() / 1000.
         pet.units = pet.units / 'kg m-3'
         pet.data = pet.core_data() /1000.
-        for mip in 'Amon', 'day':
-            # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
-            if mip == 'Amon':
-                pr.convert_units('mm month-1')
-                pet.convert_units('mm month-1')
-                print(mip)
-            # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
-            elif mip == 'day':
-                pr.convert_units('mm day-1')
-                pet.convert_units('mm day-1') 
-                print(mip)
+        # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
+        if time_step['mip'] == 'Amon':
+            pr.convert_units('mm month-1')
+            pet.convert_units('mm month-1')
+        # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
+        elif time_step['mip'] == 'day':
+            pr.convert_units('mm day-1')
+            pet.convert_units('mm day-1') 
 
         # Adjust longitude coordinate to GlobWat convention
         # for cube in [pr, pet]:
