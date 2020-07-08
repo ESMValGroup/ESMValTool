@@ -1,16 +1,5 @@
 """Utility script for inspecting and converting ncl color tables."""
 import logging
-import os
-import subprocess
-import tempfile
-
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
-import yaml
-from jinja2 import Template
-
-from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +36,7 @@ def load_ncl_color_map(name, colorpath):
         return out
 
     filename = "{0}/{1}.rgb".format(colorpath, name)
+    import os
     if not os.path.exists(filename):
         raise ValueError("Path {0} does not exist.".format(filename))
     with open(filename, 'r') as ncl_color_map:
@@ -73,13 +63,13 @@ def get_color_map(name, colorpath):
 
 def list_ncl_color_maps(colorpath):
     """Get list of all available ncl color maps."""
-    from os import walk
+    import os
 
     def _format(name):
         return os.path.splitext(os.path.basename(name))[0]
 
     out = []
-    for (_, _, filenames) in walk(colorpath):
+    for (_, _, filenames) in os.walk(colorpath):
         out.extend([
             _format(filename) for filename in filenames
             if 'rgb' in filename.split('.')
@@ -90,6 +80,7 @@ def list_ncl_color_maps(colorpath):
 def plot_example_for_colormap(name, colorpath, outdir='./'):
     """Create plots of given color map using python."""
     logger.info("Plotting example for '%s'", name)
+    import os
     import matplotlib
     matplotlib.use("Agg")  # noqa
     import matplotlib.pyplot as plt
@@ -123,6 +114,7 @@ def main_plot_ncl_cm(colorpath, outpath):
     import glob
     import subprocess
     import tempfile
+    import os
     for path in glob.glob(colorpath + "/*rgb"):
         _, tail = os.path.split(path)
         list_of_snippets.append(t_color_snippet.render(path=path, name=tail))
@@ -149,6 +141,7 @@ class ColorTables():
         self._outpath = None
 
     def _prepare_paths(self, colorpath, outpath):
+        import os
         if colorpath is None:
             from esmvaltool.diag_scripts.shared.plot  \
                 import __file__ as plot_path
