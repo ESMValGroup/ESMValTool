@@ -1,6 +1,16 @@
 """Utility script for inspecting and converting ncl color tables."""
 import logging
 import os
+import subprocess
+import tempfile
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import yaml
+from jinja2 import Template
+
+from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 
 logger = logging.getLogger(__name__)
 
