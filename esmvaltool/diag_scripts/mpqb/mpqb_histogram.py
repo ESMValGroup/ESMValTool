@@ -47,7 +47,8 @@ def _plot_histograms(hists, cfg, grouped_input_data):
     histtype = cfg.pop('histtype', 'bar')  # default type is 'bar'
     dataset = None  # needed to avoid pylint error
 
-    datasetnames = read_mpqb_cfg()['datasetnames']
+    mpqb_cfg = read_mpqb_cfg()
+    datasetnames = mpqb_cfg['datasetnames']
 
     plt.clf()
     fig, ax1 = plt.subplots(1, 1)
@@ -64,6 +65,7 @@ def _plot_histograms(hists, cfg, grouped_input_data):
                 hist["hist"],
                 width,
                 label=datasetnames[dataset],
+                color=mpqb_cfg['datasetcolors'][dataset],
             )
             plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha=0.3)
             plt.legend()
@@ -73,6 +75,7 @@ def _plot_histograms(hists, cfg, grouped_input_data):
                      weights=hist["hist"],
                      label=datasetnames[dataset],
                      histtype='step',
+                     color=mpqb_cfg['datasetcolors'][dataset],
                      linewidth=2)
             handles, labels = ax1.get_legend_handles_labels()
             handles = [Line2D([], [], c=h.get_edgecolor()) for h in handles]

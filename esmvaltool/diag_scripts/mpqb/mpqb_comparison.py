@@ -91,6 +91,9 @@ class MPQBpair:
         for metric in self.metrics:
             self.metrics[metric] = _array2cube(self.metrics[metric],
                                                self.template)
+            # Set units to one for pearsonr
+            if metric=='pearsonr':
+                self.metrics[metric].units = '1'
 
     def plot(self):
         """plot."""
@@ -117,7 +120,7 @@ class MPQBpair:
             plot_kwargs = metrics_plot_dictionary[metricname]
             # Overwrite plot title to be dataset name
             plot_kwargs['title'] = self.ds1
-            mpqb_mapplot(cube, plot_file, **plot_kwargs)
+            mpqb_mapplot(cube, cfg, plot_file, **plot_kwargs)
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                         pformat(provenance_record))

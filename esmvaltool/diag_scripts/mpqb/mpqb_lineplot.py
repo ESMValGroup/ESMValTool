@@ -12,17 +12,18 @@ from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
 from mpqb_plots import read_mpqb_cfg
 
-YLIMS = {'sm': (0.22, 0.28), 'sm1m': (0.22, 0.28)}
-
 logger = logging.getLogger(os.path.basename(__file__))
 
 
 def main(cfg):
     """Create lineplot."""
+    ylims = [cfg.pop('y0', None), cfg.pop('y1', None)]
+
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    datasetnames = read_mpqb_cfg()['datasetnames']
+    mpqb_cfg = read_mpqb_cfg()
+    datasetnames = mpqb_cfg['datasetnames']
 
     grouped_input_data = group_metadata(input_data, 'dataset', sort='dataset')
 
@@ -45,7 +46,7 @@ def main(cfg):
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
 
-        iris.quickplot.plot(cube, label=datasetnames[dataset])
+        iris.quickplot.plot(cube, label=datasetnames[dataset], color=mpqb_cfg['datasetcolors'][dataset])
     plt.legend()
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
@@ -60,9 +61,7 @@ def main(cfg):
     ax1.xaxis.set_major_formatter(years_fmt)
     ax1.grid(True, which='major', axis='x')
 
-    # set ylims if specified
-    if dataset_cfg['variable_group'] in YLIMS:
-        ax1.set_ylim(YLIMS[dataset_cfg['variable_group']])
+    ax1.set_ylim(ylims)
 
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 

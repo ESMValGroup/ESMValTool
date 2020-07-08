@@ -86,7 +86,7 @@ def main(cfg):
                 plot_kwargs = metrics_plot_dictionary[metricname]
                 # Overwrite plot title to be dataset name
                 plot_kwargs['title'] = dataset
-                mpqb_mapplot(resultcube, plot_file, **plot_kwargs)
+                mpqb_mapplot(resultcube, dataset_cfg, plot_file, **plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
 

@@ -67,7 +67,7 @@ def _parse_cmap(plotkwargs):
     return plotkwargs
 
 
-def mpqb_mapplot(cube, filename, **plotkwargs):
+def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     """Plot maps."""
     fig = plt.figure(dpi=200)
     fig.add_subplot(projection=iris.plot.default_projection(cube))
@@ -90,7 +90,7 @@ def mpqb_mapplot(cube, filename, **plotkwargs):
     colorbar.ax.tick_params(labelsize=8)
 
     # Add timeperiod to plot title
-    timeperiod = _get_plottitle_timeperiod(cube)
+    timeperiod = f"{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
     plt.title(f"{plottitle} {timeperiod}")
     fig.savefig(filename, bbox_inches='tight')
     plt.close(fig)
