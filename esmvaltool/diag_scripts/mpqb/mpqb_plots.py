@@ -20,15 +20,6 @@ def read_mpqb_cfg():
     return mpqb_cfg
 
 
-def _get_plottitle_timeperiod(cube):
-    time_coord = cube.coord('time')
-    time_asdatetime = time_coord.units.num2date(time_coord.bounds).flatten()
-    starttime = min(time_asdatetime) + datetime.timedelta(days=1)
-    endtime = max(time_asdatetime) - datetime.timedelta(days=1)
-    start, end = starttime.year, endtime.year
-    return f"{start} - {end}"
-
-
 def _parse_cmap(plotkwargs):
     # replace the cmap key with the cmap object,
     # and add grey shading for masked values
