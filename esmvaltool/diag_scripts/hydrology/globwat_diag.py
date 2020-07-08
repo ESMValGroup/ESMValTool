@@ -2,13 +2,10 @@
 import logging
 from pathlib import Path
 
-import iris
-from iris.pandas import as_data_frame
-import dask.array as da
-import numpy
-import pandas as pd
 import calendar
-import os 
+import os.path 
+import iris
+from iris.pandas import as_data_frame 
 
 import subprocess
 from esmvalcore import preprocessor as preproc
@@ -69,6 +66,8 @@ def get_input_cubes(metadata):
         cube.data.set_fill_value(-9999)
         #change cube dtype to float32
         all_vars[short_name] = change_data_type(cube)
+        # Since the code faces memory error escaped change to floaat 32
+        # all_vars[short_name] = cube
         provenance['ancestors'].append(filename)
     return all_vars, provenance
 
@@ -110,7 +109,7 @@ def _shift_era5_time_coordinate(cube):
     time.guess_bounds()
     return cube
 
-def get_year_month_day_for_output_name(cube): 
+def get_month_day_for_output_name(cube): 
     """get month and day number for output name."""
     # get start year and end year  
     coord_time = cube.coord('time') 
@@ -138,19 +137,19 @@ def make_output_name(cube):
     months , days = get_month_day_for_output_name(cube) 
     for mip in 'Amon', 'day': 
         if mip == 'Amon': 
-            for i in range (len(months)): 
-                for shortname in ['pr', 'pet']: 
+            for i in range(0, len(months)):
+                for shortname in ['pr', 'pet']:
                     if shortname == 'pr':
-                        monthly_pr.append('prc'+ str(months[i]) + 'wb.asc')
+                        monthly_pr.append('prc'+ str(months[i]) + 'wb')
                     else:
-                        monthly_pet.append('eto'+ str(months[i]) + 'wb.asc')           
+                        monthly_pet.append('eto'+ str(months[i]) + 'wb')           
         elif mip == 'day':
-            for i in range(len(days)):
-                for shortname in ['pr', 'pet']: 
+            for i in range(0, len(days)):
+                for shortname in ['pr', 'pet']:
                     if shortname == 'pr':
-                        daily_pr.append('prc'+ str(days[i]) + 'wb.asc')
+                        daily_pr.append('prc'+ str(days[i]) + 'wb')
                     else:
-                        daily_pet.append('eto'+ str(days[i]) + 'wb.asc')
+                        daily_pet.append('eto'+ str(days[i]) + 'wb')
     output_name['pr']['Amon'] = monthly_pr
     output_name['pr']['day'] = daily_pr
     output_name['pet']['Amon']  = monthly_pet
@@ -175,33 +174,46 @@ def main(cfg):
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
         
-        pr = all_vars['pr']
-                
-        logger.info("Potential evapotransporation not available, deriving")
-        pet = debruin_pet(
+        cube = all_vars['pr']  
+        logger.info("Potential evapotransporation not available, deriving and adding to all_vars dictionary")
+        all_vars.update(pet = debruin_pet(
             psl=all_vars['psl'],
             rsds=all_vars['rsds'],
             rsdt=all_vars['rsdt'],
             tas=all_vars['tas'],
-        )
-        logger.info("Converting units")
+        ))
+
+        logger.info("Converting units")      
+        pr = all_vars['pr']
+        pet = all_vars['pet']
         pr.units = pr.units / 'kg m-3'
         pr.data = pr.core_data() / 1000.
-     
         pet.units = pet.units / 'kg m-3'
         pet.data = pet.core_data() /1000.
-            
-        # cube = all_vars['pr']  
-
-        # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
         for mip in 'Amon', 'day':
+            # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
             if mip == 'Amon':
-                all_vars['pr'] = pr.convert_units('mm month-1')
-                all_vars['pet'] = pet.convert_units('mm month-1')
+                pr.convert_units('mm month-1')
+                pet.convert_units('mm month-1')
+                print(mip)
             # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
             elif mip == 'day':
-                all_vars['pr'] = pr.convert_units('mm day-1')
-                all_vars['pet'] = pet.convert_units('mm day-1')
+                pr.convert_units('mm day-1')
+                pet.convert_units('mm day-1') 
+                print(mip)
+
+        # Adjust longitude coordinate to GlobWat convention
+        # for cube in [pr, pet]:
+        #     print(cube)
+        #     points = cube.coord('longitude').points
+        #     cube.coord('longitude').points = (points + 180) % 360 - 180
+        #     # latitudes decreasing
+        #     cube = cube[:, ::-1, ...]
+
+            # cube.coord('longitude').points = (cube.coord('longitude').points +
+            #                                 180) % 360 - 180
+            # # latitudes decreasing
+            # cube = cube[:, ::-1, ...]
 
         # output_file = get_diagnostic_filename(get_output_stem_monthly(cube),cfg, 'asc')
         #TODO: the input data has 6 rows as a header which then be skiped by the model
@@ -211,21 +223,52 @@ def main(cfg):
         start_year = coord_time.cell(0).point.year 
         end_year = coord_time.cell(-1).point.year 
         for nyear in range (start_year , end_year+1):
-            path = os.path.join('GlobWat_Inputs', str(dataset),str(nyear))
+            # path = os.path.join('GlobWat_Inputs', str(dataset),str(nyear))
+            data_dir = Path(f"{dataset}/{nyear}")
+            data_dir.mkdir(parents=True, exist_ok=True)
             for key in ['pr', 'pet']:
                 for mip in ['Amon', 'day']:
-                    for i in range(len(output_name[key][mip])):
-                        key_cube = all_vars[key]
-                        for sub_cube in key_cube.slices_over('time'): 
-                            frame = iris.pandas.as_data_frame(sub_cube, copy=True)
-                            print(frame) 
-                            final_path = os.path.join(path, output_name[key][mip][i])
-                            # Path(output_file[i]).parent.mkdir(exist_ok=True)
-                            frame.to_csv(os.makedirs(final_path),
-                                        sep=' ',
-                                        na_rep='-9999',
-                                        float_format='%.1f'
-                                        ) 
+                    if mip == 'Amon':
+                        output_name_amon = output_name[key]['Amon']
+                    # for var_name in output_name: 
+                    #     for time_step in output_name[var_name]: 
+                    #         print(output_name[var_name][time_step]) 
+                        for i in range(len(output_name_amon)):
+                            key_cube = all_vars[key]
+                            for sub_cube in key_cube.slices_over('time'): 
+                                frame = iris.pandas.as_data_frame(sub_cube, copy=True)
+                                # maybe a way to save data# iris.experimental.raster.export_geotiff(frame, output_name_amon[i])
+                                # final_path = os.path.join(path, output_name[key][mip][i])
+                                # Path(output_file[i]).parent.mkdir(exist_ok=True)
+                                # os.makedirs(final_path)
+                                file_name = output_name_amon[i]
+                                frame.to_csv(data_dir / f"{file_name}.asc",
+                                            sep=' ',
+                                            na_rep='-9999',
+                                            float_format='%.1f',
+                                            index=False
+                                            ) 
+                                iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
+
+                #    TODO: the code faces memory error while running for daily data, need to fix 
+                    # elif mip == 'day':
+                    #     output_name_day = output_name[key]['day']
+                    # # for var_name in output_name: 
+                    # #     for time_step in output_name[var_name]: 
+                    # #         print(output_name[var_name][time_step]) 
+                    #     for i in range(len(output_name_day)):
+                    #         key_cube = all_vars[key]
+                    #         for sub_cube in key_cube.slices_over('time'): 
+                    #             frame = iris.pandas.as_data_frame(sub_cube, copy=True)
+                    #             print(frame) 
+                    #             # final_path = os.path.join(path, output_name[key][mip][i])
+                    #             # Path(output_file[i]).parent.mkdir(exist_ok=True)
+                    #             # os.makedirs(final_path)
+                    #             frame.to_csv(output_name_day[i],
+                    #                         sep=' ',
+                    #                         na_rep='-9999',
+                    #                         float_format='%.1f'
+                    #                         ) 
             # # Store provenance
             # with ProvenanceLogger(cfg) as provenance_logger:
             #     provenance_logger.log(output_file, provenance)
