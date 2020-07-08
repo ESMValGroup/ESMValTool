@@ -24,7 +24,6 @@ Modification history
 import logging
 import os
 import urllib
-from cf_units import Unit
 from copy import deepcopy
 from datetime import datetime
 
@@ -32,6 +31,7 @@ import iris
 import numpy as np
 import pandas as pd
 import xarray as xr
+from cf_units import Unit
 from dateutil import relativedelta
 
 from esmvalcore.preprocessor import regrid_time
