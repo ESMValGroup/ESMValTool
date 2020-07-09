@@ -103,9 +103,8 @@ def zmnam_calc(da_fname, outdir, src_props):
             mid_mon.append(idate)
 
         # Save last day of the month
-        if ((idate == len(date) - 1)
-            or (date[idate].month == mon
-                and date[idate + 1].month != mon)):
+        if idate == len(date) - 1 or (date[idate].month == mon and
+                                      date[idate + 1].month != mon):
             end_mon.append(idate)
 
         idate += 1
