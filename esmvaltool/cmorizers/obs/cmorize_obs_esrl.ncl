@@ -31,8 +31,8 @@
 ; SMO,    American Samoa,       -14.2474,      189.4356,        42
 ; SPO,    South Pole,           -90.00,        301.0,         2840
 ;
-;    (3) This list must be manually created (format: comma separated values) and
-;    saved to the path + filename given by "FILE_STAT" below.
+;    (3) This list must be manually created (format: comma separated values)
+;    and saved to the path + filename given by "FILE_STAT" below.
 ;
 ;    (4) Check the period covered by the data and give it below as YEAR1 and
 ;    YEAR2.
