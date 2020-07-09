@@ -21,31 +21,9 @@ documentation:
 
 
 datasets:
-  # working datasets
-  # - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: HadGEM2-AO, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-
   - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
   - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
-  #####
-  # Data with Errors right now -June 2018
-  ###
-  # Problem with times
-#  - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-
-  # Unstructured grids
- # - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
- # - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#  - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#  - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-
-# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
 
 preprocessors:
   # --------------------------------------------------
@@ -55,6 +33,7 @@ preprocessors:
     custom_order: true
     area_statistics:
       operator: mean
+      fx_variables: [areacello, ]
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -66,6 +45,7 @@ preprocessors:
       scheme: linear_horizontal_extrapolate_vertical
     area_statistics:
       operator: mean
+#      fx_files: [areacello, ]
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -79,6 +59,7 @@ preprocessors:
       end_latitude: 80.
     area_statistics:
       operator: mean
+#      fx_files: [areacello, ]
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -95,6 +76,7 @@ preprocessors:
       end_latitude: 80.
     area_statistics:
       operator: mean
+#      fx_files: [areacello, ]
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -236,6 +218,7 @@ preprocessors:
   prep_profile_1: # For a global profile
     area_statistics:
       operator: mean
+#      fx_files: [areacello, ]
 
   prep_profile_2: # For a regional profile
     extract_region:
@@ -248,6 +231,7 @@ preprocessors:
       z_max: 100.
     area_statistics:
       operator: mean
+#      fx_files: [areacello, ]
 
 
   # --------------------------------------------------
@@ -281,7 +265,7 @@ diagnostics:
       tos: # Temperature ocean surface
         preprocessor: prep_timeseries_1
     scripts:
-      Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries
+      Global_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_2:
@@ -290,7 +274,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_2
     scripts:
-      Global_Ocean_DepthLayers_mean_timeseries: &Global_Ocean_DepthLayers_mean_timeseries
+      Global_Ocean_DepthLayers_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_3:
@@ -299,7 +283,7 @@ diagnostics:
       tos: # Temperature ocean surface
         preprocessor: prep_timeseries_3
     scripts:
-      Regional_Ocean_Surface_mean_timeseries: &Regional_Ocean_Surface_mean_timeseries
+      Regional_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_4:
@@ -308,7 +292,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_4
     scripts:
-      Regional_Ocean_DepthLayers_mean_timeseries: &Regional_Ocean_DepthLayers_mean_timeseries
+      Regional_Ocean_DepthLayers_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_5:
@@ -317,7 +301,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_5
     scripts:
-      Global_VolumeAverage_Ocean_Physics_timeseries: &Global_VolumeAverage_Ocean_Physics_timeseries
+      Global_VolumeAverage_Ocean_Physics_timeseries:
         script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_6:
@@ -326,7 +310,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_6
     scripts:
-      Regional_VolumeAverage_Ocean_Physics_timeseries: &Regional_VolumeAverage_Ocean_Physics_timeseries
+      Regional_VolumeAverage_Ocean_Physics_timeseries:
         script: ocean/diagnostic_timeseries.py
 
   diag_timeseries_7:
@@ -335,7 +319,7 @@ diagnostics:
       thetao: # Temperature ocean 3D averaged over top 100m
         preprocessor: prep_timeseries_7
     scripts:
-      Regional_Volume100mAverage_Ocean_Physics_timeseries: &Regional_Volume100mAverage_Ocean_Physics_timeseries
+      Regional_Volume100mAverage_Ocean_Physics_timeseries:
         script: ocean/diagnostic_timeseries.py
 
   # --------------------------------------------------
@@ -347,7 +331,7 @@ diagnostics:
       tos: # Temperature ocean surface
         preprocessor: prep_map_1
     scripts:
-      Global_Ocean_Surface_mean_map: &Global_Ocean_Surface_mean_map
+      Global_Ocean_Surface_mean_map:
         script: ocean/diagnostic_maps.py
 
   diag_map_2:
@@ -356,7 +340,7 @@ diagnostics:
       tos: # Temperature ocean surface
         preprocessor: prep_map_2
     scripts:
-      Global_Ocean_Surface_regrid_map: &Global_Ocean_Surface_regrid_map
+      Global_Ocean_Surface_regrid_map:
         script: ocean/diagnostic_maps.py
 
   diag_map_3:
@@ -365,7 +349,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_3
     scripts:
-      Global_Ocean_DepthLayers_regrid_map: &Global_Ocean_DepthLayers_regrid_map
+      Global_Ocean_DepthLayers_regrid_map:
         script: ocean/diagnostic_maps.py
 
   diag_map_4:
@@ -374,7 +358,7 @@ diagnostics:
       tos: # Temperature ocean surface
         preprocessor: prep_map_4
     scripts:
-      Regional_Ocean_Surface_regrid_map: &Regional_Ocean_Surface_regrid_map
+      Regional_Ocean_Surface_regrid_map:
         script: ocean/diagnostic_maps.py
 
   diag_map_5:
@@ -383,7 +367,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_5
     scripts:
-      Regional_Ocean_DepthLayers_mean_map: &Regional_Ocean_DepthLayers_mean_map
+      Regional_Ocean_DepthLayers_mean_map:
         script: ocean/diagnostic_maps.py
 
   # --------------------------------------------------
@@ -395,7 +379,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_1
     scripts:
-      Regional_Ocean_DepthLayers_regrid_transect: &Regional_Ocean_DepthLayers_regrid_transect
+      Regional_Ocean_DepthLayers_regrid_transect:
         script: ocean/diagnostic_transects.py
 
   diag_transect_2:
@@ -404,7 +388,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_2
     scripts:
-      Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect: &Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect
+      Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect:
         script: ocean/diagnostic_transects.py
 
   diag_transect_3:
@@ -413,7 +397,7 @@ diagnostics:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_3
     scripts:
-      Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect: &Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect
+      Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect:
         script: ocean/diagnostic_transects.py
 
 
@@ -426,7 +410,7 @@ diagnostics:
       thetao: # Temperature ocean surface
         preprocessor: prep_profile_1
     scripts:
-      Global_Ocean_mean_profile: &Global_Ocean_mean_profile
+      Global_Ocean_mean_profile:
         script: ocean/diagnostic_profiles.py
 
   diag_profile_2:
@@ -435,5 +419,5 @@ diagnostics:
       thetao: # Temperature ocean surface
         preprocessor: prep_profile_2
     scripts:
-      Regional_Ocean_mean_profile: &Regional_Ocean_mean_profile
+      Regional_Ocean_mean_profile:
         script: ocean/diagnostic_profiles.py

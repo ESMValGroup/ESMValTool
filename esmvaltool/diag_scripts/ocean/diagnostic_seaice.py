@@ -289,7 +289,7 @@ def make_polar_map(
         ax1 = plt.subplot(111, projection=cartopy.crs.SouthPolarStereo())
         ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
 
-    linrange = np.linspace(0., 100., 21.)
+    linrange = np.linspace(0., 100., 21)
     qplt.contourf(cube, linrange, cmap=cmap, linewidth=0, rasterized=True)
     plt.tight_layout()
 

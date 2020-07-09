@@ -228,6 +228,14 @@ def make_model_vs_obs_plots(
                 cmap='bwr',
                 title=' '.join([model, 'over', obs]),
                 log=True)
+        else:
+            add_map_subplot(
+                224,
+                cube224,
+                logspace4,
+                cmap='bwr',
+                title=' '.join([model, 'over', obs]),
+                log=True)
 
         # Add overall title
         fig.suptitle(long_name + ' [' + units + ']', fontsize=14)
@@ -362,9 +370,8 @@ def make_scatter(
     obs_filename: str
         the preprocessed observations file.
     """
-
     filenames = {'model': model_filename, 'obs': obs_filename}
-    logger.debug('make_model_vs_obs_plots: \t%s', filenames)
+
     # ####
     # Load the data for each layer as a separate cube
     layers = {}
@@ -376,9 +383,6 @@ def make_scatter(
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
             layers[layer] = True
-
-    logger.debug('layers: %s', layers)
-    logger.debug('cubes: %s', ', '.join(cubes))
 
     # ####
     # load names:
@@ -392,28 +396,37 @@ def make_scatter(
 
     # Make a plot for each layer
     for layer in layers:
-
         fig = plt.figure()
         fig.set_size_inches(7, 6)
 
         # Create the cubes
         model_data = np.ma.array(cubes['model'][layer].data)
         obs_data = np.ma.array(cubes['obs'][layer].data)
+        units = str(cubes['model'][layer].units)
 
         mask = model_data.mask + obs_data.mask
         model_data = np.ma.masked_where(mask, model_data).compressed()
         obs_data = np.ma.masked_where(mask, obs_data).compressed()
 
-        colours = 'gist_yarg'
         zrange = diagtools.get_array_range([model_data, obs_data])
         plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
 
         x_scale = 'log'
+        mask_neg = False
+        if np.min(zrange) < 0.:
+            if mask_neg:
+                mask = np.ma.masked_where(model_data <= 0., model_data).mask
+                mask += np.ma.masked_where(obs_data <= 0., obs_data).mask
+
+                model_data = np.ma.masked_where(mask, model_data).compressed()
+                obs_data = np.ma.masked_where(mask, obs_data).compressed()
+                zrange = diagtools.get_array_range([model_data, obs_data])
+                plotrange = [zrange[0], zrange[1], zrange[0], zrange[1]]
+            else:
+                x_scale = 'linear'
+
         if np.min(zrange) * np.max(zrange) < -1:
             x_scale = 'linear'
-        if np.min(zrange) < 0.:
-            logger.info('Skip scatter for %s. Min is < 0', long_name)
-            return
 
         pyplot.hexbin(
             model_data,
@@ -423,7 +436,7 @@ def make_scatter(
             bins='log',
             # extent=np.log10(plotrange),
             gridsize=50,
-            cmap=pyplot.get_cmap(colours),
+            cmap=pyplot.get_cmap('gist_yarg'),
             mincnt=0)
         cbar = pyplot.colorbar()
         cbar.set_label('log10(N)')
@@ -439,7 +452,7 @@ def make_scatter(
             add_diagonal=True,
             extent=plotrange)
 
-        pyplot.title(long_name)
+        pyplot.title(long_name+ ', '+units)
         pyplot.xlabel(model)
         pyplot.ylabel(obs)
 
