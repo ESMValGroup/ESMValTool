@@ -763,6 +763,7 @@ def main(diag_config):
                              model_name,
                              provenance_record_mod,
                              diag_config)
+
         if diag_config['write_netcdf']:
             model_cubes = [
                 c for c in global_tau_mod['grid'].values()
@@ -775,12 +776,8 @@ def main(diag_config):
             netcdf_path = get_diagnostic_filename(base_name_mod, diag_config)
             save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
             iris.save(save_cubes, netcdf_path)
-
-        else:
-            netcdf_path = None
-
-        with ProvenanceLogger(diag_config) as provenance_logger:
-            provenance_logger.log(netcdf_path, provenance_record_mod)
+            with ProvenanceLogger(diag_config) as provenance_logger:
+                provenance_logger.log(netcdf_path, provenance_record_mod)
 
     if diag_config['write_plots']:
         # multimodel agreement
