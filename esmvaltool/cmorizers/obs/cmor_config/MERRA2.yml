@@ -14,13 +14,23 @@ attributes:
 # Variables to CMORize
 variables:
   # monthly frequency
-  sm:
+#   sm_monthly:
+#     short_name: sm
+#     mip: Lmon
+#     raw: SFMC
+#     file: 'MERRA2_?00.tavgM_2d_lnd_Nx.{year}??.nc4'
+#   sm1m_monthly:
+#     short_name: sm1m
+#     mip: Lmon
+#     raw: RZMC
+#     file: 'MERRA2_?00.tavgM_2d_lnd_Nx.{year}??.nc4'
+  sm_daily:
     short_name: sm
-    mip: Lmon
+    mip: day
     raw: SFMC
-    file: 'MERRA2_?00.tavgM_2d_lnd_Nx.{year}??.nc4'
-  sm1m:
+    file: 'MERRA2_?00.tavgU_2d_lnd_Nx.{year}??.nc4'
+  sm1m_daily:
     short_name: sm1m
-    mip: Lmon
+    mip: day
     raw: RZMC
-    file: 'MERRA2_?00.tavgM_2d_lnd_Nx.{year}??.nc4'
+    file: 'MERRA2_?00.tavgU_2d_lnd_Nx.{year}??.nc4'

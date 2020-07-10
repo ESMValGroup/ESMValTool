@@ -32,7 +32,7 @@ yrs=({1980..2020})
 # Daily data
 for yr in ${yrs[@]}; do
    echo $yr
-   wget -r -nd -nH --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --directory-prefix=$1 --auth-no-challenge=on --keep-session-cookies -A '*_lnd_*.nc4' https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_DIURNAL/M2TUNXLND.5.12.4/${yr}/ -R "*.tmp"
+   wget -r -nd -nH --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --directory-prefix=$1 --auth-no-challenge=on --keep-session-cookies -A '*_lnd_*.nc4' https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2/M2T1NXLND.5.12.4/${yr}/ -R "*.tmp"
 done
 
 # Also download constants file
