@@ -80,8 +80,10 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     colorbar.set_label(cube.units)
     colorbar.ax.tick_params(labelsize=8)
 
+    # Get first entry from all datasets
+    sample_dataset = dataset_cfg['input_data'][next(iter(dataset_cfg['input_data']))]
     # Add timeperiod to plot title
-    timeperiod = f"{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
+    timeperiod = f"{sample_dataset['start_year']}-{sample_dataset['end_year']}"
     plt.title(f"{plottitle} {timeperiod}")
     fig.savefig(filename, bbox_inches='tight')
     plt.close(fig)
