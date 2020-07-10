@@ -43,7 +43,7 @@ users can now continue with :ref:`Running ESMValTool <running>`.
 Observations
 ============
 
-Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4mips (https://esgf-node.llnl.gov/projects/obs4mips/) and ana4mips (https://esgf.nccs.nasa.gov/projects/ana4mips/) projects, respectively. Their use is strongly recommended, when possible.
+Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4mips and ana4mips projects at the ESGF (e.g., https://esgf-data.dkrz.de/projects/esgf-dkrz/). Their use is strongly recommended, when possible.
 
 Other datasets not available in these archives can be obtained by the user from the respective sources and reformatted to the CF/CMOR standard. ESMValTool currently support two ways to perform this reformatting (aka 'cmorization'). The first is to use a cmorizer script to generate a local pool of reformatted data that can readily be used by the ESMValTool. The second way is to implement specific 'fixes' for your dataset. In that case, the reformatting is performed 'on the fly' during the execution of an ESMValTool recipe (note that one of the first preprocessor tasks is 'cmor checks and fixes'). Below, both methods are explained in more detail.
 
@@ -87,7 +87,7 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 (Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
 
-To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://esmvaltool.readthedocs.io/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
+To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
 
 
 Supported datasets
@@ -111,7 +111,7 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-LAI-FAPAR      | fapar (Lmon), lai (Lmon)                                                                             |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| CDS-SATELLITE-SOIL-MOISTURE  | sm (Lmon), smStderr (Lmon)                                                                           |   3  | NCL             |
+| CDS-SATELLITE-SOIL-MOISTURE  | sm (day), sm (Lmon)                                                                                  |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-UERRA                    | sm (E6hr)                                                                                            |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+

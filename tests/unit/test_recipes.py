@@ -20,7 +20,7 @@ def test_reference_tags(recipe_file):
         The tag '{tag}' is mentioned in recipe '{recipe}'.
         However, its reference file '{tag}.bibtex' is not available in {path}.
         Please check instructions on how to add references at
-        https://esmvaltool.readthedocs.io/en/latest/community/diagnostic.html#adding-references
+        https://docs.esmvaltool.org/en/latest/community/diagnostic.html#adding-references
     """)
     for tag in tags:
         bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
