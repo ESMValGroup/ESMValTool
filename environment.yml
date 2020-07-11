@@ -2,9 +2,11 @@
 name: esmvaltool
 channels:
   - conda-forge
+  - esmvalgroup
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
+  - esmvalcore>=2.0.0b9,<2.1
   - gdal
   - esmf
   # Non-Python dependencies
@@ -14,9 +16,7 @@ dependencies:
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
 
   # Multi language support:
-  - python>=3.6
   - ncl>=6.5.0  # this should always install 6.6.0 though
   - r-base>=3.5
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
   - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
-  - libblas=3.8.0=12_openblas  # Does build 13_openblas not seem to work with R requirements
