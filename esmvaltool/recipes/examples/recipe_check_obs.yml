@@ -145,7 +145,7 @@ diagnostics:
       abs550aer:
       od550aer:
       od550aerStderr:
-      od550lt1aer:
+      # od550lt1aer:   # NEEDS Iris 3.0
       od870aer:
       od870aerStderr:
     additional_datasets:
