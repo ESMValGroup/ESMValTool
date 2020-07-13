@@ -157,6 +157,7 @@ diagnostics:
         errorbar_plot: true
         mean_IAV_plot: true
         styleset: CMIP5
+        project_name: CMIP5
         region: global
         evolution_plot: true
         evolution_plot_volcanoes: true
