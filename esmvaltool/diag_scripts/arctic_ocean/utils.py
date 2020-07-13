@@ -13,7 +13,7 @@ import pyproj
 import seawater as sw
 from cdo import Cdo
 from cmocean import cm as cmo
-from matplotlib import cm as cm
+from matplotlib import cm
 from matplotlib import pylab as plt
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
