@@ -7,13 +7,14 @@ import logging
 import os
 import shutil
 
-import cmocean.cm as cmo
 import matplotlib as mpl
-import matplotlib.cm as cm
 import numpy as np
 import pyproj
 import seawater as sw
 from cdo import Cdo
+from cmocean import cm as cmo
+from matplotlib import cm as cm
+from matplotlib import pylab as plt
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
@@ -202,8 +203,8 @@ def dens_back(smin, smax, tmin, tmax):
     xdim = round((smax - smin) / 0.1 + 1, 0)
     ydim = round((tmax - tmin) + 1, 0)
 
-    ti_size = np.linspace(tmin, tmax, ydim * 10)
-    si_size = np.linspace(smin, smax, xdim * 10)
+    ti_size = np.linspace(tmin, tmax, int(ydim * 10))
+    si_size = np.linspace(smin, smax, int(xdim * 10))
 
     si2d, ti2d = np.meshgrid(si_size, ti_size)
 
@@ -223,8 +224,8 @@ def get_cmap(cmap_name):
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
-    elif cmap_name in cm.datad:
-        colormap = cm.get_cmap(cmap_name)
+    elif cmap_name in plt.colormaps():
+        colormap = plt.get_cmap(cmap_name)
     elif cmap_name == "custom_salinity1":
         colormap = shiftedcolormap(cm.get_cmap("cubehelix3"),
                                    start=0,
