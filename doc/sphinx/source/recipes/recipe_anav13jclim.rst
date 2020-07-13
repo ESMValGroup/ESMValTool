@@ -110,6 +110,7 @@ User settings in recipe
      on/off lines of volcano eruptions in evolution plot.
    * ``evolution_plot_color``, *int*, optional (default: ``0``): Hue of the
      contours in the evolution plot.
+   * ``ensemble_name``, *string*, optional: Name of ensemble for use in evolution plot legend
 
 #. Script carbon_cycle/mvi.ncl
 

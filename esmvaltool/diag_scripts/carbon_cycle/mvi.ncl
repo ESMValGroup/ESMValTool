@@ -407,7 +407,7 @@ begin
   regional_mvi@units = "1"
   trend_tmp = regional_trend
   if ((isatt(VAR0, "plot_units")) .and. \
-      (all_data_yearly@units .ne. VAR0@plot_units)) then
+      (regional_mean@units .ne. VAR0@plot_units)) then
     new_units = VAR0@plot_units
     regional_mean = convert_units(regional_mean, new_units)
     if (new_units .eq. "degC") then

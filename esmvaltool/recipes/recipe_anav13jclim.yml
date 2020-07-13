@@ -120,7 +120,6 @@ diagnostics:
     scripts:
       mvi_global: &mvi_global
         script: carbon_cycle/mvi.ncl
-        legend_year_outside: true
         sort: true
         styleset: CMIP5
         region: global
@@ -150,19 +149,18 @@ diagnostics:
     scripts:
       main_global: &main_global
         script: carbon_cycle/main.ncl
-        legend_year_outside: false
         legend_outside: false
         sort: true
         seasonal_cycle_plot: true
         errorbar_plot: true
         mean_IAV_plot: true
         styleset: CMIP5
-        project_name: CMIP5
         region: global
         evolution_plot: true
         evolution_plot_volcanoes: true
         evolution_plot_ref_dataset: CRU
         evolution_plot_anomaly: true
+        ensemble_name: CMIP5
       main_nh: &main_nh
         <<: *main_global
         region: nh
@@ -566,7 +564,7 @@ diagnostics:
     scripts:
       scat_global: &scat_glob
         script: carbon_cycle/two_variables.ncl
-        legend_year_outside: false
+        legend_outside: false
         styleset: CMIP5
         region: global
       scat_nh:

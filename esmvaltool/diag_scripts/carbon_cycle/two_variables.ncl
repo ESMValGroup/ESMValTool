@@ -147,7 +147,7 @@ begin
 
     ; Convert units if appropriate
     if ((isatt(variable_info[ivar], "plot_units")) .and. \
-        (all_data[ivar]@units .ne. VAR0@plot_units)) then
+        (all_data[ivar]@units .ne. variable_info[ivar]@plot_units)) then
       all_data[ivar] = convert_units(all_data[ivar], \
                                      variable_info[ivar]@plot_units)
     end if
