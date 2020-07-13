@@ -61,9 +61,6 @@ begin
   ; Type
   TYPE = "sat"
 
-  ; Version
-  VERSION = "CUSTOM-TCDR-ICDR-20200602"
-
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
     "dataset/satellite-soil-moisture"
@@ -71,63 +68,71 @@ begin
     "doi: 10.5194/essd-11-717-2019, 2019."
   COMMENT = ""
 
+  SENSORS_FILEBASENAMES = (/"C3S-SOILMOISTURE-L3S-SSMV-COMBINED", "C3S-SOILMOISTURE-L3S-SSMV-PASSIVE"/)
+  ; Version
+  VERSIONS = ("CUSTOM-TCDR-ICDR-20200602", "PASSIVE")
+
 end
 
 begin
 
-  do vv = 0, dimsizes(VAR) - 1
+  do xx = 1, dimsizes(VERSIONS) - 1
 
-    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
+    do vv = 0, dimsizes(VAR) - 1
 
-    do yy = YEAR1, YEAR2
+      log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
-      ; Set list of files
-      files = systemfunc("ls " + input_dir_path + \
-                         "C3S-SOILMOISTURE-L3S-SSMV-COMBINED" + \
-                         FREQNAME(vv) + yy + \
-                         "????000000-?CDR-v201?12.0.0.nc")
+      do yy = YEAR1, YEAR2
 
-      ; Retrieve start and end date (YYYYMM)
-      start_date = systemfunc("basename " + files(0))
-      start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 7)
-      end_date = systemfunc("basename " + files(dimsizes(files) - 1))
-      end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 7)
+        ; Set list of files
+        files = systemfunc("ls " + input_dir_path + \
+                           SENSORS_FILEBASENAMES(xx) + \
+                           FREQNAME(vv) + yy + \
+                           "????000000-?CDR-v201?12.0.0.nc")
 
-      ; Read data
-      f = addfiles(files, "r")
-      delete(files)
-      output = f[:]->$NAME(vv)$
-      delete(f)
+        ; Retrieve start and end date (YYYYMM)
+        start_date = systemfunc("basename " + files(0))
+        start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 7)
+        end_date = systemfunc("basename " + files(dimsizes(files) - 1))
+        end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 7)
 
-      ; Format coordinates
-      output!0 = "time"
-      output!1 = "lat"
-      output!2 = "lon"
-      format_coords(output, start_date, end_date, FREQ(vv))
+        ; Read data
+        f = addfiles(files, "r")
+        delete(files)
+        output = f[:]->$NAME(vv)$
+        delete(f)
 
-      ; Set variable attributes
-      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
-      delete(output)
-      output = tmp
-      delete(tmp)
+        ; Format coordinates
+        output!0 = "time"
+        output!1 = "lat"
+        output!2 = "lon"
+        format_coords(output, start_date, end_date, FREQ(vv))
 
-      ; Calculate coordinate bounds
-      bounds = guess_coord_bounds(output, FREQ(vv))
+        ; Set variable attributes
+        tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
+        delete(output)
+        output = tmp
+        delete(tmp)
 
-      ; Set global attributes
-      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+        ; Calculate coordinate bounds
+        bounds = guess_coord_bounds(output, FREQ(vv))
 
-      ; Output file
-      DATESTR = start_date + "-" + end_date
-      fout = output_dir_path + \
-        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+        ; Set global attributes
+        gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
-      ; Write variable
-      write_nc(fout, VAR(vv), output, bounds, gAtt)
-      delete(gAtt)
-      delete(output)
-      delete(bounds)
+        ; Output file
+        DATESTR = start_date + "-" + end_date
+        fout = output_dir_path + \
+          str_join((/"OBS", OBSNAME, TYPE, VERSIONS(xx), \
+                     MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+
+        ; Write variable
+        write_nc(fout, VAR(vv), output, bounds, gAtt)
+        delete(gAtt)
+        delete(output)
+        delete(bounds)
+
+      end do
 
     end do
 
