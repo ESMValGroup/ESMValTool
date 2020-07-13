@@ -19,6 +19,7 @@ import logging
 import os
 from copy import deepcopy
 from datetime import datetime
+from iris.experimental import equalise_cubes
 
 import cf_units
 import iris
@@ -53,26 +54,23 @@ def _fix_time_monthly(cube):
     cube.coord('time').bounds = None
     return cube
 
+def _fix_time_daily(cube):
+    # Bounds are present, but non-contiguous, so we remove
+    cube.coord('time').bounds = None
+    return cube
 
 def _load_cube(in_files, var):
     cube_list = iris.load_raw(in_files)
     selected = [c for c in cube_list if c.var_name == var['raw']]
     selected = iris.cube.CubeList(selected)
 
-    drop_attrs = ['History', 'Filename', 'Comment', 'RangeBeginningDate',
-                  'RangeEndingDate', 'GranuleID', 'ProductionDateTime',
-                  'Source']
-    drop_time_attrs = ['begin_date', 'begin_time',
-                       'time_increment', 'valid_range', 'vmax', 'vmin']
-    for cube in selected:
-        for attr in drop_attrs:
-            cube.attributes.pop(attr)
-        for attr in drop_time_attrs:
-            cube.coord('time').attributes.pop(attr)
-        cube.coord('time').points = cube.coord(
-            'time').core_points().astype('float64')
+    # Throw out all attributes that are not equal
+    equalise_cubes.equalise_attributes(selected)
 
+    # Unify time units
     iris.util.unify_time_units(selected)
+
+    # Concatenate to one single cube
     cube = selected.concatenate_cube()
     return cube
 
@@ -123,13 +121,20 @@ def _extract_variable(in_files, var, cfg, out_dir):
     nlon = len(cube.coord('longitude').points)
     cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
 
+    # Fix time
+    if var['mip']=='Lmon':
+        cube = _fix_time_monthly(cube)
+    elif var['mip']=='day':
+        cube = _fix_time_daily(cube)
+    else:
+        raise NotImplementedError
+
     # Fix coordinates
     cube = _fix_coordinates(cube, definition)
 
     cube.coord('latitude').attributes = None
     cube.coord('longitude').attributes = None
 
-    cube = _fix_time_monthly(cube)
 
     logger.debug("Saving cube\n%s", cube)
     utils.save_variable(

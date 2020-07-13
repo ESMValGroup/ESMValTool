@@ -28,9 +28,9 @@ variables:
     short_name: sm
     mip: day
     raw: SFMC
-    file: 'MERRA2_?00.tavgU_2d_lnd_Nx.{year}??.nc4'
+    file: 'MERRA2_?00.tavg1_2d_lnd_Nx.{year}????.nc4'
   sm1m_daily:
     short_name: sm1m
     mip: day
     raw: RZMC
-    file: 'MERRA2_?00.tavgU_2d_lnd_Nx.{year}??.nc4'
+    file: 'MERRA2_?00.tavg1_2d_lnd_Nx.{year}????.nc4'
