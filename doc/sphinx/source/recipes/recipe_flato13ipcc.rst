@@ -31,10 +31,9 @@ following figures from Flato et al. (2013) can currently be reproduced:
     * Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
       1980-2005. a) multi-model mean, b) bias as the difference between the
       CMIP5 multi-model mean and the climatology from the Global Precipitation
-      Climatology Project (Adler et al., 2003), c) difference between the
-      multi-model mean and the ECMWF reanalysis of the seasonality, and d)
-      difference between the multi-model mean and the ERA-Interim absolute
-      seasonality.
+      Climatology Project (Adler et al., 2003), c) multi-model mean absolute
+      error with respect to observations, and d) multi-model mean error
+      relative to the multi-model mean precipitation ifself.
 
     * Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
       effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in
@@ -453,10 +452,9 @@ Example plots
    Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
    1980-2005. a) multi-model mean, b) bias as the difference between the
    CMIP5 multi-model mean and the climatology from the Global Precipitation
-   Climatology Project (Adler et al., 2003), c) difference between the
-   multi-model mean and the ECMWF reanalysis of the seasonality, and d)
-   difference between the multi-model mean and the ERA-Interim absolute
-   seasonality.
+   Climatology Project (Adler et al., 2003), c) multi-model mean absolute
+   error with respect to observations, and d) multi-model mean error
+   relative to the multi-model mean precipitation ifself.
 
 .. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
    :align:   center
