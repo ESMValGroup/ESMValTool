@@ -287,7 +287,7 @@ begin
 
   ; Convert units if appropriate [kg m-2 s-1] --> [PgC y-1]
   if ((isatt(VAR0, "plot_units")) .and. \
-        (all_data_yearly@units .ne. VAR0@plot_units)) then
+      (all_data_yearly@units .ne. VAR0@plot_units)) then
     if (VAR0@plot_units .eq. "degC") then
       all_data_yearly(:, :, 0) = convert_units(all_data_yearly(:, :, 0), \
                                                VAR0@plot_units)
