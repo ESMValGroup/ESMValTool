@@ -108,10 +108,11 @@ def main(cfg):
 #            logger.info(alias_cubes)
 #            logger.info(etccdi_index(alias_cubes, cfg))
             # calculate and save cube
-            iris.save(etccdi_index(
-                {k:v.copy() for k,v in alias_cubes.items()}
-                , cfg=cfg),
-                      cfg['work_dir'] + os.sep + alias + '_' + index_name + '.nc')
+            etccdi_cube = etccdi_index(
+                {k:v.copy() for k,v in alias_cubes.items()}, cfg=cfg)
+            fname = etccdi_cube.attributes["FI_filename"]
+            iris.save(etccdi_cube,
+                      cfg['work_dir'] + os.sep + fname + '.nc')
 
             logger.info('Finalized computation for %s', ', '.join([alias, attributes['dataset'], index_name]))
 
