@@ -75,18 +75,13 @@ Contact:
 author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
 """
 import argparse
+import configparser
 import logging
 import os
-import sys
 import subprocess
 import shutil
-from distutils.version import LooseVersion
-# configparser has changed names in python 3.x
-if LooseVersion(sys.version) < LooseVersion("3.0"):
-    import ConfigParser
-else:
-    import configparser as ConfigParser
-import yaml  # noqa
+
+import yaml
 
 
 # set up logging
@@ -171,7 +166,7 @@ def _setup_work(rose_config_template, recipe_files,
                 config_file, main_dir, default_suite, log_level):
     """Write the new rose conf file per suite."""
     # Build the ConfigParser object
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.optionxform = str
     config.read(rose_config_template)
 
