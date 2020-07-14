@@ -4,14 +4,11 @@ COPY . /esmvaltool
 WORKDIR /esmvaltool
 
 # install environment packages
-RUN conda env update --name base --file environment.yml && conda remove esmvalcore && conda clean --all -y
+RUN conda env update --name base --file environment.yml && conda remove --force esmvalcore && conda clean --all -y
 RUN pip install . && pip cache purge
 RUN Rscript esmvaltool/install/R/setup.R
-RUN apt install julia -y
-RUN julia esmvaltool/install/Julia/setup.jl
-
-# run tests
-RUN esmvaltool version
+RUN apt install julia -y && julia esmvaltool/install/Julia/setup.jl
+RUN rm -r /esmvaltool
 
 ENTRYPOINT ["esmvaltool"]
-CMD ["-h"]
+CMD ["version"]
