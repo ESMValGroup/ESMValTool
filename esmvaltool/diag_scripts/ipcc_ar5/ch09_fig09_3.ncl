@@ -1,8 +1,8 @@
 ; ch09_fig09-3
-;#############################################################################
+; ############################################################################
 ; Author: Axel Lauer (DLR, Germany)
 ; PROJECT-NAME CRESCENDO
-;#############################################################################
+; ############################################################################
 ; Description
 ;    Calculates the multi-model mean seasonality (DJF - JJA), multi-model mean
 ;    of absolute seasonality, multi-model mean bias in seasonality, and multi-
@@ -30,7 +30,7 @@
 ;   20170622-lauer_axel: added tags for reporting
 ;   20170320-lauer_axel: written.
 ;
-;#############################################################################
+; ############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -203,10 +203,10 @@ begin
                                + "ipcc-tas.rgb")
       seas_mm@res_cnFillColors = pal
       pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
-                               + "ipcc-tas-absdelta.rgb")
+                                + "ipcc-tas-absdelta.rgb")
       abs_seas@res_cnFillColors = pal2
       pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
-                               + "ipcc-tas-seasdelta.rgb")
+                                + "ipcc-tas-seasdelta.rgb")
       bias_seas@res_cnFillColors = pal3
       bias_abs_seas@res_cnFillColors = pal3
 
@@ -238,9 +238,9 @@ begin
 
     ; panelling resources
 
-    pres                   = True
-    pres@gsnPanelCenter    = False
-    pres@gsnPanelRowSpec = True                   ; tell panel what order to plt
+    pres                 = True
+    pres@gsnPanelCenter  = False
+    pres@gsnPanelRowSpec = True
     pres@gsnPanelYWhiteSpacePercent = 5
     pres@gsnPanelXWhiteSpacePercent = 5
 
