@@ -21,6 +21,9 @@
 ;    20190522-crezee_bas: time period extended.
 ;    20190314-crezee_bas: written based on cmorize_obs_esacci_soilmoisture.ncl.
 ;
+; Caveats
+;    - Daily data has to consist of complete months
+;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
            "/esmvaltool/cmorizers/obs/interface.ncl")
@@ -37,7 +40,7 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1978
+  YEAR1 = 1979
   YEAR2 = 2020
 
   ; Selected variables (standard name)
@@ -70,13 +73,14 @@ begin
 
   SENSORS_FILEBASENAMES = (/"C3S-SOILMOISTURE-L3S-SSMV-COMBINED", "C3S-SOILMOISTURE-L3S-SSMV-PASSIVE"/)
   ; Version
-  VERSIONS = ("CUSTOM-TCDR-ICDR-20200602", "PASSIVE")
+  VERSIONS = (/"COMBINED", "PASSIVE"/)
+  PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", "????000000-?CDR-v201?12.0.0.nc"/)
 
 end
 
 begin
 
-  do xx = 1, dimsizes(VERSIONS) - 1
+  do xx = 0, dimsizes(VERSIONS) - 1
 
     do vv = 0, dimsizes(VAR) - 1
 
@@ -88,7 +92,7 @@ begin
         files = systemfunc("ls " + input_dir_path + \
                            SENSORS_FILEBASENAMES(xx) + \
                            FREQNAME(vv) + yy + \
-                           "????000000-?CDR-v201?12.0.0.nc")
+                           PATTERNS(xx))
 
         ; Retrieve start and end date (YYYYMM)
         start_date = systemfunc("basename " + files(0))
