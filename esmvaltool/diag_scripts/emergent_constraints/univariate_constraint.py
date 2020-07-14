@@ -24,6 +24,8 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
+additional_data : list of dict, optional
+    Additional datasets given as list of metadata.
 all_data_label : str, optional (default: 'all')
     Label used in plots when all input data is considered. Only relevant if
     ``group_by`` is not used.

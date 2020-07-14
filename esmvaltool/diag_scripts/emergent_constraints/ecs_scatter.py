@@ -56,8 +56,7 @@ from scipy.stats import linregress
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvalcore.cmor._fixes.shared import (add_plev_from_altitude,
-                                           add_sigma_factory)
+from esmvalcore.cmor import add_plev_from_altitude, add_sigma_factory
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             get_plot_filename, group_metadata,

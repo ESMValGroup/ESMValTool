@@ -199,6 +199,16 @@ def _combine_dicts(old_dict, new_dict):
     return old_dict
 
 
+def _get_additional_data(additional_data, recipe):
+    """Get :class:`iris.cube.CubeList` from additional data."""
+    if additional_data is None:
+        return iris.cube.CubeList()
+    cubes = _metadata_list_to_cube_list(additional_data, 'additional_data')
+    for cube in cubes:
+        cube.attributes['filename'] = recipe
+    return cubes
+
+
 def _get_attributes(cubes):
     """Extract attributes for features and labels."""
     attributes = {}
@@ -237,8 +247,8 @@ def _get_attributes(cubes):
     return attributes
 
 
-def _get_cube_list(input_files, external_file=None,
-                   merge_identical_pred_input=True):
+def _get_cube_list(input_files, recipe, additional_data=None,
+                   external_file=None, merge_identical_pred_input=True):
     """Get :class:`iris.cube.CubeList` of input files."""
     cubes = iris.cube.CubeList()
 
@@ -253,6 +263,9 @@ def _get_cube_list(input_files, external_file=None,
             cubes.append(feature_cube)
         if prediction_cube is not None:
             cubes.append(prediction_cube)
+
+    # Additional data
+    cubes.extend(_get_additional_data(additional_data, recipe))
 
     # External file
     cubes.extend(_get_external_cube_list(external_file))
@@ -269,32 +282,14 @@ def _get_cube_list(input_files, external_file=None,
 
 
 def _get_external_cube_list(external_file):
-    """Get external cube list."""
+    """Get external :class:`iris.cube.CubeList`."""
     if external_file is None:
         return iris.cube.CubeList()
-    cubes = iris.cube.CubeList()
     with open(external_file, 'r') as infile:
         metadata_list = yaml.safe_load(infile)
-    for metadata in metadata_list:
-        for attr in ('data', 'dataset'):
-            if attr not in metadata:
-                raise AttributeError(
-                    f"Entry {metadata} of external file '{external_file}' "
-                    f"does not contain necessary attribute '{attr}'")
-        aux_coord = iris.coords.AuxCoord(metadata.pop('dataset'),
-                                         var_name='dataset',
-                                         long_name='dataset')
-        data_of_cube = metadata.pop('data')
-        if data_of_cube is None:
-            data_of_cube = np.nan
-        cube = iris.cube.Cube(data_of_cube,
-                              aux_coords_and_dims=[(aux_coord, ())])
-        for key in ('var_name', 'standard_name', 'long_name', 'units'):
-            if key in metadata:
-                setattr(cube, key, metadata.pop(key))
-        cube.attributes = metadata
+    cubes = _metadata_list_to_cube_list(metadata_list, external_file)
+    for cube in cubes:
         cube.attributes['filename'] = external_file
-        cubes.append(cube)
     return cubes
 
 
@@ -553,6 +548,31 @@ def _get_pandas_cube(pandas_object):
     return cube
 
 
+def _metadata_list_to_cube_list(metadata_list, source):
+    """Convert :obj:`list` of :obj:`dict` to :class:`iris.cube.CubeList`."""
+    cubes = iris.cube.CubeList()
+    for metadata in metadata_list:
+        for attr in ('data', 'dataset'):
+            if attr not in metadata:
+                raise AttributeError(
+                    f"Entry {metadata} from source '{source}' does not "
+                    f"contain necessary attribute '{attr}'")
+        aux_coord = iris.coords.AuxCoord(metadata.pop('dataset'),
+                                         var_name='dataset',
+                                         long_name='dataset')
+        data_of_cube = metadata.pop('data')
+        if data_of_cube is None:
+            data_of_cube = np.nan
+        cube = iris.cube.Cube(data_of_cube,
+                              aux_coords_and_dims=[(aux_coord, ())])
+        for key in ('var_name', 'standard_name', 'long_name', 'units'):
+            if key in metadata:
+                setattr(cube, key, metadata.pop(key))
+        cube.attributes = metadata
+        cubes.append(cube)
+    return cubes
+
+
 def get_input_files(cfg, patterns=None, ignore_patterns=None):
     """Get input files.
 
@@ -654,6 +674,8 @@ def get_input_data(cfg):
                                        cfg['auxiliary_data_dir'])
     cubes = _get_cube_list(
         input_files,
+        recipe=cfg['recipe'],
+        additional_data=cfg.get('additional_data'),
         external_file=external_file,
         merge_identical_pred_input=cfg.get('merge_identical_pred_input', True),
     )
