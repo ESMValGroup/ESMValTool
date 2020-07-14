@@ -251,7 +251,7 @@ User settings in recipe
 
    *Optional settings for script*
 
-   projection: map projection, e.g., Mollweide, Mercator (default = Robinson)
+   * projection: map projection, e.g., Mollweide, Mercator (default = Robinson)
 
    *Required settings for variables*
  
@@ -445,7 +445,7 @@ Example plots
    Figure 9.3: Multi model values for seasonality of near-surface temperature,
    from top left to bottom right: mean, mean of absolute seasonality, mean bias
    in seasonality, mean bias in absolute seasonality. Reference dataset:
-   ERA-Interim. Similar to IPCC AR5, fig. 9.3.
+   ERA-Interim.
 
 .. figure::  /recipes/figures/flato13ipcc/fig-9-4.png
    :align:   center
