@@ -150,7 +150,7 @@ def cmorization(in_dir, out_dir, cfg, _):
     """Run CMORizer for MERRA2."""
     cfg.pop('cmor_table')
 
-    for year in range(1980, 2020):
+    for year in range(1980, 2021):
         for short_name, var in cfg['variables'].items():
             if 'short_name' not in var:
                 var['short_name'] = short_name
