@@ -24,7 +24,7 @@ def _organize_datasets_for_mpqb(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    grouped_input_data = group_metadata(input_data, 'dataset', sort='dataset')
+    grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     all_datasets = list(grouped_input_data.keys())
 
@@ -55,8 +55,9 @@ def main(cfg):
     rmsd_list = []
     std_list = []
     labels = []
-    for dataset in grouped_input_data.keys():
-        dat = iris.load_cube(grouped_input_data[dataset][0]['filename'])
+    for alias in grouped_input_data.keys():
+        dataset = grouped_input_data[alias][0]['dataset']
+        dat = iris.load_cube(grouped_input_data[alias][0]['filename'])
         # Create common masking
         refdat.data.mask |= dat.data.mask
         dat.data.mask |= refdat.data.mask
@@ -65,7 +66,7 @@ def main(cfg):
         rvalue_list.append(pearsonr(adat, bdat)[0])
         rmsd_list.append(sm.centered_rms_dev(adat, bdat))
         std_list.append(np.std(bdat))
-        labels.append(datasetnames[dataset])
+        labels.append(datasetnames[alias])
 
     sm.taylor_diagram(np.array(std_list),
                       np.array(rmsd_list),

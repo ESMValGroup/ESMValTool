@@ -7,7 +7,8 @@
 ---
 datasetnames:
   ERA-Interim-Land: ERA-Interim/Land
-  CDS-SATELLITE-SOIL-MOISTURE: ESA-CCI
+  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: ESA-CCI-COM
+  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: ESA-CCI-PAS
   cds-era5-land-monthly: ERA5-Land
   cds-era5-monthly: ERA5
   MERRA2: MERRA-2
@@ -17,7 +18,8 @@ datasetnames:
 
 datasetcolors:
   ERA-Interim-Land: '#1f77b4'
-  CDS-SATELLITE-SOIL-MOISTURE: '#ff7f0e'
+  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: '#ff7f0e'
+  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: '#bcbd22'
   cds-era5-land-monthly: '#2ca02c'
   cds-era5-monthly: '#d62728'
   MERRA2: '#9467bd'
@@ -27,7 +29,6 @@ datasetcolors:
 # From:
 # https://stackoverflow.com/questions/42086276/
 # Cycle continues like this:
-#  '#bcbd22'
 #  '#17becf'
 
 colors:

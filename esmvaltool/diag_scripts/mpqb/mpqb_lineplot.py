@@ -25,7 +25,7 @@ def main(cfg):
     mpqb_cfg = read_mpqb_cfg()
     datasetnames = mpqb_cfg['datasetnames']
 
-    grouped_input_data = group_metadata(input_data, 'dataset', sort='dataset')
+    grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     logger.info(
         "Example of how to group and sort input data by standard_name:"
@@ -38,15 +38,20 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
 
+
     plt.clf()
     fig = plt.figure(figsize=(10, 4))
     ax1 = fig.add_subplot()
+
     for dataset in grouped_input_data:
         dataset_cfg = grouped_input_data[dataset][0]
+        alias = dataset_cfg['alias']
+
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
 
-        iris.quickplot.plot(cube, label=datasetnames[dataset], color=mpqb_cfg['datasetcolors'][dataset])
+        iris.quickplot.plot(cube, label=datasetnames[alias],
+                            color=mpqb_cfg['datasetcolors'][alias])
     plt.legend()
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies

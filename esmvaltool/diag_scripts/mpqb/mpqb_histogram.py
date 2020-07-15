@@ -47,25 +47,29 @@ def _plot_histograms(hists, cfg, grouped_input_data):
     histtype = cfg.pop('histtype', 'bar')  # default type is 'bar'
     dataset = None  # needed to avoid pylint error
 
+
     mpqb_cfg = read_mpqb_cfg()
     datasetnames = mpqb_cfg['datasetnames']
 
     plt.clf()
     fig, ax1 = plt.subplots(1, 1)
 
-    for dataset, hist in hists.items():
+    for alias, hist in hists.items():
+        dataset_cfg = grouped_input_data[alias][0]
+        dataset = dataset_cfg['dataset']
+
 
         width = np.diff(hist["bins"]) / len(hists)
         xvals = hist["bins"][:-1] + width * (
-            list(hists.keys()).index(dataset) + 0.5)
+            list(hists.keys()).index(alias) + 0.5)
 
         if histtype == 'bar':
             ax1.bar(
                 xvals,
                 hist["hist"],
                 width,
-                label=datasetnames[dataset],
-                color=mpqb_cfg['datasetcolors'][dataset],
+                label=datasetnames[alias],
+                color=mpqb_cfg['datasetcolors'][alias],
             )
             plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha=0.3)
             plt.legend()
@@ -73,9 +77,9 @@ def _plot_histograms(hists, cfg, grouped_input_data):
             ax1.hist(hist["bins"][:-1],
                      hist["bins"],
                      weights=hist["hist"],
-                     label=datasetnames[dataset],
+                     label=datasetnames[alias],
                      histtype='step',
-                     color=mpqb_cfg['datasetcolors'][dataset],
+                     color=mpqb_cfg['datasetcolors'][alias],
                      linewidth=2)
             handles, labels = ax1.get_legend_handles_labels()
             handles = [Line2D([], [], c=h.get_edgecolor()) for h in handles]
@@ -83,8 +87,8 @@ def _plot_histograms(hists, cfg, grouped_input_data):
         else:
             logger.warning("Unsupported argument for histtype: %s", histtype)
 
-    plt.xlabel(grouped_input_data[dataset][0]['long_name'] + " [" +
-               grouped_input_data[dataset][0]['units'] + "]")
+    plt.xlabel(grouped_input_data[alias][0]['long_name'] + " [" +
+               grouped_input_data[alias][0]['units'] + "]")
     plt.ylabel("frequency")
     if cfg.pop('logarithmic', False):
         ax1.set_yscale('log', nonposy='clip')
@@ -108,11 +112,8 @@ def main(cfg):
     nbars = cfg.pop('number_of_bars', 10)
 
     grouped_input_data = group_metadata(cfg['input_data'].values(),
-                                        'dataset',
-                                        sort='dataset')
-    logger.info(
-        "Example of how to group and sort input data by standard_name:"
-        "\n%s", pformat(grouped_input_data))
+                                        'alias',
+                                        sort='alias')
 
     # calculate common range if vmin or vmax not given
     if lower_upper[0] is None or lower_upper[1] is None:
@@ -121,11 +122,13 @@ def main(cfg):
 
     hists = dict()
     logger.info("Calculating the histograms.")
-    for dataset in grouped_input_data:
-        logger.info("Opening dataset: %s", dataset)
-        cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
+    for alias in grouped_input_data:
+        dataset_cfg = grouped_input_data[alias][0]
+
+        logger.info("Opening dataset: %s", alias)
+        cube = iris.load_cube(grouped_input_data[alias][0]['filename'])
         hists.update(
-            {dataset: _calculate_histograms(cube, nbars, lower_upper)})
+            {alias: _calculate_histograms(cube, nbars, lower_upper)})
     logger.info("Plotting the histograms.")
     _plot_histograms(hists, cfg, grouped_input_data)
     logger.info("Finished!")
