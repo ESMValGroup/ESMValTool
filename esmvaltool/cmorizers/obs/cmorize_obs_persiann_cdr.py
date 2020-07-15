@@ -115,7 +115,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
-    # Save variable
+    # Save variable in daily files
     iris.coord_categorisation.add_year(cube, 'time', name='year')
     years = list(set(cube.coord('year').points))
     for year in years:
@@ -125,6 +125,16 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
                             out_dir,
                             attrs,
                             unlimited_dimensions=['time'])
+    
+    # save variable in monthly files
+    iris.coord_categorisation.add_month_number(cube, 'time', name='month')
+    cube = cube.aggregated_by(['month', 'year'], iris.analysis.MEAN)
+    attrs['mip'] = "Amon"
+    utils.save_variable(cube,
+                        short_name,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
