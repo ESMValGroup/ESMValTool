@@ -18,6 +18,7 @@ Download and processing instructions
  - Download the grace months table  which holds important information
    on data coverage. Save it in the RAWOBSDIR.
       https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
+ - Manually inspect and check the months table
 
 
 Modification history
