@@ -59,21 +59,9 @@ datasets:
 # Define some default parameters using anchors #
 ################################################
 
-### NOT used
-#plot_pars: &pltpars
-#  ts_plt: true
-#  glc_plt: true
-
 range_pars: &rngpars
   base_range: [1981, 1983]
 #  analysis_range: [1998, 2000]
-
-### NOT used
-#reference_pars: &refpars
-#  reference_datasets:
-#    - MPI-ESM-LR
-##    - ERA-Interim
-##    - BNU-ESM
 
 regrid_pars: &regpars
   regrid:
@@ -137,6 +125,12 @@ diagnostics:
           - monthly_minimum_value_of_daily_minimum_temperature
           - monthly_maximum_1day_precipitation
           - monthly_maximum_5day_precipitation
+          - annual_maximum_value_of_daily_maximum_temperature
+          - annual_maximum_value_of_daily_minimum_temperature
+          - annual_minimum_value_of_daily_maximum_temperature
+          - annual_minimum_value_of_daily_minimum_temperature
+          - annual_maximum_1day_precipitation
+          - annual_maximum_5day_precipitation
           - daily_temperature_range
           - annual_total_precipitation_in_wet_days
           - annual_growing_season_length
@@ -144,18 +138,17 @@ diagnostics:
           - monthly_number_of_days_where_daily_maximum_temperature_below_10%
           - monthly_number_of_days_where_daily_maximum_temperature_above_90%
           - monthly_number_of_days_where_daily_minimum_temperature_above_90%
+          - annual_number_of_days_where_daily_minimum_temperature_below_10%
+          - annual_number_of_days_where_daily_maximum_temperature_below_10%
+          - annual_number_of_days_where_daily_maximum_temperature_above_90%
+          - annual_number_of_days_where_daily_minimum_temperature_above_90%
           - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%
           - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
           - annual_warm_spell_duration_index
           - annual_cold_spell_duration_index
           - monthly_simple_precipitation_intensity_index
+          - annual_simple_precipitation_intensity_index
           - annual_maximum_length_of_dry_spell
           - annual_maximum_length_of_wet_spell
         cumprec_threshold_nn: 15
         <<: *rngpars
-        # TODO: why is that the same name twice? is this dedicated plots?
-#        timeseries_idx: True
-#        gleckler_idx: True
-#        quickplot:
-#          plot_type: pcolormesh
-#        <<: *pltpars

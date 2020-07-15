@@ -181,7 +181,7 @@ def __adjust_masked_values__(d1, d2, year_length):
 
 
 def __gsl_per_year_per_ts__(array, split_pnt, specs, fill_value):
-    """calculate the growing season per pixel for a yearly timeseries"""
+    """calculate the growing season per pixel for a annual timeseries"""
     
     start_span = __threshold_over_span__(array[:split_pnt], specs['start']['threshold'], specs['start']['spell'], fill_value).to_dask_array(lengths=True).squeeze()
     end_span = __threshold_over_span__(array[split_pnt:], specs['end']['threshold'], specs['end']['spell'], fill_value).to_dask_array(lengths=True).squeeze()
@@ -204,11 +204,11 @@ def __gsl_per_year_per_ts__(array, split_pnt, specs, fill_value):
     
 
 def __gsl_applied_MD__(array_MD, axis, split_pnt, specs, fill_value):
-    """calculate the growing season for a multipixel yearly timeseries"""
+    """calculate the growing season for a multipixel annual timeseries"""
     
-    yearly_gsl = da.apply_along_axis(__gsl_per_year_per_ts__, axis, array_MD, split_pnt, specs, fill_value, shape = (1,), dtype = int)
+    annual_gsl = da.apply_along_axis(__gsl_per_year_per_ts__, axis, array_MD, split_pnt, specs, fill_value, shape = (1,), dtype = int)
     
-    return da.reshape(yearly_gsl, yearly_gsl.shape[0:2])
+    return da.reshape(annual_gsl, annual_gsl.shape[0:2])
 
 
 def merge_SH_NH_cubes(loCubes, fill_value = -9999):
@@ -309,7 +309,7 @@ def numdaysyear_wrapper(cubes, specs):
                 specs['name'], cubes.keys()))
         return
 
-    logger.info('Computing yearly number of {}.'.format(specs['name']))
+    logger.info('Computing annual number of {}.'.format(specs['name']))
 
     # get cube unit
     c_unit = fdcube.units
@@ -709,3 +709,25 @@ def spell_perc_ex_thresh(alias_cubes, specs, cfg):
     result_cube.units = Unit('days per year')
     
     return result_cube
+
+def add_filename(cube, fun):
+    """ adds a filename to the cube attributes based on the cube attributes """
+    # add attributes
+    
+    print(cube.attributes)
+    dts = cube.coords("time")[0]
+    dty_start = dts.units.num2date(dts.points[0]).year
+    dty_end = dts.units.num2date(dts.points[-1]).year
+    cube.attributes.update(
+        {"FI_index": fun,
+         "FI_model": cube.attributes['model_id'],
+         "FI_experiment": cube.attributes['experiment_id'],
+         "FI_ensemble": cube.attributes['parent_experiment_rip'],
+         "FI_temporal_coverage": "{}-{}".format(dty_start, dty_end),
+                })
+    cube.attributes.update({"FI_filename":
+        "{}_{}_{}_{}_{}".format(cube.attributes["FI_index"],
+         cube.attributes["FI_model"],
+         cube.attributes["FI_experiment"],
+         cube.attributes["FI_ensemble"],
+         cube.attributes["FI_temporal_coverage"],)})

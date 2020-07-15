@@ -7,8 +7,9 @@ import sys
 #from pprint import pformat
 import numpy as np
 import iris
-from extreme_events_def import index_definition
-from extreme_events_utils import max_span_yr, __adjust_threshold__, __boolean_translation__, spell_perc_ex_thresh, sum_perc_ex_wd, numdaysyear_wrapper, var_perc_ex, select_value, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
+#from extreme_events_def import index_definition
+from extreme_events_def_Rcomp import index_definition
+from extreme_events_utils import max_span_yr, add_filename, __adjust_threshold__, __boolean_translation__, spell_perc_ex_thresh, sum_perc_ex_wd, numdaysyear_wrapper, var_perc_ex, select_value, _check_required_variables, gsl_check_specs, gsl_aggregator, merge_SH_NH_cubes#, __nonzero_mod__
 from cf_units import Unit
 #import dask.dataframe as dd
 import dask.array as da
@@ -44,6 +45,18 @@ index_method = {
             "rx1dayETCCDI_m",
         "monthly_maximum_5day_precipitation":
             "rx5dayETCCDI_m",
+        "annual_maximum_value_of_daily_maximum_temperature":
+            "txxETCCDI_yr",
+        "annual_maximum_value_of_daily_minimum_temperature":
+            "tnxETCCDI_yr",
+        "annual_minimum_value_of_daily_maximum_temperature":
+            "txnETCCDI_yr",
+        "annual_minimum_value_of_daily_minimum_temperature":
+            "tnnETCCDI_yr",
+        "annual_maximum_1day_precipitation":
+            "rx1dayETCCDI_yr",
+        "annual_maximum_5day_precipitation":
+            "rx5dayETCCDI_yr",
         "annual_total_precipitation_in_wet_days":
             "prcptot",
         "daily_temperature_range":
@@ -57,6 +70,14 @@ index_method = {
             "tn90pETCCDI_m",
         "monthly_number_of_days_where_daily_maximum_temperature_below_10%":
             "tx10pETCCDI_m",
+        "annual_number_of_days_where_daily_minimum_temperature_below_10%":
+            "tn10pETCCDI_yr",
+        "annual_number_of_days_where_daily_maximum_temperature_above_90%":
+            "tx90pETCCDI_yr",
+        "annual_number_of_days_where_daily_minimum_temperature_above_90%":
+            "tn90pETCCDI_yr",
+        "annual_number_of_days_where_daily_maximum_temperature_below_10%":
+            "tx10pETCCDI_yr",
         "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%":
             "r99ptotETCCDI_yr",
         "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%":
@@ -73,6 +94,8 @@ index_method = {
             "cddETCCDI_yr",
         "monthly_simple_precipitation_intensity_index":
             "sdiiETCCDI_m",
+        "annual_simple_precipitation_intensity_index":
+            "sdiiETCCDI_yr",
         }
 
 method_index = {}
@@ -87,7 +110,10 @@ def fdETCCDI_yr(cubes, **kwargs):
 
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
-
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+        
     return res_cube
 
 
@@ -99,6 +125,9 @@ def suETCCDI_yr(cubes, **kwargs):
 
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
 
     return res_cube
 
@@ -111,6 +140,9 @@ def idETCCDI_yr(cubes, **kwargs):
 
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
 
     return res_cube
 
@@ -123,6 +155,9 @@ def trETCCDI_yr(cubes, **kwargs):
 
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
 
     return res_cube
 
@@ -135,6 +170,9 @@ def r20mmETCCDI_yr(cubes, **kwargs):
 
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
 
     return res_cube
 
@@ -147,6 +185,9 @@ def r10mmETCCDI_yr(cubes, **kwargs):
 
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
 
     return res_cube
 
@@ -162,6 +203,9 @@ def rnnmmETCCDI_yr(cubes, **kwargs):
 
     # actual calculation
     res_cube = numdaysyear_wrapper(cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
 
     return res_cube
 
@@ -170,6 +214,21 @@ def txxETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
+    return res_cube
+
+def txxETCCDI_yr(alias_cubes, **kwargs):
+    """TXx, annual maximum value of daily maximum temperature."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
     return res_cube
 
 def tnxETCCDI_m(alias_cubes, **kwargs):
@@ -178,6 +237,21 @@ def tnxETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
+    return res_cube
+
+def tnxETCCDI_yr(alias_cubes, **kwargs):
+    """TNx, annual maximum value of daily minimum temperature."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
     return res_cube
 
 def txnETCCDI_m(alias_cubes, **kwargs):
@@ -185,6 +259,21 @@ def txnETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
+    return res_cube
+
+def txnETCCDI_yr(alias_cubes, **kwargs):
+    """TNx, annual minimum value of daily maximum temperature."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
     return res_cube
 
 def tnnETCCDI_m(alias_cubes, **kwargs):
@@ -192,6 +281,21 @@ def tnnETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
+    return res_cube
+
+def tnnETCCDI_yr(alias_cubes, **kwargs):
+    """TNx, annual minimum value of daily minimum temperature."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
     return res_cube
 
 def rx1dayETCCDI_m(alias_cubes, **kwargs):
@@ -199,6 +303,21 @@ def rx1dayETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
+    return res_cube
+
+def rx1dayETCCDI_yr(alias_cubes, **kwargs):
+    """Calulates the Rx1day climate index: annual_maximum_1day_precipitation."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
     return res_cube
 
 def rx5dayETCCDI_m(alias_cubes, **kwargs):
@@ -208,13 +327,36 @@ def rx5dayETCCDI_m(alias_cubes, **kwargs):
     alias_cubes = {key: cube.rolling_window('time', iris.analysis.SUM, specs['spell']['value'])
             for key, cube in alias_cubes.items()}
     res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
+    return res_cube
+
+def rx5dayETCCDI_yr(alias_cubes, **kwargs):
+    """Calulates the Rx5day climate index: Annual_maximum_5day_precipitation."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    alias_cubes = {key: cube.rolling_window('time', iris.analysis.SUM, specs['spell']['value'])
+            for key, cube in alias_cubes.items()}
+    res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
     return res_cube
 
 def prcptot(alias_cubes, **kwargs):
     """Calculates the PRCPTOT climate index: Annual total precipitation in wet days."""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
-    return select_value(alias_cubes, specs)
+    
+    res_cube = select_value(alias_cubes, specs)
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
+    return res_cube
 
 def dtr(alias_cubes, **kwargs):
     """Calculates the DTR climate index: Daily temperature range."""
@@ -223,6 +365,10 @@ def dtr(alias_cubes, **kwargs):
     _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
     result_cube = alias_cubes['tasmax'] - alias_cubes['tasmin']
     result_cube.rename(specs['cf_name'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
     return result_cube
 
 def tn10pETCCDI_m(alias_cubes, **kwargs):
@@ -232,11 +378,37 @@ def tn10pETCCDI_m(alias_cubes, **kwargs):
     result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
     return result_cube
 
+def tn10pETCCDI_yr(alias_cubes, **kwargs):
+    """TN10p, Percentage of days when TN < 10th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
+    return result_cube
+
 def tx10pETCCDI_m(alias_cubes, **kwargs):
     """TX10p, Percentage of days when TX < 10th percentile"""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
+    return result_cube
+
+def tx10pETCCDI_yr(alias_cubes, **kwargs):
+    """TX10p, Percentage of days when TX < 10th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
     return result_cube
 
 def tn90pETCCDI_m(alias_cubes, **kwargs):
@@ -244,6 +416,21 @@ def tn90pETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
+    return result_cube
+
+def tn90pETCCDI_yr(alias_cubes, **kwargs):
+    """TN90p, Percentage of days when TN > 90th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
     return result_cube
 
 def tx90pETCCDI_m(alias_cubes, **kwargs):
@@ -251,6 +438,21 @@ def tx90pETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
+    return result_cube
+
+def tx90pETCCDI_yr(alias_cubes, **kwargs):
+    """TX90p, Percentage of days when TX > 90th percentile"""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
     return result_cube
 
 def r95ptotETCCDI_yr(alias_cubes, **kwargs):
@@ -259,6 +461,9 @@ def r95ptotETCCDI_yr(alias_cubes, **kwargs):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
 
     result_cube = sum_perc_ex_wd(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
     
     return result_cube
 
@@ -269,6 +474,9 @@ def r99ptotETCCDI_yr(alias_cubes, **kwargs):
 
     result_cube = sum_perc_ex_wd(alias_cubes, specs, kwargs['cfg'])
     
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+        
     return result_cube
 
 def wsdiETCCDI_yr(alias_cubes, **kwargs):
@@ -278,6 +486,9 @@ def wsdiETCCDI_yr(alias_cubes, **kwargs):
     
     result_cube = spell_perc_ex_thresh(alias_cubes, specs, kwargs['cfg'])
     
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+        
     return result_cube
 
 def csdiETCCDI_yr(alias_cubes, **kwargs):
@@ -287,6 +498,9 @@ def csdiETCCDI_yr(alias_cubes, **kwargs):
     
     result_cube = spell_perc_ex_thresh(alias_cubes, specs, kwargs['cfg'])
     
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+        
     return result_cube
 
 def sdiiETCCDI_m(alias_cubes, **kwargs):
@@ -313,6 +527,40 @@ def sdiiETCCDI_m(alias_cubes, **kwargs):
     result_cube.rename(specs['cf_name'])
     result_cube.units = Unit('mm month-1')
     
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+        
+    return result_cube
+
+def sdiiETCCDI_yr(alias_cubes, **kwargs):
+    """ Simple precipitation intensity index: Let RRwj be the daily precipitation amount on wet days, w (RR ≥ 1mm) in period j."""
+    logger.info('Loading ETCCDI specifications...')
+    specs = index_definition[method_index[sys._getframe().f_code.co_name]]
+    
+    _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
+    
+    cube = alias_cubes[specs['required'][0]]
+    
+    specs['threshold']['value'] = __adjust_threshold__(specs['threshold'], cube.units)
+    
+    boolean_cube = __boolean_translation__(cube, specs['threshold']['value'], logic = specs['threshold']['logic'])
+    
+    wd_selection = cube.copy(data = da.where(boolean_cube.core_data(), cube.core_data(),0))
+    
+    statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
+    if statistic_function:
+        result_cube = statistic_function(wd_selection, 'sum') / statistic_function(boolean_cube, 'sum')
+    else:
+        raise Exception(f"Period {specs['period']} not implemented.")
+        
+    result_cube.attributes = wd_selection.attributes
+    
+    result_cube.rename(specs['cf_name'])
+    result_cube.units = Unit('mm month-1')
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+        
     return result_cube
 
 def cddETCCDI_yr(alias_cubes, **kwargs):
@@ -333,6 +581,9 @@ def cddETCCDI_yr(alias_cubes, **kwargs):
     
     result_cube.rename(specs['cf_name'])
     result_cube.units = Unit(f'days per {agg}')
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
     
     return result_cube
 
@@ -355,6 +606,9 @@ def cwdETCCDI_yr(alias_cubes, **kwargs):
     result_cube.rename(specs['cf_name'])
     result_cube.units = Unit(f'days per {agg}')
     
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+        
     return result_cube
 
 def gslETCCDI_yr(cubes, **kwargs):
@@ -407,5 +661,8 @@ def gslETCCDI_yr(cubes, **kwargs):
     # adjust cube information
     res_cube.rename(specs['cf_name'])
     res_cube.units = Unit('days per year')
-
+    
+    # add filename
+    add_filename(res_cube, sys._getframe().f_code.co_name)
+    
     return res_cube

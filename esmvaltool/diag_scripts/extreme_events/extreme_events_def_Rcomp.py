@@ -18,7 +18,7 @@ annual_number_of_frost_days:
         value: 273.15
         unit: K
         logic: less
-    cf_name: annual_number_of_frost_days
+    cf_name: fdETCCDI
 # %% annual_number_of_summer_days
 annual_number_of_summer_days:
     name: summer days
@@ -29,7 +29,7 @@ annual_number_of_summer_days:
         value: 298.15
         unit: K
         logic: greater
-    cf_name: number_of_days_with_air_temperature_above_25_degree_Celsius
+    cf_name: suETCCDI
  # %% annual_number_of_icing_days
 annual_number_of_icing_days:
     name: icing days
@@ -40,7 +40,7 @@ annual_number_of_icing_days:
         value: 273.15
         unit: K
         logic: less
-    cf_name: number_of_days_where_air_temperature_remains_below_freezing_point
+    cf_name: idETCCDI
 # %% annual_number_of_tropical_nights
 annual_number_of_tropical_nights:
     name: tropical nights
@@ -51,7 +51,7 @@ annual_number_of_tropical_nights:
         value: 293.15
         unit: K
         logic: greater
-    cf_name: number_of_days_where_air_temperature_remains_above_20_degre_Celsius
+    cf_name: trETCCDI
 # %% annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
 annual_number_of_days_where_cumulative_precipitation_is_above_10_mm:
     name: R10mm
@@ -92,7 +92,15 @@ monthly_maximum_value_of_daily_maximum_temperature:
         - tasmax
     logic: max
     cf_name: monthly_maximum_value_of_daily_maximum_temperature
-  # %% monthly_maximum_value_of_daily_minimum_temperature
+# %% annual_maximum_value_of_daily_maximum_temperature
+annual_maximum_value_of_daily_maximum_temperature:
+    name: TXx
+    period: annual
+    required:
+        - tasmax
+    logic: max
+    cf_name: txxETCCDI
+# %% monthly_maximum_value_of_daily_minimum_temperature
 monthly_maximum_value_of_daily_minimum_temperature:
     name: TNx
     period: monthly
@@ -100,6 +108,14 @@ monthly_maximum_value_of_daily_minimum_temperature:
         - tasmin
     logic: max
     cf_name: monthly_maximum_value_of_daily_minimum_temperature
+# %% annual_maximum_value_of_daily_minimum_temperature
+annual_maximum_value_of_daily_minimum_temperature:
+    name: TNx
+    period: annual
+    required:
+        - tasmin
+    logic: max
+    cf_name: tnxETCCDI
 # %% monthly_minimum_value_of_daily_maximum_temperature
 monthly_minimum_value_of_daily_maximum_temperature:
     name: TXn
@@ -108,6 +124,14 @@ monthly_minimum_value_of_daily_maximum_temperature:
         - tasmax
     logic: min
     cf_name: monthly_minimum_value_of_daily_maximum_temperature
+# %% annual_minimum_value_of_daily_maximum_temperature
+annual_minimum_value_of_daily_maximum_temperature:
+    name: TXn
+    period: annual
+    required:
+        - tasmax
+    logic: min
+    cf_name: txnETCCDI
 # %% monthly_minimum_value_of_daily_minimum_temperature
 monthly_minimum_value_of_daily_minimum_temperature:
     name: TNn
@@ -116,6 +140,14 @@ monthly_minimum_value_of_daily_minimum_temperature:
         - tasmin
     logic: min
     cf_name: monthly_minimum_value_of_daily_minimum_temperature
+# %% annual_minimum_value_of_daily_minimum_temperature
+annual_minimum_value_of_daily_minimum_temperature:
+    name: TNn
+    period: annual
+    required:
+        - tasmin
+    logic: min
+    cf_name: tnnETCCDI
 # %% monthly_maximum_1day_precipitation
 monthly_maximum_1day_precipitation:
     name: Rx1day
@@ -127,6 +159,17 @@ monthly_maximum_1day_precipitation:
         unit: day
     logic: max
     cf_name: monthly_maximum_1day_precipitation
+# %% annual_maximum_1day_precipitation
+annual_maximum_1day_precipitation:
+    name: Rx1day
+    period: annual
+    required:
+        - pr
+    spell:
+        value: 1
+        unit: day
+    logic: max
+    cf_name: rx1dayETCCDI
 # %% monthly_maximum_5day_precipitation
 monthly_maximum_5day_precipitation:
     name: Rx5day
@@ -138,6 +181,17 @@ monthly_maximum_5day_precipitation:
         unit: day
     logic: max
     cf_name: monthly_maximum_5day_precipitation
+# %% annual_maximum_5day_precipitation
+annual_maximum_5day_precipitation:
+    name: Rx5day
+    period: annual
+    required:
+        - pr
+    spell:
+        value: 5
+        unit: day
+    logic: max
+    cf_name: rx5dayETCCDI
 # %% annual_total_precipitation_in_wet_days
 annual_total_precipitation_in_wet_days:
     name: PRCPTOT
@@ -145,7 +199,7 @@ annual_total_precipitation_in_wet_days:
     required:
         - pr
     logic: sum
-    cf_name: annual_total_precipitation_in_wet_days
+    cf_name: prcptotETCCDI
 # %% annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
 annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%:
     name: R95pTOT
@@ -157,7 +211,7 @@ annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%:
         unit: percent
         logic: greater
     logic: sum
-    cf_name: annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
+    cf_name: r95pETCCDI
 # %% annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%
 annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%:
     name: R99pTOT
@@ -181,6 +235,17 @@ monthly_number_of_days_where_daily_minimum_temperature_below_10%:
         unit: percent
         logic: less
     cf_name: monthly_number_of_days_where_daily_minimum_temperature_below_10%
+# %% annual_number_of_days_where_daily_minimum_temperature_below_10%
+annual_number_of_days_where_daily_minimum_temperature_below_10%:
+    name: TN10p
+    period: annual
+    required:
+        - tasmin
+    threshold:
+        value: 10
+        unit: percent
+        logic: less
+    cf_name: tn10pETCCDI
 # %% monthly_number_of_days_where_daily_minimum_temperature_above_90%
 monthly_number_of_days_where_daily_minimum_temperature_above_90%:
     name: TN90p
@@ -192,6 +257,17 @@ monthly_number_of_days_where_daily_minimum_temperature_above_90%:
         unit: percent
         logic: greater
     cf_name: monthly_number_of_days_where_daily_minimum_temperature_above_90%
+# %% annual_number_of_days_where_daily_minimum_temperature_above_90%
+annual_number_of_days_where_daily_minimum_temperature_above_90%:
+    name: TN90p
+    period: annual
+    required:
+        - tasmin
+    threshold:
+        value: 90
+        unit: percent
+        logic: greater
+    cf_name: tn90pETCCDI
 # %% monthly_number_of_days_where_daily_maximum_temperature_below_10%
 monthly_number_of_days_where_daily_maximum_temperature_below_10%:
     name: TX10p
@@ -203,6 +279,17 @@ monthly_number_of_days_where_daily_maximum_temperature_below_10%:
         unit: percent
         logic: less
     cf_name: monthly_number_of_days_where_daily_maximum_temperature_below_10%
+# %% annual_number_of_days_where_daily_maximum_temperature_below_10%
+annual_number_of_days_where_daily_maximum_temperature_below_10%:
+    name: TX10p
+    period: annual
+    required:
+        - tasmax
+    threshold:
+        value: 10
+        unit: percent
+        logic: less
+    cf_name: tx10pETCCDI
 # %% monthly_number_of_days_where_daily_maximum_temperature_above_90%
 monthly_number_of_days_where_daily_maximum_temperature_above_90%:
     name: TX90p
@@ -214,6 +301,17 @@ monthly_number_of_days_where_daily_maximum_temperature_above_90%:
         unit: percent
         logic: greater
     cf_name: monthly_number_of_days_where_daily_maximum_temperature_above_90%
+# %% annual_number_of_days_where_daily_maximum_temperature_above_90%
+annual_number_of_days_where_daily_maximum_temperature_above_90%:
+    name: TX90p
+    period: annual
+    required:
+        - tasmax
+    threshold:
+        value: 90
+        unit: percent
+        logic: greater
+    cf_name: tx90pETCCDI
 # %% annual_warm_spell_duration_index
 annual_warm_spell_duration_index:
     name: WSDI
@@ -254,7 +352,7 @@ annual_maximum_length_of_dry_spell:
         value: 1
         unit: mm day-1
         logic: less
-    cf_name: annual_maximum_length_of_dry_spell
+    cf_name: cddETCCDI
 # %% annual_maximum_length_of_wet_spell
 annual_maximum_length_of_wet_spell:
     name: CWD
@@ -277,6 +375,17 @@ monthly_simple_precipitation_intensity_index:
         unit: mm day-1
         logic: greater_equal
     cf_name: monthly_simple_precipitation_intensity_index
+# %% annual_simple_precipitation_intensity_index
+annual_simple_precipitation_intensity_index:
+    name: SDII
+    period: annual
+    required:
+        - pr
+    threshold:
+        value: 1
+        unit: mm day-1
+        logic: greater_equal
+    cf_name: sdiiETCCDI
 # %% daily_temperature_range
 daily_temperature_range:
     name: DTR
