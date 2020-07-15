@@ -425,7 +425,7 @@ diagnostics:
         <<: *precipdef
     scripts:
       mpqb:
-        reference_dataset: MultiModelMean
+        reference_dataset: GPCP-SG
         script: mpqb/mpqb_comparison.py
       # mpqb_taylor:
         # reference_dataset: MultiModelMean
