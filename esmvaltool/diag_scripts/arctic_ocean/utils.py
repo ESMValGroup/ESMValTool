@@ -312,6 +312,11 @@ def get_provenance_record(attributes, data_type, file_type):
     else:
         caption = "None"
 
+    if isinstance(attributes['ori_file'], str):
+        ancestor_files = [attributes['ori_file'], attributes['areacello']]
+    else:
+        ancestor_files = ["No_ancestor_file"]
+
     record = {
         'caption': caption,
         'region': attributes['region'],
@@ -319,6 +324,6 @@ def get_provenance_record(attributes, data_type, file_type):
         'references': [
             'contact_authors',
         ],
-        'ancestors': [attributes['ori_file'], attributes['areacello']]
+        'ancestors': ancestor_files
     }
     return record
