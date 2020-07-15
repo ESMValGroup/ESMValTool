@@ -89,6 +89,16 @@ diagnostics:
     scripts: null
 
 
+  CT2019:
+    description: CT2019 check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: CT2019, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2019, start_year: 2000, end_year: 2018}
+    scripts: null
+
+
   Duveiller2018:
     description: Duveiller2018 check
     variables:
@@ -96,6 +106,26 @@ diagnostics:
     additional_datasets:
       - {dataset: Duveiller2018, project: OBS, mip: Amon, tier: 2,
          type: clim, version: v2018, start_year: 2010, end_year: 2010}
+    scripts: null
+
+
+  E-OBS:
+    description: E-OBS check
+    variables:
+      tas:
+      tasmax:
+      tasmin:
+      pr:
+      psl:
+    additional_datasets:
+      - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
+         version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
+      - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
+         version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
+      - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
+         version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
+      - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
+         version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
     scripts: null
 
 
@@ -115,7 +145,7 @@ diagnostics:
       abs550aer:
       od550aer:
       od550aerStderr:
-      od550lt1aer:
+      # od550lt1aer:   # NEEDS Iris 3.0
       od870aer:
       od870aerStderr:
     additional_datasets:
@@ -316,6 +346,17 @@ diagnostics:
     scripts: null
 
 
+  HALOE:
+    description: HALOE check
+    variables:
+      hus:
+      tro3:
+    additional_datasets:
+      - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: 1, start_year: 1991, end_year: 2002}
+    scripts: null
+
+
   Landschuetzer2016:
     description: Landschuetzer2016 check
     variables:
@@ -415,6 +456,16 @@ diagnostics:
     scripts: null
 
 
+  PERSIANN-CDR:
+    description: PERSIANN-CDR check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: PERSIANN-CDR, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: v01r01, start_year: 1983, end_year: 2018}
+    scripts: null
+
+
   PHC:
     description: PHC check
     variables:
@@ -474,6 +525,40 @@ diagnostics:
 
   ### TIER 3 ##################################################################
 
+  APHRO-MA:
+    description: APHRO-MA check
+    variables:
+      pr:
+        additional_datasets:
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 025deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 050deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 025deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 050deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 025deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 050deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 025deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 050deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+      tas:
+        additional_datasets:
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 025deg-V1808, start_year: 1961, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 050deg-V1808, start_year: 1961, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 025deg-V1808, start_year: 1961, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 050deg-V1808, start_year: 1961, end_year: 2007}
+    scripts: null
+
+
   AURA-TES:
     description: AURA-TES check
     variables:
@@ -509,12 +594,16 @@ diagnostics:
   CDS-SATELLITE-SOIL-MOISTURE:
     description: CDS-SATELLITE-SOIL-MOISTURE check
     variables:
-      sm:
-      smStderr:
+      sm_month:
+        short_name: sm
+        mip: Lmon
+      sm_day:
+        short_name: sm
+        mip: day
     additional_datasets:
-      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, mip: day, tier: 3,
-         type: sat, version: COMBINED-TCDR-v201812.0.0,
-         start_year: 1979, end_year: 2018}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: CUSTOM-TCDR-ICDR-20200602,
+         start_year: 1978, end_year: 2020}
     scripts: null
 
 
