@@ -11,10 +11,13 @@ Download and processing instructions
  - Go to the above link
  - Click the tab "Data Access"
  - Log in with Earthdata account
- - Downloaded the following files:
+ - Download the following files:
      - CLM4.SCALE_FACTOR.JPL.MSCNv02CRI.nc
      - GRCTellus.JPL.200204_202004.GLO.RL06M.MSCNv02CRI.nc
      - LAND_MASK.CRI.nc
+ - Download the grace months table  which holds important information
+   on data coverage. Save it in the RAWOBSDIR.
+      https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
 
 
 Modification history
@@ -43,8 +46,9 @@ logger = logging.getLogger(__name__)
 def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
     original = xr.open_dataset(in_file)[raw_varname]
 
-    with urllib.request.urlopen(cfg['grace_table']) as response:
-        grace_months_table = pd.read_csv(response)
+    months_table_file = os.path.join(cfg['in_dir'],
+                                     'GRACE_GRACE-FO_Months_RL06.csv')
+    grace_months_table = pd.read_csv(months_table_file)
 
     # Construct the time axis
     time_axis = []
@@ -142,8 +146,9 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 def cmorization(in_dir, out_dir, cfg, cfg_user):
     """Cmorization func call."""
     cfg['work_dir'] = cfg_user['work_dir']
-    # Pass on rawobsdir to cfg file
+    # Pass on some parameters to cfg file
     cfg['rawobsdir'] = cfg_user['rootpath']['RAWOBS'][0]
+    cfg['in_dir'] = in_dir
     # If it doesn't exist, create it
     if not os.path.isdir(cfg['work_dir']):
         logger.info("Creating working directory for resampling: %s",
