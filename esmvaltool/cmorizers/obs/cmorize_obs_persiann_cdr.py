@@ -17,15 +17,15 @@ Download and processing instructions
 
 """
 
-import logging
 import glob
+import logging
 import os
 import warnings
 from pprint import pformat
-import iris.coord_categorisation
 
-import iris
 import dask.array as da
+import iris
+import iris.coord_categorisation
 import numpy as np
 
 from . import utilities as utils
@@ -35,12 +35,20 @@ logger = logging.getLogger(__name__)
 
 def fix_coord_dimensions(cube):
     """Fix the order of lat and lon."""
+    # Swap latitude and longitude coordinates
     flipped_data = np.moveaxis(cube.core_data(), 2, 1)
     coord_spec = [(cube.coord('time'), 0),
                   (cube.coord('latitude'), 1),
                   (cube.coord('longitude'), 2)]
     new_cube = iris.cube.Cube(flipped_data, dim_coords_and_dims=coord_spec)
     new_cube.metadata = cube.metadata
+
+    # Reverse cube along latitude coordinate and fix latitude coordinate
+    lat_coord = new_cube.coord('latitude')
+    new_cube = iris.util.reverse(new_cube, lat_coord)
+    if not lat_coord.is_contiguous():
+        lat_coord.bounds = None
+        lat_coord.guess_bounds()
     return new_cube
 
 
@@ -125,7 +133,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
                             out_dir,
                             attrs,
                             unlimited_dimensions=['time'])
-    
+
     # save variable in monthly files
     iris.coord_categorisation.add_month_number(cube, 'time', name='month')
     cube = cube.aggregated_by(['month', 'year'], iris.analysis.MEAN)
