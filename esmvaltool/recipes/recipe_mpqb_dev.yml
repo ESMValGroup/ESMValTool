@@ -36,13 +36,18 @@ histogram_settings_zoom: &histogram_settings_zoom
 datasets_dev: &datasets_dev
   additional_datasets:
     - {dataset: ERA-Interim-Land, type: reanaly, project: OBS6, mip: Lmon,
-       version: 1, tier: 3, start_year: 2008, end_year: 2010}
+       version: 1, tier: 3, start_year: 2008, end_year: 2010, alias: ERA-Interim-Land}
+    # Note that ICDR only starts from 2020, so this is a pure CDR.
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 2008, end_year: 2010, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 2008, end_year: 2010, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
     - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
-       version: 1, tier: 3, start_year: 2008, end_year: 2010}
+       version: 1, tier: 3, start_year: 2008, end_year: 2010, alias: cds-era5-land-monthly}
     - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
-       version: 1, tier: 3, start_year: 2008, end_year: 2010}
+       version: 1, tier: 3, start_year: 2008, end_year: 2010, alias: cds-era5-monthly}
     - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
-       version: 1, tier: 3, start_year: 2008, end_year: 2010}
+       version: 5.12.4, tier: 3, start_year: 2008, end_year: 2010, alias: MERRA2}
 
 
 preprocessors:
@@ -57,8 +62,6 @@ preprocessors:
       frequency: mon
 
   pp_dev_line:
-    regrid_time:  # this is needed for a fully homogeneous time coordinate
-      frequency: mon
     area_statistics:
       operator: mean
 
@@ -100,7 +103,7 @@ diagnostics:
     scripts:
       taylor:
         reference_dataset: cds-era5-land-monthly
-        script: mpqb/taylordiagram.py
+        script: mpqb/mpqb_taylordiagram.py
     <<: *datasets_dev
   lineplots:
     variables:
@@ -110,6 +113,8 @@ diagnostics:
     scripts:
       lineplot:
         script: mpqb/mpqb_lineplot.py
+        y0: 0
+        y1: 0.3
     <<: *datasets_dev
   histogram_original:
     variables:

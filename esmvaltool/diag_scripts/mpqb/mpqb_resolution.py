@@ -20,10 +20,7 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    grouped_input_data = group_metadata(input_data, 'dataset', sort='dataset')
-    logger.info(
-        "Example of how to group and sort input data by standard_name:"
-        "\n%s", pformat(grouped_input_data))
+    grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     # calculate resolution
     logger.info("Calculating the resolution.")
@@ -32,11 +29,11 @@ def main(cfg):
 
     datasetnames = read_mpqb_cfg()['datasetnames']
 
-    for dataset in grouped_input_data:
-        logger.info("Opening dataset: %s", dataset)
+    for alias in grouped_input_data:
+        logger.info("Opening dataset: %s", alias)
         datasets.append(
-            iris.load_cube(grouped_input_data[dataset][0]['filename']))
-        names.append(datasetnames[dataset])
+            iris.load_cube(grouped_input_data[alias][0]['filename']))
+        names.append(datasetnames[alias])
 
     res_data = _get_tim_res(datasets, names)
 

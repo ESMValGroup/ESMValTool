@@ -30,7 +30,7 @@ def _array2cube(array_in, cube_template):
 class MPQBpair:
     """Class for calculating metrics on one pair of datasets."""
 
-    def __init__(self, ds_cfg, ds1name, ds2name, alias):
+    def __init__(self, ds_cfg, ds1name, ds2name):
         """ds_cfg should be input data grouped on dataset."""
         self.ds_cfg = ds_cfg
         self.ds1 = ds1name
@@ -39,7 +39,6 @@ class MPQBpair:
         self.template = None
         self.ds1dat = None
         self.ds2dat = None
-        self.alias = alias
 
     def load(self):
         """load."""
@@ -120,7 +119,7 @@ class MPQBpair:
                 self.ds1][0]['short_name']]
             plot_kwargs = metrics_plot_dictionary[metricname]
             # Overwrite plot title to be dataset name
-            plot_kwargs['title'] = self.alias
+            plot_kwargs['title'] = self.ds1
             mpqb_mapplot(cube, cfg, plot_file, **plot_kwargs)
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,
@@ -147,10 +146,10 @@ def main():
     for alias in grouped_input_data.keys():
         dataset = grouped_input_data[alias][0]['dataset']
 
-        if dataset != reference_dataset:
+        if alias != reference_dataset:
             logger.info("Opening dataset: %s", dataset)
             # Opening the pair
-            pair = MPQBpair(grouped_input_data, alias, reference_dataset, alias)
+            pair = MPQBpair(grouped_input_data, alias, reference_dataset)
             pair.load()
             # Execute the requested metrics
             for metricname in metrics_to_calculate:
