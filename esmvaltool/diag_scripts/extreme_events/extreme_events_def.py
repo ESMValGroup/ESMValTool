@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Tue May 19 17:23:06 2020
 
@@ -7,7 +5,7 @@ Created on Tue May 19 17:23:06 2020
 """
 import yaml
 
-index_definition = yaml.load("""
+index_definition = yaml.safe_load("""
 # %% annual_number_of_frost_days                     
 annual_number_of_frost_days:
     name: frost days
