@@ -179,18 +179,18 @@ datasets:
      # tier: 3, alias: ERA5}
   # - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
      # tier: 3, alias: MAC-LWP}
-  # - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
-     # tier: 2, alias: PERSIANN-CDR}
+  #- {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
+  #   tier: 2, alias: PERSIANN-CDR}
   - {dataset: JRA-55, project: ana4mips, type: reanalysis, mip: Amon,
      tier: 1, alias: JRA-55}
   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, 
      tier: 1, alias: GPCP-SG}
   # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_25, 
      # tier: 2, alias: GPCC}
-  # - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
-     # tier: 3, alias: ERA5}
-  # - {dataset: ERA5-land, project: OBS6, type: reanaly, version: v1,
-     # tier: 3, alias: ERA5}
+  #- {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
+  #   tier: 3, alias: ERA5}
+  - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+     tier: 3, alias: ERA5-Land}
      
 
      
