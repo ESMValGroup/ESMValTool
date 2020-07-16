@@ -714,26 +714,26 @@ def add_filename(cube, fun):
     """ adds a filename to the cube attributes based on the cube attributes """
     # add attributes
     
-    try:
-        dty_start = cube.coords("year")[0].points[0]
-        dty_end = cube.coords("year")[0].points[-1]
-    except:
-        dts = cube.coords("time")[0]
-        dty_start = dts.units.num2date(dts.points[0]).year
-        dty_end = dts.units.num2date(dts.points[-1]).year
+#    try:
+#        dty_start = cube.coords("year")[0].points[0]
+#        dty_end = cube.coords("year")[0].points[-1]
+#    except:
+#        dts = cube.coords("time")[0]
+#        dty_start = dts.units.num2date(dts.points[0]).year
+#        dty_end = dts.units.num2date(dts.points[-1]).year
 
     cube.attributes.update(
         {"FI_index": fun,
-         "FI_model": cube.attributes['model_id'],
-         "FI_experiment": cube.attributes['experiment_id'],
-         "FI_ensemble": cube.attributes['parent_experiment_rip'],
-         "FI_temporal_coverage": "{}-{}".format(dty_start, dty_end),
+#         "FI_model": cube.attributes['model_id'],
+#         "FI_experiment": cube.attributes['experiment_id'],
+#         "FI_ensemble": cube.attributes['parent_experiment_rip'],
+#         "FI_temporal_coverage": "{}-{}".format(dty_start, dty_end),
                 })
-    cube.attributes.update({"FI_filename":
-        "{}_{}_{}_{}_{}".format(cube.attributes["FI_index"],
-         cube.attributes["FI_model"],
-         cube.attributes["FI_experiment"],
-         cube.attributes["FI_ensemble"],
-         cube.attributes["FI_temporal_coverage"],)})
+#    cube.attributes.update({"FI_filename":
+#        "{}_{}_{}_{}_{}".format(cube.attributes["FI_index"],
+#         cube.attributes["FI_model"],
+#         cube.attributes["FI_experiment"],
+#         cube.attributes["FI_ensemble"],
+#         cube.attributes["FI_temporal_coverage"],)})
     
     print(cube.attributes)

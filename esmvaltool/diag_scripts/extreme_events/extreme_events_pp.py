@@ -90,6 +90,13 @@ def main(cfg):
             logger.info('Processing dataset {}, {}.'.format(attributes['dataset'], attributes['short_name']))
             input_file = attributes['filename']
             alias_cubes[attributes['short_name']] = convert_ETCCDI_units(iris.load_cube(input_file))
+            base_fname = "_{}_{}_{}_{}".format(attributes["alias"],
+                                          attributes["exp"],
+                                          attributes["ensemble"],
+                                          "{}-{}".format(
+                                                  attributes["start_year"],
+                                                  attributes["end_year"]),
+                      )
 
         # get index function
         for index_name in cfg['indices']:
@@ -110,7 +117,7 @@ def main(cfg):
             # calculate and save cube
             etccdi_cube = etccdi_index(
                 {k:v.copy() for k,v in alias_cubes.items()}, cfg=cfg)
-            fname = etccdi_cube.attributes["FI_filename"]
+            fname = etccdi_cube.attributes["FI_index"] + base_fname
             iris.save(etccdi_cube,
                       cfg['work_dir'] + os.sep + fname + '.nc')
 
