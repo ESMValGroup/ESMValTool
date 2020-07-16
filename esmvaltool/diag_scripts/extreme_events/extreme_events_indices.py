@@ -366,6 +366,8 @@ def dtr(alias_cubes, **kwargs):
     result_cube = alias_cubes['tasmax'] - alias_cubes['tasmin']
     result_cube.rename(specs['cf_name'])
     
+    result_cube.attributes = alias_cubes['tasmax'].attributes
+    
     # add filename
     add_filename(result_cube, sys._getframe().f_code.co_name)
     
@@ -376,6 +378,10 @@ def tn10pETCCDI_m(alias_cubes, **kwargs):
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     result_cube = var_perc_ex(alias_cubes, specs, kwargs['cfg'])
+    
+    # add filename
+    add_filename(result_cube, sys._getframe().f_code.co_name)
+    
     return result_cube
 
 def tn10pETCCDI_yr(alias_cubes, **kwargs):
@@ -523,6 +529,8 @@ def sdiiETCCDI_m(alias_cubes, **kwargs):
         result_cube = statistic_function(wd_selection, 'sum') / statistic_function(boolean_cube, 'sum')
     else:
         raise Exception(f"Period {specs['period']} not implemented.")
+    
+    result_cube.attributes = wd_selection.attributes
     
     result_cube.rename(specs['cf_name'])
     result_cube.units = Unit('mm month-1')

@@ -714,10 +714,14 @@ def add_filename(cube, fun):
     """ adds a filename to the cube attributes based on the cube attributes """
     # add attributes
     
-    print(cube.attributes)
-    dts = cube.coords("time")[0]
-    dty_start = dts.units.num2date(dts.points[0]).year
-    dty_end = dts.units.num2date(dts.points[-1]).year
+    try:
+        dty_start = cube.coords("year")[0].points[0]
+        dty_end = cube.coords("year")[0].points[-1]
+    except:
+        dts = cube.coords("time")[0]
+        dty_start = dts.units.num2date(dts.points[0]).year
+        dty_end = dts.units.num2date(dts.points[-1]).year
+
     cube.attributes.update(
         {"FI_index": fun,
          "FI_model": cube.attributes['model_id'],
@@ -731,3 +735,5 @@ def add_filename(cube, fun):
          cube.attributes["FI_experiment"],
          cube.attributes["FI_ensemble"],
          cube.attributes["FI_temporal_coverage"],)})
+    
+    print(cube.attributes)
