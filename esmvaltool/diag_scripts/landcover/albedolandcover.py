@@ -323,8 +323,8 @@ def main(cfg):
                                       if key in lc3_class]
 
         # Load all data
-        model_data = {fracKey: iris.load_cube(datadict[fracKey]['filename'])
-                      for fracKey in this_models_xxfracs}
+        model_data = {frac_key: iris.load_cube(datadict[frac_key]['filename'])
+                      for frac_key in this_models_xxfracs}
         # Load albedo and snow cover
         model_data['alb'] = iris.load_cube(datadict['alb']['filename'])
         model_data['snc'] = iris.load_cube(datadict['snc']['filename'])

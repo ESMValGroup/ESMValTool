@@ -5,6 +5,7 @@
 hyint_diagnostic <- function(work_dir, # nolint
                              infile,
                              model_idx,
+                             climofiles,
                              season,
                              prov_info,
                              rewrite = FALSE) {
@@ -495,7 +496,7 @@ hyint_diagnostic <- function(work_dir, # nolint
   # Set provenance for this output file
   caption <-
     paste0(
-      "Hyint indices  for years ",
+      "Hyint indices for years ",
       year1,
       " to ",
       year2,
@@ -503,7 +504,7 @@ hyint_diagnostic <- function(work_dir, # nolint
       models_name[model_idx]
     )
   xprov <- list(
-    ancestors = list(infile),
+    ancestors = climofiles[model_idx],
     model_idx = list(model_idx),
     caption = caption
   )
