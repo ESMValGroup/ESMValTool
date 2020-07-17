@@ -8,6 +8,8 @@ import iris.analysis
 import iris.cube
 import iris.util
 
+import cf_units
+
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
