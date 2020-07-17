@@ -20,6 +20,7 @@ def get_provenance_record(ancestor_files):
         'authors': [
             'verhoeven_stefan',
             'kalverla_peter',
+            'camphuijsen_jaro',
         ],
         'projects': [
             'ewatercycle',
@@ -137,14 +138,30 @@ def main(cfg):
 
         cubes['pr'].units = 'mm d-1'
 
+        #TODO check that this loop only runs over the variables: ["pr", "tas", "tasmax", "tasmin", "e", "sfcWind", "rsds"]
+        # print('vars = ["pr", "tas", "tasmax", "tasmin", "e", "sfcWind", "rsds"]')
         for var_name, cube in cubes.items():
-            cube.remove_coord('shape_id')
+            print(var_name)
             # Western emisphere longitudes should be negative
             points = cube.coord('longitude').points
             cube.coord('longitude').points = (points + 180) % 360 - 180
             # latitudes decreasing
             cube = cube[:, ::-1, ...]
+            
+            #TODO convert to iris?
+            # drop extra coordinates and keep only necessary variables
+            ordered_dims = ["lon", "lat", "time"]
+            extra_coords = np.setdiff1d(forcing.coords, ordered_dims).tolist()
+            cleaned_forcing = forcing.drop(extra_coords)[ordered_dims + [var]]
 
+            #TODO convert to iris?
+            # reindex data to a global coordinates set
+            dataset = cleaned_forcing.reindex(
+                {"lat": masks["lat"], "lon": masks["lon"]},
+                method="nearest",
+                tolerance=1e-2,
+            )
+            
             output_file = save(cube, var_name, dataset, cfg)
 
             # Store provenance
