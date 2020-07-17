@@ -7,11 +7,13 @@ import cf_units
 import iris
 import numpy as np
 
-from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import mannkendall1d, theilslopes1d
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from mpqb_plots import get_ecv_plot_config, mpqb_mapplot
-from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import parallel_apply_along_axis
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (
+    mannkendall1d, theilslopes1d)
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import \
+    parallel_apply_along_axis
+from mpqb_plots import read_mpqb_cfg, mpqb_mapplot, read_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -35,6 +37,7 @@ def theilsenmk(cube):
     outcube.units = cf_units.Unit(str(outcube.units) + ' year-1')
     return outcube
 
+
 def timemean(cube):
     """Calculate mean over time."""
     fullmean = cube.collapsed('time', iris.analysis.MEAN)
@@ -54,16 +57,16 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    grouped_input_data = group_metadata(
-        input_data, 'dataset', sort='dataset')
+    grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     # Loop through all datasets
-    for dataset in grouped_input_data.keys():
-        dataset_cfg = grouped_input_data[dataset]
+    for alias in grouped_input_data.keys():
+        dataset_cfg = grouped_input_data[alias][0]
+        dataset = grouped_input_data[alias][0]['dataset']
 
         logger.info("Opening dataset: %s", dataset)
         # Opening the pair
-        cube = iris.load_cube(dataset_cfg[0]['filename'])
+        cube = iris.load_cube(dataset_cfg['filename'])
 
         for metricname in metrics_to_calculate:
             try:
@@ -73,15 +76,18 @@ def main(cfg):
                 logger.error("Metric %s is not defined. ", metricname)
                 continue
             # Plot the results (if configured to plot)
-            plot_file = get_plot_filename(metricname + '_' + dataset, cfg)
             if cfg['write_plots']:
-                metrics_plot_dictionary = get_ecv_plot_config(
-                    dataset_cfg[0]['short_name'])
+                baseplotname = f"{alias}_{metricname}" \
+                               f"_{dataset_cfg['variable_group']}" \
+                               f"_{dataset_cfg['start_year']}-" \
+                               f"{dataset_cfg['end_year']}"
+                plot_file = get_plot_filename(baseplotname, cfg)
+                metrics_plot_dictionary = read_mpqb_cfg()['colors'][
+                    dataset_cfg['short_name']]
                 plot_kwargs = metrics_plot_dictionary[metricname]
                 # Overwrite plot title to be dataset name
-                plot_kwargs['title'] = dataset
-                mpqb_mapplot(resultcube, plot_file, **
-                             plot_kwargs)
+                plot_kwargs['title'] = alias
+                mpqb_mapplot(resultcube, cfg, plot_file, **plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
 

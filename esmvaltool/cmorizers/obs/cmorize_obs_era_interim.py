@@ -95,7 +95,7 @@ import iris
 import numpy as np
 
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import daily_statistics
+from esmvalcore.preprocessor import daily_statistics, monthly_statistics
 
 from . import utilities as utils
 
@@ -144,21 +144,19 @@ def _fix_coordinates(cube, definition):
         utils.add_scalar_height_coord(cube, 2.)
     if 'height10m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.)
-
-    for axis in 'T', 'X', 'Y', 'Z':
-        coord_def = definition.coordinates.get(axis)
-        if coord_def:
-            coord = cube.coord(axis=axis)
-            if axis == 'T':
-                coord.convert_units('days since 1850-1-1 00:00:00.0')
-            if axis == 'Z':
-                coord.convert_units(coord_def.units)
-            coord.standard_name = coord_def.standard_name
-            coord.var_name = coord_def.out_name
-            coord.long_name = coord_def.long_name
-            coord.points = coord.core_points().astype('float64')
-            if len(coord.points) > 1:
-                coord.guess_bounds()
+    for coord_def in definition.coordinates.values():
+        axis = coord_def.axis
+        coord = cube.coord(axis=axis)
+        if axis == 'T':
+            coord.convert_units('days since 1850-1-1 00:00:00.0')
+        if axis == 'Z':
+            coord.convert_units(coord_def.units)
+        coord.standard_name = coord_def.standard_name
+        coord.var_name = coord_def.out_name
+        coord.long_name = coord_def.long_name
+        coord.points = coord.core_points().astype('float64')
+        if len(coord.points) > 1:
+            coord.guess_bounds()
     return cube
 
 
@@ -177,6 +175,40 @@ def _fix_monthly_time_coord(cube):
     start = coord.points
     coord.points = 0.5 * (start + end)
     coord.bounds = np.column_stack([start, end])
+
+
+def _fix_monthly_time_coord_eiland(cube):
+    """Set the monthly time coordinates to the middle of the month."""
+    coord = cube.coord(axis='T')
+    start = []
+    end = []
+    for cell in coord.cells():
+        # set start to first day 00 UTC
+        start.append(cell.point.replace(day=1, hour=0))
+        # now deal with the end
+        month = cell.point.month + 1
+        year = cell.point.year
+        if month == 13:
+            month = 1
+            year = year + 1
+        end.append(cell.point.replace(month=month, year=year, day=1, hour=0))
+    end = coord.units.date2num(end)
+    start = coord.units.date2num(start)
+    coord.points = 0.5 * (start + end)
+    coord.bounds = np.column_stack([start, end])
+
+
+def _compute_monthly(cube):
+    """Convert various frequencies to daily frequency.
+
+    ERA-Interim-Land is in 6hr freq need to convert to monthly
+
+    """
+    cube = monthly_statistics(cube, operator='mean')
+    # Remove monthly statistics aux coordinates
+    cube.remove_coord(cube.coord('month_number'))
+    cube.remove_coord(cube.coord('year'))
+    return cube
 
 
 def _compute_daily(cube):
@@ -221,9 +253,6 @@ def _compute_daily(cube):
         cube = daily_statistics(cube, 'sum')
     else:
         cube = daily_statistics(cube, 'mean')
-    # Remove daily statistics aux coordinates
-    cube.remove_coord(cube.coord('day_of_year'))
-    cube.remove_coord(cube.coord('year'))
 
     # Correct the time coordinate
     cube.coord('time').points = cube.coord('time').units.date2num([
@@ -308,7 +337,8 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     # Set correct names
     cube.var_name = definition.short_name
-    cube.standard_name = definition.standard_name
+    if definition.standard_name:
+        cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
     _fix_units(cube, definition)
@@ -318,15 +348,25 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     cube = _fix_coordinates(cube, definition)
 
-    if 'mon' in var['mip']:
-        _fix_monthly_time_coord(cube)
+    if attributes['dataset_id'] == 'ERA-Interim':
+        if 'mon' in var['mip']:
+            _fix_monthly_time_coord(cube)
+        if 'day' in var['mip']:
+            cube = _compute_daily(cube)
+        if 'fx' in var['mip']:
+            cube = iris.util.squeeze(cube)
+            cube.remove_coord('time')
 
-    if 'day' in var['mip']:
-        cube = _compute_daily(cube)
-
-    if 'fx' in var['mip']:
-        cube = iris.util.squeeze(cube)
-        cube.remove_coord('time')
+    # Specific to ERA Interim Land
+    elif attributes['dataset_id'] == 'ERA-Interim-Land':
+        if 'mon' in var['mip']:
+            cube = _compute_monthly(cube)
+            _fix_monthly_time_coord_eiland(cube)
+        if 'day' in var['mip']:
+            cube = _compute_daily(cube)
+    else:
+        raise ValueError("Unknown dataset_id for this script:\
+                         {attributes['dataset_id']}")
 
     # Convert units if required
     cube.convert_units(definition.units)

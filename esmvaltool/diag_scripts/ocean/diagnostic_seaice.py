@@ -68,6 +68,7 @@ from itertools import product
 
 import cartopy
 import iris
+import iris.coord_categorisation
 import iris.quickplot as qplt
 import matplotlib
 import matplotlib.pyplot as plt
@@ -177,6 +178,7 @@ def make_ts_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 
@@ -411,6 +413,7 @@ def make_map_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 
@@ -525,6 +528,7 @@ def make_map_extent_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 

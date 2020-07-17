@@ -1,0 +1,371 @@
+# ESMValTool
+#
+# Configuration related to plotting of different ECVs
+# for usage in the different MPQB diagnostics.
+#
+# mpqb_cfg.yml
+---
+
+<<<<<<< HEAD
+lai:
+  pearsonr:
+    title: pearsonr
+    vmin: -1.
+    vmax: 1.
+    cmap: BrBG
+  ubrmsd:
+    title: ubrmsd
+    vmin: 0.
+    vmax: 1.
+    cmap: YlOrBr
+  rmsd:
+    title: rmsd
+    vmin: 0.
+    vmax: 1.
+    cmap: YlOrBr
+  absdiff:
+    title: absdiff
+    vmin: -.5
+    vmax: .5
+    cmap: BrBG
+  reldiff:
+    title: reldiff
+    cmap: BrBG
+    vmin: -150
+    vmax: 150
+  theilsenmk:
+    title: theilsen
+    cmap: BrBG
+    vmin: -0.05
+    vmax: 0.05
+  timemean:
+    title: timemean
+    cmap: YlOrBr
+    vmin: 0.0
+    vmax: 0.5
+
+clt:
+  pearsonr:
+    title: pearsonr
+    vmin: -1.
+    vmax: 1.
+    cmap: BrBG
+  ubrmsd:
+    title: ubrmsd
+    vmin: 0.
+    vmax: 100.
+    cmap: YlOrBr
+  rmsd:
+    title: rmsd
+    vmin: 0.
+    vmax: 100.
+    cmap: YlOrBr
+  absdiff:
+    title: absdiff
+    vmin: -30.
+    vmax: 30.
+    cmap: BrBG
+  reldiff:
+    title: reldiff
+    cmap: BrBG
+    vmin: -50
+    vmax: 50
+  theilsenmk:
+    title: theilsen
+    cmap: BrBG
+    vmin: -0.05
+    vmax: 0.05
+  timemean:
+    title: timemean
+    cmap: YlOrBr
+    vmin: 0.0
+    vmax: 100.
+
+lwp:
+  pearsonr:
+    title: pearsonr
+    vmin: -1.
+    vmax: 1.
+    cmap: BrBG
+  ubrmsd:
+    title: ubrmsd
+    vmin: 0.
+    vmax: 0.1
+    cmap: YlOrBr
+  rmsd:
+    title: rmsd
+    vmin: 0.
+    vmax: 0.1
+    cmap: YlOrBr
+  absdiff:
+    title: absdiff
+    vmin: -0.1
+    vmax: 0.1
+    cmap: BrBG
+  reldiff:
+    title: reldiff
+    cmap: BrBG
+    vmin: -0.5
+    vmax: 0.5
+  theilsenmk:
+    title: theilsen
+    cmap: BrBG
+    vmin: -0.05
+    vmax: 0.05
+  timemean:
+    title: timemean
+    cmap: YlOrBr
+    vmin: 0.0
+    vmax: 0.2
+
+pr:
+  pearsonr:
+    title: pearsonr
+    vmin: -1.
+    vmax: 1.
+    cmap: BrBG
+  ubrmsd:
+    title: ubrmsd
+    vmin: 0.
+    vmax: 100.
+    cmap: YlOrBr
+  rmsd:
+    title: rmsd
+    vmin: 0.
+    vmax: 100.
+    cmap: YlOrBr
+  absdiff:
+    title: absdiff
+    vmin: -30.
+    vmax: 30.
+    cmap: BrBG
+  reldiff:
+    title: reldiff
+    cmap: BrBG
+    vmin: -50
+    vmax: 50
+  theilsenmk:
+    title: theilsen
+    cmap: BrBG
+    vmin: -0.05
+    vmax: 0.05
+  timemean:
+    title: timemean
+    cmap: YlOrBr
+    vmin: 0.0
+    vmax: 100.
+=======
+
+datasetnames:
+  ERA-Interim-Land: ERA-Interim/Land
+  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: ESA-CCI-COM
+  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: ESA-CCI-PAS
+  cds-era5-land-monthly: ERA5-Land
+  cds-era5-monthly: ERA5
+  MERRA2: MERRA-2
+  cds-satellite-lai-fapar: SPOT-VGT
+  CDS-SATELLITE-ALBEDO: SPOT-VGT
+  GRACE: GRACE
+
+datasetcolors:
+  ERA-Interim-Land: '#1f77b4'
+  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: '#ff7f0e'
+  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: '#bcbd22'
+  cds-era5-land-monthly: '#2ca02c'
+  cds-era5-monthly: '#d62728'
+  MERRA2: '#9467bd'
+  cds-satellite-lai-fapar: '#8c564b'
+  CDS-SATELLITE-ALBEDO: '#e377c2'
+  GRACE: '#7f7f7f'
+# From:
+# https://stackoverflow.com/questions/42086276/
+# Cycle continues like this:
+#  '#17becf'
+
+colors:
+  sm:
+    pearsonr:
+      title: pearsonr
+      vmin: -1.
+      vmax: 1.
+      cmap: BrBG
+    ubrmsd:
+      title: ubrmsd
+      vmin: 0.
+      vmax: .1
+      cmap: YlGn
+    rmsd:
+      title: rmsd
+      vmin: 0.
+      vmax: .4
+      cmap: YlGn
+    absdiff:
+      title: absdiff
+      vmin: -0.5
+      vmax: 0.5
+      cmap: BrBG
+    reldiff:
+      title: reldiff
+      cmap: BrBG
+      vmin: -150
+      vmax: 150
+    theilsenmk:
+      title: theilsen
+      cmap: BrBG
+      vmin: -0.001
+      vmax: 0.001
+    timemean:
+      title: timemean
+      cmap: YlGn
+      vmin: 0.
+      vmax: 0.6
+
+  lweGrace:
+    pearsonr:
+      title: pearsonr
+      vmin: -1.
+      vmax: 1.
+      cmap: BrBG
+    ubrmsd:
+      title: ubrmsd
+      vmin: 0.
+      vmax: .1
+      cmap: YlGn
+    rmsd:
+      title: rmsd
+      vmin: 0.
+      vmax: .4
+      cmap: YlGn
+    absdiff:
+      title: absdiff
+      vmin: -0.5
+      vmax: 0.5
+      cmap: BrBG
+    reldiff:
+      title: reldiff
+      cmap: BrBG
+      vmin: -150
+      vmax: 150
+    theilsenmk:
+      title: theilsen
+      cmap: BrBG
+      vmin: -0.02
+      vmax: 0.02
+    timemean:
+      title: timemean
+      cmap: YlGn
+      vmin: 0.
+      vmax: 0.6
+
+  sm1m:
+    pearsonr:
+      title: pearsonr
+      vmin: -1.
+      vmax: 1.
+      cmap: BrBG
+    ubrmsd:
+      title: ubrmsd
+      vmin: 0.
+      vmax: .1
+      cmap: YlGn
+    rmsd:
+      title: rmsd
+      vmin: 0.
+      vmax: .4
+      cmap: YlGn
+    absdiff:
+      title: absdiff
+      vmin: -0.5
+      vmax: .5
+      cmap: BrBG
+    reldiff:
+      title: reldiff
+      cmap: BrBG
+      vmin: -150
+      vmax: 150
+    theilsenmk:
+      title: theilsen
+      cmap: BrBG
+      vmin: -0.001
+      vmax: 0.001
+    timemean:
+      title: timemean
+      cmap: YlGn
+      vmin: 0.
+      vmax: 0.6
+
+  lai:
+    pearsonr:
+      title: pearsonr
+      vmin: -1.
+      vmax: 1.
+      cmap: BrBG
+    ubrmsd:
+      title: ubrmsd
+      vmin: 0.
+      vmax: 1.
+      cmap: YlOrBr
+    rmsd:
+      title: rmsd
+      vmin: 0.
+      vmax: 1.
+      cmap: YlOrBr
+    absdiff:
+      title: absdiff
+      vmin: -0.5
+      vmax: .5
+      cmap: BrBG
+    reldiff:
+      title: reldiff
+      cmap: BrBG
+      vmin: -150
+      vmax: 150
+    theilsenmk:
+      title: theilsen
+      cmap: BrBG
+      vmin: -0.05
+      vmax: 0.05
+    timemean:
+      title: timemean
+      cmap: YlOrBr
+      vmin: 0.0
+      vmax: 0.5
+
+  # For now the same as LAI, can be adapted
+  bdalb:
+    pearsonr:
+      title: pearsonr
+      vmin: -1.
+      vmax: 1.
+      cmap: BrBG
+    ubrmsd:
+      title: ubrmsd
+      vmin: 0.
+      vmax: 1.
+      cmap: YlOrBr
+    rmsd:
+      title: rmsd
+      vmin: 0.
+      vmax: 1.
+      cmap: YlOrBr
+    absdiff:
+      title: absdiff
+      vmin: -0.5
+      vmax: .5
+      cmap: BrBG
+    reldiff:
+      title: reldiff
+      cmap: BrBG
+      vmin: -150
+      vmax: 150
+    theilsenmk:
+      title: theilsen
+      cmap: BrBG
+      vmin: -0.01
+      vmax: 0.01
+    timemean:
+      title: timemean
+      cmap: YlOrBr
+      vmin: 0.0
+      vmax: 0.5
+>>>>>>> d8e576043103bff703315f0a7266e5d9a3421f21

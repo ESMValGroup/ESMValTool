@@ -7,16 +7,16 @@ from pprint import pformat
 
 import iris
 import numpy as np
-import yaml
 
-from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (absdiffaxismean1d, pearsonr1d, reldiffaxismean1d, rmsd1d,
-                    ubrmsd1d)
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger,
                                                   get_diagnostic_filename,
                                                   get_plot_filename)
-from mpqb_plots import get_ecv_plot_config, mpqb_mapplot
-from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import parallel_apply_along_axis
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (
+    absdiffaxismean1d, pearsonr1d, reldiffaxismean1d, rmsd1d, ubrmsd1d)
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import \
+    parallel_apply_along_axis
+from mpqb_plots import read_mpqb_cfg, mpqb_mapplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -76,7 +76,7 @@ class MPQBpair:
     def absdiff(self):
         """absdiff."""
         with warnings.catch_warnings():  # silence the mean of empty
-                # slice warnings this is expected behaviour
+            # slice warnings this is expected behaviour
             warnings.simplefilter("ignore", category=RuntimeWarning)
             self.metrics['absdiff'] = parallel_apply_along_axis(
                 absdiffaxismean1d, 0, (self.ds1dat, self.ds2dat))
@@ -89,8 +89,11 @@ class MPQBpair:
     def results2cube(self):
         """results2cube."""
         for metric in self.metrics:
-            self.metrics[metric] = _array2cube(
-                self.metrics[metric], self.template)
+            self.metrics[metric] = _array2cube(self.metrics[metric],
+                                               self.template)
+            # Set units to one for pearsonr
+            if metric=='pearsonr':
+                self.metrics[metric].units = '1'
 
     def plot(self):
         """plot."""
@@ -105,32 +108,24 @@ class MPQBpair:
 
             # Create provenance record
             provenance_record = {
-                'caption': "{0} between {1} and {2}".format(
-                    metricname, self.ds1, self.ds2),
-                'plot_file': plot_file
+                'caption':
+                "{0} between {1} and {2}".format(metricname, self.ds1,
+                                                 self.ds2),
+                'plot_file':
+                plot_file
             }
 
-            metrics_plot_dictionary = get_ecv_plot_config(
-                self.ds_cfg[self.ds1][0]['short_name'])
+            metrics_plot_dictionary = read_mpqb_cfg()['colors'][self.ds_cfg[
+                self.ds1][0]['short_name']]
             plot_kwargs = metrics_plot_dictionary[metricname]
             # Overwrite plot title to be dataset name
             plot_kwargs['title'] = self.ds1
-            mpqb_mapplot(cube, plot_file, **
-                         plot_kwargs)
+            mpqb_mapplot(cube, cfg, plot_file, **plot_kwargs)
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                         pformat(provenance_record))
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(diagnostic_file, provenance_record)
-
-
-def compute_diagnostic(filename):
-    """Compute an example diagnostic."""
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
-    logger.debug("Running example computation")
-    return cube.collapsed('time', iris.analysis.MEAN)
 
 
 def main():
@@ -144,19 +139,17 @@ def main():
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    grouped_input_data = group_metadata(
-        input_data, 'dataset', sort='dataset')
-    logger.info(
-        "Starting MPQB comparison script."
-    )
+    grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
+    logger.info("Starting MPQB comparison script.")
 
     # Create a pair of two datasets for inter-comparison
-    for dataset in grouped_input_data.keys():
-        if dataset != reference_dataset:
+    for alias in grouped_input_data.keys():
+        dataset = grouped_input_data[alias][0]['dataset']
+
+        if alias != reference_dataset:
             logger.info("Opening dataset: %s", dataset)
             # Opening the pair
-            pair = MPQBpair(grouped_input_data,
-                            dataset, reference_dataset)
+            pair = MPQBpair(grouped_input_data, alias, reference_dataset)
             pair.load()
             # Execute the requested metrics
             for metricname in metrics_to_calculate:
@@ -169,8 +162,7 @@ def main():
             # Plot the results (if configured to plot)
             if cfg['write_plots']:
                 pair.plot()
-            logger.info(
-                "Finished comparison to ref for dataset: %s", dataset)
+            logger.info("Finished comparison to ref for dataset: %s", dataset)
     logger.info("Finished!")
 
 
