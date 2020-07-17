@@ -36,23 +36,49 @@ class CycloneTracker(object):
         self.tracker_exe = self.cfg['tracker_exe']
 
     def compute(self):
-        data = group_metadata(self.cfg['input_data'].values(), 'alias')
+        data = group_metadata(self.cfg['input_data'].values(), 'dataset')
         for alias in data:
             var = group_metadata(data[alias], 'short_name')
             psl = iris.load_cube(var['psl'][0]['filename'])
-            ua = iris.load_cube(var['ua'][0]['filename'])
-            va = iris.load_cube(var['va'][0]['filename'])
             uas = iris.load_cube(var['uas'][0]['filename'])
             vas = iris.load_cube(var['vas'][0]['filename'])
-            ta = iris.load_cube(var['ta'][0]['filename'])
+            if 'ua7h' not in var.keys():
+                ua = iris.load_cube(var['ua'][0]['filename'])
+                va = iris.load_cube(var['va'][0]['filename'])
+                ta = iris.load_cube(var['ta'][0]['filename'])
+                zg = iris.load_cube(var['zg'][0]['filename'])
+            else:
+                ua = iris.load_cube(var['ua7h'][0]['filename'])
+                ua.var_name = 'ua'
+                va = iris.load_cube(var['va7h'][0]['filename'])
+                va.var_name = 'va'
+                ta = iris.load_cube(var['ta7h'][0]['filename'])
+                ta.var_name = 'ta'
+                zg = iris.load_cube(var['zg7h'][0]['filename'])
+                zg.var_name = 'zg'
+
+                ua.remove_coord('time')
+                ua.add_dim_coord(psl.coord('time'), 0)
+                va.remove_coord('time')
+                va.add_dim_coord(psl.coord('time'), 0)
+                uas = iris.load_cube(var['uas'][0]['filename'])
+                uas.remove_coord('time')
+                uas.add_dim_coord(psl.coord('time'), 0)
+                vas = iris.load_cube(var['vas'][0]['filename'])
+                vas.remove_coord('time')
+                vas.add_dim_coord(psl.coord('time'), 0)
+                ta.remove_coord('time')
+                ta.add_dim_coord(psl.coord('time'), 0)
+                zg.remove_coord('time')
+                zg.add_dim_coord(psl.coord('time'), 0)
+
             ta = ta.collapsed('air_pressure', iris.analysis.MEAN)
             ta.coords('air_pressure')[0].points = [40100]
-            zg = iris.load_cube(var['zg'][0]['filename'])
+            self.atcffreq = '600'
             freq = psl.attributes['frequency']
             if 'day' in freq:
                 self.atcffreq = '2400'
-            if '6hr' in freq:
-                self.atcffreq = '600'
+
             try:
                 years = set(psl.coord('year').points)
             except iris.exceptions.CoordinateNotFoundError:
@@ -97,18 +123,20 @@ class CycloneTracker(object):
                                  end_day,
                                  output_file)
             output_file.close()
-            self.write_provenance(
-                alias, data, os.path.join(self.cfg[n.WORK_DIR], output)
-                )
+#            self.write_provenance(
+#                alias, data, os.path.join(self.cfg[n.WORK_DIR], output)
+#                )
 
     def run_custom_time(self, dataset, total, years,
                         months, start_day, end_day, output_file):
         total_period = []
         for i, variable in enumerate(total):
             total_period.append(total[i])
-            total_period[i].coord('time').convert_units(
+            calendar = total_period[i].coord('time').units.calendar
+            total_period[i].coord('time').convert_units(cf_units.Unit(
                 'hours since {0}-{1}-{2} 00:00:00'.format(
-                    list(years)[0], list(months)[0], start_day))
+                    min(years), min(months), start_day), calendar=calendar))
+
         filename = '{dataset}_' \
                    '{start_year}{start_month}{start_day}_' \
                    '{end_year}{end_month}{end_day}'.format(
