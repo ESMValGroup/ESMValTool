@@ -5,8 +5,11 @@ from unittest.mock import create_autospec
 import pytest
 import yaml
 
-from esmvalcore import (_config, _data_finder, _recipe, _recipe_checks,
-                        _task, cmor)
+import esmvalcore
+import esmvalcore._config
+import esmvalcore._data_finder
+import esmvalcore._recipe
+import esmvalcore.cmor.check
 import esmvaltool
 
 from .test_diagnostic_run import write_config_user_file
@@ -19,10 +22,10 @@ def config_user(tmp_path_factory):
     filename = write_config_user_file(path)
     # The fixture scope is set to module to avoid very slow
     # test runs, as the following line also reads the CMOR tables
-    cfg = _config.read_config_user_file(filename, 'recipe_test', options={})
+    cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
     cfg['auxiliary_data_dir'] = str(path / 'auxiliary_data_dir')
-    cfg['check_level'] = cmor.check.CheckLevels['DEFAULT']
+    cfg['check_level'] = esmvalcore.cmor.check.CheckLevels['DEFAULT']
     return cfg
 
 
@@ -40,24 +43,24 @@ RECIPES, IDS = _get_recipes()
 def test_recipe_valid(recipe_file, config_user, monkeypatch):
     """Check that recipe files are valid ESMValTool recipes."""
     # Mock input files
-    find_files = create_autospec(_data_finder.find_files,
+    find_files = create_autospec(esmvalcore._data_finder.find_files,
                                  spec_set=True)
     find_files.side_effect = lambda *_, **__: [
         'test_0000-1849.nc',
         'test_1850-9999.nc',
     ]
-    monkeypatch.setattr(_data_finder, 'find_files', find_files)
+    monkeypatch.setattr(esmvalcore._data_finder, 'find_files', find_files)
 
     # Mock vertical levels
-    levels = create_autospec(_recipe.get_reference_levels,
+    levels = create_autospec(esmvalcore._recipe.get_reference_levels,
                              spec_set=True)
     levels.side_effect = lambda *_, **__: [1, 2]
-    monkeypatch.setattr(_recipe, 'get_reference_levels', levels)
+    monkeypatch.setattr(esmvalcore._recipe, 'get_reference_levels', levels)
 
     # Mock valid NCL version
-    ncl_version = create_autospec(_recipe_checks.ncl_version,
+    ncl_version = create_autospec(esmvalcore._recipe_checks.ncl_version,
                                   spec_set=True)
-    monkeypatch.setattr(_recipe_checks, 'ncl_version', ncl_version)
+    monkeypatch.setattr(esmvalcore._recipe_checks, 'ncl_version', ncl_version)
 
     # Mock interpreters installed
     def which(executable):
@@ -67,7 +70,7 @@ def test_recipe_valid(recipe_file, config_user, monkeypatch):
             path = None
         return path
 
-    monkeypatch.setattr(_task, 'which', which)
+    monkeypatch.setattr(esmvalcore._task, 'which', which)
 
     # Create a shapefile for extract_shape preprocessor if needed
     recipe = yaml.safe_load(recipe_file.read_text())
@@ -79,4 +82,4 @@ def test_recipe_valid(recipe_file, config_user, monkeypatch):
             filename.parent.mkdir(parents=True, exist_ok=True)
             filename.touch()
 
-    _recipe.read_recipe_file(recipe_file, config_user)
+    esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
