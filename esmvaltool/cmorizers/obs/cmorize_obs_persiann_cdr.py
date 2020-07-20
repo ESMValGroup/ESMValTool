@@ -134,7 +134,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
                             attrs,
                             unlimited_dimensions=['time'])
 
-    # save variable in monthly files
+    # Save variable in monthly files
     iris.coord_categorisation.add_month_number(cube, 'time', name='month')
     cube = cube.aggregated_by(['month', 'year'], iris.analysis.MEAN)
     attrs['mip'] = "Amon"
