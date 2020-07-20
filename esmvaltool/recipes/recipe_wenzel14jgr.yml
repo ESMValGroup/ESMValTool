@@ -1,7 +1,7 @@
+# ESMValTool
 # recipe_wenzel14jgr.yml
 ---
 documentation:
-
   description: |
     This recipe reproduces most of the figures of Wenzel et al. (2014).
 
