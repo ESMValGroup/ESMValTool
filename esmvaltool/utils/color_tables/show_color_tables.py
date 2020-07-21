@@ -1,4 +1,5 @@
 """Utility script for inspecting and converting ncl color tables."""
+# pylint: disable=import-outside-toplevel
 import logging
 
 logger = logging.getLogger(__name__)
@@ -126,9 +127,8 @@ def main_plot_ncl_cm(colorpath, outpath):
 
 
 class ColorTables():
-    """
-    Generate colormap samples for ESMValTool's default colormaps.
-    """
+    "Generate colormap samples for ESMValTool's default colormaps."
+
     def __init__(self):
         logger.setLevel(logging.DEBUG)
         console_handler = logging.StreamHandler()
