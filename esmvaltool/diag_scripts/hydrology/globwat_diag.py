@@ -6,6 +6,7 @@ import calendar
 import os.path 
 import iris
 from iris.pandas import as_data_frame 
+import pandas as pd
 
 import subprocess
 from esmvalcore import preprocessor as preproc
@@ -224,18 +225,17 @@ def main(cfg):
             pr.convert_units('mm day-1')
             pet.convert_units('mm day-1') 
 
+        #TODO: I get errot while trying to adjust coordinates :
+        #  ValueError: The 'longitude' DimCoord points array must be strictly monotonic.
+        # I used intersection instead and it works 
         # Adjust longitude coordinate to GlobWat convention
-        # for cube in [pr, pet]:
-        #     print(cube)
-        #     points = cube.coord('longitude').points
-        #     cube.coord('longitude').points = (points + 180) % 360 - 180
-        #     # latitudes decreasing
-        #     cube = cube[:, ::-1, ...]
+        # for cube in [pet, pr]:
+        #     cube.coord('longitude').points = (cube.coord('longitude').points +
+        #                                       180) % 360 - 180
 
-            # cube.coord('longitude').points = (cube.coord('longitude').points +
-            #                                 180) % 360 - 180
-            # # latitudes decreasing
-            # cube = cube[:, ::-1, ...]
+        # Adjust longitude coordinate to GlobWat convention
+        pr.intersection(longitude=[-180,180],latitude=[-90,90])
+        pet.intersection(longitude=[-180,180],latitude=[-90,90])
 
         # output_file = get_diagnostic_filename(get_output_stem_monthly(cube),cfg, 'asc')
         #TODO: the input data has 6 rows as a header which then be skiped by the model
@@ -252,23 +252,32 @@ def main(cfg):
                 for mip in ['Amon', 'day']:
                     if mip == 'Amon':
                         output_name_amon = output_name[key]['Amon']
-                    # for var_name in output_name: 
-                    #     for time_step in output_name[var_name]: 
-                    #         print(output_name[var_name][time_step]) 
                         for i in range(len(output_name_amon)):
                             key_cube = all_vars[key]
                             for sub_cube in key_cube.slices_over('time'): 
                                 frame = iris.pandas.as_data_frame(sub_cube, copy=True)
-                                # maybe a way to save data# iris.experimental.raster.export_geotiff(frame, output_name_amon[i])
-                                # final_path = os.path.join(path, output_name[key][mip][i])
-                                # Path(output_file[i]).parent.mkdir(exist_ok=True)
-                                # os.makedirs(final_path)
+                                #Making ascii files headers 
+                                header = [['ncols', cube.shape[2]],
+                                          ['nrows', cube.shape[1]],
+                                          ['xllcorner', -180], 
+                                          ['yllcorner', -90], 
+                                          ['cellsize', 360 / cube.shape[2]], 
+                                          ['NODATA_value', -9999]
+                                         ] 
+                                header_frame = pd.DataFrame(data=header)
                                 file_name = output_name_amon[i]
+                                header_frame.to_csv(data_dir / f"{file_name}.asc",
+                                                    sep=' ', 
+                                                    index=False, 
+                                                    header=False
+                                                    )
+                                #saving data and append headers to outputs
                                 frame.to_csv(data_dir / f"{file_name}.asc",
                                             sep=' ',
                                             na_rep='-9999',
                                             float_format='%.1f',
-                                            index=False
+                                            index=False,
+                                            mode ='a'
                                             ) 
                                 iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
 
