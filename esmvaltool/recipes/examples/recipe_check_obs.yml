@@ -252,12 +252,18 @@ diagnostics:
 
 
   ESRL:
-    description: ESRL (co2s) check
+    description: ESRL check
     variables:
       co2s:
         mip: Amon
     additional_datasets:
       - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: MLO, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: SMO, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: SPO, tier: 2,
          start_year: 1973, end_year: 2019}
     scripts: null
 
