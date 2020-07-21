@@ -127,7 +127,7 @@ def main_plot_ncl_cm(colorpath, outpath):
 
 
 class ColorTables():
-    "Generate colormap samples for ESMValTool's default colormaps."
+    """Generate colormap samples for ESMValTool's default colormaps."""
 
     def __init__(self):
         logger.setLevel(logging.DEBUG)
@@ -159,7 +159,7 @@ class ColorTables():
 
     def python(self, colorpath=None, outpath="./"):
         """
-        Generate samples for Python colormaps
+        Generate samples for Python colormaps.
 
         Create a series of png images  with examples of ESMValTool's available
         Python colormaps
@@ -178,7 +178,7 @@ class ColorTables():
 
     def ncl(self, colorpath=None, outpath="./"):
         """
-        Generate samples for NCL colormaps
+        Generate samples for NCL colormaps.
 
         Create a pdf with examples of ESMValTool's available NCL colormaps
 
