@@ -163,7 +163,7 @@ def main():
         logger.error("Config file %s does not exist", config_file)
 
     # read the file in
-    config_user = read_config_user_file(config_file, 'cmorize_obs')
+    config_user = read_config_user_file(config_file, 'cmorize_obs', options={})
 
     # set the run dir to hold the settings and log files
     run_dir = os.path.join(config_user['output_dir'], 'run')

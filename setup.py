@@ -32,7 +32,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.0.0b9,<2.1',
+        'esmvalcore>=2.0.0,<2.1',
         'fiona',
         'GDAL',
         'jinja2',
@@ -56,7 +56,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute 'python setup.py test' to run tests
     'test': [
-        'pytest>=3.9',
+        'pytest>=3.9,!=6.0.0rc1',
         'pytest-cov',
         'pytest-env',
         'pytest-flake8',
