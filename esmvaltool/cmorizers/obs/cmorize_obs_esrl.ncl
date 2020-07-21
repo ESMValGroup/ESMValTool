@@ -203,7 +203,8 @@ begin
       delete(output)
 
     else
-      error_msg("w", DIAG_SCRIPT, "", infile + " does not exist!")
+      log_info(infile + " does not exist! Skipping station " \
+               + st_code(stID) + " (" + VAR + ")")
       continue
     end if
 
