@@ -1,9 +1,10 @@
+# ESMValTool
 # recipe_wenzel16nat.yml
 ---
 documentation:
-
   description: |
     This recipe reproduces selected figures of Wenzel et al. (2016).
+
   authors:
     - wenzel_sabrina
 
@@ -61,7 +62,7 @@ diagnostics:
   ### Wenzel et al. 2016:  Analysis for Pt. Barrow, Alaska ###
 
   diag_beta_Fig2:
-    description: >
+    description: |
       Fig. 2: Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC
       simulations.
     themes:
@@ -95,7 +96,7 @@ diagnostics:
         styleset: CMIP5
 
   diag_co2cycle_Fig1and3:
-    description: >
+    description: |
       Fig. 1: Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC
       simulations and Fig. 3: EC on the relative increase of large-scale GPP
       for 2xCO2.
