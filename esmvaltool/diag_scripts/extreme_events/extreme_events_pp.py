@@ -90,9 +90,17 @@ def main(cfg):
             logger.info('Processing dataset {}, {}.'.format(attributes['dataset'], attributes['short_name']))
             input_file = attributes['filename']
             alias_cubes[attributes['short_name']] = convert_ETCCDI_units(iris.load_cube(input_file))
-            base_fname = "_{}_{}_{}_{}".format(attributes["alias"],
-                                          attributes["exp"],
-                                          attributes["ensemble"],
+            try:
+                exp_str = attributes["exp"]
+            except KeyError:
+                exp_str = "NULL"
+            try:
+                ens_str = attributes["ensemble"]
+            except KeyError:
+                ens_str = "NULL"
+            base_fname = "_{}_{}_{}_{}".format(attributes["dataset"],
+                                          exp_str,
+                                          ens_str,
                                           "{}-{}".format(
                                                   attributes["start_year"],
                                                   attributes["end_year"]),

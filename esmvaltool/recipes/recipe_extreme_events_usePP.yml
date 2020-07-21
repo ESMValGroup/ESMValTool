@@ -144,11 +144,11 @@ diagnostics:
           # - annual_number_of_days_where_daily_minimum_temperature_above_90%
           # - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%
           # - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
-          # - annual_warm_spell_duration_index
-          # - annual_cold_spell_duration_index
-          # - monthly_simple_precipitation_intensity_index
-          # - annual_simple_precipitation_intensity_index
-          # - annual_maximum_length_of_dry_spell
-          # - annual_maximum_length_of_wet_spell
+          - annual_warm_spell_duration_index
+          - annual_cold_spell_duration_index
+          - monthly_simple_precipitation_intensity_index
+          - annual_simple_precipitation_intensity_index
+          - annual_maximum_length_of_dry_spell
+          - annual_maximum_length_of_wet_spell
         cumprec_threshold_nn: 15
         <<: *rngpars
