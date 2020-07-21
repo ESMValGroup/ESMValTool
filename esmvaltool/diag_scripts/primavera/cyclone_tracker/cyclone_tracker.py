@@ -49,6 +49,12 @@ class CycloneTracker(object):
                 va = iris.load_cube(var['va'][0]['filename'])
                 ta = iris.load_cube(var['ta'][0]['filename'])
                 zg = iris.load_cube(var['zg'][0]['filename'])
+                try:
+                    zg = iris.load_cube(var['zg'][0]['filename'])
+                except KeyError:
+                    zg = iris.load_cube(var['zg7h'][0]['filename'])
+                    zg.var_name = 'zg'
+
             else:
                 ua = iris.load_cube(var['ua7h'][0]['filename'])
                 ua.var_name = 'ua'
