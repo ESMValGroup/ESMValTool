@@ -12,7 +12,7 @@ RUN julia esmvaltool/install/Julia/setup.jl
 RUN Rscript esmvaltool/install/R/setup.R
 RUN rm -r /esmvaltool
 
-RUN esmvaltool -v
+RUN esmvaltool -h
 
 ENTRYPOINT ["esmvaltool"]
 CMD ["-h"]

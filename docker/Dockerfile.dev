@@ -13,9 +13,8 @@ RUN Rscript esmvaltool/install/R/setup.R
 RUN rm -r /esmvaltool
 RUN pip uninstall esmvaltool -y
 
-RUN esmvaltool -v
+RUN esmvaltool -h
 
 ENTRYPOINT ["esmvaltool"]
 CMD ["-h"]
-
 
