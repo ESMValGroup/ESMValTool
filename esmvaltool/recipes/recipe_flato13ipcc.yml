@@ -2,7 +2,6 @@
 # recipe_flato13ipcc.yml
 ---
 documentation:
-
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
     9.2, 9.4, 9.5, 9.6, 9.8, 9.14, 9.24, 9.26, 9.27, 9.42, 9.45a.
@@ -19,7 +18,7 @@ documentation:
     - zimmermann_klaus
 
   maintainer:
-    - righi_mattia
+    - lauer_axel
 
   references:
     - flato13ipcc
