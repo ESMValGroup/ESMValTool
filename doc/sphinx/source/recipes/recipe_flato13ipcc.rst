@@ -21,13 +21,19 @@ following figures from Flato et al. (2013) can currently be reproduced:
       (Dee et al., 2011), c) mean absolute model error with respect to the
       climatology from ERA-Interim.
 
+    * Figure 9.3: Seasonality (December-January-February minus June-July-August)
+      of surface (2 m) air temperature (°C) for the period 1980-2005.
+      (a) Multi-model mean for the historical experiment. (b) Multi-model mean
+      of absolute seasonality. (c) Difference between the multi-model mean
+      and the ERA-Interim reanalysis seasonality. (d) Difference between the
+      multi-model mean and the ERA-Interim absolute seasonality.
+
     * Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
       1980-2005. a) multi-model mean, b) bias as the difference between the
       CMIP5 multi-model mean and the climatology from the Global Precipitation
-      Climatology Project (Adler et al., 2003), c) difference between the
-      multi-model mean and the ECMWF reanalysis of the seasonality, and d)
-      difference between the multi-model mean and the ERA-Interim absolute
-      seasonality.
+      Climatology Project (Adler et al., 2003), c) multi-model mean absolute
+      error with respect to observations, and d) multi-model mean error
+      relative to the multi-model mean precipitation ifself.
 
     * Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
       effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in
@@ -109,6 +115,8 @@ Diagnostics are stored in esmvaltool/diag_scripts/
       mean bias (Fig. 9.2, 9.4)
     * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
       averages of individual models, multi-model mean and observations (Fig. 9.5)
+    * ipcc_ar5/ch09_fig09_3.ncl: multi-model mean seasonality of near-surface
+      temperature (Fig. 9.3)
     * ipcc_ar5/ch09_fig09_6.ncl: calculating pattern correlations of annual mean
       climatologies for one variable (Fig 9.6 preprocessing)
     * ipcc_ar5/ch09_fig09_6_collect.ncl: collecting pattern correlation for each 
@@ -233,6 +241,24 @@ User settings in recipe
    *Color tables*
 
    * e.g. diag_scripts/shared/plot/styles/cmip5.style
+
+#. Script ipcc_ar5/ch09_fig09_3.ncl
+
+   *Required settings for script*
+
+   none
+
+   *Optional settings for script*
+
+   * projection: map projection, e.g., Mollweide, Mercator (default = Robinson)
+
+   *Required settings for variables*
+ 
+   * reference_dataset: name of reference observation
+
+   *Optional settings for variables*
+
+   * map_diff_levels: explicit contour levels for plotting
 
 #. Script ipcc_ar5/ch09_fig09_6.ncl
 
@@ -412,16 +438,23 @@ Example plots
    (Dee et al., 2011), c) mean absolute model error with respect to the
    climatology from ERA-Interim.
 
+.. figure::  /recipes/figures/flato13ipcc/fig-9-3.png
+   :align:   center
+
+   Figure 9.3: Multi model values for seasonality of near-surface temperature,
+   from top left to bottom right: mean, mean of absolute seasonality, mean bias
+   in seasonality, mean bias in absolute seasonality. Reference dataset:
+   ERA-Interim.
+
 .. figure::  /recipes/figures/flato13ipcc/fig-9-4.png
    :align:   center
 
    Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
    1980-2005. a) multi-model mean, b) bias as the difference between the
    CMIP5 multi-model mean and the climatology from the Global Precipitation
-   Climatology Project (Adler et al., 2003), c) difference between the
-   multi-model mean and the ECMWF reanalysis of the seasonality, and d)
-   difference between the multi-model mean and the ERA-Interim absolute
-   seasonality.
+   Climatology Project (Adler et al., 2003), c) multi-model mean absolute
+   error with respect to observations, and d) multi-model mean error
+   relative to the multi-model mean precipitation ifself.
 
 .. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
    :align:   center

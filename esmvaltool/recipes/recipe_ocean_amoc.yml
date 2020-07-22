@@ -1,6 +1,6 @@
 # ESMValTool
 # recipe_ocean_amoc.yml
-
+---
 documentation:
   description: |
     Recipe to produce time series figures of the derived variable, the

@@ -1843,40 +1843,41 @@ diagnostics:
         <<: *grading_settings
 
 
+  # NEEDS Iris 3.0
   ### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ##################
-  od550lt1aer:
-    description: Fine mode optical depth at 550 nm
-    themes:
-      - aerosols
-    realms:
-      - atmos
-    variables:
-      od550lt1aer:
-        preprocessor: ppNOLEV1thr10
-        reference_dataset: ESACCI-AEROSOL
-        mip: aero
-        project: CMIP5
-        exp: historical
-        ensemble: r1i1p1
-        start_year: 2002
-        end_year: 2004
-    additional_datasets:
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: GFDL-CM3}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC5}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MRI-CGCM3}
-      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
-         version: SU-v4.21, tier: 2}
-    scripts:
-      grading:
-        <<: *grading_settings
+  # od550lt1aer:
+  #   description: Fine mode optical depth at 550 nm
+  #   themes:
+  #     - aerosols
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     od550lt1aer:
+  #       preprocessor: ppNOLEV1thr10
+  #       reference_dataset: ESACCI-AEROSOL
+  #       mip: aero
+  #       project: CMIP5
+  #       exp: historical
+  #       ensemble: r1i1p1
+  #       start_year: 2002
+  #       end_year: 2004
+  #   additional_datasets:
+  #     - {dataset: CSIRO-Mk3-6-0}
+  #     - {dataset: GFDL-CM3}
+  #     - {dataset: GFDL-ESM2G}
+  #     - {dataset: GFDL-ESM2M}
+  #     - {dataset: GISS-E2-H, ensemble: r1i1p2}
+  #     - {dataset: GISS-E2-R, ensemble: r1i1p2}
+  #     - {dataset: IPSL-CM5B-LR}
+  #     - {dataset: MIROC5}
+  #     - {dataset: MIROC-ESM}
+  #     - {dataset: MIROC-ESM-CHEM}
+  #     - {dataset: MRI-CGCM3}
+  #     - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+  #        version: SU-v4.21, tier: 2}
+  #   scripts:
+  #     grading:
+  #       <<: *grading_settings
 
 
   ### toz: TOTAL COLUMN OZONE #################################################
@@ -1939,7 +1940,8 @@ diagnostics:
                      'ts-global', 'pr-global', 'clt-global', 'rlut-global',
                      'rsut-global', 'lwcre-global', 'swcre-global',
                      'od550aer-global', 'od870aer-global', 'abs550aer-global',
-                     'od550lt1aer-global', 'toz-global', 'toz-shpolar',
+#                     'od550lt1aer-global', 'toz-global', 'toz-shpolar',
+                     'toz-global', 'toz-shpolar',
                      'sm-global']
       taylor:
         script: perfmetrics/collect.ncl
