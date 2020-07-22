@@ -233,10 +233,4 @@ confirm that no errors are reported:
 
     python setup.py test
 
-.. note::
-   Using ``pip`` as installation tool is very useful since it installs in place
-   (ie inside the current source code directory, and it does not perform a copy to
-   the target install directory ``site-packages``, unlike ``python setup.py install``,
-   which acts in an equivalent manner to building and target-installing code);
-   it also checks for needed dependencies and, if need be, installs them on the fly,
-   including Python wheels which are not installed via ``python setup.py install``.
+
