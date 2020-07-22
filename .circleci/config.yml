@@ -24,22 +24,10 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            # Create a file to checksum as cache key
-            date --rfc-3339 date > cache_key.txt
-            cat environment.yml >> cache_key.txt
-      - restore_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - run:
           # Update/Create Conda environment and run tests
           command: |
-            python setup.py test --addopts '-m "not installation"'
+            python setup.py test
           no_output_timeout: 20m
-      - save_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-          paths:
-            - "/opt/conda/envs/esmvaltool"
-            - ".eggs"
       - store_artifacts:
           path: /logs
       - store_artifacts:
