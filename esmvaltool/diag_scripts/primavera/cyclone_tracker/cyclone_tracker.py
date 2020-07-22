@@ -48,7 +48,6 @@ class CycloneTracker(object):
                 ua = iris.load_cube(var['ua'][0]['filename'])
                 va = iris.load_cube(var['va'][0]['filename'])
                 ta = iris.load_cube(var['ta'][0]['filename'])
-                zg = iris.load_cube(var['zg'][0]['filename'])
                 try:
                     zg = iris.load_cube(var['zg'][0]['filename'])
                 except KeyError:
