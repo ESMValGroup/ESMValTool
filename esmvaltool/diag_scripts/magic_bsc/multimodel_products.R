@@ -713,7 +713,7 @@ nc_close(file)
 
 # Set provenance for output files
 xprov <- list(
-  ancestors = list(fullpath_filenames),
+  ancestors = fullpath_filenames,
   authors = list("hunter_alasdair", "manubens_nicolau"),
   projects = list("c3s-magic"),
   caption = title,

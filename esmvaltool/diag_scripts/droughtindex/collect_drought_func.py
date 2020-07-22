@@ -81,11 +81,11 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
               'based on ' + cfg['indexname'] + '.'
 
     if cfg['indexname'].lower == "spei":
-        set_refs = ['martin2018grl', 'vicente10jclim', ]
+        set_refs = ['martin18grl', 'vicente10jclim', ]
     elif cfg['indexname'].lower == "spi":
-        set_refs = ['martin2018grl', 'mckee93proc', ]
+        set_refs = ['martin18grl', 'mckee93proc', ]
     else:
-        set_refs = ['martin2018grl', ]
+        set_refs = ['martin18grl', ]
 
     provenance_record = get_provenance_record([name_dict['input_filenames']],
                                               caption,
@@ -116,11 +116,11 @@ def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
               'based on ' + cfg['indexname'] + '.'
 
     if cfg['indexname'].lower == "spei":
-        set_refs = ['martin2018grl', 'vicente10jclim', ]
+        set_refs = ['martin18grl', 'vicente10jclim', ]
     elif cfg['indexname'].lower == "spi":
-        set_refs = ['martin2018grl', 'mckee93proc', ]
+        set_refs = ['martin18grl', 'mckee93proc', ]
     else:
-        set_refs = ['martin2018grl', ]
+        set_refs = ['martin18grl', ]
 
     provenance_record = get_provenance_record(input_filenames, caption,
                                               ['global'],
@@ -151,7 +151,7 @@ def _provenance_time_series_spei(cfg, data_dict):
     elif cfg['indexname'].lower == "spi":
         set_refs = ['mckee93proc', ]
     else:
-        set_refs = ['martin2018grl', ]
+        set_refs = ['martin18grl', ]
 
     provenance_record = get_provenance_record([data_dict['filename']],
                                               caption,

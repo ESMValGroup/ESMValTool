@@ -1,13 +1,19 @@
+# ESMValTool
+# recipe_seaice_drift.yml
 ---
 documentation:
   description: |
     'Sea ice drift evaluation'
+
   authors:
     - 'docquier_david'
+
   projects:
     - primavera
+
   references:
     - 'docquier2017cryo'
+
   mantainer:
     - vegas-regidor_javier
 
