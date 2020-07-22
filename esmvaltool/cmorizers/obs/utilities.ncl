@@ -525,8 +525,9 @@ begin
   dims = getvardims(var)
   dpos = ind(dims.eq."lat")
 
-  ; Check monotonicity
-  if (isMonotonic(var&lat) .eq. 0) then
+  ; Check monotonicity but not for point variables
+  if (isMonotonic(var&lat) .eq. 0 .and. \
+      dimsizes(var&lat) .gt.  1) then
     error_msg("f", scriptname, funcname, "non-monotonic latitude coordinate")
   end if
   if (isMonotonic(var&lat) .eq. -1) then  ; must be S->N
@@ -602,9 +603,10 @@ begin
   funcname = "format_lon"
   scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
 
-  ; Check monotonicity
-  if (isMonotonic(var&lon) .eq. 0) then
-    error_msg("f", scriptname, funcname, "non-monotonic lonfitude coordinate")
+  ; Check monotonicity but not for point variables
+  if (isMonotonic(var&lon) .eq. 0 .and. \
+      dimsizes(var&lon) .gt.  1) then
+    error_msg("f", scriptname, funcname, "non-monotonic longitude coordinate")
   end if
 
   ; Check that lon is 0:360
