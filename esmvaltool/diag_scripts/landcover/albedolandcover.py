@@ -347,7 +347,6 @@ def main(cfg):
         _write_albedochanges_to_disk(alb_lc, model_data['snc'],
                                      datadict, cfg)
 
-
         # Loop through all nc files and plot them
         for ncfile in glob.glob(os.path.join(cfg['work_dir'], '*.nc')):
             transition_cube = iris.load_cube(ncfile)
