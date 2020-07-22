@@ -3,7 +3,7 @@
 ---
 documentation:
   description: |
-    This recipe analyzes relationship between landcover and albedo
+    This recipe analyzes the relationship between landcover and albedo
     in CMIP models
 
   authors:
