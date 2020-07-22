@@ -32,7 +32,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.0.0b9,<2.1',
+        'esmvalcore>=2.0.0,<2.1',
         'fiona',
         'GDAL',
         'jinja2',
@@ -56,7 +56,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute 'python setup.py test' to run tests
     'test': [
-        'pytest>=3.9',
+        'pytest>=3.9,!=6.0.0rc1',
         'pytest-cov',
         'pytest-env',
         'pytest-flake8',
@@ -168,22 +168,25 @@ setup(
     author=read_authors('CITATION.cff'),
     description='Earth System Models eValuation Tool',
     long_description=Path('README.md').read_text(),
+    long_description_content_type='text/markdown',
     url='https://www.esmvaltool.org',
     download_url='https://github.com/ESMValGroup/ESMValTool',
     license='Apache License, Version 2.0',
     classifiers=[
-        'Development Status :: 4 - Beta', 'Environment :: Console',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English', 'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Scientific/Engineering :: Hydrology',
-        'Topic :: Scientific/Engineering :: Physics'
+        'Topic :: Scientific/Engineering :: Physics',
     ],
     packages=PACKAGES,
     # Include all version controlled files

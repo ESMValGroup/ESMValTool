@@ -1467,6 +1467,10 @@ begin
       data_arr@trYMinF = min((/ymin, yregmin/))
       data_arr@trYMaxF = max((/ymax, yregmax/))
 
+      data_arr@res_gsnRightString = "R~S~2~N~ = " \
+        + tostring_with_format(rc@r2, "%3.2f")
+      data_arr@res_gsnRightStringFontHeightF = 0.025
+
       delete(yyy)
       delete(mean_se_fit)
       delete(x)
@@ -1479,7 +1483,7 @@ begin
 
     if (diag_script_info@predef_minmax) then
       data_arr@trYMinF = 2.0     ; CMIP3/CMIP5
-      data_arr@trYMaxF = 6.5     ; CMIP3/CMIP5: 5.0, CMIP6: 6.5
+      data_arr@trYMaxF = 5.0  ; 6.5     ; CMIP3/CMIP5: 5.0, CMIP6: 6.5
       if (diag.eq."itczidx") then
         data_arr@trXMinF = -1.0    ; southern ITCZ index
         data_arr@trXMaxF = 3.0     ; southern ITCZ index
@@ -1515,7 +1519,8 @@ begin
 
     ; plot observational uncertainty (if available)
 
-    if (isdefined("diagminmax")) then
+    if (.not.all(ismissing(diagminmax))) then
+;    if (isdefined("diagminmax")) then
       x = (/diagminmax(0), diagminmax(0), diagminmax(1), diagminmax(1), \
            diagminmax(0)/)
       y = (/y0, y1, y1, y0, y0/)

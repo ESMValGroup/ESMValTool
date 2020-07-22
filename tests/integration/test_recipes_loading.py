@@ -6,6 +6,10 @@ import pytest
 import yaml
 
 import esmvalcore
+import esmvalcore._config
+import esmvalcore._data_finder
+import esmvalcore._recipe
+import esmvalcore.cmor.check
 import esmvaltool
 
 from .test_diagnostic_run import write_config_user_file
