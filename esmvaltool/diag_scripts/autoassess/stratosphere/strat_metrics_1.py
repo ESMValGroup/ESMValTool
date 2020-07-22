@@ -167,9 +167,9 @@ def calc_qbo_index(qbo):
     else:
         logger.warning('QBO metric can not be computed; no zero crossings!')
         logger.warning(
-            f"This means the model U(30hPa, around tropics) doesn't oscillate"
-            f"between positive and negative"
-            f"with a period<12 months, QBO can't be computed, set to 0."
+            "This means the model U(30hPa, around tropics) doesn't oscillate"
+            "between positive and negative"
+            "with a period<12 months, QBO can't be computed, set to 0."
         )
         (kup, kdown) = (0, 0)
     # Translate upwards and downwards indices into U wind values

@@ -145,7 +145,7 @@ diagnostics:
       abs550aer:
       od550aer:
       od550aerStderr:
-      od550lt1aer:
+      # od550lt1aer:   # NEEDS Iris 3.0
       od870aer:
       od870aerStderr:
     additional_datasets:
@@ -248,6 +248,23 @@ diagnostics:
       - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
          type: sat, version: L4-GHRSST-SSTdepth-OSTIA-GLOB,
          start_year: 1992, end_year: 2010}
+    scripts: null
+
+
+  ESRL:
+    description: ESRL check
+    variables:
+      co2s:
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: MLO, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: SMO, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: SPO, tier: 2,
+         start_year: 1973, end_year: 2019}
     scripts: null
 
 
@@ -459,9 +476,14 @@ diagnostics:
   PERSIANN-CDR:
     description: PERSIANN-CDR check
     variables:
-      pr:
+      pr_month:
+        short_name: pr
+        mip: Amon
+      pr_day:
+        short_name: pr
+        mip: day
     additional_datasets:
-      - {dataset: PERSIANN-CDR, project: OBS, mip: day, tier: 2,
+      - {dataset: PERSIANN-CDR, project: OBS, tier: 2,
          type: reanaly, version: v01r01, start_year: 1983, end_year: 2018}
     scripts: null
 
@@ -594,12 +616,16 @@ diagnostics:
   CDS-SATELLITE-SOIL-MOISTURE:
     description: CDS-SATELLITE-SOIL-MOISTURE check
     variables:
-      sm:
-      smStderr:
+      sm_month:
+        short_name: sm
+        mip: Lmon
+      sm_day:
+        short_name: sm
+        mip: day
     additional_datasets:
-      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, mip: day, tier: 3,
-         type: sat, version: COMBINED-TCDR-v201812.0.0,
-         start_year: 1979, end_year: 2018}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: CUSTOM-TCDR-ICDR-20200602,
+         start_year: 1978, end_year: 2020}
     scripts: null
 
 
