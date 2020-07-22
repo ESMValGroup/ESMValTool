@@ -13,9 +13,11 @@
 ;    20190314
 ;
 ; Download and processing instructions
-;    Use the download script to retrieve the data.
+;    - Use the download script to retrieve the data.
+;    - Use the configuration file to choose what data to process.
 ;
 ; Modification history
+;    20200722-crezee_bas: added PASSIVE/ACTIVE versions
 ;    20200602-crezee_bas: include ICDR
 ;    20200525-righi_mattia: fix time checker.
 ;    20190522-crezee_bas: time period extended.
@@ -77,8 +79,13 @@ begin
   VERSIONS = (/"COMBINED", "PASSIVE", "ACTIVE"/)
   PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", "????000000-?CDR-v201?12.0.0.nc", ".nc"/)
 
-  ; Matrix to choose which data [versions(com,pas,act) x frequencies(day,mon)] to process.
-  JOBS = (/ (/False, False/), (/False, False/), (/False, True/) /)
+  ; Read in the JOBS
+  config_file = getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/cmor_config/CDS-SATELLITE-SOIL-MOISTURE.cfg"
+  JOBS = readAsciiTable(config_file, 2, "integer", 1)
+  ; Now convert to type logical
+  JOBS := JOBS .eq. 1
+
 end
 
 begin
