@@ -23,6 +23,7 @@
 ;
 ; Caveats
 ;    - Daily data has to consist of complete months
+;    - Version ACTIVE can only deal with complete years for both monthly and daily data
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -40,8 +41,8 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1979
-  YEAR2 = 2020
+  YEAR1 = 1992 ; 1979
+  YEAR2 = 2019 ; 2020
 
   ; Selected variables (standard name)
   VAR = (/"sm", "sm"/)
@@ -71,72 +72,89 @@ begin
     "doi: 10.5194/essd-11-717-2019, 2019."
   COMMENT = ""
 
-  SENSORS_FILEBASENAMES = (/"C3S-SOILMOISTURE-L3S-SSMV-COMBINED", "C3S-SOILMOISTURE-L3S-SSMV-PASSIVE"/)
+  SENSORS_FILEBASENAMES = (/"C3S-SOILMOISTURE-L3S-SSMV-COMBINED", "C3S-SOILMOISTURE-L3S-SSMV-PASSIVE", "C3S-SOILMOISTURE-L3S-SSMS-ACTIVE"/)
   ; Version
-  VERSIONS = (/"COMBINED", "PASSIVE"/)
-  PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", "????000000-?CDR-v201?12.0.0.nc"/)
+  VERSIONS = (/"COMBINED", "PASSIVE", "ACTIVE"/)
+  PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", "????000000-?CDR-v201?12.0.0.nc", ".nc"/)
 
+  ; Matrix to choose which data [versions(com,pas,act) x frequencies(day,mon)] to process.
+  JOBS = (/ (/False, False/), (/False, False/), (/False, True/) /)
 end
 
 begin
 
   do xx = 0, dimsizes(VERSIONS) - 1
 
-    do vv = 0, dimsizes(VAR) - 1
+    do vv = 0, dimsizes(FREQ) - 1
 
-      log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
+      if JOBS(xx,vv) then
+        log_info("Processing " + VAR(vv) + " " + VERSIONS(xx) + " (" + MIP(vv) + ") as requested.")
 
-      do yy = YEAR1, YEAR2
+        do yy = YEAR1, YEAR2
 
-        ; Set list of files
-        files = systemfunc("ls " + input_dir_path + \
-                           SENSORS_FILEBASENAMES(xx) + \
-                           FREQNAME(vv) + yy + \
-                           PATTERNS(xx))
+          ; Set list of files
+          files = systemfunc("ls " + input_dir_path + \
+                             SENSORS_FILEBASENAMES(xx) + \
+                             FREQNAME(vv) + yy + \
+                             PATTERNS(xx))
 
-        ; Retrieve start and end date (YYYYMM)
-        start_date = systemfunc("basename " + files(0))
-        start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 7)
-        end_date = systemfunc("basename " + files(dimsizes(files) - 1))
-        end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 7)
+          if all(ismissing(files)) then
+            log_info("Skipping year " + yy + " since no data.")
+            continue
+          end if
 
-        ; Read data
-        f = addfiles(files, "r")
-        delete(files)
-        output = f[:]->$NAME(vv)$
-        delete(f)
+          ; Retrieve start and end date (YYYYMM(DD))
+          if VERSIONS(xx) .eq. "ACTIVE" then
+            start_date = yy + "0101"
+            end_date = yy + "1231"
+          else
+            start_date = systemfunc("basename " + files(0))
+            start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 7)
+            end_date = systemfunc("basename " + files(dimsizes(files) - 1))
+            end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 7)
+          end if
 
-        ; Format coordinates
-        output!0 = "time"
-        output!1 = "lat"
-        output!2 = "lon"
-        format_coords(output, start_date, end_date, FREQ(vv))
+          ; Read data
+          f = addfiles(files, "r")
+          delete(files)
+          output = f[:]->$NAME(vv)$
+          delete(f)
 
-        ; Set variable attributes
-        tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
-        delete(output)
-        output = tmp
-        delete(tmp)
+          ; Format coordinates
+          output!0 = "time"
+          output!1 = "lat"
+          output!2 = "lon"
+          format_coords(output, start_date, end_date, FREQ(vv))
 
-        ; Calculate coordinate bounds
-        bounds = guess_coord_bounds(output, FREQ(vv))
+          ; Set variable attributes
+          tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
+          delete(output)
+          output = tmp
+          delete(tmp)
 
-        ; Set global attributes
-        gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+          ; Calculate coordinate bounds
+          bounds = guess_coord_bounds(output, FREQ(vv))
 
-        ; Output file
-        DATESTR = start_date + "-" + end_date
-        fout = output_dir_path + \
-          str_join((/"OBS", OBSNAME, TYPE, VERSIONS(xx), \
-                     MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+          ; Set global attributes
+          gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
-        ; Write variable
-        write_nc(fout, VAR(vv), output, bounds, gAtt)
-        delete(gAtt)
-        delete(output)
-        delete(bounds)
+          ; Output file
+          DATESTR = start_date + "-" + end_date
+          fout = output_dir_path + \
+            str_join((/"OBS", OBSNAME, TYPE, VERSIONS(xx), \
+                       MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
-      end do
+          ; Write variable
+          write_nc(fout, VAR(vv), output, bounds, gAtt)
+          delete(gAtt)
+          delete(output)
+          delete(bounds)
+
+        end do
+
+      else
+        log_info("Skipping " + VAR(vv) + " " + VERSIONS(xx) + " (" + MIP(vv) + ") as requested.")
+      end if
 
     end do
 
