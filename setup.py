@@ -50,6 +50,7 @@ REQUIREMENTS = {
         'seawater',
         'shapely',
         'xarray>=0.12',
+        'pynio',
         'xesmf',
         'xlsxwriter',
     ],
