@@ -11,7 +11,7 @@
 #SBATCH --mail-type=FAIL,END
 #SBATCH --account=XXXXXX
 #SBATCH --output=job_%j.out.log
-#SBATCH --error=job_%j.err.log 
+#SBATCH --error=job_%j.err.log
 ###############################################################################
 
 # Submit job with: sbatch job_DKRZ-MISTRAL.sh
