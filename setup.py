@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """ESMValTool installation script."""
+import json
 import os
 import re
 import sys
@@ -78,16 +79,6 @@ REQUIREMENTS = {
 }
 
 
-def read_authors(citation_file):
-    """Read the list of authors from .cff file."""
-    authors = re.findall(
-        r'family-names: (.*)$\s*given-names: (.*)',
-        Path(citation_file).read_text(),
-        re.MULTILINE,
-    )
-    return ', '.join(' '.join(author[::-1]) for author in authors)
-
-
 def discover_python_files(paths, ignore):
     """Discover Python files."""
     def _ignore(path):
@@ -162,11 +153,29 @@ class RunLinter(Command):
         sys.exit(errno)
 
 
+def read_authors(filename):
+    """Read the list of authors from .zenodo.json file."""
+    with Path(filename).open() as file:
+        info = json.load(file)
+        authors = []
+        for author in info['creators']:
+            name = ' '.join(author['name'].split(',')[::-1]).strip()
+            authors.append(name)
+        return ', '.join(authors)
+
+
+def read_description(filename):
+    """Read the description from .zenodo.json file."""
+    with Path(filename).open() as file:
+        info = json.load(file)
+        return info['description']
+
+
 setup(
     name='ESMValTool',
     version=__version__,
-    author=read_authors('CITATION.cff'),
-    description='Earth System Models eValuation Tool',
+    author=read_authors('.zenodo.json'),
+    description=read_description('.zenodo.json'),
     long_description=Path('README.md').read_text(),
     long_description_content_type='text/markdown',
     url='https://www.esmvaltool.org',
@@ -177,7 +186,8 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
-        'Natural Language :: English', 'Operating System :: POSIX :: Linux',
+        'Natural Language :: English',
+        'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
