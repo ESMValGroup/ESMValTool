@@ -24,7 +24,8 @@ CONFIG= # e.g. config-user.yml
 CONDAPATH=  # e.g. /home/soft/miniconda3/
 
 # Changes below this line should not be required
-export PATH=$PATH:$CONDAPATH/bin/
+source $CONDAPATH/etc/profile.d/conda.sh
+conda activate esmvaltool
 conda info --envs
 
 esmvaltool run --config-file $CONFIG $RECIPE
