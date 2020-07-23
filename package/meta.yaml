@@ -93,6 +93,7 @@ outputs:
         - seawater
         - shapely
         - xarray>=0.12.0
+        - pynio
         - xesmf
         - xlsxwriter
 
