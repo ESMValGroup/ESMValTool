@@ -14,6 +14,7 @@ dependencies:
   - imagemagick
   - nco
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
+  - pynio
 
   # Multi language support:
   - python>=3.6
