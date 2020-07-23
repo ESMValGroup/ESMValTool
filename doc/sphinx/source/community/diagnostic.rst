@@ -24,17 +24,17 @@ However, NCL, R, and Julia scripts are also supported.
 
 Good example recipes for the different languages are:
 
--  python: esmvaltool/recipes/examples/recipe_python.yml
--  R: esmvaltool/recipes/examples/recipe_r.yml
--  julia: esmvaltool/recipes/examples/recipe_julia.yml
--  ncl: esmvaltool/recipes/examples/recipe_ncl.yml
+-  python: `esmvaltool/recipes/examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_python.yml>`_
+-  R: `esmvaltool/recipes/examples/recipe_r.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_r.yml>`_
+-  julia: `esmvaltool/recipes/examples/recipe_julia.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_julia.yml>`_
+-  ncl: `esmvaltool/recipes/examples/recipe_ncl.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_ncl.yml>`_
 
 Good example diagnostics are:
 
--  python: esmvaltool/diag_scripts/examples/diagnostic.py
--  R: esmvaltool/diag_scripts/examples/diagnostic.R
--  julia: esmvaltool/diag_scripts/examples/diagnostic.jl
--  ncl: esmvaltool/diag_scripts/examples/diagnostic.ncl
+-  python: `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.py>`_
+-  R: `esmvaltool/diag_scripts/examples/diagnostic.R <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.R>`_
+-  julia: `esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
+-  ncl: `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 
 Unfortunately not much documentation is available at this stage,
 so have a look at the other recipes and diagnostics for further inspiration.
@@ -63,30 +63,45 @@ and finally it will store provenance information. Provenance information is stor
 and also plotted in an SVG file for human inspection. In addition to provenance information, a caption is also added
 to the plots.
 
-Provenance items
-----------------
-For each output file produced by the diagnostic script, ESMValCore stores at least the following items:
+Provenance items provided by the recipe
+---------------------------------------
+For each diagnostic in the recipe, ESMValCore supports the following additional information:
 
-- :code:`ancestors` a list of input files used to create the plot
+- :code:`realms` a list of high-level modeling components
+- :code:`themes` a list of themes
+
+Please see the (installed version of the) file
+`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`_
+for all available information on each item.
+
+Provenance items provided by the diagnostic script
+--------------------------------------------------
+For each output file produced by the diagnostic script, ESMValCore supports the following additional information:
+
+- :code:`ancestors` a list of input files used to create the plot.
 - :code:`caption` a caption text for the plot
-- :code:`plot_file` if the diagnostic also created a plot file, e.g. in .png format.
+
+Note that the level of detail is limited, the only valid choices for ``ancestors`` are files produced by
+`ancestor tasks <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/overview.html#ancestor-tasks>`_.
 
 It is also possible to add more information for the implemented diagnostics using the following items:
 
 - :code:`authors` a list of authors
-- :code:`references` a list of references, see the section ``Adding references`` below.
-- :code:`projects` name of the project.
-- :code:`realms` high-level modeling component for the dataset
-- :code:`themes` a list of themes.
-- :code:`domains` spatial coverage of the dataset
-- :code:`plot_types` type of the plot if the diagnostic created a plot, e.g. error bar
-- :code:`statistics` type of the statistics, e.g. anomaly
+- :code:`references` a list of references, see :ref:`adding_references` below
+- :code:`projects` a list of projects
+- :code:`domains` a list of spatial coverage of the dataset
+- :code:`plot_types` a list of plot types if the diagnostic created a plot, e.g. error bar
+- :code:`statistics` a list of types of the statistic, e.g. anomaly
 
-Please see the file :code:`esmvaltool/config_references.yml` for all available information on each item.
-In this file, the information are written in a form of ``key:value``.
+Arbitrarily named other items are also supported.
+
+Please see the (installed version of the) file
+`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`_
+for all available information on each item.
+In this file, the information is written in the form of ``key: value``.
 Note that we add the keys to the diagnostics.
 The keys will automatically be replaced by their values in the final provenance records.
-For example, in the ``config_references.yml`` there is a category for types of the plots:
+For example, in the ``config-references.yml`` there is a category for types of the plots:
 
 .. code-block:: console
 
@@ -105,11 +120,11 @@ directly reading and writing the interface files. For other languages these are 
 Depending on your preferred programming language for developing a diagnostic,
 see the instructions and examples below on how to add provenance information:
 
-Add provenance information in Python
-------------------------------------
+Recording provenance in a Python diagnostic script
+--------------------------------------------------
 Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of your script:
 
-.. code-block:: console
+.. code-block:: python
 
   if __name__ == '__main__':
     with run_diagnostic() as config:
@@ -117,7 +132,7 @@ Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of y
 
 And make use of a :class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance:
 
-.. code-block:: console
+.. code-block:: python
 
   with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
@@ -126,28 +141,29 @@ The ``diagnostic_file`` can be obtained using :class:`esmvaltool.diag_scripts.sh
 
 The ``provenance_record`` is a dictionary of provenance items, for example:
 
-.. code-block:: console
+.. code-block:: python
 
   provenance_record = {
-        'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_type': 'zonal',
+        'ancestors': ancestor_files,
         'authors': [
             'andela_bouwe',
             'righi_mattia',
         ],
+        'caption': caption,
+        'domains': ['global'],
+        'plot_types': ['zonal'],
         'references': [
             'acknow_project',
         ],
-        'ancestors': ancestor_files,
+        'statistics': ['mean'],
       }
 
-Have a look at the example Python diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.py``
+Have a look at the example Python diagnostic in
+`esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 for a complete example.
 
-Add provenance information in NCL
----------------------------------
+Recording provenance in an NCL diagnostic script
+------------------------------------------------
 Always call the ``log_provenance`` procedure after plotting from your NCL diag_script:
 
 .. code-block:: console
@@ -159,81 +175,83 @@ For example:
 .. code-block:: console
 
   log_provenance(ncdf_outfile, \
-                  map@outfile, \
-                  "Mean of variable: " + var0, \
-                  "mean", \
-                  "global", \
-                  "geo", \
-                  (/"righi_mattia", "gottschaldt_klaus-dirk"/), \
-                  (/"acknow_author"/), \
-                  metadata_att_as_array(info0, "filename"))
+                 map@outfile, \
+                 "Mean of variable: " + var0, \
+                 "mean", \
+                 "global", \
+                 "geo", \
+                 (/"righi_mattia", "gottschaldt_klaus-dirk"/), \
+                 (/"acknow_author"/), \
+                 metadata_att_as_array(info0, "filename"))
 
-Have a look at the example NCL diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.ncl``
+Have a look at the example NCL diagnostic in
+`esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 for a complete example.
 
-Add provenance information in Julia
------------------------------------
+Recording provenance in a Julia diagnostic script
+-------------------------------------------------
 The provenance information is written in a ``diagnostic_provenance.yml`` that will be located in ``run_dir``.
 For example a ``provenance_record`` can be stored in a yaml file as:
 
-.. code-block:: console
+.. code-block:: julia
 
-    provenance_file = string(run_dir, "/diagnostic_provenance.yml")
+  provenance_file = string(run_dir, "/diagnostic_provenance.yml")
 
-    open(provenance_file, "w") do io
-        JSON.print(io, provenance_record, 4)
-    end
+  open(provenance_file, "w") do io
+      JSON.print(io, provenance_records, 4)
+  end
 
-The ``provenance_record`` can be defined as a dictionary of provenance items.
+The ``provenance_records`` can be defined as a dictionary of provenance items.
 For example:
 
-.. code-block:: console
+.. code-block:: julia
 
-  Dict("ancestors" => infile,
+  provenance_records = Dict()
+
+  provenance_record = Dict(
+      "ancestors" => [input_file],
       "authors" => ["vonhardenberg_jost", "arnone_enrico"],
-      "references" => ["zhang11wcc"],
-      "projects" => ["crescendo", "c3s-magic"],
       "caption" => "Example diagnostic in Julia",
+      "domains" => ["global"],
+      "projects" => ["crescendo", "c3s-magic"],
+      "references" => ["zhang11wcc"],
       "statistics" => ["other"],
-      "realms" => ["atmos"],
-      "themes" => ["phys"],
-      "domains" => ["global"])
+  )
 
-Have a look at the example Julia diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.jl``
+  provenance_records[output_file] = provenance_record
+
+Have a look at the example Julia diagnostic in
+`esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
 for a complete example.
 
-Add provenance information in R
---------------------------------
+Recording provenance in an R diagnostic script
+----------------------------------------------
 The provenance information is written in a ``diagnostic_provenance.yml`` that will be located in ``run_dir``.
 For example a ``provenance_record`` can be stored in a yaml file as:
 
-.. code-block:: console
+.. code-block:: R
 
   provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
-  write_yaml(provenance_record, provenance_file)
+  write_yaml(provenance_records, provenance_file)
 
-The ``provenance_record`` can be defined as a list of provenance items.
+The ``provenance_records`` can be defined as a list of provenance items.
 For example:
 
-.. code-block:: console
+.. code-block:: R
 
-  xprov <- list(
-    ancestors = list(
-      fullpath_filenames[i],
-      file.path(script_dirname, power_curves[1]),
-      file.path(script_dirname, power_curves[2])
-    ),
-    authors = list(
-      "hunter_alasdair", "perez-zanon_nuria"
-    ),
-    projects = list("c3s-magic"),
+  provenance_records <- list()
+
+  provenance_record <- list(
+    ancestors = input_filenames,
+    authors = list("hunter_alasdair", "perez-zanon_nuria"),
     caption = title,
+    projects = list("c3s-magic"),
     statistics = list("other"),
-    realms = list("atmos"),
-    themes = list("phys"),
-    plot_file = filepng
   )
-  provenance_record[[filencdf]] <- xprov
+
+  provenance_records[[output_file]] <- provenance_record
+
+.. _adding_references:
 
 Adding references
 =================
