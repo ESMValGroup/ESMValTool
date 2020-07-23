@@ -65,8 +65,96 @@ Note that the ESMValTool source code is contained in the ``esmvaltool-python`` p
 Docker installation
 ===================
 
-.. warning::
-    Docker section to be added
+ESMValTool is also provided through `DockerHub <https://hub.docker.com/u/esmvalgroup/>`_
+in the form of docker containers.
+See https://docs.docker.com for more information about docker containers and how to
+run them.
+
+You can get the latest release with
+
+.. code-block:: bash
+
+   docker pull esmvalgroup/esmvaltool:stable
+
+If you want to use the current master branch, use
+
+.. code-block:: bash
+
+   docker pull esmvalgroup/esmvaltool:latest
+
+To run a container using those images, use:
+
+.. code-block:: bash
+
+   docker run esmvalgroup/esmvaltool:stable --help
+
+Note that the container does not see the data or environmental variables
+available in the host by default. You can make data available with
+``-v /path:/path/in/container`` and environmental variables with ``-e VARNAME``.
+
+For example, the following command would run a recipe
+
+.. code-block:: bash
+
+   docker run -e HOME -v "$HOME":"$HOME" -v /data:/data esmvalgroup/esmvaltool:stable -c ~/config-user.yml ~/recipes/recipe_example.yml
+
+with the environmental variable ``$HOME`` available inside the container and
+the data in the directories ``$HOME`` and ``/data``, so these can be used to
+find the configuration file, recipe, and data.
+
+It might be useful to define a `bash alias
+<https://opensource.com/article/19/7/bash-aliases>`_
+or script to abbreviate the above command, for example
+
+.. code-block:: bash
+
+	 alias esmvaltool="docker run -e HOME -v $HOME:$HOME -v /data:/data esmvalgroup/esmvaltool:stable"
+
+would allow using the ``esmvaltool`` command without even noticing that the
+tool is running inside a Docker container.
+
+
+Singularity installation
+----------------------------
+
+Docker is usually forbidden in clusters due to security reasons. However,
+there is a more secure alternative to run containers that is usually available
+on them: `Singularity <https://sylabs.io/guides/3.0/user-guide/quick_start.html>`_.
+
+Singularity can use docker containers directly from DockerHub with the
+following command
+
+.. code-block:: bash
+
+   singularity run docker://esmvalgroup/esmvaltool:stable -c ~/config-user.yml ~/recipes/recipe_example.yml
+
+Note that the container does not see the data available in the host by default.
+You can make host data available with ``-B /path:/path/in/container``.
+
+It might be useful to define a `bash alias
+<https://opensource.com/article/19/7/bash-aliases>`_
+or script to abbreviate the above command, for example
+
+.. code-block:: bash
+
+	 alias esmvaltool="singularity run -B $HOME:$HOME -B /data:/data docker://esmvalgroup/esmvaltool:stable"
+
+would allow using the ``esmvaltool`` command without even noticing that the
+tool is running inside a Singularity container.
+
+Some clusters may not allow to connect to external services, in those cases
+you can first create a singularity image locally:
+
+.. code-block:: bash
+
+   singularity build esmvaltool.sif docker://esmvalgroup/esmvaltool:stable
+
+and then upload the image file ``esmvaltool.sif`` to the cluster.
+To run the container using the image file ``esmvaltool.sif`` use:
+
+.. code-block:: bash
+
+   singularity run esmvaltool.sif -c ~/config-user.yml ~/recipes/recipe_example.yml
 
 
 Install from source
@@ -150,7 +238,7 @@ code (called ESMValTool if you did not choose a different name) and run
 
     conda env create --name esmvaltool --file environment.yml
 
-This installs the ESMValCore package from conda as a dependency.
+This installs the esmvaltool package from conda as a dependency.
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option ``--name ENVIRONMENT_NAME`` to define a custom name. You can activate
