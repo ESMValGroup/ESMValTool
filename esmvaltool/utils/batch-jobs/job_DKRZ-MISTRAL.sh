@@ -28,4 +28,4 @@ ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
 export PATH=$PATH:$CONDAPATH/bin/
 conda info --envs
 
-esmvaltool run --config-file $CONFIG $ESMVALPATH/recipes/$RECIPE
+esmvaltool run --config-file $CONFIG $RECIPE
