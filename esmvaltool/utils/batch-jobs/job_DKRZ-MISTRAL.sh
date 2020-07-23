@@ -22,7 +22,6 @@ CONFIG= # e.g. config-user.yml
 
 # Set environment
 CONDAPATH=  # e.g. /home/soft/miniconda3/
-ESMVALPATH= # e.g. /home/ESMValTool/esmvaltool
 
 # Changes below this line should not be required
 export PATH=$PATH:$CONDAPATH/bin/
