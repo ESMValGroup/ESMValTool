@@ -708,7 +708,7 @@ hyint_plot_maps <- # nolint
                   " according to ",
                   models_name[model_idx]
                 )
-              anc_list <- flatten(prov_info[[infile]]$ancestors)
+              anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
               prov_fig_now <- list(
                 figname = figname,
                 caption = caption,
@@ -730,7 +730,7 @@ hyint_plot_maps <- # nolint
                   models_name[model_idx],
                   " in comparison to reference dataset"
                 )
-              anc_list <- flatten(list(prov_info[[infile]]$ancestors,
+              anc_list <- flatten_lists(c(prov_info[[infile]]$ancestors,
                   prov_info[[ref_filename]]$ancestors))
               prov_fig_now <- list(
                 figname = figname,
@@ -750,7 +750,7 @@ hyint_plot_maps <- # nolint
               region_codes[iregion]
             )
 
-            anc_list <- flatten(list(prov_info[[infile]]$ancesstors,
+            anc_list <- flatten_lists(c(prov_info[[infile]]$ancesstors,
                 prov_info[[ref_filename]]$ancestors))
             prov_fig_now <- list(
               figname = figname,
@@ -766,7 +766,7 @@ hyint_plot_maps <- # nolint
           # Store data for provenance
           caption <-
             paste0("Maps for multiple indices over selected years")
-          anc_list <- flatten(prov_info[[infile]]$ancestors)
+          anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
           prov_fig_now <- list(
             figname = figname,
             caption = caption,

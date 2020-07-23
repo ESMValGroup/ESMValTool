@@ -37,9 +37,9 @@ if (exists(".lm.fit")) {
 ##########################################################
 
 # function to flatten nested lists
-flatten <- function(x) {
+flatten_lists <- function(x) {
   if (!inherits(x, "list")) return(list(x))
-  else return(unlist(c(lapply(x, flatten)), recursive = TRUE))
+  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
 }
 
 getfilename_regridded <- function(spath, rgrid, var0, model_idx) {

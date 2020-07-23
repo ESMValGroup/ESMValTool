@@ -273,7 +273,7 @@ if (write_plots) {
 
 # Assign provenance information for timeseries&trends figures
 for (fname in names(prov_info)) {
-  anc_list <- flatten(prov_info[[fname]]$ancestors)
+  anc_list <- flatten_lists(prov_info[[fname]]$ancestors)
   xprov <-
     list(
       ancestors = anc_list,

@@ -320,7 +320,7 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
   #  ancs <- infile
   #}
 
-  anc_list <- flatten(prov_info[[infile]]$ancestors)
+  anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
   xprov <- list(
     ancestors = anc_list,
     model_idx = list(model_idx),

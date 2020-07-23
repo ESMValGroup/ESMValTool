@@ -504,7 +504,7 @@ hyint_diagnostic <- function(work_dir, # nolint
       " according to ",
       models_name[model_idx]
     )
-  anc_list <- flatten(climofiles[model_idx])
+  anc_list <- flatten_lists(climofiles[model_idx])
   xprov <- list(
     ancestors = anc_list,
     model_idx = list(model_idx),

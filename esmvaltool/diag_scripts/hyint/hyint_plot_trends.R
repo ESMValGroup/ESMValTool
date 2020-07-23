@@ -234,7 +234,7 @@ hyint_plot_trends <- function(work_dir, # nolint
             )
           }
           if (length(prov_info[[figname]]) == 0) {
-            anc_list <- flatten(prov_info[[infile]]$ancestors)
+            anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
             prov_fig_now <- list(
               figname = figname,
               caption = caption,
@@ -571,7 +571,7 @@ hyint_plot_trends <- function(work_dir, # nolint
                 " over selected regions according to ",
                 models_name[model_idx]
               )
-              anc_list <- flatten(prov_info[[infile]]$ancestors)
+              anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
               prov_fig_now <- list(
                 figname = figname,
                 caption = caption,
@@ -832,7 +832,7 @@ hyint_plot_trends <- function(work_dir, # nolint
             models_name[model_idx]
           )
         }
-        anc_list <- flatten(prov_info[[infile]]$ancestors)
+        anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
         prov_fig_now <- list(
           figname = figname,
           caption = caption,
