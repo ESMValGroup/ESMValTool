@@ -204,11 +204,13 @@ setup(
             'mip_convert_setup = '
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
-            'showcolortables = '
-            'esmvaltool.utils.color_tables.show_color_tables:run',
             'test_recipe = '
             'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
         ],
+        'esmvaltool_commands': [
+            'colortables = '
+            'esmvaltool.utils.color_tables.show_color_tables:ColorTables'
+        ]
     },
     cmdclass={
         'lint': RunLinter,

@@ -48,7 +48,7 @@ test:
     - pytest --ignore=run_test.py
     - cmorize_obs --help
     - nclcodestyle --help
-    - showcolortables --help
+    - esmvaltool colortables --help
     - test_recipe --help
 
 outputs:
