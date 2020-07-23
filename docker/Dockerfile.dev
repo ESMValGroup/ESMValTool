@@ -2,15 +2,13 @@
 # docker build -t ${TAG_OF_YOUR_CHOICE} . -f docker/Dockerfile
 FROM continuumio/miniconda3
 
-COPY . /esmvaltool
-WORKDIR /esmvaltool
+COPY . /src/esmvaltool
+WORKDIR /src/esmvaltool
 
 RUN conda update -y conda pip && conda env update --name base --file environment.yml && conda clean --all -y
-RUN pip install .[test] && pip cache purge
-RUN apt install julia -y
-RUN julia esmvaltool/install/Julia/setup.jl
+RUN pip install . && pip cache purge
+RUN apt install julia -y && julia esmvaltool/install/Julia/setup.jl
 RUN Rscript esmvaltool/install/R/setup.R
-RUN rm -r /esmvaltool
 RUN pip uninstall esmvaltool -y
 
 RUN esmvaltool -h
