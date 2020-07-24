@@ -1,4 +1,4 @@
-.. _recipe_carvalhais2014nat:
+.. _recipe_carvalhais14nat:
 
 Turnover time of carbon over land ecosystems
 ============================================
@@ -53,7 +53,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-   * recipe_carvalhais2014nat.yml
+   * recipe_carvalhais14nat.yml
 
 
 Diagnostics are stored in diag_scripts/
@@ -302,8 +302,8 @@ References
 Example plots
 -------------
 
-.. _fig_carvalhais2014nat_1:
-.. figure:: /recipes/figures/carvalhais2014nat/r_tau_ctotal_climate_pearson_Carvalhais2014_gnz.png
+.. _fig_carvalhais14nat_1:
+.. figure:: /recipes/figures/carvalhais14nat/r_tau_ctotal_climate_pearson_Carvalhais2014_gnz.png
    :align: center
    :width: 80%
 
@@ -312,9 +312,9 @@ Example plots
    temperature (left) and vice-versa (right). Reproduces figures 2c and 2d in 
    `Carvalhais et al. (2014)`_.
 
-.. _fig_carvalhais2014nat_2:
+.. _fig_carvalhais14nat_2:
 
-.. figure:: /recipes/figures/carvalhais2014nat/global_matrix_map_ecosystem_carbon_turnover_time_Carvalhais2014_gn.png
+.. figure:: /recipes/figures/carvalhais14nat/global_matrix_map_ecosystem_carbon_turnover_time_Carvalhais2014_gn.png
    :align: center
    :width: 80%
 
@@ -322,9 +322,9 @@ Example plots
    Along the diagnonal, tau_ctotal are plotted, above the bias, and below
    density plots. The inset text in density plots indicate the correlation. 
 
-.. _fig_carvalhais2014nat_3:
+.. _fig_carvalhais14nat_3:
 
-.. figure:: /recipes/figures/carvalhais2014nat/global_multimodelAgreement_ecosystem_carbon_turnover_time_Carvalhais2014_gn.png
+.. figure:: /recipes/figures/carvalhais14nat/global_multimodelAgreement_ecosystem_carbon_turnover_time_Carvalhais2014_gn.png
    :align: center
    :width: 80%
 
@@ -335,9 +335,9 @@ Example plots
    (`5^{th}` and `95^{th}` percentiles). Reproduces figure 3 in `Carvalhais et 
    al. (2014)`_.
 
-.. _fig_carvalhais2014nat_4:
+.. _fig_carvalhais14nat_4:
 
-.. figure:: /recipes/figures/carvalhais2014nat/zonal_mean_ecosystem_carbon_turnover_time_Carvalhais2014_gnz.png
+.. figure:: /recipes/figures/carvalhais14nat/zonal_mean_ecosystem_carbon_turnover_time_Carvalhais2014_gnz.png
    :align: center
    :width: 80%
 
