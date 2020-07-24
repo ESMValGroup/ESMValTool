@@ -79,6 +79,7 @@ outputs:
         - gdal
         - iris>=2.2.1
         - jinja2
+        - joblib
         - matplotlib>=3
         - nc-time-axis
         - netCDF4
