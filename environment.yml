@@ -13,6 +13,7 @@ dependencies:
   - cdo>=1.9.7
   - imagemagick
   - nco
+  - pynio
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
 
   # Multi language support:
