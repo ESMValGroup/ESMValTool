@@ -1,6 +1,7 @@
 """LISFLOOD diagnostic."""
 import logging
 from pathlib import Path
+import numpy as np
 
 import iris
 from iris.analysis.maths import exp as iris_exp
@@ -138,8 +139,6 @@ def main(cfg):
 
         cubes['pr'].units = 'mm d-1'
 
-        #TODO check that this loop only runs over the variables: ["pr", "tas", "tasmax", "tasmin", "e", "sfcWind", "rsds"]
-        # print('vars = ["pr", "tas", "tasmax", "tasmin", "e", "sfcWind", "rsds"]')
         for var_name, cube in cubes.items():
             print(var_name)
             # Western emisphere longitudes should be negative
@@ -147,20 +146,22 @@ def main(cfg):
             cube.coord('longitude').points = (points + 180) % 360 - 180
             # latitudes decreasing
             cube = cube[:, ::-1, ...]
-            
-            #TODO convert to iris?
-            # drop extra coordinates and keep only necessary variables
-            ordered_dims = ["lon", "lat", "time"]
-            extra_coords = np.setdiff1d(forcing.coords, ordered_dims).tolist()
-            cleaned_forcing = forcing.drop(extra_coords)[ordered_dims + [var]]
 
-            #TODO convert to iris?
-            # reindex data to a global coordinates set
-            dataset = cleaned_forcing.reindex(
-                {"lat": masks["lat"], "lon": masks["lon"]},
-                method="nearest",
-                tolerance=1e-2,
-            )
+            # drop extra coordinates and reorder remaining coords to [lon,lat,time]
+            cube.remove_coord("height")
+            cube.remove_coord("shape_id")
+            cube.transpose()
+
+            # remove coordinate bounds
+            for coord in cube.coords():
+                new_coord = iris.coords.DimCoord(
+                    points=coord.points,
+                    standard_name=coord.standard_name,
+                    units=coord.units,
+                    var_name=coord.var_name,
+                    long_name=coord.long_name,
+                )
+                cube.replace_coord(new_coord)
             
             output_file = save(cube, var_name, dataset, cfg)
 
