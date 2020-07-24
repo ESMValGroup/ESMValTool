@@ -1,0 +1,614 @@
+# ESMValTool
+# recipe_mpqb_sm.yml
+---
+documentation:
+  description: |
+    Recipe for the MPQB (C3S_511) for soil moisture final version (Oct. 2020)
+
+  authors:
+    - crezee_bas
+
+
+################################################
+# Define some default parameters using anchors #
+################################################
+
+commongrid: &commongrid
+  regrid:
+    target_grid: 0.25x0.25
+    scheme: nearest
+  regrid_time:  # this is needed for a fully homogeneous time coordinate
+    frequency: mon
+
+icefreeland: &icefreeland
+  mask_landsea:
+    mask_out: sea
+  mask_glaciated:
+    mask_out: glaciated
+
+commonmask: &commonmask  # should be preceded by commongrid
+  mask_fillvalues:
+    threshold_fraction: 0.0     # keep all missing values
+    min_value: -1e20            # small enough not to alter the data
+
+nonnegative: &nonnegative
+  clip:
+    minimum: 0.0
+
+
+################################################
+
+histogram_settings: &histogram_settings
+  histtype: step
+  vmin: 0.0
+  vmax: 0.7
+  number_of_bars: 140
+  logarithmic: false
+  y0: 0.0
+  y1: 0.03
+
+histogram_settings_zoom: &histogram_settings_zoom
+  histtype: step
+  vmin: -0.1
+  vmax: 0.1
+  number_of_bars: 100
+  logarithmic: false
+
+
+################################################
+################################################
+################################################
+
+datasets_full_time_period: &datasets_full_time_period
+  additional_datasets:
+    - {dataset: ERA-Interim-Land, type: reanaly, project: OBS6, mip: Lmon,
+       version: 1, tier: 3, start_year: 1979, end_year: 2010, alias: ERA-Interim-Land}
+    # Note that ICDR only starts from 2020, so this is a pure CDR.
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 1979, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 1979, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
+    - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2019, alias: cds-era5-land-monthly}
+    - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1979, end_year: 2019, alias: cds-era5-monthly}
+    - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
+       version: 5.12.4, tier: 3, start_year: 1980, end_year: 2019, alias: MERRA2}
+
+datasets_from_1981: &datasets_from_1981
+  additional_datasets:
+    - {dataset: ERA-Interim-Land, type: reanaly, project: OBS6, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2010, alias: ERA-Interim-Land}
+    # Note that ICDR only starts from 2020, so this is a pure CDR.
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 1981, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 1981, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
+    - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2019, alias: cds-era5-land-monthly}
+    - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2019, alias: cds-era5-monthly}
+    - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
+       version: 5.12.4, tier: 3, start_year: 1981, end_year: 2019, alias: MERRA2}
+
+datasets_from_1981_2010: &datasets_from_1981_2010
+  additional_datasets:
+    - {dataset: ERA-Interim-Land, type: reanaly, project: OBS6, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2010, alias: ERA-Interim-Land}
+    # Note that ICDR only starts from 2020, so this is a pure CDR.
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 1981, end_year: 2010, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 1981, end_year: 2010, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
+    - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2010, alias: cds-era5-land-monthly}
+    - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2010, alias: cds-era5-monthly}
+    - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
+       version: 5.12.4, tier: 3, start_year: 1981, end_year: 2010, alias: MERRA2}
+
+datasets_from_1992: &datasets_from_1992
+  additional_datasets:
+    - {dataset: ERA-Interim-Land, type: reanaly, project: OBS6, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2010, alias: ERA-Interim-Land}
+    # Note that ICDR only starts from 2020, so this is a pure CDR.
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 1992, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 1992, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
+    - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2019, alias: cds-era5-land-monthly}
+    - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2019, alias: cds-era5-monthly}
+    - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
+       version: 5.12.4, tier: 3, start_year: 1992, end_year: 2019, alias: MERRA2}
+
+datasets_from_1992_2010: &datasets_from_1992_2010
+  additional_datasets:
+    - {dataset: ERA-Interim-Land, type: reanaly, project: OBS6, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2010, alias: ERA-Interim-Land}
+    # Note that ICDR only starts from 2020, so this is a pure CDR.
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 1992, end_year: 2010, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 1992, end_year: 2010, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
+    - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2010, alias: cds-era5-land-monthly}
+    - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2010, alias: cds-era5-monthly}
+    - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
+       version: 5.12.4, tier: 3, start_year: 1992, end_year: 2010, alias: MERRA2}
+
+datasets_from_1992_2019: &datasets_from_1992_2019
+  additional_datasets:
+    # Note that ICDR only starts from 2020, so this is a pure CDR.
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 1992, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 1992, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
+    - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2019, alias: cds-era5-land-monthly}
+    - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1992, end_year: 2019, alias: cds-era5-monthly}
+    - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
+       version: 5.12.4, tier: 3, start_year: 1992, end_year: 2019, alias: MERRA2}
+
+datasets_from_1981_2019: &datasets_from_1981_2019
+  additional_datasets:
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: COMBINED, start_year: 1981, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_COMBINED}
+    - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat,
+       version: PASSIVE, start_year: 1981, end_year: 2019, mip: Lmon, alias: CDS-SATELLITE-SOIL-MOISTURE_PASSIVE}
+    - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2019, alias: cds-era5-land-monthly}
+    - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+       version: 1, tier: 3, start_year: 1981, end_year: 2019, alias: cds-era5-monthly}
+    - {dataset: MERRA2, type: reanaly, project: OBS6, mip: Lmon,
+       version: 5.12.4, tier: 3, start_year: 1981, end_year: 2019, alias: MERRA2}
+
+preprocessors:
+
+  pp_mpqb:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *nonnegative
+
+  pp_mpqb_ano:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *nonnegative
+    anomalies:
+      period: monthly
+      standardize: false
+
+  pp_mpqb_stdano:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *nonnegative
+    anomalies:
+      period: monthly
+      standardize: true
+
+  pp_lineplots_individual:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    area_statistics:
+      operator: mean
+
+  pp_lineplots:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *commonmask
+    <<: *nonnegative
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_ano:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *commonmask
+    <<: *nonnegative
+    anomalies:
+      period: monthly
+      standardize: false
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_ano_individual:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *nonnegative
+    anomalies:
+      period: monthly
+      standardize: false
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_stdano_europe:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *commonmask
+    <<: *nonnegative
+    extract_region:
+      end_latitude: 53
+      end_longitude: 20
+      start_latitude: 42
+      start_longitude: 0
+    anomalies:
+      period: monthly
+      standardize: true
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_stdano_westusa:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *commonmask
+    <<: *nonnegative
+    extract_region:
+      end_latitude: 43
+      end_longitude: 244  # 360-116
+      start_latitude: 32
+      start_longitude: 235  # 360-125
+    anomalies:
+      period: monthly
+      standardize: true
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_stdano_individual:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    <<: *commongrid
+    anomalies:
+      period: monthly
+      standardize: true
+    mask_above_threshold:  # This is needed to mask out regions where std=0
+      threshold: 100
+    mask_below_threshold:
+      threshold: -100
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_stdano:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    <<: *commongrid
+    <<: *commonmask
+    anomalies:
+      period: monthly
+      standardize: true
+    mask_above_threshold:  # This is needed to mask out regions where std=0
+      threshold: 100
+    mask_below_threshold:
+      threshold: -100
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_45N:
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *commonmask
+    <<: *nonnegative
+    extract_region:
+      end_latitude: 45
+      end_longitude: 360
+      start_latitude: -90
+      start_longitude: 0
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_stdano_45N:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    <<: *commongrid
+    <<: *commonmask
+    anomalies:
+      period: monthly
+      standardize: true
+    mask_above_threshold:  # This is needed to mask out regions where std=0
+      threshold: 100
+    mask_below_threshold:
+      threshold: -100
+    extract_region:
+      end_latitude: 45
+      end_longitude: 360
+      start_latitude: -90
+      start_longitude: 0
+    area_statistics:
+      operator: mean
+
+  pp_lineplots_ano_45N:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    <<: *commongrid
+    <<: *commonmask
+    anomalies:
+      period: monthly
+      standardize: false
+    extract_region:
+      end_latitude: 45
+      end_longitude: 360
+      start_latitude: -90
+      start_longitude: 0
+    area_statistics:
+      operator: mean
+
+  pp_hist:
+    custom_order: true
+    <<: *icefreeland
+
+  pp_hist_commongrid:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    <<: *commongrid
+
+  pp_hist_commonmask:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    <<: *commongrid
+    <<: *commonmask
+
+  pp_maps_annual:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    annual_statistics:
+      operator: mean
+
+  pp_maps_annual_commonmask:
+    custom_order: true
+    <<: *icefreeland
+    <<: *nonnegative
+    <<: *commongrid
+    <<: *commonmask
+    annual_statistics:
+      operator: mean
+
+  default_extremes: &default_extremes
+    custom_order: true
+    <<: *icefreeland
+    <<: *commongrid
+    <<: *commonmask
+    <<: *nonnegative
+    anomalies:
+      period: monthly
+      standardize: true
+
+
+diagnostics:
+  mapplots:
+    variables:
+      sm:
+        preprocessor: pp_mpqb
+        mip: Lmon
+    scripts:
+      mpqb:
+        reference_dataset: cds-era5-land-monthly
+        script: mpqb/mpqb_comparison.py
+    <<: *datasets_from_1981_2010
+  taylor:
+    variables:
+      sm:
+        preprocessor: pp_mpqb
+        mip: Lmon
+    scripts:
+      taylor:
+        reference_dataset: cds-era5-land-monthly
+        script: mpqb/mpqb_taylordiagram.py
+    <<: *datasets_from_1981_2010
+  taylor_ano:
+    variables:
+      sm:
+        preprocessor: pp_mpqb_ano
+        mip: Lmon
+    scripts:
+      taylor:
+        reference_dataset: cds-era5-land-monthly
+        script: mpqb/mpqb_taylordiagram.py
+    <<: *datasets_from_1981_2010
+  mapplots_stdano:
+    variables:
+      sm:
+        preprocessor: pp_mpqb_stdano
+        mip: Lmon
+    scripts:
+      mpqb:
+        reference_dataset: cds-era5-land-monthly
+        script: mpqb/mpqb_comparison.py
+    <<: *datasets_from_1981_2010
+  lineplots_individual:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_individual
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1981
+  lineplots:
+    variables:
+      sm:
+        preprocessor: pp_lineplots
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_ano:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_ano
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_ano_individual:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_ano_individual
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_stdano:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_stdano
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_stdano_individual:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_stdano_individual
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_stdano_europe:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_stdano_europe
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_stdano_westusa:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_stdano_westusa
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  histogram_original:
+    variables:
+      sm:
+        preprocessor: pp_hist
+        mip: Lmon
+    scripts:
+      hist:
+        script: mpqb/mpqb_histogram.py
+        <<: *histogram_settings
+    <<: *datasets_from_1981_2010
+  histogram_zoom:
+    variables:
+      sm:
+        preprocessor: pp_hist
+        mip: Lmon
+    scripts:
+      hist:
+        script: mpqb/mpqb_histogram.py
+        <<: *histogram_settings_zoom
+    <<: *datasets_from_1981_2010
+  histogram_commongrid:
+    variables:
+      sm:
+        preprocessor: pp_hist_commongrid
+        mip: Lmon
+    scripts:
+      hist:
+        script: mpqb/mpqb_histogram.py
+        <<: *histogram_settings
+    <<: *datasets_from_1981_2010
+  histogram_commonmask:
+    variables:
+      sm:
+        preprocessor: pp_hist_commonmask
+        mip: Lmon
+    scripts:
+      hist:
+        script: mpqb/mpqb_histogram.py
+        <<: *histogram_settings
+    <<: *datasets_from_1981_2010
+  maps_aux_1992to2019_owngrid:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_maps_annual
+        mip: Lmon
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+    <<: *datasets_from_1992_2019
+  maps_aux_1992to2019:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_maps_annual_commonmask
+        mip: Lmon
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+    <<: *datasets_from_1992_2019
+  maps_aux_1992to2010:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_maps_annual_commonmask
+        mip: Lmon
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+    <<: *datasets_from_1992_2010
+  maps_aux_1981to2010:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_maps_annual
+        mip: Lmon
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+    <<: *datasets_from_1981_2010
+  lineplots_45N:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_45N
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_ano_45N:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_ano_45N
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019
+  lineplots_stdano_45N:
+    variables:
+      sm:
+        preprocessor: pp_lineplots_stdano_45N
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+    <<: *datasets_from_1992_2019

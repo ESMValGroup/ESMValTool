@@ -13,11 +13,11 @@ documentation:
 # Define some default parameters using anchors #
 ################################################
 
-mmm_stat: &mmm_stat
+mmm_stat_obs: &mmm_stat_obs
   multi_model_statistics:
     span: overlap
     statistics: [mean]
-    exclude: [ERA-Interim, ERA5]
+    exclude: [ERA5-Land, ERA5, ERA-Interim, JRA-55]
 
 mpqbregridder: &mpqbregridder
   regrid:
@@ -26,7 +26,7 @@ mpqbregridder: &mpqbregridder
     scheme: area_weighted
   monthly_statistics:
     operator: mean
-    
+ 
 extract_tropics: &extr_trop
   extract_region: 
     start_longitude: 0
@@ -34,20 +34,20 @@ extract_tropics: &extr_trop
     start_latitude: -30
     end_latitude: 30
 
-extract_nhstormtracks: &extr_nhstorm
+extract_nh_midlatitudes: &extr_nhmidlats
   extract_region: 
     start_longitude: 0
     end_longitude: 360
-    start_latitude: 35
-    end_latitude: 65
+    start_latitude: 30
+    end_latitude: 60    
 
-extract_southernocean: &extr_socean
+extract_sh_midlatitudes: &extr_shmidlats
   extract_region: 
     start_longitude: 0
     end_longitude: 360
     start_latitude: -60
-    end_latitude: -30
- 
+    end_latitude: -30    
+    
 extract_itcz: &extr_itcz
   extract_region: 
     start_longitude: 136
@@ -55,13 +55,40 @@ extract_itcz: &extr_itcz
     start_latitude: 0
     end_latitude: 12
  
-extract_southeastpacific: &extr_sepacific
-  extract_region: 
-    start_longitude: 275
+extract_southasianmonsoon: &extr_samonsoon
+  extract_region:
+    start_longitude: 65
+    end_longitude: 95
+    start_latitude: 5
+    end_latitude: 30
+
+# extract_westafricanmonsoon: &extr_wamonsoon
+  # extract_region:
+    # start_longitude: 350
+    # end_longitude: 10
+    # start_latitude: 5
+    # end_latitude: 30
+
+extract_southamericancoast: &extr_sacoast
+  extract_region:
+    start_longitude: 230
     end_longitude: 290
-    start_latitude: -19
-    end_latitude: -4
-    
+    start_latitude: -30
+    end_latitude: 10
+ 
+extract_europe: &extr_europe
+  extract_region: 
+    end_latitude: 53
+    end_longitude: 20
+    start_latitude: 42
+    start_longitude: 0
+
+extract_northamerica: &extr_northamerica
+  extract_region: 
+    end_latitude: 48
+    end_longitude: 290
+    start_latitude: 30
+    start_longitude: 235
     
     
 # The main preprocessor for all
@@ -71,10 +98,17 @@ default_pp_maps: &pp_maps
   mask_below_threshold:
     threshold: 0.0000000001
   <<: *mpqbregridder
-  #mask_landsea:
-  #  mask_out: sea
-  <<: *mmm_stat
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
 
+default_pp_maps_nomask: &pp_maps_nomask
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder  
+  <<: *mmm_stat_obs
+ 
 default_pp_maps_withnoth: &pp_maps_with_nothing
   custom_order: true
   mask_below_threshold:
@@ -87,10 +121,19 @@ default_pp_maps_without_gl: &pp_maps_without_gl
     threshold: 0.0000000001
   <<: *mpqbregridder
   # mask_landsea:
-    # mask_out: land
+    # mask_out: sea
   # mask_fillvalues:
     # threshold_fraction: 0.0     
     # min_value: -1e20            
+
+default_pp_maps_with_gl: &pp_maps_with_gl
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
 
 default_pp_maps_without_trop: &pp_maps_without_trop
   custom_order: true
@@ -104,29 +147,25 @@ default_pp_maps_without_trop: &pp_maps_without_trop
     # threshold_fraction: 0.0     
     # min_value: -1e20            
 
-default_pp_maps_without_socean: &pp_maps_without_so
+default_pp_maps_landonly_trop: &pp_maps_landonly_trop
   custom_order: true
   mask_below_threshold:
     threshold: 0.0000000001
   <<: *mpqbregridder
-  <<: *extr_socean
-  # mask_landsea:
-    # mask_out: land
-  # mask_fillvalues:
-    # threshold_fraction: 0.0     
-    # min_value: -1e20            
+  <<: *extr_trop
+  mask_landsea:
+    mask_out: sea
+  #<<: *mmm_stat_obs
 
-default_pp_maps_without_nhstorm: &pp_maps_without_nhs
+default_pp_maps_seaonly_trop: &pp_maps_seaonly_trop
   custom_order: true
   mask_below_threshold:
     threshold: 0.0000000001
   <<: *mpqbregridder
-  <<: *extr_nhstorm
-  # mask_landsea:
-    # mask_out: land
-  # mask_fillvalues:
-    # threshold_fraction: 0.0     
-    # min_value: -1e20            
+  <<: *extr_trop
+  mask_landsea:
+    mask_out: land
+  #<<: *mmm_stat_obs
   
 default_pp_maps_without_itcz: &pp_maps_without_itcz
   custom_order: true
@@ -140,24 +179,157 @@ default_pp_maps_without_itcz: &pp_maps_without_itcz
     # threshold_fraction: 0.0     
     # min_value: -1e20            
 
-default_pp_maps_without_sepacific: &pp_maps_without_sepacific
+default_pp_maps_with_itcz: &pp_maps_with_itcz
   custom_order: true
   mask_below_threshold:
     threshold: 0.0000000001
   <<: *mpqbregridder
-  <<: *extr_sepacific
+  <<: *extr_itcz
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
+    
+default_pp_maps_without_samonsoon: &pp_maps_without_samonsoon
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_samonsoon
   # mask_landsea:
     # mask_out: land
   # mask_fillvalues:
     # threshold_fraction: 0.0     
     # min_value: -1e20            
 
+default_pp_maps_with_samonsoon: &pp_maps_with_samonsoon
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_samonsoon
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
+  
+default_pp_maps_without_nhmidlats: &pp_maps_without_nhmidlats
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_nhmidlats
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
+
+default_pp_maps_with_nhmidlats: &pp_maps_with_nhmidlats
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_nhmidlats
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
+
+default_pp_maps_without_shmidlats: &pp_maps_without_shmidlats
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_shmidlats
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
+
+default_pp_maps_landonly_shmidlats: &pp_maps_landonly_shmidlats
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_shmidlats
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
+
+default_pp_maps_seaonly_shmidlats: &pp_maps_seaonly_shmidlats
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_shmidlats
+  mask_landsea:
+    mask_out: land
+  <<: *mmm_stat_obs
+
+default_pp_maps_without_sacoast: &pp_maps_without_sacoast
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_sacoast
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
+
+default_pp_maps_with_sacoast: &pp_maps_with_sacoast
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_sacoast
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
+  
+default_pp_maps_without_europe: &pp_maps_without_europe
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_europe
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
+
+default_pp_maps_without_northamerica: &pp_maps_without_northamerica
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_northamerica
+  # mask_landsea:
+    # mask_out: land
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
+    
+# default_pp_maps_without_wamonsoon: &pp_maps_without_wamonsoon
+  # custom_order: true
+  # mask_below_threshold:
+    # threshold: 0.0000000001
+  # <<: *mpqbregridder
+  # <<: *extr_wamonsoon
+  # # mask_landsea:
+    # # mask_out: land
+  # # mask_fillvalues:
+    # # threshold_fraction: 0.0     
+    # # min_value: -1e20            
+
   
 # Additional preprocessor for
 # line plots
 default_pp_line: &pp_line
   mask_fillvalues:
-    threshold_fraction: 0.1
+    #threshold_fraction: 0.1
+    threshold_fraction: 0.0
   area_statistics:
     operator: mean
 
@@ -167,65 +339,83 @@ default_pp_line: &pp_line
 ################################################
 
 datasets:
-  # - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, 
-     # tier: 2, alias: PATMOS-x} 
-  # - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, 
-     # tier: 2, alias: ESACCI-CLOUD} 
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', 
      tier: 3, alias: ERA-Interim}       
-  # - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-     # tier: 3, alias: MODIS}
-  # - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
-     # tier: 3, alias: ERA5}
-  # - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
-     # tier: 3, alias: MAC-LWP}
   - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
      tier: 2, alias: PERSIANN-CDR}
   - {dataset: JRA-55, project: ana4mips, type: reanalysis, mip: Amon,
      tier: 1, alias: JRA-55}
-  - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, 
+  - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, 
      tier: 1, alias: GPCP-SG}
   # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_25, 
      # tier: 2, alias: GPCC}
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
      tier: 3, alias: ERA5}
-  - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-     tier: 3, alias: ERA5-Land}
-     
+  # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+     # tier: 3, alias: ERA5-Land}
+  # - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+     # tier: 1, alias: TRMM-L3}
 
      
 preprocessors:
-  pp_tmp:
+  pp_maps_annual:
     annual_statistics:
       operator: mean
 
-  pp_mpqb_sm:
-    <<: *pp_maps
-    
-  pp_mpqb_clouds:
+  pp_mpqb_precip:
     <<: *pp_maps    
 
-  pp_mpqb_clouds_withnoth:
+  pp_mpqb_precip_nomask:
+    <<: *pp_maps_nomask    
+
+  pp_mpqb_precip_withnoth:
     <<: *pp_maps_with_nothing   
     
-  pp_mpqb_clouds_without_gl:
+  pp_mpqb_precip_without_gl:
     <<: *pp_maps_without_gl    
 
-  pp_mpqb_clouds_without_trop:
+  pp_mpqb_precip_with_gl:
+    <<: *pp_maps_with_gl      
+    
+  pp_mpqb_precip_without_trop:
     <<: *pp_maps_without_trop    
 
-  pp_mpqb_clouds_without_itcz:
+  pp_mpqb_precip_landonly_trop:
+    <<: *pp_maps_landonly_trop    
+
+  pp_mpqb_precip_seaonly_trop:
+    <<: *pp_maps_seaonly_trop    
+    
+  pp_mpqb_precip_without_itcz:
     <<: *pp_maps_without_itcz    
 
-  pp_mpqb_clouds_without_socean:
-    <<: *pp_maps_without_so    
+  pp_mpqb_precip_with_itcz:
+    <<: *pp_maps_with_itcz    
+     
+  pp_mpqb_precip_without_samonsoon:
+    <<: *pp_maps_without_samonsoon    
 
-  pp_mpqb_clouds_without_sepacific:
-    <<: *pp_maps_without_sepacific    
+  pp_mpqb_precip_with_samonsoon:
+    <<: *pp_maps_with_samonsoon    
 
-  pp_mpqb_clouds_without_nhstorm:
-    <<: *pp_maps_without_nhs    
+  pp_mpqb_precip_without_europe:
+    <<: *pp_maps_without_europe    
 
+  pp_mpqb_precip_without_northamerica:
+    <<: *pp_maps_without_northamerica    
+    
+  # pp_mpqb_precip_without_wamonsoon:
+    # <<: *pp_maps_without_wamonsoon    
+
+  pp_mpqb_precip_without_shmidlats:
+    <<: *pp_maps_without_shmidlats    
+
+  pp_mpqb_precip_landonly_shmidlats:
+    <<: *pp_maps_landonly_shmidlats    
+
+  pp_mpqb_precip_seaonly_shmidlats:
+    <<: *pp_maps_seaonly_shmidlats    
+        
     
   pp_mpqb_sm_std:
     anomalies:
@@ -233,333 +423,652 @@ preprocessors:
 #      standardize: true
     <<: *pp_maps
 
-  pp_lineplots_gl:
+  pp_lineplots_without_gl:
     <<: *pp_maps_without_gl
     <<: *pp_line
 
-  pp_lineplots_trop:
-    <<: *pp_maps_without_trop
+  pp_lineplots_with_gl:
+    <<: *pp_maps_with_gl
     <<: *pp_line
     
-  pp_lineplots_itcz:
+  pp_lineplots_without_trop:
+    <<: *pp_maps_without_trop
+    <<: *pp_line
+
+  pp_lineplots_landonly_trop:
+    <<: *pp_maps_landonly_trop
+    <<: *pp_line
+    
+  pp_lineplots_seaonly_trop:
+    <<: *pp_maps_seaonly_trop
+    <<: *pp_line
+    
+  pp_lineplots_without_itcz:
     <<: *pp_maps_without_itcz
     <<: *pp_line
 
-  pp_lineplots_socean:
-    <<: *pp_maps_without_so
+  pp_lineplots_with_itcz:
+    <<: *pp_maps_with_itcz
+    <<: *pp_line
+    
+  pp_lineplots_without_samonsoon:
+    <<: *pp_maps_without_samonsoon
+    <<: *pp_line
+    
+  pp_lineplots_with_samonsoon:
+    <<: *pp_maps_with_samonsoon
     <<: *pp_line
 
-  pp_lineplots_sepacific:
-    <<: *pp_maps_without_sepacific
+  pp_lineplots_without_europe:
+    <<: *pp_maps_without_europe
     <<: *pp_line
 
-  pp_lineplots_nhstorm:
-    <<: *pp_maps_without_nhs
+  pp_lineplots_without_northamerica:
+    <<: *pp_maps_without_northamerica
+    <<: *pp_line    
+    
+  pp_lineplots_without_shmidlats:
+    <<: *pp_maps_without_shmidlats
     <<: *pp_line
+
+  pp_lineplots_landonly_shmidlats:
+    <<: *pp_maps_landonly_shmidlats
+    <<: *pp_line
+    
+  pp_lineplots_seaonly_shmidlats:
+    <<: *pp_maps_seaonly_shmidlats
+    <<: *pp_line
+    
+  pp_lineplots_anncyc_without_trop:
+    custom_order: true
+    <<: *pp_maps_without_trop
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_landonly_trop:
+    custom_order: true
+    <<: *pp_maps_landonly_trop
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_seaonly_trop:
+    custom_order: true
+    <<: *pp_maps_seaonly_trop
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_without_itcz:
+    custom_order: true
+    <<: *pp_maps_without_itcz
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_without_europe:
+    custom_order: true
+    <<: *pp_maps_without_europe
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_without_northamerica:
+    custom_order: true
+    <<: *pp_maps_without_northamerica
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month 
+      
+  pp_lineplots_anncyc_without_samonsoon:
+    custom_order: true
+    <<: *pp_maps_without_samonsoon
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+      
     
   pp_lineplots_std:
     anomalies:
       period: monthly
-#      standardize: true
+      standardize: true
     <<: *pp_maps
     <<: *pp_line
 
-  pp_mpqb_yearmean:
-    <<: *pp_maps
-    annual_statistics:
-      operator: mean
+  pp_lineplots_gl_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps_without_gl
+    <<: *pp_line
 
-  pp_mpqb_yearmin:
-    <<: *pp_maps
-    annual_statistics:
-      operator: min
+  pp_lineplots_without_trop_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    # mask_above_threshold:  # This is needed to mask out regions where std=0
+      # threshold: 100
+    # mask_below_threshold:
+      # threshold: -100
+    <<: *pp_maps_without_trop
+    <<: *pp_line
+    
+  # pp_lineplots_landonly_trop_std:
+    # anomalies:
+      # period: monthly
+      # standardize: true
+    # mask_above_threshold:  # This is needed to mask out regions where std=0
+      # threshold: 100
+    # mask_below_threshold:
+      # threshold: -100
+    # <<: *pp_maps_landonly_trop
+    # <<: *pp_line
+    
+  # pp_lineplots_seaonly_trop_std:
+    # anomalies:
+      # period: monthly
+      # standardize: true
+    # mask_above_threshold:  # This is needed to mask out regions where std=0
+      # threshold: 100
+    # mask_below_threshold:
+      # threshold: -100
+    # <<: *pp_maps_seaonly_trop
+    # <<: *pp_line
 
-  pp_mpqb_yearmax:
-    <<: *pp_maps
-    annual_statistics:
-      operator: max
+  pp_lineplots_without_itcz_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps_without_itcz
+    <<: *pp_line
 
-  pp_mpqb_yearstddev:
-    <<: *pp_maps
-    annual_statistics:
-      operator: std_dev
+  pp_lineplots_without_europe_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps_without_europe
+    <<: *pp_line
 
-cloud_def: &clouddef
-  mip: Amon
-  start_year: 2003
-  end_year: 2016
+  pp_lineplots_without_northamerica_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps_without_northamerica
+    <<: *pp_line
+    
+  # pp_mpqb_yearmean:
+    # <<: *pp_maps
+    # annual_statistics:
+      # operator: mean
+
+  # pp_mpqb_yearmin:
+    # <<: *pp_maps
+    # annual_statistics:
+      # operator: min
+
+  # pp_mpqb_yearmax:
+    # <<: *pp_maps
+    # annual_statistics:
+      # operator: max
+
+  # pp_mpqb_yearstddev:
+    # <<: *pp_maps
+    # annual_statistics:
+      # operator: std_dev
 
 precip_def: &precipdef
   mip: Amon
-  start_year: 2001
+  start_year: 1983
+  end_year: 2016
+
+precip_def_short: &precipdef_short
+  mip: Amon
+  start_year: 1998
   end_year: 2013
+
   
 hist_def: &histdef
   script: mpqb/mpqb_histogram.py
   #vmin: 0
   #vmax: 100
   vmin: 0
-  vmax: 0.00005
-  number_of_bars: 20
+  vmax: 0.0001
+  number_of_bars: 25
   #histtype: step
   logarithmic: False
  
- 
+hist_def_long: &histdef_long
+  script: mpqb/mpqb_histogram.py
+  #vmin: 0
+  #vmax: 100
+  vmin: 0
+  vmax: 0.0002
+  number_of_bars: 30
+  #histtype: step
+  logarithmic: False
+
+hist_def_zoom: &histdef_zoom
+  script: mpqb/mpqb_histogram_rotate.py
+  #vmin: 0
+  #vmax: 100
+  vmin: 0
+  vmax: 0.000018
+  number_of_bars: 18
+  #histtype: step
+  logarithmic: False
+
+  
 diagnostics:
-  histogram_gl:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_clouds_without_gl
-        #derive: true
-        <<: *precipdef
-    scripts:
-      mpqb_gl:
-        <<: *histdef
-  # histogram_trop:
+  # # histogram_without_gl:
+    # # description: histogram for 1x1 gridded data
+    # # variables:
+      # # pr:
+        # # preprocessor: pp_mpqb_precip_without_gl
+        # # #derive: true
+        # # <<: *precipdef
+    # # scripts:
+      # # mpqb_gl:
+        # # <<: *histdef
+  # # histogram_with_gl:
+    # # description: histogram for 1x1 gridded data
+    # # variables:
+      # # pr:
+        # # preprocessor: pp_mpqb_precip_with_gl
+        # # #derive: true
+        # # <<: *precipdef
+    # # scripts:
+      # # mpqb_gl:
+        # # <<: *histdef
+  # histogram_without_trop:
     # description: histogram for 1x1 gridded data
     # variables:
       # pr:
-        # preprocessor: pp_mpqb_clouds_without_trop
+        # preprocessor: pp_mpqb_precip_without_trop
         # #derive: true
         # <<: *precipdef
     # scripts:
       # mpqb_trop:
-        # <<: *histdef
-  # histogram_itcz:
+        # <<: *histdef_zoom
+  histogram_landonly_trop:
+    description: histogram for 1x1 gridded data
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_landonly_trop
+        #derive: true
+        <<: *precipdef
+    additional_datasets:
+      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         tier: 3, alias: ERA5-Land}
+    scripts:
+      mpqb_trop:
+        <<: *histdef
+  # histogram_seaonly_trop:
     # description: histogram for 1x1 gridded data
     # variables:
       # pr:
-        # preprocessor: pp_mpqb_clouds_without_itcz
+        # preprocessor: pp_mpqb_precip_seaonly_trop
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # mpqb_trop:
+        # <<: *histdef_zoom
+  # histogram_without_itcz:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_without_itcz
         # #derive: true
         # <<: *precipdef
     # scripts:
       # mpqb_itcz:
-        # <<: *histdef
-  # histogram_socean:
+        # <<: *histdef_long
+  # # # histogram_with_itcz:
+    # # # description: histogram for 1x1 gridded data
+    # # # variables:
+      # # # pr:
+        # # # preprocessor: pp_mpqb_precip_with_itcz
+        # # # #derive: true
+        # # # <<: *precipdef
+    # # # scripts:
+      # # # mpqb_itcz:
+        # # # <<: *histdef
+  # histogram_without_samonsoon:
     # description: histogram for 1x1 gridded data
     # variables:
       # pr:
-        # preprocessor: pp_mpqb_clouds_without_socean
+        # preprocessor: pp_mpqb_precip_without_samonsoon
         # #derive: true
         # <<: *precipdef
     # scripts:
-      # mpqb_socean:
-        # <<: *histdef
-  # histogram_sepacific:
+      # mpqb_samonsoon:
+        # <<: *histdef_zoom
+  # histogram_without_europe:
     # description: histogram for 1x1 gridded data
     # variables:
       # pr:
-        # preprocessor: pp_mpqb_clouds_without_sepacific
+        # preprocessor: pp_mpqb_precip_without_europe
         # #derive: true
         # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
     # scripts:
-      # mpqb_sepacific:
+      # mpqb_europe:
         # <<: *histdef
-  # histogram_nhstorm:
+  # histogram_without_northamerica:
     # description: histogram for 1x1 gridded data
     # variables:
       # pr:
-        # preprocessor: pp_mpqb_clouds_without_nhstorm
+        # preprocessor: pp_mpqb_precip_without_northamerica
+        # #derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+    # scripts:
+      # mpqb_northamerica:
+        # <<: *histdef
+  # resolution:
+    # description: resolution
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_clouds_withnoth
+        # #derive: true
+        # <<: *precipdef 
+    # scripts: 
+      # mpqb_res:
+        # script: mpqb/mpqb_resolution.py
+  # mapplots:
+    # description: mapplots
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_nomask
         # #derive: true
         # <<: *precipdef
     # scripts:
-      # mpqb_nhstorm:
-        # <<: *histdef
-
-  # histogram_c:
-    # description: histogram for regridded data on coarsest level
-    # variables:
-      # lai:
-        # preprocessor: pp_mpqb_lai_c
-        # <<: *laidef
-    # scripts:
       # mpqb:
-        # script: mpqb/mpqb_histogram.py
-        # vmin: 0
-        # vmax: 0.7
-        # number_of_bars: 14
-        # logarithmic: False
-  # histogram_f:
-    # description: histogram for regridded data on finest level
-    # variables:
-      # lai:
-        # preprocessor: pp_mpqb_lai_f
-        # <<: *laidef
-    # scripts:
-      # mpqb:
-        # script: mpqb/mpqb_histogram.py
-        # vmin: 0
-        # vmax: 0.7
-        # number_of_bars: 14
-        # logarithmic: False
-  # histogram_O:
-    # description: histogram for original data
-    # variables:
-      # lai:
-        # preprocessor: pp_mpqb_lai_orig
-        # <<: *laidef
-    # scripts:
-      # mpqb:
-        # script: mpqb/mpqb_histogram.py
-        # vmin: 0
-        # vmax: 0.7
-        # number_of_bars: 14
-        # logarithmic: False 
-  resolution:
-    description: resolution
-    variables:
-      pr:
-        preprocessor: pp_mpqb_clouds_withnoth
-        #derive: true
-        <<: *precipdef 
-    scripts: 
-      mpqb_res:
-        script: mpqb/mpqb_resolution.py
-  mapplots:
-    description: mapplots
-    variables:
-      pr:
-        preprocessor: pp_mpqb_clouds
-        #derive: true
-        <<: *precipdef
-    scripts:
-      mpqb:
-        reference_dataset: GPCP-SG
-        script: mpqb/mpqb_comparison.py
+        # #reference_dataset: MultiModelMean
+        # reference_dataset: GPCP-SG
+        # script: mpqb/mpqb_comparison.py
       # mpqb_taylor:
         # reference_dataset: MultiModelMean
-        # script: mpqb/taylordiagram.py
-  # lineplots_gl:
+        # script: mpqb/mpqb_taylordiagram.py
+  # lineplots_without_gl:
     # description: lineplots
     # variables:
-      # lwp:
-        # preprocessor: pp_lineplots_gl
-        # derive: true
-        # <<: *clouddef
+      # pr:
+        # preprocessor: pp_lineplots_without_gl
+        # #derive: true
+        # <<: *precipdef
     # scripts:
       # lineplot_gl:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_trop:
+  # lineplots_with_gl:
     # description: lineplots
     # variables:
-      # lwp:
-        # preprocessor: pp_lineplots_trop
-        # derive: true
-        # <<: *clouddef
+      # pr:
+        # preprocessor: pp_lineplots_with_gl
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_gl:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_trop:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_trop
+        # #derive: true
+        # <<: *precipdef
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_itcz:
+  # # lineplots_without_trop_short:
     # description: lineplots
     # variables:
-      # lwp:
-        # preprocessor: pp_lineplots_itcz
+      # pr:
+        # preprocessor: pp_lineplots_without_trop
+        # #derive: true
+        # <<: *precipdef_short
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_landonly_trop:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_landonly_trop
+        # #derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_seaonly_trop:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_seaonly_trop
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot.py
+  ### works!!      
+  # lineplots_anncyc_without_trop:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_trop
         # derive: true
-        # <<: *clouddef
+        # <<: *precipdef
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_landonly_trop:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_landonly_trop
+        # derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_seaonly_trop:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_seaonly_trop
+        # derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_samonsoon:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_samonsoon
+        # derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_samonsoon:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_europe:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_europe
+        # derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+    # scripts:
+      # lineplot_europe:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_northamerica:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_northamerica
+        # derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+    # scripts:
+      # lineplot_northamerica:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_itcz:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_itcz
+        # derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_itcz:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  ###
+  # lineplots_without_trop_std:
+    # description: lineplots_std
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_trop_std
+        # <<: *precipdef
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_itcz_std:
+    # description: lineplots_std
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_itcz_std
+        # <<: *precipdef
     # scripts:
       # lineplot_itcz:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_socean:
+  # lineplots_without_europe_std:
+    # description: lineplots_std
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_europe_std
+        # <<: *precipdef
+    # scripts:
+      # lineplot_europe:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_northamerica_std:
+    # description: lineplots_std
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_northamerica_std
+        # <<: *precipdef
+    # scripts:
+      # lineplot_northamerica:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_itcz:
     # description: lineplots
     # variables:
-      # lwp:
-        # preprocessor: pp_lineplots_socean
-        # derive: true
-        # <<: *clouddef
+      # pr:
+        # preprocessor: pp_lineplots_without_itcz
+        # #derive: true
+        # <<: *precipdef
     # scripts:
-      # lineplot_socean:
+      # lineplot_itcz:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_sepacific:
+  # # lineplots_with_itcz:
+    # # description: lineplots
+    # # variables:
+      # # pr:
+        # # preprocessor: pp_lineplots_with_itcz
+        # # #derive: true
+        # # <<: *precipdef
+    # # scripts:
+      # # lineplot_itcz:
+        # # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_samonsoon:
     # description: lineplots
     # variables:
-      # lwp:
-        # preprocessor: pp_lineplots_sepacific
-        # derive: true
-        # <<: *clouddef
+      # pr:
+        # preprocessor: pp_lineplots_without_samonsoon
+        # #derive: true
+        # <<: *precipdef
     # scripts:
-      # lineplot_sepacific:
+      # lineplot_samonsoon:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_nhstorm:
+  # lineplots_without_europe:
     # description: lineplots
     # variables:
-      # lwp:
-        # preprocessor: pp_lineplots_nhstorm
-        # derive: true
-        # <<: *clouddef
+      # pr:
+        # preprocessor: pp_lineplots_without_europe
+        # #derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
     # scripts:
-      # lineplot_nhstorm:
+      # lineplot_europe:
         # script: mpqb/mpqb_lineplot.py
-#  lineplots_europe:
-#    description: lineplots_europe
-#    variables:
-#      lai:
-#        preprocessor: pp_lineplots
-#        <<: *laidef
-#    scripts:
-#      lineplot:
-#        script: mpqb/mpqb_lineplot.py
-#  mapplots_std:
-#    description: mapplots
-#    variables:
-#      lai:
-#        preprocessor: pp_mpqb_sm_std
-#        <<: *laidef
-#    scripts:
-#      mpqb:
-#        reference_dataset: MultiModelMedian
-#        script: mpqb/mpqb_comparison.py
-#  lineplots_std:
-#    description: lineplots_std
-#    variables:
-#      lai:
-#        preprocessor: pp_lineplots_std
-#        <<: *laidef
-#    scripts:
-#      lineplot:
-#        script: mpqb/mpqb_lineplot.py
-#  lineplots_europe_std:
-#    description: lineplots_europe_std
-#    variables:
-#      lai:
-#        preprocessor: pp_lineplots_std
-#        <<: *laidef
-#    scripts:
-#      lineplot:
-#        script: mpqb/mpqb_lineplot.py
-#  maps_yearmean:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      lai:
-#        preprocessor: pp_mpqb_yearmean
-#        <<: *laidef
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
-#  maps_yearmin:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      lai:
-#        preprocessor: pp_mpqb_yearmin
-#        <<: *laidef
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
-#  maps_yearmax:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      lai:
-#        preprocessor: pp_mpqb_yearmax
-#        <<: *laidef
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
-#  maps_yearstddev:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      lai:
-#        preprocessor: pp_mpqb_yearstddev
-#        <<: *laidef
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
+  # lineplots_without_northamerica:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_northamerica
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_northamerica:
+        # script: mpqb/mpqb_lineplot.py
+  # # lineplots_with_samonsoon:
+    # # description: lineplots
+    # # variables:
+      # # pr:
+        # # preprocessor: pp_lineplots_with_samonsoon
+        # # #derive: true
+        # # <<: *precipdef
+    # # scripts:
+      # # lineplot_samonsoon:
+        # # script: mpqb/mpqb_lineplot.py
+  # # mapplots_std:
+    # # description: mapplots
+    # # variables:
+      # # lai:
+        # # preprocessor: pp_mpqb_sm_std
+        # # <<: *laidef
+    # # scripts:
+      # # mpqb:
+        # # reference_dataset: MultiModelMedian
+        # # script: mpqb/mpqb_comparison.py
+  # maps_aux_owngrid:
+    # description: auxiliary maps (trend; climatology)
+    # variables:
+      # pr:
+        # preprocessor: pp_maps_annual
+        # <<: *precipdef
+    # scripts:
+      # aux_maps:
+        # script: mpqb/mpqb_auxmaps.py
+  # maps_aux_owngrid_short:
+    # description: auxiliary maps (trend; climatology)
+    # variables:
+      # pr:
+        # preprocessor: pp_maps_annual
+        # <<: *precipdef_short
+    # scripts:
+      # aux_maps:
+        # script: mpqb/mpqb_auxmaps.py
