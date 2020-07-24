@@ -5,6 +5,12 @@ documentation:
   description: |
     Recipe to evaluate the ecosystem turnover time of carbon based on
     Carvalhais et al., 2014, Nature.
+    The data required in the obs_details section can be obtained at
+    http://www.bgc-jena.mpg.de/geodb/BGI/tau4ESMValTool.php
+    and have to be stored in the auxiliary_data_dir defined i config-user.yml,
+    in a subdirectory obs_data_subdir specified in the obs_details section
+    below.
+
 
   authors:
     - koirala_sujan
@@ -35,7 +41,7 @@ obs_details: &obs_details
     #
     # size of the big box in the latitudinal direction.
     # Recommended value: 5
-    obs_data_subdir: 'data_ESMValTool_Carvalhais2014'
+    obs_data_subdir: 'carvalhais14nat'
     source_label: 'Carvalhais2014'
     variant_label: 'BE'
     grid_label: 'gn'
