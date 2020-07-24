@@ -33,6 +33,10 @@ Once you have installed the above prerequisites, you can install ESMValTool by r
 
     conda install esmvaltool -c esmvalgroup -c conda-forge
 
+Here ``conda`` is the executable calling the Conda package manager to install
+``esmvaltool`` and the ``-c`` flag specifies the software channels in which ``esmvaltool``
+and its dependencies can be found.
+
 Installation of subpackages
 ---------------------------
 
@@ -109,8 +113,8 @@ simplify the installation process, an environment definition file is provided
 in the repository (``environment.yml`` in the root folder).
 
 .. attention::
-    Some systems provides a preinstalled version of conda (e.g., via the module environment).
-    Several users however reported problems when installing NCL with such versions. It is
+    Some systems provide a preinstalled version of conda (e.g., via the module environment).
+    However, several users reported problems when installing NCL with such versions. It is
     therefore preferable to use a local, fully user-controlled conda installation.
     Using an older version of conda can also be a source of problems, so if you have conda
     installed already, make sure it is up to date by running ``conda update -n base conda``.
@@ -128,6 +132,20 @@ or ``~/.cshrc``/``~/.tcshrc`` file:
 
     source <prefix>/etc/profile.d/conda.csh
 
+where ``<prefix>`` is the install location of your anaconda or miniconda
+(e.g. ``/home/$USER/anaconda3`` or ``/home/$USER/miniconda3``).
+
+
+.. note::
+    Note that during the installation, conda will ask you
+    if you want the installation to be automatically sourced from your
+    ``.bashrc`` or ``.bash-profile`` files; if you answered yes, then conda
+    will write bash directives to those files and everytime you get to your
+    shell, you will automatically be inside conda's ``(base)`` environment.
+    To deactivate this feature, look for the ``# >>> conda initialize >>>``
+    code block in your ``.bashrc`` or ``.bash-profile`` and comment the whole block out.
+
+
 The ESMValTool conda environment file can also be used as a requirements list
 for those cases in which a conda installation is not possible or advisable.
 From now on, we will assume that the installation is going to be done through
@@ -137,7 +155,7 @@ Ideally, you should create a conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
 Note that it is advisable to update conda to the latest version before
-installing ESMValTool, using the command
+installing ESMValTool, using the command (as mentioned above)
 
 .. code-block:: bash
 
@@ -153,7 +171,7 @@ code (called ESMValTool if you did not choose a different name) and run
 This installs the ESMValCore package from conda as a dependency.
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
-the option ``--name ENVIRONMENT_NAME`` to define a custom name. You can activate
+the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should then activate
 the environment using the command:
 
 .. code-block:: bash
@@ -214,3 +232,5 @@ confirm that no errors are reported:
 .. code-block:: bash
 
     python setup.py test
+
+
