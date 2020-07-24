@@ -84,6 +84,7 @@ outputs:
         - netCDF4
         - numpy
         - pandas
+        - pynio
         - pyproj>=2.1
         - python>=3.6
         - python-cdo
@@ -93,7 +94,6 @@ outputs:
         - seawater
         - shapely
         - xarray>=0.12.0
-        - pynio
         - xesmf
         - xlsxwriter
 

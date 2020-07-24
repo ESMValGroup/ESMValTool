@@ -41,6 +41,7 @@ REQUIREMENTS = {
         'netCDF4',
         'numpy',
         'pandas',
+        'pynio',
         'pyproj>=2.1'
         'pyyaml',
         'scikit-learn',
@@ -50,7 +51,6 @@ REQUIREMENTS = {
         'seawater',
         'shapely',
         'xarray>=0.12',
-        'pynio',
         'xesmf',
         'xlsxwriter',
     ],
