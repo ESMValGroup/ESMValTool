@@ -1,5 +1,5 @@
-# To build this container, go to ESMValCore root folder and execute :
-# docker build -t ${TAG_OF_YOUR_CHOICE} . -f docker/Dockerfile
+# To build this container, go to ESMValTool root folder and execute:
+# docker build -t ${TAG_OF_YOUR_CHOICE} . -f docker/Dockerfile.dev
 FROM continuumio/miniconda3
 
 COPY . /src/ESMValTool
@@ -15,4 +15,3 @@ RUN esmvaltool -h
 
 ENTRYPOINT ["esmvaltool"]
 CMD ["-h"]
-

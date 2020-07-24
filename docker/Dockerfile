@@ -11,4 +11,4 @@ RUN apt install julia -y && julia esmvaltool/install/Julia/setup.jl
 RUN Rscript esmvaltool/install/R/setup.R
 
 ENTRYPOINT ["esmvaltool"]
-CMD ["--help"]
+CMD ["-- --help"]
