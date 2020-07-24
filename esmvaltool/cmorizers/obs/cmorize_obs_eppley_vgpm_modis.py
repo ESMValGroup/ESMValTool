@@ -70,13 +70,13 @@ def merge_data(in_dir, out_dir, raw_info):
     var = raw_info['name']
     filelist = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.hdf'))
     for filename in filelist:
-        ds = xr.open_dataset(filename).rename({
+        ds = xr.open_dataset(filename, engine='pynio').rename({
             'fakeDim0': 'lat',
             'fakeDim1': 'lon'
         })
         # create coordinates
         ds = ds.assign_coords(
-            time=dt.strptime(ds.attrs['Start Time String'],
+            time=dt.strptime(ds.attrs['Start_Time_String'],
                              '%m/%d/%Y %H:%M:%S'))
         ds = ds.expand_dims(dim='time', axis=0)
         dx = 90. / ds.dims['lat']
@@ -106,7 +106,7 @@ def merge_data(in_dir, out_dir, raw_info):
             'calendar': 'gregorian'
         },
         var: {
-            '_FillValue': ds[var].attrs['Hole Value']
+            '_FillValue': ds[var].attrs['Hole_Value']
         }
     }
     filename = os.path.join(out_dir, raw_info['file'] + '_merged.nc')

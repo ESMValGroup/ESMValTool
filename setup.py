@@ -42,6 +42,7 @@ REQUIREMENTS = {
         'netCDF4',
         'numpy',
         'pandas',
+        'pynio',
         'pyproj>=2.1'
         'pyyaml',
         'scikit-learn',

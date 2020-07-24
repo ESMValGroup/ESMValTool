@@ -84,6 +84,7 @@ outputs:
         - netCDF4
         - numpy
         - pandas
+        - pynio
         - pyproj>=2.1
         - python>=3.6
         - python-cdo
