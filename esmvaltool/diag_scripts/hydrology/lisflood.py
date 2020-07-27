@@ -1,7 +1,6 @@
 """LISFLOOD diagnostic."""
 import logging
 from pathlib import Path
-import numpy as np
 
 import iris
 from iris.analysis.maths import exp as iris_exp
@@ -140,7 +139,6 @@ def main(cfg):
         cubes['pr'].units = 'mm d-1'
 
         for var_name, cube in cubes.items():
-            print(var_name)
             # Western emisphere longitudes should be negative
             points = cube.coord('longitude').points
             cube.coord('longitude').points = (points + 180) % 360 - 180
