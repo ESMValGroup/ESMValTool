@@ -761,7 +761,7 @@ def main(diag_config):
                 "Map of global distribution of turnover time of carbon",
                 ['mean', 'perc'],
                 ['global'],
-                [model_dataset])
+                {model_name: model_dataset})
             _plot_single_map(plot_path_mod, tau_ctotal,
                              global_tau_mod['global'][model_name],
                              model_name,
