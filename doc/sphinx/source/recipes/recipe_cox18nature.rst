@@ -60,11 +60,12 @@ User settings in recipe
 
 #. Script climate_metrics/psi.py
 
-   * ``window_length``, *int*, optional (default: 55): Number of years used for
-     the moving window average.
-
+   * ``output_attributes``, *dict*, optional: Write additional attributes to
+     all output netcdf files.
    * ``lag``, *int*, optional (default: 1): Lag (in years) for the
      autocorrelation function.
+   * ``window_length``, *int*, optional (default: 55): Number of years used for
+     the moving window average.
 
 
 Variables
