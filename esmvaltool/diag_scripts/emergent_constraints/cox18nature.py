@@ -176,6 +176,34 @@ def get_provenance_record(caption, statistics, plot_type, ancestor_files):
     return record
 
 
+def get_psi(cfg):
+    """Get time-dependent ``psi`` data."""
+    psi_cubes = {}
+    psi_obs = []
+    for (dataset, [data]) in group_metadata(
+            io.netcdf_to_metadata(cfg, pattern='psi_*.nc'), 'dataset').items():
+        cube = iris.load_cube(data['filename'])
+        cube = cube.aggregated_by('year', iris.analysis.MEAN)
+        psi_cubes[dataset] = cube
+        if data['project'] == 'OBS':
+            psi_obs.append(dataset)
+    return (psi_cubes, psi_obs)
+
+
+def get_tas(input_data):
+    """Get time-dependent ``tas`` data."""
+    tas_cubes = {}
+    tas_obs = []
+    for (dataset, [data]) in group_metadata(input_data, 'dataset').items():
+        cube = iris.load_cube(data['filename'])
+        iris.coord_categorisation.add_year(cube, 'time')
+        cube = cube.aggregated_by('year', iris.analysis.MEAN)
+        tas_cubes[dataset] = cube
+        if data['project'] == 'OBS':
+            tas_obs.append(dataset)
+    return (tas_cubes, tas_obs)
+
+
 def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
     """Plot temperature anomaly versus time."""
     for cube in tas_cubes.values():
@@ -183,7 +211,7 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
             cube.extract(
                 iris.Constraint(year=lambda cell: 1961 <= cell <= 1990)).data)
 
-    # Save netcdf file and provencance
+    # Save netcdf file and provenance
     filename = 'temperature_anomaly_{}'.format(obs_name)
     netcdf_path = get_diagnostic_filename(filename, cfg)
     io.save_1d_data(tas_cubes, netcdf_path, 'year', TASA_ATTRS)
@@ -302,9 +330,10 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         obs_std = np.std(obs_cube.data)
 
         # Calculate regression line
-        lines = ec.regression_line(psi_cube.data, ecs_cube.data)
-        logger.info("Found emergent relationship with slope %.2f (r = %.2f)",
-                    lines['slope'], lines['rvalue'])
+        lines = ec.regression_surface(psi_cube.data, ecs_cube.data,
+                                      n_points=1000)
+        logger.info("Found emergent relationship with slope %.2f (R2 = %.2f)",
+                    lines['coef'], lines['R2'])
 
         # Plot points
         for model in psi_cube.coord('dataset').points:
@@ -314,7 +343,7 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         AXES.set_xlim(auto=False)
         AXES.set_ylim(auto=False)
         AXES.plot(lines['x'],
-                  lines['y_best_estim'],
+                  lines['y'],
                   color='black',
                   linestyle='dashdot',
                   label='Linear regression')
@@ -347,15 +376,9 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         provenance_logger.log(netcdf_path, provenance_record)
 
 
-def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
+def plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
     """Plot probability density function of ECS."""
-    obs_mean = np.mean(obs_cube.data)
-    obs_std = np.std(obs_cube.data)
-    (ecs_lin, ecs_pdf) = ec.gaussian_pdf(psi_cube.data, ecs_cube.data,
-                                         obs_mean, obs_std)
-
-    # Provenance
-    filename = 'pdf_{}'.format(obs_cube.attributes['dataset'])
+    filename = 'pdf_{}'.format(obs_name)
     netcdf_path = get_diagnostic_filename(filename, cfg)
     cube = iris.cube.Cube(ecs_pdf,
                           var_name='pdf',
@@ -369,7 +392,7 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
         "The PDF for ECS. The orange histograms show the prior distributions "
         "that arise from equal weighting of the {} models in 0.5 K bins.".
         format(project), ['mean'], ['other'],
-        _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
+        _get_ancestor_files(cfg, obs_name))
 
     # Plot
     if cfg['write_plots']:
@@ -399,16 +422,13 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
         provenance_logger.log(netcdf_path, provenance_record)
 
 
-def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
+def plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name):
     """Plot cumulative distribution function of ECS."""
     confidence_level = cfg.get('confidence_level', 0.66)
-    (ecs_lin, ecs_pdf) = ec.gaussian_pdf(psi_cube.data, ecs_cube.data,
-                                         np.mean(obs_cube.data),
-                                         np.std(obs_cube.data))
     ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
 
     # Provenance
-    filename = 'cdf_{}'.format(obs_cube.attributes['dataset'])
+    filename = 'cdf_{}'.format(obs_name)
     netcdf_path = get_diagnostic_filename(filename, cfg)
     cube = iris.cube.Cube(ecs_cdf,
                           var_name='cdf',
@@ -423,7 +443,7 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
         "confidence limits. The orange histograms show the prior "
         "distributions that arise from equal weighting of the {} models in "
         "0.5 K bins.".format(int(confidence_level * 100), project), ['mean'],
-        ['other'], _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
+        ['other'], _get_ancestor_files(cfg, obs_name))
 
     # Plot
     if cfg['write_plots']:
@@ -460,16 +480,13 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
         provenance_logger.log(netcdf_path, provenance_record)
 
 
-def get_ecs_range(cfg, psi_cube, ecs_cube, obs_cube):
+def get_ecs_range(cfg, ecs_lin, ecs_pdf):
     """Get constrained ecs range."""
     confidence_level = cfg.get('confidence_level', 0.66)
     conf_low = (1.0 - confidence_level) / 2.0
     conf_high = (1.0 + confidence_level) / 2.0
 
-    # Calculate PDF and CDF
-    (ecs_lin, ecs_pdf) = ec.gaussian_pdf(psi_cube.data, ecs_cube.data,
-                                         np.mean(obs_cube.data),
-                                         np.std(obs_cube.data))
+    # Calculate CDF
     ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
 
     # Calculate constrained ECS range
@@ -490,29 +507,11 @@ def main(cfg):
     if not input_data:
         raise ValueError("This diagnostics needs 'tas' or 'tasa' variable")
 
-    # Get tas data
-    tas_cubes = {}
-    tas_obs = []
-    for (dataset, [data]) in group_metadata(input_data, 'dataset').items():
-        cube = iris.load_cube(data['filename'])
-        iris.coord_categorisation.add_year(cube, 'time')
-        cube = cube.aggregated_by('year', iris.analysis.MEAN)
-        tas_cubes[dataset] = cube
-        if data['project'] == 'OBS':
-            tas_obs.append(dataset)
+    # Get time-dependent data
+    (tas_cubes, tas_obs) = get_tas(input_data)
+    (psi_cubes, psi_obs) = get_psi(cfg)
 
-    # Get time-dependent psi data
-    psi_cubes = {}
-    psi_obs = []
-    for (dataset, [data]) in group_metadata(
-            io.netcdf_to_metadata(cfg, pattern='psi_*.nc'), 'dataset').items():
-        cube = iris.load_cube(data['filename'])
-        cube = cube.aggregated_by('year', iris.analysis.MEAN)
-        psi_cubes[dataset] = cube
-        if data['project'] == 'OBS':
-            psi_obs.append(dataset)
-
-    # Get psi, ECS and psi for models
+    # Get scalar psi, ECS and climate feedback parameter for models
     (psi_cube, ecs_cube, lambda_cube) = get_external_cubes(cfg)
 
     # Plots
@@ -525,11 +524,14 @@ def main(cfg):
         obs_cube = psi_cubes[obs_name]
         plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube,
                                    obs_cube)
-        plot_pdf(cfg, psi_cube, ecs_cube, obs_cube)
-        plot_cdf(cfg, psi_cube, ecs_cube, obs_cube)
+        (ecs_lin, ecs_pdf) = ec.gaussian_pdf(psi_cube.data, ecs_cube.data,
+                                             np.mean(obs_cube.data),
+                                             np.var(obs_cube.data))
+        plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
+        plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
 
         # Print ECS range
-        ecs_range = get_ecs_range(cfg, psi_cube, ecs_cube, obs_cube)
+        ecs_range = get_ecs_range(cfg, ecs_lin, ecs_pdf)
         logger.info("Observational constraint: Ψ = (%.2f ± %.2f) K",
                     np.mean(obs_cube.data), np.std(obs_cube.data))
         logger.info(

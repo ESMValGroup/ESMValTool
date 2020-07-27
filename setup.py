@@ -37,6 +37,7 @@ REQUIREMENTS = {
         'fiona',
         'GDAL',
         'jinja2',
+        'joblib',
         'matplotlib',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
