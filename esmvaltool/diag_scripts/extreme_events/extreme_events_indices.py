@@ -79,9 +79,9 @@ index_method = {
         "annual_number_of_days_where_daily_maximum_temperature_below_10%":
             "tx10pETCCDI_yr",
         "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%":
-            "r99ptotETCCDI_yr",
+            "r99pETCCDI_yr",
         "annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%":
-            "r95ptotETCCDI_yr",
+            "r95pETCCDI_yr",
         "annual_warm_spell_duration_index":
             "wsdiETCCDI_yr",
         "annual_cold_spell_duration_index":
@@ -461,7 +461,7 @@ def tx90pETCCDI_yr(alias_cubes, **kwargs):
     
     return result_cube
 
-def r95ptotETCCDI_yr(alias_cubes, **kwargs):
+def r95pETCCDI_yr(alias_cubes, **kwargs):
     """Annual total PRCP when RR > 95th percentile."""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
@@ -473,7 +473,7 @@ def r95ptotETCCDI_yr(alias_cubes, **kwargs):
     
     return result_cube
 
-def r99ptotETCCDI_yr(alias_cubes, **kwargs):
+def r99pETCCDI_yr(alias_cubes, **kwargs):
     """Annual total PRCP when RR > 99th percentile."""
     logger.info('Loading ETCCDI specifications...')
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]

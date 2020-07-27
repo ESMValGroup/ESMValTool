@@ -3,6 +3,7 @@
 """Utilities for the calculations of the ETCCDI Climate Change Indices."""
 import logging
 import os
+import sys
 from pprint import pformat
 import numpy as np
 import iris
@@ -444,19 +445,14 @@ def lazy_percentiles(cube, percentiles, dims="time"):
     dask_data[da.ma.getmaskarray(dask_data)] = np.nan
     
     if dims == "time":
-#        dask_perc = da.apply_along_axis(np.nanpercentile,
-#                                                0,dask_data,percentiles)
         dask_perc = da.apply_along_axis(mquantiles,
                                         0,
                                         dask_data,
                                         percentiles,
                                         alphap=1/3,
                                         betap=1/3)
+        
     elif np.all(np.sort(dims) == np.sort(["latitude","longitude"])):
-#        dask_perc = da.apply_along_axis(np.nanpercentile,
-#                                                1,dask_data.reshape(
-#                                                        dask_data.shape[0],-1),
-#                                                        percentiles)
         dask_perc = da.apply_along_axis(mquantiles,
                                         1,
                                         dask_data.reshape(dask_data.shape[0],
@@ -501,6 +497,8 @@ def var_perc_ex(alias_cubes, specs, cfg):
     cube = alias_cubes[specs['required'][0]]
     if 'doy' not in [cc.long_name for cc in cube.coords()]:
         iris.coord_categorisation.add_day_of_year(cube, 'time', name='doy')
+    if 'year' not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_year(cube, 'time', name='year')
         
     base_range = cfg.copy().pop('base_range', None)
     analysis_range = cfg.copy().pop('analysis_range', None)
@@ -516,44 +514,68 @@ def var_perc_ex(alias_cubes, specs, cfg):
             np.min(analysis_range) <= cell.point.year <= np.max(analysis_range)))
     else: 
         analysis_cube = cube.copy()
+        
+    base_cube_years = list(set(base_cube.coord('year').points))
+    analysis_cube_years = list(set(analysis_cube.coord('year').points))
+        
+    overlap = [None]
+    if (base_range is None) or \
+       (analysis_range is None):
+           overlap = list(set(analysis_cube_years).intersection(base_cube_years))
+    elif (min(base_range)<min(analysis_range)<max(base_range)) or \
+         (min(base_range)<max(analysis_range)<max(base_range)):
+           logger.warning("Both, base temporal range and analysis temporal" +
+                       " range are specified. \n" +
+                       "Bootstrapping is thus canceled besides noticed overlaps.")
+    else:
+           logger.warning("Both, base temporal range and analysis temporal" +
+                       " range are specified. \n" +
+                       "Bootstrapping is thus canceled.")
     
-    percentiles = []
-    for doy in np.arange(1,367):
-        doy_set = [__nonzero_mod__(doy-2, 365), __nonzero_mod__(doy+2, 365)]
-        if doy_set[0] < doy_set[1]:
-            constraint_5day = iris.Constraint(doy = lambda cell:
-                doy_set[0] <= cell <= doy_set[1])
+    percentile_cubes = {}
+    for y in analysis_cube_years:
+        if y in overlap:
+            all_percentiles_doy = []
+            reduced_base_cube_years = base_cube_years.copy()
+            reduced_base_cube_years.remove(y)
+            for by in reduced_base_cube_years:
+                loc_base_cube = __resample_cube__(base_cube, y, by)
+                percentiles_doy = __calculate_base_percentiles__(loc_base_cube, specs['threshold']['value'])
+                all_percentiles_doy.append(percentiles_doy)
+            percentile_cubes.update({str(y): all_percentiles_doy})                
         else:
-            constraint_5day = iris.Constraint(doy = lambda cell:
-                doy_set[0] <= cell <= 366 or 0 <= cell <= doy_set[1])
-        loc_cube = lazy_percentiles(
-                base_cube.extract(constraint_5day),
-                [specs['threshold']['value']], dims='time')
-        loc_cube = loc_cube[specs['threshold']['value']]
-        loc_cube.remove_coord('doy')
-        loc_cube.remove_coord('height')
-        new_coord = iris.coords.AuxCoord(doy, long_name='doy', units='1')
-        loc_cube.add_aux_coord(new_coord)
-        loc_cube = iris.util.new_axis(loc_cube, 'doy')
-        loc_cube.remove_coord('time')
-        percentiles.append(loc_cube)
-        
-    percentiles_doy = iris.cube.CubeList(percentiles).concatenate_cube()
-        
+            percentiles_doy = __calculate_base_percentiles__(base_cube, specs['threshold']['value'])
+            percentile_cubes.update({str(y): [percentiles_doy]})
+            
     analysis_percentiles = []
 
     for cs in analysis_cube.slices(['latitude', 'longitude']):
-        thresh_data = getattr(da, specs['threshold']['logic'])(
-                                      cs.core_data(),
-                                      percentiles_doy.extract(iris.Constraint(
-                                              doy = lambda cell:
-                                                  cell == cs.coord(
-                                                          'doy').points[0])).core_data())
-        cs_threshold = cs.copy(data=thresh_data)
-        cs_threshold.remove_coord('doy')
-        cs_threshold = iris.util.new_axis(cs_threshold, 'time')
-        analysis_percentiles.append(cs_threshold)
-        
+        loc_cs_thresholds = []
+        for loc_percentiles in percentile_cubes[str(cs.coord('year').points[0])]:
+            thresh_data = getattr(da, specs['threshold']['logic'])(
+                                          cs.core_data(),
+                                          loc_percentiles.extract(iris.Constraint(
+                                                  doy = lambda cell:
+                                                      cell == cs.coord(
+                                                              'doy').points[0])).core_data())
+            cs_threshold = cs.copy(data=thresh_data*1.)
+            cs_threshold.remove_coord('doy')
+            cs_threshold = iris.util.new_axis(cs_threshold, 'time')
+            cs_threshold.remove_coord('year')
+            loc_cs_thresholds.append(cs_threshold)
+            
+        loc_cs_threshold = loc_cs_thresholds[0]
+        if len(loc_cs_thresholds) > 1:
+            for cube in loc_cs_thresholds[1:]:
+                loc_cs_threshold += cube
+            loc_cs_threshold = loc_cs_threshold/len(loc_cs_thresholds)
+            
+        analysis_percentiles.append(loc_cs_threshold)
+        for ap_cube in analysis_percentiles:
+            ap_cube.metadata = cube.metadata
+            ap_cube.rename(specs['cf_name'])
+            ap_cube.units = Unit('days')
+    
     percentiles_threshold = iris.cube.CubeList(analysis_percentiles).concatenate_cube()
     statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
     if statistic_function:
@@ -566,6 +588,51 @@ def var_perc_ex(alias_cubes, specs, cfg):
     result_cube.units = Unit('days')
 
     return result_cube
+
+def __resample_cube__(base_cube, year, newyear):
+    """exchange year by new year from base cube"""
+    new_cube_l = base_cube.extract(iris.Constraint(year = lambda cell:cell < year))
+    new_cube_h = base_cube.extract(iris.Constraint(year = lambda cell:cell > year))
+    old_year = base_cube.extract(iris.Constraint(year = lambda cell:cell == year))
+    extra = base_cube.extract(iris.Constraint(year = lambda cell:cell == newyear))
+#    new_time = [datetime.datetime(year, 1, 1) + datetime.timedelta(int(doy) - 1)  for doy in extra.coord('doy').points]
+    iris.util.demote_dim_coord_to_aux_coord(extra, 'time')
+    time_delta = old_year.coord('time').points[0] - extra.coord('time').points[0]
+    new_time = extra.coord('time')+time_delta
+    extra.remove_coord('time')
+    extra.add_dim_coord(new_time,0)
+    extra.remove_coord('year')
+    iris.coord_categorisation.add_year(extra, 'time', name='year')
+    extra = extra.extract(iris.Constraint(year = lambda cell:cell == year))
+    cube_list = [new_cube_l, extra, new_cube_h]
+    new_cube = iris.cube.CubeList(list(filter(None, cube_list))).concatenate_cube()
+    return new_cube
+
+def __calculate_base_percentiles__(base_cube, percentilelist):
+    """Calculate percentiles from base cube"""
+    percentiles = []
+    for doy in np.arange(1,367):
+        doy_set = [__nonzero_mod__(doy-2, 365), __nonzero_mod__(doy+2, 365)]
+        if doy_set[0] < doy_set[1]:
+            constraint_5day = iris.Constraint(doy = lambda cell:
+                doy_set[0] <= cell <= doy_set[1])
+        else:
+            constraint_5day = iris.Constraint(doy = lambda cell:
+                doy_set[0] <= cell <= 366 or 0 <= cell <= doy_set[1])
+        loc_cube = lazy_percentiles(
+                base_cube.extract(constraint_5day),
+                [percentilelist], dims='time')
+        loc_cube = loc_cube[percentilelist]
+        loc_cube.remove_coord('doy')
+        loc_cube.remove_coord('height')
+        new_coord = iris.coords.AuxCoord(doy, long_name='doy', units='1')
+        loc_cube.add_aux_coord(new_coord)
+        loc_cube = iris.util.new_axis(loc_cube, 'doy')
+        loc_cube.remove_coord('time')
+        percentiles.append(loc_cube)
+        
+    percentiles_doy = iris.cube.CubeList(percentiles).concatenate_cube()
+    return percentiles_doy
 
 def sum_perc_ex_wd(alias_cubes, specs, cfg):
     """Calculate the sum of exceeding values above/below percentual threshold [precipitation only, wet days]"""
@@ -580,10 +647,14 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
         raise Exception(f'Wrong unit.')
         
     cube = alias_cubes[specs['required'][0]]
-    
+    if 'doy' not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_day_of_year(cube, 'time', name='doy')
+    if 'year' not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_year(cube, 'time', name='year')
+        
     base_range = cfg.copy().pop('base_range', None)
     analysis_range = cfg.copy().pop('analysis_range', None)
-        
+    
     if not base_range is None:
         base_cube = cube.extract(iris.Constraint(time = lambda cell:
             np.min(base_range) <= cell.point.year <= np.max(base_range)))
@@ -596,22 +667,71 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
     else: 
         analysis_cube = cube.copy()
         
+    base_cube_years = list(set(base_cube.coord('year').points))
+    analysis_cube_years = list(set(analysis_cube.coord('year').points))
     base_cube.data = da.ma.masked_less(base_cube.core_data(), 1)
-    base_percentiles = lazy_percentiles(base_cube, [specs['threshold']['value']], dims='time')
+    
+    overlap = [None]
+    if (base_range is None) or \
+       (analysis_range is None):
+           overlap = list(set(analysis_cube_years).intersection(base_cube_years))
+    elif (min(base_range)<min(analysis_range)<max(base_range)) or \
+         (min(base_range)<max(analysis_range)<max(base_range)):
+           logger.warning("Both, base temporal range and analysis temporal" +
+                       " range are specified. \n" +
+                       "Bootstrapping is thus canceled besides noticed overlaps.")
+    else:
+           logger.warning("Both, base temporal range and analysis temporal" +
+                       " range are specified. \n" +
+                       "Bootstrapping is thus canceled.")
+    
+    percentile_cubes = {}
+    for y in analysis_cube_years:
+        if y in overlap:
+            all_percentiles_doy = []
+            reduced_base_cube_years = base_cube_years.copy()
+            reduced_base_cube_years.remove(y)
+            for by in reduced_base_cube_years:
+                loc_base_cube = __resample_cube__(base_cube, y, by)
+                percentiles_doy = __calculate_base_percentiles__(loc_base_cube, specs['threshold']['value'])
+                all_percentiles_doy.append(percentiles_doy)
+            percentile_cubes.update({str(y): all_percentiles_doy})                
+        else:
+            percentiles_doy = __calculate_base_percentiles__(base_cube, specs['threshold']['value'])
+            percentile_cubes.update({str(y): [percentiles_doy]})
+            
+    
     
     analysis_percentiles = []
     for cs in analysis_cube.slices(['latitude', 'longitude']):
-        thresh_data = getattr(da, specs['threshold']['logic'])(
+        loc_cs_thresholds = []
+        for loc_percentiles in percentile_cubes[str(cs.coord('year').points[0])]:
+            thresh_data = getattr(da, specs['threshold']['logic'])(
                                       cs.core_data(),
-                                      base_percentiles[specs['threshold']['value']].core_data())
-        cs_threshold = cs.copy(data=da.where(da.logical_or(da.logical_not(da.ma.getdata(thresh_data)), da.ma.getmaskarray(thresh_data)),0,cs.core_data()))
-        cs_threshold = iris.util.new_axis(cs_threshold, 'time')
-        analysis_percentiles.append(cs_threshold)
+                                      loc_percentiles[specs['threshold']['value']].core_data())
+            cs_threshold = cs.copy(data=da.where(da.logical_or(da.logical_not(da.ma.getdata(thresh_data)), da.ma.getmaskarray(thresh_data)),0,cs.core_data()))
+            cs_threshold = iris.util.new_axis(cs_threshold, 'time')
+            cs_threshold.remove_coord('year')
+            loc_cs_thresholds.append(cs_threshold)
+        
+        loc_cs_threshold = loc_cs_thresholds[0]
+        if len(loc_cs_thresholds) > 1:
+            for cube in loc_cs_thresholds[1:]:
+                loc_cs_threshold += cube
+            loc_cs_threshold = loc_cs_threshold/len(loc_cs_thresholds)
+            
+        analysis_percentiles.append(loc_cs_threshold)
+        for ap_cube in analysis_percentiles:
+            ap_cube.metadata = cube.metadata
+            ap_cube.rename(specs['cf_name'])
+            ap_cube.units = Unit('mm per year')
     
+    percentiles_threshold = iris.cube.CubeList(analysis_percentiles).concatenate_cube()
     statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
     if statistic_function:
-        result_cube = statistic_function(iris.cube.CubeList(analysis_percentiles).concatenate_cube(), specs['logic'])
+        result_cube = statistic_function(percentiles_threshold, specs['logic'])
     
+    # adjust cube information
     result_cube.rename(specs['cf_name'])
     result_cube.units = Unit('mm per year')
     
@@ -633,6 +753,8 @@ def spell_perc_ex_thresh(alias_cubes, specs, cfg):
     cube = alias_cubes[specs['required'][0]]
     if 'doy' not in [cc.long_name for cc in cube.coords()]:
         iris.coord_categorisation.add_day_of_year(cube, 'time', name='doy')
+    if 'year' not in [cc.long_name for cc in cube.coords()]:
+        iris.coord_categorisation.add_year(cube, 'time', name='year')
         
     base_range = cfg.copy().pop('base_range', None)
     analysis_range = cfg.copy().pop('analysis_range', None)
@@ -648,44 +770,68 @@ def spell_perc_ex_thresh(alias_cubes, specs, cfg):
             np.min(analysis_range) <= cell.point.year <= np.max(analysis_range)))
     else: 
         analysis_cube = cube.copy()
-    
-    percentiles = []
-    for doy in np.arange(1,367):
-        doy_set = [__nonzero_mod__(doy-2, 365), __nonzero_mod__(doy+2, 365)]
-        if doy_set[0] < doy_set[1]:
-            constraint_5day = iris.Constraint(doy = lambda cell:
-                doy_set[0] <= cell <= doy_set[1])
-        else:
-            constraint_5day = iris.Constraint(doy = lambda cell:
-                doy_set[0] <= cell <= 366 or 0 <= cell <= doy_set[1])
-        loc_cube = lazy_percentiles(
-                base_cube.extract(constraint_5day),
-                [specs['threshold']['value']], dims='time')
-        loc_cube = loc_cube[specs['threshold']['value']]
-        loc_cube.remove_coord('doy')
-        loc_cube.remove_coord('height')
-        new_coord = iris.coords.AuxCoord(doy, long_name='doy', units='1')
-        loc_cube.add_aux_coord(new_coord)
-        loc_cube = iris.util.new_axis(loc_cube, 'doy')
-        loc_cube.remove_coord('time')
-        percentiles.append(loc_cube)
         
-    percentiles_doy = iris.cube.CubeList(percentiles).concatenate_cube()
+    base_cube_years = list(set(base_cube.coord('year').points))
+    analysis_cube_years = list(set(analysis_cube.coord('year').points))
+        
+    overlap = [None]
+    if (base_range is None) or \
+       (analysis_range is None):
+           overlap = list(set(analysis_cube_years).intersection(base_cube_years))
+    elif (min(base_range)<min(analysis_range)<max(base_range)) or \
+         (min(base_range)<max(analysis_range)<max(base_range)):
+           logger.warning("Both, base temporal range and analysis temporal" +
+                       " range are specified. \n" +
+                       "Bootstrapping is thus canceled besides noticed overlaps.")
+    else:
+           logger.warning("Both, base temporal range and analysis temporal" +
+                       " range are specified. \n" +
+                       "Bootstrapping is thus canceled.")
     
+    percentile_cubes = {}
+    for y in analysis_cube_years:
+        if y in overlap:
+            all_percentiles_doy = []
+            reduced_base_cube_years = base_cube_years.copy()
+            reduced_base_cube_years.remove(y)
+            for by in reduced_base_cube_years:
+                loc_base_cube = __resample_cube__(base_cube, y, by)
+                percentiles_doy = __calculate_base_percentiles__(loc_base_cube, specs['threshold']['value'])
+                all_percentiles_doy.append(percentiles_doy)
+            percentile_cubes.update({str(y): all_percentiles_doy})                
+        else:
+            percentiles_doy = __calculate_base_percentiles__(base_cube, specs['threshold']['value'])
+            percentile_cubes.update({str(y): [percentiles_doy]})
+            
     analysis_percentiles = []
 
     for cs in analysis_cube.slices(['latitude', 'longitude']):
-        thresh_data = getattr(da, specs['threshold']['logic'])(
-                                      cs.core_data(),
-                                      percentiles_doy.extract(iris.Constraint(
-                                              doy = lambda cell:
-                                                  cell == cs.coord(
-                                                          'doy').points[0])).core_data())
-        cs_threshold = cs.copy(data=thresh_data)
-        cs_threshold.remove_coord('doy')
-        cs_threshold = iris.util.new_axis(cs_threshold, 'time')
-        analysis_percentiles.append(cs_threshold)
-        
+        loc_cs_thresholds = []
+        for loc_percentiles in percentile_cubes[str(cs.coord('year').points[0])]:
+            thresh_data = getattr(da, specs['threshold']['logic'])(
+                                          cs.core_data(),
+                                          loc_percentiles.extract(iris.Constraint(
+                                                  doy = lambda cell:
+                                                      cell == cs.coord(
+                                                              'doy').points[0])).core_data())
+            cs_threshold = cs.copy(data=thresh_data*1.)
+            cs_threshold.remove_coord('doy')
+            cs_threshold = iris.util.new_axis(cs_threshold, 'time')
+            cs_threshold.remove_coord('year')
+            loc_cs_thresholds.append(cs_threshold)
+            
+        loc_cs_threshold = loc_cs_thresholds[0]
+        if len(loc_cs_thresholds) > 1:
+            for cube in loc_cs_thresholds[1:]:
+                loc_cs_threshold += cube
+            loc_cs_threshold = loc_cs_threshold/len(loc_cs_thresholds)
+            
+        analysis_percentiles.append(loc_cs_threshold)
+        for ap_cube in analysis_percentiles:
+            ap_cube.metadata = cube.metadata
+            ap_cube.rename(specs['cf_name'])
+            ap_cube.units = Unit('days per year')
+    
     percentiles_threshold = iris.cube.CubeList(analysis_percentiles).concatenate_cube()
     
     perc_thresh_cube = percentiles_threshold.copy(data=__cumsum_with_setback_multiD__(percentiles_threshold.core_data(), 0))
@@ -736,4 +882,3 @@ def add_filename(cube, fun):
 #         cube.attributes["FI_ensemble"],
 #         cube.attributes["FI_temporal_coverage"],)})
     
-    print(cube.attributes)
