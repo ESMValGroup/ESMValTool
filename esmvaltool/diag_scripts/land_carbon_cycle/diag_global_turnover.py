@@ -125,18 +125,22 @@ def _get_ratio_colorbar_info():
     cb_info_ratio = {}
     border = 0.9
     ncolo = 128
-    num = int(ncolo // 4)
+    num_gr = int(ncolo // 4)
+    num_col = num_gr - 4
     # get the colormap
     cb_info_ratio['tickBounds'] = np.concatenate(
-        (np.geomspace(0.2, 0.25, num=num), np.geomspace(0.25, 0.33, num=num),
-         np.geomspace(0.33, 0.5, num=num), np.geomspace(0.5, border, num=num),
-         np.linspace(border, 1 / border, num=int(ncolo / 4)),
-         np.geomspace(1 / border, 2, num=num), np.geomspace(2, 3, num=num),
-         np.geomspace(3, 4, num=num), np.geomspace(4, 5, num=num)))
-    colors1 = plt.cm.Blues(np.linspace(0.15, 0.998, ncolo))[::-1]
+        (np.geomspace(0.2, 0.25,
+                      num=num_col), np.geomspace(0.25, 0.33, num=num_col),
+         np.geomspace(0.33, 0.5,
+                      num=num_col), np.geomspace(0.5, border, num=num_col),
+         np.linspace(border, 1 / border,
+                     num=num_gr), np.geomspace(1 / border, 2, num=num_col),
+         np.geomspace(2, 3, num=num_col), np.geomspace(3, 4, num=num_col),
+         np.geomspace(4, 5, num=num_col)))
+    colors1 = plt.cm.Blues(np.linspace(0.15, 0.998, (num_col) * 4))[::-1]
     colorsgr = np.tile(np.array([0.8, 0.8, 0.8, 1]),
-                       int(ncolo / 4)).reshape(int(ncolo / 4), -1)
-    colors2 = plt.cm.Reds(np.linspace(0.15, 0.998, ncolo))
+                       num_gr).reshape(num_gr, -1)
+    colors2 = plt.cm.Reds(np.linspace(0.15, 0.998, (num_col) * 4))
 
     # combine them and build a new colormap
     colors1g = np.vstack((colors1, colorsgr))
@@ -763,7 +767,6 @@ def main(diag_config):
                              model_name,
                              provenance_record_mod,
                              diag_config)
-
         if diag_config['write_netcdf']:
             model_cubes = [
                 c for c in global_tau_mod['grid'].values()
@@ -776,8 +779,12 @@ def main(diag_config):
             netcdf_path = get_diagnostic_filename(base_name_mod, diag_config)
             save_cubes = iris.cube.CubeList(model_cubes + obs_cubes)
             iris.save(save_cubes, netcdf_path)
-            with ProvenanceLogger(diag_config) as provenance_logger:
-                provenance_logger.log(netcdf_path, provenance_record_mod)
+
+        else:
+            netcdf_path = None
+
+        with ProvenanceLogger(diag_config) as provenance_logger:
+            provenance_logger.log(netcdf_path, provenance_record_mod)
 
     if diag_config['write_plots']:
         # multimodel agreement
