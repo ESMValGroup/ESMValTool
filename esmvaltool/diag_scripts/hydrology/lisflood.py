@@ -145,21 +145,24 @@ def main(cfg):
             # latitudes decreasing
             cube = cube[:, ::-1, ...]
 
-            # drop extra coordinates and reorder remaining coords to [lon,lat,time]
-            cube.remove_coord("height")
-            cube.remove_coord("shape_id")
-            cube.transpose()
-
-            # remove coordinate bounds
+            keep_coords = ['lon','lat','time']
+            
+            # remove coordinate bounds drop extra coordinates and 
+            # transpose remaining cube to [lon,lat,time]
             for coord in cube.coords():
-                new_coord = iris.coords.DimCoord(
-                    points=coord.points,
-                    standard_name=coord.standard_name,
-                    units=coord.units,
-                    var_name=coord.var_name,
-                    long_name=coord.long_name,
-                )
-                cube.replace_coord(new_coord)
+                if coord.var_name in keep_coords:
+                    new_coord = iris.coords.DimCoord(
+                        points=coord.points,
+                        standard_name=coord.standard_name,
+                        units=coord.units,
+                        var_name=coord.var_name,
+                        long_name=coord.long_name,
+                    )
+                    cube.replace_coord(new_coord)
+                else:
+                    cube.remove_coord(coord)
+            
+            cube.transpose()
             
             output_file = save(cube, var_name, dataset, cfg)
 
