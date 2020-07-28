@@ -11,4 +11,3 @@ RUN apt install julia -y && esmvaltool install Julia
 RUN esmvaltool install R
 
 ENTRYPOINT ["esmvaltool"]
-CMD ["-- --help"]
