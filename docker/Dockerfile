@@ -11,8 +11,8 @@ COPY ./esmvaltool/install/R /src/ESMValTool/esmvaltool/install/R
 RUN Rscript ./esmvaltool/install/R/setup.R
 
 COPY . /src/ESMValTool
-RUN pip install . && pip cache purge && esmvaltool --help && esmvaltool install Julia
-RUN rm -rf /src
+RUN pip install -e . && pip cache purge && esmvaltool install Julia
+# RUN rm -rf /src
 
 
 ENTRYPOINT ["esmvaltool"]
