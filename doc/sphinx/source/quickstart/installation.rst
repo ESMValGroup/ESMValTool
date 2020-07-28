@@ -100,7 +100,7 @@ For example, the following command would run a recipe
 
 .. code-block:: bash
 
-   docker run -e HOME -v "$HOME":"$HOME" -v /data:/data esmvalgroup/esmvaltool:stable -c ~/config-user.yml ~/recipes/recipe_example.yml
+   docker run -e HOME -v "$HOME":"$HOME" -v /data:/data esmvalgroup/esmvaltool:stable run ~/recipes/recipe_example.yml
 
 with the environmental variable ``$HOME`` available inside the container and
 the data in the directories ``$HOME`` and ``/data``, so these can be used to
@@ -130,7 +130,7 @@ following command
 
 .. code-block:: bash
 
-   singularity run docker://esmvalgroup/esmvaltool:stable -c ~/config-user.yml ~/recipes/recipe_example.yml
+   singularity run docker://esmvalgroup/esmvaltool:stable run ~/recipes/recipe_example.yml
 
 Note that the container does not see the data available in the host by default.
 You can make host data available with ``-B /path:/path/in/container``.
@@ -158,7 +158,7 @@ To run the container using the image file ``esmvaltool.sif`` use:
 
 .. code-block:: bash
 
-   singularity run esmvaltool.sif -c ~/config-user.yml ~/recipes/recipe_example.yml
+   singularity run esmvaltool.sif run ~/recipes/recipe_example.yml
 
 
 Install from source

@@ -2,7 +2,7 @@
 # docker build -t ${TAG_OF_YOUR_CHOICE} . -f docker/Dockerfile
 FROM continuumio/miniconda3
 
-RUN apt install julia tree -y && apt-get clean
+RUN apt install julia -y && apt-get clean
 COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
 RUN conda update -y conda pip && conda env update --name base --file environment.yml && conda clean --all -y
