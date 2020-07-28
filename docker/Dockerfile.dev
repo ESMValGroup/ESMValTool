@@ -7,8 +7,8 @@ WORKDIR /src/ESMValTool
 
 RUN conda update -y conda pip && conda env update --name base --file environment.yml && conda clean --all -y
 RUN pip install . && pip cache purge
-RUN apt install julia -y && julia esmvaltool/install/Julia/setup.jl
-RUN Rscript esmvaltool/install/R/setup.R
+RUN apt install julia -y && esmvaltool install Julia
+RUN esmvaltool install R
 RUN pip uninstall esmvaltool -y
 
 RUN esmvaltool -h

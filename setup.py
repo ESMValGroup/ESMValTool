@@ -219,7 +219,8 @@ setup(
         ],
         'esmvaltool_commands': [
             'colortables = '
-            'esmvaltool.utils.color_tables.show_color_tables:ColorTables'
+            'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
+            'install = esmvaltool.install:Install',
         ]
     },
     cmdclass={

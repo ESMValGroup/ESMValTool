@@ -295,14 +295,14 @@ If you would like to run Julia diagnostic scripts, you will also need to
 
 .. code-block:: bash
 
-    julia esmvaltool/install/Julia/setup.jl
+    esmvaltool install Julia
 
 If you would like to run R diagnostic scripts, you will also need to install the R
 dependencies. Install the R dependency packages:
 
 .. code-block:: bash
 
-    Rscript esmvaltool/install/R/setup.R
+    esmvaltool install R
 
 The next step is to check that the installation works properly.
 To do this, run the tool with:
