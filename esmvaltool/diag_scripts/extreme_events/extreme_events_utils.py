@@ -611,28 +611,38 @@ def __resample_cube__(base_cube, year, newyear):
 def __calculate_base_percentiles__(base_cube, percentilelist):
     """Calculate percentiles from base cube"""
     percentiles = []
-    for doy in np.arange(1,367):
-        doy_set = [__nonzero_mod__(doy-2, 365), __nonzero_mod__(doy+2, 365)]
-        if doy_set[0] < doy_set[1]:
-            constraint_5day = iris.Constraint(doy = lambda cell:
-                doy_set[0] <= cell <= doy_set[1])
-        else:
-            constraint_5day = iris.Constraint(doy = lambda cell:
-                doy_set[0] <= cell <= 366 or 0 <= cell <= doy_set[1])
-        loc_cube = lazy_percentiles(
-                base_cube.extract(constraint_5day),
+    if 'doy' in [cc.long_name for cc in base_cube.coords()]:
+        for doy in np.arange(1,367):
+            doy_set = [__nonzero_mod__(doy-2, 365), __nonzero_mod__(doy+2, 365)]
+            if doy_set[0] < doy_set[1]:
+                constraint_5day = iris.Constraint(doy = lambda cell:
+                    doy_set[0] <= cell <= doy_set[1])
+            else:
+                constraint_5day = iris.Constraint(doy = lambda cell:
+                    doy_set[0] <= cell <= 366 or 0 <= cell <= doy_set[1])
+            loc_cube = lazy_percentiles(
+                    base_cube.extract(constraint_5day),
+                    [percentilelist], dims='time')
+            loc_cube = loc_cube[percentilelist]
+            loc_cube.remove_coord('doy')
+            if 'height' in [cc.long_name for cc in loc_cube.coords()]:
+                loc_cube.remove_coord('height')
+            new_coord = iris.coords.AuxCoord(doy, long_name='doy', units='1')
+            loc_cube.add_aux_coord(new_coord)
+            loc_cube = iris.util.new_axis(loc_cube, 'doy')
+            loc_cube.remove_coord('time')
+            percentiles.append(loc_cube)
+        percentiles = iris.cube.CubeList(percentiles).concatenate_cube()
+    else:
+        percentiles = lazy_percentiles(
+                base_cube,
                 [percentilelist], dims='time')
-        loc_cube = loc_cube[percentilelist]
-        loc_cube.remove_coord('doy')
-        loc_cube.remove_coord('height')
-        new_coord = iris.coords.AuxCoord(doy, long_name='doy', units='1')
-        loc_cube.add_aux_coord(new_coord)
-        loc_cube = iris.util.new_axis(loc_cube, 'doy')
-        loc_cube.remove_coord('time')
-        percentiles.append(loc_cube)
+        percentiles = percentiles[percentilelist]
+        if 'height' in [cc.long_name for cc in percentiles.coords()]:
+            percentiles.remove_coord('height')
+        percentiles.remove_coord('time')
         
-    percentiles_doy = iris.cube.CubeList(percentiles).concatenate_cube()
-    return percentiles_doy
+    return percentiles
 
 def sum_perc_ex_wd(alias_cubes, specs, cfg):
     """Calculate the sum of exceeding values above/below percentual threshold [precipitation only, wet days]"""
@@ -647,8 +657,6 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
         raise Exception(f'Wrong unit.')
         
     cube = alias_cubes[specs['required'][0]]
-    if 'doy' not in [cc.long_name for cc in cube.coords()]:
-        iris.coord_categorisation.add_day_of_year(cube, 'time', name='doy')
     if 'year' not in [cc.long_name for cc in cube.coords()]:
         iris.coord_categorisation.add_year(cube, 'time', name='year')
         
@@ -688,19 +696,17 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
     percentile_cubes = {}
     for y in analysis_cube_years:
         if y in overlap:
-            all_percentiles_doy = []
+            all_percentiles = []
             reduced_base_cube_years = base_cube_years.copy()
             reduced_base_cube_years.remove(y)
             for by in reduced_base_cube_years:
                 loc_base_cube = __resample_cube__(base_cube, y, by)
-                percentiles_doy = __calculate_base_percentiles__(loc_base_cube, specs['threshold']['value'])
-                all_percentiles_doy.append(percentiles_doy)
-            percentile_cubes.update({str(y): all_percentiles_doy})                
+                percentiles = __calculate_base_percentiles__(loc_base_cube, specs['threshold']['value'])
+                all_percentiles.append(percentiles)
+            percentile_cubes.update({str(y): all_percentiles})                
         else:
-            percentiles_doy = __calculate_base_percentiles__(base_cube, specs['threshold']['value'])
-            percentile_cubes.update({str(y): [percentiles_doy]})
-            
-    
+            percentiles = __calculate_base_percentiles__(base_cube, specs['threshold']['value'])
+            percentile_cubes.update({str(y): [percentiles]})
     
     analysis_percentiles = []
     for cs in analysis_cube.slices(['latitude', 'longitude']):
@@ -708,7 +714,7 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
         for loc_percentiles in percentile_cubes[str(cs.coord('year').points[0])]:
             thresh_data = getattr(da, specs['threshold']['logic'])(
                                       cs.core_data(),
-                                      loc_percentiles[specs['threshold']['value']].core_data())
+                                      loc_percentiles.core_data())
             cs_threshold = cs.copy(data=da.where(da.logical_or(da.logical_not(da.ma.getdata(thresh_data)), da.ma.getmaskarray(thresh_data)),0,cs.core_data()))
             cs_threshold = iris.util.new_axis(cs_threshold, 'time')
             cs_threshold.remove_coord('year')
