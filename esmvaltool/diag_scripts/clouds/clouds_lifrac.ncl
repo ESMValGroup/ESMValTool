@@ -131,12 +131,8 @@ begin
   ; # get data #
   ; ############
 
-  maps = new(dim_MOD, graphic)
-
-  ; filenames for netcdf output
-
-  nc_filename_mean = work_dir + "clouds_lifrac_mean.nc"
-  nc_filename_mean@existing = "append"
+  maps_ice = new(dim_MOD, graphic)
+  maps_liq = new(dim_MOD, graphic)
 
   info_clw = select_metadata_by_name(input_file_info, "clw")
   names_clw = metadata_att_as_array(info_clw, "dataset")
@@ -244,13 +240,10 @@ begin
     ; calculate ice fraction
 
     mass = ice + liq
-;    mass = where(mass .lt. min_mass, min_mass, mass)
-    mass = where(mass .eq. 0., mass@_FillValue, mass)
+    mass = where(mass .lt. min_mass, mass@_FillValue, mass)
 
     icefrac = 100.0 * ice / mass
     liqfrac = 100.0 * liq / mass
-
-    icefrac = where(ismissing(icefrac), 0.0, icefrac)
 
     copy_VarMeta(ice, icefrac)
     copy_VarMeta(liq, liqfrac)
@@ -263,16 +256,15 @@ begin
     liqfrac@units = "%"
     icefrac@long_name = "cloud ice fraction"
     liqfrac@long_name = "cloud liquid fraction"
+    icefrac@var = "icefrac"
+    liqfrac@var = "liqfrac"
     ref_ind = refidx_cli
     if (ismissing(ref_ind)) then
       ref_ind = -1
     end if
-    var0 = "icefrac"
     imod = ii
     names = names_cli
     projects = projects_cli
-    units = icefrac@units
-    long_name = icefrac@long_name
 
     ; ###########################################
     ; # Style dependent annotation              #
@@ -297,26 +289,26 @@ begin
     res@tiMainOn             = False
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
-
     res@lbLabelBarOn         = False
     res@gsnRightString       = ""
-
     res@cnMissingValFillColor = "Gray"
-
     res@cnInfoLabelOn      = False    ; turn off cn info label
 
-    data1 = icefrac
+    nc_filename_ice = work_dir + "clouds_" + icefrac@var + "_mean.nc"
+    nc_filename_liq = work_dir + "clouds_" + liqfrac@var + "_mean.nc"
+    nc_filename_ice@existing = "append"
+    nc_filename_liq@existing = "append"
 
-    if (isatt(data1&$vcoord$, "standard_name")) then
-      res@tiYAxisString = data1&$vcoord$@standard_name
-      if (isatt(data1&$vcoord$, "units")) then
-        res@tiYAxisString = res@tiYAxisString + " (" \
-          + data1&$vcoord$@units + ")"
+    if (isatt(icefrac&$vcoord$, "standard_name")) then
+      res@tiYAxisString = icefrac&$vcoord$@standard_name
+      if (isatt(icefrac&$vcoord$, "units")) then
+          res@tiYAxisString = res@tiYAxisString + " (" \
+            + icefrac&$vcoord$@units + ")"
       end if
     end if
 
-    if (isatt(data1&lat, "standard_name")) then
-      res@tiXAxisString = data1&lat@standard_name
+    if (isatt(icefrac&lat, "standard_name")) then
+      res@tiXAxisString = icefrac&lat@standard_name
     end if
 
     ; set explicit contour levels
@@ -327,58 +319,20 @@ begin
     end if
 
     if (.not.isatt(res, "cnLevels")) then
-      res@cnLevels = fspan(5, 90, 10)
+      res@cnLevels = fspan(5, 95, 10)
     end if
 
     ; ###########################################
     ; # other Metadata: diag_script, var        #
     ; ###########################################
-    ; add to data1 as attributes without prefix
 
-    if (isatt(data1, "diag_script")) then  ; add to existing entries
-      temp = data1@diag_script
-      delete(data1@diag_script)
-      data1@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
-      delete(temp)
-    else  ; add as new attribute
-      data1@diag_script = (/DIAG_SCRIPT/)
-    end if
+    icefrac@diag_script = (/DIAG_SCRIPT/)
+    icefrac@var_long_name = icefrac@long_name
+    icefrac@var_units = icefrac@units
 
-    if (isatt(variable_info[0], "long_name")) then
-      data1@var_long_name = variable_info[0]@long_name
-    end if
-
-    data1@var = var0
-
-    if (isatt(variable_info[0], "units")) then
-      data1@var_units = variable_info[0]@units
-    else
-      data1@var_units = ""
-    end if
-
-    if (.not. isvar("ref_data")) then
-      ref_data = data1
-      vcoord_ref = vcoord
-    end if
-
-    ; check if data are on same grid (for calculating difference, RMSD,
-    ; correlation)
-
-    same_grid = False
-
-    if (all(dimsizes(ref_data) .eq. dimsizes(data1))) then
-      if (max(abs(ref_data&lat - data1&lat)) .le. 1.0e-6) then
-        if (max(abs(ref_data&$vcoord_ref$ - data1&$vcoord$)) .le. 1.0e-6) then
-          same_grid = True
-        end if
-      end if
-    end if
-
-    corr = 999.0
-    gavg = 999.0
-
-    corr = corr@_FillValue
-    gavg = gavg@_FillValue
+    liqfrac@diag_script = (/DIAG_SCRIPT/)
+    liqfrac@var_long_name = liqfrac@long_name
+    liqfrac@var_units = liqfrac@units
 
     res@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
                                          / tofloat((dim_MOD + 1) / 2)/))
@@ -386,7 +340,7 @@ begin
                                          / tofloat((dim_MOD + 1) / 2)/))
 
     ; ###########################################
-    ; # create the plot                         #
+    ; # create the plots                        #
     ; ###########################################
 
     res@gsnDraw        = False  ; do not draw yet
@@ -398,30 +352,20 @@ begin
       ; note: an array of workspaces (i.e. wks(numseas)) does not work as
       ;       attributes cannot be assigned to each array element
       ;       individually
-      wks0 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + var0 + \
-                     "_annual" + filename_add)
+      wksice = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
+                       icefrac@var +"_annual" + filename_add)
+      wksliq = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
+                       liqfrac@var +"_annual" + filename_add)
     end if
 
-;    if (.not.ismissing(corr(0))) then
-;      res@gsnRightString = "corr = " + sprintf("%6.3f", corr(0))
-;    else
-;      res@gsnRightString = ""
-;    end if
-;    if (.not.ismissing(gavg(0))) then
-;      res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg(0))
-;    else
-;      res@gsnLeftString = ""
-;    end if
-
-;    if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
-;      res@gsnRightString = ""
-;    end if
-;    maps(imod) = gsn_csm_contour(wks0, data1, res)
-    maps(imod) = gsn_csm_pres_hgt(wks0, data1, res)
+    maps_ice(imod) = gsn_csm_pres_hgt(wksice, icefrac, res)
+    maps_liq(imod) = gsn_csm_pres_hgt(wksliq, liqfrac, res)
 
     ; mandatory netcdf output
 
-;    data1@var = var0 + "_mean_" + names(imod)
+    ; *** icefrac ***
+
+    data1 = icefrac
     data1@var = names(imod)
 
     ; vertical coordinate might have a different name, which prevents
@@ -432,11 +376,28 @@ begin
     data1!0 = vcoord0
     data1&$vcoord0$ = vcoord0_var
 
-    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+    nc_outfile_ice = ncdf_write(data1, nc_filename_ice)
 
     delete(data1)
 
-    ; =======================================================================
+    ; *** liqfrac ***
+
+    data1 = liqfrac
+    data1@var = names(imod)
+
+    ; vertical coordinate might have a different name, which prevents
+    ; all data to be written to the same netcdf file
+    ; --> rename vertical coordinate to match the one of the first dataset
+    ;     written to the netcdf file
+    delete(data1&$vcoord$)
+    data1!0 = vcoord0
+    data1&$vcoord0$ = vcoord0_var
+
+    nc_outfile_liq = ncdf_write(data1, nc_filename_liq)
+
+    delete(data1)
+
+    ; =====================================================================
 
   end do  ; ii-loop (models)
 
@@ -444,7 +405,7 @@ begin
     ; save default color map in case it is needed later for optionally
     ; plotting color bar to a separate file
 
-    tmp_colors = gsn_retrieve_colormap(wks0)
+    tmp_colors = gsn_retrieve_colormap(wksice)
     cdims = dimsizes(tmp_colors)
     nboxes = dimsizes(res@cnLevels)
     clen = cdims(0)
@@ -503,7 +464,6 @@ begin
     pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
                                                 / tofloat((dim_MOD + 1) / 2)/))
     pres@lbTitlePosition                  = "Bottom"
-    pres@lbTitleString                    = long_name + " (" + units + ")"
     pres@gsnPanelCenter                   = False
     if (dim_MOD.le.8) then
       pres@pmLabelBarOrthogonalPosF       = -0.03
@@ -548,35 +508,56 @@ begin
         plotsperline = xtmp
         delete(xtmp)
       end if
-      gsn_panel(wks0, maps(plotind), plotsperline, pres)
-      outfile = wks0@fullname
+
+      pres_ice = pres
+      pres_liq = pres
+      pres_ice@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
+      pres_liq@lbTitleString = liqfrac@long_name + " (" + liqfrac@units + ")"
+
+      gsn_panel(wksice, maps_ice(plotind), plotsperline, pres_ice)
+      gsn_panel(wksliq, maps_liq(plotind), plotsperline, pres_liq)
+      outfile_ice = wksice@fullname
+      outfile_liq = wksliq@fullname
+
     else  ; if embracesetup
-      outfile = panelling(wks0, maps(plotind), (dim_MOD + 3) / 4, \
-                             4, pres)
+      pres_ice = pres
+      pres_liq = pres
+      pres_ice@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
+      pres_liq@lbTitleString = liqfrac@long_name + " (" + liqfrac@units + ")"
+
+      outfile_ice = panelling(wksice, maps_ice(plotind), (dim_MOD + 3) / 4, \
+                              4, pres_ice)
+      outfile_liq = panelling(wksliq, maps_liq(plotind), (dim_MOD + 3) / 4, \
+                              4, pres_liq)
     end if  ; if embracesetup
 
-    log_info("Wrote " + outfile)
+    log_info("Wrote " + outfile_ice + ", " + outfile_liq)
 
-    ; ------------------------------------------------------------------------
+    ; ----------------------------------------------------------------------
     ; write provenance to netcdf output and plot file(s) (mean)
-    ; ------------------------------------------------------------------------
+    ; ----------------------------------------------------------------------
 
     statistics = (/"clim", "mean"/)
     domain = "global"
     plottype = "zonal"
 
-    caption = "Zonal mean values for variable " + var0 + " (annual mean)."
-    log_provenance(nc_outfile_mean, outfile, caption, statistics, \
+    caption = "Zonal mean values for variable " + icefrac@var \
+              + " (annual mean)."
+    log_provenance(nc_outfile_ice, outfile_ice, caption, statistics, \
                    domain, plottype, "", "", infiles)
 
-    ; ========================================================================
+    caption = "Zonal mean values for variable " + liqfrac@var \
+              + " (annual mean)."
+    log_provenance(nc_outfile_liq, outfile_liq, caption, statistics, \
+                   domain, plottype, "", "", infiles)
 
-    ; optionally save legend(s) to extra file(s)
+    ; ======================================================================
+
+    ; optionally save legends to extra files
 
     if (extralegend) then
       nboxes = dimsizes(res@cnLevels) + 1
-      wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
-                       + "_legend")
+      wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_lifrac_legend")
       pres@lbMonoFillPattern = True
       pres@lbOrientation = "Horizontal"
       pres@vpWidthF = 0.7
@@ -584,7 +565,7 @@ begin
       pres@lbLabelFontHeightF = 0.015
       pres@lbLabelAlignment = "InteriorEdges"
       pres@lbTitleFontHeightF = 0.015
-      pres@lbTitleString = long_name + " (" + units + ")"
+      pres@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
 
       labels = tostring(res@cnLevels)
 
@@ -604,9 +585,9 @@ begin
         end if
       end do
 
-      if (isatt(data1, "res_cnFillColors")) then
+      if (isatt(icefrac, "res_cnFillColors")) then
         pres@lbFillColors = res@cnFillColors
-      else if (isatt(data1, "res_cnFillPalette")) then
+      else if (isatt(icefrac, "res_cnFillPalette")) then
         pres@lbFillColors = res@cnFillPalette
       else
         pres@lbFillColors = mean_colors  ; default colors
