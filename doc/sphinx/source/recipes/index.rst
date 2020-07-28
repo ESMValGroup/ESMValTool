@@ -68,6 +68,7 @@ Land
    :maxdepth: 1
 
    recipe_albedolandcover
+   recipe_carvalhais14nat
    recipe_hydrology
    recipe_landcover
    recipe_anav13jclim
