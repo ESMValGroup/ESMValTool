@@ -1,0 +1,15 @@
+# Folders to ignore
+doc
+docker
+ESMValTool.egg-info
+package
+tests
+.*
+
+**/__pycache__
+
+# FileTypes
+*.pyc
+
+# Exceptions
+!.zenodo.json
