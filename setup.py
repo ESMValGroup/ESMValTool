@@ -59,7 +59,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute 'python setup.py test' to run tests
     'test': [
-        'pytest>=3.9,!=6.0.0rc1',
+        'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov',
         'pytest-env',
         'pytest-flake8',
