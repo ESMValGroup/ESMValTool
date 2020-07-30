@@ -153,11 +153,18 @@ begin
   amp_series@var_yaxis = True
   amp_series@region = region
 
+  growth_series = amp_series
+  growth_series@long_name = "Growth Rate"
+  growth_series@units = "ppmv yr~S~-1~N~"
+
   var0_yr = amp_series
   var0_yr@long_name = var0_plotname
 
   varname2 = "SCA"
   varname2@mean = diag_script_info@plot_var2_mean
+
+  varname_gr = "GR"
+  varname_gr@mean = diag_script_info@plot_var2_mean
 
 end
 begin
@@ -280,10 +287,15 @@ begin
       var0_yr(mapping_array(imod), :) = (/time_operations(var0_lonavg_xco2, -1, -1, "average", "yearly", True)/)
       amp_series(mapping_array(imod), :) = dim_avg_wgt(var0_sca_lonavg(:,coords(0): coords(1)) , \
                 cos_lats, 1)
+      gr_temp = calc_gr(var0_lonavg_xco2, "yearly", min_nmonth)
+      growth_series(mapping_array(imod), :) = dim_avg_wgt(gr_temp(:,coords(0): coords(1)) , \
+                cos_lats, 1)
+      delete(gr_temp)
     else
       var0_avg = area_operations(var0_reg, lat_min, lat_max, 0, 360, "average", True)
       var0_yr(mapping_array(imod), :) = (/time_operations(var0_avg, -1, -1, "average", "yearly", True)/)
       amp_series(mapping_array(imod), :) = (/calc_sca(var0_avg, min_nmonth)/)
+      growth_series(mapping_array(imod), :) = (/calc_gr(var0_avg, "yearly", min_nmonth)/)
     end if
 
   end do
@@ -297,14 +309,25 @@ begin
   if .not. obs_pres then
     var0_yr := var0_yr(1:, :)
     amp_series := amp_series(1:, :)
+    growth_serie := growth_series(1:, :)
   end if
-  outfile_dtgr_detr = plot_dir + "/" + var0 + "_" + experiments(0) \
+  outfile_scaplot = plot_dir + "/" + var0 + "_" + experiments(0) \
                + "_" + region + "_" + (start_year) + "-" + (end_year) + "_" + var0 + "_SCA_panels" \
                + opt_mask
-  wks = gsn_open_wks(file_type, outfile_dtgr_detr)
+  wks = gsn_open_wks(file_type, outfile_scaplot)
   plt_xco2_SCA_panels = panel_plots(wks, var0_yr, amp_series, var0, \
                                     varname2, obs_pres, INFO0)
   delete(wks)
   delete(plt_xco2_SCA_panels)
+
+  outfile_grplot = plot_dir + "/" + var0 + "_" + experiments(0) \
+               + "_" + region + "_" + (start_year) + "-" + (end_year) + "_" + var0 + "_GR_panels" \
+               + opt_mask
+  wks = gsn_open_wks(file_type, outfile_grplot)
+  plt_t_gr_panels = panel_plots(wks, var0_yr, growth_series, var0, \
+                                    varname_gr, obs_pres, INFO0)
+  delete(wks)
+  delete(plt_t_gr_panels)
+
 
 end

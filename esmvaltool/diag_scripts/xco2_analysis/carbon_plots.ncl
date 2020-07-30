@@ -119,7 +119,6 @@ begin
     end if
     ; Add multi-model mean as it's not in diag_script_info
     colors := array_append_record(colors, "red", 0)
-    print(colors)
 
     ; calc min and max dT,
     min_X = min(source1)
@@ -129,7 +128,7 @@ begin
     res@gsnFrame = False
     res@trXMinF = min_X - 0.05*(max_X - min_X)
     res@trXMaxF = max_X + 0.05*(max_X - min_X)
-    res@trYMinF = min(source2) - 0.3 * (max(source2) - min(source2))
+    res@trYMinF = min(source2) - 0.5 * (max(source2) - min(source2))
     res@trYMaxF = max(source2) + 0.5 * (max(source2) - min(source2)) ;0.22
     res@vpHeightF = 0.2
     res@vpWidthF = 0.8
@@ -140,7 +139,7 @@ begin
     resM@gsMarkerThicknessF = 4.
 
     regression = new((/dimsizes(source2&model), 2/), float)
-    cor = new(dimsizes(source2&model), float)
+    cor = new((/dimsizes(source2&model), 2/), float)
 
     lres = True
     lres@gsLineThicknessF = 3.
@@ -187,10 +186,11 @@ begin
 
         x_fit = fspan(res@trXMinF - 1, res@trXMaxF + 1, 100)
 
-        rc = regline(source1(imod, :), source2(imod, :))
+        rc = regline_stats(source1(imod, :), source2(imod, :))
         regression(imod, 0) = (/rc/)
-        regression(imod, 1) = (/rc@rstd/)
-        cor(imod) = escorc(source1(imod, :), source2(imod, :))
+        regression(imod, 1) = (/rc@stderr(1)/)
+        cor(imod, 0) = rc@r ;pearson-correlation coefficient
+        cor(imod, 1) = rc@pval(1) ;p-value
 
         y_fit = x_fit*rc + rc@yintercept
 
@@ -201,7 +201,7 @@ begin
         plots(imod) = gsn_csm_xy(wks, x_fit, y_fit, res)
 
         if isatt(varname2, "mean") .and. varname2@mean then
-            v2_mean = avg(source2(imod, :))
+            v2_mean = rc@yave ;avg(source2(imod, :))
             v2_mean = decimalPlaces(v2_mean, 2, True)
             txadd = ", mean = " + sprintf("%1.2f", v2_mean)
             delete(v2_mean)
@@ -211,13 +211,14 @@ begin
 
         txres@txJust = "centerLeft"
         plots@$unique_string("mod")$ = gsn_add_text(wks, plots(imod), \
-                     modnames(imod) + ": " + sprintf("%1.3f", rc) + \
-                     " ~F18~S~F~ " + sprintf("%1.3f", rc@rstd) + txadd, \
+                     modnames(imod) + ": " + sprintf("%1.3f", regression(imod, 0)) + \
+                     " ~F18~S~F~ " + sprintf("%1.3f", regression(imod, 1)) + txadd, \
                      res@trXMinF + 0.02*(res@trXMaxF - res@trXMinF), \
                      res@trYMaxF - 0.13*(res@trYMaxF - res@trYMinF), txres)
         txres@txJust = "centerRight"
         plots@$unique_string("cor")$ = gsn_add_text(wks, plots(imod), \
-                     "r: " + sprintf("%1.2f",cor(imod)), \
+                     "r: " + sprintf("%1.2f",cor(imod, 0)) + ", p-value: " + \
+                     sprintf("%1.2f", cor(imod, 1)), \
                      res@trXMaxF - 0.02*(res@trXMaxF - res@trXMinF),\
                      res@trYMinF + 0.13*(res@trYMaxF - res@trYMinF), txres)
 

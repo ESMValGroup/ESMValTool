@@ -478,6 +478,10 @@ begin
       res_sca_panel_plots@cnLineLabelsOn      = False
       res_sca_panel_plots@tmLabelAutoStride = True
       res_sca_panel_plots@cnFillPalette    = "BkBlAqGrYeOrReViWh200"   ; set color map
+      res_sca_panel_plots@gsnZonalMean = True
+      res_sca_panel_plots@gsnZonalMeanXMinF    = 0      ; min X-axis value for zonal mean plot
+      res_sca_panel_plots@gsnZonalMeanXMaxF    = diag_script_info@contour_max_level     ; max X-axis value for zonal mean plot
+      res_sca_panel_plots@amOrthogonalPosF = .2
     end if
     res_sca_panel_plots@gsnLeftString = mod_names(imod)
     mean_sca_mod = avg(sca_p_array(imod, :, :))
