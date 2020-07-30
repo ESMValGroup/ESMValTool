@@ -19,21 +19,21 @@ datasetnames:
   CDS-SATELLITE-ALBEDO: SPOT-VGT
   GRACE: GRACE
 
+
+
 datasetcolors:
-  ERA-Interim-Land: '#1f77b4'
-  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: '#ff7f0e'
-  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: '#bcbd22'
-  CDS-SATELLITE-SOIL-MOISTURE_ACTIVE: '#8c564b'
-  cds-era5-land-monthly: '#2ca02c'
-  cds-era5-monthly: '#d62728'
-  MERRA2: '#9467bd'
+# Hint: use colorbrewer for setting colors.
+  ERA-Interim-Land: '#a6cee3'
+  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: '#1f78b4'
+  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: '#b2df8a'
+  CDS-SATELLITE-SOIL-MOISTURE_ACTIVE: '#33a02c'
+  cds-era5-land-monthly: '#fb9a99'
+  cds-era5-monthly: '#e31a1c'
+  MERRA2: '#fdbf6f'
   cds-satellite-lai-fapar: '#8c564b'
   CDS-SATELLITE-ALBEDO: '#e377c2'
   GRACE: '#7f7f7f'
-# From:
-# https://stackoverflow.com/questions/42086276/
-# Cycle continues like this:
-#  '#17becf'
+
 
 colors:
   sm:
