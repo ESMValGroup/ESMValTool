@@ -1,0 +1,21 @@
+---
+# Filename
+filename: 'air.mon.mean.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GHCN-CAMS
+  version: '1'
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'https://www.esrl.noaa.gov/psd/data/gridded/data.ghcncams.html'
+  reference: 'ghcn-cams'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tas:
+    mip: Amon
+    raw: air
+    raw_units: K

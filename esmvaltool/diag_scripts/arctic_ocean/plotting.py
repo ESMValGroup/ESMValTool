@@ -223,7 +223,7 @@ def hofm_plot(cfg, plot_params):
     plt.tight_layout()
     # generate the path to the output file
     plot_params['basedir'] = cfg['plot_dir']
-    plot_params['ori_file'] = [ifilename]
+    plot_params['ori_file'] = ifilename
     plot_params['areacello'] = None
     plot_params['mmodel'] = None
 
@@ -336,7 +336,7 @@ def tsplot_plot(cfg, plot_params):
                              data_type='tsplot')
     plt.savefig(pltoutname, dpi=100)
     plot_params['basedir'] = cfg['plot_dir']
-    plot_params['ori_file'] = [ifilename_t]
+    plot_params['ori_file'] = ifilename_t
     plot_params['areacello'] = None
     plot_params['mmodel'] = None
 
@@ -451,7 +451,7 @@ def plot_profile(cfg, plot_params):
     plt.gca().invert_yaxis()
 
     plot_params['basedir'] = cfg['plot_dir']
-    plot_params['ori_file'] = [ifilename]
+    plot_params['ori_file'] = ifilename
     plot_params['areacello'] = None
     plot_params['mmodel'] = None
 
@@ -590,7 +590,7 @@ def plot2d_original_grid(cfg, plot_params):
                              data_type=plot_type)
 
     plot_params['basedir'] = cfg['plot_dir']
-    plot_params['ori_file'] = [ifilename]
+    plot_params['ori_file'] = ifilename
     plot_params['areacello'] = None
     plot_params['mmodel'] = None
     plot_params['region'] = "Global"
@@ -753,7 +753,7 @@ def plot2d_bias(cfg, plot_params):
                                  str(int(target_depth))))
 
     plot_params['basedir'] = cfg['plot_dir']
-    plot_params['ori_file'] = [ifilename]
+    plot_params['ori_file'] = ifilename
     plot_params['areacello'] = None
     plot_params['mmodel'] = None
     plot_params['region'] = "Global"

@@ -1,7 +1,7 @@
+# ESMValTool
 # recipe_cox18nature.yml
 ---
 documentation:
-
   description: |
     Reproducing the emergent constraint for ECS based on global temperature
     variability (Cox et al., 2018).
