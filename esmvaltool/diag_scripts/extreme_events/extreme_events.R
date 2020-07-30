@@ -29,9 +29,15 @@ library(ncdf4.helpers)
 library(scales)
 library(RColorBrewer) # nolint
 
+# function to flatten nested lists
+flatten_lists <- function(x) {
+  if (!inherits(x, "list")) return(list(x))
+  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+}
+
 provenance_record <- function(infile) {
   xprov <- list(
-    ancestors = as.list(infile),
+    ancestors = flatten_lists(as.list(infile)),
     authors = list(
       "broetz_bjoern",
       "sandstad_marit",
