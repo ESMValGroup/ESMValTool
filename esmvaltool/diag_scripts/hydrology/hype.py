@@ -66,7 +66,7 @@ def get_data_times_and_ids(attributes):
     time_coord.points = da.floor(time_coord.core_points())
     time_coord.bounds = None
 
-    times = [str(x.point.date()) for x in time_coord.cells()]
+    times = [x.point.strftime("%Y-%m-%d") for x in time_coord.cells()]
     ids = cube.coord('shape_id').core_points()
 
     return data, times, ids
