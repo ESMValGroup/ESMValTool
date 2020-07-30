@@ -37,11 +37,13 @@ REQUIREMENTS = {
         'fiona',
         'GDAL',
         'jinja2',
+        'joblib',
         'matplotlib',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
         'pandas',
+        'pynio',
         'pyproj>=2.1'
         'pyyaml',
         'scikit-learn',
@@ -57,7 +59,7 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute 'python setup.py test' to run tests
     'test': [
-        'pytest>=3.9,!=6.0.0rc1',
+        'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov',
         'pytest-env',
         'pytest-flake8',
