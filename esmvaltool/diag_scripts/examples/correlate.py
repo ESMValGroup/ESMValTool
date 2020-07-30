@@ -70,7 +70,8 @@ def main(cfg):
                 "Computing correlation with settings %s between "
                 "reference and cube:\n%s\n%s", kwargs, filename, dataset)
             dataset = dataset.collapsed('time', MEAN)
-            # Fix issue with losing vertical bounds in extract_level preprocessor
+            # Fix issue with losing vertical bounds in extract_level
+            # preprocessor
             if reference.coords(axis='Z'):
                 ref_coord = reference.coord(axis='Z')
                 coord = dataset.coord(ref_coord)
