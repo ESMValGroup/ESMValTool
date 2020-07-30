@@ -1,19 +1,5 @@
 FROM esmvalgroup/esmvalcore:latest
 
-COPY . /src/ESMValTool
-WORKDIR /src/ESMValTool
-
-# install environment packages
-RUN conda env update --name base --file environment.yml && conda clean --all -y
-RUN pip install . && pip install ../ESMValCore && pip cache purge
-RUN apt install julia -y && esmvaltool install Julia
-RUN esmvaltool install R
-
-ENTRYPOINT ["esmvaltool"]
-CMD ["version"]
-
-FROM esmvalgroup/esmvalcore:latest
-
 RUN apt install julia -y && apt-get clean
 COPY ./environment.yml /src/ESMValTool/environment.yml
 WORKDIR /src/ESMValTool
@@ -24,7 +10,6 @@ RUN Rscript ./esmvaltool/install/R/setup.R
 
 COPY . /src/ESMValTool
 RUN pip install -e . && pip install ../ESMValCore && pip cache purge && esmvaltool install Julia
-# RUN rm -rf /src
 
 
 ENTRYPOINT ["esmvaltool"]
