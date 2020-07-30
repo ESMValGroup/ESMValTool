@@ -8,20 +8,13 @@ documentation:
   authors:
     - andela_bouwe
     - schlund_manuel
+    - vegas-regidor_javier
 
   maintainer:
     - righi_mattia
 
   projects:
     - c3s-magic
-
-preprocessors:
-
-  regrid:
-    regrid:
-      target_grid: CanESM2
-      scheme: linear
-
 
 diagnostics:
 
@@ -116,5 +109,4 @@ diagnostics:
     variables:
       clltkisccp:
         <<: *cloud
-        mip: OImon
     scripts: null
