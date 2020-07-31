@@ -1,5 +1,6 @@
 """Install Julia and R dependencies."""
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -24,6 +25,7 @@ class Install:
         except subprocess.CalledProcessError as exc:
             print(exc.stdout)
             print("installation failed")
+            sys.exit(1)
         else:
             print("Installation successful")
 

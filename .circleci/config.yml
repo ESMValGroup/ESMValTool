@@ -26,6 +26,8 @@ jobs:
       - run:
           # Update/Create Conda environment and run tests
           command: |
+            julia esmvaltool/install/Julia/setup.jl
+            Rscript esmvaltool/install/R/setup.R
             python setup.py test
           no_output_timeout: 20m
       - store_artifacts:

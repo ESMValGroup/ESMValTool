@@ -209,6 +209,7 @@ setup(
     extras_require={
         'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
                     {'pycodestyle'}),
+        'test': REQUIREMENTS['test'],
     },
     entry_points={
         'console_scripts': [
