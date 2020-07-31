@@ -41,8 +41,8 @@ datasets:
 #  - {dataset: HadCM3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1984}
-#  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1984}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
 #  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: CCSM4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: NorESM1-M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
@@ -60,12 +60,12 @@ datasets:
 ################################################
 
 range_pars: &rngpars
-  base_range: [1981, 1983]
+  base_range: [1981, 1982]
 #  analysis_range: [1998, 2000]
 
 regrid_pars: &regpars
   regrid:
-    target_grid: MPI-ESM-LR
+    target_grid: MPI-ESM-MR
     scheme: area_weighted
 #  target_grid: MPI-ESM-LR
 #  target_grid: ERA-Interim
@@ -146,9 +146,36 @@ diagnostics:
           # - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
           - annual_warm_spell_duration_index
           - annual_cold_spell_duration_index
-          - monthly_simple_precipitation_intensity_index
-          - annual_simple_precipitation_intensity_index
-          - annual_maximum_length_of_dry_spell
-          - annual_maximum_length_of_wet_spell
-        cumprec_threshold_nn: 15
+#          - monthly_simple_precipitation_intensity_index
+#          - annual_simple_precipitation_intensity_index
+#          - annual_maximum_length_of_dry_spell
+#          - annual_maximum_length_of_wet_spell
+#        cumprec_threshold_nn: 15
         <<: *rngpars
+        
+#      extremeIndices_nov:
+#        script: extreme_events/extreme_events_pp.py
+#        indices:
+#          - annual_number_of_days_where_daily_minimum_temperature_above_90%
+#        base_range: [1981, 1983]
+#        analysis_range: [1984, 1986]
+#      extremeIndices_ov:
+#        script: extreme_events/extreme_events_pp.py
+#        indices:
+#          - annual_number_of_days_where_daily_minimum_temperature_above_90%
+#        base_range: [1981, 1984]
+#        analysis_range: [1983, 1986]
+#      extremeIndices_nob:
+#        script: extreme_events/extreme_events_pp.py
+#        indices:
+#          - annual_number_of_days_where_daily_minimum_temperature_above_90%
+#        analysis_range: [1983, 1986]
+#      extremeIndices_noa:
+#        script: extreme_events/extreme_events_pp.py
+#        indices:
+#          - annual_number_of_days_where_daily_minimum_temperature_above_90%
+#        base_range: [1981, 1984]
+#      extremeIndices_noab:
+#        script: extreme_events/extreme_events_pp.py
+#        indices:
+#          - annual_number_of_days_where_daily_minimum_temperature_above_90%

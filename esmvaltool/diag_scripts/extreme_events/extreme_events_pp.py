@@ -82,29 +82,20 @@ def main(cfg):
     for alias, alias_data in grouped_input_data.items():
         logger.info('Processing alias %s', alias)
 
-        logger.info(alias_data)
-
         alias_cubes = {}
         # Save all alias related cubes in dictionary
         for attributes in alias_data:
             logger.info('Processing dataset {}, {}.'.format(attributes['dataset'], attributes['short_name']))
             input_file = attributes['filename']
             alias_cubes[attributes['short_name']] = convert_ETCCDI_units(iris.load_cube(input_file))
-            try:
-                exp_str = attributes["exp"]
-            except KeyError:
-                exp_str = "NULL"
-            try:
-                ens_str = attributes["ensemble"]
-            except KeyError:
-                ens_str = "NULL"
-            base_fname = "_{}_{}_{}_{}".format(attributes["dataset"],
-                                          exp_str,
-                                          ens_str,
+            local_atts = attributes.copy()
+            base_fname = "_{}_{}_{}_{}".format(local_atts.pop("dataset", "NULL"),
+                                          local_atts.pop("exp", "NULL"),
+                                          local_atts.pop("ensemble", "NULL"),
                                           "{}-{}".format(
-                                                  attributes["start_year"],
-                                                  attributes["end_year"]),
-                      )
+                                                  local_atts.pop("start_year", "NULL"),
+                                                  local_atts.pop("end_year", "NULL"),
+                      ))
 
         # get index function
         for index_name in cfg['indices']:

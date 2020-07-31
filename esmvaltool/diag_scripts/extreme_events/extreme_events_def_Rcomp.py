@@ -433,5 +433,5 @@ annual_growing_season_length:
             longitude: [0, 360]
     cf_name: gslETCCDI
 """)
-print("INDEX_DEFINITION:")
-print(yaml.dump(index_definition))
+#print("INDEX_DEFINITION:")
+#print(yaml.dump(index_definition))
