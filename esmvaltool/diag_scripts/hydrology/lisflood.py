@@ -145,9 +145,9 @@ def main(cfg):
             # latitudes decreasing
             cube = cube[:, ::-1, ...]
 
-            keep_coords = ['lon','lat','time']
-            
-            # remove coordinate bounds drop extra coordinates and 
+            keep_coords = ['lon', 'lat', 'time']
+
+            # remove coordinate bounds drop extra coordinates and
             # transpose remaining cube to [lon,lat,time]
             for coord in cube.coords():
                 if coord.var_name in keep_coords:
@@ -161,9 +161,9 @@ def main(cfg):
                     cube.replace_coord(new_coord)
                 else:
                     cube.remove_coord(coord)
-            
-            cube.transpose()
-            
+
+            cube.transpose([1, 2, 0])
+
             output_file = save(cube, var_name, dataset, cfg)
 
             # Store provenance
