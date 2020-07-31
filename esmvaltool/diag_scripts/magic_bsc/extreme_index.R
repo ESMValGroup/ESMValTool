@@ -504,7 +504,7 @@ nc_close(file)
 
 
 xprov <- list(
-  ancestors = flatten_lists(list(fullpath_filenames)),
+  ancestors = fullpath_filenames,
   authors = list(
     "hunter_alasdair",
     "manubens_nicolau",
