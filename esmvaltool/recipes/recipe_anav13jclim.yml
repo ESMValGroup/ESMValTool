@@ -1,7 +1,7 @@
+# ESMValTool
 # recipe_anav13jclim.xml
 ---
 documentation:
-
   description: |
     This recipe reproduces most of the figures of Anav et al. (2013).
 

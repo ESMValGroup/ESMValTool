@@ -251,6 +251,23 @@ diagnostics:
     scripts: null
 
 
+  ESRL:
+    description: ESRL check
+    variables:
+      co2s:
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: MLO, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: SMO, tier: 2,
+         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: SPO, tier: 2,
+         start_year: 1973, end_year: 2019}
+    scripts: null
+
+
   GCP:
     description: GCP check
     variables:
@@ -459,9 +476,14 @@ diagnostics:
   PERSIANN-CDR:
     description: PERSIANN-CDR check
     variables:
-      pr:
+      pr_month:
+        short_name: pr
+        mip: Amon
+      pr_day:
+        short_name: pr
+        mip: day
     additional_datasets:
-      - {dataset: PERSIANN-CDR, project: OBS, mip: day, tier: 2,
+      - {dataset: PERSIANN-CDR, project: OBS, tier: 2,
          type: reanaly, version: v01r01, start_year: 1983, end_year: 2018}
     scripts: null
 

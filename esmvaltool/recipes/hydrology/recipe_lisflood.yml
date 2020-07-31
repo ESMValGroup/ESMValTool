@@ -4,9 +4,17 @@
 documentation:
   description: |
     Recipe pre-process files for use in the LISFLOOD hydrological model.
-  authors: [verhoeven_stefan, kalverla_peter, andela_bouwe]
-  projects: [ewatercycle]
-  references: ['acknow_project']
+
+  authors:
+    - verhoeven_stefan
+    - kalverla_peter
+    - andela_bouwe
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
 
 datasets:
   - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}

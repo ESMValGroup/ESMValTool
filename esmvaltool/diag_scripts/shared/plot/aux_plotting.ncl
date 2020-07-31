@@ -74,13 +74,6 @@ begin
   scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
   enter_msg(scriptname, funcname)
 
-  ; Flag if RGB or RGBA is used for colors
-  if (dimsizes(dimsizes(styles@colors)).ne.1) then
-    RGB = True
-  else
-    RGB = False
-  end if
-
   ; Open workstation
   wks_legend = gsn_open_wks("epsi", outfile)
 
@@ -139,13 +132,8 @@ begin
   ii = 0
   do while (ii.lt.dim_LAB)
     ; Set color
-    if (RGB) then
-      resL@gsLineColor = styles@colors(ii, :)
-      resL@gsMarkerColor = styles@colors(ii, :)
-    else
-      resL@gsLineColor = styles@colors(ii)
-      resL@gsMarkerColor = styles@colors(ii)
-    end if
+    resL@gsLineColor = styles@colors(ii)
+    resL@gsMarkerColor = styles@colors(ii)
     ; Set dash pattern
     if (isatt(styles, "dashes")) then
       resL@gsLineDashPattern    = styles@dashes(ii)
