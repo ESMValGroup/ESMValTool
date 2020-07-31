@@ -6,7 +6,14 @@ Running
 
 ESMValTool is mostly used as a command line tool. Whenever your
 conda environment for ESMValTool is active, you can just run the command
-``esmvaltool``. An
+``esmvaltool``. See
+`running esmvaltool <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/quickstart/run.html>`_
+in the ESMValCore documentation for a short introduction.
+
+Running a recipe
+================
+
+An
 `example recipe <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_python.yml>`_
 is available in the ESMValTool installation folder as
 ``examples/recipe_python.yml``.
