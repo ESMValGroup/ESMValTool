@@ -31,7 +31,7 @@ library(RColorBrewer) # nolint
 
 # function to flatten nested lists
 flatten_lists <- function(x) {
-  if (!inherits(x, "list")) return(list(x))
+  if (!inherits(x, "list")) return(x)
   else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
 }
 
@@ -398,7 +398,7 @@ if (write_plots) { # nolint
       start_yr = analysis_range[1],
       end_yr = analysis_range[2]
     )
-    xprov <- provenance_record(climofiles)
+    xprov <- provenance_record(list(climofiles))
     for (fname in plotfiles) {
       provenance[[fname]] <- xprov
     }
@@ -409,7 +409,7 @@ if (write_plots) { # nolint
         pattern = model,
         full.names = TRUE
       )
-      xprov <- provenance_record(climofiles[models == model])
+      xprov <- provenance_record(list(climofiles[models == model]))
       for (fname in ncfiles) {
         provenance[[fname]] <- xprov
       }
@@ -483,7 +483,7 @@ if (write_plots) { # nolint
       provenance[[fname]] <- xprov
     }
     ncfiles <- list.files(file.path(work_dir, "gleckler/Gleck*"))
-    xprov <- provenance_record(climofiles)
+    xprov <- provenance_record(list(climofiles))
     for (fname in ncfiles) {
       provenance[[fname]] <- xprov
     }
