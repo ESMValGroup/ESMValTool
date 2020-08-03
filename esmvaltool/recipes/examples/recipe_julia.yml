@@ -2,7 +2,8 @@
 # recipe_julia.yml
 ---
 documentation:
-  description: Recipe for example diagnostic written in Julia.
+  description: |
+    Recipe for example diagnostic written in Julia.
 
   authors:
     - vonhardenberg_jost

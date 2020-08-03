@@ -1,6 +1,6 @@
+# ESMValTool
 # recipe_hyint_extreme_events.yml
 ---
-
 documentation:
   description: |
     Recipe calling the extreme_events diagnostic followed by the hyint diagnostic

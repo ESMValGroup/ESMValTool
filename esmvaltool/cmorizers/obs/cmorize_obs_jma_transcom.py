@@ -58,9 +58,9 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, ctl):
 
     # Mask appropriate parts
     if cmor_info.short_name == 'nbp':
-        cube = mask_landsea(cube, [], 'sea')
+        cube = mask_landsea(cube, {}, 'sea')
     elif cmor_info.short_name == 'fgco2':
-        cube = mask_landsea(cube, [], 'land')
+        cube = mask_landsea(cube, {}, 'land')
     else:
         raise NotImplementedError(
             f"CMORizer for '{cmor_info.short_name}' not implemented yet")

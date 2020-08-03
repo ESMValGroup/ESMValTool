@@ -26,6 +26,8 @@
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
            "/esmvaltool/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/interface_scripts/auxiliary.ncl")
 
 begin
 
@@ -89,58 +91,51 @@ begin
     fname  = input_dir_path + "TES-Aura_L3-O3-M" + \
       yy + "m" + sprinti("%0.2i", mm) + "_F01_10.he5"
 
-    if (.not.isfilepresent(fname)) then  ; alternative name
+    if (.not.fileexists(fname)) then  ; alternative name
       fname = input_dir_path + "TES-Aura_L3-O3-M" + \
         yy + "m" + sprinti("%0.2i", mm) + "_C01_F01_10.he5"
     end if
 
-    if (.not.isfilepresent(fname)) then
+    if (.not.fileexists(fname)) then
       log_info("File missing, skipping this date")
       continue
     end if
 
+    ; Convert to NetCDF
+    destination = output_dir_path + bname(fname) + ".nc"
+    system(str_join((/"ncks", fname, destination/), " "))
+
     ; Read variable
-    f = addfile(fname, "r")
-    str = "O3_" + GRIDTYPE + "Grid"
-    var = f->$str$
+    f = addfile(destination, "r")
+    var = f->O3
 
-    ; Reorder
-    d1 = "XDim_" + GRIDTYPE + "Grid"
-    d2 = "YDim_" + GRIDTYPE + "Grid"
-    d3 = "nLevels_" + GRIDTYPE + "Grid"
-    tmp = var($d1$|:, $d2$|:, $d3$|:)
-    delete(var)
-    var = tmp
-    delete(tmp)
-
-    ; Read vertical coordinate
-    str = "Pressure_" + GRIDTYPE + "Grid"
-    press = f->$str$
-    var!2 = "plev"
-    var&plev = todouble(press)
+    ; Read and assign coordinates
+    var!0 = "plev"
+    var&plev = todouble(f->Pressure)
+    var!1 = "lat"
+    var&lat = todouble(f->Latitude)
+    var!2 = "lon"
+    var&lon = todouble(f->Longitude)
 
     ; Create array
-    if (.not.isdefined("outvar")) then
+    if (.not.isdefined("output")) then
       outdim = array_append_record(dimsizes(timec), dimsizes(var), 0)
-      outvar = new(outdim, float)
-      outvar@_FillValue = var@_FillValue
+      output = new(outdim, float)
+      output@_FillValue = var@_FillValue
     end if
 
-    outvar(tt, :, :, :) = var
+    output(tt, :, :, :) = var
     delete(var)
+    delete(f)
+    system("rm -f " + destination)
 
   end do
 
-  ; Reorder
-  outvar!0 = "time"
-  outvar!1 = "lon"
-  outvar!2 = "lat"
-  outvar!3 = "plev"
-  output = outvar(time|:, plev|:, lat|:, lon|:)
+  ; Assign standard FillValue
   output@_FillValue = FILL
-  delete(outvar)
 
   ; Assign coordinates
+  output!0 = "time"
   output&time = timec
   output&plev = output&plev * 100.  ; [hPa] --> [Pa]
   output&plev@units = "Pa"
