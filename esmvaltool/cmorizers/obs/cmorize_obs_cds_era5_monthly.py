@@ -134,7 +134,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
     except iris.exceptions.UnitConversionError:
         logger.warning("Can not automatically convert units. Change units without conversion, check if this is fine.")
         cube.units = definition.units
-            
+
     # Set global attributes
     utils.set_global_atts(cube, attributes)
 
