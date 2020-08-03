@@ -171,13 +171,13 @@ preprocessors:
 
   prep_map_4: # For a specific region with regrid
     custom_order: true
-    climate_statistics:
-      operator: mean
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
+    climate_statistics:
+      operator: mean      
     regrid:
       target_grid: 1x1
       scheme: linear
