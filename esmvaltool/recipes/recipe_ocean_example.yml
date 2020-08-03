@@ -177,7 +177,7 @@ preprocessors:
       start_latitude: -80.
       end_latitude: 80.
     climate_statistics:
-      operator: mean      
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
