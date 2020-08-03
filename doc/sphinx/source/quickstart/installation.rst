@@ -6,11 +6,15 @@ Installation
 
 ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
 
-The ESMValTool supports three different installation methods:
+The ESMValTool supports five different installation methods:
 
 * Installation through Conda package manager (see https://www.continuum.io);
 
+* Installation with Pip and Conda package manager (see https://pypi.org);
+
 * Deployment through a Docker container (see https://www.docker.com);
+
+* Deployment through a Singularity container (see https://sylabs.io/guides/latest/user-guide/);
 
 * From the source code available at https://github.com/ESMValGroup/ESMValTool.
 
@@ -21,11 +25,14 @@ this methods.
 Conda installation
 ==================
 
-In order to install the Conda package, you will need both conda and Julia
-pre-installed, this is because Julia cannot be installed from conda.
-For a minimal conda installation go to https://conda.io/miniconda.html.
+In order to install the `Conda <https://docs.conda.io>`_ package, you will need
+both Conda and Julia pre-installed, this is because Julia cannot be installed
+from Conda.
+For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
+It is recommended that you always use the latest version of Conda, as problems
+have been reported when trying to use older versions.
 Installation instructions for Julia can be found on the
-`Julia download page <https://julialang.org/downloads/>`_.
+`Julia installation instructions page <https://julialang.org/downloads/platform/>`_.
 
 Once you have installed the above prerequisites, you can install ESMValTool by running:
 
@@ -34,8 +41,28 @@ Once you have installed the above prerequisites, you can install ESMValTool by r
     conda install esmvaltool -c esmvalgroup -c conda-forge
 
 Here ``conda`` is the executable calling the Conda package manager to install
-``esmvaltool`` and the ``-c`` flag specifies the software channels in which ``esmvaltool``
-and its dependencies can be found.
+``esmvaltool`` and the ``-c`` flag specifies the Conda software channels in which the
+``esmvaltool`` package and its dependencies can be found.
+
+It is also possible to create a new
+`Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
+and install ESMValTool into it with a single command:
+
+.. code-block:: bash
+
+    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool
+
+Don't forget to activate the newly created environment after the installation:
+
+.. code-block:: bash
+
+    conda activate esmvaltool
+
+Of course it is also possible to choose a different name than ``esmvaltool`` for the environment.
+
+.. note::
+
+	  Creating a new Conda environment is often much faster and more reliable than trying to update an existing Conda environment.
 
 Installation of subpackages
 ---------------------------
@@ -65,6 +92,39 @@ For example, to only install support for diagnostics written in Python and NCL, 
 Note that it is only necessary to install Julia prior to the conda installation if you are going to install the ``esmvaltool-julia`` package.
 
 Note that the ESMValTool source code is contained in the ``esmvaltool-python`` package, so this package will always be installed as a dependency if you install one or more of the packages for other languages.
+
+Pip installation
+================
+
+It is also possible to install ESMValTool from `PyPI <https://pypi.org/project/ESMValTool/>`_.
+However, this requires first installing dependencies that are not available on PyPI in some other way.
+By far the easiest way to install these dependencies is to use conda_.
+For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
+
+After installing Conda, download
+`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml>`_:
+
+.. code-block:: bash
+
+    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml
+
+and install these dependencies into a new conda environment with the command
+
+.. code-block:: bash
+
+    conda env create --name esmvaltool --file environment.yml
+
+Finally, activate the newly created environment
+
+.. code-block:: bash
+
+    conda activate esmvaltool
+
+and install ESMValTool as well as any remaining dependencies with the command:
+
+.. code-block:: bash
+
+    pip install esmvaltool
 
 Docker installation
 ===================
@@ -320,5 +380,3 @@ confirm that no errors are reported:
 .. code-block:: bash
 
     python setup.py test
-
-
