@@ -173,22 +173,35 @@ begin
   if (.not. (dimsizes(datasetnames) .eq. \
       count_unique_values(datasetnames))) then
     new_datasetnames = datasetnames
+    experiments = metadata_att_as_array(info_items, "exp")
+    ensembles = metadata_att_as_array(info_items, "ensemble")
+
     do imod = 0, dimsizes(datasetnames) - 1
       do jmod = 0, dimsizes(datasetnames) - 1
         if imod.eq.jmod then
           continue
         else
           if (datasetnames(imod) .eq. datasetnames(jmod)) then
-            experiments = metadata_att_as_array(info_items, "exp")
-            ensembles = metadata_att_as_array(info_items, "ensemble")
-              if (experiments(imod) .ne. experiments(jmod)) then
-                new_datasetnames(imod) = new_datasetnames(imod) + " " + \
-                                          experiments(imod)
-              end if
-              if (ensembles(imod) .ne. ensembles(jmod)) then
-                new_datasetnames(imod) = new_datasetnames(imod) + " " + \
-                                          ensembles(imod)
-              end if
+            if (experiments(imod) .ne. experiments(jmod)) then
+              new_datasetnames(imod) = new_datasetnames(imod) + " " + \
+                                        experiments(imod)
+              break
+            end if
+          end if
+        end if
+      end do
+    end do
+    do imod = 0, dimsizes(datasetnames) - 1
+      do jmod = 0, dimsizes(datasetnames) - 1
+        if imod.eq.jmod then
+          continue
+        else
+          if (datasetnames(imod) .eq. datasetnames(jmod)) then
+            if (ensembles(imod) .ne. ensembles(jmod)) then
+              new_datasetnames(imod) = new_datasetnames(imod) + " " + \
+                                        ensembles(imod)
+              break
+            end if
           end if
         end if
       end do
