@@ -42,6 +42,8 @@ colors:
       vmin: -1.
       vmax: 1.
       cmap: BrBG
+# closed means, closed colorbar
+      closed:
     ubrmsd:
       title: ubrmsd
       vmin: 0.

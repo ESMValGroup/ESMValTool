@@ -49,8 +49,11 @@ def _parse_cmap(plotkwargs):
 
         cmap, norm = from_levels_and_colors(levels, color_list)
         cmap.set_bad("grey", 0.1)
-        cmap.set_under(color_under)
-        cmap.set_over(color_over)
+        if 'closed' in plotkwargs.keys():
+            plotkwargs.pop('closed')
+        else:
+            cmap.set_under(color_under)
+            cmap.set_over(color_over)
 
         plotkwargs['norm'] = norm
 
