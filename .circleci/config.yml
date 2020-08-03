@@ -62,12 +62,14 @@ jobs:
             pip install . > /logs/install.txt 2>&1
             esmvaltool install R
             esmvaltool install Julia
+            # Remove source to test installed software
+            rm -r esmvaltool
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            python setup.py test
+            pytest
             esmvaltool -h
             ncl -V
             # cdo test, check that it supports hdf5
