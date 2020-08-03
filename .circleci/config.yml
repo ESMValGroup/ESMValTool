@@ -59,7 +59,7 @@ jobs:
             # conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
-            pip install . > /logs/install.txt 2>&1
+            pip install .[test] > /logs/install.txt 2>&1
             esmvaltool install R
             esmvaltool install Julia
             # Remove source to test installed software
