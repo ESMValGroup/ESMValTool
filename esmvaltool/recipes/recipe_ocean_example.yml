@@ -149,11 +149,11 @@ preprocessors:
     regrid:
       target_grid: 1x1
       scheme: linear
-    climate_statistics:
-      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
+    climate_statistics:
+      operator: mean
 
 
   prep_map_3: # For specific levels of 3D fields with regrid
@@ -161,14 +161,14 @@ preprocessors:
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
-    climate_statistics:
-      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
+    climate_statistics:
+      operator: mean
 
   prep_map_4: # For a specific region with regrid
     custom_order: true
@@ -177,22 +177,20 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    climate_statistics:
-      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
+    climate_statistics:
+      operator: mean
 
   prep_map_5: # For a specific region at depth levels,
     custom_order: true
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
-    climate_statistics:
-      operator: mean
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -204,6 +202,8 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
+    climate_statistics:
+      operator: mean
 
   # --------------------------------------------------
   # Transects preprocessors
