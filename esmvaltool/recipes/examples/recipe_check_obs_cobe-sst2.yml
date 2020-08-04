@@ -11,11 +11,11 @@ documentation:
 
 diagnostics:
 
-  NOAACobe:
-    description: NOAACobe check
+  COBESST2:
+    description: COBE-SST2 check
     variables:
       tos:
     additional_datasets:
-      - {dataset: NOAACobe, project: OBS6, mip: Omon, tier: 3,
+      - {dataset: COBESST2, project: OBS6, mip: Omon, tier: 3,
          type: reanaly, version: December2012, start_year: 1850, end_year: 2019}
     scripts: null
