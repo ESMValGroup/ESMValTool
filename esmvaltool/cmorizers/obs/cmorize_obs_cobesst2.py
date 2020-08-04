@@ -1,7 +1,7 @@
-"""ESMValTool CMORizer for NOAA Cobe data.
+"""ESMValTool CMORizer for COBE SST2 data.
 
 Tier
-    Tier 3: restricted dataset.
+    Tier 2: open dataset.
 
 Source
     https://climate.mri-jma.go.jp/pub/ocean/cobe-sst2/
@@ -10,7 +10,7 @@ Last access
     20200520
 
 Download and processing instructions
-    TODO
+    ftp://ftp.cdc.noaa.gov/Datasets/COBE2/sst.mon.mean.nc
 
 """
 
