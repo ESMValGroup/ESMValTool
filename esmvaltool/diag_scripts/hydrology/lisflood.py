@@ -111,7 +111,7 @@ def save(xrds, var_name, dataset, cfg):
         str(end_year),
     ])
     output_file = get_diagnostic_filename(basename, cfg)
-    xrds.to_netcdf(output_file, fill_value=1.e20)
+    xrds.to_netcdf(output_file, encoding={var_name:{'_FillValue':1.e20}})
     return output_file
 
 
