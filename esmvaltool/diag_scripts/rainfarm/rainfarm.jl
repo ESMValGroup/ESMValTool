@@ -46,7 +46,7 @@ function provenance_record(infile)
 end
 
 let
-diag_scripts_dir = ENV["diag_scripts"]
+diag_scripts_dir = dirname(@__DIR__)
 include(joinpath(diag_scripts_dir, "shared/external.jl"))
 
 settings = YAML.load_file(ARGS[1])
@@ -76,8 +76,8 @@ kmin = get(settings, "kmin", 1)
 nens = get(settings, "nens", 1)
 weights_climo = get(settings, "weights_climo", "")
 conserv_glob = get(settings, "conserv_glob", false)
-conserv_smooth = get(settings, "conserv_smooth", true) 
-auxiliary_data_dir = get(settings, "auxiliary_data_dir", "") 
+conserv_smooth = get(settings, "conserv_smooth", true)
+auxiliary_data_dir = get(settings, "auxiliary_data_dir", "")
 
 if weights_climo isa Bool # Compatibility with old standard
     weights_climo = ""

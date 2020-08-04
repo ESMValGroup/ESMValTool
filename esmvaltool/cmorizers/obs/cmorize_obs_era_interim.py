@@ -177,6 +177,27 @@ def _fix_monthly_time_coord(cube):
     coord.bounds = np.column_stack([start, end])
 
 
+def _fix_monthly_time_coord_eiland(cube):
+    """Set the monthly time coordinates to the middle of the month."""
+    coord = cube.coord(axis='T')
+    start = []
+    end = []
+    for cell in coord.cells():
+        # set start to first day 00 UTC
+        start.append(cell.point.replace(day=1, hour=0))
+        # now deal with the end
+        month = cell.point.month + 1
+        year = cell.point.year
+        if month == 13:
+            month = 1
+            year = year + 1
+        end.append(cell.point.replace(month=month, year=year, day=1, hour=0))
+    end = coord.units.date2num(end)
+    start = coord.units.date2num(start)
+    coord.points = 0.5 * (start + end)
+    coord.bounds = np.column_stack([start, end])
+
+
 def _compute_monthly(cube):
     """Convert various frequencies to daily frequency.
 
@@ -340,6 +361,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     elif attributes['dataset_id'] == 'ERA-Interim-Land':
         if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
+            _fix_monthly_time_coord_eiland(cube)
         if 'day' in var['mip']:
             cube = _compute_daily(cube)
     else:

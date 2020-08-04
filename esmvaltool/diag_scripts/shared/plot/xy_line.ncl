@@ -2719,7 +2719,7 @@ begin
   res_lines@gsLineColor = interval_colors(n_val-1, :)
   plot@$unique_string("dum")$ = gsn_add_polyline(wks_out, plot, xx, yy, \
                                                  res_lines)
-  plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, "CMIP5", \
+  plot@$unique_string("dum")$ = gsn_add_text(wks_out, plot, data@project, \
                                              (xx(1) + 0.3 * (xx(1) - xx(0))), \
                                              yy(0), res_text)
 

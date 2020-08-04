@@ -1,0 +1,159 @@
+# ESMValTool
+# recipe_martin18grl.yml
+---
+documentation:
+  description: |
+    Calculate the SPI and counting drought events following Martin (2018).
+  authors:
+    - weigel_katja
+    - adeniyi_kemisola
+
+  references:
+    - martin18grl
+
+  projects:
+    - eval4cmip
+
+preprocessors:
+  preprocessor1:
+    regrid:
+      target_grid: 2.0x2.0
+      scheme: linear
+  preprocessor2:
+    regrid:
+      target_grid: 2.0x2.0
+      scheme: linear
+
+diagnostics:
+  diagnostic1:
+    variables:
+      pr:
+        reference_dataset: MIROC-ESM
+        preprocessor: preprocessor1
+        field: T2Ms
+        start_year: 1901
+        end_year: 2000
+    additional_datasets:
+      # - {dataset: ERA-Interim, project: OBS6, mip: Amon, type: reanaly,
+      #   version: 1, start_year: 1979, end_year: 2005, tier: 3}
+      # - {dataset: MIROC-ESM, project: CMIP5, mip: Amon, exp: historical,
+      #    ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+      # - {dataset: GFDL-CM3, project: CMIP5, mip: Amon,
+      #    exp: historical, ensemble: r1i1p1,
+      #    start_year: 1979, end_year: 2005}
+      - {dataset: CRU, mip: Amon, project: OBS, type: reanaly,
+         version: TS4.02, tier: 2}
+      - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: CNRM-CM5, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: HadGEM2-CC, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+      - {dataset: NorESM1-M, project: CMIP5, mip: Amon, exp: historical,
+         ensemble: r1i1p1}
+
+    scripts:
+      script1:
+        script: droughtindex/diag_save_spi.R
+        smooth_month: 6
+        # distribution: "Gamma" usually for SPI.
+        # distribution: "log-Logistic" usually for SPEI-
+        # Also available distribution: "PearsonIII"
+        distribution: "Gamma"
+
+  spi_collect:
+    description: Wrapper to collect and plot previously calculated SPEI index
+    scripts:
+      spi_collect:
+        script: droughtindex/collect_drought_obs_multi.py
+        indexname: "SPI"
+        # Threshold under which an event is defined as drought.
+        # Usually -2.0 for SPI and SPEI.
+        threshold: -2.0
+        ancestors: ['diagnostic1/script1']
+
+
+  diagnostic2:
+    variables:
+      pr:
+        reference_dataset: MIROC-ESM
+        preprocessor: preprocessor2
+        field: T2Ms
+        mip: Amon
+        project: CMIP5
+        exp: [historical, rcp85]
+        start_year: 1950
+        end_year: 2100
+    additional_datasets:
+      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: CNRM-CM5, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, exp: [esmHistorical, esmrcp85], ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
+      # - {dataset: MIROC-ESM, project: CMIP5, mip: Amon,
+      #    exp: [historical, rcp85], ensemble: r1i1p1,
+      #    start_year: 1950, end_year: 2100}
+      # - {dataset: GFDL-CM3, project: CMIP5, mip: Amon,
+      #    exp: [historical, rcp85], ensemble: r1i1p1,
+      #    start_year: 1950, end_year: 2100}
+      # - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Amon,
+      #    exp: [historical, rcp85], ensemble: r1i1p1,
+      #    start_year: 1950, end_year: 2100}
+      # - {dataset: MRI-ESM1, project: CMIP5, mip: Amon,
+      #    exp: [esmHistorical, esmrcp85], ensemble: r1i1p1,
+      #    start_year: 1950, end_year: 2100}
+    scripts:
+      script2:
+        script: droughtindex/diag_save_spi.R
+        smooth_month: 6
+        # distribution: "Gamma" usually for SPI.
+        # distribution: "log-Logistic" usually for SPEI.
+        # Also available distribution: "PearsonIII".
+        distribution: "Gamma"
+
+  spi_collect2:
+    description: Wrapper to collect and plot previously calculated SPI index
+    scripts:
+      spi_collect2:
+        script: droughtindex/collect_drought_model.py
+        start_year: 1950
+        end_year: 2100
+        # comparison_period should be < (end_year - start_year)/2
+        comparison_period: 50
+        indexname: "SPI"
+        # Threshold under which an event is defined as drought.
+        # Usually -2.0 for SPI and SPEI.
+        threshold: -2.0
+        ancestors: ['diagnostic2/script2']

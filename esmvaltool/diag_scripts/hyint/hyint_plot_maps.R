@@ -111,7 +111,7 @@ hyint_plot_maps <- # nolint
           return(0)
         }
         # exclude normalization years from multiyear mean
-        retyears <- 1:length(years_ref)
+        retyears <- seq_along(years_ref)
         skipyears <- which(as.logical(match(
           years_ref,
           norm_years[1]:norm_years[2]
@@ -219,7 +219,7 @@ hyint_plot_maps <- # nolint
         # if requested calculate multiyear average and store it at time=1
         if (rmultiyear_mean) {
           years <- year1:year2
-          retyears <- 1:length(years)
+          retyears <- seq_along(years)
           skipyears <- which(as.logical(match(
             years,
             norm_years[1]:norm_years[2]
@@ -708,11 +708,12 @@ hyint_plot_maps <- # nolint
                   " according to ",
                   models_name[model_idx]
                 )
+              anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
               prov_fig_now <- list(
                 figname = figname,
                 caption = caption,
                 model_idx = list(model_idx),
-                ancestors = list(infile)
+                ancestors = anc_list
               )
               prov_info[[figname]] <- prov_fig_now
             }
@@ -729,11 +730,13 @@ hyint_plot_maps <- # nolint
                   models_name[model_idx],
                   " in comparison to reference dataset"
                 )
+              anc_list <- flatten_lists(c(prov_info[[infile]]$ancestors,
+                  prov_info[[ref_filename]]$ancestors))
               prov_fig_now <- list(
                 figname = figname,
                 caption = caption,
                 model_idx = list(model_idx, ref_idx),
-                ancestors = list(infile, ref_filename)
+                ancestors = anc_list
               )
               prov_info[[figname]] <- prov_fig_now
             }
@@ -746,11 +749,14 @@ hyint_plot_maps <- # nolint
               " over region ",
               region_codes[iregion]
             )
+
+            anc_list <- flatten_lists(c(prov_info[[infile]]$ancesstors,
+                prov_info[[ref_filename]]$ancestors))
             prov_fig_now <- list(
               figname = figname,
               caption = caption,
               model_idx = list(model_idx, ref_idx),
-              ancestors = list(infile, ref_filename)
+              ancestors = anc_list
             )
             prov_info[[figname]] <- prov_fig_now
           }
@@ -760,11 +766,12 @@ hyint_plot_maps <- # nolint
           # Store data for provenance
           caption <-
             paste0("Maps for multiple indices over selected years")
+          anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
           prov_fig_now <- list(
             figname = figname,
             caption = caption,
             model_idx = list(model_idx),
-            ancestors = list(infile)
+            ancestors = anc_list
           )
           prov_info[[figname]] <- prov_fig_now
         }

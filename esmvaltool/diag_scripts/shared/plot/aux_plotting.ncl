@@ -22,7 +22,7 @@
 ;    function lat_names
 ;    procedure add_line
 ;    procedure add_scatt
-;    procedure add_legenda
+;    procedure add_legend
 ;    function calcRegCoeffs
 ;    function genZonalMeans
 ;    function calcMeanAnnCycleMonthly
@@ -73,13 +73,6 @@ begin
   funcname = "create_legend_lines"
   scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
   enter_msg(scriptname, funcname)
-
-  ; Flag if RGB or RGBA is used for colors
-  if (dimsizes(dimsizes(styles@colors)).ne.1) then
-    RGB = True
-  else
-    RGB = False
-  end if
 
   ; Open workstation
   wks_legend = gsn_open_wks("epsi", outfile)
@@ -139,13 +132,8 @@ begin
   ii = 0
   do while (ii.lt.dim_LAB)
     ; Set color
-    if (RGB) then
-      resL@gsLineColor = styles@colors(ii, :)
-      resL@gsMarkerColor = styles@colors(ii, :)
-    else
-      resL@gsLineColor = styles@colors(ii)
-      resL@gsMarkerColor = styles@colors(ii)
-    end if
+    resL@gsLineColor = styles@colors(ii)
+    resL@gsMarkerColor = styles@colors(ii)
     ; Set dash pattern
     if (isatt(styles, "dashes")) then
       resL@gsLineDashPattern    = styles@dashes(ii)
@@ -1141,14 +1129,14 @@ begin
 end
 
 ; #############################################################################
-undef("add_legenda")
-procedure add_legenda(wks,
-                      model:string,
-                      colors:string,
-                      dashs:numeric,
-                      scatters:string,
-                      ticknesses:numeric,
-                      place:string)
+undef("add_legend")
+procedure add_legend(wks,
+                     model:string,
+                     colors:string,
+                     dashs:numeric,
+                     scatters:string,
+                     ticknesses:numeric,
+                     place:string)
 ;
 ; Arguments
 ;
