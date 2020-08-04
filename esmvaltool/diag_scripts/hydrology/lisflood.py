@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 
 import iris
+import numpy as np
+import xarray as xr
 from iris.analysis.maths import exp as iris_exp
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -95,11 +97,11 @@ def compute_windspeed(uas, vas):
     return sfc_wind
 
 
-def save(cube, var_name, dataset, cfg):
+def save(xrds, var_name, dataset, cfg):
     """Save processed cube to a lisflood-compatible file."""
-    time_coord = cube.coord('time')
-    start_year = time_coord.cell(0).point.year
-    end_year = time_coord.cell(-1).point.year
+    time_coord = xrds.coords['time']
+    start_year = time_coord[0].year.data
+    end_year = time_coord[-1].year.data
     basename = '_'.join([
         'lisflood',
         dataset,
@@ -109,7 +111,7 @@ def save(cube, var_name, dataset, cfg):
         str(end_year),
     ])
     output_file = get_diagnostic_filename(basename, cfg)
-    iris.save(cube, output_file, fill_value=1.e20)
+    xrds.to_netcdf(output_file, fill_value=1.e20)
     return output_file
 
 
@@ -145,26 +147,14 @@ def main(cfg):
             # latitudes decreasing
             cube = cube[:, ::-1, ...]
 
-            keep_coords = ['lon', 'lat', 'time']
+            # convert to xarray dataset (xrds)
+            # remove coordinate bounds drop extra coordinates and reorder
+            xrds = xr.DataArray.from_iris(cube).to_dataset(promote_attrs=True)
+            ordered_coords = ['lon', 'lat', 'time']
+            extra_coords = np.setdiff1d(dataset.coords, ordered_coords)
+            xrds = xrds.drop(extra_coords)[ordered_coords + [var_name]]
 
-            # remove coordinate bounds drop extra coordinates and
-            # transpose remaining cube to [lon,lat,time]
-            for coord in cube.coords():
-                if coord.var_name in keep_coords:
-                    new_coord = iris.coords.DimCoord(
-                        points=coord.points,
-                        standard_name=coord.standard_name,
-                        units=coord.units,
-                        var_name=coord.var_name,
-                        long_name=coord.long_name,
-                    )
-                    cube.replace_coord(new_coord)
-                else:
-                    cube.remove_coord(coord)
-
-            cube.transpose([1, 2, 0])
-
-            output_file = save(cube, var_name, dataset, cfg)
+            output_file = save(xrds, var_name, dataset, cfg)
 
             # Store provenance
             provenance_record = get_provenance_record(
