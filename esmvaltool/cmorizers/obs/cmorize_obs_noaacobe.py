@@ -34,6 +34,7 @@ def _fix_time_coord(cube):
     new_time = [d.replace(day=15) for d in old_time]
     time_coord.points = new_unit.date2num(new_time)
 
+
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
@@ -42,7 +43,7 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     utils.fix_var_metadata(cube, cmor_info)
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
-    #utils.flip_dim_coord(cube, 'latitude')
+    # utils.flip_dim_coord(cube, 'latitude')
     utils.save_variable(cube,
                         var,
                         out_dir,
