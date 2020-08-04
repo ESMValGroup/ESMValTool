@@ -100,8 +100,8 @@ def compute_windspeed(uas, vas):
 def save(xrds, var_name, dataset, cfg):
     """Save processed cube to a lisflood-compatible file."""
     time_coord = xrds.coords['time']
-    start_year = time_coord[0].year.data
-    end_year = time_coord[-1].year.data
+    start_year = time_coord[0].dt.year.data
+    end_year = time_coord[-1].dt.year.data
     basename = '_'.join([
         'lisflood',
         dataset,
