@@ -1,0 +1,20 @@
+---
+# Filename
+filename: 'cobe.sstv2.sst.mon.mean.185001-201912.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NOAACobe
+  version: 'December2012'
+  tier: 3
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://climate.mri-jma.go.jp/pub/ocean/cobe-sst2/'
+  reference: 'cobe'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tos:
+    mip: Omon
+    raw: sst

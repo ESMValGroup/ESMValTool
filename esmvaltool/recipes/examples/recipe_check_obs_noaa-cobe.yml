@@ -1,0 +1,21 @@
+# ESMValTool
+# recipe_check_obs.yml
+---
+documentation:
+  description: |
+    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    just to check correct reading of the CMORized data.
+
+  authors:
+    - righi_mattia
+
+diagnostics:
+
+  NOAACobe:
+    description: NOAACobe check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAACobe, project: OBS6, mip: Omon, tier: 3,
+         type: reanaly, version: December2012, start_year: 1850, end_year: 2019}
+    scripts: null
