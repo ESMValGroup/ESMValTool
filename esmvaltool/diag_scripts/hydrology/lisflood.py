@@ -151,7 +151,7 @@ def main(cfg):
             # remove coordinate bounds drop extra coordinates and reorder
             xrds = xr.DataArray.from_iris(cube).to_dataset(promote_attrs=True)
             ordered_coords = ['lon', 'lat', 'time']
-            extra_coords = np.setdiff1d(dataset.coords, ordered_coords)
+            extra_coords = np.setdiff1d(xrds.coords, ordered_coords)
             xrds = xrds.drop(extra_coords)[ordered_coords + [var_name]]
 
             output_file = save(xrds, var_name, dataset, cfg)
