@@ -8,11 +8,17 @@ import iris
 from iris.pandas import as_data_frame 
 import pandas as pd
 import numpy as np
-from osgeo import gdal
-from osgeo import gdal_array
-from osgeo import osr
+# from osgeo import gdal
+# from osgeo import gdal_array
+# from osgeo import osr
 import matplotlib.pylab as plt
-from osgeo import gdal, osr
+# from osgeo import gdal, osr
+import os
+# import shlex
+# import shutil
+import rasterio
+from rasterio.transform import Affine
+
 
 import subprocess
 from esmvalcore import preprocessor as preproc
@@ -188,33 +194,6 @@ def make_output_name(cube):
     output_name['pet']['day'] = daily_pet
     return output_name
 
-def array2raster(newTifffn,newASCIIfn, originX, originY,pixelWidth,pixelHeight,array, nodata, EPSG):
-    """This function take a regular array to create a raster with it"""
-    print("I am dealing with nodata values")
-    array[np.isnan(array)] = nodata # Dealing with Nodata values
-    print("I am writing the raster")
-    rows,cols = np.shape(array)
- 
-    driver = gdal.GetDriverByName('GTiff')
-    outRaster = driver.Create(newTifffn, cols, rows, 1, gdal.GDT_Float64)
-    outRaster.SetGeoTransform((originX, pixelWidth, 0, originY, 0, pixelHeight))
-    outRasterSRS = osr.SpatialReference()
-    outRasterSRS.ImportFromEPSG(EPSG)
-    outRaster.SetProjection(outRasterSRS.ExportToWkt())
-    outband = outRaster.GetRasterBand(1)
-    outband.SetNoDataValue(nodata)
-    outband.WriteArray(array)
-    driver = gdal.GetDriverByName("AAIGrid")  
-    dst_ds = driver.CreateCopy(newASCIIfn, outband, 0 )
-
-    #outband.SetNoDataValue(nodata)
-    # srs = osr.SpatialReference()
-    # srs.ImportFromEPSG(epsg)
-    # dest_wkt = srs.ExportToWkt()
-
-
-
-    outband.FlushCache() 
 
 def main(cfg):
     """Process data for use as input to the GlobWat hydrological model.
@@ -259,71 +238,11 @@ def main(cfg):
             pr.convert_units('mm day-1')
             pet.convert_units('mm day-1') 
 
-        #TODO: I get errot while trying to adjust coordinates :
-        #  ValueError: The 'longitude' DimCoord points array must be strictly monotonic.
-        # I used intersection instead and it works 
-        # Adjust longitude coordinate to GlobWat convention
-        # for cube in [pet, pr]:
-        #     cube.coord('longitude').points = (cube.coord('longitude').points +
-        #                                       180) % 360 - 180
-
-        # Adjust longitude coordinate to GlobWat convention
-
-        # pr.intersection(longitude=[-180,180],latitude=[-90,90])
-        # pet.intersection(longitude=[-180,180],latitude=[-90,90])
-        # import iris
-        # import numpy as np 
-        # from osgeo import gdal, osr
-        # cube = iris.load_cube('pathtothefile/cube.nc')
-        # array = cube.data
-        # array[np.isnan(array)] = -9999
-        # lon = (cube.coord('longitude').points + 180) % 360 - 180
-        # lat = cube.coord('latitude').points 
-        # xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
-        # nrows,ncols = np.shape(array)
-        # xres = (xmax-xmin)/float(ncols) 
-        # yres = (ymax-ymin)/float(nrows)
-        # driver = gdal.GetDriverByName("AAIGrid")  
-        # filename = "test7.asc" 
-        # output_raster = gdal.GetDriverByName('GTiff').Create('cube.tif',ncols, nrows, 1 ,gdal.GDT_Float32) 
-        # dst_ds = driver.CreateCopy(filename, output_raster, 0 )
-        # output_raster.GetRasterBand(1).WriteArray(array) 
-
-        # array = numpy.rot90(cube.data,2)
-        # lon = (cube.coord('longitude').points + 180) % 360 - 180
-        # lat = cube.coord('latitude').points 
-        # nrows,ncols = np.shape(array)
-        # xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
-        # xres = (xmax-xmin)/float(ncols) 
-        # yres = (ymax-ymin)/float(nrows)
-        # driver = gdal.GetDriverByName("AAIGrid")  
-        # filename = "test7.asc" 
-        # noDataValue = -9999
-        # geotransform=(xmin,xres,0,ymax,0, -yres)    
-        # epsg = 4326
-        # srs = osr.SpatialReference()
-        # srs.ImportFromEPSG(epsg)
-        # dest_wkt = srs.ExportToWkt()
-
-        # output_raster = gdal.GetDriverByName('GTiff').Create('cube.tif',ncols, nrows, 1 ,gdal.GDT_Float32)
-
-        # output_raster.GetRasterBand(1).WriteArray(array)
-        # output_raster.GetRasterBand(1).SetNoDataValue( noDataValue )
-        # output_raster.SetGeoTransform(geotransform)
-        # output_raster.SetProjection(dest_wkt)
-        # dst_ds = driver.CreateCopy(filename, output_raster, 0 )
-        # output_raster.GetRasterBand(1).WriteArray(array) 
-        # output_raster.FlushCache()
-            
-        # output_file = get_diagnostic_filename(get_output_stem_monthly(cube),cfg, 'asc')
-        #TODO: the input data has 6 rows as a header which then be skiped by the model
-        # so here I should add 6 rows,otherwise the model skip the 6 rows of data  
         coord_time = cube.coord('time')                                         
         output_name = make_output_name(cube)
         start_year = coord_time.cell(0).point.year 
         end_year = coord_time.cell(-1).point.year 
         for nyear in range (start_year , end_year+1):
-            # path = os.path.joi = all_vars['pr']  n('GlobWat_Inputs', str(dataset),str(nyear))
             data_dir = Path(f"{dataset}/{nyear}")
             data_dir.mkdir(parents=True, exist_ok=True)
             for key in ['pr', 'pet']:
@@ -339,60 +258,23 @@ def main(cfg):
                                 nrows,ncols = np.shape(array)
                                 xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
                                 xres = (xmax-xmin)/float(ncols) 
-                                yres = -(ymax-ymin)/float(nrows)
-                                nodata = -9999
-                                epsg = 4326
-                                originx = xmin
-                                originy = ymax
+                                yres = (ymax-ymin)/float(nrows)
+                                transform = Affine.translation(xmin + xres / 2, ymin - xres / 2) * Affine.scale(xres, xres)
                                 file_name = output_name_amon[i] 
-                                newTifffn = f"{data_dir}/{file_name}.tif"
-                                newASCIIfn = f"{data_dir}/{file_name}.asc"
-                                # array2raster(newTifffn,newASCIIfn,originx, originy,xres,yres,array, nodata, epsg)
-                                driver = gdal.GetDriverByName("AAIGrid")  
-                                file_name = output_name_amon[i] 
-                                noDataValue = -9999
-                                geotransform=(xmin,xres,0,ymax,0, yres)    
-                                epsg = 4326
-                                srs = osr.SpatialReference()
-                                srs.ImportFromEPSG(epsg)
-                                dest_wkt = srs.ExportToWkt()
-                                output_raster = gdal.GetDriverByName('GTiff').Create(f"{file_name}.tif",ncols, nrows, 1 ,gdal.GDT_Float32)
-                                output_raster.GetRasterBand(1).WriteArray(array)
-                                output_raster.GetRasterBand(1).SetNoDataValue( noDataValue )
-                                output_raster.SetGeoTransform(geotransform)
-                                output_raster.SetProjection(dest_wkt)
-                                dst_ds = driver.CreateCopy(f"{file_name}.asc", output_raster, 0 )
-                                dst_ds = None
-                                output_raster = None
-
-                                # frame = iris.pandas.as_data_frame(sub_cube, copy=True)
-                                # #TODO: take this out of the loop 
-                                # #Making ascii files headers 
-                                # header = [['ncols', cube.shape[2]],
-                                #           ['nrows', cube.shape[1]],
-                                #           ['xllcorner', -180], 
-                                #           ['yllcorner', -90], 
-                                #           ['cellsize', 360 / cube.shape[2]], 
-                                #           ['NODATA_value', -9999]
-                                #          ] 
-                                # header_frame = pd.DataFrame(data=header)
-                                # file_name = output_name_amon[i]
-                                # header_frame.to_csv(data_dir / f"{file_name}.asc",
-                                #                     sep=' ', 
-                                #                     index=False, 
-                                #                     header=False
-                                #                     )
-                                # #saving data and append headers to outputs
-                                # frame.to_csv(data_dir / f"{file_name}.asc",
-                                #             sep=' ',
-                                #             na_rep='-9999',
-                                #             float_format='%.1f',
-                                #             index=False,
-                                #             mode ='a'
-                                #             ) 
-                                iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
-                                
-
+                                new_dataset = rasterio.open(
+                                                            f"{data_dir}/{file_name}.asc", 
+                                                            'w', 
+                                                            driver='GTiff', 
+                                                            height=array.shape[1], 
+                                                            width=array.shape[0], 
+                                                            count=1, 
+                                                            dtype='float32', 
+                                                            crs='+proj=latlong', 
+                                                            transform=transform, 
+                                                            nodata= -9999,
+                                                            )    
+                                new_dataset.write(array, 1)
+                                new_dataset.close()
                 #    TODO: the code faces memory error while running for daily data, need to fix 
                     # elif mip == 'day':
                     #     output_name_day = output_name[key]['day']
