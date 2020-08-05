@@ -29,7 +29,7 @@ from datetime import datetime
 
 import iris
 import iris.coord_categorisation
-import netCDF4 as nc
+import netCDF4
 import numpy as np
 import pandas as pd
 from cf_units import Unit
@@ -151,7 +151,7 @@ def _get_date(filename, variable, cfg):
 
 def _get_file_attributes(filename):
     """Get global file attributes."""
-    dataset = nc.Dataset(filename, mode='r')
+    dataset = netCDF4.Dataset(filename, mode='r')
     add_info = dataset.groups['HDFEOS'].groups['ADDITIONAL']
     attrs = add_info.groups['FILE_ATTRIBUTES']
     return {key: attrs.getncattr(key) for key in attrs.ncattrs()}
@@ -302,7 +302,7 @@ def _get_mask(nc_rhi, nc_t, nc_loc):
 
 def _open_nc_file(filename, variable):
     """Open :class:`netCDF4.Dataset`."""
-    dataset = nc.Dataset(filename, mode='r')
+    dataset = netCDF4.Dataset(filename, mode='r')
     swaths = dataset.groups['HDFEOS'].groups['SWATHS']
     var = swaths.groups[variable]
     return (var.groups['Data Fields'], var.groups['Geolocation Fields'])

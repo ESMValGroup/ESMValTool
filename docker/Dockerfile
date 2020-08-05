@@ -1,19 +1,16 @@
+# To build this container, go to ESMValTool root folder and execute:
+# docker build -t esmvaltool:latest . -f docker/Dockerfile
 FROM continuumio/miniconda3
 
-# update the conda packages
-RUN conda update -y conda pip
+RUN apt install julia -y && apt-get clean
+COPY ./environment.yml /src/ESMValTool/environment.yml
+WORKDIR /src/ESMValTool
+RUN conda update -y conda pip && conda env update --name base --file environment.yml && conda clean --all -y
 
-# install development tools
-RUN apt-get update -y && apt-get install -y \
-    build-essential \
-    curl \
-    unzip
+COPY ./esmvaltool/install/R /src/ESMValTool/esmvaltool/install/R
+RUN Rscript ./esmvaltool/install/R/setup.R
 
-# install environment packages
-RUN conda install -c conda-forge -c esmvalgroup -c birdhouse esmvaltool
-
-# run tests
-RUN esmvaltool -h
+COPY . /src/ESMValTool
+RUN pip install -e . && pip cache purge && esmvaltool install Julia
 
 ENTRYPOINT ["esmvaltool"]
-CMD ["-h"]

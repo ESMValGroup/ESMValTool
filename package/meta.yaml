@@ -5,7 +5,7 @@
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.0.0b4" %}
+{% set version = "2.0.0" %}
 
 package:
   name: esmvaltool
@@ -36,7 +36,7 @@ test:
     - tests
     - setup.cfg
   requires:
-    - pytest>=3.9
+    - pytest>=3.9,!=6.0.0rc1,!=6.0.0
     - pytest-cov
     - pytest-env
     - pytest-flake8
@@ -48,7 +48,7 @@ test:
     - pytest --ignore=run_test.py
     - cmorize_obs --help
     - nclcodestyle --help
-    - showcolortables --help
+    - esmvaltool colortables --help
     - test_recipe --help
 
 outputs:
@@ -74,16 +74,18 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.0.0b9,<2.1  # in esmvalgroup channel
+        - esmvalcore>=2.0.0,<2.1  # in esmvalgroup channel
         - fiona
         - gdal
         - iris>=2.2.1
         - jinja2
+        - joblib
         - matplotlib>=3
         - nc-time-axis
         - netCDF4
         - numpy
         - pandas
+        - pynio
         - pyproj>=2.1
         - python>=3.6
         - python-cdo

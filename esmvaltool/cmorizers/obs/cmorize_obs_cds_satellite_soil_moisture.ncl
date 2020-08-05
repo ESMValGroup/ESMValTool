@@ -13,18 +13,12 @@
 ;    20190314
 ;
 ; Download and processing instructions
-;    Download the data from source as follows:
-;      Variable: Volumetric surface soil moisture
-;      Time aggregation: Day average
-;      All Years, Month and Days
-;      Format: 'tar.gz' (recommended)
-;      Type of sensor: Combined passive and active
-;      Type of record: CDR
-;      Version: v201812.0.0
-;    Decompress the files and put them in a single directory (no subdirectories
-;    with years)
+;    Use the download script to retrieve the data.
 ;
 ; Modification history
+;    20200602-crezee_bas: include ICDR
+;    20200525-righi_mattia: fix time checker.
+;    20190522-crezee_bas: time period extended.
 ;    20190314-crezee_bas: written based on cmorize_obs_esacci_soilmoisture.ncl.
 ;
 ; #############################################################################
@@ -43,20 +37,23 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1979
-  YEAR2 = 2018
+  YEAR1 = 1978
+  YEAR2 = 2020
 
-  ; Selected variable (standard name)
-  VAR = (/"sm", "smStderr"/)
+  ; Selected variables (standard name)
+  VAR = (/"sm", "sm"/)
 
   ; Name in the raw data
-  NAME = (/"sm", "sm_uncertainty"/)
+  NAME = (/"sm", "sm"/)
 
   ; MIP
-  MIP = (/"day", "day"/)
+  MIP = (/"day", "Lmon"/)
 
   ; Frequency
-  FREQ = (/"day", "day"/)
+  FREQ = (/"day", "mon"/)
+
+  ; Name of frequency in filename
+  FREQNAME = (/"-DAILY-", "-MONTHLY-"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
@@ -65,7 +62,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "COMBINED-TCDR-v201812.0.0"
+  VERSION = "CUSTOM-TCDR-ICDR-20200602"
 
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
@@ -86,13 +83,19 @@ begin
 
       ; Set list of files
       files = systemfunc("ls " + input_dir_path + \
-                         "C3S-SOILMOISTURE-L3S-SSMV-" + \
-                         "COMBINED-DAILY-" + yy + "????000000-" + \
-                         "TCDR-v201812.0.0.nc")
-      f = addfiles(files, "r")
-      delete(files)
+                         "C3S-SOILMOISTURE-L3S-SSMV-COMBINED" + \
+                         FREQNAME(vv) + yy + \
+                         "????000000-?CDR-v201?12.0.0.nc")
+
+      ; Retrieve start and end date (YYYYMM)
+      start_date = systemfunc("basename " + files(0))
+      start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 7)
+      end_date = systemfunc("basename " + files(dimsizes(files) - 1))
+      end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 7)
 
       ; Read data
+      f = addfiles(files, "r")
+      delete(files)
       output = f[:]->$NAME(vv)$
       delete(f)
 
@@ -100,7 +103,7 @@ begin
       output!0 = "time"
       output!1 = "lat"
       output!2 = "lon"
-      format_coords(output, yy + "0101", yy + "1231", FREQ(vv))
+      format_coords(output, start_date, end_date, FREQ(vv))
 
       ; Set variable attributes
       tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
@@ -115,7 +118,7 @@ begin
       gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
       ; Output file
-      DATESTR = yy + "01-" + yy + "12"
+      DATESTR = start_date + "-" + end_date
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
                    MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
