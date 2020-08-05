@@ -120,11 +120,25 @@ Finally, activate the newly created environment
 
     conda activate esmvaltool
 
-and install ESMValTool as well as any remaining dependencies with the command:
+and install ESMValTool as well as any remaining Python dependencies with the command:
 
 .. code-block:: bash
 
     pip install esmvaltool
+
+If you would like to run Julia diagnostic scripts, you will also need to
+`install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
+
+.. code-block:: bash
+
+    esmvaltool install Julia
+
+If you would like to run R diagnostic scripts, you will also need to install the R
+dependencies:
+
+.. code-block:: bash
+
+    esmvaltool install R
 
 Docker installation
 ===================
@@ -351,7 +365,7 @@ the following commands in the directory containing the ESMValTool source code
     pip install -e '.[develop]'
 
 If you would like to run Julia diagnostic scripts, you will also need to
-`install Julia <https://julialang.org/downloads/>`_ and the Julia dependencies:
+`install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
 
 .. code-block:: bash
 
