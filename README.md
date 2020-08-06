@@ -24,12 +24,12 @@ ESMValTool can run with the following types of data as input:
 
 # Getting started
 
-Please see [getting started](https://esmvaltool.readthedocs.io/en/latest/quickstart/index.html) on readthedocs.
+Please see [getting started](https://docs.esmvaltool.org/en/latest/quickstart/index.html) on readthedocs.
 
 ## Getting help
 
-The easiest way to get help if you cannot find the answer in the documentation on [readthedocs](https://esmvaltool.readthedocs.io), is to open an [issue on GitHub](https://github.com/ESMValGroup/ESMValTool/issues).
+The easiest way to get help if you cannot find the answer in the documentation on [readthedocs](https://docs.esmvaltool.org), is to open an [issue on GitHub](https://github.com/ESMValGroup/ESMValTool/issues).
 
 ## Contributing
 
-If you would like to contribute a new diagnostic or feature, please have a look at our [contribution guidelines](https://esmvaltool.readthedocs.io/en/latest/community/introduction.html).
+If you would like to contribute a new diagnostic or feature, please have a look at our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html).

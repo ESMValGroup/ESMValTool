@@ -19,14 +19,6 @@ documentation:
     - cmug
 
 
-#datasets:
-#  - {dataset: CanAM4, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: MIROC5, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: MRI-CGCM3, project: CMIP5, ensemble: r1i1p1}
-
-
 preprocessors:
   preproc25x25:
     regrid:
