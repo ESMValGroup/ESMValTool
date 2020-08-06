@@ -20,40 +20,33 @@ jobs:
     # Run Python 3 tests
     working_directory: /test
     docker:
-      - image: continuumio/miniconda3
+      - image: esmvalgroup/esmvaltool:development
     steps:
       - checkout
       - run:
-          command: |
-            # Create a file to checksum as cache key
-            date --rfc-3339 date > cache_key.txt
-            cat environment.yml >> cache_key.txt
-      - restore_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - run:
           # Update/Create Conda environment and run tests
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
-            # conda update -y conda >> /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            conda activate esmvaltool
-            # Install r-lintr for r linter test
-            Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
-            # Run tests
-            python setup.py test --addopts '-m "not installation"'
+            julia esmvaltool/install/Julia/setup.jl
+            Rscript esmvaltool/install/R/setup.R
+            python setup.py test
           no_output_timeout: 20m
-      - save_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-          paths:
-            - "/opt/conda/envs/esmvaltool"
-            - ".eggs"
       - store_artifacts:
           path: /logs
       - store_artifacts:
           path: test-reports/
       - store_test_results:
           path: test-reports/
+      - run:
+          when: always
+          command: |
+            if [[ -v CODACY_PROJECT_TOKEN ]]
+            then
+              echo Uploading coverage report
+              pip install codacy-coverage
+              python-codacy-coverage -r test-reports/coverage.xml
+            else
+              echo Not uploading coverage report
+            fi
 
   test_installation:
     # Test Python 3 installation
@@ -77,15 +70,17 @@ jobs:
             # conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
-            pip install . > /logs/install.txt 2>&1
-            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
+            pip install .[test] > /logs/install.txt 2>&1
+            esmvaltool install R
+            esmvaltool install Julia
+            # Remove source to test installed software
+            rm -r esmvaltool
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            python setup.py test
+            pytest
             esmvaltool -h
             ncl -V
             # cdo test, check that it supports hdf5
@@ -105,17 +100,6 @@ jobs:
           path: test-reports/
       - store_test_results:
           path: test-reports/
-      - run:
-          when: always
-          command: |
-            if [[ -v CODACY_PROJECT_TOKEN ]]
-            then
-              echo Uploading coverage report
-              pip install codacy-coverage
-              python-codacy-coverage -r test-reports/coverage.xml
-            else
-              echo Not uploading coverage report
-            fi
 
   develop:
     # Test development installation
@@ -138,8 +122,8 @@ jobs:
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
-            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
+            esmvaltool install R
+            esmvaltool install Julia
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml

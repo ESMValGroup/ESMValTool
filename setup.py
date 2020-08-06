@@ -69,6 +69,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
+        'autodocsumm',
         'codespell',
         'isort',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
@@ -209,6 +210,7 @@ setup(
     extras_require={
         'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
                     {'pycodestyle'}),
+        'test': REQUIREMENTS['test'],
     },
     entry_points={
         'console_scripts': [
@@ -221,7 +223,8 @@ setup(
         ],
         'esmvaltool_commands': [
             'colortables = '
-            'esmvaltool.utils.color_tables.show_color_tables:ColorTables'
+            'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
+            'install = esmvaltool.install:Install',
         ]
     },
     cmdclass={

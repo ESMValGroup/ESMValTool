@@ -1,0 +1,11 @@
+
+**/__pycache__
+.*
+doc
+package
+tests
+ESMValTool.egg-info
+
+
+!.zenodo.json
+
