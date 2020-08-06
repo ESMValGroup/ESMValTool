@@ -95,24 +95,6 @@ def get_segment_season_means(cfg):
     return segments_season_means, provenance
 
 
-def _all_possible_combinations(n_ensemble_members, n_segments):
-    """Generate indexer.
-
-    Returns indices for all possible combinations of
-    segments and ensembles.
-    """
-    # Create a DataArray once...
-    indices = xr.DataArray(data=np.zeros(n_segments),
-                           dims=['segment'],
-                           coords={'segment': np.arange(n_segments)})
-
-    # ...and update its values for all possible combinations
-    for combination in product(range(n_ensemble_members), repeat=n_segments):
-        indices.values = list(combination)
-        name = ''.join([str(x) for x in combination])
-        yield name, indices
-
-
 def _find_single_top1000(segment_means, target):
     """Select n_combinations that are closest to the target.
 
@@ -121,23 +103,23 @@ def _find_single_top1000(segment_means, target):
     """
     n_segments = len(segment_means.segment)
     n_members = len(segment_means.ensemble_member)
-    total = n_members**n_segments
-    all_combinations = _all_possible_combinations(n_members, n_segments)
+    segment_indices = range(n_segments)
+    segment_means = segment_means.values  # much faster indexing
 
+    all_possible_combinations = product(range(n_members), repeat=n_segments)
+    total = n_members**n_segments
     results = []
-    for combination, idx in tqdm(all_combinations, total=total):
-        results.append([
-            combination,
-            abs(
-                segment_means.sel(ensemble_member=idx).mean('segment') -
-                target).values.tolist()
-        ])
+
+    for combination in tqdm(all_possible_combinations, total=total):
+        results.append(
+            list(combination) +
+            [abs(segment_means[segment_indices, combination].mean() - target)])
 
     # Create a pandas dataframe with the combinations and distance to target
-    dataframe = pd.DataFrame(results, columns=['combination', 'distance'])
+    dataframe = pd.DataFrame(results,
+                             columns=list(segment_indices) + ['distance'])
     top1000 = dataframe.sort_values('distance').head(1000)
-
-    return top1000.set_index('combination')
+    return top1000
 
 
 def get_all_top1000s(cfg, segment_season_means):
@@ -166,16 +148,19 @@ def get_all_top1000s(cfg, segment_season_means):
         else:
             segments = segment_season_means[name].pr.sel(season='DJF')
             top1000 = _find_single_top1000(segments, target)
-            top1000.to_csv(filename)
+            top1000.to_csv(filename, index=False)
             LOGGER.info("Intermediate results stored as %s.", filename)
-        top1000s[name] = pd.read_csv(filename, dtype={'combination': 'str'})
+        top1000s[name] = pd.read_csv(filename)
     return top1000s
 
 
-def _selected_combinations(combinations):
+def _index_with_xarray(combinations):
     """Generate indexer for all selected combinations of segmented dataset.
 
-    combinations: a list of combinations (dtype: str !)
+    combinations: numpy 2d array with shape (n_combinations, n_segments)
+
+    Note that numpy indexing is much faster than xarray labelled indexing,
+    but in this case it's nice to keep working with xarray labelled arrays.
     """
     n_segments = len(combinations[0])
 
@@ -186,15 +171,15 @@ def _selected_combinations(combinations):
 
     # ...and update its values for each selected combination
     for combination in combinations:
-        indices.values = [int(x) for x in combination]
+        indices.values = combination
         yield indices
 
 
-def _season_means(top1000, segment_means):
+def _season_means(combinations, segment_means):
     """Compute summer pr,and summer and winter tas for recombined climates."""
     interesting_variables = []
     columns = ['combination', 'pr_summer', 'tas_winter', 'tas_summer']
-    for combination in _selected_combinations(top1000):
+    for combination in _index_with_xarray(combinations):
         recombined_segments = segment_means.sel(ensemble_member=combination)
         season_means = recombined_segments.mean('segment')
 
@@ -244,7 +229,8 @@ def get_percentile_subsets(cfg, segment_season_means, top1000s):
             "Compute summer mean pr and summer and winter "
             "mean tas for 1000 selected combinations for %s", name)
         segment_means = segment_season_means[name]
-        top1000s[name] = _season_means(dataframe.combination, segment_means)
+        combinations = dataframe.drop('distance', axis=1).values
+        top1000s[name] = _season_means(combinations, segment_means)
 
     # For each scenario, get a subset for the control and future period.
     subsets = {}
