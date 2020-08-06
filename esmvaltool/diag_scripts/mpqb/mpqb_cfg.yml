@@ -11,6 +11,7 @@ datasetnames:
   ERA-Interim: ERA-Interim
   CDS-SATELLITE-SOIL-MOISTURE_COMBINED: ESA-CCI-COM
   CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: ESA-CCI-PAS
+  CDS-SATELLITE-SOIL-MOISTURE_ACTIVE: ESA-CCI-ACT
   cds-era5-land-monthly: ERA5-Land
   cds-era5-monthly: ERA5
   ERA5-Land: ERA5-Land
@@ -23,6 +24,8 @@ datasetnames:
   PERSIANN-CDR: PERSIANN-CDR
   GPCP-SG: GPCP-SG
   TRMM-L3: TRMM-L3
+
+
 
 datasetcolors:
   ERA-Interim-Land: '#1f77b4'
@@ -46,6 +49,7 @@ datasetcolors:
 # https://stackoverflow.com/questions/42086276/
 # Cycle continues like this:
 #  '#17becf'
+# Hint: use colorbrewer for setting colors.
 
 colors:
   sm:

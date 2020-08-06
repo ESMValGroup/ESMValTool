@@ -16,6 +16,8 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_perfmetrics_CMIP5.yml
+* recipe_perfmetrics_CMIP5_cds.yml
+* recipe_perfmetrics_land_CMIP5.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
 
@@ -93,41 +95,64 @@ User settings in recipe
 
 Variables
 ---------
+#.  recipe_perfmetrics_CMIP5.yml
 
-* clt (atmos, monthly mean, longitude latitude time)
-* hus (atmos, monthly mean, longitude latitude lev time)
-* od550aer, od870aer, od550abs, od550lt1aer (aero, monthly mean, longitude latitude time)
-* pr (atmos, monthly mean, longitude latitude time)
-* rlut, rlutcs, rsut, rsutcs (atmos, monthly mean, longitude latitude time)
-* sm (land, monthly mean, longitude latitude time)
-* ta (atmos, monthly mean, longitude latitude lev time)
-* tas (atmos, monthly mean, longitude latitude time)
-* toz (atmos, monthly mean, longitude latitude time)
-* ts (atmos, monthly mean, longitude latitude time)
-* ua (atmos, monthly mean, longitude latitude lev time)
-* va (atmos, monthly mean, longitude latitude lev time)
-* zg (atmos, monthly mean, longitude latitude lev time)
+    * clt (atmos, monthly mean, longitude latitude time)
+    * hus (atmos, monthly mean, longitude latitude lev time)
+    * od550aer, od870aer, od550abs, od550lt1aer (aero, monthly mean, longitude latitude time)
+    * pr (atmos, monthly mean, longitude latitude time)
+    * rlut, rlutcs, rsut, rsutcs (atmos, monthly mean, longitude latitude time)
+    * sm (land, monthly mean, longitude latitude time)
+    * ta (atmos, monthly mean, longitude latitude lev time)
+    * tas (atmos, monthly mean, longitude latitude time)
+    * toz (atmos, monthly mean, longitude latitude time)
+    * ts (atmos, monthly mean, longitude latitude time)
+    * ua (atmos, monthly mean, longitude latitude lev time)
+    * va (atmos, monthly mean, longitude latitude lev time)
+    * zg (atmos, monthly mean, longitude latitude lev time)
+
+#. recipe_perfmetrics_land_CMIP5.yml
+
+    * sm (land, monthly mean, longitude latitude time)
+    * nbp (land, monthly mean, longitude latitude time)
+    * gpp (land, monthly mean, longitude latitude time)
+    * lai (land, monthly mean, longitude latitude time)
+    * fgco2 (ocean, monthly mean, longitude latitude time)
+    * et (land, monthly mean, longitude latitude time)
+    * rlus, rlds, rsus, rdsd (atmos, monthly mean, longitude latitude time)
 
 Observations and reformat scripts
 ---------------------------------
 
 The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
 <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
+#.  recipe_perfmetrics_CMIP5.yml
 
-* AIRS (hus - obs4mips)
-* CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-AEROSOL.ncl)
-* ESACCI-CLOUD (clt - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-CLOUD.ncl)
-* ESACCI-OZONE (toz - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-OZONE.ncl)
-* ESACCI-SOILMOISTURE (sm - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
-* ESACCI-SST (ts - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-SST.ncl)
-* GPCP-SG (pr - obs4mips)
-* HadISST (ts - esmvaltool/utils/cmorizers/obs/cmorize_obs_HadISST.ncl)
-* MODIS (od550aer - esmvaltool/utils/cmorizers/obs/cmorize_obs_MODIS.ncl)
-* NCEP (tas, ta, ua, va, zg - esmvaltool/utils/cmorizers/obs/cmorize_obs_NCEP.ncl)
-* NIWA-BS (toz - esmvaltool/utils/cmorizers/obs/cmorize_obs_NIWA-BS.ncl)
-* PATMOS-x (clt - esmvaltool/utils/cmorizers/obs/cmorize_obs_PATMOS-x.ncl)
+    * AIRS (hus - obs4mips)
+    * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
+    * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+    * ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-AEROSOL.ncl)
+    * ESACCI-CLOUD (clt - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-CLOUD.ncl)
+    * ESACCI-OZONE (toz - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-OZONE.ncl)
+    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
+    * ESACCI-SST (ts - esmvaltool/ucmorizers/obs/cmorize_obs_ESACCI-SST.ncl)
+    * GPCP-SG (pr - obs4mips)
+    * HadISST (ts - esmvaltool/cmorizers/obs/cmorize_obs_HadISST.ncl)
+    * MODIS (od550aer - esmvaltool/cmorizers/obs/cmorize_obs_MODIS.ncl)
+    * NCEP (tas, ta, ua, va, zg - esmvaltool/cmorizers/obs/cmorize_obs_NCEP.ncl)
+    * NIWA-BS (toz - esmvaltool/cmorizers/obs/cmorize_obs_NIWA-BS.ncl)
+    * PATMOS-x (clt - esmvaltool/cmorizers/obs/cmorize_obs_PATMOS-x.ncl)
+
+#. recipe_perfmetrics_land_CMIP5.yml
+
+    * CERES-EBAF (rlus, rlds, rsus, rsds - obs4mips)
+    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
+    * FLUXCOM (gpp - esmvaltool/cmorizers/obs/cmorize_obs_fluxcom.py)
+    * JMA-TRANSCOM (nbp, fgco2 - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
+    * LAI3d (lai - esmvaltool/cmorizers/obs/cmorize_obs_lai3g.py)
+    * LandFlux-EVAL (et - esmvaltool/cmorizers/obs/cmorize_obs_landflux_eval.py)
+    * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/obs/cmorize_obs_landschuetzer2016.py)
+    * MTE (gpp - esmvaltool/cmorizers/obs/cmorize_obs_mte.py)
 
 References
 ----------

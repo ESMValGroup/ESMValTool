@@ -94,6 +94,8 @@ class MPQBpair:
             # Set units to one for pearsonr
             if metric=='pearsonr':
                 self.metrics[metric].units = '1'
+            elif metric=='reldiff':
+                self.metrics[metric].units = '%'
 
     def plot(self):
         """plot."""
