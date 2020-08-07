@@ -259,12 +259,13 @@ begin
     ; Different averages
     if diag_script_info@area_avg .eq. "lat-first" then
       var0_lonavg = dim_avg_n_Wrap(var0_reg, 2)
-      printVarSummary(var0_lonavg)
       var0_sca_lonavg = new((/nyear, dimsizes(var0_lonavg&lat)/), float)
+      gr_lonavg_temp = var0_sca_lonavg
       delete(var0_reg)
 
       do ilat = 0, dimsizes(var0_lonavg&lat) -1
         gr = calc_gr(var0_lonavg(:, ilat), "monthlyfilled", min_nmonth)
+        gr_lonavg_temp(:, ilat) = calc_gr(var0_lonavg(:, ilat), "yearly", min_nmonth)
         do itim = 0, nyear - 1
           slope = dim_cumsum(gr(itim*12:itim*12+11)/12., 1)
           detrended = var0_lonavg(itim*12:itim*12+11, ilat) - slope
@@ -287,10 +288,9 @@ begin
       var0_yr(mapping_array(imod), :) = (/time_operations(var0_lonavg_xco2, -1, -1, "average", "yearly", True)/)
       amp_series(mapping_array(imod), :) = dim_avg_wgt(var0_sca_lonavg(:,coords(0): coords(1)) , \
                 cos_lats, 1)
-      gr_temp = calc_gr(var0_lonavg_xco2, "yearly", min_nmonth)
-      growth_series(mapping_array(imod), :) = dim_avg_wgt(gr_temp(:,coords(0): coords(1)) , \
+      growth_series(mapping_array(imod), :) = dim_avg_wgt(gr_lonavg_temp(:,coords(0): coords(1)) , \
                 cos_lats, 1)
-      delete(gr_temp)
+      delete(gr_lonavg_temp)
     else
       var0_avg = area_operations(var0_reg, lat_min, lat_max, 0, 360, "average", True)
       var0_yr(mapping_array(imod), :) = (/time_operations(var0_avg, -1, -1, "average", "yearly", True)/)

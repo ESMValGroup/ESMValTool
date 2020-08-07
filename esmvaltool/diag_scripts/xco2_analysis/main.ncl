@@ -248,6 +248,15 @@ begin
   gr_Rates(:, 1) = dim_stddev_n(growth_series, 1)
   asciiwrite(work_dir + "/GR_wstd.txt", gr_Rates)
 
+  ; Sort by size
+  sort_by = gr_Rates(:, 0)
+  qsort(sort_by)
+  perm_idx = new(dimsizes(sort_by), integer)
+  do idim = 0, dimsizes(sort_by) -1
+    perm_idx(idim) = ind(sort_by(idim).eq.gr_Rates(:,0))
+  end do
+  gr_Rates_sort = gr_Rates(perm_idx, :)
+
   res = True
   res@gsnDraw = False
   res@gsnFrame = False
@@ -255,7 +264,7 @@ begin
   res@gsnXYBarChart = True
   res@tmXBMode = "Explicit"
   res@tmXBValues = ispan(0, dimsizes(growth_series&model) - 1, 1)
-  res@tmXBLabels = growth_series&model
+  res@tmXBLabels = growth_series&model(perm_idx)
   res@tmXBLabelAngleF = 60.
   res@tmXBLabelJust = "CenterRight"
   res@tmXBLabelFontHeightF = 0.014
@@ -269,12 +278,12 @@ begin
   res@tiYAxisString = "Average growth rate [ppmv yr~S~-1~N~]"
   res@tiYAxisFontHeightF = 0.02
   res@gsnXYBarChartBarWidth = 0.75
-  res@gsnXYBarChartColors = bp_colors
+  res@gsnXYBarChartColors = bp_colors(perm_idx)
   ; res@gsnAboveYRefLineColor = "skyblue"
 
   x = ispan(0, dimsizes(growth_series&model)-1, 1)
 
-  plot_grbp = gsn_csm_xy(wks, x, gr_Rates(:, 0), res)
+  plot_grbp = gsn_csm_xy(wks, x, gr_Rates_sort(:, 0), res)
 
   ;; Add errorbars
 
@@ -285,16 +294,16 @@ begin
 
   do imod = 0, dimsizes(growth_series&model) - 1
     plot_grbp@$unique_string("errbar")$ = gsn_add_polyline(wks, plot_grbp, \
-          (/imod, imod/), (/gr_Rates(imod, 0) + gr_Rates(imod, 1),  \
-          gr_Rates(imod, 0) - gr_Rates(imod, 1)/), lres)
+          (/imod, imod/), (/gr_Rates_sort(imod, 0) + gr_Rates_sort(imod, 1),  \
+          gr_Rates_sort(imod, 0) - gr_Rates_sort(imod, 1)/), lres)
     plot_grbp@$unique_string("errbar")$ = gsn_add_polyline(wks, plot_grbp, \
-          (/imod + err_wdth, imod - err_wdth/), (/gr_Rates(imod, 0) \
-          + gr_Rates(imod, 1),gr_Rates(imod, 0) \
-          + gr_Rates(imod, 1)/), lres)
+          (/imod + err_wdth, imod - err_wdth/), (/gr_Rates_sort(imod, 0) \
+          + gr_Rates_sort(imod, 1),gr_Rates_sort(imod, 0) \
+          + gr_Rates_sort(imod, 1)/), lres)
     plot_grbp@$unique_string("errbar")$ = gsn_add_polyline(wks, plot_grbp, \
-          (/imod + err_wdth, imod - err_wdth/), (/gr_Rates(imod, 0) \
-          - gr_Rates(imod, 1),gr_Rates(imod, 0) \
-          - gr_Rates(imod, 1)/), lres)
+          (/imod + err_wdth, imod - err_wdth/), (/gr_Rates_sort(imod, 0) \
+          - gr_Rates_sort(imod, 1),gr_Rates_sort(imod, 0) \
+          - gr_Rates_sort(imod, 1)/), lres)
   end do
 
   draw(plot_grbp)

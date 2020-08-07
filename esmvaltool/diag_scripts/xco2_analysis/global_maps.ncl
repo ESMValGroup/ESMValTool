@@ -505,8 +505,9 @@ begin
   pres@lbTopMarginF = 0.8
   pres@lbTitleOffsetF = 0.2
 
-  ; TODO: Make this not hardcoded but variable depending on amount of models
-  gsn_panel(wks_scap, sca_panel_plots,(/4, 3/), pres)
+  nrow = round(sqrt(dimsizes(mod_inds)), 3)
+  ncol = round(dimsizes(mod_inds) / nrow, 3)
+  gsn_panel(wks_scap, sca_panel_plots,(/nrow, ncol/), pres)
   frame(wks_scap)
   delete(res_sca_panel_plots)
   delete(pres)
