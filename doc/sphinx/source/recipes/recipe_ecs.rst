@@ -42,6 +42,8 @@ User settings in recipe
 
    * ``calculate_mmm``, *bool*, optional (default: ``True``): Calculate
      multi-model mean ECS.
+   * ``output_attributes``, *dict*, optional: Write additional attributes to
+     all output netcdf files.
    * ``read_external_file``, *str*, optional: Read ECS and net climate feedback
      parameter from external file. Can be given relative to the diagnostic
      script or as absolute path.

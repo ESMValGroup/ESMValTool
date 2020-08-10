@@ -2,6 +2,7 @@
 #-----Hydroclimatic Intensity (HyInt) diagnostic-----#
 #-------------E. Arnone (June 2017)------------------#
 ######################################################
+
 hyint_diagnostic <- function(work_dir, # nolint
                              infile,
                              model_idx,
@@ -503,8 +504,9 @@ hyint_diagnostic <- function(work_dir, # nolint
       " according to ",
       models_name[model_idx]
     )
+  anc_list <- flatten_lists(climofiles[model_idx])
   xprov <- list(
-    ancestors = climofiles[model_idx],
+    ancestors = anc_list,
     model_idx = list(model_idx),
     caption = caption
   )

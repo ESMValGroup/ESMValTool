@@ -3,8 +3,8 @@
 ---
 documentation:
   description: >
-    This recipe reproduces the basic steps described in Lenderink 2014.
-    We just do one scenario at a time; maybe extend later.
+    This recipe reproduces the basic steps described in Lenderink 2014,
+    one scenario at a time.
 
   references:
     - lenderink14erl

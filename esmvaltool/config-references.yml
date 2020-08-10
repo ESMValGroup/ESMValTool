@@ -241,6 +241,10 @@ authors:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
     orcid: https://orcid.org/0000-0001-9335-1093
+  koirala_sujan:
+    name: Koirala, Sujan
+    institute: MPI-BGC, Germany
+    orcid: https://orcid.org/0000-0001-5681-1986
   krasting_john:
     name: Krasting, John
     institute: NOAA, USA
@@ -364,7 +368,7 @@ authors:
     name: Roehrig, Romain
     institute: MeteoFr, France
   rol_evert:
-    name: Evert rol_evert
+    name: Rol, Evert
     orcid: https://orcid.org/0000-0001-8357-4453
   russell_joellen:
     name: Russell, Joellen
@@ -581,6 +585,10 @@ authors:
     institute: NCAR, US
     orcid:
   # Former viewers (not active viewers)
+  adeniyi_kemisola:
+    name: Adeniyi, Kemisola
+    institute: University of Bremen, Germany
+    orcid:
   butchart_neal:
     name: Butchart, Neal
     institute: MetOffice, UK

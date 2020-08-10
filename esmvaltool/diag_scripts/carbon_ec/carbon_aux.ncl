@@ -33,6 +33,7 @@ function cumulate_carbon(NBP[*][*][*]:numeric)
 ;     20191118-zechlau_sabrina: written.
 ;
 local funcname, scriptname, verbosity, idx_new, NBP_tmp, NBP, y
+
 begin
 
   funcname = "cumulate_carbon"
@@ -48,6 +49,7 @@ begin
       do y = 0, dimsizes(NBP(:, 0, 0)) - 2
         NBP_tmp(y + 1, :, :) = NBP_tmp(y, :, :) + NBP(y, :, :)
       end do
+
       copy_VarAtts(NBP, NBP_tmp)
       copy_VarCoords(NBP, NBP_tmp)
 

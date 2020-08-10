@@ -1,7 +1,7 @@
+# ESMValTool
 # recipe_wenzel14jgr.yml
 ---
 documentation:
-
   description: |
     This recipe reproduces most of the figures of Wenzel et al. (2014).
 
@@ -20,7 +20,7 @@ preprocessors:
     weighting_landsea_fraction:
       area_type: land
       exclude: [
-        'GCP', 
+        'GCP',
         ]
 
   sea_fraction_weighting:
@@ -55,7 +55,7 @@ preprocessors:
       end_latitude: 30.
     area_statistics:
           operator: sum
-          
+
   global_ocean:
     weighting_landsea_fraction:
       area_type: sea
@@ -64,8 +64,8 @@ preprocessors:
         ]
     area_statistics:
           operator: sum
-          fx_files: [areacello]
-          
+          fx_variables: [areacello]
+
   tropical:
     extract_region:
       start_longitude: 0.
@@ -77,7 +77,7 @@ preprocessors:
 
 
 diagnostics:
-  
+
   ### Wenzel et al. 2014, Fig. 01: Quantities used to diagnose GAMMA_LT #########################
 
   diag_tsline_Fig1a: &Carbon_tsline
@@ -86,9 +86,9 @@ diagnostics:
       - phys
     realms:
       - land
-    variables: 
+    variables:
       nbp: &var_nbp
-        preprocessor: default #land_fraction_weighting 
+        preprocessor: default #land_fraction_weighting
         project: CMIP5
         mip: Lmon
         exp: 1pctCO2
@@ -127,7 +127,7 @@ diagnostics:
         styleset: CMIP5       # Plot style
         xy_line_legend: True
 
-  diag_tsline_Fig1b: 
+  diag_tsline_Fig1b:
     description: Fig 1b integrated NBP in the idealized uncoupled simulation
     themes:
       - phys
@@ -218,9 +218,9 @@ diagnostics:
         styleset: CMIP5       # Plot style
         xy_line_legend: True
 
-  ### Wenzel et al. 2014, Fig. 02: Quantities used to diagnose GAMMA_IAV #########################  
+  ### Wenzel et al. 2014, Fig. 02: Quantities used to diagnose GAMMA_IAV #########################
 
-  diag_tsline_Fig2a: 
+  diag_tsline_Fig2a:
     description: Fig 2a integrated NBP in the historical coupled simulation
     themes:
       - phys
@@ -264,7 +264,7 @@ diagnostics:
         styleset: CMIP5       # Plot style
         run_ave: 2
         xy_line_legend: True
-        
+
   diag_tsline_Fig2b:
     description: Fig 2b integrated NBP in the idealized coupled simulation
     themes:
@@ -290,7 +290,7 @@ diagnostics:
       #- {dataset: MPI-ESM-LR}
       - {dataset: NorESM1-ME, start_year: 40 ,end_year: 90}
     scripts:
-      tsline_2b: 
+      tsline_2b:
         script: carbon_ec/carbon_tsline.ncl
         ts_minlat: -30
         ts_maxlat: 30
@@ -311,8 +311,8 @@ diagnostics:
         styleset: CMIP5       # Plot style
         run_ave: 2
         xy_line_legend: True
-              
-  diag_tsline_Fig2c: 
+
+  diag_tsline_Fig2c:
     description: Fig 2c integrated FGCO2 in the historical coupled simulation
     variables:
       fgco2:
@@ -352,8 +352,8 @@ diagnostics:
         styleset: CMIP5       # Plot style
         run_ave: 2
         xy_line_legend: True
-        
-  diag_tsline_Fig2d: &tsline_fgcos 
+
+  diag_tsline_Fig2d: &tsline_fgcos
     description: Fig 2d integrated NBP in the idealized coupled simulation
     themes:
       - phys
@@ -400,10 +400,10 @@ diagnostics:
         run_ave: 2
         xy_line_legend: True
 
-  diag_tsline_Fig2e: 
+  diag_tsline_Fig2e:
     description: Fig 2e near surface temperature historical coupled simulation
     variables:
-      tas: 
+      tas:
         project: CMIP5
         mip: Amon
         exp: esmHistorical
@@ -439,7 +439,7 @@ diagnostics:
         styleset: CMIP5       # Plot style
         run_ave: 2
         xy_line_legend: True
-          
+
   diag_tsline_Fig2f:
     description: Fig 2f near surface temperature idealized coupled simulation
     themes:
@@ -485,10 +485,10 @@ diagnostics:
         align: True
         styleset: CMIP5       # Plot style
         xy_line_legend: True
-        
+
   ### Wenzel et al. 2014, Fig. 03/04: Diagnose GAMMA_IAV from each model #########################
 
-  diag_gammaHist_Fig3and4: 
+  diag_gammaHist_Fig3and4:
     description: Fig 3 and 4 correlating near surface temperature and land+ocean carbon fluxes
     variables:
       fgco2:
@@ -574,19 +574,19 @@ diagnostics:
           - {dataset: NorESM1-ME, start_year: 1960 ,end_year: 2005}
     scripts:
       gammaHist_3and4:
-        script: carbon_ec/carbon_gammaHist.ncl 
+        script: carbon_ec/carbon_gammaHist.ncl
         start_year: 1960
         end_year: 2005
         plot_units_x: k
         plot_units_y: GtC y-1
-        ec_anom : True 
+        ec_anom : True
         ec_volc : True      #(optional)
         scatter_log : False # set logaritmic axes in scatterplot.ncl
         styleset: CMIP5     # Plot style
-        
+
   ### Wenzel et al. 2014, Fig. 05: Diagnose GAMMA_LT and create Emergent Constraint #############
 
-  diag_gammaLT_5: 
+  diag_gammaLT_5:
     description: Fig 5 correlates gamma hist vs gammaLT and calculates PDF
     variables:
       nbp_1pct:
