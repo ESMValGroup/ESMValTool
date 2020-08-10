@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xarray as xr
-from tqdm import tqdm
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -107,10 +106,9 @@ def _find_single_top1000(segment_means, target):
     segment_means = segment_means.values  # much faster indexing
 
     all_possible_combinations = product(range(n_members), repeat=n_segments)
-    total = n_members**n_segments
     results = []
 
-    for combination in tqdm(all_possible_combinations, total=total):
+    for combination in all_possible_combinations:
         results.append(
             list(combination) +
             [abs(segment_means[segment_indices, combination].mean() - target)])

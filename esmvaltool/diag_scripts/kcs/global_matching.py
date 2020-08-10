@@ -17,7 +17,8 @@ logger = logging.getLogger(Path(__file__).name)
 def create_provenance_record(ancestor_files):
     """Create a provenance record."""
     record = {
-        'caption': "Resampling of local climate model.",
+        'caption':
+        "Match temperature anomaly in target model to CMIP ensemble",
         'domains': ['global'],
         'authors': [
             'kalverla_peter',
@@ -81,7 +82,7 @@ def _timeline(axes, yloc, interval):
     axes.plot([xmax] * 2, [yloc - 0.01, yloc + 0.01], **plot_args)
 
 
-def make_plot(metadata, scenarios, cfg):
+def make_plot(metadata, scenarios, cfg, provenance):
     """Make figure 3, left graph.
 
     Multimodel values as line, reference value in black square,
@@ -136,6 +137,8 @@ def make_plot(metadata, scenarios, cfg):
     # Save figure
     filename = get_plot_filename('global_matching', cfg)
     fig.savefig(filename, bbox_inches='tight', dpi=300)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance)
 
 
 def save(output, cfg, provenance):
@@ -179,7 +182,7 @@ def main(cfg):
 
     # Plot the results
     if cfg['write_plots']:
-        make_plot(metadata, scenarios, cfg)
+        make_plot(metadata, scenarios, cfg, provenance)
 
 
 if __name__ == '__main__':
