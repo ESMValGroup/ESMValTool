@@ -50,9 +50,13 @@ def main(cfg):
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
 
-        iris.quickplot.plot(cube, label=datasetnames[alias],
-                            color=mpqb_cfg['datasetcolors'][alias])
-    plt.legend()
+        # Set default if not defined.
+        label=datasetnames.pop(alias, alias)
+        color=mpqb_cfg['datasetcolors'].pop(alias, 'k')
+        iris.quickplot.plot(cube, label=label, color=color)
+    leg = plt.legend()
+    for legobj in leg.legendHandles:
+        legobj.set_linewidth(2.0)
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:
