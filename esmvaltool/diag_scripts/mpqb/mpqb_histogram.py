@@ -82,8 +82,9 @@ def _plot_histograms(hists, cfg, grouped_input_data):
                      color=mpqb_cfg['datasetcolors'][alias],
                      linewidth=2)
             handles, labels = ax1.get_legend_handles_labels()
-            handles = [Line2D([], [], c=h.get_edgecolor()) for h in handles]
+            handles = [Line2D([], [], c=h.get_edgecolor(), lw=2.0) for h in handles]
             plt.legend(handles=handles, labels=labels)
+
         else:
             logger.warning("Unsupported argument for histtype: %s", histtype)
 
