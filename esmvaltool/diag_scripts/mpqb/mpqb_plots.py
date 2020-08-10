@@ -21,42 +21,39 @@ def read_mpqb_cfg():
 
 
 def _parse_cmap(plotkwargs):
+    """Create a discrete colormap with nice ticks.
+
+    Caveats:
+       - Does not work yet for all cases
+    """
     # replace the cmap key with the cmap object,
     # and add grey shading for masked values
+    # Diverging colorbar centred around zero
+    nbins = 11 # has to be uneven
+
     cmapname = plotkwargs.pop('cmap')
     cmap = matplotlib.cm.get_cmap(cmapname)
-    cmap.set_bad("grey", 0.1)
+    color_list = cmap(np.linspace(0, 1, nbins))
+    cmap_name = cmap.name + str(nbins)
+    cmap = cmap.from_list(cmap_name, color_list, nbins)
 
-    if np.abs(plotkwargs['vmin']) == np.abs(plotkwargs['vmax']):
-        # Diverging colorbar centred around zero
-        discrete = True
-        n_colors = 11  # number of colors
-        if discrete:
-            color_list = cmap(np.linspace(0, 1, n_colors))
-            cmap_name = cmap.name + str(n_colors)
-            cmap = cmap.from_list(cmap_name, color_list, n_colors)
+    symmetric = np.abs(plotkwargs['vmin'])==np.abs(plotkwargs['vmax'])
 
-        levels = MaxNLocator(nbins=cmap.N - 1, symmetric=True).tick_values(
-            plotkwargs['vmin'], plotkwargs['vmax'])
+    levels = MaxNLocator(nbins=nbins, symmetric=symmetric).tick_values(
+        plotkwargs['vmin'], plotkwargs['vmax'])
 
+    if symmetric:
+        print("Deleting middle level")
         # Remove zero from levels
         levels = np.delete(levels, len(levels) / 2)
 
-        color_list = list(color_list)
+    color_list = list(color_list)
 
-        color_under = color_list.pop(0)
-        color_over = color_list.pop(-1)
+    cmap, norm = from_levels_and_colors(levels, color_list,
+                                        extend=plotkwargs['extend'])
+    cmap.set_bad("grey", 0.1)
 
-        cmap, norm = from_levels_and_colors(levels, color_list)
-        cmap.set_bad("grey", 0.1)
-        if 'closed' in plotkwargs.keys():
-            plotkwargs.pop('closed')
-        else:
-            cmap.set_under(color_under)
-            cmap.set_over(color_over)
-
-        plotkwargs['norm'] = norm
-
+    plotkwargs['norm'] = norm
     plotkwargs['cmap'] = cmap
     return plotkwargs
 
@@ -70,8 +67,10 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     plottitle = datasetnames[plotkwargs.pop('title')]
 
     plotkwargs = _parse_cmap(plotkwargs)
+    extend = plotkwargs.pop('extend')
 
     plotkwargs['rasterized'] = True
+
 
     pcols = iris.plot.pcolormesh(cube, **plotkwargs)
     # Take out small grid lines like this
@@ -79,7 +78,7 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     plt.gca().coastlines()
 
     # Colorbar
-    colorbar = plt.colorbar(pcols, orientation='horizontal', extend='both')
+    colorbar = plt.colorbar(pcols, orientation='horizontal', extend=extend)
     colorbar.set_label(cube.units)
     colorbar.ax.tick_params(labelsize=8)
 
