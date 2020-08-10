@@ -22,7 +22,7 @@ def create_provenance_record(ancestor_files):
         'authors': [
             'kalverla_peter',
             'alidoost_sarah',
-            # 'rol_evert',
+            'rol_evert',
         ],
         'ancestors': ancestor_files,
     }
