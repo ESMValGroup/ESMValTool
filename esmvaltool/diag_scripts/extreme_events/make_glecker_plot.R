@@ -296,7 +296,10 @@ gleckler_array <- function(path = land,
           "*.nc"
         )
       )))
+      # print("tm_model KW")
+      # print(tm_model)
       idxs <- unlist(strsplit(idx_list[i], split = "_"))[1]
+      idxs <- sub("ETCCDI", "etccdi", idxs)
       tm_model_idx <- ncvar_get(tm_model, idxs)
 
       # extract latitudes for area mean calculations

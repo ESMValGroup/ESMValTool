@@ -557,6 +557,7 @@ timeseries_plot <-
     ## Stripping off the _yr tail to the index name
     idx_no <- which(idx_df$idx_etccdi_time == idx)
     idx_name <- paste(idx_df$idx_etccdi[idx_no], "ETCCDI", sep = "")
+    idx_name <- sub("ETCCDI", "etccdi", idx_name)
 
     # Reading in the y-variables to be plotted
     # First the ensemble mean

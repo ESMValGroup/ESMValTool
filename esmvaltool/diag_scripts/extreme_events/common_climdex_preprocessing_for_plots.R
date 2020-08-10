@@ -240,6 +240,7 @@ regrid_and_land_sea_mask <- function(idx_raw,
 
   ## Regridding file:
   varname <- strsplit(idx_name, "_")[[1]][1]
+  varname <- sub("ETCCDI", "etccdi", varname)
   tmpsel <-
     cdo("selvar",
       args = varname,

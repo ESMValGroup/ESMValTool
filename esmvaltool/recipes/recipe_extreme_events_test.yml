@@ -1,0 +1,190 @@
+---
+documentation:
+  description: |
+     Calculate indices for monitoring changes in extremes based on daily temperature
+     and precipitation data. Producing Glecker and timeline plots of this as
+     shown in the IPCC_AR4 report
+
+  authors:
+    - broetz_bjoern
+    - mueller_benjamin
+
+  maintainer:
+    - broetz_bjoern
+
+  references:
+    - zhang11wcc
+
+  projects:
+    - crescendo
+    - c3s-magic
+
+################################################
+# Define sdatasets                             #
+################################################
+
+datasets:
+#  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}ex
+#  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: BNU-ESM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
+#  - {dataset: CMCC-CESM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: CMCC-CM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: CMCC-CMS, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: CNRM-CM5, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: ACCESS1-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: ACCESS1-3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: inmcm4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: FGOALS-g2, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: HadCM3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
+#  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: CCSM4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: NorESM1-M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: GFDL-CM3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: CESM1-BGC, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+#  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
+# - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1981, end_year: 2005, tier: 3}
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 1981, end_year: 1983, tier: 3}
+
+################################################
+# Define some default parameters using anchors #
+################################################
+
+### NOT used
+#plot_pars: &pltpars
+#  ts_plt: true
+#  glc_plt: true
+
+range_pars: &rngpars
+  base_range: [1981, 1983]
+  # analysis_range: [1983, 1984]
+
+### NOT used
+#reference_pars: &refpars
+#  reference_datasets:
+#    - MPI-ESM-LR
+##    - ERA-Interim
+##    - BNU-ESM
+
+regrid_pars: &regpars
+  regrid:
+    target_grid: MPI-ESM-LR
+    scheme: area_weighted
+#  target_grid: MPI-ESM-LR
+#  target_grid: ERA-Interim
+
+mip_definition: &mipdef
+  mip: day
+
+################################################
+# Define preprocessors                         #
+################################################
+
+preprocessors:
+  pp_standard:
+    <<: *regpars
+    # mask_landsea:
+      # mask_out: sea
+
+################################################
+# Define diagnostics                           #
+################################################
+
+diagnostics:
+
+  extremeIndices:
+    description: calculate extreme events idx
+
+    variables:
+      tas:
+        <<: *mipdef
+        preprocessor: pp_standard
+      tasmax:
+        <<: *mipdef
+        preprocessor: pp_standard
+      tasmin:
+        <<: *mipdef
+        preprocessor: pp_standard
+      pr:
+        <<: *mipdef
+        preprocessor: pp_standard
+        # derive: true # TODO: WHY?
+
+    scripts:
+      extremeIndices:
+        script: extreme_events/extreme_events_pp.py
+#        <<: *refpars
+        indices:
+          - annual_number_of_frost_days
+          - annual_maximum_length_of_dry_spell
+          # - annual_number_of_summer_days
+          # - annual_number_of_icing_days
+          # - annual_number_of_tropical_nights
+          # - annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
+          # - annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
+          # - annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm
+          # - monthly_maximum_value_of_daily_maximum_temperature
+          # - monthly_maximum_value_of_daily_minimum_temperature
+          # - monthly_minimum_value_of_daily_maximum_temperature
+          # - monthly_minimum_value_of_daily_minimum_temperature
+          # - monthly_maximum_1day_precipitation
+          # - monthly_maximum_5day_precipitation
+          # - daily_temperature_range
+          # - annual_total_precipitation_in_wet_days
+          # - annual_growing_season_length
+          # - monthly_number_of_days_where_daily_minimum_temperature_below_10%
+          # - monthly_number_of_days_where_daily_maximum_temperature_below_10%
+          # - monthly_number_of_days_where_daily_maximum_temperature_above_90%
+          # - monthly_number_of_days_where_daily_minimum_temperature_above_90%
+          # - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_99%
+          # Does not work, misses height coordinate:
+          # - annual_total_precipitation_in_wet_days_where_daily_precipitation_above_95%
+          # - annual_warm_spell_duration_index
+          # - annual_cold_spell_duration_index
+          # - monthly_simple_precipitation_intensity_index
+          # - annual_maximum_length_of_dry_spell
+          # - annual_maximum_length_of_wet_spell
+          # - annual_simple_precipitation_intensity_index
+          # - annual_maximum_5day_precipitation
+          # - annual_maximum_1day_precipitation 
+          # - annual_minimum_value_of_daily_maximum_temperature
+          - annual_maximum_value_of_daily_maximum_temperature
+          # - annual_minimum_value_of_daily_minimum_temperature
+          # - annual_maximum_value_of_daily_minimum_temperature
+
+        cumprec_threshold_nn: 15
+        <<: *rngpars
+        # TODO: why is that the same name twice? is this dedicated plots?
+#        timeseries_idx: True
+#        gleckler_idx: True
+#        quickplot:
+#          plot_type: pcolormesh
+#        <<: *pltpars
+
+  plotIndices:
+    description: plot extreme events idx
+    scripts:
+      plotIndices:
+        script: extreme_events/extreme_events_usepp.R
+        ancestors: ['extremeIndices/extremeIndices']
+        reference_datasets: ["ERA-Interim"]
+        regrid_dataset: MPI-ESM-LR
+        mip_name: CMIP
+        timeseries_idx: ["fdETCCDI_yr", "txxETCCDI_yr", "cddETCCDI_yr"]
+        gleckler_idx: ["fdETCCDI_yr", "txxETCCDI_yr", "cddETCCDI_yr"]
+        # timeseries_idx: ["cddETCCDI_yr", "fdETCCDI_yr", "txxETCCDI_yr"]
+        # gleckler_idx: ["cddETCCDI_yr", "fdETCCDI_yr", "txxETCCDI_yr"]
+       # timeseries_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
+       # gleckler_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]    
+        ts_plt: true
+        glc_plt: true
+        base_range: [1981, 1983]
+        # analysis_range: [1983, 1984]
