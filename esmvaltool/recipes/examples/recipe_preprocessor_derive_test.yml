@@ -8,20 +8,13 @@ documentation:
   authors:
     - andela_bouwe
     - schlund_manuel
+    - vegas-regidor_javier
 
   maintainer:
     - righi_mattia
 
   projects:
     - c3s-magic
-
-preprocessors:
-
-  regrid:
-    regrid:
-      target_grid: CanESM2
-      scheme: linear
-
 
 diagnostics:
 
@@ -114,7 +107,13 @@ diagnostics:
   diag8:
     description: Test sispeed
     variables:
-      clltkisccp:
-        <<: *cloud
-        mip: OImon
+      sispeed:
+        mip: day
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical,
+             ensemble: r1i1p1, start_year: 1979, end_year: 1979}
+          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,
+             ensemble: r1i1p1, start_year: 1979, end_year: 1979}
     scripts: null

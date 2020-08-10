@@ -25,7 +25,7 @@ Atmosphere
    recipe_modes_of_variability
    recipe_quantilebias
    recipe_spei
-   recipe_martin2018grl
+   recipe_martin18grl
    recipe_autoassess_stratosphere
    recipe_zmnam
    recipe_thermodyn_diagtool
@@ -50,6 +50,7 @@ Future projections
    recipe_snowalbedo
    recipe_ecs
    recipe_wenzel16jclim
+   recipe_wenzel16nat
    recipe_tcr
    recipe_li17natcc
 
@@ -67,6 +68,7 @@ Land
    :maxdepth: 1
 
    recipe_albedolandcover
+   recipe_carvalhais14nat
    recipe_hydrology
    recipe_landcover
    recipe_anav13jclim

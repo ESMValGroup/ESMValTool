@@ -1,4 +1,4 @@
-.. _recipes_martin2018grl:
+.. _recipes_martin18grl:
 
 Drought characteristics following Martin (2018)
 ===============================================
@@ -18,7 +18,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-   * recipe_martin2018grl.yml
+   * recipe_martin18grl.yml
 
 
 Diagnostics are stored in diag_scripts/
@@ -75,15 +75,15 @@ References
 Example plots
 -------------
 
-.. _martin2018grl_fig1:
-.. figure:: /recipes/figures/droughtindex/martin2018grl_fig1.png
+.. _martin18grl_fig1:
+.. figure:: /recipes/figures/droughtindex/martin18grl_fig1.png
    :align: center
    :width: 50%
 
    Global map of the percentage difference between multi-model mean of 15 CMIP models and the CRU data for the number of drought events [%] based on SPI.
 
-.. _martin2018grl_fig2:
-.. figure:: /recipes/figures/droughtindex/martin2018grl_fig2.png
+.. _martin18grl_fig2:
+.. figure:: /recipes/figures/droughtindex/martin18grl_fig2.png
    :align: center
    :width: 50%
 

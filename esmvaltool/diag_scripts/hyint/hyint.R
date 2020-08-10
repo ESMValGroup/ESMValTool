@@ -41,7 +41,7 @@
 # the user in the hyint_parameters file.
 # R libraries:"tools","PCICt","ncdf4","maps"
 #
-# Optional
+#i Optional
 # Several options can be selected via the configuration file, e.g. provision
 # of an external normalization functions for the indices; a reference
 # climatology for the R95 index; type of plots; etc.
@@ -206,7 +206,7 @@ if (write_netcdf) {
     if (run_diagnostic) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
-        prov_info <- hyint_diagnostic(work_dir, regfile, model_idx, 
+        prov_info <- hyint_diagnostic(work_dir, regfile, model_idx,
           climofiles,
           seas,
           prov_info,
@@ -273,9 +273,10 @@ if (write_plots) {
 
 # Assign provenance information for timeseries&trends figures
 for (fname in names(prov_info)) {
+  anc_list <- flatten_lists(prov_info[[fname]]$ancestors)
   xprov <-
     list(
-      ancestors = prov_info[[fname]]$ancestors,
+      ancestors = anc_list,
       authors = list("arnone_enrico", "vonhardenberg_jost"),
       references = list("giorgi11jc", "giorgi14jgr"),
       projects = list("c3s-magic"),

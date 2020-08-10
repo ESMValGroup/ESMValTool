@@ -23,7 +23,7 @@ def get_provenance_record(attributes, ancestor_files):
         'caption': caption,
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_type': 'zonal',
+        'plot_types': ['zonal'],
         'authors': [
             'andela_bouwe',
             'righi_mattia',

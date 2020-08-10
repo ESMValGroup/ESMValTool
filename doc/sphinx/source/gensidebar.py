@@ -76,7 +76,6 @@ def generate_sidebar(conf, conf_api):
     _write("esmvalcore", "Diagnostic script interfaces", "interfaces")
     _write("esmvalcore", "Development", "develop/index")
     _write("esmvalcore", "Contributing", "contributing")
-    _write("esmvalcore", "Utilities", "utils")
     _write("esmvalcore", "ESMValCore API Reference", "api/esmvalcore")
     _write("esmvalcore", "Changelog", "changelog")
     _endl()

@@ -1,6 +1,7 @@
+# ESMValTool
+# recipe_martin18grl.yml
 ---
 documentation:
-
   description: |
     Calculate the SPI and counting drought events following Martin (2018).
   authors:
@@ -8,7 +9,7 @@ documentation:
     - adeniyi_kemisola
 
   references:
-    - martin2018grl
+    - martin18grl
 
   projects:
     - eval4cmip
