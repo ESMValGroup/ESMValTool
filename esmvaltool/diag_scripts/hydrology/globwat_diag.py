@@ -243,48 +243,79 @@ def main(cfg):
         start_year = coord_time.cell(0).point.year 
         end_year = coord_time.cell(-1).point.year 
         for nyear in range (start_year , end_year+1):
-            data_dir = Path(f"{dataset}/{nyear}")
-            data_dir.mkdir(parents=True, exist_ok=True)
+            # data_dir = Path(f"{dataset}/{nyear}")
+            # data_dir.mkdir(parents=True, exist_ok=True)
             for key in ['pr', 'pet']:
                 for mip in ['Amon', 'day']:
                     if mip == 'Amon':
                         output_name_amon = output_name[key]['Amon']
+                        data_dir = Path(f"{dataset}/{nyear}/{'Monthly'}")
+                        data_dir.mkdir(parents=True, exist_ok=True)
                         for i in range(len(output_name_amon)):
                             key_cube = all_vars[key]
                             for sub_cube in key_cube.slices_over('time'): 
-                                array = sub_cube.data
-                                lon = (sub_cube.coord('longitude').points + 180) % 360 - 180
-                                lat = sub_cube.coord('latitude').points 
-                                nrows,ncols = np.shape(array)
-                                xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
-                                xres = (xmax-xmin)/float(ncols) 
-                                yres = (ymax-ymin)/float(nrows)
-                                transform = Affine.translation(xmin + xres / 2, ymin - xres / 2) * Affine.scale(xres, xres)
+                                #precipitation data has negative values except than fill_value
+                                #which results in gaps in model results so here we set those negative 
+                                #values to zero
+                                sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
+
+                                #The preprocessed data are saved as netcdf files which then go through  
+                                #a set of modifications including regriding, reprojection and netcdf to
+                                #AAIGrid conversion by running a bash file in the directory where the netcdf
+                                #files have been saved. 
+
+                                #Save data as netcdf 
                                 file_name = output_name_amon[i] 
-                                new_dataset = rasterio.open(
-                                                            f"{data_dir}/{file_name}.asc", 
-                                                            'w', 
-                                                            driver='GTiff', 
-                                                            height=array.shape[1], 
-                                                            width=array.shape[0], 
-                                                            count=1, 
-                                                            dtype='float32', 
-                                                            crs='+proj=latlong', 
-                                                            transform=transform, 
-                                                            nodata= -9999,
-                                                            )    
-                                new_dataset.write(array, 1)
-                                new_dataset.close()
-                #    TODO: the code faces memory error while running for daily data, need to fix 
+                                iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
+
+                                #TODO: We must work on saving data as ascii format. 
+                                #We tried different saving methods including save to csv, gdal
+                                # and, rasterio. However, in all methods we must use AAIGrid driver
+                                #which rotate the maps 180 degree (maps are Southup insteas of Northup)
+                                #TODO: The maps are Pacific-Centered while they must be Earth-centered(WGS84).
+                                # We tried to apply such a change by changing latitude and longitude points, but
+                                #this method was not sucessful.
+
+                                # array = sub_cube.data
+                                # points = sub_cube.coord('longitude').points
+                                # sub_cube.coord('longitude').points = (points + 180) % 360 - 180
+                                # lon = (sub_cube.coord('longitude').points + 180) % 360 -180
+                                # lat = sub_cube.coord('latitude').points 
+                                # sub_cube = sub_cube[:, ::-1, ...]
+                                # nrows,ncols = np.shape(array)
+                                # xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
+                                # xres = (xmax-xmin)/float(ncols) 
+                                # yres = (ymax-ymin)/float(nrows)
+                                # transform = Affine.translation(xmin + xres / 2, ymin - xres / 2) * Affine.scale(xres, xres)
+                                # file_name = output_name_amon[i] 
+                                # new_dataset = rasterio.open(
+                                #                             f"{data_dir}/{file_name}.asc", 
+                                #                             'w', 
+                                #                             driver='GTiff', 
+                                #                             height=array.shape[1], 
+                                #                             width=array.shape[0], 
+                                #                             count=1, 
+                                #                             dtype='float32', 
+                                #                             crs='+proj=latlong', 
+                                #                             transform=transform, 
+                                #                             nodata= -9999,
+                                #                             )    
+                                # new_dataset.write(array, 1)
+                                # new_dataset.close()
+                    # TODO: the code faces memory error while running for daily data, need to fix 
                     # elif mip == 'day':
                     #     output_name_day = output_name[key]['day']
-                    # # for var_name in output_name: 
-                    # #     for time_step in output_name[var_name]: 
-                    # #         print(output_name[var_name][time_step]) 
-                    #     for i in range(len(output_name_day)):
-                    #         key_cube = all_vars[key]
-                    #         for sub_cube in key_cube.slices_over('time'): 
-                    #             frame = iris.pandas.as_data_frame(sub_cube, copy=True)
+                    #     output_name_amon = output_name[key]['Amon']
+                    #     data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
+                    # for var_name in output_name: 
+                    #     for time_step in output_name[var_name]: 
+                    #         print(output_name[var_name][time_step]) 
+                        # for i in range(len(output_name_day)):
+                        #     key_cube = all_vars[key]
+                        #     for sub_cube in key_cube.slices_over('time'): 
+                                # frame = iris.pandas.as_data_frame(sub_cube, copy=True)
+                                # file_name = output_name_day[i]
+                                # iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
                     #             print(frame) 
                     #             # final_path = os.path.join(path, output_name[key][mip][i])
                     #             # Path(output_file[i]).parent.mkdir(exist_ok=True)

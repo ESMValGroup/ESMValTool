@@ -17,7 +17,10 @@ preprocessors:
     mask_landsea:
       mask_out: "sea"
     # regrid:
-    #   target_grid: 0.0833333x0.0833333 # TODO: change the target to 0.08333*0.08333
+    #TODO: Change the target grid to 0.083333*0.083333. Currently, this is not accessible. 
+    #Therefore, regriding is done using CDO after saving preprocssed data as netcdf by running 
+    # a bash file
+    #   target_grid: 0.08x0.08 
     #   lon_offset: true
     #   lat_offset: true
     #   scheme: nearest #area_weighted and linear results in memory issues 
@@ -53,7 +56,7 @@ diagnostics:
       description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
       additional_datasets:
         - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-        # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
+        - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
       variables:
         pr: &var_monthly
           mip: Amon
