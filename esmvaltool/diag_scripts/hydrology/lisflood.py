@@ -99,9 +99,8 @@ def compute_windspeed(uas, vas):
 
 def save(xrds, var_name, dataset, cfg):
     """Save processed cube to a lisflood-compatible file."""
-    time_coord = xrds.coords['time']
-    start_year = time_coord[0].dt.year.data
-    end_year = time_coord[-1].dt.year.data
+    start_year = int(xrds.time[0].dt.year)
+    end_year = int(xrds.time[-1].dt.year)
     basename = '_'.join([
         'lisflood',
         dataset,
@@ -149,7 +148,7 @@ def main(cfg):
 
             # convert to xarray dataset (xrds)
             # remove coordinate bounds drop extra coordinates and reorder
-            xrds = xr.DataArray.from_iris(cube).to_dataset(promote_attrs=True)
+            xrds = xr.DataArray.from_iris(cube).to_dataset()
             ordered_coords = ['lon', 'lat', 'time']
             extra_coords = np.setdiff1d(xrds.coords, ordered_coords)
             xrds = xrds.drop(extra_coords)[ordered_coords + [var_name]]
