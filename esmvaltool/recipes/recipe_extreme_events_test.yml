@@ -106,16 +106,16 @@ diagnostics:
     variables:
       tas:
         <<: *mipdef
-        preprocessor: pp_standard
+        # preprocessor: pp_standard
       tasmax:
         <<: *mipdef
-        preprocessor: pp_standard
+        # preprocessor: pp_standard
       tasmin:
         <<: *mipdef
-        preprocessor: pp_standard
+        # preprocessor: pp_standard
       pr:
         <<: *mipdef
-        preprocessor: pp_standard
+        # preprocessor: pp_standard
         # derive: true # TODO: WHY?
 
     scripts:
@@ -124,7 +124,7 @@ diagnostics:
 #        <<: *refpars
         indices:
           - annual_number_of_frost_days
-          - annual_maximum_length_of_dry_spell
+          # - annual_maximum_length_of_dry_spell
           # - annual_number_of_summer_days
           # - annual_number_of_icing_days
           # - annual_number_of_tropical_nights
@@ -178,8 +178,8 @@ diagnostics:
         reference_datasets: ["ERA-Interim"]
         regrid_dataset: MPI-ESM-LR
         mip_name: CMIP
-        timeseries_idx: ["fdETCCDI_yr", "txxETCCDI_yr", "cddETCCDI_yr"]
-        gleckler_idx: ["fdETCCDI_yr", "txxETCCDI_yr", "cddETCCDI_yr"]
+        timeseries_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
+        gleckler_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
         # timeseries_idx: ["cddETCCDI_yr", "fdETCCDI_yr", "txxETCCDI_yr"]
         # gleckler_idx: ["cddETCCDI_yr", "fdETCCDI_yr", "txxETCCDI_yr"]
        # timeseries_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
