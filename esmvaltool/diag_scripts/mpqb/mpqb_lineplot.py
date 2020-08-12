@@ -39,8 +39,6 @@ def main(cfg):
 
     plt.clf()
     fig, (ax,lax) = plt.subplots(nrows=2, gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
-#    fig = plt.figure(figsize=(10, 4))
-#    ax1 = fig.add_subplot()
 
     plt.sca(ax)
     for dataset in grouped_input_data:
