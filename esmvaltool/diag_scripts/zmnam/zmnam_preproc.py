@@ -19,8 +19,8 @@ def zmnam_preproc(ifile):
 
     # Detrend with memory-efficient method.
     full_da_nl_a, full_da_nl_b = cdo.trend(input=full_da_nl_nn)
-    full_da_nl_detr = cdo.subtrend(input=full_da_nl_nn + ' ' +
-                                   full_da_nl_a + ' ' + full_da_nl_b)
+    full_da_nl_detr = cdo.subtrend(input=full_da_nl_nn + ' ' + full_da_nl_a +
+                                   ' ' + full_da_nl_b)
 
     # Compute anomalies from the daily/monthly means.
     gh_da_dm = cdo.ydaymean(input=full_da_nl_detr)

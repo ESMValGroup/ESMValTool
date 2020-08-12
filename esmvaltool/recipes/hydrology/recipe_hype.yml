@@ -6,9 +6,15 @@ documentation:
     Recipe pre-processes ERA5 and ERA-Interim reanalyses files
     for use in the Hype hydrological model.
 
-  authors: ['pelupessy_inti', 'kalverla_peter']
-  projects: ['ewatercycle']
-  references: ['acknow_project']
+  authors:
+    - pelupessy_inti
+    - kalverla_peter
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
 
 preprocessors:
   preprocessor: &general
