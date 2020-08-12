@@ -2,7 +2,7 @@
 # recipe_climwip.yml
 ---
 documentation:
-  description: EUCP ClimWIP 
+  description: EUCP ClimWIP
 
   authors:
     - kalverla_peter
@@ -35,7 +35,7 @@ datasets:
 
 # TODO extend this preprocessor to adhere to ClimWIP methods (extract shape / extract points)
 preprocessors:
-  all_methods: &shared
+  general: &general
     regrid:
       target_grid: 2.5x2.5
       scheme: linear
@@ -46,16 +46,13 @@ preprocessors:
       end_longitude: 39.0
       start_latitude: 30.0
       end_latitude: 76.25
-  
-  climWip_specific: &climwip
+
+  climwip:
+    <<: *general
     extract_season:
       season: JJA
     climate_statistics:
       operator: mean
-  
-  climWip_complete:
-    <<: *shared
-    <<: *climwip
 
 # TODO add another diagnostic for plotting and more variables
 diagnostics:
@@ -64,7 +61,7 @@ diagnostics:
       tas:
         mip: Amon
         preprocessor: climWip_complete
-      pr:  
+      pr:
         mip: Amon
         preprocessor: climWip_complete
     scripts:
@@ -76,9 +73,9 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-      pr:  
+      pr:
         mip: Amon
     scripts:
-      climwip: 
+      climwip:
         script: weighting/climwip.py
         shape_params: {D_tas : 0.588, D_pr: 0.658, S: 0.704}
