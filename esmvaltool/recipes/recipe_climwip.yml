@@ -21,19 +21,12 @@ documentation:
 
     - "Knutti, R. at al. (2017): A climate model projection weighting scheme accounting for performance and interdependence, Geophys. Res. Lett., 44, 1909–1918. DOI 10.1002/2016GL072012"
 
-
-
-# TODO select the right datasets and include observations
 datasets:
-  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r(1:3)i1p1, start_year: 1995, end_year: 2014}
-  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r(1:3)i1p1, start_year: 1995, end_year: 2014}
-  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r(1:4)i1p1, start_year: 1995, end_year: 2014}
-  - {dataset: ACCESS1-0, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1995, end_year: 2014}
-  - {dataset: ACCESS1-3, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 1995, end_year: 2014}
-  - {dataset: CCSM4, project: CMIP5, exp: rcp85, ensemble: r(1:4)i1p1, start_year: 1995, end_year: 2014}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1960, end_year: 2100}
+  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1960, end_year: 2100}
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1980, end_year: 2015}
 
-
-# TODO extend this preprocessor to adhere to ClimWIP methods (extract shape / extract points)
+# TODO use extract shape for an SREX region
 preprocessors:
   general: &general
     regrid:
@@ -54,27 +47,19 @@ preprocessors:
     climate_statistics:
       operator: mean
 
-# TODO add another diagnostic for plotting and more variables
 diagnostics:
-  inspect_preprocessed_files:
-    variables:
-      tas:
-        mip: Amon
-        preprocessor: climwip
-      pr:
-        mip: Amon
-        preprocessor: climwip
-    scripts:
-      visualize_region:
-        script:
-          weighting/visualize_region.py
-
   apply_climwip:
     variables:
       tas:
         mip: Amon
+        era5_name: 2m_temperature
+        era5_freq: monthly
       pr:
         mip: Amon
+        era5_name: total_precipitation
+        era5_freq: monthly
+
+
     scripts:
       climwip:
         script: weighting/climwip.py
