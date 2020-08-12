@@ -60,10 +60,10 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-        preprocessor: climWip_complete
+        preprocessor: climwip
       pr:
         mip: Amon
-        preprocessor: climWip_complete
+        preprocessor: climwip
     scripts:
       visualize_region:
         script:
