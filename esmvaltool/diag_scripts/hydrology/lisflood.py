@@ -79,16 +79,15 @@ def compute_vapour_pressure(tdps):
     esat.long_name = 'Daily Actual Water Vapour Pressure'
     esat.standard_name = 'water_vapor_pressure'
     esat.units = 'hPa'
-    esat.attributes['comment'] = ''.join((
-        'Actual water vapour pressure of air near the surface calculated',
-        ' from tdps using Tetens formula'
-    ))
+    esat.attributes['comment'] = ''.join(
+        ('Actual water vapour pressure of air near the surface calculated',
+         ' from tdps using Tetens formula'))
     return esat
 
 
 def compute_windspeed(uas, vas):
     """Compute absolute wind speed from horizontal components."""
-    sfc_wind = (uas ** 2 + vas ** 2) ** .5
+    sfc_wind = (uas**2 + vas**2)**.5
     sfc_wind.var_name = 'sfcWind'
     sfc_wind.long_name = 'Daily-Mean Near-Surface Wind Speed'
     sfc_wind.standard_name = 'wind_speed'
@@ -110,7 +109,7 @@ def save(xrds, var_name, dataset, cfg):
         str(end_year),
     ])
     output_file = get_diagnostic_filename(basename, cfg)
-    xrds.to_netcdf(output_file, encoding={var_name:{'_FillValue':1.e20}})
+    xrds.to_netcdf(output_file, encoding={var_name: {'_FillValue': 1.e20}})
     return output_file
 
 
@@ -156,9 +155,7 @@ def main(cfg):
             output_file = save(xrds, var_name, dataset, cfg)
 
             # Store provenance
-            provenance_record = get_provenance_record(
-                ancestors[var_name]
-            )
+            provenance_record = get_provenance_record(ancestors[var_name])
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(output_file, provenance_record)
 
