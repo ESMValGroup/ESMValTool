@@ -19,9 +19,12 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def _calculate_histograms(cube, numbars, lower_upper):
     # returns a dictionary for histogram plotting
+    weights = iris.analysis.cartography.area_weights(cube, normalize=True)
+    # Now convert to dask array, needed for da.histogram
+    weights = da.from_array(weights, chunks=cube.core_data().chunks)
     hist, bins = da.histogram(cube.core_data(),
                               bins=numbars,
-                              range=lower_upper)
+                              range=lower_upper, weights=weights)
     hist = hist.compute()
     hist = hist / np.sum(hist)
     return {"hist": hist, "bins": bins}
