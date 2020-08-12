@@ -1,11 +1,11 @@
 """
-Implementation of step iii and iv of the climwip weighting scheme 
+Implementation of step iii and iv of the climwip weighting scheme
 
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
 from scipy import stats
-
+from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata
 
 # (iii) The point-to-point distance between model and the center of the observational spread is calculated
 def model_performance(model, obs):
@@ -38,7 +38,7 @@ def calculate_weights(quality, independence, sigma_q, sigma_i):
     if sigma_q == -99.:
         numerator = (numerator * 0) + 1  # set to 1 (except NaN)
 
-return numerator, denominator
+    return numerator, denominator
 
 def calculate_weights_sigmas(distances, sigmas_q, sigmas_i):
     """Calculates the weights for each model N and combination of sigma values.
@@ -69,3 +69,66 @@ def calculate_weights_sigmas(distances, sigmas_q, sigmas_i):
                 # ww[ww < 1.e-10] = 0.  # set small weights to zero  # NOTE!!
                 weights[idx_q, idx_i, idx_d] = ww
     return weights
+
+
+
+def calculate_independence():
+    """calculate_independence."""
+    # TODO: complete this function
+    returned_stuff = None
+    return returned_stuff
+
+
+def visualize_independence():
+    """visualize_independence."""
+    # TODO: complete this function
+    returned_stuff = None
+    return returned_stuff
+
+
+def calculate_performance():
+    """calculate_performance."""
+    # TODO: complete this function
+    returned_stuff = None
+    return returned_stuff
+
+
+def visualize_performance():
+    """visualize_performance."""
+    # TODO: complete this function
+    returned_stuff = None
+    return returned_stuff
+
+
+def calculate_weights():
+    """calculate_weights."""
+    # TODO: complete this function
+    returned_stuff = None
+    return returned_stuff
+
+
+def visualize_weighting():
+    """visualize_weighting."""
+    # TODO: complete this function
+    returned_stuff = None
+    return returned_stuff
+
+
+def main(cfg):
+    """Perform climwip weighting method."""
+    obs = select_metadata(cfg['input_data'].values(), project='native6')
+    cmip5 = select_metadata(cfg['input_data'].values(), project='cmip5')
+
+    independence = calculate_independence(cmip5)
+    visualize_independence(independence)
+
+    performance = calculate_performance(cmip5, obs)
+    visualize_performance(performance)
+
+    weights = calculate_weights(independence, performance)
+    visualize_weighting(weights)
+
+
+if __name__ == '__main__':
+    with run_diagnostic() as config:
+        main(config)
