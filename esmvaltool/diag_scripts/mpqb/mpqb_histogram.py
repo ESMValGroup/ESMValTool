@@ -12,7 +12,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from mpqb_plots import read_mpqb_cfg
+from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -47,10 +47,6 @@ def _plot_histograms(hists, cfg, grouped_input_data):
     histtype = cfg.pop('histtype', 'bar')  # default type is 'bar'
     dataset = None  # needed to avoid pylint error
 
-
-    mpqb_cfg = read_mpqb_cfg()
-    datasetnames = mpqb_cfg['datasetnames']
-
     plt.clf()
     fig, ax1 = plt.subplots(1, 1)
 
@@ -63,13 +59,15 @@ def _plot_histograms(hists, cfg, grouped_input_data):
         xvals = hist["bins"][:-1] + width * (
             list(hists.keys()).index(alias) + 0.5)
 
+        label = get_mpqb_cfg('datasetname', alias)
+        color = get_mpqb_cfg('datasetcolor', alias)
         if histtype == 'bar':
             ax1.bar(
                 xvals,
                 hist["hist"],
                 width,
-                label=datasetnames[alias],
-                color=mpqb_cfg['datasetcolors'][alias],
+                label=label,
+                color=color,
             )
             plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha=0.3)
             plt.legend()
@@ -77,9 +75,9 @@ def _plot_histograms(hists, cfg, grouped_input_data):
             ax1.hist(hist["bins"][:-1],
                      hist["bins"],
                      weights=hist["hist"],
-                     label=datasetnames[alias],
+                     label=label,
                      histtype='step',
-                     color=mpqb_cfg['datasetcolors'][alias],
+                     color=color,
                      linewidth=2)
             handles, labels = ax1.get_legend_handles_labels()
             handles = [Line2D([], [], c=h.get_edgecolor(), lw=2.0) for h in handles]

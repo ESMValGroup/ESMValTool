@@ -10,14 +10,9 @@ from matplotlib.colors import from_levels_and_colors
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 import yaml
+from mpqb_utils import get_mpqb_cfg
 
 
-def read_mpqb_cfg():
-    """Read from mpqb_cfg.yml file."""
-    cfg_filename = os.path.join(os.path.split(__file__)[0], 'mpqb_cfg.yml')
-    with open(cfg_filename, 'r') as handle:
-        mpqb_cfg = yaml.safe_load(handle)
-    return mpqb_cfg
 
 
 def _parse_cmap(plotkwargs):
@@ -63,8 +58,7 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     fig = plt.figure(dpi=200)
     fig.add_subplot(projection=iris.plot.default_projection(cube))
 
-    datasetnames = read_mpqb_cfg()['datasetnames']
-    plottitle = datasetnames[plotkwargs.pop('title')]
+    plottitle =  get_mpqb_cfg('datasetname', plotkwargs.pop('title'))
 
     plotkwargs = _parse_cmap(plotkwargs)
     extend = plotkwargs.pop('extend')
