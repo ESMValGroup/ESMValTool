@@ -457,20 +457,20 @@ def run_diagnostic():
     )
 
     if old_content:
-        for content in old_content:
-            if args.force:
+        if args.force:
+            for content in old_content:
                 logger.info("Removing %s", content)
                 if os.path.isfile(content):
                     os.remove(content)
                 else:
                     shutil.rmtree(content)
-            elif not args.ignore_existing:
-                raise FileExistsError(
-                    "Script will abort to prevent accidentally overwriting "
-                    "your data in the following output files or directories:"
-                    "\n%s\n Use -f or --force to force emptying the output "
-                    "directories or use -i or --ignore-existing to ignore "
-                    "existing output directories." % '\n'.join(old_content))
+        elif not args.ignore_existing:
+            raise FileExistsError(
+                "Script will abort to prevent accidentally overwriting "
+                "your data in the following output files or directories:"
+                "\n%s\n Use -f or --force to force emptying the output "
+                "directories or use -i or --ignore-existing to ignore "
+                "existing output directories." % '\n'.join(old_content))
 
     # Create output directories
     for output_directory in output_directories:
