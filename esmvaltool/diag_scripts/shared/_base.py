@@ -442,7 +442,7 @@ def run_diagnostic():
                 cfg['script'], yaml.safe_dump(cfg))
 
     # Clean run_dir and output directories from previous runs
-    default_files = ['log.txt', 'resource_usage.txt', 'settings.yml']
+    default_files = {'log.txt', 'profile.bin', 'resource_usage.txt', 'settings.yml'}
 
     output_directories = []
     if cfg['write_netcdf']:
@@ -451,10 +451,10 @@ def run_diagnostic():
         output_directories.append(cfg['plot_dir'])
 
     old_content = [p for p in output_directories if os.path.exists(p)]
-    old_content += [
-        p for p in glob.glob(f"{cfg['run_dir']}/*")
+    old_content.extend(
+        p for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
         if not os.path.basename(p) in default_files
-    ]
+    )
 
     if old_content:
         for content in old_content:
