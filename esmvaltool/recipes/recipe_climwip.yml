@@ -54,11 +54,12 @@ diagnostics:
         mip: Amon
         era5_name: 2m_temperature
         era5_freq: monthly
+        preprocessor: climwip
       pr:
         mip: Amon
         era5_name: total_precipitation
         era5_freq: monthly
-
+        preprocessor: climwip
 
     scripts:
       climwip:
