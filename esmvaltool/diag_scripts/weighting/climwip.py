@@ -9,6 +9,8 @@ from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata
 import numpy as np
 import xarray as xr
 from scipy.spatial.distance import pdist, squareform
+from collections import defaultdict
+
 
 
 # (iii) The point-to-point distance between model and the center of the observational spread is calculated
@@ -144,40 +146,59 @@ def visualize_weighting():
     return returned_stuff
 
 
+def read_metadata(cfg, projects: list) -> dict:
+    """Read the metadata from the config file
+    Project is the list of project identifiers to select."""
+    d = defaultdict(list)
+
+    for project in projects:
+        metadata = select_metadata(cfg['input_data'].values(), project=project)
+
+        for item in metadata:
+            variable = item['short_name']
+
+            d[variable].append(item)
+
+    return d
+
+
+def read_diagnostic_data(datasets: list):
+    """Read the diagnostic data from the list of given datasets (metadata) into an Xarray."""
+    to_concat = []
+
+    for dataset in datasets:
+        fn = dataset['filename']
+        xarr = xr.open_dataset(fn)
+        to_concat.append(xarr)
+
+    diagnostic = xr.concat(to_concat, dim='model_ensemble')
+
+    return diagnostic
+
+
 def main(cfg):
     """Perform climwip weighting method."""
 
     print("\nBEGIN DIAGNOSTIC\n")
 
-    obs = select_metadata(cfg['input_data'].values(), project='native6')
-    cmip5 = select_metadata(cfg['input_data'].values(), project='CMIP5')
+    observations = read_metadata(cfg, projects=['native6'])
+    model_data = read_metadata(cfg, projects=['CMIP5'])
 
-    variables = set([item['short_name'] for item in cmip5])
+    variables = model_data.keys()
 
     diagnostics = []  # TODO: is this necessary to keep around?
-    observations = {}
     independences = []
 
-    # TODO: make function out of this loop to do both obs/cmip5 for reading data
-    for idx, variable in enumerate(variables):
+    for variable, datasets in model_data.items():
         print(variable)
-
-        datasets = [item for item in cmip5 if item['short_name'] == variable]
-        to_concat = []
-
-        for dataset in datasets:
-            fn = dataset['filename']
-            xarr = xr.open_dataset(fn)
-            to_concat.append(xarr)
-
-        diagnostic = xr.concat(to_concat, dim='model_ensemble')
-        diagnostics.append(diagnostic)
+        diagnostic = read_diagnostic_data(datasets)
     
         independence = calculate_independence(diagnostic[variable])
 
         print(independence)
         print()
 
+        diagnostics.append(diagnostic)
         independences.append(independence)
 
     independences = xr.concat(independences, dim='diagnostic')
