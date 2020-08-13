@@ -82,7 +82,7 @@ def get_segment_season_means(cfg):
     segments_season_means = {}
     for name, period in periods.items():
         LOGGER.info("Get segment season means for %s", name)
-        filename = get_diagnostic_filename(f'season_means_{name}', cfg)
+        filename = f"{cfg['run_dir']}/season_means_{name}.nc"
         if Path(filename).exists():
             LOGGER.info("Found intermediate file %s", filename)
         else:
@@ -140,7 +140,7 @@ def get_all_top1000s(cfg, segment_season_means):
     top1000s = {}
     for name, target in target_values.items():
         LOGGER.info('Get 1000 recombinations for %s', name)
-        filename = get_diagnostic_filename(f"top1000_{name}", cfg, 'csv')
+        filename = f"{cfg['run_dir']}/top1000_{name}.csv"
         if Path(filename).exists():
             LOGGER.info("Found intermediate file %s", filename)
         else:

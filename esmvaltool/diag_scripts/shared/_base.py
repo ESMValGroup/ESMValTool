@@ -96,7 +96,6 @@ class ProvenanceLogger:
                 provenance_logger.log(output_file, record)
 
     """
-
     def __init__(self, cfg):
         """Create a provenance logger."""
         self._log_file = os.path.join(cfg['run_dir'],
@@ -174,10 +173,9 @@ def select_metadata(metadata, **attributes):
     """
     selection = []
     for attribs in metadata:
-        if all(
-                a in attribs and (
-                    attribs[a] == attributes[a] or attributes[a] == '*')
-                for a in attributes):
+        if all(a in attribs and (
+                attribs[a] == attributes[a] or attributes[a] == '*')
+               for a in attributes):
             selection.append(attribs)
     return selection
 
@@ -443,28 +441,38 @@ def run_diagnostic():
     logger.info("Starting diagnostic script %s with configuration:\n%s",
                 cfg['script'], yaml.safe_dump(cfg))
 
-    # Create output directories
+    # Clean run_dir and output directories from previous runs
+    default_files = ['log.txt', 'resource_usage.txt', 'settings.yml']
+
     output_directories = []
     if cfg['write_netcdf']:
         output_directories.append(cfg['work_dir'])
     if cfg['write_plots']:
         output_directories.append(cfg['plot_dir'])
 
-    existing = [p for p in output_directories if os.path.exists(p)]
+    old_content = [p for p in output_directories if os.path.exists(p)]
+    old_content += [
+        p for p in glob.glob(f"{cfg['run_dir']}/*")
+        if not os.path.basename(p) in default_files
+    ]
 
-    if existing:
-        if args.force:
-            for output_directory in existing:
-                logger.info("Removing %s", output_directory)
-                shutil.rmtree(output_directory)
-        elif not args.ignore_existing:
-            logger.error(
-                "Script will abort to prevent accidentally overwriting your "
-                "data in these directories:\n%s\n"
-                "Use -f or --force to force emptying the output directories "
-                "or use -i or --ignore-existing to ignore existing output "
-                "directories.", '\n'.join(existing))
+    if old_content:
+        for content in old_content:
+            if args.force:
+                logger.info("Removing %s", content)
+                if os.path.isfile(content):
+                    os.remove(content)
+                else:
+                    shutil.rmtree(content)
+            elif not args.ignore_existing:
+                raise FileExistsError(
+                    "Script will abort to prevent accidentally overwriting your "
+                    "data in the following output files or directories:\n%s\n"
+                    "Use -f or --force to force emptying the output directories "
+                    "or use -i or --ignore-existing to ignore existing output "
+                    "directories." % '\n'.join(old_content))
 
+    # Create output directories
     for output_directory in output_directories:
         logger.info("Creating %s", output_directory)
         if args.ignore_existing and os.path.exists(output_directory):
