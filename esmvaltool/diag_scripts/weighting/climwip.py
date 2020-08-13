@@ -6,6 +6,10 @@ https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
 from scipy import stats
 from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata
+import numpy as np
+import xarray as xr
+from scipy.spatial.distance import pdist, squareform
+
 
 # (iii) The point-to-point distance between model and the center of the observational spread is calculated
 def model_performance(model, obs):
@@ -71,13 +75,39 @@ def calculate_weights_sigmas(distances, sigmas_q, sigmas_i):
     return weights
 
 
+def distance_matrix(data):
+    """Takes a dataset with ensemble member/lon/lat. Flattens lon/lat into a single dimension.
+    Calculates the distance between every ensemble member.
 
-def calculate_independence():
+    Returns 2D NxN array, where N == number of ensemble members.
+    """
+    n_members = data.shape[0]
+    
+    data = data.reshape(n_members, -1)
+    
+    # pdist does not work with NaN
+    idx = np.where(np.all(np.isfinite(data), axis=0))[0]
+    data = data[:, idx]
+
+    d_matrix = squareform(pdist(data, metric='euclidean'))
+    np.fill_diagonal(d_matrix, np.nan)
+
+    return d_matrix
+
+
+def calculate_independence(data_array: 'xarray.DataArray') -> 'xarray.DataArray':
     """calculate_independence."""
-    # TODO: complete this function
-    returned_stuff = None
-    return returned_stuff
+    
+    diff = xr.apply_ufunc(
+        distance_matrix, data_array,
+        input_core_dims=[['model_ensemble', 'lat', 'lon']],
+        output_core_dims=[['perfect_model_ensemble', 'model_ensemble']]
+    )
 
+    diff.name = 'data'
+    # diff = diff.expand_dims({'diagnostic': [idx]})
+
+    return diff
 
 def visualize_independence():
     """visualize_independence."""
@@ -116,10 +146,47 @@ def visualize_weighting():
 
 def main(cfg):
     """Perform climwip weighting method."""
-    obs = select_metadata(cfg['input_data'].values(), project='native6')
-    cmip5 = select_metadata(cfg['input_data'].values(), project='cmip5')
 
-    independence = calculate_independence(cmip5)
+    print("\nBEGIN DIAGNOSTIC\n")
+
+    obs = select_metadata(cfg['input_data'].values(), project='native6')
+    cmip5 = select_metadata(cfg['input_data'].values(), project='CMIP5')
+
+    variables = set([item['short_name'] for item in cmip5])
+
+    diagnostics = []  # TODO: is this necessary to keep around?
+    observations = {}
+    independences = []
+
+    # TODO: make function out of this loop to do both obs/cmip5 for reading data
+    for idx, variable in enumerate(variables):
+        print(variable)
+
+        datasets = [item for item in cmip5 if item['short_name'] == variable]
+        to_concat = []
+
+        for dataset in datasets:
+            fn = dataset['filename']
+            xarr = xr.open_dataset(fn)
+            to_concat.append(xarr)
+
+        diagnostic = xr.concat(to_concat, dim='model_ensemble')
+        diagnostics.append(diagnostic)
+    
+        independence = calculate_independence(diagnostic[variable])
+
+        print(independence)
+        print()
+
+        independences.append(independence)
+
+    independences = xr.concat(independences, dim='diagnostic')
+
+    from IPython import embed
+    embed();exit()
+
+    independence = calculate_independence(diagnostics)
+
     visualize_independence(independence)
 
     performance = calculate_performance(cmip5, obs)
