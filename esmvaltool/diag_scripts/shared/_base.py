@@ -466,11 +466,11 @@ def run_diagnostic():
                     shutil.rmtree(content)
             elif not args.ignore_existing:
                 raise FileExistsError(
-                    "Script will abort to prevent accidentally overwriting your "
-                    "data in the following output files or directories:\n%s\n"
-                    "Use -f or --force to force emptying the output directories "
-                    "or use -i or --ignore-existing to ignore existing output "
-                    "directories." % '\n'.join(old_content))
+                    "Script will abort to prevent accidentally overwriting "
+                    "your data in the following output files or directories:"
+                    "\n%s\n Use -f or --force to force emptying the output "
+                    "directories or use -i or --ignore-existing to ignore "
+                    "existing output directories." % '\n'.join(old_content))
 
     # Create output directories
     for output_directory in output_directories:
