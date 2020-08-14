@@ -1,6 +1,9 @@
 ---
 version: 2.1
 
+orbs:
+  coverage-reporter: codacy/coverage-reporter@11.1.1
+
 commands:
   check_changes:
     steps:
@@ -36,17 +39,9 @@ jobs:
           path: test-reports/
       - store_test_results:
           path: test-reports/
-      - run:
-          when: always
-          command: |
-            if [[ -v CODACY_PROJECT_TOKEN ]]
-            then
-              echo Uploading coverage report
-              pip install codacy-coverage
-              python-codacy-coverage -r test-reports/coverage.xml
-            else
-              echo Not uploading coverage report
-            fi
+      - coverage-reporter/send_report:
+          coverage-reports: 'test-reports/coverage.xml'
+          project-token: $CODACY_PROJECT_TOKEN
 
   test_installation:
     # Test Python 3 installation
