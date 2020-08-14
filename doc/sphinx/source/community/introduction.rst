@@ -123,7 +123,7 @@ Running tests
 -------------
 
 Go to the directory where the repository is cloned and run
-``python setup.py test``. Tests will also be run automatically by
+``pytest``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
 
 Code style
