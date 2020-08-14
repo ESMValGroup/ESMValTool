@@ -82,12 +82,18 @@ def weighted_distance_matrix(data):
 
 
 def area_weighted_mean(data):
-    pass
+    """Calculate mean weighted by the latitude."""
+
+    weights_lat = np.cos(np.radians(data.lat))
+    means = data.weighted(weights_lat).mean(dim=['lat', 'lon'])
+
+    return means
 
 
 def distance_matrix(data):
-    """Takes a dataset with ensemble member/lon/lat. Flattens lon/lat into a single dimension.
-    Calculates the distance between every ensemble member.
+    """Takes a dataset with ensemble member/lon/lat. Flattens lon/lat 
+    into a single dimension. Calculates the distance between every 
+    ensemble member.
 
     Returns 2D NxN array, where N == number of ensemble members.
     """
@@ -129,10 +135,10 @@ def visualize_independence(independence):
 
 def calculate_performance(model_data, obs_data):
     """calculate_performance."""
-    # TODO: Add weighting
 
     diff = model_data - obs_data
-    performance = (diff**2).mean()**0.5
+
+    performance = area_weighted_mean(diff**2)**0.5
     
     return performance
 
