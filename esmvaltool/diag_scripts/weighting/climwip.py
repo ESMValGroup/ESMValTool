@@ -180,26 +180,29 @@ def read_metadata(cfg, projects: list) -> dict:
     return d
 
 
-def read_input_data(datasets: list, variable: str, dim: str='data_ensemble'):
+def read_input_data(datasets: list, dim: str='data_ensemble') -> 'xr.DataArray':
     """Read the diagnostic data from the list of given datasets (metadata) into an Xarray."""
     to_concat = []
 
     for dataset in datasets:
         fn = dataset['filename']
+        variable = dataset['short_name']
         xarr = xr.open_dataset(fn)
-        to_concat.append(xarr)
+        to_concat.append(xarr[variable])
 
     diagnostic = xr.concat(to_concat, dim=dim)
 
-    return diagnostic[variable]
+    return diagnostic
 
 
-def read_model_data(datasets: list, variable: str):
-    return read_input_data(datasets, variable, dim='model_ensemble')
+def read_model_data(datasets: list) -> 'xr.DataArray':
+    """Loads model data from list of metadata."""
+    return read_input_data(datasets, dim='model_ensemble')
 
 
-def read_observation_data(datasets: list, variable: str):
-    return read_input_data(datasets, variable, dim='obs_ensemble')
+def read_observation_data(datasets: list) -> 'xr.DataArray':
+    """Loads observation data from list of metadata."""
+    return read_input_data(datasets, dim='obs_ensemble')
 
 
 def aggregate_obs_data(dataset, operator: str='median'):
@@ -229,13 +232,13 @@ def main(cfg):
     for variable, datasets in models.items():
         print(f'Reading model data for {variable}')
 
-        model_data = read_model_data(datasets, variable=variable)
+        model_data = read_model_data(datasets)
         model_data_dict[variable] = model_data
     
     for variable, datasets in observations.items():
         print(f'Reading observation data for {variable}')
 
-        obs_data = read_observation_data(datasets, variable=variable)
+        obs_data = read_observation_data(datasets)
         obs_data = aggregate_obs_data(obs_data, operator='median')
         obs_data_dict[variable] = obs_data
 
