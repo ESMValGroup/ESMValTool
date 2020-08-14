@@ -365,7 +365,8 @@ def select_value(alias_cubes, specs):
         result_cube = statistic_function(cube, specs['logic'])
     else:
         raise Exception(f"Period {specs['period']} not implemented.")
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     return result_cube
 
 def _check_required_variables(required, available):
@@ -584,7 +585,8 @@ def var_perc_ex(alias_cubes, specs, cfg):
         raise Exception(f"Period {specs['period']} not implemented.")
 
     # adjust cube information
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     result_cube.units = Unit('days')
 
     return result_cube
@@ -738,7 +740,8 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
         result_cube = statistic_function(percentiles_threshold, specs['logic'])
     
     # adjust cube information
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     result_cube.units = Unit('mm per year')
     
     return result_cube
@@ -857,7 +860,8 @@ def spell_perc_ex_thresh(alias_cubes, specs, cfg):
         raise Exception(f"Period {specs['period']} not implemented.")
         
     # adjust cube information
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     result_cube.units = Unit('days per year')
     
     return result_cube

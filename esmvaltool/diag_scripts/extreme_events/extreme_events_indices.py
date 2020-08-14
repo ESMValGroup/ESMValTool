@@ -364,7 +364,8 @@ def dtr(alias_cubes, **kwargs):
     specs = index_definition[method_index[sys._getframe().f_code.co_name]]
     _check_required_variables(specs['required'], [item.var_name for _,item in alias_cubes.items()])
     result_cube = alias_cubes['tasmax'] - alias_cubes['tasmin']
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     
     result_cube.attributes = alias_cubes['tasmax'].attributes
     
@@ -532,7 +533,8 @@ def sdiiETCCDI_m(alias_cubes, **kwargs):
     
     result_cube.attributes = wd_selection.attributes
     
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     result_cube.units = Unit('mm month-1')
     
     # add filename
@@ -563,7 +565,8 @@ def sdiiETCCDI_yr(alias_cubes, **kwargs):
         
     result_cube.attributes = wd_selection.attributes
     
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     result_cube.units = Unit('mm month-1')
     
     # add filename
@@ -587,7 +590,8 @@ def cddETCCDI_yr(alias_cubes, **kwargs):
     
     result_cube = max_span_yr(cube, specs['threshold'], agg)
     
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     result_cube.units = Unit(f'days per {agg}')
     
     # add filename
@@ -611,7 +615,8 @@ def cwdETCCDI_yr(alias_cubes, **kwargs):
     
     result_cube = max_span_yr(cube, specs['threshold'], agg)
     
-    result_cube.rename(specs['cf_name'])
+    result_cube.long_name = specs['cf_name']
+    result_cube.var_name = specs['cf_name']
     result_cube.units = Unit(f'days per {agg}')
     
     # add filename

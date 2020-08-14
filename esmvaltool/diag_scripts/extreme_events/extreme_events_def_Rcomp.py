@@ -339,7 +339,7 @@ annual_cold_spell_duration_index:
         value: 6
         unit: days
         logic: greater_equal
-    cf_name: cddiETCCDI
+    cf_name: csdiETCCDI
 # %% annual_maximum_length_of_dry_spell
 annual_maximum_length_of_dry_spell:
     name: CDD
