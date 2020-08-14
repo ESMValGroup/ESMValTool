@@ -111,21 +111,26 @@ def calculate_independence(data_array: 'xarray.DataArray') -> 'xarray.DataArray'
 
     return diff
 
-def visualize_independence():
+def visualize_independence(independence):
     """visualize_independence."""
     # TODO: complete this function
     returned_stuff = None
     return returned_stuff
 
 
-def calculate_performance():
+def calculate_performance(model_data, obs_data):
     """calculate_performance."""
     # TODO: complete this function
+
+    from IPython import embed
+    embed();exit()
+    
+
     returned_stuff = None
     return returned_stuff
 
 
-def visualize_performance():
+def visualize_performance(performance):
     """visualize_performance."""
     # TODO: complete this function
     returned_stuff = None
@@ -162,7 +167,7 @@ def read_metadata(cfg, projects: list) -> dict:
     return d
 
 
-def read_diagnostic_data(datasets: list):
+def read_diagnostic_data(datasets: list, variable: str):
     """Read the diagnostic data from the list of given datasets (metadata) into an Xarray."""
     to_concat = []
 
@@ -173,7 +178,7 @@ def read_diagnostic_data(datasets: list):
 
     diagnostic = xr.concat(to_concat, dim='model_ensemble')
 
-    return diagnostic
+    return diagnostic[variable]
 
 
 def main(cfg):
@@ -182,39 +187,54 @@ def main(cfg):
     print("\nBEGIN DIAGNOSTIC\n")
 
     observations = read_metadata(cfg, projects=['native6'])
-    model_data = read_metadata(cfg, projects=['CMIP5'])
+    models = read_metadata(cfg, projects=['CMIP5'])
 
-    variables = model_data.keys()
+    variables = models.keys()
 
-    diagnostics = []  # TODO: is this necessary to keep around?
-    independences = []
+    model_data_dict = {}
+    obs_data_dict = {}
+    independence_dict = {}
 
-    for variable, datasets in model_data.items():
-        print(variable)
-        diagnostic = read_diagnostic_data(datasets)
+    for variable, datasets in models.items():
+        print(f'Reading model data for {variable}')
+
+        model_data = read_diagnostic_data(datasets, variable=variable)
+        model_data_dict[variable] = model_data
     
-        independence = calculate_independence(diagnostic[variable])
+    for variable, datasets in observations.items():
+        print(f'Reading observation data for {variable}')
+
+        obs_data = read_diagnostic_data(datasets, variable=variable)
+        obs_data_dict[variable] = obs_data
+
+    for variable, model_data in model_data_dict.items():
+        print(f'Calculating independence for {variable}')
+
+        independence = calculate_independence(model_data)
+        independence_dict[variable] = independence
+        
+        visualize_independence(independence)  # TODO
 
         print(independence)
         print()
 
-        diagnostics.append(diagnostic)
-        independences.append(independence)
+    for variable in variables:
+        print(f'Calculating performance for {variable}')
 
-    independences = xr.concat(independences, dim='diagnostic')
+        model_data = model_data_dict[variable]
+        obs_data = obs_data_dict[variable]
 
-    from IPython import embed
-    embed();exit()
+        performance = calculate_performance(model_data, obs_data)
 
-    independence = calculate_independence(diagnostics)
+        visualize_performance(performance)  # TODO
 
-    visualize_independence(independence)
 
-    performance = calculate_performance(cmip5, obs)
-    visualize_performance(performance)
 
-    weights = calculate_weights(independence, performance)
-    visualize_weighting(weights)
+
+    # independences = xr.concat(independences, dim='diagnostic')
+
+    # weights = calculate_weights(independence, performance)
+    # visualize_weighting(weights)
 
 
 if __name__ == '__main__':
