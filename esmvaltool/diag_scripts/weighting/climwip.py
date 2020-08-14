@@ -77,6 +77,14 @@ def calculate_weights_sigmas(distances, sigmas_q, sigmas_i):
     return weights
 
 
+def weighted_distance_matrix(data):
+    pass
+
+
+def area_weighted_mean(data):
+    pass
+
+
 def distance_matrix(data):
     """Takes a dataset with ensemble member/lon/lat. Flattens lon/lat into a single dimension.
     Calculates the distance between every ensemble member.
@@ -99,6 +107,7 @@ def distance_matrix(data):
 
 def calculate_independence(data_array: 'xarray.DataArray') -> 'xarray.DataArray':
     """calculate_independence."""
+    # TODO: use weighted_distance_matrix
     
     diff = xr.apply_ufunc(
         distance_matrix, data_array,
@@ -120,14 +129,12 @@ def visualize_independence(independence):
 
 def calculate_performance(model_data, obs_data):
     """calculate_performance."""
-    # TODO: complete this function
+    # TODO: Add weighting
 
-    from IPython import embed
-    embed();exit()
+    diff = model_data - obs_data
+    performance = (diff**2).mean()**0.5
     
-
-    returned_stuff = None
-    return returned_stuff
+    return performance
 
 
 def visualize_performance(performance):
@@ -167,7 +174,7 @@ def read_metadata(cfg, projects: list) -> dict:
     return d
 
 
-def read_diagnostic_data(datasets: list, variable: str):
+def read_input_data(datasets: list, variable: str, dim: str='data_ensemble'):
     """Read the diagnostic data from the list of given datasets (metadata) into an Xarray."""
     to_concat = []
 
@@ -176,9 +183,27 @@ def read_diagnostic_data(datasets: list, variable: str):
         xarr = xr.open_dataset(fn)
         to_concat.append(xarr)
 
-    diagnostic = xr.concat(to_concat, dim='model_ensemble')
+    diagnostic = xr.concat(to_concat, dim=dim)
 
     return diagnostic[variable]
+
+
+def read_model_data(datasets: list, variable: str):
+    return read_input_data(datasets, variable, dim='model_ensemble')
+
+
+def read_observation_data(datasets: list, variable: str):
+    return read_input_data(datasets, variable, dim='obs_ensemble')
+
+
+def aggregate_obs_data(dataset, operator: str='median'):
+    """Reduce the dataset along the `obs_ensemble` dimension by applying
+    the operator. Returns an xarray with the ensemble dimension squeezed to 1D."""
+
+    if operator == 'median':
+        return dataset.median(dim='obs_ensemble')
+    else:
+        raise ValueError(f'No such operator `{operator}`')
 
 
 def main(cfg):
@@ -198,13 +223,14 @@ def main(cfg):
     for variable, datasets in models.items():
         print(f'Reading model data for {variable}')
 
-        model_data = read_diagnostic_data(datasets, variable=variable)
+        model_data = read_model_data(datasets, variable=variable)
         model_data_dict[variable] = model_data
     
     for variable, datasets in observations.items():
         print(f'Reading observation data for {variable}')
 
-        obs_data = read_diagnostic_data(datasets, variable=variable)
+        obs_data = read_observation_data(datasets, variable=variable)
+        obs_data = aggregate_obs_data(obs_data, operator='median')
         obs_data_dict[variable] = obs_data
 
     for variable, model_data in model_data_dict.items():
@@ -227,6 +253,9 @@ def main(cfg):
         performance = calculate_performance(model_data, obs_data)
 
         visualize_performance(performance)  # TODO
+
+        print(performance)
+        print()
 
 
 
