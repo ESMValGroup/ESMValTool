@@ -7,7 +7,6 @@ import os
 import shutil
 import sys
 import time
-from collections import OrderedDict
 
 import yaml
 
@@ -96,6 +95,7 @@ class ProvenanceLogger:
                 provenance_logger.log(output_file, record)
 
     """
+
     def __init__(self, cfg):
         """Create a provenance logger."""
         self._log_file = os.path.join(cfg['run_dir'],
@@ -195,8 +195,7 @@ def group_metadata(metadata, attribute, sort=None):
     Returns
     -------
     :obj:`dict` of :obj:`list` of :obj:`dict`
-        A dictionary containing the requested groups. If sorting is requested,
-        an `OrderedDict` will be returned.
+        A dictionary containing the requested groups.
 
     """
     groups = {}
@@ -255,7 +254,7 @@ def sorted_group_metadata(metadata_groups, sort):
 
     Returns
     -------
-    :obj:`OrderedDict` of :obj:`list` of :obj:`dict`
+    :obj:`dict` of :obj:`list` of :obj:`dict`
         A dictionary containing the requested groups.
 
     """
@@ -263,10 +262,10 @@ def sorted_group_metadata(metadata_groups, sort):
         sort = []
 
     def normalized_group_key(key):
-        """Define a key to sort the OrderedDict by."""
+        """Define a key to sort by."""
         return '' if key is None else str(key).lower()
 
-    groups = OrderedDict()
+    groups = {}
     for key in sorted(metadata_groups, key=normalized_group_key):
         groups[key] = sorted_metadata(metadata_groups[key], sort)
 
@@ -310,7 +309,8 @@ def extract_variables(cfg, as_iris=False):
         variables[short_name] = {}
         info = variables[short_name]
         for key in keys_to_extract:
-            info[key] = data[key]
+            if key in data:
+                info[key] = data[key]
 
         # Replace short_name by var_name if desired
         if as_iris:
@@ -442,7 +442,9 @@ def run_diagnostic():
                 cfg['script'], yaml.safe_dump(cfg))
 
     # Clean run_dir and output directories from previous runs
-    default_files = {'log.txt', 'profile.bin', 'resource_usage.txt', 'settings.yml'}
+    default_files = {
+        'log.txt', 'profile.bin', 'resource_usage.txt', 'settings.yml'
+    }
 
     output_directories = []
     if cfg['write_netcdf']:
@@ -451,10 +453,8 @@ def run_diagnostic():
         output_directories.append(cfg['plot_dir'])
 
     old_content = [p for p in output_directories if os.path.exists(p)]
-    old_content.extend(
-        p for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
-        if not os.path.basename(p) in default_files
-    )
+    old_content.extend(p for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
+                       if not os.path.basename(p) in default_files)
 
     if old_content:
         if args.force:
