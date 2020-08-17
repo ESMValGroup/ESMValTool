@@ -4,12 +4,14 @@ Implementation of step iii and iv of the climwip weighting scheme
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-from scipy import stats
-from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata
+from collections import defaultdict
+
 import numpy as np
 import xarray as xr
+from scipy import stats
 from scipy.spatial.distance import pdist, squareform
-from collections import defaultdict
+
+from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata
 
 
 def read_metadata(cfg, projects: list) -> dict:
