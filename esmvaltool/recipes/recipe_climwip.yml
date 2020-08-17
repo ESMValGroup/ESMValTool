@@ -64,4 +64,10 @@ diagnostics:
     scripts:
       climwip:
         script: weighting/climwip.py
-        shape_params: {D_tas : 0.588, D_pr: 0.658, S: 0.704}
+        shape_params:
+          tas:
+            sigma_d: 0.588
+            sigma_s: 0.704
+          pr:
+            sigma_d: 0.658
+            sigma_s: 0.704
