@@ -30,35 +30,48 @@ def read_metadata(cfg, projects: list) -> dict:
     return d
 
 
-def read_input_data(datasets: list,
-                    dim: str = 'data_ensemble') -> 'xr.DataArray':
+def read_input_data(metadata: list,
+                    dim: str = 'data_ensemble',
+                    identifier_fmt: str = '{dataset}') -> 'xr.DataArray':
     """Loads data from metadata.
 
-    Read the input data from the list of given data sets. `datasets` is a list
+    Read the input data from the list of given data sets. `metadata` is a list
     of metadata containing the filenames to load. Only returns the given `variable`.
     The datasets are stacked along the `dim` dimension. Returns an xarray.DataArray."""
 
-    to_concat = []
+    data_arrays = []
+    identifiers = []
 
-    for dataset in datasets:
-        fn = dataset['filename']
-        variable = dataset['short_name']
-        xarr = xr.open_dataset(fn)
-        to_concat.append(xarr[variable])
+    for info in metadata:
+        filename = info['filename']
+        variable = info['short_name']
+        xrds = xr.open_dataset(filename)
+        data_arrays.append(xrds[variable])
+        identifier = identifier_fmt.format(**info)
+        identifiers.append(identifier)
 
-    diagnostic = xr.concat(to_concat, dim=dim)
+    diagnostic = xr.concat(data_arrays, dim=dim)
+    diagnostic[dim] = identifiers
+
+    # Clean up unnecessary coordinate info
+    redundant_dims = np.setdiff1d(diagnostic.coords, diagnostic.dims)
+    diagnostic = diagnostic.drop(redundant_dims)
 
     return diagnostic
 
 
 def read_model_data(datasets: list) -> 'xr.DataArray':
     """Loads model data from list of metadata."""
-    return read_input_data(datasets, dim='model_ensemble')
+    return read_input_data(datasets,
+                           dim='model_ensemble',
+                           identifier_fmt='{dataset}_{ensemble}_{exp}')
 
 
 def read_observation_data(datasets: list) -> 'xr.DataArray':
     """Loads observation data from list of metadata."""
-    return read_input_data(datasets, dim='obs_ensemble')
+    return read_input_data(datasets,
+                           dim='obs_ensemble',
+                           identifier_fmt='{dataset}')
 
 
 def aggregate_obs_data(data_array: 'xr.DataArray',
@@ -167,8 +180,7 @@ def visualize_performance(performance):
 
 
 def calculate_weights(performance: 'xr.DataArray',
-                      independence: 'xr.DataArray',
-                      sigma_performance: float,
+                      independence: 'xr.DataArray', sigma_performance: float,
                       sigma_independence: float) -> 'xr.DataArray':
     """Calculates the (NOT normalised) weights for each model N.
     Parameters
@@ -227,6 +239,10 @@ def main(cfg):
         datasets_obs = observations[variable]
         obs_data = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
+
+        import IPython
+        IPython.embed()
+        exit()
 
         print(f'Calculating independence for {variable}')
         independence = calculate_independence(model_data)
