@@ -12,7 +12,71 @@ from scipy.spatial.distance import pdist, squareform
 from collections import defaultdict
 
 
+def read_metadata(cfg, projects: list) -> dict:
+    """Read the metadata from the config file.
+
+    Project is the list of project identifiers (str) to select."""
+
+    d = defaultdict(list)
+
+    for project in projects:
+        metadata = select_metadata(cfg['input_data'].values(), project=project)
+
+        for item in metadata:
+            variable = item['short_name']
+
+            d[variable].append(item)
+
+    return d
+
+
+def read_input_data(datasets: list,
+                    dim: str = 'data_ensemble') -> 'xr.DataArray':
+    """Loads data from metadata.
+
+    Read the input data from the list of given data sets. `datasets` is a list
+    of metadata containing the filenames to load. Only returns the given `variable`.
+    The datasets are stacked along the `dim` dimension. Returns an xarray.DataArray."""
+
+    to_concat = []
+
+    for dataset in datasets:
+        fn = dataset['filename']
+        variable = dataset['short_name']
+        xarr = xr.open_dataset(fn)
+        to_concat.append(xarr[variable])
+
+    diagnostic = xr.concat(to_concat, dim=dim)
+
+    return diagnostic
+
+
+def read_model_data(datasets: list) -> 'xr.DataArray':
+    """Loads model data from list of metadata."""
+    return read_input_data(datasets, dim='model_ensemble')
+
+
+def read_observation_data(datasets: list) -> 'xr.DataArray':
+    """Loads observation data from list of metadata."""
+    return read_input_data(datasets, dim='obs_ensemble')
+
+
+def aggregate_obs_data(data_array: 'xr.DataArray',
+                       operator: str = 'median') -> 'xr.DataArray':
+    """Reduce data array along ensemble dimension.
+
+    Apply the operator to squeeze the ensemble dimension by applying
+    the `operator` along the ensemble (`obs_ensemble`) dimension. Returns
+    an xarray.Dataset squeezed to 1D."""
+
+    if operator == 'median':
+        return data_array.median(dim='obs_ensemble')
+    else:
+        raise ValueError(f'No such operator `{operator}`')
+
+
 def weighted_distance_matrix(data_array: 'xr.DataArray'):
+    # TODO implement this function to replace distance_matrix
     pass
 
 
@@ -135,75 +199,12 @@ def calculate_weights(performance: 'xr.DataArray',
     return weights
 
 
-def visualize_weighting():
+def visualize_weights():
     """visualize_weighting."""
 
     # TODO: complete this function
     returned_stuff = None
     return returned_stuff
-
-
-def read_metadata(cfg, projects: list) -> dict:
-    """Read the metadata from the config file.
-
-    Project is the list of project identifiers (str) to select."""
-
-    d = defaultdict(list)
-
-    for project in projects:
-        metadata = select_metadata(cfg['input_data'].values(), project=project)
-
-        for item in metadata:
-            variable = item['short_name']
-
-            d[variable].append(item)
-
-    return d
-
-
-def read_input_data(datasets: list,
-                    dim: str = 'data_ensemble') -> 'xr.DataArray':
-    """Loads data from metadata.
-
-    Read the input data from the list of given data sets. `datasets` is a list
-    of metadata containing the filenames to load. Only returns the given `variable`.
-    The datasets are stacked along the `dim` dimension. Returns an xarray.DataArray."""
-
-    to_concat = []
-
-    for dataset in datasets:
-        fn = dataset['filename']
-        variable = dataset['short_name']
-        xarr = xr.open_dataset(fn)
-        to_concat.append(xarr[variable])
-
-    diagnostic = xr.concat(to_concat, dim=dim)
-
-    return diagnostic
-
-
-def read_model_data(datasets: list) -> 'xr.DataArray':
-    """Loads model data from list of metadata."""
-    return read_input_data(datasets, dim='model_ensemble')
-
-
-def read_observation_data(datasets: list) -> 'xr.DataArray':
-    """Loads observation data from list of metadata."""
-    return read_input_data(datasets, dim='obs_ensemble')
-
-
-def aggregate_obs_data(data_array: 'xr.DataArray',
-                       operator: str = 'median') -> 'xr.DataArray':
-    """Reduce data array along ensemble dimension.
-
-    Apply the operator to squeeze the ensemble dimension by applying
-    the `operator` along the ensemble (`obs_ensemble`) dimension. Returns
-    an xarray.Dataset squeezed to 1D."""
-
-    if operator == 'median':
-        return data_array.median(dim='obs_ensemble')
-    else:
-        raise ValueError(f'No such operator `{operator}`')
 
 
 def main(cfg):
@@ -216,67 +217,37 @@ def main(cfg):
 
     variables = models.keys()
 
-    model_data_dict = {}
-    obs_data_dict = {}
-    independence_dict = {}
-    performance_dict = {}
+    for variable in variables:
 
-    for variable, datasets in models.items():
         print(f'Reading model data for {variable}')
+        datasets_model = models[variable]
+        model_data = read_model_data(datasets_model)
 
-        model_data = read_model_data(datasets)
-        model_data_dict[variable] = model_data
-
-    for variable, datasets in observations.items():
         print(f'Reading observation data for {variable}')
-
-        obs_data = read_observation_data(datasets)
+        datasets_obs = observations[variable]
+        obs_data = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
-        obs_data_dict[variable] = obs_data
 
-    for variable, model_data in model_data_dict.items():
         print(f'Calculating independence for {variable}')
-
         independence = calculate_independence(model_data)
-        independence_dict[variable] = independence
-
         visualize_independence(independence)  # TODO
-
         print(independence.values)
         print()
 
-    for variable in variables:
         print(f'Calculating performance for {variable}')
-
-        model_data = model_data_dict[variable]
-        obs_data = obs_data_dict[variable]
-
         performance = calculate_performance(model_data, obs_data)
-        performance_dict[variable] = performance
-
         visualize_performance(performance)  # TODO
-
         print(performance.values)
         print()
 
-    for variable in variables:
         print(f'Calculating weights for {variable}')
-
-        performance = performance_dict[variable]
-        independence = independence_dict[variable]
-
         sigma_performance = cfg['shape_params'][variable]['sigma_d']
         sigma_independence = cfg['shape_params'][variable]['sigma_s']
-
         weights = calculate_weights(performance, independence,
                                     sigma_performance, sigma_independence)
-
+        visualize_weights(weights)  # TODO
         print(weights.values)
         print()
-
-        # visualize_weighting(weights)
-
-    # independences = xr.concat(independences, dim='diagnostic')
 
 
 if __name__ == '__main__':
