@@ -1,17 +1,40 @@
 """
-Implementation of step iii and iv of the climwip weighting scheme
+Implementation of the climwip weighting scheme
 
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
 from collections import defaultdict
 
+import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import xarray as xr
-from scipy import stats
 from scipy.spatial.distance import pdist, squareform
 
-from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename, run_diagnostic,
+                                            select_metadata)
+
+
+def get_provenance_record(caption, ancestors):
+    """Create a provenance record describing the diagnostic data and plots."""
+
+    record = {
+        'caption': caption,
+        'domains': ['reg'],
+        'authors': [
+            'kalverla_peter',
+            # 'smeets_stef',
+            # 'brunner_lukas',
+        ],
+        'references': [
+            'acknow_project',
+        ],
+        'ancestors': ancestors,
+    }
+    return record
 
 
 def read_metadata(cfg, projects: list) -> dict:
@@ -43,6 +66,7 @@ def read_input_data(metadata: list,
 
     data_arrays = []
     identifiers = []
+    ancestors = []
 
     for info in metadata:
         filename = info['filename']
@@ -51,6 +75,7 @@ def read_input_data(metadata: list,
         data_arrays.append(xrds[variable])
         identifier = identifier_fmt.format(**info)
         identifiers.append(identifier)
+        ancestors.append(filename)
 
     diagnostic = xr.concat(data_arrays, dim=dim)
     diagnostic[dim] = identifiers
@@ -59,7 +84,7 @@ def read_input_data(metadata: list,
     redundant_dims = np.setdiff1d(diagnostic.coords, diagnostic.dims)
     diagnostic = diagnostic.drop(redundant_dims)
 
-    return diagnostic
+    return diagnostic, ancestors
 
 
 def read_model_data(datasets: list) -> 'xr.DataArray':
@@ -144,17 +169,43 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
         input_core_dims=[['model_ensemble', 'lat', 'lon']],
         output_core_dims=[['perfect_model_ensemble', 'model_ensemble']])
 
-    diff.name = 'data'
+    diff.name = f'd{data_array.name}'
+    diff.attrs['short_name'] = data_array.name
+    diff.attrs["units"] = data_array.units
+    diff['perfect_model_ensemble'] = diff.model_ensemble.values
+
     # diff = diff.expand_dims({'diagnostic': [idx]})
 
     return diff
 
 
-def visualize_independence(independence):
-    """visualize_independence."""
-    # TODO: complete this function
-    returned_stuff = None
-    return returned_stuff
+def visualize_independence(independence, cfg, provenance_info):
+    """Visualize_independence."""
+    # import IPython; IPython.embed(); exit()
+    variable = independence.short_name
+    labels = [x.replace('_', '\n') for x in independence.model_ensemble.values]
+
+    chart = sns.heatmap(
+        independence,
+        annot=True,
+        linewidths=1,
+        cmap="YlGn",
+        xticklabels=labels,
+        yticklabels=labels,
+        cbar_kws={'label': f'Euclidean distance ({independence.units})'})
+    chart.set_title(f'Distance matrix for {variable}')
+
+    filename = get_plot_filename(f'independence_{variable}', cfg)
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    caption = f'Euclidean distance matrix for variable {variable}'
+    provenance_record = get_provenance_record(caption,
+                                              ancestors=provenance_info)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance_record)
+
+    print(f'Output stored as {filename}')
 
 
 def calculate_performance(model_data: 'xr.DataArray',
@@ -235,20 +286,16 @@ def main(cfg):
 
         print(f'Reading model data for {variable}')
         datasets_model = models[variable]
-        model_data = read_model_data(datasets_model)
+        model_data, model_provenance = read_model_data(datasets_model)
 
         print(f'Reading observation data for {variable}')
         datasets_obs = observations[variable]
-        obs_data = read_observation_data(datasets_obs)
+        obs_data, obs_provenance = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
-
-        import IPython
-        IPython.embed()
-        exit()
 
         print(f'Calculating independence for {variable}')
         independence = calculate_independence(model_data)
-        visualize_independence(independence)  # TODO
+        visualize_independence(independence, cfg, model_provenance)
         print(independence.values)
         print()
 
@@ -263,7 +310,7 @@ def main(cfg):
         sigma_independence = cfg['shape_params'][variable]['sigma_s']
         weights = calculate_weights(performance, independence,
                                     sigma_performance, sigma_independence)
-        visualize_weights(weights)  # TODO
+        # visualize_weights(weights)  # TODO
         print(weights.values)
         print()
 
