@@ -115,11 +115,6 @@ def aggregate_obs_data(data_array: 'xr.DataArray',
         raise ValueError(f'No such operator `{operator}`')
 
 
-def weighted_distance_matrix(data_array: 'xr.DataArray'):
-    # TODO implement this function to replace distance_matrix
-    pass
-
-
 def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
     """Calculate area mean weighted by the latitude.
 
@@ -132,24 +127,32 @@ def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return means
 
 
-def distance_matrix(data_array: 'xr.DataArray') -> 'xr.DataArray':
+def distance_matrix(values: 'numpy.ndarray', weights: 'numpy.ndarray' = None) -> 'numpy.ndarray':
     """Calculate the pairwise distance between model members.
 
     Takes a dataset with ensemble member/lon/lat. Flattens lon/lat
     into a single dimension. Calculates the distance between every
     ensemble member.
 
+    If weights are passed, they should have the same shape as values.
+
     Returns 2D NxN array, where N == number of ensemble members.
     """
-    n_members = data_array.shape[0]
+    n_members = values.shape[0]
 
-    data_array = data_array.reshape(n_members, -1)
+    values = values.reshape(n_members, -1)
 
     # pdist does not work with NaN
-    idx = np.where(np.all(np.isfinite(data_array), axis=0))[0]
-    data_array = data_array[:, idx]
+    not_nan = np.where(np.all(np.isfinite(values), axis=0))[0]
+    values = values[:, not_nan]
 
-    d_matrix = squareform(pdist(data_array, metric='euclidean'))
+    if weights is not None:
+        # Reshape weights to match values array
+        weights = weights.reshape(n_members, -1)
+        weights = weights[:, not_nan]
+        weights = weights[0]  # Weights are equal along first dim
+
+    d_matrix = squareform(pdist(values, metric='euclidean', w=weights))
 
     return d_matrix
 
@@ -161,20 +164,21 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     the datasets defined in the `data_array`. Returned is a square matrix with
     where the number of elements along each edge equals
     the number of ensemble members."""
-    # TODO: use weighted_distance_matrix
+    weights = np.cos(np.radians(data_array.lat))
+    weights, _ = xr.broadcast(weights, data_array)
 
     diff = xr.apply_ufunc(
         distance_matrix,
         data_array,
-        input_core_dims=[['model_ensemble', 'lat', 'lon']],
-        output_core_dims=[['perfect_model_ensemble', 'model_ensemble']])
+        weights,
+        input_core_dims=[['model_ensemble', 'lat', 'lon'], ['model_ensemble', 'lat', 'lon']],
+        output_core_dims=[['perfect_model_ensemble', 'model_ensemble']],
+        )
 
     diff.name = f'd{data_array.name}'
     diff.attrs['short_name'] = data_array.name
     diff.attrs["units"] = data_array.units
     diff['perfect_model_ensemble'] = diff.model_ensemble.values
-
-    # diff = diff.expand_dims({'diagnostic': [idx]})
 
     return diff
 
