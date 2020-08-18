@@ -192,6 +192,7 @@ def visualize_independence(independence, cfg, provenance_info):
     chart = sns.heatmap(
         independence,
         annot=True,
+        fmt='.3g',
         linewidths=1,
         cmap="YlGn",
         xticklabels=labels,
