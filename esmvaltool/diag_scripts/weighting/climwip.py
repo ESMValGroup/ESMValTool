@@ -11,6 +11,7 @@ import numpy as np
 import seaborn as sns
 import xarray as xr
 from scipy.spatial.distance import pdist, squareform
+import yaml
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -234,7 +235,7 @@ def calculate_performance(model_data: 'xr.DataArray',
 
 
 def visualize_performance(performance, cfg, provenance_info):
-    """visualize_performance."""
+    """Visualize performance."""
 
     name = performance.name
     variable = performance.short_name
@@ -329,6 +330,23 @@ def visualize_weights(weights, cfg, provenance_info):
     print(f'Output stored as {filename}')
 
 
+def save_weights(s, cfg, provenance_info):
+    """Save the weights to a `.csv` file."""
+    
+    filename = get_diagnostic_filename(f'weights', cfg, extension='csv')
+
+    d = s.to_dict()
+
+    with open(filename, 'w') as f:
+        yaml.dump(d, stream=f)
+
+    caption = f'Weights for all variables'
+    provenance_record = get_provenance_record(caption,
+                                              ancestors=provenance_info)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance_record)
+
+
 def main(cfg):
     """Perform climwip weighting method."""
 
@@ -338,6 +356,9 @@ def main(cfg):
     models = read_metadata(cfg, projects=['CMIP5'])
 
     variables = models.keys()
+
+    weights_dict = {}
+    ancestors = []
 
     for variable in variables:
 
@@ -370,6 +391,14 @@ def main(cfg):
         visualize_weights(weights, cfg, model_provenance + obs_provenance)
         print(weights.values)
         print()
+
+        weights_dict[variable] = weights
+        ancestors.extend(model_provenance)
+        ancestors.extend(obs_provenance)
+
+    df = xr.Dataset(weights_dict).to_dataframe()
+    s = df.mean(axis=1)  # Average over variables
+    save_weights(s, cfg, provenance_info=ancestors)
 
 
 if __name__ == '__main__':
