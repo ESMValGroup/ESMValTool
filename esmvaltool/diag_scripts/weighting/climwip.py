@@ -292,15 +292,41 @@ def calculate_weights(performance: 'xr.DataArray',
     # Normalize weights
     weights /= weights.sum()
 
+    weights.name = f'w{performance.short_name}'
+    weights.attrs['short_name'] = performance.short_name
+    weights.attrs["units"] = 'a.u.'
+
     return weights
 
 
-def visualize_weights():
-    """visualize_weighting."""
+def visualize_weights(weights, cfg, provenance_info):
+    """Visualize weights."""
 
-    # TODO: complete this function
-    returned_stuff = None
-    return returned_stuff
+    name = weights.name
+    variable = weights.short_name
+    units = weights.units
+
+    df = weights.to_dataframe().reset_index()
+    df.model_ensemble = df.model_ensemble.map(lambda x: x.replace('_', '\n'))
+
+    ylabel = f'Weights {variable} ({units})'
+
+    chart = sns.barplot(x='model_ensemble', y=name, data=df)
+    chart.set_title(f'Weights for {variable}')
+    chart.set_ylabel(ylabel)
+    chart.set_xlabel('')
+
+    filename = get_plot_filename(f'weights_{variable}', cfg)
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    caption = f'Weights for variable {variable}'
+    provenance_record = get_provenance_record(caption,
+                                              ancestors=provenance_info)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance_record)
+
+    print(f'Output stored as {filename}')
 
 
 def main(cfg):
@@ -341,7 +367,7 @@ def main(cfg):
         sigma_independence = cfg['shape_params'][variable]['sigma_s']
         weights = calculate_weights(performance, independence,
                                     sigma_performance, sigma_independence)
-        # visualize_weights(weights)  # TODO
+        visualize_weights(weights, cfg, model_provenance + obs_provenance)
         print(weights.values)
         print()
 
