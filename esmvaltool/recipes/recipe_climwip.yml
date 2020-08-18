@@ -40,7 +40,7 @@ preprocessors:
       start_latitude: 30.0
       end_latitude: 76.25
 
-  climwip:
+  summer_mean:
     <<: *general
     extract_season:
       season: JJA
@@ -48,18 +48,18 @@ preprocessors:
       operator: mean
 
 diagnostics:
-  apply_climwip:
+  calculate_weights_climwip:
     variables:
       tas:
         mip: Amon
         era5_name: 2m_temperature
         era5_freq: monthly
-        preprocessor: climwip
+        preprocessor: summer_mean
       pr:
         mip: Amon
         era5_name: total_precipitation
         era5_freq: monthly
-        preprocessor: climwip
+        preprocessor: summer_mean
 
     scripts:
       climwip:
@@ -71,3 +71,10 @@ diagnostics:
           pr:
             sigma_d: 0.658
             sigma_s: 0.704
+
+  weighted_temperature_analysis:
+    scripts:
+      evaluate_weights:
+        script: weighting/evaluate_weights.py
+        ancestors: [apply_climwip/climwip] 
+        weights: 'weights.yaml'
