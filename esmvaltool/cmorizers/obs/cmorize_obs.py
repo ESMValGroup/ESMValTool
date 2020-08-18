@@ -60,7 +60,7 @@ class Formatter():
 
         # configure logging
         log_files = configure_logging(
-            output=self.run_dir, console_log_level=self.log_level)
+            output_dir=self.run_dir, console_log_level=self.log_level)
         logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
         # run
@@ -71,7 +71,7 @@ class Formatter():
                     timestamp1.strftime(timestamp_format))
 
         logger.info(70 * "-")
-        logger.info("input_dir  = %s", )
+        logger.info("input_dir  = %s", self.rawobs)
         # check if the inputdir actually exists
         if not os.path.isdir(self.rawobs):
             logger.error("Directory %s does not exist", self.rawobs)
@@ -403,6 +403,8 @@ class DataCommand():
 
     @staticmethod
     def _parse_date(date):
+        if date is None:
+            date = ''
         date = str(date)
         if len(date) == 8:
             return datetime.datetime.strptime(date, "%Y%m%d")
