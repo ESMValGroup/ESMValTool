@@ -226,15 +226,41 @@ def calculate_performance(model_data: 'xr.DataArray',
 
     performance = area_weighted_mean(diff**2)**0.5
 
+    performance.name = f'd{model_data.name}'
+    performance.attrs['short_name'] = model_data.name
+    performance.attrs["units"] = model_data.units
+
     return performance
 
 
-def visualize_performance(performance):
+def visualize_performance(performance, cfg, provenance_info):
     """visualize_performance."""
 
-    # TODO: complete this function
-    returned_stuff = None
-    return returned_stuff
+    name = performance.name
+    variable = performance.short_name
+    units = performance.units
+
+    df = performance.to_dataframe().reset_index()
+    df.model_ensemble = df.model_ensemble.map(lambda x: x.replace('_', '\n'))
+
+    ylabel = f'RMS error {variable} ({units})'
+
+    chart = sns.barplot(x='model_ensemble', y=name, data=df)
+    chart.set_title(f'Performance metric for {variable}')
+    chart.set_ylabel(ylabel)
+    chart.set_xlabel('')
+
+    filename = get_plot_filename(f'performance_{variable}', cfg)
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    caption = f'Performance data for variable {variable}'
+    provenance_record = get_provenance_record(caption,
+                                              ancestors=provenance_info)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance_record)
+
+    print(f'Output stored as {filename}')
 
 
 def calculate_weights(performance: 'xr.DataArray',
@@ -306,7 +332,7 @@ def main(cfg):
 
         print(f'Calculating performance for {variable}')
         performance = calculate_performance(model_data, obs_data)
-        visualize_performance(performance)  # TODO
+        visualize_performance(performance, cfg, model_provenance + obs_provenance)
         print(performance.values)
         print()
 
