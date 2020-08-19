@@ -1,6 +1,7 @@
 """Script to download CALIPSO-GOCCP from IPSL ftp."""
 
 from dateutil import relativedelta
+import datetime
 
 from esmvaltool.cmorizers.obs.downloaders.ftp import FTPDownloader
 
@@ -14,6 +15,10 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         overwrite=overwrite,
     )
     downloader.connect()
+    if not start_date:
+        start_date = datetime.datetime(2007, 1, 1)
+    if not end_date:
+        end_date = datetime.datetime(2015, 1, 1)
 
     loop_date = start_date
     two_digits = r"\d{2}"
