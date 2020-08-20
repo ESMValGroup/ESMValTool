@@ -1,6 +1,8 @@
 """Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
 
 from dateutil import relativedelta
+import datetime
+import calendar
 
 from esmvaltool.cmorizers.obs.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.obs.utilities import unpack_files_in_folder
@@ -8,29 +10,18 @@ from esmvaltool.cmorizers.obs.utilities import unpack_files_in_folder
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
     """Download dataset cds-satellite-albedo."""
-    loop_date = start_date
-
     downloader = CDSDownloader(
-        product_name='satellite-albedo',
+        product_name='satellite-methane',
         request_dictionary={
             'format': 'tgz',
-            'satellite': 'spot',
-            'sensor': 'vgt',
-            'product_version': 'V1',
-            'horizontal_resolution': '1km',
-            'variable': [
-                'albb_bh',
-                'albb_dh',
-            ],
-            'nominal_day': '20',
+            'processing_level': 'level_3',
+            'variable': 'xch4',
+            'sensor_and_algorithm': 'merged_obs4mips',
+            'version': '4.1',
         },
         config=config,
         dataset=dataset,
         overwrite=overwrite,
     )
-
-    while loop_date <= end_date:
-        downloader.download(loop_date.year, loop_date.month)
-        loop_date += relativedelta.relativedelta(months=1)
-
+    downloader.download_request("CDS-XCH4.tar")
     unpack_files_in_folder(downloader.local_folder)

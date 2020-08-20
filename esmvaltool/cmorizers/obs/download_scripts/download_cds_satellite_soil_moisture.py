@@ -87,12 +87,9 @@ def download_cds_satellite_sm():
                 '11',
                 '12',
             ],
-            'day':
-            '01',
-            'type_of_record':
-            'cdr',
-            'version':
-            'v201912.0.0',
+            'day': '01',
+            'type_of_record': 'cdr',
+            'version': 'v201912.0.0',
             **freq_specific_kwargs[args.frequency]
         }
         client.retrieve('satellite-soil-moisture', request_dictionary,
@@ -135,12 +132,7 @@ def download_cds_satellite_sm():
             'version': 'v201812.0.0',
             **freq_specific_kwargs[args.frequency]
         }, savename)
-    # Unpack the file
-    tar = tarfile.open(savename)
-    tar.extractall(path=os.path.dirname(savename))
-    tar.close()
-    # Remove the tar file since it has been extracted
-    os.remove(savename)
+
 
 
 if __name__ == "__main__":

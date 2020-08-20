@@ -44,8 +44,8 @@ begin
   GRIDTYPE = "Nadir"
 
   ; Period
-  YEAR1 = 2005
-  YEAR2 = 2011
+  YEAR1 = get_year(start_year, 2005)
+  YEAR2 = get_year(end_year, 2011)
 
   ; Selected variable
   VAR = "tro3"

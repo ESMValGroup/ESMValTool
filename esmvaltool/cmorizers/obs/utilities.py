@@ -4,6 +4,7 @@ import datetime
 import logging
 import os
 import re
+import shutil
 from contextlib import contextmanager
 
 import iris
@@ -348,3 +349,38 @@ def _set_units(cube, units):
     else:
         cube.units = Unit(units)
     return cube
+
+def unpack_files_in_folder(folder):
+
+    decompress =True
+    while decompress:
+        decompress = False
+        for filename in os.listdir(folder):
+            full_path = os.path.join(folder, filename)
+            if os.path.isdir(full_path):
+                logger.info('Moving files from folder %s', filename)
+                folder_files = os.listdir(full_path)
+                for file_path in folder_files:
+                    shutil.move(
+                        os.path.join(full_path, file_path),
+                        folder
+                    )
+                os.rmdir(full_path)
+                decompress = True
+                continue
+            if not filename.endswith(('.gz', '.tgz', '.tar')):
+                continue
+            logger.info('Unpacking %s', filename)
+            shutil.unpack_archive(full_path, folder)
+            os.remove(full_path)
+            decompress = True
+
+def _gunzip(file_name, work_dir):
+    filename = os.path.split(file_name)[-1]
+    filename = re.sub(r"\.gz$", "", filename, flags=re.IGNORECASE)
+
+    with gzip.open(file_name, 'rb') as f_in:
+        with open(os.path.join(work_dir, filename), 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
+shutil.register_unpack_format('gz', ['.gz', ], _gunzip)

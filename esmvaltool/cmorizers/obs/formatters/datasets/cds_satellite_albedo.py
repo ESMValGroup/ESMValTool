@@ -163,7 +163,7 @@ def _set_time_bnds(in_dir, var):
     return cubelist
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start, end):
     """Cmorization func call."""
     # run the cmorization
     # Pass on the workdir to the cfg dictionary
