@@ -42,6 +42,8 @@ begin
   DATASETS = metadata_att_as_array(INFO0, "dataset")
   DATASETS := array_append_record(DATASETS, "multi-model mean", 0)
   experiments = metadata_att_as_array(INFO0, "exp") ; Careful! OBS also has exp: esm-hist
+  ensembles = metadata_att_as_array(INFO0, "ensemble")
+  print(ensembles)
   dim_MOD = dimsizes(DATASETS)
   ALL_FILES = metadata_att_as_array(INFO0, "filename")
 
@@ -129,11 +131,23 @@ begin
     subtract_mmm = 2
   end if
 
+  ; Check if ensembles members should be handled as ensemble or seperately
+  ensemble_mean = True ;diag_script_info@ensemble_mean
+  if ensemble_mean then
+    ; find unique models
+    unique_models = get_unique_values(DATASETS)
+    dim_unique_MOD = dimsizes(unique_models)
+  end if
+
+
   model_arr = new((/dim_MOD, ntime/), float)
   model_arr!0 = "model"
   model_arr!1 = "time"
   model_arr&model = array_append_record("OBS", DATASETS(mod_inds), 0)
   model_arr&time = time
+
+  gr_arr = model_arr
+  sca_arr = model_arr
 
   growth_series = new((/dim_MOD, nyear/), float)
   growth_series!0 = "model"
@@ -154,6 +168,11 @@ begin
   else
       var0_plotname = var0
   end if
+
+  print("Ensemble refs")
+  test = diag_script_info@ensemble_refs
+  print(test(:, 0))
+
 end
 begin
   ; First read obs to have it ready for masking
@@ -201,6 +220,9 @@ begin
     var0_avg = area_operations(var0_reg, lat_min, lat_max, 0, 360, \
             "average", True)
     model_arr(mapping_array(imod), :) = (/var0_avg/)
+    gr_arr(mapping_array(imod), :) = (/calc_gr(var0_avg, "monthlyfilled", min_nmonth)/)
+    sca_arr(mapping_array(imod), :) = (/(var0_avg - dim_cumsum(gr_arr(mapping_array(imod), :)/12., 1)) - \
+                                      avg(var0_avg - dim_cumsum(gr_arr(mapping_array(imod), :)/12., 1))/)
     growth_series(mapping_array(imod), :) = (/calc_gr(var0_avg, "yearly", min_nmonth)/)
     amp_series(mapping_array(imod), :) = (/calc_sca(var0_avg, min_nmonth)/)
     delete([/var0_avg, var0_reg/])
@@ -225,6 +247,109 @@ begin
   ts_plot = xy_line_gen(wks, model_arr, model_arr&time, 0, res, False, INFO0)
   frame(wks)
   delete(res)
+
+  ; -------------------------------------------------------------------------------
+  ; ---------------------- SERIES PANELS-------------------------------------------
+  ; -------------------------------------------------------------------------------
+
+  outfile_ts_panels = plot_dir + "/" + var0 + "_" + experiments(0) \
+               + "_" + region + "_time_series_panels" \
+               + start_year + "-" + end_year + opt_mask
+  wks = gsn_open_wks(file_type, outfile_ts_panels)
+
+  colors = project_style(INFO0, diag_script_info, "colors")
+  colors := array_append_record(colors, "red", 0)
+  thicks = project_style(INFO0, diag_script_info, "thicks")
+  thicks := array_append_record(thicks, 6., 0)
+  dashes = project_style(INFO0, diag_script_info, "dashes")
+  dashes := array_append_record(dashes, 0, 0)
+
+  ;; Plot series
+  res = True
+  res@tiYAxisString = ""
+  res@tiYAxisFontHeightF = 0.02
+  res@tmYLLabelFontHeightF = 0.02
+  res@tiYAxisString = var0_plotname + " [ppmv]";"  [" + model_arr@units + "]"
+  res@tiXAxisFontHeightF = 0.02
+  res@tmXBLabelFontHeightF = 0.02
+  res@pmTickMarkDisplayMode = "Conditional"
+  res@tiMainFontHeightF = 0.02
+  res@tiMainString = ""
+  res@gsnMaximize = True
+  res@gsnDraw = False
+  res@gsnFrame = False
+  res@trXMinF = start_year
+  res@trXMaxF = end_year + 1
+  res@vpHeightF = 0.3
+  res@vpWidthF = 0.8
+  res@tmLabelAutoStride = True
+  res@xyLineColors      = colors  ; change line color
+  res@xyLineThicknesses = thicks  ; make 2nd lines thicker
+  res@xyMonoDashPattern = False
+  res@xyDashPatterns    = dashes
+
+  plots = new(3, graphic)
+
+
+
+  res@trYMinF = min(model_arr) - 0.05 * (max(model_arr) - min(model_arr))
+  res@trYMaxF = max(model_arr) + 0.05 * (max(model_arr) - min(model_arr)) ;0.22
+
+  plots(0) = gsn_csm_xy(wks, model_arr&time, model_arr, res)
+
+  res@tiYAxisString = "Growth Rate [ppmv yr~S~-1~N~]"
+  res@trYMinF = min(gr_arr) - 0.05 * (max(gr_arr) - min(gr_arr))
+  res@trYMaxF = max(gr_arr) + 0.05 * (max(gr_arr) - min(gr_arr)) ;0.22
+
+  plots(1) = gsn_csm_xy(wks, gr_arr&time, gr_arr, res)
+
+  res@trYMinF = min(sca_arr) - 0.05 * (max(sca_arr) - min(sca_arr))
+  res@trYMaxF = max(sca_arr) + 0.05 * (max(sca_arr) - min(sca_arr)) ;0.22
+  res@tiYAxisString = "SCA [ppmv]"
+  plots(2) = gsn_csm_xy(wks, sca_arr&time, sca_arr, res)
+
+  ; Add correlation to plot 2!
+  do imod = 1, dim_MOD - 1
+    corr = escorc(sca_arr(:, 0), sca_arr(:, imod))
+    ;print(corr)
+  end do
+
+
+  lgres = True
+  lgres@vpWidthF = 0.15
+  lgres@vpHeightF = 0.5
+  lgres@lgLineColors = colors(::-1)
+  lgres@lgLabelFontHeightF = 0.1
+  lgres@lgMonoDashIndex     = False
+  lgres@lgDashIndexes     = dashes(::-1)
+  lgres@lgMonoLineThickness = False
+  lgres@lgLineThicknesses = thicks(::-1);*2
+  lgres@lgPerimOn = False
+  lgres@lgItemType         = "Lines"
+
+  labels = model_arr&model(::-1)
+  nlabels = dim_MOD
+  legend = gsn_create_legend(wks, nlabels, labels, lgres)
+
+  anres = True
+  anres@amJust = "TopLeft"
+  ; Parallel -> x-direction
+  anres@amParallelPosF = 0.53 ;0.5
+  anres@amOrthogonalPosF = -0.5 ;0.6
+  annoid1 = gsn_add_annotation(plots(0), legend, anres)
+
+  res1                     = True
+  res2                     = True
+  res1@gsnMaximize         = True
+  res2@gsnAttachPlotsXAxis = True
+
+  newplot = gsn_attach_plots(plots(0), plots(1:), res1, res2)
+
+  draw(plots(0))
+
+  frame(wks)
+  delete(res)
+
   ; -------------------------------------------------------------------------------
   ; ---------------------- BARPLOTS -----------------------------------------------
   ; -------------------------------------------------------------------------------
