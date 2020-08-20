@@ -28,8 +28,9 @@ def get_provenance_record(caption, ancestors):
         'domains': ['reg'],
         'authors': [
             'kalverla_peter',
-            # 'smeets_stef',
-            # 'brunner_lukas',
+            'smeets_stef',
+            'brunner_lukas',
+            'camphuijsen_jaro',
         ],
         'references': [
             'acknow_project',
