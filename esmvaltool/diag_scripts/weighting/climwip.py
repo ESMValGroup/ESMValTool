@@ -5,6 +5,8 @@ Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
 from collections import defaultdict
+import os
+import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,6 +20,9 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             get_plot_filename, run_diagnostic,
                                             select_metadata)
+
+logger = logging.getLogger(os.path.basename(__file__))
+
 
 
 def get_provenance_record(caption: str, ancestors: list):
@@ -238,7 +243,7 @@ def visualize_independence(independence: 'xr.DataArray', cfg: dict, provenance_i
 
     log_provenance(caption, filename, cfg, provenance_info)
 
-    print(f'Output stored as {filename}')
+    logger.info(f'Output stored as {filename}')
 
 
 def calculate_performance(model_data: 'xr.DataArray',
@@ -285,7 +290,7 @@ def barplot(
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
-    print(f'Output stored as {filename}')  
+    logger.info(f'Output stored as {filename}')  
 
 
 def visualize_performance(performance: 'xr.DataArray', cfg: dict, provenance_info: list):
@@ -368,8 +373,6 @@ def save_weights(weights: 'pd.Series', cfg: dict, provenance_info: list):
 def main(cfg):
     """Perform climwip weighting method."""
 
-    print("\nBEGIN DIAGNOSTIC\n")
-
     observations = read_metadata(cfg, projects=['native6'])
     models = read_metadata(cfg, projects=['CMIP5'])
 
@@ -380,35 +383,32 @@ def main(cfg):
 
     for variable in variables:
 
-        print(f'Reading model data for {variable}')
+        logger.info(f'Reading model data for {variable}')
         datasets_model = models[variable]
         model_data, model_provenance = read_model_data(datasets_model)
 
-        print(f'Reading observation data for {variable}')
+        logger.info(f'Reading observation data for {variable}')
         datasets_obs = observations[variable]
         obs_data, obs_provenance = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
-        print(f'Calculating independence for {variable}')
+        logger.info(f'Calculating independence for {variable}')
         independence = calculate_independence(model_data)
         visualize_independence(independence, cfg, model_provenance)
-        print(independence.values)
-        print()
+        logger.debug(independence.values)
 
-        print(f'Calculating performance for {variable}')
+        logger.info(f'Calculating performance for {variable}')
         performance = calculate_performance(model_data, obs_data)
         visualize_performance(performance, cfg, model_provenance + obs_provenance)
-        print(performance.values)
-        print()
+        logger.debug(performance.values)
 
-        print(f'Calculating weights for {variable}')
+        logger.info(f'Calculating weights for {variable}')
         sigma_performance = cfg['shape_params'][variable]['sigma_d']
         sigma_independence = cfg['shape_params'][variable]['sigma_s']
         weights = calculate_weights(performance, independence,
                                     sigma_performance, sigma_independence)
         visualize_weights(weights, cfg, model_provenance + obs_provenance)
-        print(weights.values)
-        print()
+        logger.debug(weights.values)
 
         weights_dict[variable] = weights
         ancestors.extend(model_provenance)

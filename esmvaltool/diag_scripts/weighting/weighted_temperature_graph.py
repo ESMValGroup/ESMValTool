@@ -12,11 +12,17 @@ import xarray as xr
 from scipy.spatial.distance import pdist, squareform
 from pathlib import Path
 import yaml
+import os
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
 
+
 from climwip import read_metadata, read_model_data
 from climwip import log_provenance
+
+import logging
+
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 def read_weights(filename: str):
@@ -136,7 +142,7 @@ def visualize_temperature_graph(
 
     log_provenance(caption, filename, cfg, provenance_info)
 
-    print(f'Output stored as {filename}')
+    logger.info(f'Temperature anomaly plot stored as {filename}')
 
 
 def calculate_percentiles(data: 'xr.DataArray',
