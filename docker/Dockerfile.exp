@@ -1,6 +1,6 @@
 # To build this container, go to ESMValTool root folder and execute:
 # docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
-FROM esmvalgroup/esmvalcore:latest
+FROM bsces/esmvalcore:latest
 
 RUN apt install julia -y && apt-get clean
 COPY ./environment.yml /src/ESMValTool/environment.yml

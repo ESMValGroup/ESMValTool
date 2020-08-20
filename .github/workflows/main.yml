@@ -1,0 +1,24 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Update branches
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 23 * * *'
+  workflow_dispatch:
+jobs:
+  update_bsc_with_master:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: merge
+        uses: shitiomatic/forkbacon@v1.1.0
+        with:
+          upstream_url: "https://github.com/ESMValGroup/ESMValTool.git" # Required! Upstream https clone URL
+          upstream_branch: "master"   # Upstream Branch to use
+          branch: "BSC"   # Local Branch
+          method: "rebase"   # Method to use. Can be `merge`, `merge-ff-only` or `rebase`.

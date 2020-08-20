@@ -1,6 +1,6 @@
 # To build this container, go to ESMValTool root folder and execute:
 # docker build -t esmvaltool:latest . -f docker/Dockerfile
-FROM continuumio/miniconda3
+FROM bsces/miniconda3:debian-stretch-20190610
 
 RUN apt install julia -y && apt-get clean
 COPY ./environment.yml /src/ESMValTool/environment.yml
