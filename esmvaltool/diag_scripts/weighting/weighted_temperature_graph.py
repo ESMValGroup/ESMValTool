@@ -13,13 +13,10 @@ from scipy.spatial.distance import pdist, squareform
 from pathlib import Path
 import yaml
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
 
 from climwip import read_metadata, read_model_data
-from climwip import get_provenance_record
+from climwip import log_provenance
 
 
 def read_weights(filename: str):
@@ -136,10 +133,8 @@ def visualize_temperature_graph(
     plt.close()
 
     caption = f'Temperature anomaly relative to 1981-2010'
-    provenance_record = get_provenance_record(caption,
-                                              ancestors=provenance_info)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance_record)
+
+    log_provenance(caption, filename, cfg, provenance_info)
 
     print(f'Output stored as {filename}')
 

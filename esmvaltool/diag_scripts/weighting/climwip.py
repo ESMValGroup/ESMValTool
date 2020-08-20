@@ -20,7 +20,7 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             select_metadata)
 
 
-def get_provenance_record(caption, ancestors):
+def get_provenance_record(caption: str, ancestors: list):
     """Create a provenance record describing the diagnostic data and plots."""
 
     record = {
@@ -40,7 +40,16 @@ def get_provenance_record(caption, ancestors):
     return record
 
 
-def read_metadata(cfg, projects: list) -> dict:
+def log_provenance(caption: str, filename: str, cfg: dict, provenance_info: list):
+    """Log provenance info."""
+
+    provenance_record = get_provenance_record(caption,
+                                              ancestors=provenance_info)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance_record)
+
+
+def read_metadata(cfg: dict, projects: list) -> dict:
     """Read the metadata from the config file.
 
     Project is the list of project identifiers (str) to select."""
@@ -58,7 +67,7 @@ def read_metadata(cfg, projects: list) -> dict:
     return d
 
 
-def make_standard_calendar(xrds):
+def make_standard_calendar(xrds: 'xr.Dataset'):
     """Make sure time coordinate uses the default calendar.
 
     Workaround for imcompatible calendars 'standard' and 'no-leap'.
@@ -148,7 +157,7 @@ def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return means
 
 
-def distance_matrix(values: 'numpy.ndarray', weights: 'numpy.ndarray' = None) -> 'numpy.ndarray':
+def distance_matrix(values: 'np.ndarray', weights: 'np.ndarray' = None) -> 'np.ndarray':
     """Calculate the pairwise distance between model members.
 
     Takes a dataset with ensemble member/lon/lat. Flattens lon/lat
@@ -204,7 +213,7 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return diff
 
 
-def visualize_independence(independence, cfg, provenance_info):
+def visualize_independence(independence: 'xr.DataArray', cfg: dict, provenance_info: list):
     """Visualize_independence."""
     # import IPython; IPython.embed(); exit()
     variable = independence.short_name
@@ -226,10 +235,8 @@ def visualize_independence(independence, cfg, provenance_info):
     plt.close()
 
     caption = f'Euclidean distance matrix for variable {variable}'
-    provenance_record = get_provenance_record(caption,
-                                              ancestors=provenance_info)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance_record)
+
+    log_provenance(caption, filename, cfg, provenance_info)
 
     print(f'Output stored as {filename}')
 
@@ -254,34 +261,44 @@ def calculate_performance(model_data: 'xr.DataArray',
     return performance
 
 
-def visualize_performance(performance, cfg, provenance_info):
-    """Visualize performance."""
+def barplot(
+        metric: 'xr.DataArray', 
+        label: str,
+        filename: str,
+    ):
+    """Visualize metric as barplot."""
 
-    name = performance.name
-    variable = performance.short_name
-    units = performance.units
+    name = metric.name
+    variable = metric.short_name
+    units = metric.units
 
-    df = performance.to_dataframe().reset_index()
+    df = metric.to_dataframe().reset_index()
     df.model_ensemble = df.model_ensemble.map(lambda x: x.replace('_', '\n'))
 
-    ylabel = f'RMS error {variable} ({units})'
+    ylabel = f'{label} {variable} ({units})'
 
     chart = sns.barplot(x='model_ensemble', y=name, data=df)
-    chart.set_title(f'Performance metric for {variable}')
+    chart.set_title(f'{label} for {variable}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
 
-    filename = get_plot_filename(f'performance_{variable}', cfg)
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
-    caption = f'Performance data for variable {variable}'
-    provenance_record = get_provenance_record(caption,
-                                              ancestors=provenance_info)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance_record)
+    print(f'Output stored as {filename}')  
 
-    print(f'Output stored as {filename}')
+
+def visualize_performance(performance: 'xr.DataArray', cfg: dict, provenance_info: list):
+    """Visualize performance."""
+
+    label = 'RMS error'
+
+    variable = performance.short_name
+    filename = get_plot_filename(f'performance_{variable}', cfg)
+    caption = f'Performance metric ({label}) for variable {variable}'
+
+    barplot(performance, label, filename)
+    log_provenance(caption, filename, cfg, provenance_info)
 
 
 def calculate_weights(performance: 'xr.DataArray',
@@ -320,51 +337,32 @@ def calculate_weights(performance: 'xr.DataArray',
     return weights
 
 
-def visualize_weights(weights, cfg, provenance_info):
+def visualize_weights(weights: 'xr.DataArray', cfg: dict, provenance_info: list):
     """Visualize weights."""
 
-    name = weights.name
+    label = 'Weights'
+
     variable = weights.short_name
-    units = weights.units
-
-    df = weights.to_dataframe().reset_index()
-    df.model_ensemble = df.model_ensemble.map(lambda x: x.replace('_', '\n'))
-
-    ylabel = f'Weights {variable} ({units})'
-
-    chart = sns.barplot(x='model_ensemble', y=name, data=df)
-    chart.set_title(f'Weights for {variable}')
-    chart.set_ylabel(ylabel)
-    chart.set_xlabel('')
-
     filename = get_plot_filename(f'weights_{variable}', cfg)
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.close()
-
     caption = f'Weights for variable {variable}'
-    provenance_record = get_provenance_record(caption,
-                                              ancestors=provenance_info)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance_record)
 
-    print(f'Output stored as {filename}')
+    barplot(weights, label, filename)
+    log_provenance(caption, filename, cfg, provenance_info)
 
 
-def save_weights(s, cfg, provenance_info):
+def save_weights(weights: 'pd.Series', cfg: dict, provenance_info: list):
     """Save the weights to a `.yml` file."""
 
     filename = get_diagnostic_filename(f'weights', cfg, extension='yml')
 
-    d = s.to_dict()
+    weights_dct = weights.to_dict()
 
     with open(filename, 'w') as f:
-        yaml.dump(d, stream=f)
+        yaml.dump(weights_dct, stream=f)
 
     caption = f'Weights for all variables'
-    provenance_record = get_provenance_record(caption,
-                                              ancestors=provenance_info)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance_record)
+
+    log_provenance(caption, filename, cfg, provenance_info)
 
 
 def main(cfg):
@@ -416,9 +414,9 @@ def main(cfg):
         ancestors.extend(model_provenance)
         ancestors.extend(obs_provenance)
 
-    df = xr.Dataset(weights_dict).to_dataframe()
-    s = df.mean(axis=1)  # Average over variables
-    save_weights(s, cfg, provenance_info=ancestors)
+    weights_df = xr.Dataset(weights_dict).to_dataframe()
+    mean_weights = weights_df.mean(axis=1)  # Average over variables
+    save_weights(mean_weights, cfg, provenance_info=ancestors)
 
 
 if __name__ == '__main__':
