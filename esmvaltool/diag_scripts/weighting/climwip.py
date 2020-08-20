@@ -62,10 +62,17 @@ def make_standard_calendar(xrds):
 
     Workaround for imcompatible calendars 'standard' and 'no-leap'.
     """
-    years = xrds.time.dt.year.values
-    months = xrds.time.dt.month.values
-    days = xrds.time.dt.day.values
-    xrds['time'] = [datetime(year, month, day) for year, month, day in zip(years, months, days)]
+    try:
+        years = xrds.time.dt.year.values
+        months = xrds.time.dt.month.values
+        days = xrds.time.dt.day.values
+        xrds['time'] = [datetime(year, month, day) for year, month, day in zip(years, months, days)]
+    except TypeError:
+        # Time dimension is 0-d array
+        pass
+    except AttributeError:
+        # Time dimension does not exist
+        pass
 
 
 def read_input_data(metadata: list,
