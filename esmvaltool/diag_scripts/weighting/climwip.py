@@ -12,6 +12,7 @@ import seaborn as sns
 import xarray as xr
 from scipy.spatial.distance import pdist, squareform
 import yaml
+from datetime import datetime
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -56,6 +57,17 @@ def read_metadata(cfg, projects: list) -> dict:
     return d
 
 
+def make_standard_calendar(xrds):
+    """Make sure time coordinate uses the default calendar.
+
+    Workaround for imcompatible calendars 'standard' and 'no-leap'.
+    """
+    years = xrds.time.dt.year.values
+    months = xrds.time.dt.month.values
+    days = xrds.time.dt.day.values
+    xrds['time'] = [datetime(year, month, day) for year, month, day in zip(years, months, days)]
+
+
 def read_input_data(metadata: list,
                     dim: str = 'data_ensemble',
                     identifier_fmt: str = '{dataset}') -> 'xr.DataArray':
@@ -68,11 +80,11 @@ def read_input_data(metadata: list,
     data_arrays = []
     identifiers = []
     ancestors = []
-
     for info in metadata:
         filename = info['filename']
         variable = info['short_name']
         xrds = xr.open_dataset(filename)
+        make_standard_calendar(xrds)
         data_arrays.append(xrds[variable])
         identifier = identifier_fmt.format(**info)
         identifiers.append(identifier)
@@ -331,9 +343,9 @@ def visualize_weights(weights, cfg, provenance_info):
 
 
 def save_weights(s, cfg, provenance_info):
-    """Save the weights to a `.csv` file."""
-    
-    filename = get_diagnostic_filename(f'weights', cfg, extension='csv')
+    """Save the weights to a `.yml` file."""
+
+    filename = get_diagnostic_filename(f'weights', cfg, extension='yml')
 
     d = s.to_dict()
 

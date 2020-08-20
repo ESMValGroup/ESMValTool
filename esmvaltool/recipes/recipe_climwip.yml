@@ -21,14 +21,17 @@ documentation:
 
     - "Knutti, R. at al. (2017): A climate model projection weighting scheme accounting for performance and interdependence, Geophys. Res. Lett., 44, 1909–1918. DOI 10.1002/2016GL072012"
 
-datasets:
-  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1960, end_year: 2100}
-  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1960, end_year: 2100}
-  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1980, end_year: 2015}
+
+datasets: &model_data
+  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+
+obs_data: &obs_data  # for climwip performance metrics
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
 
 # TODO use extract shape for an SREX region
 preprocessors:
-  general: &general
+  climwip_general: &general
     regrid:
       target_grid: 2.5x2.5
       scheme: linear
@@ -40,26 +43,56 @@ preprocessors:
       start_latitude: 30.0
       end_latitude: 76.25
 
-  summer_mean:
+  climwip_summer_mean:
     <<: *general
     extract_season:
       season: JJA
     climate_statistics:
       operator: mean
 
+  climwip_winter_std:
+    <<: *general
+    extract_season:
+      season: DJF
+    climate_statistics:
+      operator: std_dev
+
+  temperature_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference:
+        start_year: 1981
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+
 diagnostics:
   calculate_weights_climwip:
     variables:
       tas:
+        start_year: 1995
+        end_year: 2014
         mip: Amon
         era5_name: 2m_temperature
         era5_freq: monthly
-        preprocessor: summer_mean
+        preprocessor: climwip_winter_std
+        additional_datasets: *obs_data
       pr:
+        start_year: 1995
+        end_year: 2014
         mip: Amon
         era5_name: total_precipitation
         era5_freq: monthly
-        preprocessor: summer_mean
+        preprocessor: climwip_summer_mean
+        additional_datasets: *obs_data
 
     scripts:
       climwip:
@@ -72,9 +105,17 @@ diagnostics:
             sigma_d: 0.658
             sigma_s: 0.704
 
-  weighted_temperature_analysis:
+  weighted_temperature_graph:
+    variables:
+      tas:
+        start_year: 1960
+        end_year: 2100
+        mip: Amon
+        era5_name: 2m_temperature
+        era5_freq: monthly
+        preprocessor: temperature_anomalies
     scripts:
       evaluate_weights:
-        script: weighting/evaluate_weights.py
-        ancestors: [apply_climwip/climwip] 
-        weights: 'weights.yaml'
+        script: weighting/weighted_temperature_graph.py
+        ancestors: [calculate_weights_climwip/climwip, tas]
+        weights: 'weights.yml'
