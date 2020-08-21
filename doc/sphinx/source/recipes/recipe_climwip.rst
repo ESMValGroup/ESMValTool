@@ -30,7 +30,20 @@ User settings in recipe
 
   *Required settings for script*
 
-  *Optional settings for script*
+    * Currently the shape parameters for the weight calculations need to be specified in the recipe:
+    * ``shape_params``: A dictionary with shape parameters for each input variable. E.g.
+
+      .. code-block:: yaml
+
+        shape_params:
+          tas:
+            sigma_d: 0.588
+            sigma_s: 0.704
+          pr:
+            sigma_d: 0.658
+            sigma_s: 0.704
+
+      where default values are taken from table 2 in `Brunner et al., 2019 <https://doi.org/10.1088/1748-9326/ab492f>`_.
 
   *Required settings for variables*
 
@@ -100,7 +113,26 @@ Example plots
 -------------
 
 .. _fig_climwip_1:
+.. figure::  /recipes/figures/climwip/independence_tas.png
+   :align:   center
+
+   Distance matrix for temperature, providing the independence metric.
+
+.. _fig_climwip_2:
+.. figure::  /recipes/figures/climwip/performance_pr.png
+   :align:   center
+
+   Distance of preciptation relative to observations, providing the performance metric.
+
+.. _fig_climwip_3:
+.. figure::  /recipes/figures/climwip/weights_tas.png
+   :align:   center
+
+   Weights determined by combining independence and performance metrics for tas.
+
+   .. _fig_climwip_4:
 .. figure::  /recipes/figures/climwip/temperature_anomaly_graph.png
    :align:   center
 
    Interquartile range of temperature anomalies relative to 1981-2010, weighted versus non-weighted.
+
