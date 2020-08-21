@@ -1,5 +1,4 @@
-"""
-Implementation of the climwip weighting scheme
+"""Implementation of the climwip weighting scheme.
 
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
@@ -68,15 +67,12 @@ def weighted_quantile(values,
     return np.interp(quantiles, weighted_quantiles, values)
 
 
-def visualize_temperature_graph(
-    temperature,
-    iqr,
-    iqr_weighted,
-    cfg,
-    provenance_info,
-):
+def visualize_temperature_graph(temperature,
+                                iqr,
+                                iqr_weighted,
+                                cfg,
+                                provenance_info):
     """Visualize weighted temperature."""
-
     fig, ax = plt.subplots(dpi=300)
 
     def plot_shaded(t, upper, lower, color, **kwargs):
@@ -125,17 +121,17 @@ def visualize_temperature_graph(
 
     plt.title('Temperature anomaly relative to 1981-2010')
     plt.xlabel('Year')
-    plt.ylabel('Temperature anomaly $\degree$C')
+    plt.ylabel(r'Temperature anomaly $\degree$C')
 
-    filename = get_plot_filename(f'temperature_anomaly_graph', cfg)
+    filename = get_plot_filename('temperature_anomaly_graph', cfg)
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
-    caption = f'Temperature anomaly relative to 1981-2010'
+    caption = 'Temperature anomaly relative to 1981-2010'
 
     log_provenance(caption, filename, cfg, provenance_info)
 
-    logger.info(f'Temperature anomaly plot stored as {filename}')
+    logger.info('Temperature anomaly plot stored as %s', filename)
 
 
 def calculate_percentiles(data: 'xr.DataArray',
@@ -147,7 +143,8 @@ def calculate_percentiles(data: 'xr.DataArray',
 
     Percentiles is a list of values between 0 and 100.
 
-    Weights is a dictionary where the keys represent the model members, and the values the weights.
+    Weights is a dictionary where the keys represent the model members,
+    and the values the weights.
     If `weights` is not specified, the non-weighted percentiles are calculated.
 
     Returns a DataArray with 'percentiles' as the dimension.
@@ -171,6 +168,7 @@ def calculate_percentiles(data: 'xr.DataArray',
 
 
 def main(cfg):
+    """Plot weighted temperature graph."""
     input_files = cfg['input_files']
     filename = cfg['weights']
     weights_path = Path(input_files[0]) / filename

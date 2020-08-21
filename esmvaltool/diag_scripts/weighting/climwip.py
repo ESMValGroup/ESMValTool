@@ -1,20 +1,19 @@
-"""
-Implementation of the climwip weighting scheme
+"""Implementation of the climwip weighting scheme.
 
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-import logging
-import os
 from collections import defaultdict
-from datetime import datetime
+import os
+import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import xarray as xr
-import yaml
 from scipy.spatial.distance import pdist, squareform
+import yaml
+from datetime import datetime
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -26,10 +25,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def get_provenance_record(caption: str, ancestors: list):
     """Create a provenance record describing the diagnostic data and plots."""
-
     record = {
-        'caption':
-        caption,
+        'caption': caption,
         'domains': ['reg'],
         'authors': [
             'kalverla_peter',
@@ -40,16 +37,18 @@ def get_provenance_record(caption: str, ancestors: list):
         'references': [
             'acknow_project',
         ],
-        'ancestors':
-        ancestors,
+        'ancestors': ancestors,
     }
     return record
 
 
-def log_provenance(caption: str, filename: str, cfg: dict,
-                   provenance_info: list):
+def log_provenance(
+    caption: str,
+    filename: str,
+    cfg: dict,
+    provenance_info: list
+):
     """Log provenance info."""
-
     provenance_record = get_provenance_record(caption,
                                               ancestors=provenance_info)
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -59,9 +58,9 @@ def log_provenance(caption: str, filename: str, cfg: dict,
 def read_metadata(cfg: dict, projects: list) -> dict:
     """Read the metadata from the config file.
 
-    Project is the list of project identifiers (str) to select."""
-
-    d = defaultdict(list)
+    Project is the list of project identifiers (str) to select.
+    """
+    datasets = defaultdict(list)
 
     for project in projects:
         metadata = select_metadata(cfg['input_data'].values(), project=project)
@@ -69,9 +68,9 @@ def read_metadata(cfg: dict, projects: list) -> dict:
         for item in metadata:
             variable = item['short_name']
 
-            d[variable].append(item)
+            datasets[variable].append(item)
 
-    return d
+    return datasets
 
 
 def make_standard_calendar(xrds: 'xr.Dataset'):
@@ -94,12 +93,13 @@ def make_standard_calendar(xrds: 'xr.Dataset'):
 def read_input_data(metadata: list,
                     dim: str = 'data_ensemble',
                     identifier_fmt: str = '{dataset}') -> 'xr.DataArray':
-    """Loads data from metadata.
+    """Load data from metadata.
 
     Read the input data from the list of given data sets. `metadata` is a list
-    of metadata containing the filenames to load. Only returns the given `variable`.
-    The datasets are stacked along the `dim` dimension. Returns an xarray.DataArray."""
-
+    of metadata containing the filenames to load. Only returns the given
+    `variable`. The datasets are stacked along the `dim` dimension. Returns
+    an xarray.DataArray.
+    """
     data_arrays = []
     identifiers = []
     ancestors = []
@@ -124,14 +124,14 @@ def read_input_data(metadata: list,
 
 
 def read_model_data(datasets: list) -> 'xr.DataArray':
-    """Loads model data from list of metadata."""
+    """Load model data from list of metadata."""
     return read_input_data(datasets,
                            dim='model_ensemble',
                            identifier_fmt='{dataset}_{ensemble}_{exp}')
 
 
 def read_observation_data(datasets: list) -> 'xr.DataArray':
-    """Loads observation data from list of metadata."""
+    """Load observation data from list of metadata."""
     return read_input_data(datasets,
                            dim='obs_ensemble',
                            identifier_fmt='{dataset}')
@@ -143,20 +143,22 @@ def aggregate_obs_data(data_array: 'xr.DataArray',
 
     Apply the operator to squeeze the ensemble dimension by applying
     the `operator` along the ensemble (`obs_ensemble`) dimension. Returns
-    an xarray.Dataset squeezed to 1D."""
-
+    an xarray.Dataset squeezed to 1D.
+    """
     if operator == 'median':
-        return data_array.median(dim='obs_ensemble')
+        output = data_array.median(dim='obs_ensemble')
     else:
         raise ValueError(f'No such operator `{operator}`')
+
+    return output
 
 
 def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
     """Calculate area mean weighted by the latitude.
 
     Returns a data array consisting of N values,
-    where N == number of ensemble members"""
-
+    where N == number of ensemble members.
+    """
     weights_lat = np.cos(np.radians(data_array.lat))
     means = data_array.weighted(weights_lat).mean(dim=['lat', 'lon'])
 
@@ -195,12 +197,13 @@ def distance_matrix(values: 'np.ndarray',
 
 
 def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
-    """Calculate_independence.
+    """Calculate independence.
 
     The independence is calculated as a distance matrix between
     the datasets defined in the `data_array`. Returned is a square matrix with
     where the number of elements along each edge equals
-    the number of ensemble members."""
+    the number of ensemble members.
+    """
     weights = np.cos(np.radians(data_array.lat))
     weights, _ = xr.broadcast(weights, data_array)
 
@@ -221,12 +224,12 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return diff
 
 
-def visualize_independence(independence: 'xr.DataArray', cfg: dict,
+def visualize_independence(independence: 'xr.DataArray',
+                           cfg: dict,
                            provenance_info: list):
     """Visualize_independence."""
-
     variable = independence.short_name
-    labels = [x for x in independence.model_ensemble.values]
+    labels = list(independence.model_ensemble.values)
 
     fig, ax = plt.subplots(figsize=(15, 15), subplot_kw={'aspect': 'equal'})
     chart = sns.heatmap(
@@ -248,18 +251,18 @@ def visualize_independence(independence: 'xr.DataArray', cfg: dict,
 
     log_provenance(caption, filename, cfg, provenance_info)
 
-    logger.info(f'Output stored as {filename}')
+    logger.info('Output stored as %s', filename)
 
 
 def calculate_performance(model_data: 'xr.DataArray',
                           obs_data: 'xr.DataArray') -> 'xr.DataArray':
-    """Calculate_performance.
+    """Calculate performance.
 
     Calculate the area weighted mean between the given ensemble of model data,
     and observation data. The observation data must have the
     ensemble dimension squeezed or reduced. Returns an xarray.DataArray
-    containing the same number of values as members of `model_data`"""
-
+    containing the same number of values as members of `model_data`.
+    """
     diff = model_data - obs_data
 
     performance = area_weighted_mean(diff**2)**0.5
@@ -272,12 +275,10 @@ def calculate_performance(model_data: 'xr.DataArray',
 
 
 def barplot(
-    metric: 'xr.DataArray',
-    label: str,
-    filename: str,
-):
+        metric: 'xr.DataArray',
+        label: str,
+        filename: str):
     """Visualize metric as barplot."""
-
     name = metric.name
     variable = metric.short_name
     units = metric.units
@@ -289,8 +290,7 @@ def barplot(
     fig, ax = plt.subplots(figsize=(15, 10))
     chart = sns.barplot(x='model_ensemble', y=name, data=df, ax=ax)
     chart.set_xticklabels(chart.get_xticklabels(),
-                          rotation=45,
-                          horizontalalignment='right')
+                          rotation=45, horizontalalignment='right')
     chart.set_title(f'{label} for {variable}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
@@ -298,13 +298,13 @@ def barplot(
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
-    logger.info(f'Output stored as {filename}')
+    logger.info('Output stored as %s', filename)
 
 
-def visualize_performance(performance: 'xr.DataArray', cfg: dict,
+def visualize_performance(performance: 'xr.DataArray',
+                          cfg: dict,
                           provenance_info: list):
     """Visualize performance."""
-
     label = 'RMS error'
 
     variable = performance.short_name
@@ -318,7 +318,8 @@ def visualize_performance(performance: 'xr.DataArray', cfg: dict,
 def calculate_weights(performance: 'xr.DataArray',
                       independence: 'xr.DataArray', sigma_performance: float,
                       sigma_independence: float) -> 'xr.DataArray':
-    """Calculates the (NOT normalised) weights for each model N.
+    """Calculate the (NOT normalised) weights for each model N.
+
     Parameters
     ----------
     performance : array_like, shape (N,)
@@ -326,9 +327,12 @@ def calculate_weights(performance: 'xr.DataArray',
     independence : array_like, shape (N, N)
         Array specifying the model independence.
     sigma_performance : float
-        Sigma value defining the form of the weighting function for the performance.
+        Sigma value defining the form of the weighting function
+            for the performance.
     sigma_independence : float
-        Sigma value defining the form of the weighting function for the independence.
+        Sigma value defining the form of the weighting function
+            for the independence.
+
     Returns
     -------
     weights : ndarray, shape (N,)
@@ -351,10 +355,10 @@ def calculate_weights(performance: 'xr.DataArray',
     return weights
 
 
-def visualize_weights(weights: 'xr.DataArray', cfg: dict,
+def visualize_weights(weights: 'xr.DataArray',
+                      cfg: dict,
                       provenance_info: list):
     """Visualize weights."""
-
     label = 'Weights'
 
     variable = weights.short_name
@@ -367,22 +371,20 @@ def visualize_weights(weights: 'xr.DataArray', cfg: dict,
 
 def save_weights(weights: 'pd.Series', cfg: dict, provenance_info: list):
     """Save the weights to a `.yml` file."""
-
-    filename = get_diagnostic_filename(f'weights', cfg, extension='yml')
+    filename = get_diagnostic_filename('weights', cfg, extension='yml')
 
     weights_dct = weights.to_dict()
 
     with open(filename, 'w') as f:
         yaml.dump(weights_dct, stream=f)
 
-    caption = f'Weights for all variables'
+    caption = 'Weights for all variables'
 
     log_provenance(caption, filename, cfg, provenance_info)
 
 
 def main(cfg):
     """Perform climwip weighting method."""
-
     observations = read_metadata(cfg, projects=['native6', 'E-OBS'])
     models = read_metadata(cfg, projects=['CMIP5'])
 
@@ -393,27 +395,27 @@ def main(cfg):
 
     for variable in variables:
 
-        logger.info(f'Reading model data for {variable}')
+        logger.info('Reading model data for %s', variable)
         datasets_model = models[variable]
         model_data, model_provenance = read_model_data(datasets_model)
 
-        logger.info(f'Reading observation data for {variable}')
+        logger.info('Reading observation data for %s', variable)
         datasets_obs = observations[variable]
         obs_data, obs_provenance = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
-        logger.info(f'Calculating independence for {variable}')
+        logger.info('Calculating independence for %s', variable)
         independence = calculate_independence(model_data)
         visualize_independence(independence, cfg, model_provenance)
         logger.debug(independence.values)
 
-        logger.info(f'Calculating performance for {variable}')
+        logger.info('Calculating performance for %s', variable)
         performance = calculate_performance(model_data, obs_data)
-        visualize_performance(performance, cfg,
-                              model_provenance + obs_provenance)
+        visualize_performance(
+            performance, cfg, model_provenance + obs_provenance)
         logger.debug(performance.values)
 
-        logger.info(f'Calculating weights for {variable}')
+        logger.info('Calculating weights for %s', variable)
         sigma_performance = cfg['shape_params'][variable]['sigma_d']
         sigma_independence = cfg['shape_params'][variable]['sigma_s']
         weights = calculate_weights(performance, independence,
