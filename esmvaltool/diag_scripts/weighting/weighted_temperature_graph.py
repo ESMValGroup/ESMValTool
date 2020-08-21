@@ -4,23 +4,17 @@ Implementation of the climwip weighting scheme
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-from collections import defaultdict
+import logging
+import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from scipy.spatial.distance import pdist, squareform
-from pathlib import Path
 import yaml
-import os
 
+from climwip import log_provenance, read_metadata, read_model_data
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
-
-
-from climwip import read_metadata, read_model_data
-from climwip import log_provenance
-
-import logging
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -121,7 +115,7 @@ def visualize_temperature_graph(
                 color=color_data,
                 lw=0.5,
                 alpha=0.5,
-                zorder=1000,
+                zorder=1,
                 label='Ensemble members')
 
     # Fix duplicate labels
@@ -132,7 +126,6 @@ def visualize_temperature_graph(
     plt.title('Temperature anomaly relative to 1981-2010')
     plt.xlabel('Year')
     plt.ylabel('Temperature anomaly $\degree$C')
-    plt.show()
 
     filename = get_plot_filename(f'temperature_anomaly_graph', cfg)
     plt.savefig(filename, dpi=300, bbox_inches='tight')

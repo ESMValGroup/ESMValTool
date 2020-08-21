@@ -24,12 +24,12 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-
 def get_provenance_record(caption: str, ancestors: list):
     """Create a provenance record describing the diagnostic data and plots."""
 
     record = {
-        'caption': caption,
+        'caption':
+        caption,
         'domains': ['reg'],
         'authors': [
             'kalverla_peter',
@@ -40,12 +40,14 @@ def get_provenance_record(caption: str, ancestors: list):
         'references': [
             'acknow_project',
         ],
-        'ancestors': ancestors,
+        'ancestors':
+        ancestors,
     }
     return record
 
 
-def log_provenance(caption: str, filename: str, cfg: dict, provenance_info: list):
+def log_provenance(caption: str, filename: str, cfg: dict,
+                   provenance_info: list):
     """Log provenance info."""
 
     provenance_record = get_provenance_record(caption,
@@ -76,12 +78,11 @@ def make_standard_calendar(xrds: 'xr.Dataset'):
     """Make sure time coordinate uses the default calendar.
 
     Workaround for imcompatible calendars 'standard' and 'no-leap'.
+    Assumes yearly data.
     """
     try:
         years = xrds.time.dt.year.values
-        months = xrds.time.dt.month.values
-        days = xrds.time.dt.day.values
-        xrds['time'] = [datetime(year, month, day) for year, month, day in zip(years, months, days)]
+        xrds['time'] = [datetime(year, 7, 1) for year in years]
     except TypeError:
         # Time dimension is 0-d array
         pass
@@ -162,7 +163,8 @@ def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return means
 
 
-def distance_matrix(values: 'np.ndarray', weights: 'np.ndarray' = None) -> 'np.ndarray':
+def distance_matrix(values: 'np.ndarray',
+                    weights: 'np.ndarray' = None) -> 'np.ndarray':
     """Calculate the pairwise distance between model members.
 
     Takes a dataset with ensemble member/lon/lat. Flattens lon/lat
@@ -206,9 +208,10 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
         distance_matrix,
         data_array,
         weights,
-        input_core_dims=[['model_ensemble', 'lat', 'lon'], ['model_ensemble', 'lat', 'lon']],
+        input_core_dims=[['model_ensemble', 'lat', 'lon'],
+                         ['model_ensemble', 'lat', 'lon']],
         output_core_dims=[['perfect_model_ensemble', 'model_ensemble']],
-        )
+    )
 
     diff.name = f'd{data_array.name}'
     diff.attrs['short_name'] = data_array.name
@@ -218,7 +221,8 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return diff
 
 
-def visualize_independence(independence: 'xr.DataArray', cfg: dict, provenance_info: list):
+def visualize_independence(independence: 'xr.DataArray', cfg: dict,
+                           provenance_info: list):
     """Visualize_independence."""
 
     variable = independence.short_name
@@ -268,10 +272,10 @@ def calculate_performance(model_data: 'xr.DataArray',
 
 
 def barplot(
-        metric: 'xr.DataArray',
-        label: str,
-        filename: str,
-    ):
+    metric: 'xr.DataArray',
+    label: str,
+    filename: str,
+):
     """Visualize metric as barplot."""
 
     name = metric.name
@@ -284,7 +288,9 @@ def barplot(
 
     fig, ax = plt.subplots(figsize=(15, 10))
     chart = sns.barplot(x='model_ensemble', y=name, data=df, ax=ax)
-    chart.set_xticklabels(chart.get_xticklabels(), rotation=45, horizontalalignment='right')
+    chart.set_xticklabels(chart.get_xticklabels(),
+                          rotation=45,
+                          horizontalalignment='right')
     chart.set_title(f'{label} for {variable}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
@@ -295,7 +301,8 @@ def barplot(
     logger.info(f'Output stored as {filename}')
 
 
-def visualize_performance(performance: 'xr.DataArray', cfg: dict, provenance_info: list):
+def visualize_performance(performance: 'xr.DataArray', cfg: dict,
+                          provenance_info: list):
     """Visualize performance."""
 
     label = 'RMS error'
@@ -344,7 +351,8 @@ def calculate_weights(performance: 'xr.DataArray',
     return weights
 
 
-def visualize_weights(weights: 'xr.DataArray', cfg: dict, provenance_info: list):
+def visualize_weights(weights: 'xr.DataArray', cfg: dict,
+                      provenance_info: list):
     """Visualize weights."""
 
     label = 'Weights'
@@ -401,7 +409,8 @@ def main(cfg):
 
         logger.info(f'Calculating performance for {variable}')
         performance = calculate_performance(model_data, obs_data)
-        visualize_performance(performance, cfg, model_provenance + obs_provenance)
+        visualize_performance(performance, cfg,
+                              model_provenance + obs_provenance)
         logger.debug(performance.values)
 
         logger.info(f'Calculating weights for {variable}')
