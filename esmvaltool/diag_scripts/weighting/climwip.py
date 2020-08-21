@@ -220,19 +220,20 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
 
 def visualize_independence(independence: 'xr.DataArray', cfg: dict, provenance_info: list):
     """Visualize_independence."""
-    # import IPython; IPython.embed(); exit()
-    variable = independence.short_name
-    labels = [x.replace('_', '\n') for x in independence.model_ensemble.values]
 
+    variable = independence.short_name
+    labels = [x for x in independence.model_ensemble.values]
+
+    fig, ax = plt.subplots(figsize=(15, 15), subplot_kw={'aspect': 'equal'})
     chart = sns.heatmap(
         independence,
-        annot=True,
-        fmt='.3g',
         linewidths=1,
         cmap="YlGn",
         xticklabels=labels,
         yticklabels=labels,
-        cbar_kws={'label': f'Euclidean distance ({independence.units})'})
+        cbar_kws={'label': f'Euclidean distance ({independence.units})'},
+        ax=ax,
+    )
     chart.set_title(f'Distance matrix for {variable}')
 
     filename = get_plot_filename(f'independence_{variable}', cfg)
@@ -267,7 +268,7 @@ def calculate_performance(model_data: 'xr.DataArray',
 
 
 def barplot(
-        metric: 'xr.DataArray', 
+        metric: 'xr.DataArray',
         label: str,
         filename: str,
     ):
@@ -278,11 +279,12 @@ def barplot(
     units = metric.units
 
     df = metric.to_dataframe().reset_index()
-    df.model_ensemble = df.model_ensemble.map(lambda x: x.replace('_', '\n'))
 
     ylabel = f'{label} {variable} ({units})'
 
-    chart = sns.barplot(x='model_ensemble', y=name, data=df)
+    fig, ax = plt.subplots(figsize=(15, 10))
+    chart = sns.barplot(x='model_ensemble', y=name, data=df, ax=ax)
+    chart.set_xticklabels(chart.get_xticklabels(), rotation=45, horizontalalignment='right')
     chart.set_title(f'{label} for {variable}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
@@ -290,7 +292,7 @@ def barplot(
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
-    logger.info(f'Output stored as {filename}')  
+    logger.info(f'Output stored as {filename}')
 
 
 def visualize_performance(performance: 'xr.DataArray', cfg: dict, provenance_info: list):
