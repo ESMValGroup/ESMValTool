@@ -4,17 +4,17 @@ Implementation of the climwip weighting scheme
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-from collections import defaultdict
-import os
 import logging
+import os
+from collections import defaultdict
+from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import xarray as xr
-from scipy.spatial.distance import pdist, squareform
 import yaml
-from datetime import datetime
+from scipy.spatial.distance import pdist, squareform
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,

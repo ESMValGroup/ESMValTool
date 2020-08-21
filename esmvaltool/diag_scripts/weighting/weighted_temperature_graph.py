@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 import yaml
-
 from climwip import log_provenance, read_metadata, read_model_data
+
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
 
 logger = logging.getLogger(os.path.basename(__file__))
