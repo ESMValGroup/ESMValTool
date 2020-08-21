@@ -383,7 +383,7 @@ def save_weights(weights: 'pd.Series', cfg: dict, provenance_info: list):
 def main(cfg):
     """Perform climwip weighting method."""
 
-    observations = read_metadata(cfg, projects=['native6'])
+    observations = read_metadata(cfg, projects=['native6', 'E-OBS'])
     models = read_metadata(cfg, projects=['CMIP5'])
 
     variables = models.keys()
