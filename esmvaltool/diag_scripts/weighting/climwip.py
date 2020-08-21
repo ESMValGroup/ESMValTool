@@ -42,12 +42,10 @@ def get_provenance_record(caption: str, ancestors: list):
     return record
 
 
-def log_provenance(
-    caption: str,
-    filename: str,
-    cfg: dict,
-    provenance_info: list
-):
+def log_provenance(caption: str,
+                   filename: str,
+                   cfg: dict,
+                   provenance_info: list):
     """Log provenance info."""
     provenance_record = get_provenance_record(caption,
                                               ancestors=provenance_info)
@@ -283,12 +281,12 @@ def barplot(
     variable = metric.short_name
     units = metric.units
 
-    df = metric.to_dataframe().reset_index()
+    metric_df = metric.to_dataframe().reset_index()
 
     ylabel = f'{label} {variable} ({units})'
 
     fig, ax = plt.subplots(figsize=(15, 10))
-    chart = sns.barplot(x='model_ensemble', y=name, data=df, ax=ax)
+    chart = sns.barplot(x='model_ensemble', y=name, data=metric_df, ax=ax)
     chart.set_xticklabels(chart.get_xticklabels(),
                           rotation=45, horizontalalignment='right')
     chart.set_title(f'{label} for {variable}')

@@ -75,9 +75,9 @@ def visualize_temperature_graph(temperature,
     """Visualize weighted temperature."""
     fig, ax = plt.subplots(dpi=300)
 
-    def plot_shaded(t, upper, lower, color, **kwargs):
+    def plot_shaded(xrange, upper, lower, color, **kwargs):
         ax.fill_between(
-            t,
+            xrange,
             upper,
             lower,
             facecolor=color,
@@ -105,9 +105,9 @@ def visualize_temperature_graph(temperature,
         label='Weighted inter-quartile range',
     )
 
-    for t in temperature.data:
+    for temp in temperature.data:
         ax.plot(temperature.time,
-                t,
+                temp,
                 color=color_data,
                 lw=0.5,
                 alpha=0.5,
