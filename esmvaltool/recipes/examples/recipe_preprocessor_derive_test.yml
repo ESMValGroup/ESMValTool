@@ -16,13 +16,13 @@ documentation:
   projects:
     - c3s-magic
 
+
 diagnostics:
 
-  diag1:
-    description: Test variable derivation
+  cmip5:
+    description: Test variable derivation for CMIP5 models.
     variables:
-      rtnt_cmip5: &rtnt_cmip5
-        short_name: rtnt
+      alb: &alb_cmip5
         project: CMIP5
         mip: Amon
         exp: historical
@@ -32,35 +32,14 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: GFDL-CM3, ensemble: r1i1p1}
-      amoc_cmip5:
-        <<: *rtnt_cmip5
-        short_name: amoc
+      amoc:
+        <<: *alb_cmip5
         mip: Omon
         additional_datasets:
           - {dataset: CanESM2, ensemble: r1i1p1}
-      co2s_cmip5:
-        <<: *rtnt_cmip5
-        short_name: co2s
-        additional_datasets:
-          - {dataset: CanESM2, ensemble: r1i1p1}
-      ctotal_cmip5:
-        <<: *rtnt_cmip5
-        short_name: ctotal
-        mip: Lmon
-        additional_datasets:
-          - {dataset: CanESM2, ensemble: r1i1p1}
-      et_cmip5:
-        <<: *rtnt_cmip5
-        short_name: et
-        mip: Lmon
-      lwcre_cmip5:
-        <<: *rtnt_cmip5
-        short_name: lwcre
-      swcre_cmip5:
-        <<: *rtnt_cmip5
-        short_name: swcre
-      clhmtisccp_cmip5: &cloud_cmip5
-        short_name: clhmtisccp
+      asr:
+        <<: *alb_cmip5
+      clhmtisccp: &cloud_cmip5
         project: CMIP5
         mip: cfMon
         exp: amip
@@ -71,8 +50,93 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: HadGEM2-A, ensemble: r1i1p1}
-      rtnt_cmip6: &rtnt_cmip6
-        short_name: rtnt
+      clhtkisccp:
+        <<: *cloud_cmip5
+      cllmtisccp:
+        <<: *cloud_cmip5
+      clltkisccp:
+        <<: *cloud_cmip5
+      clmmtisccp:
+        <<: *cloud_cmip5
+      clmtkisccp:
+        <<: *cloud_cmip5
+      co2s:
+        <<: *alb_cmip5
+        additional_datasets:
+          - {dataset: CanESM2, ensemble: r1i1p1}
+      ctotal:
+        <<: *alb_cmip5
+        mip: Lmon
+        additional_datasets:
+          - {dataset: CanESM2, ensemble: r1i1p1}
+      et:
+        <<: *alb_cmip5
+        mip: Lmon
+      lvp:
+        <<: *alb_cmip5
+      lwcre:
+        <<: *alb_cmip5
+      lwp:
+        <<: *alb_cmip5
+      netcre:
+        <<: *alb_cmip5
+      ohc:
+        <<: *alb_cmip5
+        mip: Omon
+        additional_datasets:
+          - {dataset: CanESM2, ensemble: r1i1p1}
+      rlns:
+        <<: *alb_cmip5
+      rlnstcs:
+        <<: *alb_cmip5
+      rlnst:
+        <<: *alb_cmip5
+      rlntcs:
+        <<: *alb_cmip5
+      rsns:
+        <<: *alb_cmip5
+      rsnstcsnorm:
+        <<: *alb_cmip5
+      rsnstcs:
+        <<: *alb_cmip5
+      rsnst:
+        <<: *alb_cmip5
+      rsntcs:
+        <<: *alb_cmip5
+      rsnt:
+        <<: *alb_cmip5
+      rtnt:
+        <<: *alb_cmip5
+      sispeed:
+        <<: *alb_cmip5
+        mip: day
+        start_year: 1979
+        end_year: 1979
+      sithick:
+        <<: *alb_cmip5
+        mip: day
+        start_year: 1979
+        end_year: 1979
+      sm:
+        <<: *alb_cmip5
+        mip: Lmon
+      swcre:
+        <<: *alb_cmip5
+      toz:
+        <<: *alb_cmip5
+      uajet:
+        <<: *alb_cmip5
+      vegfrac:
+        <<: *alb_cmip5
+        mip: Lmon
+        additional_datasets:
+          - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+    scripts: null
+
+  cmip6:
+    description: Test variable derivation for CMIP6 models.
+    variables:
+      alb: &alb_cmip6
         project: CMIP6
         mip: Amon
         exp: historical
@@ -83,31 +147,12 @@ diagnostics:
         additional_datasets:
           - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr}
       # Issues with required variables [#359]
-      # amoc_cmip6:
-      #   <<: *rtnt_cmip6
-      #   short_name: amoc
+      # amoc:
+      #   <<: *alb_cmip6
       #   mip: Omon
-      co2s_cmip6:
-        <<: *rtnt_cmip6
-        short_name: co2s
-        additional_datasets:
-          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-      ctotal_cmip6:
-        <<: *rtnt_cmip6
-        short_name: ctotal
-        mip: Lmon
-      et_cmip6:
-        <<: *rtnt_cmip6
-        short_name: et
-        mip: Lmon
-      lwcre_cmip6:
-        <<: *rtnt_cmip6
-        short_name: lwcre
-      swcre_cmip6:
-        <<: *rtnt_cmip6
-        short_name: swcre
-      clhmtisccp_cmip6: &cloud_cmip6
-        short_name: clhmtisccp
+      asr:
+        <<: *alb_cmip6
+      clhmtisccp: &cloud_cmip6
         project: CMIP6
         mip: CFmon
         exp: hist-nat
@@ -117,231 +162,86 @@ diagnostics:
         force_derivation: false
         additional_datasets:
           - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
-    scripts: null
-
-  diag2:
-    description: Test variable derivation
-    variables:
-      asr_cmip5:
-        <<: *rtnt_cmip5
-        short_name: asr
-      ohc_cmip5:
-        <<: *rtnt_cmip5
-        short_name: ohc
+      clhtkisccp:
+        <<: *cloud_cmip6
+      cllmtisccp:
+        <<: *cloud_cmip6
+      clltkisccp:
+        <<: *cloud_cmip6
+      clmmtisccp:
+        <<: *cloud_cmip6
+      clmtkisccp:
+        <<: *cloud_cmip6
+      co2s:
+        <<: *alb_cmip6
+        additional_datasets:
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      ctotal:
+        <<: *alb_cmip6
+        mip: Lmon
+      et:
+        <<: *alb_cmip6
+        mip: Lmon
+      lvp:
+        <<: *alb_cmip6
+      lwcre:
+        <<: *alb_cmip6
+      lwp:
+        <<: *alb_cmip6
+      netcre:
+        <<: *alb_cmip6
+      ohc:
+        <<: *alb_cmip6
         mip: Omon
         additional_datasets:
-          - {dataset: CanESM2, ensemble: r1i1p1}
-      sm_cmip5:
-        <<: *rtnt_cmip5
-        short_name: sm
+          - {dataset: NorCPM1, ensemble: r2i1p1f1, grid: gr, institute: NCC}
+      rlns:
+        <<: *alb_cmip6
+      rlnstcs:
+        <<: *alb_cmip6
+      rlnst:
+        <<: *alb_cmip6
+      rlntcs:
+        <<: *alb_cmip6
+      rsns:
+        <<: *alb_cmip6
+      rsnstcsnorm:
+        <<: *alb_cmip6
+      rsnstcs:
+        <<: *alb_cmip6
+      rsnst:
+        <<: *alb_cmip6
+      rsntcs:
+        <<: *alb_cmip6
+      rsnt:
+        <<: *alb_cmip6
+      rtnt:
+        <<: *alb_cmip6
+      sispeed:
+        <<: *alb_cmip6
+        mip: SImon
+        start_year: 1979
+        end_year: 1979
+        additional_datasets:
+          - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn}
+      sithick:
+        <<: *alb_cmip6
+        mip: SImon
+        additional_datasets:
+          - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn}
+      sm:
+        <<: *alb_cmip6
         mip: Lmon
-      toz_cmip5:
-        <<: *rtnt_cmip5
-        short_name: toz
-      clhtkisccp_cmip5:
-        <<: *cloud_cmip5
-        short_name: clhtkisccp
-      asr_cmip6:
-        <<: *rtnt_cmip6
-        short_name: asr
-      # No CMIP6 model with thetao and volcello available
-      # ohc_cmip6:
-      #   <<: *rtnt_cmip6
-      #   short_name: ohc
-      #   mip: Omon
-      #   additional_datasets:
-      #     - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn}
-      sm_cmip6:
-        <<: *rtnt_cmip6
-        short_name: sm
-        mip: Lmon
-      toz_cmip6:
-        <<: *rtnt_cmip6
-        short_name: toz
+      swcre:
+        <<: *alb_cmip6
+      toz:
+        <<: *alb_cmip6
         exp: G1
         start_year: 1948
         end_year: 1949
-      clhtkisccp_cmip6:
-        <<: *cloud_cmip6
-        short_name: clhtkisccp
-    scripts: null
-
-  diag3:
-    description: Test variable derivation
-    variables:
-      rsnt_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rsnt
-      lvp_cmip5:
-        <<: *rtnt_cmip5
-        short_name: lvp
-      rsnstcsnorm_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rsnstcsnorm
-      uajet_cmip5:
-        <<: *rtnt_cmip5
-        short_name: uajet
-      vegfrac_cmip5:
-        <<: *rtnt_cmip5
-        short_name: vegfrac
+      uajet:
+        <<: *alb_cmip6
+      vegfrac:
+        <<: *alb_cmip6
         mip: Lmon
-        additional_datasets:
-          - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
-      clmmtisccp_cmip5:
-        <<: *cloud_cmip5
-        short_name: clmmtisccp
-      rsnt_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rsnt
-      rsnstcsnorm_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rsnstcsnorm
-      lvp_cmip6:
-        <<: *rtnt_cmip6
-        short_name: lvp
-      uajet_cmip6:
-        <<: *rtnt_cmip6
-        short_name: uajet
-      vegfrac_cmip6:
-        <<: *rtnt_cmip6
-        short_name: vegfrac
-        mip: Lmon
-      clmmtisccp_cmip6:
-        <<: *cloud_cmip6
-        short_name: clmmtisccp
-    scripts: null
-
-  diag4:
-    description: Test variable derivation
-    variables:
-      rlntcs_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rlntcs
-      rsns_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rsns
-      clmtkisccp_cmip5:
-        <<: *cloud_cmip5
-        short_name: clmtkisccp
-      rlntcs_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rlntcs
-      rsns_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rsns
-      clmtkisccp_cmip6:
-        <<: *cloud_cmip6
-        short_name: clmtkisccp
-    scripts: null
-
-  diag5:
-    description: Test variable derivation
-    variables:
-      rlns_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rlns
-      rlns_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rlns
-    scripts: null
-
-  diag6:
-    description: Test variable derivation
-    variables:
-      alb_cmip5:
-        <<: *rtnt_cmip5
-        short_name: alb
-      lwp_cmip5:
-        <<: *rtnt_cmip5
-        short_name: lwp
-      rlnstcs_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rlnstcs
-      rsnstcs_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rsnstcs
-      cllmtisccp_cmip5:
-        <<: *cloud_cmip5
-        short_name: cllmtisccp
-      alb_cmip6:
-        <<: *rtnt_cmip6
-        short_name: alb
-      lwp_cmip6:
-        <<: *rtnt_cmip6
-        short_name: lwp
-      rlnstcs_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rlnstcs
-      rsnstcs_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rsnstcs
-      cllmtisccp_cmip6:
-        <<: *cloud_cmip6
-        short_name: cllmtisccp
-    scripts: null
-
-  diag7:
-    description: Test variable derivation
-    variables:
-      netcre_cmip5:
-        <<: *rtnt_cmip5
-        short_name: netcre
-      rsntcs_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rsntcs
-      sithick_cmip5:
-        <<: *rtnt_cmip5
-        short_name: sithick
-        mip: day
-        start_year: 1979
-        end_year: 1979
-      clltkisccp_cmip5:
-        <<: *cloud_cmip5
-        short_name: clltkisccp
-      netcre_cmip6:
-        <<: *rtnt_cmip6
-        short_name: netcre
-      rsntcs_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rsntcs
-      sithick_cmip6:
-        <<: *rtnt_cmip6
-        short_name: sithick
-        mip: SImon
-        additional_datasets:
-          - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn}
-      clltkisccp_cmip6:
-        <<: *cloud_cmip6
-        short_name: clltkisccp
-    scripts: null
-
-  diag8:
-    description: Test sispeed
-    variables:
-      rlnst_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rlnst
-      rsnst_cmip5:
-        <<: *rtnt_cmip5
-        short_name: rsnst
-      sispeed_cmip5:
-        <<: *rtnt_cmip5
-        short_name: sispeed
-        mip: day
-        start_year: 1979
-        end_year: 1979
-      rlnst_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rlnst
-      rsnst_cmip6:
-        <<: *rtnt_cmip6
-        short_name: rsnst
-      sispeed_cmip6:
-        <<: *rtnt_cmip6
-        short_name: sispeed
-        mip: SImon
-        start_year: 1979
-        end_year: 1979
-        additional_datasets:
-          - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn}
     scripts: null
