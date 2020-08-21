@@ -41,7 +41,7 @@ datasets: &model_data
 
 obs_data: &obs_data  # for climwip performance metrics
   - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
-  - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, version: v21.0e-0.25, type: ground}
+  # - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, version: v21.0e-0.25, type: ground}
 
 # TODO use extract shape for an SREX region
 preprocessors:
@@ -57,17 +57,16 @@ preprocessors:
       start_latitude: 30.0
       end_latitude: 76.25
 
-  climwip_summer_mean:
+  climatological_mean:
     <<: *general
-    extract_season:
-      season: JJA
     climate_statistics:
       operator: mean
 
-  climwip_winter_std:
+  detrended_std:
     <<: *general
-    extract_season:
-      season: DJF
+    detrend:
+      dimension: time
+      method: linear
     climate_statistics:
       operator: std_dev
 
@@ -97,7 +96,7 @@ diagnostics:
         mip: Amon
         era5_name: 2m_temperature
         era5_freq: monthly
-        preprocessor: climwip_winter_std
+        preprocessor: detrended_std
         additional_datasets: *obs_data
       pr:
         start_year: 1995
@@ -105,7 +104,7 @@ diagnostics:
         mip: Amon
         era5_name: total_precipitation
         era5_freq: monthly
-        preprocessor: climwip_summer_mean
+        preprocessor: climatological_mean
         additional_datasets: *obs_data
 
     scripts:
