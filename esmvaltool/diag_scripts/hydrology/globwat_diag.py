@@ -6,6 +6,7 @@ import calendar
 import os.path 
 import iris
 from iris.pandas import as_data_frame 
+import iris.analysis    
 import pandas as pd
 import numpy as np
 # from osgeo import gdal
@@ -21,6 +22,7 @@ from rasterio.transform import Affine
 
 
 import subprocess
+from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
 from esmvalcore import preprocessor as preproc
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -29,7 +31,7 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             select_metadata)
 
 
-logger = logging.getLogger(Path('__file__').name) #for test in python use '__file__'
+logger = logging.getLogger(Path(__file__).name) #for test in python use '__file__'
 
 
 def create_provenance_record():
@@ -147,6 +149,96 @@ def _shift_era5_time_coordinate(cube):
     time.guess_bounds()
     return cube
 
+# def regrid_temperature(src_temp, src_height, target_height, scheme):
+#     """Convert temperature to target grid with lapse rate correction."""
+#     # Convert 2m temperature to sea-level temperature (slt)
+#     src_dtemp = lapse_rate_correction(src_height)
+#     src_slt = src_temp.copy(data=src_temp.core_data() + src_dtemp.core_data())
+
+#     # Interpolate sea-level temperature to target grid
+#     target_slt = lazy_regrid(src_slt, target_height, scheme)
+
+#     # Convert sea-level temperature to new target elevation
+#     target_dtemp = lapse_rate_correction(target_height)
+#     target_temp = target_slt
+#     target_temp.data = target_slt.core_data() - target_dtemp.core_data()
+
+#     return target_temp
+
+def load_target(filename):
+    """Load DEM into iris cube."""
+    logger.info("Reading digital elevation model from %s", filename)
+    if filename.suffix.lower() == '.nc':
+        cube = iris.load_cube(str(filename))
+    elif filename.suffix.lower() == '.map':
+        cube = _load_pcraster_dem(filename)
+    else:
+        raise ValueError(f"Unknown file format {filename}. Supported formats "
+                         "are '.nc' and '.map'.")
+    for coord in 'longitude', 'latitude':
+        if not cube.coord(coord).has_bounds():
+            logger.warning("Guessing DEM %s bounds", coord)
+            cube.coord(coord).guess_bounds()
+    return cube
+
+# def _load_pcraster_dem(filename):
+#     """Load DEM from a PCRASTER .map file."""
+#     dataset = gdal.Open(str(filename))
+#     lon_offset, lon_step, _, lat_offset, _, lat_step = dataset.GetGeoTransform(
+#     )
+#     lon_size, lat_size = dataset.RasterXSize, dataset.RasterYSize
+#     data = dataset.ReadAsArray()
+#     data = np.ma.masked_less(data, -1e8)
+#     dataset = None
+
+#     lons = lon_offset + lon_step * (np.arange(lon_size) + 0.5)
+#     lats = lat_offset + lat_step * (np.arange(lat_size) + 0.5)
+
+#     lon_coord = iris.coords.DimCoord(
+#         lons,
+#         var_name='lon',
+#         standard_name='longitude',
+#         units='degrees',
+#     )
+#     lat_coord = iris.coords.DimCoord(
+#         lats,
+#         var_name='lat',
+#         standard_name='latitude',
+#         units='degrees',
+#     )
+
+#     cube = iris.cube.Cube(
+#         data,
+#         var_name='height',
+#         units='m',
+#         dim_coords_and_dims=[
+#             (lat_coord, 0),
+#             (lon_coord, 1),
+#         ],
+#     )
+#     return cube
+
+
+# def check_dem(dem, cube):
+#     """Check that the DEM and extract_region parameters match."""
+#     for coord in ('longitude', 'latitude'):
+#         start_dem_coord = dem.coord(coord).cell(0).point
+#         end_dem_coord = dem.coord(coord).cell(-1).point
+#         start_cube_coord = cube.coord(coord).cell(0).point
+#         end_cube_coord = cube.coord(coord).cell(-1).point
+#         if start_dem_coord < start_cube_coord:
+#             logger.warning(
+#                 "Insufficient data available, input data starts at %s "
+#                 "degrees %s, but should be at least one grid "
+#                 "cell larger than the DEM start at %s degrees %s.",
+#                 start_cube_coord, coord, start_dem_coord, coord)
+#         if end_dem_coord > end_cube_coord:
+#             logger.warning(
+#                 "Insufficient data available, input data ends at %s "
+#                 "degrees %s, but should be at least one grid "
+#                 "cell larger than the DEM end at %s degrees %s.",
+#                 end_cube_coord, coord, end_dem_coord, coord)
+    
 def get_month_day_for_output_name(cube): 
     """get month and day number for output name."""
     # get start year and end year  
@@ -194,7 +286,6 @@ def make_output_name(cube):
     output_name['pet']['day'] = daily_pet
     return output_name
 
-
 def main(cfg):
     """Process data for use as input to the GlobWat hydrological model.
 
@@ -209,10 +300,73 @@ def main(cfg):
     input_metadata = cfg['input_data'].values()
     # for checking the code in ipython I added print(input_metadata).
     # Run the script and use print(input_metadata) in the log.txt as input_metadata
-    print(input_metadata)
+    print('input_metadata', input_metadata)
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance, time_step = get_input_cubes(metadata)
+
+        target_cube_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
+        target_cube = load_target(target_cube_path)
+        # check_dem(dem, all_vars['pr'])
+
+        # logger.info("Processing variable precipitation_flux")
+        # scheme = cfg['regrid']  #'linear'
+        # pr_dem = lazy_regrid(all_vars['pr'], dem, scheme)
+
+        # logger.info("Processing variable temperature")
+        # tas_dem = regrid_temperature(
+        #     all_vars['tas'],
+        #     all_vars['orog'],
+        #     dem,
+        #     scheme,
+        # )
+
+        # logger.info("Processing variable potential evapotranspiration")
+        # if 'evspsblpot' in all_vars:
+        #     pet = all_vars['evspsblpot']
+        #     pet_dem = lazy_regrid(pet, dem, scheme)
+        # else:
+        #     logger.info("Potential evapotransporation not available, deriving")
+        #     psl_dem = lazy_regrid(all_vars['psl'], dem, scheme)
+        #     rsds_dem = lazy_regrid(all_vars['rsds'], dem, scheme)
+        #     rsdt_dem = lazy_regrid(all_vars['rsdt'], dem, scheme)
+        #     pet_dem = debruin_pet(
+        #         tas=tas_dem,
+        #         psl=psl_dem,
+        #         rsds=rsds_dem,
+        #         rsdt=rsdt_dem,
+        #     )
+        # pet_dem.var_name = 'pet'
+
         
+        # # Interpolating variables onto the dem grid
+        # # Read the target cube, which contains target grid and target elevation
+        # dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
+        # dem = load_dem(dem_path)
+        # # # check_dem(dem, all_vars['pr'])
+
+        # logger.info("Processing variable precipitation_flux")
+        # scheme = cfg['regrid']
+        # all_vars.update(pr = lazy_regrid(all_vars['pr'], dem, scheme)
+        # # print('I could regrid prc')
+
+        # # logger.info("Potential evapotransporation not available, deriving")
+        # # psl_dem = lazy_regrid(all_vars['psl'], dem, scheme)
+        # # rsds_dem = lazy_regrid(all_vars['rsds'], dem, scheme)
+        # # rsdt_dem = lazy_regrid(all_vars['rsdt'], dem, scheme)
+        # # tas_dem = lazy_regrid(all_vars['tas'], dem, scheme)
+        # # all_vars.update(pet = debruin_pet(
+        # #             psl= psl_dem,
+        # #             rsds= rsds_dem,
+        # #             rsdt= rsdt_dem,
+        # #             tas= tas_dem,
+        # #         ))
+
+        # # # debruin_pet(tas=lazy_regrid(all_vars['tas'], dem, scheme),
+        # # #                                   psl=lazy_regrid(all_vars['psl'], dem, scheme),
+        # # #                                   rsds=lazy_regrid(all_vars['rsds'], dem, scheme),
+        # # #                                   rsdt=lazy_regrid(all_vars['rsdt'], dem, scheme),
+        # # #                                  )
+            
         cube = all_vars['pr']  
         logger.info("Potential evapotransporation not available, deriving and adding to all_vars dictionary")
         all_vars.update(pet = debruin_pet(
@@ -256,8 +410,9 @@ def main(cfg):
                             for sub_cube in key_cube.slices_over('time'): 
                                 #precipitation data has negative values except than fill_value
                                 #which results in gaps in model results so here we set those negative 
-                                #values to zero
+                                # values to zero
                                 sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
+                                sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
 
                                 #The preprocessed data are saved as netcdf files which then go through  
                                 #a set of modifications including regriding, reprojection and netcdf to
@@ -266,7 +421,7 @@ def main(cfg):
 
                                 #Save data as netcdf 
                                 file_name = output_name_amon[i] 
-                                iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
+                                iris.save(sub_cube_regrided, data_dir / f"{file_name}.nc", fill_value=-9999)
 
                                 #TODO: We must work on saving data as ascii format. 
                                 #We tried different saving methods including save to csv, gdal
@@ -303,28 +458,29 @@ def main(cfg):
                                 # new_dataset.write(array, 1)
                                 # new_dataset.close()
                     # TODO: the code faces memory error while running for daily data, need to fix 
-                    # elif mip == 'day':
-                    #     output_name_day = output_name[key]['day']
-                    #     output_name_amon = output_name[key]['Amon']
-                    #     data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
-                    # for var_name in output_name: 
-                    #     for time_step in output_name[var_name]: 
-                    #         print(output_name[var_name][time_step]) 
-                        # for i in range(len(output_name_day)):
-                        #     key_cube = all_vars[key]
-                        #     for sub_cube in key_cube.slices_over('time'): 
-                                # frame = iris.pandas.as_data_frame(sub_cube, copy=True)
-                                # file_name = output_name_day[i]
-                                # iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
-                    #             print(frame) 
-                    #             # final_path = os.path.join(path, output_name[key][mip][i])
-                    #             # Path(output_file[i]).parent.mkdir(exist_ok=True)
-                    #             # os.makedirs(final_path)
-                    #             frame.to_csv(output_name_day[i],
-                    #                         sep=' ',
-                    #                         na_rep='-9999',
-                    #                         float_format='%.1f'
-                    #                         ) 
+                    elif mip == 'day':
+                        output_name_day = output_name[key]['day']
+                        output_name_amon = output_name[key]['Amon']
+                        data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
+                    for var_name in output_name: 
+                        for time_step in output_name[var_name]: 
+                            print(output_name[var_name][time_step]) 
+                            for i in range(len(output_name_day)):
+                                key_cube = all_vars[key]
+                                for sub_cube in key_cube.slices_over('time'): 
+                                    # frame = iris.pandas.as_data_frame(sub_cube, copy=True)
+                                    sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
+                                    file_name = output_name_day[i]
+                                    iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
+                                # print(frame) 
+                                # final_path = os.path.join(path, output_name[key][mip][i])
+                                # Path(output_file[i]).parent.mkdir(exist_ok=True)
+                                # os.makedirs(final_path)
+                                # frame.to_csv(output_name_day[i],
+                                #             sep=' ',
+                                #             na_rep='-9999',
+                                #             float_format='%.1f'
+                                #             ) 
             # # Store provenance
             # with ProvenanceLogger(cfg) as provenance_logger:
             #     provenance_logger.log(output_file, provenance)
