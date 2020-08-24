@@ -1,0 +1,60 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+    -   id: check-added-large-files
+    -   id: check-ast
+    -   id: check-case-conflict
+    -   id: check-merge-conflict
+    -   id: check-yaml
+    -   id: debug-statements
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+-   repo: https://github.com/pre-commit/mirrors-isort
+    rev: ''  # Use the revision sha / tag you want to point at
+    hooks:
+    -   id: isort
+        args: [--multi-line=3, --trailing-comma]
+-   repo: https://github.com/pre-commit/mirrors-yapf
+    rev: ''
+    hooks:
+    -   id: yapf
+-   repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.0.1
+    hooks:
+    -   id: add-trailing-comma
+- repo: https://github.com/myint/docformatter
+  rev: v1.3.1
+  hooks:
+    - id: docformatter
+      args: [--in-place]
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: ''
+    hooks:
+        # Run flake8.
+    -   id: flake8
+        additional_dependencies: [
+          'flake8-blind-except',
+          'flake8-commas',
+          'flake8-comprehensions',
+          'flake8-deprecated',
+          'flake8-mutable',
+          'flake8-quotes',
+          'flake8-tidy-imports',
+          'flake8-type-annotations',
+          'flake8-builtins',
+          ]
+-   repo: https://github.com/pre-commit/mirrors-pylint
+    rev: ''  # Use the sha / tag you want to point at
+    hooks:
+    -   id: pylint
+        args: [--reports=no]
+-   repo: git://github.com/FalconSocial/pre-commit-mirrors-pep257
+    rev: ''  # Use the sha / tag you want to point at
+    hooks:
+    -   id: pep257
+        args: ['--ignore=D107,D203,D212,D213,D402,D413,D416']
+
