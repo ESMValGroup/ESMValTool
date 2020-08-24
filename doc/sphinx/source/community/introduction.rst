@@ -294,14 +294,20 @@ What should be documented
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Any code documentation that is visible on
-`readthedocs <https://docs.esmvaltool.org>`__ should be well
-written and adhere to the standards for documentation for the respective
-language. Recipes should have a page in the *Recipes* section on
-readthedocs. This is also the place to document recipe options for the
-diagnostic scripts used in those recipes. Note that there is no need to
-write extensive documentation for functions that are not visible on
-readthedocs. However, adding a one line docstring describing what a
-function does is always a good idea.
+`docs.esmvaltool.org <https://docs.esmvaltool.org>`__
+should be well written and adhere to the standards for documentation for the
+respective language.
+Recipes should have a page in the :ref:`recipes` section.
+This is also the place to document recipe options for the diagnostic scripts
+used in those recipes.
+When adding a new recipe, please start from the
+`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+and do not forget to add your recipe to the
+`<index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+Note that there is no need to write extensive documentation for functions
+that are not visible on readthedocs.
+However, adding a one line docstring describing what a function does is
+always a good idea.
 
 How to build the documentation locally
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
