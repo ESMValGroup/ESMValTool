@@ -107,12 +107,12 @@ def visualize_temperature_graph(temperature,
 
     for temp in temperature.data:
         axes.plot(temperature.time,
-                temp,
-                color=color_data,
-                lw=0.5,
-                alpha=0.5,
-                zorder=1,
-                label='Ensemble members')
+                  temp,
+                  color=color_data,
+                  lw=0.5,
+                  alpha=0.5,
+                  zorder=1,
+                  label='Ensemble members')
 
     # Fix duplicate labels
     handles, labels = plt.gca().get_legend_handles_labels()
