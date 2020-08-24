@@ -7,10 +7,10 @@ import logging
 import os
 from pathlib import Path
 
+import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-import yaml
 from climwip import log_provenance, read_metadata, read_model_data
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
@@ -20,8 +20,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def read_weights(filename: str):
     """Read a `.yml` file into a Pandas Dataframe."""
-    with open(filename, 'r') as f:
-        weights = yaml.safe_load(f)
+    with open(filename, 'r') as file:
+        weights = yaml.safe_load(file)
     return weights
 
 
@@ -73,10 +73,10 @@ def visualize_temperature_graph(temperature,
                                 cfg,
                                 provenance_info):
     """Visualize weighted temperature."""
-    fig, ax = plt.subplots(dpi=300)
+    figure, axes = plt.subplots(dpi=300)
 
     def plot_shaded(xrange, upper, lower, color, **kwargs):
-        ax.fill_between(
+        axes.fill_between(
             xrange,
             upper,
             lower,
@@ -106,7 +106,7 @@ def visualize_temperature_graph(temperature,
     )
 
     for temp in temperature.data:
-        ax.plot(temperature.time,
+        axes.plot(temperature.time,
                 temp,
                 color=color_data,
                 lw=0.5,
@@ -117,7 +117,7 @@ def visualize_temperature_graph(temperature,
     # Fix duplicate labels
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))  # dict removes dupes
-    ax.legend(by_label.values(), by_label.keys())
+    axes.legend(by_label.values(), by_label.keys())
 
     plt.title('Temperature anomaly relative to 1981-2010')
     plt.xlabel('Year')

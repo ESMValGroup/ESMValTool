@@ -6,14 +6,14 @@ https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 from collections import defaultdict
 import os
 import logging
+from datetime import datetime
 
+import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import xarray as xr
 from scipy.spatial.distance import pdist, squareform
-import yaml
-from datetime import datetime
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -229,7 +229,8 @@ def visualize_independence(independence: 'xr.DataArray',
     variable = independence.short_name
     labels = list(independence.model_ensemble.values)
 
-    fig, ax = plt.subplots(figsize=(15, 15), subplot_kw={'aspect': 'equal'})
+    figure, axes = plt.subplots(figsize=(15, 15),
+                                subplot_kw={'aspect': 'equal'})
     chart = sns.heatmap(
         independence,
         linewidths=1,
@@ -237,7 +238,7 @@ def visualize_independence(independence: 'xr.DataArray',
         xticklabels=labels,
         yticklabels=labels,
         cbar_kws={'label': f'Euclidean distance ({independence.units})'},
-        ax=ax,
+        ax=axes,
     )
     chart.set_title(f'Distance matrix for {variable}')
 
@@ -285,8 +286,8 @@ def barplot(
 
     ylabel = f'{label} {variable} ({units})'
 
-    fig, ax = plt.subplots(figsize=(15, 10))
-    chart = sns.barplot(x='model_ensemble', y=name, data=metric_df, ax=ax)
+    figure, axes = plt.subplots(figsize=(15, 10))
+    chart = sns.barplot(x='model_ensemble', y=name, data=metric_df, ax=axes)
     chart.set_xticklabels(chart.get_xticklabels(),
                           rotation=45, horizontalalignment='right')
     chart.set_title(f'{label} for {variable}')
@@ -375,8 +376,8 @@ def save_weights(weights: 'pd.Series',  # noqa: F821
 
     weights_dct = weights.to_dict()
 
-    with open(filename, 'w') as f:
-        yaml.dump(weights_dct, stream=f)
+    with open(filename, 'w') as file:
+        yaml.dump(weights_dct, stream=file)
 
     caption = 'Weights for all variables'
 
