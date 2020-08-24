@@ -367,7 +367,7 @@ def visualize_weights(weights: 'xr.DataArray',
     log_provenance(caption, filename, cfg, provenance_info)
 
 
-def save_weights(weights: 'pd.Series', cfg: dict, provenance_info: list):
+def save_weights(weights: 'pd.Series', cfg: dict, provenance_info: list):  # noqa: F821
     """Save the weights to a `.yml` file."""
     filename = get_diagnostic_filename('weights', cfg, extension='yml')
 
