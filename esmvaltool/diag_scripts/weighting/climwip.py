@@ -398,22 +398,22 @@ def main(cfg):
 
         logger.info('Reading model data for %s', variable)
         datasets_model = models[variable]
-        model_data, model_provenance = read_model_data(datasets_model)
+        model_data, model_input_files = read_model_data(datasets_model)
 
         logger.info('Reading observation data for %s', variable)
         datasets_obs = observations[variable]
-        obs_data, obs_provenance = read_observation_data(datasets_obs)
+        obs_data, obs_input_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
         logger.info('Calculating independence for %s', variable)
         independence = calculate_independence(model_data)
-        visualize_independence(independence, cfg, model_provenance)
+        visualize_independence(independence, cfg, model_input_files)
         logger.debug(independence.values)
 
         logger.info('Calculating performance for %s', variable)
         performance = calculate_performance(model_data, obs_data)
         visualize_performance(
-            performance, cfg, model_provenance + obs_provenance)
+            performance, cfg, model_input_files + obs_input_files)
         logger.debug(performance.values)
 
         logger.info('Calculating weights for %s', variable)
@@ -421,12 +421,12 @@ def main(cfg):
         sigma_independence = cfg['shape_params'][variable]['sigma_s']
         weights = calculate_weights(performance, independence,
                                     sigma_performance, sigma_independence)
-        visualize_weights(weights, cfg, model_provenance + obs_provenance)
+        visualize_weights(weights, cfg, model_input_files + obs_input_files)
         logger.debug(weights.values)
 
         weights_dict[variable] = weights
-        ancestors.extend(model_provenance)
-        ancestors.extend(obs_provenance)
+        ancestors.extend(model_input_files)
+        ancestors.extend(obs_input_files)
 
     weights_df = xr.Dataset(weights_dict).to_dataframe()
     mean_weights = weights_df.mean(axis=1)  # Average over variables
