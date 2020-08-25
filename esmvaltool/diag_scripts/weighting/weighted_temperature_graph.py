@@ -161,7 +161,7 @@ def calculate_percentiles(data: 'xr.DataArray',
                             input_core_dims=[['model_ensemble']],
                             output_core_dims=[['percentiles']],
                             kwargs={
-                                'sample_weight': weights,
+                                'weights': weights,
                                 'quantiles': percentiles / 100
                             },
                             vectorize=True)
