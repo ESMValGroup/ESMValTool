@@ -35,7 +35,9 @@ def get_provenance_record(caption: str, ancestors: list):
             'camphuijsen_jaro',
         ],
         'references': [
-            'acknow_project',
+            'brunner2019',
+            'lorenz2018',
+            'knutti2017',
         ],
         'ancestors': ancestors,
     }
