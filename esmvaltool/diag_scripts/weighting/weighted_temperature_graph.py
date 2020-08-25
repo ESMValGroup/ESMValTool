@@ -128,8 +128,8 @@ def visualize_temperature_graph(temperature,
     plt.ylabel(r'Temperature anomaly $\degree$C')
 
     filename = get_plot_filename('temperature_anomaly_graph', cfg)
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.close()
+    figure.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close(figure)
 
     caption = 'Temperature anomaly relative to 1981-2010'
 

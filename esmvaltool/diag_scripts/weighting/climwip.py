@@ -243,8 +243,8 @@ def visualize_independence(independence: 'xr.DataArray',
     chart.set_title(f'Distance matrix for {variable}')
 
     filename = get_plot_filename(f'independence_{variable}', cfg)
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.close()
+    figure.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close(figure)
 
     caption = f'Euclidean distance matrix for variable {variable}'
 
@@ -294,8 +294,8 @@ def barplot(
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
 
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.close()
+    figure.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close(figure)
 
     logger.info('Output stored as %s', filename)
 
