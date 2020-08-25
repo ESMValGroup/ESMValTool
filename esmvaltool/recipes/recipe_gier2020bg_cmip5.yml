@@ -83,7 +83,7 @@ diagnostics:
     scripts:
       xco2_maps:
         script: xco2_analysis/global_maps.ncl
-        contour_max_level: 26
+        contour_max_level: 18
 
       xco2_main:
         script: xco2_analysis/main.ncl
@@ -91,6 +91,7 @@ diagnostics:
         region: [-90, 90]
         # Possible masking options: obs
         masking: ["obs"]
+        ensemble_mean: false
 
       xco2_panels_unsampled:
         script: xco2_analysis/panel_plots.ncl

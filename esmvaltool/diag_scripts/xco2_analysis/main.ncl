@@ -43,7 +43,6 @@ begin
   DATASETS := array_append_record(DATASETS, "multi-model mean", 0)
   experiments = metadata_att_as_array(INFO0, "exp") ; Careful! OBS also has exp: esm-hist
   ensembles = metadata_att_as_array(INFO0, "ensemble")
-  print(ensembles)
   dim_MOD = dimsizes(DATASETS)
   ALL_FILES = metadata_att_as_array(INFO0, "filename")
 
@@ -132,13 +131,13 @@ begin
   end if
 
   ; Check if ensembles members should be handled as ensemble or seperately
-  ensemble_mean = True ;diag_script_info@ensemble_mean
-  if ensemble_mean then
-    ; find unique models
-    unique_models = get_unique_values(DATASETS)
-    dim_unique_MOD = dimsizes(unique_models)
+  calc_ensemble_mean = diag_script_info@ensemble_mean
+  if calc_ensemble_mean then
+    ensemble_refs = diag_script_info@ensemble_refs
   end if
-
+  ; find unique models
+  unique_models = get_unique_values(DATASETS)
+  dim_unique_MOD = dimsizes(unique_models)
 
   model_arr = new((/dim_MOD, ntime/), float)
   model_arr!0 = "model"
@@ -169,10 +168,6 @@ begin
       var0_plotname = var0
   end if
 
-  print("Ensemble refs")
-  test = diag_script_info@ensemble_refs
-  print(test(:, 0))
-
 end
 begin
   ; First read obs to have it ready for masking
@@ -181,24 +176,50 @@ begin
 
   do imod = 0, dim_MOD - 1
     if DATASETS(imod).eq."multi-model mean" then
-      var0_mod = mmm_array / tofloat(dimsizes(DATASETS) - subtract_mmm)
+      if calc_ensemble_mean then
+        var0_mod = mmm_array / tofloat(dim_unique_MOD - subtract_mmm)
+      else
+        var0_mod = mmm_array / tofloat(dimsizes(DATASETS) - subtract_mmm)
+      end if
       copy_VarMeta(mmm_array, var0_mod)
     else
-      if imod.ne.ref_ind then
+      ; Check if it's an ensemble member
+      if calc_ensemble_mean then
+        if imod.eq.ref_ind then
+          mmm_member = False
+        elseif .not. calc_ensemble_mean then
+          mmm_member = True
+        elseif all(ensemble_refs(:,0).ne.DATASETS(imod))
+          mmm_member = True
+        else
+          ensemble_ref_ind = ind(ensemble_refs(:,0).eq.DATASETS(imod))
+          if ensemble_refs(ensemble_ref_ind, 1).eq. ensembles(imod) then
+            mmm_member = True
+          else
+            mmm_member = False
+          end if
+        end if
+        print(DATASETS(imod) + ensembles(imod) + " is ensemble member: " + mmm_member)
+      else
+        mmm_member = True
+      end if
+      if (imod.ne.ref_ind)then
         tmp = read_data(INFO0[imod])
         var0_mod = tofloat(tmp)
         copy_VarMeta(tmp, var0_mod)
         delete(tmp)
         var0_mod = convert_units(var0_mod, "ppmv")
 
-        if .not. isdefined("mmm_array") then
-          mmm_array =  area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, var0_mod, \
-                                          True,1, obs_data&lon, obs_data&lat, False)
-        else
-          var_reg = area_hi2lores(var0_mod&lon, var0_mod&lat, var0_mod, \
-                                  True,1, mmm_array&lon, mmm_array&lat, False)
-          mmm_array = mmm_array + (/var_reg/)
-          delete(var_reg)
+        if mmm_member
+          if .not. isdefined("mmm_array") then
+            mmm_array =  area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, var0_mod, \
+                                            True,1, obs_data&lon, obs_data&lat, False)
+          else
+            var_reg = area_hi2lores(var0_mod&lon, var0_mod&lat, var0_mod, \
+                                    True,1, mmm_array&lon, mmm_array&lat, False)
+            mmm_array = mmm_array + (/var_reg/)
+            delete(var_reg)
+          end if
         end if
       end if
     end if
@@ -220,12 +241,13 @@ begin
     var0_avg = area_operations(var0_reg, lat_min, lat_max, 0, 360, \
             "average", True)
     model_arr(mapping_array(imod), :) = (/var0_avg/)
-    gr_arr(mapping_array(imod), :) = (/calc_gr(var0_avg, "monthlyfilled", min_nmonth)/)
-    sca_arr(mapping_array(imod), :) = (/(var0_avg - dim_cumsum(gr_arr(mapping_array(imod), :)/12., 1)) - \
-                                      avg(var0_avg - dim_cumsum(gr_arr(mapping_array(imod), :)/12., 1))/)
+    gr_arr(mapping_array(imod), :) = (/calc_gr(var0_avg, "monthly", min_nmonth)/)
+    mnth_filled = calc_gr(var0_avg, "monthlyfilled", min_nmonth)
+    sca_arr(mapping_array(imod), :) = (/(var0_avg - dim_cumsum(mnth_filled/12., 1)) - \
+                                      avg(var0_avg - dim_cumsum(mnth_filled/12., 1))/)
     growth_series(mapping_array(imod), :) = (/calc_gr(var0_avg, "yearly", min_nmonth)/)
     amp_series(mapping_array(imod), :) = (/calc_sca(var0_avg, min_nmonth)/)
-    delete([/var0_avg, var0_reg/])
+    delete([/var0_avg, var0_reg, mnth_filled/])
   end do ; End loop over models
 
   ; -------------------------------------------------------------------------------
@@ -264,6 +286,20 @@ begin
   dashes = project_style(INFO0, diag_script_info, "dashes")
   dashes := array_append_record(dashes, 0, 0)
 
+  labels_ini = model_arr&model
+  if dim_unique_MOD .ne. dim_MOD then
+    inds = ispan(0, dim_MOD-1, 1)
+    do imod = 0, dim_MOD -1
+      other_sets = DATASETS(ind(inds.ne.imod))
+      if any(other_sets.eq.DATASETS(imod)) then
+        labels_ini(imod) = labels_ini(imod) + " " +ensembles(imod)
+        get_r = str_split(ensembles(imod), "ri")
+        dashes(imod) = toint(get_r(0)) - 1
+      end if
+      delete(other_sets)
+    end do
+  end if
+
   ;; Plot series
   res = True
   res@tiYAxisString = ""
@@ -287,36 +323,56 @@ begin
   res@xyLineThicknesses = thicks  ; make 2nd lines thicker
   res@xyMonoDashPattern = False
   res@xyDashPatterns    = dashes
+  res@tmXBFormat = "f"
 
   plots = new(3, graphic)
-
 
 
   res@trYMinF = min(model_arr) - 0.05 * (max(model_arr) - min(model_arr))
   res@trYMaxF = max(model_arr) + 0.05 * (max(model_arr) - min(model_arr)) ;0.22
 
   plots(0) = gsn_csm_xy(wks, model_arr&time, model_arr, res)
+  ;Redraw obs to make it more visible on top
+  respoly = True
+  respoly@gsLineThicknessF = thicks(0)
+  plots@poly0 = gsn_add_polyline(wks, plots(0), model_arr&time, model_arr(0,:), respoly)
+
 
   res@tiYAxisString = "Growth Rate [ppmv yr~S~-1~N~]"
   res@trYMinF = min(gr_arr) - 0.05 * (max(gr_arr) - min(gr_arr))
   res@trYMaxF = max(gr_arr) + 0.05 * (max(gr_arr) - min(gr_arr)) ;0.22
 
   plots(1) = gsn_csm_xy(wks, gr_arr&time, gr_arr, res)
+  plots@poly1 = gsn_add_polyline(wks, plots(1), gr_arr&time, gr_arr(0,:), respoly)
 
   res@trYMinF = min(sca_arr) - 0.05 * (max(sca_arr) - min(sca_arr))
   res@trYMaxF = max(sca_arr) + 0.05 * (max(sca_arr) - min(sca_arr)) ;0.22
-  res@tiYAxisString = "SCA [ppmv]"
+  res@tiYAxisString = "Seasonal Cycle [ppmv]"
   plots(2) = gsn_csm_xy(wks, sca_arr&time, sca_arr, res)
+  plots@poly2 = gsn_add_polyline(wks, plots(2), sca_arr&time, sca_arr(0,:), respoly)
 
-  ; Add correlation to plot 2!
+  ; Calc annual mean GR correlations
+  gr_corrs = new(dim_MOD-1, float)
+  gr_corrs!0 = "models"
+  gr_corrs&models = labels_ini(1:)
+
+  ; Calc SCA correlations
+  sca_corrs = gr_corrs
+
   do imod = 1, dim_MOD - 1
-    corr = escorc(sca_arr(:, 0), sca_arr(:, imod))
-    ;print(corr)
+    gr_corrs(imod-1) = escorc(growth_series(0, :), growth_series(imod, :))
+    corr = escorc(sca_arr(0, :), sca_arr(imod, :))
+    sca_corrs(imod-1) = corr
   end do
+  print("Annual Mean Growth Rate correlation to observations")
+  print(gr_corrs&models + ": " + gr_corrs)
+
+  print("SCA Correlation to observations")
+  print(sca_corrs&models + ": " + sca_corrs)
 
 
   lgres = True
-  lgres@vpWidthF = 0.15
+  lgres@vpWidthF = 0.25
   lgres@vpHeightF = 0.5
   lgres@lgLineColors = colors(::-1)
   lgres@lgLabelFontHeightF = 0.1
@@ -327,7 +383,11 @@ begin
   lgres@lgPerimOn = False
   lgres@lgItemType         = "Lines"
 
-  labels = model_arr&model(::-1)
+  lgres@lgAutoManage = False
+  lgres@lgLabelFontHeightF = 0.06
+
+
+  labels = labels_ini(::-1)
   nlabels = dim_MOD
   legend = gsn_create_legend(wks, nlabels, labels, lgres)
 
@@ -389,7 +449,7 @@ begin
   res@gsnXYBarChart = True
   res@tmXBMode = "Explicit"
   res@tmXBValues = ispan(0, dimsizes(growth_series&model) - 1, 1)
-  res@tmXBLabels = growth_series&model(perm_idx)
+  res@tmXBLabels = labels_ini(perm_idx) ;growth_series&model(perm_idx)
   res@tmXBLabelAngleF = 60.
   res@tmXBLabelJust = "CenterRight"
   res@tmXBLabelFontHeightF = 0.014

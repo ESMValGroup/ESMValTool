@@ -43,6 +43,8 @@ begin
   DATASETS = metadata_att_as_array(INFO0, "dataset")
   DATASETS := array_append_record(DATASETS, "multi-model mean", 0)
   experiments = metadata_att_as_array(INFO0, "exp") ; Careful! OBS also has exp: esm-hist
+  ensembles = metadata_att_as_array(INFO0, "ensemble")
+  ensembles := array_append_record(ensembles, "", 0)
   dim_MOD = dimsizes(DATASETS)
   ALL_FILES = metadata_att_as_array(INFO0, "filename")
 
@@ -308,6 +310,14 @@ begin
     ; #####################################################################
     ; #####################  PLOTTING  ####################################
     ; #####################################################################
+    ; Set up the different colormaps to be used
+    ; Non-divergent
+    non_div_cm = read_colormap_file("MPL_viridis")
+    non_div_cm = non_div_cm(::-1, :)
+    ; Divergent
+    div_cm = read_colormap_file("ncl_default")
+    ;div_cm = div_cm(::-1, :)
+
 
     ;; Plot seasonal cycle amplitude maps with and without obs sampling
 
@@ -352,8 +362,8 @@ begin
     seasamp_diff&lat = mod_mv_growth&lat
     seasamp_diff!1 = "lon"
     seasamp_diff&lon = mod_mv_growth&lon
-    maxlev_obs = decimalPlaces(max(abs(seasamp_obsdiff)), 0, False) + 1 ;Truncate and then +1!
-    maxlev_diff = decimalPlaces(max(abs(seasamp_diff)), 0, False) + 1 ;Truncate and then +1!
+    maxlev_obs = decimalPlaces(max(abs(seasamp_obsdiff)), 0, False) ;Truncate and then +1!
+    maxlev_diff = decimalPlaces(max(abs(seasamp_diff)), 0, False) ;Truncate and then +1!
     maxlev = max((/maxlev_obs, maxlev_diff/))
     res@cnLevelSelectionMode = "ManualLevels"
     res@cnMinLevelValF = -maxlev
@@ -361,6 +371,7 @@ begin
     res@cnLevelSpacingF = 1.
     mean_plot = avg(seasamp_obsdiff)
     res@gsnRightString = sprintf("%1.2f", mean_plot) + " ppmv"
+    res@cnFillPalette = div_cm   ; set color map
     plot_seasamp_diff = gsn_csm_contour_map(wks, seasamp_obsdiff, res)
 
 
@@ -381,6 +392,8 @@ begin
     res@cnLevelSpacingF      = 1.
 
     res@gsnLeftString = "Sampled " + DATASETS(imod)
+    delete(res@cnFillPalette)
+    res@cnFillPalette = non_div_cm   ; set color map
 
     mean_plot = avg(mod_mv_seasamp)
     res@gsnRightString = sprintf("%1.2f", mean_plot) + " ppmv"
@@ -450,6 +463,7 @@ begin
     delete(mod_var)
     delete(mod_mv)
     delete(mod_nomv)
+    delete(res@cnFillPalette)
   end do ; Loop over models
 
   ; ---------------- Make panel plot
@@ -473,15 +487,23 @@ begin
       res_sca_panel_plots@cnLevelSpacingF = 1.
       res_sca_panel_plots@gsnStringFontHeightF = 0.03
       res_sca_panel_plots@tmXBLabelFontHeightF = 0.025
+      ;res_sca_panel_plots@tmXBMode = "Manual"
+      ;res_sca_panel_plots@tmXBTickStartF = -135
+      ;res_sca_panel_plots@tmXBTickEndF = 135
+      ;res_sca_panel_plots@tmTickSpacingF = 45
       res_sca_panel_plots@tmYLLabelFontHeightF = 0.025
       res_sca_panel_plots@cnConstFLabelOn = False
       res_sca_panel_plots@cnLineLabelsOn      = False
       res_sca_panel_plots@tmLabelAutoStride = True
-      res_sca_panel_plots@cnFillPalette    = "BkBlAqGrYeOrReViWh200"   ; set color map
+      ;res_sca_panel_plots@cnFillPalette    = "BkBlAqGrYeOrReViWh200"   ; set color map
       res_sca_panel_plots@gsnZonalMean = True
       res_sca_panel_plots@gsnZonalMeanXMinF    = 0      ; min X-axis value for zonal mean plot
       res_sca_panel_plots@gsnZonalMeanXMaxF    = diag_script_info@contour_max_level     ; max X-axis value for zonal mean plot
       res_sca_panel_plots@amOrthogonalPosF = .2
+      res_sca_panel_plots@cnFillPalette = non_div_cm   ; set color map
+      res_sca_panel_plots@gsnRightStringOrthogonalPosF = -0.005
+      res_sca_panel_plots@gsnLeftStringOrthogonalPosF = -0.005
+      ;res_sca_panel_plots@tmXBLabelsOn          = False    ; turn off lon labels
     end if
     res_sca_panel_plots@gsnLeftString = mod_names(imod)
     mean_sca_mod = avg(sca_p_array(imod, :, :))
@@ -505,8 +527,11 @@ begin
   pres@lbTopMarginF = 0.8
   pres@lbTitleOffsetF = 0.2
 
-  nrow = round(sqrt(dimsizes(mod_inds)), 3)
-  ncol = round(dimsizes(mod_inds) / nrow, 3)
+
+  ncol = toint(floor(sqrt(dimsizes(mod_inds))))
+  nrow = toint(ceil((dimsizes(mod_inds)/tofloat(ncol))))
+  ;toint(ceil(sqrt(dimsizes(mod_inds))))
+  ;ncol = round(dimsizes(mod_inds) / nrow, 3)
   gsn_panel(wks_scap, sca_panel_plots,(/nrow, ncol/), pres)
   frame(wks_scap)
   delete(res_sca_panel_plots)

@@ -371,7 +371,11 @@ begin
    res               = True                        ; plot mods desired
    res@gsnDraw       = False                       ; don't draw yet
    res@gsnFrame      = False                       ; don't advance frame
-   plot = gsn_csm_map_ce(wks,res)                 ; draw global map
+
+   resm = res
+   resm@mpFillOn = True
+   resm@mpLandFillColor = "grey92"
+   plot = gsn_csm_map_ce(wks,resm)                 ; draw global map
    ;drawNDCGrid(wks)
 
    ; Make Station timeseries plots
