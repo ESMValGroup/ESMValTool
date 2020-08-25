@@ -1,0 +1,21 @@
+# ESMValTool
+# recipe_check_obs.yml
+---
+documentation:
+  description: |
+    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    just to check correct reading of the CMORized data.
+
+  authors:
+    - righi_mattia
+
+diagnostics:
+
+  NOAA-ERSSTv5:
+    description: NOAA-ERSSTv5 check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv5, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v5, start_year: 1854, end_year: 2019}
+    scripts: null
