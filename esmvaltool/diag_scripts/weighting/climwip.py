@@ -97,7 +97,7 @@ def make_standard_calendar(xrds: 'xr.Dataset'):
 
 def read_input_data(metadata: list,
                     dim: str = 'data_ensemble',
-                    identifier_fmt: str = '{dataset}') -> 'xr.DataArray':
+                    identifier_fmt: str = '{dataset}') -> tuple:
     """Load data from metadata.
 
     Read the input data from the list of given data sets. `metadata` is a list
@@ -128,14 +128,14 @@ def read_input_data(metadata: list,
     return diagnostic, ancestors
 
 
-def read_model_data(datasets: list) -> 'xr.DataArray':
+def read_model_data(datasets: list) -> tuple:
     """Load model data from list of metadata."""
     return read_input_data(datasets,
                            dim='model_ensemble',
                            identifier_fmt='{dataset}_{ensemble}_{exp}')
 
 
-def read_observation_data(datasets: list) -> 'xr.DataArray':
+def read_observation_data(datasets: list) -> tuple:
     """Load observation data from list of metadata."""
     return read_input_data(datasets,
                            dim='obs_ensemble',
