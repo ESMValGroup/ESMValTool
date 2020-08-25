@@ -7,7 +7,6 @@ import logging
 import os
 from pathlib import Path
 
-import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -18,11 +17,10 @@ from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def read_weights(filename: str):
-    """Read a `.yml` file into a Pandas Dataframe."""
-    with open(filename, 'r') as file:
-        weights = yaml.safe_load(file)
-    return weights
+def read_weights(filename: str) -> dict:
+    """Read a `.nc` file into a weights DataArray."""
+    weights_ds = xr.open_dataset(filename)
+    return weights_ds.to_dataframe().to_dict()['weight']
 
 
 def weighted_quantile(values: list,

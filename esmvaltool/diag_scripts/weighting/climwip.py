@@ -8,7 +8,6 @@ import os
 import logging
 from datetime import datetime
 
-import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
