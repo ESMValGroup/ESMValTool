@@ -94,16 +94,12 @@ diagnostics:
         start_year: 1995
         end_year: 2014
         mip: Amon
-        era5_name: 2m_temperature
-        era5_freq: monthly
         preprocessor: detrended_std
         additional_datasets: *obs_data
       pr:
         start_year: 1995
         end_year: 2014
         mip: Amon
-        era5_name: total_precipitation
-        era5_freq: monthly
         preprocessor: climatological_mean
         additional_datasets: *obs_data
 
@@ -124,8 +120,6 @@ diagnostics:
         start_year: 1960
         end_year: 2100
         mip: Amon
-        era5_name: 2m_temperature
-        era5_freq: monthly
         preprocessor: temperature_anomalies
     scripts:
       weighted_temperature_graph:
