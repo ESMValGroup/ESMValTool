@@ -260,7 +260,7 @@ def visualize_and_save_independence(independence: 'xr.DataArray',
     log_provenance(caption, filename, cfg, provenance_info)
 
     data_filename = get_diagnostic_filename(f'independence_{variable}', cfg, extension='nc')
-    data.to_netcdf(data_filename)
+    independence.to_netcdf(data_filename)
 
 
 def calculate_performance(model_data: 'xr.DataArray',
@@ -324,7 +324,7 @@ def visualize_and_save_performance(performance: 'xr.DataArray',
     log_provenance(caption, filename, cfg, provenance_info)
 
     data_filename = get_diagnostic_filename(f'performance_{variable}', cfg, extension='nc')
-    data.to_netcdf(data_filename)
+    performance.to_netcdf(data_filename)
 
 
 def calculate_weights(performance: 'xr.DataArray',
@@ -381,7 +381,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray',
     log_provenance(caption, filename, cfg, provenance_info)
 
     data_filename = get_diagnostic_filename(f'weights_{variable}', cfg, extension='nc')
-    data.to_netcdf(data_filename)
+    weights.to_netcdf(data_filename)
 
 
 def visualize_and_save_mean_weights(weights: dict,
@@ -406,7 +406,7 @@ def visualize_and_save_mean_weights(weights: dict,
     log_provenance(caption, filename, cfg, provenance_info)
 
     data_filename = get_diagnostic_filename('weights_combined', cfg, extension='nc')
-    data.to_netcdf(data_filename)
+    weights_combined.to_netcdf(data_filename)
 
 
 def main(cfg):
