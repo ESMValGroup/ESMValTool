@@ -178,7 +178,7 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models = read_metadata(cfg, projects=['CMIP5'])['tas']
+    models = read_metadata(cfg, key='model_data')['tas']
     model_data, model_provenance = read_model_data(models)
 
     percentiles = np.array([25, 75])

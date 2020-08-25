@@ -106,6 +106,10 @@ diagnostics:
     scripts:
       climwip:
         script: weighting/climwip.py
+
+        obs_data: native6
+        model_data: CMIP5
+
         shape_params:
           tas:
             sigma_d: 0.588
@@ -126,3 +130,4 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.yml'
+        model_data: CMIP5

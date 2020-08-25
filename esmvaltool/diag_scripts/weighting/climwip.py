@@ -55,12 +55,17 @@ def log_provenance(caption: str,
         provenance_logger.log(filename, provenance_record)
 
 
-def read_metadata(cfg: dict, projects: list) -> dict:
+def read_metadata(cfg: dict, key: str) -> dict:
     """Read the metadata from the config file.
 
-    Project is the list of project identifiers (str) to select.
+    The `key` defines the variable in the recipe containing
+    the identifiers of the projects to select.
     """
     datasets = defaultdict(list)
+
+    projects = cfg[key]
+    if isinstance(projects, str):
+        projects = [projects]
 
     for project in projects:
         metadata = select_metadata(cfg['input_data'].values(), project=project)
@@ -388,8 +393,9 @@ def save_weights(weights,  # pd.Series
 
 def main(cfg):
     """Perform climwip weighting method."""
-    observations = read_metadata(cfg, projects=['native6', 'E-OBS'])
-    models = read_metadata(cfg, projects=['CMIP5'])
+
+    observations = read_metadata(cfg, key='obs_data')
+    models = read_metadata(cfg, key='model_data')
 
     variables = models.keys()
 
