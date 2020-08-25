@@ -54,6 +54,8 @@ def log_provenance(caption: str,
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
+    logger.info('Output stored as %s', filename)
+
 
 def read_metadata(cfg: dict, key: str) -> dict:
     """Read the metadata from the config file.
@@ -229,7 +231,7 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return diff
 
 
-def visualize_independence(independence: 'xr.DataArray',
+def visualize_and_save_independence(independence: 'xr.DataArray',
                            cfg: dict,
                            provenance_info: list):
     """Visualize_independence."""
@@ -257,7 +259,8 @@ def visualize_independence(independence: 'xr.DataArray',
 
     log_provenance(caption, filename, cfg, provenance_info)
 
-    logger.info('Output stored as %s', filename)
+    data_filename = get_diagnostic_filename(f'independence_{variable}', cfg, extension='nc')
+    data.to_netcdf(data_filename)
 
 
 def calculate_performance(model_data: 'xr.DataArray',
@@ -307,7 +310,7 @@ def barplot(
     logger.info('Output stored as %s', filename)
 
 
-def visualize_performance(performance: 'xr.DataArray',
+def visualize_and_save_performance(performance: 'xr.DataArray',
                           cfg: dict,
                           provenance_info: list):
     """Visualize performance."""
@@ -319,6 +322,9 @@ def visualize_performance(performance: 'xr.DataArray',
 
     barplot(performance, label, filename)
     log_provenance(caption, filename, cfg, provenance_info)
+
+    data_filename = get_diagnostic_filename(f'performance_{variable}', cfg, extension='nc')
+    data.to_netcdf(data_filename)
 
 
 def calculate_weights(performance: 'xr.DataArray',
@@ -361,7 +367,7 @@ def calculate_weights(performance: 'xr.DataArray',
     return weights
 
 
-def visualize_weights(weights: 'xr.DataArray',
+def visualize_and_save_weights(weights: 'xr.DataArray',
                       cfg: dict,
                       provenance_info: list):
     """Visualize weights."""
@@ -374,21 +380,33 @@ def visualize_weights(weights: 'xr.DataArray',
     barplot(weights, label, filename)
     log_provenance(caption, filename, cfg, provenance_info)
 
+    data_filename = get_diagnostic_filename(f'weights_{variable}', cfg, extension='nc')
+    data.to_netcdf(data_filename)
 
-def save_weights(weights,  # pd.Series
+
+def visualize_and_save_mean_weights(weights: dict,
                  cfg: dict,
                  provenance_info: list):
-    """Save the weights (`pd.Series`) to a `.yml` file."""
-    filename = get_diagnostic_filename('weights', cfg, extension='yml')
+    """Save the mean weights to a `.nc` file."""
+    weights_combined = (
+        xr.Dataset(weights)
+        .to_array(name='weight')
+        .mean(dim='variable')
+    )
 
-    weights_dct = weights.to_dict()
+    weights_combined.attrs['short_name'] = 'weights'
+    weights_combined.attrs['units'] = 'a.u.'
 
-    with open(filename, 'w') as file:
-        yaml.dump(weights_dct, stream=file)
+    label = 'combined mean'
 
-    caption = 'Weights for all variables'
+    filename = get_plot_filename(f'weights_combined', cfg)
+    caption = 'Mean weights for all variables'
 
+    barplot(weights_combined, label, filename)
     log_provenance(caption, filename, cfg, provenance_info)
+
+    data_filename = get_diagnostic_filename('weights_combined', cfg, extension='nc')
+    data.to_netcdf(data_filename)
 
 
 def main(cfg):
@@ -415,12 +433,12 @@ def main(cfg):
 
         logger.info('Calculating independence for %s', variable)
         independence = calculate_independence(model_data)
-        visualize_independence(independence, cfg, model_input_files)
+        visualize_and_save_independence(independence, cfg, model_input_files)
         logger.debug(independence.values)
 
         logger.info('Calculating performance for %s', variable)
         performance = calculate_performance(model_data, obs_data)
-        visualize_performance(
+        visualize_and_save_performance(
             performance, cfg, model_input_files + obs_input_files)
         logger.debug(performance.values)
 
@@ -429,16 +447,14 @@ def main(cfg):
         sigma_independence = cfg['shape_params'][variable]['sigma_s']
         weights = calculate_weights(performance, independence,
                                     sigma_performance, sigma_independence)
-        visualize_weights(weights, cfg, model_input_files + obs_input_files)
+        visualize_and_save_weights(weights, cfg, model_input_files + obs_input_files)
         logger.debug(weights.values)
 
         weights_dict[variable] = weights
         ancestors.extend(model_input_files)
         ancestors.extend(obs_input_files)
 
-    weights_df = xr.Dataset(weights_dict).to_dataframe()
-    mean_weights = weights_df.mean(axis=1)  # Average over variables
-    save_weights(mean_weights, cfg, provenance_info=ancestors)
+    visualize_and_save_mean_weights(weights_dict, cfg, provenance_info=ancestors)
 
 
 if __name__ == '__main__':
