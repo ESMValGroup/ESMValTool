@@ -40,9 +40,10 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
-    # _fix_time_coord(cube)
+    cube = iris.util.squeeze(cube)
+    #_fix_time_coord(cube)
     utils.fix_var_metadata(cube, cmor_info)
-    # utils.fix_coords(cube)
+    #utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     # utils.flip_dim_coord(cube, 'latitude')
     utils.save_variable(cube,
