@@ -71,7 +71,7 @@ REQUIREMENTS = {
     'develop': [
         'autodocsumm',
         'codespell',
-        'isort',
+        'isort>=5.4',
         'pre-commit'
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
         'sphinx>2',
