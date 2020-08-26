@@ -19,3 +19,12 @@ diagnostics:
       - {dataset: NOAA-ERSSTv5, project: OBS6, mip: Omon, tier: 2,
          type: reanaly, version: v5, start_year: 1854, end_year: 2000}
     scripts: null
+
+  NOAA-ERSSTv3b:
+    description: NOAA-ERSSTv3b check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv3b, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
+    scripts: null
