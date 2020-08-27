@@ -69,7 +69,7 @@ User settings in recipe
   *Required settings for script*
 
     * ``ancestors``: must include weights from previous diagnostic
-    * ``weights``: the filename of the weights: 'weights.yml'
+    * ``weights``: the filename of the weights: 'weights_combined.nc'
 
   *Required settings for variables*
 
