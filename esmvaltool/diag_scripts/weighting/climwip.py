@@ -46,10 +46,10 @@ def get_provenance_record(caption: str, ancestors: list):
 def log_provenance(caption: str,
                    filename: str,
                    cfg: dict,
-                   provenance_info: list):
+                   ancestors: list):
     """Log provenance info."""
     provenance_record = get_provenance_record(caption,
-                                              ancestors=provenance_info)
+                                              ancestors=ancestors)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
@@ -108,7 +108,7 @@ def read_input_data(metadata: list,
     """
     data_arrays = []
     identifiers = []
-    ancestors = []
+    input_files = []
     for info in metadata:
         filename = info['filename']
         variable = info['short_name']
@@ -117,7 +117,7 @@ def read_input_data(metadata: list,
         data_arrays.append(xrds[variable])
         identifier = identifier_fmt.format(**info)
         identifiers.append(identifier)
-        ancestors.append(filename)
+        input_files.append(filename)
 
     diagnostic = xr.concat(data_arrays, dim=dim)
     diagnostic[dim] = identifiers
@@ -126,7 +126,7 @@ def read_input_data(metadata: list,
     redundant_dims = np.setdiff1d(diagnostic.coords, diagnostic.dims)
     diagnostic = diagnostic.drop(redundant_dims)
 
-    return diagnostic, ancestors
+    return diagnostic, input_files
 
 
 def read_model_data(datasets: list) -> tuple:
@@ -232,8 +232,8 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
 
 def visualize_and_save_independence(independence: 'xr.DataArray',
                                     cfg: dict,
-                                    provenance_info: list):
-    """Visualize_independence."""
+                                    ancestors: list):
+    """Visualize independence."""
     variable = independence.short_name
     labels = list(independence.model_ensemble.values)
 
@@ -256,7 +256,7 @@ def visualize_and_save_independence(independence: 'xr.DataArray',
 
     caption = f'Euclidean distance matrix for variable {variable}'
 
-    log_provenance(caption, filename, cfg, provenance_info)
+    log_provenance(caption, filename, cfg, ancestors)
 
     data_filename = get_diagnostic_filename(
         f'independence_{variable}', cfg, extension='nc')
@@ -312,7 +312,7 @@ def barplot(
 
 def visualize_and_save_performance(performance: 'xr.DataArray',
                                    cfg: dict,
-                                   provenance_info: list):
+                                   ancestors: list):
     """Visualize performance."""
     label = 'RMS error'
 
@@ -321,7 +321,7 @@ def visualize_and_save_performance(performance: 'xr.DataArray',
     caption = f'Performance metric ({label}) for variable {variable}'
 
     barplot(performance, label, filename)
-    log_provenance(caption, filename, cfg, provenance_info)
+    log_provenance(caption, filename, cfg, ancestors)
 
     data_filename = get_diagnostic_filename(
         f'performance_{variable}', cfg, extension='nc')
@@ -370,7 +370,7 @@ def calculate_weights(performance: 'xr.DataArray',
 
 def visualize_and_save_weights(weights: 'xr.DataArray',
                                cfg: dict,
-                               provenance_info: list):
+                               ancestors: list):
     """Visualize weights."""
     label = 'Weights'
 
@@ -379,7 +379,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray',
     caption = f'Weights for variable {variable}'
 
     barplot(weights, label, filename)
-    log_provenance(caption, filename, cfg, provenance_info)
+    log_provenance(caption, filename, cfg, ancestors)
 
     data_filename = get_diagnostic_filename(
         f'weights_{variable}', cfg, extension='nc')
@@ -388,7 +388,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray',
 
 def visualize_and_save_mean_weights(weights: dict,
                                     cfg: dict,
-                                    provenance_info: list):
+                                    ancestors: list):
     """Save the mean weights to a `.nc` file."""
     weights_combined = (
         xr.Dataset(weights)
@@ -405,7 +405,7 @@ def visualize_and_save_mean_weights(weights: dict,
     caption = 'Mean weights for all variables'
 
     barplot(weights_combined, label, filename)
-    log_provenance(caption, filename, cfg, provenance_info)
+    log_provenance(caption, filename, cfg, ancestors)
 
     data_filename = get_diagnostic_filename(
         'weights_combined', cfg, extension='nc')
@@ -420,28 +420,28 @@ def main(cfg):
     variables = models.keys()
 
     weights_dict = {}
-    ancestors = []
+    data_files = []
 
     for variable in variables:
 
         logger.info('Reading model data for %s', variable)
         datasets_model = models[variable]
-        model_data, model_input_files = read_model_data(datasets_model)
+        model_data, model_data_files = read_model_data(datasets_model)
 
         logger.info('Reading observation data for %s', variable)
         datasets_obs = observations[variable]
-        obs_data, obs_input_files = read_observation_data(datasets_obs)
+        obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
         logger.info('Calculating independence for %s', variable)
         independence = calculate_independence(model_data)
-        visualize_and_save_independence(independence, cfg, model_input_files)
+        visualize_and_save_independence(independence, cfg, model_data_files)
         logger.debug(independence.values)
 
         logger.info('Calculating performance for %s', variable)
         performance = calculate_performance(model_data, obs_data)
         visualize_and_save_performance(
-            performance, cfg, model_input_files + obs_input_files)
+            performance, cfg, model_data_files + obs_data_files)
         logger.debug(performance.values)
 
         logger.info('Calculating weights for %s', variable)
@@ -451,15 +451,15 @@ def main(cfg):
             performance, independence,
             sigma_performance, sigma_independence)
         visualize_and_save_weights(
-            weights, cfg, model_input_files + obs_input_files)
+            weights, cfg, model_data_files + obs_data_files)
         logger.debug(weights.values)
 
         weights_dict[variable] = weights
-        ancestors.extend(model_input_files)
-        ancestors.extend(obs_input_files)
+        data_files.extend(model_data_files)
+        data_files.extend(obs_data_files)
 
     visualize_and_save_mean_weights(
-        weights_dict, cfg, provenance_info=ancestors)
+        weights_dict, cfg, ancestors=data_files)
 
 
 if __name__ == '__main__':
