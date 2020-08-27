@@ -69,7 +69,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm',
+        'autodocsumm!=0.2.0',
         'codespell',
         'isort>=5.4',
         'pre-commit'
