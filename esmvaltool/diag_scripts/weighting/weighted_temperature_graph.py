@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from climwip import log_provenance, read_metadata, read_model_data
+from climwip import get_diagnostic_filename
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
 
@@ -69,11 +70,11 @@ def weighted_quantile(values: list,
     return np.interp(quantiles, weighted_quantiles, values)
 
 
-def visualize_temperature_graph(temperature,
-                                iqr,
-                                iqr_weighted,
-                                cfg,
-                                provenance_info):
+def visualize_and_save_temperature_anomalies(temperature: 'xr.DataArray',
+                                             iqr: 'xr.DataArray',
+                                             iqr_weighted: 'xr.DataArray',
+                                             cfg: dict,
+                                             ancestors: list):
     """Visualize weighted temperature."""
     figure, axes = plt.subplots(dpi=300)
 
@@ -131,7 +132,11 @@ def visualize_temperature_graph(temperature,
 
     caption = 'Temperature anomaly relative to 1981-2010'
 
-    log_provenance(caption, filename, cfg, provenance_info)
+    log_provenance(caption, filename, cfg, ancestors)
+
+    data_filename = get_diagnostic_filename(
+        f'temperature_anomalies', cfg, extension='nc')
+    temperature.to_netcdf(data_filename)
 
     logger.info('Temperature anomaly plot stored as %s', filename)
 
@@ -177,7 +182,7 @@ def main(cfg):
     weights = read_weights(weights_path)
 
     models = read_metadata(cfg, key='model_data')['tas']
-    model_data, model_provenance = read_model_data(models)
+    model_data, model_data_files = read_model_data(models)
 
     percentiles = np.array([25, 75])
 
@@ -192,12 +197,12 @@ def main(cfg):
         weights=weights,
     )
 
-    visualize_temperature_graph(
+    visualize_and_save_temperature_anomalies(
         model_data,
         iqr,
         iqr_weighted,
         cfg,
-        model_provenance,
+        model_data_files,
     )
 
 
