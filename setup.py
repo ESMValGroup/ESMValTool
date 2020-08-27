@@ -72,7 +72,7 @@ REQUIREMENTS = {
         'autodocsumm!=0.2.0',
         'codespell',
         'isort>=5.4',
-        'pre-commit'
+        'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
         'sphinx>2',
         'sphinx_rtd_theme',
