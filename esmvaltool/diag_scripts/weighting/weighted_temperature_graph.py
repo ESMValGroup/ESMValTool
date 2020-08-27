@@ -70,11 +70,11 @@ def weighted_quantile(values: list,
     return np.interp(quantiles, weighted_quantiles, values)
 
 
-def visualize_and_save_temperature_anomalies(temperature: 'xr.DataArray',
-                                             iqr: 'xr.DataArray',
-                                             iqr_weighted: 'xr.DataArray',
-                                             cfg: dict,
-                                             ancestors: list):
+def visualize_and_save_temperatures(temperature: 'xr.DataArray',
+                                    iqr: 'xr.DataArray',
+                                    iqr_weighted: 'xr.DataArray',
+                                    cfg: dict,
+                                    ancestors: list):
     """Visualize weighted temperature."""
     figure, axes = plt.subplots(dpi=300)
 
@@ -135,7 +135,7 @@ def visualize_and_save_temperature_anomalies(temperature: 'xr.DataArray',
     log_provenance(caption, filename, cfg, ancestors)
 
     data_filename = get_diagnostic_filename(
-        f'temperature_anomalies', cfg, extension='nc')
+        'temperature_anomalies', cfg, extension='nc')
     temperature.to_netcdf(data_filename)
 
     logger.info('Temperature anomaly plot stored as %s', filename)
@@ -197,7 +197,7 @@ def main(cfg):
         weights=weights,
     )
 
-    visualize_and_save_temperature_anomalies(
+    visualize_and_save_temperatures(
         model_data,
         iqr,
         iqr_weighted,
