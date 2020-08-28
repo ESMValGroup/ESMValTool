@@ -106,7 +106,6 @@ diagnostics:
         script: weighting/climwip.py
 
         obs_data: native6
-        model_data: CMIP5
 
         shape_params:
           tas:

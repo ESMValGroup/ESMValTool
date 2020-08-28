@@ -17,7 +17,7 @@ from scipy.spatial.distance import pdist, squareform
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             get_plot_filename, run_diagnostic,
-                                            select_metadata)
+                                            group_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -56,27 +56,36 @@ def log_provenance(caption: str,
     logger.info('Output stored as %s', filename)
 
 
-def read_metadata(cfg: dict, key: str) -> dict:
+def read_metadata(cfg: dict) -> tuple:
     """Read the metadata from the config file.
 
-    The `key` defines the variable in the recipe containing
-    the identifiers of the projects to select.
+    Returns a two dicts, one for the model data and one for the observational
+    data. They are split based on the value of the 'obs_data' variable in the
+    recipe. The dictionaries are sorted by the variable.
     """
     datasets = defaultdict(list)
 
-    projects = cfg[key]
-    if isinstance(projects, str):
-        projects = [projects]
+    obs_ids = cfg['obs_data']
+    if isinstance(obs_ids, str):
+        obs_ids = [obs_ids]
 
-    for project in projects:
-        metadata = select_metadata(cfg['input_data'].values(), project=project)
+    input_data = cfg['input_data'].values()
+    projects = group_metadata(input_data, attribute='project')
+
+    observations = defaultdict(list)
+    models = defaultdict(list)
+
+    for project, metadata in projects.items():
 
         for item in metadata:
             variable = item['short_name']
 
-            datasets[variable].append(item)
+            if project in obs_ids:
+                observations[variable].append(item)
+            else:
+                models[variable].append(item)
 
-    return datasets
+    return models, observations
 
 
 def make_standard_calendar(xrds: 'xr.Dataset'):
@@ -420,8 +429,7 @@ def visualize_and_save_mean_weights(weights: dict,
 
 def main(cfg):
     """Perform climwip weighting method."""
-    observations = read_metadata(cfg, key='obs_data')
-    models = read_metadata(cfg, key='model_data')
+    models, observations = read_metadata(cfg)
 
     variables = models.keys()
 
