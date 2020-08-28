@@ -214,16 +214,16 @@ running the commands
 
    isort some_file.py
 
-to sort the imports in the standard way and
+to sort the imports in the standard way using `isort <https://pycqa.github.io/isort/>`__ and
 
 ::
 
    yapf -i some_file.py
 
-to add/remove whitespace as required by the standard.
+to add/remove whitespace as required by the standard using `yapf <https://github.com/google/yapf>`__.
 
 To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``. and run
+the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`__
 
 ::
 
@@ -237,7 +237,7 @@ Run
 
 to see the warnings about the code style of the entire project.
 
-We use ``pycodestyle`` on CircleCI to automatically check that there are
+We use `pycodestyle <https://pycodestyle.pycqa.org/en/latest/>`__ on CircleCI to automatically check that there are
 no formatting mistakes and Codacy for monitoring (Python) code quality.
 Running prospector locally will give you quicker and sometimes more
 accurate results.
