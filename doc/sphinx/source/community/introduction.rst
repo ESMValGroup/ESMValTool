@@ -147,58 +147,27 @@ docstrings <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_nump
 to document Python functions that are visible on
 `readthedocs <https://docs.esmvaltool.org>`__.
 
+Most formatting issues in Python code can be fixed automatically by
+running the commands
+
+::
+
+   isort some_file.py
+
+to sort the imports in the standard way and
+
+::
+
+   yapf -i some_file.py
+
+to add/remove whitespace as required by the standard.
+
 To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``, and run
+the repository is cloned, e.g. ``cd ESMValTool``. and run
 
 ::
 
-   pre-commit run --files esmvaltool/diag_scripts/your_diagnostic/your_script.py
-
-`pre-commit <https://pre-commit.com/>`__ will fix most
-formatting issues in Python automatically, and show a list of remaining issues
-that it cannot fix by itself.
-
-Alternatively, if you have staged your modifications with git (i.e. after
-``git add your_script.py``),
-
-::
-
-   pre-commit run
-
-will run on only those files that have been changed.
-
-Alternatively, you can configure pre-commit to run on the staged files before
-every commit, by installing it as a pre-commit hook using
-
-::
-
-   pre-commit install
-
-This will abort the commit if any issues are found. Some issues cannot be
-fixed (easily), so to bypass the check, run
-
-::
-
-   git commit no-verify
-
-or uninstall the pre-commit hook
-
-::
-
-   pre-commit uninstall
-
-Internally, ``pre-commit`` uses isort `isort <https://pycqa.github.io/isort/>`__
-to sort imports, `yapf <https://github.com/google/yapf>`__ to autoformat the
-code (e.g. add/remove whitespace), and `prospector <http://prospector.landscape.io/>`__
-to see how well the code adheres to the standard.
-
-To run these tools individually, you can run the commands
-
-::
-
-   isort your_script.py
-   yapf -i your_script.py
-   prospector your_script.py
+   prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
 Run
 
