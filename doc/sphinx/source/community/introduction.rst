@@ -136,6 +136,66 @@ development team. For code in all languages, it is highly recommended
 that you split your code up in functions that are short enough to view
 without scrolling.
 
+Pre-commit
+~~~~~~~~~~
+
+`Pre-commit <https://pre-commit.com/>`__  is a tool that runs a series of
+tools to automatically point out issues in the code such as missing semicolons,
+trailing whitespace, and debug statements. Some of these are fixed
+automatically. We include checks for Python, R, NCL, and yaml files, most of
+which are described in more detail below. Pre-commit knows which tool to run
+for each filetype, and provides a simple way to run all the necessary tools
+at once!
+
+To run ``pre-commit`` on your code, go to the ESMValTool directory
+(``cd ESMValTool``) and run
+
+::
+
+   pre-commit run
+
+By default, pre-commit will only run on the files that have been changed,
+meaning those that have been staged in git (i.e. after
+``git add your_script.py``).
+
+To make it only check some specific files, use
+
+::
+
+   pre-commit run --files your_script.py
+
+or
+
+::
+
+   pre-commit run --files your_script.R
+
+Alternatively, you can configure ``pre-commit`` to run on the staged files before
+every commit (i.e. ``git commit``), by installing it as a `git hook <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__ using
+
+::
+
+   pre-commit install
+
+Pre-commit hooks are used by to inspect the code that is about to be committed. The
+commit will be aborted if any issues are found that cannot be fixed automatically.
+Some issues cannot be fixed (easily), so to bypass the check, run
+
+::
+
+   git commit no-verify
+
+or uninstall the pre-commit hook
+
+::
+
+   pre-commit uninstall
+
+Internally, ``pre-commit`` uses isort `isort <https://pycqa.github.io/isort/>`__
+to sort imports, `yapf <https://github.com/google/yapf>`__ to autoformat the
+code (e.g. add/remove whitespace), and `prospector <http://prospector.landscape.io/>`__
+to see how well the code adheres to the standard.
+
 Python
 ~~~~~~
 
