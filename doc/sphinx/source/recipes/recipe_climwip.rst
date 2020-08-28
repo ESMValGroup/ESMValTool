@@ -45,6 +45,9 @@ User settings in recipe
 
       where default values are taken from table 2 in `Brunner et al., 2019 <https://doi.org/10.1088/1748-9326/ab492f>`_.
 
+    * ``model_data``: list of project names for the model data.
+    * ``obs_data``: list of project names for the observational data.
+
   *Required settings for variables*
 
     * This script takes multiple variables as input as long as they're available for all models
