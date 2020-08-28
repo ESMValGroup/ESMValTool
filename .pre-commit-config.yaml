@@ -16,6 +16,22 @@ repos:
     rev: ''
     hooks:
     -   id: yamllint
+-   repo: local  # nclcodestyle is installed alongside ESMValTool
+    hooks:
+    -   id: nclcodestyle
+        name: nclcodestyle
+        entry: nclcodestyle
+        language: system
+        files: '\.(ncl|NCL)$'
+-   repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
+    rev: ''
+    hooks:
+    -   id: lintr
+    -   id: style-files  # styler
+-   repo: https://github.com/codespell-project/codespell
+    rev: ''
+    hooks:
+    -   id: codespell
 -   repo: https://github.com/PyCQA/isort
     rev: ''
     hooks:
