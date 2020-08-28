@@ -63,8 +63,6 @@ def read_metadata(cfg: dict) -> tuple:
     data. They are split based on the value of the 'obs_data' variable in the
     recipe. The dictionaries are sorted by the variable.
     """
-    datasets = defaultdict(list)
-
     obs_ids = cfg['obs_data']
     if isinstance(obs_ids, str):
         obs_ids = [obs_ids]
