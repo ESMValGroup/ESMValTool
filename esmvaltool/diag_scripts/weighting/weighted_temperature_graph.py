@@ -3,6 +3,7 @@
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
+from collections import defaultdict
 import logging
 import os
 from pathlib import Path
@@ -10,7 +11,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from climwip import log_provenance, read_metadata, read_model_data
+from climwip import log_provenance, read_model_data
 from climwip import get_diagnostic_filename
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
@@ -22,6 +23,20 @@ def read_weights(filename: str) -> dict:
     """Read a `.nc` file into a weights DataArray."""
     weights_ds = xr.open_dataset(filename)
     return weights_ds.to_dataframe().to_dict()['weight']
+
+
+def read_metadata(cfg: dict) -> dict:
+    """Read the metadata from the config file."""
+    datasets = defaultdict(list)
+
+    metadata = cfg['input_data'].values()
+
+    for item in metadata:
+        variable = item['short_name']
+
+        datasets[variable].append(item)
+
+    return datasets
 
 
 def weighted_quantile(values: list,
@@ -179,7 +194,8 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models = read_metadata(cfg, key='model_data')['tas']
+    models = read_metadata(cfg)['tas']
+
     model_data, model_data_files = read_model_data(models)
 
     percentiles = np.array([25, 75])

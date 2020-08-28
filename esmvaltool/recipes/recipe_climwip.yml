@@ -128,4 +128,3 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights_combined.nc'
-        model_data: CMIP5
