@@ -29,11 +29,9 @@ logger = logging.getLogger(__name__)
 def _fix_time_coord(cube):
     """Set time points to central day of month."""
     time_coord = cube.coord('time')
-    new_unit = Unit('days since 1850-01-01 00:00:00', calendar='standard')
-    time_coord.convert_units(new_unit)
-    old_time = new_unit.num2date(time_coord.points)
-    new_time = [d.replace(day=15) for d in old_time]
-    time_coord.points = new_unit.date2num(new_time)
+    old_unit = time_coord[0].units
+    new_time = [d.replace(day=15) for d in old_unit.num2date(time_coord.points)]
+    time_coord.points = old_unit.date2num(new_time)
 
 
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
@@ -41,7 +39,7 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     var = cmor_info.short_name
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
     cube = iris.util.squeeze(cube)
-    #_fix_time_coord(cube)
+    _fix_time_coord(cube)
     utils.fix_var_metadata(cube, cmor_info)
     #utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
