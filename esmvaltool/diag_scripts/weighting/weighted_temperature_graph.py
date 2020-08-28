@@ -126,19 +126,17 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
     plt.xlabel('Year')
     plt.ylabel(r'Temperature anomaly $\degree$C')
 
-    filename = get_plot_filename('temperature_anomaly_graph', cfg)
-    figure.savefig(filename, dpi=300, bbox_inches='tight')
+    filename_plot = get_plot_filename('temperature_anomaly_graph', cfg)
+    figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
     plt.close(figure)
 
-    caption = 'Temperature anomaly relative to 1981-2010'
-
-    log_provenance(caption, filename, cfg, ancestors)
-
-    data_filename = get_diagnostic_filename(
+    filename_data = get_diagnostic_filename(
         'temperature_anomalies', cfg, extension='nc')
-    temperature.to_netcdf(data_filename)
+    temperature.to_netcdf(filename_data)
 
-    logger.info('Temperature anomaly plot stored as %s', filename)
+    caption = 'Temperature anomaly relative to 1981-2010'
+    log_provenance(caption, filename_plot, cfg, ancestors)
+    log_provenance(caption, filename_data, cfg, ancestors)
 
 
 def calculate_percentiles(data: 'xr.DataArray',

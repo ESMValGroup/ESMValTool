@@ -250,17 +250,17 @@ def visualize_and_save_independence(independence: 'xr.DataArray',
     )
     chart.set_title(f'Distance matrix for {variable}')
 
-    filename = get_plot_filename(f'independence_{variable}', cfg)
-    figure.savefig(filename, dpi=300, bbox_inches='tight')
+    filename_plot = get_plot_filename(f'independence_{variable}', cfg)
+    figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
     plt.close(figure)
 
-    caption = f'Euclidean distance matrix for variable {variable}'
-
-    log_provenance(caption, filename, cfg, ancestors)
-
-    data_filename = get_diagnostic_filename(
+    filename_data = get_diagnostic_filename(
         f'independence_{variable}', cfg, extension='nc')
-    independence.to_netcdf(data_filename)
+    independence.to_netcdf(filename_data)
+
+    caption = f'Euclidean distance matrix for variable {variable}'
+    log_provenance(caption, filename_plot, cfg, ancestors)
+    log_provenance(caption, filename_data, cfg, ancestors)
 
 
 def calculate_performance(model_data: 'xr.DataArray',
@@ -317,15 +317,17 @@ def visualize_and_save_performance(performance: 'xr.DataArray',
     label = 'RMS error'
 
     variable = performance.short_name
-    filename = get_plot_filename(f'performance_{variable}', cfg)
-    caption = f'Performance metric ({label}) for variable {variable}'
+    filename_plot = get_plot_filename(f'performance_{variable}', cfg)
 
-    barplot(performance, label, filename)
-    log_provenance(caption, filename, cfg, ancestors)
+    barplot(performance, label, filename_plot)
 
-    data_filename = get_diagnostic_filename(
+    filename_data = get_diagnostic_filename(
         f'performance_{variable}', cfg, extension='nc')
-    performance.to_netcdf(data_filename)
+    performance.to_netcdf(filename_data)
+
+    caption = f'Performance metric ({label}) for variable {variable}'
+    log_provenance(caption, filename_plot, cfg, ancestors)
+    log_provenance(caption, filename_data, cfg, ancestors)
 
 
 def calculate_weights(performance: 'xr.DataArray',
@@ -375,15 +377,17 @@ def visualize_and_save_weights(weights: 'xr.DataArray',
     label = 'Weights'
 
     variable = weights.short_name
-    filename = get_plot_filename(f'weights_{variable}', cfg)
-    caption = f'Weights for variable {variable}'
+    filename_plot = get_plot_filename(f'weights_{variable}', cfg)
 
-    barplot(weights, label, filename)
-    log_provenance(caption, filename, cfg, ancestors)
+    barplot(weights, label, filename_plot)
 
-    data_filename = get_diagnostic_filename(
+    filename_data = get_diagnostic_filename(
         f'weights_{variable}', cfg, extension='nc')
-    weights.to_netcdf(data_filename)
+    weights.to_netcdf(filename_data)
+
+    caption = f'Weights for variable {variable}'
+    log_provenance(caption, filename_plot, cfg, ancestors)
+    log_provenance(caption, filename_data, cfg, ancestors)
 
 
 def visualize_and_save_mean_weights(weights: dict,
@@ -401,15 +405,17 @@ def visualize_and_save_mean_weights(weights: dict,
 
     label = 'combined mean'
 
-    filename = get_plot_filename('weights_combined', cfg)
-    caption = 'Mean weights for all variables'
+    filename_plot = get_plot_filename('weights_combined', cfg)
 
-    barplot(weights_combined, label, filename)
-    log_provenance(caption, filename, cfg, ancestors)
+    barplot(weights_combined, label, filename_plot)
 
-    data_filename = get_diagnostic_filename(
+    filename_data = get_diagnostic_filename(
         'weights_combined', cfg, extension='nc')
-    weights_combined.to_netcdf(data_filename)
+    weights_combined.to_netcdf(filename_data)
+
+    caption = 'Mean weights for all variables'
+    log_provenance(caption, filename_plot, cfg, ancestors)
+    log_provenance(caption, filename_data, cfg, ancestors)
 
 
 def main(cfg):
