@@ -8,11 +8,14 @@ repos:
     -   id: check-ast
     -   id: check-case-conflict
     -   id: check-merge-conflict
-    -   id: check-yaml
     -   id: debug-statements
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
+-   repo: https://github.com/adrienverge/yamllint
+    rev: ''
+    hooks:
+    -   id: yamllint
 -   repo: https://github.com/PyCQA/isort
     rev: ''
     hooks:
