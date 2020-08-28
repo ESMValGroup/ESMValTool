@@ -1,5 +1,7 @@
-"""ESMValTool CMORizer for NOAA Extended Reconstructed Sea Surface
-   Temperature (ERSST), Version 3b data.
+"""ESMValTool CMORizer for NOAA ERSST data, version 3b.
+
+   This is the CMORizer script for the NOAA Extended Reconstructed
+   Sea Surface Temperature (ERSST) in its version 3b.
 
 Tier
     Tier 2: open dataset.
@@ -11,7 +13,8 @@ Last access
     20200520
 
 Download and processing instructions
-    TODO
+    The data is provided by NOAA at:
+        https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/
 
 """
 
@@ -41,11 +44,8 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     var = cmor_info.short_name
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
     cube = iris.util.squeeze(cube)
-    #_fix_time_coord(cube)
     utils.fix_var_metadata(cube, cmor_info)
-    #utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
-    # utils.flip_dim_coord(cube, 'latitude')
     utils.save_variable(cube,
                         var,
                         out_dir,
