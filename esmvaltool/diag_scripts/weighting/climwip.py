@@ -82,7 +82,7 @@ def read_metadata(cfg: dict, key: str) -> dict:
 def make_standard_calendar(xrds: 'xr.Dataset'):
     """Make sure time coordinate uses the default calendar.
 
-    Workaround for imcompatible calendars 'standard' and 'no-leap'.
+    Workaround for incompatible calendars 'standard' and 'no-leap'.
     Assumes yearly data.
     """
     try:
