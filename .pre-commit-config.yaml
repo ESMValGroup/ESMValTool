@@ -29,7 +29,9 @@ repos:
     rev: ''
     hooks:
       - id: lintr
+        exclude: 'esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf'
       - id: style-files  # styler
+        exclude: 'esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf'
   - repo: https://github.com/codespell-project/codespell
     rev: ''
     hooks:
