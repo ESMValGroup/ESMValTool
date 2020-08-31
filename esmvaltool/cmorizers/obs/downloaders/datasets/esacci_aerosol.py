@@ -1,5 +1,6 @@
 """Script to download ESACCI-AEROSOL from CCI CEDA ftp."""
 
+from datetime import datetime
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.obs.downloaders.ftp import CCIDownloader
@@ -7,6 +8,10 @@ from esmvaltool.cmorizers.obs.downloaders.ftp import CCIDownloader
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
     """Download dataset ESACCI-AEROSOL."""
+    if start_date is None:
+        start_date = datetime(1997, 1, 1)
+    if end_date is None:
+        end_date = datetime(2011, 1, 1)
     loop_date = start_date
 
     downloader = CCIDownloader(
@@ -15,6 +20,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         overwrite=overwrite,
     )
     downloader.connect()
+
+
 
     while loop_date <= end_date:
         year = loop_date.year

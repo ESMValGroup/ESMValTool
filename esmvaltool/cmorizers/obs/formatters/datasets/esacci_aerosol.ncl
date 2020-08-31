@@ -42,7 +42,9 @@ begin
   TIER = 2
 
   ; Period
+  print(start_year)
   YEAR1 = get_year(start_year, 1997)
+  print(YEAR1)
   YEAR2 = get_year(end_year, 2011)
 
   ; Selected variable (standard name)
