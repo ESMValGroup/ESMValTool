@@ -143,9 +143,9 @@ Pre-commit
 tools to automatically point out issues in the code such as missing semicolons,
 trailing whitespace, and debug statements. Some of these are fixed
 automatically. We include checks for Python, R, NCL, and yaml files, most of
-which are described in more detail below. Pre-commit knows which tool to run
-for each filetype, and provides a simple way to run all the necessary tools
-at once!
+which are described in more detail in the sections below. Pre-commit knows
+which tool to run for each filetype, and provides a simple way to run all
+the necessary tools at once!
 
 To run ``pre-commit`` on your code, go to the ESMValTool directory
 (``cd ESMValTool``) and run
@@ -178,12 +178,19 @@ every commit (i.e. ``git commit``), by installing it as a `git hook <https://git
    pre-commit install
 
 Pre-commit hooks are used by to inspect the code that is about to be committed. The
-commit will be aborted if any issues are found that cannot be fixed automatically.
-Some issues cannot be fixed (easily), so to bypass the check, run
+commit will be aborted if files are changed or if any issues are found that
+cannot be fixed automatically. Some issues cannot be fixed (easily), so to
+bypass the check, run
 
 ::
 
-   git commit no-verify
+   git commit --no-verify
+
+or
+
+::
+
+   git commit -n
 
 or uninstall the pre-commit hook
 
@@ -220,7 +227,13 @@ to sort the imports in the standard way using `isort <https://pycqa.github.io/is
 
    yapf -i some_file.py
 
-to add/remove whitespace as required by the standard using `yapf <https://github.com/google/yapf>`__.
+to add/remove whitespace as required by the standard using `yapf <https://github.com/google/yapf>`__,
+
+::
+
+   docformatter -i your_script.py
+
+to run `docformatter <https://github.com/myint/docformatter>`__ which helps formatting the doc strings (such as line length, spaces).
 
 To check if your code adheres to the standard, go to the directory where
 the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`__
