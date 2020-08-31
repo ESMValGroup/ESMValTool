@@ -136,16 +136,16 @@ development team. For code in all languages, it is highly recommended
 that you split your code up in functions that are short enough to view
 without scrolling.
 
+We include checks for Python, R, NCL, and yaml files, most of which are
+described in more detail in the sections below.
+This includes checks for invalid syntax and formatting errors.
+`Pre-commit <https://pre-commit.com/>`__ is a handy tool that can run
+all of these checks automatically.
+It knows knows which tool to run for each filetype, and therefore provides
+a simple way to check your code!
+
 Pre-commit
 ~~~~~~~~~~
-
-`Pre-commit <https://pre-commit.com/>`__  is a tool that runs a series of
-tools to automatically point out issues in the code such as missing semicolons,
-trailing whitespace, and debug statements. Some of these are fixed
-automatically. We include checks for Python, R, NCL, and yaml files, most of
-which are described in more detail in the sections below. Pre-commit knows
-which tool to run for each filetype, and provides a simple way to run all
-the necessary tools at once!
 
 To run ``pre-commit`` on your code, go to the ESMValTool directory
 (``cd ESMValTool``) and run
