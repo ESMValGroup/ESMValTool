@@ -237,7 +237,7 @@ Run
 
 to see the warnings about the code style of the entire project.
 
-We use `pycodestyle <https://pycodestyle.pycqa.org/en/latest/>`__ on CircleCI to automatically check that there are
+We use `flake8 <https://flake8.pycqa.org/en/latest/>`__ on CircleCI to automatically check that there are
 no formatting mistakes and Codacy for monitoring (Python) code quality.
 Running prospector locally will give you quicker and sometimes more
 accurate results.
