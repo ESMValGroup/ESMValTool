@@ -1,53 +1,60 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+---
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
     hooks:
-    -   id: check-added-large-files
-    -   id: check-ast
-    -   id: check-case-conflict
-    -   id: check-merge-conflict
-    -   id: debug-statements
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
--   repo: https://github.com/adrienverge/yamllint
+  - repo: https://github.com/adrienverge/yamllint
     rev: ''
     hooks:
-    -   id: yamllint
--   repo: local  # nclcodestyle is installed alongside ESMValTool
+      - id: yamllint
+  - repo: local  # nclcodestyle is installed alongside ESMValTool
     hooks:
-    -   id: nclcodestyle
+      - id: nclcodestyle
         name: nclcodestyle
         entry: nclcodestyle
         language: system
         files: '\.(ncl|NCL)$'
--   repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
+        exclude: 'esmvaltool/diag_scripts/cvdp'
+  - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
     rev: ''
     hooks:
-    -   id: lintr
-    -   id: style-files  # styler
--   repo: https://github.com/codespell-project/codespell
+      - id: lintr
+      - id: style-files  # styler
+  - repo: https://github.com/codespell-project/codespell
     rev: ''
     hooks:
-    -   id: codespell
--   repo: https://github.com/PyCQA/isort
+      - id: codespell
+        exclude: 'esmvaltool/diag_scripts/cvdp'
+  - repo: https://github.com/PyCQA/isort
     rev: ''
     hooks:
-    -   id: isort
--   repo: https://github.com/pre-commit/mirrors-yapf
+      - id: isort
+  - repo: https://github.com/pre-commit/mirrors-yapf
     rev: ''
     hooks:
-    -   id: yapf
--   repo: https://github.com/myint/docformatter
+      - id: yapf
+  - repo: https://github.com/myint/docformatter
     rev: ''
     hooks:
-    - id: docformatter
--   repo: https://github.com/PyCQA/prospector
+      - id: docformatter
+  - repo: https://gitlab.com/pycqa/flake8
     rev: ''
     hooks:
-    -   id: prospector
-        additional_dependencies: [
-          'pyroma',
-          ]
+      - id: flake8
+  # - repo: https://github.com/PyCQA/prospector
+  #   rev: ''
+  #   hooks:
+  #     - id: prospector
+  #       additional_dependencies: [
+  #         'pyroma',
+  #       ]
