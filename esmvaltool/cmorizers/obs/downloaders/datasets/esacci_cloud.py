@@ -1,12 +1,17 @@
 """Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
 
 from dateutil import relativedelta
+from datetime import datetime
 
 from esmvaltool.cmorizers.obs.downloaders.ftp import CCIDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
     """Download dataset cds-satellite-albedo."""
+    if start_date is None:
+        start_date = datetime(1982, 1, 1)
+    if end_date is None:
+        end_date = datetime(2016, 1, 1)
     loop_date = start_date
 
     downloader = CCIDownloader(
