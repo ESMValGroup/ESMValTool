@@ -124,6 +124,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | CERES-SYN1deg                | rlds, rldscs, rlus, rluscs, rlut, rlutcs, rsds, rsdscs, rsus, rsuscs, rsut, rsutcs (3hr)             |   3  | NCL             |
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| COBESST2                     | tos (Omon)                                                                                           |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CowtanWay                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CRU                          | tas, pr (Amon)                                                                                       |   2  | Python          |
