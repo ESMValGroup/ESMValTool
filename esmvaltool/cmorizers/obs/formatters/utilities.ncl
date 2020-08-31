@@ -47,7 +47,7 @@ function get_year(year:integer, default:integer)
 ; Description
 ;   Get passed year an default date if not provided
 begin
-  if year.ne.0 then
+  if year.eq.0 then
     return(default)
   else
     return(year)
