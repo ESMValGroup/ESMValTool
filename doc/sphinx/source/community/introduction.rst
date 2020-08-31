@@ -177,7 +177,7 @@ every commit (i.e. ``git commit``), by installing it as a `git hook <https://git
 
    pre-commit install
 
-Pre-commit hooks are used by to inspect the code that is about to be committed. The
+Pre-commit hooks are used to inspect the code that is about to be committed. The
 commit will be aborted if files are changed or if any issues are found that
 cannot be fixed automatically. Some issues cannot be fixed (easily), so to
 bypass the check, run
@@ -198,11 +198,6 @@ or uninstall the pre-commit hook
 
    pre-commit uninstall
 
-Internally, ``pre-commit`` uses isort `isort <https://pycqa.github.io/isort/>`__
-to sort imports, `yapf <https://github.com/google/yapf>`__ to autoformat the
-code (e.g. add/remove whitespace), and `prospector <http://prospector.landscape.io/>`__
-to see how well the code adheres to the standard.
-
 Python
 ~~~~~~
 
@@ -221,7 +216,8 @@ running the commands
 
    isort some_file.py
 
-to sort the imports in the standard way using `isort <https://pycqa.github.io/isort/>`__ and
+to sort the imports in `the standard way <https://www.python.org/dev/peps/pep-0008/#imports>`__
+using `isort <https://pycqa.github.io/isort/>`__ and
 
 ::
 
