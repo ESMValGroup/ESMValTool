@@ -3,7 +3,7 @@
 from datetime import datetime
 from dateutil import relativedelta
 
-from esmvaltool.cmorizers.obs.downloaders.ftp import CCIDownloader, FTPDownloader
+from esmvaltool.cmorizers.obs.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
@@ -21,11 +21,13 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         server='aftp.cmdl.noaa.gov'
     )
     downloader.connect()
-    downloader.set_cwd('products/carbontracker/co2/CT2019/molefractions/co2_total_monthly/')
+    downloader.set_cwd(
+        'products/carbontracker/co2/CT2019/molefractions/co2_total_monthly/')
 
     while loop_date <= end_date:
         year = loop_date.year
         month = loop_date.month
 
-        downloader.download_file(f'CT2019.molefrac_glb3x2_{year}-{month:02}.nc')
+        downloader.download_file(
+            f'CT2019.molefrac_glb3x2_{year}-{month:02}.nc')
         loop_date += relativedelta.relativedelta(months=1)

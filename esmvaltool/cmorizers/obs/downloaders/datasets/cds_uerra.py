@@ -22,7 +22,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
             'format': 'netcdf',
             'origin': 'uerra_harmonie',
             'variable': 'volumetric_soil_moisture',
-            'soil_level': ['1', '2', '3',],
+            'soil_level': ['1', '2', '3', ],
             'time': ['00:00', '06:00', '12:00', '18:00'],
         },
         config=config,
@@ -34,7 +34,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     while loop_date <= end_date:
         downloader.download(
             loop_date.year, loop_date.month,
-            [f'{i+1:02d}' for i in range(calendar.monthrange(loop_date.year, loop_date.month)[1])])
+            [f'{i+1:02d}' for i in range(
+                calendar.monthrange(loop_date.year, loop_date.month)[1])])
         loop_date += relativedelta.relativedelta(months=1)
 
     unpack_files_in_folder(downloader.local_folder)

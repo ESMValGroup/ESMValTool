@@ -1,9 +1,5 @@
 """Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
 
-from dateutil import relativedelta
-import datetime
-import calendar
-
 from esmvaltool.cmorizers.obs.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.obs.utilities import unpack_files_in_folder
 

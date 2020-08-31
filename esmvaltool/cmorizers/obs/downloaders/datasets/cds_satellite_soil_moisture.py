@@ -1,4 +1,4 @@
-"""Script to download cds-satellite-soil-moisture from the Climate Data Store(CDS)"""
+"""Script to download cds-satellite-soil-moisture from the CDS"""
 
 from dateutil import relativedelta
 import datetime
@@ -56,8 +56,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     while loop_date <= end_date:
         downloader.download(
             loop_date.year, loop_date.month,
-            [f'{i+1:02d}' for i in range(calendar.monthrange(loop_date.year, loop_date.month)[1])])
+            [f'{i+1:02d}' for i in range(
+                calendar.monthrange(loop_date.year, loop_date.month)[1])])
         loop_date += relativedelta.relativedelta(months=1)
 
     unpack_files_in_folder(downloader.local_folder)
-

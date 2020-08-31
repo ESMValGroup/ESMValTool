@@ -17,7 +17,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
 
     loop_date = start_date
 
-    downloader.set_cwd(f"/Datasets/ncep.reanalysis.derived/pressure/")
+    downloader.set_cwd("/Datasets/ncep.reanalysis.derived/pressure/")
     downloader.download_file("air.mon.mean.nc", sub_folder='pressure')
     downloader.download_file("hgt.mon.mean.nc", sub_folder='pressure')
     downloader.download_file("rhum.mon.mean.nc", sub_folder='pressure')
@@ -26,9 +26,9 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     downloader.download_file("vwnd.mon.mean.nc", sub_folder='pressure')
     downloader.download_file("omega.mon.mean.nc", sub_folder='pressure')
 
-    downloader.set_cwd(f"/Datasets/ncep.reanalysis.derived/surface/")
+    downloader.set_cwd("/Datasets/ncep.reanalysis.derived/surface/")
     downloader.download_file("air.mon.mean.nc", sub_folder='surface')
-    downloader.set_cwd(f"/Datasets/ncep.reanalysis.derived/surface_gauss/")
+    downloader.set_cwd("/Datasets/ncep.reanalysis.derived/surface_gauss/")
     downloader.download_file("prate.mon.mean.nc", sub_folder='surface')
 
     while loop_date <= end_date:

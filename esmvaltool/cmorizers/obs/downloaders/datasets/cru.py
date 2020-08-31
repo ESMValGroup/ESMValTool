@@ -1,15 +1,10 @@
-"""Script to download APHRO-MA from its webpage."""
-import datetime
-from dateutil import relativedelta
+"""Script to download CRU from its webpage."""
 import logging
 
 from esmvaltool.cmorizers.obs.downloaders.wget import WGetDownloader
 from esmvaltool.cmorizers.obs.utilities import unpack_files_in_folder
 
 logger = logging.getLogger(__name__)
-
-import os
-import shutil
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):

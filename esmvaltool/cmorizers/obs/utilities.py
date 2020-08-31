@@ -351,9 +351,10 @@ def _set_units(cube, units):
         cube.units = Unit(units)
     return cube
 
+
 def unpack_files_in_folder(folder):
 
-    decompress =True
+    decompress = True
     while decompress:
         decompress = False
         for filename in os.listdir(folder):
@@ -376,6 +377,7 @@ def unpack_files_in_folder(folder):
             os.remove(full_path)
             decompress = True
 
+
 def _gunzip(file_name, work_dir):
     filename = os.path.split(file_name)[-1]
     filename = re.sub(r"\.gz$", "", filename, flags=re.IGNORECASE)
@@ -383,5 +385,6 @@ def _gunzip(file_name, work_dir):
     with gzip.open(file_name, 'rb') as f_in:
         with open(os.path.join(work_dir, filename), 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+
 
 shutil.register_unpack_format('gz', ['.gz', ], _gunzip)

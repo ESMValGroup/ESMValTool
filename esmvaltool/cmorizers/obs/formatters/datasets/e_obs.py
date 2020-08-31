@@ -135,7 +135,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
                                 unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 

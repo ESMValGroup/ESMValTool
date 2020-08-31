@@ -21,8 +21,6 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     )
     downloader.connect()
 
-
-
     while loop_date <= end_date:
         year = loop_date.year
         if year < 2002:

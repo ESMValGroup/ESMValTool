@@ -134,6 +134,5 @@ def download_cds_satellite_sm():
         }, savename)
 
 
-
 if __name__ == "__main__":
     download_cds_satellite_sm()
