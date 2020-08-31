@@ -1,6 +1,6 @@
 ---
 # Filename (will be extended by variable name)
-filename: '{version}_0_0.nc.gz'
+filename: '{version}_0_0.nc'
 
 # Common global attributes for Cmorizer output
 attributes:

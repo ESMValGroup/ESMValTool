@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import shutil
+import gzip
 from contextlib import contextmanager
 
 import iris

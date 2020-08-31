@@ -90,7 +90,7 @@ def _unzip(short_name, zip_path, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
@@ -99,10 +99,7 @@ def cmorization(in_dir, out_dir, cfg, _):
         for (vkey, version) in cfg['attributes']['version'].items():
             logger.info("CMORizing variable '%s' version '%s'",
                         short_name, version)
-            zip_filepath = raw_filepath.format(version=version)
-            filepath = _unzip(short_name, zip_filepath, out_dir)
-            if filepath is None:
-                continue
+            filepath = raw_filepath.format(version=version)
             _extract_variable(short_name, var, vkey, version, cfg,
                               filepath, out_dir)
             _clean(filepath)
