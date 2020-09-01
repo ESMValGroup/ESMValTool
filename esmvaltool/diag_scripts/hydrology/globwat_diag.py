@@ -457,30 +457,30 @@ def main(cfg):
                                 #                             )    
                                 # new_dataset.write(array, 1)
                                 # new_dataset.close()
-                    # TODO: the code faces memory error while running for daily data, need to fix 
-                    elif mip == 'day':
-                        output_name_day = output_name[key]['day']
-                        output_name_amon = output_name[key]['Amon']
-                        data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
-                    for var_name in output_name: 
-                        for time_step in output_name[var_name]: 
-                            print(output_name[var_name][time_step]) 
-                            for i in range(len(output_name_day)):
-                                key_cube = all_vars[key]
-                                for sub_cube in key_cube.slices_over('time'): 
-                                    # frame = iris.pandas.as_data_frame(sub_cube, copy=True)
-                                    sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
-                                    file_name = output_name_day[i]
-                                    iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
-                                # print(frame) 
-                                # final_path = os.path.join(path, output_name[key][mip][i])
-                                # Path(output_file[i]).parent.mkdir(exist_ok=True)
-                                # os.makedirs(final_path)
-                                # frame.to_csv(output_name_day[i],
-                                #             sep=' ',
-                                #             na_rep='-9999',
-                                #             float_format='%.1f'
-                                #             ) 
+                    # # TODO: the code faces memory error while running for daily data, need to fix 
+                    # elif mip == 'day':
+                    #     output_name_day = output_name[key]['day']
+                    #     output_name_amon = output_name[key]['Amon']
+                    #     data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
+                    # for var_name in output_name: 
+                    #     for time_step in output_name[var_name]: 
+                    #         print(output_name[var_name][time_step]) 
+                    #         for i in range(len(output_name_day)):
+                    #             key_cube = all_vars[key]
+                    #             for sub_cube in key_cube.slices_over('time'): 
+                    #                 # frame = iris.pandas.as_data_frame(sub_cube, copy=True)
+                    #                 sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
+                    #                 file_name = output_name_day[i]
+                    #                 iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
+                    #             # print(frame) 
+                    #             # final_path = os.path.join(path, output_name[key][mip][i])
+                    #             # Path(output_file[i]).parent.mkdir(exist_ok=True)
+                    #             # os.makedirs(final_path)
+                    #             # frame.to_csv(output_name_day[i],
+                    #             #             sep=' ',
+                    #             #             na_rep='-9999',
+                    #             #             float_format='%.1f'
+                    #             #             ) 
             # # Store provenance
             # with ProvenanceLogger(cfg) as provenance_logger:
             #     provenance_logger.log(output_file, provenance)
