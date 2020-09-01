@@ -109,7 +109,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
         save_fx_variable(cube, var, out_dir, attrs)
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
