@@ -1,6 +1,6 @@
 ---
 # Filename (will be extended by variable name)
-filename: 'gistemp250_GHCNv4.nc.gz'
+filename: 'gistemp250_GHCNv4.nc'
 
 # Common global attributes for Cmorizer output
 attributes:

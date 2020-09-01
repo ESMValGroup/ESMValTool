@@ -430,7 +430,7 @@ def _run(jobs, n_workers):
                     raise
 
 
-def cmorization(in_dir, out_dir, cfg, config_user):
+def cmorization(in_dir, out_dir, cfg, config_user, _, __):
     """Run CMORizer for ERA-Interim."""
     cfg['attributes']['comment'] = cfg['attributes']['comment'].strip().format(
         year=datetime.now().year)
