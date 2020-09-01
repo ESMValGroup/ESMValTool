@@ -1,9 +1,7 @@
 """Script to download Duveiller2018 from its webpage."""
 import logging
-import os
 
 from esmvaltool.cmorizers.obs.downloaders.wget import WGetDownloader
-from esmvaltool.cmorizers.obs.utilities import unpack_files_in_folder
 
 logger = logging.getLogger(__name__)
 

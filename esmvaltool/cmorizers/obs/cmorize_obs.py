@@ -157,6 +157,7 @@ class Formatter():
         except ImportError:
             logger.exception('Could not find cmorizer for %s', dataset)
             raise
+
         downloader.download_dataset(
             self.config, dataset, start_date, end_date, overwrite)
         logger.info('%s downloaded', dataset)

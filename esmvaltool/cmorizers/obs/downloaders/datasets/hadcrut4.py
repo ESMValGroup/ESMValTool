@@ -16,7 +16,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     downloader.tier = 2
     os.makedirs(downloader.local_folder, exist_ok=True)
     downloader.download_file(
-        "https://crudata.uea.ac.uk/cru/data/temperature/HadCRUT.4.6.0.0.median.nc",
+        "https://crudata.uea.ac.uk/cru/data/temperature/"
+        "HadCRUT.4.6.0.0.median.nc",
         wget_options=[]
 
     )

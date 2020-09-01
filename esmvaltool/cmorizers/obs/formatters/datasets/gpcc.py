@@ -15,10 +15,8 @@ Download and processing instructions
 
 """
 
-import gzip
 import logging
 import os
-import shutil
 from warnings import catch_warnings, filterwarnings
 import cf_units
 

@@ -12,10 +12,8 @@ Last access
 
 """
 
-import gzip
 import logging
 import os
-import shutil
 
 import iris
 
