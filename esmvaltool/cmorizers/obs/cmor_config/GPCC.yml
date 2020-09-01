@@ -1,6 +1,6 @@
 ---
 # Filename (will be extended by version)
-filename: 'full_data_monthly_{version}.nc.gz'
+filename: 'full_data_monthly_{version}.nc'
 
 # Common global attributes for Cmorizer output
 attributes:

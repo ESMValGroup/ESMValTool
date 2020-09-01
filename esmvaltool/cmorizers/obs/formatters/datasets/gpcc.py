@@ -76,34 +76,15 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
                         unlimited_dimensions=['time'])
 
 
-def _unzip(short_name, var, version, raw_filepath, out_dir):
-    """Unzip `*.gz` file."""
-    raw_var = var.get('raw', short_name)
-    zip_path = raw_filepath.format(version=version, raw_name=raw_var)
-    if not os.path.isfile(zip_path):
-        logger.debug("Skipping '%s', file '%s' not found", short_name,
-                     zip_path)
-        return None
-    logger.info("Found input file '%s'", zip_path)
-    filename = os.path.basename(zip_path.replace('.gz', ''))
-    new_path = os.path.join(out_dir, filename)
-    with gzip.open(zip_path, 'rb') as zip_file:
-        with open(new_path, 'wb') as new_file:
-            shutil.copyfileobj(zip_file, new_file)
-    logger.info("Succefully extracted file to %s", new_path)
-    return new_path
-
-
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
     for version in cfg['attributes']['version'].values():
         for (short_name, var) in cfg['variables'].items():
+            raw_var = var.get('raw', short_name)
+            filepath = raw_filepath.format(version=version, raw_name=raw_var)
             logger.info("CMORizing variable '%s'", short_name)
-            filepath = _unzip(short_name, var, version, raw_filepath, out_dir)
-            if filepath is None:
-                continue
             _extract_variable(short_name, var, version, cfg, filepath, out_dir)
             _clean(filepath)
