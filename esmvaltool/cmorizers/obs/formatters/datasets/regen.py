@@ -82,7 +82,7 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
                                 unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, _, __, ___):
     """Cmorization func call."""
     raw_filename = cfg['filename']
     file_names = raw_filename.format(version=cfg['attributes']['version'])
