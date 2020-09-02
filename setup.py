@@ -59,7 +59,7 @@ REQUIREMENTS = {
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
-        'pytest-cov',
+        'pytest-cov>=2.10.1',
         'pytest-env',
         'pytest-flake8',
         'pytest-html!=2.1.0',
