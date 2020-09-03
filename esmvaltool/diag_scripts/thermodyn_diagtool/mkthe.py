@@ -57,7 +57,7 @@ def init_mkthe_te(model, wdir, input_data):
     filelist: a list of file names containing the input fields;
 
     Returns
-    ------
+    -------
     A file containing annual mean emission temperature fields, the time mean
     globally averaged emission temperature, the file containing emission
     temperature fields.
@@ -93,7 +93,7 @@ def init_mkthe_wat(model, wdir, input_data, flags):
             (1: indirect, 2, direct, 3: both));
 
     Returns
-    ------
+    -------
     A list of input fields.
     """
     wat = flags[0]
@@ -117,7 +117,7 @@ def init_mkthe_lec(model, wdir, input_data):
             (1: indirect, 2, direct, 3: both));
 
     Returns
-    ------
+    -------
     The file containing monthly mean near-surface velocities in the zonal and
     meridional direction.
     """
@@ -131,7 +131,7 @@ def init_mkthe_lec(model, wdir, input_data):
 
 
 def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
-    """Compute the MEP with the direct method.
+    """Compute the MEP with the direct method
 
     Arguments:
     ---------
@@ -225,7 +225,7 @@ def input_fields(wdir, file_list):
                ps, uas, vas, hfss, te;
 
     Returns
-    ------
+    -------
     hfss, huss, ps, te, ts and teh near-surface wind speed fields.
     """
     cdo = Cdo()
@@ -297,7 +297,7 @@ def mkthe_main(wdir, file_list, modelname):
     modelname: the name of the model from which the fields are;
 
     Returns
-    ------
+    -------
     The fields containing boundary layer top height, bondary layer mean
     temperature, temperature at the lifting condensation level (LCL).
     """
@@ -377,7 +377,7 @@ def wfluxes(model, wdir, input_data):
     input_data: a dictionary of file names containing the input fields;
 
     Returns
-    ------
+    -------
     The names of the files containing evaporation and rainfall precipitation
     fluxes.
     """
@@ -411,7 +411,7 @@ def write_output(wdir, model, file_list, varlist):
              their dimensions are as (time, lat, lon);
 
     Returns
-    ------
+    -------
     The names of the files containing fields of boundary layer top height,
     bondary layer mean temperature, temperature at the lifting condensation
     level (LCL).
