@@ -911,13 +911,13 @@ def preproc_lec(model, wdir, pdir, input_data):
     tas_file = e.select_metadata(input_data, short_name='tas',
                                  dataset=model)[0]['filename']
     ua_file = e.select_metadata(input_data, short_name='ua',
-                                dataset=model)[1]['filename']
+                                dataset=model)[0]['filename']
     uas_file = e.select_metadata(input_data, short_name='uas',
                                  dataset=model)[0]['filename']
     va_file = e.select_metadata(input_data, short_name='va',
-                                dataset=model)[1]['filename']
+                                dataset=model)[0]['filename']
     vas_file = e.select_metadata(input_data, short_name='vas',
-                                 dataset=model)[1]['filename']
+                                 dataset=model)[0]['filename']
     wap_file = e.select_metadata(input_data, short_name='wap',
                                  dataset=model)[0]['filename']
     ldir = os.path.join(pdir, 'LEC_results')
