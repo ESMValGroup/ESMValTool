@@ -58,7 +58,7 @@ if (length(package_list) == 0) {
   log("Number of packages to be installed: ", length(package_list))
 }
 
-n_cpus_override <- Sys.getenv("R_INSTALL_N_CPUS")
+n_cpus_override <- strtoi(Sys.getenv("R_INSTALL_N_CPUS", unset = "0"))
 if (n_cpus_override) {
   n_cpus <- n_cpus_override
 } else {
