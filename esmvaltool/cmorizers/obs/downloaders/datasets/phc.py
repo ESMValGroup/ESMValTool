@@ -15,8 +15,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     )
     downloader.tier = 2
     downloader.download_file(
-        "http://psc.apl.washington.edu/nonwp_projects/PHC/Data3/phc3.0_annual.nc",
+        "http://psc.apl.washington.edu/nonwp_projects/PHC/Data3/"
+        "phc3.0_annual.nc",
         wget_options=[]
-
     )
     unpack_files_in_folder(downloader.local_folder)

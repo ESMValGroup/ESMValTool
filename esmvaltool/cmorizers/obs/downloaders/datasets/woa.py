@@ -2,7 +2,6 @@
 import logging
 
 from esmvaltool.cmorizers.obs.downloaders.wget import WGetDownloader
-from esmvaltool.cmorizers.obs.utilities import unpack_files_in_folder
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +13,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         overwrite=overwrite,
     )
     downloader.tier = 2
+
     def download(file):
         downloader.download_file(
             "https://data.nodc.noaa.gov/woa/WOA13/DATAv2/" + file,
