@@ -913,21 +913,23 @@ def preproc_lec(model, wdir, pdir, input_data):
     #ua_file = e.select_metadata(input_data, short_name='ua',
     #                            dataset=model)[1]['filename']
     ua_files = e.select_metadata(input_data, short_name='ua', dataset=model)
+    print(ua_files)
     if len(ua_files) > 1:
-        ua_files = e.select_metadata(ua_files, variable_group='ua_2')
-    ua_file = ua_files[0]    
+        ua_files = e.select_metadata(ua_files, variable_group='ua_1')
+    ua_file = ua_files[0]['filename']
+    print(ua_file)    
     uas_file = e.select_metadata(input_data, short_name='uas',
                                  dataset=model)[0]['filename']
     va_files = e.select_metadata(input_data, short_name='va', dataset=model)
     if len(va_files) > 1:
-        va_files = e.select_metadata(va_files, variable_group='va_2')
-    va_file = va_files[0]
+        va_files = e.select_metadata(va_files, variable_group='va_1')
+    va_file = va_files[0]['filename']
     #va_file = e.select_metadata(input_data, short_name='va',
     #                            dataset=model)[1]['filename']
     vas_files = e.select_metadata(input_data, short_name='vas', dataset=model)
     if len(vas_files) > 1:
-        vas_files = e.select_metadata(vas_files, variable_group='vas_2')
-    vas_file = vas_files[0]
+        vas_files = e.select_metadata(vas_files, variable_group='vas_1')
+    vas_file = vas_files[0]['filename']
     #vas_file = e.select_metadata(input_data, short_name='vas',
     #                             dataset=model)[1]['filename']
     wap_file = e.select_metadata(input_data, short_name='wap',
