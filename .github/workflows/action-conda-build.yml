@@ -42,8 +42,8 @@ jobs:
         run: wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
       - shell: bash -l {0}
         run: tar xfz julia-*-linux-x86_64.tar.gz
-      - shell: bash -l {0}
-        run: ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
+      #- shell: bash -l {0}
+      #  run: ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
       - shell: bash -l {0}
         run: conda install -y conda-build conda-verify 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/install_conda_buildtools.txt
       - shell: bash -l {0}
