@@ -1,0 +1,92 @@
+name: Conda Base Install
+
+# runs on a push on master and at the end of every day
+on:
+  # triggering on push without branch name will run tests everytime
+  # there is a push on any branch
+  # turn it on only if needed
+  push:
+    branches:
+    - master
+    - github-actions2
+  # run the test only if the PR is to master
+  # turn it on if required
+  #pull_request:
+  #  branches:
+  #  - master
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+      # fail-fast set to False allows all other tests
+      # in the worflow to run regardless of any fail
+      fail-fast: false
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: esmvalgroup,conda-forge
+      - shell: bash -l {0}
+        run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
+      - shell: bash -l {0}
+        run: conda --version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - shell: bash -l {0}
+        run: which conda 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+      - shell: bash -l {0}
+        run: python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: conda install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+      - shell: bash -l {0}
+        run: esmvaltool --help
+      - shell: bash -l {0}
+        run: esmvaltool version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v2
+        with:
+          name: Conda_Install_Linux_python_${{ matrix.python-version }}
+          path: conda_install_linux_artifacts_python_${{ matrix.python-version }}
+
+  osx:
+    runs-on: "macos-latest"
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]  # 3.8 not avail yet
+      fail-fast: false
+    name: OSX Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          activate-environment: esmvaltool
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: esmvalgroup,conda-forge
+      - shell: bash -l {0}
+        run: mkdir -p conda_install_osx_artifacts_python_${{ matrix.python-version }}
+      - shell: bash -l {0}
+        run: conda --version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - shell: bash -l {0}
+        run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+      - shell: bash -l {0}
+        run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: conda install esmvaltool 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+      - shell: bash -l {0}
+        run: esmvaltool --help
+      - shell: bash -l {0}
+        run: esmvaltool version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v2
+        with:
+          name: Conda_Install_OSX_python_${{ matrix.python-version }}
+          path: conda_install_osx_artifacts_python_${{ matrix.python-version }}
