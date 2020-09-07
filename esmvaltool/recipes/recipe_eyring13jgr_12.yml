@@ -1,0 +1,186 @@
+# ESMValTool
+# recipe_eyring06jgr.yml
+---
+documentation:
+  description: |
+    Diagnostics of stratospheric dynamics and chemistry reproducing selected figures
+    from Eyring et al. JGR (2006).
+
+  authors:
+    - cionni_irene
+
+  maintainer:
+    - cionni_irene
+
+  references:
+    - eyring13jgr
+
+  projects:
+    - crescendo 
+
+
+datasets:
+#  - {dataset: ERA-40, project: OBS, type: reanaly, version: v1,
+#         start_year: 1980, end_year: 1999, tier: 3}
+#  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1990, end_year: 1999}
+#  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+#  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+#  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1979, end_year: 2005}
+#  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1979, end_year: 2005}
+#  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+#  - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+  # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
+  #    ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+#  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+#  - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical,
+#     ensemble: r1i1p1, start_year: 1986, end_year: 1999}
+#  - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+#  - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1980, end_year: 1999}
+  # - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1980, end_year: 1999}
+  # - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1980, end_year: 1999}
+  # - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1986, end_year: 1999}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1979, end_year: 2005}
+ # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+  # - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1980, end_year: 1999}
+ # - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+ # - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+ # - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+ # - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+  # - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1980, end_year: 1999}
+ # - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+ # - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+  # - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1980, end_year: 1999}
+  # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1980, end_year: 1999}
+ # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1980, end_year: 1999}
+ # - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+ # - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+ # - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1986, end_year: 1999}
+
+preprocessors:
+   zonal: 
+       regrid:
+         target_grid: reference_dataset 
+         scheme: linear
+       extract_levels:
+         scheme: linear
+         levels: reference_dataset
+       zonal_statistics: 
+          operator: mean   
+       mask_fillvalues:
+          threshold_fraction: 0.95
+    
+#   climate_statistics:
+#      operator: mean
+#      period: month   
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean]
+#      exclude: [reference_dataset]
+
+#   clim_std_dev:
+#    regrid:
+#     target_grid: reference_dataset
+#     scheme: linear
+#    extract_levels:
+#      scheme: linear
+#      levels: reference_dataset
+#    mask_fillvalues:
+#      threshold_fraction: 0.95
+#    extract_region:
+#      start_latitude: -60
+#      end_latitude: -55
+#      start_longitude: 0
+#      end_longitude: 360
+#    area_statistics:
+#      operator: mean
+#    climate_statistics:
+#      operator: std_dev
+#      period: month
+   
+
+diagnostics:
+
+
+  # ==========================================================================
+  # Eyring et al. (2013) - Figure 12
+  # Longterm mean and trend of the zonal wind,
+  # ==========================================================================
+
+  eyring13jgr_fig12:
+    description: Longterm mean and trend zonal wind 
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      ua:
+        derive: false
+        force_derivation: false
+        preprocessor: zonal
+        reference_dataset: ERA-Interim
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+         start_year: 1979, end_year: 2005, tier: 3}
+    scripts:
+      clim: &clim_settings
+        script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/eyring13jgr/eyring13jgr_fig12.ncl
+        projection: CylindricalEquidistant
+        # --------
+        showdiff: false
+        styleset: CMIP5
+        e13fig12_exp_MMM: "historical"
+        e13fig12_season: "DJF"
+        e13fig12_multimean: True
+#
