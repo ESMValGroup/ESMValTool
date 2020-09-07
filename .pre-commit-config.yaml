@@ -31,8 +31,8 @@ repos:
   - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
     rev: ''
     hooks:
-      - id: lintr
       - id: style-files  # styler
+      - id: lintr
   - repo: https://github.com/codespell-project/codespell
     rev: ''
     hooks:
