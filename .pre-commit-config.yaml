@@ -1,7 +1,10 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 ---
-exclude: '(esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf|esmvaltool/diag_scripts/cvdp)'
+exclude: |
+  (?x)
+  ^esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf/|
+  ^esmvaltool/diag_scripts/cvdp/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
@@ -25,7 +28,6 @@ repos:
         entry: nclcodestyle
         language: system
         files: '\.(ncl|NCL)$'
-        exclude: 'esmvaltool/diag_scripts/cvdp'
   - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
     rev: ''
     hooks:
@@ -35,7 +37,6 @@ repos:
     rev: ''
     hooks:
       - id: codespell
-        exclude: 'esmvaltool/diag_scripts/cvdp'
   - repo: https://github.com/PyCQA/isort
     rev: ''
     hooks:
