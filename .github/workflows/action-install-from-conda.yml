@@ -43,8 +43,6 @@ jobs:
       - shell: bash -l {0}
         run: python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - shell: bash -l {0}
-        run: conda install -y conda-forge::ncurses 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/ncurses.txt
-      - shell: bash -l {0}
         run: conda install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - shell: bash -l {0}
         run: esmvaltool --help
@@ -80,6 +78,8 @@ jobs:
         run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
       - shell: bash -l {0}
         run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: conda install -y conda-forge::ncurses 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/ncurses.txt
       - shell: bash -l {0}
         run: conda install esmvaltool 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - shell: bash -l {0}
