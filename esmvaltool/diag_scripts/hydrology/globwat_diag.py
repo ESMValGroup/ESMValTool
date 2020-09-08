@@ -253,7 +253,33 @@ def main(cfg):
                                 iris.save(sub_cube_regrided, data_dir / f"{file_name}.nc", fill_value=-9999)
 
                                 #TODO: We must work on saving data as ascii format. 
-                                
+                                # array = sub_cube.data
+                                # points = sub_cube.coord('longitude').points
+                                # sub_cube.coord('longitude').points = (points + 180) % 360 - 180
+                                # lon = (sub_cube.coord('longitude').points + 180) % 360 -180
+                                # lat = sub_cube.coord('latitude').points 
+                                # sub_cube = sub_cube[:, ::-1, ...]
+                                # nrows,ncols = np.shape(array)
+                                # xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
+                                # xres = (xmax-xmin)/float(ncols) 
+                                # yres = (ymax-ymin)/float(nrows)
+                                # transform = Affine.translation(xmin + xres / 2, ymin - xres / 2) * Affine.scale(xres, xres)
+                                # file_name = output_name_amon[i] 
+                                # new_dataset = rasterio.open(
+                                # f"{data_dir}/{file_name}.asc", 
+                                # 'w', 
+                                # driver='GTiff', 
+                                # height=array.shape[1], 
+                                # width=array.shape[0], 
+                                # count=1, 
+                                # dtype='float32', 
+                                # crs='+proj=latlong', 
+                                # transform=transform, 
+                                # nodata= -9999,
+                                # ) 
+                                # new_dataset.write(array, 1)
+                                # new_dataset.close()
+
                     else:
                         output_name_amon = output_name[key]['Amon']
                         output_name_day = output_name[key]['day']
