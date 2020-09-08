@@ -59,7 +59,7 @@ jobs:
     runs-on: "macos-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7]  # 3.8.5 not working as of 07-Sep-2020
+        python-version: [3.6, 3.7]  # 3.8.5 not working as of 07-Sep-2020; serious issues at env solving
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
@@ -77,14 +77,16 @@ jobs:
         run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
       - shell: bash -l {0}
         run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
-      #- shell: bash -l {0}
-      #  run: conda uninstall -y ncurses
-      #- shell: bash -l {0}
-      #  run: conda list ncurses
-      #- shell: bash -l {0}
-      #  run: conda install -y conda-forge::ncurses
-      #- shell: bash -l {0}
-      #  run: conda list ncurses
+      # ncurses needs to be from conda-forge and not main channel
+      # for now it's turned off since we're not testing R/Julia installs
+      # - shell: bash -l {0}
+      #   run: conda uninstall -y ncurses
+      # - shell: bash -l {0}
+      #   run: conda list ncurses
+      # - shell: bash -l {0}
+      #   run: conda install -y conda-forge::ncurses
+      # - shell: bash -l {0}
+      #   run: conda list ncurses
       - shell: bash -l {0}
         #run: conda install esmvaltool --no-update-deps 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
         run: conda install esmvaltool-python esmvaltool-ncl 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
