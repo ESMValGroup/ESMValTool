@@ -1,4 +1,3 @@
-#!/usr/bin/ipython
 from glob import glob
 
 import argparse
