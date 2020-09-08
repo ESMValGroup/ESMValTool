@@ -59,7 +59,7 @@ jobs:
     runs-on: "macos-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7]  # 3.8.5 poses serious issues with environment solving
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
@@ -79,12 +79,14 @@ jobs:
         run: python -V 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - shell: bash -l {0}
         run: pip install -e .[develop] --use-feature=2020-resolver 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
-      #- shell: bash -l {0}
-      #  run: conda install -y conda-forge::ncurses 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/ncurses.txt
-      #- shell: bash -l {0}
-      #  run: esmvaltool install R
-      #- shell: bash -l {0}
-      #  run: esmvaltool install Julia
+      # ncurses needs to be from conda-forge and not main channel
+      # for now it's turned off since we're not testing R/Julia installs
+      # - shell: bash -l {0}
+      #   run: conda install -y conda-forge::ncurses 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/ncurses.txt
+      # - shell: bash -l {0}
+      #   run: esmvaltool install R
+      # - shell: bash -l {0}
+      #   run: esmvaltool install Julia
       - shell: bash -l {0}
         run: pytest -n 2 -m "not installation" 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
