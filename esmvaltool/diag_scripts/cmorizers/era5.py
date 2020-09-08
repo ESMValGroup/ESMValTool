@@ -41,9 +41,6 @@ def main(cfg):
                 end = time.cell(-1).point.strftime("%Y%m%d")
             basename = f"{basename.rstrip('0123456789-')}{start}-{end}"
 
-        if info['diagnostic'] == 'monthly':
-            basename = stem.replace('native', 'OBS')
-
         outfile = get_diagnostic_filename(basename, cfg)
         logger.info('Moving %s to %s', file, outfile)
         shutil.move(file, outfile)

@@ -51,7 +51,7 @@ def get_input_cubes(metadata):
         inputs[short_name] = cube
         ancestors[short_name] = [filename]
 
-    return inputs, ancestors, short_name
+    return inputs, ancestors
 
 
 def shift_era5_time_coordinate(cube, shift=30):

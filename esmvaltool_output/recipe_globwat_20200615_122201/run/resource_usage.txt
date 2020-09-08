@@ -1,1 +1,0 @@
-Date and time (UTC)	Real time (s)	CPU time (s)	CPU (%)	Memory (GB)	Memory (%)	Disk read (GB)	Disk write (GB)
