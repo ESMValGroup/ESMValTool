@@ -2,7 +2,9 @@
 # recipe_pcrglobwb.yml
 ---
 documentation:
-  description: Pre-processes climate data for use in the PCR-GLOBWB hydrological model.
+  description: |
+    Pre-processes climate data for use in the PCR-GLOBWB hydrological model.
+
   authors:
     - aerts_jerom
     - andela_bouwe
@@ -10,8 +12,12 @@ documentation:
     - camphuijsen_jaro
     - alidoost_sarah
     - kalverla_peter
-  projects: ['ewatercycle']
-  references: ['acknow_project', 'sutanudjaja2018gmd']
+
+  projects:
+    - ewatercycle
+
+  references:
+    - sutanudjaja2018gmd
 
 
 preprocessors:

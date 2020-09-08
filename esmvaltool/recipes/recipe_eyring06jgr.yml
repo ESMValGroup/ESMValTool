@@ -2,16 +2,16 @@
 # recipe_eyring06jgr.yml
 ---
 documentation:
-
   description: |
     Diagnostics of stratospheric dynamics and chemistry reproducing selected
     figures from Eyring et al. JGR (2006).
 
   authors:
     - cionni_irene
+    - hassler_birgit
 
   maintainer:
-    - cionni_irene
+    - hassler_birgit
 
   references:
     - eyring06jgr

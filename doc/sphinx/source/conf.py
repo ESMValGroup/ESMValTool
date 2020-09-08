@@ -73,14 +73,14 @@ autodoc_mock_imports = [
     'cartopy',
     'cftime',
     'cf_units',
-    'ESMF',
+    'ESMPy',
     'esmvalcore',
+    'GDAL',
     'iris',
-    'PIL',
-    'prov',
     'psutil',
+    'pynio',
     'scipy',
-    'stratify',
+    'xesmf',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

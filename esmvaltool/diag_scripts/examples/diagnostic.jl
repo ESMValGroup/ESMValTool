@@ -25,7 +25,7 @@ pygui(false)
 include(joinpath(dirname(@__DIR__), "shared/external.jl"))
 
 function provenance_record(infile)
-    xprov = Dict("ancestors" => infile,
+    xprov = Dict("ancestors" => [infile],
                  "authors" => ["vonhardenberg_jost", "arnone_enrico"],
                  "references" => ["zhang11wcc"],
                  "projects" => ["crescendo", "c3s-magic"],
