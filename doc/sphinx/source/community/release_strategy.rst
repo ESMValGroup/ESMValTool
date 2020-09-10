@@ -26,6 +26,11 @@ Overall Procedure
 Timeline
 ~~~~~~~~~
 
+.. figure::  /figures/release-timeline.png
+   :align:   center
+
+   Example of a Release Timeline (in this case for 2.1.0)
+
 1. Contributors assign issues (and pull requests) that they intend to finish before the due date, there is a separate milestone for ESMValCore and ESMValTool
 2. The ESMValCore feature freeze takes place on the ESMValCore due date
 3. Some additional testing of ESMValCore takes place
