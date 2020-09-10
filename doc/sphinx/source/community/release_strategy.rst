@@ -1,22 +1,22 @@
 Release Strategy for ESMValCore and ESMValTool
 ================================================
 
-The goal of this document is to lay out a process for the release of ESMValCore
+This document describes the process for the release of ESMValCore
 and ESMValTool.
-By following a defined process, we hope to streamline the work, reduce
+By following a defined process, we streamline the work, reduce
 uncertainty about required actions, and clarify the state of the code for the
 user.
 
-We propose to follow a strategy of timed releases.
-That means that we will do releases with a regular frequency and all features
+ESMValTool follows a strategy of timed releases.
+That means that we do releases with a regular frequency and all features
 that are implemented up to a certain cut-off-point can go
-into the upcoming release; those that are not will be deferred to the next
+into the upcoming release; those that are not are deferred to the next
 release.
 This means that generally no release will be delayed due to a pending feature.
 Instead, the regular nature of the release guarantees that every feature can be
 released in a timely manner even if a specific target release is missed.
 
-Because of limited resources, only the latest released versions of ESMValTool and ESMValCore will be maintained.
+Because of limited resources, only the latest released versions of ESMValTool and ESMValCore is maintained.
 If your project requires longer maintenance or you have other concerns about the release strategy, please contact the ESMValTool core development team.
 
 
@@ -71,7 +71,7 @@ With the following release schedule, we strive to have three releases per year a
 | 2020-10-26 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.2.0 (Release Manager: n/a)
+- 2.2.0 (Release Manager: tbd)
 
 +------------+--------------------------+
 | 2021-02-01 |ESMValCore feature freeze |
@@ -83,7 +83,7 @@ With the following release schedule, we strive to have three releases per year a
 | 2021-02-21 |ESMValTool release        |
 +------------+--------------------------+
 
-- 2.3.0 (Release Manager: n/a)
+- 2.3.0 (Release Manager: tbd)
 
 +------------+--------------------------+
 | 2021-06-07 |ESMValCore feature freeze |
