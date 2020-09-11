@@ -4,21 +4,28 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
-   https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+   WOA13: https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+   WOA18: https://www.nodc.noaa.gov/OC5/woa18/woa18data.html
 
 Last access
-   20190131
+   WOA13: 20190131
+   WOA18: 20200911
 
 Download and processing instructions
    Download the following files:
+     WOA13: 
      temperature/netcdf/decav81B0/1.00/woa13_decav81B0_t00_01.nc
      salinity/netcdf/decav81B0/1.00/woa13_decav81B0_s00_01.nc
      oxygen/netcdf/all/1.00/woa13_all_o00_01.nc
      nitrate/netcdf/all/1.00/woa13_all_n00_01.nc
      phosphate/netcdf/all/1.00/woa13_all_p00_01.nc
      silicate/netcdf/all/1.00/woa13_all_i00_01.nc
+     WOA18:
+     https://data.nodc.noaa.gov/thredds/fileServer/ncei/woa/temperature/decav/1.00/woa18_decav_t00_01.nc
+     https://data.nodc.noaa.gov/thredds/fileServer/ncei/woa/salinity/decav/1.00/woa18_decav_s00_01.nc
 
 Modification history
+   20200911-bock_lisa: extend to WOA18
    20130328-lovato_tomas: cmorizer revision
    20190131-predoi_valeriu: adapted to v2.
    20190131-demora_lee: written.
@@ -58,6 +65,13 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
 
     for cube in cubes:
         if cube.var_name == rawvar:
+            logger.info("CMORizing var %s", var)
+            if var in {'tos', 'sos'}:
+              logger.info("Extract level")
+              level_constraint = iris.Constraint(cube.var_name,
+                                                 depth=0)
+              cube = cube.extract(level_constraint)
+
             fix_var_metadata(cube, var_info)
             convert_timeunits(cube, year)
             fix_coords(cube)
@@ -75,8 +89,9 @@ def cmorization(in_dir, out_dir, cfg, _):
     # run the cmorization
     for var, vals in cfg['variables'].items():
         for yr in cfg['custom']['years']:
-            file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
-            inpfile = os.path.join(in_dir, vals['file'] + file_suffix)
+            #file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
+            #inpfile = os.path.join(in_dir, vals['file'] + file_suffix)
+            inpfile = os.path.join(in_dir, vals['file'])
             logger.info("CMORizing var %s from file %s", var, inpfile)
             var_info = cmor_table.get_variable(vals['mip'], var)
             raw_info = {'name': vals['raw'], 'file': inpfile}
