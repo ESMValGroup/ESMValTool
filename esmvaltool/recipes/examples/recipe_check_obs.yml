@@ -527,21 +527,25 @@ diagnostics:
   WOA:
     description: WOA check
     variables:
+      sos:
+        mip: Omon
+      tos:
+        mip: Omon
       so:
         mip: Omon
       thetao:
         mip: Omon
-      no3:
-        mip: Oyr
-      o2:
-        mip: Oyr
-      po4:
-        mip: Oyr
-      si:
-        mip: Oyr
+      #no3:
+      #  mip: Oyr
+      #o2:
+      #  mip: Oyr
+      #po4:
+      #  mip: Oyr
+      #si:
+      #  mip: Oyr
     additional_datasets:
       - {dataset: WOA, project: OBS, tier: 2,
-         type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
+         type: clim, version: 2018, start_year: 2315, end_year: 2315}
     scripts: null
 
 
