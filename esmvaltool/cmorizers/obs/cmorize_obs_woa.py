@@ -50,7 +50,7 @@ def _fix_data(cube, var):
         mll_to_mol = ['po4', 'si', 'no3']
         if var in mll_to_mol:
             cube /= 1000.  # Convert from ml/l to mol/m^3
-        elif var == 'thetao':
+        elif var in ['tos', 'thetao']:
             cube += 273.15  # Convert to Kelvin
         elif var == 'o2':
             cube *= 44.661 / 1000.  # Convert from ml/l to mol/m^3
@@ -94,6 +94,7 @@ def cmorization(in_dir, out_dir, cfg, _):
             inpfile = os.path.join(in_dir, vals['file'])
             logger.info("CMORizing var %s from file %s", var, inpfile)
             var_info = cmor_table.get_variable(vals['mip'], var)
+            logger.info("units = %s", var_info.units)
             raw_info = {'name': vals['raw'], 'file': inpfile}
             glob_attrs['mip'] = vals['mip']
             extract_variable(var_info, raw_info, out_dir, glob_attrs, yr)
