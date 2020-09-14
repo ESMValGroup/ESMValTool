@@ -1,0 +1,110 @@
+# Dataset information
+---
+datasets:
+  APHRO-MA:
+    tier: 3
+    source: "http://aphrodite.st.hirosaki-u.ac.jp/download/"
+    last_access: 20200306
+    info: |
+      Register at http://aphrodite.st.hirosaki-u.ac.jp/download/create/
+
+      To use the automatic download set your credentials in your .netrc file.
+
+      To download manually, download the following files from
+      http://aphrodite.st.hirosaki-u.ac.jp/product/:
+          APHRO_V1808_TEMP/APHRO_MA
+              025deg_nc/APHRO_MA_TAVE_025deg_V1808.nc.tgz
+              050deg_nc/APHRO_MA_TAVE_050deg_V1808.nc.tgz
+          APHRO_V1101/APHRO_MA
+              025deg_nc/APHRO_MA_025deg_V1101.1951-2007.nc.gz.tar
+              050deg_nc/APHRO_MA_050deg_V1101.1951-2007.nc.gz.tar
+          APHRO_V1101EX_R1/APHRO_MA
+              025deg_nc/APHRO_MA_025deg_V1101_EXR1.nc.tgz
+              050deg_nc/APHRO_MA_050deg_V1101_EXR1.nc.tgz
+
+      Please untar / unzip all *.tar *.tgz *.gz files in the same directory
+      (no subdirectories!) prior to running the cmorizer!
+
+  AURA-TES:
+    tier: 3
+    source: https://search.earthdata.nasa.gov/search?q=TL3O3M
+    last_access: 20181208
+    info: |
+      Download and processing instructions
+      Select the V004 and V005 projects.
+      Download the script file for both projects.
+      To download the data use: wget -i <scriptfile>.
+      From the downloaded data, pick only the *.he5 files and put them in
+      input_dir_path.
+      Data is freely available, but a registration is required.
+
+  BerkeleyEarth:
+    tier: 2
+    source: http://berkeleyearth.org/data/
+    last_access: 20200225
+    info: |
+      Download the following file:
+      http://berkeleyearth.lbl.gov/auto/Global/Gridded/Land_and_Ocean_LatLong1.nc
+
+  CALIPSO-GOCCP:
+    tier: 2
+    source: ftp://ftp.climserv.ipsl.polytechnique.fr/
+    last_access: 20200127
+    info: |
+      Download the data from:"
+        ftp://ftp.climserv.ipsl.polytechnique.fr/
+        path: /cfmip/GOCCP_v3/3D_CloudFraction/grid_2x2xL40/yyyy/avg/
+      Put all files under a single directory (no subdirectories with years).
+        3D_CloudFraction330m_yyyymm_avg_CFMIP2_sat_3.1.2.nc
+
+  CDS-SATELLITE-ALBEDO:
+    tier: 3
+    source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
+    last_access: 20190401
+    info: |
+      Download and processing instructions
+        - Download the data from source to the right directory
+          using the download script
+        - Decompress the files within the directory:
+            "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
+
+  CDS-SATELLITE-LAI-FAPAR:
+    tier: 3
+    source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar?tab=form
+    last_access: 20190703
+    info: |
+      Download and processing instructions
+      - Open in a browser the data source as specified above
+      - Put the right ticks:
+        - Tick variables LAI and FAPAR
+        - Tick satellite SPOT (System Pour l'Observation de la Terre)
+        - Tick sensor VGT (Vegetation)
+        - Tick horizontal resolution 1km
+        - Tick product version V1
+        - Tick all available years
+        - Tick all available months
+        - Tick Nominal day 20
+      - Click 'submit form'
+      - According to ESMValTool practice, put them in the right rawobsdir folder
+      - Request might need to be split into chunks to not exceed download limit
+      - Fails setting standard name for variable FAPAR
+
+  CDS-SATELLITE-SOIL-MOISTURE:
+    tier: 3
+    source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-soil-moisture?tab=form
+    last_access: 20190314
+    info: ""
+
+  CDS-UERRA:
+    tier: 3
+    source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-uerra-europe-soil-levels
+    last_access: 20191104
+    info: |
+      - Open in a browser the data source as specified above
+      - Put the right ticks:
+        - Tick Origin UERRA-HARMONIE
+        - Tick Variable 'Volumetric soil moisture'
+        - Tick Soil level 1, 2, 3
+        - Tick all available years
+        - Tick all available months
+        - Tick all available days

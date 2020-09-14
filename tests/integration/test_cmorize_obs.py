@@ -1,4 +1,4 @@
-"""Tests for the module :mod:`esmvaltool.cmorizers.obs.cmorize_obs`."""
+"""Tests for the module :mod:`esmvaltool.cmorizers.data.cmorize_obs`."""
 
 import contextlib
 import os
@@ -9,7 +9,7 @@ import numpy as np
 import yaml
 from cf_units import Unit
 
-from esmvaltool.cmorizers.obs.cmorize_obs import main as run
+from esmvaltool.cmorizers.data.cmorize_obs import main as run
 
 
 @contextlib.contextmanager
