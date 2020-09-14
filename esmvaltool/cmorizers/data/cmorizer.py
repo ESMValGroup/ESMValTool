@@ -375,14 +375,14 @@ class DataCommand():
         import yaml
         with open(os.path.join(os.path.dirname(__file__), 'datasets.yml')) as data:
             info = yaml.safe_load(data)
-
+        print(info.keys())
         print()
-        print(f'| {"Dataset name":25} | Tier | Auto-download | Last access |')
-        print('-' * 66)
+        print(f'| {"Dataset name":30} | Tier | Auto-download | Last access |')
+        print('-' * 71)
         for dataset, dataset_info in info['datasets'].items():
             date = datetime.datetime.strptime(str(dataset_info['last_access']), "%Y%m%d")
-            print(f"| {dataset:25} | {dataset_info['tier']:4} | {self.formatter.has_downloader(dataset):13} |  {date.strftime('%Y-%m-%d')} |")
-        print('-' * 66)
+            print(f"| {dataset:30} | {dataset_info['tier']:4} | {self.formatter.has_downloader(dataset):13} |  {date.strftime('%Y-%m-%d')} |")
+        print('-' * 71)
 
     def info(self, dataset):
         import yaml

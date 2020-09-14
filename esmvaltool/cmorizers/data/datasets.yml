@@ -66,7 +66,7 @@ datasets:
         - Download the data from source to the right directory
           using the download script
         - Decompress the files within the directory:
-            "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \;"
+            "find . -name '*.tar.gz' -execdir tar -xzvf '{}' \"
 
   CDS-SATELLITE-LAI-FAPAR:
     tier: 3
@@ -108,3 +108,262 @@ datasets:
         - Tick all available years
         - Tick all available months
         - Tick all available days
+
+  CDS-XCH4:
+    tier: 3
+    source:  https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-methane?tab=form
+    last_access: 20190311
+    info: |
+      Select Processing level "Level 3", variable "Column-average dry-air mole
+      fraction of atmospheric methane (XCH4) and related variables", Sensor and
+      algorithm "MERGED and OBS4MIPS".
+      A registration is required to download the data.
+
+  CDS-XCO2:
+    tier: 3
+    source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-carbon-dioxide?tab=form
+    last_access: 20190319
+    info: |
+      Select Processing level "Level 3", variable "Column-average dry-air mole
+      fraction of atmospheric carbon dioxide (XCO2) and related variables",
+      Sensor and algorithm "MERGED and OBS4MIPS".
+      A registration is required to download the data.
+
+  CERES-EBAF:
+    tier: 2
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/EBAF4Selection.jsp
+    last_access: 20191126
+    info: |
+      Select: "TOA Fluxes" ("Shortwave Flux" and "Longwave Flux", "All Sky"
+      and "Clear Sky"), "Monthly Mean", "Regional 1x1 global grid".
+
+  CERES-SYN1deg:
+    tier: 3
+    source: https://ceres-tool.larc.nasa.gov/ord-tool/jsp/SYN1degSelection.jsp
+    last_access: 20190207
+    info: |
+      Monthly data:
+        Expand "Compute TOA Fluxes" and select:
+          Shortwave Flux, Allsky and Clearsky
+          Longwave Flux, Allsky and Clearsky
+          Shortwave Flux Down, Allsky
+        Expand "Computed Surface Fluxes" and select:
+          Shortwave Flux Up, Allsky and Clearsky
+          Shortwave Flux Down, Allsky and Clearsky
+          Longwave Flux Up, Allsky and Clearsky
+          Longwave Flux Down, Allsky and Clearsky
+        then click on "Monthly", "Regional" and "Get data". All fields are saved
+        in CERES_SYN1deg-Month_Terra-Aqua-MODIS_Ed3A_Subset_200003-201702.nc
+      3hr data:
+        Select the same fields as above, then click on "Daily 3-Hourly" and
+        "Get data". All fields are saved in
+        CERES_SYN1deg-3H_Terra-Aqua-MODIS_Ed3A_Subset_YYYYMMDD-YYYYMMDD.nc
+      Put all files in input_dir_path (no subdirectories with years).
+      For orders larger than 2 GB a registration is required.
+
+  CowtanWay:
+    tier: 2
+    source: https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html
+    last_access: 20200226
+    info: |
+      Download the following files:
+        'had4_krig_v1_0_0.nc.gz'
+        'had4_uah_v1_0_0.nc.gz'
+        'had4_short_krig_v2_0_0.nc.gz'
+        'had4_short_uah_v2_0_0.nc.gz'
+        'ghcn_short_krig_v2_0_0.nc.gz'
+        'ghcn_short_uah_v2_0_0.nc.gz'
+        'had4sst4_krig_v2_0_0.nc.gz'
+        'had4_krig_v2_0_0.nc.gz'
+
+  CRU:
+    tier: 2
+    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
+    last_access: 20190516
+    info: |
+      Download the following files:
+        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
+      where {raw_name} is the name of the desired variable(s).
+
+  CT2019:
+    tier: 2
+    source: https://www.esrl.noaa.gov/gmd/ccgg/carbontracker/index.php
+    last_access: 20200323
+    info: |
+      Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
+      ``$RAWOBSPATH`` is given by your user configuration file) where the raw
+      data will be stored. The download of the data is automatically handled by
+      this script. If data is already present in this directory, the download is
+      skipped (to force a new download delete your old files).
+
+  Duveiller2018:
+    tier: 2
+    source: https://ndownloader.figshare.com/files/9969496
+    last_access: 20190430
+    info: |
+      - Download the dataset albedo_IGBPgen.nc and save in the right directory
+        according to ESMValTool practices.
+      - Complete the CMOR-config specifications (see instructions in the file
+        itself)
+      - Run cmorize_obs
+
+  E-OBS:
+    tier: 2
+    source: http://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php#datafiles
+    last_access: 20200225
+    info: |
+      Download the ensemble mean files for:
+        TG TN TX RR PP
+
+  Eppley-VGPM-MODIS:
+    tier: 2
+    source: http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf
+    last_access: 20190515
+    info: |
+      Download and unpack all the *.tar files under a single directory
+      (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
+
+  ERA-Interim-Land:
+    tier: 3
+    source: https://apps.ecmwf.int/datasets/data/interim-land/type=fc/
+    last_access: 20191104
+    info: |
+      See script cmorize_obs_era_interim.py
+
+  ERA-Interim:
+    tier: 3
+    source: http://apps.ecmwf.int/datasets/data/interim-full-moda/
+    last_access: 20190905
+    info: |
+      Select "ERA Interim Fields":
+        Daily: for daily values
+        Invariant: for time invariant variables (like land-sea mask)
+        Monthly Means of Daily Means: for monthly values
+        Monthly Means of Daily Forecast Accumulation: for accumulated variables
+        like precipitation or radiation fluxes
+      Select "Type of level" (Surface or Pressure levels)
+      Download the data on a single variable and single year basis, and save
+      them as ERA-Interim_<var>_<mean>_YYYY.nc, where <var> is the ERA-Interim
+      variable name and <mean> is either monthly or daily. Further download
+      "land-sea mask" from the "Invariant" data and save it in
+      ERA-Interim_lsm.nc.
+      It is also possible to download data in an automated way, see:
+          https://confluence.ecmwf.int/display/WEBAPI/Access+ECMWF+Public+Datasets
+          https://confluence.ecmwf.int/display/WEBAPI/Python+ERA-interim+examples
+      A registration is required for downloading the data.
+      It is alo possible to use the script in:
+      esmvaltool/cmorizers/obs/download_scripts/download_era-interim.py
+      This cmorization script currently supports daily and monthly data of
+      the following variables:
+        10m u component of wind
+        10m v component of wind
+        2m dewpoint temperature
+        2m temperature
+        evaporation
+        maximum 2m temperature since previous post processing
+        mean sea level pressure
+        minimum 2m temperature since previous post processing
+        skin temperature
+        snowfall
+        surface net solar radiation
+        surface solar radiation downwards
+        temperature of snow layer
+        toa incident solar radiation
+        total cloud cover
+        total precipitation
+      and daily, monthly (not invariant) data of:
+            Geopotential
+
+      and monthly data of:
+            Inst. eastward turbulent surface stress
+            Inst. northward turbulent surface stress
+          Sea surface temperature
+          Surface net thermal radiation
+          Surface latent heat flux
+          Surface sensible heat flux
+          Relative humidity
+          Temperature
+          U component of wind
+          V component of wind
+          Vertical velocity
+          Specific humidity
+
+      Caveats
+        Make sure to select the right steps for accumulated fluxes, see:
+            https://confluence.ecmwf.int/pages/viewpage.action?pageId=56658233
+            https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+monthly+means
+        for a detailed explanation.
+        The data are updated regularly: recent years are added, but also the past
+        years are sometimes corrected. To have a consistent timeseries, it is
+        therefore recommended to download the full timeseries and not just add
+        new years to a previous version of the data.
+
+      For further details on obtaining daily values from ERA-Interim,
+        see:
+        https://confluence.ecmwf.int/display/CKB/ERA-Interim
+        https://confluence.ecmwf.int/display/CKB/ERA-Interim+documentation#ERA-Interimdocumentation-Monthlymeans
+        https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+How+to+calculate+daily+total+precipitation
+
+  ESACCI-AEROSOL:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
+    last_access: 20190124
+    info: |
+      Download the data from:
+        ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
+        AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
+      Other years are not considered since they are not complete.
+      Put all files in input_dir_path (no subdirectories with years).
+
+  ESACCI-CLOUD:
+    tier: 2
+    source: https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/
+    last_access: 20190201
+    info: |
+      Download the data from:
+        L3C/AVHRR-PM/
+      To fill the gap 199409-199501, also download:
+        L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+          199409-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+        L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+          199410-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+        L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+          199411-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+        L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
+          199412-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+        L3C/AVHRR-AM/AVHRR_NOAA-12/1995/ \
+          199501-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
+      Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-FIRE:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/
+    last_access: 20190124
+    info: |
+      Download the data from:
+        burned_area/MERIS/grid/v4.1/
+      Put all files in input_dir_path (no subdirectories with years).
+
+  ESACCI-LANDCOVER:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
+    last_access: 20190110
+    info: |
+      Download the 3 NetCDF files for 2000, 2005 and 2010.
+      Download the CCI-LC Tools from:
+        http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
+      Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
+        bash lc-user-tools-3.14/bin/aggregate-map.sh \
+          -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
+          -PoutputAccuracy=false -PoutputPFTClasses=true \
+          -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
+      Put the resulting processed data in input_dir_path.
+
+      Caveat
+        The CCI-LC Tools must be applied before running this script.
+        The CCI-LC Tools require Java Version 7 or higher.
+        The input data are available for a single year and are copied over to
+        generate a time series over their time range of validity.
+
+  ESACCI-OC:
+    
