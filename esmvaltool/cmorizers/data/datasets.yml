@@ -537,7 +537,7 @@ datasets:
       Meteorological Research Institute, Tsukuba City, Japan). See link above
       for more information.
 
-  LAI3G:
+  LAI3g:
     tier: 3
     source: http://cliveg.bu.edu/modismisr/lai3g-fpar3g.html
     last_access: 20190503
@@ -552,7 +552,7 @@ datasets:
       preprocessing the dataset with ESMValTool (i.e. every time you run the
       tool) can take a very long time (> 30 min).
 
-  LANDFLUX-EVAL:
+  LandFlux-EVAL:
     tier: 3
     source: https://data.iac.ethz.ch/landflux/
     last_access: 20190516
@@ -563,7 +563,7 @@ datasets:
       <http://www.iac.ethz.ch/group/land-climate-dynamics/research/
       landflux-eval.html>).
 
-  LandSchuetzer2016:
+  Landschuetzer2016:
     tier: 2
     source: https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/
     last_access: 20190308
@@ -685,7 +685,7 @@ datasets:
       Newer versions may become available over time, but make sure to download
       the patched one. Only complete years should be downloaded.
 
-  NSIDC-0116-NH:
+  NSIDC-0116-nh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
     last_access: 20190513
@@ -694,7 +694,7 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
-  NSIDC-0116-SH:
+  NSIDC-0116-sh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
     last_access: 20190513
@@ -703,7 +703,7 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
-  OSI-450-NH:
+  OSI-450-nh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
     last_access: 20190502
@@ -719,7 +719,7 @@ datasets:
       for OSI-450-sh pointing to the data folder. Both cmorizers will ignore
       files belonging to the other hemisphere
 
-  OSI-450-SH:
+  OSI-450-sh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
     last_access: 20190502
@@ -735,7 +735,7 @@ datasets:
       for OSI-450-nh pointing to the data folder. Both cmorizers will ignore
       files belonging to the other hemisphere
 
-  PATMOS-X:
+  PATMOS-x:
     tier: 2
     source: https://www.ncdc.noaa.gov/cdr/atmospheric/avhrr-cloud-properties-patmos-x
     last_access: 20190210
@@ -792,7 +792,7 @@ datasets:
       Download the following files:
         REGEN_AllStns_{version}_[1950..2016].nc
 
-  UWISC:
+  UWisc:
     tier: 3
     source: Data provided by Ralf Bennartz.
     last_access: 20150415

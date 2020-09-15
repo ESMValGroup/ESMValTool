@@ -4,6 +4,7 @@ import contextlib
 import os
 import sys
 
+import pytest
 import iris
 import numpy as np
 import yaml
@@ -99,7 +100,7 @@ def check_log_file(log_file, no_data=False):
     """Check the cmorization log file."""
     with open(log_file, 'r') as log:
         if no_data:
-            msg = "Could not find raw data WOA"
+            msg = "Data for WOA not found"
         else:
             msg = "Fixing data"
         assert any(msg in line for line in log)
@@ -140,7 +141,8 @@ def test_cmorize_obs_woa_no_data(tmp_path):
     config_user_file = write_config_user_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
     with keep_cwd():
-        DataCommand().format('WOA', config_user_file)
+        with pytest.raises(Exception):
+            DataCommand().format('WOA', config_user_file)
 
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
