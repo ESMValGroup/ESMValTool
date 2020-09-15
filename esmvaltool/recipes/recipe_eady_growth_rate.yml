@@ -96,3 +96,4 @@ diagnostics:
         compute_annual_mean: false
         compute_seasonal_mean: false
         compute_climatology: true
+        plot_levels: [70000]

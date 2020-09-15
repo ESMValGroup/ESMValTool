@@ -1,17 +1,25 @@
 import os
 import logging
 
+import matplotlib
+matplotlib.use('agg')
+
+
 import iris
 import iris.cube
 import iris.analysis
 import iris.util
+import iris.quickplot as qplt
+import matplotlib.pyplot as plt
+
+import cartopy.crs as ccrs
 
 import numpy as np
 
 from dask import array as da
 
 from esmvalcore.preprocessor import (
-    regrid, annual_statistics, seasonal_statistics)
+    regrid, annual_statistics, seasonal_statistics, extract_levels)
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
@@ -34,6 +42,7 @@ class EadyGrowthRate(object):
         self.compute_climatology = self.cfg['compute_climatology']
         self.compute_annual_mean = self.cfg['compute_annual_mean']
         self.compute_seasonal_mean = self.cfg['compute_seasonal_mean']
+
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
@@ -61,11 +70,18 @@ class EadyGrowthRate(object):
 
             cube_egr = ua.copy(egr * 86400)
 
+            cube_egr.standard_name = None
+            cube_egr.long_name = 'eady_growth_rate'
+            cube_egr.var_name = 'egr'
+            cube_egr.units = 'day-1'
+
+
+            # pending to clean this
             if self.compute_annual_mean:
                 cube_egr = annual_statistics(cube_egr)
             elif self.compute_seasonal_mean:
                 cube_egr = seasonal_statistics(cube_egr)
-
+                self.seasonal_plots(cube_egr)
             if self.compute_climatology:
                 cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
 
@@ -139,17 +155,35 @@ class EadyGrowthRate(object):
 
         return egr
 
-    def save(self, egr, alias, data):
-        egr.standard_name = None
-        egr.long_name = 'eady_growth_rate'
-        egr.var_name = 'egr'
-        egr.units = 'day-1'
+    def seasonal_plots(self, egr):
+        try:
+            levels = self.cfg['plot_levels']
+        except KeyError:
+            levels = egr.coord('air_pressure').points
+        for level in levels:
+            cube = extract_levels(egr, level, scheme='linear')
+            crs_latlon = ccrs.PlateCarree()
+            ax = plt.axes(projection=ccrs.PlateCarree())
+            ax.coastlines(linewidth=1, color='black')
+            # North Atlantic
+            ax.set_extent((-90.0, 30.0, 20.0, 80.0), crs=crs_latlon)
+            ax.set_yticks(np.linspace(25,75,6))
+            qplt.contourf(cube, levels=np.arange(0, np.max(cube.data), 0.05))
+            extension = self.cfg['output_file_type']
+            diagnostic = self.cfg['script']
+            plotname = '_'.join([diagnostic, str(level), f'.{extension}']) # fix this
+            plt.savefig(os.path.join(self.cfg[n.PLOT_DIR], plotname))
+            plt.close()
 
+
+
+
+    def save(self, egr, alias, data):
         script = self.cfg[n.SCRIPT]
         info = data[alias][0]
         keys = [str(info[key]) for key in (
             'project', 'dataset', 'exp', 'ensemble', 'start_year', 'end_year'
-        ) if key in info]
+        ) if key in info] # fix this
         output_name = '_'.join(keys)+'.nc'
         output_file = os.path.join(self.cfg[n.WORK_DIR], output_name)
         iris.save(egr, output_file)
