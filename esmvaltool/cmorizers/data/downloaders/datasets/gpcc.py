@@ -8,7 +8,7 @@ from esmvaltool.cmorizers.data.utilities import (
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, _, __, overwrite):
     downloader = WGetDownloader(
         config=config,
         dataset=dataset,

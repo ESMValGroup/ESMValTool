@@ -210,10 +210,9 @@ class Formatter():
         datasets = []
         if self.datasets:
             return self.datasets
-        else:
-            for tier in tiers:
-                for dataset in os.listdir(os.path.join(self.rawobs, tier)):
-                    datasets.append(dataset)
+        for tier in tiers:
+            for dataset in os.listdir(os.path.join(self.rawobs, tier)):
+                datasets.append(dataset)
 
         return datasets
 
@@ -371,18 +370,14 @@ class DataCommand():
     """Download and format data to use with ESMValTool"""
 
     def __init__(self):
-        self.formatter = Formatter()
-
-    @staticmethod
-    def _read_dataset_file():
         import yaml
         datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
         with open(datasets_file) as data:
-            return yaml.safe_load(data)
+            self.info =  yaml.safe_load(data)
+        self.formatter = Formatter(self.info)
 
     def list(self):
         "List all supported datasets"
-        self._read_dataset_file()
         print()
         print(f'| {"Dataset name":30} | Tier | Auto-download | Last access |')
         print('-' * 71)
@@ -397,7 +392,6 @@ class DataCommand():
         print('-' * 71)
 
     def info(self, dataset):
-        self._read_dataset_file()
         dataset_info = self.info['datasets'][dataset]
         print(dataset)
         print()

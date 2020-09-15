@@ -4,7 +4,7 @@ from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, _, __, overwrite):
     """Download dataset cds-satellite-albedo."""
     downloader = CDSDownloader(
         product_name='satellite-methane',

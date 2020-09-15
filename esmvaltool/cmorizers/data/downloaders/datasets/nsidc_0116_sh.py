@@ -11,7 +11,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
 
     downloader = NASADownloader(
         config=config,
-        dataset=dataset
+        dataset=dataset,
+        overwrite=overwrite,
     )
 
     while loop_date <= end_date:

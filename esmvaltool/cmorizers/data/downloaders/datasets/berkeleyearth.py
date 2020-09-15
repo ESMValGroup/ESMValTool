@@ -3,7 +3,7 @@
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
-def download_dataset(config, dataset, start_date, end_date, overwrite):
+def download_dataset(config, dataset, _, __, overwrite):
     """Download dataset BerkeleyEarth."""
     downloader = WGetDownloader(
         config=config,
