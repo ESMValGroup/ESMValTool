@@ -65,9 +65,10 @@ and version number:
 -  Righi, M., Andela, B., Eyring, V., Lauer, A., Predoi, V., Schlund,
    M., Vegas-Regidor, J., Bock, L., Brötz, B., de Mora, L., Diblen, F.,
    Dreyer, L., Drost, N., Earnshaw, P., Hassler, B., Koldunov, N.,
-   Little, B., Loosveldt Tomas, S., and Zimmermann, K.: ESMValTool v2.0
-   - Technical overview, Geosci. Model Dev. Discuss.,
-   https://doi.org/10.5194/gmd-2019-226, in review, 2019.
+   Little, B., Loosveldt Tomas, S., and Zimmermann, K.: Earth System
+   Model Evaluation Tool (ESMValTool) v2.0 – technical overview, Geosci.
+   Model Dev., 13, 1179–1199, https://doi.org/10.5194/gmd-13-1179-2020,
+   2020. 
 
 Besides the above citation, users are kindly asked to register any
 journal articles (or other scientific documents) that use the software

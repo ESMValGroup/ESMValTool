@@ -25,6 +25,13 @@ and `wflow_topoflex <https://wflow.readthedocs.io/en/latest/wflow_topoflex.html>
 hydrological models can be prepared using recipe_wflow.yml.
 If PET is not available from the source data (e.g. ERA-Interim), then it can be derived from psl, rsds and rsdt using De Bruin's 2016 formula (De Bruin et al. 2016). For daily ERA5 data, the time points of these variables are shifted 30 minutes with respect to one another. This is because in ERA5, accumulated variables are recorded over the past hour, and in the process of cmorization, we shift the time coordinates to the middle of the interval over which is accumulated. However, computing daily statistics then averages the times, which results in 12:00 UTC for accumulated variables and 11:30 UTC for instantaneous variables. Therefore, in this diagnostic, the time coordinates of the daily instantaneous variables are shifted 30 minutes forward in time.
 
+LISFLOOD
+********
+`LISFLOOD <https://ec-jrc.github.io/lisflood-model/>`_ is a spatially distributed water resources model, developed by the Joint Research Centre (JRC) of the European Commission since 1997. We provide a recipe to produce meteorological forcing data for the Python 3 version of LISFLOOD.
+
+LISFLOOD has a separate preprocessor LISVAP that derives some additional variables. We don't replace LISVAP. Rather, we provide input files that can readily be passed to LISVAP and then to LISFLOOD.
+
+
 HYPE
 ****
 
@@ -41,6 +48,7 @@ Recipes are stored in esmvaltool/recipes/hydrology
     * recipe_pcrglobwb.yml
     * recipe_marrmot.yml
     * recipe_wflow.yml
+    * recipe_lisflood.yml
     * recipe_hype.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/hydrology
@@ -48,11 +56,14 @@ Diagnostics are stored in esmvaltool/diag_scripts/hydrology
     * pcrglobwb.py
     * marrmot.py
     * wflow.py
+    * lisflood.py
     * hype.py
 
 
 User settings in recipe
 -----------------------
+
+All hydrological recipes require a shapefile as an input to produce forcing data. This shapefile determines the shape of the basin for which the data will be cut out and processed. All recipes are tested with `the shapefiles <https://github.com/eWaterCycle/recipes_auxiliary_datasets/tree/master/>`_  that are used for the eWaterCycle project. In principle any shapefile can be used, for example, the freely available basin shapefiles from the `HydroSHEDS project <https://www.hydrosheds.org/>`_. 
 
 #. recipe_pcrglobwb.yml
 
@@ -81,18 +92,46 @@ User settings in recipe
 
 #. recipe_wflow.yml
 
-   *Required preprocessor settings:*
+   *Optional preprocessor settings:*
 
       * extract_region: the region specified here should match the catchment
-      * daily_statistics: if the frequency of the input data is not daily, it
-        should be converted to daily using the preprocessor function
-        daily_statistics with ``operator: mean``.
 
    *Required diagnostic script settings:*
 
 	    * basin: name of the catchment
 	    * dem_file: netcdf file containing a digital elevation model with
 	      elevation in meters and coordinates latitude and longitude.
+	    * regrid: the regridding scheme for regridding to the digital elevation model. Choose ``area_weighted`` (slow) or ``linear``.
+
+#. recipe_lisflood.yml
+
+   *Required preprocessor settings:*
+
+      * extract_region: A region bounding box slightly larger than the shapefile. This is run prior to regridding, to save memory.
+      * extract_shape:*
+
+         * shapefile: A shapefile that specifies the extents of the catchment.
+
+         These settings should not be changed
+
+         * method: contains
+         * crop: true
+
+      * regrid:*
+
+         * target_grid: Grid of LISFLOOD input files
+
+         These settings should not be changed
+
+         * lon_offset: true
+         * lat_offset: true
+         * scheme: linear
+
+   There is one diagnostic ``diagnostic_daily`` for using daily data.
+
+   *Required diagnostic script settings:*
+
+      * catchment: Name of the catchment, used in output filenames
 
 #. recipe_hype.yml
 
@@ -140,6 +179,17 @@ Variables
    * rsds (atmos, daily or hourly mean, longitude, latitude, time)
    * rsdt (atmos, daily or hourly mean, longitude, latitude, time)
 
+#. recipe_lisflood.yml
+
+   * pr (atmos, daily, longitude, latitude, time)
+   * tas (atmos, daily, longitude, latitude, time)
+   * tasmax (atmos, daily, longitude, latitude, time)
+   * tasmin (atmos, daily, longitude, latitude, time)
+   * tdps (atmos, daily, longitude, latitude, time)
+   * uas (atmos, daily, longitude, latitude, time)
+   * vas (atmos, daily, longitude, latitude, time)
+   * rsds (atmos, daily, longitude, latitude, time)
+
 #. recipe_hype.yml
 
    * tas (atmos, daily or hourly, longitude, latitude, time)
@@ -168,6 +218,10 @@ Output
 
 	The forcing data, stored in a single NetCDF file.
 
+#. recipe_lisflood.yml
+
+   The forcing data, stored in separate files per variable.
+
 References
 ----------
 
@@ -175,3 +229,4 @@ References
 * De Bruin, H. A. R., Trigo, I. F., Bosveld, F. C., Meirink, J. F.: A Thermodynamically Based Model for Actual Evapotranspiration of an Extensive Grass Field Close to FAO Reference, Suitable for Remote Sensing Application, American Meteorological Society, 17, 1373-1382, DOI: 10.1175/JHM-D-15-0006.1, 2016.
 * Arheimer, B., Lindström, G., Pers, C., Rosberg, J. och J. Strömqvist, 2008. Development and test of a new Swedish water quality model for small-scale and large-scale applications. XXV Nordic Hydrological Conference, Reykjavik, August 11-13, 2008. NHP Report No. 50, pp. 483-492.
 * Lindström, G., Pers, C.P., Rosberg, R., Strömqvist, J., Arheimer, B. 2010. Development and test of the HYPE (Hydrological Predictions for the Environment) model – A water quality model for different spatial scales. Hydrology Research 41.3-4:295-319.
+* van der Knijff, J. M., Younis, J. and de Roo, A. P. J.: LISFLOOD: A GIS-based distributed model for river basin scale water balance and flood simulation, Int. J. Geogr. Inf. Sci., 24(2), 189–212, 2010.

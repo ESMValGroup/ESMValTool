@@ -1,12 +1,12 @@
+# ESMValTool
 # recipe_thermodyn_diagtool.yml
-
 ---
 documentation:
   description: |
-        Recipe for the computation of various aspects associated with
-        the thermodynamics of the climate system, such as energy and
-        water mass budgets, meridional enthalpy transports, the Lorenz
-        Energy Cycle and the material entropy production.
+    Recipe for the computation of various aspects associated with
+    the thermodynamics of the climate system, such as energy and
+    water mass budgets, meridional enthalpy transports, the Lorenz
+    Energy Cycle and the material entropy production.
 
   authors:
     - lembo_valerio

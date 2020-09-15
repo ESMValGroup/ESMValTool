@@ -259,7 +259,7 @@ if (data_type == "day" | !is.na(sea)) {
     loess_span = 1
   ), c(2, 3, 1, 4, 5))
 }
-
+names(dim(clim_obs))[3] <- 'sdate'
 anom_obs <- Ano(reference_data, clim_obs)
 print(dim(anom_obs))
 print(length(lon))
@@ -550,6 +550,7 @@ if (data_type == "day" | !is.na(sea)) {
   loess_span = 1
   ), c(2, 3, 1, 4, 5))
 }
+names(dim(clim_ref))[3] <- 'sdate'
 anom_exp <- Ano(projection_data, clim_ref)
 reference <- drop(WR_obs$composite)
 if (cluster_method == "kmeans") {

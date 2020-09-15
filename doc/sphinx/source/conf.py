@@ -58,27 +58,29 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'autodocsumm',
 ]
 
-autodoc_default_flags = [
-    'members',
-    'undoc-members',
-    'inherited-members',
-    'show-inheritance',
-]
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+    'autosummary': True,
+}
 
 autodoc_mock_imports = [
     'cartopy',
     'cftime',
     'cf_units',
-    'ESMF',
+    'ESMPy',
     'esmvalcore',
+    'GDAL',
     'iris',
-    'PIL',
-    'prov',
     'psutil',
+    'pynio',
     'scipy',
-    'stratify',
+    'xesmf',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -95,7 +97,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'{0}, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'.format(
+copyright = u'{0}, ESMValTool Development Team'.format(
     datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
@@ -421,9 +423,9 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'esmvaltool':
-    ('https://esmvaltool.readthedocs.io/en/%s/' % rtd_version, None),
+    ('https://docs.esmvaltool.org/en/%s/' % rtd_version, None),
     'esmvalcore':
-    ('https://esmvaltool.readthedocs.io/projects/esmvalcore/en/%s/' %
+    ('https://docs.esmvaltool.org/projects/esmvalcore/en/%s/' %
      rtd_version, None),
 }
 

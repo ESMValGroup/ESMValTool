@@ -16,13 +16,16 @@ Atmosphere
    recipe_crem
    recipe_combined_climate_extreme_index
    recipe_consecdrydays
+   recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_extreme_events
+   recipe_eyring06jgr
    recipe_heatwaves_coldwaves
    recipe_hyint
    recipe_modes_of_variability
    recipe_quantilebias
    recipe_spei
+   recipe_martin18grl
    recipe_autoassess_stratosphere
    recipe_zmnam
    recipe_thermodyn_diagtool
@@ -47,7 +50,9 @@ Future projections
    recipe_snowalbedo
    recipe_ecs
    recipe_wenzel16jclim
+   recipe_wenzel16nat
    recipe_tcr
+   recipe_li17natcc
 
 IPCC
 ^^^^
@@ -63,6 +68,7 @@ Land
    :maxdepth: 1
 
    recipe_albedolandcover
+   recipe_carvalhais14nat
    recipe_hydrology
    recipe_landcover
    recipe_anav13jclim

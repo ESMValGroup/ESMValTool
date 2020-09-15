@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """ESMValTool installation script."""
+import json
 import os
 import re
 import sys
@@ -16,7 +17,6 @@ PACKAGES = [
 REQUIREMENTS = {
     # Installation script (this file) dependencies
     'setup': [
-        'pytest-runner',
         'setuptools_scm',
     ],
     # Installation dependencies
@@ -26,65 +26,62 @@ REQUIREMENTS = {
         'cdo',
         'cdsapi',
         'cf-units',
+        'cftime',
         'cmocean',
-        'cython',
+        'dask>=2.12',
         'ecmwf-api-client',
         'eofs',
-        'esmvalcore>=2.0.0b9,<2.1',
+        'ESMPy',
+        'esmvalcore>=2.0.0,<2.1',
         'fiona',
+        'GDAL',
         'jinja2',
+        'joblib',
         'matplotlib',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
         'pandas',
+        'pynio',
         'pyproj>=2.1'
         'pyyaml',
         'scikit-learn',
-        'scitools-iris>=2.2',
-        'seawater',
+        'scipy',
+        'scitools-iris>=2.2.1',
         'seaborn',
+        'seawater',
         'shapely',
-        'stratify',
         'xarray>=0.12',
         'xesmf',
-        'xlrd',
         'xlsxwriter',
     ],
     # Test dependencies
-    # Execute 'python setup.py test' to run tests
+    # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
-        'flake8<3.8.0',
-        'pytest>=3.9',
-        'pytest-cov',
+        'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
+        'pytest-cov>=2.10.1',
         'pytest-env',
-        'pytest-flake8',
+        'pytest-flake8>=1.0.6',
         'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
+        'pytest-xdist',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
+        'autodocsumm!=0.2.0',
         'codespell',
+        'docformatter',
         'isort',
+        'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
-        'sphinx',
+        'sphinx>2',
         'sphinx_rtd_theme',
         'vmprof',
         'yamllint',
         'yapf',
     ],
 }
-
-
-def read_authors(citation_file):
-    """Read the list of authors from .cff file."""
-    authors = re.findall(
-        r'family-names: (.*)$\s*given-names: (.*)',
-        Path(citation_file).read_text(),
-        re.MULTILINE,
-    )
-    return ', '.join(' '.join(author[::-1]) for author in authors)
 
 
 def discover_python_files(paths, ignore):
@@ -161,28 +158,50 @@ class RunLinter(Command):
         sys.exit(errno)
 
 
+def read_authors(filename):
+    """Read the list of authors from .zenodo.json file."""
+    with Path(filename).open() as file:
+        info = json.load(file)
+        authors = []
+        for author in info['creators']:
+            name = ' '.join(author['name'].split(',')[::-1]).strip()
+            authors.append(name)
+        return ', '.join(authors)
+
+
+def read_description(filename):
+    """Read the description from .zenodo.json file."""
+    with Path(filename).open() as file:
+        info = json.load(file)
+        return info['description']
+
+
 setup(
     name='ESMValTool',
     version=__version__,
-    author=read_authors('CITATION.cff'),
-    description='Earth System Models eValuation Tool',
+    author=read_authors('.zenodo.json'),
+    description=read_description('.zenodo.json'),
     long_description=Path('README.md').read_text(),
+    long_description_content_type='text/markdown',
     url='https://www.esmvaltool.org',
     download_url='https://github.com/ESMValGroup/ESMValTool',
     license='Apache License, Version 2.0',
     classifiers=[
-        'Development Status :: 4 - Beta', 'Environment :: Console',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
-        'Natural Language :: English', 'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
+        'Natural Language :: English',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Scientific/Engineering :: Hydrology',
-        'Topic :: Scientific/Engineering :: Physics'
+        'Topic :: Scientific/Engineering :: Physics',
     ],
     packages=PACKAGES,
     # Include all version controlled files
@@ -193,6 +212,7 @@ setup(
     extras_require={
         'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
                     {'pycodestyle'}),
+        'test': REQUIREMENTS['test'],
     },
     entry_points={
         'console_scripts': [
@@ -200,11 +220,14 @@ setup(
             'mip_convert_setup = '
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
-            'showcolortables = '
-            'esmvaltool.utils.color_tables.show_color_tables:run',
             'test_recipe = '
             'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
         ],
+        'esmvaltool_commands': [
+            'colortables = '
+            'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
+            'install = esmvaltool.install:Install',
+        ]
     },
     cmdclass={
         'lint': RunLinter,

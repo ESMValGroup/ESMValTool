@@ -1,5 +1,7 @@
 ^\.circleci/
 ^environment\.yml$
+^esmvaltool/install/
 ^[A-Za-z_]*meta\.yaml$
+^package/
 ^setup\.py$
 ^setup\.cfg$
