@@ -996,7 +996,7 @@ def transports_preproc(lats, yrs, lim, transp):
 
 
 def varatts(w_nc_var, varname):
-    """Add attibutes to the variables, depending on name and time res.
+    """Add attributes to the variables, depending on name and time res.
 
     Arguments:
     ---------

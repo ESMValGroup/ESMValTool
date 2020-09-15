@@ -131,7 +131,7 @@ def init_mkthe_lec(model, wdir, input_data):
 
 
 def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
-    """Compute the MEP with the direct method
+    """Compute the MEP with the direct method.
 
     Arguments:
     ---------

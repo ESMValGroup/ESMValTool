@@ -80,7 +80,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
 
     Arguments:
     ----------
-        outpath: ath where otput fields are stored (as NetCDF fields);
+        outpath: ath where output fields are stored (as NetCDF fields);
         model: name of the model that is analysed;
         year: year that is considered;
         filenc: name of the file containing the input fields;
@@ -1051,7 +1051,7 @@ def table(varin, ntp, name, logfile, flag):
 
 
 def varatts(w_nc_var, varname, tres, vres):
-    """Add attibutes to the variables, depending on name and time res.
+    """Add attributes to the variables, depending on name and time res.
 
     Arguments:
     ----------
@@ -1105,7 +1105,7 @@ def varatts(w_nc_var, varname, tres, vres):
 
 
 def weights(lev, nlev, lat):
-    """Compute weigths for vertical integration and meridional averages.
+    """Compute weights for vertical integration and meridional averages.
 
     Arguments:
     ----------
