@@ -183,6 +183,7 @@ class Formatter():
                 raise Exception(
                     f'Format failed for datasets {" ".join(failed_datasets)}'
                 )
+
     @staticmethod
     def has_downloader(dataset):
         try:
@@ -354,8 +355,10 @@ class Formatter():
 
     def _run_pyt_script(self, in_dir, out_dir, dataset, start, end):
         """Run the Python cmorization mechanism."""
-        module_name = 'esmvaltool.cmorizers.data.formatters.datasets.{}'.format(
-            dataset.lower().replace("-", "_"))
+        module_name = (
+            'esmvaltool.cmorizers.data.formatters.datasets.' +
+            dataset.lower().replace("-", "_")
+        )
         module = importlib.import_module(module_name)
         logger.info("CMORizing dataset %s using Python script %s",
                     dataset, module.__file__)
@@ -370,32 +373,38 @@ class DataCommand():
     def __init__(self):
         self.formatter = Formatter()
 
+    @staticmethod
+    def _read_dataset_file():
+        import yaml
+        datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
+        with open(datasets_file) as data:
+            return yaml.safe_load(data)
+
     def list(self):
         "List all supported datasets"
-        import yaml
-        with open(os.path.join(os.path.dirname(__file__), 'datasets.yml')) as data:
-            info = yaml.safe_load(data)
-        print(info.keys())
+        self._read_dataset_file()
         print()
         print(f'| {"Dataset name":30} | Tier | Auto-download | Last access |')
         print('-' * 71)
-        for dataset, dataset_info in info['datasets'].items():
-            date = datetime.datetime.strptime(str(dataset_info['last_access']), "%Y%m%d")
-            print(f"| {dataset:30} | {dataset_info['tier']:4} | {self.formatter.has_downloader(dataset):13} |  {date.strftime('%Y-%m-%d')} |")
+        for dataset, dataset_info in self.info['datasets'].items():
+            date = datetime.datetime.strptime(
+                str(dataset_info['last_access']), "%Y%m%d")
+            print(
+                f"| {dataset:30} | {dataset_info['tier']:4} "
+                f"| {self.formatter.has_downloader(dataset):13} "
+                f"|  {date.strftime('%Y-%m-%d')} |"
+            )
         print('-' * 71)
 
     def info(self, dataset):
-        import yaml
-        with open(os.path.join(os.path.dirname(__file__), 'datasets.yml')) as data:
-            info = yaml.safe_load(data)
-        dataset_info = info['datasets'][dataset]
+        self._read_dataset_file()
+        dataset_info = self.info['datasets'][dataset]
         print(dataset)
         print()
         print(f"Tier: {dataset_info['tier']}")
         print(f"Automatic download: {self.formatter.has_downloader(dataset)}")
         print("")
         print(dataset_info['info'])
-
 
     def download(self, datasets, config_file=None, start=None, end=None,
                  overwrite=False, **kwargs):

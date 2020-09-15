@@ -387,4 +387,7 @@ def _gunzip(file_name, work_dir):
             shutil.copyfileobj(f_in, f_out)
 
 
-shutil.register_unpack_format('gz', ['.gz', ], _gunzip)
+try:
+    shutil.register_unpack_format('gz', ['.gz', ], _gunzip)
+except shutil.RegistryError:
+    logger.debug('Format gz already registered. Skipping...')

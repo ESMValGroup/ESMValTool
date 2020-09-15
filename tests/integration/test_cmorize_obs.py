@@ -9,7 +9,7 @@ import numpy as np
 import yaml
 from cf_units import Unit
 
-from esmvaltool.cmorizers.data.cmorize_obs import main as run
+from esmvaltool.cmorizers.data.cmorizer import DataCommand
 
 
 @contextlib.contextmanager
@@ -140,14 +140,7 @@ def test_cmorize_obs_woa_no_data(tmp_path):
     config_user_file = write_config_user_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
     with keep_cwd():
-        with arguments(
-                'cmorize_obs',
-                '-c',
-                config_user_file,
-                '-o',
-                'WOA',
-        ):
-            run()
+        DataCommand().format('WOA', config_user_file)
 
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
@@ -164,14 +157,7 @@ def test_cmorize_obs_woa_data(tmp_path):
     os.makedirs(data_path)
     put_dummy_data(data_path)
     with keep_cwd():
-        with arguments(
-                'cmorize_obs',
-                '-c',
-                config_user_file,
-                '-o',
-                'WOA',
-        ):
-            run()
+        DataCommand().format('WOA', config_user_file)
 
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
