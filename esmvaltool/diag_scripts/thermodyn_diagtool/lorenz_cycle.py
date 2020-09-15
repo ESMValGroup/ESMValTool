@@ -524,11 +524,11 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     t_g: a temperature vertical profile;
     p_l: the pressure levels;
     """
-    a2k = - np.real(R / p_l[:, np.newaxis, np.newaxis] *
-                    (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = - np.real(R / p_l[:, np.newaxis] *
-                             (t_t[:, :, 0] - t_g[:, np.newaxis]) *
-                             (wap[:, :, 0] - w_g[:, np.newaxis]))
+    a2k = -np.real(R / p_l[:, np.newaxis, np.newaxis] *
+                   (t_t * np.conj(wap) + np.conj(t_t) * wap))
+    a2k[:, :, 0] = -np.real(R / p_l[:, np.newaxis] *
+                            (t_t[:, :, 0] - t_g[:, np.newaxis]) *
+                            (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k
 
 
@@ -651,12 +651,12 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
             dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0])) /
                             (lat[i_l] - lat[i_l - 1]))
         else:
-            dudy[:, i_l] = (
-                (np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0])) /
-                (lat[i_l + 1] - lat[i_l - 1]))
-            dvdy[:, i_l] = (
-                (np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0])) /
-                (lat[i_l + 1] - lat[i_l - 1]))
+            dudy[:,
+                 i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0])) /
+                         (lat[i_l + 1] - lat[i_l - 1]))
+            dvdy[:,
+                 i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0])) /
+                         (lat[i_l + 1] - lat[i_l - 1]))
     dudy = dudy / AA
     dvdy = dvdy / AA
     c_1 = np.zeros([nlev, nlat, ntp - 1])
@@ -915,7 +915,7 @@ def preproc_lec(model, wdir, pdir, input_data):
     if len(ua_files) > 1:
         ua_files = e.select_metadata(ua_files, variable_group='ua_1')
     ua_file = ua_files[0]['filename']
-    print(ua_file)    
+    print(ua_file)
     uas_file = e.select_metadata(input_data, short_name='uas',
                                  dataset=model)[0]['filename']
     va_files = e.select_metadata(input_data, short_name='va', dataset=model)
