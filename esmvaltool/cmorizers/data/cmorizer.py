@@ -192,7 +192,7 @@ class Formatter():
             )
             return 'Yes'
         except ImportError:
-            return 'False'
+            return 'No'
 
     def _assemble_datasets(self):
         """Get my datasets as dictionary keyed on Tier."""
