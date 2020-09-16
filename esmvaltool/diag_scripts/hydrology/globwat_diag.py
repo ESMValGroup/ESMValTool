@@ -185,6 +185,18 @@ def make_output_name(cube):
     output_name['pet']['day'] = daily_pet
     return output_name
 
+def arora_pet(tas):
+    """Arora is a temperature-based method for calculating potential ET.
+    In this equation, t is the monthly average temperature in degree Celcius."""
+    # convert temperature unit to degC
+    tas.convert_units('degC')
+    a = np.float32(325)
+    b = np.float32(21)
+    c = np.float32(0.9)
+    pet = a + b * tas + c * (tas ** 2)
+
+    return pet
+
 def main(cfg):
     """Process data for use as input to the GlobWat hydrological model.
     These variables are needed in all_vars:
@@ -206,12 +218,15 @@ def main(cfg):
 
         cube = all_vars['pr']  
         logger.info("Potential evapotransporation not available, deriving and adding to all_vars dictionary")
-        all_vars.update(pet = debruin_pet(
-            psl=all_vars['psl'],
-            rsds=all_vars['rsds'],
-            rsdt=all_vars['rsdt'],
-            tas=all_vars['tas'],
-        ))
+        # all_vars.update(pet = debruin_pet(
+        #     psl=all_vars['psl'],
+        #     rsds=all_vars['rsds'],
+        #     rsdt=all_vars['rsdt'],
+        #     tas=all_vars['tas'],
+        # ))
+        # print('tas', all_vars['tas'])
+        tas = all_vars['tas']
+        all_vars.update(pet_arora = arora_pet(tas)) 
 
         logger.info("Converting units")      
         pr = all_vars['pr']
@@ -234,7 +249,7 @@ def main(cfg):
         start_year = coord_time.cell(0).point.year 
         end_year = coord_time.cell(-1).point.year 
         for nyear in range (start_year , end_year+1):
-            for key in ['pr', 'pet']:
+            for key in ['pr', 'pet_arora']:
                 for mip in ['Amon', 'day']:
                     if mip == 'Amon':
                         output_name_amon = output_name[key]['Amon']
@@ -246,8 +261,8 @@ def main(cfg):
                                 # set negative values for precipitaion to zero
                                 sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
                                 #regrid data baed on target cube
-                                # sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
-                                sub_cube_regrided = lazy_regrid(sub_cube, target_cube, "linear")
+                                sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
+                                # sub_cube_regrided = lazy_regrid(sub_cube, target_cube, "linear")
                                 #Save data as netcdf 
                                 file_name = output_name_amon[i] 
                                 iris.save(sub_cube_regrided, data_dir / f"{file_name}.nc", fill_value=-9999)
@@ -280,22 +295,22 @@ def main(cfg):
                                 # new_dataset.write(array, 1)
                                 # new_dataset.close()
 
-                    else:
-                        output_name_amon = output_name[key]['Amon']
-                        output_name_day = output_name[key]['day']
-                        data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
-                        data_dir.mkdir(parents=True, exist_ok=True)
-                        # for var_name in output_name: 
-                        #     for time_step in output_name[var_name]: 
-                        for i in range(len(output_name_day)):
-                            key_cube = all_vars[key]
-                            for sub_cube in key_cube.slices_over('time'): 
-                                sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
-                                # sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
-                                sub_cube_regrided = lazy_regrid(sub_cube, target_cube, "linear")
-                                file_name = output_name_day[i]
-                                print("file_name_daily", file_name)
-                                iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
+                    # else:
+                    #     output_name_amon = output_name[key]['Amon']
+                    #     output_name_day = output_name[key]['day']
+                    #     data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
+                    #     data_dir.mkdir(parents=True, exist_ok=True)
+                    #     # for var_name in output_name: 
+                    #     #     for time_step in output_name[var_name]: 
+                    #     for i in range(len(output_name_day)):
+                    #         key_cube = all_vars[key]
+                    #         for sub_cube in key_cube.slices_over('time'): 
+                    #             sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
+                    #             sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
+                    #             # sub_cube_regrided = lazy_regrid(sub_cube, target_cube, "linear")
+                    #             file_name = output_name_day[i]
+                    #             print("file_name_daily", file_name)
+                    #             iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
                                     
             # # Store provenance
             # with ProvenanceLogger(cfg) as provenance_logger:
