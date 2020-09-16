@@ -18,6 +18,7 @@ import os
 import subprocess
 import shutil
 from pathlib import Path
+import yaml
 
 import esmvalcore
 from esmvalcore._config import configure_logging, read_config_user_file
@@ -370,7 +371,6 @@ class DataCommand():
     """Download and format data to use with ESMValTool"""
 
     def __init__(self):
-        import yaml
         datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
         with open(datasets_file) as data:
             self.info =  yaml.safe_load(data)

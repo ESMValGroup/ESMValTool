@@ -72,7 +72,7 @@ class NASADownloader(WGetDownloader):
             "--keep-session-cookies",
         ]
 
-    def download_folder(self, server_path):
+    def download_folder(self, server_path, wget_options=None):
         """
         Download folder.
 
@@ -81,13 +81,15 @@ class NASADownloader(WGetDownloader):
         folder_path: str
             Path to remote folder
         """
-        wget_options = self._wget_common_options + [
+        if wget_options is None:
+            wget_options = []
+        wget_options = self._wget_common_options  + [
             "-np",
             "--accept=nc,nc4"
-        ]
+        ] + wget_options
         super().download_folder(server_path, wget_options)
 
-    def download_file(self, server_path):
+    def download_file(self, server_path, wget_options=None):
         """
         Download file.
 
@@ -96,4 +98,7 @@ class NASADownloader(WGetDownloader):
         folder_path: str
             Path to remote folder
         """
-        super().download_file(server_path, self._wget_common_options)
+        if wget_options is None:
+            wget_options = []
+        super().download_file(
+            server_path, self._wget_common_options + wget_options)
