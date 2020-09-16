@@ -89,6 +89,9 @@ def main(cfg):
                 plot_kwargs = metrics_plot_dictionary[metricname]
                 # Overwrite plot title to be dataset name
                 plot_kwargs['title'] = alias
+                # Specify to add small text with field mean for timemean
+                if metricname == 'timemean':
+                    plot_kwargs['addglobmeanvalue'] = True
                 mpqb_mapplot(resultcube, cfg, plot_file, **plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")

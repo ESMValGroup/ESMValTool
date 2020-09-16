@@ -52,6 +52,14 @@ def _parse_cmap(plotkwargs):
     plotkwargs['cmap'] = cmap
     return plotkwargs
 
+def _calc_glob_mean(cube):
+    grid_areas = iris.analysis.cartography.area_weights(cube)
+    # Perform the area-weighted mean
+    globmean = cube.collapsed(['longitude', 'latitude'],
+                                                   iris.analysis.MEAN,
+                                                   weights=grid_areas)
+    return globmean
+
 
 def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     """Plot maps."""
@@ -65,6 +73,8 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
 
     plotkwargs['rasterized'] = True
 
+    # Add small box with global mean if requested
+    addglobmeanvalue = plotkwargs.pop("addglobmeanvalue", False)
 
     pcols = iris.plot.pcolormesh(cube, **plotkwargs)
     # Take out small grid lines like this
@@ -75,6 +85,16 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     colorbar = plt.colorbar(pcols, orientation='horizontal', extend=extend)
     colorbar.set_label(cube.units)
     colorbar.ax.tick_params(labelsize=8)
+
+    if addglobmeanvalue:
+        globmean = _calc_glob_mean(cube)
+        globmeanvalue = globmean.data.item()
+        plt.gca().text(0,
+                       -0.02,
+                       f"mean: {globmeanvalue:.3f}",
+                       horizontalalignment='left',
+                       verticalalignment='top',
+                       transform=plt.gca().transAxes)
 
     # Get first entry from all datasets
     sample_dataset = dataset_cfg['input_data'][next(iter(dataset_cfg['input_data']))]

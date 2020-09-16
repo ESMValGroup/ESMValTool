@@ -9,9 +9,9 @@
 
 datasetnames:
   ERA-Interim-Land: ERA-Interim/Land
-  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: ESA-CCI-COM
-  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: ESA-CCI-PAS
-  CDS-SATELLITE-SOIL-MOISTURE_ACTIVE: ESA-CCI-ACT
+  CDS-SATELLITE-SOIL-MOISTURE_COMBINED: CDS-SAT-SM-COM
+  CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: CDS-SAT-SM-PAS
+  CDS-SATELLITE-SOIL-MOISTURE_ACTIVE: CDS-SAT-SM-ACT
   cds-era5-land-monthly: ERA5-Land
   cds-era5-monthly: ERA5
   MERRA2: MERRA-2
@@ -33,6 +33,10 @@ datasetcolors:
   cds-satellite-lai-fapar: '#8c564b'
   CDS-SATELLITE-ALBEDO: '#e377c2'
   GRACE: '#7f7f7f'
+  ESA-CCI-COM: '#1f78b4'
+  ESA-CCI-PAS: '#b2df8a'
+  ESA-CCI-ACT: '#33a02c'
+
 
 
 colormaps:
@@ -154,11 +158,13 @@ colormaps:
       cmap: BrBG
       vmin: -0.02
       vmax: 0.02
+      extend: both
     timemean:
       title: timemean
       cmap: YlGn
-      vmin: 0.
+      vmin: 0
       vmax: 0.6
+      extend: max
 
   sm1m:
     pearsonr:
