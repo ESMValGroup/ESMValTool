@@ -9,7 +9,22 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """Download dataset cds-satellite-soil-moisture."""
+    """
+    Download dataset.
+
+    Parameters
+    ----------
+    config : dict
+        ESMValTool's user configuration
+    dataset : str
+        Name of the dataset
+    start_date : datetime
+        Start of the interval to download
+    end_date : datetime
+        End of the interval to download
+    overwrite : bool
+        Overwrite already downloaded files
+    """
     if not start_date:
         start_date = datetime.datetime(1978, 11, 1)
     if not end_date:

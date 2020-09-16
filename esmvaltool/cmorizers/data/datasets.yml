@@ -403,6 +403,36 @@ datasets:
         lt/Analysis/L4/v01.1/
       Put all files under a single directory (no subdirectories with years).
 
+  ESRL:
+    tier: 2
+    source: http://www.esrl.noaa.gov/gmd/dv/data/index.php
+    last_access: 20200630
+    info: |
+      (1) Select the following filters:
+          Category: Greenhouse Gases.
+          Parameter name: Carbon Dioxide.
+          Type: Insitu.
+          Frequency: Monthly Averages.
+          Site: BRW, MLO, SMO, SPO.
+      (2) Get stations properties at http://www.esrl.noaa.gov/gmd/obop/
+          and compile a station list as comma separated value table containing:
+          station code, station name, latitude, longitude (0-360), elevation (m)
+
+          Example (ESRL_stations.csv):
+          ----------------------------
+          BRW,    Barrow Alaska,        71.3230,       203.3886,        11
+          THD,    Trinidad Head,        41.0541,       235.849,        107
+          SUM,    Summit Greenland,     72.5962,       321.578,       3210
+          MLO,    Mauna Loa,            19.5362,       204.4237,      3397
+          SMO,    American Samoa,       -14.2474,      189.4356,        42
+          SPO,    South Pole,           -90.00,        301.0,         2840
+
+          (3) This list must be manually created (format: comma separated values)
+              and saved to the path + filename given by "FILE_STAT" below.
+
+          (4) Check the period covered by the data and give it below as YEAR1 and
+              YEAR2.
+
   FLUXCOM:
     tier: 3
     source: http://www.bgc-jena.mpg.de/geodb/BGI/Home

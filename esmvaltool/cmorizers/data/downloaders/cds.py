@@ -1,4 +1,4 @@
-"""Downloader for the Climate Data Store"""
+"""Downloader for the Climate Data Store."""
 
 import os
 import logging
@@ -11,6 +11,25 @@ logger = logging.getLogger(__name__)
 
 
 class CDSDownloader(BaseDownloader):
+    """
+    Downloader class for the climate data store.
+
+    Parameters
+    ----------
+    product_name : str
+        Name of the product in the CDS
+    config : dict
+        ESMValTool's user configuration
+    request_dictionary : dict
+        Common CDS request parameters
+    dataset : str
+        Name of the dataset
+    overwrite : bool
+        Overwrite already downloaded files
+    extra_name : str, optional
+        Some products have a subfix appended to their name for certain
+        variables. This parameter is to specify it, by default ''
+    """
 
     def __init__(self, product_name, config, request_dictionary, dataset,
                  overwrite, extra_name=''):
@@ -21,6 +40,18 @@ class CDSDownloader(BaseDownloader):
         self.extra_name = extra_name
 
     def download(self, year, month, day=None):
+        """
+        Download a specfic month from the CDS.
+
+        Parameters
+        ----------
+        year : int
+            Year to download
+        month : int
+            Month to download
+        day : int, list(int), optional
+            Day or days to download, by default None
+        """
         request_dict = self._request_dict.copy()
         request_dict['year'] = f'{year}'
         request_dict['month'] = f"{month:02d}"
@@ -40,6 +71,16 @@ class CDSDownloader(BaseDownloader):
         self.download_request(file_path, request_dict)
 
     def download_request(self, filename, request=None):
+        """
+        Download a specific request.
+
+        Parameters
+        ----------
+        filename : str
+            Name of the file to download
+        request : dict, optional
+            Request dictionary for the CDS, by default None
+        """
         if request is None:
             request = self._request_dict.copy()
 

@@ -43,7 +43,7 @@
 ;
 ; ######################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/interface.ncl")
+           "/obs/formatters/interface.ncl"))
 
 begin
 
@@ -57,8 +57,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = 1973
-  YEAR2 = 2019
+  YEAR1 = get_year(start_year, 1973)
+  YEAR2 = get_year(end_year, 2019)
 
   ; Selected variable (standard name)
   VAR = "co2s"

@@ -1,4 +1,4 @@
-"""Script to download CALIPSO-GOCCP from IPSL ftp."""
+"""Script to download CALIPSO-GOCCP from IPSL's ftp server."""
 
 from dateutil import relativedelta
 import datetime
@@ -7,7 +7,22 @@ from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """Download dataset CALIPSO-GOCCP."""
+    """
+    Download dataset.
+
+    Parameters
+    ----------
+    config : dict
+        ESMValTool's user configuration
+    dataset : str
+        Name of the dataset
+    start_date : datetime
+        Start of the interval to download
+    end_date : datetime
+        End of the interval to download
+    overwrite : bool
+        Overwrite already downloaded files
+    """
     downloader = FTPDownloader(
         config=config,
         server='ftp.climserv.ipsl.polytechnique.fr',

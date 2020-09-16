@@ -1,11 +1,26 @@
-"""Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
+"""Script to download cds-satellite-albedo from the Climate Data Store(CDS)."""
 
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """Download dataset cds-satellite-albedo."""
+    """
+    Download dataset.
+
+    Parameters
+    ----------
+    config : dict
+        ESMValTool's user configuration
+    dataset : str
+        Name of the dataset
+    start_date : datetime
+        Start of the interval to download
+    end_date : datetime
+        End of the interval to download
+    overwrite : bool
+        Overwrite already downloaded files
+    """
     downloader = CDSDownloader(
         product_name='satellite-methane',
         request_dictionary={
