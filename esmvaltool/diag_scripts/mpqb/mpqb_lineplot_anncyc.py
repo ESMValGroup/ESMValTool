@@ -41,6 +41,7 @@ def main(cfg):
     fig = plt.figure(figsize=(10, 4))
     ax1 = fig.add_subplot()
 
+
     for dataset in grouped_input_data:
         dataset_cfg = grouped_input_data[dataset][0]
         alias = dataset_cfg['alias']

@@ -1,0 +1,62 @@
+# recipe_anav13jclim.xml
+---
+documentation:
+
+  description: |
+    This recipe reproduces most of the figures of Anav et al. (2013).
+
+  authors:
+    - gier_bettina
+
+  references:
+    - anav13jclim
+
+  projects:
+    - embrace
+    - crescendo
+
+
+preprocessors:
+
+  noop:
+    {}
+
+  preproc:
+    regrid:
+      target_grid: 5x5
+      scheme: nearest
+    #mask_fillvalues:
+    #  threshold_fraction: 0.0
+    #  min_value: -1e20
+    mask_multimodel:
+
+
+diagnostics:
+
+  xch4_test:
+    description: XCH4 test
+    variables:
+      xch4:
+        project: CMIP6
+        mip: Amon
+        preprocessor: preproc
+        exp: esm-hist
+        start_year: 2005
+        end_year: 2005
+        derive: true
+    additional_datasets:
+      #OBS!
+      #- {dataset: GISS, project: OBS, type: reanaly, version: 2, tier: 2}
+      #- {dataset: C3S, project: obs4mips, level: sat, version: l3-v30, tier: 1, derive: false}
+      #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+      #- {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+      #- {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      #- {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+      #- {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3, 
+         derive: false}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1, 
+         exp: esmHistorical}
+
+    scripts: null

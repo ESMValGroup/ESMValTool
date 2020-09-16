@@ -7,12 +7,33 @@ from pprint import pformat
 import iris
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from cf_units import Unit
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
 from mpqb_plots import read_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+def _unify_time_coord(cube):
+    """Unify time coordinate of cube."""
+    if not cube.coords('time', dim_coords=True):
+        return
+    time_coord = cube.coord('time')
+    dates_points = time_coord.units.num2date(time_coord.points)
+    dates_bounds = time_coord.units.num2date(time_coord.bounds)
+    new_units = Unit('days since 1850-01-01 00:00:00')
+    new_time_coord = iris.coords.DimCoord(
+        new_units.date2num(dates_points),
+        bounds=new_units.date2num(dates_bounds),
+        var_name='time',
+        standard_name='time',
+        long_name='time',
+        units=new_units,
+    )
+    coord_dims = cube.coord_dims('time')
+    cube.remove_coord('time')
+    cube.add_dim_coord(new_time_coord, coord_dims)
 
 
 def main(cfg):
@@ -47,7 +68,8 @@ def main(cfg):
 
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
-
+        _unify_time_coord(cube)
+        
         iris.quickplot.plot(cube, label=datasetnames[alias],
                             color=mpqb_cfg['datasetcolors'][alias])
     plt.legend()
@@ -75,6 +97,7 @@ def main(cfg):
     fig.savefig(filename)
     plt.close(fig)
     logger.info("Finished!")
+
 
 
 if __name__ == '__main__':

@@ -20,12 +20,22 @@ datasetnames:
   cds-satellite-lai-fapar: SPOT-VGT
   CDS-SATELLITE-ALBEDO: SPOT-VGT
   GRACE: GRACE
+  ESACCI-CLOUD: ESACCI-CLOUD
+  PATMOS-x: PATMOS-x
+  MODIS: MODIS
+  MAC-LWP: MAC-LWP
   JRA-55: JRA-55
   PERSIANN-CDR: PERSIANN-CDR
   GPCP-SG: GPCP-SG
+  GPCC: GPCC
   TRMM-L3: TRMM-L3
-
-
+  CDS-XCH4: CDS-XCH4
+  BCC-CSM2-MR: BCC-CSM2-MR
+  CNRM-ESM2-1: CNRM-ESM2-1
+  UKESM1-0-LL: UKESM1-0-LL
+  BNU-ESM: BNU-ESM
+  FIO-ESM: FIO-ESM
+  MRI-ESM1: MRI-ESM1
 
 datasetcolors:
   ERA-Interim-Land: '#1f77b4'
@@ -40,11 +50,23 @@ datasetcolors:
   cds-satellite-lai-fapar: '#8c564b'
   CDS-SATELLITE-ALBEDO: '#e377c2'
   GRACE: '#7f7f7f'
+  ESACCI-CLOUD: '#9467bd'
+  PATMOS-x: '#ff7f00'
+  MODIS: '#2ca02c'
+  MAC-LWP: '#bcbd22'
   JRA-55: '#9467bd'
   PERSIANN-CDR: '#8c564b'
   GPCP-SG: '#ff7f00'
+  GPCC: '#8c564b'
   TRMM-L3: '#04ffff'
- 
+  CDS-XCH4: '#d62728'
+  BCC-CSM2-MR: '#458ef6'
+  CNRM-ESM2-1: '#2ca02c'
+  UKESM1-0-LL: '#1f77b4'
+  BNU-ESM: '#458ef6'
+  FIO-ESM: '#2ca02c'
+  MRI-ESM1: '#1f77b4'
+
 # From:
 # https://stackoverflow.com/questions/42086276/
 # Cycle continues like this:
@@ -271,7 +293,7 @@ colors:
       vmax: 0.05
     timemean:
       title: timemean
-      cmap: YlOrBr
+      cmap: RdYlBu_r
       vmin: 0.0
       vmax: 100.
 
@@ -308,7 +330,7 @@ colors:
       vmax: 0.05
     timemean:
       title: timemean
-      cmap: YlOrBr
+      cmap: RdYlBu_r
       vmin: 0.0
       vmax: 0.2
 
@@ -348,3 +370,42 @@ colors:
       cmap: YlGnBu
       vmin: 0.0
       vmax: 0.0001
+      
+  xch4:
+    pearsonr:
+      title: pearsonr
+      vmin: -1.
+      vmax: 1.
+      cmap: BrBG
+    ubrmsd:
+      title: ubrmsd
+      vmin: 0.
+      vmax: 100.
+      cmap: YlOrBr
+    rmsd:
+      title: rmsd
+      vmin: 0.
+      vmax: 100.
+      cmap: YlOrBr
+    absdiff:
+      title: absdiff
+      vmin: -0.00003
+      vmax: 0.00003
+      cmap: BrBG
+    reldiff:
+      title: reldiff
+      cmap: BrBG
+      vmin: -50
+      vmax: 50
+    theilsenmk:
+      title: theilsen
+      cmap: BrBG
+      vmin: -0.05
+      vmax: 0.05
+    timemean:
+      title: timemean
+      cmap: YlGnBu
+      #vmin: 1500.
+      #vmax: 1800.
+      vmin: 1550.
+      vmax: 1750.

@@ -339,15 +339,15 @@ default_pp_line: &pp_line
 ################################################
 
 datasets:
-  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', 
-     tier: 3, alias: ERA-Interim}       
-  - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
-     tier: 2, alias: PERSIANN-CDR}
-  - {dataset: JRA-55, project: ana4mips, type: reanalysis, mip: Amon,
-     tier: 1, alias: JRA-55}
+  # - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', 
+     # tier: 3, alias: ERA-Interim}       
+  # - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
+     # tier: 2, alias: PERSIANN-CDR}
+  # - {dataset: JRA-55, project: ana4mips, type: reanalysis, mip: Amon,
+     # tier: 1, alias: JRA-55}
   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, 
      tier: 1, alias: GPCP-SG}
-  # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_25, 
+  # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
      # tier: 2, alias: GPCC}
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
      tier: 3, alias: ERA5}
@@ -534,6 +534,14 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
+
+  pp_lineplots_anncyc_without_gl:
+    custom_order: true
+    <<: *pp_maps_without_gl
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
       
     
   pp_lineplots_std:
@@ -697,19 +705,19 @@ diagnostics:
     # scripts:
       # mpqb_trop:
         # <<: *histdef_zoom
-  histogram_landonly_trop:
-    description: histogram for 1x1 gridded data
-    variables:
-      pr:
-        preprocessor: pp_mpqb_precip_landonly_trop
-        #derive: true
-        <<: *precipdef
-    additional_datasets:
-      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         tier: 3, alias: ERA5-Land}
-    scripts:
-      mpqb_trop:
-        <<: *histdef
+  # histogram_landonly_trop:
+    # description: histogram for 1x1 gridded data
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_landonly_trop
+        # #derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+    # scripts:
+      # mpqb_trop:
+        # <<: *histdef
   # histogram_seaonly_trop:
     # description: histogram for 1x1 gridded data
     # variables:
@@ -791,16 +799,16 @@ diagnostics:
     # variables:
       # pr:
         # preprocessor: pp_mpqb_precip_nomask
-        # #derive: true
+        # # derive: true
         # <<: *precipdef
     # scripts:
       # mpqb:
         # #reference_dataset: MultiModelMean
-        # reference_dataset: GPCP-SG
+        # reference_dataset: ERA5
         # script: mpqb/mpqb_comparison.py
-      # mpqb_taylor:
-        # reference_dataset: MultiModelMean
-        # script: mpqb/mpqb_taylordiagram.py
+      # # mpqb_taylor:
+        # # reference_dataset: MultiModelMean
+        # # script: mpqb/mpqb_taylordiagram.py
   # lineplots_without_gl:
     # description: lineplots
     # variables:
@@ -865,16 +873,16 @@ diagnostics:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot.py
   ### works!!      
-  # lineplots_anncyc_without_trop:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_anncyc_without_trop
-        # derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_trop:
-        # script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_trop:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_anncyc_without_trop
+        derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_trop:
+        script: mpqb/mpqb_lineplot_anncyc.py
   # lineplots_anncyc_landonly_trop:
     # description: lineplots
     # variables:
@@ -898,52 +906,66 @@ diagnostics:
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_samonsoon:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_anncyc_without_samonsoon
-        # derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_samonsoon:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_europe:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_anncyc_without_europe
-        # derive: true
-        # <<: *precipdef
+  lineplots_anncyc_without_gl:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_anncyc_without_gl
+        derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_gl:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_samonsoon:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_anncyc_without_samonsoon
+        derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_samonsoon:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_europe:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_anncyc_without_europe
+        derive: true
+        <<: *precipdef
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
-    # scripts:
-      # lineplot_europe:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_northamerica:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_anncyc_without_northamerica
-        # derive: true
-        # <<: *precipdef
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+    scripts:
+      lineplot_europe:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_northamerica:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_anncyc_without_northamerica
+        derive: true
+        <<: *precipdef
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
-    # scripts:
-      # lineplot_northamerica:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_itcz:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_anncyc_without_itcz
-        # derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_itcz:
-        # script: mpqb/mpqb_lineplot_anncyc.py
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+    scripts:
+      lineplot_northamerica:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_itcz:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_anncyc_without_itcz
+        derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_itcz:
+        script: mpqb/mpqb_lineplot_anncyc.py
   ###
   # lineplots_without_trop_std:
     # description: lineplots_std
@@ -981,16 +1003,16 @@ diagnostics:
     # scripts:
       # lineplot_northamerica:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_itcz:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_without_itcz
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_itcz:
-        # script: mpqb/mpqb_lineplot.py
+  lineplots_without_itcz:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_without_itcz
+        #derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_itcz:
+        script: mpqb/mpqb_lineplot.py
   # # lineplots_with_itcz:
     # # description: lineplots
     # # variables:
@@ -1001,49 +1023,49 @@ diagnostics:
     # # scripts:
       # # lineplot_itcz:
         # # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_samonsoon:
+  lineplots_without_samonsoon:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_without_samonsoon
+        #derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_samonsoon:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_without_europe:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_without_europe
+        #derive: true
+        <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+    scripts:
+      lineplot_europe:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_without_northamerica:
+    description: lineplots
+    variables:
+      pr:
+        preprocessor: pp_lineplots_without_northamerica
+        #derive: true
+        <<: *precipdef
+    scripts:
+      lineplot_northamerica:
+        script: mpqb/mpqb_lineplot.py
+  # lineplots_with_samonsoon:
     # description: lineplots
     # variables:
       # pr:
-        # preprocessor: pp_lineplots_without_samonsoon
+        # preprocessor: pp_lineplots_with_samonsoon
         # #derive: true
         # <<: *precipdef
     # scripts:
       # lineplot_samonsoon:
         # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_europe:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_without_europe
-        # #derive: true
-        # <<: *precipdef
-    # additional_datasets:
-      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         # tier: 3, alias: ERA5-Land}
-    # scripts:
-      # lineplot_europe:
-        # script: mpqb/mpqb_lineplot.py
-  # lineplots_without_northamerica:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_without_northamerica
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_northamerica:
-        # script: mpqb/mpqb_lineplot.py
-  # # lineplots_with_samonsoon:
-    # # description: lineplots
-    # # variables:
-      # # pr:
-        # # preprocessor: pp_lineplots_with_samonsoon
-        # # #derive: true
-        # # <<: *precipdef
-    # # scripts:
-      # # lineplot_samonsoon:
-        # # script: mpqb/mpqb_lineplot.py
   # # mapplots_std:
     # # description: mapplots
     # # variables:

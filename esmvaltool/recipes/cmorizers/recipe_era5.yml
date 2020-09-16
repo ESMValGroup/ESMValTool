@@ -16,7 +16,8 @@ documentation:
 
 datasets:
   # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
-  - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3, start_year: 1981, end_year: 2019}
+  #- {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3, start_year: 1981, end_year: 2019}
+  - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3, start_year: 1979, end_year: 2019}
 
 preprocessors:
   add_one_day: &add_one_day
@@ -45,7 +46,7 @@ diagnostics:
       rename:
         script: cmorizers/era5.py
     variables:
-      pr:
+      lwp:
         mip: Amon
-        era5_name: total_precipitation
+        era5_name: total_column_cloud_liquid_water
         era5_freq: monthly

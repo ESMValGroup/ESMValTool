@@ -1,0 +1,510 @@
+# ESMValTool
+# recipe_mpqb.yml
+---
+documentation:
+  description: |
+    Test recipe for the MPQB (C3S_511) for soil moisture
+
+  authors:
+    - mueller_benjamin
+
+
+################################################
+# Define some default parameters using anchors #
+################################################
+
+mmm_stat_obs: &mmm_stat_obs
+  multi_model_statistics:
+    span: overlap
+    statistics: [mean]
+    exclude: [ERA5-Land, ERA5, ERA-Interim, JRA-55]
+
+mpqbregridder: &mpqbregridder
+  regrid:
+    #target_grid: 1x1
+    target_grid: 2.5x2.5
+    scheme: area_weighted
+  monthly_statistics:
+    operator: mean
+ 
+extract_southasianmonsoon: &extr_samonsoon
+  extract_region:
+    start_longitude: 65
+    end_longitude: 105
+    start_latitude: 10
+    end_latitude: 40
+
+extract_europe: &extr_europe
+  extract_region: 
+    end_latitude: 53
+    end_longitude: 20
+    start_latitude: 42
+    start_longitude: 0
+
+extract_northamerica: &extr_northamerica
+  extract_region: 
+    end_latitude: 48
+    end_longitude: 290
+    start_latitude: 30
+    start_longitude: 235
+    
+    
+# The main preprocessor for all
+# input data
+default_pp_maps: &pp_maps
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
+
+default_pp_maps_nomask: &pp_maps_nomask
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder  
+  <<: *mmm_stat_obs
+ 
+default_pp_maps_withnoth: &pp_maps_with_nothing
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  
+  
+default_pp_maps_without_gl: &pp_maps_without_gl
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  mask_multimodel:    
+  <<: *mpqbregridder
+  # mask_landsea:
+    # mask_out: sea
+  # mask_fillvalues:
+    # threshold_fraction: 0.0     
+    # min_value: -1e20            
+
+default_pp_maps_with_gl: &pp_maps_with_gl
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  #mask_fillvalues:
+    #threshold_fraction: 0.0     
+    #min_value: -1e20
+  <<: *mpqbregridder
+  <<: *mmm_stat_obs
+
+    
+default_pp_maps_without_samonsoon: &pp_maps_without_samonsoon
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  mask_multimodel:    
+  <<: *mpqbregridder
+  <<: *extr_samonsoon
+
+
+default_pp_maps_with_samonsoon: &pp_maps_with_samonsoon
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  <<: *mpqbregridder
+  <<: *extr_samonsoon
+  mask_landsea:
+    mask_out: sea
+  <<: *mmm_stat_obs
+  
+  
+default_pp_maps_without_europe: &pp_maps_without_europe
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  mask_multimodel:    
+  <<: *mpqbregridder
+  <<: *extr_europe
+ 
+default_pp_maps_without_northamerica: &pp_maps_without_northamerica
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.0000000001
+  mask_multimodel:    
+  <<: *mpqbregridder
+  <<: *extr_northamerica
+    
+# Additional preprocessor for
+# line plots
+default_pp_line: &pp_line
+  mask_fillvalues:
+    #threshold_fraction: 0.1
+    threshold_fraction: 0.0
+  area_statistics:
+    operator: mean
+
+
+################################################
+################################################
+################################################
+
+datasets:
+  - {dataset: CDS-XCH4, project: OBS, type: sat, version: L3, tier: 3, 
+     derive: false, alias: CDS-XCH4}
+  - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1, grid: gn, 
+     exp: esm-hist, derive: true, alias: BCC-CSM2-MR}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr,
+     exp: esm-hist, derive: true, alias: CNRM-ESM2-1}
+  - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2, grid: gn,
+     exp: esm-hist, derive: true, alias: UKESM1-0-LL}
+  # - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1, 
+     # exp: esmHistorical, derive: true, alias: BNU-ESM}
+  # - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1, 
+     # exp: esmHistorical, derive: true, alias: FIO-ESM}
+  # - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1, 
+     # exp: esmHistorical, derive: true, alias: MRI-ESM1}
+ 
+preprocessors:
+  pp_maps_annual:
+    annual_statistics:
+      operator: mean
+    convert_units:
+      units: ppbv
+
+  pp_mpqb_xch4:
+    <<: *pp_maps    
+
+  pp_mpqb_xch4_nomask:
+    <<: *pp_maps_nomask    
+
+  pp_mpqb_xch4_withnoth:
+    <<: *pp_maps_with_nothing   
+    
+  pp_mpqb_xch4_without_gl:
+    <<: *pp_maps_without_gl    
+
+  pp_mpqb_xch4_with_gl:
+    <<: *pp_maps_with_gl      
+    
+  pp_mpqb_xch4_without_samonsoon:
+    <<: *pp_maps_without_samonsoon    
+
+  pp_mpqb_xch4_with_samonsoon:
+    <<: *pp_maps_with_samonsoon    
+
+  pp_mpqb_xch4_without_europe:
+    <<: *pp_maps_without_europe    
+
+  pp_mpqb_xch4_without_northamerica:
+    <<: *pp_maps_without_northamerica    
+    
+    
+  pp_mpqb_xch4_std:
+    anomalies:
+      period: monthly
+#      standardize: true
+    <<: *pp_maps
+
+  pp_lineplots_without_gl:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_gl
+    <<: *pp_line
+
+  pp_lineplots_with_gl:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_with_gl
+    <<: *pp_line
+    
+  pp_lineplots_without_samonsoon:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_samonsoon
+    <<: *pp_line
+    
+  pp_lineplots_with_samonsoon:
+    <<: *pp_maps_with_samonsoon
+    <<: *pp_line
+
+  pp_lineplots_without_europe:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_europe
+    <<: *pp_line
+
+  pp_lineplots_without_northamerica:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_northamerica
+    <<: *pp_line    
+    
+  pp_lineplots_anncyc_without_europe:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_europe
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_without_northamerica:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_northamerica
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month 
+      
+  pp_lineplots_anncyc_without_samonsoon:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_samonsoon
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+
+  pp_lineplots_anncyc_without_gl:
+    custom_order: true
+    convert_units:
+      units: ppbv    
+    <<: *pp_maps_without_gl
+    <<: *pp_line
+    climate_statistics:
+      operator: mean
+      period: month
+      
+    
+  pp_lineplots_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_lineplots_gl_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps_without_gl
+    <<: *pp_line
+
+  # pp_lineplots_without_trop_std:
+    # anomalies:
+      # period: monthly
+      # standardize: true
+    # # mask_above_threshold:  # This is needed to mask out regions where std=0
+      # # threshold: 100
+    # # mask_below_threshold:
+      # # threshold: -100
+    # <<: *pp_maps_without_trop
+    # <<: *pp_line
+    
+  pp_lineplots_without_europe_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps_without_europe
+    <<: *pp_line
+
+  pp_lineplots_without_northamerica_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps_without_northamerica
+    <<: *pp_line
+    
+xch4_def: &xch4def
+  mip: Amon
+  start_year: 2003
+  end_year: 2014
+  #end_year: 2005
+
+  
+hist_def: &histdef
+  script: mpqb/mpqb_histogram.py
+  #vmin: 0
+  #vmax: 100
+  vmin: 0
+  vmax: 0.0001
+  number_of_bars: 25
+  #histtype: step
+  logarithmic: False
+ 
+hist_def_long: &histdef_long
+  script: mpqb/mpqb_histogram.py
+  #vmin: 0
+  #vmax: 100
+  vmin: 0
+  vmax: 0.0002
+  number_of_bars: 30
+  #histtype: step
+  logarithmic: False
+
+hist_def_zoom: &histdef_zoom
+  script: mpqb/mpqb_histogram_rotate.py
+  #vmin: 0
+  #vmax: 100
+  vmin: 0
+  vmax: 0.000018
+  number_of_bars: 18
+  #histtype: step
+  logarithmic: False
+
+  
+diagnostics:
+  # mapplots:
+    # description: mapplots
+    # variables:
+      # pr:
+        # preprocessor: pp_mpqb_precip_nomask
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # mpqb:
+        # #reference_dataset: MultiModelMean
+        # reference_dataset: GPCP-SG
+        # script: mpqb/mpqb_comparison.py
+      # mpqb_taylor:
+        # reference_dataset: MultiModelMean
+        # script: mpqb/mpqb_taylordiagram.py
+  # lineplots_without_gl:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_without_gl
+        # <<: *xch4def
+    # scripts:
+      # lineplot_gl:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_with_gl:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_with_gl
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_gl:
+        # script: mpqb/mpqb_lineplot.py
+  ### works!!      
+  # lineplots_anncyc_without_gl:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_anncyc_without_gl
+        # derive: true
+        # <<: *xch4def
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_samonsoon:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_anncyc_without_samonsoon
+        # <<: *xch4def
+    # scripts:
+      # lineplot_samonsoon:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_europe:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_anncyc_without_europe
+        # <<: *xch4def
+    # scripts:
+      # lineplot_europe:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_northamerica:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_anncyc_without_northamerica
+        # <<: *xch4def
+    # scripts:
+      # lineplot_northamerica:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  ###
+  # lineplots_without_europe_std:
+    # description: lineplots_std
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_europe_std
+        # <<: *precipdef
+    # scripts:
+      # lineplot_europe:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_northamerica_std:
+    # description: lineplots_std
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_northamerica_std
+        # <<: *precipdef
+    # scripts:
+      # lineplot_northamerica:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_samonsoon:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_without_samonsoon
+        # <<: *xch4def
+    # scripts:
+      # lineplot_samonsoon:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_europe:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_without_europe
+        # <<: *xch4def
+    # scripts:
+      # lineplot_europe:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_northamerica:
+    # description: lineplots
+    # variables:
+      # xch4:
+        # preprocessor: pp_lineplots_without_northamerica
+        # <<: *xch4def
+    # scripts:
+      # lineplot_northamerica:
+        # script: mpqb/mpqb_lineplot.py
+  # # lineplots_with_samonsoon:
+    # # description: lineplots
+    # # variables:
+      # # pr:
+        # # preprocessor: pp_lineplots_with_samonsoon
+        # # #derive: true
+        # # <<: *precipdef
+    # # scripts:
+      # # lineplot_samonsoon:
+        # # script: mpqb/mpqb_lineplot.py
+  # # mapplots_std:
+    # # description: mapplots
+    # # variables:
+      # # lai:
+        # # preprocessor: pp_mpqb_sm_std
+        # # <<: *laidef
+    # # scripts:
+      # # mpqb:
+        # # reference_dataset: MultiModelMedian
+        # # script: mpqb/mpqb_comparison.py
+  # maps_aux_owngrid:
+    # description: auxiliary maps (trend; climatology)
+    # variables:
+      # xch4:
+        # preprocessor: pp_maps_annual
+        # <<: *xch4def
+    # scripts:
+      # aux_maps:
+        # script: mpqb/mpqb_auxmaps.py
