@@ -353,7 +353,17 @@ def _set_units(cube, units):
 
 
 def unpack_files_in_folder(folder):
+    """
+    Unpack all compressed and tarred files in a given folder.
 
+    This function flattens the folder hierarchy, both outside
+    and inside the given folder. It also unpack nested files
+
+    Parameters
+    ----------
+    folder : str
+        Path to the folder to unpack
+    """
     decompress = True
     while decompress:
         decompress = False

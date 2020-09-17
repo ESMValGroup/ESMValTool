@@ -1,4 +1,4 @@
-"""Script to download cds-satellite-albedo from the Climate Data Store(CDS)"""
+"""Script to download CDS-SATELLITE-LAI-FAPAR from the Climate Data Store"""
 
 from dateutil import relativedelta
 import datetime

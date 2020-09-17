@@ -30,8 +30,11 @@ logger = logging.getLogger(__name__)
 
 
 class Formatter():
+    """
+    Class to manage the download and formatting of datasets.
+    """
 
-    def __init__(self,):
+    def __init__(self):
         self.datasets = []
         self.config = None
 
@@ -82,22 +85,22 @@ class Formatter():
 
     @property
     def rawobs(self):
-        """Raw obs folder path"""
+        """Raw obs folder path."""
         return self.config["rootpath"]["RAWOBS"][0]
 
     @property
     def output_dir(self):
-        """Output folder path"""
+        """Output folder path."""
         return self.config['output_dir']
 
     @property
     def run_dir(self):
-        """Run dir folder path"""
+        """Run dir folder path."""
         return os.path.join(self.config['output_dir'], 'run')
 
     @property
     def log_level(self):
-        """"Console log level"""
+        """"Console log level."""
         return self.config['log_level']
 
     @staticmethod
@@ -187,6 +190,19 @@ class Formatter():
 
     @staticmethod
     def has_downloader(dataset):
+        """
+        Check if a given datasets has an automatic downloader.
+
+        Parameters
+        ----------
+        dataset : str
+            Name of the dataset to check
+
+        Returns
+        -------
+        str
+            'Yes' if the downloader exist, 'No' otherwise
+        """
         try:
             importlib.import_module(
                 f'.{dataset.lower().replace("-", "_")}',
@@ -368,7 +384,7 @@ class Formatter():
 
 
 class DataCommand():
-    """Download and format data to use with ESMValTool"""
+    """Download and format data to use with ESMValTool."""
 
     def __init__(self):
         datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
@@ -377,7 +393,7 @@ class DataCommand():
         self.formatter = Formatter(self.info)
 
     def list(self):
-        "List all supported datasets"
+        """List all supported datasets."""
         print()
         print(f'| {"Dataset name":30} | Tier | Auto-download | Last access |')
         print('-' * 71)
@@ -392,6 +408,14 @@ class DataCommand():
         print('-' * 71)
 
     def info(self, dataset):
+        """
+        Show detailed info about a specific dataset.
+
+        Parameters
+        ----------
+        dataset : str
+            dataset to show
+        """
         dataset_info = self.info['datasets'][dataset]
         print(dataset)
         print()
@@ -419,6 +443,24 @@ class DataCommand():
 
     def format(self, datasets=None, config_file=None, start=None, end=None,
                install=False, **kwargs):
+        """
+        Format datasets.
+
+        Parameters
+        ----------
+        datasets : list(str), optional
+            List of datasets to format, by default None
+        config_file : str, optional
+            Path to ESMValTool's config user file, by default None
+        start : str, optional
+            Start of the interval to process, by default None. Valid formats
+            are YYYY, YYYYMM and YYYYMMDD.
+        end : str, optional
+            End of the interval to process, by default None. Valid formats
+            are YYYY, YYYYMM and YYYYMMDD.
+        install : bool, optional
+            If true, move processed data to the folder, by default False
+        """
         start = self._parse_date(start)
         end = self._parse_date(end)
 
