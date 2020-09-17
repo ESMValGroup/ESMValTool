@@ -2,18 +2,10 @@ name: Conda Base Install
 
 # runs on a push on master and at the end of every day
 on:
-  # triggering on push without branch name will run tests everytime
-  # there is a push on any branch
-  # turn it on only if needed
   push:
     branches:
     - master
-    - github-actions2
-  # run the test only if the PR is to master
-  # turn it on if required
-  #pull_request:
-  #  branches:
-  #  - master
+    - github-actions2  # testing branch
   schedule:
     - cron: '0 0 * * *'
 
