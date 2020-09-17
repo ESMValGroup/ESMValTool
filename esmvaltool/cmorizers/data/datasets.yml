@@ -724,7 +724,7 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
-  NSIDC-0116-sh:
+  NSIDC-0116-nh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
     last_access: 20190513

@@ -36,8 +36,8 @@ begin
   TIER = 2
 
   ; Period
-  YEAR1 = (/1997, 1997, 2007, 2007/)
-  YEAR2 = (/2010, 2010, 2008, 2008/)
+  YEAR1 = get_year(start_year, 1997)
+  YEAR2 = get_year(end_year, 2010)
 
   ; Selected variable (standard name)
   VAR = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
@@ -87,7 +87,7 @@ begin
     date = cd_calendar(time, 1)
 
     ; Create timeseries
-    do yy = YEAR1(vv), YEAR2(vv)
+    do yy = YEAR1, YEAR2
       do mm = 1, 12
 
         ldate = yy + sprinti("%0.2i", mm)

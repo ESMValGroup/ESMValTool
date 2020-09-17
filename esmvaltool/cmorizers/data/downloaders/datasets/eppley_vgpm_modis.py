@@ -1,4 +1,4 @@
-"""Script to download APHRO-MA from its webpage."""
+"""Script to download Eppley-VGPM-MODIS."""
 import datetime
 from dateutil import relativedelta
 import logging

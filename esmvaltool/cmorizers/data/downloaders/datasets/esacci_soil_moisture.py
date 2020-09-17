@@ -1,6 +1,6 @@
-"""Script to download ESACCI-SOS."""
-
+"""Script to download ESACCI-SOIL-MOISTURE."""
 from dateutil import relativedelta
+from datetime import datetime
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
@@ -22,6 +22,11 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     overwrite : bool
         Overwrite already downloaded files
     """
+    if start_date is None:
+        start_date = datetime(1979, 1, 1)
+    if end_date is None:
+        end_date = datetime(2016, 1, 1)
+
     loop_date = start_date
 
     downloader = CCIDownloader(
@@ -29,9 +34,12 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         dataset=dataset,
         overwrite=overwrite,
     )
+    downloader.ftp_name = 'soil_moisture'
     downloader.connect()
-    downloader.set_cwd('v01.8/30days')
-
+    downloader.set_cwd('ancillary/v04.2/')
+    downloader.download_folder('.')
+    downloader.set_cwd('daily_files/COMBINED/v04.2/')
     while loop_date <= end_date:
-        downloader.download_year(loop_date.year)
+        year = loop_date.year
+        downloader.download_year(f'{year}')
         loop_date += relativedelta.relativedelta(years=1)

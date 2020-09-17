@@ -1,4 +1,4 @@
-"""Script to download Duveiller2018 from its webpage."""
+"""Script to download HadCRUT4 from its webpage."""
 import logging
 import os
 

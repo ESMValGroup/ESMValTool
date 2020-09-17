@@ -1,4 +1,4 @@
-"""Script to download ESACCI-AEROSOL from CCI CEDA ftp."""
+"""Script to download CT2019 from NOAA's webpage."""
 
 from datetime import datetime
 from dateutil import relativedelta

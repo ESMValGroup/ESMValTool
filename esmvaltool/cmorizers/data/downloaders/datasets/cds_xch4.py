@@ -1,4 +1,4 @@
-"""Script to download cds-satellite-albedo from the Climate Data Store(CDS)."""
+"""Script to download CDS-XCH4 from the Climate Data Store (CDS)."""
 
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder

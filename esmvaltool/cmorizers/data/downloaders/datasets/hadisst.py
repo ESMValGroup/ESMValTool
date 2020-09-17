@@ -1,4 +1,4 @@
-"""Script to download Duveiller2018 from its webpage."""
+"""Script to download HadISST from its webpage."""
 import logging
 import os
 

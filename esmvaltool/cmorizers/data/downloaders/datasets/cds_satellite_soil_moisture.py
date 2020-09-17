@@ -1,4 +1,4 @@
-"""Script to download cds-satellite-soil-moisture from the CDS"""
+"""Script to download CDS-SATELLITE-SOIL-MOISTURE from the CDS."""
 
 from dateutil import relativedelta
 import datetime

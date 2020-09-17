@@ -1,4 +1,4 @@
-"""Script to download Duveiller2018 from its webpage."""
+"""Script to download WOA from its webpage."""
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader

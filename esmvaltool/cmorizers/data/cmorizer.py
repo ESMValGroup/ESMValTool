@@ -32,11 +32,16 @@ logger = logging.getLogger(__name__)
 class Formatter():
     """
     Class to manage the download and formatting of datasets.
+
+    Parameters
+    ----------
+    info : dict
+        Datasets information
     """
 
-    def __init__(self):
+    def __init__(self, info):
         self.datasets = []
-        self.config = None
+        self.config = info
 
     def start(self, command, datasets, config_file, options):
         """
