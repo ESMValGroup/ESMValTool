@@ -7,7 +7,7 @@ Obtaining input data
 ESMValTool supports input data from climate models participating in
 `CMIP6 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip6>`__,
 `CMIP5 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip5>`__,
-`CMIP3 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip6>`__, and
+`CMIP3 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip3>`__, and
 `CORDEX <https://cordex.org/>`__
 as well as observations, reanalysis, and any other data, provided that it
 adheres to the
@@ -52,7 +52,7 @@ to download CMIP6 or CMIP5 model data.
 
 To install Synda, follow the steps listed in the
 `Synda installation documentation <http://prodiguer.github.io/synda/sdt/conda_install.html>`__.
-This description assumes that you use the conda installation.
+(This description assumes that Synda is installed using Conda.)
 As the last step, Synda will ask to set your openID credentials.
 Therefore, you'll need to create an account on an ESGF node, e.g.
 `the ESGF node at Lawrence Livermore National Laboratory <https://esgf-node.llnl.gov/projects/esgf-llnl/>`__
