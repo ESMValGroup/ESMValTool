@@ -42,10 +42,11 @@ test:
     - pytest-flake8
     - pytest-html!=2.1.0
     - pytest-metadata>=1.5.1
+    - pytest-xdist
   imports:
     - esmvaltool
   commands:
-    - pytest --ignore=run_test.py
+    - pytest -n 2 --ignore=run_test.py
     - cmorize_obs --help
     - nclcodestyle --help
     - esmvaltool colortables --help
@@ -60,7 +61,6 @@ outputs:
     requirements:
       build:
         - git
-        - pytest-runner
         - python>=3.6
         - setuptools_scm
       run:

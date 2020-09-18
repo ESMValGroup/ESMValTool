@@ -157,6 +157,8 @@ def _fix_coordinates(cube, definition):
         coord.points = coord.core_points().astype('float64')
         if len(coord.points) > 1:
             coord.guess_bounds()
+        if coord.var_name == 'plev':
+            coord.attributes['positive'] = 'down'
     return cube
 
 
