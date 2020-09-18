@@ -1,17 +1,24 @@
 """Python example diagnostic."""
 import logging
-import os
+from pathlib import Path
 from pprint import pformat
 
 import iris
 
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata, sorted_metadata)
+from esmvaltool.diag_scripts.shared import (
+    group_metadata,
+    run_diagnostic,
+    select_metadata,
+    sorted_metadata,
+)
 from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).stem)
 
 
 def get_provenance_record(attributes, ancestor_files):
@@ -42,26 +49,25 @@ def compute_diagnostic(filename):
     cube = iris.load_cube(filename)
 
     logger.debug("Running example computation")
-    return cube.collapsed('time', iris.analysis.MEAN)
+    cube = iris.util.squeeze(cube)
+    return cube
 
 
 def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
-    diagnostic_file = get_diagnostic_filename(basename, cfg)
-
-    logger.info("Saving analysis results to %s", diagnostic_file)
-    iris.save(cube, target=diagnostic_file)
-
-    if cfg['write_plots'] and cfg.get('quickplot'):
-        plot_file = get_plot_filename(basename, cfg)
-        logger.info("Plotting analysis results to %s", plot_file)
-        provenance_record['plot_file'] = plot_file
-        quickplot(cube, filename=plot_file, **cfg['quickplot'])
-
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
-                pformat(provenance_record))
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, provenance_record)
+
+        if cfg['write_netcdf']:
+            filename = get_diagnostic_filename(basename, cfg)
+            logger.info("Saving analysis results to %s", filename)
+            iris.save(cube, target=filename)
+            provenance_logger.log(filename, provenance_record)
+
+        if cfg['write_plots'] and cfg.get('quickplot'):
+            filename = get_plot_filename(basename, cfg)
+            logger.info("Plotting analysis results to %s", filename)
+            quickplot(cube, filename=filename, **cfg['quickplot'])
+            provenance_logger.log(filename, provenance_record)
 
 
 def main(cfg):
@@ -78,22 +84,25 @@ def main(cfg):
     logger.info("Example of how to sort this selection by dataset:\n%s",
                 pformat(selection))
 
-    grouped_input_data = group_metadata(
-        input_data, 'standard_name', sort='dataset')
+    grouped_input_data = group_metadata(input_data,
+                                        'variable_group',
+                                        sort='dataset')
     logger.info(
-        "Example of how to group and sort input data by standard_name:"
-        "\n%s", pformat(grouped_input_data))
+        "Example of how to group and sort input data by variable groups from "
+        "the recipe:\n%s", pformat(grouped_input_data))
 
     # Example of how to loop over variables/datasets in alphabetical order
-    for standard_name in grouped_input_data:
-        logger.info("Processing variable %s", standard_name)
-        for attributes in grouped_input_data[standard_name]:
+    groups = group_metadata(input_data, 'variable_group', sort='dataset')
+    for group_name in groups:
+        logger.info("Processing variable %s", group_name)
+        for attributes in groups[group_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
             cube = compute_diagnostic(input_file)
 
-            output_basename = os.path.splitext(
-                os.path.basename(input_file))[0] + '_mean'
+            output_basename = Path(input_file).stem
+            if group_name != attributes['short_name']:
+                output_basename = group_name + '_' + output_basename
             provenance_record = get_provenance_record(
                 attributes, ancestor_files=[input_file])
             plot_diagnostic(cube, output_basename, provenance_record, cfg)
