@@ -51,6 +51,7 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
     obs=cfg['obs']
+#    obs='had4'
     if obs=='had5':
         obs_file='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.analysis.anomalies.ensemble_median.nc'
         hadlabel='HadCRUT5'
@@ -292,7 +293,7 @@ def main(cfg):
           plt.plot(mm+1,numpy.mean(all_ann_warming_gsat[2010-1850:2020-1850,0,mm,ee],axis=0)/numpy.mean(all_ann_warming[2010-1850:2020-1850,0,mm,ee],axis=0),color=mod_cols[mm],marker='+')
     plt.subplot(212)
     plt.ylabel('Ratio of GSAT to globally-complete GMST',size='small') 
-    plt.axis([0,nmodel+1,1.0,1.1])
+    plt.axis([0,nmodel+1,1.0,1.3])
     plt.xticks(list(range(1,nmodel+1)),model_names, size='x-small',rotation=30.,ha="right")
     for mm, dataset in enumerate(grouped_input_data):
         ens_size=ens_sizes[0,mm]
