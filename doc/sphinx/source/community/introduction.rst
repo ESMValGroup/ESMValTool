@@ -361,6 +361,8 @@ name to the list of authors in CITATION.cff and regenerate the file
    pip install cffconvert
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
 
+.. _How to make a release:
+
 How to make a release
 ---------------------
 
