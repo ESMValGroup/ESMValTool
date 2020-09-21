@@ -1,5 +1,6 @@
 """Lint tests."""
 import os
+import pytest
 import subprocess
 import textwrap
 from pathlib import Path
@@ -41,6 +42,7 @@ def test_nclcodestyle():
     assert success, "Your NCL code does not follow our formatting standards."
 
 
+@pytest.mark.installation
 def test_r_lint(monkeypatch):
     """Test R lint."""
     monkeypatch.setenv("LINTR_COMMENT_BOT", "FALSE")
