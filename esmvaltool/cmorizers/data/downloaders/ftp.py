@@ -76,6 +76,17 @@ class FTPDownloader(BaseDownloader):
             if facts['type'] == 'dir'
         ]
 
+    def exists(self, server_path):
+        """
+        Check if a given path exists in the server.
+
+        Parameters
+        ----------
+        server_path : str
+            Path to check for existence.
+        """
+        return server_path in self._client.nlst()
+
     def download_folder(self, server_path, sub_folder='', filter_files=None):
         """
         Download files from a given folder.

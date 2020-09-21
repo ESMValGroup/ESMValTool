@@ -396,6 +396,16 @@ datasets:
 
   ESACCI-SST:
     tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_surface_salinity/data
+    last_access: 20200921
+    info: |
+      Download the data from:
+        v01.8/30days/
+        v02.31/30days/
+      Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-SST:
+    tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/
     last_access: 20190201
     info: |
