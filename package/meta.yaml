@@ -1,0 +1,138 @@
+# Conda build recipe
+---
+
+# Build commmand:
+# conda build package -c conda-forge -c esmvalgroup
+
+# Package version number
+{% set version = "2.0.0" %}
+
+package:
+  name: esmvaltool
+  version: {{ version }}
+
+source:
+  # Use these two lines to build a release:
+  # git_rev: v{{ version }}
+  # git_url: https://github.com/ESMValGroup/ESMValTool.git
+  # Use this line instead of the above to test building without a release:
+  path: ..
+
+build:
+  # Increment the build number when building a new conda package of the same
+  # esmvaltool version, reset to 0 when building a new version.
+  number: 0
+  noarch: python
+
+requirements:
+  run:
+    - esmvaltool-julia
+    - esmvaltool-ncl
+    - esmvaltool-python
+    - esmvaltool-r
+
+test:
+  source_files:
+    - tests
+    - setup.cfg
+  requires:
+    - pytest>=3.9,!=6.0.0rc1,!=6.0.0
+    - pytest-cov
+    - pytest-env
+    - pytest-flake8
+    - pytest-html!=2.1.0
+    - pytest-metadata>=1.5.1
+    - pytest-xdist
+  imports:
+    - esmvaltool
+  commands:
+    - pytest -n 2 --ignore=run_test.py
+    - cmorize_obs --help
+    - nclcodestyle --help
+    - esmvaltool colortables --help
+    - test_recipe --help
+
+outputs:
+
+  - name: esmvaltool-python
+    build:
+      noarch: python
+    script: install.sh
+    requirements:
+      build:
+        - git
+        - python>=3.6
+        - setuptools_scm
+      run:
+        - cartopy
+        - cdo>=1.9.7
+        - cdsapi
+        - cf-units
+        - cftime
+        - cmocean
+        - dask>=2.12
+        - ecmwf-api-client  # in esmvalgroup channel
+        - eofs
+        - esmpy
+        - esmvalcore>=2.0.0,<2.1  # in esmvalgroup channel
+        - fiona
+        - gdal
+        - iris>=2.2.1
+        - jinja2
+        - joblib
+        - matplotlib>=3
+        - nc-time-axis
+        - netCDF4
+        - numpy
+        - pandas
+        - pynio
+        - pyproj>=2.1
+        - python>=3.6
+        - python-cdo
+        - pyyaml
+        - scikit-learn
+        - seaborn
+        - seawater
+        - shapely
+        - xarray>=0.12.0
+        - xesmf
+        - xlsxwriter
+
+  - name: esmvaltool-julia
+    build:
+      noarch: generic
+      post-link: install-julia-deps
+    requirements:
+      run:
+        - esmvaltool-python
+
+  - name: esmvaltool-ncl
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - cdo>=1.9.7
+        - esmvaltool-python
+        - imagemagick
+        - ncl>=6.6
+        - nco
+
+  - name: esmvaltool-r
+    build:
+      noarch: generic
+      post-link: install-r-deps
+    requirements:
+      run:
+        - cdo>=1.9.7
+        - esmvaltool-python
+        - nco
+        - r-base>=3.5
+        - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+        - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
+
+about:
+  home: https://www.esmvaltool.org
+  license: Apache License, Version 2.0
+  license_file: LICENSE
+  summary: "A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP."
+  description: "A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP."

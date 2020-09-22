@@ -1,9 +1,11 @@
 # ESMValTool
-
+# recipe_albedolandcover.yml
 ---
 documentation:
   description: |
-    analyzes relationship between landcover and albedo in CMIP models
+    This recipe analyzes the relationship between landcover and albedo
+    in CMIP models
+
   authors:
     - crezee_bas
     - lejeune_quentin

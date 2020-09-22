@@ -1,0 +1,184 @@
+# ESMValTool
+# recipe_li17natcc.yml
+---
+documentation:
+  description: |
+    Recipe for reproducing the plots in Li et al., 2017 Nature climate change
+
+  authors:
+    - weigel_katja
+
+  references:
+    - li17natcc
+
+  projects:
+    - eval4cmip
+
+preprocessors:
+  pp850:
+    extract_levels:
+      levels: 85000
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_latitude: -40
+      end_latitude: 40
+      start_longitude: 0
+      end_longitude: 360
+  tropical:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_region:
+      start_latitude: -40
+      end_latitude: 40
+      start_longitude: 0
+      end_longitude: 360
+  glob:
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+
+diagnostics:
+
+  cmip5:
+    description: Diagnostic for figure 1 and 2 from Li et al., 2017. Data sets from CMIP5.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      pr: &gridded_cmip5_r1i1p1_amon_t2ms
+        preprocessor: tropical
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+      ua: &gridded_cmip5_r1i1p1_amon_t3m_pp850
+        preprocessor: pp850
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+      va:
+        <<: *gridded_cmip5_r1i1p1_amon_t3m_pp850
+      ts: &global_mean_cmip5_r1i1p1_amon_t2ms
+        preprocessor: glob
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+    additional_datasets:
+      - {dataset: ACCESS1-0, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: ACCESS1-0, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: CanESM2, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CanESM2, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: CCSM4, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CCSM4, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: CESM1-CAM5, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CESM1-CAM5, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: CNRM-CM5, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CNRM-CM5, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: GFDL-CM3, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: GFDL-ESM2M, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: GISS-E2-R, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: GISS-E2-R, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: HadGEM2-AO, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: HadGEM2-AO, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: HadGEM2-CC, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: HadGEM2-CC, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: inmcm4, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: inmcm4, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: IPSL-CM5A-MR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: MPI-ESM-MR, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: MPI-ESM-MR, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: MRI-CGCM3, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: MRI-CGCM3, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: NorESM1-M, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: NorESM1-M, exp: rcp85, start_year: 2070, end_year: 2099}
+
+      - {dataset: NorESM1-ME, exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: NorESM1-ME, exp: rcp85, start_year: 2070, end_year: 2099}
+
+    scripts:
+      lif1f2:
+        script: emergent_constraints/lif1f2.py
+
+  cmip6:
+    description: Diagnostic for figure 1 and 2 from Li et al., 2017. Data sets from CMIP6.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      pr: &gridded_cmip6_r1i1p1_amon_t2ms
+        preprocessor: tropical
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+      ua: &gridded_cmip6_r1i1p1_amon_t3m_pp850
+        preprocessor: pp850
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+      va:
+        <<: *gridded_cmip6_r1i1p1_amon_t3m_pp850
+      ts: &global_mean_cmip6_r1i1p1_amon_t2ms
+        preprocessor: glob
+        project: CMIP6
+        ensemble: r1i1p1f1
+        mip: Amon
+    additional_datasets:
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+      - {dataset: BCC-CSM2-MR, institute: BCC, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: BCC-CSM2-MR, institute: BCC, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+      - {dataset: CanESM5, institute: CCCma, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: CanESM5, institute: CCCma, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, exp: historical, grid: gr, start_year: 1980, end_year: 2009}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, exp: ssp585, grid: gr, start_year: 2070, end_year: 2099}
+
+      - {dataset: MIROC6, institute: MIROC, exp: historical, grid: gn, start_year: 1980, end_year: 2009}
+      - {dataset: MIROC6, institute: MIROC, exp: ssp585, grid: gn, start_year: 2070, end_year: 2099}
+
+    scripts:
+      lif1f2:
+        script: emergent_constraints/lif1f2.py

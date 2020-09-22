@@ -51,20 +51,15 @@ Contact:
 author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
 """
 import argparse
+import configparser
 import datetime
 import logging
 import os
-import sys
 import shutil
 import subprocess
 import socket
-from distutils.version import LooseVersion
-# configparser has changed names in python 3.x
-if LooseVersion(sys.version) < LooseVersion("3.0"):
-    import ConfigParser
-else:
-    import configparser as ConfigParser
-import yaml  # noqa
+
+import yaml
 
 ####################
 # global variables #
@@ -230,7 +225,7 @@ def map_var_to_stream(diagnostics, stream_map):
 def write_rose_conf(rose_config_template, recipe_file, config_file, log_level):
     """Write the new rose conf file per suite."""
     # Build the ConfigParser object
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.optionxform = str
     config.read(rose_config_template)
     recipe_object = read_yaml_file(recipe_file)
@@ -346,7 +341,7 @@ def _edit_mip_convert_config(mipconv_config, conf_file, dataset, stream):
     cdds_dir = os.path.join(DEFAULT_SUITE_LOCATION, 'mip_convert_aux')
 
     # Build the ConfigParser object
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.optionxform = str
     config.read(mipconv_config)
 

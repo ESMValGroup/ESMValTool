@@ -26,6 +26,7 @@
 ;                            automatically.
 ;     evolution_plot_volcanoes: Turns on/off lines of volcano eruptions.
 ;     evolution_plot_color: Hue of the contours; default: red = 0.
+;     ensemble_name: Name of ensemble for use in evolution plot legend
 ;
 ;     For external dataset input:
 ;     obsfile: Filename of external obs to read in.
@@ -285,7 +286,8 @@ begin
   end do
 
   ; Convert units if appropriate [kg m-2 s-1] --> [PgC y-1]
-  if (isatt(VAR0, "plot_units")) then
+  if ((isatt(VAR0, "plot_units")) .and. \
+      (all_data_yearly@units .ne. VAR0@plot_units)) then
     if (VAR0@plot_units .eq. "degC") then
       all_data_yearly(:, :, 0) = convert_units(all_data_yearly(:, :, 0), \
                                                VAR0@plot_units)
@@ -532,6 +534,7 @@ begin
       data_arr@ref_name = diag_script_info@evolution_plot_ref_dataset
       data_arr@units = all_data_yearly@units
       data_arr@dim_Mod = dimsizes(model_ind)
+      data_arr@project = diag_script_info@ensemble_name
 
       ; Subtract mean 1901-1930 (coded as "until 1930") if anomaly plot
       ind_1930 = ind(all_data_yearly&year .eq. 1930)

@@ -7,20 +7,23 @@ import iris
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
-                                            run_diagnostic, select_metadata)
+                                            group_metadata, run_diagnostic,
+                                            select_metadata)
 
 logger = logging.getLogger(Path(__file__).name)
 
 
-def get_provenance_record(ancestor_file):
+def get_provenance_record(ancestor_files):
     """Create a provenance record."""
     record = {
-        'caption': "Forcings for the PCR-GLOBWB hydrological model.",
+        'caption':
+        "Forcings for the PCR-GLOBWB hydrological model.",
         'domains': ['global'],
         'authors': [
             'aerts_jerom',
             'andela_bouwe',
             'alidoost_sarah',
+            'kalverla_peter',
         ],
         'projects': [
             'ewatercycle',
@@ -28,7 +31,7 @@ def get_provenance_record(ancestor_file):
         'references': [
             'acknow_project',
         ],
-        'ancestors': [ancestor_file],
+        'ancestors': ancestor_files,
     }
     return record
 
@@ -88,55 +91,58 @@ def add_spinup_year(cube, cube_climatology):
 
 def main(cfg):
     """Process data for use as input to the PCR-GLOBWB hydrological model."""
-    input_data = cfg['input_data'].values()
+    for dataset, metadata in group_metadata(cfg['input_data'].values(),
+                                            'dataset').items():
+        for short_name in "pr", "tas":
+            logger.info("Processing variable %s for dataset %s", short_name,
+                        dataset)
 
-    # Loop over variables
-    for short_name in "pr", "tas":
+            # Load preprocessed cubes for normal data and climatology
+            var = select_metadata(metadata, variable_group=short_name)[0]
+            cube = iris.load_cube(var['filename'])
+            var_climatology = select_metadata(
+                metadata,
+                variable_group=short_name + '_climatology',
+            )[0]
+            cube_climatology = iris.load_cube(var_climatology['filename'])
 
-        # Select and load in cube regular variable timeseries
-        metadata = select_metadata(input_data, variable_group=short_name)[0]
-        input_file = metadata['filename']
-        cube = iris.load_cube(input_file)
+            # Create a spin-up year for pcrglob based on the climatology data
+            cube = add_spinup_year(cube, cube_climatology)
 
-        # Round times to integer number of days
-        time_coord = cube.coord('time')
-        time_coord.points = da.floor(time_coord.core_points())
-        time_coord.bounds = None
-        time_coord.guess_bounds()
+            # Round times to integer number of days
+            time_coord = cube.coord('time')
+            time_coord.points = da.floor(time_coord.core_points())
+            time_coord.bounds = None
+            time_coord.guess_bounds()
 
-        # Select and load in cube climatology variable timeseries
-        metadata_climatology = select_metadata(
-            input_data,
-            variable_group=short_name + '_climatology',
-        )[0]
-        input_climatology_file = metadata_climatology['filename']
-        cube_climatology = iris.load_cube(input_climatology_file)
+            # Set lat from highest to lowest value
+            cube = cube[:, ::-1, ...]
 
-        # Run function to add spinup year to regular variable timeseries
-        cube = add_spinup_year(cube, cube_climatology)
+            # Workaround for bug in PCRGlob
+            # (see https://github.com/UU-Hydro/PCR-GLOBWB_model/pull/13)
+            for coord_name in ['latitude', 'longitude']:
+                coord = cube.coord(coord_name)
+                coord.points = coord.points + 0.001
 
-        # Set lat from highest to lowest value
-        cube = cube[:, ::-1, ...]
+            # Unit conversion 'kg m-3 day-1' to 'm' precip (divide by density)
+            if short_name == "pr":
+                cube.units = cube.units / 'kg m-3 day-1'
+                cube.data = cube.core_data() / 1000
 
-        # Unit conversion 'kg m-3 day-1' to 'm' precip
-        if short_name == "pr":
-            cube.units = cube.units / 'kg m-3 day-1'
-            cube.data = cube.core_data() / 1000
+            # Save data
+            basename = '_'.join([
+                'pcrglobwb',
+                Path(var['filename']).stem,
+                cfg['basin'],
+            ])
+            output_file = get_diagnostic_filename(basename, cfg)
+            iris.save(cube, output_file, fill_value=1.e20)
 
-        # Save data
-        basename = '_'.join([
-            'pcrglobwb',
-            Path(input_file).stem,
-            cfg['basin'],
-        ])
-        output_file = get_diagnostic_filename(basename, cfg)
-        iris.save(cube, output_file, fill_value=1.e20)
-
-        # Store provenance
-        provenance_record = get_provenance_record(
-            [input_file, input_climatology_file])
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(output_file, provenance_record)
+            # Store provenance
+            provenance_record = get_provenance_record(
+                [var['filename'], var_climatology['filename']])
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(output_file, provenance_record)
 
 
 if __name__ == '__main__':

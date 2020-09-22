@@ -29,9 +29,15 @@ library(ncdf4.helpers)
 library(scales)
 library(RColorBrewer) # nolint
 
+# function to flatten nested lists
+flatten_lists <- function(x) {
+  if (!inherits(x, "list")) return(x)
+  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+}
+
 provenance_record <- function(infile) {
   xprov <- list(
-    ancestors = as.list(infile),
+    ancestors = flatten_lists(as.list(infile)),
     authors = list(
       "broetz_bjoern",
       "sandstad_marit",
@@ -103,7 +109,7 @@ models <- c()
 metadata <- c()
 
 # loop over variables
-for (i in 1:length(settings$input_files)) {
+for (i in seq_along(settings$input_files)) {
   metadata <- yaml::read_yaml(settings$input_files[i])
   models_name <- unname(sapply(metadata, "[[", "dataset"))
   short_name <- unname(sapply(metadata, "[[", "short_name"))
@@ -168,7 +174,7 @@ climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
 
 # Fix input files removing bounds
 print("Removing bounds from preprocessed files")
-for (i in 1:length(climofiles)) {
+for (i in seq_along(climofiles)) {
   tmp <- tempfile()
   nco(
     "ncks",
@@ -392,7 +398,7 @@ if (write_plots) { # nolint
       start_yr = analysis_range[1],
       end_yr = analysis_range[2]
     )
-    xprov <- provenance_record(climofiles)
+    xprov <- provenance_record(list(climofiles))
     for (fname in plotfiles) {
       provenance[[fname]] <- xprov
     }
@@ -403,7 +409,7 @@ if (write_plots) { # nolint
         pattern = model,
         full.names = TRUE
       )
-      xprov <- provenance_record(climofiles[models == model])
+      xprov <- provenance_record(list(climofiles[models == model]))
       for (fname in ncfiles) {
         provenance[[fname]] <- xprov
       }
@@ -477,7 +483,7 @@ if (write_plots) { # nolint
       provenance[[fname]] <- xprov
     }
     ncfiles <- list.files(file.path(work_dir, "gleckler/Gleck*"))
-    xprov <- provenance_record(climofiles)
+    xprov <- provenance_record(list(climofiles))
     for (fname in ncfiles) {
       provenance[[fname]] <- xprov
     }

@@ -232,7 +232,7 @@ names(dim(reference_data))[c(time_dim, time_dim + 1)] <-
 
 Loess <- function(clim, loess_span) {
   if (sum(is.na(clim)) != length(clim)) {
-    data <- data.frame(ensmean = clim, day = 1:length(clim))
+    data <- data.frame(ensmean = clim, day = seq_along(clim))
     loess_filt <- loess(ensmean ~ day, data,
       span = loess_span,
       degree = detrend_order
@@ -252,14 +252,14 @@ clim_obs <- array(apply(reference_data, c(1, 2, 3, 5, 6), mean),
 )
 if (data_type == "day" | !is.na(sea)) {
   clim_obs <- aperm(apply(clim_obs,
-    c(1:length(dim(
+    c(seq_along(dim(
       clim_obs
     )))[-which(names(dim(clim_obs)) == "sdate")],
     Loess,
     loess_span = 1
   ), c(2, 3, 1, 4, 5))
 }
-
+names(dim(clim_obs))[3] <- 'sdate'
 anom_obs <- Ano(reference_data, clim_obs)
 print(dim(anom_obs))
 print(length(lon))
@@ -542,7 +542,7 @@ clim_ref <- array(apply(projection_data, c(1, 2, 3, 5, 6), mean),
   dim = dim(projection_data)[-4]
 )
 if (data_type == "day" | !is.na(sea)) {
-  clim_ref <- aperm(apply(clim_ref, c(1:length(dim(
+  clim_ref <- aperm(apply(clim_ref, c(seq_along(dim(
     clim_ref
   )))
   [-which(names(dim(clim_ref)) == "sdate")],
@@ -550,6 +550,7 @@ if (data_type == "day" | !is.na(sea)) {
   loess_span = 1
   ), c(2, 3, 1, 4, 5))
 }
+names(dim(clim_ref))[3] <- 'sdate'
 anom_exp <- Ano(projection_data, clim_ref)
 reference <- drop(WR_obs$composite)
 if (cluster_method == "kmeans") {
@@ -592,7 +593,7 @@ if ((
   dim_names <- names(dim(reference))
   pos_lon <- which(names(dim(reference)) == "lon")
   pos_lat <- which(names(dim(reference)) == "lat")
-  pos <- 1:length(dim(reference))
+  pos <- seq_along(dim(reference))
   pos[pos_lon] <- pos_lat
   pos[pos_lat] <- pos_lon
   reference <- aperm(reference, pos)
@@ -807,7 +808,7 @@ if ((
   dim_names <- names(dim(reference))
   pos_lon <- which(names(dim(reference)) == "lon")
   pos_lat <- which(names(dim(reference)) == "lat")
-  pos <- 1:length(dim(reference))
+  pos <- seq_along(dim(reference))
   pos[pos_lon] <- pos_lat
   pos[pos_lat] <- pos_lon
   reference <- aperm(reference, pos)
