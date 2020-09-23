@@ -51,11 +51,11 @@ References
 
 * xxx
 
-Example plots # TO BE ADDED
+Example plots
 -------------
 
 .. _fig_eady_growth_rate:
-.. figure::  /recipes/figures/<mynewdiagnostic>/awesome1.png 
+.. figure::  /recipes/figures/eady_growth_rate/HadGEM3-GC31-LM_winter_eady_growth_rate_70000.png 
    :align:   center
 
    Add figure caption here.
