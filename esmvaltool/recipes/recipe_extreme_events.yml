@@ -78,8 +78,10 @@ diagnostics:
         reference_datasets: ["ERA-Interim"]
         regrid_dataset: ERA-Interim
         mip_name: CMIP
-        timeseries_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
-        gleckler_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
+        timeseries_idx: ["txxETCCDI_yr"]
+        gleckler_idx: ["txxETCCDI_yr"]
+        # timeseries_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
+        # gleckler_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
         # timeseries_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
         # gleckler_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]    
         ts_plt: true

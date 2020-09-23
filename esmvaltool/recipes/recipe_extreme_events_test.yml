@@ -41,8 +41,8 @@ datasets:
 #  - {dataset: HadCM3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1984}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1984}
 #  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: CCSM4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: NorESM1-M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
@@ -52,7 +52,7 @@ datasets:
 #  - {dataset: CESM1-BGC, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 #  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 1983}
 # - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1981, end_year: 2005, tier: 3}
-  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 1981, end_year: 1983, tier: 3}
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 1981, end_year: 1984, tier: 3}
 
 ################################################
 # Define some default parameters using anchors #
@@ -64,8 +64,8 @@ datasets:
 #  glc_plt: true
 
 range_pars: &rngpars
-  base_range: [1981, 1983]
-  # analysis_range: [1983, 1984]
+  base_range: [1981, 1982]
+  analysis_range: [1983, 1984]
 
 ### NOT used
 #reference_pars: &refpars
@@ -123,7 +123,7 @@ diagnostics:
         script: extreme_events/extreme_events_pp.py
 #        <<: *refpars
         indices:
-          - annual_number_of_frost_days
+          # - annual_number_of_frost_days
           # - annual_maximum_length_of_dry_spell
           # - annual_number_of_summer_days
           # - annual_number_of_icing_days
@@ -131,7 +131,7 @@ diagnostics:
           # - annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
           # - annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
           # - annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm
-          # - monthly_maximum_value_of_daily_maximum_temperature
+          - monthly_maximum_value_of_daily_maximum_temperature
           # - monthly_maximum_value_of_daily_minimum_temperature
           # - monthly_minimum_value_of_daily_maximum_temperature
           # - monthly_minimum_value_of_daily_minimum_temperature
@@ -156,7 +156,7 @@ diagnostics:
           # - annual_maximum_5day_precipitation
           # - annual_maximum_1day_precipitation 
           # - annual_minimum_value_of_daily_maximum_temperature
-          - annual_maximum_value_of_daily_maximum_temperature
+          # - annual_maximum_value_of_daily_maximum_temperature
           # - annual_minimum_value_of_daily_minimum_temperature
           # - annual_maximum_value_of_daily_minimum_temperature
 
@@ -178,13 +178,15 @@ diagnostics:
         reference_datasets: ["ERA-Interim"]
         regrid_dataset: MPI-ESM-LR
         mip_name: CMIP
-        timeseries_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
-        gleckler_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
+        timeseries_idx: ["txxETCCDI_yr"]
+        gleckler_idx: ["txxETCCDI_yr"]
+        # timeseries_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
+        # gleckler_idx: ["fdETCCDI_yr", "txxETCCDI_yr"]
         # timeseries_idx: ["cddETCCDI_yr", "fdETCCDI_yr", "txxETCCDI_yr"]
         # gleckler_idx: ["cddETCCDI_yr", "fdETCCDI_yr", "txxETCCDI_yr"]
        # timeseries_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]
        # gleckler_idx: ["sdiiETCCDI_yr", "r95pETCCDI_yr", "rx5dayETCCDI_yr", "rx1dayETCCDI_yr", "cddETCCDI_yr", "fdETCCDI_yr", "trETCCDI_yr", "txnETCCDI_yr", "txxETCCDI_yr", "tnnETCCDI_yr", "tnxETCCDI_yr"]    
         ts_plt: true
         glc_plt: true
-        base_range: [1981, 1983]
-        # analysis_range: [1983, 1984]
+        base_range: [1981, 1982]
+        analysis_range: [1983, 1984]
