@@ -1,4 +1,6 @@
+"""Fill in recipe."""
 import argparse
+import itertools
 import os
 import shutil
 from glob import glob
@@ -35,35 +37,27 @@ base_dict = {
 
 
 def get_site_rootpath(cmip_era):
-    """
-    Get site (drs) from config-user.yml
-    """
+    """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
     yamlconf = yaml.load(open(config_yml, 'r'))
     return yamlconf['drs'][cmip_era], yamlconf['rootpath'][cmip_era]
 
 
 def get_input_dir(cmip_era):
-    """
-    Get input_dir from config-developer.yml
-    """
+    """Get input_dir from config-developer.yml."""
     site = get_site_rootpath(cmip_era)[0]
     yamlconf = read_config_developer_file()
     return yamlconf[cmip_era]['input_dir'][site]
 
 
 def get_input_file(cmip_era):
-    """
-    Get input_file from config-developer.yml
-    """
+    """Get input_file from config-developer.yml."""
     yamlconf = read_config_developer_file()
     return yamlconf[cmip_era]['input_file']
 
 
 def determine_basepath(cmip_era):
-    """
-    Determine a basepath
-    """
+    """Determine a basepath."""
     basepath = os.path.join(
         get_site_rootpath(cmip_era)[1], get_input_dir(cmip_era),
         get_input_file(cmip_era))
@@ -73,10 +67,35 @@ def determine_basepath(cmip_era):
     return basepath
 
 
+def filter_years(files, start_year, end_year):
+    """Filter out files that are outside time range."""
+    valid_files = []
+    available_years = {}
+    all_files_roots = [("").join(fil.split("_")[0:-1]) for fil in files]
+    for fil in files:
+        available_years[("").join(fil.split("_")[0:-1])] = []
+    for fil in files:
+        available_years[("").join(fil.split("_")[0:-1])].append(
+            fil.split("_")[-1].strip(".nc").split("-"))
+
+    for root, yr_list in available_years.items():
+        yr_list = list(itertools.chain.from_iterable(yr_list))
+        actual_years = []
+        for year in yr_list:
+            if len(year) == 4:
+                actual_years.append(int(year))
+            else:
+                actual_years.append(int(year[0:4]))
+        actual_years = sorted(list(set(actual_years)))
+        if actual_years[0] <= start_year and actual_years[-1] >= end_year:
+            idx = all_files_roots.index(root)
+            valid_files.append(files[idx])
+
+    return valid_files
+
+
 def list_all_files(file_dict, cmip_era):
-    """
-    List all files that match the dataset dictionairy.
-    """
+    """List all files that match the dataset dictionary."""
     basepath = determine_basepath(cmip_era)
     mip = file_dict['mip']
     short_name = file_dict['short_name']
@@ -98,13 +117,16 @@ def list_all_files(file_dict, cmip_era):
         files = glob(new_path)
         all_files.extend(files)
 
+    # filter time
+    if all_files:
+        all_files = filter_years(all_files, file_dict["start_year"],
+                                 file_dict["end_year"])
+
     return all_files
 
 
 def file_to_recipe_dataset(fn, cmip_era, file_dict):
-    """
-    Converts a filename to an recipe ready dataset.
-    """
+    """Convert a filename to an recipe ready dataset."""
     # Add the obvious ones - ie the one you requested!
     output_dataset = {}
     output_dataset['project'] = cmip_era
@@ -115,20 +137,8 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
             output_dataset[key] = value
 
     # Split file name and base path into directory structure and filenames.
-    basepath, basefile = os.path.split(determine_basepath(cmip_era))
-    fnpath, fnfile = os.path.split(fn)
-    basepath_split = basepath.split(os.sep)
-    fnpath_split = fnpath.split(os.sep)
-
-    # Check lengths of split lists.
-    if len(basepath_split) != len(fnpath_split):
-        assert "Paths do not match in length"
-
-    # iterate through directory structure looking for useful bits.
-    for base_key, fn_key in zip(basepath_split, fnpath_split):
-        if base_key not in dataset_order:
-            continue
-        output_dataset[base_key] = fn_key
+    _, basefile = os.path.split(determine_basepath(cmip_era))
+    _, fnfile = os.path.split(fn)
 
     # Some of the key words include the splitting character '_' !
     basefile = basefile.replace('short_name', 'shortname')
@@ -140,10 +150,6 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
     basefile_split = [key.replace("}", "") for key in basefile_split]
     fnfile_split = fnfile.split('_')
 
-    # Check lengths of split lists.
-    if len(basefile_split) != len(fnfile_split):
-        assert "File names do not match in length!"
-
     # iterate through directory structure looking for useful bits.
     for base_key, fn_key in zip(basefile_split, fnfile_split):
         if base_key == '*.nc':
@@ -153,6 +159,8 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
             output_dataset['end_year'] = end_year
         elif base_key == "ensemble*.nc":
             output_dataset['ensemble'] = fn_key
+        elif base_key == "grid*.nc":
+            output_dataset['grid'] = fn_key
         elif base_key not in ["shortname", "ensemble*.nc", "*.nc"]:
             output_dataset[base_key] = fn_key
 
@@ -160,10 +168,7 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
 
 
 def remove_duplicates(add_datasets):
-    """
-    Condense the files to start_year and end_year
-    Takes a list of fn:outs and joins together the ones with matching times
-    """
+    """Remove accidental duplicates."""
     datasets = []
     seen = set()
     for dataset in add_datasets:
@@ -176,9 +181,7 @@ def remove_duplicates(add_datasets):
 
 
 def get_args():
-    """
-    Parse command line arguments.
-    """
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description="Tool to add additional_datasets to a recipe.",
         formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -196,9 +199,7 @@ def get_args():
 
 
 def parse_recipe_to_dicts(recipe):
-    """
-    Parses a recipe's variables into a dictionary of dictionairies.
-    """
+    """Parse a recipe's variables into a dictionary of dictionairies."""
     yamlrecipe = yaml.load(open(recipe, 'r'))
 
     output_dicts = {}
@@ -218,20 +219,17 @@ def parse_recipe_to_dicts(recipe):
 
 
 def add_datasets_into_recipe(additional_datasets, output_recipe):
-    """
-    Add the datasets into a new recipe.
-
-    """
+    """Add the datasets into a new recipe."""
     with open(output_recipe, 'r') as yamlfile:
         cur_yaml = yaml.safe_load(yamlfile)
         for diag_var, add_dat in additional_datasets.items():
-            if add_dat and add_dat not in cur_yaml['datasets']:
+            if add_dat:
                 if 'additional_datasets' in cur_yaml['diagnostics']:
-                    cur_yaml['diagnostics'][
-                        diag_var[0]]['additional_datasets'].extend(add_dat)
+                    cur_yaml['diagnostics'][diag_var[0]]['variables'][
+                        diag_var[1]]['additional_datasets'].extend(add_dat)
                 else:
-                    cur_yaml['diagnostics'][
-                        diag_var[0]]['additional_datasets'] = add_dat
+                    cur_yaml['diagnostics'][diag_var[0]]['variables'][
+                        diag_var[1]]['additional_datasets'] = add_dat
     if cur_yaml:
         with open(output_recipe, 'w') as yamlfile:
             yaml.safe_dump(cur_yaml, yamlfile)
@@ -262,7 +260,6 @@ def run():
     # Create a list of additional_datasets for each diagnostic/variable.
     additional_datasets = {}
     for (diag, variable), recipe_dict in recipe_dicts.items():
-        files_recipe_dicts = {}
         recipe_dict['short_name'] = variable
         for cmip_era in cmip_eras:
             files = list_all_files(recipe_dict, cmip_era)
