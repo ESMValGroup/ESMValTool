@@ -6,7 +6,7 @@ Frequently Asked Questions
 Is there a mailing list?
 ========================
 
-Yes, you can subscribe to the ESMValTool user mailing list and join the discussion on general topics (installation, configuration, etc). See :ref:`mailing-list`. 
+Yes, you can subscribe to the ESMValTool user mailing list and join the discussion on general topics (installation, configuration, etc). See :ref:`mailing-list`.
 
 What is YAML?
 =============
@@ -24,8 +24,10 @@ encountered this language before. The key information about this format is:
 More information can be found in the `yaml tutorial
 <https://learnxinyminutes.com/docs/yaml/>`_ and `yaml quick reference card
 <https://yaml.org/refcard.html>`_. ESMValTool uses the `yamllint
-<http://www.yamllint.com>`_ linter tool to check recipe syntax. 
+<http://www.yamllint.com>`_ linter tool to check recipe syntax.
 
+
+.. _rerunning:
 
 Re-running diagnostics
 ======================

@@ -29,6 +29,7 @@ abind:
 akima:
 climdex.pcic:
 ClimProjDiags:
+docopt:
 dotCall64:
 functional:
 ggplot2:
@@ -47,6 +48,7 @@ Rcpp:
 s2dverification:
 snow:
 SPEI:
+styler:
 tools:
 udunits2:
 yaml:

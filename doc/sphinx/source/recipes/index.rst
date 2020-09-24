@@ -54,6 +54,7 @@ Future projections
    recipe_wenzel16nat
    recipe_tcr
    recipe_li17natcc
+   recipe_kcs
 
 IPCC
 ^^^^
