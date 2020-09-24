@@ -29,22 +29,8 @@ User settings in recipe
 1. Script ``climwip.py``
 
   *Required settings for script*
-
-    * Currently the shape parameters for the weight calculations need to be specified in the recipe:
-    * ``shape_params``: A dictionary with shape parameters for each input variable. E.g.
-
-      .. code-block:: yaml
-
-        shape_params:
-          tas:
-            sigma_d: 0.588
-            sigma_s: 0.704
-          pr:
-            sigma_d: 0.658
-            sigma_s: 0.704
-
-      where default values are taken from table 2 in `Brunner et al., 2019 <https://doi.org/10.1088/1748-9326/ab492f>`_.
-
+    * ``sigma_performance``: shape parameter weights calculation (determined offline)
+    * ``sigma_independence``: shape parameter for weights calculation (determined offline)
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
@@ -137,4 +123,3 @@ Example plots
    :align:   center
 
    Interquartile range of temperature anomalies relative to 1981-2010, weighted versus non-weighted.
-

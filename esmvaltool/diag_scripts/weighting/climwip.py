@@ -3,9 +3,9 @@
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-from collections import defaultdict
-import os
 import logging
+import os
+from collections import defaultdict
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -14,10 +14,13 @@ import seaborn as sns
 import xarray as xr
 from scipy.spatial.distance import pdist, squareform
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, run_diagnostic,
-                                            group_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -25,7 +28,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 def get_provenance_record(caption: str, ancestors: list):
     """Create a provenance record describing the diagnostic data and plots."""
     record = {
-        'caption': caption,
+        'caption':
+        caption,
         'domains': ['reg'],
         'authors': [
             'kalverla_peter',
@@ -38,18 +42,15 @@ def get_provenance_record(caption: str, ancestors: list):
             'lorenz2018',
             'knutti2017',
         ],
-        'ancestors': ancestors,
+        'ancestors':
+        ancestors,
     }
     return record
 
 
-def log_provenance(caption: str,
-                   filename: str,
-                   cfg: dict,
-                   ancestors: list):
+def log_provenance(caption: str, filename: str, cfg: dict, ancestors: list):
     """Log provenance info."""
-    provenance_record = get_provenance_record(caption,
-                                              ancestors=ancestors)
+    provenance_record = get_provenance_record(caption, ancestors=ancestors)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
@@ -59,9 +60,10 @@ def log_provenance(caption: str,
 def read_metadata(cfg: dict) -> tuple:
     """Read the metadata from the config file.
 
-    Returns a two dicts, one for the model data and one for the observational
-    data. They are split based on the value of the 'obs_data' variable in the
-    recipe. The dictionaries are sorted by the variable.
+    Returns a two dicts, one for the model data and one for the
+    observational data. They are split based on the value of the
+    'obs_data' variable in the recipe. The dictionaries are sorted by
+    the variable.
     """
     obs_ids = cfg['obs_data']
     if isinstance(obs_ids, str):
@@ -108,10 +110,10 @@ def read_input_data(metadata: list,
                     identifier_fmt: str = '{dataset}') -> tuple:
     """Load data from metadata.
 
-    Read the input data from the list of given data sets. `metadata` is a list
-    of metadata containing the filenames to load. Only returns the given
-    `variable`. The datasets are stacked along the `dim` dimension. Returns
-    an xarray.DataArray.
+    Read the input data from the list of given data sets. `metadata` is
+    a list of metadata containing the filenames to load. Only returns
+    the given `variable`. The datasets are stacked along the `dim`
+    dimension. Returns an xarray.DataArray.
     """
     data_arrays = []
     identifiers = []
@@ -154,9 +156,9 @@ def aggregate_obs_data(data_array: 'xr.DataArray',
                        operator: str = 'median') -> 'xr.DataArray':
     """Reduce data array along ensemble dimension.
 
-    Apply the operator to squeeze the ensemble dimension by applying
-    the `operator` along the ensemble (`obs_ensemble`) dimension. Returns
-    an xarray.Dataset squeezed to 1D.
+    Apply the operator to squeeze the ensemble dimension by applying the
+    `operator` along the ensemble (`obs_ensemble`) dimension. Returns an
+    xarray.Dataset squeezed to 1D.
     """
     if operator == 'median':
         output = data_array.median(dim='obs_ensemble')
@@ -169,8 +171,8 @@ def aggregate_obs_data(data_array: 'xr.DataArray',
 def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
     """Calculate area mean weighted by the latitude.
 
-    Returns a data array consisting of N values,
-    where N == number of ensemble members.
+    Returns a data array consisting of N values, where N == number of
+    ensemble members.
     """
     weights_lat = np.cos(np.radians(data_array.lat))
     means = data_array.weighted(weights_lat).mean(dim=['lat', 'lon'])
@@ -212,10 +214,10 @@ def distance_matrix(values: 'np.ndarray',
 def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     """Calculate independence.
 
-    The independence is calculated as a distance matrix between
-    the datasets defined in the `data_array`. Returned is a square matrix with
-    where the number of elements along each edge equals
-    the number of ensemble members.
+    The independence is calculated as a distance matrix between the
+    datasets defined in the `data_array`. Returned is a square matrix
+    with where the number of elements along each edge equals the number
+    of ensemble members.
     """
     weights = np.cos(np.radians(data_array.lat))
     weights, _ = xr.broadcast(weights, data_array)
@@ -237,8 +239,7 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     return diff
 
 
-def visualize_and_save_independence(independence: 'xr.DataArray',
-                                    cfg: dict,
+def visualize_and_save_independence(independence: 'xr.DataArray', cfg: dict,
                                     ancestors: list):
     """Visualize independence."""
     variable = independence.short_name
@@ -261,8 +262,9 @@ def visualize_and_save_independence(independence: 'xr.DataArray',
     figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
     plt.close(figure)
 
-    filename_data = get_diagnostic_filename(
-        f'independence_{variable}', cfg, extension='nc')
+    filename_data = get_diagnostic_filename(f'independence_{variable}',
+                                            cfg,
+                                            extension='nc')
     independence.to_netcdf(filename_data)
 
     caption = f'Euclidean distance matrix for variable {variable}'
@@ -274,8 +276,8 @@ def calculate_performance(model_data: 'xr.DataArray',
                           obs_data: 'xr.DataArray') -> 'xr.DataArray':
     """Calculate performance.
 
-    Calculate the area weighted mean between the given ensemble of model data,
-    and observation data. The observation data must have the
+    Calculate the area weighted mean between the given ensemble of model
+    data, and observation data. The observation data must have the
     ensemble dimension squeezed or reduced. Returns an xarray.DataArray
     containing the same number of values as members of `model_data`.
     """
@@ -290,10 +292,7 @@ def calculate_performance(model_data: 'xr.DataArray',
     return performance
 
 
-def barplot(
-        metric: 'xr.DataArray',
-        label: str,
-        filename: str):
+def barplot(metric: 'xr.DataArray', label: str, filename: str):
     """Visualize metric as barplot."""
     name = metric.name
     variable = metric.short_name
@@ -306,7 +305,8 @@ def barplot(
     figure, axes = plt.subplots(figsize=(15, 10))
     chart = sns.barplot(x='model_ensemble', y=name, data=metric_df, ax=axes)
     chart.set_xticklabels(chart.get_xticklabels(),
-                          rotation=45, horizontalalignment='right')
+                          rotation=45,
+                          horizontalalignment='right')
     chart.set_title(f'{label} for {variable}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
@@ -314,11 +314,8 @@ def barplot(
     figure.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close(figure)
 
-    logger.info('Output stored as %s', filename)
 
-
-def visualize_and_save_performance(performance: 'xr.DataArray',
-                                   cfg: dict,
+def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
                                    ancestors: list):
     """Visualize performance."""
     label = 'RMS error'
@@ -328,13 +325,21 @@ def visualize_and_save_performance(performance: 'xr.DataArray',
 
     barplot(performance, label, filename_plot)
 
-    filename_data = get_diagnostic_filename(
-        f'performance_{variable}', cfg, extension='nc')
+    filename_data = get_diagnostic_filename(f'performance_{variable}',
+                                            cfg,
+                                            extension='nc')
     performance.to_netcdf(filename_data)
 
     caption = f'Performance metric ({label}) for variable {variable}'
     log_provenance(caption, filename_plot, cfg, ancestors)
     log_provenance(caption, filename_data, cfg, ancestors)
+
+
+def aggregate_variables(dataset):
+    """Normalized all variables in a dataset and return their mean."""
+    normalized = dataset / dataset.median(dim='model_ensemble')
+    aggregated = normalized.to_array(dim='variable').mean('variable')
+    return aggregated
 
 
 def calculate_weights(performance: 'xr.DataArray',
@@ -370,42 +375,34 @@ def calculate_weights(performance: 'xr.DataArray',
     # Normalize weights
     weights /= weights.sum()
 
-    weights.name = f'w{performance.short_name}'
-    weights.attrs['short_name'] = performance.short_name
+    weights.name = 'weight'
+    weights.attrs['short_name'] = 'weight'
     weights.attrs["units"] = 'a.u.'
 
     return weights
 
 
-def visualize_and_save_weights(weights: 'xr.DataArray',
-                               cfg: dict,
+def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
                                ancestors: list):
     """Visualize weights."""
     label = 'Weights'
 
-    variable = weights.short_name
-    filename_plot = get_plot_filename(f'weights_{variable}', cfg)
+    filename_plot = get_plot_filename('weights', cfg)
 
     barplot(weights, label, filename_plot)
 
-    filename_data = get_diagnostic_filename(
-        f'weights_{variable}', cfg, extension='nc')
+    filename_data = get_diagnostic_filename('weights', cfg, extension='nc')
     weights.to_netcdf(filename_data)
 
-    caption = f'Weights for variable {variable}'
+    caption = 'Weights'
     log_provenance(caption, filename_plot, cfg, ancestors)
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def visualize_and_save_mean_weights(weights: dict,
-                                    cfg: dict,
-                                    ancestors: list):
+def visualize_and_save_mean_weights(weights: dict, cfg: dict, ancestors: list):
     """Save the mean weights to a `.nc` file."""
-    weights_combined = (
-        xr.Dataset(weights)
-        .to_array(name='weight')
-        .mean(dim='variable')
-    )
+    weights_combined = (xr.Dataset(weights).to_array(name='weight').mean(
+        dim='variable'))
 
     weights_combined.attrs['short_name'] = 'weights'
     weights_combined.attrs['units'] = 'a.u.'
@@ -416,8 +413,9 @@ def visualize_and_save_mean_weights(weights: dict,
 
     barplot(weights_combined, label, filename_plot)
 
-    filename_data = get_diagnostic_filename(
-        'weights_combined', cfg, extension='nc')
+    filename_data = get_diagnostic_filename('weights_combined',
+                                            cfg,
+                                            extension='nc')
     weights_combined.to_netcdf(filename_data)
 
     caption = 'Mean weights for all variables'
@@ -431,8 +429,10 @@ def main(cfg):
 
     variables = models.keys()
 
-    weights_dict = {}
     data_files = []
+
+    performances = {}
+    independences = {}
 
     for variable in variables:
 
@@ -449,29 +449,33 @@ def main(cfg):
         independence = calculate_independence(model_data)
         visualize_and_save_independence(independence, cfg, model_data_files)
         logger.debug(independence.values)
+        independences[variable] = independence
 
         logger.info('Calculating performance for %s', variable)
         performance = calculate_performance(model_data, obs_data)
-        visualize_and_save_performance(
-            performance, cfg, model_data_files + obs_data_files)
+        visualize_and_save_performance(performance, cfg,
+                                       model_data_files + obs_data_files)
         logger.debug(performance.values)
+        performances[variable] = performance
 
-        logger.info('Calculating weights for %s', variable)
-        sigma_performance = cfg['shape_params'][variable]['sigma_d']
-        sigma_independence = cfg['shape_params'][variable]['sigma_s']
-        weights = calculate_weights(
-            performance, independence,
-            sigma_performance, sigma_independence)
-        visualize_and_save_weights(
-            weights, cfg, model_data_files + obs_data_files)
-        logger.debug(weights.values)
-
-        weights_dict[variable] = weights
         data_files.extend(model_data_files)
         data_files.extend(obs_data_files)
 
-    visualize_and_save_mean_weights(
-        weights_dict, cfg, ancestors=data_files)
+    logger.info('Aggregating independence for all variables')
+    independence = xr.Dataset(independences)
+    overall_independence = aggregate_variables(independence)
+
+    logger.info('Aggregating performance for all variables')
+    performance = xr.Dataset(performances)
+    overall_performance = aggregate_variables(performance)
+
+    logger.info('Calculating weights')
+    sigma_performance = cfg['sigma_performance']
+    sigma_independence = cfg['sigma_independence']
+    weights = calculate_weights(overall_performance, overall_independence,
+                                sigma_performance, sigma_independence)
+    visualize_and_save_weights(weights, cfg, ancestors=data_files)
+    logger.debug(weights.values)
 
 
 if __name__ == '__main__':
