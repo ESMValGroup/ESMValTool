@@ -131,7 +131,8 @@ diagnostics:
           # - annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
           # - annual_number_of_days_where_cumulative_precipitation_is_above_20_mm
           # - annual_number_of_days_where_cumulative_precipitation_is_above_nn_mm
-          - monthly_maximum_value_of_daily_maximum_temperature
+          - annual_maximum_value_of_daily_maximum_temperature
+          # - monthly_maximum_value_of_daily_maximum_temperature
           # - monthly_maximum_value_of_daily_minimum_temperature
           # - monthly_minimum_value_of_daily_maximum_temperature
           # - monthly_minimum_value_of_daily_minimum_temperature
