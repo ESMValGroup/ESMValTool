@@ -58,13 +58,19 @@ def get_input_file(cmip_era):
 
 def determine_basepath(cmip_era):
     """Determine a basepath."""
-    basepath = os.path.join(
-        get_site_rootpath(cmip_era)[1], get_input_dir(cmip_era),
-        get_input_file(cmip_era))
-    while basepath.find('//') > -1:
-        basepath = basepath.replace('//', '/')
+    if isinstance(get_site_rootpath(cmip_era)[1], list):
+        rootpaths = get_site_rootpath(cmip_era)[1]
+    else:
+        rootpaths = [get_site_rootpath(cmip_era)[1]]
+    basepaths = []
+    for rootpath in rootpaths:
+        basepath = os.path.join(rootpath, get_input_dir(cmip_era),
+                                get_input_file(cmip_era))
+        while basepath.find('//') > -1:
+            basepath = basepath.replace('//', '/')
+        basepaths.append(basepath)
 
-    return basepath
+    return basepaths
 
 
 def filter_years(files, start_year, end_year):
@@ -96,26 +102,29 @@ def filter_years(files, start_year, end_year):
 
 def list_all_files(file_dict, cmip_era):
     """List all files that match the dataset dictionary."""
-    basepath = determine_basepath(cmip_era)
     mip = file_dict['mip']
     short_name = file_dict['short_name']
     frequency = CMOR_TABLES[cmip_era].get_variable(mip, short_name).frequency
     realms = CMOR_TABLES[cmip_era].get_variable(mip, short_name).modeling_realm
     file_dict['frequency'] = frequency
-    new_path = basepath[:]
 
-    # could have multiple realms
+    basepaths = determine_basepath(cmip_era)
     all_files = []
-    for realm in realms:
-        file_dict['modeling_realm'] = realm
 
-        # load all the files in the custom dict
-        for key, value in file_dict.items():
-            new_path = new_path.replace('{' + key + '}', str(value))
+    for basepath in basepaths:
+        new_path = basepath[:]
 
-        # Globs all the wildcards into a list of files.
-        files = glob(new_path)
-        all_files.extend(files)
+        # could have multiple realms
+        for realm in realms:
+            file_dict['modeling_realm'] = realm
+
+            # load all the files in the custom dict
+            for key, value in file_dict.items():
+                new_path = new_path.replace('{' + key + '}', str(value))
+
+            # Globs all the wildcards into a list of files.
+            files = glob(new_path)
+            all_files.extend(files)
 
     # filter time
     if all_files:
@@ -137,32 +146,34 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
             output_dataset[key] = value
 
     # Split file name and base path into directory structure and filenames.
-    _, basefile = os.path.split(determine_basepath(cmip_era))
+    basefiles = determine_basepath(cmip_era)
     _, fnfile = os.path.split(fn)
 
-    # Some of the key words include the splitting character '_' !
-    basefile = basefile.replace('short_name', 'shortname')
-    basefile = basefile.replace('start_year', 'startyear')
-    basefile = basefile.replace('end_year', 'endyear')
+    for basefile in basefiles:
+        _, basefile = os.path.split(basefile)
+        # Some of the key words include the splitting character '_' !
+        basefile = basefile.replace('short_name', 'shortname')
+        basefile = basefile.replace('start_year', 'startyear')
+        basefile = basefile.replace('end_year', 'endyear')
 
-    # Assume filename is separated by '_'
-    basefile_split = [key.replace("{", "") for key in basefile.split('_')]
-    basefile_split = [key.replace("}", "") for key in basefile_split]
-    fnfile_split = fnfile.split('_')
+        # Assume filename is separated by '_'
+        basefile_split = [key.replace("{", "") for key in basefile.split('_')]
+        basefile_split = [key.replace("}", "") for key in basefile_split]
+        fnfile_split = fnfile.split('_')
 
-    # iterate through directory structure looking for useful bits.
-    for base_key, fn_key in zip(basefile_split, fnfile_split):
-        if base_key == '*.nc':
-            fn_key = fn_key.replace('.nc', '')
-            start_year, end_year = fn_key.split('-')
-            output_dataset['start_year'] = start_year
-            output_dataset['end_year'] = end_year
-        elif base_key == "ensemble*.nc":
-            output_dataset['ensemble'] = fn_key
-        elif base_key == "grid*.nc":
-            output_dataset['grid'] = fn_key
-        elif base_key not in ["shortname", "ensemble*.nc", "*.nc"]:
-            output_dataset[base_key] = fn_key
+        # iterate through directory structure looking for useful bits.
+        for base_key, fn_key in zip(basefile_split, fnfile_split):
+            if base_key == '*.nc':
+                fn_key = fn_key.replace('.nc', '')
+                start_year, end_year = fn_key.split('-')
+                output_dataset['start_year'] = start_year
+                output_dataset['end_year'] = end_year
+            elif base_key == "ensemble*.nc":
+                output_dataset['ensemble'] = fn_key
+            elif base_key == "grid*.nc":
+                output_dataset['grid'] = fn_key
+            elif base_key not in ["shortname", "ensemble*.nc", "*.nc"]:
+                output_dataset[base_key] = fn_key
 
     return output_dataset
 
@@ -171,6 +182,7 @@ def remove_duplicates(add_datasets):
     """Remove accidental duplicates."""
     datasets = []
     seen = set()
+
     for dataset in add_datasets:
         tup_dat = tuple(dataset.items())
         if tup_dat not in seen:
@@ -188,7 +200,7 @@ def get_args():
     parser.add_argument('recipe', help='Path or name of the yaml recipe file')
     parser.add_argument('-c',
                         '--config-file',
-                        default=os.path.join(os.path.dirname(__file__),
+                        default=os.path.join(os.environ["HOME"], '.esmvaltool',
                                              'config-user.yml'),
                         help='Config file')
 
@@ -200,21 +212,19 @@ def get_args():
 
 def parse_recipe_to_dicts(recipe):
     """Parse a recipe's variables into a dictionary of dictionairies."""
-    yamlrecipe = yaml.load(open(recipe, 'r'))
-
     output_dicts = {}
 
-    # For each diagnostic in the recipe:
-    for diag in yamlrecipe['diagnostics']:
-        # For each variable in the diagnostic:
-        for variable, var_dict in yamlrecipe['diagnostics'][diag][
-                'variables'].items():
-            new_dict = base_dict.copy()
-            # for each key in the variable:
-            for var_key, var_value in var_dict.items():
-                if var_key in new_dict:
-                    new_dict[var_key] = var_value
-            output_dicts[(diag, variable)] = new_dict
+    with open(recipe, 'r') as yamlfile:
+        yamlrecipe = yaml.safe_load(yamlfile)
+        for diag in yamlrecipe['diagnostics']:
+            for variable, var_dict in yamlrecipe['diagnostics'][diag][
+                    'variables'].items():
+                new_dict = base_dict.copy()
+                for var_key, var_value in var_dict.items():
+                    if var_key in new_dict:
+                        new_dict[var_key] = var_value
+                output_dicts[(diag, variable)] = new_dict
+
     return output_dicts
 
 
@@ -260,17 +270,25 @@ def run():
     # Create a list of additional_datasets for each diagnostic/variable.
     additional_datasets = {}
     for (diag, variable), recipe_dict in recipe_dicts.items():
+        new_datasets = []
         recipe_dict['short_name'] = variable
-        for cmip_era in cmip_eras:
-            files = list_all_files(recipe_dict, cmip_era)
-            add_datasets = []
-            for fn in sorted(files):
-                out = file_to_recipe_dataset(fn, cmip_era, recipe_dict)
-                if out is None:
-                    continue
-                add_datasets.append(out)
-            additional_datasets[(diag, variable, cmip_era)] = \
-                remove_duplicates(add_datasets)
+        if isinstance(recipe_dict['dataset'], list):
+            datasets = recipe_dict['dataset']
+        else:
+            datasets = [recipe_dict['dataset']]
+        for dataset in datasets:
+            recipe_dict['dataset'] = dataset
+            for cmip_era in cmip_eras:
+                files = list_all_files(recipe_dict, cmip_era)
+                add_datasets = []
+                for fn in sorted(files):
+                    out = file_to_recipe_dataset(fn, cmip_era, recipe_dict)
+                    if out is None:
+                        continue
+                    add_datasets.append(out)
+                new_datasets.extend(add_datasets)
+        additional_datasets[(diag, variable, cmip_era)] = \
+            remove_duplicates(new_datasets)
 
     # add datasets to recipe as additional_datasets
     shutil.copyfile(input_recipe, output_recipe, follow_symlinks=True)
