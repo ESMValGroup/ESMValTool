@@ -78,7 +78,7 @@ def read_metadata(cfg: dict) -> tuple:
     for project, metadata in projects.items():
 
         for item in metadata:
-            variable = item['short_name']
+            variable = item['variable_group']
 
             if project in obs_ids:
                 observations[variable].append(item)
@@ -335,10 +335,10 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def aggregate_variables(dataset):
+def aggregate_variable_groups(dataset):
     """Normalized all variables in a dataset and return their mean."""
     normalized = dataset / dataset.median(dim='model_ensemble')
-    aggregated = normalized.to_array(dim='variable').mean('variable')
+    aggregated = normalized.to_array(dim='var_group').mean('var_group')
     return aggregated
 
 
@@ -399,75 +399,51 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def visualize_and_save_mean_weights(weights: dict, cfg: dict, ancestors: list):
-    """Save the mean weights to a `.nc` file."""
-    weights_combined = (xr.Dataset(weights).to_array(name='weight').mean(
-        dim='variable'))
-
-    weights_combined.attrs['short_name'] = 'weights'
-    weights_combined.attrs['units'] = 'a.u.'
-
-    label = 'combined mean'
-
-    filename_plot = get_plot_filename('weights_combined', cfg)
-
-    barplot(weights_combined, label, filename_plot)
-
-    filename_data = get_diagnostic_filename('weights_combined',
-                                            cfg,
-                                            extension='nc')
-    weights_combined.to_netcdf(filename_data)
-
-    caption = 'Mean weights for all variables'
-    log_provenance(caption, filename_plot, cfg, ancestors)
-    log_provenance(caption, filename_data, cfg, ancestors)
-
-
 def main(cfg):
     """Perform climwip weighting method."""
     models, observations = read_metadata(cfg)
 
-    variables = models.keys()
+    variable_groups = models.keys()
 
     data_files = []
 
     performances = {}
     independences = {}
 
-    for variable in variables:
+    for variable_group in variable_groups:
 
-        logger.info('Reading model data for %s', variable)
-        datasets_model = models[variable]
+        logger.info('Reading model data for %s', variable_group)
+        datasets_model = models[variable_group]
         model_data, model_data_files = read_model_data(datasets_model)
 
-        logger.info('Reading observation data for %s', variable)
-        datasets_obs = observations[variable]
+        logger.info('Reading observation data for %s', variable_group)
+        datasets_obs = observations[variable_group]
         obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
-        logger.info('Calculating independence for %s', variable)
+        logger.info('Calculating independence for %s', variable_group)
         independence = calculate_independence(model_data)
         visualize_and_save_independence(independence, cfg, model_data_files)
         logger.debug(independence.values)
-        independences[variable] = independence
+        independences[variable_group] = independence
 
-        logger.info('Calculating performance for %s', variable)
+        logger.info('Calculating performance for %s', variable_group)
         performance = calculate_performance(model_data, obs_data)
         visualize_and_save_performance(performance, cfg,
                                        model_data_files + obs_data_files)
         logger.debug(performance.values)
-        performances[variable] = performance
+        performances[variable_group] = performance
 
         data_files.extend(model_data_files)
         data_files.extend(obs_data_files)
 
-    logger.info('Aggregating independence for all variables')
+    logger.info('Aggregating independence for all variable groups')
     independence = xr.Dataset(independences)
-    overall_independence = aggregate_variables(independence)
+    overall_independence = aggregate_variable_groups(independence)
 
-    logger.info('Aggregating performance for all variables')
+    logger.info('Aggregating performance for all variable groups')
     performance = xr.Dataset(performances)
-    overall_performance = aggregate_variables(performance)
+    overall_performance = aggregate_variable_groups(performance)
 
     logger.info('Calculating weights')
     sigma_performance = cfg['sigma_performance']
