@@ -1,13 +1,29 @@
 """Fill in recipe."""
 import argparse
 import itertools
+import logging
 import os
 import shutil
 from glob import glob
 
 import yaml
-from esmvalcore._config import read_config_developer_file
+from esmvalcore._config import (configure_logging,
+                                read_config_developer_file,
+                                read_config_user_file)
 from esmvalcore.cmor.table import CMOR_TABLES
+
+logger = logging.getLogger(__name__)
+
+HEADER = r"""
+______________________________________________________________________
+          _____ ____  __  ____     __    _ _____           _
+         | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+         |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+         | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+         |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________________________
+
+""" + __doc__
 
 dataset_order = [
     'dataset', 'project', 'exp', 'mip', 'historical', 'ensemble', 'grid',
@@ -39,7 +55,8 @@ base_dict = {
 def get_site_rootpath(cmip_era):
     """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
-    yamlconf = yaml.load(open(config_yml, 'r'))
+    with open(config_yml, 'r') as yamf:
+        yamlconf = yaml.safe_load(yamf)
     return yamlconf['drs'][cmip_era], yamlconf['rootpath'][cmip_era]
 
 
@@ -246,23 +263,25 @@ def add_datasets_into_recipe(additional_datasets, output_recipe):
 
 
 def run():
-    """
-    Run the `recipe_filler` program,.
-
-    This tool takes a recipe without datasets provided, and adds an
-    additional_datasets section for each diagnostics for each variable.
-
-    It looks at whether any specific requirements are needed for the variable,
-    and adds them.
-
-    This won't work for derived objects.
-
-    This won't check whether any datasets are provided already.
-    """
+    """Run the `recipe_filler` tool."""
     # Get arguments
     args = get_args()
     input_recipe = args.recipe
     output_recipe = args.output
+
+    # read the file in
+    config_user = read_config_user_file(args.config_file, 'recipe_filler', options={})
+
+    # configure logger
+    run_dir = os.path.join(config_user['output_dir'], 'recipe_filler')
+    if not os.path.isdir(run_dir):
+        os.makedirs(run_dir)
+    log_files = configure_logging(
+        output_dir=run_dir, console_log_level=config_user['log_level'])
+    logger.info("Writing program log files to:\n%s", "\n".join(log_files))
+
+    # print header
+    logger.info(HEADER)
 
     # Convert the recipe into a yaml dict.
     recipe_dicts = parse_recipe_to_dicts(input_recipe)
@@ -270,19 +289,25 @@ def run():
     # Create a list of additional_datasets for each diagnostic/variable.
     additional_datasets = {}
     for (diag, variable), recipe_dict in recipe_dicts.items():
+        logger.info("Looking for data for variable %s in diagnostic %s",
+                    variable, diag)
         new_datasets = []
         recipe_dict['short_name'] = variable
         if isinstance(recipe_dict['dataset'], list):
             datasets = recipe_dict['dataset']
         else:
             datasets = [recipe_dict['dataset']]
+        logger.info("Seeking data for datasets: %s", str(datasets))
         for dataset in datasets:
             recipe_dict['dataset'] = dataset
+            logger.info("Analyzing dataset: %s", dataset)
             for cmip_era in cmip_eras:
                 files = list_all_files(recipe_dict, cmip_era)
                 add_datasets = []
                 for fn in sorted(files):
+                    logger.info("Data directory: %s", os.path.dirname(fn))
                     out = file_to_recipe_dataset(fn, cmip_era, recipe_dict)
+                    logger.info("New recipe entry: %s", out)
                     if out is None:
                         continue
                     add_datasets.append(out)
