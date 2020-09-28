@@ -78,12 +78,12 @@ def read_metadata(cfg: dict) -> tuple:
     for project, metadata in projects.items():
 
         for item in metadata:
-            variable = item['variable_group']
+            variable_group = item['variable_group']
 
             if project in obs_ids:
-                observations[variable].append(item)
+                observations[variable_group].append(item)
             else:
-                models[variable].append(item)
+                models[variable_group].append(item)
 
     return models, observations
 
@@ -120,10 +120,15 @@ def read_input_data(metadata: list,
     input_files = []
     for info in metadata:
         filename = info['filename']
-        variable = info['short_name']
+        short_name = info['short_name']
+        variable_group = info['variable_group']
+
         xrds = xr.open_dataset(filename)
         make_standard_calendar(xrds)
-        data_arrays.append(xrds[variable])
+        xrda = xrds[short_name]
+        xrda = xrda.rename(variable_group)
+        data_arrays.append(xrda)
+
         identifier = identifier_fmt.format(**info)
         identifiers.append(identifier)
         input_files.append(filename)
@@ -232,7 +237,7 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
     )
 
     diff.name = f'd{data_array.name}'
-    diff.attrs['short_name'] = data_array.name
+    diff.attrs['variable_group'] = data_array.name
     diff.attrs["units"] = data_array.units
     diff['perfect_model_ensemble'] = diff.model_ensemble.values
 
@@ -242,7 +247,7 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
 def visualize_and_save_independence(independence: 'xr.DataArray', cfg: dict,
                                     ancestors: list):
     """Visualize independence."""
-    variable = independence.short_name
+    variable = independence.variable_group
     labels = list(independence.model_ensemble.values)
 
     figure, axes = plt.subplots(figsize=(15, 15),
@@ -286,7 +291,7 @@ def calculate_performance(model_data: 'xr.DataArray',
     performance = area_weighted_mean(diff**2)**0.5
 
     performance.name = f'd{model_data.name}'
-    performance.attrs['short_name'] = model_data.name
+    performance.attrs['variable_group'] = model_data.name
     performance.attrs["units"] = model_data.units
 
     return performance
@@ -295,19 +300,19 @@ def calculate_performance(model_data: 'xr.DataArray',
 def barplot(metric: 'xr.DataArray', label: str, filename: str):
     """Visualize metric as barplot."""
     name = metric.name
-    variable = metric.short_name
+    variable_group = metric.variable_group
     units = metric.units
 
     metric_df = metric.to_dataframe().reset_index()
 
-    ylabel = f'{label} {variable} ({units})'
+    ylabel = f'{label} {variable_group} ({units})'
 
     figure, axes = plt.subplots(figsize=(15, 10))
     chart = sns.barplot(x='model_ensemble', y=name, data=metric_df, ax=axes)
     chart.set_xticklabels(chart.get_xticklabels(),
                           rotation=45,
                           horizontalalignment='right')
-    chart.set_title(f'{label} for {variable}')
+    chart.set_title(f'{label} for {variable_group}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
 
@@ -320,17 +325,17 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     """Visualize performance."""
     label = 'RMS error'
 
-    variable = performance.short_name
-    filename_plot = get_plot_filename(f'performance_{variable}', cfg)
+    variable_group = performance.variable_group
+    filename_plot = get_plot_filename(f'performance_{variable_group}', cfg)
 
     barplot(performance, label, filename_plot)
 
-    filename_data = get_diagnostic_filename(f'performance_{variable}',
+    filename_data = get_diagnostic_filename(f'performance_{variable_group}',
                                             cfg,
                                             extension='nc')
     performance.to_netcdf(filename_data)
 
-    caption = f'Performance metric ({label}) for variable {variable}'
+    caption = f'Performance metric {label} for variable group {variable_group}'
     log_provenance(caption, filename_plot, cfg, ancestors)
     log_provenance(caption, filename_data, cfg, ancestors)
 
@@ -338,7 +343,8 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
 def aggregate_variable_groups(dataset):
     """Normalized all variables in a dataset and return their mean."""
     normalized = dataset / dataset.median(dim='model_ensemble')
-    aggregated = normalized.to_array(dim='var_group').mean('var_group')
+    aggregated = normalized.to_array(
+        dim='variable_group').mean('variable_group')
     return aggregated
 
 
@@ -376,7 +382,7 @@ def calculate_weights(performance: 'xr.DataArray',
     weights /= weights.sum()
 
     weights.name = 'weight'
-    weights.attrs['short_name'] = 'weight'
+    weights.attrs['variable_group'] = 'weight'  # used in barplot
     weights.attrs["units"] = 'a.u.'
 
     return weights
