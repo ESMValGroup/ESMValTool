@@ -1,4 +1,20 @@
-"""Fill in recipe."""
+"""
+Fill in a blank recipe with additional datasets.
+
+Tool to obtain a set of additional datasets when given a blank recipe.
+The blank recipe should contain, to the very least, a list of diagnostics
+each with their variable(s). Example:
+diagnostics:
+
+  diagnostic:
+    description: some decscription
+    variables:
+      ta:
+        preprocessor: preprocessor
+        mip: Amon
+        start_year: 1850
+        end_year: 1900
+"""
 import argparse
 import itertools
 import logging
