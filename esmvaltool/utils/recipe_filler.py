@@ -3,28 +3,45 @@ Fill in a blank recipe with additional datasets.
 
 Tool to obtain a set of additional datasets when given a blank recipe.
 The blank recipe should contain, to the very least, a list of diagnostics
-each with their variable(s). Example:
-diagnostics:
+each with their variable(s). Example of minimum settings:
 
+diagnostics:
   diagnostic:
-    description: some decscription
     variables:
       ta:
-        preprocessor: preprocessor
-        mip: Amon
         start_year: 1850
         end_year: 1900
+
+Note that the tool will exit if any of these minimum settings are missing!
+
+Key features:
+
+- you can add as many variable parameters as are needed; if not added, the tool
+  will use the "*" wildcard and find all available combinations;
+- you can restrict the number of datasets to be looked for with the `dataset:`
+  key for each variable, pass a list of datasets as value, e.g.
+  `dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]`;
+- `start_year` and `end_year` are mandatory and are used to filter out the
+  datasets that don't have data in the interval;
+- `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
+
+Caveats:
+
+- the tool doesn't yet work for derived variables;
+- operation restricted to CMIP data.
+
+Have fun!
 """
 import argparse
 import itertools
 import logging
 import os
 import shutil
+import sys
 from glob import glob
 
 import yaml
-from esmvalcore._config import (configure_logging,
-                                read_config_developer_file,
+from esmvalcore._config import (configure_logging, read_config_developer_file,
                                 read_config_user_file)
 from esmvalcore.cmor.table import CMOR_TABLES
 
@@ -107,7 +124,15 @@ def determine_basepath(cmip_era):
 
 
 def filter_years(files, start_year, end_year):
-    """Filter out files that are outside time range."""
+    """
+    Filter out files that are outside time range.
+
+    Nifty function that takes a list of files and two years
+    as arguments; it will build a series of filter dictionaries
+    and check if data is available for the entire interval;
+    it will return a single file per dataset, the first file
+    in the list of files that cover the specified interval.
+    """
     valid_files = []
     available_years = {}
     all_files_roots = [("").join(fil.split("_")[0:-1]) for fil in files]
@@ -212,7 +237,13 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
 
 
 def remove_duplicates(add_datasets):
-    """Remove accidental duplicates."""
+    """
+    Remove accidental duplicates.
+
+    Close to 0% chances this will ever be used.
+    May be used when there are actual duplicates in data
+    storage, we've seen these before, but seldom.
+    """
     datasets = []
     seen = set()
 
@@ -225,22 +256,26 @@ def remove_duplicates(add_datasets):
     return datasets
 
 
-def get_args():
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Tool to add additional_datasets to a recipe.",
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('recipe', help='Path or name of the yaml recipe file')
-    parser.add_argument('-c',
-                        '--config-file',
-                        default=os.path.join(os.environ["HOME"], '.esmvaltool',
-                                             'config-user.yml'),
-                        help='Config file')
-
-    parser.add_argument('-o', '--output', help='Output recipe')
-
-    args = parser.parse_args()
-    return args
+def check_recipe(recipe_dict):
+    """Perform a quick recipe check for mandatory fields."""
+    do_exit = False
+    if "diagnostics" not in recipe_dict:
+        logger.error("Recipe missing diagnostics section.")
+        do_exit = True
+    for diag_name, diag in recipe_dict["diagnostics"].items():
+        if "variables" not in diag:
+            logger.error("Diagnostic %s missing variables.", diag_name)
+            do_exit = True
+        for var_name, var_pars in diag["variables"].items():
+            if "start_year" not in var_pars:
+                logger.error("Variable %s missing start_year.", var_name)
+                do_exit = True
+            if "end_year" not in var_pars:
+                logger.error("Variable %s missing end_year.", var_name)
+                do_exit = True
+    if do_exit:
+        logger.error("Please fix the issues in recipe and rerun. Exiting.")
+        sys.exit(1)
 
 
 def parse_recipe_to_dicts(recipe):
@@ -249,6 +284,7 @@ def parse_recipe_to_dicts(recipe):
 
     with open(recipe, 'r') as yamlfile:
         yamlrecipe = yaml.safe_load(yamlfile)
+        check_recipe(yamlrecipe)
         for diag in yamlrecipe['diagnostics']:
             for variable, var_dict in yamlrecipe['diagnostics'][diag][
                     'variables'].items():
@@ -278,22 +314,42 @@ def add_datasets_into_recipe(additional_datasets, output_recipe):
             yaml.safe_dump(cur_yaml, yamlfile)
 
 
+def get_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('recipe', help='Path or name of the yaml recipe file')
+    parser.add_argument('-c',
+                        '--config-file',
+                        default=os.path.join(os.environ["HOME"], '.esmvaltool',
+                                             'config-user.yml'),
+                        help='Config file')
+
+    parser.add_argument('-o', '--output', help='Output recipe')
+
+    args = parser.parse_args()
+    return args
+
+
 def run():
-    """Run the `recipe_filler` tool."""
+    """Run the `recipe_filler` tool. Help in __doc__ and via --help."""
     # Get arguments
     args = get_args()
     input_recipe = args.recipe
     output_recipe = args.output
 
     # read the file in
-    config_user = read_config_user_file(args.config_file, 'recipe_filler', options={})
+    config_user = read_config_user_file(args.config_file,
+                                        'recipe_filler',
+                                        options={})
 
     # configure logger
     run_dir = os.path.join(config_user['output_dir'], 'recipe_filler')
     if not os.path.isdir(run_dir):
         os.makedirs(run_dir)
-    log_files = configure_logging(
-        output_dir=run_dir, console_log_level=config_user['log_level'])
+    log_files = configure_logging(output_dir=run_dir,
+                                  console_log_level=config_user['log_level'])
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
     # print header
