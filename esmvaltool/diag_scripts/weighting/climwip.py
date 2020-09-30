@@ -9,6 +9,7 @@ from collections import defaultdict
 from datetime import datetime
 
 import matplotlib.pyplot as plt
+import natsort
 import numpy as np
 import seaborn as sns
 import xarray as xr
@@ -139,6 +140,10 @@ def read_input_data(metadata: list,
     # Clean up unnecessary coordinate info
     redundant_dims = np.setdiff1d(diagnostic.coords, diagnostic.dims)
     diagnostic = diagnostic.drop(redundant_dims)
+
+    # Use natural sorting order
+    sorting = natsort.natsorted(identifiers, alg=natsort.IC)
+    diagnostic = diagnostic.sel(indexers={dim: sorting})
 
     return diagnostic, input_files
 
