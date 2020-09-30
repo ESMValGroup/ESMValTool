@@ -340,12 +340,15 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def aggregate_variable_groups(dataset):
-    """Normalized all variables in a dataset and return their mean."""
+def compute_overall_mean(dataset):
+    """Normalize all variables in a dataset and return their mean."""
     normalized = dataset / dataset.median(dim='model_ensemble')
-    aggregated = normalized.to_array(
+    overall_mean = normalized.to_array(
         dim='variable_group').mean('variable_group')
-    return aggregated
+    overall_mean.name = 'overall_mean'
+    overall_mean.attrs['variable_group'] = 'overall_mean'
+    overall_mean.attrs['units'] = 1
+    return overall_mean
 
 
 def calculate_weights(performance: 'xr.DataArray',
@@ -383,7 +386,7 @@ def calculate_weights(performance: 'xr.DataArray',
 
     weights.name = 'weight'
     weights.attrs['variable_group'] = 'weight'  # used in barplot
-    weights.attrs["units"] = 'a.u.'
+    weights.attrs['units'] = 1
 
     return weights
 
@@ -411,7 +414,8 @@ def main(cfg):
 
     variable_groups = models.keys()
 
-    data_files = []
+    model_ancestors = []
+    obs_ancestors = []
 
     performances = {}
     independences = {}
@@ -440,23 +444,28 @@ def main(cfg):
         logger.debug(performance.values)
         performances[variable_group] = performance
 
-        data_files.extend(model_data_files)
-        data_files.extend(obs_data_files)
+        model_ancestors.extend(model_data_files)
+        obs_ancestors.extend(obs_data_files)
 
-    logger.info('Aggregating independence for all variable groups')
+    logger.info('Computing overall mean independence')
     independence = xr.Dataset(independences)
-    overall_independence = aggregate_variable_groups(independence)
+    overall_independence = compute_overall_mean(independence)
+    visualize_and_save_independence(overall_independence, cfg, model_ancestors)
 
-    logger.info('Aggregating performance for all variable groups')
+    logger.info('Computing overall mean performance')
     performance = xr.Dataset(performances)
-    overall_performance = aggregate_variable_groups(performance)
+    overall_performance = compute_overall_mean(performance)
+    visualize_and_save_performance(overall_performance, cfg,
+                                   model_ancestors + obs_ancestors)
 
     logger.info('Calculating weights')
     sigma_performance = cfg['sigma_performance']
     sigma_independence = cfg['sigma_independence']
     weights = calculate_weights(overall_performance, overall_independence,
                                 sigma_performance, sigma_independence)
-    visualize_and_save_weights(weights, cfg, ancestors=data_files)
+    visualize_and_save_weights(weights,
+                               cfg,
+                               ancestors=model_ancestors + obs_ancestors)
     logger.debug(weights.values)
 
 
