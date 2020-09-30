@@ -153,6 +153,6 @@ Example plots
    :align: center
    :width: 50%
 
-   Average Specific Humidity (hus) profile between 250 and 1 hPa from ERA-Interim data. The diagnostic averages the complete time series, here 1985-2014.
+   Average Specific Humidity (hus) profile between 250 and 1 hPa from ERA-Interim and CMIP6 model data. The diagnostic averages the complete time series, here 1985-2014.
 
 
