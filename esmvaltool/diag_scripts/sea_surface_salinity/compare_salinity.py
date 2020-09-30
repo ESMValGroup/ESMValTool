@@ -135,8 +135,9 @@ class CompareSalinity(object):
             bbox_to_anchor=(0.5, -0.1), borderaxespad=0.
         )
         plt.title(
-            f'Correlation of {data_info[n.SHORT_NAME]} between {data_alias} '
-            f'and {reference_alias}', pad=20
+            f'{data_info[n.SHORT_NAME]} correlation\n'
+            f'{data_alias} vs {reference_alias}',
+            pad=20
         )
         plt.tight_layout()
         plot_path = os.path.join(
