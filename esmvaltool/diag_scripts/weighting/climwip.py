@@ -436,21 +436,24 @@ def main(cfg):
         obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
-        logger.info('Calculating independence for %s', variable_group)
-        independence = calculate_independence(model_data)
-        visualize_and_save_independence(independence, cfg, model_data_files)
-        logger.debug(independence.values)
-        independences[variable_group] = independence
+        if datasets_model[0].get('independence', True):
+            logger.info('Calculating independence for %s', variable_group)
+            independence = calculate_independence(model_data)
+            visualize_and_save_independence(independence, cfg,
+                                            model_data_files)
+            logger.debug(independence.values)
+            independences[variable_group] = independence
 
-        logger.info('Calculating performance for %s', variable_group)
-        performance = calculate_performance(model_data, obs_data)
-        visualize_and_save_performance(performance, cfg,
-                                       model_data_files + obs_data_files)
-        logger.debug(performance.values)
-        performances[variable_group] = performance
+        if datasets_model[0].get('performance', True):
+            logger.info('Calculating performance for %s', variable_group)
+            performance = calculate_performance(model_data, obs_data)
+            visualize_and_save_performance(performance, cfg,
+                                           model_data_files + obs_data_files)
+            logger.debug(performance.values)
+            performances[variable_group] = performance
+            obs_ancestors.extend(obs_data_files)
 
         model_ancestors.extend(model_data_files)
-        obs_ancestors.extend(obs_data_files)
 
     logger.info('Computing overall mean independence')
     independence = xr.Dataset(independences)

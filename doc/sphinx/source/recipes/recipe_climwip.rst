@@ -42,6 +42,12 @@ User settings in recipe
     * ``preprocessor``: e.g. climwip_summer_mean
     * ``additional_datasets``: provide a list of model data for performance calculation.
 
+  *Optional settings for variables*
+
+    * ``performance``: set to false to *not* calculate performance for this variable group
+    * ``independence``: set to false to *not* calculate independence for this variable group
+    * By default, both performance and independence are calculate for each variable group.
+
   *Required settings for preprocessor*
 
     * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
