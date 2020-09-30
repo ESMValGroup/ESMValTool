@@ -1,0 +1,129 @@
+# ESMValTool
+# recipe_deangelis15nat.yml
+---
+documentation:
+  description: |
+    Recipe for reproducing figure 3 and 4 from DeAngelis et al., 2015 Nature.
+    In this version HOABS data are used as a replacement for expected ESA-CMUG data, type CDR-2:
+    Gridded monthly time series of TCWV in units of kg/m2 (corresponds to prw)
+    that cover the global land and ocean areas with a spatial resolution of 0.05° / 0.5°.
+    It covers the period July 2002 to December 2017.
+
+  authors:
+    - weigel_katja
+
+  references:
+    - deangelis15nat
+
+  projects:
+    - eval4cmip
+    - cmug
+
+preprocessors:
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+  tropical_ocean:
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+
+  tropical:
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+
+
+diagnostics:
+
+  deangelisf3f4:
+    description: Plot fig 3 and fig 4 of DeAngelis et al., 2015
+    variables:
+      rsnstcs: &spatial_mean3_cmip5_r1i1p1_amon_t2ms
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        derive: true
+        force_derivation: false
+      rsnstcsnorm: &tropical_cmip5_r1i1p1_amon_t2ms
+        preprocessor: tropical_ocean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, type: satellite,
+             level: L3B, version: Ed2-8, start_year: 2001,
+             end_year: 2012, tier: 1}
+      tas:
+        <<: *spatial_mean3_cmip5_r1i1p1_amon_t2ms
+        derive: false
+      prw:
+        <<: *tropical_cmip5_r1i1p1_amon_t2ms
+        derive: false
+        additional_datasets:
+          - {dataset: ESACCI-WV, project: OBS, type: sat,
+             version: HOAPS-v4.0, start_year: 2001, end_year: 2012, tier: 2}
+    additional_datasets:
+      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
+      - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
+      - {dataset: ACCESS1-3, exp: piControl, start_year: 250, end_year: 399}
+      - {dataset: ACCESS1-3, exp: abrupt4xCO2, start_year: 250, end_year: 399}
+      - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2G, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2M, exp: piControl, start_year: 1, end_year: 150}
+      - {dataset: GFDL-ESM2M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
+      - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
+      - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+      # IPSL-CM5A-MR only 140 years available
+      - {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850,
+         end_year: 1989}
+      - {dataset: IPSL-CM5A-MR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1989}
+      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
+         end_year: 1999}
+      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
+      - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+      - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
+      - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
+      - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: MPI-ESM-MR, exp: piControl, start_year: 2015, end_year: 2164}
+      - {dataset: MPI-ESM-MR, exp: abrupt4xCO2, start_year: 1850,
+         end_year: 1999}
+      - {dataset: MRI-CGCM3, exp: piControl, start_year: 1851, end_year: 2000}
+      - {dataset: MRI-CGCM3, exp: abrupt4xCO2, start_year: 1851,
+         end_year: 2000}
+      - {dataset: NorESM1-M, exp: piControl, start_year: 700, end_year: 849}
+      - {dataset: NorESM1-M, exp: abrupt4xCO2, start_year: 1, end_year: 150}
+
+    scripts:
+      deangelisf3f4:
+        script: deangelis15nat/deangelisf3f4.py
