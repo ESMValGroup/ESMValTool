@@ -127,5 +127,32 @@ Example plots
 
    Scatter plot and regression line the between the ratio of the change of net short wave radiation (rsnst) and the change of the Water Vapor Path (prw) against the ratio of the change of netshort wave radiation for clear skye (rsnstcs) and the the change of surface temperature (tas). The width of horizontal shading for models and the vertical dashed lines for observations (Obs.) represent statistical uncertainties of the ratio, as the 95% confidence interval (CI) of the regression slope to the rsnst versus prw curve. For the observations the minimum of the lower bounds of all CIs to the maximum of the upper bounds of all CIs is shown.
 
+.. _fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity_map:
+.. figure:: /recipes/figures/cmug_h2o/fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity_map.png
+   :align: center
+   :width: 50%
+
+   Map of the average Specific Humidity (hus) at the cold point tropopause from ERA-Interim data. The diagnostic averages the complete time series, here 2010-2014.
+
+.. _fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity:
+.. figure:: /recipes/figures/cmug_h2o/fig_ERA-Interim_Cold_point_tropopause_Specific_Humidity.png
+   :align: center
+   :width: 50%
+
+   Latitude versus time plot of the Specific Humidity (hus) at the cold point tropopause from ERA-Interim data.
+
+.. _fig_ERA-Interim_Zonal_mean_Specific_Humidity:
+.. figure:: /recipes/figures/cmug_h2o/fig_ERA-Interim_Zonal_mean_Specific_Humidity.png
+   :align: center
+   :width: 50%
+
+   Zonal average Specific Humidity (hus) between 250 and 1 hPa from ERA-Interim data. The diagnostic averages the complete time series, here 1985-2014.
+
+.. _fig_profile_Specific_Humidity:
+.. figure:: /recipes/figures/cmug_h2o/fig_profile_Specific_Humidity.png
+   :align: center
+   :width: 50%
+
+   Average Specific Humidity (hus) profile between 250 and 1 hPa from ERA-Interim data. The diagnostic averages the complete time series, here 1985-2014.
 
 
