@@ -72,7 +72,7 @@ def plot_zonal_mean(cfg, mean_cube, titlestr, variable):
         set_range = np.linspace(0, 100, 21)
     elif variable == "Specific Humidity":
         print_var = "Specific Humidity [kg/kg]"
-        logval = np.log(np.array([1e-6, 1e-3]))
+        logval = np.log(np.array([1e-6, 1e-5]))
         set_range = np.exp(np.linspace(logval[0], logval[1], 41))
     else:
         print_var = mean_cube.long_name
@@ -230,6 +230,8 @@ def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
 
         axx.set_ylabel('Pressure [hPa]')
         axx.set_ylim(250, 1)
+        axx.set_xlim(0, 1e-4)
+        # axx.set_xscale('log')
         if profiles[svar][dataset].long_name ==  "Specific Humidity":
             unitstr = "kg/kg"
         else:

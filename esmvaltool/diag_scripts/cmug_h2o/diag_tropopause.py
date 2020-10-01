@@ -113,8 +113,8 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable):
     # axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    figname = 'fig_' + titlestr.replace(" ", "_") + variable.replace(" ",
-                                                                     "_")
+    figname = 'fig_' + titlestr.replace(" ", "_") +\
+        variable.replace(" ", "_") + '_map'
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
 
