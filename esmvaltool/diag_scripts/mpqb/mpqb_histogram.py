@@ -85,15 +85,15 @@ def _plot_histograms(hists, cfg, grouped_input_data):
             handles, labels = ax1.get_legend_handles_labels()
             handles = [Line2D([], [], c=h.get_edgecolor(), lw=2.0) for h in handles]
             plt.legend(handles=handles, labels=labels)
-
         else:
             logger.warning("Unsupported argument for histtype: %s", histtype)
-
+    ax1.tick_params(axis='both', which='major', labelsize='large')
     plt.xlabel(grouped_input_data[alias][0]['long_name'] + " [" +
-               grouped_input_data[alias][0]['units'] + "]")
-    plt.ylabel("frequency")
+               grouped_input_data[alias][0]['units'] + "]", fontsize='large')
+    plt.ylabel("frequency",  fontsize='x-large')
     if cfg.pop('logarithmic', False):
         ax1.set_yscale('log', nonposy='clip')
+    ax1.tick_params(axis='both', which='major', labelsize=12)
 
     plt.ylim(
         0,
