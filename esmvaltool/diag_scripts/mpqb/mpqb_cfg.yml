@@ -19,8 +19,6 @@ datasetnames:
   CDS-SATELLITE-ALBEDO: SPOT-VGT
   GRACE: GRACE
 
-
-
 datasetcolors:
 # Hint: use colorbrewer for setting colors.
   ERA-Interim-Land: '#a6cee3'
@@ -33,6 +31,7 @@ datasetcolors:
   cds-satellite-lai-fapar: '#8c564b'
   CDS-SATELLITE-ALBEDO: '#e377c2'
   GRACE: '#7f7f7f'
+  ESA-CCI-COM-v4.8: '#7f7f7f'
   ESA-CCI-COM: '#1f78b4'
   ESA-CCI-PAS: '#b2df8a'
   ESA-CCI-ACT: '#33a02c'
