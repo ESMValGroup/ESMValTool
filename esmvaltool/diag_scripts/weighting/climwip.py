@@ -347,7 +347,12 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
 
 def compute_overall_mean(dataset):
     """Normalize all variables in a dataset and return their mean."""
-    normalized = dataset / dataset.median(dim='model_ensemble')
+    if 'perfect_model_ensemble' in dataset.dims:
+        median_dim = ['perfect_model_ensemble', 'model_ensemble']
+    else:
+        median_dim = 'model_ensemble'
+    normalized = dataset / dataset.median(dim=median_dim)
+
     overall_mean = normalized.to_array(
         dim='variable_group').mean('variable_group')
     overall_mean.name = 'overall_mean'
