@@ -352,7 +352,7 @@ def compute_overall_mean(dataset):
         dim='variable_group').mean('variable_group')
     overall_mean.name = 'overall_mean'
     overall_mean.attrs['variable_group'] = 'overall_mean'
-    overall_mean.attrs['units'] = 1
+    overall_mean.attrs['units'] = '1'
     return overall_mean
 
 
@@ -391,7 +391,7 @@ def calculate_weights(performance: 'xr.DataArray',
 
     weights.name = 'weight'
     weights.attrs['variable_group'] = 'weight'  # used in barplot
-    weights.attrs['units'] = 1
+    weights.attrs['units'] = '1'
 
     return weights
 
