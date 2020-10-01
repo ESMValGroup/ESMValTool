@@ -44,7 +44,7 @@ argument (available only for Python diagnostics, check your options with ``--hel
 that will force an overwrite, and it will delete not just the failed diagnostic,
 but the contents of its ``work_dir`` and ``plot_dir`` directories - this is useful when needing to
 redo the whole work. Adding ``-i`` or ``--ignore-existing`` will not delete any existing files,
-and it can be used to skip work that was already done succesfully, provided
+and it can be used to skip work that was already done successfully, provided
 that the diagnostic script supports this.
 
 
@@ -86,7 +86,7 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 
 .. code:: bash
 
-   esmvaltool -c ~/config-user.yml recipe_example.yml; \
+   esmvaltool run recipe_example.yml; \
    ln -sfT $(ls -1d ~/esmvaltool_output/recipe_example_* | tail -1) ~/esmvaltool_output/recipe_example_latest
 
 
@@ -98,11 +98,11 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 
 .. .. code:: bash
 
-..   esmvaltool -c ~/config-user.yml recipe_xxx.yml --dry-run
+..   esmvaltool run recipe_xxx.yml --dry-run
 
 
 .. This mode activated will run through the data finding and CMOR checks and fixes
-.. and will highlight on screen and in `run/main_log.txt` everytime certain data is
+.. and will highlight on screen and in `run/main_log.txt` every time certain data is
 .. missing or there are issues with the CMOR checks; note that no data is written
 .. to disk and no diagnostics are run; you don't have to modify your recipe in any
 .. way to have this mode run. The information provided will help you obtain any data
