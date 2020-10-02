@@ -13,6 +13,7 @@ import natsort
 import numpy as np
 import seaborn as sns
 import xarray as xr
+import itertools
 from scipy.spatial.distance import pdist, squareform
 
 from esmvaltool.diag_scripts.shared import (
@@ -361,6 +362,53 @@ def compute_overall_mean(dataset):
     return overall_mean
 
 
+def combine_dimension(dataset, dimn):
+    model_ensemble = dataset[dimn].values
+    models = [me.split('_')[0] for me in model_ensemble]
+    dataset['model'] = xr.DataArray(models, dims=dimn)
+    dataset = dataset.groupby('model').mean(keep_attrs=True).rename({'model': dimn})
+
+    # new model names
+    groups = {k: [*v] for k, v in itertools.groupby(model_ensemble, lambda x: x.split('_')[0])}
+    for key, group in groups.items():
+        model, forcing = group[0].split('_')[::2]
+        members = '-'.join([me.split('_')[1] for me in group])
+        groups[key] = '_'.join([model, members, forcing])
+
+    # ensure that they are sorted correctly
+    return dataset.assign_coords({dimn: [groups[key] for key in dataset[dimn].values]})
+
+
+def combine_ensemble_members(dataset):
+    dataset = combine_dimension(dataset, 'model_ensemble')
+    if 'perfect_model_ensemble' in dataset.dims:
+        dataset = combine_dimension(dataset, 'perfect_model_ensemble')
+        # need to set the diagonal elements back to zero after averaging
+        dataset.values[np.diag_indices(dataset['model_ensemble'].size)] = 0
+    return dataset
+
+
+def split_ensemble_members(dataset):
+    model_ensemble = []
+    nr_members = []
+    for model in dataset['model_ensemble'].data:
+        ensembles = model.split('_')[1].split('-')
+        nr_members.append(len(ensembles))
+        model_ensemble += [
+            '_'.join([model.split('_')[0], ensemble, model.split('_')[2]])
+            for ensemble in ensembles]
+
+    data_scaled = dataset.values / nr_members
+    data_expanded = np.repeat(data_scaled, nr_members)
+
+    return xr.DataArray(
+        data_expanded,
+        coords={'model_ensemble': model_ensemble},
+        dims='model_ensemble',
+        name=dataset.name,
+        attrs=dataset.attrs)
+
+
 def calculate_weights(performance: 'xr.DataArray',
                       independence: 'xr.DataArray', sigma_performance: float,
                       sigma_independence: float) -> 'xr.DataArray':
@@ -463,11 +511,15 @@ def main(cfg):
     logger.info('Computing overall mean independence')
     independence = xr.Dataset(independences)
     overall_independence = compute_overall_mean(independence)
+    if cfg['combine_ensemble_members']:
+        overall_independence = combine_ensemble_members(overall_independence)
     visualize_and_save_independence(overall_independence, cfg, model_ancestors)
 
     logger.info('Computing overall mean performance')
     performance = xr.Dataset(performances)
     overall_performance = compute_overall_mean(performance)
+    if cfg['combine_ensemble_members']:
+        overall_performance = combine_ensemble_members(overall_performance)
     visualize_and_save_performance(overall_performance, cfg,
                                    model_ancestors + obs_ancestors)
 
@@ -476,6 +528,8 @@ def main(cfg):
     sigma_independence = cfg['sigma_independence']
     weights = calculate_weights(overall_performance, overall_independence,
                                 sigma_performance, sigma_independence)
+    if cfg['combine_ensemble_members']:
+        weights = split_ensemble_members(weights)
     visualize_and_save_weights(weights,
                                cfg,
                                ancestors=model_ancestors + obs_ancestors)
