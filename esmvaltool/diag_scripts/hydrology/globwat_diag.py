@@ -3,24 +3,12 @@ import logging
 from pathlib import Path
 
 import calendar
-import os.path 
 import iris
-from iris.pandas import as_data_frame 
 import iris.analysis    
-import pandas as pd
 import numpy as np
-import matplotlib.pylab as plt
-import os
-import rasterio
-from rasterio.transform import Affine
 
-
-import subprocess
-from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
-from esmvalcore import preprocessor as preproc
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
+from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
                                             group_metadata, run_diagnostic,
                                             select_metadata)
 
@@ -162,40 +150,59 @@ def make_output_name(cube):
     daily_pr = []
     monthly_pet = [] 
     daily_pet = [] 
-    output_name = {'pr':{'Amon':{}, 'day':{}}, 'pet':{'Amon':{}, 'day':{}}}      
+    monthly_pet_arora = [] 
+    daily_pet_arora = [] 
+    output_name = {'pr':{'Amon':{}, 'day':{}}, 
+                   'pet':{'Amon':{}, 'day':{}},
+                   'pet_arora':{'Amon':{}, 'day':{}}}      
     months , days = get_month_day_for_output_name(cube) 
     for mip in 'Amon', 'day': 
         if mip == 'Amon': 
             for i in range(0, len(months)):
-                for shortname in ['pr', 'pet']:
+                for shortname in ['pr', 'pet', 'pet_arora']:
                     if shortname == 'pr':
                         monthly_pr.append('prc'+ str(months[i]) + 'wb')
+                    elif shortname == 'pet':
+                        monthly_pet.append('eto'+ str(months[i]) + 'wb')
                     else:
-                        monthly_pet.append('eto'+ str(months[i]) + 'wb')           
+                        monthly_pet_arora.append('eto_arora'+ str(months[i]) + 'wb')                 
         elif mip == 'day':
             for i in range(0, len(days)):
-                for shortname in ['pr', 'pet']:
+                for shortname in ['pr', 'pet', 'pet_arora']:
                     if shortname == 'pr':
                         daily_pr.append('prc'+ str(days[i]) + 'wb')
-                    else:
+                    elif shortname == 'pet':
                         daily_pet.append('eto'+ str(days[i]) + 'wb')
+                    else:
+                        daily_pet_arora.append('eto_arora'+ str(days[i]) + 'wb')     
     output_name['pr']['Amon'] = monthly_pr
     output_name['pr']['day'] = daily_pr
     output_name['pet']['Amon']  = monthly_pet
     output_name['pet']['day'] = daily_pet
+    output_name['pet_arora']['Amon']  = monthly_pet_arora
+    output_name['pet_arora']['day']  = daily_pet_arora
     return output_name
 
 def arora_pet(tas):
     """Arora is a temperature-based method for calculating potential ET.
-    In this equation, t is the monthly average temperature in degree Celcius."""
+    In this equation, t is the monthly average temperature in degree Celcius 
+    pet is in mm per month."""
     # convert temperature unit to degC
     tas.convert_units('degC')
-    a = np.float32(325)
-    b = np.float32(21)
-    c = np.float32(0.9)
-    pet = a + b * tas + c * (tas ** 2)
-
-    return pet
+    # define constants of formula 
+    a = iris.coords.AuxCoord(np.float32(325),
+                             long_name='first constant',
+                             units=None)
+    b = iris.coords.AuxCoord(np.float32(21),
+                             long_name='second constant',
+                             units=None)
+    c = iris.coords.AuxCoord(np.float32(0.9),
+                             long_name='third constant',
+                             units=None)
+    arora_pet = a + b * tas + c * (tas ** 2)
+    arora_pet.units = 'mm month-1' 
+    arora_pet.rename("arora potential evapotranspiration")     
+    return arora_pet
 
 def main(cfg):
     """Process data for use as input to the GlobWat hydrological model.
@@ -209,7 +216,7 @@ def main(cfg):
     input_metadata = cfg['input_data'].values()
     # for checking the code in ipython I added print(input_metadata).
     # Run the script and use print(input_metadata) in the log.txt as input_metadata
-    print('input_metadata', input_metadata)
+    # print('input_metadata', input_metadata)
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance, time_step = get_input_cubes(metadata)
         #load target grid for using in regriding function
@@ -218,13 +225,13 @@ def main(cfg):
 
         cube = all_vars['pr']  
         logger.info("Potential evapotransporation not available, deriving and adding to all_vars dictionary")
-        # all_vars.update(pet = debruin_pet(
-        #     psl=all_vars['psl'],
-        #     rsds=all_vars['rsds'],
-        #     rsdt=all_vars['rsdt'],
-        #     tas=all_vars['tas'],
-        # ))
-        # print('tas', all_vars['tas'])
+        all_vars.update(pet = debruin_pet(
+            psl=all_vars['psl'],
+            rsds=all_vars['rsds'],
+            rsdt=all_vars['rsdt'],
+            tas=all_vars['tas'],
+        ))
+        #Take tas values to calculate pet_arora 
         tas = all_vars['tas']
         all_vars.update(pet_arora = arora_pet(tas)) 
 
@@ -249,69 +256,69 @@ def main(cfg):
         start_year = coord_time.cell(0).point.year 
         end_year = coord_time.cell(-1).point.year 
         for nyear in range (start_year , end_year+1):
-            for key in ['pr', 'pet_arora']:
-                for mip in ['Amon', 'day']:
-                    if mip == 'Amon':
-                        output_name_amon = output_name[key]['Amon']
-                        data_dir = Path(f"{dataset}/{nyear}/{'Monthly'}")
-                        data_dir.mkdir(parents=True, exist_ok=True)
-                        for i in range(len(output_name_amon)):
-                            key_cube = all_vars[key]
-                            for sub_cube in key_cube.slices_over('time'): 
-                                # set negative values for precipitaion to zero
+            for key in ['pr', 'pet', 'pet_arora']:
+                if time_step['mip'] == 'Amon':
+                    output_name_amon = output_name[key]['Amon']
+                    data_dir = Path(f"{dataset}/{nyear}/{'Monthly'}")
+                    data_dir.mkdir(parents=True, exist_ok=True)
+                    for i in range(len(output_name_amon)):
+                        key_cube = all_vars[key]
+                        for sub_cube in key_cube.slices_over('time'): 
+                            # set negative values for precipitaion to zero
+                            if key == 'pr':
                                 sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
-                                #regrid data baed on target cube
-                                sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
-                                # sub_cube_regrided = lazy_regrid(sub_cube, target_cube, "linear")
-                                #Save data as netcdf 
-                                file_name = output_name_amon[i] 
-                                iris.save(sub_cube_regrided, data_dir / f"{file_name}.nc", fill_value=-9999)
-
-                                #TODO: We must work on saving data as ascii format. 
-                                # array = sub_cube.data
-                                # points = sub_cube.coord('longitude').points
-                                # sub_cube.coord('longitude').points = (points + 180) % 360 - 180
-                                # lon = (sub_cube.coord('longitude').points + 180) % 360 -180
-                                # lat = sub_cube.coord('latitude').points 
-                                # sub_cube = sub_cube[:, ::-1, ...]
-                                # nrows,ncols = np.shape(array)
-                                # xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
-                                # xres = (xmax-xmin)/float(ncols) 
-                                # yres = (ymax-ymin)/float(nrows)
-                                # transform = Affine.translation(xmin + xres / 2, ymin - xres / 2) * Affine.scale(xres, xres)
-                                # file_name = output_name_amon[i] 
-                                # new_dataset = rasterio.open(
-                                # f"{data_dir}/{file_name}.asc", 
-                                # 'w', 
-                                # driver='GTiff', 
-                                # height=array.shape[1], 
-                                # width=array.shape[0], 
-                                # count=1, 
-                                # dtype='float32', 
-                                # crs='+proj=latlong', 
-                                # transform=transform, 
-                                # nodata= -9999,
-                                # ) 
-                                # new_dataset.write(array, 1)
-                                # new_dataset.close()
-
-                    # else:
-                    #     output_name_amon = output_name[key]['Amon']
-                    #     output_name_day = output_name[key]['day']
-                    #     data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
-                    #     data_dir.mkdir(parents=True, exist_ok=True)
-                    #     # for var_name in output_name: 
-                    #     #     for time_step in output_name[var_name]: 
-                    #     for i in range(len(output_name_day)):
-                    #         key_cube = all_vars[key]
-                    #         for sub_cube in key_cube.slices_over('time'): 
-                    #             sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
-                    #             sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
-                    #             # sub_cube_regrided = lazy_regrid(sub_cube, target_cube, "linear")
-                    #             file_name = output_name_day[i]
-                    #             print("file_name_daily", file_name)
-                    #             iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
-                                    
+                            #regrid data baed on target cube
+                            sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
+                            #Save data as netcdf 
+                            file_name = output_name_amon[i] 
+                            iris.save(sub_cube_regrided, data_dir / f"{file_name}.nc", fill_value=-9999)
+                            
+                            #TODO: We must work on saving data as ascii format. 
+                            # array = sub_cube.data
+                            # points = sub_cube.coord('longitude').points
+                            # sub_cube.coord('longitude').points = (points + 180) % 360 - 180
+                            # lon = (sub_cube.coord('longitude').points + 180) % 360 -180
+                            # lat = sub_cube.coord('latitude').points 
+                            # sub_cube = sub_cube[:, ::-1, ...]
+                            # nrows,ncols = np.shape(array)
+                            # xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
+                            # xres = (xmax-xmin)/float(ncols) 
+                            # yres = (ymax-ymin)/float(nrows)
+                            # transform = Affine.translation(xmin + xres / 2, ymin - xres / 2) * Affine.scale(xres, xres)
+                            # file_name = output_name_amon[i] 
+                            # new_dataset = rasterio.open(
+                            # f"{data_dir}/{file_name}.asc", 
+                            # 'w', 
+                            # driver='GTiff', 
+                            # height=array.shape[1], 
+                            # width=array.shape[0], 
+                            # count=1, 
+                            # dtype='float32', 
+                            # crs='+proj=latlong', 
+                            # transform=transform, 
+                            # nodata= -9999,
+                            # ) 
+                            # new_dataset.write(array, 1)
+                            # new_dataset.close()
+                else:
+                    #getting output names
+                    output_name_amon = output_name[key]['Amon']
+                    output_name_day = output_name[key]['day']
+                    #making output directory 
+                    data_dir = Path(f"{dataset}/{nyear}/{'Daily'}")
+                    data_dir.mkdir(parents=True, exist_ok=True)
+                    #saving output
+                    for i in range(len(output_name_day)):
+                        key_cube = all_vars[key]
+                        for sub_cube in key_cube.slices_over('time'): 
+                            # set negative values for precipitaion to zero
+                            if key == 'pr':
+                                sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0 
+                                
+                            sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())  
+                            file_name = output_name_day[i]
+                            iris.save(sub_cube, data_dir / f"{file_name}.nc", fill_value=-9999)
+                                
             # # Store provenance
             # with ProvenanceLogger(cfg) as provenance_logger:
             #     provenance_logger.log(output_file, provenance)
