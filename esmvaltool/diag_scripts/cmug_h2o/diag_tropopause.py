@@ -42,6 +42,23 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def cube_to_save_ploted_map(var, lats, lons, names):
+    """Create cube to prepare plotted data for saving to netCDF."""
+    new_cube = iris.cube.Cube(var, var_name=names['var_name'],
+                              long_name=names['long_name'],
+                              units=names['units'])
+    new_cube.add_dim_coord(iris.coords.DimCoord(lats,
+                                                var_name='lat',
+                                                long_name='latitude',
+                                                units='degrees_north'), 0)
+    new_cube.add_dim_coord(iris.coords.DimCoord(lons,
+                                                var_name='lon',
+                                                long_name='longitude',
+                                                units='degrees_east'), 1)
+
+    return new_cube
+
+
 def find_min(data, data_min, axis):
     """Functions for Iris Aggregator to find the min based on other cube."""
     if axis < 0:

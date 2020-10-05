@@ -40,6 +40,56 @@ from esmvaltool.diag_scripts.shared._base import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def _get_sel_files(cfg, dataname, dim=2):
+    """Get filenames from cfg for single models or multi-model mean."""
+    selection = []
+    if dim == 2:
+        for hlp in select_metadata(cfg['input_data'].values(),
+                                   dataset=dataname):
+            selection.append(hlp['filename'])
+    else:
+        for hlp in cfg['input_data'].values():
+            selection.append(hlp['filename'])
+
+    return selection
+
+
+def _get_sel_files_var(cfg, varnames):
+    """Get filenames from cfg for all model mean and differen variables."""
+    selection = []
+
+    for var in varnames:
+        for hlp in select_metadata(cfg['input_data'].values(), short_name=var):
+            selection.append(hlp['filename'])
+
+    return selection
+
+
+def _get_sel_files_lvardata(cfg, dataname, lvarnames):
+    """Get filenames from cfg for one model and differen variable(s)."""
+    selection = []
+
+    for lvar in lvarnames:
+        for hlp in select_metadata(cfg['input_data'].values(), long_name=lvar,
+                                   dataset=dataname):
+            selection.append(hlp['filename'])
+
+    return selection
+
+
+def cube_to_save_profile(var1, var2, names):
+    """Create cubes to prepare scatter plot data for saving to netCDF."""
+    cubes = iris.cube.CubeList([iris.cube.Cube(var1,
+                                               var_name=names['var_name1'],
+                                               long_name=names['long_name1'],
+                                               units=names['units1'])])
+    cubes.append(iris.cube.Cube(var2, var_name=names['var_name2'],
+                                long_name=names['long_name2'],
+                                units=names['units2']))
+
+    return cubes
+
+
 def find_min(data, data_min, axis):
     """Functions for Iris Aggregator to find the min based on other cube."""
     if axis < 0:
@@ -52,7 +102,28 @@ def find_min(data, data_min, axis):
     return return_data
 
 
-def plot_zonal_mean(cfg, mean_cube, titlestr, variable):
+def get_provenance_record(ancestor_files, caption, statistics,
+                          domains, plot_type='zonal'):
+    """Get Provenance record."""
+    record = {
+        'caption': caption,
+        'statistics': statistics,
+        'domains': domains,
+        'plot_type': plot_type,
+        'realms': ['atmos'],
+        'themes': ['atmDyn'],
+        'authors': [
+            'weigel_katja',
+        ],
+        'references': [
+            '',
+        ],
+        'ancestors': ancestor_files,
+    }
+    return record
+
+
+def plot_zonal_mean(cfg, mean_cube, dataname, titlestr, variable):
     """Plot zonal mean contour."""
     # if not cfg[n.WRITE_PLOTS]:
     #     return
@@ -78,8 +149,6 @@ def plot_zonal_mean(cfg, mean_cube, titlestr, variable):
         print_var = mean_cube.long_name
         set_range = np.linspace(np.nanmin(mean_cube.data),
                                 np.nanmax(mean_cube.data), 21)
-    print("mean_cube.units")
-    print(mean_cube.units)
     # draw filled contours
     cnplot = plt.contourf(
         mean_cube.coord('latitude').points,
@@ -89,7 +158,7 @@ def plot_zonal_mean(cfg, mean_cube, titlestr, variable):
         cmap='jet',
         # cmap='RdBu_r',
         extend='both')
-    
+
     axx = plt.gca()
     axx.invert_yaxis()
     axx.set_ylim(250, 1)
@@ -108,37 +177,30 @@ def plot_zonal_mean(cfg, mean_cube, titlestr, variable):
     # axx.set_yticklabels(['10°S', '0°', '10°N', '20°N', '30°N'])
 
     fig.tight_layout()
-    figname = 'fig_' + titlestr.replace(" ", "_") + variable.replace(" ",
-                                                                     "_")
+
+    caption = dataname + " " + titlestr + variable +\
+        " between 250 and 1 hPa." +\
+        " The diagnostic averages the complete time series."
+    figname = 'fig_' + dataname + "_" + titlestr.replace(" ", "_") +\
+              variable.replace(" ", "_")
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
-
-#    titlestr = titlestr + ' Box displays the area used to define the ' + \
-#        'average ISM (Indian Summer Monsoon) rainfall. Precipitation ' + \
-#        'changes are normalized by the corresponding global ' + \
-#        'mean SST increase for each model.'
 #
-#    selection = _get_sel_files_var(cfg, ['pr', 'ts'])
+    selection = _get_sel_files_lvardata(cfg, dataname, [variable])
 #
-#    provenance_record = get_provenance_record(selection,
-#                                              titlestr, ['diff'], ['reg'])
+    provenance_record = get_provenance_record(selection,
+                                              caption, ['mean'], ['global'])
 #
-#    diagnostic_file = get_diagnostic_filename(figname, cfg)
+    diagnostic_file = get_diagnostic_filename(figname, cfg)
 #
-#    logger.info("Saving analysis results to %s", diagnostic_file)
+    logger.info("Saving analysis results to %s", diagnostic_file)
 #
-#    iris.save(cube_to_save_ploted(data, lats, lons, {'var_name': 'd_pr',
-#                                                     'long_name': 'Prec' +
-#                                                                  'ipita' +
-#                                                                  'tion ' +
-#                                                                  'Change',
-#                                                     'units': 'mm d-1'}),
-#              target=diagnostic_file)
+    iris.save(mean_cube, target=diagnostic_file)
 #
-#    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
-#                pformat(provenance_record))
-#    with ProvenanceLogger(cfg) as provenance_logger:
-#        provenance_logger.log(diagnostic_file, provenance_record)
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def plot_zonal_timedev(cfg, mean_cube, titlestr, variable):
@@ -180,7 +242,7 @@ def plot_zonal_timedev(cfg, mean_cube, titlestr, variable):
     cnplot = plt.contourf(
         mean_cube.coord('latitude').points,
         mean_cube.coord('year').points +
-        (mean_cube.coord('month_number').points - 1.0)/12.0,
+        (mean_cube.coord('month_number').points - 1.0) / 12.0,
         mean_cube.data,
         set_range,
         cmap='rainbow',
@@ -216,35 +278,34 @@ def plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets):
     # create figure and axes instances
     for svar in available_vars_min_tas:
         fig, axx = plt.subplots(figsize=(7, 5))
-        
+
         for dataset in available_datasets:
             plt.plot((profiles[svar][dataset]).data,
                      (profiles[svar][dataset]).coord('air_pressure').points /
-                     100.0, label = dataset)
-    
+                     100.0, label=dataset)
+
         axx = plt.gca()
         axx.invert_yaxis()
-        
-        
+
         plt.legend(loc='upper right')
 
         axx.set_ylabel('Pressure [hPa]')
         axx.set_ylim(250, 1)
         axx.set_xlim(0, 1e-4)
-        # axx.set_xscale('log')
-        if profiles[svar][dataset].long_name ==  "Specific Humidity":
+        onedat = profiles[svar][available_datasets[0]]
+        if onedat.long_name == "Specific Humidity":
             unitstr = "kg/kg"
         else:
-            unitstr = str(profiles[svar][dataset].units)
-        
-        
-        axx.set_xlabel(profiles[svar][dataset].long_name +
+            unitstr = str(onedat.units)
+
+        axx.set_xlabel(onedat.long_name +
                        ' [' + unitstr + ']')
-        axx.set_title('Average ' + profiles[svar][dataset].long_name +
+        axx.set_title('Average ' +
+                      onedat.long_name +
                       ' profile')
         fig.tight_layout()
         figname = 'fig_profile_' +\
-            profiles[svar][dataset].long_name.replace(" ", "_")
+            onedat.long_name.replace(" ", "_")
         fig.savefig(get_plot_filename(figname, cfg), dpi=300)
         plt.close()
 
@@ -254,7 +315,7 @@ def main(cfg):
     available_vars = list(group_metadata(cfg['input_data'].values(),
                                          'short_name'))
     available_datasets = list(group_metadata(cfg['input_data'].values(),
-                                         'dataset'))
+                                             'dataset'))
 
     logging.debug("Found variables in recipe:\n%s", available_vars)
     available_vars_min_tas = deepcopy(available_vars)
@@ -268,8 +329,7 @@ def main(cfg):
         data[varname] = select_metadata(cfg['input_data'].values(),
                                         short_name=varname)
         data[varname] = sorted_metadata(data[varname], sort='dataset')
-    
-    
+
     profiles = {}
     for svar in available_vars_min_tas:
         profiles[svar] = {}
@@ -283,18 +343,18 @@ def main(cfg):
             input_file_svar = input_file_svar.replace('_ta_', '_' + svar + '_')
 
             logger.debug("Loading %s", input_file_svar)
-            svarcube = iris.load_cube(input_file_svar).collapsed('longitude',
-                                                        iris.analysis.MEAN)
+            svarcube = iris.load_cube(input_file_svar)
+            svarcube = svarcube.collapsed('longitude', iris.analysis.MEAN)
             profiles[svar][dataset] = svarcube.collapsed(['time', 'latitude'],
-                                                    iris.analysis.MEAN)
+                                                         iris.analysis.MEAN)
             logger.debug("Loading %s", attributes['filename'])
-            tacube = iris.load_cube(attributes['filename']).collapsed('longitude',
-                                                        iris.analysis.MEAN)
+            tacube = iris.load_cube(attributes['filename'])
+            tacube = tacube.collapsed('longitude', iris.analysis.MEAN)
             # plev = tacube.coord('air_pressure').points
             plot_zonal_mean(cfg, svarcube.collapsed(['time'],
                                                     iris.analysis.MEAN),
-                        dataset + " Zonal mean ",
-                        svarcube.long_name)
+                            dataset, "Zonal mean ",
+                            svarcube.long_name)
 
             # interpolate to dense grid, use equal dist points in log(p)
             logpr = np.log(np.array([25000, 2500]))
@@ -318,18 +378,18 @@ def main(cfg):
             trop_svar = new_svarcube.collapsed('air_pressure', min_pos,
                                                data_min=unrolled_data)
             plot_zonal_timedev(cfg, trop_svar,
-                        dataset + " Cold point tropopause ",
-                        new_svarcube.long_name)
+                               dataset + " Cold point tropopause ",
+                               new_svarcube.long_name)
 
         trop_ta = new_tacube.collapsed('air_pressure', min_pos,
                                        data_min=unrolled_data)
 
         plot_zonal_timedev(cfg, trop_ta,
-                    dataset + " Cold point tropopause ",
-                    "Air Temperature")
+                           dataset + " Cold point tropopause ",
+                           "Air Temperature")
     print("profiles")
     print(profiles)
-    
+
     plot_profiles(cfg, profiles, available_vars_min_tas, available_datasets)
 #        plot_tp_map(cfg, trop_hus.collapsed('time', iris.analysis.MEAN),
 #                    dataset + " Cold point tropopause specific humidity",
