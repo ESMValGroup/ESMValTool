@@ -26,10 +26,10 @@ Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 
 """
+import itertools
 import logging
 import os
 import sys
-from itertools import product
 
 import iris
 import iris.quickplot as qplt
@@ -457,7 +457,7 @@ def multi_model_contours(
     image_extention = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer and each threshold
-    for region, threshold in product(regions, thresholds):
+    for region, threshold in itertools.product(regions, thresholds):
         logger.info('plotting threshold: \t%s', threshold)
         title = ''
         plot_details = {}
