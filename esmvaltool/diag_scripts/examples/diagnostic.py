@@ -8,13 +8,10 @@ import iris
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
+    save_data,
+    save_figure,
     select_metadata,
     sorted_metadata,
-)
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger,
-    get_diagnostic_filename,
-    get_plot_filename,
 )
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
@@ -55,19 +52,13 @@ def compute_diagnostic(filename):
 
 def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
-    with ProvenanceLogger(cfg) as provenance_logger:
 
-        if cfg['write_netcdf']:
-            filename = get_diagnostic_filename(basename, cfg)
-            logger.info("Saving analysis results to %s", filename)
-            iris.save(cube, target=filename)
-            provenance_logger.log(filename, provenance_record)
+    if cfg['write_netcdf']:
+        save_data(basename, provenance_record, cfg, cube)
 
-        if cfg['write_plots'] and cfg.get('quickplot'):
-            filename = get_plot_filename(basename, cfg)
-            logger.info("Plotting analysis results to %s", filename)
-            quickplot(cube, filename=filename, **cfg['quickplot'])
-            provenance_logger.log(filename, provenance_record)
+    if cfg.get('quickplot'):
+        quickplot(cube, **cfg['quickplot'])
+        save_figure(basename, provenance_record, cfg)
 
 
 def main(cfg):

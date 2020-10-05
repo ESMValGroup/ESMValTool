@@ -120,15 +120,15 @@ def get_dataset_style(dataset, style_file=None):
     return style[dataset]
 
 
-def quickplot(cube, filename, plot_type, **kwargs):
+def quickplot(cube, plot_type, filename=None, **kwargs):
     """Plot a cube using one of the iris.quickplot functions."""
     logger.debug("Creating '%s' plot %s", plot_type, filename)
     plot_function = getattr(iris.quickplot, plot_type)
     fig = plt.figure()
     plot_function(cube, **kwargs)
-    # plt.gca().coastlines()
-    fig.savefig(filename)
-    plt.close(fig)
+    if filename:
+        fig.savefig(filename)
+    return fig
 
 
 def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
@@ -171,7 +171,6 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     ValueError
         `x_data`, `y_data`, `datasets` or `plot_kwargs` do not have the same
          size.
-
     """
     # Allowed kwargs
     allowed_kwargs = [
@@ -203,20 +202,20 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
             style['facecolor']
 
         # Plot
-        axes.plot(
-            x_data[idx],
-            y_data[idx],
-            markeredgecolor=style['color'],
-            markerfacecolor=facecolor,
-            marker=style['mark'],
-            **(kwargs.get('plot_kwargs', empty_dict)[idx]))
+        axes.plot(x_data[idx],
+                  y_data[idx],
+                  markeredgecolor=style['color'],
+                  markerfacecolor=facecolor,
+                  marker=style['mark'],
+                  **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
     # Costumize plot
     legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
-    fig.savefig(
-        filepath, additional_artists=[legend], **kwargs.get('save_kwargs', {}))
+    fig.savefig(filepath,
+                additional_artists=[legend],
+                **kwargs.get('save_kwargs', {}))
     logger.info("Wrote %s", filepath)
     plt.close()
 
@@ -256,7 +255,6 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         given) `plot_kwargs` is not array-like.
     ValueError
         `x_data`, `y_data` or `plot_kwargs` do not have the same size.
-
     """
     # Allowed kwargs
     allowed_kwargs = [
@@ -270,8 +268,8 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
             raise TypeError("{} is not a valid keyword argument".format(kwarg))
 
     # Check parameters
-    _check_size_of_parameters(x_data, y_data, kwargs.get(
-        'plot_kwargs', x_data))
+    _check_size_of_parameters(x_data, y_data,
+                              kwargs.get('plot_kwargs', x_data))
     empty_dict = [{} for _ in x_data]
 
     # Create matplotlib instances
@@ -294,7 +292,8 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
-    fig.savefig(
-        filepath, additional_artists=[legend], **kwargs.get('save_kwargs', {}))
+    fig.savefig(filepath,
+                additional_artists=[legend],
+                **kwargs.get('save_kwargs', {}))
     logger.info("Wrote %s", filepath)
     plt.close()

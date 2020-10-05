@@ -32,7 +32,7 @@ To install in development mode, follow these instructions.
    (this should be done even if the system in use already has a
    preinstalled version of conda, as problems have been reported with
    NCL when using such a version)
--  To make the ``conda`` command availble, add
+-  To make the ``conda`` command available, add
    ``source <prefix>/etc/profile.d/conda.sh`` to your ``.bashrc`` file
    and restart your shell. If using (t)csh shell, add
    ``source <prefix>/etc/profile.d/conda.csh`` to your
@@ -60,7 +60,7 @@ To install in development mode, follow these instructions.
    ``esmvaltool install Julia`` to install the Julia
    dependences. Install Julia dependences after R dependences if you
    plan to use both.
--  Test that your installation was succesful by running
+-  Test that your installation was successful by running
    ``esmvaltool -h``.
 -  If you log into a cluster or other device via ``ssh`` and your origin
    machine sends the ``locale`` environment via the ``ssh`` connection,
@@ -73,14 +73,14 @@ To install in development mode, follow these instructions.
    environment since that will update some packages that are pinned to
    specific versions for the correct functionality of the environment.
 
-Using the development version of the ESMValTool Core package
+Using the development version of the ESMValCore package
 ------------------------------------------------------------
 
-If you need the latest developments of the ESMValTool Core package, you
+If you need the latest developments of the ESMValCore package, you
 can install it from source into the same conda environment. First follow
 the steps above and then:
 
--  Clone the ESMValTool Core github repository:
+-  Clone the ESMValCore github repository:
    ``git clone git@github.com:ESMValGroup/ESMValCore``)
 -  Go to the esmvalcore directory: ``cd ESMValCore``
 -  Update the esmvaltool conda environment
@@ -256,7 +256,7 @@ NCL
 
 Because there is no standard best practices document for NCL, we use
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ for NCL code as
-well, with some minor adjustments to accomodate for differences in the
+well, with some minor adjustments to accommodate for differences in the
 languages. The most important difference is that for NCL code the
 indentation should be 2 spaces instead of 4. Use the command
 ``nclcodestyle /path/to/file.ncl`` to check if your code follows the
