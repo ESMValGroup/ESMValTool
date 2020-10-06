@@ -69,7 +69,7 @@ preprocessors:
 diagnostics:
   calculate_weights_climwip:
     variables:
-      tas_CLIM:
+      tas_CLIM: &common_settings
         short_name: tas
         start_year: 1995
         end_year: 2014
@@ -77,19 +77,11 @@ diagnostics:
         preprocessor: climatological_mean
         additional_datasets: *obs_data
       pr_CLIM:
+        <<: *common_settings
         short_name: pr
-        start_year: 1995
-        end_year: 2014
-        mip: Amon
-        preprocessor: climatological_mean
-        additional_datasets: *obs_data
       psl_CLIM:
+        <<: *common_settings
         short_name: psl
-        start_year: 1995
-        end_year: 2014
-        mip: Amon
-        preprocessor: climatological_mean
-        additional_datasets: *obs_data
 
     scripts:
       climwip:
