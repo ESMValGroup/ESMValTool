@@ -137,7 +137,7 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 .. code-block:: bash
 
-    esmvaltool -c [CONFIG_FILE] cmorizers/recipe_era5.yml
+    esmvaltool run cmorizers/recipe_era5.yml
 
 (Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
 
