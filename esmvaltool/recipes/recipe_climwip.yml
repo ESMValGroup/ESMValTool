@@ -9,18 +9,20 @@ documentation:
     - smeets_stef
     - brunner_lukas
     - camphuijsen_jaro
+    - lorenz_ruth
 
   maintainer:
     - kalverla_peter
     - smeets_stef
     - brunner_lukas
+    - lorenz_ruth
 
   references:
     - brunner2019
     - lorenz2018
     - knutti2017
 
-datasets: &model_data
+datasets: &model_data  # a minimal selection to demonstrate functionality
   - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
   - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
   - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: "r(1:4)i1p1"}
@@ -47,14 +49,6 @@ preprocessors:
     climate_statistics:
       operator: mean
 
-  detrended_std:
-    <<: *general
-    detrend:
-      dimension: time
-      method: linear
-    climate_statistics:
-      operator: std_dev
-
   temperature_anomalies:
     custom_order: true
     area_statistics:
@@ -75,26 +69,28 @@ preprocessors:
 diagnostics:
   calculate_weights_climwip:
     variables:
-      tas:
+      tas_CLIM:
+        short_name: tas
         start_year: 1995
         end_year: 2014
         mip: Amon
-        preprocessor: detrended_std
+        preprocessor: climatological_mean
         additional_datasets: *obs_data
-      pr:
+      pr_CLIM:
+        short_name: pr
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+        additional_datasets: *obs_data
+      psl_CLIM:
+        short_name: psl
         start_year: 1995
         end_year: 2014
         mip: Amon
         preprocessor: climatological_mean
         additional_datasets: *obs_data
 
-      psl:
-        start_year: 1995
-        end_year: 2014
-        mip: Amon
-        preprocessor: climatological_mean
-        additional_datasets: *obs_data
-        
     scripts:
       climwip:
         script: weighting/climwip.py
