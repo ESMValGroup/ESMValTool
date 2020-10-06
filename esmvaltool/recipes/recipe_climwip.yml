@@ -21,22 +21,9 @@ documentation:
     - knutti2017
 
 datasets: &model_data
-  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp45], ensemble: r1i1p1}
   - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
-
-  - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp45], ensemble: r1i1p1}
   - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
-
-  - {dataset: CanESM2, project: CMIP5, exp: [historical, rcp45], ensemble: "r(1:5)i1p1"}
-
-  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp45], ensemble: "r(1:4)i1p1"}
-  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp60], ensemble: "r(1:4)i1p1"}
   - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: "r(1:4)i1p1"}
-
-  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: [historical, rcp26], ensemble: "r(1:10)i1p1"}
-
-  - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp26], ensemble: r1i1p1}
-  - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp45], ensemble: r1i1p1}
   - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
 
 obs_data: &obs_data  # for climwip performance metrics
@@ -50,7 +37,7 @@ preprocessors:
     mask_landsea:
       mask_out: sea
     extract_region:
-      start_longitude: -10.0
+      start_longitude: 0.0
       end_longitude: 39.0
       start_latitude: 30.0
       end_latitude: 76.25
@@ -101,12 +88,19 @@ diagnostics:
         preprocessor: climatological_mean
         additional_datasets: *obs_data
 
+      psl:
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+        additional_datasets: *obs_data
+        
     scripts:
       climwip:
         script: weighting/climwip.py
         obs_data: native6
-        sigma_performance: 0.588
-        sigma_independence: 0.704
+        sigma_performance: 0.5
+        sigma_independence: 0.5
 
   weighted_temperature_graph:
     variables:
