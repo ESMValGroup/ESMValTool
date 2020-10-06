@@ -18,24 +18,16 @@ preprocessors:
       mask_out: "sea"
   extract: &extract
     extract_shape:
-      shapefile: 'globwat/basin41_ll.shp' # (config-user, aux)
+      shapefile: 'globwat/basin41_ll.shp'
       method: contains
-      crop: true  # set to false to keep the entire globe (memory intensive!)
+      crop: true
 
-diagnostics:
-# TODO: can we use the daily reference evaporation in the model as well?
-# """
-# Currently, the model reads monthly reference evaporation and then multiplies it by kc and then 
-# divide it by the number of days in each month and uses it as daily actual evaporation in the model. 
-# We can change the model code to read daily reference evaporation and does the calculation, but we
-# did not change the model code for this aim yet. 
-# """
+diagnostics:  # TODO: can we use the daily reference evaporation in the model as well?
   # diagnostic_daily_GlobWat:
   #   description: daily precipitation of ERA5 & ERA-Interim
   #   additional_datasets:
   #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #     # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
-  #     # - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #     # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
   #   variables:
   #     pr: &daily_var
   #       mip: day
@@ -47,43 +39,36 @@ diagnostics:
   #     rsds: *daily_var
   #     rsdt:
   #       <<: *daily_var
-  #       mip: CFday  
+  #       mip: CFday
   #   scripts:
   #     script:
-  #       script: hydrology/globwat_diag.py
+  #       script: hydrology/globwat.py
   #       target_file: 'globwat/globwat_target_grid.nc'
 
   diagnostic_monthly_GlobWat:
       description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
       additional_datasets:
         - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-        # - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
         # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
       variables:
-        # orog:
-        #   mip: fx
-        #   preprocessor: general
         pr: &var_monthly
           mip: Amon
           start_year: 2004
           end_year: 2004
           preprocessor: general
-        # evspsblpot: *var_monthly
-        # ERA-Interim does not have pet. Thus, we need tas, psl, rsds, and rsdt to calculate it.
-        tas: *var_monthly
+        tas: *var_monthly  # ERA-Interim does not have pet. Thus, we need tas, psl, rsds, and rsdt to calculate it.
         psl: *var_monthly
         rsds: *var_monthly
         rsdt: *var_monthly
       scripts:
         script:
-          script: hydrology/globwat_diag.py
+          script: hydrology/globwat.py
           target_file: 'globwat/globwat_target_grid.nc'
 
   # diagnostic_monthly_tas:
-  #   description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
+  #   description: analysis of ERA5 & ERA-Interim
   #   additional_datasets:
   #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #     # - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
   #     # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
   #   variables:
   #     tas: &var_monthly
@@ -92,7 +77,6 @@ diagnostics:
   #       end_year: 2004
   #       preprocessor: extract
   #     pr: *var_monthly
-  #   scripts: 
+  #   scripts:
   #     script:
   #       script: hydrology/extract_tas_prc.py
-     
