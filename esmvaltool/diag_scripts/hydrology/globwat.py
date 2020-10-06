@@ -1,8 +1,9 @@
 """Globwat diagnostic.
 
-Currently, the model reads monthly reference evaporation and then multiplies it by kc and then
-divide it by the number of days in each month and uses it as daily actual evaporation in the model.
-We can change the model code to read daily reference evaporation and does the calculation, but we
+Currently, the model reads monthly reference evaporation and then multiplies
+it by kc and then divide it by the number of days in each month and uses it
+as daily actual evaporation in the model. We can change the model code to
+read daily reference evaporation and does the calculation, but we
 did not change the model code for this aim yet.
 """
 import logging
@@ -14,12 +15,10 @@ import iris.analysis
 import numpy as np
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
-from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
-                                            group_metadata, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic)
 
 
-logger = logging.getLogger(Path(__file__).name) #for test in python use '__file__'
+logger = logging.getLogger(Path(__file__).name)
 
 
 def create_provenance_record():
@@ -41,10 +40,9 @@ def create_provenance_record():
     }
     return record
 
+
 def change_data_type(cube):
-    """GlobWat input data types are float32.
-    """
-    # fix dtype
+    """Change data type to float32."""
     cube.data = cube.core_data().astype('float32')
     for coord_name in 'latitude', 'longitude', 'time':
         coord = cube.coord(coord_name)
@@ -53,8 +51,9 @@ def change_data_type(cube):
         coord.guess_bounds()
     return cube
 
+
 def get_input_cubes(metadata):
-    """Return a dict with all (preprocessed) input files."""
+    """Return a dictionary with all (preprocessed) input files."""
     provenance = create_provenance_record()
     all_vars = {}
     time_step = {}
@@ -70,54 +69,14 @@ def get_input_cubes(metadata):
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
-        #set filling values to -9999
         cube.data.set_fill_value(-9999)
-        #change cube dtype to float32
         all_vars[short_name] = change_data_type(cube)
-        # Since the code faces memory error escaped change to floaat 32
-        # all_vars[short_name] = cube
         provenance['ancestors'].append(filename)
     return all_vars, provenance, time_step
 
-def _get_extra_info(cube):
-    """Get start/end time and origin of cube.
-    Get the start and end times as an array with length 6
-    and get latitude and longitude as an array with length 2
-    """
-    coord = cube.coord('time')
-    time_start_end = []
-    for index in 0, -1:
-        time_val = coord.cell(index).point
-        time_val = [
-            time_val.year,
-            time_val.month,
-            time_val.day,
-            time_val.hour,
-            time_val.minute,
-            time_val.second,
-        ]
-        time_val = [float(time) for time in time_val]
-        time_start_end.append(time_val)
-    # Add data_origin
-    lat_lon = [
-        cube.coord(name).points[0] for name in ('latitude', 'longitude')
-    ]
-    return time_start_end, lat_lon
-
-def _shift_era5_time_coordinate(cube):
-    """Shift instantaneous variables 30 minutes forward in time.
-    After this shift, as an example:
-    time format [1990, 1, 1, 11, 30, 0] will be [1990, 1, 1, 12, 0, 0].
-    For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
-    """
-    time = cube.coord(axis='T')
-    time.points = time.points + 30 / (24 * 60)
-    time.bounds = None
-    time.guess_bounds()
-    return cube
 
 def load_target(filename):
-    """Load DEM into iris cube."""
+    """Load target grid."""
     logger.info("Reading digital elevation model from %s", filename)
     if filename.suffix.lower() == '.nc':
         cube = iris.load_cube(str(filename))
@@ -132,14 +91,13 @@ def load_target(filename):
             cube.coord(coord).guess_bounds()
     return cube
 
+
 def get_month_day_for_output_name(cube):
-    """get month and day number for output name."""
-    # get start year and end year
+    """Get month and day number for output name."""
     coord_time = cube.coord('time')
     start_year = coord_time.cell(0).point.year
     end_year = coord_time.cell(-1).point.year
     year = start_year - 1
-    #looping over time dimention, get day and months
     months = []
     days = []
     for i in range(0, len(cube.coord('time').points)):
@@ -149,6 +107,7 @@ def get_month_day_for_output_name(cube):
         for daynumber in range(1, nday+1):
             days.append(str(n_month) + str(daynumber).zfill(2))
     return months ,days
+
 
 def make_output_name(cube):
     """Get output file name, specific to Globwat."""
@@ -189,13 +148,15 @@ def make_output_name(cube):
     output_name['pet_arora']['day']  = daily_pet_arora
     return output_name
 
+
 def arora_pet(tas):
-    """Arora is a temperature-based method for calculating potential ET.
+    """Calculating potential ET using Arora method.
+
+    Arora is a temperature-based method for calculating potential ET.
     In this equation, t is the monthly average temperature in degree Celcius
-    pet is in mm per month."""
-    # convert temperature unit to degC
+    pet is in mm per month.
+    """
     tas.convert_units('degC')
-    # define constants of formula
     a = iris.coords.AuxCoord(np.float32(325),
                              long_name='first constant',
                              units=None)
@@ -210,8 +171,10 @@ def arora_pet(tas):
     arora_pet.rename("arora potential evapotranspiration")
     return arora_pet
 
+
 def main(cfg):
-    """Process data for use as input to the GlobWat hydrological model.
+    """Process data for GlobWat hydrological model.
+
     These variables are needed in all_vars:
     pr (precipitation_flux)
     psl (air_pressure_at_mean_sea_level)
@@ -220,12 +183,10 @@ def main(cfg):
     tas (air_temperature)
     """
     input_metadata = cfg['input_data'].values()
-    # for checking the code in ipython I added print(input_metadata).
-    # Run the script and use print(input_metadata) in the log.txt as input_metadata
-    # print('input_metadata', input_metadata)
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance, time_step = get_input_cubes(metadata)
-        #load target grid for using in regriding function
+
+        # load target grid for using in regriding function
         target_cube_path = Path(cfg['auxiliary_data_dir']) / cfg['target_file']
         target_cube = load_target(target_cube_path)
 
@@ -237,10 +198,10 @@ def main(cfg):
             rsdt=all_vars['rsdt'],
             tas=all_vars['tas'],
         ))
+
         #Take tas values to calculate pet_arora
         tas = all_vars['tas']
         all_vars.update(pet_arora = arora_pet(tas))
-
         logger.info("Converting units")
         pr = all_vars['pr']
         pet = all_vars['pet']
@@ -248,10 +209,12 @@ def main(cfg):
         pr.data = pr.core_data() / 1000.
         pet.units = pet.units / 'kg m-3'
         pet.data = pet.core_data() /1000.
+
         # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
         if time_step['mip'] == 'Amon':
             pr.convert_units('mm month-1')
             pet.convert_units('mm month-1')
+
         # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
         elif time_step['mip'] == 'day':
             pr.convert_units('mm day-1')
@@ -328,7 +291,6 @@ def main(cfg):
             # # Store provenance
             # with ProvenanceLogger(cfg) as provenance_logger:
             #     provenance_logger.log(output_file, provenance)
-
 
 
 if __name__ == '__main__':
