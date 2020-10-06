@@ -222,7 +222,7 @@ def main(cfg):
     """
     input_metadata = cfg['input_data'].values()
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
-        all_vars, provenance, time_step = get_input_cubes(metadata)
+        all_vars, provenance, mip = get_input_cubes(metadata)
 
         # load target grid for using in regriding function
         target_cube = load_target(cfg)
@@ -242,25 +242,29 @@ def main(cfg):
         output_name = make_output_name(all_vars['pr'])
         start_year, end_year = get_cube_info(all_vars['pr'])
 
+        if mip == 'Amon':
+            freq = 'Monthly'
+        else:
+            freq = 'Daily'
+
         for nyear in range(start_year , end_year+1):
             for key in ['pr', 'pet', 'pet_arora']:
-                for mip, freq in zip(['Amon', 'day'], ['Monthly', 'Daily']):
-                    file_names = output_name[key][mip]
-                    data_dir = Path(f"{dataset}/{nyear}/{freq}")
-                    data_dir.mkdir(parents=True, exist_ok=True)
-                    for file_name in file_names:
-                        cube = all_vars[key]
-                        for sub_cube in cube.slices_over('time'):
-                            # set negative values for precipitaion to zero
-                            if key == 'pr':
-                                sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
-                            #regrid data baed on target cube
-                            sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
-                            #Save data as netcdf
-                            path = data_dir / f"{file_name}.nc"
-                            iris.save(sub_cube_regrided, path , fill_value=-9999)
+                file_names = output_name[key][mip]
+                data_dir = Path(f"{dataset}/{nyear}/{freq}")
+                data_dir.mkdir(parents=True, exist_ok=True)
+                for file_name in file_names:
+                    cube = all_vars[key]
+                    for sub_cube in cube.slices_over('time'):
+                        # set negative values for precipitaion to zero
+                        if key == 'pr':
+                            sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
+                        #regrid data baed on target cube
+                        sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
+                        #Save data as netcdf
+                        path = data_dir / f"{file_name}.nc"
+                        iris.save(sub_cube_regrided, path , fill_value=-9999)
 
-                            # save_ascii(sub_cube, path)
+                        # save_ascii(sub_cube, path)
 
             # Store provenance
             with ProvenanceLogger(cfg) as provenance_logger:
@@ -268,5 +272,5 @@ def main(cfg):
 
 
 if __name__ == '__main__':
-   with run_diagnostic() as config:
-       main(config)
+    with run_diagnostic() as config:
+        main(config)
