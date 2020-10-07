@@ -240,11 +240,13 @@ colormaps:
       cmap: BrBG
       vmin: -0.05
       vmax: 0.05
+      extend: both
     timemean:
       title: timemean
-      cmap: YlOrBr
-      vmin: 0.0
+      cmap: BrBG
+      vmin: -0.5
       vmax: 0.5
+      extend: both
 
   # For now the same as LAI, can be adapted
   bdalb:
