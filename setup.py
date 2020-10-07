@@ -38,6 +38,7 @@ REQUIREMENTS = {
         'jinja2',
         'joblib',
         'matplotlib',
+        'natsort',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',

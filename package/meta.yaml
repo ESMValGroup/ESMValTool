@@ -1,7 +1,7 @@
 # Conda build recipe
 ---
 
-# Build commmand:
+# Build command:
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
@@ -81,6 +81,7 @@ outputs:
         - jinja2
         - joblib
         - matplotlib>=3
+        - natsort
         - nc-time-axis
         - netCDF4
         - numpy

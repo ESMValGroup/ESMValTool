@@ -109,6 +109,10 @@ authors:
     name: Bojovic, Dragana
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-7354-1885
+  brunner_lukas:
+    name: Brunner, Lukas
+    institute: ETH Zurich, Switzerland
+    orcid: https://orcid.org/0000-0001-5760-4524
   cagnazzo_chiara:
     name: Cagnazzo, Chiara
     institute: CNR, Italy
@@ -382,6 +386,10 @@ authors:
     name: Serva, Federico
     institute: CNR, Italy
     orcid: https://orcid.org/0000-0002-7118-0817
+  smeets_stef:
+    name: Smeets, Stef
+    institute: NLeSC, Netherlands
+    orcid: https://orcid.org/0000-0002-5413-9038
   sommer_philipp:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
