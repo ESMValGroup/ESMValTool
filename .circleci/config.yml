@@ -164,7 +164,6 @@ jobs:
     working_directory: /esmvaltool
     docker:
       - image: continuumio/miniconda3
-    resource_class: medium+
     steps:
       - checkout
       - check_changes
