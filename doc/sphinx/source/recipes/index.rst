@@ -12,6 +12,7 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
+   recipe_climwip
    recipe_clouds
    recipe_crem
    recipe_combined_climate_extreme_index
