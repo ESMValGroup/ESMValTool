@@ -34,7 +34,6 @@ User settings in recipe
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
-
     * This script takes multiple variables as input as long as they're available for all models
     * ``start_year``: provide the period for which to compute performance and independence.
     * ``end_year``: provide the period for which to compute performance and independence.
@@ -43,17 +42,14 @@ User settings in recipe
     * ``additional_datasets``: provide a list of model data for performance calculation.
 
   *Optional settings for variables*
-
     * ``performance``: set to false to *not* calculate performance for this variable group
     * ``independence``: set to false to *not* calculate independence for this variable group
     * By default, both performance and independence are calculate for each variable group.
 
   *Required settings for preprocessor*
-
     * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
 
   *Optional settings for preprocessor*
-
     * ``extract_region`` or ``extract_shape`` can be used to crop the input data.
     * ``extract_season`` can be used to focus on a single season.
     * different climate statistics can be used to calculate mean or (detrended) std_dev.
@@ -61,12 +57,10 @@ User settings in recipe
 2. Script ``weighted_temperature_graph.py``
 
   *Required settings for script*
-
     * ``ancestors``: must include weights from previous diagnostic
     * ``weights``: the filename of the weights: 'weights_combined.nc'
 
   *Required settings for variables*
-
     * This script only takes temperature (tas) as input
     * ``start_year``: provide the period for which to plot a temperature change graph.
     * ``end_year``: provide the period for which to plot a temperature change graph.
@@ -74,11 +68,9 @@ User settings in recipe
     * ``preprocessor``: temperature_anomalies
 
   *Required settings for preprocessor*
-
     * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
 
   *Optional settings for preprocessor*
-
     * Can be a global mean or focus on a point, region or shape
     * Anomalies can be calculated with respect to a custom reference period
     * Monthly, annual or seasonal average/extraction can be used
