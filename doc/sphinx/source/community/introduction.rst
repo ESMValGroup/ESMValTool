@@ -123,7 +123,7 @@ Running tests
 -------------
 
 Go to the directory where the repository is cloned and run
-``python setup.py test``. Tests will also be run automatically by
+``pytest``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
 
 Code style
@@ -135,6 +135,68 @@ requests are reviewed and tested by one or more members of the core
 development team. For code in all languages, it is highly recommended
 that you split your code up in functions that are short enough to view
 without scrolling.
+
+We include checks for Python, R, NCL, and yaml files, most of which are
+described in more detail in the sections below.
+This includes checks for invalid syntax and formatting errors.
+`Pre-commit <https://pre-commit.com/>`__ is a handy tool that can run
+all of these checks automatically.
+It knows knows which tool to run for each filetype, and therefore provides
+a simple way to check your code!
+
+Pre-commit
+~~~~~~~~~~
+
+To run ``pre-commit`` on your code, go to the ESMValTool directory
+(``cd ESMValTool``) and run
+
+::
+
+   pre-commit run
+
+By default, pre-commit will only run on the files that have been changed,
+meaning those that have been staged in git (i.e. after
+``git add your_script.py``).
+
+To make it only check some specific files, use
+
+::
+
+   pre-commit run --files your_script.py
+
+or
+
+::
+
+   pre-commit run --files your_script.R
+
+Alternatively, you can configure ``pre-commit`` to run on the staged files before
+every commit (i.e. ``git commit``), by installing it as a `git hook <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__ using
+
+::
+
+   pre-commit install
+
+Pre-commit hooks are used to inspect the code that is about to be committed. The
+commit will be aborted if files are changed or if any issues are found that
+cannot be fixed automatically. Some issues cannot be fixed (easily), so to
+bypass the check, run
+
+::
+
+   git commit --no-verify
+
+or
+
+::
+
+   git commit -n
+
+or uninstall the pre-commit hook
+
+::
+
+   pre-commit uninstall
 
 Python
 ~~~~~~
@@ -154,16 +216,23 @@ running the commands
 
    isort some_file.py
 
-to sort the imports in the standard way and
+to sort the imports in `the standard way <https://www.python.org/dev/peps/pep-0008/#imports>`__
+using `isort <https://pycqa.github.io/isort/>`__ and
 
 ::
 
    yapf -i some_file.py
 
-to add/remove whitespace as required by the standard.
+to add/remove whitespace as required by the standard using `yapf <https://github.com/google/yapf>`__,
+
+::
+
+   docformatter -i your_script.py
+
+to run `docformatter <https://github.com/myint/docformatter>`__ which helps formatting the doc strings (such as line length, spaces).
 
 To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``. and run
+the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`__
 
 ::
 
@@ -177,7 +246,7 @@ Run
 
 to see the warnings about the code style of the entire project.
 
-We use ``pycodestyle`` on CircleCI to automatically check that there are
+We use `flake8 <https://flake8.pycqa.org/en/latest/>`__ on CircleCI to automatically check that there are
 no formatting mistakes and Codacy for monitoring (Python) code quality.
 Running prospector locally will give you quicker and sometimes more
 accurate results.
@@ -291,6 +360,8 @@ name to the list of authors in CITATION.cff and regenerate the file
 
    pip install cffconvert
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
+
+.. _How to make a release:
 
 How to make a release
 ---------------------
