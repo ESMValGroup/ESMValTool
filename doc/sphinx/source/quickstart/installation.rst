@@ -393,4 +393,12 @@ confirm that no errors are reported:
 
 .. code-block:: bash
 
-    python setup.py test
+    pytest -m "not installation"
+
+or if you want to run the full test suite remove the `-m "not installation"` flag;
+also if you want to run the tests on multiple threads, making the run faster, use
+the `-n N` flag where N is the number of available threads e.g:
+
+.. code-block:: bash
+
+    pytest -n 4
