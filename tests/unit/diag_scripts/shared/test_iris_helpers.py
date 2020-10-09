@@ -346,7 +346,7 @@ def test_intersect_dataset_coords(cubes, output):
     assert new_cubes == output
 
 
-def test_preprocess_cube_before_merging():
+def test_prepare_cube_for_merging():
     """Test preprocessing cubes before merging."""
     label = 'abcde'
     aux_coord = iris.coords.AuxCoord(label,
@@ -362,7 +362,7 @@ def test_preprocess_cube_before_merging():
         aux_coords_and_dims=[(aux_coord, [])],
     )
     assert cube_in != cube_out
-    ih.preprocess_cube_before_merging(cube_in, label)
+    ih.prepare_cube_for_merging(cube_in, label)
     assert cube_in == cube_out
 
 

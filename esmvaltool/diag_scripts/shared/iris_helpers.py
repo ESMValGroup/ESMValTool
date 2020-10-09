@@ -141,7 +141,7 @@ def get_mean_cube(datasets):
     for dataset in datasets:
         path = dataset['filename']
         cube = iris.load_cube(path)
-        preprocess_cube_before_merging(cube, path)
+        prepare_cube_for_merging(cube, path)
         cubes.append(cube)
     mean_cube = cubes.merge_cube()
     if len(cubes) > 1:
@@ -245,8 +245,8 @@ def intersect_dataset_coordinates(cubes):
     return new_cubes
 
 
-def preprocess_cube_before_merging(cube, cube_label):
-    """Preprocess single :class:`iris.cube.Cube` in order to merge it later.
+def prepare_cube_for_merging(cube, cube_label):
+    """Prepare single :class:`iris.cube.Cube` in order to merge it later.
 
     Parameters
     ----------
