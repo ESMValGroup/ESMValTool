@@ -89,6 +89,7 @@ diagnostics:
         obs_data: native6
         sigma_performance: 0.5
         sigma_independence: 0.5
+        combine_ensemble_members: True
 
   weighted_temperature_graph:
     variables:
