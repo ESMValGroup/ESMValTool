@@ -16,9 +16,12 @@ from scipy.stats import linregress, multivariate_normal
 from sklearn.feature_selection import f_regression
 from sklearn.linear_model import LinearRegression
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, io)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    io,
+)
 
 logger = logging.getLogger(__name__)
 

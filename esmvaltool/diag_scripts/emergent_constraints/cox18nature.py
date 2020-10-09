@@ -33,11 +33,16 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            io, plot, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    plot,
+    run_diagnostic,
+    select_metadata,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
