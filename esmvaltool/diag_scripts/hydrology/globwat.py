@@ -134,7 +134,7 @@ def make_output_name(cube):
     return output_name
 
 
-def arora_pet(tas):
+def monthly_arora_pet(tas):
     """Calculating potential ET using Arora method.
 
     Arora is a temperature-based method for calculating potential ET.
@@ -151,10 +151,10 @@ def arora_pet(tas):
     c = iris.coords.AuxCoord(np.float32(0.9),
                              long_name='third constant',
                              units=None)
-    arora_pet = a + b * tas + c * (tas ** 2)
-    arora_pet.units = 'mm month-1'
-    arora_pet.rename("arora potential evapotranspiration")
-    return arora_pet
+    monthly_arora_pet = (a + b * tas + c * (tas ** 2))/12
+    monthly_arora_pet.units = 'mm month-1'
+    monthly_arora_pet.rename("arora potential evapotranspiration")
+    return monthly_arora_pet
 
 
 def _convert_units(cube, time_step):
@@ -237,7 +237,7 @@ def main(cfg):
         ))
 
         logger.info("Calculation PET uisng arora method")
-        all_vars.update(pet_arora = arora_pet(all_vars['tas']))
+        all_vars.update(pet_arora = monthly_arora_pet(all_vars['tas']))
 
         output_name = make_output_name(all_vars['pr'])
         start_year, end_year = get_cube_info(all_vars['pr'])
