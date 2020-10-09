@@ -6,11 +6,15 @@ Installation
 
 ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
 
-The ESMValTool supports three different installation methods:
+The ESMValTool supports five different installation methods:
 
 * Installation through Conda package manager (see https://www.continuum.io);
 
+* Installation with Pip and Conda package manager (see https://pypi.org);
+
 * Deployment through a Docker container (see https://www.docker.com);
+
+* Deployment through a Singularity container (see https://sylabs.io/guides/latest/user-guide/);
 
 * From the source code available at https://github.com/ESMValGroup/ESMValTool.
 
@@ -21,11 +25,14 @@ this methods.
 Conda installation
 ==================
 
-In order to install the Conda package, you will need both conda and Julia
-pre-installed, this is because Julia cannot be installed from conda.
-For a minimal conda installation go to https://conda.io/miniconda.html.
+In order to install the `Conda <https://docs.conda.io>`_ package, you will need
+both Conda and Julia pre-installed, this is because Julia cannot be installed
+from Conda.
+For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
+It is recommended that you always use the latest version of Conda, as problems
+have been reported when trying to use older versions.
 Installation instructions for Julia can be found on the
-`Julia download page <https://julialang.org/downloads/>`_.
+`Julia installation instructions page <https://julialang.org/downloads/platform/>`_.
 
 Once you have installed the above prerequisites, you can install ESMValTool by running:
 
@@ -34,8 +41,28 @@ Once you have installed the above prerequisites, you can install ESMValTool by r
     conda install esmvaltool -c esmvalgroup -c conda-forge
 
 Here ``conda`` is the executable calling the Conda package manager to install
-``esmvaltool`` and the ``-c`` flag specifies the software channels in which ``esmvaltool``
-and its dependencies can be found.
+``esmvaltool`` and the ``-c`` flag specifies the Conda software channels in which the
+``esmvaltool`` package and its dependencies can be found.
+
+It is also possible to create a new
+`Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
+and install ESMValTool into it with a single command:
+
+.. code-block:: bash
+
+    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool
+
+Don't forget to activate the newly created environment after the installation:
+
+.. code-block:: bash
+
+    conda activate esmvaltool
+
+Of course it is also possible to choose a different name than ``esmvaltool`` for the environment.
+
+.. note::
+
+	  Creating a new Conda environment is often much faster and more reliable than trying to update an existing Conda environment.
 
 Installation of subpackages
 ---------------------------
@@ -66,11 +93,146 @@ Note that it is only necessary to install Julia prior to the conda installation 
 
 Note that the ESMValTool source code is contained in the ``esmvaltool-python`` package, so this package will always be installed as a dependency if you install one or more of the packages for other languages.
 
+Pip installation
+================
+
+It is also possible to install ESMValTool from `PyPI <https://pypi.org/project/ESMValTool/>`_.
+However, this requires first installing dependencies that are not available on PyPI in some other way.
+By far the easiest way to install these dependencies is to use conda_.
+For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
+
+After installing Conda, download
+`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml>`_:
+
+.. code-block:: bash
+
+    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml
+
+and install these dependencies into a new conda environment with the command
+
+.. code-block:: bash
+
+    conda env create --name esmvaltool --file environment.yml
+
+Finally, activate the newly created environment
+
+.. code-block:: bash
+
+    conda activate esmvaltool
+
+and install ESMValTool as well as any remaining Python dependencies with the command:
+
+.. code-block:: bash
+
+    pip install esmvaltool
+
+If you would like to run Julia diagnostic scripts, you will also need to
+`install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
+
+.. code-block:: bash
+
+    esmvaltool install Julia
+
+If you would like to run R diagnostic scripts, you will also need to install the R
+dependencies:
+
+.. code-block:: bash
+
+    esmvaltool install R
+
 Docker installation
 ===================
 
-.. warning::
-    Docker section to be added
+ESMValTool is also provided through `DockerHub <https://hub.docker.com/u/esmvalgroup/>`_
+in the form of docker containers.
+See https://docs.docker.com for more information about docker containers and how to
+run them.
+
+You can get the latest release with
+
+.. code-block:: bash
+
+   docker pull esmvalgroup/esmvaltool:stable
+
+If you want to use the current master branch, use
+
+.. code-block:: bash
+
+   docker pull esmvalgroup/esmvaltool:latest
+
+To run a container using those images, use:
+
+.. code-block:: bash
+
+   docker run esmvalgroup/esmvaltool:stable --help
+
+Note that the container does not see the data or environmental variables
+available in the host by default. You can make data available with
+``-v /path:/path/in/container`` and environmental variables with ``-e VARNAME``.
+
+For example, the following command would run a recipe
+
+.. code-block:: bash
+
+   docker run -e HOME -v "$HOME":"$HOME" -v /data:/data esmvalgroup/esmvaltool:stable run examples/recipe_python.yml
+
+with the environmental variable ``$HOME`` available inside the container and
+the data in the directories ``$HOME`` and ``/data``, so these can be used to
+find the configuration file, recipe, and data.
+
+It might be useful to define a `bash alias
+<https://opensource.com/article/19/7/bash-aliases>`_
+or script to abbreviate the above command, for example
+
+.. code-block:: bash
+
+	 alias esmvaltool="docker run -e HOME -v $HOME:$HOME -v /data:/data esmvalgroup/esmvaltool:stable"
+
+would allow using the ``esmvaltool`` command without even noticing that the
+tool is running inside a Docker container.
+
+
+Singularity installation
+========================
+
+Docker is usually forbidden in clusters due to security reasons. However,
+there is a more secure alternative to run containers that is usually available
+on them: `Singularity <https://sylabs.io/guides/3.0/user-guide/quick_start.html>`_.
+
+Singularity can use docker containers directly from DockerHub with the
+following command
+
+.. code-block:: bash
+
+   singularity run docker://esmvalgroup/esmvaltool:stable run examples/recipe_python.yml
+
+Note that the container does not see the data available in the host by default.
+You can make host data available with ``-B /path:/path/in/container``.
+
+It might be useful to define a `bash alias
+<https://opensource.com/article/19/7/bash-aliases>`_
+or script to abbreviate the above command, for example
+
+.. code-block:: bash
+
+	 alias esmvaltool="singularity run -B $HOME:$HOME -B /data:/data docker://esmvalgroup/esmvaltool:stable"
+
+would allow using the ``esmvaltool`` command without even noticing that the
+tool is running inside a Singularity container.
+
+Some clusters may not allow to connect to external services, in those cases
+you can first create a singularity image locally:
+
+.. code-block:: bash
+
+   singularity build esmvaltool.sif docker://esmvalgroup/esmvaltool:stable
+
+and then upload the image file ``esmvaltool.sif`` to the cluster.
+To run the container using the image file ``esmvaltool.sif`` use:
+
+.. code-block:: bash
+
+   singularity run esmvaltool.sif run examples/recipe_python.yml
 
 
 Install from source
@@ -203,18 +365,18 @@ the following commands in the directory containing the ESMValTool source code
     pip install -e '.[develop]'
 
 If you would like to run Julia diagnostic scripts, you will also need to
-`install Julia <https://julialang.org/downloads/>`_ and the Julia dependencies:
+`install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
 
 .. code-block:: bash
 
-    julia esmvaltool/install/Julia/setup.jl
+    esmvaltool install Julia
 
 If you would like to run R diagnostic scripts, you will also need to install the R
 dependencies. Install the R dependency packages:
 
 .. code-block:: bash
 
-    Rscript esmvaltool/install/R/setup.R
+    esmvaltool install R
 
 The next step is to check that the installation works properly.
 To do this, run the tool with:
@@ -232,5 +394,3 @@ confirm that no errors are reported:
 .. code-block:: bash
 
     python setup.py test
-
-

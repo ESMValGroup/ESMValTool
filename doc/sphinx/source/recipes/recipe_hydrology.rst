@@ -63,6 +63,8 @@ Diagnostics are stored in esmvaltool/diag_scripts/hydrology
 User settings in recipe
 -----------------------
 
+All hydrological recipes require a shapefile as an input to produce forcing data. This shapefile determines the shape of the basin for which the data will be cut out and processed. All recipes are tested with `the shapefiles <https://github.com/eWaterCycle/recipes_auxiliary_datasets/tree/master/>`_  that are used for the eWaterCycle project. In principle any shapefile can be used, for example, the freely available basin shapefiles from the `HydroSHEDS project <https://www.hydrosheds.org/>`_. 
+
 #. recipe_pcrglobwb.yml
 
    *Required preprocessor settings:*

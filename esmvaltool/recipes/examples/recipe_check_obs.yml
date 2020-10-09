@@ -895,50 +895,198 @@ diagnostics:
   ERA5:
     description: ERA5 check
     variables:
-      clt:
+      clt_E1hr:
+        short_name: clt
         mip: E1hr
-      evspsbl:
+      evspsbl_E1hr:
+        short_name: evspsbl
         mip: E1hr
-      evspsblpot:
+      evspsblpot_E1hr:
+        short_name: evspsblpot
         mip: E1hr
-      mrro:
+      mrro_E1hr:
+        short_name: mrro
         mip: E1hr
-      pr:
+      pr_E1hr:
+        short_name: pr
         mip: E1hr
-      prsn:
+      prsn_E1hr:
+        short_name: prsn
         mip: E1hr
-      ps:
+      ps_E1hr:
+        short_name: ps
         mip: E1hr
-      psl:
+      psl_E1hr:
+        short_name: psl
         mip: E1hr
-      ptype:
+      ptype_E1hr:
+        short_name: ptype
         mip: E1hr
-      rls:
+      rls_E1hr:
+        short_name: rls
         mip: E1hr
-      rlds:
+      rlds_E1hr:
+        short_name: rlds
         mip: E1hr
-      rsds:
+      rsds_E1hr:
+        short_name: rsds
         mip: E1hr
-      rsdt:
+      rsdt_E1hr:
+        short_name: rsdt
         mip: E1hr
-      rss:
+      rss_E1hr:
+        short_name: rss
         mip: E1hr
-      uas:
+      uas_E1hr:
+        short_name: uas
         mip: E1hr
-      vas:
+      vas_E1hr:
+        short_name: vas
         mip: E1hr
-      tas:
+      tas_E1hr:
+        short_name: tas
         mip: E1hr
-      tasmax:
+      tasmax_E1hr:
+        short_name: tasmax
         mip: E1hr
-      tasmin:
+      tasmin_E1hr:
+        short_name: tasmin
         mip: E1hr
-      tdps:
+      tdps_E1hr:
+        short_name: tdps
         mip: E1hr
-      ts:
+      ts_E1hr:
+        short_name: ts
         mip: E1hr
-      tsn:
+      tsn_E1hr:
+        short_name: tsn
         mip: E1hr
+      evspsbl_Eday:
+        short_name: evspsbl
+        mip: Eday
+      evspsblpot_Eday:
+        short_name: evspsblpot
+        mip: Eday
+      tdps_Eday:
+        short_name: tdps
+        mip: Eday
+      ts_Eday:
+        short_name: ts
+        mip: Eday
+      tsn_Eday:
+        short_name: tsn
+        mip: Eday
+      clt_day:
+        short_name: clt
+        mip: day
+      mrro_day:
+        short_name: mrro
+        mip: day
+      pr_day:
+        short_name: pr
+        mip: day
+      prsn_day:
+        short_name: prsn
+        mip: day
+      psl_day:
+        short_name: psl
+        mip: day
+      rlds_day:
+        short_name: rlds
+        mip: day
+      rls_day:
+        short_name: rls
+        mip: day
+      rsds_day:
+        short_name: rsds
+        mip: day
+      rss_day:
+        short_name: rss
+        mip: day
+      tas_day:
+        short_name: tas
+        mip: day
+      tasmax_day:
+        short_name: tasmax
+        mip: day
+      tasmin_day:
+        short_name: tasmin
+        mip: day
+      uas_day:
+        short_name: uas
+        mip: day
+      vas_day:
+        short_name: vas
+        mip: day
+      ps_CFday:
+        short_name: ps
+        mip: CFday
+      rsdt_CFday:
+        short_name: rsdt
+        mip: CFday
+      clt_Amon:
+        short_name: clt
+        mip: Amon
+      evspsbl_Amon:
+        short_name: evspsbl
+        mip: Amon
+      evspsblpot_Amon:
+        short_name: evspsblpot
+        mip: Amon
+      mrro_Amon:
+        short_name: mrro
+        mip: Amon
+      pr_Amon:
+        short_name: pr
+        mip: Amon
+      prsn_Amon:
+        short_name: prsn
+        mip: Amon
+      ps_Amon:
+        short_name: ps
+        mip: Amon
+      psl_Amon:
+        short_name: psl
+        mip: Amon
+      ptype_Amon:
+        short_name: ptype
+        mip: Amon
+      rlds_Amon:
+        short_name: rlds
+        mip: Amon
+      rls_Amon:
+        short_name: rls
+        mip: Amon
+      rsds_Amon:
+        short_name: rsds
+        mip: Amon
+      rsdt_Amon:
+        short_name: rsdt
+        mip: Amon
+      rss_Amon:
+        short_name: rss
+        mip: Amon
+      ta_Amon:
+        short_name: ta
+        mip: Amon
+      tas_Amon:
+        short_name: tas
+        mip: Amon
+      tdps_Amon:
+        short_name: tdps
+        mip: Amon
+      ts_Amon:
+        short_name: ts
+        mip: Amon
+      tsn_Amon:
+        short_name: tsn
+        mip: Amon
+      va_Amon:
+        short_name: va
+        mip: Amon
+      zg_Amon:
+        short_name: zg
+        mip: Amon
       orog:
         mip: fx
     additional_datasets:
