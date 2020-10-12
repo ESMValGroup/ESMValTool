@@ -31,6 +31,7 @@ User settings in recipe
   *Required settings for script*
     * ``sigma_performance``: shape parameter weights calculation (determined offline)
     * ``sigma_independence``: shape parameter for weights calculation (determined offline)
+    * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble members per model.
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
