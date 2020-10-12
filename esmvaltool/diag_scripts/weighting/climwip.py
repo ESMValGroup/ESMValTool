@@ -362,7 +362,8 @@ def compute_overall_mean(dataset):
     return overall_mean
 
 
-def combine_dimension(dataset, dimn):
+def combine_dimension(dataset: 'xr.DataArray', dimn: str) -> 'xr.DataArray':
+    """Combine ensemble members of the same model along the given dimension"""
     model_ensemble = dataset[dimn].values
     models = [me.split('_')[0] for me in model_ensemble]
     dataset['model'] = xr.DataArray(models, dims=dimn)
@@ -379,7 +380,8 @@ def combine_dimension(dataset, dimn):
     return dataset.assign_coords({dimn: [groups[key] for key in dataset[dimn].values]})
 
 
-def combine_ensemble_members(dataset):
+def combine_ensemble_members(dataset: 'xr.DataArray') -> 'xr.DataArray':
+    """Combine ensemble members of the same model along all dimensions"""
     dataset = combine_dimension(dataset, 'model_ensemble')
     if 'perfect_model_ensemble' in dataset.dims:
         dataset = combine_dimension(dataset, 'perfect_model_ensemble')
@@ -388,7 +390,8 @@ def combine_ensemble_members(dataset):
     return dataset
 
 
-def split_ensemble_members(dataset):
+def split_ensemble_members(dataset: 'xr.DataArray') -> 'xr.DataArray':
+    """Split combined ensemble members of the same model"""
     model_ensemble = []
     nr_members = []
     for model in dataset['model_ensemble'].data:
