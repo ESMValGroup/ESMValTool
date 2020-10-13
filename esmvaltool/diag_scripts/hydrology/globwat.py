@@ -203,7 +203,7 @@ def save_ascii(cube, filename):
 def save_to_ascii(cube, file_name):
     """Save array as ascii grid file."""
     dataset = xr.DataArray.from_iris(cube)
-    array = dataset.isel(time=time).fillna(-9999)
+    array = dataset.fillna(-9999)
 
     xmin = array['lon'].min().values
     ymax = array['lat'].max().values
@@ -228,7 +228,6 @@ def save_to_ascii(cube, file_name):
         )
     new_dataset.write(array, 1)
     new_dataset.close()
-
 
 
 def main(cfg):
@@ -290,6 +289,7 @@ def main(cfg):
                         iris.save(sub_cube_regrided, path , fill_value=-9999)
 
                         # save_ascii(sub_cube_regrided, path)
+                        path = data_dir / f"{file_name}.asc"
                         save_to_ascii(sub_cube_regrided, path)
 
             # Store provenance
