@@ -267,10 +267,6 @@ def group_metadata(metadata, attribute, sort=None):
     -------
     :obj:`dict` of :obj:`list` of :obj:`dict`
         A dictionary containing the requested groups.
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
     """
     groups = {}
     for attributes in metadata:
@@ -334,11 +330,7 @@ def sorted_group_metadata(metadata_groups, sort):
         sort = []
 
     def normalized_group_key(key):
-<<<<<<< HEAD
-        """Define a key to sort the dict by."""
-=======
         """Define a key to sort by."""
->>>>>>> origin/master
         return '' if key is None else str(key).lower()
 
     groups = {}
