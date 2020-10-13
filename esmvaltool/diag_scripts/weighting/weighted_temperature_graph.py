@@ -198,6 +198,7 @@ def main(cfg):
 
     model_data, model_data_files = read_model_data(models)
 
+
     percentiles = np.array([25, 75])
 
     iqr = calculate_percentiles(

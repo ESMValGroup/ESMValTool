@@ -66,6 +66,23 @@ preprocessors:
         end_day: 31
       standardize: false
 
+  temperature_change:
+    custom_order: true
+    anomalies:
+      period: full
+      reference:
+        start_year: 1981
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+    <<: *general
+    # how do I get the right time period now?
+    climate_statistics:
+      operator: mean
+
 diagnostics:
   calculate_weights_climwip:
     variables:
@@ -101,4 +118,29 @@ diagnostics:
       weighted_temperature_graph:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
+        weights: 'weights.nc'
+
+  weighted_temperature_map:
+    variables:
+      # tas:
+      #   # needs to cover full period otherwise I cannot calculate anomalies
+      #   start_year: 1981
+      #   end_year: 2100
+      #   mip: Amon
+      #   preprocessor: temperature_change
+      tas_hist: &common_settings
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_future:
+        <<: *common_settings
+        start_year: 2081
+        end_year: 2100
+    scripts:
+      weighted_temperature_map:
+        script: weighting/weighted_temperature_map.py
+        # ancestors: [calculate_weights_climwip/climwip, tas]
+        ancestors: [calculate_weights_climwip/climwip, tas_hist, tas_future]
         weights: 'weights.nc'
