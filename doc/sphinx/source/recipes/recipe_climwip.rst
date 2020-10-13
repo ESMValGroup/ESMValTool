@@ -78,6 +78,7 @@ Variables
 
 * pr (atmos, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
+* psl (atmos, monthly mean, longitude latitude time)
 * more variables can be added if available for all datasets.
 
 
@@ -90,7 +91,9 @@ multiple datasets.
 References
 ----------
 
-* `Brunner et al. 2019, Environ. Res. Lett., 14, 124010 <https://doi.org/10.1088/1748-9326/ab492f>`_.
+* `Brunner et al. 2020 (accepted), Earth Syst. Dynam., <https://doi.org/10.5194/esd-2020-23>`_.
+* `Merrifield et al. 2020, Earth Syst. Dynam., 11, 807-834, <https://doi.org/10.5194/esd-11-807-2020>`_.
+* `Brunner et al. 2019, Environ. Res. Lett., 14, 124010, <https://doi.org/10.1088/1748-9326/ab492f>`_.
 
 Example plots
 -------------
