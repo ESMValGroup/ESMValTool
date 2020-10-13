@@ -29,8 +29,8 @@ User settings in recipe
 1. Script ``climwip.py``
 
   *Required settings for script*
-    * ``sigma_performance``: shape parameter weights calculation (determined offline)
-    * ``sigma_independence``: shape parameter for weights calculation (determined offline)
+    * ``performance_sigma``: shape parameter weights calculation (determined offline)
+    * ``independence_sigma``: shape parameter for weights calculation (determined offline)
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*

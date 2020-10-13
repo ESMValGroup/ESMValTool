@@ -87,8 +87,8 @@ diagnostics:
       climwip:
         script: weighting/climwip.py
         obs_data: native6
-        sigma_performance: 0.5
-        sigma_independence: 0.5
+        performance_sigma: 0.5
+        independence_sigma: 0.5
 
   weighted_temperature_graph:
     variables:

@@ -362,8 +362,8 @@ def compute_overall_mean(dataset):
 
 
 def calculate_weights(performance: 'xr.DataArray',
-                      independence: 'xr.DataArray', sigma_performance: float,
-                      sigma_independence: float) -> 'xr.DataArray':
+                      independence: 'xr.DataArray', performance_sigma: float,
+                      independence_sigma: float) -> 'xr.DataArray':
     """Calculate the (NOT normalised) weights for each model N.
 
     Parameters
@@ -372,10 +372,10 @@ def calculate_weights(performance: 'xr.DataArray',
         Array specifying the model performance.
     independence : array_like, shape (N, N)
         Array specifying the model independence.
-    sigma_performance : float
+    performance_sigma : float
         Sigma value defining the form of the weighting function
             for the performance.
-    sigma_independence : float
+    independence_sigma : float
         Sigma value defining the form of the weighting function
             for the independence.
 
@@ -383,8 +383,8 @@ def calculate_weights(performance: 'xr.DataArray',
     -------
     weights : ndarray, shape (N,)
     """
-    numerator = np.exp(-((performance / sigma_performance)**2))
-    exp = np.exp(-((independence / sigma_independence)**2))
+    numerator = np.exp(-((performance / performance_sigma)**2))
+    exp = np.exp(-((independence / independence_sigma)**2))
 
     # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
     denominator = exp.sum(axis=0)
@@ -472,10 +472,10 @@ def main(cfg):
                                    model_ancestors + obs_ancestors)
 
     logger.info('Calculating weights')
-    sigma_performance = cfg['sigma_performance']
-    sigma_independence = cfg['sigma_independence']
+    performance_sigma = cfg['performance_sigma']
+    independence_sigma = cfg['independence_sigma']
     weights = calculate_weights(overall_performance, overall_independence,
-                                sigma_performance, sigma_independence)
+                                performance_sigma, independence_sigma)
     visualize_and_save_weights(weights,
                                cfg,
                                ancestors=model_ancestors + obs_ancestors)
