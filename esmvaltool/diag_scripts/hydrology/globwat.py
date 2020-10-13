@@ -96,7 +96,7 @@ def load_target(cfg):
         cube = iris.load_cube(str(filename))
     for coord in 'longitude', 'latitude':
         if not cube.coord(coord).has_bounds():
-            logger.warning("Guessing DEM %s bounds", coord)
+            logger.warning("Guessing target %s bounds", coord)
             cube.coord(coord).guess_bounds()
     return cube
 
@@ -165,12 +165,11 @@ def monthly_arora_pet(tas):
 def get_cube_info(cube):
     """"""
     coord_time = cube.coord('time')
-    start_year = coord_time.cell(0).point.year
-    end_year = coord_time.cell(-1).point.year
-    return start_year, end_year
+    year = coord_time.cell(0).point.year
+    return year
 
 #TODO: We must work on saving data as ascii format.
-def save_ascii(cube, filename):
+# def save_ascii(cube, filename):
     """"""
     # array = sub_cube.data
     # points = sub_cube.coord('longitude').points
@@ -230,6 +229,24 @@ def save_to_ascii(cube, file_name):
     new_dataset.close()
 
 
+def _make_drs(dataset, nyear, mip):
+    """"""
+    if mip == 'Amon':
+        freq = 'Monthly'
+    else:
+        freq = 'Daily'
+
+    data_dir = Path(f"{dataset}/{nyear}/{freq}")
+    data_dir.mkdir(parents=True, exist_ok=True)
+    return data_dir
+
+
+def _make_path(data_dir, file_name, extention="nc"):
+    """"""
+    path = data_dir / f"{file_name}.{extention}"
+    return path
+
+
 def main(cfg):
     """Process data for GlobWat hydrological model.
 
@@ -243,10 +260,6 @@ def main(cfg):
     input_metadata = cfg['input_data'].values()
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance, mip = get_input_cubes(metadata)
-
-        # load target grid for using in regriding function
-        target_cube = load_target(cfg)
-
 
         logger.info("Calculation PET uisng debruin method")
         all_vars.update(pet = debruin_pet(
@@ -264,33 +277,31 @@ def main(cfg):
             _convert_units(all_vars[var], mip)
 
         output_name = make_output_name(all_vars['pr'])
-        start_year, end_year = get_cube_info(all_vars['pr'])
 
-        if mip == 'Amon':
-            freq = 'Monthly'
-        else:
-            freq = 'Daily'
+        for key in ['pr', 'pet', 'pet_arora']:
+            cube = all_vars[key]
+            for sub_cube in cube.slices_over('time'):
+                nyear = get_cube_info(sub_cube)
 
-        for nyear in range(start_year , end_year+1):
-            for key in ['pr', 'pet', 'pet_arora']:
-                file_names = output_name[key][mip]
-                data_dir = Path(f"{dataset}/{nyear}/{freq}")
-                data_dir.mkdir(parents=True, exist_ok=True)
-                for file_name in file_names:
-                    cube = all_vars[key]
-                    for sub_cube in cube.slices_over('time'):
-                        # set negative values for precipitaion to zero
-                        if key == 'pr':
-                            sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
-                        #regrid data baed on target cube
-                        sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
-                        #Save data as netcdf
-                        path = data_dir / f"{file_name}.nc"
-                        iris.save(sub_cube_regrided, path , fill_value=-9999)
+                # set negative values for precipitaion to zero
+                if key == 'pr':
+                    sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
 
-                        # save_ascii(sub_cube_regrided, path)
-                        path = data_dir / f"{file_name}.asc"
-                        save_to_ascii(sub_cube_regrided, path)
+                # load target grid for using in regriding function
+                target_cube = load_target(cfg)
+                #regrid data baed on target cube
+                sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
+
+                file_name = output_name[key][mip]
+                data_dir = _make_drs(dataset, nyear, mip)
+
+                #Save data as netcdf
+                path = _make_path(data_dir, file_name, extention="nc")
+                iris.save(sub_cube_regrided, path , fill_value=-9999)
+
+                # save_ascii(sub_cube_regrided, path)
+                path = _make_path(data_dir, file_name, extention="asc")
+                save_to_ascii(sub_cube_regrided, path)
 
             # Store provenance
             with ProvenanceLogger(cfg) as provenance_logger:
