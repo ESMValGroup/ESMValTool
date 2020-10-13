@@ -75,12 +75,6 @@ def get_input_cubes(metadata):
     for attributes in metadata:
         short_name = attributes['short_name']
         time_step = attributes['mip']
-        for key,value in time_step.items():
-            if value not in time_step.values():
-                time_step[key] = value
-        if short_name in all_vars:
-            raise ValueError(
-                f"Multiple input files found for variable '{short_name}'.")
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
