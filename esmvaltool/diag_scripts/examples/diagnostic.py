@@ -67,8 +67,8 @@ def main(cfg):
     input_data = cfg['input_data'].values()
 
     # Demonstrate use of metadata access convenience functions.
-    selection = select_metadata(input_data, short_name='pr', project='CMIP5')
-    logger.info("Example of how to select only CMIP5 precipitation data:\n%s",
+    selection = select_metadata(input_data, short_name='tas', project='CMIP5')
+    logger.info("Example of how to select only CMIP5 temperature data:\n%s",
                 pformat(selection))
 
     selection = sorted_metadata(selection, sort='dataset')

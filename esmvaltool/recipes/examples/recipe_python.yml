@@ -3,7 +3,7 @@
 ---
 documentation:
   description: |
-    Example recipe that plots the mean precipitation and temperature.
+    Example recipe that plots a map and timeseries of temperature.
 
   authors:
     - andela_bouwe
