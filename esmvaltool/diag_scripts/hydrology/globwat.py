@@ -59,11 +59,11 @@ def _convert_units(cube, time_step):
     cube.data = cube.core_data() / 1000.
 
     # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
-    if time_step['mip'] == 'Amon':
+    if time_step == 'Amon':
         cube.convert_units('mm month-1')
 
     # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
-    elif time_step['mip'] == 'day':
+    elif time_step == 'day':
         cube.convert_units('mm day-1')
     return cube
 
@@ -72,10 +72,9 @@ def get_input_cubes(metadata):
     """Return a dictionary with all (preprocessed) input files."""
     provenance = create_provenance_record()
     all_vars = {}
-    time_step = {}
     for attributes in metadata:
         short_name = attributes['short_name']
-        time_step['mip'] = attributes['mip']
+        time_step = attributes['mip']
         for key,value in time_step.items():
             if value not in time_step.values():
                 time_step[key] = value
@@ -87,11 +86,6 @@ def get_input_cubes(metadata):
         cube = iris.load_cube(filename)
         cube.data.set_fill_value(-9999)
         all_vars[short_name] = change_data_type(cube)
-
-        # convert unit of pr and pet
-        # for var in ['pr', 'pet']:
-        _convert_units(all_vars['pr'], time_step)
-
         provenance['ancestors'].append(filename)
     return all_vars, provenance, time_step
 
@@ -236,6 +230,10 @@ def main(cfg):
 
         logger.info("Calculation PET uisng arora method")
         all_vars.update(pet_arora = monthly_arora_pet(all_vars['tas']))
+
+        # convert unit of pr and pet
+        for var in ['pr', 'pet']:
+            _convert_units(all_vars[var], mip)
 
         output_name = make_output_name(all_vars['pr'])
         start_year, end_year = get_cube_info(all_vars['pr'])
