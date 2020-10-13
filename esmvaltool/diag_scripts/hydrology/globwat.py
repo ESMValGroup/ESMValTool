@@ -13,6 +13,10 @@ import calendar
 import iris
 import iris.analysis
 import numpy as np
+import xarray as xr
+
+import rasterio
+from rasterio.transform import Affine
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger, group_metadata, run_diagnostic)
@@ -196,6 +200,37 @@ def save_ascii(cube, filename):
     # new_dataset.close()
 
 
+def save_to_ascii(cube, file_name):
+    """Save array as ascii grid file."""
+    dataset = xr.DataArray.from_iris(cube)
+    array = dataset.isel(time=time).fillna(-9999)
+
+    xmin = array['lon'].min().values
+    ymax = array['lat'].max().values
+
+    xres = array['lon'].values[1] - array['lon'].values[0]
+    yres = array['lat'].values[0] - array['lat'].values[1]
+
+    Affine_translation = Affine.translation(xmin - xres / 2, ymax - yres / 2)
+    Affine_scale = Affine.scale(xres, yres)
+    transform = Affine_translation * Affine_scale
+    new_dataset = rasterio.open(
+        file_name,
+        'w',
+        driver='AAIGrid',
+        height=array.shape[0],  # lat
+        width=array.shape[1],  # lon
+        count=1,
+        dtype=array.dtype,
+        crs='+proj=latlong',
+        transform=transform,
+        nodata= -9999,
+        )
+    new_dataset.write(array, 1)
+    new_dataset.close()
+
+
+
 def main(cfg):
     """Process data for GlobWat hydrological model.
 
@@ -254,7 +289,8 @@ def main(cfg):
                         path = data_dir / f"{file_name}.nc"
                         iris.save(sub_cube_regrided, path , fill_value=-9999)
 
-                        # save_ascii(sub_cube, path)
+                        # save_ascii(sub_cube_regrided, path)
+                        save_to_ascii(sub_cube_regrided, path)
 
             # Store provenance
             with ProvenanceLogger(cfg) as provenance_logger:
