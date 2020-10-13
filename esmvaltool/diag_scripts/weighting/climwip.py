@@ -345,7 +345,7 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def compute_overall_mean(dataset):
+def compute_overall_mean(dataset, contributions):
     """Normalize all variables in a dataset and return their mean."""
     if 'perfect_model_ensemble' in dataset.dims:
         median_dim = ['perfect_model_ensemble', 'model_ensemble']
@@ -353,8 +353,12 @@ def compute_overall_mean(dataset):
         median_dim = 'model_ensemble'
     normalized = dataset / dataset.median(dim=median_dim)
 
+    weights = xr.DataArray(
+        [contributions[vg] for vg in dataset],
+        coords={'variable_group': list(dataset)},
+        dims='variable_group')
     overall_mean = normalized.to_array(
-        dim='variable_group').mean('variable_group')
+        dim='variable_group').weighted(weights).mean('variable_group')
     overall_mean.name = 'overall_mean'
     overall_mean.attrs['variable_group'] = 'overall_mean'
     overall_mean.attrs['units'] = '1'
@@ -422,7 +426,12 @@ def main(cfg):
     """Perform climwip weighting method."""
     models, observations = read_metadata(cfg)
 
-    variable_groups = models.keys()
+    variable_groups_independence = [
+        key for key, value in cfg['independence_contributions'].items() if value > 0]
+    variable_groups_performance = [
+        key for key, value in cfg['performance_contributions'].items() if value > 0]
+    assert len(variable_groups_independence) > 0
+    assert len(variable_groups_performance) > 0
 
     model_ancestors = []
     obs_ancestors = []
@@ -430,7 +439,22 @@ def main(cfg):
     performances = {}
     independences = {}
 
-    for variable_group in variable_groups:
+    for variable_group in variable_groups_independence:
+
+        logger.info('Reading model data for %s', variable_group)
+        datasets_model = models[variable_group]
+        model_data, model_data_files = read_model_data(datasets_model)
+
+        logger.info('Calculating independence for %s', variable_group)
+        independence = calculate_independence(model_data)
+        visualize_and_save_independence(independence, cfg,
+                                            model_data_files)
+        logger.debug(independence.values)
+        independences[variable_group] = independence
+
+        model_ancestors.extend(model_data_files)
+
+    for variable_group in variable_groups_performance:
 
         logger.info('Reading model data for %s', variable_group)
         datasets_model = models[variable_group]
@@ -441,33 +465,26 @@ def main(cfg):
         obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
-        if datasets_model[0].get('independence', True):
-            logger.info('Calculating independence for %s', variable_group)
-            independence = calculate_independence(model_data)
-            visualize_and_save_independence(independence, cfg,
-                                            model_data_files)
-            logger.debug(independence.values)
-            independences[variable_group] = independence
-
-        if datasets_model[0].get('performance', True):
-            logger.info('Calculating performance for %s', variable_group)
-            performance = calculate_performance(model_data, obs_data)
-            visualize_and_save_performance(performance, cfg,
-                                           model_data_files + obs_data_files)
-            logger.debug(performance.values)
-            performances[variable_group] = performance
-            obs_ancestors.extend(obs_data_files)
+        logger.info('Calculating performance for %s', variable_group)
+        performance = calculate_performance(model_data, obs_data)
+        visualize_and_save_performance(performance, cfg,
+                                       model_data_files + obs_data_files)
+        logger.debug(performance.values)
+        performances[variable_group] = performance
+        obs_ancestors.extend(obs_data_files)
 
         model_ancestors.extend(model_data_files)
 
+    model_ancestors = [*{*model_ancestors}]  # make unique
+
     logger.info('Computing overall mean independence')
     independence = xr.Dataset(independences)
-    overall_independence = compute_overall_mean(independence)
+    overall_independence = compute_overall_mean(independence, cfg['independence_contributions'])
     visualize_and_save_independence(overall_independence, cfg, model_ancestors)
 
     logger.info('Computing overall mean performance')
     performance = xr.Dataset(performances)
-    overall_performance = compute_overall_mean(performance)
+    overall_performance = compute_overall_mean(performance, cfg['performance_contributions'])
     visualize_and_save_performance(overall_performance, cfg,
                                    model_ancestors + obs_ancestors)
 

@@ -31,6 +31,8 @@ User settings in recipe
   *Required settings for script*
     * ``performance_sigma``: shape parameter weights calculation (determined offline)
     * ``independence_sigma``: shape parameter for weights calculation (determined offline)
+    * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
+    * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
@@ -40,11 +42,6 @@ User settings in recipe
     * ``mip``: typically Amon
     * ``preprocessor``: e.g. climwip_summer_mean
     * ``additional_datasets``: provide a list of model data for performance calculation.
-
-  *Optional settings for variables*
-    * ``performance``: set to false to *not* calculate performance for this variable group
-    * ``independence``: set to false to *not* calculate independence for this variable group
-    * By default, both performance and independence are calculate for each variable group.
 
   *Required settings for preprocessor*
     * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
