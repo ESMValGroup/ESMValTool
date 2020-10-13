@@ -2,7 +2,8 @@
 # recipe_python.yml
 ---
 documentation:
-  description: Example recipe that plots the mean precipitation and temperature.
+  description: |
+    Example recipe that plots the mean precipitation and temperature.
 
   authors:
     - andela_bouwe

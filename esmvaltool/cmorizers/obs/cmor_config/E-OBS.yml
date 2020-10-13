@@ -1,0 +1,45 @@
+---
+# Filename (will be extended by variable name, resolutions and version)
+filename: '{raw_name}_ens_mean_{resolution}deg_reg_v{version}.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: E-OBS
+  version: '20.0e'
+  resolution:
+    r1: 0.1
+    r2: 0.25
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'https://www.ecad.eu/download/ensembles/download.php'
+  reference: 'e-obs'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tas:
+    mip: day
+    raw: tg
+    raw_units: celsius
+    add_mon: true
+  pr:
+    mip: day
+    raw: rr
+    raw_units: kg m-2 day-1
+    add_mon: true
+  tasmax:
+    mip: day
+    raw: tx
+    raw_units: celsius
+    add_mon: true
+  tasmin:
+    mip: day
+    raw: tn
+    raw_units: celsius
+    add_mon: true
+  psl:
+    mip: day
+    raw: pp
+    raw_units: hPa
+    add_mon: true

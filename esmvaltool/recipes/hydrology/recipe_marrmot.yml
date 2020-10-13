@@ -8,9 +8,17 @@ documentation:
 
     MARRMoT is the Modular Assessment of Rainfall-Runnoff Models Toolbox ...
     https://www.geosci-model-dev.net/12/2463/2019/
-  authors: ['kalverla_peter', 'camphuijsen_jaro', 'alidoost_sarah']
-  projects: ['ewatercycle']
-  references: ['acknow_project']
+
+  authors:
+    - kalverla_peter
+    - camphuijsen_jaro
+    - alidoost_sarah
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
 
 preprocessors:
   daily: &daily

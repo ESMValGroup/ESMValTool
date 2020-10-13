@@ -73,6 +73,7 @@ User settings
    *Required settings for variables*
 
    * reference_dataset: reference dataset for comparison
+   * reference_exp: optional reference experiment for comparison (to use when comparing two experiments of the same dataset)
 
    *Required settings for script*
 
@@ -83,6 +84,7 @@ User settings
    *Required settings for variables*
 
    * reference_dataset: reference dataset for comparison
+   * reference_exp: optional reference experiment for comparison (to use when comparing two experiments of the same dataset)
 
    *Required settings for script*
 
@@ -94,6 +96,7 @@ User settings
     *Required settings for variables*
 
     * reference_dataset: reference dataset
+    * reference_exp: optional reference experiment for comparison (to use when comparing two experiments of the same dataset)
 
     *Required or optional settings for script*
 

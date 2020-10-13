@@ -1,7 +1,7 @@
+# ESMValTool
 # recipe_ecs.yml
 ---
 documentation:
-
   description: |
     Calculate ECS using linear regression following Gregory et al. (2004).
 

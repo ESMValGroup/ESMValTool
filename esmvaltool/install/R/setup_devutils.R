@@ -25,7 +25,7 @@ if (any(file.access(RLIBPATH, 2) == 0)) {
 log("Installing packages to --> ", RLIBLOC)
 
 pkg_mirror <- "https://cloud.r-project.org"
-pkg_list <- c("lintr", "yaml")
+pkg_list <- c("devtools", "yaml", "lintr", "styler", "docopt")
 install.packages(
   pkg_list,
   repos = pkg_mirror,
@@ -47,5 +47,6 @@ if (length(failed) != 0) {
   log("Failed to install packages:", paste(failed, collapse = ", "))
   quit(status = 1, save = "no")
 }
+
 
 log("Successfully installed all packages")

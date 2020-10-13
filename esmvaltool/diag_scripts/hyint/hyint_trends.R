@@ -3,7 +3,6 @@
 #-------------E. Arnone (June 2017)------------------#
 ######################################################
 
-
 # MAIN TRENDS FUNCTION
 hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
   # setup useful strings
@@ -314,8 +313,16 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
     " according to ",
     models_name[model_idx]
   )
+
+
+  #ancs <- list(infile)
+  #if (length(infile) == 1) {
+  #  ancs <- infile
+  #}
+
+  anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
   xprov <- list(
-    ancestors = list(infile),
+    ancestors = anc_list,
     model_idx = list(model_idx),
     caption = caption
   )

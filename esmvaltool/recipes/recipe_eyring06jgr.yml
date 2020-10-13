@@ -1,0 +1,324 @@
+# ESMValTool
+# recipe_eyring06jgr.yml
+---
+documentation:
+  description: |
+    Diagnostics of stratospheric dynamics and chemistry reproducing selected
+    figures from Eyring et al. JGR (2006).
+
+  authors:
+    - cionni_irene
+    - hassler_birgit
+
+  maintainer:
+    - hassler_birgit
+
+  references:
+    - eyring06jgr
+
+  projects:
+    - crescendo
+
+datasets:
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1960, end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1960, end_year: 2005}  
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+  - {dataset: MRI-ESM1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1980, end_year: 2005}
+
+preprocessors:
+
+  # Figure 1
+  regrid_interp_lev_zonal: &regrid_and_zonal_preproc
+    extract_levels:
+      scheme: linear
+      levels: reference_dataset
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    zonal_statistics:
+      operator: mean      
+  
+  regrid_interp_lev_zonal_o3:
+    <<: *regrid_and_zonal_preproc
+    convert_units:
+      units: ppmv    
+  
+  # zonal mean
+  zonal: &zonal_preproc
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+  zonal_o3_du:
+    <<: *zonal_preproc
+    convert_units:
+      units: DU    
+    
+
+diagnostics:
+
+  # ==========================================================================
+  # Eyring et al. (2006) - Figure 1
+  # Vertical profile climatological mean bias,
+  # climatological mean for selected seasons and latitudinal region
+  # ==========================================================================
+
+  eyring06jgr_fig01:
+    description: vertical profile climatological seasonal means bias
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: regrid_interp_lev_zonal
+        reference_dataset: ERA-Interim
+        mip: Amon
+    additional_datasets:
+      - {dataset: ACCESS1-0, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: ACCESS1-3, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: CESM1-BGC, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: CMCC-CESM, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: CMCC-CM, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: CMCC-CMS, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: GISS-E2-H, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: GISS-E2-R, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: inmcm4, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: NorESM1-M, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: NorESM1-ME, project: CMIP5, exp: historical, 
+         ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+         start_year: 1980, end_year: 1999, tier: 3}
+    scripts:
+      fig01:
+        script: eyring06jgr/eyring06jgr_fig01.ncl
+        # Time average ('DJF', 'MAM', 'JJA', 'SON', or 'ANN')
+        season: ['DJF', 'MAM', 'JJA', 'SON']
+        # Minimum latitude for region selection
+        latmin: [60., 60., -90., -90.]
+        # Maximum latitude for region selection
+        latmax: [90., 90., -60., -60.]
+        # Lower and upper limits for the X axis
+        Xmin: [-30., -30., -30., -30.]
+        Xmax: [20., 20., 20., 20.]
+        # Lover and upper limits for the Y axis
+        Ymin: [1., 1., 1., 1.]
+        Ymax: [350., 350., 350., 350.]
+        # Climatology time period
+        start_year: 1980
+        end_year: 1999
+        # Calculate multimodel mean?
+        multimean: True
+        # line style definition
+        styleset: CMIP5
+
+
+  # ===========================================================================
+  # Eyring et al. (2006) - Figure 5 two sets of figures a (vertical profiles)
+  # and b (latitudinal profiles)
+  # Vertical profile climatological mean bias, climatological mean for selected
+  # seasons and latitudinal region this figure and setting is valid for
+  # figure 5(CH4) figure 6(H2O) figure 11(HCL) figure 13 (tro3)
+  # ===========================================================================
+
+  eyring06jgr_fig05a:
+    description: vertical profile climatological seasonal means bias
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tro3:
+        preprocessor: regrid_interp_lev_zonal_o3
+        reference_dataset: HALOE
+        mip: Amon
+    additional_datasets:
+      - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         start_year: 1991, end_year: 2002, tier: 2}
+    scripts:
+      fig05a:
+        script: eyring06jgr/eyring06jgr_fig05a.ncl
+        # Selected projection
+        projection: CylindricalEquidistant
+        # Temporal aggregation
+        timemean: annualclim
+        # Should the difference be shown?
+        showdiff: false
+        # Minimum latitude for region selection
+        latmin: [80., -10., -82.5]
+        # Maximum latitude for region selection
+        latmax: [82.5, 10., -80.]
+        # Selected months
+        month: ['3', '3', '9']
+        # Lower and upper limits for the X axis
+        Xmin: [0., 0., 0.]
+        Xmax: [7., 12., 7.]
+        # Lower and upper limits for the Y axis
+        levmin: [1., 1., 1.]
+        levmax: [200., 200., 200.]
+        # Climatology time period
+        start_year: 1991
+        end_year: 2002
+        # Calculate multimodel mean?
+        multimean: True
+        # line style definition
+        styleset: CMIP5
+
+  eyring06jgr_fig05b:
+    description: latitudinal profile climatological seasonal mean
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tro3:
+        preprocessor: regrid_interp_lev_zonal_o3
+        reference_dataset: HALOE
+        mip: Amon
+    additional_datasets:
+      - {dataset: HALOE, project: OBS, type: sat, version: 1,
+         start_year: 1991, end_year: 2002, tier: 2}
+    scripts:
+      fig5b:
+        script: eyring06jgr/eyring06jgr_fig05b.ncl
+        projection: CylindricalEquidistant
+        # Temporal aggregation
+        timemean: annualclim
+        # Should the difference be shown?
+        showdiff: false
+        # line style definition
+        styleset: CMIP5
+        # Lower and upper limits for the Y axis - given here in Pa
+        lev: ['5000', '5000']
+        # Selected months
+        month: ['3', '9']
+        # Lower and upper limits for the Y axis
+        YMin: [0., 0.]
+        YMax: [5., 5.]
+        # Climatology time period
+        start_year: 1991
+        end_year: 2002  
+        # Calculate multimodel mean?
+        multimean: True
+
+
+  # ==========================================================================
+  # Eyring et al. (2006) - Figure 15
+  # Timeseries detrended
+  # ==========================================================================
+
+  eyring06jgr_fig15:
+    description: Total ozone anomalies at different latitudinal band and seasons
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      toz:
+        derive: true
+        force_derivation: false
+        preprocessor: zonal_o3_du
+        reference_dataset: NIWA-BS
+        mip: Amon
+    additional_datasets:
+      - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3,
+         start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      fig15:
+        script:  eyring06jgr/eyring06jgr_fig15.ncl
+        projection: CylindricalEquidistant
+        showdiff: false
+        # line style definition
+        styleset: CMIP5
+        # Minimum latitude for region selection
+        latmin: [60., -90., -90.]
+        # Maximum latitude for region selection        
+        latmax: [90., -60., 90.]
+        # Time average
+        season: ['FMA', 'SON', 'ANN']
+        # Lower and upper limits for the Y axis - left plot
+        Ymin: [-25., -40.,-10.]
+        Ymax: [15., 25., 10.]
+        # Lower and upper limits for the X axis - left plot
+        Xmin: 1960
+        Xmax: 2005
+        # Lower and upper limits for the X axis - right plot
+        cycle_yearmin: 1980
+        cycle_yearmax: 1989
+        # Lower and upper limits for the Y axis - right plot
+        cycle_Ymin: [250., 450., 260.]
+        cycle_Ymax: [550., 200., 380.]
+        # Calculate multimodel mean?
+        multimean: True
