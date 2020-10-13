@@ -448,7 +448,7 @@ def main(cfg):
         logger.info('Calculating independence for %s', variable_group)
         independence = calculate_independence(model_data)
         visualize_and_save_independence(independence, cfg,
-                                            model_data_files)
+                                        model_data_files)
         logger.debug(independence.values)
         independences[variable_group] = independence
 
