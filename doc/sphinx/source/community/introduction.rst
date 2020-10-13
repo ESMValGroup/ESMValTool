@@ -52,13 +52,13 @@ To install in development mode, follow these instructions.
    ``pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]``
 -  If you want to use R diagnostics, run
    ``esmvaltool install R`` to install the R
-   dependences. Note that if you only want to run the lint test for R
+   dependencies. Note that if you only want to run the lint test for R
    scripts you will have to install the ``lintr`` package. You can do
    that by running ``Rscript esmvaltool/install/R/setup_devutils.R``.
 -  If you want to use Julia diagnostics, first install Julia as
    described below in section “Installing Julia”, then run
    ``esmvaltool install Julia`` to install the Julia
-   dependences. Install Julia dependences after R dependences if you
+   dependencies. Install Julia dependencies after R dependencies if you
    plan to use both.
 -  Test that your installation was successful by running
    ``esmvaltool -h``.
@@ -294,14 +294,22 @@ What should be documented
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Any code documentation that is visible on
-`readthedocs <https://docs.esmvaltool.org>`__ should be well
-written and adhere to the standards for documentation for the respective
-language. Recipes should have a page in the *Recipes* section on
-readthedocs. This is also the place to document recipe options for the
-diagnostic scripts used in those recipes. Note that there is no need to
-write extensive documentation for functions that are not visible on
-readthedocs. However, adding a one line docstring describing what a
-function does is always a good idea.
+`docs.esmvaltool.org <https://docs.esmvaltool.org>`__
+should be well written and adhere to the standards for documentation for the
+respective language.
+Recipes should have a page in the :ref:`recipes` section.
+This is also the place to document recipe options for the diagnostic scripts
+used in those recipes.
+When adding a new recipe, please start from the
+`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+and do not forget to add your recipe to the
+`<index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+Note that there is no need to write extensive documentation for functions that
+are not visible in the online documentation.
+However, a short description in the docstring helps other contributors to
+understand what a function is intended to do and and what its capabilities are.
+For short functions, a one-line docstring is usually sufficient, but more
+complex functions might require slightly more extensive documentation.
 
 How to build the documentation locally
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -360,6 +368,8 @@ name to the list of authors in CITATION.cff and regenerate the file
 
    pip install cffconvert
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
+
+.. _How to make a release:
 
 How to make a release
 ---------------------

@@ -267,6 +267,10 @@ def group_metadata(metadata, attribute, sort=None):
     -------
     :obj:`dict` of :obj:`list` of :obj:`dict`
         A dictionary containing the requested groups.
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
     """
     groups = {}
     for attributes in metadata:
@@ -330,7 +334,11 @@ def sorted_group_metadata(metadata_groups, sort):
         sort = []
 
     def normalized_group_key(key):
+<<<<<<< HEAD
         """Define a key to sort the dict by."""
+=======
+        """Define a key to sort by."""
+>>>>>>> origin/master
         return '' if key is None else str(key).lower()
 
     groups = {}
@@ -376,7 +384,8 @@ def extract_variables(cfg, as_iris=False):
         variables[short_name] = {}
         info = variables[short_name]
         for key in keys_to_extract:
-            info[key] = data[key]
+            if key in data:
+                info[key] = data[key]
 
         # Replace short_name by var_name if desired
         if as_iris:
@@ -505,28 +514,38 @@ def run_diagnostic():
     logger.info("Starting diagnostic script %s with configuration:\n%s",
                 cfg['script'], yaml.safe_dump(cfg))
 
-    # Create output directories
+    # Clean run_dir and output directories from previous runs
+    default_files = {
+        'log.txt', 'profile.bin', 'resource_usage.txt', 'settings.yml'
+    }
+
     output_directories = []
     if cfg['write_netcdf']:
         output_directories.append(cfg['work_dir'])
     if cfg['write_plots']:
         output_directories.append(cfg['plot_dir'])
 
-    existing = [p for p in output_directories if os.path.exists(p)]
+    old_content = [p for p in output_directories if os.path.exists(p)]
+    old_content.extend(p for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
+                       if not os.path.basename(p) in default_files)
 
-    if existing:
+    if old_content:
         if args.force:
-            for output_directory in existing:
-                logger.info("Removing %s", output_directory)
-                shutil.rmtree(output_directory)
+            for content in old_content:
+                logger.info("Removing %s", content)
+                if os.path.isfile(content):
+                    os.remove(content)
+                else:
+                    shutil.rmtree(content)
         elif not args.ignore_existing:
-            logger.error(
-                "Script will abort to prevent accidentally overwriting your "
-                "data in these directories:\n%s\n"
-                "Use -f or --force to force emptying the output directories "
-                "or use -i or --ignore-existing to ignore existing output "
-                "directories.", '\n'.join(existing))
+            raise FileExistsError(
+                "Script will abort to prevent accidentally overwriting "
+                "your data in the following output files or directories:"
+                "\n%s\n Use -f or --force to force emptying the output "
+                "directories or use -i or --ignore-existing to ignore "
+                "existing output directories." % '\n'.join(old_content))
 
+    # Create output directories
     for output_directory in output_directories:
         logger.info("Creating %s", output_directory)
         if args.ignore_existing and os.path.exists(output_directory):
