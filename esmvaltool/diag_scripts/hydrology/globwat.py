@@ -52,6 +52,22 @@ def change_data_type(cube):
     return cube
 
 
+def _convert_units(cube, time_step):
+    """Convert unit of cube."""
+
+    cube.units = cube.units / 'kg m-3'
+    cube.data = cube.core_data() / 1000.
+
+    # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
+    if time_step['mip'] == 'Amon':
+        cube.convert_units('mm month-1')
+
+    # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
+    elif time_step['mip'] == 'day':
+        cube.convert_units('mm day-1')
+    return cube
+
+
 def get_input_cubes(metadata):
     """Return a dictionary with all (preprocessed) input files."""
     provenance = create_provenance_record()
@@ -73,23 +89,19 @@ def get_input_cubes(metadata):
         all_vars[short_name] = change_data_type(cube)
 
         # convert unit of pr and pet
-        for var in ['pr', 'pet']:
-            _convert_units(all_vars[var], time_step)
+        # for var in ['pr', 'pet']:
+        _convert_units(all_vars['pr'], time_step)
+
         provenance['ancestors'].append(filename)
     return all_vars, provenance, time_step
 
 
 def load_target(cfg):
     """Load target grid."""
-    logger.info("Reading digital elevation model from %s", filename)
+    logger.info("Reading a sample input file from %s")
     filename = Path(cfg['auxiliary_data_dir']) / cfg['target_file']
     if filename.suffix.lower() == '.nc':
         cube = iris.load_cube(str(filename))
-    elif filename.suffix.lower() == '.map':
-        cube = _load_pcraster_dem(filename)
-    else:
-        raise ValueError(f"Unknown file format {filename}. Supported formats "
-                         "are '.nc' and '.map'.")
     for coord in 'longitude', 'latitude':
         if not cube.coord(coord).has_bounds():
             logger.warning("Guessing DEM %s bounds", coord)
@@ -101,7 +113,6 @@ def get_month_day_for_output_name(cube):
     """Get month and day number for output name."""
     coord_time = cube.coord('time')
     start_year = coord_time.cell(0).point.year
-    end_year = coord_time.cell(-1).point.year
     year = start_year - 1
     months = []
     days = []
@@ -139,7 +150,8 @@ def monthly_arora_pet(tas):
 
     Arora is a temperature-based method for calculating potential ET.
     In this equation, t is the monthly average temperature in degree Celcius
-    pet is in mm per month.
+    pet is in mm per month (Arora, V. K., 2002).
+    https://doi.org/10.1016/S0022-1694(02)00101-4
     """
     tas.convert_units('degC')
     a = iris.coords.AuxCoord(np.float32(325),
@@ -157,20 +169,6 @@ def monthly_arora_pet(tas):
     return monthly_arora_pet
 
 
-def _convert_units(cube, time_step):
-    """Convert unit of cube."""
-
-    cube.units = cube.units / 'kg m-3'
-    cube.data = cube.core_data() / 1000.
-
-    # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
-    if time_step['mip'] == 'Amon':
-        cube.convert_units('mm month-1')
-
-    # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
-    elif time_step['mip'] == 'day':
-        cube.convert_units('mm day-1')
-    return cube
 
 def get_cube_info(cube):
     """"""
