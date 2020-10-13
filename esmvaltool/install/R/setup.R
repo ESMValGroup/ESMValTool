@@ -4,6 +4,7 @@ log <- function(..., level = "INFO") {
 
 # check for present library paths
 RLIBPATH <- .libPaths()
+Sys.setenv(R_INSTALL_STAGED = FALSE)
 
 # check if we can write in the present R libaries paths
 if (any(file.access(RLIBPATH, 2) == 0)) {

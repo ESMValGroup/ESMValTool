@@ -1,0 +1,155 @@
+# ESMValTool
+# recipe_kcs.yml
+---
+documentation:
+  description: >
+    This recipe reproduces the basic steps described in Lenderink 2014,
+    one scenario at a time.
+
+  references:
+    - lenderink14erl
+
+  authors:
+    - rol_evert
+    - kalverla_peter
+    - alidoost_sarah
+
+
+cmip5: &cmip5
+  - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: ACCESS1-3, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+  - {dataset: CanESM2, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:5)i1p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp60], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: "r(1:10)i1p1", start_year: 1961, end_year: 2099}
+
+  - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp26], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+  - {dataset: BNU-ESM, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: r1i1p1, start_year: 1961, end_year: 2099}
+
+target: &target
+  - {dataset: CCSM4, project: CMIP5, mip: Amon, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", start_year: 1961, end_year: 2099}
+
+
+preprocessors:
+  preprocessor_global:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference:
+        start_year: 1981
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+    multi_model_statistics:
+      span: full
+      statistics: [p10, p90]
+  preprocessor_local: &extract_NL
+    extract_point:
+      longitude: 6.25
+      latitude: 51.21
+      scheme: linear
+
+
+diagnostics:
+  global_matching:
+    description: >
+      - Make a plot of the global mean temperature change according to all datasets (defined above)
+      - Get the global mean temperature change for specified years and specified percentiles (Delta T). These define our scenarios.
+      - Select the 30-year period from the target model (all ensemble members) where they match the Delta T for each scenario.
+    variables:
+      tas_cmip:
+        short_name: tas
+        preprocessor: preprocessor_global
+        additional_datasets: *cmip5
+      tas_target:
+        short_name: tas
+        preprocessor: preprocessor_global
+        additional_datasets: *target
+    scripts:
+      global_matching:
+        script: kcs/global_matching.py
+        scenario_years: [2050, 2085]
+        scenario_percentiles: [P10, P90]
+
+  local_resampling:
+    description: >
+      - Divide the 30-year dataset into 5-year blocks
+      - Create all possible combinations out of these 30/5 = 6 periods and x ensemble members (may contain the same block multiple times, but less is better and maximum three times (see third item below))
+      - Determine the 1000 best ...
+      - Determine the final best
+    variables:
+      pr_target:
+        short_name: pr
+        preprocessor: preprocessor_local
+        additional_datasets: *target
+      tas_target:
+        short_name: tas
+        preprocessor: preprocessor_local
+        additional_datasets: *target
+      pr_cmip:
+        short_name: pr
+        preprocessor: preprocessor_local
+        additional_datasets: *cmip5
+      tas_cmip:
+        short_name: tas
+        preprocessor: preprocessor_local
+        additional_datasets: *cmip5
+    scripts:
+      resample:
+        script: kcs/local_resampling.py
+        control_period: [1981, 2010]
+        n_samples: 8
+        scenarios:
+          ML_MOC:
+            description: "Moderate warming / low changes in seasonal temperature & precipitation, mid-century"
+            global_dT: 1.0
+            scenario_year: 2050
+            resampling_period: [2021, 2050]
+            dpr_winter: 4
+            pr_summer_control: [25, 55]
+            pr_summer_future: [45, 75]
+            tas_winter_control: [50, 80]
+            tas_winter_future: [20, 50]
+            tas_summer_control: [0, 100]
+            tas_summer_future: [0, 50]
+
+          ML_EOC:
+            description: "Moderate warming / low changes in seasonal temperature & precipitation, mid-century"
+            global_dT: 1.5
+            scenario_year: 2085
+            resampling_period: [2031, 2060]
+            dpr_winter: 6
+            pr_summer_control: [10, 40]
+            pr_summer_future: [60, 90]
+            tas_winter_control: [50, 80]
+            tas_winter_future: [20, 50]
+            tas_summer_control: [0, 100]
+            tas_summer_future: [0, 50]
+
+          WH_EOC:
+            description: "High warming / high changes in seasonal temperature & precipitation, end of century"
+            global_dT: 3.0
+            scenario_year: 2085
+            resampling_period: [2066, 2095]
+            dpr_winter: 24
+            pr_summer_control: [60, 100]
+            pr_summer_future: [0, 40]
+            tas_winter_control: [20, 50]
+            tas_winter_future: [50, 80]
+            tas_summer_control: [10, 50]
+            tas_summer_future: [60, 100]
