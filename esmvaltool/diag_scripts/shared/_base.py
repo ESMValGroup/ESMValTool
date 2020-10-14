@@ -197,10 +197,10 @@ class ProvenanceLogger:
 
         Note
         ----
-            See `the documentation <
-            https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance
-            >`__ for more information.
-        """
+            See the provenance `documentation`_ for more information.
+
+        .. _documentation: https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance
+        """  # noqa
         if isinstance(filename, Path):
             filename = str(filename)
         if filename in self.table:
