@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - master
-      # - release_2.1  # testing only; remove before merge
-      - GA_deployment_tests  # testing only; remove before merge
 
 jobs:
   build-n-publish:
@@ -35,15 +33,16 @@ jobs:
           --out-dir dist/
           .
       # Publish on Test PyPi
-      #- name: Publish distribution 📦 to Test PyPI
-      #  uses: pypa/gh-action-pypi-publish@master
-      #  with:
-      #    password: ${{ secrets.test_pypi_password }}
-      #    repository_url: https://test.pypi.org/legacy/
+      - name: Publish distribution 📦 to Test PyPI
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.test_pypi_password }}
+          repository_url: https://test.pypi.org/legacy/
 
       # Publish on PyPi
-      #- name: Publish distribution 📦 to PyPI
-      #  if: startsWith(github.ref, 'refs/tags')
-      #  uses: pypa/gh-action-pypi-publish@master
-      #  with:
-      #    password: ${{ secrets.pypi_password }}
+      - name: Publish distribution 📦 to PyPI
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.pypi_password }}
