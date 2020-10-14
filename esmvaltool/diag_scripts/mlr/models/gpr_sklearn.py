@@ -4,6 +4,8 @@ Use ``mlr_model_type: gpr_sklearn`` to use this MLR model in the recipe.
 
 """
 
+# pylint: disable=arguments-differ
+
 import logging
 import os
 
@@ -17,9 +19,9 @@ logger = logging.getLogger(os.path.basename(__file__))
 class AdvancedGaussianProcessRegressor(GaussianProcessRegressor):
     """Expand :class:`sklearn.gaussian_process.GaussianProcessRegressor`."""
 
-    def predict(self, X, return_var=False, return_cov=False):
+    def predict(self, x, return_var=False, return_cov=False):
         """Expand :meth:`predict` to accept ``return_var``."""
-        pred = super().predict(X, return_std=return_var, return_cov=return_cov)
+        pred = super().predict(x, return_std=return_var, return_cov=return_cov)
         if return_var:
             return (pred[0], pred[1]**2)
         return pred
