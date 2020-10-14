@@ -30,6 +30,7 @@ class TestMLRModel():
 
     def test_register_mlr_model(self, mock_logger):
         """Test registering subclass."""
+        MLRModel._MODELS == {}
         assert MLRModel._MODELS == {}
 
         @MLRModel.register_mlr_model('test_model')
@@ -47,6 +48,7 @@ class TestMLRModel():
                     mock_logger):
         """Test creating subclasses."""
         # No subclasses
+        MLRModel._MODELS == {}
         assert MLRModel._MODELS == {}
         mock_mlr_model_init.return_value = None
         with pytest.raises(NotImplementedError):

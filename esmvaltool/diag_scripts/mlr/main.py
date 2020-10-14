@@ -90,10 +90,7 @@ save_mlr_model_error : str or int, optional
     using leave-one-group-out cross-validation using the group_attributes. Only
     possible if ``group_datasets_by_attributes`` is given. If the option is set
     to an integer ``n`` (!= 0), the (constant) error is estimated as RMSEP
-    using n-fold cross-validation. If the option is set to ``'linear'``, the
-    error is estimated as standard prediction error of ordinary linear
-    regression for every prediction input point individually.  Only possible if
-    ``mlr_model_type`` is ``'linear'``.
+    using n-fold cross-validation.
 save_lime_importance : bool, optional (default: False)
     Additionally save local feature importance given by LIME (Local
     Interpretable Model-agnostic Explanations).

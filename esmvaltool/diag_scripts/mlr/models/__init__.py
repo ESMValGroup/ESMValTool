@@ -1479,10 +1479,7 @@ class MLRModel():
             cross-validation using the group_attributes. Only possible if
             ``group_datasets_by_attributes`` is given. If the option is set to
             an integer ``n`` (!= 0), the (constant) error is estimated as RMSEP
-            using n-fold cross-validation. If the option is set to
-            ``'linear'``, the error is estimated as standard prediction error
-            of ordinary linear regression for every prediction input point
-            individually.  Only possible if ``mlr_model_type`` is ``'linear'``.
+            using n-fold cross-validation.
         save_lime_importance : bool, optional (default: False)
             Additionally saves local feature importance given by LIME (Local
             Interpretable Model-agnostic Explanations).
@@ -1939,7 +1936,6 @@ class MLRModel():
                 y_pred,
                 sample_weight=self._get_sample_weights('test'),
             )
-        # TODO: Implement 'linear'
         else:
             if strategy == 'logo':
                 cv_kwargs = self._get_logo_cv_kwargs()
