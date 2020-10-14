@@ -52,7 +52,7 @@ map_plot_type : str, optional (default: 'pcolormesh')
 pattern : str, optional
     Pattern matched against ancestor file names.
 plot_map : dict, optional
-    Specifiy additional keyword arguments for plotting global maps showing
+    Specify additional keyword arguments for plotting global maps showing
     datasets by ``plot_kwargs`` and plot appearance options by
     ``pyplot_kwargs`` (processed as functions of :mod:`matplotlib.pyplot`).
 plot_map_abs_biases : dict, optional

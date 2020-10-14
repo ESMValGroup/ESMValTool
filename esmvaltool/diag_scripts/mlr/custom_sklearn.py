@@ -221,7 +221,7 @@ def _score_weighted(estimator, x_test, y_test, scorer, sample_weights=None):
 
 
 def _split_fit_kwargs(fit_kwargs, train_idx, test_idx):
-    """Get splitted fit kwargs for single CV step."""
+    """Get split fit kwargs for single CV step."""
     fit_kwargs_train = {}
     fit_kwargs_test = {}
     for (key, val) in fit_kwargs.items():
@@ -328,7 +328,7 @@ def perform_efecv(estimator, x_data, y_data, **kwargs):
         support = np.array(support)
         features = np.arange(n_all_features)[support]
 
-        # Evaulate estimator on new subset of features
+        # Evaluate estimator on new subset of features
         new_estimator = clone(estimator)
         _update_transformers_param(new_estimator, support)
         scores = cross_val_score_weighted(new_estimator, x_data[:, features],

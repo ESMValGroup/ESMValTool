@@ -25,7 +25,7 @@ CRESCENDO
 Configuration options in recipe
 -------------------------------
 group_by_attributes : list of str, optional (default: ['dataset'])
-    List of attributes used to seperate different input points.
+    List of attributes used to separate different input points.
 ignore : list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
 legend_kwargs : dict, optional
@@ -39,7 +39,7 @@ plot_emergent_relationship : dict, optional
     by ``pyplot_kwargs`` (processed as functions of :mod:`matplotlib.pyplot`).
     Use ``{}`` to plot with default settings.
 plot_kwargs_for_groups : dict, optional
-    Specifiy additional keyword arguments (values) for the different points
+    Specify additional keyword arguments (values) for the different points
     defined by ``group_by_attributes`` (keys) used in plots.
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.

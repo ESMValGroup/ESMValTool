@@ -861,15 +861,15 @@ def get_caption(attributes, feature, label, group=None):
     label_attrs = attributes[label]
     if 'plot_title' not in feature_attrs:
         raise KeyError(
-            f"Attributes for feature '{feature}' does not inlcude necessary "
+            f"Attributes for feature '{feature}' does not include necessary "
             f"key 'plot_title'")
     if 'plot_xlabel' not in feature_attrs:
         raise KeyError(
-            f"Attributes for feature '{feature}' does not inlcude necessary "
+            f"Attributes for feature '{feature}' does not include necessary "
             f"key 'plot_xlabel'")
     if 'plot_ylabel' not in label_attrs:
         raise KeyError(
-            f"Attributes for label '{label}' does not inlcude necessary "
+            f"Attributes for label '{label}' does not include necessary "
             f"key 'plot_ylabel'")
     caption = (f"{attributes[feature]['plot_title']}: "
                f"{attributes[label]['plot_ylabel']} vs. "

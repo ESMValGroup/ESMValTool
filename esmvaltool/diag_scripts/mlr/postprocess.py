@@ -45,7 +45,7 @@ different ``var_type`` s:
   ``cov_estimate_dim_map: [1, 3]`` to map the dimensions of
   ``prediction_output_error`` to dimension 1 and 3 of ``prediction_input``).
 
-All data with other ``var_type`` s is ignored (``feature``, ``label``, ect.).
+All data with other ``var_type`` s is ignored (``feature``, ``label``, etc.).
 
 Real error calculation (using covariance dataset given as
 ``prediction_output_error``) and estimation (using ``prediction_input`` dataset

@@ -181,7 +181,7 @@ def create_alias(dataset, attributes, delimiter='-'):
     for attribute in attributes:
         if attribute not in dataset:
             raise AttributeError(
-                f"Datset {dataset} does not contain attribute '{attribute}' "
+                f"Dataset {dataset} does not contain attribute '{attribute}' "
                 f"for alias creation")
         alias.append(dataset[attribute])
     return delimiter.join(alias)

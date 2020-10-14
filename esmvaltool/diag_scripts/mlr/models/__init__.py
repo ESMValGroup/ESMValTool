@@ -217,7 +217,7 @@ dtype : str (default: 'float64')
     allowed values.
 fit_kwargs : dict
     Optional keyword arguments for the pipeline's ``fit()`` function.  These
-    arguments have to be given for each step of the pipeline seperated by two
+    arguments have to be given for each step of the pipeline separated by two
     underscores, i.e. ``s__p`` is the parameter ``p`` for step ``s``.
 group_datasets_by_attributes : list of str
     List of dataset attributes which are used to group input data for
@@ -243,12 +243,12 @@ output_file_type : str (default: 'png')
     File type for the plots.
 parameters : dict
     Parameters used for the whole pipeline. Have to be given for each step of
-    the pipeline seperated by two underscores, i.e. ``s__p`` is the parameter
+    the pipeline separated by two underscores, i.e. ``s__p`` is the parameter
     ``p`` for step ``s``.
 parameters_final_regressor : dict
     Parameters used for the **final** regressor. If these parameters are
     updated using the function :meth:`update_parameters`, the new names have to
-    be given for each step of the pipeline seperated by two underscores, i.e.
+    be given for each step of the pipeline separated by two underscores, i.e.
     ``s__p`` is the parameter ``p`` for step ``s``.
 pca : bool (default: False)
     Preprocess numerical input features using PCA. Parameters for this pipeline
@@ -750,7 +750,7 @@ class MLRModel():
         return ancestors
 
     def get_data_frame(self, data_type, impute_nans=False):
-        """Return data frame of specfied type.
+        """Return data frame of specified type.
 
         Parameters
         ----------
@@ -843,7 +843,7 @@ class MLRModel():
         ----------
         param_grid : dict or list of dict
             Parameter names (keys) and ranges (values) for the search. Have to
-            be given for each step of the pipeline seperated by two
+            be given for each step of the pipeline separated by two
             underscores, i.e. ``s__p`` is the parameter ``p`` for step ``s``.
         **kwargs : keyword arguments, optional
             Additional options for
@@ -1776,13 +1776,13 @@ class MLRModel():
         Note
         ----
         Parameter names have to be given for each step of the pipeline
-        seperated by two underscores, i.e. ``s__p`` is the parameter ``p`` for
+        separated by two underscores, i.e. ``s__p`` is the parameter ``p`` for
         step ``s``.
 
         Parameters
         ----------
         **params : keyword arguments, optional
-            Paramaters for the pipeline which should be updated.
+            Parameters for the pipeline which should be updated.
 
         Raises
         ------

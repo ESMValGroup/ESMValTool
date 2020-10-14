@@ -35,7 +35,7 @@ grid_search_cv_param_grid : dict or list of dict, optional
     instead of simply calling
     :meth:`esmvaltool.diag_scripts.mlr.models.MLRModel.fit`. Contains
     parameters (keys) and ranges (values) for the exhaustive parameter search.
-    Have to be given for each step of the pipeline seperated by two
+    Have to be given for each step of the pipeline separated by two
     underscores, i.e. ``s__p`` is the parameter ``p`` for step ``s``. May not
     be used together with ``efecv_kwargs`` or ``rfecv_kwargs``.
 group_metadata : str, optional
@@ -134,7 +134,7 @@ def _get_grouped_data(cfg, input_data):
     """Group input data to create individual MLR models for each group."""
     group_attribute = cfg['group_metadata']
     logger.info(
-        "Grouping training data by atribute '%s' and creating individual MLR "
+        "Grouping training data by attribute '%s' and creating individual MLR "
         "model for each group member", group_attribute)
 
     # Group data using var types
@@ -212,7 +212,7 @@ def _get_raw_input_data(cfg):
 
 
 def _update_mlr_model(mlr_model_type, mlr_model):
-    """Update MLR model paramters during run time."""
+    """Update MLR model parameters during run time."""
     if mlr_model_type == 'gpr_sklearn':
         new_kernel = (sklearn_kernels.ConstantKernel(1.0, (1e-5, 1e5)) *
                       sklearn_kernels.RBF(1.0, (1e-5, 1e5)))
@@ -283,7 +283,7 @@ def run_mlr_model(cfg, mlr_model_type, group_attribute, grouped_datasets):
         }
         mlr_model.predict(**predict_args)
 
-        # Print futher information
+        # Print further information
         mlr_model.print_correlation_matrices()
         mlr_model.print_regression_metrics()
         mlr_model.test_normality_of_residuals()
