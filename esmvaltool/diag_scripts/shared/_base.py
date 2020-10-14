@@ -190,9 +190,10 @@ class ProvenanceLogger:
                 - ancestors
                 - authors
                 - caption
+                - domain
                 - plot_type
-                - plot_file
                 - references
+                - statistics
 
         Note
         ----
