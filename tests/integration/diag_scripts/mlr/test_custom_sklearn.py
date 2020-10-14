@@ -48,11 +48,11 @@ def test_get_fit_parameters(kwargs, steps, output):
 class StdLinearRegression(LinearRegression):
     """Expand :class:`sklearn.linear_model.CoolLinearRegression`."""
 
-    def predict(self, X, return_std=False):
+    def predict(self, x, return_std=False):
         """Expand :meth:`predict`."""
-        pred = super().predict(X)
+        pred = super().predict(x)
         if return_std:
-            err = np.ones(X.shape[0], dtype=X.dtype)
+            err = np.ones(x.shape[0], dtype=x.dtype)
             return (pred, err)
         return pred
 
@@ -60,16 +60,16 @@ class StdLinearRegression(LinearRegression):
 class VarLinearRegression(LinearRegression):
     """Expand :class:`sklearn.linear_model.CoolLinearRegression`."""
 
-    def predict(self, X, return_var=False, return_cov=False, err_2d=False):
+    def predict(self, x, return_var=False, return_cov=False, err_2d=False):
         """Expand :meth:`predict`."""
-        pred = super().predict(X)
+        pred = super().predict(x)
         if return_var:
-            err = np.ones(X.shape[0], dtype=X.dtype)
+            err = np.ones(x.shape[0], dtype=x.dtype)
             if err_2d:
                 err = err.reshape(-1, 1)
             return (pred, err)
         if return_cov:
-            err = np.ones((X.shape[0], X.shape[0]), dtype=X.dtype)
+            err = np.ones((x.shape[0], x.shape[0]), dtype=x.dtype)
             return (pred, err)
         return pred
 
@@ -77,9 +77,9 @@ class VarLinearRegression(LinearRegression):
 class NonStandardScaler(StandardScaler):
     """Expand :class:`sklearn.preprocessing.StandardScaler`."""
 
-    def fit(self, X, y=None, f=0.0):
+    def fit(self, x, y=None, f=0.0):
         """Expand :meth:`fit`."""
-        return_value = super().fit(X, y)
+        return_value = super().fit(x, y)
         if self.mean_ is not None:
             self.mean_ += f
         return return_value

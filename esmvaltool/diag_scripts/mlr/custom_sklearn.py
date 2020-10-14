@@ -392,9 +392,9 @@ class AdvancedPipeline(Pipeline):
 
     def fit_transformers_only(self, x_data, y_data, **fit_kwargs):
         """Fit only ``transform`` steps of Pipeline."""
-        # Check fit_kwargs
-        _get_fit_parameters(fit_kwargs, self.steps, self.__class__)
-        return self._fit(x_data, y_data, **fit_kwargs)
+        fit_params = _get_fit_parameters(fit_kwargs, self.steps,
+                                         self.__class__)
+        return self._fit(x_data, y_data, **fit_params)
 
     def transform_only(self, x_data):
         """Only perform ``transform`` steps of Pipeline."""
