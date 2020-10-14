@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - master
-      # - release_2.1  # testing only; remove before merge
-      - GA_deployment_tests  # testing only; remove before merge
 
 jobs:
 
