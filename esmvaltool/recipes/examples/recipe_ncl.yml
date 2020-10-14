@@ -54,4 +54,3 @@ diagnostics:
         projection: Mollweide
         colormap: WhiteBlueGreenYellowRed
         ncdf: default
-        output_file_type: png
