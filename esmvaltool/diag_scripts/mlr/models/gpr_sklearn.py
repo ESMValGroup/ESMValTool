@@ -19,9 +19,10 @@ logger = logging.getLogger(os.path.basename(__file__))
 class AdvancedGaussianProcessRegressor(GaussianProcessRegressor):
     """Expand :class:`sklearn.gaussian_process.GaussianProcessRegressor`."""
 
-    def predict(self, x, return_var=False, return_cov=False):
+    def predict(self, x_data, return_var=False, return_cov=False):
         """Expand :meth:`predict` to accept ``return_var``."""
-        pred = super().predict(x, return_std=return_var, return_cov=return_cov)
+        pred = super().predict(x_data, return_std=return_var,
+                               return_cov=return_cov)
         if return_var:
             return (pred[0], pred[1]**2)
         return pred
