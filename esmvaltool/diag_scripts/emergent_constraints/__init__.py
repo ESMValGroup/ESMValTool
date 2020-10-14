@@ -538,17 +538,17 @@ def _get_pandas_cube(pandas_object):
             names = getattr(pandas_object, coord_name).names
         except AttributeError:
             continue
-        names = [n for n in names if n is not None]
-        if not names:
-            continue
-        new_coord_name = '-'.join(names)
         coord = cube.coord(coord_name)
-        coord.var_name = new_coord_name
-        coord.long_name = new_coord_name
         if not np.issubdtype(coord.dtype, np.number):
             coord.points = coord.points.astype(str)
             if coord.bounds is not None:
                 coord.bounds = coord.bounds.astype(str)
+        names = [n for n in names if n is not None]
+        if not names:
+            continue
+        new_coord_name = '-'.join(names)
+        coord.var_name = new_coord_name
+        coord.long_name = new_coord_name
     return cube
 
 

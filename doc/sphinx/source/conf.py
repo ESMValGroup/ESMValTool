@@ -12,10 +12,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -38,6 +38,7 @@ if rtd_version not in ["latest", "doc"]:  # TODO: add "stable" once we have it
 # Generate gallery
 sys.path.append(os.path.dirname(__file__))
 import generate_gallery
+
 generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
@@ -80,7 +81,9 @@ autodoc_mock_imports = [
     'psutil',
     'pynio',
     'scipy',
+    'sklearn',
     'xesmf',
+    'xgboost',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -432,4 +435,5 @@ intersphinx_mapping = {
 # -- Custom Document processing ----------------------------------------------
 
 import gensidebar
+
 gensidebar.generate_sidebar(globals(), "esmvaltool")

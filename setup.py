@@ -37,6 +37,7 @@ REQUIREMENTS = {
         'GDAL',
         'jinja2',
         'joblib',
+        'lime',
         'matplotlib',
         'natsort',
         'nc-time-axis',  # needed by iris.plot
@@ -54,6 +55,7 @@ REQUIREMENTS = {
         'shapely',
         'xarray>=0.12',
         'xesmf',
+        'xgboost',
         'xlsxwriter',
     ],
     # Test dependencies

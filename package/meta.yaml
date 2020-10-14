@@ -80,6 +80,7 @@ outputs:
         - iris>=2.2.1
         - jinja2
         - joblib
+        - lime
         - matplotlib>=3
         - natsort
         - nc-time-axis
@@ -97,6 +98,7 @@ outputs:
         - shapely
         - xarray>=0.12.0
         - xesmf
+        - xgboost
         - xlsxwriter
 
   - name: esmvaltool-julia
