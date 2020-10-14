@@ -104,6 +104,8 @@ diagnostics:
         mip: Amon
         preprocessor: climatological_mean
         additional_datasets: *obs_data
+        independence: True
+        performance: False
       psl_CLIM:
         <<: *independence_settings
         short_name: psl
@@ -114,6 +116,8 @@ diagnostics:
         mip: Amon
         preprocessor: local_anomalies
         additional_datasets: *obs_data
+        independence: False
+        performance: True
       tas_STD:
         <<: *performance_settings
         preprocessor: detrended_std
@@ -147,4 +151,25 @@ diagnostics:
       weighted_temperature_graph:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
+        weights: 'weights.nc'
+
+  weighted_boxplot:
+    variables:
+      tas_future:
+        short_name: tas
+        start_year: 2081
+        end_year: 2100
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_present:
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+
+    scripts:
+      boxplot_weighting_cmip:
+        script: weighting/boxplot_weighting_cmip.py
+        ancestors: [calculate_weights_climwip/climwip, tas_future, tas_present]
         weights: 'weights.nc'
