@@ -124,11 +124,12 @@ def save_data(basename, provenance, cfg, cube, **kwargs):
     ProvenanceLogger: For an example provenance record that can be used
         with this function.
     """
-    filename = get_diagnostic_filename(basename, cfg)
-    logger.info("Saving analysis results to %s", filename)
-    iris.save(cube, target=filename, **kwargs)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance)
+    if cfg.get('write_netcdf', True):
+        filename = get_diagnostic_filename(basename, cfg)
+        logger.info("Saving analysis results to %s", filename)
+        iris.save(cube, target=filename, **kwargs)
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(filename, provenance)
 
 
 class ProvenanceLogger:

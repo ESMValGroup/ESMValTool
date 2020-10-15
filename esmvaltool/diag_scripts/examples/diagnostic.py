@@ -53,11 +53,13 @@ def compute_diagnostic(filename):
 def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
 
-    if cfg['write_netcdf']:
-        save_data(basename, provenance_record, cfg, cube)
+    # Save the data used for the plot
+    save_data(basename, provenance_record, cfg, cube)
 
     if cfg.get('quickplot'):
+        # Create the plot
         quickplot(cube, **cfg['quickplot'])
+        # And save the plot
         save_figure(basename, provenance_record, cfg)
 
 

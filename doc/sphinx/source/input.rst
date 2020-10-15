@@ -43,7 +43,10 @@ user configuration file. Alternatively, it can use an external
 tool called `Synda <http://prodiguer.github.io/synda/index.html>`__. If you
 do not have access to a compute cluster with the data already mounted, this is
 the recommended approach for first-time users to obtain some data for
-running ESMValTool.
+running ESMValTool. It is also possible to manually download the files from
+ESGF, see
+`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__
+for a tutorial.
 
 Installing Synda for use from ESMValTool
 ----------------------------------------
