@@ -2861,7 +2861,7 @@ class MLRModel():
             self._group_prediction_datasets(pred_ref_datasets))
 
     def _load_lime_explainer(self):
-        """Load :class:`lime.lime_tabular.LimeTabularExplainer`"""
+        """Load :class:`lime.lime_tabular.LimeTabularExplainer`."""
         x_train = self.get_x_array('train', impute_nans=True)
         y_train = self.get_y_array('train', impute_nans=True)
         verbosity = self._get_verbosity_parameters(LimeTabularExplainer,
