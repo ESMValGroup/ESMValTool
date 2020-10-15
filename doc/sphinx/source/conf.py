@@ -421,15 +421,22 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
-    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-    'esmvaltool':
-    ('https://docs.esmvaltool.org/en/%s/' % rtd_version, None),
+    'cf_units': ('https://scitools.org.uk/cf-units/docs/latest/', None),
     'esmvalcore':
     ('https://docs.esmvaltool.org/projects/esmvalcore/en/%s/' %
      rtd_version, None),
+    'esmvaltool':
+    ('https://docs.esmvaltool.org/en/%s/' % rtd_version, None),
+    'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
+    'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
+    'python': ('https://docs.python.org/3/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'seaborn': ('https://seaborn.pydata.org/', None),
+    'sklearn': ('http://scikit-learn.org/stable',
+                (None, './_intersphinx/sklearn-objects.inv')),
 }
 
 # -- Custom Document processing ----------------------------------------------

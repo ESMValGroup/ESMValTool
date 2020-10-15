@@ -2861,7 +2861,7 @@ class MLRModel():
             self._group_prediction_datasets(pred_ref_datasets))
 
     def _load_lime_explainer(self):
-        """Load :class:`lime.LimeTabularExplainer`."""
+        """Load :class:`lime.lime_tabular.LimeTabularExplainer`"""
         x_train = self.get_x_array('train', impute_nans=True)
         y_train = self.get_y_array('train', impute_nans=True)
         verbosity = self._get_verbosity_parameters(LimeTabularExplainer,
@@ -3436,7 +3436,7 @@ class MLRModel():
 
     @staticmethod
     def _group_attr_to_pandas_index_str(group_attr):
-        """Convert group attribute to :obj:`str` used in :class:`pd.Index`."""
+        """Convert group attribute to :obj:`str` used in pandas index."""
         if group_attr is None:
             return 'none'
         return group_attr
