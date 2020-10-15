@@ -25,7 +25,8 @@
 ;
 ; Caveats
 ;    - Daily data has to consist of complete months
-;    - Version ACTIVE can only deal with complete years for both monthly and daily data
+;    - Version ACTIVE can only deal with complete years for both
+;      monthly and daily data
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -43,8 +44,8 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1992 ; 1979
-  YEAR2 = 2019 ; 2020
+  YEAR1 = 1992  ; 1979
+  YEAR2 = 2019  ; 2020
 
   ; Selected variables (standard name)
   VAR = (/"sm", "sm"/)
@@ -74,14 +75,17 @@ begin
     "doi: 10.5194/essd-11-717-2019, 2019."
   COMMENT = ""
 
-  SENSORS_FILEBASENAMES = (/"C3S-SOILMOISTURE-L3S-SSMV-COMBINED", "C3S-SOILMOISTURE-L3S-SSMV-PASSIVE", "C3S-SOILMOISTURE-L3S-SSMS-ACTIVE"/)
+  SENSORS_FILEBASENAMES = (/"C3S-SOILMOISTURE-L3S-SSMV-COMBINED", \
+                            "C3S-SOILMOISTURE-L3S-SSMV-PASSIVE", \
+                            "C3S-SOILMOISTURE-L3S-SSMS-ACTIVE"/)
   ; Version
   VERSIONS = (/"COMBINED", "PASSIVE", "ACTIVE"/)
-  PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", "????000000-?CDR-v201?12.0.0.nc", ".nc"/)
+  PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", \
+               "????000000-?CDR-v201?12.0.0.nc", ".nc"/)
 
   ; Read in the JOBS
   config_file = getenv("esmvaltool_root") + \
-           "/esmvaltool/cmorizers/obs/cmor_config/CDS-SATELLITE-SOIL-MOISTURE.cfg"
+    "/esmvaltool/cmorizers/obs/cmor_config/CDS-SATELLITE-SOIL-MOISTURE.cfg"
   JOBS = readAsciiTable(config_file, 2, "integer", 1)
   ; Now convert to type logical
   JOBS := JOBS .eq. 1
@@ -94,8 +98,9 @@ begin
 
     do vv = 0, dimsizes(FREQ) - 1
 
-      if JOBS(xx,vv) then
-        log_info("Processing " + VAR(vv) + " " + VERSIONS(xx) + " (" + MIP(vv) + ") as requested.")
+      if JOBS(xx, vv) then
+        log_info("Processing " + VAR(vv) + " " + VERSIONS(xx) + \
+                 " (" + MIP(vv) + ") as requested.")
 
         do yy = YEAR1, YEAR2
 
@@ -160,7 +165,8 @@ begin
         end do
 
       else
-        log_info("Skipping " + VAR(vv) + " " + VERSIONS(xx) + " (" + MIP(vv) + ") as requested.")
+        log_info("Skipping " + VAR(vv) + " " + VERSIONS(xx) + \
+                 " (" + MIP(vv) + ") as requested.")
       end if
 
     end do
