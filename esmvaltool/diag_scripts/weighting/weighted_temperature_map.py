@@ -1,4 +1,4 @@
-"""Implementation of the climwip weighting scheme.
+"""Implementation of a mapplot for the climwip weighting scheme.
 
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import cartopy
 import cartopy.crs as ccrs
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 import numpy as np
@@ -87,9 +86,9 @@ def weighted_quantile(values: list,
     return np.interp(quantile, weighted_quantiles, values)
 
 
-def visualize_and_save_temperature_change(temperature: 'xr.DataArray',
-                                    cfg: dict,
-                                    ancestors: list):
+def visualize_and_save_temperature(temperature: 'xr.DataArray',
+                                   cfg: dict,
+                                   ancestors: list):
     """Visualize weighted temperature."""
     period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
     if (meta := read_metadata(cfg).get('tas_reference', None)) is not None:
@@ -145,9 +144,9 @@ def visualize_and_save_temperature_change(temperature: 'xr.DataArray',
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def visualize_and_save_temperature_change_difference(temperature: 'xr.DataArray',
-                                                     cfg: dict,
-                                                     ancestors: list):
+def visualize_and_save_temperature_difference(temperature: 'xr.DataArray',
+                                              cfg: dict,
+                                              ancestors: list):
     """Visualize weighted temperature."""
     period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
     if (meta := read_metadata(cfg).get('tas_reference', None)) is not None:
@@ -159,7 +158,7 @@ def visualize_and_save_temperature_change_difference(temperature: 'xr.DataArray'
     proj = ccrs.PlateCarree(central_longitude=0)
     fig, ax = plt.subplots(subplot_kw={'projection': proj})
 
-    mplot = temperature.plot.pcolormesh(
+    temperature.plot.pcolormesh(
         ax=ax,
         transform=ccrs.PlateCarree(),
         levels=9,
@@ -167,7 +166,6 @@ def visualize_and_save_temperature_change_difference(temperature: 'xr.DataArray'
         robust=True,
         extend='both',
     )
-
 
     ax.coastlines()
     lons = temperature.lon.values
@@ -189,7 +187,7 @@ def visualize_and_save_temperature_change_difference(temperature: 'xr.DataArray'
     ax.set_xlabel('')
     ax.set_ylabel('')
 
-    ax.set_title(f'Weighted - unweighted {metric} temperature\n{period} ($\degree$C)')  # TODO: this should not be hardcoded!
+    ax.set_title(f'Weighted - unweighted {metric} temperature\n{period} ($\degree$C)')
 
     filename_plot = get_plot_filename('temperature_map_difference', cfg)
     fig.savefig(filename_plot, dpi=300, bbox_inches='tight')
@@ -269,13 +267,13 @@ def main(cfg):
     unweighted_mean = model_aggregation(model_data, metric)
     weighted_mean = model_aggregation(model_data, metric, weights)
 
-    visualize_and_save_temperature_change(
+    visualize_and_save_temperature(
         weighted_mean,
         cfg,
         model_data_files,
     )
 
-    visualize_and_save_temperature_change_difference(
+    visualize_and_save_temperature_difference(
         weighted_mean - unweighted_mean,
         cfg,
         model_data_files,
