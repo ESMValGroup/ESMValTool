@@ -8,7 +8,7 @@ dependencies:
   # Python packages that cannot be installed from PyPI:
   - gdal
   - esmpy
-  - esmvalcore>=2.0.0,<2.1
+  - esmvalcore>=2.1.0,<2.2
   # Non-Python dependencies
   - cdo>=1.9.7
   - imagemagick
