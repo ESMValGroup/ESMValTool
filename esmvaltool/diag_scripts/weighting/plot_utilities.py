@@ -1,7 +1,7 @@
 """A collection of utility functions used by the plot scripts."""
+from collections import defaultdict
 import numpy as np
 import xarray as xr
-from collections import defaultdict
 
 
 def read_weights(filename: str) -> dict:

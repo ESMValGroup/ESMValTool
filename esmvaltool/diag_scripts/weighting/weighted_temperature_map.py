@@ -26,6 +26,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, center=None):
+    """Visualize weighted temperature."""
     period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
     if (meta := read_metadata(cfg).get('tas_reference', None)) is not None:
         period = 'change: {} minus {start_year}-{end_year}'.format(period, **meta[0])
@@ -42,7 +43,7 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, 
         robust=True,
         extend='both',
         cmap=cmap,
-        center=None,
+        center=center,
         # colorbar size often does not fit nicely
         # https://stackoverflow.com/questions/18195758/set-matplotlib-colorbar-size-to-match-graph
         # cbar_kwargs={'fraction': .021}
@@ -87,7 +88,7 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, 
 def visualize_and_save_temperature(temperature: 'xr.DataArray',
                                    cfg: dict,
                                    ancestors: list):
-    """Visualize weighted temperature."""
+    """Wrapper for mapplot: absolute temperature"""
     title_pattern = 'Weighted {metric} temperature \n{period} ($\degree$C)'
     filename_part = 'temperature_change_weighted_map'
     mapplot(temperature, cfg, title_pattern, filename_part, ancestors, cmap='Reds')
@@ -96,7 +97,7 @@ def visualize_and_save_temperature(temperature: 'xr.DataArray',
 def visualize_and_save_temperature_difference(temperature_difference: 'xr.DataArray',
                                               cfg: dict,
                                               ancestors: list):
-    """Visualize weighted temperature."""
+    """Wrapper for mapplot: temperature change"""
     title_pattern = 'Difference: weighted minus unweighted {metric} temperature\n{period} ($\degree$C)'
     filename_part = 'temperature_change_difference_map'
     mapplot(temperature_difference, cfg, title_pattern, filename_part, ancestors, center=0)
@@ -133,6 +134,7 @@ def calculate_percentiles(data: 'xr.DataArray',
 
 
 def model_aggregation(dataset, metric, weights=None):
+    """Call mean or percentile calculation"""
     if isinstance(metric, int):
         return calculate_percentiles(dataset, metric, weights)
     elif metric.lower() == 'mean':
