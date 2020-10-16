@@ -11,11 +11,13 @@ The recipe produces time series plots of global mean temperature and for the
 temperature in Amsterdam. It also produces a map of global temperature in
 January 2020.
 
-Data are available e.g. via the `climate4impact portal <https://climate4impact.eu/impactportal/data/esgfsearch.jsp>`_. The links below will help you find them:
+For detailed instructions on obtaining input data, please refer to :ref:`_inputdata`. However, in case you just quickly want to run through the example, you can use the following links to obtain the data from ESGF:
 
-  * `BCC-ESM1 <https://climate4impact.eu/impactportal/data/esgfsearch.jsp#project=CMIP6&variable=tas&frequency=mon&experiment_id=historical&member_id=r1i1p1f1&source_id=BCC-ESM1&>`_
+  * `BCC-ESM1 <http://cmip.bcc.cma.cn/thredds/fileServer/cmip6_data/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc>`_
 
-  * `CanESM2 <https://climate4impact.eu/impactportal/data/esgfsearch.jsp#project=CMIP5&variable=tas&experiment=historical&model=CanESM2&ensemble=r1i1p1&time_frequency=mon&>`_
+  * `CanESM2 <http://crd-esgf-drc.ec.gc.ca/thredds/fileServer/esg_dataroot/AR5/CMIP5/output/CCCma/CanESM2/historical/mon/atmos/tas/r1i1p1/tas_Amon_CanESM2_historical_r1i1p1_185001-200512.nc>`_
+
+Please refer to the terms of use for `CMIP5` <https://pcmdi.llnl.gov/mips/cmip5/terms-of-use.html>`_ and `CMIP6 <https://pcmdi.llnl.gov/CMIP6/TermsOfUse/TermsOfUse6-1.html>`_ data.
 
 Available recipes and diagnostics
 ---------------------------------
