@@ -3,7 +3,6 @@
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-from collections import defaultdict
 import logging
 import os
 from pathlib import Path
@@ -14,193 +13,93 @@ from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 import numpy as np
 import xarray as xr
 from climwip import log_provenance, read_model_data
-from climwip import get_diagnostic_filename
+from climwip import get_diagnostic_filename, get_plot_filename
 
-from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
+from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.weighting.plot_utilities import (
+    read_weights,
+    read_metadata,
+    weighted_quantile,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def read_weights(filename: str) -> dict:
-    """Read a `.nc` file into a weights DataArray."""
-    weights_ds = xr.open_dataset(filename)
-    return weights_ds['weight']
+def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, center=None):
+    period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
+    if (meta := read_metadata(cfg).get('tas_reference', None)) is not None:
+        period = 'change: {} minus {start_year}-{end_year}'.format(period, **meta[0])
+    metric = cfg['model_aggregation']
+    if isinstance(metric, int):
+        metric = f'{metric}perc'
+    proj = ccrs.PlateCarree(central_longitude=0)
+    fig, ax = plt.subplots(subplot_kw={'projection': proj})
 
+    dataarray.plot.pcolormesh(
+        ax=ax,
+        transform=ccrs.PlateCarree(),
+        levels=9,
+        robust=True,
+        extend='both',
+        cmap=cmap,
+        center=None,
+        # colorbar size often does not fit nicely
+        # https://stackoverflow.com/questions/18195758/set-matplotlib-colorbar-size-to-match-graph
+        # cbar_kwargs={'fraction': .021}
+    )
 
-def read_metadata(cfg: dict) -> dict:
-    """Read the metadata from the config file."""
-    datasets = defaultdict(list)
+    ax.coastlines()
+    lons = dataarray.lon.values
+    lats = dataarray.lat.values
+    longitude_formatter = LongitudeFormatter()
+    latitude_formatter = LatitudeFormatter()
+    if (xticks := cfg.get('xticks', None)) is not None:
+        ax.set_xticks(xticks)
+    else:
+        ax.set_xticks(np.arange(np.floor(lons.min()), np.ceil(lons.max()), 10), crs=proj)
+    if (yticks := cfg.get('yticks', None)) is not None:
+        ax.set_yticks(yticks)
+    else:
+        ax.set_yticks(np.arange(np.floor(lats.min()), np.ceil(lats.max()), 10), crs=proj)
+    ax.xaxis.set_ticks_position('both')
+    ax.yaxis.set_ticks_position('both')
+    ax.xaxis.set_major_formatter(longitude_formatter)
+    ax.yaxis.set_major_formatter(latitude_formatter)
+    ax.set_xlabel('')
+    ax.set_ylabel('')
 
-    metadata = cfg['input_data'].values()
+    title = title_pattern.format(metric=metric, period=period)
+    ax.set_title(title)
 
-    for item in metadata:
-        variable = item['variable_group']
+    filename_plot = get_plot_filename(
+        filename_part, cfg)
+    fig.savefig(filename_plot, dpi=300, bbox_inches='tight')
+    plt.close(fig)
 
-        datasets[variable].append(item)
+    filename_data = get_diagnostic_filename(
+        filename_part, cfg, extension='nc')
+    dataarray.to_netcdf(filename_data)
 
-    return datasets
-
-
-def weighted_quantile(values: list,
-                      quantile: float,
-                      weights: list = None) -> 'np.array':
-    """Calculate weighted quantiles.
-
-    Analogous to np.quantile, but supports weights.
-
-    Based on: https://stackoverflow.com/a/29677616/6012085
-
-    Parameters
-    ----------
-    values: array_like
-        List of input values.
-    quantile: array_like
-        List of quantiles between 0.0 and 1.0.
-    weights: array_like
-        List with same length as `values` containing the weights.
-
-    Returns
-    -------
-    np.array
-        Numpy array with computed quantile.
-    """
-    values = np.array(values)
-    if weights is None:
-        weights = np.ones(len(values))
-    weights = np.array(weights)
-
-    if not ((quantile >= 0) & (quantile <= 1)):
-        raise ValueError('Quantile should be between 0.0 and 1.0')
-
-    idx = np.argsort(values)
-    values = values[idx]
-    weights = weights[idx]
-
-    weighted_quantiles = np.cumsum(weights) - 0.5 * weights
-
-    # Cast weighted quantiles to 0-1 To be consistent with np.quantile
-    min_val = weighted_quantiles.min()
-    max_val = weighted_quantiles.max()
-    weighted_quantiles = (weighted_quantiles - min_val) / max_val
-
-    return np.interp(quantile, weighted_quantiles, values)
+    log_provenance(title, filename_plot, cfg, ancestors)
+    log_provenance(title, filename_data, cfg, ancestors)
 
 
 def visualize_and_save_temperature(temperature: 'xr.DataArray',
                                    cfg: dict,
                                    ancestors: list):
     """Visualize weighted temperature."""
-    period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
-    if (meta := read_metadata(cfg).get('tas_reference', None)) is not None:
-        period = '{} minus {start_year}-{end_year}'.format(period, **meta[0])
-    metric = cfg['model_aggregation']
-    if isinstance(metric, int):
-        metric = f'{metric}perc'
-
-    proj = ccrs.PlateCarree(central_longitude=0)
-    fig, ax = plt.subplots(subplot_kw={'projection': proj})
-
-    temperature.plot.pcolormesh(
-        ax=ax,
-        transform=ccrs.PlateCarree(),
-        levels=9,
-        robust=True,
-        extend='both',
-        cmap='Reds',
-    )
-
-    ax.coastlines()
-    lons = temperature.lon.values
-    lats = temperature.lat.values
-    longitude_formatter = LongitudeFormatter()
-    latitude_formatter = LatitudeFormatter()
-    if (xticks := cfg.get('xticks', None)) is not None:
-        ax.set_xticks(xticks)
-    else:
-        ax.set_xticks(np.arange(np.floor(lons.min()), np.ceil(lons.max()), 10), crs=proj)
-    if (yticks := cfg.get('yticks', None)) is not None:
-        ax.set_yticks(yticks)
-    else:
-        ax.set_yticks(np.arange(np.floor(lats.min()), np.ceil(lats.max()), 10), crs=proj)
-    ax.xaxis.set_ticks_position('both')
-    ax.yaxis.set_ticks_position('both')
-    ax.xaxis.set_major_formatter(longitude_formatter)
-    ax.yaxis.set_major_formatter(latitude_formatter)
-    ax.set_xlabel('')
-    ax.set_ylabel('')
-
-    ax.set_title(f'Weighted {metric} temperature \n{period} ($\degree$C)')
-
-    filename_plot = get_plot_filename('temperature_change_weighted_map', cfg)
-    fig.savefig(filename_plot, dpi=300, bbox_inches='tight')
-    plt.close(fig)
-
-    filename_data = get_diagnostic_filename(
-        'temperature_map_weighted', cfg, extension='nc')
-    temperature.to_netcdf(filename_data)
-
-    caption = f'Temperature map {period}'
-    log_provenance(caption, filename_plot, cfg, ancestors)
-    log_provenance(caption, filename_data, cfg, ancestors)
+    title_pattern = 'Weighted {metric} temperature \n{period} ($\degree$C)'
+    filename_part = 'temperature_change_weighted_map'
+    mapplot(temperature, cfg, title_pattern, filename_part, ancestors, cmap='Reds')
 
 
-def visualize_and_save_temperature_difference(temperature: 'xr.DataArray',
+def visualize_and_save_temperature_difference(temperature_difference: 'xr.DataArray',
                                               cfg: dict,
                                               ancestors: list):
     """Visualize weighted temperature."""
-    period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
-    if (meta := read_metadata(cfg).get('tas_reference', None)) is not None:
-        period = '{} minus {start_year}-{end_year}'.format(period, **meta[0])
-    metric = cfg['model_aggregation']
-    if isinstance(metric, int):
-        metric = f'{metric}perc'
-
-    proj = ccrs.PlateCarree(central_longitude=0)
-    fig, ax = plt.subplots(subplot_kw={'projection': proj})
-
-    temperature.plot.pcolormesh(
-        ax=ax,
-        transform=ccrs.PlateCarree(),
-        levels=9,
-        center=0,
-        robust=True,
-        extend='both',
-    )
-
-    ax.coastlines()
-    lons = temperature.lon.values
-    lats = temperature.lat.values
-    longitude_formatter = LongitudeFormatter()
-    latitude_formatter = LatitudeFormatter()
-    if (xticks := cfg.get('xticks', None)) is not None:
-        ax.set_xticks(xticks)
-    else:
-        ax.set_xticks(np.arange(np.floor(lons.min()), np.ceil(lons.max()), 10), crs=proj)
-    if (yticks := cfg.get('yticks', None)) is not None:
-        ax.set_yticks(yticks)
-    else:
-        ax.set_yticks(np.arange(np.floor(lats.min()), np.ceil(lats.max()), 10), crs=proj)
-    ax.xaxis.set_ticks_position('both')
-    ax.yaxis.set_ticks_position('both')
-    ax.xaxis.set_major_formatter(longitude_formatter)
-    ax.yaxis.set_major_formatter(latitude_formatter)
-    ax.set_xlabel('')
-    ax.set_ylabel('')
-
-    ax.set_title(f'Weighted - unweighted {metric} temperature\n{period} ($\degree$C)')
-
-    filename_plot = get_plot_filename('temperature_map_difference', cfg)
-    fig.savefig(filename_plot, dpi=300, bbox_inches='tight')
-    plt.close(fig)
-
-    filename_data = get_diagnostic_filename(
-        'temperature_map_difference', cfg, extension='nc')
-    temperature.to_netcdf(filename_data)
-
-    caption = 'Temperature map difference'
-    log_provenance(caption, filename_plot, cfg, ancestors)
-    log_provenance(caption, filename_data, cfg, ancestors)
-
+    title_pattern = 'Difference: weighted minus unweighted {metric} temperature\n{period} ($\degree$C)'
+    filename_part = 'temperature_change_difference_map'
+    mapplot(temperature_difference, cfg, title_pattern, filename_part, ancestors, center=0)
 
 
 def calculate_percentiles(data: 'xr.DataArray',
