@@ -15,9 +15,8 @@ For detailed instructions on obtaining input data, please refer to
 :ref:`inputdata`. However, in case you just quickly want to run through the
 example, you can use the following links to obtain the data from ESGF:
 
-  * `BCC-ESM1 <http://cmip.bcc.cma.cn/thredds/fileServer/cmip6_data/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc>`_
-
-  * `CanESM2 <http://crd-esgf-drc.ec.gc.ca/thredds/fileServer/esg_dataroot/AR5/CMIP5/output/CCCma/CanESM2/historical/mon/atmos/tas/r1i1p1/tas_Amon_CanESM2_historical_r1i1p1_185001-200512.nc>`_
+  * `BCC-ESM1 <http://esgf3.dkrz.de/thredds/fileServer/cmip6/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc>`_
+  * `CanESM2 <http://esgf2.dkrz.de/thredds/fileServer/lta_dataroot/cmip5/output1/CCCma/CanESM2/historical/mon/atmos/Amon/r1i1p1/v20120718/tas/tas_Amon_CanESM2_historical_r1i1p1_185001-200512.nc>`_
 
 Please refer to the terms of use for `CMIP5
 <https://pcmdi.llnl.gov/mips/cmip5/terms-of-use.html>`_ and `CMIP6
