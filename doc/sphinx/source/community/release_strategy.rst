@@ -1,5 +1,5 @@
-Release Strategy for ESMValCore and ESMValTool
-================================================
+Release schedule and procedure for ESMValCore and ESMValTool
+============================================================
 
 This document describes the process for the release of ESMValCore
 and ESMValTool.
@@ -190,6 +190,55 @@ Release branch
 ~~~~~~~~~~~~~~
 The release branch can be used to do some additional testing before the release, while normal development work continues in the master branch. It will be branched off from the master branch after the feature freeze and will be used to make the release on the release date. The only way to still get something included in the release after the feature freeze is to ask the release manager to cherry-pick a commit from the master branch into this branch.
 
+.. _How to make a release:
+
+How to make an ESMValTool release
+---------------------------------
+
+To make a new release of the ESMValTool package, follow these steps:
+
+1. Check that the nightly build on CircleCI was successful
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check the ``nightly`` `build on
+CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/master>`__.
+All tests should pass before making a release.
+
+2. Make a pull request to increase the version number
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The version number is stored in ``esmvaltool/__init__.py``,
+``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
+https://semver.org for more information on choosing a version number.
+
+3. Make the release on GitHub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Click the `releases
+tab <https://github.com/ESMValGroup/ESMValTool/releases>`__ and draft
+the new release. Do not forget to tick the pre-release box for a beta
+release. Use the script
+`esmvalcore/utils/draft_release_notes.py <https://github.com/ESMValGroup/ESMValCore/blob/master/esmvalcore/utils/draft_release_notes.py>`__
+from the ESMValCore project to create a draft version of the release
+notes and edit those.
+
+4. Create and upload the Conda package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Follow these steps to create a new conda package:
+
+-  Check out the tag corresponding to the release, e.g.
+   ``git checkout v2.0.0b2``
+-  Edit package/meta.yaml and uncomment the lines starting with
+   ``git_rev`` and ``git_url``, remove the line starting with ``path``
+   in the ``source`` section.
+-  Activate the base environment ``conda activate base``
+-  Run ``conda build package -c conda-forge -c esmvalgroup`` to build
+   the conda package
+-  If the build was successful, upload all the packages to the esmvalgroup
+   conda channel, e.g.
+   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.0.0b2-py_0.tar.bz2``.
+
 Changelog
 ---------
 
@@ -198,6 +247,5 @@ Changelog
 - 2020-07-27 Update including tidying up and Glossary by Klaus Zimmermann and Bouwe Andela
 - 2020-07-23 Update to timeline format by Bouwe Andela and Klaus Zimmermann
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
-
 
 .. _ESMValCore release instructions: https://docs.esmvaltool.org/projects/esmvalcore/en/latest/contributing.html#how-to-make-a-release
