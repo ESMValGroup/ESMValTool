@@ -3,7 +3,6 @@
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-from collections import defaultdict
 import logging
 import os
 from pathlib import Path
@@ -15,74 +14,13 @@ from climwip import log_provenance, read_model_data
 from climwip import get_diagnostic_filename
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
+from esmvaltool.diag_scripts.weighting.plot_utilities import (
+    read_weights,
+    read_metadata,
+    weighted_quantile,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-def read_weights(filename: str) -> dict:
-    """Read a `.nc` file into a weights DataArray."""
-    weights_ds = xr.open_dataset(filename)
-    return weights_ds.to_dataframe().to_dict()['weight']
-
-
-def read_metadata(cfg: dict) -> dict:
-    """Read the metadata from the config file."""
-    datasets = defaultdict(list)
-
-    metadata = cfg['input_data'].values()
-
-    for item in metadata:
-        variable = item['short_name']
-
-        datasets[variable].append(item)
-
-    return datasets
-
-
-def weighted_quantile(values: list,
-                      quantiles: list,
-                      weights: list = None) -> 'np.array':
-    """Calculate weighted quantiles.
-
-    Analogous to np.quantile, but supports weights.
-
-    Based on: https://stackoverflow.com/a/29677616/6012085
-
-    Parameters
-    ----------
-    values: array_like
-        List of input values.
-    quantiles: array_like
-        List of quantiles between 0.0 and 1.0.
-    weights: array_like
-        List with same length as `values` containing the weights.
-
-    Returns
-    -------
-    np.array
-        Numpy array with computed quantiles.
-    """
-    values = np.array(values)
-    quantiles = np.array(quantiles)
-    if weights is None:
-        weights = np.ones(len(values))
-    weights = np.array(weights)
-
-    if not np.all((quantiles >= 0) & (quantiles <= 1)):
-        raise ValueError('Quantiles should be between 0.0 and 1.0')
-
-    idx = np.argsort(values)
-    values = values[idx]
-    weights = weights[idx]
-
-    weighted_quantiles = np.cumsum(weights) - 0.5 * weights
-
-    # Cast weighted quantiles to 0-1 To be consistent with np.quantile
-    min_val = weighted_quantiles.min()
-    max_val = weighted_quantiles.max()
-    weighted_quantiles = (weighted_quantiles - min_val) / max_val
-
-    return np.interp(quantiles, weighted_quantiles, values)
 
 
 def visualize_and_save_temperatures(temperature: 'xr.DataArray',
@@ -169,8 +107,8 @@ def calculate_percentiles(data: 'xr.DataArray',
 
     Returns a DataArray with 'percentiles' as the dimension.
     """
-    if weights:
-        weights = [weights[member] for member in data.model_ensemble.values]
+    if weights is not None:
+        weights = weights.sel(model_ensemble=data.model_ensemble)
 
     output = xr.apply_ufunc(weighted_quantile,
                             data,
@@ -194,10 +132,8 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models = read_metadata(cfg)['tas']
-
+    models = read_metadata(cfg, 'short_name')['tas']
     model_data, model_data_files = read_model_data(models)
-
 
     percentiles = np.array([25, 75])
 
