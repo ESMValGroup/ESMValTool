@@ -143,3 +143,9 @@ Example plots
    :align:   center
 
    Interquartile range of temperature anomalies relative to 1981-2010, weighted versus non-weighted.
+
+   .. _fig_climwip_5:
+.. figure::  /recipes/figures/climwip/temperature_change_weighted_map.png
+   :align:   center
+
+   Map of weighted mean temperature change 2081-2100 relative to 1995-2014
