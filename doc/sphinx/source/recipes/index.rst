@@ -96,6 +96,7 @@ Other
    recipe_capacity_factor
    recipe_ensclus
    recipe_multimodel_products
+   recipe_python
    recipe_rainfarm
    recipe_seaice_feedback
    recipe_seaice

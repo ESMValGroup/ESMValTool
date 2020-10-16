@@ -100,8 +100,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'{0}, ESMValTool Development Team'.format(
-    datetime.now().year)
+copyright = u'{0}, ESMValTool Development Team'.format(datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -423,20 +422,20 @@ numfig = True
 intersphinx_mapping = {
     'cf_units': ('https://scitools.org.uk/cf-units/docs/latest/', None),
     'esmvalcore':
-    ('https://docs.esmvaltool.org/projects/esmvalcore/en/%s/' %
-     rtd_version, None),
-    'esmvaltool':
-    ('https://docs.esmvaltool.org/en/%s/' % rtd_version, None),
+    (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
+     None),
+    'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
     'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
     'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
-    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'matplotlib': ('https://matplotlib.org/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
     'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
-    'sklearn': ('http://scikit-learn.org/stable',
-                (None, './_intersphinx/sklearn-objects.inv')),
+    'sklearn':
+    ('http://scikit-learn.org/stable',
+     (None, './_intersphinx/sklearn-objects.inv')),
 }
 
 # -- Custom Document processing ----------------------------------------------

@@ -73,14 +73,14 @@ To install in development mode, follow these instructions.
    environment since that will update some packages that are pinned to
    specific versions for the correct functionality of the environment.
 
-Using the development version of the ESMValTool Core package
+Using the development version of the ESMValCore package
 ------------------------------------------------------------
 
-If you need the latest developments of the ESMValTool Core package, you
+If you need the latest developments of the ESMValCore package, you
 can install it from source into the same conda environment. First follow
 the steps above and then:
 
--  Clone the ESMValTool Core github repository:
+-  Clone the ESMValCore github repository:
    ``git clone git@github.com:ESMValGroup/ESMValCore``)
 -  Go to the esmvalcore directory: ``cd ESMValCore``
 -  Update the esmvaltool conda environment
