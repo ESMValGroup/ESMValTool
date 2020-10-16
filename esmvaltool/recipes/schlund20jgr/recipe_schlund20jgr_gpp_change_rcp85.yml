@@ -22,19 +22,17 @@ documentation:
     - crescendo
     - usmile
 
+# YAML anchors
+
+PROVENANCE_ANCHOR: &provenance
   domains:
     - global
-
   realms:
     - land
-
   themes:
     - ML
     - EC
     - carbon
-
-
-# YAML anchors
 
 DATASET_ANCHOR: &datasets
   - {dataset: CanESM2}
@@ -148,7 +146,7 @@ GBRT_SCRIPT: &gbrt_script
     - {var_type: null}
   imputation_strategy: mean
   mlr_model_type: gbr_sklearn
-  n_jobs: 24
+  n_jobs: -1
   parameters_final_regressor: &gbrt_parameters
     learning_rate: 0.1
     max_depth: 4
@@ -168,7 +166,7 @@ LASSO_SCRIPT: &lasso_script
     - {var_type: null}
   imputation_strategy: mean
   mlr_model_type: lasso_cv
-  n_jobs: 24
+  n_jobs: -1
   save_lime_importance: true
   save_mlr_model_error: test
   save_propagated_errors: true
@@ -295,6 +293,7 @@ diagnostics:
   # Auxiliary dataset to estimate covariance
 
   diag_mte_for_cov_estimation:
+    <<: *provenance
     description: Process MTE dataset which is used to estimate covariance structure.
     variables:
       cov_ref:
@@ -317,6 +316,7 @@ diagnostics:
   # Use emergent constraint to rescale target variable (Step 1 in paper)
 
   diag_co2_cycle:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_features
@@ -350,6 +350,7 @@ diagnostics:
             title: 'KUM (19.5°N, 154.8°W)'
 
   diag_co2_amplitude_sensitivity:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_features
@@ -421,6 +422,7 @@ diagnostics:
           x_coord: mole_fraction_of_carbon_dioxide_in_air
 
   diag_gpp_fraction_mean:
+    <<: *provenance
     variables:
       ref:
         <<: *variable_settings_gpp_fraction_ref
@@ -438,6 +440,7 @@ diagnostics:
         ancestors: ['diag_gpp_fraction_mean/preprocess_fraction']
 
   diag_gpp_fraction_map:
+    <<: *provenance
     variables:
       ref:
         <<: *variable_settings_gpp_fraction_ref
@@ -476,6 +479,7 @@ diagnostics:
             vmax: 300
 
   diag_rescale_gpp_fraction_with_emergent_constraint:
+    <<: *provenance
     scripts:
       rescale:
         script: mlr/rescale_with_emergent_constraint.py
@@ -527,6 +531,7 @@ diagnostics:
   # Features (= predicctors)
 
   diag_mlr_feature_gpp_mean:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_features
@@ -569,6 +574,7 @@ diagnostics:
             cbar_label: 'GPP [gC m$^{-2}$ yr$^{-1}$]'
 
   diag_mlr_feature_lai_mean:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_features
@@ -599,6 +605,7 @@ diagnostics:
             cbar_label: 'LAI [1]'
 
   diag_mlr_feature_pr_mean:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_features
@@ -630,6 +637,7 @@ diagnostics:
             cbar_label: 'PR [kg m$^{-2}$ day$^{-1}$]'
 
   diag_mlr_feature_rsds_mean:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_features
@@ -660,6 +668,7 @@ diagnostics:
             cbar_label: 'RSDS [W m$^{-2}$]'
 
   diag_mlr_feature_tas_mean:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_features
@@ -693,6 +702,7 @@ diagnostics:
   # MLR models (Step 2b in paper)
 
   diag_mmm_mean:
+    <<: *provenance
     description: Use simple multi-model mean to predict scalar target variable.
     scripts:
       mlr:
@@ -701,6 +711,7 @@ diagnostics:
         mlr_model_name: MMM
 
   diag_mmm:
+    <<: *provenance
     description: Use simple multi-model mean to predict target variable (zonal means).
     scripts:
       mlr:
@@ -715,6 +726,7 @@ diagnostics:
         ]
 
   diag_mmm_pseudo_reality:
+    <<: *provenance
     description: Validate MMM model using pseudo-reality approach.
     scripts:
       mlr_pseudo_reality:
@@ -724,6 +736,7 @@ diagnostics:
         pseudo_reality: ['dataset']
 
   diag_mmm_rescaled:
+    <<: *provenance
     description: Use simple multi-model mean to predict target variable from rescaled data (zonal means).
     scripts:
       mlr:
@@ -739,6 +752,7 @@ diagnostics:
         ]
 
   diag_mmm_rescaled_pseudo_reality:
+    <<: *provenance
     description: Validate rescaled MMM model using pseudo-reality approach.
     scripts:
       mlr_pseudo_reality:
@@ -748,6 +762,7 @@ diagnostics:
         pseudo_reality: ['dataset']
 
   diag_gbrt:
+    <<: *provenance
     description: GBRT model.
     scripts:
       mlr:
@@ -766,6 +781,7 @@ diagnostics:
         ]
 
   diag_gbrt_pseudo_reality:
+    <<: *provenance
     description: Validate GBRT model using pseudo-reality approach.
     scripts:
       mlr_pseudo_reality:
@@ -779,6 +795,7 @@ diagnostics:
         parameters_final_regressor: *gbrt_parameters
 
   diag_lasso:
+    <<: *provenance
     description: Use LASSO regression model to predict target variable.
     scripts:
       mlr:
@@ -797,6 +814,7 @@ diagnostics:
         ]
 
   diag_lasso_pseudo_reality:
+    <<: *provenance
     description: Validate LASSO regression model using pseudo-reality approach.
     scripts:
       mlr_pseudo_reality:
@@ -811,6 +829,7 @@ diagnostics:
   # Plots
 
   diag_plot_rescaled_zonal_means:
+    <<: *provenance
     scripts:
       preprocess_original_data:
         <<: *preprocess_zonal_means_script
@@ -850,6 +869,7 @@ diagnostics:
 
 
   diag_plot_mlr_models:
+    <<: *provenance
     description: Create plots for the different MLR models.
     scripts:
       plot:
@@ -917,6 +937,7 @@ diagnostics:
             vmax: 75.0
 
   diag_evaluate_residuals:
+    <<: *provenance
     description: Evaluate residuals of different statistical models.
     scripts:
       evaluate_residuals:

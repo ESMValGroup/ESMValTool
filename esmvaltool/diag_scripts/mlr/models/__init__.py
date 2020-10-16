@@ -238,7 +238,9 @@ log_level : str (default: 'info')
 mlr_model_name : str
     Human-readable name of the MLR model instance (e.g used for labels).
 n_jobs : int (default: 1)
-    Maximum number of jobs spawned by this class.
+    Maximum number of jobs spawned by this class. Use ``-1`` to use all
+    processors. More details are given here
+    <https://scikit-learn.org/stable/glossary.html#term-n-jobs>.
 output_file_type : str (default: 'png')
     File type for the plots.
 parameters : dict

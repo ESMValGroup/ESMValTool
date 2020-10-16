@@ -22,18 +22,17 @@ documentation:
     - crescendo
     - usmile
 
+
+# YAML anchors
+
+PROVENANCE_ANCHOR: &provenance
   domains:
     - global
-
   realms:
     - land
-
   themes:
     - EC
     - carbon
-
-
-# YAML anchors
 
 DATASET_ANCHOR_CO2: &datasets_co2
   - {dataset: CanESM2}
@@ -218,6 +217,7 @@ preprocessors:
 diagnostics:
 
   diag_co2_cycle:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_feature_co2
@@ -247,6 +247,7 @@ diagnostics:
           Scripps-CO2-KUM: {color: k,  alpha: 1.0, linewidth: 1}
 
   diag_co2_amplitude_sensitivity:
+    <<: *provenance
     variables:
       features:
         <<: *variable_settings_feature_co2
@@ -292,6 +293,7 @@ diagnostics:
           x_coord: mole_fraction_of_carbon_dioxide_in_air
 
   diag_gpp_fraction_mean:
+    <<: *provenance
     variables:
       ref:
         <<: *variable_settings_gpp_fraction_ref
@@ -307,6 +309,7 @@ diagnostics:
         ancestors: ['diag_gpp_fraction_mean/preprocess_fraction']
 
   diag_gpp_fraction_map:
+    <<: *provenance
     variables:
       ref:
         <<: *variable_settings_gpp_fraction_ref
@@ -343,6 +346,7 @@ diagnostics:
             vmax: 300
 
   diag_rescale_gpp_fraction_with_emergent_constraint:
+    <<: *provenance
     scripts:
       rescale:
         script: mlr/rescale_with_emergent_constraint.py
@@ -363,6 +367,7 @@ diagnostics:
         seaborn_settings: *seaborn_settings
 
   diag_mmm_mean:
+    <<: *provenance
     description: Use simple multi-model mean to predict scalar target variable.
     scripts:
       mlr:

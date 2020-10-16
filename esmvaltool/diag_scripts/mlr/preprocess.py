@@ -65,8 +65,10 @@ mask : dict of dict
     Mask datasets. Keys have to be :mod:`numpy.ma` conversion operations (see
     <https://docs.scipy.org/doc/numpy/reference/routines.ma.html>) and values
     all the keyword arguments of them.
-n_jobs : int (default: 8)
-    Maximum number of jobs spawned by this diagnostic script.
+n_jobs : int (default: 1)
+    Maximum number of jobs spawned by this diagnostic script. Use ``-1`` to use
+    all processors. More details are given here
+    <https://scikit-learn.org/stable/glossary.html#term-n-jobs>.
 normalize_by_mean : bool, optional (default: False)
     Remove total mean of the dataset in the last step (resulting mean will be
     0.0). Calculates weighted mean if ``area_weighted``, ``time_weighted`` or
@@ -1116,7 +1118,7 @@ def main(cfg):
     # Default options
     cfg.setdefault('area_weighted', True)
     cfg.setdefault('extract_ignore_bounds', False)
-    cfg.setdefault('n_jobs', 8)
+    cfg.setdefault('n_jobs', 1)
     cfg.setdefault('return_trend_stderr', True)
     cfg.setdefault('time_weighted', True)
     logger.info("Using at most %i processes", cfg['n_jobs'])
