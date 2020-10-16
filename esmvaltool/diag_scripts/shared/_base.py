@@ -117,13 +117,16 @@ def save_data(basename, provenance, cfg, cube, **kwargs):
     cube: iris.cube.Cube
         Data cube to save.
     **kwargs:
-        Keyword arguments to pass to :obj:`iris.save`.
+        Extra keyword arguments to pass to :obj:`iris.save`.
 
     See Also
     --------
     ProvenanceLogger: For an example provenance record that can be used
         with this function.
     """
+    if 'target' in kwargs:
+        raise ValueError(
+            "Please use the `basename` argument to specify the output file")
     if cfg.get('write_netcdf', True):
         filename = get_diagnostic_filename(basename, cfg)
         logger.info("Saving analysis results to %s", filename)
