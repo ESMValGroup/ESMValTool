@@ -28,8 +28,8 @@ efecv_kwargs : dict, optional
     together with ``grid_search_cv_param_grid`` or ``rfecv_kwargs``.
 grid_search_cv_kwargs : dict, optional
     Keyword arguments for the grid search cross-validation, see
-    <https://scikit-learn.org/stable/modules/generated/
-    sklearn.model_selection.GridSearchCV.html>.
+    `<https://scikit-learn.org/stable/modules/generated/
+    sklearn.model_selection.GridSearchCV.html>`_.
 grid_search_cv_param_grid : dict or list of dict, optional
     If specified, perform exhaustive parameter search using cross-validation
     instead of simply calling
@@ -74,8 +74,8 @@ pseudo_reality : list of str, optional
 rfecv_kwargs : dict, optional
     If specified, use these additional keyword arguments to perform a recursive
     feature elimination using cross-validation, see
-    <https://scikit-learn.org/stable/modules/generated/
-    sklearn.feature_selection.RFECV.html>. May not be used together with
+    `<https://scikit-learn.org/stable/modules/generated/
+    sklearn.feature_selection.RFECV.html>`_. May not be used together with
     ``efecv_kwargs`` or ``grid_search_cv_param_grid``.
 save_mlr_model_error : str or int, optional
     Additionally saves estimated squared MLR model error. This error represents

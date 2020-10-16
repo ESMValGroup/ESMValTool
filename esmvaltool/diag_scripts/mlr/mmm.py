@@ -21,7 +21,7 @@ convert_units_to : str, optional
     Convert units of the input data. Can also be given as dataset option.
 dtype : str (default: 'float64')
     Internal data type which is used for all calculations, see
-    <https://docs.scipy.org/doc/numpy/user/basics.types.html> for a list of
+    `<https://docs.scipy.org/doc/numpy/user/basics.types.html>`_ for a list of
     allowed values.
 ignore : list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.

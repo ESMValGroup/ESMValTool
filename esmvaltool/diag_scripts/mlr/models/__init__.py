@@ -93,12 +93,12 @@ following properties:
 
 #. In this example, a
    `GBRT model
-   <https://scikit-learn.org/stable/modules/ensemble.html#gradient-tree-boosting>`_
-   (with ``mlr_model_type: gbr_sklearn``) is used. Parameters for this are
-   specified via ``parameters_final_regressor``. Apart from the best-estimate
-   prediction, the estimated MLR model error (``save_mlr_model_error: test``)
-   and the propagated prediction input error (``save_propagated_errors:
-   true``) are returned.
+   <https://scikit-learn.org/stable/modules/ensemble.html
+   #gradient-tree-boosting>`_ (with ``mlr_model_type: gbr_sklearn``) is used.
+   Parameters for this are specified via ``parameters_final_regressor``. Apart
+   from the best-estimate prediction, the estimated MLR model error
+   (``save_mlr_model_error: test``) and the propagated prediction input error
+   (``save_propagated_errors: true``) are returned.
 #. With ``postprocess.py``, the global mean of the best estimate prediction and
    the corresponding errors (MLR model + propagated input error) are calculted.
 
@@ -213,7 +213,7 @@ coords_as_features : list of str
     If given, specify a list of coordinates which should be used as features.
 dtype : str (default: 'float64')
     Internal data type which is used for all calculations, see
-    <https://docs.scipy.org/doc/numpy/user/basics.types.html> for a list of
+    `<https://docs.scipy.org/doc/numpy/user/basics.types.html>`_ for a list of
     allowed values.
 fit_kwargs : dict
     Optional keyword arguments for the pipeline's ``fit()`` function.  These
@@ -239,8 +239,8 @@ mlr_model_name : str
     Human-readable name of the MLR model instance (e.g used for labels).
 n_jobs : int (default: 1)
     Maximum number of jobs spawned by this class. Use ``-1`` to use all
-    processors. More details are given here
-    <https://scikit-learn.org/stable/glossary.html#term-n-jobs>.
+    processors. More details are given `here
+    <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_.
 output_file_type : str (default: 'png')
     File type for the plots.
 parameters : dict
@@ -263,7 +263,7 @@ savefig_kwargs : dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict
     Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
 standardize_data : bool (default: True)
     Linearly standardize numerical input data by removing mean and scaling to
     unit variance.
@@ -849,9 +849,7 @@ class MLRModel():
             underscores, i.e. ``s__p`` is the parameter ``p`` for step ``s``.
         **kwargs : keyword arguments, optional
             Additional options for
-            :class:`sklearn.model_selection.GridSearchCV`
-            <https://scikit-learn.org/stable/modules/generated/
-            sklearn.model_selection.GridSearchCV.html>.
+            :class:`sklearn.model_selection.GridSearchCV`.
 
         Raises
         ------
@@ -885,8 +883,8 @@ class MLRModel():
                 "GridSearchCV not successful, cannot determine best estimator "
                 "(neither using 'best_estimator_' nor 'best_params_'), "
                 "adapt keyword arguments accordingly (see "
-                "<https://scikit-learn.org/stable/modules/generated/"
-                "sklearn.model_selection.GridSearchCV.html> for more help)")
+                "https://scikit-learn.org/stable/modules/generated/"
+                "sklearn.model_selection.GridSearchCV.html for more help)")
         self._parameters = self._get_clf_parameters()
         logger.info(
             "Exhaustive grid search successful, found best parameter(s) %s",
@@ -1685,9 +1683,7 @@ class MLRModel():
         Parameters
         ----------
         **kwargs : keyword arguments, optional
-            Additional options for :class:`sklearn.feature_selection.RFECV`
-            <https://scikit-learn.org/stable/modules/generated/
-            sklearn.feature_selection.RFECV.html>.
+            Additional options for :class:`sklearn.feature_selection.RFECV`.
 
         Raises
         ------

@@ -63,12 +63,12 @@ landsea_fraction_weighted : str, optional
     ``'land'``, ``'sea'``.
 mask : dict of dict
     Mask datasets. Keys have to be :mod:`numpy.ma` conversion operations (see
-    <https://docs.scipy.org/doc/numpy/reference/routines.ma.html>) and values
-    all the keyword arguments of them.
+    `<https://docs.scipy.org/doc/numpy/reference/routines.ma.html>`_) and
+    values all the keyword arguments of them.
 n_jobs : int (default: 1)
     Maximum number of jobs spawned by this diagnostic script. Use ``-1`` to use
-    all processors. More details are given here
-    <https://scikit-learn.org/stable/glossary.html#term-n-jobs>.
+    all processors. More details are given `here
+    <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_.
 normalize_by_mean : bool, optional (default: False)
     Remove total mean of the dataset in the last step (resulting mean will be
     0.0). Calculates weighted mean if ``area_weighted``, ``time_weighted`` or

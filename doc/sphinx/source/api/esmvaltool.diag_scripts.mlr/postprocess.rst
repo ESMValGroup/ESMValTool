@@ -4,3 +4,6 @@ Postprocessing functionalities
 ==============================
 
 .. automodule:: esmvaltool.diag_scripts.mlr.postprocess
+   :no-members:
+   :no-inherited-members:
+   :no-show-inheritance:
