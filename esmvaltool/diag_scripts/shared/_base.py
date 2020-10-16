@@ -99,7 +99,7 @@ def save_figure(basename, provenance, cfg, figure=None, close=True, **kwargs):
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(filename, provenance)
 
-    if close and figure:
+    if close:
         plt.close(figure)
 
 
