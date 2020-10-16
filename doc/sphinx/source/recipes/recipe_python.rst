@@ -12,7 +12,7 @@ temperature in Amsterdam. It also produces a map of global temperature in
 January 2020.
 
 For detailed instructions on obtaining input data, please refer to
-:ref:`_inputdata`. However, in case you just quickly want to run through the
+:ref:`inputdata`. However, in case you just quickly want to run through the
 example, you can use the following links to obtain the data from ESGF:
 
   * `BCC-ESM1 <http://cmip.bcc.cma.cn/thredds/fileServer/cmip6_data/CMIP/BCC/BCC-ESM1/historical/r1i1p1f1/Amon/tas/gn/v20181214/tas_Amon_BCC-ESM1_historical_r1i1p1f1_gn_185001-201412.nc>`_
