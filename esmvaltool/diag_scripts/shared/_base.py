@@ -73,7 +73,7 @@ def save_figure(basename, provenance, cfg, figure=None, close=True, **kwargs):
         Dictionary with diagnostic configuration.
     figure: matplotlib.figure.Figure
         Figure to save.
-    close:
+    close: bool
         Close the figure after saving.
     **kwargs:
         Keyword arguments to pass to :obj:`matplotlib.figure.Figure.savefig`.
