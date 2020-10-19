@@ -538,17 +538,17 @@ def _get_pandas_cube(pandas_object):
             names = getattr(pandas_object, coord_name).names
         except AttributeError:
             continue
-        names = [n for n in names if n is not None]
-        if not names:
-            continue
-        new_coord_name = '-'.join(names)
         coord = cube.coord(coord_name)
-        coord.var_name = new_coord_name
-        coord.long_name = new_coord_name
         if not np.issubdtype(coord.dtype, np.number):
             coord.points = coord.points.astype(str)
             if coord.bounds is not None:
                 coord.bounds = coord.bounds.astype(str)
+        names = [n for n in names if n is not None]
+        if not names:
+            continue
+        new_coord_name = '-'.join(names)
+        coord.var_name = new_coord_name
+        coord.long_name = new_coord_name
     return cube
 
 
@@ -861,15 +861,15 @@ def get_caption(attributes, feature, label, group=None):
     label_attrs = attributes[label]
     if 'plot_title' not in feature_attrs:
         raise KeyError(
-            f"Attributes for feature '{feature}' does not inlcude necessary "
+            f"Attributes for feature '{feature}' does not include necessary "
             f"key 'plot_title'")
     if 'plot_xlabel' not in feature_attrs:
         raise KeyError(
-            f"Attributes for feature '{feature}' does not inlcude necessary "
+            f"Attributes for feature '{feature}' does not include necessary "
             f"key 'plot_xlabel'")
     if 'plot_ylabel' not in label_attrs:
         raise KeyError(
-            f"Attributes for label '{label}' does not inlcude necessary "
+            f"Attributes for label '{label}' does not include necessary "
             f"key 'plot_ylabel'")
     caption = (f"{attributes[feature]['plot_title']}: "
                f"{attributes[label]['plot_ylabel']} vs. "
