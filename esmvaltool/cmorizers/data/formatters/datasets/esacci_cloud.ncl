@@ -36,7 +36,7 @@
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
-           "/obs/formatters/interface.ncl")
+           "/data/formatters/interface.ncl")
 
 begin
 
