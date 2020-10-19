@@ -394,15 +394,15 @@ class DataCommand():
     def __init__(self):
         datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
         with open(datasets_file) as data:
-            self.info =  yaml.safe_load(data)
-        self.formatter = Formatter(self.info)
+            self._info =  yaml.safe_load(data)
+        self.formatter = Formatter(self._info)
 
     def list(self):
         """List all supported datasets."""
         print()
         print(f'| {"Dataset name":30} | Tier | Auto-download | Last access |')
         print('-' * 71)
-        for dataset, dataset_info in self.info['datasets'].items():
+        for dataset, dataset_info in self._info['datasets'].items():
             date = datetime.datetime.strptime(
                 str(dataset_info['last_access']), "%Y%m%d")
             print(
@@ -421,7 +421,7 @@ class DataCommand():
         dataset : str
             dataset to show
         """
-        dataset_info = self.info['datasets'][dataset]
+        dataset_info = self._info['datasets'][dataset]
         print(dataset)
         print()
         print(f"Tier: {dataset_info['tier']}")
