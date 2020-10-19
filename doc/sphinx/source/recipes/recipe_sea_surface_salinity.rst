@@ -12,9 +12,123 @@ To do this, the recipe generate plots for the timeseries of each region and
 a radar plot showing the correlation of dataset and reference timeseries for
 each region during the time they both exists.
 
+The recipe can be used with any shapefile. As it is, it uses the IHO Sea Areas
+(version 3) downloaded from https://marineregions.org/downloads.php, but any
+shapefile containing marine regions can be used.
+
+Any number of regions can be choosed also, even though plots may look odd if
+too few or too many are selected.
+
+Regions available on IHO Sea Areas file:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Adriatic Sea
+- Aegean Sea
+- Alboran Sea
+- Andaman or Burma Sea
+- Arabian Sea
+- Arafura Sea
+- Arctic Ocean
+- Baffin Bay
+- Balearic (Iberian Sea)
+- Bali Sea
+- Baltic Sea
+- Banda Sea
+- Barentsz Sea
+- Bass Strait
+- Bay of Bengal
+- Bay of Biscay
+- Bay of Fundy
+- Beaufort Sea
+- Bering Sea
+- Bismarck Sea
+- Black Sea
+- Bristol Channel
+- Caribbean Sea
+- Celebes Sea
+- Celtic Sea
+- Ceram Sea
+- Chukchi Sea
+- Coral Sea
+- Davis Strait
+- East Siberian Sea
+- Eastern China Sea
+- English Channel
+- Flores Sea
+- Great Australian Bight
+- Greenland Sea
+- Gulf of Aden
+- Gulf of Alaska
+- Gulf of Aqaba
+- Gulf of Boni
+- Gulf of Bothnia
+- Gulf of California
+- Gulf of Finland
+- Gulf of Guinea
+- Gulf of Mexico
+- Gulf of Oman
+- Gulf of Riga
+- Gulf of St. Lawrence
+- Gulf of Suez
+- Gulf of Thailand
+- Gulf of Tomini
+- Halmahera Sea
+- Hudson Bay
+- Hudson Strait
+- Indian Ocean
+- Inner Seas off the West Coast of Scotland
+- Ionian Sea
+- Irish Sea and St. George's Channel
+- Japan Sea
+- Java Sea
+- Kara Sea
+- Kattegat
+- Labrador Sea
+- Laccadive Sea
+- Laptev Sea
+- Ligurian Sea
+- Lincoln Sea
+- Makassar Strait
+- Malacca Strait
+- Mediterranean Sea - Eastern Basin
+- Mediterranean Sea - Western Basin
+- Molukka Sea
+- Mozambique Channel
+- North Atlantic Ocean
+- North Pacific Ocean
+- North Sea
+- Norwegian Sea
+- Persian Gulf
+- Philippine Sea
+- Red Sea
+- Rio de La Plata
+- Savu Sea
+- Sea of Azov
+- Sea of Marmara
+- Sea of Okhotsk
+- Seto Naikai or Inland Sea
+- Singapore Strait
+- Skagerrak
+- Solomon Sea
+- South Atlantic Ocean
+- South China Sea
+- South Pacific Ocean
+- Southern Ocean
+- Strait of Gibraltar
+- Sulu Sea
+- Tasman Sea
+- The Coastal Waters of Southeast Alaska and British Columbia
+- The Northwestern Passages
+- Timor Sea
+- Tyrrhenian Sea
+- White Sea
+- Yellow Sea
+
 The recipe is created in a way that should make possible (although is not
 tested) to use it for other variables and datasets, even for more that one at
 a time.
+
+
 
 
 Available recipes and diagnostics

@@ -18,7 +18,12 @@ documentation:
 preprocessors:
   timeseries:
     extract_shape:
-      shapefile: /home/jvegas/World_Seas_IHO_v3/World_Seas_IHO_v3.shp
+      # Relative paths are relative to 'auxiliary_data_dir' as configured in
+      # the config-user.yml file.
+      # The example shpaefile can be downloaded from
+      # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
+      # by any shapefile can be used
+      shapefile: World_Seas_IHO_v3.shp
       decomposed: True
       method: contains
       crop: False
@@ -39,7 +44,7 @@ preprocessors:
 
 datasets:
   - {project: CMIP6, exp: historical, dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1,
-      start_year: 1950, end_year: 2014}
+      start_year: 1950, end_year: 2014, alias: MPI-ESM1-2-HR}
 
 diagnostics:
   compare_salinity:
