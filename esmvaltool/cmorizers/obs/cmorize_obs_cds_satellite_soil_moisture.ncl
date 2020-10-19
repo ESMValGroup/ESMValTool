@@ -31,6 +31,11 @@
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
            "/esmvaltool/cmorizers/obs/interface.ncl")
+; Read in variable JOBS which defines what combination of
+; [time resolution] x [sensor] will be processed.
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/cmor_config/" + \
+           "CDS-SATELLITE-SOIL-MOISTURE.ncl")
 
 begin
 
@@ -82,13 +87,6 @@ begin
   VERSIONS = (/"COMBINED", "PASSIVE", "ACTIVE"/)
   PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", \
                "????000000-?CDR-v201?12.0.0.nc", ".nc"/)
-
-  ; Read in the JOBS
-  config_file = getenv("esmvaltool_root") + \
-    "/esmvaltool/cmorizers/obs/cmor_config/CDS-SATELLITE-SOIL-MOISTURE.cfg"
-  JOBS = readAsciiTable(config_file, 2, "integer", 1)
-  ; Now convert to type logical
-  JOBS := JOBS .eq. 1
 
 end
 
