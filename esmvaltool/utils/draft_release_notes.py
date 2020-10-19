@@ -23,10 +23,10 @@ except FileNotFoundError:
           "authenticating-to-github/creating-a-personal-access-token-"
           "for-the-command-line")
 
-from esmvalcore import __version__
+from esmvaltool import __version__
 
 VERSION = f"v{__version__}"
-GITHUB_REPO = "ESMValGroup/ESMValCore"
+GITHUB_REPO = "ESMValGroup/ESMValTool"
 
 TITLES = {
     'bug': 'Bug fixes',
@@ -101,7 +101,7 @@ def draft_notes_since(previous_release_date, labels):
 
 if __name__ == '__main__':
 
-    PREVIOUS_RELEASE = datetime.datetime(2020, 3, 31, 12)
+    PREVIOUS_RELEASE = datetime.datetime(2020, 8, 3, 18)
     LABELS = (
         'bug',
         'documentation',
