@@ -37,6 +37,7 @@ REQUIREMENTS = {
         'GDAL',
         'jinja2',
         'joblib',
+        'lime',
         'matplotlib',
         'natsort',
         'nc-time-axis',  # needed by iris.plot
@@ -46,6 +47,7 @@ REQUIREMENTS = {
         'pynio',
         'pyproj>=2.1'
         'pyyaml',
+        'scikit-image',
         'scikit-learn',
         'scipy',
         'scitools-iris>=2.2.1',
@@ -54,6 +56,7 @@ REQUIREMENTS = {
         'shapely',
         'xarray>=0.12',
         'xesmf',
+        'xgboost',
         'xlsxwriter',
     ],
     # Test dependencies
@@ -70,7 +73,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm!=0.2.0',
+        'autodocsumm<0.2.0',
         'codespell',
         'docformatter',
         'isort',
