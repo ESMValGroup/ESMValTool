@@ -16,7 +16,7 @@ loadscript(getenv("esmvaltool_root") + \
 
 ; Load utility functions
 loadscript(getenv("esmvaltool_root") + \
-           "/obs/formatters/utilities.ncl")
+           "/data/formatters/utilities.ncl")
 
 ; Check trailing slash
 if (str_get_cols(input_dir_path, -1, -1).ne."/") then
