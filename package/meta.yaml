@@ -92,6 +92,7 @@ outputs:
         - python>=3.6
         - python-cdo
         - pyyaml
+        - scikit-image
         - scikit-learn
         - seaborn
         - seawater
