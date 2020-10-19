@@ -6,6 +6,7 @@ on:
     branches:
     - master
     - github-actions2  # testing branch
+    - pin_eccodes
   schedule:
     - cron: '0 0 * * *'
 
