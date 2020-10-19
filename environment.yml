@@ -11,6 +11,7 @@ dependencies:
   - esmvalcore>=2.1.0,<2.2
   # Non-Python dependencies
   - cdo>=1.9.7
+  - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
   - imagemagick
   - nco
   - pynio
