@@ -6,6 +6,7 @@ on:
     branches:
     - master
     - github-actions2  # testing branch
+    - add_schlund20jgr  # remove after test completion
   schedule:
     - cron: '0 0 * * *'
 
