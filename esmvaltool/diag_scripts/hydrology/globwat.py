@@ -118,23 +118,63 @@ def get_month_day_for_output_name(cube):
 
 
 def make_output_name(cube):
-    """Get output file name, specific to Globwat."""
-    monthly = []
-    daily = []
-    output_name = {'pr':{'Amon':{}, 'day':{}},
+    """Get output file name, specific to Globwat.""" 
+    monthly_pr = [] 
+    daily_pr = []
+    monthly_pet = [] 
+    daily_pet = [] 
+    monthly_pet_arora = [] 
+    daily_pet_arora = [] 
+    output_name = {'pr':{'Amon':{}, 'day':{}}, 
                    'pet':{'Amon':{}, 'day':{}},
-                   'pet_arora':{'Amon':{}, 'day':{}}}
-    months , days = get_month_day_for_output_name(cube)
-
-    names = ['prc', 'eto', 'eto_arora']
-    for shortname, name in zip(output_name.keys(), names):
-        for month in months:
-            monthly.append(name + str(month) + 'wb')
-        for day in days:
-            daily.append(name + str(day) + 'wb')
-        output_name[shortname]['Amon'] = monthly
-        output_name[shortname]['day'] = daily
+                   'pet_arora':{'Amon':{}, 'day':{}}}      
+    months , days = get_month_day_for_output_name(cube) 
+    for mip in 'Amon', 'day': 
+        if mip == 'Amon': 
+            for i in range(0, len(months)):
+                for shortname in ['pr', 'pet', 'pet_arora']:
+                    if shortname == 'pr':
+                        monthly_pr.append('prc'+ str(months[i]) + 'wb')
+                    elif shortname == 'pet':
+                        monthly_pet.append('eto'+ str(months[i]) + 'wb')
+                    else:
+                        monthly_pet_arora.append('eto_arora_'+ str(months[i]) + 'wb')                 
+        elif mip == 'day':
+            for i in range(0, len(days)):
+                for shortname in ['pr', 'pet', 'pet_arora']:
+                    if shortname == 'pr':
+                        daily_pr.append('prc'+ str(days[i]) + 'wb')
+                    elif shortname == 'pet':
+                        daily_pet.append('eto'+ str(days[i]) + 'wb')
+                    else:
+                        daily_pet_arora.append('eto_arora_'+ str(days[i]) + 'wb')     
+    output_name['pr']['Amon'] = monthly_pr
+    output_name['pr']['day'] = daily_pr
+    output_name['pet']['Amon']  = monthly_pet
+    output_name['pet']['day'] = daily_pet
+    output_name['pet_arora']['Amon']  = monthly_pet_arora
+    output_name['pet_arora']['day']  = daily_pet_arora
     return output_name
+
+#TODO: the function does not loop over names and it only shows prc. 
+# def make_output_name(cube):
+#     """Get output file name, specific to Globwat."""
+#     monthly = []
+#     daily = []
+#     output_name = {'pr':{'Amon':{}, 'day':{}},
+#                    'pet':{'Amon':{}, 'day':{}},
+#                    'pet_arora':{'Amon':{}, 'day':{}}}
+#     months , days = get_month_day_for_output_name(cube)
+
+#     names = ['prc', 'eto', 'eto_arora']
+#     for shortname, name in zip(output_name.keys(), names):
+#         for month in months:
+#             monthly.append(name + str(month) + 'wb')
+#         for day in days:
+#             daily.append(name + str(day) + 'wb')
+#         output_name[shortname]['Amon'] = monthly
+#         output_name[shortname]['day'] = daily
+#     return output_name
 
 
 def monthly_arora_pet(tas):
@@ -159,7 +199,6 @@ def monthly_arora_pet(tas):
     monthly_arora_pet.units = 'mm month-1'
     monthly_arora_pet.rename("arora potential evapotranspiration")
     return monthly_arora_pet
-
 
 
 def get_cube_info(cube):
@@ -199,6 +238,21 @@ def get_cube_info(cube):
     # new_dataset.close()
 
 
+# def affine_rotate(transform, degrees=15.0):
+#     parameters = np.array(transform.GetParameters())
+#     new_transform = sitk.AffineTransform(transform)
+#     matrix = np.array(transform.GetMatrix()).reshape((dimension,dimension))
+#     radians = -np.pi * degrees / 180.
+#     rotation = np.array([[np.cos(radians), -np.sin(radians)],[np.sin(radians), np.cos(radians)]])
+#     new_matrix = np.dot(rotation, matrix)
+#     new_transform.SetMatrix(new_matrix.ravel())
+#     resampled = resample(grid, new_transform)
+#     print(new_matrix)
+#     myshow(resampled, 'Rotated')
+#     return new_transform
+    
+#TODO: the maps are saving upside down in ascii output. in addition 
+# a part of Africa is cloase to USA which must be corrected
 def save_to_ascii(cube, file_name):
     """Save array as ascii grid file."""
     dataset = xr.DataArray.from_iris(cube)
@@ -206,6 +260,7 @@ def save_to_ascii(cube, file_name):
 
     xmin = array['lon'].min().values
     ymax = array['lat'].max().values
+    # ymin = array['lat'].min().values
 
     xres = array['lon'].values[1] - array['lon'].values[0]
     yres = array['lat'].values[0] - array['lat'].values[1]
@@ -213,6 +268,7 @@ def save_to_ascii(cube, file_name):
     Affine_translation = Affine.translation(xmin - xres / 2, ymax - yres / 2)
     Affine_scale = Affine.scale(xres, yres)
     transform = Affine_translation * Affine_scale
+    
     new_dataset = rasterio.open(
         file_name,
         'w',
@@ -220,7 +276,8 @@ def save_to_ascii(cube, file_name):
         height=array.shape[0],  # lat
         width=array.shape[1],  # lon
         count=1,
-        dtype=array.dtype,
+        dtype ='float32',
+        # dtype=array.dtype,
         crs='+proj=latlong',
         transform=transform,
         nodata= -9999,
@@ -230,7 +287,7 @@ def save_to_ascii(cube, file_name):
 
 
 def _make_drs(dataset, nyear, mip):
-    """"""
+    """making the structure of saving directory."""
     if mip == 'Amon':
         freq = 'Monthly'
     else:
@@ -242,7 +299,7 @@ def _make_drs(dataset, nyear, mip):
 
 
 def _make_path(data_dir, file_name, extention="nc"):
-    """"""
+    """making the saving the directory."""
     path = data_dir / f"{file_name}.{extention}"
     return path
 
@@ -277,35 +334,47 @@ def main(cfg):
             _convert_units(all_vars[var], mip)
 
         output_name = make_output_name(all_vars['pr'])
-
         for key in ['pr', 'pet', 'pet_arora']:
             cube = all_vars[key]
-            for sub_cube in cube.slices_over('time'):
+            #TODO: we need a loop heir to loop over months. otherwise the code
+            # stop running because output_name stuck in the first name. I just
+            #added the for below which might be a better solusion for it.
+            #In the previous code I looped over the lengh of the output name.
+            for i in range(0,12):
+                # for time in cube.coord('time'):
+                # for sub_cube in cube.slices_over('time'):
+                sub_cube = cube[i]
+                print('sub_cub',sub_cube)
                 nyear = get_cube_info(sub_cube)
+                print ('sub_cube*********', sub_cube)
 
                 # set negative values for precipitaion to zero
                 if key == 'pr':
                     sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
+                #TODO: here the code faces memory error:
+                #"MemoryError: Unable to allocate 285. MiB for an array 
+                # with shape (37324800,) and data type int64
+                
+                # # load target grid for using in regriding function"
+                # target_cube = load_target(cfg)
+                # #regrid data baed on target cube
+                # sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
 
-                # load target grid for using in regriding function
-                target_cube = load_target(cfg)
-                #regrid data baed on target cube
-                sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
-
-                file_name = output_name[key][mip]
+                output_name_save = output_name[key][mip]
+                file_name = output_name_save[i]
                 data_dir = _make_drs(dataset, nyear, mip)
 
                 #Save data as netcdf
                 path = _make_path(data_dir, file_name, extention="nc")
-                iris.save(sub_cube_regrided, path , fill_value=-9999)
+                iris.save(sub_cube, path , fill_value=-9999)
 
                 # save_ascii(sub_cube_regrided, path)
                 path = _make_path(data_dir, file_name, extention="asc")
-                save_to_ascii(sub_cube_regrided, path)
+                save_to_ascii(sub_cube, path)
 
-            # Store provenance
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(path, provenance)
+            # # Store provenance
+            # with ProvenanceLogger(cfg) as provenance_logger:
+            #     provenance_logger.log(path, provenance)
 
 
 if __name__ == '__main__':
