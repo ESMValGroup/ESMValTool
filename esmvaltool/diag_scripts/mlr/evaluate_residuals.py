@@ -16,26 +16,26 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-ignore : list of dict, optional
+ignore: list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
-mse_plot : dict, optional
+mse_plot: dict, optional
     Additional options for plotting the mean square errors (MSE). Specify
     additional keyword arguments for :func:`seaborn.boxplot` by ``plot_kwargs``
     and plot appearance options by ``pyplot_kwargs`` (processed as functions of
     :mod:`matplotlib.pyplot`).
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-rmse_plot : dict, optional
+rmse_plot: dict, optional
     Additional options for plotting the root mean square errors (RMSE).
     Specify additional keyword arguments for :func:`seaborn.boxplot` by
     ``plot_kwargs`` and plot appearance options by ``pyplot_kwargs`` (processed
     as functions of :mod:`matplotlib.pyplot`).
-savefig_kwargs : dict, optional
+savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-seaborn_settings : dict, optional
+seaborn_settings: dict, optional
     Options for :func:`seaborn.set` (affects all plots), see
     `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
-weighted_samples : dict
+weighted_samples: dict
     If specified, use weighted root mean square error. The given keyword
     arguments are directly passed to
     :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the sample

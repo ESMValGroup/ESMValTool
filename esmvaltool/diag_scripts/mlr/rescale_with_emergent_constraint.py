@@ -24,26 +24,26 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-group_by_attributes : list of str, optional (default: ['dataset'])
+group_by_attributes: list of str, optional (default: ['dataset'])
     List of attributes used to separate different input points.
-ignore : list of dict, optional
+ignore: list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
-legend_kwargs : dict, optional
+legend_kwargs: dict, optional
     Optional keyword arguments of :func:`matplotlib.pyplot.legend` (affects
     only plots with legends).
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-plot_emergent_relationship : dict, optional
+plot_emergent_relationship: dict, optional
     If given, plot emergent relationship between X and Y data. Specify
     additional keyword arguments by ``plot_kwargs`` and plot appearance options
     by ``pyplot_kwargs`` (processed as functions of :mod:`matplotlib.pyplot`).
     Use ``{}`` to plot with default settings.
-plot_kwargs_for_groups : dict, optional
+plot_kwargs_for_groups: dict, optional
     Specify additional keyword arguments (values) for the different points
     defined by ``group_by_attributes`` (keys) used in plots.
-savefig_kwargs : dict, optional
+savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-seaborn_settings : dict, optional
+seaborn_settings: dict, optional
     Options for :func:`seaborn.set` (affects all plots), see
     `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
 

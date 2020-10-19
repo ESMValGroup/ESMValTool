@@ -55,36 +55,36 @@ for either ``mean`` or ``sum``.
 
 Configuration options in recipe
 -------------------------------
-add_var_from_cov : bool, optional (default: True)
+add_var_from_cov: bool, optional (default: True)
     Calculate variances from covariance matrix (diagonal elements) and add
     those to (squared) error datasets. Set to ``False`` if variance is already
     given separately in prediction output.
-area_weighted : bool, optional (default: True)
+area_weighted: bool, optional (default: True)
     Calculate weighted averages/sums when collapsing over latitude and/or
     longitude coordinates using grid cell areas (calculated using grid cell
     boundaries). Only possible if the datasets contains ``latitude`` and
     ``longitude`` coordinates.
-convert_units_to : str, optional
+convert_units_to: str, optional
     Convert units of the input data.
-cov_estimate_dim_map : list of int, optional
+cov_estimate_dim_map: list of int, optional
     Map dimensions of ``prediction_output_error`` datasets to corresponding
     dimensions of ``prediction_input`` used for estimating covariance. Only
     relevant if both dataset types are given. See notes above for more
     information.
-ignore : list of dict, optional
+ignore: list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
-landsea_fraction_weighted : str, optional
+landsea_fraction_weighted: str, optional
     When given, calculate weighted averages/sums when collapsing over latitude
     and/or longitude coordinates using land/sea fraction (calculated using
     Natural Earth masks). Only possible if the datasets contains ``latitude``
     and ``longitude`` coordinates. Must be one of ``'land'``, ``'sea'``.
-mean : list of str, optional
+mean: list of str, optional
     Perform mean over the given coordinates.
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-sum : list of str, optional
+sum: list of str, optional
     Perform sum over the given coordinates.
-time_weighted : bool, optional (default: True)
+time_weighted: bool, optional (default: True)
     Calculate weighted averages/sums for time (using grid cell boundaries).
 
 """

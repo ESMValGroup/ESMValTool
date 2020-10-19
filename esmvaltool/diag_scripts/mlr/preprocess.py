@@ -18,70 +18,70 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-aggregate_by : dict, optional
+aggregate_by: dict, optional
     Aggregate over given coordinates (dict values; given as  :obj:`list` of
     :obj:`str`) using a desired aggregator (dict key; given as  :obj:`str`).
     Allowed aggregators are ``'max'``, ``'mean'``, ``'median'``, ``'min'``,
     ``'sum'``, ``'std'``, ``'var'``, and ``'trend'``.
-apply_common_mask : bool, optional (default: False)
+apply_common_mask: bool, optional (default: False)
     Apply common mask to all datasets. Requires identical shapes for all
     datasets.
-area_weighted : bool, optional (default: True)
+area_weighted: bool, optional (default: True)
     Use weighted aggregation when collapsing over latitude and/or longitude
     using ``collapse``. Weights are estimated using grid cell boundaries. Only
     possible if the dataset contains ``latitude`` and ``longitude``
     coordinates.
-argsort : dict, optional
+argsort: dict, optional
     Calculate :func:`numpy.ma.argsort` along given coordinate to get ranking.
     The coordinate can be specified by the ``coord`` key. If ``descending`` is
     set to ``True``, use descending order instead of ascending.
-collapse : dict, optional
+collapse: dict, optional
     Collapse over given coordinates (dict values; given as :obj:`list` of
     :obj:`str`) using a desired aggregator (dict key; given as :obj:`str`).
     Allowed aggregators are ``'max'``, ``'mean'``, ``'median'``, ``'min'``,
     ``'sum'``, ``'std'``, ``'var'``, and ``'trend'``.
-convert_units_to : str, optional
+convert_units_to: str, optional
     Convert units of the input data. Can also be given as dataset option.
-extract : dict, optional
+extract: dict, optional
     Extract certain values (dict values, given as :obj:`int`, :obj:`float` or
     iterable of them) for certain coordinates (dict keys, given as :obj:`str`).
-extract_ignore_bounds : bool, optional (default: False)
+extract_ignore_bounds: bool, optional (default: False)
     If ``True``, ignore coordinate bounds when using ``extract`` or
     ``extract_range``. If ``False``, consider coordinate bounds when using
     ``extract`` or ``extract_range``. For time coordinates, bounds are always
     ignored.
-extract_range : dict, optional
+extract_range: dict, optional
     Like ``extract``, but instead of specific values extract ranges (dict
     values, given as iterable of exactly two :obj:`int` s or :obj:`float` s)
     for certain coordinates (dict keys, given as :obj:`str`).
-ignore : list of dict, optional
+ignore: list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
-landsea_fraction_weighted : str, optional
+landsea_fraction_weighted: str, optional
     When given, use land/sea fraction for weighted aggregation when collapsing
     over latitude and/or longitude using ``collapse``. Only possible if the
     dataset contains ``latitude`` and ``longitude`` coordinates. Must be one of
     ``'land'``, ``'sea'``.
-mask : dict of dict
+mask: dict of dict
     Mask datasets. Keys have to be :mod:`numpy.ma` conversion operations (see
     `<https://docs.scipy.org/doc/numpy/reference/routines.ma.html>`_) and
     values all the keyword arguments of them.
-n_jobs : int (default: 1)
+n_jobs: int (default: 1)
     Maximum number of jobs spawned by this diagnostic script. Use ``-1`` to use
     all processors. More details are given `here
     <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_.
-normalize_by_mean : bool, optional (default: False)
+normalize_by_mean: bool, optional (default: False)
     Remove total mean of the dataset in the last step (resulting mean will be
     0.0). Calculates weighted mean if ``area_weighted``, ``time_weighted`` or
     ``landsea_fraction_weighted`` are set and the cube contains the
     corresponding coordinates. Does not apply to error datasets.
-normalize_by_std : bool, optional (default: False)
+normalize_by_std: bool, optional (default: False)
     Scale total standard deviation of the dataset in the last step (resulting
     standard deviation will be 1.0).
-output_attributes : dict, optional
+output_attributes: dict, optional
     Write additional attributes to netcdf files, e.g. ``'tag'``.
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-ref_calculation : str, optional
+ref_calculation: str, optional
     Perform calculations involving reference dataset. Must be one of ``merge``
     (simply merge two datasets by adding the data of the reference dataset as
     :class:`iris.coords.AuxCoord` to the original dataset), ``add`` (add
@@ -89,7 +89,7 @@ ref_calculation : str, optional
     (multiply with reference dataset), ``subtract`` (subtract reference
     dataset) or ``trend`` (use reference dataset as x axis for calculation of
     linear trend along a specified axis, see ``ref_kwargs``).
-ref_kwargs : dict, optional
+ref_kwargs: dict, optional
     Keyword arguments for calculations involving reference datasets. Allowed
     keyword arguments are:
 
@@ -98,17 +98,17 @@ ref_kwargs : dict, optional
       reference datasets (specified by ``ref = True``).
     * ``collapse_over`` (:obj:`str`, default: ``'time'``): Coordinate which
       is collapsed. Only relevant when ``ref_calculation`` is set to ``trend``.
-return_trend_stderr : bool, optional (default: True)
+return_trend_stderr: bool, optional (default: True)
     Return standard error of slope in case of trend calculations (as
     ``var_type`` ``prediction_input_error``).
-scalar_operations : dict, optional
+scalar_operations: dict, optional
     Operations involving scalars. Allowed keys are ``add``, ``divide``,
     ``multiply`` or ``subtract``. The corresponding values (:obj:`float` or
     :obj:`int`) are scalars that are used with the operations.
-time_weighted : bool, optional (default: True)
+time_weighted: bool, optional (default: True)
     Use weighted aggregation when collapsing over time dimension using
     ``collapse``. Weights are estimated using grid cell boundaries.
-unify_coords_to : dict, optional
+unify_coords_to: dict, optional
     If given, replace coordinates of all datasets with that of a reference cube
     (if necessary and possible, broadcast beforehand). The reference dataset
     is determined by keyword arguments given to this option (keyword arguments

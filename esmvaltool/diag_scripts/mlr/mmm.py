@@ -17,27 +17,27 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-convert_units_to : str, optional
+convert_units_to: str, optional
     Convert units of the input data. Can also be given as dataset option.
-dtype : str (default: 'float64')
+dtype: str (default: 'float64')
     Internal data type which is used for all calculations, see
     `<https://docs.scipy.org/doc/numpy/user/basics.types.html>`_ for a list of
     allowed values.
-ignore : list of dict, optional
+ignore: list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
-mlr_model_name : str, optional (default: 'MMM')
+mlr_model_name: str, optional (default: 'MMM')
     Human-readable name of the MLR model instance (e.g used for labels).
-mmm_error_type : str, optional
+mmm_error_type: str, optional
     If given, additionally saves estimated squared MMM model error. If the
     option is set to ``'loo'``, the (constant) error is estimated as RMSEP
     using leave-one-out cross-validation. No other options are supported at the
     moment.
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-prediction_name : str, optional
+prediction_name: str, optional
     Default ``prediction_name`` of output cubes if no 'prediction_reference'
     dataset is given.
-weighted_samples : dict
+weighted_samples: dict
     If specified, use weighted mean square error to estimate prediction error.
     The given keyword arguments are directly passed to
     :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the sample

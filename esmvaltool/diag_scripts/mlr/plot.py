@@ -23,69 +23,69 @@ use ``{}``).
 
 Configuration options in recipe
 -------------------------------
-additional_plot_kwargs_xy_plots : dict, optional
+additional_plot_kwargs_xy_plots: dict, optional
     Optional keyword arguments (values) for single datasets used in X-Y plots.
     They keys may include a ``var_type`` or values of the attribute given by
     ``group_by_attribute``.
-alias : dict, optional
+alias: dict, optional
     :obj:`str` to :obj:`str` mapping for nicer plot labels (e.g.
     ``{'feature': 'Historical CMIP5 data'}``.
-apply_common_mask : bool, optional (default: False)
+apply_common_mask: bool, optional (default: False)
     Apply common mask to all datasets prior to plotting. Requires identical
     shapes for all datasets.
-group_attribute_as_default_alias : bool, optional (default: True)
+group_attribute_as_default_alias: bool, optional (default: True)
     If ``True``, sse value of attribute given by ``group_by_attribute`` as
     default alias if possible. If ``False``, use full group name (including
     ``var_type``) as default alias.
-group_by_attribute : str, optional (default: 'mlr_model_name')
+group_by_attribute: str, optional (default: 'mlr_model_name')
     By default, datasets are grouped using the ``var_type`` attribute. This
     option can be used to specify a further attribute to group datasets. This
     diagnostic expects a single dataset per group.
-ignore : list of dict, optional
+ignore: list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
-legend_kwargs : dict, optional
+legend_kwargs: dict, optional
     Optional keyword arguments of :func:`matplotlib.pyplot.legend` (affects
     only plots with legends).
-map_plot_type : str, optional (default: 'pcolormesh')
+map_plot_type: str, optional (default: 'pcolormesh')
     Type of plot used for plotting maps. Must be one of ``'pcolormesh'`` or
     ``'contourf'``.
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-plot_map : dict, optional
+plot_map: dict, optional
     Specify additional keyword arguments for plotting global maps showing
     datasets by ``plot_kwargs`` and plot appearance options by
     ``pyplot_kwargs`` (processed as functions of :mod:`matplotlib.pyplot`).
-plot_map_abs_biases : dict, optional
+plot_map_abs_biases: dict, optional
     Specify additional keyword arguments for plotting global maps showing
     absolute biases by ``plot_kwargs`` and plot appearance options by
     ``pyplot_kwargs`` (processed as functions of :mod:`matplotlib.pyplot`).
-plot_map_ratios : dict, optional
+plot_map_ratios: dict, optional
     Specify additional keyword arguments for plotting global maps showing
     ratios of datasets by ``plot_kwargs`` and plot appearance options by
     ``pyplot_kwargs`` (processed as functions of :mod:`matplotlib.pyplot`).
-plot_map_rel_biases : dict, optional
+plot_map_rel_biases: dict, optional
     Specify additional keyword arguments for plotting global maps showing
     relative biases of datasets  by ``plot_kwargs`` and plot appearance options
     by ``pyplot_kwargs`` (processed as functions of :mod:`matplotlib.pyplot`).
-plot_xy : dict, optional
+plot_xy: dict, optional
     Specify additional keyword arguments for simple X-Y plots by
     ``plot_kwargs`` and plot appearance options by ``pyplot_kwargs`` (processed
     as functions of :mod:`matplotlib.pyplot`). By default, plots data against
     dimensional coordinate (if available). Use ``x_coord`` (:obj:`str`) to use
     another coordinate as X-axis. Use ``reg_line: True`` to additionally plot
     a linear regression line.
-plot_xy_with_errors : dict, optional
+plot_xy_with_errors: dict, optional
     Specify additional keyword arguments for X-Y plots with error ranges
     ``plot_kwargs`` and plot appearance options by ``pyplot_kwargs`` (processed
     as functions of :mod:`matplotlib.pyplot`). By default, plots data against
     dimensional coordinate (if available). Use ``x_coord`` (:obj:`str`) to use
     another coordinate as X-axis.
-print_corr : bool, optional (default: False)
+print_corr: bool, optional (default: False)
     Print and save Pearson correlation coefficient between all datasets at the
     end.  Requires identical shapes for all datasets.
-savefig_kwargs : dict, optional
+savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-seaborn_settings : dict, optional
+seaborn_settings: dict, optional
     Options for :func:`seaborn.set` (affects all plots), see
     `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
 years_in_title: bool, optional (default: False)

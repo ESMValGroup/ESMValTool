@@ -22,15 +22,15 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-efecv_kwargs : dict, optional
+efecv_kwargs: dict, optional
     If specified, use these additional keyword arguments to perform a
     exhaustive feature elimination using cross-validation. May not be used
     together with ``grid_search_cv_param_grid`` or ``rfecv_kwargs``.
-grid_search_cv_kwargs : dict, optional
+grid_search_cv_kwargs: dict, optional
     Keyword arguments for the grid search cross-validation, see
     `<https://scikit-learn.org/stable/modules/generated/
     sklearn.model_selection.GridSearchCV.html>`_.
-grid_search_cv_param_grid : dict or list of dict, optional
+grid_search_cv_param_grid: dict or list of dict, optional
     If specified, perform exhaustive parameter search using cross-validation
     instead of simply calling
     :meth:`esmvaltool.diag_scripts.mlr.models.MLRModel.fit`. Contains
@@ -38,29 +38,29 @@ grid_search_cv_param_grid : dict or list of dict, optional
     Have to be given for each step of the pipeline separated by two
     underscores, i.e. ``s__p`` is the parameter ``p`` for step ``s``. May not
     be used together with ``efecv_kwargs`` or ``rfecv_kwargs``.
-group_metadata : str, optional
+group_metadata: str, optional
     Group input data by an attribute. For every group element (set of
     datasets), an individual MLR model is calculated. Only affects ``feature``
     and ``label`` datasets. May be used together with the option
     ``pseudo_reality``.
-ignore : list of dict, optional
+ignore: list of dict, optional
     Ignore specific datasets by specifying multiple :obj:`dict` s of metadata.
-mlr_model_type : str
+mlr_model_type: str
     MLR model type. The given model has to be defined in
     :mod:`esmvaltool.diag_scripts.mlr.models`.
-only_predict : bool, optional (default: False)
+only_predict: bool, optional (default: False)
     If ``True``, only use
     :meth:`esmvaltool.diag_scripts.mlr.models.MLRModel.predict` and do not
     create any other output (CSV files, plots, etc.).
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-plot_partial_dependences : bool, optional (default: False)
+plot_partial_dependences: bool, optional (default: False)
     Plot partial dependence of every feature in MLR model (computationally
     expensive).
-predict_kwargs : dict, optional
+predict_kwargs: dict, optional
     Optional keyword arguments for the final regressor's ``predict()``
     function.
-pseudo_reality : list of str, optional
+pseudo_reality: list of str, optional
     List of dataset attributes which are used to group input data for a pseudo-
     reality test (also known as `model-as-truth` or `perfect-model` setup). For
     every element of the group a single MLR model is fitted on all data
@@ -71,13 +71,13 @@ pseudo_reality : list of str, optional
     splitting the input data in a training and test set, but not dividing the
     data randomly but using specific datasets, e.g. the different climate
     models). May be used together with the option ``group_metadata``.
-rfecv_kwargs : dict, optional
+rfecv_kwargs: dict, optional
     If specified, use these additional keyword arguments to perform a recursive
     feature elimination using cross-validation, see
     `<https://scikit-learn.org/stable/modules/generated/
     sklearn.feature_selection.RFECV.html>`_. May not be used together with
     ``efecv_kwargs`` or ``grid_search_cv_param_grid``.
-save_mlr_model_error : str or int, optional
+save_mlr_model_error: str or int, optional
     Additionally saves estimated squared MLR model error. This error represents
     the uncertainty of the prediction caused by the MLR model itself and not by
     errors in the prediction input data (errors in that will be considered by
@@ -91,13 +91,13 @@ save_mlr_model_error : str or int, optional
     possible if ``group_datasets_by_attributes`` is given. If the option is set
     to an integer ``n`` (!= 0), the (constant) error is estimated as RMSEP
     using n-fold cross-validation.
-save_lime_importance : bool, optional (default: False)
+save_lime_importance: bool, optional (default: False)
     Additionally save local feature importance given by LIME (Local
     Interpretable Model-agnostic Explanations).
-save_propagated_errors : bool, optional (default: False)
+save_propagated_errors: bool, optional (default: False)
     Additionally save propagated errors from ``prediction_input_error``
     datasets.
-select_metadata : dict, optional
+select_metadata: dict, optional
     Pre-select input data by specifying (key, value) pairs. Affects all
     datasets regardless of ``var_type``.
 

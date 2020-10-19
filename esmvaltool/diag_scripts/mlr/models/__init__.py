@@ -199,27 +199,27 @@ of :class:`esmvaltool.diag_scripts.mlr.models.MLRModel` decorated with
 
 Optional parameters for class initialization
 --------------------------------------------
-accept_only_scalar_data : bool (default: False)
+accept_only_scalar_data: bool (default: False)
     If set to ``True``, only accept scalar input data. Should be used together
     with the option ``group_datasets_by_attributes``.
-allow_missing_features : bool (default: False)
+allow_missing_features: bool (default: False)
     Allow missing features in the training data.
-cache_intermediate_results : bool (default: True)
+cache_intermediate_results: bool (default: True)
     Cache the intermediate results of the pipeline's transformers.
-categorical_features : list of str
+categorical_features: list of str
     Names of features which are interpreted as categorical features (in
     contrast to numerical features).
-coords_as_features : list of str
+coords_as_features: list of str
     If given, specify a list of coordinates which should be used as features.
-dtype : str (default: 'float64')
+dtype: str (default: 'float64')
     Internal data type which is used for all calculations, see
     `<https://docs.scipy.org/doc/numpy/user/basics.types.html>`_ for a list of
     allowed values.
-fit_kwargs : dict
+fit_kwargs: dict
     Optional keyword arguments for the pipeline's ``fit()`` function.  These
     arguments have to be given for each step of the pipeline separated by two
     underscores, i.e. ``s__p`` is the parameter ``p`` for step ``s``.
-group_datasets_by_attributes : list of str
+group_datasets_by_attributes: list of str
     List of dataset attributes which are used to group input data for
     ``feature`` s and ``label`` s. For example, this is necessary if the MLR
     model should consider multiple climate models in the training phase. If
@@ -228,58 +228,58 @@ group_datasets_by_attributes : list of str
     input data is first grouped by the given attributes and then checked for
     uniqueness within this group. After that, all groups are stacked to form a
     single set of training data.
-imputation_strategy : str (default: 'remove')
+imputation_strategy: str (default: 'remove')
     Strategy for the imputation of missing values in the features. Must be one
     of ``'remove'``, ``'mean'``, ``'median'``, ``'most_frequent'`` or
     ``'constant'``.
-log_level : str (default: 'info')
+log_level: str (default: 'info')
     Verbosity for the logger. Must be one of ``'debug'``, ``'info'``,
     ``'warning'`` or ``'error'``.
-mlr_model_name : str
+mlr_model_name: str
     Human-readable name of the MLR model instance (e.g used for labels).
-n_jobs : int (default: 1)
+n_jobs: int (default: 1)
     Maximum number of jobs spawned by this class. Use ``-1`` to use all
     processors. More details are given `here
     <https://scikit-learn.org/stable/glossary.html#term-n-jobs>`_.
-output_file_type : str (default: 'png')
+output_file_type: str (default: 'png')
     File type for the plots.
-parameters : dict
+parameters: dict
     Parameters used for the whole pipeline. Have to be given for each step of
     the pipeline separated by two underscores, i.e. ``s__p`` is the parameter
     ``p`` for step ``s``.
-parameters_final_regressor : dict
+parameters_final_regressor: dict
     Parameters used for the **final** regressor. If these parameters are
     updated using the function :meth:`update_parameters`, the new names have to
     be given for each step of the pipeline separated by two underscores, i.e.
     ``s__p`` is the parameter ``p`` for step ``s``.
-pca : bool (default: False)
+pca: bool (default: False)
     Preprocess numerical input features using PCA. Parameters for this pipeline
     step can be given via the ``parameters`` argument.
-plot_dir : str (default: ~/plots)
+plot_dir: str (default: ~/plots)
     Root directory to save plots.
-plot_units : dict
+plot_units: dict
     Replace specific units (keys) with other text (values) in plots.
-savefig_kwargs : dict
+savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-seaborn_settings : dict
+seaborn_settings: dict
     Options for :func:`seaborn.set` (affects all plots), see
     `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
-standardize_data : bool (default: True)
+standardize_data: bool (default: True)
     Linearly standardize numerical input data by removing mean and scaling to
     unit variance.
-sub_dir : str
+sub_dir: str
     Create additional subdirectory for output in ``work_dir`` and ``plot_dir``.
-test_size : float (default: 0.25)
+test_size: float (default: 0.25)
     If given, randomly exclude the desired fraction of input data from training
     and use it as test data.
-weighted_samples : dict
+weighted_samples: dict
     If specified, use weighted samples whenever possible. The given keyword
     arguments are directly passed to
     :func:`esmvaltool.diag_scripts.mlr.get_all_weights` to calculate the sample
     weights. By default, area weights and time weights are used.
-work_dir : str (default: ~/work)
+work_dir: str (default: ~/work)
     Root directory to save all other files (mainly ``*.nc`` files).
-write_plots : bool (default: True)
+write_plots: bool (default: True)
     If ``False``, do not write any plot.
 
 """

@@ -1,4 +1,17 @@
-"""Custom expansions of :mod:`sklearn` functionalities."""
+"""Custom expansions of :mod:`sklearn` functionalities.
+
+Note
+----
+This module provides custom expansions of some :mod:`sklearn` classes and
+functions which are necessary to fit the purposes for the desired
+functionalities of the :ref:`MLR module <api.esmvaltool.diag_scripts.mlr>`. As
+long-term goal we would like to include these functionalities to the
+:mod:`sklearn` package since we believe these additions might be helpful for
+everyone. This module serves as interim solution. To ensure that all features
+are properly working this module is also covered by tests, which will also be
+expanded in the future.
+
+"""
 
 # pylint: disable=arguments-differ
 # pylint: disable=attribute-defined-outside-init
