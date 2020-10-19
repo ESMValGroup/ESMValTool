@@ -26,8 +26,6 @@ documentation:
 # YAML anchors
 
 PROVENANCE_ANCHOR: &provenance
-  domains:
-    - global
   realms:
     - land
   themes:
