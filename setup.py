@@ -47,6 +47,7 @@ REQUIREMENTS = {
         'pynio',
         'pyproj>=2.1'
         'pyyaml',
+        'scikit-image',
         'scikit-learn',
         'scipy',
         'scitools-iris>=2.2.1',
