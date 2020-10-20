@@ -21,7 +21,7 @@ albedolandcover_parameters: &albedolandcover_parameters
     # size of the big box in the longitudinal direction.
     # Recommended value: 5
     lonsize_BB: 5
-    # 
+    #
     # minimum grid cell area fraction that must be
     # covered by the sum of the area fractions of all
     # land cover classes included in the local
@@ -29,7 +29,7 @@ albedolandcover_parameters: &albedolandcover_parameters
     # to be included in the regression.
     # Recommended value: 90
     threshold_sumpred: 90
-    # 
+    #
     # minimum number of grid cells with non-zero area fraction
     # covered by one land cover class within a big box, for this
     # land cover class to be included as a predictor in the local
@@ -50,8 +50,27 @@ albedolandcover_parameters: &albedolandcover_parameters
 
 CMIP6_landcover: &CMIP6_landcover
   additional_datasets:
-    - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: historical,
-       ensemble: r1i1p1f3}
+#    - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: historical,
+#       ensemble: r1i1p1f3}  # has no cropFrac
+    - {dataset: AWI-ESM-1-1-LR, project: CMIP6, grid: gn, exp: historical,
+       ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-Veg, project: CMIP6, grid: gr, exp: historical,
+#       ensemble: r1i1p1f1}  # This ens has no shrubFrac available
+#    - {dataset: EC-Earth3-Veg-LR, project: CMIP6, grid: gr, exp: historical,
+#       ensemble: r1i1p1f1}  # This ens has no shrubFrac available
+#    - {dataset: GFDL-CM4, project: CMIP6, grid: gr1, exp: historical,
+#       ensemble: r1i1p1f1}  # no shrubFrac available
+#    - {dataset: MIROC-ES2L, project: CMIP6, grid: gn, exp: historical,
+#       ensemble: r1i1p1f2}   # MIROC-ES2L has no treeFrac available
+    - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, grid: gn, exp: historical,
+       ensemble: r1i1p1f1}
+    - {dataset: MPI-ESM1-2-HR, project: CMIP6, grid: gn, exp: historical,
+       ensemble: r1i1p1f1}
+    - {dataset: MPI-ESM1-2-LR, project: CMIP6, grid: gn, exp: historical,
+       ensemble: r1i1p1f1}
+    - {dataset: UKESM1-0-LL, project: CMIP6, grid: gn, exp: historical,
+       ensemble: r1i1p1f2}
+
 
 CMIP5_landcover: &CMIP5_landcover
   additional_datasets:
@@ -126,9 +145,13 @@ diagnostics:
         mip: Amon
         derive: true
         force_derivation: false
+      cropFrac:
+        <<: *variable_settings_cmip6
       grassFrac:
         <<: *variable_settings_cmip6
       shrubFrac:
+        <<: *variable_settings_cmip6
+      pastureFrac:
         <<: *variable_settings_cmip6
     scripts:
       albedolandcover:
