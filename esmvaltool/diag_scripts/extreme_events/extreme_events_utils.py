@@ -281,7 +281,7 @@ def gsl_aggregator(cube, specs):
     return iris.cube.CubeList(res_cubes).merge_cube()
     
 
-def __numdaysyear_base__(cube, threshold=273.15, logic='less'):
+def __numdaysyear_base__(cube, threshold=0.0, logic='less'):
     """Compute number of days per year for specific logic and threshold"""
     # set aggregation level
     agg = 'year'
@@ -349,6 +349,8 @@ def convert_ETCCDI_units(cube):
     if cube.standard_name == 'precipitation_flux' and cube.units == 'kg m-2 s-1':
         cube.data = cube.data * 24. * 3600.
         cube.units = Unit('mm day-1')
+    if cube.units == 'K':
+        cube.convert_units('celsius')
     return cube
 
 

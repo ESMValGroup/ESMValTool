@@ -13,8 +13,8 @@ annual_number_of_frost_days:
     required:
         - tasmin
     threshold:
-        value: 273.15
-        unit: K
+        value: 0.0
+        unit: celsius
         logic: less
     cf_name: fdETCCDI
 # %% annual_number_of_summer_days
@@ -24,8 +24,8 @@ annual_number_of_summer_days:
     required:
         - tasmax
     threshold:
-        value: 298.15
-        unit: K
+        value: 25.0
+        unit: celsius
         logic: greater
     cf_name: suETCCDI
  # %% annual_number_of_icing_days
@@ -35,8 +35,8 @@ annual_number_of_icing_days:
     required:
         - tasmax
     threshold:
-        value: 273.15
-        unit: K
+        value: 0.0
+        unit: celsius
         logic: less
     cf_name: idETCCDI
 # %% annual_number_of_tropical_nights
@@ -46,8 +46,8 @@ annual_number_of_tropical_nights:
     required:
         - tasmin
     threshold:
-        value: 293.15
-        unit: K
+        value: 20.0 
+        unit: celsius
         logic: greater
     cf_name: trETCCDI
 # %% annual_number_of_days_where_cumulative_precipitation_is_above_10_mm
@@ -400,8 +400,8 @@ annual_growing_season_length:
         - tas
     start:
         threshold:
-            value: 278.15
-            unit: K
+            value: 5
+            unit: celsius
             logic: greater
         spell:
             value: 6
@@ -413,8 +413,8 @@ annual_growing_season_length:
             unit: month
     end:
         threshold:
-            value: 278.15
-            unit: K
+            value: 5
+            unit: celsius
             logic: less
         spell:
             value: 6
