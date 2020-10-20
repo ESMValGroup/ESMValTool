@@ -117,26 +117,36 @@ def get_month_day_for_output_name(cube):
     return months , days
 
 
-# TODO: the function does not loop over names and it only shows prc. 
-# TODO_Update : Now the function works fine. 
-def make_output_name(cube): 
-    """Get output file name, specific to Globwat.""" 
-    monthly = [[],[],[]] 
-    daily = [[],[],[]] 
-    output_name = {'pr':{'Amon':{}, 'day':{}}, 
-                   'pet':{'Amon':{}, 'day':{}}, 
-                   'pet_arora':{'Amon':{}, 'day':{}}} 
-    months , days = get_month_day_for_output_name(cube) 
-    names = ['prc', 'eto', 'eto_arora'] 
-    shortname = ['pr', 'pet', 'pet_arora']  
-    for i in range(0,3):  
-        for month in months: 
-            monthly[i].append(names[i] + str(month) + 'wb') 
-        for day in days: 
-            daily[i].append(names[i] + str(day) + 'wb') 
-        output_name[shortname[i]]['Amon'] = monthly[i] 
-        output_name[shortname[i]]['day'] = daily[i] 
-    return output_name 
+# TODO: the function does not loop over names and it only shows prc.
+# TODO_Update : Now the function works fine.
+# def make_output_name(cube):
+#     """Get output file name, specific to Globwat."""
+#     monthly = [[],[],[]]
+#     daily = [[],[],[]]
+#     output_name = {'pr':{'Amon':{}, 'day':{}},
+#                    'pet':{'Amon':{}, 'day':{}},
+#                    'pet_arora':{'Amon':{}, 'day':{}}}
+#     months , days = get_month_day_for_output_name(cube)
+#     names = ['prc', 'eto', 'eto_arora']
+#     shortname = ['pr', 'pet', 'pet_arora']
+#     for i in range(0,3):
+#         for month in months:
+#             monthly[i].append(names[i] + str(month) + 'wb')
+#         for day in days:
+#             daily[i].append(names[i] + str(day) + 'wb')
+#         output_name[shortname[i]]['Amon'] = monthly[i]
+#         output_name[shortname[i]]['day'] = daily[i]
+#     return output_name
+
+def make_output_name(key, mip, month, day):
+    """Get output file name, specific to Globwat."""
+    names_map = {'pr':'prc', 'pet':'eto', 'pet_arora':'eto_arora'}
+    if mip == 'Amon':
+        filename = f"{names_map[key]}_{month}wb"
+    else:
+        filename = f"{names_map[key]}_{month}{day}wb"
+    return filename
+
 
 def monthly_arora_pet(tas):
     """Calculating potential ET using Arora method.
@@ -166,7 +176,10 @@ def get_cube_info(cube):
     """"""
     coord_time = cube.coord('time')
     year = coord_time.cell(0).point.year
-    return year
+    month = str(coord_time.cell(0).point.month).zfill(2)
+    day = str(coord_time.cell(0).point.day).zfill(2)
+    return year, month, day
+
 
 #TODO: We must work on saving data as ascii format.
 # def save_ascii(cube, filename):
@@ -211,8 +224,8 @@ def get_cube_info(cube):
 #     print(new_matrix)
 #     myshow(resampled, 'Rotated')
 #     return new_transform
-    
-#TODO: the maps are saving upside down in ascii output. in addition 
+
+#TODO: the maps are saving upside down in ascii output. in addition
 # a part of Africa is cloase to USA which must be corrected
 def save_to_ascii(cube, file_name):
     """Save array as ascii grid file."""
@@ -229,7 +242,7 @@ def save_to_ascii(cube, file_name):
     Affine_translation = Affine.translation(xmin - xres / 2, ymax - yres / 2)
     Affine_scale = Affine.scale(xres, yres)
     transform = Affine_translation * Affine_scale
-    
+
     new_dataset = rasterio.open(
         file_name,
         'w',
@@ -294,33 +307,24 @@ def main(cfg):
         for var in ['pr', 'pet']:
             _convert_units(all_vars[var], mip)
 
-        output_name = make_output_name(all_vars['pr'])
         for key in ['pr', 'pet', 'pet_arora']:
             cube = all_vars[key]
-            #TODO: we need a loop heir to loop over months. otherwise the code
-            # stop running because output_name stuck in the first name. I just
-            #added the for below which might be a better solusion for it.
-            #In the previous code I looped over the lengh of the output name.
-            for i in range(0,12):
-                # for time in cube.coord('time'):
-                # for sub_cube in cube.slices_over('time'):
-                sub_cube = cube[i]
-                nyear = get_cube_info(sub_cube)
+            for sub_cube in cube.slices_over('time'):
+                nyear, nmonth, nday = get_cube_info(sub_cube)
 
                 # set negative values for precipitaion to zero
                 if key == 'pr':
                     sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
+
                 #TODO: here the code faces memory error:
-                #"MemoryError: Unable to allocate 285. MiB for an array 
+                #"MemoryError: Unable to allocate 285. MiB for an array
                 # with shape (37324800,) and data type int64
-                
                 # # load target grid for using in regriding function"
                 # target_cube = load_target(cfg)
                 # #regrid data baed on target cube
                 # sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
 
-                output_name_save = output_name[key][mip]
-                file_name = output_name_save[i]
+                file_name = make_output_name(key, mip, nmonth, nday)
                 data_dir = _make_drs(dataset, nyear, mip)
 
                 #Save data as netcdf
