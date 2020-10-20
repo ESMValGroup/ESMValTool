@@ -101,50 +101,13 @@ def load_target(cfg):
     return cube
 
 
-def get_month_day_for_output_name(cube):
-    """Get month and day number for output name."""
-    coord_time = cube.coord('time')
-    start_year = coord_time.cell(0).point.year
-    year = start_year - 1
-    months = []
-    days = []
-    for i in range(0, len(cube.coord('time').points)):
-        n_month = str(coord_time.cell(i).point.month).zfill(2)
-        months.append(n_month)
-        nday = calendar.monthrange(year,int(n_month))[1]
-        for daynumber in range(1, nday+1):
-            days.append(str(n_month) + str(daynumber).zfill(2))
-    return months , days
-
-
-# TODO: the function does not loop over names and it only shows prc.
-# TODO_Update : Now the function works fine.
-# def make_output_name(cube):
-#     """Get output file name, specific to Globwat."""
-#     monthly = [[],[],[]]
-#     daily = [[],[],[]]
-#     output_name = {'pr':{'Amon':{}, 'day':{}},
-#                    'pet':{'Amon':{}, 'day':{}},
-#                    'pet_arora':{'Amon':{}, 'day':{}}}
-#     months , days = get_month_day_for_output_name(cube)
-#     names = ['prc', 'eto', 'eto_arora']
-#     shortname = ['pr', 'pet', 'pet_arora']
-#     for i in range(0,3):
-#         for month in months:
-#             monthly[i].append(names[i] + str(month) + 'wb')
-#         for day in days:
-#             daily[i].append(names[i] + str(day) + 'wb')
-#         output_name[shortname[i]]['Amon'] = monthly[i]
-#         output_name[shortname[i]]['day'] = daily[i]
-#     return output_name
-
 def make_output_name(key, mip, month, day):
     """Get output file name, specific to Globwat."""
     names_map = {'pr':'prc', 'pet':'eto', 'pet_arora':'eto_arora'}
     if mip == 'Amon':
-        filename = f"{names_map[key]}_{month}wb"
+        filename = f"{names_map[key]}{month}wb"
     else:
-        filename = f"{names_map[key]}_{month}{day}wb"
+        filename = f"{names_map[key]}{month}{day}wb"
     return filename
 
 
@@ -272,9 +235,19 @@ def _make_drs(dataset, nyear, mip):
     return data_dir
 
 
-def _make_path(data_dir, file_name, extention="nc"):
-    """making the saving the directory."""
-    path = data_dir / f"{file_name}.{extention}"
+def save(dataset, key, mip, sub_cube):
+    """Save data to a netcdf file."""
+    nyear, nmonth, nday = get_cube_info(sub_cube)
+    file_name = make_output_name(key, mip, nmonth, nday)
+    data_dir = _make_drs(dataset, nyear, mip)
+
+    # save to netcedf
+    path = f"{data_dir}/{file_name}.nc"
+    iris.save(sub_cube, path , fill_value=-9999)
+
+    # save to ascii #TODO fix it
+    # path = f"{data_dir}/{file_name}.asc"
+    # save_to_ascii(sub_cube, path)
     return path
 
 
@@ -310,8 +283,6 @@ def main(cfg):
         for key in ['pr', 'pet', 'pet_arora']:
             cube = all_vars[key]
             for sub_cube in cube.slices_over('time'):
-                nyear, nmonth, nday = get_cube_info(sub_cube)
-
                 # set negative values for precipitaion to zero
                 if key == 'pr':
                     sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
@@ -324,20 +295,12 @@ def main(cfg):
                 # #regrid data baed on target cube
                 # sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
 
-                file_name = make_output_name(key, mip, nmonth, nday)
-                data_dir = _make_drs(dataset, nyear, mip)
+                # Save data as netcdf and ascii
+                path = save(dataset, key, mip, sub_cube)
 
-                #Save data as netcdf
-                path = _make_path(data_dir, file_name, extention="nc")
-                iris.save(sub_cube, path , fill_value=-9999)
-
-                # save_ascii(sub_cube_regrided, path)
-                path = _make_path(data_dir, file_name, extention="asc")
-                save_to_ascii(sub_cube, path)
-
-            # # Store provenance
-            # with ProvenanceLogger(cfg) as provenance_logger:
-            #     provenance_logger.log(path, provenance)
+                # Store provenance
+                with ProvenanceLogger(cfg) as provenance_logger:
+                    provenance_logger.log(path, provenance)
 
 
 if __name__ == '__main__':
