@@ -68,15 +68,16 @@ diagnostics:  # TODO: can we use the daily reference evaporation in the model as
   # diagnostic_monthly_tas:
   #   description: analysis of ERA5 & ERA-Interim
   #   additional_datasets:
-  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #     - {dataset: CRU, project: OBS, tier: 2, type: reanaly, version: TS4.02}
+  #     # - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
   #     # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
   #   variables:
-  #     tas: &var_monthly
+  #     pr: &var_monthly
   #       mip: Amon
   #       start_year: 2004
-  #       end_year: 2004
+  #       end_year: 2006
   #       preprocessor: extract
-  #     pr: *var_monthly
+  #     tas: *var_monthly
   #   scripts:
   #     script:
   #       script: hydrology/extract_tas_prc.py
