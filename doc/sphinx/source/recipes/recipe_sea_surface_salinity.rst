@@ -12,6 +12,20 @@ To do this, the recipe generate plots for the timeseries of each region and
 a radar plot showing the correlation of dataset and reference timeseries for
 each region during the time they both exists.
 
+Preprocessor requirements:
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The recipe is created in a way that should make possible (although is not
+tested) to use it for other variables and datasets, even for more that one at
+a time. The diagnostic only expects variables with dimensions `time` and `depth_id`
+and it does not assume any other constraint.
+
+It ist herefore mandatory to keep the `extract_shape` preprocessor for more than
+one region and any form of region operation (`mean`, `max`, `min` ...) to collapse
+the `latitude` and `longitude` coordinates. In case you want to try with variables
+that have extra dimensions (i.e. `depth`) you must add an extra preprocessor
+call to collapse them (i.e. `depth_integration`)
+
 The recipe can be used with any shapefile. As it is, it uses the IHO Sea Areas
 (version 3) downloaded from https://marineregions.org/downloads.php, but any
 shapefile containing marine regions can be used.
@@ -124,19 +138,13 @@ Regions available on IHO Sea Areas file:
 - White Sea
 - Yellow Sea
 
-The recipe is created in a way that should make possible (although is not
-tested) to use it for other variables and datasets, even for more that one at
-a time.
-
-
-
 
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in recipes/
 
-    * recipe_sea_surface_salinity
+    * recipe_sea_surface_salinity.yml
 
 Diagnostics are stored in diag_scripts/sea_surface_salinity/
 
@@ -165,17 +173,11 @@ User settings in recipe
 
    none
 
-   *Required settings (scripts)*
-
-   none
-
-   *Optional settings (scripts)*
-
 
 Variables
 ---------
 
-* sos (ocean, monthly mean, time depth_id)
+* sos (ocean, monthly, time latitude longitude)
 
 
 Observations and reformat scripts

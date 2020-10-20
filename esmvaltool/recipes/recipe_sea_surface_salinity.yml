@@ -20,9 +20,9 @@ preprocessors:
     extract_shape:
       # Relative paths are relative to 'auxiliary_data_dir' as configured in
       # the config-user.yml file.
-      # The example shpaefile can be downloaded from
+      # The example shapefile can be downloaded from
       # https://marineregions.org/download_file.php?name=World_Seas_IHO_v3.zip
-      # by any shapefile can be used
+      # but any shapefile can be used
       shapefile: World_Seas_IHO_v3.shp
       decomposed: True
       method: contains
