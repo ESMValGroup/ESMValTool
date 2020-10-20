@@ -117,65 +117,26 @@ def get_month_day_for_output_name(cube):
     return months , days
 
 
-def make_output_name(cube):
+# TODO: the function does not loop over names and it only shows prc. 
+# TODO_Update : Now the function works fine. 
+def make_output_name(cube): 
     """Get output file name, specific to Globwat.""" 
-    monthly_pr = [] 
-    daily_pr = []
-    monthly_pet = [] 
-    daily_pet = [] 
-    monthly_pet_arora = [] 
-    daily_pet_arora = [] 
+    monthly = [[],[],[]] 
+    daily = [[],[],[]] 
     output_name = {'pr':{'Amon':{}, 'day':{}}, 
-                   'pet':{'Amon':{}, 'day':{}},
-                   'pet_arora':{'Amon':{}, 'day':{}}}      
+                   'pet':{'Amon':{}, 'day':{}}, 
+                   'pet_arora':{'Amon':{}, 'day':{}}} 
     months , days = get_month_day_for_output_name(cube) 
-    for mip in 'Amon', 'day': 
-        if mip == 'Amon': 
-            for i in range(0, len(months)):
-                for shortname in ['pr', 'pet', 'pet_arora']:
-                    if shortname == 'pr':
-                        monthly_pr.append('prc'+ str(months[i]) + 'wb')
-                    elif shortname == 'pet':
-                        monthly_pet.append('eto'+ str(months[i]) + 'wb')
-                    else:
-                        monthly_pet_arora.append('eto_arora_'+ str(months[i]) + 'wb')                 
-        elif mip == 'day':
-            for i in range(0, len(days)):
-                for shortname in ['pr', 'pet', 'pet_arora']:
-                    if shortname == 'pr':
-                        daily_pr.append('prc'+ str(days[i]) + 'wb')
-                    elif shortname == 'pet':
-                        daily_pet.append('eto'+ str(days[i]) + 'wb')
-                    else:
-                        daily_pet_arora.append('eto_arora_'+ str(days[i]) + 'wb')     
-    output_name['pr']['Amon'] = monthly_pr
-    output_name['pr']['day'] = daily_pr
-    output_name['pet']['Amon']  = monthly_pet
-    output_name['pet']['day'] = daily_pet
-    output_name['pet_arora']['Amon']  = monthly_pet_arora
-    output_name['pet_arora']['day']  = daily_pet_arora
-    return output_name
-
-#TODO: the function does not loop over names and it only shows prc. 
-# def make_output_name(cube):
-#     """Get output file name, specific to Globwat."""
-#     monthly = []
-#     daily = []
-#     output_name = {'pr':{'Amon':{}, 'day':{}},
-#                    'pet':{'Amon':{}, 'day':{}},
-#                    'pet_arora':{'Amon':{}, 'day':{}}}
-#     months , days = get_month_day_for_output_name(cube)
-
-#     names = ['prc', 'eto', 'eto_arora']
-#     for shortname, name in zip(output_name.keys(), names):
-#         for month in months:
-#             monthly.append(name + str(month) + 'wb')
-#         for day in days:
-#             daily.append(name + str(day) + 'wb')
-#         output_name[shortname]['Amon'] = monthly
-#         output_name[shortname]['day'] = daily
-#     return output_name
-
+    names = ['prc', 'eto', 'eto_arora'] 
+    shortname = ['pr', 'pet', 'pet_arora']  
+    for i in range(0,3):  
+        for month in months: 
+            monthly[i].append(names[i] + str(month) + 'wb') 
+        for day in days: 
+            daily[i].append(names[i] + str(day) + 'wb') 
+        output_name[shortname[i]]['Amon'] = monthly[i] 
+        output_name[shortname[i]]['day'] = daily[i] 
+    return output_name 
 
 def monthly_arora_pet(tas):
     """Calculating potential ET using Arora method.
@@ -344,9 +305,7 @@ def main(cfg):
                 # for time in cube.coord('time'):
                 # for sub_cube in cube.slices_over('time'):
                 sub_cube = cube[i]
-                print('sub_cub',sub_cube)
                 nyear = get_cube_info(sub_cube)
-                print ('sub_cube*********', sub_cube)
 
                 # set negative values for precipitaion to zero
                 if key == 'pr':
