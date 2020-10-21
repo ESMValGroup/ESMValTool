@@ -58,7 +58,7 @@ User settings in recipe
 
   *Required settings for script*
     * ``ancestors``: must include weights from previous diagnostic
-    * ``weights``: the filename of the weights: 'weights_combined.nc'
+    * ``weights``: the filename of the weights: 'weights.nc'
 
   *Required settings for variables*
     * This script only takes temperature (tas) as input
