@@ -28,7 +28,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, center=None):
     """Visualize weighted temperature."""
     period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
-    if (meta := read_metadata(cfg).get('tas_reference', None)) is not None:
+    if 'tas_reference' in read_metadata(cfg).keys():
+        meta = read_metadata(cfg)['tas_reference']
         period = 'change: {} minus {start_year}-{end_year}'.format(period, **meta[0])
     metric = cfg['model_aggregation']
     if isinstance(metric, int):
@@ -54,12 +55,12 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, 
     lats = dataarray.lat.values
     longitude_formatter = LongitudeFormatter()
     latitude_formatter = LatitudeFormatter()
-    if (xticks := cfg.get('xticks', None)) is not None:
-        ax.set_xticks(xticks)
+    if 'xticks' in cfg.keys():
+        ax.set_xticks(cfg['xticks'])
     else:
         ax.set_xticks(np.arange(np.floor(lons.min()), np.ceil(lons.max()), 10), crs=proj)
-    if (yticks := cfg.get('yticks', None)) is not None:
-        ax.set_yticks(yticks)
+    if 'yticks' in cfg.keys():
+        ax.set_yticks(cfg['yticks'])
     else:
         ax.set_yticks(np.arange(np.floor(lats.min()), np.ceil(lats.max()), 10), crs=proj)
     ax.xaxis.set_ticks_position('both')
@@ -159,7 +160,8 @@ def main(cfg):
     model_data, model_data_files = read_model_data(models)
 
     # if a historical period is given calculate the change
-    if (models_hist := read_metadata(cfg).get('tas_reference', None)) is not None:
+    if 'tas_reference' in read_metadata(cfg).keys():
+        models_hist = read_metadata(cfg)['tas_reference']
         model_data_hist, model_data_files_hist = read_model_data(models_hist)
         model_data_files += model_data_files_hist
         model_data = model_data - model_data_hist
