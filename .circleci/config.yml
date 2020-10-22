@@ -27,6 +27,8 @@ jobs:
     steps:
       - checkout
       - run:
+          environment:
+            R_INSTALL_N_CPUS: 2
           # Update/Create Conda environment and run tests
           command: |
             pip install .[test]
@@ -54,6 +56,8 @@ jobs:
       - restore_cache:
           key: test-install-{{ .Branch }}
       - run:
+          environment:
+            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
@@ -83,7 +87,7 @@ jobs:
             echo 0 | cdo -f nc input,r1x1 tmp.nc
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
-          no_output_timeout: 20m
+          no_output_timeout: 30m
       - save_cache:
           key: test-install-{{ .Branch }}
           paths:
@@ -105,6 +109,8 @@ jobs:
       - checkout
       - check_changes
       - run:
+          environment:
+            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
@@ -128,7 +134,7 @@ jobs:
             esmvaltool -h
             ncl -V
             cdo --version
-          no_output_timeout: 20m
+          no_output_timeout: 30m
       - store_artifacts:
           path: /logs
 
@@ -169,7 +175,7 @@ jobs:
       - check_changes
       - run:
           environment:
-            R_INSTALL_N_CPUS: 1
+            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
