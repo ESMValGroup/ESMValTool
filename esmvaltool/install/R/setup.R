@@ -81,7 +81,7 @@ if (length(install_dependencies) > 0) {
   install.packages(
     unlist(install_dependencies),
     repos = pkg_mirror,
-    n_cpus = n_cpus,
+    Ncpus = n_cpus,
     dependencies = c("Depends", "Imports", "LinkingTo")
   )
 }
