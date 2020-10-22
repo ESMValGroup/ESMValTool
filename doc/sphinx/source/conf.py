@@ -429,13 +429,11 @@ intersphinx_mapping = {
     'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
-    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'python': ('https://docs.python.org/3/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
-    'sklearn':
-    ('http://scikit-learn.org/stable',
-     (None, './_intersphinx/sklearn-objects.inv')),
+    'sklearn': ('https://scikit-learn.org/stable', None),
 }
 
 # -- Custom Document processing ----------------------------------------------
