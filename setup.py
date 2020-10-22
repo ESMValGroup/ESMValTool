@@ -32,12 +32,14 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.0.0,<2.1',
+        'esmvalcore>=2.1.0,<2.2',
         'fiona',
         'GDAL',
         'jinja2',
         'joblib',
+        'lime',
         'matplotlib',
+        'natsort',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
@@ -45,6 +47,7 @@ REQUIREMENTS = {
         'pynio',
         'pyproj>=2.1'
         'pyyaml',
+        'scikit-image',
         'scikit-learn',
         'scipy',
         'scitools-iris>=2.2.1',
@@ -53,6 +56,7 @@ REQUIREMENTS = {
         'shapely',
         'xarray>=0.12',
         'xesmf',
+        'xgboost',
         'xlsxwriter',
     ],
     # Test dependencies
@@ -69,7 +73,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm!=0.2.0',
+        'autodocsumm<0.2.0',
         'codespell',
         'docformatter',
         'isort',
@@ -77,7 +81,7 @@ REQUIREMENTS = {
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
         'sphinx>2',
         'sphinx_rtd_theme',
-        'vmprof',
+        'vprof',
         'yamllint',
         'yapf',
     ],
