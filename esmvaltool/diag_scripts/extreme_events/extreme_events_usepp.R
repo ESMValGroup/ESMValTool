@@ -235,7 +235,6 @@ for (model_idx in c(1:length(models_name))) { # nolint
   print("")
 
   idx_select <- unique(c(timeseries_idx, gleckler_idx))
-
   ## Check point for existing files
   climdex_file_check <- c()
   for (idx in idx_select) {
@@ -278,6 +277,7 @@ for (model_idx in c(1:length(models_name))) { # nolint
     }
   }
   check_control <- vector("logical", length(climdex_file_check))
+
   n <- 0
   for (chck in climdex_file_check) {
     n <- n + 1
@@ -460,7 +460,8 @@ if (write_plots) { # nolint
       provenance[[fname]] <- xprov
     }
   }
+  # Write provenance to file
+  # Only if write_plot TRUE because there is not data provenance.
+  # Data and their provenance have been produced by python programs.
+  write_yaml(provenance, provenance_file)
 }
-
-# Write provenance to file
-write_yaml(provenance, provenance_file)
