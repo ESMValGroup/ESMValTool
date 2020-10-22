@@ -14,12 +14,18 @@ Download and processing instructions
         {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
     where {raw_name} is the name of the desired variable(s).
 
+Two files are generated per variable, one with version (e.g. TS4.03),
+one with version + _stn (e.g. TS4.03_stn), which is constrained on holding
+gridpoint values relying on data from at least one station (i.e. removing
+gridpoints solely relying on climatological infilling).
+
 """
 
 import gzip
 import logging
 import os
 import shutil
+import numpy as np
 
 import iris
 
@@ -59,6 +65,24 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     utils.set_global_atts(cube, attrs)
 
     # Save variable
+    utils.save_variable(cube,
+                        short_name,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=['time'])
+
+
+    # build contraints cube on stn < 1
+    constraint_var = var.get('constraint', short_name)
+    constr_cube = iris.load_cube(filepath,
+                                 utils.var_name_constraint(constraint_var))
+    constr_mask = np.ma.masked_where(constr_cube.data < 1, constr_cube.data)
+    cube.data.mask = np.logical_or(cube.data.mask, constr_mask)
+
+    # Save variable
+    attrs = cfg['attributes_constraint']
+    attrs['mip'] = var['mip']
+
     utils.save_variable(cube,
                         short_name,
                         out_dir,
