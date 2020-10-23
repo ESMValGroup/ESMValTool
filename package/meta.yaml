@@ -80,7 +80,7 @@ outputs:
         - esmvalcore>=2.1.0,<2.2  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=2.2.1
+        - iris>=2.2.1,<3
         - jinja2
         - joblib
         - lime

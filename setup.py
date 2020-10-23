@@ -50,7 +50,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=2.2.1',
+        'scitools-iris>=2.2.1,<3',
         'seaborn',
         'seawater',
         'shapely',
