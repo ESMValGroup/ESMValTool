@@ -29,7 +29,8 @@ from esmvaltool.diag_scripts.weighting.plot_utilities import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, **colormesh_args):
+def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
+            **colormesh_args):
     """Visualize weighted temperature."""
     period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
     if 'tas_reference' in read_metadata(cfg).keys():
@@ -114,15 +115,15 @@ def visualize_and_save_temperature_difference(
 def model_aggregation(dataset, metric, weights=None):
     """Call mean or percentile calculation."""
     if isinstance(metric, int):
-        return calculate_percentiles(dataset, [metric], weights).squeeze(
-            'percentile', drop=True)
+        return calculate_percentiles(dataset, [metric],
+                                     weights).squeeze('percentile', drop=True)
     elif metric.lower() == 'mean':
         if weights is not None:
             dataset = dataset.weighted(weights)
         return dataset.mean('model_ensemble')
     elif metric.lower() == 'median':
-        return calculate_percentiles(dataset, [50], weights).squeeze(
-            'percentile', drop=True)
+        return calculate_percentiles(dataset, [50],
+                                     weights).squeeze('percentile', drop=True)
     else:
         errmsg = f'model_aggregation {metric} is not implemented!'
         raise NotImplementedError(errmsg)
