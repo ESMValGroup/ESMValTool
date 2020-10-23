@@ -101,7 +101,8 @@ def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
 
 def visualize_and_save_temperature_difference(
         temperature_difference: 'xr.DataArray', cfg: dict, ancestors: list):
-    """Wrapper for mapplot: temperature difference between weighted and unweighted."""
+    """Wrapper for mapplot: temperature difference between weighted and
+    unweighted."""
     title_pattern = 'Difference: weighted minus unweighted {metric} temperature\n{period} ($\degree$C)'
     filename_part = 'temperature_change_difference_map'
     mapplot(temperature_difference,
