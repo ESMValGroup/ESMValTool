@@ -71,11 +71,13 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
                         attrs,
                         unlimited_dimensions=['time'])
 
-
     # build contraints cube on stn < 1
     constraint_var = var.get('constraint', short_name)
     constr_cube = iris.load_cube(filepath,
                                  utils.var_name_constraint(constraint_var))
+    utils.fix_coords(constr_cube)
+    utils.convert_timeunits(constr_cube, 1950)
+
     constr_mask = np.ma.masked_where(constr_cube.data < 1, constr_cube.data)
     cube.data.mask = np.logical_or(cube.data.mask, constr_mask)
 
