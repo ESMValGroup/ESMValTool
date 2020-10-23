@@ -161,7 +161,7 @@ diagnostics:
         end_year: 2100
         mip: Amon
         preprocessor: climatological_mean
-      tas_present:
+      tas_reference:
         short_name: tas
         start_year: 1995
         end_year: 2014
@@ -171,5 +171,5 @@ diagnostics:
     scripts:
       boxplot_weighting_cmip:
         script: weighting/boxplot_weighting_cmip.py
-        ancestors: [calculate_weights_climwip/climwip, tas_future, tas_present]
+        ancestors: [calculate_weights_climwip/climwip, tas_future, tas_reference]
         weights: 'weights.nc'

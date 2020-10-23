@@ -111,7 +111,7 @@ def main(cfg):
     weights = read_weights(weights_path)
 
     models_fut = read_metadata(cfg)['tas_future']
-    models_pres = read_metadata(cfg)['tas_present']
+    models_pres = read_metadata(cfg)['tas_reference']
 
     model_data1, model_data_files1 = read_model_data(models_fut)
     model_data2, model_data_files2 = read_model_data(models_pres)
