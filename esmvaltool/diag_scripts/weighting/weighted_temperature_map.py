@@ -48,7 +48,7 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, **colormesh
         levels=9,
         robust=True,
         extend='both',
-        **colormap_args
+        **colormesh_args
         # colorbar size often does not fit nicely
         # https://stackoverflow.com/questions/18195758/set-matplotlib-colorbar-size-to-match-graph
         # cbar_kwargs={'fraction': .021}
