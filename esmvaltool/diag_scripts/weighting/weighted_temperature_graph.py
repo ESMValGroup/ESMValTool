@@ -87,8 +87,7 @@ def weighted_quantile(values: list,
 
 def visualize_and_save_temperatures(temperature: 'xr.DataArray',
                                     iqr: 'xr.DataArray',
-                                    iqr_weighted: 'xr.DataArray',
-                                    cfg: dict,
+                                    iqr_weighted: 'xr.DataArray', cfg: dict,
                                     ancestors: list):
     """Visualize weighted temperature."""
     figure, axes = plt.subplots(dpi=300)
@@ -145,8 +144,9 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
     figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
     plt.close(figure)
 
-    filename_data = get_diagnostic_filename(
-        'temperature_anomalies', cfg, extension='nc')
+    filename_data = get_diagnostic_filename('temperature_anomalies',
+                                            cfg,
+                                            extension='nc')
     temperature.to_netcdf(filename_data)
 
     caption = 'Temperature anomaly relative to 1981-2010'

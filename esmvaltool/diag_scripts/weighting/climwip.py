@@ -353,10 +353,9 @@ def compute_overall_mean(dataset, contributions):
         median_dim = 'model_ensemble'
     normalized = dataset / dataset.median(dim=median_dim)
 
-    weights = xr.DataArray(
-        [contributions[vg] for vg in dataset],
-        coords={'variable_group': list(dataset)},
-        dims='variable_group')
+    weights = xr.DataArray([contributions[vg] for vg in dataset],
+                           coords={'variable_group': list(dataset)},
+                           dims='variable_group')
     overall_mean = normalized.to_array(
         dim='variable_group').weighted(weights).mean('variable_group')
     overall_mean.name = 'overall_mean'
@@ -427,9 +426,13 @@ def main(cfg):
     models, observations = read_metadata(cfg)
 
     variable_groups_independence = [
-        key for key, value in cfg['independence_contributions'].items() if value > 0]
+        key for key, value in cfg['independence_contributions'].items()
+        if value > 0
+    ]
     variable_groups_performance = [
-        key for key, value in cfg['performance_contributions'].items() if value > 0]
+        key for key, value in cfg['performance_contributions'].items()
+        if value > 0
+    ]
     assert len(variable_groups_independence) > 0
     assert len(variable_groups_performance) > 0
 
@@ -447,8 +450,7 @@ def main(cfg):
 
         logger.info('Calculating independence for %s', variable_group)
         independence = calculate_independence(model_data)
-        visualize_and_save_independence(independence, cfg,
-                                        model_data_files)
+        visualize_and_save_independence(independence, cfg, model_data_files)
         logger.debug(independence.values)
         independences[variable_group] = independence
 
@@ -479,12 +481,14 @@ def main(cfg):
 
     logger.info('Computing overall mean independence')
     independence = xr.Dataset(independences)
-    overall_independence = compute_overall_mean(independence, cfg['independence_contributions'])
+    overall_independence = compute_overall_mean(
+        independence, cfg['independence_contributions'])
     visualize_and_save_independence(overall_independence, cfg, model_ancestors)
 
     logger.info('Computing overall mean performance')
     performance = xr.Dataset(performances)
-    overall_performance = compute_overall_mean(performance, cfg['performance_contributions'])
+    overall_performance = compute_overall_mean(
+        performance, cfg['performance_contributions'])
     visualize_and_save_performance(overall_performance, cfg,
                                    model_ancestors + obs_ancestors)
 
