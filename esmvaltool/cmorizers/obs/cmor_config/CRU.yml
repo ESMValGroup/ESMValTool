@@ -1,6 +1,6 @@
 ---
 # Filename (will be extended by variable name)
-filename: 'cru_ts4.03.1901.2018.{raw_name}.dat.nc.gz'
+filename: 'cru_ts4.04.1901.2019.{raw_name}.dat.nc.gz'
 
 # Common global attributes for Cmorizer output
 attributes:
@@ -9,7 +9,7 @@ attributes:
   tier: 2
   modeling_realm: reanaly
   project_id: OBS
-  source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.03/cruts.1811131722.v4.02/'
+  source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.04/cruts.2004151855.v4.04/'
   reference: 'cru'
   comment: ''
 
@@ -19,7 +19,7 @@ attributes_constraint:
   tier: 2
   modeling_realm: reanaly
   project_id: OBS
-  source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.03/cruts.1811131722.v4.02/'
+  source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.04/cruts.2004151855.v4.04/'
   reference: 'cru'
   comment: 'contrained on gridpoint values beeing based on at least 1 station'
 
