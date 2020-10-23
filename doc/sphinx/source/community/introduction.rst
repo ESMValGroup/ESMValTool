@@ -126,6 +126,8 @@ Go to the directory where the repository is cloned and run
 ``pytest``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
 
+In addition, a recipe tester Bot is also available (experimental at the moment).
+
 Code style
 ----------
 
