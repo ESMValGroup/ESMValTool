@@ -29,13 +29,7 @@ from esmvaltool.diag_scripts.weighting.plot_utilities import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def mapplot(dataarray,
-            cfg,
-            title_pattern,
-            filename_part,
-            ancestors,
-            cmap=None,
-            center=None):
+def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, **colormesh_args):
     """Visualize weighted temperature."""
     period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
     if 'tas_reference' in read_metadata(cfg).keys():
@@ -54,8 +48,7 @@ def mapplot(dataarray,
         levels=9,
         robust=True,
         extend='both',
-        cmap=cmap,
-        center=center,
+        **colormap_args
         # colorbar size often does not fit nicely
         # https://stackoverflow.com/questions/18195758/set-matplotlib-colorbar-size-to-match-graph
         # cbar_kwargs={'fraction': .021}
