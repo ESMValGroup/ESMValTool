@@ -21,7 +21,7 @@ documentation:
     - trr181
 
 datasets:
-  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2001}
 
 preprocessors:
   regrid_preproc:
