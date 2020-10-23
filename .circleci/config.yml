@@ -56,8 +56,6 @@ jobs:
       - restore_cache:
           key: test-install-{{ .Branch }}
       - run:
-          environment:
-            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
@@ -70,7 +68,7 @@ jobs:
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install .[test] > /logs/install.txt 2>&1
-            esmvaltool install R
+            R_INSTALL_N_CPUS=4 esmvaltool install R
             esmvaltool install Julia
             # Remove source to test installed software
             rm -r esmvaltool
@@ -109,8 +107,6 @@ jobs:
       - checkout
       - check_changes
       - run:
-          environment:
-            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
@@ -123,7 +119,7 @@ jobs:
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
-            esmvaltool install R
+            R_INSTALL_N_CPUS=4 esmvaltool install R
             esmvaltool install Julia
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -175,7 +171,7 @@ jobs:
       - check_changes
       - run:
           environment:
-            R_INSTALL_N_CPUS: 2
+            R_INSTALL_N_CPUS: 4
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
