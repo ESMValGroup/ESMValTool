@@ -10,14 +10,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from climwip import log_provenance, read_model_data
-from climwip import get_diagnostic_filename
 
+from climwip import get_diagnostic_filename, log_provenance, read_model_data
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
 from esmvaltool.diag_scripts.weighting.plot_utilities import (
-    read_weights,
+    calculate_percentiles,
     read_metadata,
-    weighted_quantile,
+    read_weights,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -90,39 +89,6 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
     caption = 'Temperature anomaly relative to 1981-2010'
     log_provenance(caption, filename_plot, cfg, ancestors)
     log_provenance(caption, filename_data, cfg, ancestors)
-
-
-def calculate_percentiles(data: 'xr.DataArray',
-                          percentiles: list,
-                          weights: dict = None):
-    """Calculate (weighted) percentiles.
-
-    Calculate the (weighted) percentiles for the given data.
-
-    Percentiles is a list of values between 0 and 100.
-
-    Weights is a dictionary where the keys represent the model members,
-    and the values the weights.
-    If `weights` is not specified, the non-weighted percentiles are calculated.
-
-    Returns a DataArray with 'percentiles' as the dimension.
-    """
-    if weights is not None:
-        weights = weights.sel(model_ensemble=data.model_ensemble)
-
-    output = xr.apply_ufunc(weighted_quantile,
-                            data,
-                            input_core_dims=[['model_ensemble']],
-                            output_core_dims=[['percentiles']],
-                            kwargs={
-                                'weights': weights,
-                                'quantiles': percentiles / 100
-                            },
-                            vectorize=True)
-
-    output['percentiles'] = percentiles
-
-    return output
 
 
 def main(cfg):

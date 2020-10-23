@@ -7,30 +7,41 @@ import logging
 import os
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
-from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from climwip import log_provenance, read_model_data
-from climwip import get_diagnostic_filename, get_plot_filename
+from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
+from climwip import (
+    get_diagnostic_filename,
+    get_plot_filename,
+    log_provenance,
+    read_model_data,
+)
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.weighting.plot_utilities import (
-    read_weights,
+    calculate_percentiles,
     read_metadata,
-    weighted_quantile,
+    read_weights,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, center=None):
+def mapplot(dataarray,
+            cfg,
+            title_pattern,
+            filename_part,
+            ancestors,
+            cmap=None,
+            center=None):
     """Visualize weighted temperature."""
     period = '{start_year}-{end_year}'.format(**read_metadata(cfg)['tas'][0])
     if 'tas_reference' in read_metadata(cfg).keys():
         meta = read_metadata(cfg)['tas_reference']
-        period = 'change: {} minus {start_year}-{end_year}'.format(period, **meta[0])
+        period = 'change: {} minus {start_year}-{end_year}'.format(
+            period, **meta[0])
     metric = cfg['model_aggregation']
     if isinstance(metric, int):
         metric = f'{metric}perc'
@@ -50,19 +61,16 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, 
         # cbar_kwargs={'fraction': .021}
     )
 
-    ax.coastlines()
     lons = dataarray.lon.values
     lats = dataarray.lat.values
     longitude_formatter = LongitudeFormatter()
     latitude_formatter = LatitudeFormatter()
-    if 'xticks' in cfg.keys():
-        ax.set_xticks(cfg['xticks'])
-    else:
-        ax.set_xticks(np.arange(np.floor(lons.min()), np.ceil(lons.max()), 10), crs=proj)
-    if 'yticks' in cfg.keys():
-        ax.set_yticks(cfg['yticks'])
-    else:
-        ax.set_yticks(np.arange(np.floor(lats.min()), np.ceil(lats.max()), 10), crs=proj)
+    default_xticks = np.arange(np.floor(lons.min()), np.ceil(lons.max()), 10)
+    default_yticks = np.arange(np.floor(lats.min()), np.ceil(lats.max()), 10)
+
+    ax.coastlines()
+    ax.set_xticks(cfg.get('xticks', default_xticks), crs=proj)
+    ax.set_yticks(cfg.get('yticks', default_yticks), crs=proj)
     ax.xaxis.set_ticks_position('both')
     ax.yaxis.set_ticks_position('both')
     ax.xaxis.set_major_formatter(longitude_formatter)
@@ -73,77 +81,55 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors, cmap=None, 
     title = title_pattern.format(metric=metric, period=period)
     ax.set_title(title)
 
-    filename_plot = get_plot_filename(
-        filename_part, cfg)
+    filename_plot = get_plot_filename(filename_part, cfg)
     fig.savefig(filename_plot, dpi=300, bbox_inches='tight')
     plt.close(fig)
 
-    filename_data = get_diagnostic_filename(
-        filename_part, cfg, extension='nc')
+    filename_data = get_diagnostic_filename(filename_part, cfg, extension='nc')
     dataarray.to_netcdf(filename_data)
 
     log_provenance(title, filename_plot, cfg, ancestors)
     log_provenance(title, filename_data, cfg, ancestors)
 
 
-def visualize_and_save_temperature(temperature: 'xr.DataArray',
-                                   cfg: dict,
+def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
                                    ancestors: list):
-    """Wrapper for mapplot: absolute temperature"""
+    """Wrapper for mapplot: absolute temperature."""
     title_pattern = 'Weighted {metric} temperature \n{period} ($\degree$C)'
     filename_part = 'temperature_change_weighted_map'
-    mapplot(temperature, cfg, title_pattern, filename_part, ancestors, cmap='Reds')
+    mapplot(temperature,
+            cfg,
+            title_pattern,
+            filename_part,
+            ancestors,
+            cmap='Reds')
 
 
-def visualize_and_save_temperature_difference(temperature_difference: 'xr.DataArray',
-                                              cfg: dict,
-                                              ancestors: list):
-    """Wrapper for mapplot: temperature change"""
+def visualize_and_save_temperature_difference(
+        temperature_difference: 'xr.DataArray', cfg: dict, ancestors: list):
+    """Wrapper for mapplot: temperature difference between weighted and unweighted."""
     title_pattern = 'Difference: weighted minus unweighted {metric} temperature\n{period} ($\degree$C)'
     filename_part = 'temperature_change_difference_map'
-    mapplot(temperature_difference, cfg, title_pattern, filename_part, ancestors, center=0)
-
-
-def calculate_percentiles(data: 'xr.DataArray',
-                          percentile: float,
-                          weights: dict = None):
-    """Calculate (weighted) percentiles.
-
-    Calculate the (weighted) percentiles for the given data.
-
-    Percentiles is a list of values between 0 and 100.
-
-    Weights is a dictionary where the keys represent the model members,
-    and the values the weights.
-    If `weights` is not specified, the non-weighted percentiles are calculated.
-
-    Returns a DataArray with 'percentiles' as the dimension.
-    """
-    if weights is not None:
-        weights = weights.sel(model_ensemble=data.model_ensemble)
-
-    output = xr.apply_ufunc(weighted_quantile,
-                            data,
-                            input_core_dims=[['model_ensemble']],
-                            kwargs={
-                                'weights': weights,
-                                'quantile': percentile / 100
-                            },
-                            vectorize=True)
-
-    return output
+    mapplot(temperature_difference,
+            cfg,
+            title_pattern,
+            filename_part,
+            ancestors,
+            center=0)
 
 
 def model_aggregation(dataset, metric, weights=None):
-    """Call mean or percentile calculation"""
+    """Call mean or percentile calculation."""
     if isinstance(metric, int):
-        return calculate_percentiles(dataset, metric, weights)
+        return calculate_percentiles(dataset, [metric], weights).squeeze(
+            'percentile', drop=True)
     elif metric.lower() == 'mean':
         if weights is not None:
             dataset = dataset.weighted(weights)
         return dataset.mean('model_ensemble')
     elif metric.lower() == 'median':
-        return calculate_percentiles(dataset, 50, weights)
+        return calculate_percentiles(dataset, [50], weights).squeeze(
+            'percentile', drop=True)
     else:
         errmsg = f'model_aggregation {metric} is not implemented!'
         raise NotImplementedError(errmsg)
