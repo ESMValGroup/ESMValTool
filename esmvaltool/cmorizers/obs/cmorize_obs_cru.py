@@ -4,18 +4,18 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
+    https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.04/cruts.2004151855.v4.04/
 
 Last access
     20190516
 
 Download and processing instructions
     Download the following files:
-        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
+        {raw_name}/cru_ts4.04.1901.2019.{raw_name}.dat.nc.gz
     where {raw_name} is the name of the desired variable(s).
 
-Two files are generated per variable, one with version (e.g. TS4.03),
-one with version + _stn (e.g. TS4.03_stn), which is constrained on holding
+Two files are generated per variable, one with version (e.g. TS4.04),
+one with version + _stn1 (e.g. TS4.04_stn1), which is constrained on holding
 gridpoint values relying on data from at least one station (i.e. removing
 gridpoints solely relying on climatological infilling).
 
