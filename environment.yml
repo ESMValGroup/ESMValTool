@@ -9,6 +9,7 @@ dependencies:
   - gdal
   - esmpy
   - esmvalcore>=2.1.0,<2.2
+  - iris>=2.2.1,<3
   # Non-Python dependencies
   - cdo>=1.9.7
   - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
