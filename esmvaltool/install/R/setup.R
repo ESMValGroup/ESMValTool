@@ -123,7 +123,7 @@ if (length(package_list) != 0) {
   install.packages(
     package_list,
     repos = pkg_mirror,
-    n_cpus = n_cpus,
+    Ncpus = n_cpus,
     dependencies = c("Depends", "Imports", "LinkingTo")
   )
 }
