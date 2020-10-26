@@ -131,8 +131,6 @@ These are the detailed steps to take to make a release.
    - The creation of the release branch is announced to the ESMValTool development team along with the procedures to use the branch for testing and making last-minute changes (see next step)
 
 
-
-
 6. Some additional testing of ESMValTool
 
    - Run all the recipes to check that they still work and ask authors to review the plots
@@ -190,54 +188,135 @@ Release branch
 ~~~~~~~~~~~~~~
 The release branch can be used to do some additional testing before the release, while normal development work continues in the master branch. It will be branched off from the master branch after the feature freeze and will be used to make the release on the release date. The only way to still get something included in the release after the feature freeze is to ask the release manager to cherry-pick a commit from the master branch into this branch.
 
+
 .. _How to make a release:
 
 How to make an ESMValTool release
 ---------------------------------
 
-To make a new release of the ESMValTool package, follow these steps:
+The release manager makes the release, assisted by the release manager of the
+previous release, or if that person is not available, another previous release
+manager. Perform the steps listed below with two persons, to reduce the risk of
+error.
 
-1. Check that the nightly build on CircleCI was successful
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To make a new release of the package, follow these steps:
 
-Check the ``nightly`` `build on
-CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/master>`__.
-All tests should pass before making a release.
+1. Check the tests on GitHub Actions and CircleCI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-2. Make a pull request to increase the version number
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Check the ``nightly``
+`build on CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/master>`__
+and the
+`GitHub Actions run <https://github.com/ESMValGroup/ESMValTool/actions>`__.
+All tests should pass before making a release (branch).
+
+2. Increase the version number
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The version number is stored in ``esmvaltool/__init__.py``,
-``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
-https://semver.org for more information on choosing a version number.
+``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files.
+Also update the release date in ``CITATION.cff``.
+See https://semver.org for more information on choosing a version number.
+Make a pull request and get it merged into ``master``.
 
-3. Make the release on GitHub
+3. Add release notes
+~~~~~~~~~~~~~~~~~~~~
+Use the script :ref:`draft_release_notes.py` to create create a draft of the
+release notes.
+This script uses the titles and labels of merged pull requests since the
+previous release.
+Review the results, and if anything needs changing, change it on GitHub and
+re-run the script until the changelog looks acceptable.
+Copy the result to the file ``doc/sphinx/source/changelog.rst``.
+Make a pull request and get it merged into ``master``.
+
+4. Create a release branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Create a branch off the ``master`` branch and push it to GitHub.
+Ask someone with administrative permissions to set up branch protection rules
+for it so only you and the person helping you with the release can push to it.
+Announce the name of the branch in an issue and ask the members of the
+`ESMValTool development team <https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam>`__
+to run their favourite recipe using this branch.
+
+5. Cherry pick bugfixes into the release branch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If a bug is found and fixed (i.e. pull request merged into the
+``master`` branch) during the period of testing, use the command
+``git cherry-pick`` to include the commit for this bugfix into
+the release branch.
+When the testing period is over, make a pull request to update
+the release notes with the latest changes, get it merged into
+``master`` and cherry-pick it into the release branch.
+
+6. Make the release on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Click the `releases
-tab <https://github.com/ESMValGroup/ESMValTool/releases>`__ and draft
-the new release. Do not forget to tick the pre-release box for a beta
-release. Use the script
-`esmvalcore/utils/draft_release_notes.py <https://github.com/ESMValGroup/ESMValCore/blob/master/esmvalcore/utils/draft_release_notes.py>`__
-from the ESMValCore project to create a draft version of the release
-notes and edit those.
+Do a final check that all tests on CircleCI and GitHub Actions completed
+successfully.
+Then click the
+`releases tab <https://github.com/ESMValGroup/ESMValTool/releases>`__
+and create the new release from the release branch (i.e. not from ``master``).
 
-4. Create and upload the Conda package
+7. Create and upload the Conda package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The package is automatically uploaded to the
+`ESMValGroup conda channel <https://anaconda.org/esmvalgroup/esmvaltool>`__
+by a GitHub action.
+If this has failed for some reason, build and upload the package manually by
+following the instructions below.
 
 Follow these steps to create a new conda package:
 
--  Check out the tag corresponding to the release, e.g.
-   ``git checkout v2.0.0b2``
--  Edit package/meta.yaml and uncomment the lines starting with
-   ``git_rev`` and ``git_url``, remove the line starting with ``path``
-   in the ``source`` section.
+-  Check out the tag corresponding to the release,
+   e.g. ``git checkout tags/v2.1.0``
+-  Make sure your current working directory is clean by checking the output
+   of ``git status`` and by running ``git clean -xdf`` to remove any files
+   ignored by git.
+-  Edit ``package/meta.yaml`` and uncomment the lines starting with ``git_rev`` and
+   ``git_url``, remove the line starting with ``path`` in the ``source``
+   section.
 -  Activate the base environment ``conda activate base``
--  Run ``conda build package -c conda-forge -c esmvalgroup`` to build
-   the conda package
--  If the build was successful, upload all the packages to the esmvalgroup
+-  Install the required packages:
+   ``conda install -y conda-build conda-verify ripgrep anaconda-client``
+-  Run ``conda build package -c conda-forge -c esmvalgroup`` to build the
+   conda package
+-  If the build was successful, upload the package to the esmvalgroup
    conda channel, e.g.
-   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.0.0b2-py_0.tar.bz2``.
+   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.1.0-py_0.tar.bz2``.
+
+8. Create and upload the PyPI package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The package is automatically uploaded to the
+`PyPI <https://pypi.org/project/ESMValTool/>`__
+by a GitHub action.
+If has failed for some reason, build and upload the package manually by
+following the instructions below.
+
+Follow these steps to create a new Python package:
+
+-  Check out the tag corresponding to the release,
+   e.g. ``git checkout tags/v2.1.0``
+-  Make sure your current working directory is clean by checking the output
+   of ``git status`` and by running ``git clean -xdf`` to remove any files
+   ignored by git.
+-  Install the required packages:
+   ``python3 -m pip install --upgrade pep517 twine``
+-  Build the package:
+   ``python3 -m pep517.build --source --binary --out-dir dist/ .``
+   This command should generate two files in the ``dist`` directory, e.g.
+   ``ESMValTool-2.1.0-py3-none-any.whl`` and ``ESMValTool-2.1.0.tar.gz``.
+-  Upload the package:
+   ``python3 -m twine upload dist/*``
+   You will be prompted for an API token if you have not set this up
+   before, see
+   `here <https://pypi.org/help/#apitoken>`__ for more information.
+
+You can read more about this in
+`Packaging Python Projects <https://packaging.python.org/tutorials/packaging-projects/>`__.
+
 
 Changelog
 ---------
