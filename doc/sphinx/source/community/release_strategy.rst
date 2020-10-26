@@ -243,8 +243,9 @@ to run their favourite recipe using this branch.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If a bug is found and fixed (i.e. pull request merged into the
 ``master`` branch) during the period of testing, use the command
-``git cherry-pick`` to include the commit for this bugfix into
-the release branch.
+``git cherry-pick COMMIT_HASH``, where ``COMMIT_HASH`` is the commit hash of the
+commit that needs to be cherry-picked, to include the commit for this bugfix
+into the release branch.
 When the testing period is over, make a pull request to update
 the release notes with the latest changes, get it merged into
 ``master`` and cherry-pick it into the release branch.
