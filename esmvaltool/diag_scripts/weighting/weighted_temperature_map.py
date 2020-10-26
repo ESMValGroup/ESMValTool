@@ -10,7 +10,6 @@ from pathlib import Path
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
-import xarray as xr
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
 from climwip import (
@@ -41,10 +40,10 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
     if isinstance(metric, int):
         metric = f'{metric}perc'
     proj = ccrs.PlateCarree(central_longitude=0)
-    fig, ax = plt.subplots(subplot_kw={'projection': proj})
+    figure, axes = plt.subplots(subplot_kw={'projection': proj})
 
     dataarray.plot.pcolormesh(
-        ax=ax,
+        ax=axes,
         transform=ccrs.PlateCarree(),
         levels=9,
         robust=True,
@@ -62,22 +61,22 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
     default_xticks = np.arange(np.floor(lons.min()), np.ceil(lons.max()), 10)
     default_yticks = np.arange(np.floor(lats.min()), np.ceil(lats.max()), 10)
 
-    ax.coastlines()
-    ax.set_xticks(cfg.get('xticks', default_xticks), crs=proj)
-    ax.set_yticks(cfg.get('yticks', default_yticks), crs=proj)
-    ax.xaxis.set_ticks_position('both')
-    ax.yaxis.set_ticks_position('both')
-    ax.xaxis.set_major_formatter(longitude_formatter)
-    ax.yaxis.set_major_formatter(latitude_formatter)
-    ax.set_xlabel('')
-    ax.set_ylabel('')
+    axes.coastlines()
+    axes.set_xticks(cfg.get('xticks', default_xticks), crs=proj)
+    axes.set_yticks(cfg.get('yticks', default_yticks), crs=proj)
+    axes.xaxis.set_ticks_position('both')
+    axes.yaxis.set_ticks_position('both')
+    axes.xaxis.set_major_formatter(longitude_formatter)
+    axes.yaxis.set_major_formatter(latitude_formatter)
+    axes.set_xlabel('')
+    axes.set_ylabel('')
 
     title = title_pattern.format(metric=metric, period=period)
-    ax.set_title(title)
+    axes.set_title(title)
 
     filename_plot = get_plot_filename(filename_part, cfg)
-    fig.savefig(filename_plot, dpi=300, bbox_inches='tight')
-    plt.close(fig)
+    figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
+    plt.close(figure)
 
     filename_data = get_diagnostic_filename(filename_part, cfg, extension='nc')
     dataarray.to_netcdf(filename_data)
