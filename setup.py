@@ -8,7 +8,8 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-from esmvaltool import __version__
+sys.path.insert(0, os.path.dirname(__file__))
+from esmvaltool import __version__  # noqa: E402
 
 PACKAGES = [
     'esmvaltool',
