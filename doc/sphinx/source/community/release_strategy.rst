@@ -246,9 +246,12 @@ If a bug is found and fixed (i.e. pull request merged into the
 ``git cherry-pick COMMIT_HASH``, where ``COMMIT_HASH`` is the commit hash of the
 commit that needs to be cherry-picked, to include the commit for this bugfix
 into the release branch.
+Cherry-pick any new contributions in the order they were merged, to avoid
+conflicts.
 When the testing period is over, make a pull request to update
-the release notes with the latest changes, get it merged into
-``master`` and cherry-pick it into the release branch.
+the release notes with the latest changes (do not forget to include the pull
+request itself into the changelog), get it merged into ``master`` and
+cherry-pick it into the release branch.
 
 6. Make the release on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -258,6 +261,8 @@ successfully.
 Then click the
 `releases tab <https://github.com/ESMValGroup/ESMValTool/releases>`__
 and create the new release from the release branch (i.e. not from ``master``).
+The release tag always starts with the letter ``v`` followed by the version
+number, e.g. ``v2.1.0``.
 
 7. Create and upload the Conda package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
