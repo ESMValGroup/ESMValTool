@@ -14,9 +14,7 @@ import iris
 import iris.analysis
 import numpy as np
 import xarray as xr
-
-import rasterio
-from rasterio.transform import Affine
+import pandas as pd
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
@@ -145,83 +143,58 @@ def get_cube_info(cube):
     return year, month, day
 
 
-#TODO: We must work on saving data as ascii format.
-# def save_ascii(cube, filename):
-    """"""
-    # array = sub_cube.data
-    # points = sub_cube.coord('longitude').points
-    # sub_cube.coord('longitude').points = (points + 180) % 360 - 180
-    # lon = (sub_cube.coord('longitude').points + 180) % 360 -180
-    # lat = sub_cube.coord('latitude').points
-    # sub_cube = sub_cube[:, ::-1, ...]
-    # nrows,ncols = np.shape(array)
-    # xmin,ymin,xmax,ymax = [lon.min(),lat.min(),lon.max(),lat.max()]
-    # xres = (xmax-xmin)/float(ncols)
-    # yres = (ymax-ymin)/float(nrows)
-    # transform = Affine.translation(xmin + xres / 2, ymin - xres / 2) * Affine.scale(xres, xres)
-    # file_name = output_name_amon[i]
-    # new_dataset = rasterio.open(
-    # f"{data_dir}/{file_name}.asc",
-    # 'w',
-    # driver='GTiff',
-    # height=array.shape[1],
-    # width=array.shape[0],
-    # count=1,
-    # dtype='float32',
-    # crs='+proj=latlong',
-    # transform=transform,
-    # nodata= -9999,
-    # )
-    # new_dataset.write(array, 1)
-    # new_dataset.close()
+def _swap_western_hemisphere(sub_cube):
+    """Set longitude values in range -180, 180.
+
+    Western hemisphere longitudes should be negative.
+    """
+    array = xr.DataArray.from_iris(sub_cube)
+
+    # Set longitude values in range -180, 180.
+    array['lon'] = (array['lon'] + 180) % 360 - 180
+
+    # Re-index data along longitude values
+    west = array.where(array.lon<0, drop=True)
+    east = array.where(array.lon>=0, drop=True)
+    return west.combine_first(east)
 
 
-# def affine_rotate(transform, degrees=15.0):
-#     parameters = np.array(transform.GetParameters())
-#     new_transform = sitk.AffineTransform(transform)
-#     matrix = np.array(transform.GetMatrix()).reshape((dimension,dimension))
-#     radians = -np.pi * degrees / 180.
-#     rotation = np.array([[np.cos(radians), -np.sin(radians)],[np.sin(radians), np.cos(radians)]])
-#     new_matrix = np.dot(rotation, matrix)
-#     new_transform.SetMatrix(new_matrix.ravel())
-#     resampled = resample(grid, new_transform)
-#     print(new_matrix)
-#     myshow(resampled, 'Rotated')
-#     return new_transform
+def _flip_vertically(array):
+    """Flip vertically for writing as ascii.
 
-#TODO: the maps are saving upside down in ascii output. in addition
-# a part of Africa is cloase to USA which must be corrected
-def save_to_ascii(cube, file_name):
-    """Save array as ascii grid file."""
-    dataset = xr.DataArray.from_iris(cube)
-    array = dataset.fillna(-9999)
+    Latitudes order should be in range 90, -90.
+    """
+    flipped = array[::-1,...]
+    flipped['lat'] = array['lat'] * -1
+    return flipped
+
+
+def save_to_ascii(sub_cube, file_name):
+    """Save data to an ascii file.
+
+    Data with index [0,0] should be in -180, 90 lon/lat.
+    """
+
+    # Re-index data
+    array = _swap_western_hemisphere(sub_cube)
+    array = _flip_vertically(array)
+
+    # Set nodata values
+    array = array.fillna(-9999)
 
     xmin = array['lon'].min().values
-    ymax = array['lat'].max().values
-    # ymin = array['lat'].min().values
-
+    ymin = array['lat'].min().values
     xres = array['lon'].values[1] - array['lon'].values[0]
-    yres = array['lat'].values[0] - array['lat'].values[1]
-
-    Affine_translation = Affine.translation(xmin - xres / 2, ymax - yres / 2)
-    Affine_scale = Affine.scale(xres, yres)
-    transform = Affine_translation * Affine_scale
-
-    new_dataset = rasterio.open(
-        file_name,
-        'w',
-        driver='AAIGrid',
-        height=array.shape[0],  # lat
-        width=array.shape[1],  # lon
-        count=1,
-        dtype ='float32',
-        # dtype=array.dtype,
-        crs='+proj=latlong',
-        transform=transform,
-        nodata= -9999,
-        )
-    new_dataset.write(array, 1)
-    new_dataset.close()
+    output = open(file_name, "w")
+    output.write(f"ncols {array.shape[1]}\n")
+    output.write(f"nrows {array.shape[0]}\n")
+    output.write(f"xllcorner     {xmin}\n")
+    output.write(f"yllcorner     {ymin}\n")
+    output.write(f"cellsize      {xres}\n")
+    output.write(f"NODATA_value  {np.int32(-9999)}\n")
+    output.close()
+    data_frame = pd.DataFrame(array.values, dtype=array.dtype)
+    data_frame.to_csv(file_name, sep=' ', na_rep='-9999', float_format=None, header=False, index=False, mode='a')
 
 
 def _make_drs(dataset, nyear, mip):
@@ -243,12 +216,12 @@ def save(dataset, key, mip, sub_cube):
     data_dir = _make_drs(dataset, nyear, mip)
 
     # save to netcedf
-    path = f"{data_dir}/{file_name}.nc"
-    iris.save(sub_cube, path , fill_value=-9999)
+    # path = f"{data_dir}/{file_name}.nc"
+    # iris.save(sub_cube, path , fill_value=-9999)
 
     # save to ascii #TODO fix it
-    # path = f"{data_dir}/{file_name}.asc"
-    # save_to_ascii(sub_cube, path)
+    path = f"{data_dir}/{file_name}.asc"
+    save_to_ascii(sub_cube, path)
     return path
 
 
