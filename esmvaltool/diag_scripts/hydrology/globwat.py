@@ -143,6 +143,20 @@ def get_cube_info(cube):
     return year, month, day
 
 
+def _reindex_data(cube, target):
+    """Reindex data to a global coordinates set.
+
+    Globwat works with global extent."""
+    cube_ds = xr.DataArray.from_iris(cube).to_dataset()
+    target_ds = xr.DataArray.from_iris(target).to_dataset()
+    reindex_ds = cube_ds.reindex(
+        {"lat": target_ds["lat"], "lon": target_ds["lon"]},
+        method="nearest",
+        tolerance=1e-2,
+    )
+    return reindex_ds
+
+
 def _swap_western_hemisphere(sub_cube):
     """Set longitude values in range -180, 180.
 
@@ -197,23 +211,23 @@ def save_to_ascii(sub_cube, file_name):
     data_frame.to_csv(file_name, sep=' ', na_rep='-9999', float_format=None, header=False, index=False, mode='a')
 
 
-def _make_drs(dataset, nyear, mip):
+def _make_drs(dataset_name, nyear, mip):
     """making the structure of saving directory."""
     if mip == 'Amon':
         freq = 'Monthly'
     else:
         freq = 'Daily'
 
-    data_dir = Path(f"{dataset}/{nyear}/{freq}")
+    data_dir = Path(f"{dataset_name}/{nyear}/{freq}")
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
 
-def save(dataset, key, mip, sub_cube):
+def save(dataset_name, key, mip, sub_cube):
     """Save data to a netcdf file."""
     nyear, nmonth, nday = get_cube_info(sub_cube)
     file_name = make_output_name(key, mip, nmonth, nday)
-    data_dir = _make_drs(dataset, nyear, mip)
+    data_dir = _make_drs(dataset_name, nyear, mip)
 
     # save to netcedf
     # path = f"{data_dir}/{file_name}.nc"
@@ -236,7 +250,7 @@ def main(cfg):
     tas (air_temperature)
     """
     input_metadata = cfg['input_data'].values()
-    for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
+    for dataset_name, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance, mip = get_input_cubes(metadata)
 
         logger.info("Calculation PET uisng debruin method")
@@ -270,12 +284,15 @@ def main(cfg):
                 # #regrid data baed on target cube
                 sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
 
+                # Re-index data
+                sub_cube_reindex = _reindex_data(sub_cube_regrided, target_cube)
+
                 # Save data as netcdf and ascii
-                path = save(dataset, key, mip, sub_cube_regrided)
+                path = save(dataset_name, key, mip, sub_cube_reindex)
 
                 # Store provenance
-                with ProvenanceLogger(cfg) as provenance_logger:
-                    provenance_logger.log(path, provenance)
+                # with ProvenanceLogger(cfg) as provenance_logger:
+                #     provenance_logger.log(path, provenance)
 
 
 if __name__ == '__main__':
