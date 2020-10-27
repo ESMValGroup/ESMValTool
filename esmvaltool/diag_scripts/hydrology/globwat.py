@@ -147,23 +147,22 @@ def _reindex_data(cube, target):
     """Reindex data to a global coordinates set.
 
     Globwat works with global extent."""
-    cube_ds = xr.DataArray.from_iris(cube).to_dataset()
+    array = xr.DataArray.from_iris(cube).to_dataset()
     target_ds = xr.DataArray.from_iris(target).to_dataset()
-    reindex_ds = cube_ds.reindex(
+    #TODO if
+    reindex_ds = array.reindex(
         {"lat": target_ds["lat"], "lon": target_ds["lon"]},
         method="nearest",
         tolerance=1e-2,
     )
-    return reindex_ds
+    return reindex_ds.to_array()
 
 
-def _swap_western_hemisphere(sub_cube):
+def _swap_western_hemisphere(array):
     """Set longitude values in range -180, 180.
 
     Western hemisphere longitudes should be negative.
     """
-    array = xr.DataArray.from_iris(sub_cube)
-
     # Set longitude values in range -180, 180.
     array['lon'] = (array['lon'] + 180) % 360 - 180
 
@@ -183,14 +182,15 @@ def _flip_vertically(array):
     return flipped
 
 
-def save_to_ascii(sub_cube, file_name):
+def save_to_ascii(cube, target, file_name):
     """Save data to an ascii file.
 
     Data with index [0,0] should be in -180, 90 lon/lat.
     """
 
     # Re-index data
-    array = _swap_western_hemisphere(sub_cube)
+    array = _reindex_data(cube, target)
+    array = _swap_western_hemisphere(array)
     array = _flip_vertically(array)
 
     # Set nodata values
@@ -223,9 +223,9 @@ def _make_drs(dataset_name, nyear, mip):
     return data_dir
 
 
-def save(dataset_name, key, mip, sub_cube):
+def save(dataset_name, key, mip, cube, target):
     """Save data to a netcdf file."""
-    nyear, nmonth, nday = get_cube_info(sub_cube)
+    nyear, nmonth, nday = get_cube_info(cube)
     file_name = make_output_name(key, mip, nmonth, nday)
     data_dir = _make_drs(dataset_name, nyear, mip)
 
@@ -235,7 +235,7 @@ def save(dataset_name, key, mip, sub_cube):
 
     # save to ascii #TODO fix it
     path = f"{data_dir}/{file_name}.asc"
-    save_to_ascii(sub_cube, path)
+    save_to_ascii(cube, target, path)
     return path
 
 
@@ -284,11 +284,8 @@ def main(cfg):
                 # #regrid data baed on target cube
                 sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
 
-                # Re-index data
-                sub_cube_reindex = _reindex_data(sub_cube_regrided, target_cube)
-
                 # Save data as netcdf and ascii
-                path = save(dataset_name, key, mip, sub_cube_reindex)
+                path = save(dataset_name, key, mip, sub_cube_regrided, target_cube)
 
                 # Store provenance
                 # with ProvenanceLogger(cfg) as provenance_logger:
