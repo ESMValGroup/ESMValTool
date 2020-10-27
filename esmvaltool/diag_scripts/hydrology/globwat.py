@@ -19,6 +19,7 @@ import rasterio
 from rasterio.transform import Affine
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
+from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger, group_metadata, run_diagnostic)
 
 
@@ -275,7 +276,7 @@ def main(cfg):
 
         logger.info("Calculation PET uisng arora method")
         all_vars.update(pet_arora = monthly_arora_pet(all_vars['tas']))
-
+        # scheme = cfg['regrid']
         # convert unit of pr and pet
         for var in ['pr', 'pet']:
             _convert_units(all_vars[var], mip)
@@ -290,13 +291,14 @@ def main(cfg):
                 #TODO: here the code faces memory error:
                 #"MemoryError: Unable to allocate 285. MiB for an array
                 # with shape (37324800,) and data type int64
-                # # load target grid for using in regriding function"
-                # target_cube = load_target(cfg)
+                # load target grid for using in regriding function"
+                target_cube = load_target(cfg)
+                # sub_cube_regrided = lazy_regrid(sub_cube, target_cube, scheme)
                 # #regrid data baed on target cube
-                # sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
+                sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
 
                 # Save data as netcdf and ascii
-                path = save(dataset, key, mip, sub_cube)
+                path = save(dataset, key, mip, sub_cube_regrided)
 
                 # Store provenance
                 with ProvenanceLogger(cfg) as provenance_logger:

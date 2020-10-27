@@ -13,14 +13,20 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  general: &general
+  # general: &general
     mask_landsea:
       mask_out: "sea"
-  extract: &extract
-    extract_shape:
-      shapefile: 'globwat/basin41_ll.shp'
-      method: contains
-      crop: true
+    rough_cutout:
+      extract_region:
+        start_longitude: 40
+        end_longitude: 65
+        start_latitude: 25
+        end_latitude: 40
+  # extract: &extract
+  #   extract_shape:
+  #     shapefile: 'globwat/basin41_ll.shp'
+  #     method: contains
+  #     crop: true
 
 diagnostics:  # TODO: can we use the daily reference evaporation in the model as well?
   # diagnostic_daily_GlobWat:
@@ -55,7 +61,7 @@ diagnostics:  # TODO: can we use the daily reference evaporation in the model as
           mip: Amon
           start_year: 2004
           end_year: 2004
-          preprocessor: general
+          preprocessor: rough_cutout
         tas: *var_monthly  # ERA-Interim does not have pet. Thus, we need tas, psl, rsds, and rsdt to calculate it.
         psl: *var_monthly
         rsds: *var_monthly
