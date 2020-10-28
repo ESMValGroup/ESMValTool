@@ -89,7 +89,8 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
 def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
                                    ancestors: list):
     """Wrap mapplot: absolute temperature."""
-    title_pattern = r'Weighted {metric} temperature \n{period} ($\degree$C)'
+    title_pattern = '\n'.join(
+        ['Weighted {metric} temperature', r'{period} ($\degree$C)'])
     filename_part = 'temperature_change_weighted_map'
     mapplot(temperature,
             cfg,
@@ -102,8 +103,8 @@ def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
 def visualize_and_save_difference(temperature_difference: 'xr.DataArray',
                                   cfg: dict, ancestors: list):
     """Wrap mapplot: temperature difference between weighted and unweighted."""
-    title_pattern = r'\n'.join([
-        r'Difference: weighted minus unweighted {metric} temperature',
+    title_pattern = '\n'.join([
+        'Difference: weighted minus unweighted {metric} temperature',
         r'{period} ($\degree$C)',
     ])
     filename_part = 'temperature_change_difference_map'
