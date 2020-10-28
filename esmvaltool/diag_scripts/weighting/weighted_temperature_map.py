@@ -87,8 +87,8 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
 
 def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
                                    ancestors: list):
-    """Wrapper for mapplot: absolute temperature."""
-    title_pattern = 'Weighted {metric} temperature \n{period} ($\degree$C)'
+    """Wrap mapplot: absolute temperature."""
+    title_pattern = r'Weighted {metric} temperature \n{period} ($\degree$C)'
     filename_part = 'temperature_change_weighted_map'
     mapplot(temperature,
             cfg,
@@ -100,9 +100,8 @@ def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
 
 def visualize_and_save_temperature_difference(
         temperature_difference: 'xr.DataArray', cfg: dict, ancestors: list):
-    """Wrapper for mapplot: temperature difference between weighted and
-    unweighted."""
-    title_pattern = 'Difference: weighted minus unweighted {metric} temperature\n{period} ($\degree$C)'
+    """Wrap mapplot: temperature difference between weighted and unweighted."""
+    title_pattern = r'Difference: weighted minus unweighted {metric} temperature\n{period} ($\degree$C)'
     filename_part = 'temperature_change_difference_map'
     mapplot(temperature_difference,
             cfg,
@@ -117,16 +116,17 @@ def model_aggregation(dataset, metric, weights=None):
     if isinstance(metric, int):
         return calculate_percentiles(dataset, [metric],
                                      weights).squeeze('percentile', drop=True)
-    elif metric.lower() == 'mean':
+    if metric.lower() == 'mean':
         if weights is not None:
             dataset = dataset.weighted(weights)
         return dataset.mean('model_ensemble')
-    elif metric.lower() == 'median':
+
+    if metric.lower() == 'median':
         return calculate_percentiles(dataset, [50],
                                      weights).squeeze('percentile', drop=True)
-    else:
-        errmsg = f'model_aggregation {metric} is not implemented!'
-        raise NotImplementedError(errmsg)
+
+    errmsg = f'model_aggregation {metric} is not implemented!'
+    raise NotImplementedError(errmsg)
 
 
 def main(cfg):
