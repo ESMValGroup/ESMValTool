@@ -1,0 +1,379 @@
+# ESMValTool
+# recipe_schlund20jgr_gpp_change_1pct.yml
+---
+documentation:
+
+  description: |
+    Plot emergent constraint of Wenzel et al. (2016) for global mean gross
+    primary production (GPP) in biogeochemically-coupled 1%CO2 run.
+
+  authors:
+    - schlund_manuel
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - schlund20jgr
+    - wenzel16nat
+
+  projects:
+    - 4c
+    - crescendo
+    - usmile
+
+
+# YAML anchors
+
+PROVENANCE_ANCHOR: &provenance
+  realms:
+    - land
+  themes:
+    - EC
+    - carbon
+
+DATASET_ANCHOR_CO2: &datasets_co2
+  - {dataset: CanESM2}
+  - {dataset: CESM1-BGC}
+  - {dataset: GFDL-ESM2M, start_year: 1861}
+  - {dataset: HadGEM2-ES, end_year: 2004}
+  - {dataset: MIROC-ESM}
+  - {dataset: MPI-ESM-LR}
+  - {dataset: NorESM1-ME}
+
+DATASET_ANCHOR_ESMCONTROL: &datasets_esmControl
+  - {dataset: CanESM2,    start_year: 1860, end_year: 1869}
+  - {dataset: CESM1-BGC,  start_year:   11, end_year:   20}
+  - {dataset: GFDL-ESM2M, start_year:   11, end_year:   20}
+  - {dataset: HadGEM2-ES, start_year: 1860, end_year: 1869}
+  - {dataset: MIROC-ESM,  start_year:   11, end_year:   20}
+  - {dataset: MPI-ESM-LR, start_year: 1860, end_year: 1869}
+  - {dataset: NorESM1-ME, start_year:   11, end_year:   20}
+
+DATASET_ANCHOR_1PCTBGC: &datasets_1pctBGC
+  - {dataset: CanESM2,    start_year: 1916, end_year: 1925}
+  - {dataset: CESM1-BGC,  start_year:   67, end_year:   76}
+  - {dataset: GFDL-ESM2M, start_year:   67, end_year:   76}
+  - {dataset: HadGEM2-ES, start_year: 1916, end_year: 1925}
+  - {dataset: MIROC-ESM,  start_year:   67, end_year:   76}
+  - {dataset: MPI-ESM-LR, start_year: 1916, end_year: 1925}
+  - {dataset: NorESM1-ME, start_year:   67, end_year:   76}
+
+ADDITIONAL_PLOT_KWARGS: &additional_plot_kwargs
+  CanESM2:         {color: C0, alpha: 0.5}
+  CESM1-BGC:       {color: C1, alpha: 0.5}
+  GFDL-ESM2M:      {color: C2, alpha: 0.5}
+  HadGEM2-ES:      {color: C3, alpha: 0.5}
+  MIROC-ESM:       {color: C4, alpha: 0.5}
+  MPI-ESM-LR:      {color: C5, alpha: 0.5}
+  NorESM1-ME:      {color: C6, alpha: 0.5}
+  CRU:             {color: k,  alpha: 1.0, linewidth: 2}
+  CT2019:          {color: k,  alpha: 1.0, linewidth: 2}
+  ERA-Interim:     {color: k,  alpha: 1.0, linewidth: 2}
+  LAI3g:           {color: k,  alpha: 1.0, linewidth: 2}
+  MTE:             {color: k,  alpha: 1.0, linewidth: 2}
+  Scripps-CO2-KUM: {color: k,  alpha: 1.0, linewidth: 2}
+
+LEGEND_KWARGS: &legend_kwargs
+  bbox_to_anchor: [1.05, 0.5]
+  borderaxespad: 0.0
+  loc: center left
+
+SEABORN_SETTINGS: &seaborn_settings
+  style: ticks
+  rc:
+    axes.titlepad: 15.0
+    xtick.top: true
+    ytick.right: true
+    xtick.minor.visible: true
+    ytick.minor.visible: true
+
+WEIGHTED_SAMPLES: &weighted_samples
+  area_weighted: true
+  time_weighted: true
+
+VARIABLE_SETTINGS_FEATURE_CO2: &variable_settings_feature_co2
+  project: CMIP5
+  short_name: co2s
+  mip: Amon
+  exp: [esmHistorical, esmrcp85]
+  start_year: 1860
+  end_year: 2005
+  ensemble: r1i1p1
+  derive: true
+  var_type: feature
+  additional_datasets: *datasets_co2
+
+VARIABLE_SETTINGS_PREDICTION_INPUT_CO2: &variable_settings_prediction_input_co2
+  short_name: co2s
+  mip: Amon
+  start_year: 1979
+  end_year: 2019
+  prediction_name: OBS
+  var_type: prediction_input
+  additional_datasets:
+    - {dataset: Scripps-CO2-KUM, project: OBS6, type: ground, version: 15-Nov-2019, tier: 2}
+
+VARIABLE_SETTINGS_GPP_FRACTION: &variable_settings_gpp_fraction
+  project: CMIP5
+  short_name: gpp
+  mip: Lmon
+  exp: esmFixClim1
+  ensemble: r1i1p1
+  var_type: label
+  additional_datasets: *datasets_1pctBGC
+
+VARIABLE_SETTINGS_GPP_FRACTION_REF: &variable_settings_gpp_fraction_ref
+  project: CMIP5
+  short_name: gpp
+  mip: Lmon
+  exp: esmFixClim1
+  ensemble: r1i1p1
+  ref: true
+  additional_datasets: *datasets_esmControl
+
+PREPROCESS_FRACTION_SCRIPT: &preprocess_fraction_script
+  script: mlr/preprocess.py
+  convert_units_to: '1'
+  output_attributes:
+    tag: GPP_change
+  ref_calculation: divide
+  ref_kwargs:
+    matched_by: ['dataset']
+
+PREPROCESS_FRACTION_TO_PERCENTAGE_SCRIPT: &preprocess_fraction_to_percentage_script
+  script: mlr/preprocess.py
+  convert_units_to: '%'
+  scalar_operations:
+    divide: 0.9
+    subtract: 1.0
+
+PLOT_SCRIPT: &plot_script
+  script: mlr/plot.py
+  additional_plot_kwargs_xy_plots: *additional_plot_kwargs
+  group_by_attribute: dataset
+  ignore:
+    - {var_type: prediction_input_error}
+  legend_kwargs: *legend_kwargs
+  seaborn_settings: *seaborn_settings
+
+
+preprocessors:
+
+  preproc_extract_KUM:
+    custom_order: true
+    extract_point: &extract_point
+      latitude: 19.5
+      longitude: 205.2
+      scheme: nearest
+
+  preproc_extract_KUM_annual_amplitude:
+    custom_order: true
+    extract_point: *extract_point
+    amplitude:
+      coords: year
+
+  preproc_extract_KUM_annual_mean:
+    custom_order: true
+    extract_point: *extract_point
+    annual_statistics:
+      operator: mean
+
+  preproc_total_mean_flux_var:
+    custom_order: true
+    weighting_landsea_fraction: &weighting_landsea_fraction
+      area_type: land
+      exclude: ['BNU-ESM', 'LAI3g', 'MTE']
+    mask_landsea: &mask_sea
+      mask_out: sea
+    extract_region:
+      start_latitude: -60.0
+      end_latitude: 90.0
+      start_longitude: 0.0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+    climate_statistics: &climate_statistics
+      period: full
+      operator: mean
+
+  preproc_map_flux_var:
+    custom_order: true
+    weighting_landsea_fraction: *weighting_landsea_fraction
+    regrid:
+      scheme: nearest
+      target_grid: 2x2
+    mask_landsea: *mask_sea
+    extract_region:
+      start_latitude: -60.0
+      end_latitude: 75.0
+      start_longitude: 0.0
+      end_longitude: 360
+    climate_statistics: *climate_statistics
+
+
+diagnostics:
+
+  diag_co2_cycle:
+    <<: *provenance
+    variables:
+      features:
+        <<: *variable_settings_feature_co2
+        preprocessor: preproc_extract_KUM
+        tag: CO2
+      prediction_input:
+        <<: *variable_settings_prediction_input_co2
+        preprocessor: preproc_extract_KUM
+        tag: CO2
+    scripts:
+      plot_cycle:
+        <<: *plot_script
+        plot_xy:
+          pyplot_kwargs:
+            xlabel: 'Year'
+            ylabel: 'Atmospheric CO$_2$ concentration [ppm]'
+            ylim: [270, 430]
+            title: 'KUM (19.5°N, 154.8°W)'
+        additional_plot_kwargs_xy_plots:
+          CanESM2:         {color: C0, alpha: 0.5, linewidth: 0.5}
+          CESM1-BGC:       {color: C1, alpha: 0.5, linewidth: 0.5}
+          GFDL-ESM2M:      {color: C2, alpha: 0.5, linewidth: 0.5}
+          HadGEM2-ES:      {color: C3, alpha: 0.5, linewidth: 0.5}
+          MIROC-ESM:       {color: C4, alpha: 0.5, linewidth: 0.5}
+          MPI-ESM-LR:      {color: C5, alpha: 0.5, linewidth: 0.5}
+          NorESM1-ME:      {color: C6, alpha: 0.5, linewidth: 0.5}
+          Scripps-CO2-KUM: {color: k,  alpha: 1.0, linewidth: 1}
+
+  diag_co2_amplitude_sensitivity:
+    <<: *provenance
+    variables:
+      features:
+        <<: *variable_settings_feature_co2
+        preprocessor: preproc_extract_KUM_annual_amplitude
+      features_ref:
+        <<: *variable_settings_feature_co2
+        preprocessor: preproc_extract_KUM_annual_mean
+        ref: true
+      prediction_input:
+        <<: *variable_settings_prediction_input_co2
+        preprocessor: preproc_extract_KUM_annual_amplitude
+      prediction_input_ref:
+        <<: *variable_settings_prediction_input_co2
+        preprocessor: preproc_extract_KUM_annual_mean
+        ref: true
+    scripts:
+      preprocess:
+        script: mlr/preprocess.py
+        ref_calculation: trend
+        ref_kwargs:
+          matched_by: ['dataset']
+          collapse_over: 'time'
+        output_attributes:
+          tag: CO2_AMP_SENS
+        convert_units_to: 1
+      preprocess_for_plot:
+        script: mlr/preprocess.py
+        output_attributes:
+          tag: CO2_AMP_SENS
+        ref_calculation: merge
+        ref_kwargs:
+          matched_by: ['dataset']
+      plot_co2_amplitudes:
+        <<: *plot_script
+        ancestors: ['diag_co2_amplitude_sensitivity/preprocess_for_plot']
+        plot_xy:
+          reg_line: true
+          pyplot_kwargs:
+            xlabel: 'Atmospheric CO$_2$ concentration [ppm]'
+            ylabel: 'Amplitude of seasonal CO$_2$ cycle [ppm]'
+            ylim: [0, 20]
+            title: 'KUM (19.5°N, 154.8°W)'
+          x_coord: mole_fraction_of_carbon_dioxide_in_air
+
+  diag_gpp_fraction_mean:
+    <<: *provenance
+    variables:
+      ref:
+        <<: *variable_settings_gpp_fraction_ref
+        preprocessor: preproc_total_mean_flux_var
+      label:
+        <<: *variable_settings_gpp_fraction
+        preprocessor: preproc_total_mean_flux_var
+    scripts:
+      preprocess_fraction:
+        <<: *preprocess_fraction_script
+      preprocess:
+        <<: *preprocess_fraction_to_percentage_script
+        ancestors: ['diag_gpp_fraction_mean/preprocess_fraction']
+
+  diag_gpp_fraction_map:
+    <<: *provenance
+    variables:
+      ref:
+        <<: *variable_settings_gpp_fraction_ref
+        preprocessor: preproc_map_flux_var
+      label:
+        <<: *variable_settings_gpp_fraction
+        preprocessor: preproc_map_flux_var
+    scripts:
+      preprocess_fraction:
+        <<: *preprocess_fraction_script
+        mask:
+          masked_less:
+            value: 6.342e-9
+      preprocess:
+        <<: *preprocess_fraction_to_percentage_script
+        ancestors: ['diag_gpp_fraction_map/preprocess_fraction']
+        output_attributes:
+          var_type: label
+      preprocess_for_rescaling:
+        <<: *preprocess_fraction_to_percentage_script
+        ancestors: ['diag_gpp_fraction_map/preprocess_fraction']
+        output_attributes:
+          var_type: label_to_rescale
+      plot:
+        <<: *plot_script
+        ancestors: ['diag_gpp_fraction_map/preprocess']
+        plot_map:
+          plot_kwargs:
+            cbar_center: 0
+            cbar_label: 'GPP change (2xCO2 vs. 1xCO2) [%]'
+            cbar_ticks: [-50, 0, 50, 100, 150, 200, 250, 300]
+            cmap: bwr
+            vmin: -50
+            vmax: 300
+
+  diag_rescale_gpp_fraction_with_emergent_constraint:
+    <<: *provenance
+    scripts:
+      rescale:
+        script: mlr/rescale_with_emergent_constraint.py
+        ancestors: [
+          'diag_co2_amplitude_sensitivity/preprocess',
+          'diag_gpp_fraction_mean/preprocess',
+          'diag_gpp_fraction_map/preprocess_for_rescaling',
+        ]
+        legend_kwargs: *legend_kwargs
+        plot_emergent_relationship:
+          pyplot_kwargs:
+            xlim: [-0.01, 0.065]
+            ylim: [5, 75]
+            xlabel: 'Sensitivity of CO$_2$ amplitude at KUM [ppm ppm$^{-1}$]'
+            ylabel: 'GPP change (doubling of CO$_2$) [%]'
+            title: 'Biogeochemically-coupled simulation with CO$_2$ increase of 1% per year'
+        plot_kwargs_for_groups: *additional_plot_kwargs
+        seaborn_settings: *seaborn_settings
+
+  diag_mmm_mean:
+    <<: *provenance
+    description: Use simple multi-model mean to predict scalar target variable.
+    scripts:
+      mlr:
+        script: mlr/main.py
+        ancestors: ['diag_gpp_fraction_mean/preprocess']
+        mlr_model_name: MMM
+        mlr_model_type: mmm
+        prediction_name: OBS
+        mmm_error_type: loo
+        seaborn_settings: *seaborn_settings
+        weighted_samples: *weighted_samples

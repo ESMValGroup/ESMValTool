@@ -33,11 +33,16 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            io, plot, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    plot,
+    run_diagnostic,
+    select_metadata,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -150,11 +155,12 @@ def _save_fig(cfg, basename, legend=None):
 def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
     cubes = iris.cube.CubeList()
+    input_data = list(cfg['input_data'].values())
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
         cube = cube.extract(
-            ih.iris_project_constraint(['OBS'], cfg, negate=True))
+            ih.iris_project_constraint(['OBS'], input_data, negate=True))
         cubes.append(cube)
     cubes = ih.intersect_dataset_coordinates(cubes)
     return (cubes[0], cubes[1], cubes[2])

@@ -1,11 +1,11 @@
 # Conda build recipe
 ---
 
-# Build commmand:
+# Build command:
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.0.0" %}
+{% set version = "2.1.0" %}
 
 package:
   name: esmvaltool
@@ -51,6 +51,8 @@ test:
     - nclcodestyle --help
     - esmvaltool colortables --help
     - test_recipe --help
+    - ncl -V
+    - cdo -V
 
 outputs:
 
@@ -66,6 +68,7 @@ outputs:
       run:
         - cartopy
         - cdo>=1.9.7
+        - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
         - cdsapi
         - cf-units
         - cftime
@@ -74,13 +77,15 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.0.0,<2.1  # in esmvalgroup channel
+        - esmvalcore>=2.1.0,<2.2  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=2.2.1
+        - iris>=2.2.1,<3
         - jinja2
         - joblib
+        - lime
         - matplotlib>=3
+        - natsort
         - nc-time-axis
         - netCDF4
         - numpy
@@ -90,12 +95,14 @@ outputs:
         - python>=3.6
         - python-cdo
         - pyyaml
+        - scikit-image
         - scikit-learn
         - seaborn
         - seawater
         - shapely
         - xarray>=0.12.0
         - xesmf
+        - xgboost
         - xlsxwriter
 
   - name: esmvaltool-julia

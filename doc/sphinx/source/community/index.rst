@@ -7,7 +7,7 @@ Contributing to the community
    :maxdepth: 1
 
 		Introduction <introduction>
-		Release Strategy <release_strategy>
+		Release schedule and procedure <release_strategy>
 		Contributing a new diagnostic or recipe <diagnostic>
 		Porting a namelist (recipe) or diagnostic from version 1 to version 2 <porting>
     GitHub workflow <repository>

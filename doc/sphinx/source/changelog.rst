@@ -1,5 +1,61 @@
 Changelog
 =========
+
+v2.1.0
+------
+
+This release includes
+
+Diagnostics
+~~~~~~~~~~~
+
+-  Add extra steps to diagnostic to make output of hydrology/recipe_lisflood.yml usable by the LISFLOOD model (`#1737 <https://github.com/ESMValGroup/ESMValTool/pull/1737>`__) `Jaro Camphuijsen <https://github.com/JaroCamphuijsen>`__
+-  Recipe to reproduce the 2014 KNMI Climate Scenarios (kcs). (`#1667 <https://github.com/ESMValGroup/ESMValTool/pull/1667>`__) `Peter Kalverla <https://github.com/Peter9192>`__
+-  Implement the climwip weighting scheme in a recipe and diagnostic (`#1648 <https://github.com/ESMValGroup/ESMValTool/pull/1648>`__) `Jaro Camphuijsen <https://github.com/JaroCamphuijsen>`__
+-  Remove unreviewed autoassess recipes (`#1840 <https://github.com/ESMValGroup/ESMValTool/pull/1840>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Changes in shared scripts for Schlund et al., JGR: Biogeosciences, 2020 (`#1845 <https://github.com/ESMValGroup/ESMValTool/pull/1845>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Updated derivation test recipe (`#1790 <https://github.com/ESMValGroup/ESMValTool/pull/1790>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Support for multiple model occurrence in perf main (`#1649 <https://github.com/ESMValGroup/ESMValTool/pull/1649>`__) `Bettina Gier <https://github.com/bettina-gier>`__
+-  Add recipe and diagnostics for Schlund et al., JGR: Biogeosciences, 2020 (`#1860 <https://github.com/ESMValGroup/ESMValTool/pull/1860>`__) `Manuel Schlund <https://github.com/schlunma>`__
+-  Adjust recipe_extract_shape.yml to recent changes in the example diagnostic.py (`#1880 <https://github.com/ESMValGroup/ESMValTool/pull/1880>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Add pip installation instructions (`#1783 <https://github.com/ESMValGroup/ESMValTool/pull/1783>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add installation instruction for R and Julia dependencies tot pip install (`#1787 <https://github.com/ESMValGroup/ESMValTool/pull/1787>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Avoid autodocsumm 0.2.0 and update documentation build dependencies (`#1794 <https://github.com/ESMValGroup/ESMValTool/pull/1794>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add more information on working on cluster attached to ESGF node (`#1821 <https://github.com/ESMValGroup/ESMValTool/pull/1821>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add release strategy to community documentation (`#1809 <https://github.com/ESMValGroup/ESMValTool/pull/1809>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Update esmvaltool run command everywhere in documentation (`#1820 <https://github.com/ESMValGroup/ESMValTool/pull/1820>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Add more info on documenting a recipe (`#1795 <https://github.com/ESMValGroup/ESMValTool/pull/1795>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Improve the Python example diagnostic and documentation (`#1827 <https://github.com/ESMValGroup/ESMValTool/pull/1827>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Improve description of how to use draft_release_notes.py (`#1848 <https://github.com/ESMValGroup/ESMValTool/pull/1848>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Increase version to 2.1.0 and add release notes (`#1868 <https://github.com/ESMValGroup/ESMValTool/pull/1868>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Update changelog for release 2.1 (`#1886 <https://github.com/ESMValGroup/ESMValTool/pull/1886>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
+Improvements
+~~~~~~~~~~~~
+
+-  Fix R installation in WSL (`#1789 <https://github.com/ESMValGroup/ESMValTool/pull/1789>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Add pre-commit for linting/formatting (`#1796 <https://github.com/ESMValGroup/ESMValTool/pull/1796>`__) `Stef Smeets <https://github.com/stefsmeets>`__
+-  Speed up tests on CircleCI and use pytest to run them (`#1804 <https://github.com/ESMValGroup/ESMValTool/pull/1804>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Move pre-commit excludes to top-level and correct order of lintr and styler (`#1805 <https://github.com/ESMValGroup/ESMValTool/pull/1805>`__) `Stef Smeets <https://github.com/stefsmeets>`__
+-  Remove isort setup to fix formatting conflict with yapf (`#1815 <https://github.com/ESMValGroup/ESMValTool/pull/1815>`__) `Stef Smeets <https://github.com/stefsmeets>`__
+-  GitHub Actions (`#1806 <https://github.com/ESMValGroup/ESMValTool/pull/1806>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Fix yapf-isort import formatting conflict (`#1822 <https://github.com/ESMValGroup/ESMValTool/pull/1822>`__) `Stef Smeets <https://github.com/stefsmeets>`__
+-  Replace vmprof with vprof as the default profiler (`#1829 <https://github.com/ESMValGroup/ESMValTool/pull/1829>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Update ESMValCore v2.1.0 requirement (`#1839 <https://github.com/ESMValGroup/ESMValTool/pull/1839>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Pin iris to version 2 (`#1881 <https://github.com/ESMValGroup/ESMValTool/pull/1881>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Pin eccodes to not use eccodes=2.19.0 for cdo to work fine (`#1869 <https://github.com/ESMValGroup/ESMValTool/pull/1869>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Increase version to 2.1.0 and add release notes (`#1868 <https://github.com/ESMValGroup/ESMValTool/pull/1868>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Github Actions Build Packages and Deploy tests (conda and PyPi) (`#1858 <https://github.com/ESMValGroup/ESMValTool/pull/1858>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Added CMORizer for Scripps-CO2-KUM (`#1857 <https://github.com/ESMValGroup/ESMValTool/pull/1857>`__) `Manuel Schlund <https://github.com/schlunma>`__
+
 v2.0.0
 ------
 
