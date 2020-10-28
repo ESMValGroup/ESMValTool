@@ -10,14 +10,15 @@ from pathlib import Path
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
+import xarray as xr
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-
 from climwip import (
     get_diagnostic_filename,
     get_plot_filename,
     log_provenance,
     read_model_data,
 )
+
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.weighting.plot_utilities import (
     calculate_percentiles,
@@ -98,10 +99,13 @@ def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
             cmap='Reds')
 
 
-def visualize_and_save_temperature_difference(
-        temperature_difference: 'xr.DataArray', cfg: dict, ancestors: list):
+def visualize_and_save_difference(temperature_difference: 'xr.DataArray',
+                                  cfg: dict, ancestors: list):
     """Wrap mapplot: temperature difference between weighted and unweighted."""
-    title_pattern = r'Difference: weighted minus unweighted {metric} temperature\n{period} ($\degree$C)'
+    title_pattern = r'\n'.join([
+        r'Difference: weighted minus unweighted {metric} temperature',
+        r'{period} ($\degree$C)',
+    ])
     filename_part = 'temperature_change_difference_map'
     mapplot(temperature_difference,
             cfg,
@@ -156,7 +160,7 @@ def main(cfg):
         model_data_files,
     )
 
-    visualize_and_save_temperature_difference(
+    visualize_and_save_difference(
         weighted_mean - unweighted_mean,
         cfg,
         model_data_files,
