@@ -50,18 +50,18 @@ albedolandcover_parameters: &albedolandcover_parameters
 
 CMIP6_landcover: &CMIP6_landcover
   additional_datasets:
-#    - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: historical,
-#       ensemble: r1i1p1f3}  # has no cropFrac
+    # - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: historical,
+    #    ensemble: r1i1p1f3}  # has no cropFrac
     - {dataset: AWI-ESM-1-1-LR, project: CMIP6, grid: gn, exp: historical,
        ensemble: r1i1p1f1}
-#    - {dataset: EC-Earth3-Veg, project: CMIP6, grid: gr, exp: historical,
-#       ensemble: r1i1p1f1}  # This ens has no shrubFrac available
-#    - {dataset: EC-Earth3-Veg-LR, project: CMIP6, grid: gr, exp: historical,
-#       ensemble: r1i1p1f1}  # This ens has no shrubFrac available
-#    - {dataset: GFDL-CM4, project: CMIP6, grid: gr1, exp: historical,
-#       ensemble: r1i1p1f1}  # no shrubFrac available
-#    - {dataset: MIROC-ES2L, project: CMIP6, grid: gn, exp: historical,
-#       ensemble: r1i1p1f2}   # MIROC-ES2L has no treeFrac available
+    # - {dataset: EC-Earth3-Veg, project: CMIP6, grid: gr, exp: historical,
+    #    ensemble: r1i1p1f1}  # This ens has no shrubFrac available
+    # - {dataset: EC-Earth3-Veg-LR, project: CMIP6, grid: gr, exp: historical,
+    #    ensemble: r1i1p1f1}  # This ens has no shrubFrac available
+    # - {dataset: GFDL-CM4, project: CMIP6, grid: gr1, exp: historical,
+    #    ensemble: r1i1p1f1}  # no shrubFrac available
+    # - {dataset: MIROC-ES2L, project: CMIP6, grid: gn, exp: historical,
+    #    ensemble: r1i1p1f2}   # MIROC-ES2L has no treeFrac available
     - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, grid: gn, exp: historical,
        ensemble: r1i1p1f1}
     - {dataset: MPI-ESM1-2-HR, project: CMIP6, grid: gn, exp: historical,
