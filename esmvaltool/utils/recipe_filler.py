@@ -9,6 +9,7 @@ diagnostics:
   diagnostic:
     variables:
       ta:
+        mip: Amon
         start_year: 1850
         end_year: 1900
 
@@ -290,7 +291,7 @@ def check_config_file(user_config_file):
     if "drs" not in user_config_file:
         logger.error("Config file missing drs section.")
         do_exit = True
-    for proj in ["CMIP5", "CMIP6"]:
+    for proj in cmip_eras:
         if proj not in user_config_file["rootpath"].keys():
             logger.error("Config file missing rootpath for %s" % proj)
             do_exit = True
@@ -302,21 +303,17 @@ def check_config_file(user_config_file):
         sys.exit(1)
 
 
-def parse_recipe_to_dicts(recipe):
+def parse_recipe_to_dicts(yamlrecipe):
     """Parse a recipe's variables into a dictionary of dictionairies."""
     output_dicts = {}
-
-    with open(recipe, 'r') as yamlfile:
-        yamlrecipe = yaml.safe_load(yamlfile)
-        check_recipe(yamlrecipe)
-        for diag in yamlrecipe['diagnostics']:
-            for variable, var_dict in yamlrecipe['diagnostics'][diag][
-                    'variables'].items():
-                new_dict = base_dict.copy()
-                for var_key, var_value in var_dict.items():
-                    if var_key in new_dict:
-                        new_dict[var_key] = var_value
-                output_dicts[(diag, variable)] = new_dict
+    for diag in yamlrecipe['diagnostics']:
+        for variable, var_dict in yamlrecipe['diagnostics'][diag][
+                'variables'].items():
+            new_dict = base_dict.copy()
+            for var_key, var_value in var_dict.items():
+                if var_key in new_dict:
+                    new_dict[var_key] = var_value
+            output_dicts[(diag, variable)] = new_dict
 
     return output_dicts
 
@@ -343,17 +340,17 @@ def get_args():
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('recipe', help='Path or name of the yaml recipe file')
+    parser.add_argument('recipe', help='Path/name of yaml pilot recipe file')
     parser.add_argument('-c',
                         '--config-file',
                         default=os.path.join(os.environ["HOME"], '.esmvaltool',
                                              'config-user.yml'),
-                        help='Config file')
+                        help='User configuration file')
 
     parser.add_argument('-o',
                         '--output',
-                       default=os.path.join(os.getcwd(),
-                                            'recipe_autofilled.yml'),
+                        default=os.path.join(os.getcwd(),
+                                             'recipe_autofilled.yml'),
                         help='Output recipe, default recipe_autofilled.yml')
 
     args = parser.parse_args()
@@ -384,11 +381,14 @@ def run():
     logger.info("Writing filled out recipe to: %s" % output_recipe)
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
-    # perform checks
+    # check config user file
     check_config_file(config_user)
 
-    # Convert the recipe into a yaml dict.
-    recipe_dicts = parse_recipe_to_dicts(input_recipe)
+    # parse recipe
+    with open(input_recipe, 'r') as yamlfile:
+        yamlrecipe = yaml.safe_load(yamlfile)
+        check_recipe(yamlrecipe)
+        recipe_dicts = parse_recipe_to_dicts(yamlrecipe)
 
     # Create a list of additional_datasets for each diagnostic/variable.
     additional_datasets = {}
