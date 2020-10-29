@@ -2,6 +2,7 @@
 import fnmatch
 import logging
 import os
+from pprint import pformat
 
 import iris
 import numpy as np
@@ -26,16 +27,17 @@ def _has_necessary_attributes(metadata,
                               only_var_attrs=False,
                               log_level='debug'):
     """Check if dataset metadata has necessary attributes."""
+    output = True
     keys_to_check = (VAR_KEYS +
                      ['short_name'] if only_var_attrs else NECESSARY_KEYS)
     for dataset in metadata:
         for key in keys_to_check:
             if key not in dataset:
-                getattr(logger, log_level)("Dataset '%s' does not have "
-                                           "necessary attribute '%s'", dataset,
-                                           key)
-                return False
-    return True
+                getattr(logger, log_level)(
+                    "Dataset '%s' does not have necessary attribute '%s'",
+                    dataset, key)
+                output = False
+    return output
 
 
 def get_all_ancestor_files(cfg, pattern=None):
@@ -79,20 +81,20 @@ def get_ancestor_file(cfg, pattern):
 
     Returns
     -------
-    str or None
-        Full path to the file or ``None`` if file not found.
+    str
+        Full path to the file.
+
+    Raises
+    ------
+    ValueError
+        No or more than one file found.
 
     """
     files = get_all_ancestor_files(cfg, pattern=pattern)
-    if not files:
-        logger.warning(
-            "No file with requested name %s found in ancestor "
-            "directories", pattern)
-        return None
     if len(files) != 1:
-        logger.warning(
-            "Multiple files with requested pattern %s found (%s), returning "
-            "first appearance", pattern, files)
+        raise ValueError(
+            f"Expected to find exactly one ancestor file for pattern "
+            f"'{pattern}', got {len(files):d}:\n{pformat(files)}")
     return files[0]
 
 
@@ -113,6 +115,11 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
     list of dict
         List of dataset metadata.
 
+    Raises
+    ------
+    ValueError
+        Necessary attributes are missing.
+
     """
     if root is None:
         all_files = get_all_ancestor_files(cfg, pattern)
@@ -131,16 +138,15 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         cube = iris.load_cube(path)
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
-            dataset_info[var_key] = getattr(cube, var_key)
+            dataset_info[var_key] = str(getattr(cube, var_key))
         dataset_info['short_name'] = cube.var_name
         dataset_info['standard_name'] = cube.standard_name
         dataset_info['filename'] = path
+        metadata.append(dataset_info)
 
-        # Check if necessary keys are available
-        if _has_necessary_attributes([dataset_info], log_level='warning'):
-            metadata.append(dataset_info)
-        else:
-            logger.warning("Skipping '%s'", path)
+    # Check if necessary keys are available
+    if not _has_necessary_attributes(metadata, log_level='error'):
+        raise ValueError("Necessary attributes are missing for metadata")
 
     return metadata
 
@@ -155,11 +161,15 @@ def metadata_to_netcdf(cube, metadata):
     metadata : dict
         Metadata for the cube.
 
+    Raises
+    ------
+    ValueError
+        Saving of cube not possible because of invalid metadata.
+
     """
     metadata = dict(metadata)
-    if not _has_necessary_attributes([metadata], log_level='warning'):
-        logger.warning("Cannot save cube\n%s", cube)
-        return
+    if not _has_necessary_attributes([metadata], log_level='error'):
+        raise ValueError(f"Cannot save cube {cube.summary(shorten=True)}")
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
     cube.var_name = metadata.pop('short_name')
@@ -169,7 +179,10 @@ def metadata_to_netcdf(cube, metadata):
         try:
             cube.standard_name = standard_name
         except ValueError:
-            logger.debug("Got invalid standard_name '%s'", standard_name)
+            logger.warning(
+                "Got invalid standard_name '%s', setting it to 'None'",
+                standard_name)
+            cube.attributes['invalid_standard_name'] = standard_name
     for (attr, val) in metadata.items():
         if isinstance(val, bool):
             metadata[attr] = str(val)
@@ -225,15 +238,20 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     attributes : dict, optional
         Additional attributes for the cube.
 
+    Raises
+    ------
+    ValueError
+        Empty list of cubes given or necessary variable attributes are missing.
+
     """
     var_attrs = dict(var_attrs)
     if not cubes:
-        logger.warning("Cannot save 1D data, no cubes given")
-        return
+        raise ValueError("Cannot save 1D data, no cubes given")
     if not _has_necessary_attributes(
-            [var_attrs], only_var_attrs=True, log_level='warning'):
-        logger.warning("Cannot write file '%s'", path)
-        return
+            [var_attrs], only_var_attrs=True, log_level='error'):
+        raise ValueError(
+            f"Cannot save 1D data to {path} because necessary variable "
+            f"attributes are missing")
     datasets = list(cubes.keys())
     cube_list = iris.cube.CubeList(list(cubes.values()))
     cube_list = unify_1d_cubes(cube_list, coord_name)
@@ -276,15 +294,20 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     attributes : dict, optional
         Additional attributes for the cube.
 
+    Raises
+    ------
+    ValueError
+        No data given or necessary variable attributes are missing.
+
     """
     var_attrs = dict(var_attrs)
     if not data:
-        logger.warning("Cannot save scalar data, no data given")
-        return
+        raise ValueError("Cannot save scalar data, no data given")
     if not _has_necessary_attributes(
-            [var_attrs], only_var_attrs=True, log_level='warning'):
-        logger.warning("Cannot write file '%s'", path)
-        return
+            [var_attrs], only_var_attrs=True, log_level='error'):
+        raise ValueError(
+            f"Cannot save scalar data to {path} because necessary variable "
+            f"attributes are missing")
     dataset_coord = iris.coords.AuxCoord(list(data), long_name='dataset')
     if attributes is None:
         attributes = {}
