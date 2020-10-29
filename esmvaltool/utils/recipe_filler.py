@@ -163,8 +163,16 @@ def list_all_files(file_dict, cmip_era):
     """List all files that match the dataset dictionary."""
     mip = file_dict['mip']
     short_name = file_dict['short_name']
-    frequency = CMOR_TABLES[cmip_era].get_variable(mip, short_name).frequency
-    realms = CMOR_TABLES[cmip_era].get_variable(mip, short_name).modeling_realm
+    try:
+        frequency = CMOR_TABLES[cmip_era].get_variable(mip,
+                                                       short_name).frequency
+        realms = CMOR_TABLES[cmip_era].get_variable(mip,
+                                                    short_name).modeling_realm
+    except AttributeError:
+        logger.warning(f"Could not find %s CMOR table "
+                       f"for variable %s with mip %s" %
+                       (cmip_era, short_name, mip))
+        return []
     file_dict['frequency'] = frequency
 
     basepaths = determine_basepath(cmip_era)
@@ -397,10 +405,15 @@ def run():
                     variable, diag)
         new_datasets = []
         recipe_dict['short_name'] = variable
+
+        # filter on user request
         if isinstance(recipe_dict['dataset'], list):
             datasets = recipe_dict['dataset']
         else:
             datasets = [recipe_dict['dataset']]
+        if recipe_dict['project'] != "*":
+            cmip_eras = [recipe_dict['project']]
+
         logger.info("Seeking data for datasets: %s", str(datasets))
         for dataset in datasets:
             recipe_dict['dataset'] = dataset
