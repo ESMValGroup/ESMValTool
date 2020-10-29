@@ -20,8 +20,31 @@ documentation:
     - esmval
     - trr181
 
-datasets:
+HADGEM: &hadgem_only
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
+
+OTHER: &other_data
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
+
+ALL: &all_data
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
 
 preprocessors:
   regrid_preproc:
@@ -38,93 +61,93 @@ diagnostics:
       hfls:
         mip: Amon
         cmor_name: hfls
-        additional_datasets: &other_data
-          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
-          - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
-          - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
-          - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
-          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
-          - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
-          - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
-          - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
-          - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
+        additional_datasets: *all_data
       hfss:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       pr:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       ps:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       prsn:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       rlds:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       rlus:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       rlut:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       rsds:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       rsus:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       rsdt:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       rsut:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       ts:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       hus:
         mip: Amon
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       tas:
         mip: day
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       uas:
         mip: day
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       vas_1:
         mip: day
         short_name: vas
         preprocessor: regrid_preproc
+        additional_datasets: *hadgem_only
       vas_2: &variable_settings 
         mip: day
         short_name: vas
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       ta:
         mip: day
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       ua_1: &variable_settings_ua
         mip: day
         short_name: ua
         preprocessor: regrid_preproc
+        additional_datasets: *hadgem_only
       ua_2:
         mip: day
         short_name: ua
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       va_1: &variable_settings_va
         mip: day
         short_name: va
         preprocessor: regrid_preproc
+        additional_datasets: *hadgem_only
       va_2:
         mip: day
         short_name: va
-        additional_datasets: *other_data
+        additional_datasets: *all_data
       wap:
         mip: day
-        additional_datasets: *other_data
-      sftlf:
+        additional_datasets: *all_data
+      sftlf_hadgem:
         mip: fx
+        short_name: sftlf
+        experiment: piControl
+        additional_datasets: *hadgem_only
+      sftlf_other:
+        mip: fx
+        short_name: sftlf
         additional_datasets: *other_data
     scripts:
       Thermodyn_Diag:

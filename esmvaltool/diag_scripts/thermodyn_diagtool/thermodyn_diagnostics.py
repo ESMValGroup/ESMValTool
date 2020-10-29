@@ -395,9 +395,15 @@ def main(cfg):
              latent_all[i_m, 1]) = compute_water_mass_budget(
                  cfg, wdir_up, pdir, model, wdir, input_data, flags, aux_file)
         if lsm == 'True':
-            sftlf_fx = e.select_metadata(input_data,
-                                         short_name='sftlf',
-                                         dataset=model)[0]['filename']
+            sftlf_files = e.select_metadata(input_data, short_name='sftlf',
+                                            dataset=model)
+            if model == 'HadGEM3-GC31-LL':
+                sftlf_files = e.select_metadata(sftlf_files,
+                                                variable_group='sftlf_hadgem')
+            else:
+                sftlf_files = e.select_metadata(sftlf_files,
+                                                variable_group='sftlf_other')
+            sftlf_fx = sftlf_files[0]['filename']
             logger.info('Computing energy budgets over land and oceans\n')
             toab_oc_all[i_m], toab_la_all[i_m] = compute_land_ocean(
                 model, wdir, eb_file[0], sftlf_fx, 'toab')
