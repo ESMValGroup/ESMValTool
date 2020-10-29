@@ -26,6 +26,7 @@ build:
 
 requirements:
   run:
+    - python
     - esmvaltool-julia
     - esmvaltool-ncl
     - esmvaltool-python
