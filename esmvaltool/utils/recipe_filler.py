@@ -267,6 +267,9 @@ def check_recipe(recipe_dict):
             logger.error("Diagnostic %s missing variables.", diag_name)
             do_exit = True
         for var_name, var_pars in diag["variables"].items():
+            if "mip" not in var_pars:
+                logger.error("Variable %s missing mip.", var_name)
+                do_exit = True
             if "start_year" not in var_pars:
                 logger.error("Variable %s missing start_year.", var_name)
                 do_exit = True
@@ -275,6 +278,27 @@ def check_recipe(recipe_dict):
                 do_exit = True
     if do_exit:
         logger.error("Please fix the issues in recipe and rerun. Exiting.")
+        sys.exit(1)
+
+
+def check_config_file(user_config_file):
+    """Perform a quick recipe check for mandatory fields."""
+    do_exit = False
+    if "rootpath" not in user_config_file:
+        logger.error("Config file missing rootpath section.")
+        do_exit = True
+    if "drs" not in user_config_file:
+        logger.error("Config file missing drs section.")
+        do_exit = True
+    for proj in ["CMIP5", "CMIP6"]:
+        if proj not in user_config_file["rootpath"].keys():
+            logger.error("Config file missing rootpath for %s" % proj)
+            do_exit = True
+        if proj not in user_config_file["drs"].keys():
+            logger.error("Config file missing drs for %s" % proj)
+            do_exit = True
+    if do_exit:
+        logger.error("Please fix issues in config file and rerun. Exiting.")
         sys.exit(1)
 
 
@@ -326,7 +350,11 @@ def get_args():
                                              'config-user.yml'),
                         help='Config file')
 
-    parser.add_argument('-o', '--output', help='Output recipe')
+    parser.add_argument('-o',
+                        '--output',
+                       default=os.path.join(os.getcwd(),
+                                            'recipe_autofilled.yml'),
+                        help='Output recipe, default recipe_autofilled.yml')
 
     args = parser.parse_args()
     return args
@@ -339,7 +367,7 @@ def run():
     input_recipe = args.recipe
     output_recipe = args.output
 
-    # read the file in
+    # read the config file
     config_user = read_config_user_file(args.config_file,
                                         'recipe_filler',
                                         options={})
@@ -350,10 +378,14 @@ def run():
         os.makedirs(run_dir)
     log_files = configure_logging(output_dir=run_dir,
                                   console_log_level=config_user['log_level'])
+    logger.info(HEADER)
+    logger.info("Using user configuration file: %s" % args.config_file)
+    logger.info("Using pilot recipe file: %s" % input_recipe)
+    logger.info("Writing filled out recipe to: %s" % output_recipe)
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
-    # print header
-    logger.info(HEADER)
+    # perform checks
+    check_config_file(config_user)
 
     # Convert the recipe into a yaml dict.
     recipe_dicts = parse_recipe_to_dicts(input_recipe)
