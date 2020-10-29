@@ -131,6 +131,7 @@ outputs:
     requirements:
       run:
         - cdo>=1.9.7
+        - compilers
         - esmvaltool-python
         - nco
         - r-base>=3.5
