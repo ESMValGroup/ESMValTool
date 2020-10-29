@@ -10,7 +10,6 @@ from pathlib import Path
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
-import xarray as xr
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 from climwip import (
     get_diagnostic_filename,
@@ -86,11 +85,10 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
     log_provenance(title, filename_data, cfg, ancestors)
 
 
-def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
-                                   ancestors: list):
+def visualize_and_save_temperature(temperature, cfg: dict, ancestors: list):
     """Wrap mapplot: absolute temperature."""
-    title_pattern = '\n'.join(
-        ['Weighted {metric} temperature', r'{period} ($\degree$C)'])
+    title_pattern = ('Weighted {metric} temperature\n'
+                     r'{period} ($\degree$C)')
     filename_part = 'temperature_change_weighted_map'
     mapplot(temperature,
             cfg,
@@ -100,8 +98,8 @@ def visualize_and_save_temperature(temperature: 'xr.DataArray', cfg: dict,
             cmap='Reds')
 
 
-def visualize_and_save_difference(temperature_difference: 'xr.DataArray',
-                                  cfg: dict, ancestors: list):
+def visualize_and_save_difference(temperature_difference, cfg: dict,
+                                  ancestors: list):
     """Wrap mapplot: temperature difference between weighted and unweighted."""
     title_pattern = '\n'.join([
         'Difference: weighted minus unweighted {metric} temperature',
