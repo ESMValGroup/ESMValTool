@@ -23,8 +23,19 @@ documentation:
 HADGEM: &hadgem_only
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
 
-HADGEM: &hadgem_sftlf
+SFTLF_PIC: &pic_sftlf
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2001}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+
+SFTLF_OTHER: &other_sftlf
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
 
 OTHER: &other_data
   - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
@@ -143,15 +154,14 @@ diagnostics:
       wap:
         mip: day
         additional_datasets: *all_data
-      sftlf_hadgem:
+      sftlf_piC:
         mip: fx
         short_name: sftlf
-        experiment: piControl
-        additional_datasets: *hadgem_sftlf
+        additional_datasets: *pic_sftlf
       sftlf_other:
         mip: fx
         short_name: sftlf
-        additional_datasets: *other_data
+        additional_datasets: *other_sftlf
     scripts:
       Thermodyn_Diag:
         script: thermodyn_diagtool/thermodyn_diagnostics.py
