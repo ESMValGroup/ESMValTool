@@ -23,6 +23,9 @@ documentation:
 HADGEM: &hadgem_only
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
 
+HADGEM: &hadgem_sftlf
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2001}
+
 OTHER: &other_data
   - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
   - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
@@ -144,7 +147,7 @@ diagnostics:
         mip: fx
         short_name: sftlf
         experiment: piControl
-        additional_datasets: *hadgem_only
+        additional_datasets: *hadgem_sftlf
       sftlf_other:
         mip: fx
         short_name: sftlf
