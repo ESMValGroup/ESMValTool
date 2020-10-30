@@ -1,0 +1,45 @@
+###############################################################################
+# User's configuration file for the ESMValTool
+###############################################################################
+---
+
+# Diagnostics create plots? [true]/false
+write_plots: true
+# Diagnositcs write NetCDF files? [true]/false
+write_netcdf: true
+# Set the console log level debug, [info], warning, error
+log_level: info
+# verbosity is deprecated and will be removed in the future
+# verbosity: 1
+# Exit on warning? true/[false]
+exit_on_warning: false
+# Plot file format? [ps]/pdf/png/eps/epsi
+output_file_type: pdf
+# Destination directory
+output_dir: ./Ophelie
+# Use netCDF compression true/[false]
+compress_netcdf: false
+# Save intermediary cubes in the preprocessor true/[false]
+save_intermediary_cubes: false
+# Remove the preproc dir if all fine
+remove_preproc_dir: false
+max_parallel_tasks: 1
+
+# rpk added ccilst
+rootpath:
+  # Rootpath to CMIP5 data
+  CMIP5: /badc/cmip5/data/cmip5/output1
+  CMIP6: /badc/cmip6/data/CMIP6
+  OBS: /group_workspaces/jasmin4/esmeval/obsdata-v2
+  OBS6: /group_workspaces/jasmin4/esmeval/obsdata-v2
+  obs4mips: /group_workspaces/jasmin4/esmeval/obsdata-v2
+  ana4mips: /group_workspaces/jasmin4/esmeval/obsdata-v2
+  default: /home/users/valeriu/esmvaltool_cmip6_autoassess/permafrost_data
+  RAWOBS: /home/users/robking/RAWOBS
+  ccilst: /group_workspaces/jasmin2/esacci_lst/public/AQUA_MODIS_L3C/1.00
+
+# Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
+# See config-developer.yml for definitions.
+drs:
+  CMIP5: BADC
+  CMIP6: BADC
