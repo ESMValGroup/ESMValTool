@@ -25,40 +25,40 @@ HADGEM: &hadgem_only
 
 SFTLF_PIC: &pic_sftlf
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2001}
-  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2004}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
 
 SFTLF_OTHER: &other_sftlf
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2004}
-  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2004}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
 
 OTHER: &other_data
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2004}
-  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2004}
-  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2004}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
 
 ALL: &all_data
   - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2004}
-  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2004}
-  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2004}
-  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2004}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
 
 preprocessors:
   regrid_preproc:
