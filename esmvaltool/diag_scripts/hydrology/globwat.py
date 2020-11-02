@@ -9,7 +9,6 @@ did not change the model code for this aim yet.
 import logging
 from pathlib import Path
 
-import calendar
 import iris
 import iris.analysis
 import numpy as np
@@ -17,8 +16,10 @@ import xarray as xr
 import pandas as pd
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
-from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger, group_metadata, run_diagnostic)
+# from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            group_metadata,
+                                            run_diagnostic)
 
 
 logger = logging.getLogger(Path(__file__).name)
@@ -57,7 +58,6 @@ def change_data_type(cube):
 
 def _convert_units(cube, time_step):
     """Convert unit of cube."""
-
     cube.units = cube.units / 'kg m-3'
     cube.data = cube.core_data() / 1000.
 
@@ -102,7 +102,7 @@ def load_target(cfg):
 
 def make_output_name(key, mip, month, day):
     """Get output file name, specific to Globwat."""
-    names_map = {'pr':'prc', 'pet':'eto', 'pet_arora':'eto_arora'}
+    names_map = {'pr': 'prc', 'pet': 'eto', 'pet_arora': 'eto_arora'}
     if mip == 'Amon':
         filename = f"{names_map[key]}{month}wb"
     else:
@@ -111,7 +111,7 @@ def make_output_name(key, mip, month, day):
 
 
 def monthly_arora_pet(tas):
-    """Calculating potential ET using Arora method.
+    """Calculate potential ET using Arora method.
 
     Arora is a temperature-based method for calculating potential ET.
     In this equation, t is the monthly average temperature in degree Celcius
@@ -119,23 +119,20 @@ def monthly_arora_pet(tas):
     https://doi.org/10.1016/S0022-1694(02)00101-4
     """
     tas.convert_units('degC')
-    a = iris.coords.AuxCoord(np.float32(325),
-                             long_name='first constant',
-                             units=None)
-    b = iris.coords.AuxCoord(np.float32(21),
-                             long_name='second constant',
-                             units=None)
-    c = iris.coords.AuxCoord(np.float32(0.9),
-                             long_name='third constant',
-                             units=None)
-    monthly_arora_pet = (a + b * tas + c * (tas ** 2))/12
-    monthly_arora_pet.units = 'mm month-1'
-    monthly_arora_pet.rename("arora potential evapotranspiration")
-    return monthly_arora_pet
+    constant_a = iris.coords.AuxCoord(np.float32(325),
+                                      long_name='first constant', units=None)
+    constant_b = iris.coords.AuxCoord(np.float32(21),
+                                      long_name='second constant', units=None)
+    constant_c = iris.coords.AuxCoord(np.float32(0.9),
+                                      long_name='third constant', units=None)
+    arora_pet = (constant_a + constant_b * tas + constant_c * (tas ** 2)) / 12
+    arora_pet.units = 'mm month-1'
+    arora_pet.rename("arora potential evapotranspiration")
+    return arora_pet
 
 
 def get_cube_info(cube):
-    """"""
+    """Get year, month and day from the cube."""
     coord_time = cube.coord('time')
     year = coord_time.cell(0).point.year
     month = str(coord_time.cell(0).point.month).zfill(2)
@@ -146,10 +143,11 @@ def get_cube_info(cube):
 def _reindex_data(cube, target):
     """Reindex data to a global coordinates set.
 
-    Globwat works with global extent."""
+    Globwat works with global extent.
+    """
     array = xr.DataArray.from_iris(cube).to_dataset()
     target_ds = xr.DataArray.from_iris(target).to_dataset()
-    #TODO if
+    #TODO:add if
     reindex_ds = array.reindex(
         {"lat": target_ds["lat"], "lon": target_ds["lon"]},
         method="nearest",
@@ -167,8 +165,8 @@ def _swap_western_hemisphere(array):
     array['lon'] = (array['lon'] + 180) % 360 - 180
 
     # Re-index data along longitude values
-    west = array.where(array.lon<0, drop=True)
-    east = array.where(array.lon>=0, drop=True)
+    west = array.where(array.lon < 0, drop=True)
+    east = array.where(array.lon >= 0, drop=True)
     return west.combine_first(east)
 
 
@@ -177,7 +175,7 @@ def _flip_vertically(array):
 
     Latitudes order should be in range 90, -90.
     """
-    flipped = array[::-1,...]
+    flipped = array[::-1, ...]
     flipped['lat'] = array['lat'] * -1
     return flipped
 
@@ -187,7 +185,6 @@ def save_to_ascii(cube, target, file_name):
 
     Data with index [0,0] should be in -180, 90 lon/lat.
     """
-
     # Re-index data
     array = _reindex_data(cube, target)
     array = _swap_western_hemisphere(array)
@@ -208,11 +205,12 @@ def save_to_ascii(cube, target, file_name):
     output.write(f"NODATA_value  {np.int32(-9999)}\n")
     output.close()
     data_frame = pd.DataFrame(array.values, dtype=array.dtype)
-    data_frame.to_csv(file_name, sep=' ', na_rep='-9999', float_format=None, header=False, index=False, mode='a')
+    data_frame.to_csv(file_name, sep=' ', na_rep='-9999', float_format=None,
+                      header=False, index=False, mode='a')
 
 
 def _make_drs(dataset_name, nyear, mip):
-    """making the structure of saving directory."""
+    """Make the structure of saving directory."""
     if mip == 'Amon':
         freq = 'Monthly'
     else:
@@ -233,7 +231,7 @@ def save(dataset_name, key, mip, cube, target):
     # path = f"{data_dir}/{file_name}.nc"
     # iris.save(sub_cube, path , fill_value=-9999)
 
-    # save to ascii #TODO fix it
+    # save to ascii #TODO: fix it
     path = f"{data_dir}/{file_name}.asc"
     save_to_ascii(cube, target, path)
     return path
@@ -250,19 +248,20 @@ def main(cfg):
     tas (air_temperature)
     """
     input_metadata = cfg['input_data'].values()
-    for dataset_name, metadata in group_metadata(input_metadata, 'dataset').items():
+    for dataset_name, metadata in group_metadata(input_metadata,
+                                                 'dataset').items():
         all_vars, provenance, mip = get_input_cubes(metadata)
 
         logger.info("Calculation PET uisng debruin method")
-        all_vars.update(pet = debruin_pet(
-            psl=all_vars['psl'],
-            rsds=all_vars['rsds'],
-            rsdt=all_vars['rsdt'],
-            tas=all_vars['tas'],
-        ))
+        all_vars.update(pet=debruin_pet(
+                        psl=all_vars['psl'],
+                        rsds=all_vars['rsds'],
+                        rsdt=all_vars['rsdt'],
+                        tas=all_vars['tas'],
+                        ))
 
         logger.info("Calculation PET uisng arora method")
-        all_vars.update(pet_arora = monthly_arora_pet(all_vars['tas']))
+        all_vars.update(pet_arora=monthly_arora_pet(all_vars['tas']))
         # scheme = cfg['regrid']
         # convert unit of pr and pet
         for var in ['pr', 'pet']:
@@ -273,23 +272,23 @@ def main(cfg):
             for sub_cube in cube.slices_over('time'):
                 # set negative values for precipitaion to zero
                 if key == 'pr':
-                    sub_cube.data[(-9999<sub_cube.data) & (sub_cube.data<0)] = 0
+                    sub_cube.data[(-9999 < sub_cube.data) &
+                                  (sub_cube.data < 0)] = 0
 
-                #TODO: here the code faces memory error:
-                #"MemoryError: Unable to allocate 285. MiB for an array
-                # with shape (37324800,) and data type int64
                 # load target grid for using in regriding function"
                 target_cube = load_target(cfg)
-                # sub_cube_regrided = lazy_regrid(sub_cube, target_cube, scheme)
+                # sub_cube_regrided = lazy_regrid(sub_cube, target_cube,
+                #   scheme)
                 # #regrid data baed on target cube
-                sub_cube_regrided = sub_cube.regrid(target_cube, iris.analysis.Linear())
-
+                sub_cube_regrided = sub_cube.regrid(target_cube,
+                                                    iris.analysis.Linear())
                 # Save data as netcdf and ascii
-                path = save(dataset_name, key, mip, sub_cube_regrided, target_cube)
+                path = save(dataset_name, key, mip, sub_cube_regrided,
+                            target_cube)
 
                 # Store provenance
-                # with ProvenanceLogger(cfg) as provenance_logger:
-                #     provenance_logger.log(path, provenance)
+                with ProvenanceLogger(cfg) as provenance_logger:
+                    provenance_logger.log(path, provenance)
 
 
 if __name__ == '__main__':
