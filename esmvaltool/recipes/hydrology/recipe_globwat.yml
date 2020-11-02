@@ -13,9 +13,6 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  # general: &general
-    mask_landsea:
-      mask_out: "sea"
     rough_cutout:
       extract_region:
         start_longitude: 40
