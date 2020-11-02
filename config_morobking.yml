@@ -36,7 +36,7 @@ rootpath:
   ana4mips: /group_workspaces/jasmin4/esmeval/obsdata-v2
   default: /home/users/valeriu/esmvaltool_cmip6_autoassess/permafrost_data
   RAWOBS: /home/users/robking/RAWOBS
-  ccilst: /group_workspaces/jasmin2/esacci_lst/public/AQUA_MODIS_L3C/1.00
+  ccilst: /home/users/robking/ESMValTool/rob_cmug/Ophelie/cmorize_obs_20201102_130809/Tier2/ESACCI-LST
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.

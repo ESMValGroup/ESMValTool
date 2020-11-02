@@ -57,8 +57,10 @@ def cmorization(in_dir, out_dir, cfg, _):
         # loop over years and months
         # get years from start_year and end_year
         # not 2003 doesn't start until July
-        for YEAR in [2004]: # Change this in final version
-            for MONTH in [1,2]: # Change this in final version
+        for YEAR in range(2004,2019): # Change this in final version
+            this_years_cubes = iris.cube.CubeList()
+            for month in range(12): # Change this in final version
+                MONTH = month + 1
                 logger.info(MONTH)
                 day_cube, night_cube = load_cubes(in_dir,
                                                   vals['file_day'],
@@ -75,17 +77,20 @@ def cmorization(in_dir, out_dir, cfg, _):
                 # use CMORizer utils
                 monthly_cube = utils.fix_coords(monthly_cube)
                 
+                this_years_cubes.append(monthly_cube)
+                
                 # is there anything else needed for CMOR?????
                 
-                # Use utils save
-                # This seems to save files all with the same name!! Need to fix!!!
-                utils.save_variable(
-                    monthly_cube,
-                    var,
-                    out_dir,
-                    glob_attrs,
-                )
-                
+            # Use utils save
+            # This seems to save files all with the same name!! Need to fix!!!
+            this_years_cubes = this_years_cubes.merge_cube()
+            utils.save_variable(
+                this_years_cubes, # monthly_cube,
+                var,
+                out_dir,
+                glob_attrs,
+            )
+
             
 def load_cubes(in_dir,file_day,file_night,YEAR,MONTH,variable,platform):
     """
