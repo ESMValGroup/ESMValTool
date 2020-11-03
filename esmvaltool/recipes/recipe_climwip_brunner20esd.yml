@@ -45,7 +45,7 @@ preprocessors:
       operator: mean
 
   detrended_std:
-    custom_order: True
+    custom_order: true
     <<: *general
     annual_statistics:
       operator: mean
@@ -104,8 +104,8 @@ diagnostics:
         mip: Amon
         preprocessor: climatological_mean
         additional_datasets: *obs_data
-        independence: True
-        performance: False
+        independence: true
+        performance: false
       psl_CLIM:
         <<: *independence_settings
         short_name: psl
@@ -116,8 +116,8 @@ diagnostics:
         mip: Amon
         preprocessor: local_anomalies
         additional_datasets: *obs_data
-        independence: False
-        performance: True
+        independence: false
+        performance: true
       tas_STD:
         <<: *performance_settings
         preprocessor: detrended_std
@@ -150,6 +150,10 @@ diagnostics:
     scripts:
       weighted_temperature_graph:
         script: weighting/weighted_temperature_graph.py
+        ancestors: [calculate_weights_climwip/climwip, tas]
+        weights: 'weights.nc'
+      weighted_boxplot_ecs:
+        script: weighting/boxplot_weighted_ecs.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
 

@@ -37,6 +37,7 @@ def get_provenance_record(caption: str, ancestors: list):
             'smeets_stef',
             'brunner_lukas',
             'camphuijsen_jaro',
+            'lorenz_ruth',
         ],
         'references': [
             'brunner2019',
