@@ -480,7 +480,7 @@ def main(cfg):
 
         model_ancestors.extend(model_data_files)
 
-    model_ancestors = [*{*model_ancestors}]  # make unique
+    model_ancestors = list(set(model_ancestors))  # only keep unique items
 
     logger.info('Computing overall mean independence')
     independence = xr.Dataset(independences)
