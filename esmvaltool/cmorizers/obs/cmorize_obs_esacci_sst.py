@@ -1,27 +1,22 @@
-"""ESMValTool CMORizer for WOA data.
+"""ESMValTool CMORizer for ESACCI-SST data.
 
 Tier
    Tier 2: other freely-available dataset.
 
 Source
-   https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+   https:<insert_here>
 
 Last access
-   20190131
+   20202203
 
 Download and processing instructions
    Download the following files:
-     temperature/netcdf/decav81B0/1.00/woa13_decav81B0_t00_01.nc
-     salinity/netcdf/decav81B0/1.00/woa13_decav81B0_s00_01.nc
-     oxygen/netcdf/all/1.00/woa13_all_o00_01.nc
-     nitrate/netcdf/all/1.00/woa13_all_n00_01.nc
-     phosphate/netcdf/all/1.00/woa13_all_p00_01.nc
-     silicate/netcdf/all/1.00/woa13_all_i00_01.nc
+     <insert here>
 
 Modification history
-   20130328-lovato_tomas: cmorizer revision
-   20190131-predoi_valeriu: adapted to v2.
-   20190131-demora_lee: written.
+   20202203-predoi_valeriu: written.
+   <insert_revision>
+   <insert_approval>
 
 """
 
