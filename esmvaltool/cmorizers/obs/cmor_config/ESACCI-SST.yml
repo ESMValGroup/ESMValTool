@@ -17,3 +17,7 @@ variables:
     mip: Amon
     raw: sst
     file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB
+  tsStderr:
+    mip: Amon
+    raw: sst_uncertainty
+    file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB
