@@ -346,7 +346,10 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
 
 
 def compute_overall_mean(dataset, contributions):
-    """Normalize all variables in a dataset and return their mean."""
+    """Normalize all variables in a dataset and return their weighted mean.
+    
+    Relative weights for each variable group are passed via the recipe.
+    """
     if 'perfect_model_ensemble' in dataset.dims:
         median_dim = ['perfect_model_ensemble', 'model_ensemble']
     else:
