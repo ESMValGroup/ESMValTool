@@ -356,7 +356,7 @@ def compute_overall_mean(dataset, contributions):
         median_dim = 'model_ensemble'
     normalized = dataset / dataset.median(dim=median_dim)
 
-    weights = xr.DataArray([contributions[vg] for vg in dataset],
+    weights = xr.DataArray([contributions[variable_group] for variable_group in dataset],
                            coords={'variable_group': list(dataset)},
                            dims='variable_group')
     overall_mean = normalized.to_array(
