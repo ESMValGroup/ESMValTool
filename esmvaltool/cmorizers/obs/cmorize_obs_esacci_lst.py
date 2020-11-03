@@ -56,8 +56,8 @@ def cmorization(in_dir, out_dir, cfg, _):
 
         # loop over years and months
         # get years from start_year and end_year
-        # not 2003 doesn't start until July
-        for YEAR in range(2004,2019): # Change this in final version
+        # note 2003 doesn't start until July so not included at this stage
+        for YEAR in range(vals['start_year'],vals['end_year']+1): 
             this_years_cubes = iris.cube.CubeList()
             for month in range(12): # Change this in final version
                 MONTH = month + 1
@@ -82,10 +82,10 @@ def cmorization(in_dir, out_dir, cfg, _):
                 # is there anything else needed for CMOR?????
                 
             # Use utils save
-            # This seems to save files all with the same name!! Need to fix!!!
+            # This seems to save files all with the same name!
             this_years_cubes = this_years_cubes.merge_cube()
             utils.save_variable(
-                this_years_cubes, # monthly_cube,
+                this_years_cubes,
                 var,
                 out_dir,
                 glob_attrs,
@@ -125,13 +125,13 @@ def make_monthly_average(day_cube, night_cube, YEAR, MONTH):
     result = iris.cube.CubeList([day_cube,night_cube]).concatenate_cube()
 
     # This corrects the lonitude coord name issue
+    # This should be fixed in the next version of the CCI data
     logger.info("Longitude coordinate correction being applied")
     result.coords()[2].var_name = 'longitude'
     result.coords()[2].standard_name = 'longitude'
     result.coords()[2].long_name = 'longitude'
     
     monthly_cube = result.collapsed('time',iris.analysis.MEAN)
-
     
     # fix time coordinate bounds
     monthly_co_time = monthly_cube.coord('time')
@@ -145,6 +145,5 @@ def make_monthly_average(day_cube, night_cube, YEAR, MONTH):
     # or 23:59:59 ???
 
     monthly_cube.attributes = {'information' :'Mean of Day and Night Aqua MODIS monthly LST'}
-
 
     return monthly_cube
