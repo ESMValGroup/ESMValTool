@@ -1,4 +1,5 @@
-"""Implementation of the climwip weighting scheme.
+"""Plotting boxplots to show weighted ensemble results weights provided by
+ClimWIP weighting scheme.
 
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
@@ -30,7 +31,7 @@ def read_weights(filename: str) -> dict:
 
 
 def read_metadata(cfg: dict) -> dict:
-    """Read the metadata from the config file."""
+    """Read the metadata from the configure file."""
     datasets = defaultdict(list)
 
     metadata = cfg['input_data'].values()
@@ -44,51 +45,51 @@ def read_metadata(cfg: dict) -> dict:
 
 
 def _visualize_and_save_percentiles(data: 'xr.DataArray', weights: dict,
-                                    models_fut: list, models_pres: list,
-                                    cfg: dict, ancestors: list):
+                                    models_fut: list, cfg: dict,
+                                    ancestors: list):
     """Visualize data in boxplot and save percentiles."""
     # ensure weighhts are sorted the same way as data and convert to list
     weights = [weights[member] for member in data.model_ensemble.values]
 
-    fig, ax = plt.subplots(1, 1, figsize=(4, 10), dpi=300)
-    fig.subplots_adjust(left=.1, right=.99, bottom=.22, top=.91)
+    figure, axes = plt.subplots(1, 1, figuresize=(4, 10), dpi=300)
+    figure.subplots_adjust(left=.1, right=.99, bottom=.22, top=.91)
 
-    h1 = boxplot(ax,
-                 0,
-                 median=data,
-                 mean=data,
-                 box=data,
-                 whisk=data,
-                 width=.8,
-                 color='darkgrey',
-                 alpha=.3)
+    box_h1 = boxplot(axes,
+                     0,
+                     median=data,
+                     mean=data,
+                     box=data,
+                     whisk=data,
+                     width=.8,
+                     color='darkgrey',
+                     alpha=.3)
 
-    h2 = boxplot(ax,
-                 0,
-                 median=data,
-                 mean=data,
-                 box=data,
-                 whisk=data,
-                 weights=weights,
-                 width=.6,
-                 color='tab:blue',
-                 alpha=1)
+    box_h2 = boxplot(axes,
+                     0,
+                     median=data,
+                     mean=data,
+                     box=data,
+                     whisk=data,
+                     weights=weights,
+                     width=.6,
+                     color='tab:blue',
+                     alpha=1)
 
-    ax.set_ylabel('Temperature change relative to 1995-2015 [K]')
-    ax.grid(axis='y')
+    axes.set_ylabel('Temperature change relative to 1995-2015 [K]')
+    axes.grid(axis='y')
 
-    ax.set_xticklabels([])
+    axes.set_xticklabels([])
 
     plt.ylim(0, 6)
-    plt.legend((h1, h2), ('unweighted', 'weighted'))
+    plt.legend((box_h1, box_h2), ('unweighted', 'weighted'))
 
     start = models_fut[0]['start_year']
     end = models_fut[0]['end_year']
     plt.title('Global temperature change by %s-%s' % (start, end))
 
     filename_plot = get_plot_filename('boxplot_temperature_change', cfg)
-    fig.savefig(filename_plot, dpi=300, bbox_inches='tight')
-    plt.close(fig)
+    figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
+    plt.close(figure)
 
     filename_data = get_diagnostic_filename('temperature_change_percentiles',
                                             cfg,
@@ -120,12 +121,11 @@ def main(cfg):
         area_mean_change,
         weights,
         models_fut,
-        models_pres,
         cfg,
         [model_data_files1, model_data_files2],
     )
 
 
 if __name__ == '__main__':
-    with run_diagnostic() as config:
-        main(config)
+    with run_diagnostic() as configure:
+        main(configure)

@@ -1,16 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Time-stamp: <2020-02-05 15:59:30 lukbrunn>
-
-(c) 2019 under a MIT License (https://mit-license.org)
-
-Authors:
-- Lukas Brunner || lukas.brunner@env.ethz.ch
-
-Abstract:
-
-"""
+"""Costumised boxplot that can deal with weights."""
 import matplotlib.patches as mpatches
 import numpy as np
 import seaborn as sns
@@ -19,7 +7,7 @@ from matplotlib.patches import Rectangle
 from weighted_temperature_graph import weighted_quantile
 
 
-def boxplot(ax,
+def boxplot(axes,
             pos=None,
             data=None,
             median=None,
@@ -32,21 +20,16 @@ def boxplot(ax,
             color=sns.xkcd_rgb['greyish'],
             alpha=1.,
             showcaps=True,
-            fancy_legend=False,
-            return_handle=False,
-            zorder=100,
-            box_quantiles=(.25, .75),
-            whisk_quantiles=(.05, .95),
             median_kwargs=None,
             mean_kwargs=None,
             whisk_kwargs=None,
             dots_kwargs=None,
             dots_sizes=None):
-    """A custom-mad boxplot routine based on user set statistics.
+    """Custom-made boxplot routine based on user set statistics.
 
     Parameters
     ----------
-    ax : plt.axis object
+    axes : plt.axis object
     pos : float, optional
         Location (center) of the box.
     data: array-like, optional
@@ -68,19 +51,19 @@ def boxplot(ax,
         Width of box, median, mean, and caps (caps have .4*width).
     color : string, optional
         Box color and default color for median, mean, and whiskers.
+    alpha : float, optional
+        A number between 0. and 1. to determine opacity of drawn objects
     showcaps : bool, optional
         Whether to draw caps at the end of the whiskers.
-    zorder : int, optional
-        zorder of the drawn objects.
     median_kwargs : dict, optional
-        Keyword arguments passed on to ax.hlines for the median.
+        Keyword arguments passed on to axes.hlines for the median.
     mean_kwargs : dict, optional
-        Keyword arguments passed on to ax.hlines for the mean.
+        Keyword arguments passed on to axes.hlines for the mean.
     whisk_kwargs : dict, optional
-        Keyword arguments passed on to ax.hlines and ax.vlines for whiskers
+        Keyword arguments passed on to axes.hlines and axes.vlines for whiskers
         and caps.
     dots_kwargs : dict, optional
-        Keyword arguments passed on to ax.scatter for the dots.
+        Keyword arguments passed on to axes.scatter for the dots.
     dots_sizes : tuple of (min, max), optional
     """
     if data is not None:
@@ -100,11 +83,11 @@ def boxplot(ax,
     if median is not None and not isinstance(median, (int, float)):
         median = weighted_quantile(median, .5, weights)
     if box is not None and len(box) != 2 and not isinstance(box, tuple):
-        box = weighted_quantile(box, box_quantiles, weights)
+        box = weighted_quantile(box, (.25, .75), weights)
     elif tuple(box) == (None, None):
         box = None
     if whisk is not None and len(whisk) != 2 and not isinstance(whisk, tuple):
-        whisk = weighted_quantile(whisk, whisk_quantiles, weights)
+        whisk = weighted_quantile(whisk, (.05, .95), weights)
     elif whisk is not None and tuple(whisk) == (None, None):
         whisk = None
 
@@ -150,56 +133,63 @@ def boxplot(ax,
     if 's' not in dots_kwargs.keys():
         dots_kwargs['s'] = 1
 
+    zorder = 100
+
     handle = [mpatches.Patch(color=color, alpha=alpha)]
     if median is not None:
-        handle.append(ax.hlines([], [], [], **median_kwargs))
+        handle.append(axes.hlines([], [], [], **median_kwargs))
     if mean is not None:
-        handle.append(ax.hlines([], [], [], **mean_kwargs))
+        handle.append(axes.hlines([], [], [], **mean_kwargs))
     if dots is not None:
-        handle.append(ax.scatter([], [], **dots_kwargs))
-    if return_handle:
-        return tuple(handle)
+        handle.append(axes.scatter([], [], **dots_kwargs))
 
-    x0, x1 = pos - .5 * width, pos + .5 * width
+    x_0, x_1 = pos - .5 * width, pos + .5 * width
     if box is not None:  # plot box
         patch = PatchCollection(
-            [Rectangle((x0, box[0]), width, box[1] - box[0])],
+            [Rectangle((x_0, box[0]), width, box[1] - box[0])],
             facecolor=color,
             alpha=alpha,
             zorder=zorder)
-        ax.add_collection(patch)
+        axes.add_collection(patch)
 
     if median is not None:
-        x0_median = x0 + (1 - median_width) * width * .5
-        x1_median = x1 - (1 - median_width) * width * .5
-        ax.hlines(median, x0_median, x1_median, zorder=zorder, **median_kwargs)
+        x0_median = x_0 + (1 - median_width) * width * .5
+        x1_median = x_1 - (1 - median_width) * width * .5
+        axes.hlines(median,
+                    x0_median,
+                    x1_median,
+                    zorder=zorder,
+                    **median_kwargs)
 
     if mean is not None:  # plot mean
-        x0_mean = x0 + (1 - mean_width) * width * .5
-        x1_mean = x1 - (1 - mean_width) * width * .5
-        ax.hlines(mean, x0_mean, x1_mean, zorder=zorder, **mean_kwargs)
+        x0_mean = x_0 + (1 - mean_width) * width * .5
+        x1_mean = x_1 - (1 - mean_width) * width * .5
+        axes.hlines(mean, x0_mean, x1_mean, zorder=zorder, **mean_kwargs)
 
     if dots is not None:
         if len(dots) == 1:
-            xx = pos
+            x_pos = pos
         else:
-            xx = np.random.RandomState(0).uniform(pos - .4 * width,
-                                                  pos + .4 * width, len(dots))
+            x_pos = np.random.RandomState(0).uniform(pos - .4 * width,
+                                                     pos + .4 * width,
+                                                     len(dots))
         if weights is not None and dots_sizes is not None:
             sizes = np.interp(
                 weights, [np.min(weights), np.max(weights)], dots_sizes)
             dots_kwargs['s'] = sizes**2
-        patch = ax.scatter(xx, dots, zorder=zorder, **dots_kwargs)
+        patch = axes.scatter(x_pos, dots, zorder=zorder, **dots_kwargs)
 
     if whisk is not None:  # plot whiskers
         if box is None:
             box = (whisk[0], whisk[0])
-        ax.vlines((pos, pos), (whisk[0], box[1]), (box[0], whisk[1]),
-                  zorder=zorder,
-                  **whisk_kwargs)
+        axes.vlines((pos, pos), (whisk[0], box[1]), (box[0], whisk[1]),
+                    zorder=zorder,
+                    **whisk_kwargs)
         if showcaps:  # plot caps
-            x0 = pos - .5 * caps_width * width
-            x1 = pos + .5 * caps_width * width
-            ax.hlines(whisk, (x0, x0), (x1, x1), zorder=zorder, **whisk_kwargs)
+            x_0 = pos - .5 * caps_width * width
+            x_1 = pos + .5 * caps_width * width
+            axes.hlines(whisk, (x_0, x_0), (x_1, x_1),
+                        zorder=zorder,
+                        **whisk_kwargs)
 
     return tuple(handle)
