@@ -398,12 +398,12 @@ def calculate_weights(
     weights : ndarray, shape (N,)
     """
     if performance is not None:
-        assert performance_sigma is not None, 'performance_sigma has to be set'
+        assert performance_sigma is not None, 'performance_sigma must be set'
         numerator = np.exp(-((performance / performance_sigma)**2))
     else:
         numerator = 1
     if independence is not None:
-        assert independence_sigma is not None, 'independence_sigma has to be set'
+        assert independence_sigma is not None, 'independence_sigma must be set'
         exp = np.exp(-((independence / independence_sigma)**2))
         # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
         denominator = exp.sum('perfect_model_ensemble')
@@ -440,6 +440,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
 
 
 def get_variable_groups(contribution: str, cfg: dict) -> list:
+    """Return a list of variable groups with contributions > 0"""
     if cfg.get(contribution, None) is not None:
         return [key for key, value in cfg[contribution].items() if value > 0]
     return []
@@ -455,7 +456,7 @@ def main(cfg):
         'performance_contributions', cfg)
 
     if (len(variable_groups_independence) == 0 and
-        len(variable_groups_performance) == 0):
+            len(variable_groups_performance) == 0):
         errmsg = ' '.join([
             'Either the independence_contributions or the',
             'performance_contributions field need to be set and contain at',
