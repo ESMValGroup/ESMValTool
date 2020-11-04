@@ -450,7 +450,7 @@ def main(cfg):
     """Perform climwip weighting method."""
     models, observations = read_metadata(cfg)
 
-    variable_groups_independence = get_variable_groups(
+    contributions_independence = parse_contributions(
         'independence_contributions', cfg)
     variable_groups_performance = get_variable_groups(
         'performance_contributions', cfg)
