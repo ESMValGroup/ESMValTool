@@ -16,7 +16,7 @@ import xarray as xr
 import pandas as pd
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
-# from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
+from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             group_metadata,
                                             run_diagnostic)
@@ -100,16 +100,6 @@ def load_target(cfg):
     return cube
 
 
-def make_output_name(key, mip, month, day):
-    """Get output file name, specific to Globwat."""
-    names_map = {'pr': 'prc', 'pet': 'eto', 'pet_arora': 'eto_arora'}
-    if mip == 'Amon':
-        filename = f"{names_map[key]}{month}wb"
-    else:
-        filename = f"{names_map[key]}{month}{day}wb"
-    return filename
-
-
 def monthly_arora_pet(tas):
     """Calculate potential ET using Arora method.
 
@@ -131,13 +121,20 @@ def monthly_arora_pet(tas):
     return arora_pet
 
 
-def get_cube_info(cube):
+def get_cube_time_info(cube):
     """Get year, month and day from the cube."""
     coord_time = cube.coord('time')
     year = coord_time.cell(0).point.year
     month = str(coord_time.cell(0).point.month).zfill(2)
     day = str(coord_time.cell(0).point.day).zfill(2)
     return year, month, day
+
+
+def get_cube_data_info(cube):
+    """Get short_name, and mip from the cube."""
+    short_name = cube.var_name
+    mip = cube.attributes['mip']
+    return short_name, mip
 
 
 def _reindex_data(cube, target):
@@ -147,20 +144,21 @@ def _reindex_data(cube, target):
     """
     array = xr.DataArray.from_iris(cube).to_dataset()
     target_ds = xr.DataArray.from_iris(target).to_dataset()
-    #TODO:add if
     reindex_ds = array.reindex(
         {"lat": target_ds["lat"], "lon": target_ds["lon"]},
         method="nearest",
         tolerance=1e-2,
     )
-    return reindex_ds.to_array()
+    return reindex_ds.to_array().to_iris()
 
 
-def _swap_western_hemisphere(array):
+def _swap_western_hemisphere(cube):
     """Set longitude values in range -180, 180.
 
     Western hemisphere longitudes should be negative.
     """
+    array = xr.DataArray.from_iris(cube)
+
     # Set longitude values in range -180, 180.
     array['lon'] = (array['lon'] + 180) % 360 - 180
 
@@ -180,14 +178,13 @@ def _flip_vertically(array):
     return flipped
 
 
-def save_to_ascii(cube, target, file_name):
+def save_to_ascii(cube, file_name):
     """Save data to an ascii file.
 
     Data with index [0,0] should be in -180, 90 lon/lat.
     """
     # Re-index data
-    array = _reindex_data(cube, target)
-    array = _swap_western_hemisphere(array)
+    array = _swap_western_hemisphere(cube)
     array = _flip_vertically(array)
 
     # Set nodata values
@@ -209,32 +206,27 @@ def save_to_ascii(cube, target, file_name):
                       header=False, index=False, mode='a')
 
 
-def _make_drs(dataset_name, nyear, mip):
-    """Make the structure of saving directory."""
+def make_filename(dataset_name, cfg, cube, extension='asc'):
+    """Get a valid path for saving a diagnostic data file.
+
+    filenames are specific to Globwat."""
+
+    names_map = {'pr': 'prc', 'pet': 'eto', 'pet_arora': 'eto_arora'}
+
+    nyear, nmonth, nday = get_cube_time_info(cube)
+    short_name, mip = get_cube_data_info(cube)
+
     if mip == 'Amon':
+        filename = f"{names_map[short_name]}{nmonth}wb.{extension}"
         freq = 'Monthly'
+
     else:
+        filename = f"{names_map[short_name]}{nmonth}{nday}wb.{extension}"
         freq = 'Daily'
 
-    data_dir = Path(f"{dataset_name}/{nyear}/{freq}")
+    data_dir = Path(f"{cfg['work_dir']}/{dataset_name}/{nyear}/{freq}")
     data_dir.mkdir(parents=True, exist_ok=True)
-    return data_dir
-
-
-def save(dataset_name, key, mip, cube, target):
-    """Save data to a netcdf file."""
-    nyear, nmonth, nday = get_cube_info(cube)
-    file_name = make_output_name(key, mip, nmonth, nday)
-    data_dir = _make_drs(dataset_name, nyear, mip)
-
-    # save to netcedf
-    # path = f"{data_dir}/{file_name}.nc"
-    # iris.save(sub_cube, path , fill_value=-9999)
-
-    # save to ascii #TODO: fix it
-    path = f"{data_dir}/{file_name}.asc"
-    save_to_ascii(cube, target, path)
-    return path
+    return str(data_dir / f"{filename}")
 
 
 def main(cfg):
@@ -262,33 +254,35 @@ def main(cfg):
 
         logger.info("Calculation PET uisng arora method")
         all_vars.update(pet_arora=monthly_arora_pet(all_vars['tas']))
-        # scheme = cfg['regrid']
-        # convert unit of pr and pet
+
+        # Load target grid to be used in re-gridding
+        target_cube = load_target(cfg)
+
+        # Convert unit of pr and pet
         for var in ['pr', 'pet']:
             _convert_units(all_vars[var], mip)
 
         for key in ['pr', 'pet', 'pet_arora']:
             cube = all_vars[key]
-            for sub_cube in cube.slices_over('time'):
-                # set negative values for precipitaion to zero
-                if key == 'pr':
-                    sub_cube.data[(-9999 < sub_cube.data) &
-                                  (sub_cube.data < 0)] = 0
 
-                # load target grid for using in regriding function"
-                target_cube = load_target(cfg)
-                # sub_cube_regrided = lazy_regrid(sub_cube, target_cube,
-                #   scheme)
-                # #regrid data baed on target cube
-                sub_cube_regrided = sub_cube.regrid(target_cube,
-                                                    iris.analysis.Linear())
-                # Save data as netcdf and ascii
-                path = save(dataset_name, key, mip, sub_cube_regrided,
-                            target_cube)
+            # set negative values for precipitaion to zero
+            if key == 'pr':
+                cube.data[(-9999 < cube.data) & (cube.data < 0)] = 0
+
+            # Re-grid data according to the target cube
+            cube = lazy_regrid(cube, target_cube, 'linear')
+
+            # Reindex data to a global coordinates set
+            cube = _reindex_data(cube, target_cube)
+
+            # Save data as an ascii file per each time step
+            for sub_cube in cube.slices_over('time'):
+                filename = make_filename(dataset_name, cfg, sub_cube, extension='asc')
+                save_to_ascii(sub_cube, filename)
 
                 # Store provenance
                 with ProvenanceLogger(cfg) as provenance_logger:
-                    provenance_logger.log(path, provenance)
+                    provenance_logger.log(filename, provenance)
 
 
 if __name__ == '__main__':
