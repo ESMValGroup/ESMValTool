@@ -1,0 +1,21 @@
+---
+# Filename
+filename: 'monthly_flask_co2_kum.csv'
+fill_value: -99.99
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Scripps-CO2-KUM
+  version: '15-Nov-2019'
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS6
+  source: 'https://scrippsco2.ucsd.edu/data/atmospheric_co2/kum.html'
+  reference: 'scripps_co2'
+  comment: 'Flask CO2 and isotopic data sets taken at Cape Kumukahi, Hawaii: Latitude 19.5°N Longitude 154.8°W Elevation 3m. These data are subject to revision based on recalibration of standard gases.'
+
+# Variables to cmorize
+variables:
+  co2s:
+    mip: Amon
+    column_name: ['fit', '', '[ppm]']

@@ -324,15 +324,15 @@ def global_pcolormesh(cube,
     return map_plot
 
 
-def quickplot(cube, filename, plot_type, **kwargs):
+def quickplot(cube, plot_type, filename=None, **kwargs):
     """Plot a cube using one of the iris.quickplot functions."""
     logger.debug("Creating '%s' plot %s", plot_type, filename)
     plot_function = getattr(iris.quickplot, plot_type)
     fig = plt.figure()
     plot_function(cube, **kwargs)
-    # plt.gca().coastlines()
-    fig.savefig(filename)
-    plt.close(fig)
+    if filename:
+        fig.savefig(filename)
+    return fig
 
 
 def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
@@ -375,7 +375,6 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     ValueError
         `x_data`, `y_data`, `datasets` or `plot_kwargs` do not have the same
          size.
-
     """
     # Allowed kwargs
     allowed_kwargs = [
@@ -460,7 +459,6 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
         given) `plot_kwargs` is not array-like.
     ValueError
         `x_data`, `y_data` or `plot_kwargs` do not have the same size.
-
     """
     # Allowed kwargs
     allowed_kwargs = [
