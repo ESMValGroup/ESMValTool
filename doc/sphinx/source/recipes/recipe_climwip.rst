@@ -58,7 +58,7 @@ User settings in recipe
 
   *Required settings for script*
     * ``ancestors``: must include weights from previous diagnostic
-    * ``weights``: the filename of the weights: 'weights_combined.nc'
+    * ``weights``: the filename of the weights: 'weights.nc'
 
   *Required settings for variables*
     * This script only takes temperature (tas) as input
@@ -74,6 +74,28 @@ User settings in recipe
     * Can be a global mean or focus on a point, region or shape
     * Anomalies can be calculated with respect to a custom reference period
     * Monthly, annual or seasonal average/extraction can be used
+
+3. Script ``weighted_temperature_map.py``
+
+   *Required settings for script*
+     * ``ancestors``: must include weights from previous diagnostic
+     * ``weights``: the filename of the weights: 'weights_combined.nc'
+
+   *Optional settings for script*
+     * ``model_aggregation``: how to aggregate the models: mean (default), median, integer between 0 and 100 given a percentile
+     * ``xticks``: positions to draw xticks at
+     * ``yticks``: positions to draw yticks at
+
+   *Required settings for variables*
+     * This script takes temperature (tas) as input
+     * ``start_year``: provide the period for which to plot a temperature change graph.
+     * ``end_year``: provide the period for which to plot a temperature change graph.
+     * ``mip``: typically Amon
+     * ``preprocessor``: temperature_anomalies
+
+   *Optional settings for variables*
+     * A second variable is optional: temperature reference (tas_reference). If given, maps of temperature change to the reference are drawn, otherwise absolute temperature are drawn.
+     * tas_reference takes the same fields as tas
 
 
 Variables
@@ -121,3 +143,9 @@ Example plots
    :align:   center
 
    Interquartile range of temperature anomalies relative to 1981-2010, weighted versus non-weighted.
+
+   .. _fig_climwip_5:
+.. figure::  /recipes/figures/climwip/temperature_change_weighted_map.png
+   :align:   center
+
+   Map of weighted mean temperature change 2081-2100 relative to 1995-2014
