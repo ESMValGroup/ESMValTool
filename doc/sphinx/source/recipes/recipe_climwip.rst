@@ -29,10 +29,10 @@ User settings in recipe
 1. Script ``climwip.py``
 
   *Required settings for script*
-    * ``performance_sigma``: shape parameter weights calculation (determined offline)
-    * ``independence_sigma``: shape parameter for weights calculation (determined offline)
-    * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
-    * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
+    * ``performance_sigma``: shape parameter weights calculation (determined offline). Can be skipped or not set if ``performance_contributions`` is skipped or not set.
+    * ``independence_sigma``: shape parameter for weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
+    * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with ``independence_contributions`` being skipped or not set).
+    * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with ``performance_contributions`` being skipped or not set).
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
