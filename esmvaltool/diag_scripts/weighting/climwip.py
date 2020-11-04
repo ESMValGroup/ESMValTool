@@ -372,8 +372,8 @@ def compute_overall_mean(dataset: 'xr.Dataset',
 
 
 def calculate_weights(
-        performance: Union['xr.DataArray',
-                           None], independence: Union['xr.DataArray', None],
+        performance: Union['xr.DataArray', None],
+        independence: Union['xr.DataArray', None],
         performance_sigma: Union[float, None],
         independence_sigma: Union[float, None]) -> 'xr.DataArray':
     """Calculate the (NOT normalised) weights for each model N.
@@ -439,24 +439,25 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def get_variable_groups(contribution: str, cfg: dict) -> list:
-    """Return a list of variable groups with contributions > 0."""
-    if cfg.get(contribution) is not None:
-        return [key for key, value in cfg[contribution].items() if value > 0]
-    return []
+def parse_contributions(metric: str, cfg: dict) -> list:
+    """Return a dict of variable groups with contributions > 0."""
+    if cfg.get(f'{metric}_contributions') is not None:
+        return {
+            key: value
+            for key, value in cfg[f'{metric}_contributions'].items()
+            if value > 0
+        }
+    return {}
 
 
 def main(cfg):
     """Perform climwip weighting method."""
     models, observations = read_metadata(cfg)
 
-    contributions_independence = parse_contributions(
-        'independence_contributions', cfg)
-    variable_groups_performance = get_variable_groups(
-        'performance_contributions', cfg)
+    independence_contributions = parse_contributions('independence', cfg)
+    performance_contributions = parse_contributions('performance', cfg)
 
-    if (len(variable_groups_independence) == 0 and
-            len(variable_groups_performance) == 0):
+    if not (independence_contributions or performance_contributions):
         errmsg = ' '.join([
             'Either the independence_contributions or the',
             'performance_contributions field need to be set and contain at',
@@ -471,7 +472,7 @@ def main(cfg):
     performances = {}
     independences = {}
 
-    for variable_group in variable_groups_independence:
+    for variable_group in independence_contributions.keys():
 
         logger.info('Reading model data for %s', variable_group)
         datasets_model = models[variable_group]
@@ -485,7 +486,7 @@ def main(cfg):
 
         model_ancestors.extend(model_data_files)
 
-    for variable_group in variable_groups_performance:
+    for variable_group in performance_contributions.keys():
 
         logger.info('Reading model data for %s', variable_group)
         datasets_model = models[variable_group]
@@ -508,29 +509,29 @@ def main(cfg):
 
     model_ancestors = list(set(model_ancestors))  # only keep unique items
 
-    if len(independences) > 0:
+    if independence_contributions:
         logger.info('Computing overall mean independence')
         independence = xr.Dataset(independences)
         overall_independence = compute_overall_mean(
-            independence, cfg['independence_contributions'])
+            independence, independence_contributions)
         visualize_and_save_independence(overall_independence, cfg,
                                         model_ancestors)
     else:
         overall_independence = None
 
-    if len(performances) > 0:
+    if performance_contributions:
         logger.info('Computing overall mean performance')
         performance = xr.Dataset(performances)
-        overall_performance = compute_overall_mean(
-            performance, cfg['performance_contributions'])
+        overall_performance = compute_overall_mean(performance,
+                                                   performance_contributions)
         visualize_and_save_performance(overall_performance, cfg,
                                        model_ancestors + obs_ancestors)
     else:
         overall_performance = None
 
     logger.info('Calculating weights')
-    performance_sigma = cfg.get('performance_sigma', None)
-    independence_sigma = cfg.get('independence_sigma', None)
+    performance_sigma = cfg.get('performance_sigma')
+    independence_sigma = cfg.get('independence_sigma')
     weights = calculate_weights(overall_performance, overall_independence,
                                 performance_sigma, independence_sigma)
     visualize_and_save_weights(weights,
