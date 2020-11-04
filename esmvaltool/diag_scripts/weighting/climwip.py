@@ -441,7 +441,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
 
 def get_variable_groups(contribution: str, cfg: dict) -> list:
     """Return a list of variable groups with contributions > 0."""
-    if cfg.get(contribution, None) is not None:
+    if cfg.get(contribution) is not None:
         return [key for key, value in cfg[contribution].items() if value > 0]
     return []
 
