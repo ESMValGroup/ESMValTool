@@ -371,6 +371,7 @@ def run():
     args = get_args()
     input_recipe = args.recipe
     output_recipe = args.output
+    cmip_eras = ["CMIP5", "CMIP6"]
 
     # read the config file
     config_user = read_config_user_file(args.config_file,
@@ -404,7 +405,8 @@ def run():
         logger.info("Looking for data for variable %s in diagnostic %s",
                     variable, diag)
         new_datasets = []
-        recipe_dict['short_name'] = variable
+        if "short_name" not in recipe_dict:
+            recipe_dict['short_name'] = variable
 
         # filter on user request
         if isinstance(recipe_dict['dataset'], list):
