@@ -11,7 +11,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import xarray as xr
-from _boxplot import boxplot
+from plot_utilities import boxplot
 from climwip import (
     area_weighted_mean,
     get_diagnostic_filename,
@@ -51,7 +51,7 @@ def _visualize_and_save_percentiles(data: 'xr.DataArray', weights: dict,
     # ensure weighhts are sorted the same way as data and convert to list
     weights = [weights[member] for member in data.model_ensemble.values]
 
-    figure, axes = plt.subplots(1, 1, figuresize=(4, 10), dpi=300)
+    figure, axes = plt.subplots(1, 1, figsize=(4, 10), dpi=300)
     figure.subplots_adjust(left=.1, right=.99, bottom=.22, top=.91)
 
     box_h1 = boxplot(axes,

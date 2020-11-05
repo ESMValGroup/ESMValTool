@@ -7,7 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import requests
 import xarray as xr
-from _boxplot import boxplot
+from plot_utilities import boxplot
 from climwip import get_diagnostic_filename, log_provenance
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
