@@ -91,13 +91,24 @@ def get_site_rootpath(cmip_era):
     config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
         yamlconf = yaml.safe_load(yamf)
-    return yamlconf['drs'][cmip_era], yamlconf['rootpath'][cmip_era]
+    drs = yamlconf['drs'][cmip_era]
+    rootdir = yamlconf['rootpath'][cmip_era]
+    if drs == 'default':
+        if 'default' not in yamlconf['rootpath']:
+            logger.error(f"You are using default DRS but did not "
+                         f"specify a rootpath/default in config-user."
+                         f"Exiting.")
+            sys.exit(1)
+        rootdir = yamlconf['rootpath']['default']
+
+    return drs, rootdir
 
 
 def get_input_dir(cmip_era):
     """Get input_dir from config-developer.yml."""
     site = get_site_rootpath(cmip_era)[0]
     yamlconf = read_config_developer_file()
+
     return yamlconf[cmip_era]['input_dir'][site]
 
 
@@ -115,11 +126,16 @@ def determine_basepath(cmip_era):
         rootpaths = [get_site_rootpath(cmip_era)[1]]
     basepaths = []
     for rootpath in rootpaths:
-        basepath = os.path.join(rootpath, get_input_dir(cmip_era),
-                                get_input_file(cmip_era))
+        if get_input_dir(cmip_era) != os.path.sep:
+            basepath = os.path.join(rootpath, get_input_dir(cmip_era),
+                                    get_input_file(cmip_era))
+        else:
+            basepath = os.path.join(rootpath,
+                                    get_input_file(cmip_era))
         while basepath.find('//') > -1:
             basepath = basepath.replace('//', '/')
         basepaths.append(basepath)
+    logger.debug(f"We will look for files of patterns %s" % basepaths)
 
     return basepaths
 
@@ -437,6 +453,7 @@ def run():
     # add datasets to recipe as additional_datasets
     shutil.copyfile(input_recipe, output_recipe, follow_symlinks=True)
     add_datasets_into_recipe(additional_datasets, output_recipe)
+    logger.info("Finished recipe filler. Go get some science done now!")
 
 
 if __name__ == "__main__":
