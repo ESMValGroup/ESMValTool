@@ -71,6 +71,12 @@ def _convert_units(cube, time_step):
     return cube
 
 
+def _fix_negative_values(cube):
+    """Change negative values to zero"""
+    cube.data[(-9999 < cube.data) & (cube.data < 0)] = 0
+    return cube
+
+
 def get_input_cubes(metadata):
     """Return a dictionary with all (preprocessed) input files."""
     provenance = create_provenance_record()
@@ -239,35 +245,36 @@ def main(cfg):
     rsdt (toa_incoming_shortwave_flux)
     tas (air_temperature)
     """
+    # Load target grid to be used in re-gridding
+    target_cube = load_target(cfg)
+
     input_metadata = cfg['input_data'].values()
     for dataset_name, metadata in group_metadata(input_metadata,
                                                  'dataset').items():
         all_vars, provenance, mip = get_input_cubes(metadata)
 
-        logger.info("Calculation PET uisng debruin method")
-        all_vars.update(pet=debruin_pet(
-                        psl=all_vars['psl'],
-                        rsds=all_vars['rsds'],
-                        rsdt=all_vars['rsdt'],
-                        tas=all_vars['tas'],
-                        ))
+        if cfg['pet_arora']:
+            logger.info("Calculation PET uisng arora method")
+            all_vars.update(pet=monthly_arora_pet(all_vars['tas']))
+        else:
+            logger.info("Calculation PET uisng debruin method")
+            all_vars.update(pet=debruin_pet(
+                            psl=all_vars['psl'],
+                            rsds=all_vars['rsds'],
+                            rsdt=all_vars['rsdt'],
+                            tas=all_vars['tas'],
+                            ))
+            # Convert unit of pet
+            _convert_units(all_vars['pet'], mip)
 
-        logger.info("Calculation PET uisng arora method")
-        all_vars.update(pet_arora=monthly_arora_pet(all_vars['tas']))
+        # Convert unit of pr
+        _convert_units(all_vars['pr'], mip)
 
-        # Load target grid to be used in re-gridding
-        target_cube = load_target(cfg)
+        # Change negative values for precipitaion to zero
+        _fix_negative_values(all_vars['pr'])
 
-        # Convert unit of pr and pet
-        for var in ['pr', 'pet']:
-            _convert_units(all_vars[var], mip)
-
-        for key in ['pr', 'pet', 'pet_arora']:
+        for key in ['pr', 'pet']:
             cube = all_vars[key]
-
-            # set negative values for precipitaion to zero
-            if key == 'pr':
-                cube.data[(-9999 < cube.data) & (cube.data < 0)] = 0
 
             # Re-grid data according to the target cube
             cube = lazy_regrid(cube, target_cube, 'linear')
