@@ -398,12 +398,10 @@ def calculate_weights(
     weights : ndarray, shape (N,)
     """
     if performance is not None:
-        assert performance_sigma is not None, 'performance_sigma must be set'
         numerator = np.exp(-((performance / performance_sigma)**2))
     else:
         numerator = 1
     if independence is not None:
-        assert independence_sigma is not None, 'independence_sigma must be set'
         exp = np.exp(-((independence / independence_sigma)**2))
         # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
         denominator = exp.sum('perfect_model_ensemble')
@@ -439,23 +437,29 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def parse_contributions(metric: str, cfg: dict) -> list:
-    """Return a dict of variable groups with contributions > 0."""
-    if cfg.get(f'{metric}_contributions') is not None:
-        return {
-            key: value
-            for key, value in cfg[f'{metric}_contributions'].items()
-            if value > 0
-        }
-    return {}
+def parse_contributions_sigma(metric: str,
+                              cfg: dict) -> (list, Union[float, None]):
+    """Return contributions > 0 and sigma for a given metric."""
+    contributions = {
+        key: value
+        for key, value in cfg.get(f'{metric}_contributions', {}).items()
+        if value > 0
+    }
+    sigma = cfg.get(f'{metric}_sigma')
+    if contributions and sigma is None:
+        errmsg = f'{metric}_sigma must be set if {metric}_contributions is set'
+        raise IOError(errmsg)
+    return contributions, sigma
 
 
 def main(cfg):
     """Perform climwip weighting method."""
     models, observations = read_metadata(cfg)
 
-    independence_contributions = parse_contributions('independence', cfg)
-    performance_contributions = parse_contributions('performance', cfg)
+    independence_contributions, independence_sigma = parse_contributions_sigma(
+        'independence', cfg)
+    performance_contributions, performance_sigma = parse_contributions_sigma(
+        'performance', cfg)
 
     if not (independence_contributions or performance_contributions):
         errmsg = ' '.join([
@@ -530,8 +534,6 @@ def main(cfg):
         overall_performance = None
 
     logger.info('Calculating weights')
-    performance_sigma = cfg.get('performance_sigma')
-    independence_sigma = cfg.get('independence_sigma')
     weights = calculate_weights(overall_performance, overall_independence,
                                 performance_sigma, independence_sigma)
     visualize_and_save_weights(weights,
