@@ -486,7 +486,7 @@ def main(cfg):
 
         model_ancestors.extend(model_data_files)
 
-    for variable_group in performance_contributions.keys():
+    for variable_group in performance_contributions:
 
         logger.info('Reading model data for %s', variable_group)
         datasets_model = models[variable_group]
