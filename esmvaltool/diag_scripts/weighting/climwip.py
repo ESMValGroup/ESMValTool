@@ -472,7 +472,7 @@ def main(cfg):
     performances = {}
     independences = {}
 
-    for variable_group in independence_contributions.keys():
+    for variable_group in independence_contributions:
 
         logger.info('Reading model data for %s', variable_group)
         datasets_model = models[variable_group]
