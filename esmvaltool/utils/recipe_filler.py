@@ -60,7 +60,7 @@ ______________________________________________________________________
 """ + __doc__
 
 dataset_order = [
-    'dataset', 'project', 'exp', 'mip', 'historical', 'ensemble', 'grid',
+    'dataset', 'project', 'exp', 'mip', 'ensemble', 'grid',
     'start_year', 'end_year'
 ]
 
@@ -79,7 +79,6 @@ base_dict = {
     'modeling_realm': '*',
     'short_name': '*',
     'grid': '*',
-    'latestversion': 'latest',
     'start_year': '*',
     'end_year': '*',
     'activity': '*',
@@ -173,6 +172,26 @@ def filter_years(files, start_year, end_year):
     return valid_files
 
 
+def _resolve_latestversion(dirname_template):
+    """Resolve the 'latestversion' tag."""
+    if '{latestversion}' not in dirname_template:
+        return dirname_template
+
+    # Find latest version
+    part1, part2 = dirname_template.split('{latestversion}')
+    part2 = part2.lstrip(os.sep)
+    part1_contents = glob(part1)
+    if part1_contents:
+        versions = os.listdir(part1_contents[0])
+        versions.sort(reverse=True)
+        for version in ['latest'] + versions:
+            dirname = os.path.join(part1, version, part2)
+            if glob(dirname):
+                return dirname
+
+    return dirname_template
+
+
 def list_all_files(file_dict, cmip_era):
     """List all files that match the dataset dictionary."""
     mip = file_dict['mip']
@@ -202,6 +221,7 @@ def list_all_files(file_dict, cmip_era):
             # load all the files in the custom dict
             for key, value in file_dict.items():
                 new_path = new_path.replace('{' + key + '}', str(value))
+            new_path = _resolve_latestversion(new_path)
 
             # Globs all the wildcards into a list of files.
             files = glob(new_path)
