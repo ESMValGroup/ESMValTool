@@ -440,7 +440,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
 def parse_contributions_sigma(metric: str,
                               cfg: dict) -> (list, Union[float, None]):
     """Return contributions > 0 and sigma for a given metric."""
-    if  cfg.get(f'{metric}_contributions') is None:  # not set or set to None
+    if cfg.get(f'{metric}_contributions') is None:  # not set or set to None
         contributions = {}
     else:
         contributions = {
