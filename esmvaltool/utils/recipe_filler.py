@@ -93,13 +93,11 @@ def get_site_rootpath(cmip_era):
         yamlconf = yaml.safe_load(yamf)
     drs = yamlconf['drs'][cmip_era]
     rootdir = yamlconf['rootpath'][cmip_era]
-    if drs == 'default':
-        if 'default' not in yamlconf['rootpath']:
-            logger.error(f"You are using default DRS but did not "
-                         f"specify a rootpath/default in config-user."
-                         f"Exiting.")
-            sys.exit(1)
+    logger.debug("%s root directory %s" % (cmip_era, rootdir))
+    if drs == 'default' and 'default' in yamlconf['rootpath']:
         rootdir = yamlconf['rootpath']['default']
+        logger.debug(f"Using drs default and "
+                     f"default: %s data directory" % rootdir)
 
     return drs, rootdir
 
