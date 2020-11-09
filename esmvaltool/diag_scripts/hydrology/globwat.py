@@ -14,6 +14,7 @@ import iris.analysis
 import numpy as np
 import xarray as xr
 import pandas as pd
+import dask.array as da
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
@@ -56,24 +57,26 @@ def change_data_type(cube):
     return cube
 
 
-def _convert_units(cube, time_step):
+def _convert_units(cube):
     """Convert unit of cube."""
     cube.units = cube.units / 'kg m-3'
     cube.data = cube.core_data() / 1000.
 
+    mip = cube.attributes['mip']
+
     # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
-    if time_step == 'Amon':
+    if mip == 'Amon':
         cube.convert_units('mm month-1')
 
     # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
-    elif time_step == 'day':
+    elif mip == 'day':
         cube.convert_units('mm day-1')
     return cube
 
 
 def _fix_negative_values(cube):
     """Change negative values to zero"""
-    cube.data[(-9999 < cube.data) & (cube.data < 0)] = 0
+    cube.data = da.where(cube.core_data() < 0, 0, cube.core_data())
     return cube
 
 
@@ -83,26 +86,18 @@ def get_input_cubes(metadata):
     all_vars = {}
     for attributes in metadata:
         short_name = attributes['short_name']
-        time_step = attributes['mip']
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
-        cube.data.set_fill_value(-9999)
         all_vars[short_name] = change_data_type(cube)
         provenance['ancestors'].append(filename)
-    return all_vars, provenance, time_step
+    return all_vars, provenance
 
 
 def load_target(cfg):
     """Load target grid."""
-    logger.info("Reading a sample input file from %s")
     filename = Path(cfg['auxiliary_data_dir']) / cfg['target_file']
-    if filename.suffix.lower() == '.nc':
-        cube = iris.load_cube(str(filename))
-    for coord in 'longitude', 'latitude':
-        if not cube.coord(coord).has_bounds():
-            logger.warning("Guessing target %s bounds", coord)
-            cube.coord(coord).guess_bounds()
+    cube = iris.load_cube(str(filename))
     return cube
 
 
@@ -155,7 +150,10 @@ def _reindex_data(cube, target):
         method="nearest",
         tolerance=1e-2,
     )
-    return reindex_ds.to_array().to_iris()
+    new_cube = reindex_ds.to_array().to_iris()
+    new_cube.var_name = cube.var_name
+    new_cube.attributes = cube.attributes
+    return new_cube
 
 
 def _swap_western_hemisphere(cube):
@@ -207,6 +205,7 @@ def save_to_ascii(cube, file_name):
     output.write(f"cellsize      {xres}\n")
     output.write(f"NODATA_value  {np.int32(-9999)}\n")
     output.close()
+
     data_frame = pd.DataFrame(array.values, dtype=array.dtype)
     data_frame.to_csv(file_name, sep=' ', na_rep='-9999', float_format=None,
                       header=False, index=False, mode='a')
@@ -251,7 +250,7 @@ def main(cfg):
     input_metadata = cfg['input_data'].values()
     for dataset_name, metadata in group_metadata(input_metadata,
                                                  'dataset').items():
-        all_vars, provenance, mip = get_input_cubes(metadata)
+        all_vars, provenance = get_input_cubes(metadata)
 
         if cfg['pet_arora']:
             logger.info("Calculation PET uisng arora method")
@@ -265,12 +264,12 @@ def main(cfg):
                             tas=all_vars['tas'],
                             ))
             # Convert unit of pet
-            _convert_units(all_vars['pet'], mip)
+            _convert_units(all_vars['pet'])
 
         # Convert unit of pr
-        _convert_units(all_vars['pr'], mip)
+        _convert_units(all_vars['pr'])
 
-        # Change negative values for precipitaion to zero
+        # Change negative values for pr to zero
         _fix_negative_values(all_vars['pr'])
 
         for key in ['pr', 'pet']:
@@ -284,8 +283,15 @@ def main(cfg):
 
             # Save data as an ascii file per each time step
             for sub_cube in cube.slices_over('time'):
-                filename = make_filename(dataset_name, cfg, sub_cube, extension='asc')
-                save_to_ascii(sub_cube, filename)
+
+                # Removes time dimension of length one
+                new_cube = iris.util.squeeze(sub_cube)
+
+                # Make a file name
+                filename = make_filename(dataset_name, cfg, new_cube, extension='asc')
+
+                # Save to ascii
+                save_to_ascii(new_cube, filename)
 
                 # Store provenance
                 with ProvenanceLogger(cfg) as provenance_logger:
