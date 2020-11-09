@@ -102,3 +102,25 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
+
+  weighted_temperature_map:
+    variables:
+      tas: &map_settings
+        short_name: tas
+        start_year: 2081
+        end_year: 2100
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_reference:
+        <<: *map_settings
+        start_year: 1995
+        end_year: 2014
+    scripts:
+      weighted_temperature_map:
+        script: weighting/weighted_temperature_map.py
+        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        weights: 'weights.nc'
+        # optional arguments
+        model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
+        xticks: [0, 10, 20, 30, 40]  # if not given ticks will be set automatically
+        yticks: [30, 40, 50, 60, 70, 80]

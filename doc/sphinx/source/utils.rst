@@ -7,6 +7,7 @@ This section provides information on small tools that are available in the
 `esmvaltool/utils <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/utils>`_
 directory.
 
+.. _draft_release_notes.py:
 
 draft_release_notes.py
 ======================

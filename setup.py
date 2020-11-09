@@ -8,7 +8,8 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-from esmvaltool import __version__
+sys.path.insert(0, os.path.dirname(__file__))
+from esmvaltool import __version__  # noqa: E402
 
 PACKAGES = [
     'esmvaltool',
@@ -38,7 +39,7 @@ REQUIREMENTS = {
         'jinja2',
         'joblib',
         'lime',
-        'matplotlib',
+        'matplotlib>=3,<3.3',
         'natsort',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
@@ -50,7 +51,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=2.2.1',
+        'scitools-iris>=2.2.1,<3',
         'seaborn',
         'seawater',
         'shapely',
