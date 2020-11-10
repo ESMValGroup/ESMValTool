@@ -276,7 +276,7 @@ def main(cfg):
             cube = all_vars[key]
 
             # Re-grid data according to the target cube
-            cube = lazy_regrid(cube, target_cube, 'linear')
+            cube = lazy_regrid(cube, target_cube, cfg['regrid_scheme'])
 
             # Reindex data to a global coordinates set
             cube = _reindex_data(cube, target_cube)
