@@ -222,6 +222,13 @@ def list_all_files(file_dict, cmip_era):
             for key, value in file_dict.items():
                 new_path = new_path.replace('{' + key + '}', str(value))
             new_path = _resolve_latestversion(new_path)
+            if new_path.startswith("~"):
+                new_path = os.path.expanduser(new_path)
+                if not new_path.startswith(os.sep):
+                    logger.error(f"Could not expand ~ to user home dir "
+                                 f"please expand it in the config user file!")
+                    sys.exit(1)
+                logger.warning("Expanding path to %s" % new_path)
 
             # Globs all the wildcards into a list of files.
             files = glob(new_path)
