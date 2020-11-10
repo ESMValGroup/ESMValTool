@@ -75,7 +75,7 @@ def _convert_units(cube):
 
 
 def _fix_negative_values(cube):
-    """Change negative values to zero"""
+    """Change negative values to zero."""
     cube.data = da.where(cube.core_data() < 0, 0, cube.core_data())
     return cube
 
@@ -214,8 +214,8 @@ def save_to_ascii(cube, file_name):
 def make_filename(dataset_name, cfg, cube, extension='asc'):
     """Get a valid path for saving a diagnostic data file.
 
-    filenames are specific to Globwat."""
-
+    filenames are specific to Globwat.
+    """
     names_map = {'pr': 'prc', 'pet': 'eto'}
 
     nyear, nmonth, nday = get_cube_time_info(cube)
@@ -258,11 +258,10 @@ def main(cfg):
         else:
             logger.info("Calculation PET uisng debruin method")
             all_vars.update(pet=debruin_pet(
-                            psl=all_vars['psl'],
-                            rsds=all_vars['rsds'],
-                            rsdt=all_vars['rsdt'],
-                            tas=all_vars['tas'],
-                            ))
+                psl=all_vars['psl'],
+                rsds=all_vars['rsds'],
+                rsdt=all_vars['rsdt'],
+                tas=all_vars['tas']))
             # Convert unit of pet
             _convert_units(all_vars['pet'])
 
@@ -288,7 +287,9 @@ def main(cfg):
                 new_cube = iris.util.squeeze(sub_cube)
 
                 # Make a file name
-                filename = make_filename(dataset_name, cfg, new_cube, extension='asc')
+                filename = make_filename(
+                    dataset_name, cfg, new_cube, extension='asc'
+                )
 
                 # Save to ascii
                 save_to_ascii(new_cube, filename)
