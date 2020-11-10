@@ -1,23 +1,15 @@
 # ESA CCI LST Diagnostic
 
-
 import os
-
-# to manipulate iris cubes
 import iris
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
-                               AutoMinorLocator)
-
 import numpy as np
 
 import logging
 
-# import internal esmvaltool modules here
+# import internal esmvaltool modules
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvalcore.preprocessor import area_statistics
-#from esmvaltool.diag_scripts.shared.plot import quickplot#, save_figure
 
 logger = logging.getLogger(__name__) # from OC example, dont know what this does!
 
@@ -41,7 +33,7 @@ def get_input_cubes(metadata):
 
     return inputs, ancestors
 
-def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config):
+def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input_metadata):
     # Make a timeseries plot of the difference OBS-MODEL
 
     fig,ax = plt.subplots(figsize=(15,15))
@@ -52,6 +44,20 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config):
     ax.plot(lst_diff_data_high.data,'--', color='blue', linewidth=3)
     ax.fill_between(range(len(lst_diff_data.data)), lst_diff_data_low.data,lst_diff_data_high.data,
                     color='blue',alpha=0.25)
+
+    # needed for y ticks and model used text
+    Y_lower = np.floor(lst_diff_data_low.data.min())
+    Y_upper = np.ceil(lst_diff_data_high.data.max())
+
+    # model_text = "Models used:\n"
+    # for ITEM in input_metadata:
+    #     logger.info(ITEM['alias'])
+    #     if 'ESACCI' in ITEM['alias'] or 'MultiModel' in ITEM['alias'] or 'OBS' in ITEM['alias']:
+    #         continue
+    #     model_text += "%s \n" % ITEM['alias']
+    # ax.text(0, (Y_lower+Y_upper)/2, model_text,
+    #         bbox=dict(facecolor='black', alpha=0.25, pad=10),
+    #         fontsize=14)
 
     # make X ticks
     x_tick_list = []
@@ -67,21 +73,9 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config):
     ax.set_xticks(range(len(lst_diff_data.data)))
     ax.set_xticklabels(x_tick_list, fontsize=18, rotation = 45)
 
-
     # make Y ticks
-    Y_lower = np.floor(lst_diff_data_low.data.min())
-    Y_upper = np.ceil(lst_diff_data_high.data.max())
-
-#    ax.yaxis.set_major_locator(MultipleLocator(2))
-#    ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
-
-    # For the minor ticks, use no labels; default NullFormatter.
-#    ax.yaxis.set_minor_locator(MultipleLocator(0.5))
-
     ax.set_yticks(np.arange(Y_lower,Y_upper+0.1,2))
-    ax.set_yticklabels(np.arange(Y_lower,Y_upper+0.1,0.5), fontsize=18)
-
-    
+    ax.set_yticklabels(np.arange(Y_lower,Y_upper+0.1,2), fontsize=18)
     ax.set_ylim((Y_lower-0.1,Y_upper+0.1))
 
     ax.set_xlabel('Date', fontsize = 20)
@@ -97,34 +91,21 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config):
     fig.suptitle('ESACCI LST - CMIP6 Historical Ensemble Mean', fontsize=24)
 
     plt.savefig('%s/timeseries.png' % config['plot_dir'])
-
-    plt.close('all')
-
-    # fig = plt.figure()
-    # ax = plt.axes(projection=ccrs.PlateCarree())
-    # ax.stock_img()
-
-    
-
+    plt.close('all') # Is this needed?
 
     return None
 
 def diagnostic(config):
     
-
     logger.info("Robs text 1") # marker to see where this work appears in the log
 
-    # this function is from the hydrology py above
+    # this function is based on the hydrology py above
     input_metadata = config['input_data'].values()
-    logger.info(input_metadata)
-    logger.info(group_metadata(input_metadata, 'dataset').items())
+
     loaded_data = {}
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors = get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-
-    logger.info('Robs text 2 ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
-    logger.info(loaded_data)
 
     # loaded data is a nested dictionary
     # KEY1 model ESACCI-LST or something else
@@ -145,12 +126,9 @@ def diagnostic(config):
     lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data['MultiModelMean']['ts']
     lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts']+loaded_data['MultiModelStd']['ts'])
     lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts']-loaded_data['MultiModelStd']['ts'])
-    logger.info('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq')
-    logger.info(lst_diff_cube_low)
-    logger.info(lst_diff_cube_low.data)
 
     # plotting
-    make_plots(lst_diff_cube,lst_diff_cube_low,lst_diff_cube_high, config)
+    make_plots(lst_diff_cube,lst_diff_cube_low,lst_diff_cube_high, config, input_metadata)
 
     return None
 
