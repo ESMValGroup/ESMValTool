@@ -53,8 +53,10 @@ def make_plots(lst_diff_data, config):
     for item in time_list:
         if item.month == 1:
             x_tick_list.append(item.strftime('%Y %b'))
-        else:
+        elif item.month == 6:
             x_tick_list.append(item.strftime('%b'))
+        else:
+            x_tick_list.append('')
 
     ax.set_xticks(range(len(lst_diff_data.data)))
     ax.set_xticklabels(x_tick_list, fontsize=18, rotation = 45)
@@ -137,4 +139,5 @@ if __name__ == '__main__':
     with run_diagnostic() as config:
         # list here the functions that need to run
         diagnostic(config)
+
 
