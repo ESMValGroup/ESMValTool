@@ -84,6 +84,9 @@ def cmorization(in_dir, out_dir, cfg, _):
             # Use utils save
             # This seems to save files all with the same name!
             this_years_cubes = this_years_cubes.merge_cube()
+            this_years_cubes.long_name = 'Surface Temperature'
+            this_years_cubes.standard_name = 'surface_temperature'
+
             utils.save_variable(
                 this_years_cubes,
                 var,
