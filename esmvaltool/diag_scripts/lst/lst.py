@@ -7,6 +7,9 @@ import os
 import iris
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
+from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
+                               AutoMinorLocator)
+
 import numpy as np
 
 import logging
@@ -38,14 +41,17 @@ def get_input_cubes(metadata):
 
     return inputs, ancestors
 
-def make_plots(lst_diff_data, config):
+def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config):
     # Make a timeseries plot of the difference OBS-MODEL
 
     fig,ax = plt.subplots(figsize=(15,15))
 
 
-    ax.plot(lst_diff_data.data, color='black', linewidth=2)
-
+    ax.plot(lst_diff_data.data, color='black', linewidth=4)
+    ax.plot(lst_diff_data_low.data,'--', color='blue', linewidth=3)
+    ax.plot(lst_diff_data_high.data,'--', color='blue', linewidth=3)
+    ax.fill_between(range(len(lst_diff_data.data)), lst_diff_data_low.data,lst_diff_data_high.data,
+                    color='blue',alpha=0.25)
 
     # make X ticks
     x_tick_list = []
@@ -53,7 +59,7 @@ def make_plots(lst_diff_data, config):
     for item in time_list:
         if item.month == 1:
             x_tick_list.append(item.strftime('%Y %b'))
-        elif item.month == 6:
+        elif item.month == 7:
             x_tick_list.append(item.strftime('%b'))
         else:
             x_tick_list.append('')
@@ -63,11 +69,19 @@ def make_plots(lst_diff_data, config):
 
 
     # make Y ticks
-    Y_lower = np.floor(lst_diff_data.data.min())
-    Y_upper = np.ceil(lst_diff_data.data.max())
-    ax.set_yticks(np.arange(Y_lower,Y_upper+0.1,0.5))
+    Y_lower = np.floor(lst_diff_data_low.data.min())
+    Y_upper = np.ceil(lst_diff_data_high.data.max())
+
+#    ax.yaxis.set_major_locator(MultipleLocator(2))
+#    ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
+
+    # For the minor ticks, use no labels; default NullFormatter.
+#    ax.yaxis.set_minor_locator(MultipleLocator(0.5))
+
+    ax.set_yticks(np.arange(Y_lower,Y_upper+0.1,2))
     ax.set_yticklabels(np.arange(Y_lower,Y_upper+0.1,0.5), fontsize=18)
 
+    
     ax.set_ylim((Y_lower-0.1,Y_upper+0.1))
 
     ax.set_xlabel('Date', fontsize = 20)
@@ -86,9 +100,9 @@ def make_plots(lst_diff_data, config):
 
     plt.close('all')
 
-    fig = plt.figure()
-    ax = plt.axes(projection=ccrs.PlateCarree())
-    ax.stock_img()
+    # fig = plt.figure()
+    # ax = plt.axes(projection=ccrs.PlateCarree())
+    # ax.stock_img()
 
     
 
@@ -124,12 +138,19 @@ def diagnostic(config):
     # Assume the loaded data is all the same shape !!!!
     loaded_data['MultiModelMean']['ts'].remove_coord('time')
     loaded_data['MultiModelMean']['ts'].add_dim_coord(loaded_data['ESACCI-LST']['ts'].coord('time'),0)
+    loaded_data['MultiModelStd']['ts'].remove_coord('time')
+    loaded_data['MultiModelStd']['ts'].add_dim_coord(loaded_data['ESACCI-LST']['ts'].coord('time'),0)
 
     # Make a cube of the LST difference
     lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data['MultiModelMean']['ts']
-    
+    lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts']+loaded_data['MultiModelStd']['ts'])
+    lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts']-loaded_data['MultiModelStd']['ts'])
+    logger.info('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq')
+    logger.info(lst_diff_cube_low)
+    logger.info(lst_diff_cube_low.data)
+
     # plotting
-    make_plots(lst_diff_cube, config)
+    make_plots(lst_diff_cube,lst_diff_cube_low,lst_diff_cube_high, config)
 
     return None
 
