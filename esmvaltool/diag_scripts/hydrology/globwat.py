@@ -216,7 +216,7 @@ def make_filename(dataset_name, cfg, cube, extension='asc'):
 
     filenames are specific to Globwat."""
 
-    names_map = {'pr': 'prc', 'pet': 'eto', 'pet_arora': 'eto_arora'}
+    names_map = {'pr': 'prc', 'pet': 'eto'}
 
     nyear, nmonth, nday = get_cube_time_info(cube)
     short_name, mip = get_cube_data_info(cube)
