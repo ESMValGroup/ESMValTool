@@ -15,33 +15,35 @@ documentation:
     - cmug
 
 datasets:
- 
-  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2009, end_year: 2010, grid: gn}
-  - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2009,  end_year: 2010, version: '1.00'}
+   
+  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1, start_year: 2013, end_year: 2014, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2013, end_year: 2014, grid: gn}
+  - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2013,  end_year: 2014, version: '1.00'}
 
 preprocessors:
 
-  robs_preprocessor:
+  lst_preprocessor:
     regrid:
       target_grid: UKESM1-0-LL
       scheme: linear
       
-    multi_model_statistics:
-        span: overlap
-        statistics: [mean]
-        exclude: [ESACCI-LST]
-
     extract_region:
-        start_longitude: 170
-        end_longitude:   220
-        start_latitude:   40
-        end_latitude:     60
+        start_longitude:  35
+        end_longitude:   175
+        start_latitude:   55
+        end_latitude:     70
 
     mask_landsea:
         mask_out: sea
 
     area_statistics:
         operator: mean
+
+    multi_model_statistics:
+        span: overlap
+        statistics: [mean,std]
+        exclude: [ESACCI-LST]
+
 
 diagnostics:
 
@@ -54,9 +56,8 @@ diagnostics:
     variables:
       ts:
         mip: Amon
-        preprocessor: robs_preprocessor
-        start_year: 2009
-        end_year: 2010
+        preprocessor: lst_preprocessor
+
     scripts:
       script1:
         script: lst/lst.py
