@@ -7,6 +7,7 @@ import logging
 import os
 from collections import defaultdict
 from datetime import datetime
+from typing import Union
 
 import matplotlib.pyplot as plt
 import natsort
@@ -345,49 +346,67 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def compute_overall_mean(dataset):
-    """Normalize all variables in a dataset and return their mean."""
+def compute_overall_mean(dataset: 'xr.Dataset',
+                         weights: dict) -> 'xr.DataArray':
+    """Normalize all variables in a dataset and return their weighted mean.
+
+    Relative weights for each variable group are passed via the recipe.
+    """
     if 'perfect_model_ensemble' in dataset.dims:
         median_dim = ['perfect_model_ensemble', 'model_ensemble']
     else:
         median_dim = 'model_ensemble'
+
     normalized = dataset / dataset.median(dim=median_dim)
 
+    weights_selected = xr.DataArray(
+        [weights[variable_group] for variable_group in dataset],
+        coords={'variable_group': list(dataset)},
+        dims='variable_group')
     overall_mean = normalized.to_array(
-        dim='variable_group').mean('variable_group')
+        dim='variable_group').weighted(weights_selected).mean('variable_group')
     overall_mean.name = 'overall_mean'
     overall_mean.attrs['variable_group'] = 'overall_mean'
     overall_mean.attrs['units'] = '1'
     return overall_mean
 
 
-def calculate_weights(performance: 'xr.DataArray',
-                      independence: 'xr.DataArray', sigma_performance: float,
-                      sigma_independence: float) -> 'xr.DataArray':
+def calculate_weights(
+        performance: Union['xr.DataArray', None],
+        independence: Union['xr.DataArray', None],
+        performance_sigma: Union[float, None],
+        independence_sigma: Union[float, None]) -> 'xr.DataArray':
     """Calculate the (NOT normalised) weights for each model N.
 
     Parameters
     ----------
-    performance : array_like, shape (N,)
-        Array specifying the model performance.
-    independence : array_like, shape (N, N)
-        Array specifying the model independence.
-    sigma_performance : float
+    performance : array_like, shape (N,) or None
+        Array specifying the model performance. None is mutually exclusive
+        with independence being None.
+    independence : array_like, shape (N, N) or None
+        Array specifying the model independence. None is mutually exclusive
+        with performance being None.
+    performance_sigma : float or None
         Sigma value defining the form of the weighting function
-            for the performance.
-    sigma_independence : float
+        for the performance. Can be one only if performance is also None.
+    independence_sigma : float or None
         Sigma value defining the form of the weighting function
-            for the independence.
+            for the independence. Can be one only if independence is also None.
 
     Returns
     -------
     weights : ndarray, shape (N,)
     """
-    numerator = np.exp(-((performance / sigma_performance)**2))
-    exp = np.exp(-((independence / sigma_independence)**2))
-
-    # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
-    denominator = exp.sum(axis=0)
+    if performance is not None:
+        numerator = np.exp(-((performance / performance_sigma)**2))
+    else:
+        numerator = 1
+    if independence is not None:
+        exp = np.exp(-((independence / independence_sigma)**2))
+        # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
+        denominator = exp.sum('perfect_model_ensemble')
+    else:
+        denominator = 1
 
     weights = numerator / denominator
 
@@ -418,11 +437,41 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
+def parse_contributions_sigma(metric: str,
+                              cfg: dict) -> (list, Union[float, None]):
+    """Return contributions > 0 and sigma for a given metric."""
+    if cfg.get(f'{metric}_contributions') is None:  # not set or set to None
+        contributions = {}
+    else:
+        contributions = {
+            key: value
+            for key, value in cfg[f'{metric}_contributions'].items()
+            if value > 0
+        }
+    sigma = cfg.get(f'{metric}_sigma')
+    if contributions and sigma is None:
+        errmsg = f'{metric}_sigma must be set if {metric}_contributions is set'
+        raise IOError(errmsg)
+    return contributions, sigma
+
+
 def main(cfg):
     """Perform climwip weighting method."""
     models, observations = read_metadata(cfg)
 
-    variable_groups = models.keys()
+    independence_contributions, independence_sigma = parse_contributions_sigma(
+        'independence', cfg)
+    performance_contributions, performance_sigma = parse_contributions_sigma(
+        'performance', cfg)
+
+    if not (independence_contributions or performance_contributions):
+        errmsg = ' '.join([
+            'Either the independence_contributions or the',
+            'performance_contributions field need to be set and contain at',
+            'least one variable group with weight > 0 otherwise no weights',
+            'can be calculated!'
+        ])
+        raise IOError(errmsg)
 
     model_ancestors = []
     obs_ancestors = []
@@ -430,7 +479,21 @@ def main(cfg):
     performances = {}
     independences = {}
 
-    for variable_group in variable_groups:
+    for variable_group in independence_contributions:
+
+        logger.info('Reading model data for %s', variable_group)
+        datasets_model = models[variable_group]
+        model_data, model_data_files = read_model_data(datasets_model)
+
+        logger.info('Calculating independence for %s', variable_group)
+        independence = calculate_independence(model_data)
+        visualize_and_save_independence(independence, cfg, model_data_files)
+        logger.debug(independence.values)
+        independences[variable_group] = independence
+
+        model_ancestors.extend(model_data_files)
+
+    for variable_group in performance_contributions:
 
         logger.info('Reading model data for %s', variable_group)
         datasets_model = models[variable_group]
@@ -441,41 +504,41 @@ def main(cfg):
         obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
-        if datasets_model[0].get('independence', True):
-            logger.info('Calculating independence for %s', variable_group)
-            independence = calculate_independence(model_data)
-            visualize_and_save_independence(independence, cfg,
-                                            model_data_files)
-            logger.debug(independence.values)
-            independences[variable_group] = independence
-
-        if datasets_model[0].get('performance', True):
-            logger.info('Calculating performance for %s', variable_group)
-            performance = calculate_performance(model_data, obs_data)
-            visualize_and_save_performance(performance, cfg,
-                                           model_data_files + obs_data_files)
-            logger.debug(performance.values)
-            performances[variable_group] = performance
-            obs_ancestors.extend(obs_data_files)
+        logger.info('Calculating performance for %s', variable_group)
+        performance = calculate_performance(model_data, obs_data)
+        visualize_and_save_performance(performance, cfg,
+                                       model_data_files + obs_data_files)
+        logger.debug(performance.values)
+        performances[variable_group] = performance
+        obs_ancestors.extend(obs_data_files)
 
         model_ancestors.extend(model_data_files)
 
-    logger.info('Computing overall mean independence')
-    independence = xr.Dataset(independences)
-    overall_independence = compute_overall_mean(independence)
-    visualize_and_save_independence(overall_independence, cfg, model_ancestors)
+    model_ancestors = list(set(model_ancestors))  # only keep unique items
 
-    logger.info('Computing overall mean performance')
-    performance = xr.Dataset(performances)
-    overall_performance = compute_overall_mean(performance)
-    visualize_and_save_performance(overall_performance, cfg,
-                                   model_ancestors + obs_ancestors)
+    if independence_contributions:
+        logger.info('Computing overall mean independence')
+        independence = xr.Dataset(independences)
+        overall_independence = compute_overall_mean(
+            independence, independence_contributions)
+        visualize_and_save_independence(overall_independence, cfg,
+                                        model_ancestors)
+    else:
+        overall_independence = None
+
+    if performance_contributions:
+        logger.info('Computing overall mean performance')
+        performance = xr.Dataset(performances)
+        overall_performance = compute_overall_mean(performance,
+                                                   performance_contributions)
+        visualize_and_save_performance(overall_performance, cfg,
+                                       model_ancestors + obs_ancestors)
+    else:
+        overall_performance = None
 
     logger.info('Calculating weights')
-    sigma_performance = cfg['sigma_performance']
-    sigma_independence = cfg['sigma_independence']
     weights = calculate_weights(overall_performance, overall_independence,
-                                sigma_performance, sigma_independence)
+                                performance_sigma, independence_sigma)
     visualize_and_save_weights(weights,
                                cfg,
                                ancestors=model_ancestors + obs_ancestors)
