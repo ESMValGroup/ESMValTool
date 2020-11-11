@@ -1,14 +1,11 @@
 # ESA CCI LST Diagnostic
 
-import os
 import iris
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
-
 import logging
 
-# import internal esmvaltool modules
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
@@ -17,14 +14,11 @@ logger = logging.getLogger(__name__) # from OC example, dont know what this does
 def get_input_cubes(metadata):
     # This is from 
     # https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/hydrology/lisflood.py
-    """Create a dict with all (preprocessed) input files."""
+
     inputs = {}
     ancestors = {}
     for attributes in metadata:
         short_name = attributes['short_name']
-        #if short_name in inputs:
-        #    raise ValueError(f"Multiple input files found for variable "
-        #                     f"'{short_name}'.")
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
@@ -39,16 +33,11 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input
 
     fig,ax = plt.subplots(figsize=(15,15))
 
-
     ax.plot(lst_diff_data.data, color='black', linewidth=4)
     ax.plot(lst_diff_data_low.data,'--', color='blue', linewidth=3)
     ax.plot(lst_diff_data_high.data,'--', color='blue', linewidth=3)
     ax.fill_between(range(len(lst_diff_data.data)), lst_diff_data_low.data,lst_diff_data_high.data,
                     color='blue',alpha=0.25)
-
-    # needed for y ticks and model used text
-    Y_lower = np.floor(lst_diff_data_low.data.min())
-    Y_upper = np.ceil(lst_diff_data_high.data.max())
 
     # make X ticks
     x_tick_list = []
@@ -65,6 +54,8 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input
     ax.set_xticklabels(x_tick_list, fontsize=18, rotation = 45)
 
     # make Y ticks
+    Y_lower = np.floor(lst_diff_data_low.data.min())
+    Y_upper = np.ceil(lst_diff_data_high.data.max())
     ax.set_yticks(np.arange(Y_lower,Y_upper+0.1,2))
     ax.set_yticklabels(np.arange(Y_lower,Y_upper+0.1,2), fontsize=18)
     ax.set_ylim((Y_lower-0.1,Y_upper+0.1))
@@ -87,7 +78,7 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input
     return None
 
 def get_provenance_record(attributes, ancestor_files):
-    """Create a provenance record describing the diagnostic data and plot."""
+    
     caption = ("Timeseries of ESA CCI LST difference to mean of model ensembles, calculated over region bounded by latitude {lat_south} to {lat_north}, longitude {lon_west} to {lon_east} and for model/ensembles {ensembles}. Shown for years {start_year} to {end_year}."
                .format(**attributes))
 
@@ -105,9 +96,7 @@ def get_provenance_record(attributes, ancestor_files):
 
 def diagnostic(config):
     
-    logger.info("Robs text 1") # marker to see where this work appears in the log
-    
-    # this function is based on the hydrology py above
+    # this loading function is based on the hydrology py above
     input_metadata = config['input_data'].values()
     logger.info(config)
     loaded_data = {}
@@ -116,6 +105,7 @@ def diagnostic(config):
         cubes, ancestors = get_input_cubes(metadata)
         loaded_data[dataset] = cubes
         ancestor_list.append(ancestors['ts'][0])
+
     # loaded data is a nested dictionary
     # KEY1 model ESACCI-LST or something else
     # KEY2 is ts, the surface temperature
@@ -125,22 +115,22 @@ def diagnostic(config):
     ##### The Diagnostic uses CCI - MODEL
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
-    # Assume the loaded data is all the same shape !!!!
+    # Assume the loaded data is all the same shape
     loaded_data['MultiModelMean']['ts'].remove_coord('time')
     loaded_data['MultiModelMean']['ts'].add_dim_coord(loaded_data['ESACCI-LST']['ts'].coord('time'),0)
     loaded_data['MultiModelStd']['ts'].remove_coord('time')
     loaded_data['MultiModelStd']['ts'].add_dim_coord(loaded_data['ESACCI-LST']['ts'].coord('time'),0)
 
-    # Make a cube of the LST difference
+    # Make a cube of the LST difference, and with +/- std of model variation
     lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data['MultiModelMean']['ts']
     lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts']+loaded_data['MultiModelStd']['ts'])
     lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts']-loaded_data['MultiModelStd']['ts'])
 
-    # plotting
+    # Plotting
     make_plots(lst_diff_cube,lst_diff_cube_low,lst_diff_cube_high, config, input_metadata)
 
-    logger.info(ancestor_list)
-    # provenance
+    # Provenance
+    # Get this information form the data cubes
     data_attributes = {}
     data_attributes['start_year'] = lst_diff_cube.coord('time').units.num2date(lst_diff_cube.coord('time').points)[0].year
     data_attributes['end_year']   = lst_diff_cube.coord('time').units.num2date(lst_diff_cube.coord('time').points)[-1].year
@@ -149,14 +139,14 @@ def diagnostic(config):
     data_attributes['lon_west']   = lst_diff_cube.coord('longitude').bounds[0][0]
     data_attributes['lon_east']   = lst_diff_cube.coord('longitude').bounds[0][1]
     data_attributes['ensembles'] = ''
+
     for ITEM in input_metadata:
         if 'ESACCI' in ITEM['alias'] or 'MultiModel' in ITEM['alias'] or 'OBS' in ITEM['alias']:
             continue
         data_attributes['ensembles'] += "%s " % ITEM['alias']
 
-
-    record = get_provenance_record(data_attributes,ancestor_list)#attributes, ancestor_files)
-    for file in ['%s/timeseries.png' % config['plot_dir']]:#outfiles + plot_files:
+    record = get_provenance_record(data_attributes,ancestor_list)
+    for file in ['%s/timeseries.png' % config['plot_dir']]:
         with ProvenanceLogger(config) as provenance_logger:
             provenance_logger.log(file, record)
 
@@ -166,7 +156,4 @@ if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
     # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
-        # list here the functions that need to run
         diagnostic(config)
-
-
