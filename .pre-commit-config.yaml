@@ -3,6 +3,7 @@
 ---
 exclude: |
   (?x)
+  ^doc/sphinx/source/conf.py|
   ^esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf/|
   ^esmvaltool/diag_scripts/cvdp/
 repos:
