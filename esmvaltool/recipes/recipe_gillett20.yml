@@ -85,14 +85,14 @@ diagnostics:
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-nat}
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-GHG}
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-aer}
-          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: GFDL-ESM4, ensemble: r(1:3)i1p1f1, grid: gr1}
           - {dataset: GFDL-ESM4, ensemble: r(1:3)i1p1f1, grid: gr1, exp: hist-nat}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, exp: hist-aer}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, exp: hist-GHG}
           - {dataset: GISS-E2-1-G, ensemble: r(1:10)i1p1f2, grid: gn}#
           - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-nat,ssp245-nat]}#
           - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-GHG,ssp245-GHG]}#
-#          - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-aer,ssp245-aer]}#Missing 1990s.
+          - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-aer,ssp245-aer]}#
           - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn}
           - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn, exp: hist-nat}
           - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn, exp: hist-GHG}
@@ -141,6 +141,7 @@ diagnostics:
         start_year: 1850
         end_year: 2019
         additional_datasets:  &damip_simulations
+          - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn}#
           - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-nat}#
           - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-aer}#
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, exp: hist-GHG}#
@@ -179,14 +180,14 @@ diagnostics:
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-nat}
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-GHG}
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-aer}
-          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, ensemble: r(1:3)i1p1f1, grid: gn}
           - {dataset: GFDL-ESM4, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-nat}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn, exp: hist-aer}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn, exp: hist-GHG}
           - {dataset: GISS-E2-1-G, ensemble: r(1:10)i1p1f2, grid: gn}#
           - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-nat,ssp245-nat]}#
           - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-GHG,ssp245-GHG]}#
-#          - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-aer,ssp245-aer]}#Missing 1990s.
+          - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-aer,ssp245-aer]}#
           - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn}
           - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn, exp: hist-nat}
           - {dataset: HadGEM3-GC31-LL, ensemble: r(1:4)i1p1f3, grid: gn, exp: hist-GHG}
@@ -236,6 +237,7 @@ diagnostics:
         start_year: 1850
         end_year: 2019
         additional_datasets:
+          - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn}#
           - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-nat}#
           - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-aer}#
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, exp: hist-GHG}#
@@ -274,7 +276,7 @@ diagnostics:
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-nat}
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-GHG}
           - {dataset: FGOALS-g3, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-aer}
-          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, ensemble: r(1:3)i1p1f1, grid: gn}
           - {dataset: GFDL-ESM4, ensemble: r(1:3)i1p1f1, grid: gn, exp: hist-nat}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn, exp: hist-aer}
           - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn, exp: hist-GHG}
@@ -327,7 +329,7 @@ diagnostics:
           - {dataset: GISS-E2-1-G, ensemble: r(1:10)i1p1f2, grid: gn}#
           - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-nat,ssp245-nat]}#
           - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-GHG,ssp245-GHG]}#
-#          - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-aer,ssp245-aer]}#Missing 1990s.
+          - {dataset: GISS-E2-1-G, ensemble: r(1:5)i1p1f2, grid: gn, exp: [hist-aer,ssp245-aer]}#
 
 
 

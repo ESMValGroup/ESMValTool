@@ -45,6 +45,12 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
 #  y0 = int(nc.variables["time"][:][0]/10000)
   nc.close()
 
+#Added to correct GISS-E2-1-G data - ssp245-nat is labelled as C but is in K.
+#Convert values in K to C.
+  if numpy.amax(tos) - numpy.amin(tos[tos > -1e29]) > 100:
+    tos[tos > 100] = tos[tos > 100] - 273.15
+    print ('**** Fixing units in ',tos_file)
+
   # read sic.nc
   nc = netCDF4.Dataset(sic_file, "r")
   lats3 = nc.variables["lat"][:]
@@ -229,6 +235,8 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
   if gmst_comp_warming!=0:
     gmst_comp_warming.append(calc_ann_warming(tos,w)) #Calculate warming in globally-complete blended data.
   obs_diag=calc_diag(obs_tas[0:tos.shape[0],:,:],wm,diag_name)
+  if numpy.amax(diag) > 10:
+    stop
 
   #Repeat obs diagnostics for each member of ensemble observational dataset if ensobs is set. Assume missing data mask is the same as for main obs dataset.
   if ensobs != '':

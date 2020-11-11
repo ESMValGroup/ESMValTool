@@ -18,7 +18,7 @@ import ncblendmask_esmval as ncbm
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
 from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
+   ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -75,6 +75,10 @@ def merge_giss():
   
 def main(cfg):
     plt.ioff() #Turn off interactive plotting.
+    font = {'size'   : 5}
+    matplotlib.rc('font', **font)
+    mm_conv=0.0394
+ 
     """Carry out an attribution analysis using masked and blended temperature."""
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -176,14 +180,6 @@ def main(cfg):
                 dec_warming=[]
                 obs_dec_warming=[]
                 (exp_diags[:,ee],had4_diag)=ncbm.ncblendmask_esmval('max', files[0],files[1],files[2],sftlf_file,obs_file,dec_warming,obs_dec_warming,0,0,diag_name,obs,ensobs,ensobs_diag,ensobs_dec_warming)
-#                #Calculate uncertainty in obs warming.
-#                ens_warming=numpy.zeros(200)
-#                for ens in range(200):
-#                  ens_warming[ens]=numpy.squeeze(numpy.mean(ensobs_diag[ens][32:34])-numpy.mean(ensobs_diag[ens][0:10])) #Assume 5-yr means, calculate 2010-2019-1850-1899 in GMST.
-#                ens_warming=numpy.sort(ens_warming)
-#                print ('ens_warming',ens_warming)
-#                print ('mean',numpy.mean(ens_warming))
-#                exit ()
                 ensobs='' #Set to empty string so that ensemble obs diagnostics are only calculated on the first iteration.
                 exp_dec_warming[ee]=dec_warming[0]
 #Calculate attributable warming in 2010-2019 vs 1850-1899 GMST.
@@ -207,7 +203,7 @@ def main(cfg):
       beta2=numpy.zeros((2,enssize))
       beta3=numpy.zeros((3,enssize))
       neff=nmodel**2/numpy.sum(1./ens_sizes[0:3,:],axis=1) #Effective ensemble size when using multi-model mean.
-      plt.figure(1,figsize=[7,3]) 
+      plt.figure(1,figsize=[180*mm_conv,60*mm_conv]) 
       for ee in range(enssize):
         (xr,yr,cn1,cn2)=da.reduce_dim(numpy.mean(mean_diag[:,0:3,:],axis=2),ensobs_diag[ee][:,None],anom[:,list(range(1,anom_index,2))],anom[:,list(range(0,anom_index,2))])
         att_out2=da.tls(xr[:,0:2],yr,cn1,ne=neff[[0,1]],cn2=cn2,flag_2S=1,RCT_flag=False)
@@ -231,14 +227,17 @@ def main(cfg):
 
       plt.subplot(121)
       plt.plot([0,enssize+1],[1,1],color='black',linewidth=1,ls=':')
-      plt.ylabel('Regression coefficients',size='x-small')
+      plt.ylabel('Regression coefficients')#,size='x-small')
       plt.plot([0,enssize+1],[0,0],color='black',linewidth=1,ls='--')
       plt.axis([0,enssize+1,-1,3])
+      plt.text (-10,3.3,'a',fontsize =7,fontweight='bold', va='center', ha='center')
+
       plt.subplot(122)
       plt.plot([0,enssize+1],[1,1],color='black',linewidth=1,ls=':')
       plt.plot([0,enssize+1],[0,0],color='black',linewidth=1,ls='--')
       plt.axis([0,enssize+1,-1,3])
-      plt.savefig('/home/rng/plots/esmvaltool/reg_obsens_'+diag_name+'_'+exp_flag+'_'+obs+'.png')
+      plt.text (-10,3.3,'b',fontsize =7,fontweight='bold', va='center', ha='center')
+      plt.savefig('/home/rng/plots/esmvaltool/reg_obsens_'+diag_name+'_'+exp_flag+'_'+obs+'.eps')
       plt.close()
 
       for experiment in range(2):      
@@ -249,6 +248,15 @@ def main(cfg):
       print ('beta2',beta2)
       print ('ci95_beta_obs2', ci95_beta_obs2)
       print ('ci95_beta_obs3', ci95_beta_obs3)
+
+#Calculate uncertainty in obs warming.
+#      ens_warming=numpy.zeros(enssize)
+#      for ens in range(enssize):
+#        ens_warming[ens]=numpy.squeeze(numpy.mean(ensobs_diag[ens][32:34])-numpy.mean(ensobs_diag[ens][0:10])) #Assume 5-yr means, calculate 2010-2019-1850-1899 in GMST.
+#      ens_warming=numpy.sort(ens_warming)
+#      print ('ens_warming',ens_warming)
+#      print ('mean',numpy.mean(ens_warming))
+ 
       
     att_out={}
     att_out3={}
@@ -321,9 +329,9 @@ def main(cfg):
             bottomright=224
 #2-way regression coefficients.
         if rcplot:
-            plt.figure(0,figsize=[7,9]) 
+            plt.figure(0,figsize=[180*mm_conv,180*mm_conv]) 
         else:
-            plt.figure(0,figsize=[7,6]) 
+            plt.figure(0,figsize=[180*mm_conv,120*mm_conv]) 
         plt.subplot(topleft)
         plt.plot([mm_attrib+0.9,mm_attrib+0.9],numpy.transpose(att_out[dataset]['betaCI'][0,:]),color=colors[1,:],linewidth=2,label=ant)
         plt.plot([mm_attrib+1.1,mm_attrib+1.1],numpy.transpose(att_out[dataset]['betaCI'][1,:]),color=colors[4,:],linewidth=2,label=nat)
@@ -497,22 +505,14 @@ def main(cfg):
     print ('Obs warming',obs_warming)
     print ('Obs warming in GMST',obs_dec_warming[0])
     print ('att_out3',att_out3)
+    panel_labels=['a','b','c','d','e','f']
+    panel_counter=0
+    
 
-    for ff in [bottomleft,bottomright]:
-        plt.subplot(ff)
-        plt.plot([0,nmodel_attrib+2],[obs_warming,obs_warming],color='black',linewidth=1,label='Had4 GSAT')
-        if ff == bottomleft: plt.ylabel('Attributable change 2010-2019 vs 1850-1900 ($^\circ$C)',size='x-small') 
-        plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--')
-        if pool_int_var:
-          plt.axis([0,nmodel_attrib+2,-2,3])
-          plt.xticks(list(range(1,nmodel_attrib+2)),model_names, size='xx-small',rotation=30.,ha="right")
-        else:
-          plt.axis([0,nmodel_attrib+1,-2,3])
-          plt.xticks(list(range(1,nmodel_attrib+1)),model_names[0:nmodel_attrib], size='xx-small',rotation=30.,ha="right")
     for ff in [topleft,topright]:
         plt.subplot(ff)
         plt.plot([0,nmodel_attrib+2],[1,1],color='black',linewidth=1,ls=':')
-        if ff == topleft: plt.ylabel('Regression coefficients',size='x-small')
+        if ff == topleft: plt.ylabel('Regression coefficients')#,size='x-small')
         plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--')
         if pool_int_var:
           plt.axis([0,nmodel_attrib+2,-1,3])
@@ -521,6 +521,9 @@ def main(cfg):
           plt.axis([0,nmodel_attrib+1,-1,3])
           plt.xticks(list(range(1,nmodel_attrib+1)),[''])
         plt.legend(loc="upper left")
+        plt.text (-2.5,3.5,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
+        panel_counter=panel_counter+1
+
     if rcplot:
         for ff in [323,324]:
             plt.subplot(ff)
@@ -532,15 +535,57 @@ def main(cfg):
             else:
               plt.axis([0,nmodel_attrib+1,0,1])
               plt.xticks(list(range(1,nmodel_attrib+1)),[''])
-            if ff == 323: plt.ylabel('RCT P-value',size='x-small')
+            if ff == 323: plt.ylabel('RCT P-value')#,size='x-small')
+            plt.text (-2,1.075,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
+            panel_counter=panel_counter+1
+
+    if simple_uncert: #Label lower panels a and b.
+      panel_counter=0
+      
+    for ff in [bottomleft,bottomright]:
+        plt.subplot(ff)
+        plt.plot([0,nmodel_attrib+2],[obs_warming,obs_warming],color='black',linewidth=1,label='Had4 GSAT')
+        if ff == bottomleft: plt.ylabel('Attributable change 2010-2019 vs 1850-1900 ($^\circ$C)')#,size='x-small') 
+        plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--')
+        if pool_int_var:
+          plt.axis([0,nmodel_attrib+2,-2,3])
+          plt.xticks(list(range(1,nmodel_attrib+2)),model_names,rotation=30.,ha="right")
+        else:
+          plt.axis([0,nmodel_attrib+1,-2,3])
+          plt.xticks(list(range(1,nmodel_attrib+1)),model_names[0:nmodel_attrib],rotation=30.,ha="right")
+
+        plt.text (-2,3.3,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
+        panel_counter=panel_counter+1
 
 
     pool_flag='' if pool_int_var else '_not_pooled'
     uncert_flag='__simple_uncert' if simple_uncert else ''
-    plt.savefig('/home/rng/plots/esmvaltool/reg_attrib_'+diag_name+'_'+exp_flag+'_'+obs+pool_flag+uncert_flag+'.png')
+    plt.savefig('/home/rng/plots/esmvaltool/reg_attrib_'+diag_name+'_'+exp_flag+'_'+obs+pool_flag+uncert_flag+'.eps')
     plt.close()
-    
 
+#Debug plot.
+    mod_cols=numpy.array([[0,73,73],[255,255,109],[0,146,146],[255,109,182],[255,182,119],[146,0,0],[0,109,219],[182,109,255],[109,182,255],[182,219,255],[73,0,146],[146,73,0],[219,209,0],[36,255,36]])/256.    
+    if diag_name[0:4]=='hemi':
+      had4_diag=numpy.mean(numpy.reshape(had4_diag,(nlat,nper)),axis=0)
+      anom=numpy.mean(numpy.reshape(anom,(nlat,nper,anom_index)),axis=0)
+    plt.plot(years,anom[:,0],color="Gray",label='Pseudo-control')
+    for ann in range(1,anom_index):
+        plt.plot(years,anom[:,ann],color="Gray")
+    for mm, dataset in enumerate(grouped_input_data):
+      if mm == 0 or mm == 7:
+        plt.plot(years,mean_diag[:,0,mm],color=mod_cols[mm],linewidth=4,label=dataset+'_ALL')
+        plt.plot(years,mean_diag[:,1,mm],color=mod_cols[mm],linewidth=4,ls='--')
+#Multi-model mean ANT response
+    ant=numpy.mean(mean_diag[:,0,:]-mean_diag[:,1,:],axis=1)*att_out['Multi']['beta'][0]
+    plt.plot(years,ant,color="Red",linewidth=4,label='Scaled anthropogenic')
+    plt.plot(years,had4_diag,color="Black",linewidth=4,label=obs)
+    plt.legend(loc="upper left")
+    plt.xlabel('Year')
+    plt.ylabel('GMST anomaly ($^\circ$C)')
+    plt.savefig('/home/rng/plots/esmvaltool/timeseries_ant_nat_'+diag_name+'_'+exp_flag+'_'+obs+'.png')
+    plt.close()
+
+    
 if __name__ == '__main__':
 
     with run_diagnostic() as config:

@@ -33,6 +33,11 @@ def attrib_warming(beta,betaCI,dec_warming,ci95_dec_warming):
 
 def main(cfg):
     plt.ioff() #Turn off interactive plotting.
+    font = {'size'   : 5}
+    matplotlib.rc('font', **font)
+    mm_conv=0.0394
+    plt.figure(figsize=[88*mm_conv,88*mm_conv])
+
     """Compute the time average for each input dataset."""
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -192,7 +197,7 @@ def main(cfg):
             for experiment in range(0,3):
                 [att_warming,att_range]=attrib_warming(att_out['beta'][experiment],att_out['betaCI'][experiment,:],other_mean_dec_warming[experiment],other_mean_ci95[experiment])
                 plt.plot([mean_dec_warming[experiment,mms]+offset,mean_dec_warming[experiment,mms]+offset],att_range,color=shade_cols[cols[experiment],:],zorder=1,linewidth=0.4)
-                plt.plot([mean_dec_warming[experiment,mms]],[att_warming],color=colors[cols[experiment],:],marker='x',label=label[experiment],zorder=2)
+                plt.plot([mean_dec_warming[experiment,mms]],[att_warming],color=colors[cols[experiment],:],marker='x',markersize=2,label=label[experiment],zorder=2)
                 if att_warming-((att_warming-att_range[0])**2+ci95_dec_warming[experiment,mms]**2)**0.5 < mean_dec_warming[experiment,mms] < att_warming+((att_range[1]-att_warming)**2+ci95_dec_warming[experiment,mms]**2)**0.5: nin[experiment]=nin[experiment]+1
 #                print (att_warming,mean_dec_warming[experiment,mms],ci_att_warming,ci95_dec_warming[experiment,mms])
             label=['','','']
@@ -203,11 +208,11 @@ def main(cfg):
 
 
     plt.axis([-1.5,3,-1.5,3])
-    plt.xlabel('Simulated change in GSAT ($^\circ$C)')
-    plt.ylabel('Reconstructed change in GSAT ($^\circ$C)')
+    plt.xlabel('Simulated change in GSAT ($^\circ$C)',fontsize=7)
+    plt.ylabel('Reconstructed change in GSAT ($^\circ$C)',fontsize=7)
     plt.plot([-2,3],[-2,3],color='black',linewidth=1,ls=':')             
     plt.legend(loc="upper left")
-    plt.savefig('/home/rng/plots/esmvaltool/xval_'+diag_name+'_'+exp_flag+'.png')
+    plt.savefig('/home/rng/plots/esmvaltool/xval_'+diag_name+'_'+exp_flag+'.pdf')
     plt.close()
      
     
