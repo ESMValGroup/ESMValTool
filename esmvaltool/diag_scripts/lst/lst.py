@@ -10,6 +10,7 @@ import logging
 
 # import internal esmvaltool modules
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 logger = logging.getLogger(__name__) # from OC example, dont know what this does!
 
@@ -95,6 +96,23 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input
 
     return None
 
+def get_provenance_record(attributes, ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    #caption = ("Timeseries of ESA CCI LST difference to mean of model ensembles, calculated over region *** and for model/ensembles ***. The region bounded by ****."
+    #           .format(**attributes))
+
+    record = {
+        'caption': 'testing',#caption,
+        'statistics': ['mean','stddev'],
+        'domains': ['reg'],
+        'plot_types': ['times'],
+        'authors': ['king_robert'],
+        'references': [],
+        'ancestors': ancestor_files
+    }
+
+    return record
+
 def diagnostic(config):
     
     logger.info("Robs text 1") # marker to see where this work appears in the log
@@ -103,10 +121,11 @@ def diagnostic(config):
     input_metadata = config['input_data'].values()
 
     loaded_data = {}
+    ancestor_list = []
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors = get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-
+        ancestor_list.append(ancestors['ts'][0])
     # loaded data is a nested dictionary
     # KEY1 model ESACCI-LST or something else
     # KEY2 is ts, the surface temperature
@@ -129,6 +148,13 @@ def diagnostic(config):
 
     # plotting
     make_plots(lst_diff_cube,lst_diff_cube_low,lst_diff_cube_high, config, input_metadata)
+
+    logger.info(ancestor_list)
+    # provenance
+    record = get_provenance_record('',ancestor_list)#attributes, ancestor_files)
+    for file in ['%s/timeseries.png' % config['plot_dir']]:#outfiles + plot_files:
+        with ProvenanceLogger(config) as provenance_logger:
+            provenance_logger.log(file, record)
 
     return None
 
