@@ -106,4 +106,5 @@ def debruin_pet(psl, rsds, rsdt, tas):
     pet.var_name = 'evspsblpot'
     pet.standard_name = 'water_potential_evaporation_flux'
     pet.long_name = 'Potential Evapotranspiration'
+    pet.attributes['mip'] = tas.attributes['mip']
     return pet
