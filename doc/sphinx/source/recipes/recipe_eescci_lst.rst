@@ -1,0 +1,77 @@
+.. _recipes_<mynewrecipe>:
+
+Title
+=====
+
+Overview
+--------
+
+Brief description of the diagnostic.
+
+
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/
+
+    * recipe_<mynewrecipe>.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/<mynewdiag>/
+
+    * <mynewdiag.py/.ncl/.r>: one line scription
+
+
+User settings in recipe
+-----------------------
+
+#. Script <mynewdiag.py/.ncl/.r>
+
+   *Required settings for script*
+
+   * xxx: zzz
+
+   *Optional settings for script*
+
+   *Required settings for variables*
+
+   *Optional settings for variables*
+
+   *Required settings for preprocessor*
+
+   *Optional settings for preprocessor*
+
+   *Color tables*
+
+   * list required color tables (if any) here
+
+
+Variables
+---------
+
+* var1 (realm, frequency, dimensions), e.g. pr (atmos, monthly mean, longitude latitude time)
+
+
+Observations and reformat scripts
+---------------------------------
+
+*Note: (1) obs4mips data can be used directly without any preprocessing;
+(2) see headers of reformat scripts for non-obs4mips data for download
+instructions.*
+
+* xxx
+
+  *Reformat script:* <myreformatscript.py>
+
+References
+----------
+
+* xxx
+
+Example plots
+-------------
+
+.. _fig_mynewdiag_1:
+.. figure::  /recipes/figures/<mynewdiagnostic>/awesome1.png
+   :align:   center
+
+   Add figure caption here.
