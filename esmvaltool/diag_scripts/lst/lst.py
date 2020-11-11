@@ -50,16 +50,6 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input
     Y_lower = np.floor(lst_diff_data_low.data.min())
     Y_upper = np.ceil(lst_diff_data_high.data.max())
 
-    # model_text = "Models used:\n"
-    # for ITEM in input_metadata:
-    #     logger.info(ITEM['alias'])
-    #     if 'ESACCI' in ITEM['alias'] or 'MultiModel' in ITEM['alias'] or 'OBS' in ITEM['alias']:
-    #         continue
-    #     model_text += "%s \n" % ITEM['alias']
-    # ax.text(0, (Y_lower+Y_upper)/2, model_text,
-    #         bbox=dict(facecolor='black', alpha=0.25, pad=10),
-    #         fontsize=14)
-
     # make X ticks
     x_tick_list = []
     time_list = lst_diff_data.coord('time').units.num2date(lst_diff_data.coord('time').points)
@@ -98,16 +88,16 @@ def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    #caption = ("Timeseries of ESA CCI LST difference to mean of model ensembles, calculated over region *** and for model/ensembles ***. The region bounded by ****."
-    #           .format(**attributes))
+    caption = ("Timeseries of ESA CCI LST difference to mean of model ensembles, calculated over region bounded by latitude {lat_south} to {lat_north}, longitude {lon_west} to {lon_east} and for model/ensembles {ensembles}. Shown for years {start_year} to {end_year}."
+               .format(**attributes))
 
     record = {
-        'caption': 'testing',#caption,
+        'caption': caption,
         'statistics': ['mean','stddev'],
         'domains': ['reg'],
         'plot_types': ['times'],
         'authors': ['king_robert'],
-        'references': [],
+        #'references': [],
         'ancestors': ancestor_files
     }
 
@@ -116,10 +106,10 @@ def get_provenance_record(attributes, ancestor_files):
 def diagnostic(config):
     
     logger.info("Robs text 1") # marker to see where this work appears in the log
-
+    
     # this function is based on the hydrology py above
     input_metadata = config['input_data'].values()
-
+    logger.info(config)
     loaded_data = {}
     ancestor_list = []
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
@@ -151,7 +141,21 @@ def diagnostic(config):
 
     logger.info(ancestor_list)
     # provenance
-    record = get_provenance_record('',ancestor_list)#attributes, ancestor_files)
+    data_attributes = {}
+    data_attributes['start_year'] = lst_diff_cube.coord('time').units.num2date(lst_diff_cube.coord('time').points)[0].year
+    data_attributes['end_year']   = lst_diff_cube.coord('time').units.num2date(lst_diff_cube.coord('time').points)[-1].year
+    data_attributes['lat_south']  = lst_diff_cube.coord('latitude').bounds[0][0]
+    data_attributes['lat_north']  = lst_diff_cube.coord('latitude').bounds[0][1]
+    data_attributes['lon_west']   = lst_diff_cube.coord('longitude').bounds[0][0]
+    data_attributes['lon_east']   = lst_diff_cube.coord('longitude').bounds[0][1]
+    data_attributes['ensembles'] = ''
+    for ITEM in input_metadata:
+        if 'ESACCI' in ITEM['alias'] or 'MultiModel' in ITEM['alias'] or 'OBS' in ITEM['alias']:
+            continue
+        data_attributes['ensembles'] += "%s " % ITEM['alias']
+
+
+    record = get_provenance_record(data_attributes,ancestor_list)#attributes, ancestor_files)
     for file in ['%s/timeseries.png' % config['plot_dir']]:#outfiles + plot_files:
         with ProvenanceLogger(config) as provenance_logger:
             provenance_logger.log(file, record)

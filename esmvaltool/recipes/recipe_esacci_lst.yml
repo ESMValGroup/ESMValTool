@@ -48,11 +48,11 @@ preprocessors:
 diagnostics:
 
   timeseries:
-    description: ESACCI LST difference to CMIP6 historical ensemble
+    description: ESACCI LST difference to model historical ensemble average
     themes:
       - phys
     realms:
-      - atmos
+      - land
     variables:
       ts:
         mip: Amon
@@ -61,4 +61,3 @@ diagnostics:
     scripts:
       script1:
         script: lst/lst.py
-
