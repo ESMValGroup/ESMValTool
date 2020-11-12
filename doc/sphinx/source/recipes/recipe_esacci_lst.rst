@@ -22,17 +22,17 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * ``recipe_esacci_lst.yml''
+    * ``recipe_esacci_lst.yml``
 
 Diagnostics are stored in esmvaltool/diag_scripts/lst/
 
-    * ``lst.py''
+    * ``lst.py``
 
 
 User settings in recipe
 -----------------------
 
-#. Script ``recipe_esacci_lst.yml''
+#. Script ``recipe_esacci_lst.yml``
 
    *No required settings for script*
   
