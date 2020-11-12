@@ -1,7 +1,7 @@
 # Recipe to call ESA CCI LST diagnostic.
-
+---
 documentation:
-  description: 
+  description:
     ESA CCI LST
   authors:
     - king_robert
@@ -15,10 +15,9 @@ documentation:
     - cmug
 
 datasets:
-   
-  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1, start_year: 2013, end_year: 2014, grid: gn}
-  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2013, end_year: 2014, grid: gn}
-  - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2013,  end_year: 2014, version: '1.00'}
+  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1, start_year: 2004, end_year: 2005, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r(1:2)i1p1f2, start_year: 2004, end_year: 2005, grid: gn}
+  - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2004, end_year: 2005, version: '1.00'}
 
 preprocessors:
 
@@ -26,23 +25,23 @@ preprocessors:
     regrid:
       target_grid: UKESM1-0-LL
       scheme: linear
-      
+
     extract_region:
-        start_longitude:  35
-        end_longitude:   175
-        start_latitude:   55
-        end_latitude:     70
+      start_longitude: 35
+      end_longitude: 175
+      start_latitude: 55
+      end_latitude: 70
 
     mask_landsea:
-        mask_out: sea
+      mask_out: sea
 
     area_statistics:
-        operator: mean
+      operator: mean
 
     multi_model_statistics:
-        span: overlap
-        statistics: [mean,std]
-        exclude: [ESACCI-LST]
+      span: overlap
+      statistics: [mean, std]
+      exclude: [ESACCI-LST]
 
 
 diagnostics:
