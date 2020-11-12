@@ -17,15 +17,14 @@ Modification history
    20201029 Day/Night averaging added along with CMOR utils
 """
 
-import glob
-import os
-
 import datetime
+import glob
+import logging
+import os
 from calendar import monthrange
 
 import iris
 
-import logging
 from . import utilities as utils
 
 logger = logging.getLogger(__name__) # from OC example, dont know what this does!

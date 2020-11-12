@@ -1,13 +1,17 @@
 # ESA CCI LST Diagnostic
 
-import iris
-import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
-import numpy as np
 import logging
 
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
+import cartopy.crs as ccrs
+import iris
+import matplotlib.pyplot as plt
+import numpy as np
+
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    group_metadata,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(__name__) # from OC example, dont know what this does!
 
