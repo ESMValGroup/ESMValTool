@@ -558,6 +558,9 @@ def sdiiETCCDI_yr(alias_cubes, **kwargs):
     statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
     if statistic_function:
         result_cube = statistic_function(wd_selection, 'sum') / statistic_function(boolean_cube, 'sum')
+        result_cube.data = np.where((statistic_function(boolean_cube,
+                                                        'sum')).data == 0, 0,
+                                    result_cube.data)
     else:
         raise Exception(f"Period {specs['period']} not implemented.")
         
