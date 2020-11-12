@@ -31,7 +31,7 @@ def get_input_cubes(metadata):
 def make_plots(lst_diff_data,lst_diff_data_low,lst_diff_data_high, config, input_metadata):
     # Make a timeseries plot of the difference OBS-MODEL
 
-    fig,ax = plt.subplots(figsize=(15,15))
+    fig,ax = plt.subplots(figsize=(20,15))
 
     ax.plot(lst_diff_data.data, color='black', linewidth=4)
     ax.plot(lst_diff_data_low.data,'--', color='blue', linewidth=3)
