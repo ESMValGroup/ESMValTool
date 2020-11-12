@@ -22,30 +22,31 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_esacci_lst.yml
+    * ``recipe_esacci_lst.yml''
 
 Diagnostics are stored in esmvaltool/diag_scripts/lst/
 
-    * lst.py
+    * ``lst.py''
 
 
 User settings in recipe
 -----------------------
 
-#. Script recipe_esacci_lst.yml
+#. Script ``recipe_esacci_lst.yml''
 
    *No required settings for script*
   
-   * No user defined inputs to the diagnostic *
+   *No user defined inputs to the diagnostic*
 
    *Required settings for variables*
-   #. The diagnostic works with all data sources on having the same start_year and end_year, and hence that data is also available
+   #. 
+    * The diagnostic works with all data sources on having the same start_year and end_year, and hence that data is also available.
 
    *Required settings for preprocessor*
    #.  
-    * start_longitude, end_longitude The western and eastern bounds of the region to work with
-    * start_latitude, end_latitude The southern and northern bounds of the region to work with
-    * target_grid This should be one of the model grids
+    * start_longitude, end_longitude The western and eastern bounds of the region to work with.
+    * start_latitude, end_latitude The southern and northern bounds of the region to work with.
+    * target_grid This should be one of the model grids.
    
 
 Variables
@@ -59,6 +60,7 @@ Observations and reformat scripts
 
 This recipe and diagnostic is written to work with data created from the CMORizer esmvaltool/cmorizers/obs/cmorize_obs_esacci_lst.py.
 This takes the orginal ESA CCI LST files for the L3C data from Aqua MODIS DAY and NIGHT files and creates a the all time mean data this diagnostic uses.
+Advice from the CCI LST team is to use the monthly not daily files to create the all time average to avoid th epossibility of biasing towards night time LST values being more prevalent because of how the cloud screening algorithms work.
 
 References
 ----------
