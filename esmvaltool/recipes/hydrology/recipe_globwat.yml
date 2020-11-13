@@ -5,9 +5,24 @@ documentation:
   description: |
     Recipe pre-processes ERA-Interim and ERA-5 data
     for use in the GlobWat hydrological model.
-
     GlobWat is a Global Hydrological Model provided by FAO
     http: //www.fao.org/nr/water/aquamaps/
+
+    By default, PET is calculated by the De Bruin method. However, users 
+    can choose the Arora method by setting the pet_arora in the recipe
+    to True.
+    More information about the Arora method can be found at:
+    https://doi.org/10.1016/S0022-1694(02)00101-4
+    More information about the De Bruin method can be found at:
+    https://doi.org/10.1175/JHM-D-15-0006.1
+
+    The target file has been generated from one of the models sample files
+    (prc01wb.asc). The file can be found at:
+    http://www.fao.org/geonetwork/srv/en/metadata.show?currTab=simple&id=52366
+
+    Regridding scheme can be choosen from ‘linear’, ‘linear_extrapolate’,
+    ‘nearest’, ‘area_weighted’, and ‘unstructured_nearest’.
+
   authors: ['abdollahi_banafsheh','alidoost_sarah']
   projects: ['ewatercycle']
   references: ['acknow_project']
@@ -19,13 +34,8 @@ preprocessors:
         end_longitude: 65
         start_latitude: 25
         end_latitude: 40
-  # extract: &extract
-  #   extract_shape:
-  #     shapefile: 'globwat/basin41_ll.shp'
-  #     method: contains
-  #     crop: true
 
-diagnostics:  # TODO: can we use the daily reference evaporation in the model as well?
+diagnostics:
   # diagnostic_daily_GlobWat:
   #   description: daily precipitation of ERA5 & ERA-Interim
   #   additional_datasets:
@@ -61,8 +71,7 @@ diagnostics:  # TODO: can we use the daily reference evaporation in the model as
           start_year: 2004
           end_year: 2004
           preprocessor: rough_cutout
-        tas: *var_monthly  # ERA-Interim does not have pet. Thus, we need tas, psl, rsds, and rsdt to calculate it.
-        psl: *var_monthly
+        tas: *var_monthly
         rsds: *var_monthly
         rsdt: *var_monthly
       scripts:
@@ -71,20 +80,3 @@ diagnostics:  # TODO: can we use the daily reference evaporation in the model as
           target_file: 'globwat/globwat_target_grid.nc'
           pet_arora: True
           regrid_scheme: linear
-
-  # diagnostic_monthly_tas:
-  #   description: analysis of ERA5 & ERA-Interim
-  #   additional_datasets:
-  #     - {dataset: CRU, project: OBS, tier: 2, type: reanaly, version: TS4.02}
-  #     # - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #     # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 2004, end_year: 2004}
-  #   variables:
-  #     pr: &var_monthly
-  #       mip: Amon
-  #       start_year: 2004
-  #       end_year: 2006
-  #       preprocessor: extract
-  #     tas: *var_monthly
-  #   scripts:
-  #     script:
-  #       script: hydrology/extract_tas_prc.py
