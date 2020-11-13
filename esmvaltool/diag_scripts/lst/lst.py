@@ -1,3 +1,12 @@
+"""
+ESMValTool diagnostic for ESA CCI LST data.
+
+The code uses the all time average monthly data.
+The ouptput is a timeseries plot of the mean differnce of
+CCI LST to model ensemble average, with the ensemble spread
+represented by a standard deviation either side of the mean.
+"""
+
 import logging
 
 import iris
@@ -14,9 +23,17 @@ logger = logging.getLogger(__name__)
 
 
 def get_input_cubes(metadata):
-    # This is from
-    # https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/hydrology/lisflood.py
+    """Load the data files into cubes.
 
+    Based on the hydrolofy diagnostic.
+
+    Inputs:
+    metadata = List of dictionaries made from the preprocessor config
+
+    Outputs:
+    inputs = Dictionary of cubes
+    ancecestors = Dictionary of filename information
+    """
     inputs = {}
     ancestors = {}
     for attributes in metadata:
@@ -31,10 +48,23 @@ def get_input_cubes(metadata):
     return inputs, ancestors
 
 
-def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config,
-               input_metadata):
-    # Make a timeseries plot of the difference OBS-MODEL
+def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
+    """Create and save the output figure.
 
+    The plot is a mean differnce with +/- one standard deviation
+    of the model spread,
+
+    Inputs:
+    lst_diff_data = cube of the mean difference
+    lst_diff_data_low = cube of the mean difference
+                        with model minus standard deviation
+    lst_diff_data_high = cube of the mean difference
+                        with model plus standard deviation
+    config = The config dictionary from the preprocessor
+
+    Outputs:
+    Saved figure
+    """
     fig, ax = plt.subplots(figsize=(20, 15))
 
     ax.plot(lst_diff_data.data, color='black', linewidth=4)
@@ -62,11 +92,11 @@ def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config,
     ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
 
     # make Y ticks
-    Y_lower = np.floor(lst_diff_data_low.data.min())
-    Y_upper = np.ceil(lst_diff_data_high.data.max())
-    ax.set_yticks(np.arange(Y_lower, Y_upper + 0.1, 2))
-    ax.set_yticklabels(np.arange(Y_lower, Y_upper + 0.1, 2), fontsize=18)
-    ax.set_ylim((Y_lower - 0.1, Y_upper + 0.1))
+    y_lower = np.floor(lst_diff_data_low.data.min())
+    y_upper = np.ceil(lst_diff_data_high.data.max())
+    ax.set_yticks(np.arange(y_lower, y_upper + 0.1, 2))
+    ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
+    ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
 
     ax.set_xlabel('Date', fontsize=20)
     ax.set_ylabel('Difference / K', fontsize=20)
@@ -87,10 +117,21 @@ def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config,
 
 
 def get_provenance_record(attributes, ancestor_files):
+    """Create the provenance record dictionary.
 
-    caption = (
-        "Timeseries of ESA CCI LST difference to mean of model ensembles, calculated over region bounded by latitude {lat_south} to {lat_north}, longitude {lon_west} to {lon_east} and for model/ensembles {ensembles}. Shown for years {start_year} to {end_year}."
-        .format(**attributes))
+    Inputs:
+    attributes = dictionary of ensembles/models used, the region bounds
+                 and years of data used.
+    ancestor_files = list of data files used by the diagnostic.
+
+    Outputs:
+    record = dictionary of provenance records.
+    """
+    caption = "Timeseries of ESA CCI LST difference to mean of "\
+        + "model ensembles calculated over region bounded by latitude "\
+        + "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "\
+        + "and for model/ensembles {ensembles}. "\
+        + "Shown for years {start_year} to {end_year}.".format(**attributes)
 
     record = {
         'caption': caption,
@@ -106,8 +147,16 @@ def get_provenance_record(attributes, ancestor_files):
 
 
 def diagnostic(config):
+    """Perform the control for the ESA CCI LST diagnostic.
 
-    # this loading function is based on the hydrology py above
+    Inputs:
+    config = the preprocessor nested dictionary holding
+             all the needed information.
+
+    Outputs:
+    The saved plot from make_plots function.
+    """
+    # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
 
     loaded_data = {}
@@ -146,8 +195,7 @@ def diagnostic(config):
         loaded_data['MultiModelStd']['ts'])
 
     # Plotting
-    make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config,
-               input_metadata)
+    make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config)
 
     # Provenance
     # Get this information form the data cubes
