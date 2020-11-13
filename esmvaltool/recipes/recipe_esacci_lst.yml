@@ -1,15 +1,17 @@
 # Recipe to call ESA CCI LST diagnostic.
 ---
 documentation:
-  description:
-    ESA CCI LST
+  description: |
+    Please add description here
   authors:
     - king_robert
 
   maintainer:
     - king_robert
 
-  references:
+  # references:
+  # either add reference - see https://docs.esmvaltool.org/en/latest/community/diagnostic.html#adding-references
+  # or remove empty section
 
   projects:
     - cmug
