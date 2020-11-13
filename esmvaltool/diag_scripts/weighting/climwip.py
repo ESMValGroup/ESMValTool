@@ -396,8 +396,11 @@ def combine_dimension(dataset: 'xr.DataArray', dimn: str) -> 'xr.DataArray':
         {dimn: [groups[key] for key in dataset[dimn].values]})
 
 
-def combine_ensemble_members(dataset: 'xr.DataArray') -> 'xr.DataArray':
+def combine_ensemble_members(
+        dataset: Union['xr.DataArray', None]) -> Union['xr.DataArray', None]:
     """Combine ensemble members of the same model along all dimensions."""
+    if dataset is None:
+        return None
     dataset = combine_dimension(dataset, 'model_ensemble')
     if 'perfect_model_ensemble' in dataset.dims:
         dataset = combine_dimension(dataset, 'perfect_model_ensemble')
@@ -429,11 +432,11 @@ def split_ensemble_members(dataset: 'xr.DataArray') -> 'xr.DataArray':
 
 
 def calculate_weights(
-        performance: Union['xr.DataArray', None],
-        independence: Union['xr.DataArray', None],
+        performance: Union['xr.DataArray',
+                           None], independence: Union['xr.DataArray', None],
         performance_sigma: Union[float, None],
         independence_sigma: Union[float, None]) -> 'xr.DataArray':
-    """Calculate the (NOT normalised) weights for each model N.
+    """Calculate normalized weights for each model N.
 
     Parameters
     ----------
@@ -578,12 +581,6 @@ def main(cfg):
         independence = xr.Dataset(independences)
         overall_independence = compute_overall_mean(
             independence, independence_contributions)
-
-        # NOTE: this should come before visualize and save I think
-        if cfg['combine_ensemble_members']:
-            overall_independence = combine_ensemble_members(
-                overall_independence)
-
         visualize_and_save_independence(overall_independence, cfg,
                                         model_ancestors)
     else:
@@ -594,14 +591,14 @@ def main(cfg):
         performance = xr.Dataset(performances)
         overall_performance = compute_overall_mean(performance,
                                                    performance_contributions)
-
-        if cfg['combine_ensemble_members']:
-            overall_performance = combine_ensemble_members(overall_performance)
-
         visualize_and_save_performance(overall_performance, cfg,
                                        model_ancestors + obs_ancestors)
     else:
         overall_performance = None
+
+    if cfg['combine_ensemble_members']:
+        overall_independence = combine_ensemble_members(overall_independence)
+        overall_performance = combine_ensemble_members(overall_performance)
 
     logger.info('Calculating weights')
     weights = calculate_weights(overall_performance, overall_independence,
