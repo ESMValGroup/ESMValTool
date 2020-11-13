@@ -1,8 +1,5 @@
-# ESA CCI LST Diagnostic
-
 import logging
 
-import cartopy.crs as ccrs
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,23 +31,25 @@ def get_input_cubes(metadata):
     return inputs, ancestors
 
 
-def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high,
-            config, input_metadata):
+def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config,
+               input_metadata):
     # Make a timeseries plot of the difference OBS-MODEL
 
-    fig,ax = plt.subplots(figsize=(20, 15))
+    fig, ax = plt.subplots(figsize=(20, 15))
 
     ax.plot(lst_diff_data.data, color='black', linewidth=4)
     ax.plot(lst_diff_data_low.data, '--', color='blue', linewidth=3)
     ax.plot(lst_diff_data_high.data, '--', color='blue', linewidth=3)
     ax.fill_between(range(len(lst_diff_data.data)),
-                    lst_diff_data_low.data, lst_diff_data_high.data,
-                    color='blue', alpha=0.25
-                    )
+                    lst_diff_data_low.data,
+                    lst_diff_data_high.data,
+                    color='blue',
+                    alpha=0.25)
 
     # make X ticks
     x_tick_list = []
-    time_list = lst_diff_data.coord('time').units.num2date(lst_diff_data.coord('time').points)
+    time_list = lst_diff_data.coord('time').units.num2date(
+        lst_diff_data.coord('time').points)
     for item in time_list:
         if item.month == 1:
             x_tick_list.append(item.strftime('%Y %b'))
@@ -79,9 +78,7 @@ def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high,
 
     ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
 
-    fig.suptitle('ESACCI LST - CMIP6 Historical Ensemble Mean',
-                 fontsize=24
-                 )
+    fig.suptitle('ESACCI LST - CMIP6 Historical Ensemble Mean', fontsize=24)
 
     plt.savefig('%s/timeseries.png' % config['plot_dir'])
     plt.close('all')  # Is this needed?
@@ -91,8 +88,9 @@ def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high,
 
 def get_provenance_record(attributes, ancestor_files):
 
-    caption = ("Timeseries of ESA CCI LST difference to mean of model ensembles, calculated over region bounded by latitude {lat_south} to {lat_north}, longitude {lon_west} to {lon_east} and for model/ensembles {ensembles}. Shown for years {start_year} to {end_year}."
-               .format(**attributes))
+    caption = (
+        "Timeseries of ESA CCI LST difference to mean of model ensembles, calculated over region bounded by latitude {lat_south} to {lat_north}, longitude {lon_west} to {lon_east} and for model/ensembles {ensembles}. Shown for years {start_year} to {end_year}."
+        .format(**attributes))
 
     record = {
         'caption': caption,
@@ -131,31 +129,33 @@ def diagnostic(config):
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
     loaded_data['MultiModelMean']['ts'].remove_coord('time')
-    loaded_data['MultiModelMean']['ts'].add_dim_coord(loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
+    loaded_data['MultiModelMean']['ts'].add_dim_coord(
+        loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
     loaded_data['MultiModelStd']['ts'].remove_coord('time')
-    loaded_data['MultiModelStd']['ts'].add_dim_coord(loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
+    loaded_data['MultiModelStd']['ts'].add_dim_coord(
+        loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
 
     # Make a cube of the LST difference, and with +/- std of model variation
-    lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data['MultiModelMean']['ts']
-    lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts'] +
-                             loaded_data['MultiModelStd']['ts']
-                             )
-    lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (loaded_data['MultiModelMean']['ts'] -
-                            loaded_data['MultiModelStd']['ts']
-                             )
+    lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data[
+        'MultiModelMean']['ts']
+    lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (
+        loaded_data['MultiModelMean']['ts'] +
+        loaded_data['MultiModelStd']['ts'])
+    lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (
+        loaded_data['MultiModelMean']['ts'] -
+        loaded_data['MultiModelStd']['ts'])
 
     # Plotting
-    make_plots(lst_diff_cube,
-                lst_diff_cube_low,
-                lst_diff_cube_high,
-                config,
-                input_metadata)
+    make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config,
+               input_metadata)
 
     # Provenance
     # Get this information form the data cubes
     data_attributes = {}
-    data_attributes['start_year'] = lst_diff_cube.coord('time').units.num2date(lst_diff_cube.coord('time').points)[0].year
-    data_attributes['end_year'] = lst_diff_cube.coord('time').units.num2date(lst_diff_cube.coord('time').points)[-1].year
+    data_attributes['start_year'] = lst_diff_cube.coord('time').units.num2date(
+        lst_diff_cube.coord('time').points)[0].year
+    data_attributes['end_year'] = lst_diff_cube.coord('time').units.num2date(
+        lst_diff_cube.coord('time').points)[-1].year
     data_attributes['lat_south'] = lst_diff_cube.coord('latitude').bounds[0][0]
     data_attributes['lat_north'] = lst_diff_cube.coord('latitude').bounds[0][1]
     data_attributes['lon_west'] = lst_diff_cube.coord('longitude').bounds[0][0]
@@ -163,7 +163,8 @@ def diagnostic(config):
     data_attributes['ensembles'] = ''
 
     for item in input_metadata:
-        if 'ESACCI' in item['alias'] or 'MultiModel' in item['alias'] or 'OBS' in item['alias']:
+        if 'ESACCI' in item['alias'] or 'MultiModel' in item[
+                'alias'] or 'OBS' in item['alias']:
             continue
         data_attributes['ensembles'] += "%s " % item['alias']
 
