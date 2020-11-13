@@ -116,10 +116,13 @@ def monthly_arora_pet(tas):
                                       long_name='second constant', units=None)
     constant_c = iris.coords.AuxCoord(np.float32(0.9),
                                       long_name='third constant', units=None)
-    arora_pet = (constant_a + constant_b * tas + constant_c * (tas ** 2)) / 12
-    arora_pet.units = 'mm month-1'
-    arora_pet.rename("arora potential evapotranspiration")
-    return arora_pet
+    pet = (constant_a + constant_b * tas + constant_c * (tas ** 2)) / 12
+    pet.units = 'mm month-1'
+    pet.var_name = 'evspsblpot'
+    pet.standard_name = 'water_potential_evaporation_flux'
+    pet.long_name = 'Potential Evapotranspiration'
+    pet.attributes['mip'] = tas.attributes['mip']
+    return pet
 
 
 def get_cube_time_info(cube):
@@ -216,7 +219,7 @@ def make_filename(dataset_name, cfg, cube, extension='asc'):
 
     filenames are specific to Globwat.
     """
-    names_map = {'pr': 'prc', 'pet': 'eto'}
+    names_map = {'pr': 'prc', 'evspsblpot': 'eto'}
 
     nyear, nmonth, nday = get_cube_time_info(cube)
     short_name, mip = get_cube_data_info(cube)
@@ -251,7 +254,7 @@ def main(cfg):
     for dataset_name, metadata in group_metadata(input_metadata,
                                                  'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
-
+        # TODO: What to use for daily pet?
         if cfg['pet_arora']:
             logger.info("Calculation PET uisng arora method")
             all_vars.update(pet=monthly_arora_pet(all_vars['tas']))
