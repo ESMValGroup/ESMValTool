@@ -93,7 +93,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
         for thekeys in [
                 'grid_mapping', 'ancillary_variables', 'parameter_vocab_uri'
         ]:
-            del da.attrs[thekeys]
+            da.attrs.pop(thekeys, None)
 
         if do_bin:
             da = da.coarsen(lat=bins, boundary='exact').mean()
