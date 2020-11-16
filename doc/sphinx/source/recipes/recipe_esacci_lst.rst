@@ -1,7 +1,7 @@
 .. _recipes_esacci_lst:
 
 ESA CCI LST comparison to Historical Models
-=====
+===========================================
 
 Overview
 --------
