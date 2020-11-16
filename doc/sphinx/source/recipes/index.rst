@@ -96,6 +96,7 @@ Other
    recipe_examples
    recipe_capacity_factor
    recipe_ensclus
+   recipe_esacci_lst
    recipe_multimodel_products
    recipe_rainfarm
    recipe_seaice_feedback
