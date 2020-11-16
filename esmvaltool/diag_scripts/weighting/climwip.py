@@ -381,7 +381,7 @@ def combine_ensemble_members(dataset: Union['xr.DataArray', None]) -> (
     models = []
     for name in dataset['model_ensemble'].values:
         model, ensemble = name.split('_')[:2]
-        groups[model].append('_'.join([model, ensemble]))
+        groups[model].append(name)
         models.append(model)
 
     dataset['model'] = xr.DataArray(models, dims='model_ensemble')
