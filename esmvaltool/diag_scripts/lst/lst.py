@@ -113,8 +113,6 @@ def make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
     plt.savefig('%s/timeseries.png' % config['plot_dir'])
     plt.close('all')  # Is this needed?
 
-    return None
-
 
 def get_provenance_record(attributes, ancestor_files):
     """Create the provenance record dictionary.
@@ -220,8 +218,6 @@ def diagnostic(config):
     for file in ['%s/timeseries.png' % config['plot_dir']]:
         with ProvenanceLogger(config) as provenance_logger:
             provenance_logger.log(file, record)
-
-    return None
 
 
 if __name__ == '__main__':
