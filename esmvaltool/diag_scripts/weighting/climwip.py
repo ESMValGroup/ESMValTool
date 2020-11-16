@@ -3,7 +3,6 @@
 Lukas Brunner et al. section 2.4
 https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
-import itertools
 import logging
 import os
 from collections import defaultdict
@@ -372,54 +371,41 @@ def compute_overall_mean(dataset: 'xr.Dataset',
     return overall_mean
 
 
-def combine_dimension(dataset: 'xr.DataArray', dimn: str) -> 'xr.DataArray':
-    """Combine ensemble members of the same model along the given dimension."""
-    model_ensemble = dataset[dimn].values
-    models = [me.split('_')[0] for me in model_ensemble]
-    dataset['model'] = xr.DataArray(models, dims=dimn)
-    dataset = dataset.groupby('model').mean(keep_attrs=True).rename(
-        {'model': dimn})
-
-    # new model names
-    groups = {
-        k: [*v]
-        for k, v in itertools.groupby(model_ensemble,
-                                      lambda x: x.split('_')[0])
-    }
-    for key, group in groups.items():
-        model, forcing = group[0].split('_')[::2]
-        members = '-'.join([me.split('_')[1] for me in group])
-        groups[key] = '_'.join([model, members, forcing])
-
-    # ensure that they are sorted correctly
-    return dataset.assign_coords(
-        {dimn: [groups[key] for key in dataset[dimn].values]})
-
-
-def combine_ensemble_members(
-        dataset: Union['xr.DataArray', None]) -> Union['xr.DataArray', None]:
-    """Combine ensemble members of the same model along all dimensions."""
+def combine_ensemble_members(dataset: Union['xr.DataArray', None]) -> (
+        Union['xr.DataArray', None], dict):
+    """Combine ensemble members of the same model."""
     if dataset is None:
-        return None
-    dataset = combine_dimension(dataset, 'model_ensemble')
+        return None, {}
+
+    groups = defaultdict(list)
+    models = []
+    for name in dataset['model_ensemble'].values:
+        model, ensemble = name.split('_')[:2]
+        groups[model].append('_'.join([model, ensemble]))
+        models.append(model)
+
+    dataset['model'] = xr.DataArray(models, dims='model_ensemble')
+    dataset = dataset.groupby('model').mean(keep_attrs=True).rename(
+        {'model': 'model_ensemble'})
+
     if 'perfect_model_ensemble' in dataset.dims:
-        dataset = combine_dimension(dataset, 'perfect_model_ensemble')
+        dataset['model'] = xr.DataArray(models, dims='perfect_model_ensemble')
+        dataset = dataset.groupby('model').mean(keep_attrs=True).rename(
+            {'model': 'perfect_model_ensemble'})
         # need to set the diagonal elements back to zero after averaging
         dataset.values[np.diag_indices(dataset['model_ensemble'].size)] = 0
-    return dataset
+
+    return dataset, groups
 
 
-def split_ensemble_members(dataset: 'xr.DataArray') -> 'xr.DataArray':
+def split_ensemble_members(dataset: 'xr.DataArray',
+                           groups: dict) -> 'xr.DataArray':
     """Split combined ensemble members of the same model."""
     model_ensemble = []
     nr_members = []
-    for model in dataset['model_ensemble'].data:
-        ensembles = model.split('_')[1].split('-')
-        nr_members.append(len(ensembles))
-        model_ensemble += [
-            '_'.join([model.split('_')[0], ensemble,
-                      model.split('_')[2]]) for ensemble in ensembles
-        ]
+    for model in dataset['model_ensemble'].values:
+        model_ensemble += groups[model]
+        nr_members.append(len(groups[model]))
 
     data_scaled = dataset.values / nr_members
     data_expanded = np.repeat(data_scaled, nr_members)
@@ -432,8 +418,8 @@ def split_ensemble_members(dataset: 'xr.DataArray') -> 'xr.DataArray':
 
 
 def calculate_weights(
-        performance: Union['xr.DataArray',
-                           None], independence: Union['xr.DataArray', None],
+        performance: Union['xr.DataArray', None],
+        independence: Union['xr.DataArray', None],
         performance_sigma: Union[float, None],
         independence_sigma: Union[float, None]) -> 'xr.DataArray':
     """Calculate normalized weights for each model N.
@@ -597,15 +583,19 @@ def main(cfg):
         overall_performance = None
 
     if cfg['combine_ensemble_members']:
-        overall_independence = combine_ensemble_members(overall_independence)
-        overall_performance = combine_ensemble_members(overall_performance)
+        overall_independence, groups_independence = combine_ensemble_members(
+            overall_independence)
+        overall_performance, groups_performance = combine_ensemble_members(
+            overall_performance)
+        # one of them could be empty if metric is not calculated
+        groups = {**groups_independence, **groups_performance}
 
     logger.info('Calculating weights')
     weights = calculate_weights(overall_performance, overall_independence,
                                 performance_sigma, independence_sigma)
 
     if cfg['combine_ensemble_members']:
-        weights = split_ensemble_members(weights)
+        weights = split_ensemble_members(weights, groups)
 
     visualize_and_save_weights(weights,
                                cfg,
