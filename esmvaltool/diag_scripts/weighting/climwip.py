@@ -384,13 +384,14 @@ def combine_ensemble_members(dataset: Union['xr.DataArray', None]) -> (
         groups[model].append(name)
         models.append(model)
 
-    for dimn in ['model_ensemble', 'perfect_model_ensembe']:
-        if dimn in dataset:
+    for dimn in ['model_ensemble', 'perfect_model_ensemble']:
+        if dimn in dataset.dims:
             model = xr.DataArray(models, dims=dimn)
             dataset = dataset.groupby(model).mean(keep_attrs=True).rename(
                 {'group': dimn})
-         
-         # need to set the diagonal elements back to zero after averaging
+
+    if 'perfect_model_ensemble' in dataset.dims:
+        # need to set the diagonal elements back to zero after averaging
         dataset.values[np.diag_indices(dataset['model_ensemble'].size)] = 0
 
     return dataset, groups
