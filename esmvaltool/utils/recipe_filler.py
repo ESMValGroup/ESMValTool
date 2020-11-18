@@ -468,6 +468,9 @@ def run():
             exps_list = recipe_dict["exp"]
             if isinstance(exps_list, list):
                 logger.info(f"Multiple {exps_list} experiments requested")
+            else:
+                exps_list = [recipe_dict["exp"]]
+                logger.info(f"Single {exps_list} experiment requested")
 
         logger.info(f"Seeking data for datasets: {datasets}")
         for dataset in datasets:
@@ -479,6 +482,8 @@ def run():
                     for exp in exps_list:
                         recipe_dict["exp"] = exp
                         files.extend(list_all_files(recipe_dict, cmip_era))
+                else:
+                    files = list_all_files(recipe_dict, cmip_era)
                 add_datasets = []
                 for fn in sorted(files):
                     fn_dir = os.path.dirname(fn)
