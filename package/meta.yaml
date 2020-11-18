@@ -95,6 +95,7 @@ outputs:
         - python>=3.6
         - python-cdo
         - pyyaml
+        - ruamel.yaml
         - scikit-image
         - scikit-learn
         - seaborn
