@@ -6,7 +6,7 @@ documentation:
     Recipe pre-processes ERA-Interim and ERA-5 data
     for use in the GlobWat hydrological model.
     GlobWat is a Global Hydrological Model provided by FAO
-    http: //www.fao.org/nr/water/aquamaps/
+    http://www.fao.org/nr/water/aquamaps/
 
     By default, PET is calculated by the Arora method. However, users 
     can choose the De Bruin method by setting the pet_arora in the recipe
