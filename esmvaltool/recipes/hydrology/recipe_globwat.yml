@@ -8,8 +8,8 @@ documentation:
     GlobWat is a Global Hydrological Model provided by FAO
     http: //www.fao.org/nr/water/aquamaps/
 
-    By default, PET is calculated by the De Bruin method. However, users 
-    can choose the Arora method by setting the pet_arora in the recipe
+    By default, PET is calculated by the Arora method. However, users 
+    can choose the De Bruin method by setting the pet_arora in the recipe
     to True.
     More information about the Arora method can be found at:
     https://doi.org/10.1016/S0022-1694(02)00101-4
@@ -48,6 +48,7 @@ diagnostics:
   #       end_year: 2004
   #       preprocessor: rough_cutout
   #     tas: *daily_var
+  #     # uncomment psl, rsds and rsdt if pet_arora is false
   #     psl: *daily_var
   #     rsds: *daily_var
   #     rsdt:
@@ -72,8 +73,10 @@ diagnostics:
           end_year: 2004
           preprocessor: rough_cutout
         tas: *var_monthly
-        rsds: *var_monthly
-        rsdt: *var_monthly
+        #uncomment psl, rsds and rsdt if pet_arora is false
+        # psl: *var_monthly
+        # rsds: *var_monthly
+        # rsdt: *var_monthly
       scripts:
         script:
           script: hydrology/globwat.py
