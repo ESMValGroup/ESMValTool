@@ -17,11 +17,13 @@ Note that the tool will exit if any of these minimum settings are missing!
 
 Key features:
 
-- you can add as many variable parameters as are needed; if not added, the tool
-  will use the "*" wildcard and find all available combinations;
+- you can add as many variable parameters as are needed; if not added, the
+  tool will use the "*" wildcard and find all available combinations;
 - you can restrict the number of datasets to be looked for with the `dataset:`
   key for each variable, pass a list of datasets as value, e.g.
   `dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]`;
+- you can specify a list of experiments eg `exp: [piControl, rcp26, rcp85]`
+  for each variable; this will look for each available dataset per experiment;
 - `start_year` and `end_year` are mandatory and are used to filter out the
   datasets that don't have data in the interval;
 - `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
@@ -452,7 +454,7 @@ def run():
         if "short_name" not in recipe_dict:
             recipe_dict['short_name'] = variable
 
-        # filter on user request
+        # dataset is a list
         if isinstance(recipe_dict['dataset'], list):
             datasets = recipe_dict['dataset']
         else:
@@ -460,12 +462,23 @@ def run():
         if recipe_dict['project'] != "*":
             cmip_eras = [recipe_dict['project']]
 
+        # experiment is a list
+        exps_list = ["*"]
+        if "exp" in recipe_dict:
+            exps_list = recipe_dict["exp"]
+            if isinstance(exps_list, list):
+                logger.info(f"Multiple {exps_list} experiments requested")
+
         logger.info(f"Seeking data for datasets: {datasets}")
         for dataset in datasets:
             recipe_dict['dataset'] = dataset
             logger.info(f"Analyzing dataset: {dataset}")
             for cmip_era in cmip_eras:
-                files = list_all_files(recipe_dict, cmip_era)
+                if len(exps_list) > 1:
+                    files = []
+                    for exp in exps_list:
+                        recipe_dict["exp"] = exp
+                        files.extend(list_all_files(recipe_dict, cmip_era))
                 add_datasets = []
                 for fn in sorted(files):
                     fn_dir = os.path.dirname(fn)
