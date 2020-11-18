@@ -96,8 +96,8 @@ def get_site_rootpath(cmip_era):
     logger.debug("%s root directory %s" % (cmip_era, rootdir))
     if drs == 'default' and 'default' in yamlconf['rootpath']:
         rootdir = yamlconf['rootpath']['default']
-        logger.debug(f"Using drs default and "
-                     f"default: %s data directory" % rootdir)
+        logger.debug("Using drs default and "
+                     f"default: {rootdir} data directory")
 
     return drs, rootdir
 
@@ -133,7 +133,7 @@ def determine_basepath(cmip_era):
         while basepath.find('//') > -1:
             basepath = basepath.replace('//', '/')
         basepaths.append(basepath)
-    logger.debug(f"We will look for files of patterns %s" % basepaths)
+    logger.debug(f"We will look for files of patterns {basepaths}")
 
     return basepaths
 
@@ -203,9 +203,8 @@ def list_all_files(file_dict, cmip_era):
         realms = CMOR_TABLES[cmip_era].get_variable(mip,
                                                     short_name).modeling_realm
     except AttributeError:
-        logger.warning(f"Could not find %s CMOR table "
-                       f"for variable %s with mip %s" %
-                       (cmip_era, short_name, mip))
+        logger.warning(f"Could not find {cmip_era} CMOR table "
+                       f"for variable {short_name} with mip {mip}")
         return []
     file_dict['frequency'] = frequency
 
@@ -226,8 +225,8 @@ def list_all_files(file_dict, cmip_era):
             if new_path.startswith("~"):
                 new_path = os.path.expanduser(new_path)
                 if not new_path.startswith(os.sep):
-                    logger.error(f"Could not expand ~ to user home dir "
-                                 f"please expand it in the config user file!")
+                    logger.error("Could not expand ~ to user home dir "
+                                 "please expand it in the config user file!")
                     sys.exit(1)
                 logger.warning("Expanding path to %s" % new_path)
 
