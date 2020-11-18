@@ -23,7 +23,9 @@ Key features:
   key for each variable, pass a list of datasets as value, e.g.
   `dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]`;
 - you can specify a list of experiments eg `exp: [piControl, rcp26, rcp85]`
-  for each variable; this will look for each available dataset per experiment;
+  for each variable; this will look for each available dataset per experiment
+  and assemble an aggregated stretch of from each experiment; equivalent to
+  esmvaltool's syntax of multiple experiments;
 - `start_year` and `end_year` are mandatory and are used to filter out the
   datasets that don't have data in the interval;
 - `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
@@ -140,7 +142,7 @@ def determine_basepath(cmip_era):
     return basepaths
 
 
-def filter_years(files, start_year, end_year):
+def filter_years(files, start_year, end_year, overlap=False):
     """
     Filter out files that are outside time range.
 
@@ -150,6 +152,9 @@ def filter_years(files, start_year, end_year):
     it will return a single file per dataset, the first file
     in the list of files that cover the specified interval.
     """
+    if not files:
+        return []
+
     valid_files = []
     available_years = {}
     all_files_roots = [("").join(fil.split("_")[0:-1]) for fil in files]
@@ -159,18 +164,27 @@ def filter_years(files, start_year, end_year):
         available_years[("").join(fil.split("_")[0:-1])].append(
             fil.split("_")[-1].strip(".nc").split("-"))
 
+    all_years = []
     for root, yr_list in available_years.items():
-        yr_list = list(itertools.chain.from_iterable(yr_list))
         actual_years = []
+        yr_list = list(itertools.chain.from_iterable(yr_list))
         for year in yr_list:
             if len(year) == 4:
                 actual_years.append(int(year))
             else:
                 actual_years.append(int(year[0:4]))
         actual_years = sorted(list(set(actual_years)))
-        if actual_years[0] <= start_year and actual_years[-1] >= end_year:
-            idx = all_files_roots.index(root)
-            valid_files.append(files[idx])
+        all_years.extend(actual_years)
+        if not overlap:
+            if actual_years[0] <= start_year and actual_years[-1] >= end_year:
+                idx = all_files_roots.index(root)
+                valid_files.append(files[idx])
+    all_years = sorted(all_years)
+
+    # multiple experiments to complete each other
+    if overlap:
+        if all_years[0] <= start_year and all_years[-1] >= end_year:
+            valid_files = files
 
     return valid_files
 
@@ -236,11 +250,6 @@ def list_all_files(file_dict, cmip_era):
             files = glob(new_path)
             all_files.extend(files)
 
-    # filter time
-    if all_files:
-        all_files = filter_years(all_files, file_dict["start_year"],
-                                 file_dict["end_year"])
-
     return all_files
 
 
@@ -284,6 +293,9 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
                 output_dataset['grid'] = fn_key
             elif base_key not in ["shortname", "ensemble*.nc", "*.nc"]:
                 output_dataset[base_key] = fn_key
+    if "exp" in file_dict:
+        if isinstance(file_dict["exp"], list):
+            output_dataset["exp"] = file_dict["exp"]
 
     return output_dataset
 
@@ -300,9 +312,12 @@ def remove_duplicates(add_datasets):
     seen = set()
 
     for dataset in add_datasets:
+        orig_exp = dataset["exp"]
+        dataset["exp"] = str(dataset["exp"])
         tup_dat = tuple(dataset.items())
         if tup_dat not in seen:
             seen.add(tup_dat)
+            dataset["exp"] = orig_exp
             datasets.append(dataset)
 
     return datasets
@@ -477,13 +492,23 @@ def run():
             recipe_dict['dataset'] = dataset
             logger.info(f"Analyzing dataset: {dataset}")
             for cmip_era in cmip_eras:
+                # handle complimentary experiments
                 if len(exps_list) > 1:
                     files = []
                     for exp in exps_list:
                         recipe_dict["exp"] = exp
                         files.extend(list_all_files(recipe_dict, cmip_era))
+                    files = filter_years(files, recipe_dict["start_year"],
+                                         recipe_dict["end_year"],
+                                         overlap=True)
+                    recipe_dict["exp"] = exps_list
+
                 else:
                     files = list_all_files(recipe_dict, cmip_era)
+                    files = filter_years(files, recipe_dict["start_year"],
+                                         recipe_dict["end_year"])
+
+                # assemble in new recipe
                 add_datasets = []
                 for fn in sorted(files):
                     fn_dir = os.path.dirname(fn)
