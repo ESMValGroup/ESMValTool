@@ -101,7 +101,7 @@ def load_target(cfg):
     return cube
 
 
-def monthly_arora_pet(tas):
+def arora_pet(tas):
     """Calculate potential ET using Arora method.
 
     Arora is a temperature-based method for calculating potential ET.
@@ -116,8 +116,18 @@ def monthly_arora_pet(tas):
                                       long_name='second constant', units=None)
     constant_c = iris.coords.AuxCoord(np.float32(0.9),
                                       long_name='third constant', units=None)
-    pet = (constant_a + constant_b * tas + constant_c * (tas ** 2)) / 12
-    pet.units = 'mm month-1'
+    mip = tas.attributes['mip'] 
+    if mip == "Amon":
+        conversion = 12
+        unit = 'mm month-1'
+    else:
+        conversion = tas.coord('time').shape[0]
+        unit = 'mm day-1'
+    # assumption here: tas is constant over time, then the monthly/daily    
+    # average value is equal to the annual average.
+    pet_annual = constant_a + constant_b * (tas) + constant_c * (tas ** 2)
+    pet = pet_annual / conversion
+    pet.units = unit
     pet.var_name = 'evspsblpot'
     pet.standard_name = 'water_potential_evaporation_flux'
     pet.long_name = 'Potential Evapotranspiration'
@@ -254,10 +264,9 @@ def main(cfg):
     for dataset_name, metadata in group_metadata(input_metadata,
                                                  'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
-        # TODO: What to use for daily pet?
         if cfg['pet_arora']:
             logger.info("Calculation PET uisng arora method")
-            all_vars.update(pet=monthly_arora_pet(all_vars['tas']))
+            all_vars.update(pet=arora_pet(all_vars['tas']))
         else:
             logger.info("Calculation PET uisng debruin method")
             all_vars.update(pet=debruin_pet(
