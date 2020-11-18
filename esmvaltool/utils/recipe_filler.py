@@ -22,10 +22,11 @@ Key features:
 - you can restrict the number of datasets to be looked for with the `dataset:`
   key for each variable, pass a list of datasets as value, e.g.
   `dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]`;
-- you can specify a list of experiments eg `exp: [piControl, rcp26, rcp85]`
+- you can specify a pair of experiments eg `exp: [rcp26, rcp85]`
   for each variable; this will look for each available dataset per experiment
-  and assemble an aggregated stretch of from each experiment; equivalent to
+  and assemble an aggregated data stretch from each experiment; equivalent to
   esmvaltool's syntax of multiple experiments;
+  it will return empty if there are gaps
 - `start_year` and `end_year` are mandatory and are used to filter out the
   datasets that don't have data in the interval;
 - `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
@@ -65,8 +66,8 @@ ______________________________________________________________________
 """ + __doc__
 
 dataset_order = [
-    'dataset', 'project', 'exp', 'mip', 'ensemble', 'grid',
-    'start_year', 'end_year'
+    'dataset', 'project', 'exp', 'mip', 'ensemble', 'grid', 'start_year',
+    'end_year'
 ]
 
 # cmip eras
@@ -132,8 +133,7 @@ def determine_basepath(cmip_era):
             basepath = os.path.join(rootpath, get_input_dir(cmip_era),
                                     get_input_file(cmip_era))
         else:
-            basepath = os.path.join(rootpath,
-                                    get_input_file(cmip_era))
+            basepath = os.path.join(rootpath, get_input_file(cmip_era))
         while basepath.find('//') > -1:
             basepath = basepath.replace('//', '/')
         basepaths.append(basepath)
@@ -179,12 +179,23 @@ def filter_years(files, start_year, end_year, overlap=False):
             if actual_years[0] <= start_year and actual_years[-1] >= end_year:
                 idx = all_files_roots.index(root)
                 valid_files.append(files[idx])
-    all_years = sorted(all_years)
 
+    ay_sorted = sorted(all_years)
     # multiple experiments to complete each other
     if overlap:
-        if all_years[0] <= start_year and all_years[-1] >= end_year:
-            valid_files = files
+        if ay_sorted[0] <= start_year and ay_sorted[-1] >= end_year:
+            yr_pairs = sorted(
+                [all_years[i:i + 2] for i in range(0, len(all_years), 2)])
+            d_y = [
+                yr_pairs[j][1] - yr_pairs[j + 1][0]
+                for j in range(len(yr_pairs) - 1)
+            ]
+            gaps = [c for c in d_y if c < -1]
+            if not gaps:
+                valid_files = files
+                logger.info("Contiguous data from multiple experiments.")
+            else:
+                logger.warning("Data from multiple experiments has gaps!")
 
     return valid_files
 
@@ -498,7 +509,8 @@ def run():
                     for exp in exps_list:
                         recipe_dict["exp"] = exp
                         files.extend(list_all_files(recipe_dict, cmip_era))
-                    files = filter_years(files, recipe_dict["start_year"],
+                    files = filter_years(files,
+                                         recipe_dict["start_year"],
                                          recipe_dict["end_year"],
                                          overlap=True)
                     recipe_dict["exp"] = exps_list
