@@ -42,6 +42,7 @@ import sys
 from glob import glob
 
 import yaml
+from ruamel.yaml import YAML
 from esmvalcore._config import (configure_logging, read_config_developer_file,
                                 read_config_user_file)
 from esmvalcore.cmor.table import CMOR_TABLES
@@ -369,8 +370,10 @@ def parse_recipe_to_dicts(yamlrecipe):
 
 def add_datasets_into_recipe(additional_datasets, output_recipe):
     """Add the datasets into a new recipe."""
+    yaml = YAML()
+    yaml.default_flow_style = False
     with open(output_recipe, 'r') as yamlfile:
-        cur_yaml = yaml.safe_load(yamlfile)
+        cur_yaml = yaml.load(yamlfile)
         for diag_var, add_dat in additional_datasets.items():
             if add_dat:
                 if 'additional_datasets' in cur_yaml['diagnostics']:
@@ -381,7 +384,7 @@ def add_datasets_into_recipe(additional_datasets, output_recipe):
                         diag_var[1]]['additional_datasets'] = add_dat
     if cur_yaml:
         with open(output_recipe, 'w') as yamlfile:
-            yaml.safe_dump(cur_yaml, yamlfile)
+            yaml.dump(cur_yaml, yamlfile)
 
 
 def get_args():
