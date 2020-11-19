@@ -222,9 +222,10 @@ def filter_years(files, start_year, end_year, overlap=False):
                 actual_years.append(int(year))
             else:
                 actual_years.append(int(year[0:4]))
-        actual_years = sorted(list(set(actual_years)))
+        actual_years = sorted(actual_years)
         all_years.extend(actual_years)
         if not overlap:
+            actual_years = sorted(list(set(actual_years)))
             if actual_years[0] <= start_year and actual_years[-1] >= end_year:
                 idx = all_files_roots.index(root)
                 valid_files.append(files[idx])
