@@ -71,15 +71,18 @@ def create_tree(path, filenames=None, symlinks=None):
         os.symlink(symlink['target'], link_name)
 
 
-def write_config_user_file(dirname, project, file_path, drs):
+def write_config_user_file(dirname, file_path, drs):
     config_file = dirname / 'config-user.yml'
     cfg = {
         'log_level': 'info',
+        'output_dir': str(dirname / 'recipe_filler_output'),
         'rootpath': {
-            project: str(dirname / file_path),
+            'CMIP5': str(dirname / file_path),
+            'CMIP6': str(dirname / file_path),
         },
         'drs': {
-            project: drs,
+            'CMIP5': drs,
+            'CMIP6': drs,
         },
     }
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
@@ -88,7 +91,8 @@ def write_config_user_file(dirname, project, file_path, drs):
 
 def write_recipe(dirname, recipe_dict):
     recipe_file = dirname / 'recipe.yml'
-    recipe_file.write_text(yaml.safe_dump(recipe_dict, encoding=None))
+    diags = {'diagnostics': recipe_dict}
+    recipe_file.write_text(yaml.safe_dump(diags, encoding=None))
     return str(recipe_file)
 
 
@@ -108,19 +112,22 @@ def test_get_timefiltered_files(tmp_path, root, cfg):
     create_tree(root, cfg.get('available_files'),
                 cfg.get('available_symlinks'))
 
-    # Find files
-    rootpath = {cfg['variable']['project']: [root]}
-    drs = {cfg['variable']['project']: cfg['drs']}
-
     user_config_file = write_config_user_file(tmp_path,
-                                              cfg["variable"]["project"],
                                               root, cfg['drs'])
-    recipe = write_recipe(tmp_path, cfg)
+    # found_files = cfg["found_files"]
+    diagnostics = {}
+    diagnostics["test_diagnostic"] = {}
+    diagnostics["test_diagnostic"]["variables"] = {}
+    diagnostics["test_diagnostic"]["variables"]["test_var"] = cfg["variable"]
+    recipe = write_recipe(tmp_path, diagnostics)
+    output_recipe = str(tmp_path / "recipe_auto.yml")
 
     with arguments(
             'recipe_filler',
             recipe,
             '-c',
             user_config_file,
+            '-o',
+            output_recipe,
     ):
         run()
