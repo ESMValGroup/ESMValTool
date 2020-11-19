@@ -91,7 +91,7 @@ base_dict = {
 }
 
 
-def get_site_rootpath(cmip_era):
+def _get_site_rootpath(cmip_era):
     """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
@@ -107,33 +107,33 @@ def get_site_rootpath(cmip_era):
     return drs, rootdir
 
 
-def get_input_dir(cmip_era):
+def _get_input_dir(cmip_era):
     """Get input_dir from config-developer.yml."""
-    site = get_site_rootpath(cmip_era)[0]
+    site = _get_site_rootpath(cmip_era)[0]
     yamlconf = read_config_developer_file()
 
     return yamlconf[cmip_era]['input_dir'][site]
 
 
-def get_input_file(cmip_era):
+def _get_input_file(cmip_era):
     """Get input_file from config-developer.yml."""
     yamlconf = read_config_developer_file()
     return yamlconf[cmip_era]['input_file']
 
 
-def determine_basepath(cmip_era):
+def _determine_basepath(cmip_era):
     """Determine a basepath."""
-    if isinstance(get_site_rootpath(cmip_era)[1], list):
-        rootpaths = get_site_rootpath(cmip_era)[1]
+    if isinstance(_get_site_rootpath(cmip_era)[1], list):
+        rootpaths = _get_site_rootpath(cmip_era)[1]
     else:
-        rootpaths = [get_site_rootpath(cmip_era)[1]]
+        rootpaths = [_get_site_rootpath(cmip_era)[1]]
     basepaths = []
     for rootpath in rootpaths:
-        if get_input_dir(cmip_era) != os.path.sep:
-            basepath = os.path.join(rootpath, get_input_dir(cmip_era),
-                                    get_input_file(cmip_era))
+        if _get_input_dir(cmip_era) != os.path.sep:
+            basepath = os.path.join(rootpath, _get_input_dir(cmip_era),
+                                    _get_input_file(cmip_era))
         else:
-            basepath = os.path.join(rootpath, get_input_file(cmip_era))
+            basepath = os.path.join(rootpath, _get_input_file(cmip_era))
         while basepath.find('//') > -1:
             basepath = basepath.replace('//', '/')
         basepaths.append(basepath)
@@ -142,21 +142,69 @@ def determine_basepath(cmip_era):
     return basepaths
 
 
+def _overlapping_datasets(files, all_years, start_year, end_year):
+    """Process overlapping datasets and check for avail data in time range."""
+    valid_files = []
+    ay_sorted = sorted(all_years)
+    if ay_sorted[0] <= start_year and ay_sorted[-1] >= end_year:
+        yr_pairs = sorted(
+            [all_years[i:i + 2] for i in range(0, len(all_years), 2)])
+        d_y = [
+            yr_pairs[j][1] - yr_pairs[j + 1][0]
+            for j in range(len(yr_pairs) - 1)
+        ]
+        gaps = [c for c in d_y if c < -1]
+        if not gaps:
+            valid_files = files
+            logger.info("Contiguous data from multiple experiments.")
+        else:
+            logger.warning("Data from multiple experiments has >1 year gaps! "
+                           f"Start {start_year}/end {end_year} requested - "
+                           f"files covering {yr_pairs} found.")
+
+    return valid_files
+
+
 def filter_years(files, start_year, end_year, overlap=False):
     """
-    Filter out files that are outside time range.
+    Filter out files that are outside requested time range.
 
     Nifty function that takes a list of files and two years
     as arguments; it will build a series of filter dictionaries
     and check if data is available for the entire interval;
     it will return a single file per dataset, the first file
-    in the list of files that cover the specified interval.
-    """
-    if not files:
-        return []
+    in the list of files that cover the specified interval;
+    optional argument `overlap` used if multiple experiments are
+    used and overlap between datasets is present.
 
+    Parameters
+    ----------
+    files: list
+        A list of files that need filtering by requested time range.
+
+    start_year: int
+        Integer start year of requested range.
+
+    end_year: int
+        Integer end year of requested range.
+
+    overlap: bool
+        Flag if datasets overlap; defaults to False.
+
+    Returns
+    -------
+    list
+        List of files which have been identified as falling in
+        the requested time range; if multiple files within time range
+        per dataset, the first file will be returned.
+
+    """
     valid_files = []
     available_years = {}
+
+    if not files:
+        return valid_files
+
     all_files_roots = [("").join(fil.split("_")[0:-1]) for fil in files]
     for fil in files:
         available_years[("").join(fil.split("_")[0:-1])] = []
@@ -180,22 +228,14 @@ def filter_years(files, start_year, end_year, overlap=False):
                 idx = all_files_roots.index(root)
                 valid_files.append(files[idx])
 
-    ay_sorted = sorted(all_years)
     # multiple experiments to complete each other
     if overlap:
-        if ay_sorted[0] <= start_year and ay_sorted[-1] >= end_year:
-            yr_pairs = sorted(
-                [all_years[i:i + 2] for i in range(0, len(all_years), 2)])
-            d_y = [
-                yr_pairs[j][1] - yr_pairs[j + 1][0]
-                for j in range(len(yr_pairs) - 1)
-            ]
-            gaps = [c for c in d_y if c < -1]
-            if not gaps:
-                valid_files = files
-                logger.info("Contiguous data from multiple experiments.")
-            else:
-                logger.warning("Data from multiple experiments has gaps!")
+        valid_files = _overlapping_datasets(files, all_years,
+                                            start_year, end_year)
+
+    if not valid_files:
+        logger.warning("No data found to fully cover start "
+                       f"{start_year} / end {end_year} as requested!")
 
     return valid_files
 
@@ -221,7 +261,29 @@ def _resolve_latestversion(dirname_template):
 
 
 def list_all_files(file_dict, cmip_era):
-    """List all files that match the dataset dictionary."""
+    """
+    List all files that match the dataset dictionary.
+
+    Function that returnes all files that are determined by a
+    file_dict dictionary; file_dict is keyed on usual parameters
+    like `dataset`, `project`, `mip` etc; glob.glob is used
+    to find files; speedup is achieved by replacing wildcards
+    with values from CMOR tables.
+
+    Parameters
+    ----------
+    file_dict: dict
+        Dictionary to hold dataset specifications.
+
+    cmip_era: str
+        Either CMIP5 or CMIP6.
+
+    Returns
+    -------
+    list:
+        List of found files.
+
+    """
     mip = file_dict['mip']
     short_name = file_dict['short_name']
     try:
@@ -235,7 +297,7 @@ def list_all_files(file_dict, cmip_era):
         return []
     file_dict['frequency'] = frequency
 
-    basepaths = determine_basepath(cmip_era)
+    basepaths = _determine_basepath(cmip_era)
     all_files = []
 
     for basepath in basepaths:
@@ -264,7 +326,7 @@ def list_all_files(file_dict, cmip_era):
     return all_files
 
 
-def file_to_recipe_dataset(fn, cmip_era, file_dict):
+def _file_to_recipe_dataset(fn, cmip_era, file_dict):
     """Convert a filename to an recipe ready dataset."""
     # Add the obvious ones - ie the one you requested!
     output_dataset = {}
@@ -276,7 +338,7 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
             output_dataset[key] = value
 
     # Split file name and base path into directory structure and filenames.
-    basefiles = determine_basepath(cmip_era)
+    basefiles = _determine_basepath(cmip_era)
     _, fnfile = os.path.split(fn)
 
     for basefile in basefiles:
@@ -311,7 +373,7 @@ def file_to_recipe_dataset(fn, cmip_era, file_dict):
     return output_dataset
 
 
-def remove_duplicates(add_datasets):
+def _remove_duplicates(add_datasets):
     """
     Remove accidental duplicates.
 
@@ -334,7 +396,7 @@ def remove_duplicates(add_datasets):
     return datasets
 
 
-def check_recipe(recipe_dict):
+def _check_recipe(recipe_dict):
     """Perform a quick recipe check for mandatory fields."""
     do_exit = False
     if "diagnostics" not in recipe_dict:
@@ -359,7 +421,7 @@ def check_recipe(recipe_dict):
         sys.exit(1)
 
 
-def check_config_file(user_config_file):
+def _check_config_file(user_config_file):
     """Perform a quick recipe check for mandatory fields."""
     do_exit = False
     if "rootpath" not in user_config_file:
@@ -380,7 +442,7 @@ def check_config_file(user_config_file):
         sys.exit(1)
 
 
-def parse_recipe_to_dicts(yamlrecipe):
+def _parse_recipe_to_dicts(yamlrecipe):
     """Parse a recipe's variables into a dictionary of dictionairies."""
     output_dicts = {}
     for diag in yamlrecipe['diagnostics']:
@@ -395,7 +457,7 @@ def parse_recipe_to_dicts(yamlrecipe):
     return output_dicts
 
 
-def add_datasets_into_recipe(additional_datasets, output_recipe):
+def _add_datasets_into_recipe(additional_datasets, output_recipe):
     """Add the datasets into a new recipe."""
     yaml = YAML()
     yaml.default_flow_style = False
@@ -436,6 +498,28 @@ def get_args():
     return args
 
 
+def _get_timefiltered_files(recipe_dict, exps_list, cmip_era):
+    """Obtain all files that correspond to requested time range."""
+    # multiple experiments allowed, complement data from each exp
+    if len(exps_list) > 1:
+        files = []
+        for exp in exps_list:
+            recipe_dict["exp"] = exp
+            files.extend(list_all_files(recipe_dict, cmip_era))
+        files = filter_years(files,
+                             recipe_dict["start_year"],
+                             recipe_dict["end_year"],
+                             overlap=True)
+        recipe_dict["exp"] = exps_list
+
+    else:
+        files = list_all_files(recipe_dict, cmip_era)
+        files = filter_years(files, recipe_dict["start_year"],
+                             recipe_dict["end_year"])
+
+    return files
+
+
 def run():
     """Run the `recipe_filler` tool. Help in __doc__ and via --help."""
     # Get arguments
@@ -463,13 +547,13 @@ def run():
     logger.info(f"Writing program log files to:\n{log_files}")
 
     # check config user file
-    check_config_file(config_user)
+    _check_config_file(config_user)
 
     # parse recipe
     with open(input_recipe, 'r') as yamlfile:
         yamlrecipe = yaml.safe_load(yamlfile)
-        check_recipe(yamlrecipe)
-        recipe_dicts = parse_recipe_to_dicts(yamlrecipe)
+        _check_recipe(yamlrecipe)
+        recipe_dicts = _parse_recipe_to_dicts(yamlrecipe)
 
     # Create a list of additional_datasets for each diagnostic/variable.
     additional_datasets = {}
@@ -503,40 +587,28 @@ def run():
             recipe_dict['dataset'] = dataset
             logger.info(f"Analyzing dataset: {dataset}")
             for cmip_era in cmip_eras:
-                # handle complimentary experiments
-                if len(exps_list) > 1:
-                    files = []
-                    for exp in exps_list:
-                        recipe_dict["exp"] = exp
-                        files.extend(list_all_files(recipe_dict, cmip_era))
-                    files = filter_years(files,
-                                         recipe_dict["start_year"],
-                                         recipe_dict["end_year"],
-                                         overlap=True)
-                    recipe_dict["exp"] = exps_list
-
-                else:
-                    files = list_all_files(recipe_dict, cmip_era)
-                    files = filter_years(files, recipe_dict["start_year"],
-                                         recipe_dict["end_year"])
+                # find valid time-gated files
+                files = _get_timefiltered_files(recipe_dict,
+                                                exps_list,
+                                                cmip_era)
 
                 # assemble in new recipe
                 add_datasets = []
                 for fn in sorted(files):
                     fn_dir = os.path.dirname(fn)
                     logger.info(f"Data directory: {fn_dir}")
-                    out = file_to_recipe_dataset(fn, cmip_era, recipe_dict)
+                    out = _file_to_recipe_dataset(fn, cmip_era, recipe_dict)
                     logger.info(f"New recipe entry: {out}", out)
                     if out is None:
                         continue
                     add_datasets.append(out)
                 new_datasets.extend(add_datasets)
         additional_datasets[(diag, variable, cmip_era)] = \
-            remove_duplicates(new_datasets)
+            _remove_duplicates(new_datasets)
 
     # add datasets to recipe as additional_datasets
     shutil.copyfile(input_recipe, output_recipe, follow_symlinks=True)
-    add_datasets_into_recipe(additional_datasets, output_recipe)
+    _add_datasets_into_recipe(additional_datasets, output_recipe)
     logger.info("Finished recipe filler. Go get some science done now!")
 
 
