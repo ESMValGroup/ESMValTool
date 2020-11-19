@@ -38,6 +38,9 @@ HYPE
 The hydrological catchment model HYPE simulates water flow and substances on their way from precipitation through soil, river and lakes to the river outlet.
 HYPE is developed at the Swedish Meteorological and Hydrological Institute. The recipe pre-processes ERA-Interim and ERA5 data for use in HYPE.
 
+GlobWat
+*******
+GlobWat is a soil water balance model that has been provided by the Food and Agriculture Organization (FAO) to assess water use in irrigated agriculture. http://www.fao.org/nr/water/aquamaps. The recipe pre-processes ERA-Interim and ERA5 reanalyses data for use in the GlobWat. GlobWat requires potential evapotranspiration (evspsblpot). The variable evspsblpot is not available in ERA-Interim. Thus, we use the arora (Arora. 2002) or debruin function (De Bruin et al. 2016) to obtain evspsblpot using both ERA-Interim and ERA5. The arora function needs the variable tas and the debruin function besides that needs the variables psl, rsds, and rsdt as input.
 
 
 Available recipes and diagnostics
@@ -50,6 +53,7 @@ Recipes are stored in esmvaltool/recipes/hydrology
     * recipe_wflow.yml
     * recipe_lisflood.yml
     * recipe_hype.yml
+    * recipe_globwat.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/hydrology
 
@@ -58,6 +62,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/hydrology
     * wflow.py
     * lisflood.py
     * hype.py
+    * globwat.py 
 
 
 User settings in recipe
@@ -146,6 +151,20 @@ All hydrological recipes require a shapefile as an input to produce forcing data
    * method: contains
    * decomposed: true
 
+#. recipe_globwat.yml
+
+   *Required preprocessor settings:*
+
+   * start_year: 2004
+   * end_year: 2004
+   * target_file: Generated from a GlobWat input file sample
+
+   *Optional preprocessor settings:*
+
+   * extract_region: A region bounding box to extract the data for a specific region
+   * regrid_scheme: Can be chosen among regridding schemes (default is linear)
+   * pet_arora: Can be set to False to use De Bruin function for calculating evspsblpot (default is True)
+
 
 Variables
 ---------
@@ -197,6 +216,13 @@ Variables
    * tasmax (atmos, daily or hourly, longitude, latitude, time)
    * pr (atmos, daily or hourly, longitude, latitude, time)
 
+#. recipe_globwat.yml
+
+   * pr (atmos, daily or monthly, longitude, latitude, time)
+   * tas (atmos, daily or monthly, longitude, latitude, time)
+   * psl (atmos, daily or monthly, longitude, latitude, time)
+   * rsds (atmos, daily or monthly, longitude, latitude, time)
+   * rsdt (atmos, daily or monthly , longitude, latitude, time)
 
 Observations and reformat scripts
 ---------------------------------
@@ -222,6 +248,11 @@ Output
 
    The forcing data, stored in separate files per variable.
 
+#. recipe_globwat.yml
+
+   The forcing data, stored with ascii format for each year in a separate folder. In daily outputs, the first two numbers represent the month and the second two numbers represent the day. For example, prc0120wb.asc represents precipitation for the 20th of February. 
+
+
 References
 ----------
 
@@ -230,3 +261,5 @@ References
 * Arheimer, B., Lindström, G., Pers, C., Rosberg, J. och J. Strömqvist, 2008. Development and test of a new Swedish water quality model for small-scale and large-scale applications. XXV Nordic Hydrological Conference, Reykjavik, August 11-13, 2008. NHP Report No. 50, pp. 483-492.
 * Lindström, G., Pers, C.P., Rosberg, R., Strömqvist, J., Arheimer, B. 2010. Development and test of the HYPE (Hydrological Predictions for the Environment) model – A water quality model for different spatial scales. Hydrology Research 41.3-4:295-319.
 * van der Knijff, J. M., Younis, J. and de Roo, A. P. J.: LISFLOOD: A GIS-based distributed model for river basin scale water balance and flood simulation, Int. J. Geogr. Inf. Sci., 24(2), 189–212, 2010.
+* Hoogeveen, J., Faurès, J. M., Peiser, L., Burke, J., de Giesen, N. V.: GlobWat--a global water balance model to assess water use in irrigated agriculture, Hydrology & Earth System Sciences Discussions, 2015 Jan 1;12(1), Doi:10.5194/hess-19-3829-2015.
+* Arora, V. K.: The use of the aridity index to assess climate change effect on annual runoff, Journal of hydrology, 2002 Aug 30;265(1-4):164-77. https://doi.org/10.1016/S0022-1694(02)00101-4.
