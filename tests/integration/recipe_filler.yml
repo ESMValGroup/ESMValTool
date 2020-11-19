@@ -40,21 +40,10 @@ get_input_filelist:
       - o3_Amon_HadGEM2-ES_historical_r1i1p1_gn_198412-200511.nc
   - drs: BADC
     variable:
+      project: CMIP5
       mip: Amon
       start_year: 1960
       end_year: 2080
-      ensemble: r1i1p1
-      exp: [historical, rcp85]
-    available_files:
-      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
-      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
-      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198413-200512.nc
-      - MOHC/HadGEM2-ES/rcp85/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
-
-  - drs: BADC
-    variable:
-      <<: *variable
-      end_year: 2060
       ensemble: r1i1p1
       exp: [historical, rcp85]
     available_files:
