@@ -25,8 +25,8 @@ Key features:
 - you can specify a pair of experiments eg `exp: [rcp26, rcp85]`
   for each variable; this will look for each available dataset per experiment
   and assemble an aggregated data stretch from each experiment; equivalent to
-  esmvaltool's syntax of multiple experiments;
-  it will return empty if there are gaps
+  esmvaltool's syntax of multiple experiments; this option needs an ensemble
+  to be declared explicitly; it will return no entry if there are gaps in data
 - `start_year` and `end_year` are mandatory and are used to filter out the
   datasets that don't have data in the interval;
 - `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
@@ -149,6 +149,7 @@ def _overlapping_datasets(files, all_years, start_year, end_year):
     if ay_sorted[0] <= start_year and ay_sorted[-1] >= end_year:
         yr_pairs = sorted(
             [all_years[i:i + 2] for i in range(0, len(all_years), 2)])
+        yr_pairs = list(k for k, _ in itertools.groupby(yr_pairs))
         d_y = [
             yr_pairs[j][1] - yr_pairs[j + 1][0]
             for j in range(len(yr_pairs) - 1)
@@ -230,8 +231,8 @@ def filter_years(files, start_year, end_year, overlap=False):
 
     # multiple experiments to complete each other
     if overlap:
-        valid_files = _overlapping_datasets(files, all_years,
-                                            start_year, end_year)
+        valid_files = _overlapping_datasets(files, all_years, start_year,
+                                            end_year)
 
     if not valid_files:
         logger.warning("No data found to fully cover start "
@@ -322,6 +323,8 @@ def list_all_files(file_dict, cmip_era):
             # Globs all the wildcards into a list of files.
             files = glob(new_path)
             all_files.extend(files)
+    if not all_files:
+        logger.warning("Could not find any file for data specifications.")
 
     return all_files
 
@@ -416,6 +419,13 @@ def _check_recipe(recipe_dict):
             if "end_year" not in var_pars:
                 logger.error(f"Variable {var_name} missing end_year.")
                 do_exit = True
+            if "exp" in var_pars:
+                if isinstance(var_pars["exp"],
+                              list) and "ensemble" not in var_pars:
+                    logger.error("Asking for experiments list for ")
+                    logger.error(f"variable {var_name} - you need to ")
+                    logger.error("define an ensemble for this case.")
+                    do_exit = True
     if do_exit:
         logger.error("Please fix the issues in recipe and rerun. Exiting.")
         sys.exit(1)
@@ -491,9 +501,8 @@ def _find_all_datasets(cmip_eras):
         else:
             institutes = os.listdir(os.path.join(site_path, activity))
             for institute in institutes:
-                datasets.extend(os.listdir(os.path.join(site_path,
-                                                        activity,
-                                                        institute)))
+                datasets.extend(
+                    os.listdir(os.path.join(site_path, activity, institute)))
     return datasets
 
 
@@ -627,8 +636,7 @@ def run():
             recipe_dict['dataset'] = dataset
             logger.info(f"Seeking data for dataset: {dataset}")
             for cmip_era in cmip_eras:
-                files = _get_timefiltered_files(recipe_dict,
-                                                exps_list,
+                files = _get_timefiltered_files(recipe_dict, exps_list,
                                                 cmip_era)
 
                 # assemble in new recipe
