@@ -158,9 +158,9 @@ def _overlapping_datasets(files, all_years, start_year, end_year):
             valid_files = files
             logger.info("Contiguous data from multiple experiments.")
         else:
-            logger.warning("Data from multiple experiments has >1 year gaps! "
-                           f"Start {start_year}/end {end_year} requested - "
-                           f"files covering {yr_pairs} found.")
+            logger.warning("Data from multiple exps has >1 year gaps! ")
+            logger.debug(f"Start {start_year}/end {end_year} requested - "
+                         f"files covering {yr_pairs} found.")
 
     return valid_files
 
@@ -476,6 +476,30 @@ def _add_datasets_into_recipe(additional_datasets, output_recipe):
             yaml.dump(cur_yaml, yamlfile)
 
 
+def _get_exp(recipe_dict):
+    """Get the correct exp as list of single or multiple exps."""
+    exps_list = ["*"]
+    if "exp" in recipe_dict:
+        exps_list = recipe_dict["exp"]
+        if isinstance(exps_list, list):
+            logger.info(f"Multiple {exps_list} experiments requested")
+        else:
+            exps_list = [recipe_dict["exp"]]
+            logger.info(f"Single {exps_list} experiment requested")
+
+    return exps_list
+
+
+def _get_datasets(recipe_dict):
+    """Get the correct datasets as list if needed."""
+    if isinstance(recipe_dict['dataset'], list):
+        datasets = recipe_dict['dataset']
+    else:
+        datasets = [recipe_dict['dataset']]
+
+    return datasets
+
+
 def get_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
@@ -565,22 +589,14 @@ def run():
             recipe_dict['short_name'] = variable
 
         # dataset is a list
-        if isinstance(recipe_dict['dataset'], list):
-            datasets = recipe_dict['dataset']
-        else:
-            datasets = [recipe_dict['dataset']]
+        datasets = _get_datasets(recipe_dict)
+
+        # adjust cmip era if needed
         if recipe_dict['project'] != "*":
             cmip_eras = [recipe_dict['project']]
 
         # experiment is a list
-        exps_list = ["*"]
-        if "exp" in recipe_dict:
-            exps_list = recipe_dict["exp"]
-            if isinstance(exps_list, list):
-                logger.info(f"Multiple {exps_list} experiments requested")
-            else:
-                exps_list = [recipe_dict["exp"]]
-                logger.info(f"Single {exps_list} experiment requested")
+        exps_list = _get_exp(recipe_dict)
 
         logger.info(f"Seeking data for datasets: {datasets}")
         for dataset in datasets:
