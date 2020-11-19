@@ -495,10 +495,15 @@ def _find_all_datasets(cmip_eras):
         else:
             activity = ""
         drs, site_path = _get_site_rootpath(cmip_era)
-        if drs == "default":
+        if drs in ["default", "ETHZ", "SMHI", "RCAST", "BSC"]:
+            logger.info(f"DRS is {drs}; filter on dataset disabled.")
             datasets = ["*"]
-            return datasets
         else:
+            institutes_path = os.path.join(site_path, activity)
+            if not os.path.isdir(institutes_path):
+                logger.warning(f"Path to data {institutes_path} "
+                               "does not exist; will look everywhere.")
+                datasets = ["*"]
             institutes = os.listdir(os.path.join(site_path, activity))
             for institute in institutes:
                 datasets.extend(
