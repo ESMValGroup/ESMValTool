@@ -476,26 +476,50 @@ def _add_datasets_into_recipe(additional_datasets, output_recipe):
             yaml.dump(cur_yaml, yamlfile)
 
 
+def _find_all_datasets(cmip_eras):
+    """Find all datasets explicitly."""
+    datasets = []
+    for cmip_era in cmip_eras:
+        if cmip_era == "CMIP6":
+            activity = "CMIP"
+        else:
+            activity = ""
+        drs, site_path = _get_site_rootpath(cmip_era)
+        if drs == "default":
+            datasets = ["*"]
+            return datasets
+        else:
+            institutes = os.listdir(os.path.join(site_path, activity))
+            for institute in institutes:
+                datasets.extend(os.listdir(os.path.join(site_path,
+                                                        activity,
+                                                        institute)))
+    return datasets
+
+
 def _get_exp(recipe_dict):
     """Get the correct exp as list of single or multiple exps."""
-    exps_list = ["*"]
-    if "exp" in recipe_dict:
+    if isinstance(recipe_dict["exp"], list):
         exps_list = recipe_dict["exp"]
-        if isinstance(exps_list, list):
-            logger.info(f"Multiple {exps_list} experiments requested")
-        else:
-            exps_list = [recipe_dict["exp"]]
-            logger.info(f"Single {exps_list} experiment requested")
+        logger.info(f"Multiple {exps_list} experiments requested")
+    else:
+        exps_list = [recipe_dict["exp"]]
+        logger.info(f"Single {exps_list} experiment requested")
 
     return exps_list
 
 
-def _get_datasets(recipe_dict):
+def _get_datasets(recipe_dict, cmip_eras):
     """Get the correct datasets as list if needed."""
+    if recipe_dict["dataset"] == "*":
+        datasets = _find_all_datasets(cmip_eras)
+        return datasets
     if isinstance(recipe_dict['dataset'], list):
         datasets = recipe_dict['dataset']
+        logger.info(f"Multiple {datasets} datasets requested")
     else:
         datasets = [recipe_dict['dataset']]
+        logger.info(f"Single {datasets} dataset requested")
 
     return datasets
 
@@ -588,22 +612,21 @@ def run():
         if "short_name" not in recipe_dict:
             recipe_dict['short_name'] = variable
 
-        # dataset is a list
-        datasets = _get_datasets(recipe_dict)
-
         # adjust cmip era if needed
         if recipe_dict['project'] != "*":
             cmip_eras = [recipe_dict['project']]
 
-        # experiment is a list
+        # get datasets depending on user request; always a list
+        datasets = _get_datasets(recipe_dict, cmip_eras)
+
+        # get experiments depending on user request; always a list
         exps_list = _get_exp(recipe_dict)
 
-        logger.info(f"Seeking data for datasets: {datasets}")
+        # loop through datasets
         for dataset in datasets:
             recipe_dict['dataset'] = dataset
-            logger.info(f"Analyzing dataset: {dataset}")
+            logger.info(f"Seeking data for dataset: {dataset}")
             for cmip_era in cmip_eras:
-                # find valid time-gated files
                 files = _get_timefiltered_files(recipe_dict,
                                                 exps_list,
                                                 cmip_era)
