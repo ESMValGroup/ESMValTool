@@ -486,7 +486,7 @@ def _add_datasets_into_recipe(additional_datasets, output_recipe):
             yaml.dump(cur_yaml, yamlfile)
 
 
-def _find_all_datasets(cmip_eras):
+def _find_all_datasets(recipe_dict, cmip_eras):
     """Find all datasets explicitly."""
     datasets = []
     for cmip_era in cmip_eras:
@@ -499,12 +499,20 @@ def _find_all_datasets(cmip_eras):
             logger.info(f"DRS is {drs}; filter on dataset disabled.")
             datasets = ["*"]
         else:
-            institutes_path = os.path.join(site_path, activity)
+            if drs in ["BADC", "DKRZ", "CP4CDS"]:
+                institutes_path = os.path.join(site_path, activity)
+            elif drs in ["ETHZ", "RCAST"]:
+                exp = recipe_dict["exp"][0]
+                if exp == "*":
+                    exp = "piControl"  # all institutes have piControl
+                mip = recipe_dict["mip"]
+                var = recipe_dict["short_name"]
+                institutes_path = os.path.join(site_path, exp, mip, var)
             if not os.path.isdir(institutes_path):
                 logger.warning(f"Path to data {institutes_path} "
                                "does not exist; will look everywhere.")
                 datasets = ["*"]
-            institutes = os.listdir(os.path.join(site_path, activity))
+            institutes = os.listdir(institutes_path)
             for institute in institutes:
                 datasets.extend(
                     os.listdir(os.path.join(site_path, activity, institute)))
@@ -526,7 +534,7 @@ def _get_exp(recipe_dict):
 def _get_datasets(recipe_dict, cmip_eras):
     """Get the correct datasets as list if needed."""
     if recipe_dict["dataset"] == "*":
-        datasets = _find_all_datasets(cmip_eras)
+        datasets = _find_all_datasets(recipe_dict, cmip_eras)
         return datasets
     if isinstance(recipe_dict['dataset'], list):
         datasets = recipe_dict['dataset']
