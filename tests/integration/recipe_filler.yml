@@ -68,6 +68,23 @@ has_additional_datasets:
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198413-200512.nc
       - MOHC/HadGEM2-ES/rcp85/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+  - drs: BADC
+    variable:
+      short_name: ta
+      dataset: "*"
+      project: CMIP5
+      mip: Amon
+      start_year: 1960
+      end_year: 2080
+      ensemble: r1i1p1
+      exp: [historical, rcp85]
+    available_files:
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198413-200512.nc
+      - MOHC/HadGEM2-ES/rcp85/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+      - MOHC/RUTH/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_RUTH_historical_r1i1p1_192212-200512.nc
+      - MOHC/RUTH/rcp85/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_RUTH_rcp85_r1i1p1_200601-210012.nc
   - drs: default
     variable:
       <<: *variable
@@ -121,6 +138,7 @@ has_additional_datasets:
   - drs: ETHZ
     variable:
       <<: *variable
+      dataset: "*"
       start_year: 2000
       end_year: 2100
       ensemble: r1i1p1
@@ -133,6 +151,23 @@ has_additional_datasets:
       - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
       - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
       - rcp85/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+  - drs: ETHZ
+    variable:
+      <<: *variable
+      dataset: "*"
+      start_year: 1950
+      end_year: 2100
+      ensemble: r1i1p1
+      exp: [historical, rcp85]
+    available_files:
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_185912-188411.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_188412-190911.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_190912-193411.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+      - historical/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - rcp85/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
+      - historical/Amon/ta/RUTH/r1i1p1/ta_Amon_RUTH_historical_r1i1p1_185912-200512.nc
+      - rcp85/Amon/ta/RUTH/r1i1p1/ta_Amon_RUTH_rcp85_r1i1p1_200601-210012.nc
 no_additional_datasets:
   - drs: ETHZ
     variable:
