@@ -41,6 +41,22 @@ has_additional_datasets:
   - drs: BADC
     variable:
       short_name: ta
+      dataset: [UKESM1-0-LL, HadGEM2-ES]
+      project: "*"
+      mip: Amon
+      start_year: 1960
+      end_year: 1980
+      diagnostic: test_diag
+    available_files:
+      - CMIP/MOHC/UKESM1-0-LL/historical/r1i1p1f2/Amon/ta/gn/latest/ta_Amon_UKESM1-0-LL_historical_r1i1p1f2_gn_193412-195911.nc
+      - CMIP/MOHC/UKESM1-0-LL/historical/r1i1p1f2/Amon/ta/gn/latest/ta_Amon_UKESM1-0-LL_historical_r1i1p1f2_gn_195912-198411.nc
+      - CMIP/MOHC/UKESM1-0-LL/historical/r1i1p1f2/Amon/ta/gn/latest/ta_Amon_UKESM1-0-LL_historical_r1i1p1f2_gn_198412-200511.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_195912-198411.nc
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
+  - drs: BADC
+    variable:
+      short_name: ta
       project: CMIP5
       mip: Amon
       start_year: 1960
