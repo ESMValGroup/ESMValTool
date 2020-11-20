@@ -513,6 +513,8 @@ def _find_all_datasets(recipe_dict, cmip_eras):
                 logger.warning(f"Path to data {institutes_path} "
                                "does not exist; will look everywhere.")
                 datasets = ["*"]
+                return datasets
+
             institutes = os.listdir(institutes_path)
             for institute in institutes:
                 datasets.extend(
