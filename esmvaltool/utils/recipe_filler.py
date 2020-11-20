@@ -496,7 +496,7 @@ def _find_all_datasets(recipe_dict, cmip_eras):
         else:
             activity = ""
         drs, site_path = _get_site_rootpath(cmip_era)
-        if drs in ["default", "ETHZ", "SMHI", "RCAST", "BSC"]:
+        if drs in ["default", "SMHI"]:
             logger.info(f"DRS is {drs}; filter on dataset disabled.")
             datasets = ["*"]
         else:
@@ -509,6 +509,7 @@ def _find_all_datasets(recipe_dict, cmip_eras):
                 mip = recipe_dict["mip"]
                 var = recipe_dict["short_name"]
                 institutes_path = os.path.join(site_path, exp, mip, var)
+
             if not os.path.isdir(institutes_path):
                 logger.warning(f"Path to data {institutes_path} "
                                "does not exist; will look everywhere.")
@@ -516,9 +517,13 @@ def _find_all_datasets(recipe_dict, cmip_eras):
                 return datasets
 
             institutes = os.listdir(institutes_path)
-            for institute in institutes:
-                datasets.extend(
-                    os.listdir(os.path.join(site_path, activity, institute)))
+            if drs in ["BADC", "DKRZ", "CP4CDS"]:
+                for institute in institutes:
+                    datasets.extend(
+                        os.listdir(os.path.join(institutes_path, institute)))
+            else:
+                datasets.extend(institutes)
+
     return datasets
 
 
