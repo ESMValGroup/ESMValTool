@@ -106,21 +106,26 @@ def root():
     shutil.rmtree(dirname)
 
 
-@pytest.mark.parametrize('cfg', CONFIG['get_input_filelist'])
-def test_get_timefiltered_files(tmp_path, root, cfg):
-    """Test retrieving input filelist."""
-    create_tree(root, cfg.get('available_files'),
-                cfg.get('available_symlinks'))
-
-    user_config_file = write_config_user_file(tmp_path,
-                                              root, cfg['drs'])
-    # found_files = cfg["found_files"]
+def setup_files(tmp_path, root, cfg):
+    """Create config, recipe ,output recipe etc."""
+    user_config_file = write_config_user_file(tmp_path, root, cfg['drs'])
     diagnostics = {}
     diagnostics["test_diagnostic"] = {}
     diagnostics["test_diagnostic"]["variables"] = {}
     diagnostics["test_diagnostic"]["variables"]["test_var"] = cfg["variable"]
     recipe = write_recipe(tmp_path, diagnostics)
     output_recipe = str(tmp_path / "recipe_auto.yml")
+
+    return user_config_file, recipe, output_recipe
+
+
+@pytest.mark.parametrize('cfg', CONFIG['has_additional_datasets'])
+def test_adding_datasets(tmp_path, root, cfg):
+    """Test retrieving additional datasets."""
+    create_tree(root, cfg.get('available_files'),
+                cfg.get('available_symlinks'))
+
+    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
 
     with arguments(
             'recipe_filler',
@@ -131,3 +136,58 @@ def test_get_timefiltered_files(tmp_path, root, cfg):
             output_recipe,
     ):
         run()
+
+    with open(output_recipe, 'r') as file:
+        autofilled_recipe = yaml.safe_load(file)
+        diag = autofilled_recipe["diagnostics"]["test_diagnostic"]
+        var = diag["variables"]["test_var"]
+        assert "additional_datasets" in var
+
+
+@pytest.mark.parametrize('cfg', CONFIG['no_additional_datasets'])
+def test_not_adding_datasets(tmp_path, root, cfg):
+    """Test retrieving no additional datasets."""
+    create_tree(root, cfg.get('available_files'),
+                cfg.get('available_symlinks'))
+
+    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
+
+    with arguments(
+            'recipe_filler',
+            recipe,
+            '-c',
+            user_config_file,
+            '-o',
+            output_recipe,
+    ):
+        run()
+
+    with open(output_recipe, 'r') as file:
+        autofilled_recipe = yaml.safe_load(file)
+        diag = autofilled_recipe["diagnostics"]["test_diagnostic"]
+        var = diag["variables"]["test_var"]
+        assert "additional_datasets" not in var
+
+
+def test_bad_var(tmp_path, root):
+    """Test a bad variable in the works."""
+    cfg = CONFIG['bad_variable'][0]
+    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
+
+    # this doesn't fail and it shouldn't since it can go on
+    # and look for data for other valid variables
+    with arguments(
+            'recipe_filler',
+            recipe,
+            '-c',
+            user_config_file,
+            '-o',
+            output_recipe,
+    ):
+        run()
+
+    with open(output_recipe, 'r') as file:
+        autofilled_recipe = yaml.safe_load(file)
+        diag = autofilled_recipe["diagnostics"]["test_diagnostic"]
+        var = diag["variables"]["test_var"]
+        assert "additional_datasets" not in var
