@@ -35,7 +35,7 @@ Closes #issue_number
 New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
 
 - [ ] Documentation for the recipe/diagnostic is available in the `doc/sphinx/source/recipes` folder and an entry has been added to `index.rst`
-- [ ] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
+- [ ] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added and no warnings related to provenance are generated when running the recipe
 
 New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
 
