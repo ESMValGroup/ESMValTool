@@ -6,15 +6,15 @@ log <- function(..., level = "INFO") {
 }
 
 # check for present library paths
-RLIBPATH <- .libPaths()
+rlibpath <- .libPaths()
 
-# check if we can write in the present R libaries paths
-if (any(file.access(RLIBPATH, 2) == 0)) {
-  # if possible, use the standard one for following instalation
-  RLIBLOC <- RLIBPATH[which(file.access(RLIBPATH, 2) == 0)[1]]
+# check if we can write in the present R libraries paths
+if (any(file.access(rlibpath, 2) == 0)) {
+  # if possible, use the standard one for following installation
+  rlibloc <- rlibpath[which(file.access(rlibpath, 2) == 0)[1]]
 } else {
   # if not possible, create a local library in the home directory
-  RLIBLOC <- Sys.getenv("R_LIBS_USER")
+  rlibloc <- Sys.getenv("R_LIBS_USER")
   dir.create(
     path = Sys.getenv("R_LIBS_USER"),
     showWarnings = FALSE,
@@ -22,7 +22,7 @@ if (any(file.access(RLIBPATH, 2) == 0)) {
   )
 }
 
-log("Installing packages to --> ", RLIBLOC)
+log("Installing packages to --> ", rlibloc)
 
 pkg_mirror <- "https://cloud.r-project.org"
 pkg_list <- c("devtools", "yaml", "lintr", "styler", "docopt")
