@@ -56,6 +56,7 @@ Automated checks pass, status can be seen below the pull request:
 [New or updated recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html)
 
 - [ ] [The documentation](https://docs.esmvaltool.org/en/latest/recipes/index.html) for the new/updated recipes/diagnostics clearly describes what the recipe does and how to use it
+- [ ] The recipe runs successfully on your own machine/cluster or with the [`@esmvalbot`](https://github.com/apps/esmvalbot) without any modifications to the recipe and with all data specified in the recipe
 - [ ] The figure(s) and data look as expected from the literature and/or the paper that is reproduced by the recipe
 - [ ] The code contains comments with references to formulas, figures, tables, etc. that are used from papers/online resources
 
