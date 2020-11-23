@@ -12,7 +12,8 @@ sure all items on it are properly implemented.
 Before you start, please read our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html).
 To understand how we review and merge pull requests, have a look at our [review guidelines](https://docs.esmvaltool.org/en/latest/community/review.html).
 
-Please discuss your idea with the development team before getting started, to avoid disappointment later. The way to do this is to open a new issue on GitHub. If you are planning to modify an existing functionality, please discuss it with the original author(s) by tagging them in the issue.
+Please discuss your idea with the development team before getting started, to avoid disappointment later. The way to do this is to open a new issue on GitHub.
+If you are planning to modify existing functionality, please discuss it with the original author(s) by tagging them in the issue.
 
 <!---
 Please fill in the GitHub issue that is closed by this pull request, e.g. Closes #1903
