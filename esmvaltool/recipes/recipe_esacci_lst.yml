@@ -9,9 +9,8 @@ documentation:
   maintainer:
     - king_robert
 
-  # references:
-  # either add reference - see https://docs.esmvaltool.org/en/latest/community/diagnostic.html#adding-references
-  # or remove empty section
+  references:
+    - esacci-lst
 
   projects:
     - cmug
