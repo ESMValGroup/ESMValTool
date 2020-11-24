@@ -87,6 +87,7 @@ diagnostics:
       climwip:
         script: weighting/climwip.py
         obs_data: native6
+        combine_ensemble_members: true
         performance_sigma: 0.5
         performance_contributions:
           tas_CLIM: 1
