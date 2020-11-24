@@ -8,58 +8,78 @@ import iris.analysis
 import iris.cube
 import iris.quickplot as qplt
 import iris.util
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from dask import array as da
 
 import esmvaltool.diag_scripts.shared
-import esmvaltool.diag_scripts.shared.names as n
+import esmvaltool.diag_scripts.shared.names as shared_names
 from esmvalcore.preprocessor import (annual_statistics, extract_levels, regrid,
                                      seasonal_statistics)
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata
 
-matplotlib.use('agg')
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
 class EadyGrowthRate(object):
+    """Class used to compute the Eady Growth Rate."""
     def __init__(self, config):
+        """
+        Set diagnostic parameters and constants.
+
+        Parameters
+        ----------
+            config : dict
+                Dictionary containing configuration settings
+        """
+
         self.cfg = config
         self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.fill_value = 1e20
+        """Fill Value."""
         self.ref_p = 1000.0
-        self.g = 9.80665
+        """Reference Pressure [Pa]"""
+        self.gravity = 9.80665
+        """Gravity [m/s]"""
         self.con = 0.3098
+        """Constant"""
         self.omega = 7.292e-5
+        """Rotation of the Earth [rad/s]"""
         self.time_statistic = self.cfg['time_statistic']
+        """Time statistic to perform"""
 
     def compute(self):
+        """
+        Computes the Eady Growth Rate and
+        either it's annual or the seasonal mean.
+        """
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
             var = group_metadata(data[alias], 'short_name')
-            ta = iris.load_cube(var['ta'][0]['filename'])
-            plev = ta.coord('air_pressure')
+            temperature = iris.load_cube(var['ta'][0]['filename'])
+            plev = temperature.coord('air_pressure')
 
-            theta = self.potential_temperature(ta, plev)
+            theta = self.potential_temperature(temperature, plev)
 
-            del ta
+            del temperature
 
-            zg = iris.load_cube(var['zg'][0]['filename'])
+            geopotential = iris.load_cube(var['zg'][0]['filename'])
 
-            brunt = self.brunt_vaisala_frq(theta, zg)
+            brunt = self.brunt_vaisala_frq(theta, geopotential)
 
-            lats = zg.coord('latitude')
-            fcor = self.coriolis(lats, zg.shape)
+            lats = geopotential.coord('latitude')
+            fcor = self.coriolis(lats, geopotential.shape)
 
-            ua = iris.load_cube(var['ua'][0]['filename'])
-            if ua.shape is not zg.shape:
-                ua = regrid(ua, zg, scheme='linear')
+            eastward_wind = iris.load_cube(var['ua'][0]['filename'])
+            if eastward_wind.shape is not geopotential.shape:
+                eastward_wind = regrid(
+                    eastward_wind, geopotential, scheme='linear')
 
-            egr = self.eady_growth_rate(fcor, ua, zg, brunt)
+            egr = self.eady_growth_rate(
+                fcor, eastward_wind, geopotential, brunt)
 
-            cube_egr = ua.copy(egr * 86400)
+            cube_egr = eastward_wind.copy(egr * 86400)
 
             cube_egr.standard_name = None
             cube_egr.long_name = 'eady_growth_rate'
@@ -81,36 +101,70 @@ class EadyGrowthRate(object):
 
             self.save(cube_egr, alias, data)
 
-    def potential_temperature(self, ta, plev):
-        p0 = iris.coords.AuxCoord(self.ref_p,
-                                  long_name='reference_pressure',
-                                  units='hPa')
-        p0.convert_units(plev.units)
-        p = (p0.points / plev.points)**(2 / 7)
-        theta = ta * iris.util.broadcast_to_shape(
-            p, ta.shape, ta.coord_dims('air_pressure'))
+    def potential_temperature(self, temperature, plev):
+        """Computes the potential temperature.
+
+        Parameters
+        ----------
+        temperature: iris.cube.Cube
+            Cube of air temperature ta.
+        plev: iris.coords.Coord
+            Pressure level coordinates
+
+        Returns
+        -------
+        theta: iris.cube.Cube
+            Cube of potential temperature theta.
+
+        """
+        reference_pressure = iris.coords.AuxCoord(
+            self.ref_p,
+            long_name='reference_pressure',
+            units='hPa')
+        reference_pressure.convert_units(plev.units)
+        pressure = (reference_pressure.points / plev.points)**(2 / 7)
+        theta = temperature * iris.util.broadcast_to_shape(
+            pressure,
+            temperature.shape,
+            temperature.coord_dims('air_pressure'))
         theta.long_name = 'potential_air_temperature'
 
         return theta
 
-    def vertical_integration(self, x, y):
-        # Perform a non-cyclic centered finite-difference to integrate
-        # along pressure levels
+    def vertical_integration(self, var_x, var_y):
+        """Perform a non-cyclic centered finite-difference to integrate
+        variable x with respect to variable y along pressure levels.
 
-        plevs = x.shape[1]
+        Parameters
+        ----------
+        x: iris.cube.Cube
+            Cube of variable x.
+        y: iris.cube.Cube
+            Cube of variable y.
 
-        dxdy_0 = ((x[:, 1, :, :].lazy_data() - x[:, 0, :, :].lazy_data()) /
-                  (y[:, 1, :, :].lazy_data() - y[:, 0, :, :].lazy_data()))
+        Returns:
+        --------
+        dxdy: iris.cube.Cube
+            Cube of variable integrated along pressure levels.
+        """
 
-        dxdy_centre = ((x[:, 2:plevs, :, :].lazy_data() -
-                        x[:, 0:plevs - 2, :, :].lazy_data()) /
-                       (y[:, 2:plevs, :, :].lazy_data() -
-                        y[:, 0:plevs - 2, :, :].lazy_data()))
+        plevs = var_x.shape[1]
 
-        dxdy_end = ((x[:, plevs - 1, :, :].lazy_data() -
-                     x[:, plevs - 2, :, :].lazy_data()) /
-                    (y[:, plevs - 1, :, :].lazy_data() -
-                     y[:, plevs - 2, :, :].lazy_data()))
+        dxdy_0 = (
+            (var_x[:, 1, :, :].lazy_data() - var_x[:, 0, :, :].lazy_data()) /
+            (var_y[:, 1, :, :].lazy_data() - var_y[:, 0, :, :].lazy_data()))
+
+        dxdy_centre = (
+            (var_x[:, 2:plevs, :, :].lazy_data() -
+             var_x[:, 0:plevs - 2, :, :].lazy_data()) /
+            (var_y[:, 2:plevs, :, :].lazy_data() -
+             var_y[:, 0:plevs - 2, :, :].lazy_data()))
+
+        dxdy_end = (
+            (var_x[:, plevs - 1, :, :].lazy_data() -
+             var_x[:, plevs - 2, :, :].lazy_data()) /
+            (var_y[:, plevs - 1, :, :].lazy_data() -
+             var_y[:, plevs - 2, :, :].lazy_data()))
 
         bounds = [dxdy_end, dxdy_0]
         stacked_bounds = da.stack(bounds, axis=1)
@@ -124,29 +178,81 @@ class EadyGrowthRate(object):
 
         return dxdy
 
-    def brunt_vaisala_frq(self, theta, zg):
-        dthdz = self.vertical_integration(theta, zg)
+    def brunt_vaisala_frq(self, theta, geopotential):
+        """Compute Brunt-Väisälä frequency.
+
+        Parameters
+        ----------
+        theta: iris.cube.Cube
+            Cube of potential temperature.
+        geopotential: iris.cube.Cube
+            Cube of variable zg.
+
+        Returns:
+        --------
+        brunt: da.array
+            Array containing Brunt-Väisälä frequency.
+        """
+        dthdz = self.vertical_integration(theta, geopotential)
         dthdz = da.where(dthdz > 0, dthdz, 0)
-        buoy = (self.g / theta.lazy_data()) * dthdz
+        buoy = (self.gravity / theta.lazy_data()) * dthdz
         brunt = da.sqrt(buoy)
         brunt = da.where(brunt != 0, brunt, self.fill_value)
 
         return brunt
 
     def coriolis(self, lats, ndim):
+        """Compute Coriolis force.
+
+        Parameters
+        ----------
+        lats: iris.coord.Coord
+            Latitude coordinate.
+        ndim: int
+            Number of dimension.
+
+        Returns:
+        --------
+        fcor: da.array
+            Array containing Coriolis force.
+        """
         fcor = 2.0 * self.omega * np.sin(np.radians(lats.points))
         fcor = fcor[np.newaxis, np.newaxis, :, np.newaxis]
         fcor = da.broadcast_to(fcor, ndim)
 
         return fcor
 
-    def eady_growth_rate(self, fcor, ua, zg, brunt):
-        dudz = self.vertical_integration(ua, zg)
+    def eady_growth_rate(self, fcor, eastward_wind, geopotential, brunt):
+        """Compute Eady Growth Rate.
+
+        Parameters
+        ----------
+        eastward_wind: iris.cube.Cube
+            Cube containing variable ua.
+        geopotential: iris.cube.Cube
+            Cube containing variable zg.
+        brunt: da.array
+            Array containing Brunt-Väisäla frequency
+
+        Returns:
+        --------
+        egr: da.array
+            Array containing Eady Growth Rate.
+        """
+        dudz = self.vertical_integration(eastward_wind, geopotential)
         egr = self.con * abs(fcor) * abs(dudz) / brunt
 
         return egr
 
     def seasonal_plots(self, egr, alias):
+        """Plot seasonal Eady Growth rate values.
+        Parameters
+        ----------
+        egr: iris.cube.Cube
+            Cube containing variable egr.
+        alias: str
+            Alias of the dataset.
+        """
         try:
             levels = self.cfg['plot_levels']
         except KeyError:
@@ -156,21 +262,23 @@ class EadyGrowthRate(object):
         for level in levels:
             cube = extract_levels(egr, level, scheme='linear')
             crs_latlon = ccrs.PlateCarree()
-            ax = plt.axes(projection=ccrs.PlateCarree())
-            ax.coastlines(linewidth=1, color='black')
+            axes = plt.axes(projection=ccrs.PlateCarree())
+            axes.coastlines(linewidth=1, color='black')
             # North Atlantic
-            ax.set_extent((-90.0, 30.0, 20.0, 80.0), crs=crs_latlon)
-            ax.set_yticks(np.linspace(25, 75, 6))
+            axes.set_extent((-90.0, 30.0, 20.0, 80.0), crs=crs_latlon)
+            axes.set_yticks(np.linspace(25, 75, 6))
             qplt.contourf(cube, levels=np.arange(0, np.max(cube.data), 0.05))
             extension = self.cfg['output_file_type']
             diagnostic = self.cfg['script']
             plotname = '_'.join([alias, diagnostic,
                                  str(int(level))]) + f'.{extension}'
-            plt.savefig(os.path.join(self.cfg[n.PLOT_DIR], plotname))
+            plt.savefig(os.path.join(
+                self.cfg[shared_names.PLOT_DIR], plotname))
             plt.close()
 
     def save(self, egr, alias, data):
-        script = self.cfg[n.SCRIPT]
+        """Save results and write provenance."""
+        script = self.cfg[shared_names.SCRIPT]
         info = data[alias][0]
         keys = [
             str(info[key]) for key in ('project', 'dataset', 'exp', 'ensemble',
@@ -178,7 +286,8 @@ class EadyGrowthRate(object):
             if key in info
         ]
         output_name = '_'.join(keys) + '.nc'
-        output_file = os.path.join(self.cfg[n.WORK_DIR], output_name)
+        output_file = os.path.join(
+            self.cfg[shared_names.WORK_DIR], output_name)
         iris.save(egr, output_file)
 
         caption = ("{script} between {start} and {end}"
@@ -202,6 +311,7 @@ class EadyGrowthRate(object):
 
 
 def main():
+    """Run Eady Growth Rate diagnostic"""
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         EadyGrowthRate(config).compute()
 
