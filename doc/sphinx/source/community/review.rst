@@ -154,7 +154,7 @@ request yourself, unless the author specifically agrees to those changes, as
 this could potentially be perceived as offensive.
 
 If talking about the pull requests in a meeting still does not resolve the
-disagreement, ask other members of the `@ESMValGroup/esmvaltool-coreteam`_ for
+disagreement, ask a member of the `@ESMValGroup/esmvaltool-coreteam`_ for
 their opinion and try to find a solution.
 
 
