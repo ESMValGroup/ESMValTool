@@ -29,8 +29,11 @@ User settings in recipe
 1. Script ``climwip.py``
 
   *Required settings for script*
-    * ``sigma_performance``: shape parameter weights calculation (determined offline)
-    * ``sigma_independence``: shape parameter for weights calculation (determined offline)
+    * ``performance_sigma``: shape parameter weights calculation (determined offline). Can be skipped or not set if ``performance_contributions`` is skipped or not set.
+    * ``independence_sigma``: shape parameter for weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
+    * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with ``independence_contributions`` being skipped or not set).
+    * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with ``performance_contributions`` being skipped or not set).
+    * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble members per model.
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
@@ -40,11 +43,6 @@ User settings in recipe
     * ``mip``: typically Amon
     * ``preprocessor``: e.g. climwip_summer_mean
     * ``additional_datasets``: provide a list of model data for performance calculation.
-
-  *Optional settings for variables*
-    * ``performance``: set to false to *not* calculate performance for this variable group
-    * ``independence``: set to false to *not* calculate independence for this variable group
-    * By default, both performance and independence are calculate for each variable group.
 
   *Required settings for preprocessor*
     * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
@@ -103,6 +101,7 @@ Variables
 
 * pr (atmos, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
+* psl (atmos, monthly mean, longitude latitude time)
 * more variables can be added if available for all datasets.
 
 
@@ -115,7 +114,9 @@ multiple datasets.
 References
 ----------
 
-* `Brunner et al. 2019, Environ. Res. Lett., 14, 124010 <https://doi.org/10.1088/1748-9326/ab492f>`_.
+* `Brunner et al. 2020 (accepted), Earth Syst. Dynam., <https://doi.org/10.5194/esd-2020-23>`_.
+* `Merrifield et al. 2020, Earth Syst. Dynam., 11, 807-834, <https://doi.org/10.5194/esd-11-807-2020>`_.
+* `Brunner et al. 2019, Environ. Res. Lett., 14, 124010, <https://doi.org/10.1088/1748-9326/ab492f>`_.
 
 Example plots
 -------------
