@@ -902,6 +902,19 @@ diagnostics:
     scripts: null
 
 
+  ERA5-Land:
+    description: ERA5-Land check
+    variables:
+      pr_Amon:
+        short_name: pr
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA5-Land, project: OBS6, tier: 3, type: reanaly,
+         version: 1, start_year: 1981, end_year: 1981}
+    scripts: null
+
+
+
   ERA5:
     description: ERA5 check
     variables:

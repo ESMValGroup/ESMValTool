@@ -196,7 +196,7 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | n/a             |
 |                              | tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx)                                                 |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5-Land [*]_               | pr                                                                                                   |   3  | n/a             |
+| ERA5-Land                    | pr                                                                                                   |   3  | n/a             |
 |                                                                                                                                     |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |

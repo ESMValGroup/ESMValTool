@@ -19,26 +19,6 @@ datasets:
   - {dataset: ERA5-Land, project: native6, type: reanaly, version: '1',
      tier: 3, start_year: 1981, end_year: 1982}
 
-preprocessors:
-  add_one_day: &add_one_day
-    extract_time:
-      end_year: 1991
-      end_month: 1
-      end_day: 1
-
-  daily_mean:
-    <<: *add_one_day
-    daily_statistics:
-      operator: mean
-  daily_min:
-    <<: *add_one_day
-    daily_statistics:
-      operator: min
-  daily_max:
-    <<: *add_one_day
-    daily_statistics:
-      operator: max
-
 diagnostics:
   monthly:
     description: CMORize monthly ERA5 data
