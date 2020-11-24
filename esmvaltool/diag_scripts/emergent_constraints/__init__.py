@@ -13,11 +13,15 @@ import seaborn as sns
 import yaml
 from scipy import integrate
 from scipy.stats import linregress, multivariate_normal
+from sklearn.feature_selection import f_regression
 from sklearn.linear_model import LinearRegression
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, io)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    io,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +77,7 @@ def _check_prediction_arrays(x_new, x_train=None, x_cov=None):
     """Ensure that the prediction input arrays have correct shapes."""
     x_new = _check_feature_array(x_new, single_sample=True)
     if x_train is not None:
-        _check_feature_array(x_train, single_sample=False)
+        x_train = _check_feature_array(x_train, single_sample=False)
         if x_new.shape[1] != x_train.shape[1]:
             raise ValueError(
                 f"Expected identical number of predictors for training and "
@@ -81,7 +85,7 @@ def _check_prediction_arrays(x_new, x_train=None, x_cov=None):
                 f"{x_new.shape[1]:d}, respectively")
     if x_cov is None:
         return x_new
-    x_cov = np.array(x_cov)
+    x_cov = np.squeeze(x_cov)
     if x_cov.ndim == 0:
         x_cov = x_cov.reshape(1, 1)
     elif x_cov.ndim != 2:
@@ -1176,27 +1180,41 @@ def standard_prediction_error(x_data, y_data):
     lin.fit(x_data, y_data)
 
     # Standard error of estimates
-    dof = x_data.shape[0] - x_data.shape[1]
+    dof = x_data.shape[0] - x_data.shape[1] - 1
     y_pred = lin.predict(x_data)
     see = np.sqrt(np.sum(np.square(y_data - y_pred)) / dof)
 
-    # Get design matrix
-    ones = np.ones((x_data.shape[0], 1), dtype=x_data.dtype)
-    x_design = np.hstack([ones, x_data])
+    # Standard prediction error for 1D input
+    if x_data.shape[1] == 1:
+        x_data = np.squeeze(x_data, axis=1)
+        x_mean = np.mean(x_data)
+        ssx = np.sum(np.square(x_data - x_mean))
 
-    # Standard prediction error for new input
-    def spe(x_new):
-        """Return standard prediction error."""
-        x_new = _check_prediction_arrays(x_new, x_train=x_data)
-        one = np.ones((1, 1), dtype=x_new.dtype)
-        x_new = np.hstack([one, x_new])
-        return see * (1.0 +
-                      x_new @ np.linalg.inv(x_design.T @ x_design) @ x_new.T)
+        def spe(x_new):
+            """1D standard prediction error."""
+            x_new = _check_prediction_arrays(x_new, x_train=x_data)
+            x_new = np.squeeze(x_new)
+            return see * np.sqrt(1.0 + 1.0 / x_data.shape[0] +
+                                 (x_new - x_mean)**2 / ssx)
+
+    # Standard prediction error for multi-dimensional input
+    else:
+        ones = np.ones((x_data.shape[0], 1), dtype=x_data.dtype)
+        x_design = np.hstack([ones, x_data])
+
+        def spe(x_new):
+            """Return standard prediction error."""
+            x_new = _check_prediction_arrays(x_new, x_train=x_data)
+            one = np.ones((1, 1), dtype=x_new.dtype)
+            x_new = np.hstack([one, x_new])
+            return see * (1.0 +
+                          x_new @ np.linalg.inv(x_design.T @ x_design) @
+                          x_new.T)
 
     return np.vectorize(spe, signature='(n)->()')
 
 
-def regression_surface(x_data, y_data, n_points=50):
+def regression_surface(x_data, y_data, n_points=100):
     """Return points of the regression surface (mean and error).
 
     Parameters
@@ -1205,7 +1223,7 @@ def regression_surface(x_data, y_data, n_points=50):
         Independent observations of predictors.
     y_data : numpy.ndarray
         Independent observations of the target variable.
-    n_points : int, optional (default: 50)
+    n_points : int, optional (default: 100)
         Number of sampled points per predictor.
 
     Returns
@@ -1234,15 +1252,14 @@ def regression_surface(x_data, y_data, n_points=50):
     out['y'] = lin.predict(x_lin)
     out['y_minus_err'] = out['y'] - spe(x_lin)
     out['y_plus_err'] = out['y'] + spe(x_lin)
-    out['x'] = x_lin
     out['coef'] = lin.coef_
     out['intercept'] = lin.intercept_
     out['R2'] = lin.score(x_data, y_data)
-
+    (_, out['p']) = f_regression(x_data, y_data)
     return out
 
 
-def gaussian_pdf(x_data, y_data, obs_mean, obs_cov, n_points=1000):
+def gaussian_pdf(x_data, y_data, obs_mean, obs_cov, n_points=200):
     """Calculate Gaussian probability densitiy function for target variable.
 
     Parameters
@@ -1255,7 +1272,7 @@ def gaussian_pdf(x_data, y_data, obs_mean, obs_cov, n_points=1000):
         Mean of observational data.
     obs_cov : numpy.ndarray
         Covariance matrix of observational data.
-    n_points : int, optional (default: 1000)
+    n_points : int, optional (default: 200)
         Number of sampled points for target variable for PDF.
 
     Returns
@@ -1292,7 +1309,7 @@ def gaussian_pdf(x_data, y_data, obs_mean, obs_cov, n_points=1000):
 
     # Calculate PDF of target variable P(y)
     x_ranges = _get_x_ranges(obs_mean, obs_cov)
-    y_range = max(y_data) - min(y_data)
+    y_range = 1.5 * (max(y_data) - min(y_data))
     y_lin = np.linspace(min(y_data) - y_range, max(y_data) + y_range, n_points)
     y_pdf = [integrate.nquad(comb_pdf, x_ranges, args=(y, ))[0] for y in y_lin]
     return (y_lin, np.array(y_pdf))
