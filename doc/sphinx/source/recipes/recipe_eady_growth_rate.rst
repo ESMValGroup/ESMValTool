@@ -22,7 +22,7 @@ Recipes are stored in esmvaltool/recipes/
 Diagnostics are stored in esmvaltool/diag_scripts/eady_growth_rate/
 
     * eady_growth_rate.py: Computes and stores the eady growth rate. 
-    Plots can be produced for the seasonal mean over the North Atlantic region.
+      Plots can be produced for the seasonal mean over the North Atlantic region.
 
 
 User settings in recipe
