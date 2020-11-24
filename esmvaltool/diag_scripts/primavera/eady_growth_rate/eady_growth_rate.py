@@ -76,7 +76,7 @@ class EadyGrowthRate(object):
             else:
                 logger.info(
                     "Parameter time_statistic is not well set in the recipe."
-                    "Must be 'annual' or 'seasonal'")
+                    "Must be 'annual_mean' or 'seasonal_mean'")
                 sys.exit()
 
             self.save(cube_egr, alias, data)
@@ -193,7 +193,7 @@ class EadyGrowthRate(object):
         record = {
             'caption': caption,
             'domains': ['global'],
-            'autors': ['sanchez-gomez_emilia'],
+            'authors': ['sanchez-gomez_emilia', 'moreno-chamarro_eduardo'],
             'references': ['acknow_project'],
             'ancestors': ancestors
         }

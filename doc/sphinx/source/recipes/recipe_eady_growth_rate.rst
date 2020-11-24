@@ -9,7 +9,7 @@ Overview
 This recipe computes the Eady growth rate and performs the annual and seasonal means, storing 
 the results for each dataset. 
 For the seasonal means, the results are plotted over the North-Atlantic region for the selected
-levels to reproduce Figure ? from PAPER.
+pressure levels.
 
 
 Available recipes and diagnostics
@@ -46,10 +46,6 @@ Variables
 * zg (atmos, monthly mean, longitude latitude level time)
 * ua (atmos, monthly mean, longitude latitude level time) 
 
-References
-----------
-
-* xxx
 
 Example plots
 -------------
@@ -58,4 +54,4 @@ Example plots
 .. figure::  /recipes/figures/eady_growth_rate/HadGEM3-GC31-LM_winter_eady_growth_rate_70000.png 
    :align:   center
 
-   Add figure caption here.
+   Eady Growth Rate values over the North-Atlantic region at 
