@@ -76,6 +76,12 @@ diagnostics:
         mip: Amon
         preprocessor: climatological_mean
         additional_datasets: *obs_data
+      tas_CLIM_future:
+        short_name: tas
+        start_year: 2081
+        end_year: 2100
+        mip: Amon
+        preprocessor: climatological_mean
       pr_CLIM:
         <<: *common_settings
         short_name: pr
@@ -88,7 +94,14 @@ diagnostics:
         script: weighting/climwip.py
         obs_data: native6
         combine_ensemble_members: true
-        performance_sigma: 0.5
+        # performance_sigma: 0.5
+        calibrate_performance_sigma:
+          most_independent_subset: None
+          performance_sigma_range: [.1, 2]
+          variable_group_target: tas_CLIM_future
+          use_independence_weighting: false
+          optimise_for: confidence
+          percentiles: [15, 85]
         performance_contributions:
           tas_CLIM: 1
           pr_CLIM: 2
