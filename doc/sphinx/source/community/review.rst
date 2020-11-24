@@ -47,7 +47,7 @@ GitHub.
 
 Scientific reviews are done by the scientific review team.
 This team consists of contributors that have a strong interest and
-experience in climate science.
+experience in climate science or related domains.
 
 Scientific reviewers use the scientific checklist from the
 `pull request template`_ to make sure the pull request follows the standards we
