@@ -1,7 +1,7 @@
 .. _recipes_eady_growth_rate:
 
 Eady growth rate
-=====
+==========================================================================================================================
 
 Overview
 --------
@@ -54,4 +54,4 @@ Example plots
 .. figure::  /recipes/figures/eady_growth_rate/HadGEM3-GC31-LM_winter_eady_growth_rate_70000.png 
    :align:   center
 
-   Eady Growth Rate values over the North-Atlantic region at 
+   Eady Growth Rate values over the North-Atlantic region at 70000 Pa.
