@@ -27,6 +27,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 class EadyGrowthRate(object):
     """Class used to compute the Eady Growth Rate."""
+
     def __init__(self, config):
         """
         Set diagnostic parameters and constants.
@@ -34,7 +35,8 @@ class EadyGrowthRate(object):
         Parameters
         ----------
             config : dict
-                Dictionary containing configuration settings
+                Dictionary containing configuration settings.
+
         """
 
         self.cfg = config
