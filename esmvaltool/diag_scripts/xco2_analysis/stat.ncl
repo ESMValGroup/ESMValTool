@@ -1,11 +1,23 @@
-; ########################################################################
+; #############################################################################
+; ROUTINES FOR CALCULATING GROWTH RATE AND SEASONAL CYCLE AMPLITUDE
+; #############################################################################
+; Please consider using of extending existing routines before adding new ones.
+; Check the header of each routine for documentation.
+;
+; Contents:
+;    function calc_gr
+;    function calc_sca
+;    function var_detrend
+;
+; #############################################################################
 undef("calc_gr")
 function calc_gr(data[*]: numeric, \
                  opt[1]:string, \
                  min_nmonth: integer)
 ;
 ; Description:
-;
+;   Calculates growth rate of a 1D array using the Buchwitz et al 2018 method,
+;   with a maximum of min_nmonth permitted missing values per year.
 ;
 ; Return value:
 ;
@@ -24,7 +36,6 @@ function calc_gr(data[*]: numeric, \
 ;
 local result, ntime, grmon, gryr, data1D, gryrf, mvnum
 begin
-    ; Trial version: just 1D input data
     data1D = data
 
     ; Calc 1D case
@@ -49,8 +60,8 @@ begin
             do itim = 0, ntime/12 - 1
                 gryrf(itim*12:itim*12+11) = \
                               where(ismissing(grmon(itim*12:itim*12+11)), \
-                              gryr(itim),\
-                              grmon(itim*12:itim*12+11))
+                                    gryr(itim),\
+                                    grmon(itim*12:itim*12+11))
             end do
             result = gryrf
         end if
@@ -60,18 +71,17 @@ begin
         result = grmon
     end if
 
-    ;copy_VarMeta(result, data)
-
     return result
 end
 
-; ########################################################################
+; #############################################################################
 undef("calc_sca")
 function calc_sca(data[*]: numeric, \
-                 min_nmonth: integer)
+                  min_nmonth: integer)
 ;
 ; Description:
-;
+;   Calculates seasonal cycle amplitude by max - min of a 1D array, with a
+;   maximum of min_nmonth permitted missing values per year.
 ;
 ; Return value:
 ;
@@ -86,25 +96,24 @@ function calc_sca(data[*]: numeric, \
 ;
 local sca, detrended, gryrf, ntime, mvnum, data1D
 begin
-    ; Trial version: Just 1D input data
     ; Get GR to detrend
     data1D = data
     ntime = dimsizes(data)
     sca = new(ntime/12, float)
     gryrf = calc_gr(data, "monthlyfilled", min_nmonth)
     do itim = 0, ntime/12 - 1
-        detrended = data(itim*12:itim*12+11) - dim_cumsum(gryrf(itim*12:itim*12+11)/12., 1)
+        detrended = data(itim*12:itim*12+11) \
+                    - dim_cumsum(gryrf(itim*12:itim*12+11)/12., 1)
         mvnum = num(ismissing(detrended))
         if mvnum .le. min_nmonth then
             sca(itim) = max(detrended) - min(detrended)
         end if
     end do
-    ;copy_VarMeta(sca, data)
 
     return sca
 end
 
-; ############################################################################
+; #############################################################################
 undef("var_detrend")
 function var_detrend(x[*]: numeric,
                      y[*]: numeric)

@@ -1,16 +1,35 @@
 ; #############################################################################
-;  xco2_analysis/global_maps.ncl
+;  xco2_analysis/panel_plots.ncl
 ; #############################################################################
 ; Description
-;    Plotting global maps for XCO2 data and SCA
+;    Plotting panel plots showing seasonal cycle amplitude against input
+;    variable
 ;
 ; Required diag_script_info attributes:
+;    styleset: styleset to use for plotting colors, linestyles...
+;    region: latitude range for averaging
+;    masking: different masking options are available to use on dataset:
+;              "none" - no masking
+;              "obs" - observational masking
+;              C3S satellite dataset specific:
+;              "sciamachy" - masking according to period for Sciamachy only
+;              "gosat" - masking according to period for Gosat only
+;              "land" - only consider land values
+;    obs_in_panel: True if observations should be included in plot
+;    area_avg: Type of area averaging: "full-area" normal area-average
+;                                      "lat-first" calculate zonal means first,
+;                                                  then average these
+;    plot_var2_mean: If True adds mean of seasonal cycle to panel as string.
 ;
 ; Optional diag_script_info attributes:
+;    output_file_type: output file type for plots. Default: png
+;    var_plotname: String formatting how variable should be named in plots
+;                  defaults to short_name if not assigned
 ;
 ; Caveats
 ;
 ; Modification history
+;    20201119-gier_bettina: Added provenance and cleaned up.
 ;    20200226-gier_bettina: Adapted to version 2
 ;
 ; #############################################################################
@@ -33,7 +52,7 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
   AUTHORS = (/"gier_bettina"/)
-  REFERENCES = (/"acknow_author"/)
+  REFERENCES = (/"gier20bg"/)
 
   ; Variable
   var0 = variable_info[0]@short_name
@@ -42,17 +61,16 @@ begin
   INFO0 = select_metadata_by_name(input_file_info, var0)
   DATASETS = metadata_att_as_array(INFO0, "dataset")
   DATASETS := array_append_record(DATASETS, "multi-model mean", 0)
-  experiments = metadata_att_as_array(INFO0, "exp") ; Careful! OBS also has exp: esm-hist
+  experiments = metadata_att_as_array(INFO0, "exp")
   dim_MOD = dimsizes(DATASETS)
   ALL_FILES = metadata_att_as_array(INFO0, "filename")
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(DIAG_SCRIPT + " (var: " + var0  + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
 end
 begin
-  ; Minimum amount of available months allowed for calculating SCA
   ; Maximum amount of missing values per year
   min_nmonth = 7
 
@@ -67,7 +85,7 @@ begin
   else if lat_min.eq.(-60) .and. lat_max.eq.(-30) then
     region = "shmidlat"
   else if lat_min.eq.(-30) .and. lat_max.eq.(30) then
-    region = "tropics"
+    region = "trop"
   else if lat_min.eq.(0) .and. lat_max.eq.(90) then
     region = "nh"
   else if lat_min.eq.(-90) .and. lat_max.eq.0 then
@@ -83,16 +101,19 @@ begin
   DOMAIN = (/region/)
 
   ; Plot file type
-  file_type = config_user_info@output_file_type
-  if (ismissing(file_type)) then
-    file_type = "ps"
+  if (isatt(diag_script_info, "output_file_type")) then
+    file_type = diag_script_info@output_file_type
+  else
+    file_type = "png"
   end if
 
   ; Output plot directory
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
+  work_dir = config_user_info@work_dir
+  system("mkdir -p " + work_dir)
 
-  ;; Determine start + end year
+  ; Determine start + end year
   start_years = metadata_att_as_array(INFO0, "start_year")
   start_year = min(start_years)
   end_years = metadata_att_as_array(INFO0, "end_year")
@@ -102,7 +123,7 @@ begin
   time = new(ntime, float)
   do yy = start_year, end_year
       do mm = 0, 11
-          time(12* (yy - start_year) + mm) = yy + (mm+0.5)/12.
+          time(12 * (yy - start_year) + mm) = yy + (mm + 0.5)/12.
       end do
   end do
 
@@ -111,7 +132,6 @@ begin
   else
     ref_ind = -999
   end if
-
 
   mod_inds = ind(DATASETS.ne.INFO0[0]@reference_dataset)
 
@@ -135,9 +155,10 @@ begin
     opt_mask = ""
   end if
 
-    ;; Formatted varname for plots
-  if var0.eq."xco2" then
-      var0_plotname = "XCO~B~2~N~"
+  diag_script_info@var_plotname = "XCO~B~2~N~"
+  ; Formatted varname for plots
+  if (isatt(diag_script_info, "var_plotname")) then
+      var0_plotname = diag_script_info@var_plotname
   else
       var0_plotname = var0
   end if
@@ -148,35 +169,40 @@ begin
   amp_series&model = DATASETS
   amp_series!1 = "time"
   amp_series&time = ispan(start_year, end_year, 1)
-  amp_series@units = "ppmv"
+  amp_series@units = variable_info[0]@units
+  amp_series@var = "sca"
   amp_series@long_name = "Seasonal Cycle Amplitude"
   amp_series@var_yaxis = True
   amp_series@region = region
+  amp_series@diag_script = DIAG_SCRIPT
+
+  print(variable_info[0])
 
   growth_series = amp_series
   growth_series@long_name = "Growth Rate"
-  growth_series@units = "ppmv yr~S~-1~N~"
+  growth_series@units = amp_series@units + " yr-1"
+  growth_series@var = "gr"
 
   var0_yr = amp_series
   var0_yr@long_name = var0_plotname
+  var0_yr@var = var0
 
   varname2 = "SCA"
   varname2@mean = diag_script_info@plot_var2_mean
 
   varname_gr = "GR"
   varname_gr@mean = diag_script_info@plot_var2_mean
-
 end
+
 begin
   ; First read obs to have it ready for masking
   obs_data = read_data(INFO0[ref_ind])
-  obs_data = convert_units(obs_data, "ppmv")
   time_mnth = cd_calendar(obs_data&time, 0)
 
   ; Prepare sat masks for usage if needed
   if any(diag_script_info@masking .eq. "sciamachy") then
     ; Sciamachy Masks! 2003-2008
-    scia_ind = max(ind(time_mnth(:,0).eq.2008))
+    scia_ind = max(ind(time_mnth(:, 0).eq.2008))
     scia_l_mask = obs_data(0, :, :)
     scia_l_mask = 0.
 
@@ -189,7 +215,7 @@ begin
   end if
 
   if any(diag_script_info@masking .eq. "gosat") then
-    gosat_ind = min(ind(time_mnth(:,0).eq.2013))
+    gosat_ind = min(ind(time_mnth(:, 0).eq.2013))
     gosat_l_mask = obs_data(0, :, :)
     gosat_l_mask = 0.
 
@@ -209,7 +235,7 @@ begin
   sftlf = where(sftlf.eq.0, sftlf@_FillValue, sftlf)
 
   ; Read data
-  do imod = 0, dim_MOD -1
+  do imod = 0, dim_MOD - 1
     ; Load data
     if DATASETS(imod).eq."multi-model mean" then
       var0_mod = mmm_array / tofloat(dimsizes(DATASETS) - subtract_mmm)
@@ -220,24 +246,24 @@ begin
         var0_mod = tofloat(tmp)
         copy_VarMeta(tmp, var0_mod)
         delete(tmp)
-        var0_mod = convert_units(var0_mod, "ppmv")
 
         if .not. isdefined("mmm_array") then
-          mmm_array =  area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, var0_mod, \
-                                          True,1, obs_data&lon, obs_data&lat, False)
+          mmm_array = area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, \
+                                         var0_mod, True, 1, obs_data&lon, \
+                                         obs_data&lat, False)
         else
           var_reg = area_hi2lores(var0_mod&lon, var0_mod&lat, var0_mod, \
-                                  True,1, mmm_array&lon, mmm_array&lat, False)
+                                  True, 1, mmm_array&lon, mmm_array&lat, False)
           mmm_array = mmm_array + (/var_reg/)
           delete(var_reg)
         end if
       end if
     end if
 
-    ; Go through all masks and apply -> check for which are applied to obs as well!
+    ; Go through all masks and apply
     if imod .ne. ref_ind then
-      var0_reg = area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, var0_mod, True, \
-                                  1, obs_data&lon, obs_data&lat, False)
+      var0_reg = area_hi2lores_Wrap(var0_mod&lon, var0_mod&lat, var0_mod, \
+                                    True, 1, obs_data&lon, obs_data&lat, False)
       delete(var0_mod)
       if any(diag_script_info@masking .eq. "obs") then
         var0_reg = where(ismissing(obs_data), obs_data, var0_reg)
@@ -263,9 +289,10 @@ begin
       gr_lonavg_temp = var0_sca_lonavg
       delete(var0_reg)
 
-      do ilat = 0, dimsizes(var0_lonavg&lat) -1
+      do ilat = 0, dimsizes(var0_lonavg&lat) - 1
         gr = calc_gr(var0_lonavg(:, ilat), "monthlyfilled", min_nmonth)
-        gr_lonavg_temp(:, ilat) = calc_gr(var0_lonavg(:, ilat), "yearly", min_nmonth)
+        gr_lonavg_temp(:, ilat) = calc_gr(var0_lonavg(:, ilat), "yearly", \
+                                          min_nmonth)
         do itim = 0, nyear - 1
           slope = dim_cumsum(gr(itim*12:itim*12+11)/12., 1)
           detrended = var0_lonavg(itim*12:itim*12+11, ilat) - slope
@@ -277,57 +304,103 @@ begin
           delete(slope)
         end do
 
-        ;var0_sca_lonavg(:, ilat) = (/calc_sca(var0_lonavg(:, ilat), min_nmonth)/)
       end do
 
       coords = ind_nearest_coord((/lat_min, lat_max/), var0_lonavg&lat, 0)
       cos_lats = tofloat(cos(var0_lonavg&lat(coords(0):coords(1))/180*3.14159))
-      var0_lonavg_xco2 = dim_avg_wgt_n(var0_lonavg(:,coords(0): coords(1)), cos_lats, 1, 1)
+      var0_lonavg_xco2 = dim_avg_wgt_n(var0_lonavg(:, coords(0): coords(1)), \
+                                       cos_lats, 1, 1)
       copy_VarMeta(var0_lonavg, var0_lonavg_xco2)
 
-      var0_yr(mapping_array(imod), :) = (/time_operations(var0_lonavg_xco2, -1, -1, "average", "yearly", True)/)
-      amp_series(mapping_array(imod), :) = dim_avg_wgt(var0_sca_lonavg(:,coords(0): coords(1)) , \
-                cos_lats, 1)
-      growth_series(mapping_array(imod), :) = dim_avg_wgt(gr_lonavg_temp(:,coords(0): coords(1)) , \
-                cos_lats, 1)
+      var0_yr(mapping_array(imod), :) = \
+        (/time_operations(var0_lonavg_xco2, -1, -1, "average", "yearly", \
+                          True)/)
+      amp_series(mapping_array(imod), :) = \
+        dim_avg_wgt(var0_sca_lonavg(:, coords(0): coords(1)), cos_lats, 1)
+      growth_series(mapping_array(imod), :) = \
+        dim_avg_wgt(gr_lonavg_temp(:, coords(0): coords(1)), cos_lats, 1)
       delete(gr_lonavg_temp)
     else
-      var0_avg = area_operations(var0_reg, lat_min, lat_max, 0, 360, "average", True)
-      var0_yr(mapping_array(imod), :) = (/time_operations(var0_avg, -1, -1, "average", "yearly", True)/)
+      var0_avg = area_operations(var0_reg, lat_min, lat_max, 0, 360, \
+                                 "average", True)
+      var0_yr(mapping_array(imod), :) = \
+        (/time_operations(var0_avg, -1, -1, "average", "yearly", True)/)
       amp_series(mapping_array(imod), :) = (/calc_sca(var0_avg, min_nmonth)/)
-      growth_series(mapping_array(imod), :) = (/calc_gr(var0_avg, "yearly", min_nmonth)/)
+      growth_series(mapping_array(imod), :) = \
+        (/calc_gr(var0_avg, "yearly", min_nmonth)/)
     end if
 
   end do
 
-
-
-  ; -------------------------------------------------------------------------------
-  ; ---------------------- PANEL PLOTS---------------------------------------------
-  ; -------------------------------------------------------------------------------
+  ; ---------------------------------------------------------------------------
+  ; ---------------------- PANEL PLOTS-----------------------------------------
+  ; ---------------------------------------------------------------------------
   obs_pres = diag_script_info@obs_in_panel
   if .not. obs_pres then
     var0_yr := var0_yr(1:, :)
     amp_series := amp_series(1:, :)
-    growth_serie := growth_series(1:, :)
+    growth_series := growth_series(1:, :)
   end if
-  outfile_scaplot = plot_dir + "/" + var0 + "_" + experiments(0) \
-               + "_" + region + "_" + (start_year) + "-" + (end_year) + "_" + var0 + "_SCA_panels" \
-               + opt_mask
+  filename_scaplot = var0 + "_" + experiments(0) \
+    + "_" + region + "_" + (start_year) + "-" + (end_year) \
+    + "_" + var0 + "_SCA_panels" + opt_mask
+  outfile_scaplot = plot_dir + "/" + filename_scaplot
+  outfile_scaplot_netcdf = work_dir + "/" + filename_scaplot + ".nc"
   wks = gsn_open_wks(file_type, outfile_scaplot)
   plt_xco2_SCA_panels = panel_plots(wks, var0_yr, amp_series, var0, \
                                     varname2, obs_pres, INFO0)
   delete(wks)
   delete(plt_xco2_SCA_panels)
 
-  outfile_grplot = plot_dir + "/" + var0 + "_" + experiments(0) \
-               + "_" + region + "_" + (start_year) + "-" + (end_year) + "_" + var0 + "_GR_panels" \
-               + opt_mask
+  ; Write nc file
+  outfile_scaplot_netcdf@existing = "overwrite"
+  ncdf_outfile = ncdf_write(var0_yr, outfile_scaplot_netcdf)
+  outfile_scaplot_netcdf@existing = "append"
+  ncdf_outfile = ncdf_write(amp_series, outfile_scaplot_netcdf)
+
+  ; Provenance
+  log_provenance(ncdf_outfile, \
+                 outfile_scaplot, \
+                 "Trend of Seasonal Cycle Amplitude with " \
+                 + var0 + " for " + region + ", " + start_year + "-" \
+                 + end_year + ". Using masking: " + opt_mask \
+                 + ". Similar to Gier et al 2020, Fig. 7.", \
+                 (/"mean", "correlation"/), \
+                 DOMAIN, \
+                 "scatter", \
+                 AUTHORS, \
+                 REFERENCES, \
+                 ALL_FILES)
+
+  filename_grplot = var0 + "_" + experiments(0) + "_" + region + "_" \
+    + (start_year) + "-" + (end_year) + "_" + var0 + "_GR_panels" \
+    + opt_mask
+  outfile_grplot = plot_dir + "/" + filename_grplot
+  outfile_grplot_netcdf = work_dir + "/" + filename_grplot + ".nc"
   wks = gsn_open_wks(file_type, outfile_grplot)
   plt_t_gr_panels = panel_plots(wks, var0_yr, growth_series, var0, \
-                                    varname_gr, obs_pres, INFO0)
+                                varname_gr, obs_pres, INFO0)
   delete(wks)
   delete(plt_t_gr_panels)
 
+  ; Write nc file
+  outfile_grplot_netcdf@existing = "overwrite"
+  ncdf_outfile = ncdf_write(var0_yr, outfile_grplot_netcdf)
+  outfile_grplot_netcdf@existing = "append"
+  ncdf_outfile = ncdf_write(growth_series, outfile_grplot_netcdf)
+
+  ; Provenance
+  log_provenance(ncdf_outfile, \
+                 outfile_grplot, \
+                 "Trend of Growth Rate with " \
+                 + var0 + " for " + region + ", " + start_year + "-" \
+                 + end_year + ". Using masking: " + opt_mask \
+                 + ". Similar to Gier et al 2020, Fig. 7.", \
+                 (/"mean", "correlation"/), \
+                 DOMAIN, \
+                 "scatter", \
+                 AUTHORS, \
+                 REFERENCES, \
+                 ALL_FILES)
 
 end

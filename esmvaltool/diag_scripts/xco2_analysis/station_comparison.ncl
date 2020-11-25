@@ -8,7 +8,8 @@
 ;    path: path to station data - move this to recipe!
 ;    stationlist: ascii data for stations -> make this into recipe cfg
 ;    station_varname: short_name of variable for station data
-;    var_order: in this case xco2, co2 - column averaged with obs dataset from recipe first
+;    var_order: in this case xco2, co2 - column averaged with obs dataset
+;               from recipe first
 ;
 ; Optional diag_script_info attributes:
 ;
@@ -38,8 +39,8 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
   AUTHORS = (/"gier_bettina"/)
-  REFERENCES = (/"acknow_author"/)
-  DOMAIN = (/"global"/) ;diag_script_info@region
+  REFERENCES = (/"gier20bg"/)
+  DOMAIN = (/"global"/)
 
   ; Variable
   var0 = diag_script_info@var_order(0)
@@ -105,16 +106,9 @@ begin
   mod_co2 = read_data(INFO1[co2_mmm])
 
   ; Convert units to ppmv
-  mod_co2 = convert_units(mod_co2, "ppmv")
-  mod_xco2 = convert_units(mod_xco2, "ppmv")
-  sat_data = convert_units(sat_data, "ppmv")
-
-  ; Print stuffs!
-  print("Mod CO2 Avg " + avg(mod_co2))
-  print("Sat XCO2 Avg " + avg(sat_data))
-  print("Mod XCO2 Avg " + avg(mod_xco2))
-
-
+  ;mod_co2 = convert_units(mod_co2, "ppmv")
+  ;mod_xco2 = convert_units(mod_xco2, "ppmv")
+  ;sat_data = convert_units(sat_data, "ppmv")
 
   ; Read station info
   log_info("Reading station information")
@@ -381,120 +375,111 @@ begin
    ; Make Station timeseries plots
    sta_ts_plots = new(nstat, graphic)
 
-   do istat = 0, nstat - 1
-       res@tiMainString = st_code(istat) + " (" + \
-           station_array&station@lat(istat) + \
-           ", " + station_array&station@lon(istat) + \
-           ") Offset: " + decimalPlaces(offsets(istat), 1, True)
-       ;res@xyMonoDashPattern = False
-           res@vpWidthF          = 0.155       ; Make plots quite a bit smaller.
-           res@vpHeightF         = 0.15
+  do istat = 0, nstat - 1
+    res@tiMainString = st_code(istat) + " (" + \
+         station_array&station@lat(istat) + \
+         ", " + station_array&station@lon(istat) + \
+         ") Offset: " + decimalPlaces(offsets(istat), 1, True)
+     ;res@xyMonoDashPattern = False
+    res@vpWidthF          = 0.155       ; Make plots quite a bit smaller.
+    res@vpHeightF         = 0.15
 
-       res@trXMinF = IYEAR
-       res@trXMaxF = FYEAR+1
-       res@trYMinF = min(stobs_ts(istat, :, :)) - 2
-       res@trYMaxF = max(stobs_ts(istat, :, :)) + 2
-       res@xyDashPattern = 0;(/0, 2, 0, 0, 0/)                         ; Make curves all solid
-       res@xyLineColors = (/"blue", "black", "red","orange"/) ; 3 different colors
-       res@tmXBFormat = "f" ; Don't put unnecessary 0's
-       res@pmLegendDisplayMode = "Never" ;"Always"
-       ;stobs_ts(istat, :, :) = (/stobs/)
-       ;res@xyExplicitLegendLabels = stobs_ts&dataset
+    res@trXMinF = IYEAR
+    res@trXMaxF = FYEAR+1
+    res@trYMinF = min(stobs_ts(istat, :, :)) - 2
+    res@trYMaxF = max(stobs_ts(istat, :, :)) + 2
+    res@xyDashPattern = 0
+    res@xyLineColors = (/"blue", "black", "red","orange"/)
+    res@tmXBFormat = "f"  ; Don't put unnecessary 0's
+    res@pmLegendDisplayMode = "Never"
 
-       res@tiYAxisString =  "XCO~B~2~N~ [ppmv]"
-       res@xyLineThicknessF       = 2.0      ; default is 1
-       res@xyMonoDashPattern      = True     ; force all solid lines
-       res@tiMainFontHeightF = 0.01
-       res@tiYAxisFontHeightF = 0.01
-       res@tmXBLabelFontHeightF = 0.007;0.025
-       res@tmYLLabelFontHeightF = 0.007;0.025
-       res@tmYLLabelDeltaF = -0.5 ;offset to regular position, default 0
-       res@tmXBLabelDeltaF = -0.5
-       res@tiDeltaF = 0.9 ;Default 1.5
-                              ;---Make legend
-       ;res@pmLegendOrthogonalPosF = -1.05
-       ;res@pmLegendParallelPosF   = 0.25
-       ;res@pmLegendDisplayMode    = "Always"
-       ;res@pmLegendWidthF         = 0.05/5.
-       ;res@pmLegendHeightF        = 0.2/5.
-       ;res@lgLabelFontHeightF     = .015/5.
-       sta_ts_plots(istat) = gsn_csm_xy(wks, stobs_ts&time, stobs_ts(istat, :, :), res)
+    res@tiYAxisString =  "XCO~B~2~N~ [ppmv]"
+    res@xyLineThicknessF       = 2.0      ; default is 1
+    res@xyMonoDashPattern      = True     ; force all solid lines
+    res@tiMainFontHeightF = 0.01
+    res@tiYAxisFontHeightF = 0.01
+    res@tmXBLabelFontHeightF = 0.007;0.025
+    res@tmYLLabelFontHeightF = 0.007;0.025
+    res@tmYLLabelDeltaF = -0.5 ;offset to regular position, default 0
+    res@tmXBLabelDeltaF = -0.5
+    res@tiDeltaF = 0.9 ;Default 1.5
 
-       mres = True
-       mres@gsMarkerIndex = 5
-       mres@gsMarkerSizeF    = 0.01
-       mres@gsMarkerColor    = "black"
-       mres@gsMarkerThicknessF = 5.
-       plot@$unique_string("marker")$ = gsn_add_polymarker(wks, plot,\
-             st_lon(istat), st_lat(istat), mres)
-   end do
+    sta_ts_plots(istat) = gsn_csm_xy(wks, stobs_ts&time, stobs_ts(istat, :, :), res)
 
-   txres = True
-   txres@txFontHeightF = 0.01
+    mres = True
+    mres@gsMarkerIndex = 5
+    mres@gsMarkerSizeF    = 0.01
+    mres@gsMarkerColor    = "black"
+    mres@gsMarkerThicknessF = 5.
+    plot@$unique_string("marker")$ = gsn_add_polymarker(wks, plot,\
+           st_lon(istat), st_lat(istat), mres)
+  end do
 
-   ; Manual text placement!
-   plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
+  txres = True
+  txres@txFontHeightF = 0.01
+
+  ; Manual text placement!
+  plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
              stobs_ts&station(0) + " (" + st_alt(0) + " m)", \
              st_lon(0) + 20, st_lat(0) - 7, txres)
 
-   plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
+  plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
              stobs_ts&station(1) + " (" + st_alt(1) + " m)", \
              st_lon(1) + 10, st_lat(1) - 7, txres)
 
-   plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
+  plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
              stobs_ts&station(2) + " (" + st_alt(2) + " m)", \
              st_lon(2) - 20, st_lat(2)-7, txres)
 
-   plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
+  plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
              stobs_ts&station(3) + " (" + st_alt(3) + " m)", \
              st_lon(3), st_lat(3) - 7, txres)
 
-   plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
+  plot@$unique_string("test")$ = gsn_add_text(wks, plot, \
              stobs_ts&station(4) + " (" + st_alt(4) + " m)", \
              st_lon(4) + 5, st_lat(4) + 7, txres)
 
-   amres                  = True
-   amres@amJust           = "BottomLeft"  ; Corner of plot for positioning
+  amres                  = True
+  amres@amJust           = "BottomLeft"  ; Corner of plot for positioning
 
-   ; ASK
-   amres@amOrthogonalPosF =  0.43   ;  0.5 is the bottom edge of the plot.
+  ; ASK
+  amres@amOrthogonalPosF =  0.43   ;  0.5 is the bottom edge of the plot.
                                  ; Need to leave room for tickmarks.
-   amres@amParallelPosF   = -0.10   ; -0.5 is the left edge of the plot.
-   anno1 = gsn_add_annotation(plot, sta_ts_plots(0), amres)  ; Attach first plot
+  amres@amParallelPosF   = -0.10   ; -0.5 is the left edge of the plot.
+  anno1 = gsn_add_annotation(plot, sta_ts_plots(0), amres)  ; Attach first plot
 
-   ; CGO
-   amres@amOrthogonalPosF =  0.45   ;  0.5 is the bottom edge of the plot.
-   amres@amParallelPosF  = 0.18
-   anno2 = gsn_add_annotation(plot, sta_ts_plots(1), amres)  ; Attach first plot
+  ; CGO
+  amres@amOrthogonalPosF =  0.45   ;  0.5 is the bottom edge of the plot.
+  amres@amParallelPosF  = 0.18
+  anno2 = gsn_add_annotation(plot, sta_ts_plots(1), amres)  ; Attach first plot
 
-   ; LEF
-   amres@amOrthogonalPosF =  0.30   ;  0.5 is the bottom edge of the plot.
-   amres@amParallelPosF  =  -0.445
-   anno3 = gsn_add_annotation(plot, sta_ts_plots(2), amres)  ; Attach first plot
+  ; LEF
+  amres@amOrthogonalPosF =  0.30   ;  0.5 is the bottom edge of the plot.
+  amres@amParallelPosF  =  -0.445
+  anno3 = gsn_add_annotation(plot, sta_ts_plots(2), amres)  ; Attach first plot
 
-   ; WIS
-   amres@amOrthogonalPosF =  -0.05   ;  0.5 is the bottom edge of the plot.
-   amres@amParallelPosF  =  0.21
-   anno3 = gsn_add_annotation(plot, sta_ts_plots(3), amres)  ; Attach first plot
+  ; WIS
+  amres@amOrthogonalPosF =  -0.05   ;  0.5 is the bottom edge of the plot.
+  amres@amParallelPosF  =  0.21
+  anno3 = gsn_add_annotation(plot, sta_ts_plots(3), amres)  ; Attach first plot
 
-   ; HUN
-   amres@amOrthogonalPosF =  -0.06   ;  0.5 is the bottom edge of the plot.
-   amres@amParallelPosF  =  -0.19
-   anno3 = gsn_add_annotation(plot, sta_ts_plots(4), amres)  ; Attach first plot
+  ; HUN
+  amres@amOrthogonalPosF =  -0.06   ;  0.5 is the bottom edge of the plot.
+  amres@amParallelPosF  =  -0.19
+  anno3 = gsn_add_annotation(plot, sta_ts_plots(4), amres)  ; Attach first plot
 
 
-   ;; Make shared legend
+  ; Make shared legend
 
   gres = True
-  gres@YPosPercent = 97.    ; expressed as %, 0->100, sets position of top border of legend
-                            ;  when gres@Position is set to its default setting of "Top" (Default = 95.)
-  gres@XPosPercent = 1.      ; expressed as %, 0->100, sets position of left border of legend(Default = 5.)
+  gres@YPosPercent = 97.
+  gres@XPosPercent = 1.
   gres@LineLabelWhiteSpacePercent = 1.
 
   lineres = True
-  lineres@lgLineColors = (/"blue", "black", "red","orange"/) ; line colors
-  lineres@lgLineThicknesses = 2.5                        ; line thicknesses
-  lineres@LineLengthPercent = 4.                         ; expressed as %, 0->100, length of line
+  lineres@lgLineColors = (/"blue", "black", "red","orange"/)
+  lineres@lgLineThicknesses = 2.5
+  lineres@LineLengthPercent = 4.
 
   textres = True
   textres@lgLabelFontHeights = 0.01
@@ -503,11 +488,9 @@ begin
   plot = simple_legend(wks,plot,gres,lineres,textres)
 
 
-;---Drawing the "base" plot will draw all plots.
-     draw(plot)
-     frame(wks)
-     ;print(stobs_ts)
-
+  ;---Drawing the "base" plot will draw all plots.
+  draw(plot)
+  frame(wks)
 
   leave_msg(DIAG_SCRIPT, "")
 end
