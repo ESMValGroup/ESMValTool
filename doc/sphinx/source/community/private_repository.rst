@@ -1,9 +1,13 @@
 1) Clone the private repository
 ~~~~~~~~~
 For example, to clone a repository called esmvaltool-private, you would run:
+
 ``git clone git@github.com:esmvalgroup/esmvaltool-private``
+
 or
+
 ``git clone https://github.com/esmvalgroup/esmvaltool-private``
+
 
 2) Make a branch to develop your recipe and diagnostic:
 ~~~~~~~~~
