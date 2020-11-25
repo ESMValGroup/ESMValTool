@@ -26,9 +26,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 class EadyGrowthRate(object):
-    """
-    Class used to compute the Eady Growth Rate.
-    """
+    """Class used to compute the Eady Growth Rate."""
     def __init__(self, config):
         """
         Set diagnostic parameters and constants.
@@ -137,7 +135,8 @@ class EadyGrowthRate(object):
 
         return theta
 
-    def vertical_integration(self, var_x, var_y):
+    @staticmethod
+    def vertical_integration(var_x, var_y):
         """
         Perform a non-cyclic centered finite-difference to integrate
         variable x with respect to variable y along pressure levels.
@@ -296,8 +295,7 @@ class EadyGrowthRate(object):
         keys = [
             str(info[key]) for key in ('project', 'dataset', 'exp', 'ensemble',
                                        'diagnostic', 'start_year', 'end_year')
-            if key in info
-            ]
+            if key in info]
         output_name = '_'.join(keys) + '.nc'
         output_file = os.path.join(
             self.cfg[shared_names.WORK_DIR], output_name)
