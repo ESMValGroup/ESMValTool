@@ -4,10 +4,10 @@ import yamale
 import yaml
 
 yaml_folder = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../../../', 'esmvaltool/cmorizers/data'))
+    os.path.dirname(__file__), '../../..', 'esmvaltool/cmorizers/data'))
 
 recipes_folder = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../../../', 'esmvaltool/recipes'))
+    os.path.dirname(__file__), '../../..', 'esmvaltool/recipes'))
 
 
 def test_only_datasets_are_present():
