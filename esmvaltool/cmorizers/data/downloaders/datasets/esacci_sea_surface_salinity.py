@@ -1,8 +1,9 @@
 """Script to download ESACCI-SOS."""
 
-from dateutil import relativedelta
-from datetime import datetime
 import logging
+from datetime import datetime
+
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
@@ -10,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -45,7 +45,6 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
             if downloader.exists(str(loop_date.year)):
                 downloader.download_year(loop_date.year)
             else:
-                logger.info(
-                    f'Year {loop_date.year} not available for '
-                    f'version {version}')
+                logger.info(f'Year {loop_date.year} not available for '
+                            f'version {version}')
             loop_date += relativedelta.relativedelta(years=1)

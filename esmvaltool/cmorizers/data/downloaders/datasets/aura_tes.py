@@ -4,8 +4,7 @@ from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------

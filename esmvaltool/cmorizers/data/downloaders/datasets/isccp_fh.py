@@ -1,6 +1,7 @@
 """Script to download ISCCP-FH."""
 
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -8,8 +9,7 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -40,7 +40,6 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         downloader.download_file(
             "https://isccp.giss.nasa.gov/pub/flux-fh/tar-nc4_MPF/"
             f"ISCCP-FH_nc4_MPF_v.0.0_{loop_date.year}.tar.gz",
-            wget_options=[]
-        )
+            wget_options=[])
         loop_date += relativedelta.relativedelta(years=1)
     unpack_files_in_folder(downloader.local_folder)

@@ -6,8 +6,7 @@ from ..cds import CDSDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------

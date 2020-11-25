@@ -1,14 +1,14 @@
 """Script to download ESACCI-CLOUD."""
 
-from dateutil import relativedelta
 from datetime import datetime
+
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -43,7 +43,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
             f'AVHRR_NOAA_12/1994/199411-{end_of_file}',
             f'AVHRR_NOAA_12/1994/199412-{end_of_file}',
         ],
-        1995:  [
+        1995: [
             f'AVHRR_NOAA_12/1995/199501-{end_of_file}',
         ],
     }

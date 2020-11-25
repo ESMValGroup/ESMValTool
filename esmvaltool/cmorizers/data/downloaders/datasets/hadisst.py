@@ -9,8 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -34,13 +33,9 @@ def download_dataset(config, dataset, _, __, overwrite):
     os.makedirs(downloader.local_folder, exist_ok=True)
     downloader.download_file(
         "https://www.metoffice.gov.uk/hadobs/hadisst/data/HadISST_sst.nc.gz",
-        wget_options=[]
-
-    )
+        wget_options=[])
     downloader.download_file(
         "https://www.metoffice.gov.uk/hadobs/hadisst/data/HadISST_ice.nc.gz",
-        wget_options=[]
-
-    )
+        wget_options=[])
 
     unpack_files_in_folder(downloader.local_folder)

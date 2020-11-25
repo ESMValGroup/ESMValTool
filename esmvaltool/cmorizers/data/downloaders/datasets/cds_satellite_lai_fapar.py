@@ -1,15 +1,15 @@
 """Script to download CDS-SATELLITE-LAI-FAPAR from the Climate Data Store."""
 
-from dateutil import relativedelta
 import datetime
+
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -34,7 +34,8 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         product_name='satellite-lai-fapar',
         request_dictionary={
             'variable': [
-                'fapar', 'lai',
+                'fapar',
+                'lai',
             ],
             'satellite': 'spot',
             'sensor': 'vgt',

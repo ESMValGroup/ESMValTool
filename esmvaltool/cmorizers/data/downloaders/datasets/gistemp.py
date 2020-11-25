@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -32,7 +31,5 @@ def download_dataset(config, dataset, _, __, overwrite):
     downloader.tier = 2
     downloader.download_file(
         "https://data.giss.nasa.gov/pub/gistemp/gistemp250_GHCNv4.nc.gz",
-        wget_options=[]
-
-    )
+        wget_options=[])
     unpack_files_in_folder(downloader.local_folder)

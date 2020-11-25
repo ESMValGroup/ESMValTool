@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -33,6 +32,4 @@ def download_dataset(config, dataset, _, __, overwrite):
     os.makedirs(downloader.local_folder, exist_ok=True)
     downloader.download_file(
         "ftp://ftp.cdc.noaa.gov/Datasets/ghcncams/air.mon.mean.nc",
-        wget_options=[]
-
-    )
+        wget_options=[])

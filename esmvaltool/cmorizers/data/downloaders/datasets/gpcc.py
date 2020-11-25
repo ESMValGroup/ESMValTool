@@ -3,14 +3,15 @@ import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 from esmvaltool.cmorizers.data.utilities import (
-    unpack_files_in_folder, read_cmor_config)
+    read_cmor_config,
+    unpack_files_in_folder,
+)
 
 logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -32,14 +33,9 @@ def download_dataset(config, dataset, _, __, overwrite):
     )
     downloader.tier = 2
     cmor_config = read_cmor_config(dataset)
-    raw_path = (
-        "https://opendata.dwd.de/climate_environment/GPCC/"
-        "full_data_2018/full_data_monthly_{version}.nc.gz"
-    )
+    raw_path = ("https://opendata.dwd.de/climate_environment/GPCC/"
+                "full_data_2018/full_data_monthly_{version}.nc.gz")
     for version in cmor_config['attributes']['version'].values():
-        downloader.download_file(
-            raw_path.format(version=version),
-            wget_options=[]
-
-        )
+        downloader.download_file(raw_path.format(version=version),
+                                 wget_options=[])
     unpack_files_in_folder(downloader.local_folder)

@@ -6,8 +6,7 @@ from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -34,6 +33,5 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         year = loop_date.year
         downloader.download_folder(
             "https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/"
-            f"M2TMNXLND.5.12.4/{year}/"
-        )
+            f"M2TMNXLND.5.12.4/{year}/")
         loop_date += relativedelta.relativedelta(years=1)

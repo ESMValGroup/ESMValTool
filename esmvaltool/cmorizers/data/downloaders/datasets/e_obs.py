@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -35,5 +34,4 @@ def download_dataset(config, dataset, _, __, overwrite):
                     "https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/"
                     f"data/Grid_{grid}_reg_ensemble/"
                     f"{var.lower()}_ens_mean_{grid}_reg_v{version}.nc",
-                    wget_options=[]
-                )
+                    wget_options=[])

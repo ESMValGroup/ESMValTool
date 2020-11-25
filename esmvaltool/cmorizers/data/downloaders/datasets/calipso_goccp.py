@@ -1,14 +1,14 @@
 """Script to download CALIPSO-GOCCP from IPSL's ftp server."""
 
-from dateutil import relativedelta
 import datetime
+
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -43,9 +43,6 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
             f"/cfmip/GOCCP_v3/3D_CloudFraction/grid_2x2xL40/{year}/avg/")
         downloader.download_folder(
             ".",
-            filter_files=(
-                f"3D_CloudFraction330m_{year}{two_digits}"
-                "_avg_CFMIP2_sat_3.1.2.nc"
-            )
-        )
+            filter_files=(f"3D_CloudFraction330m_{year}{two_digits}"
+                          "_avg_CFMIP2_sat_3.1.2.nc"))
         loop_date += relativedelta.relativedelta(years=1)

@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -33,9 +32,7 @@ def download_dataset(config, dataset, _, __, overwrite):
     def download(file):
         downloader.download_file(
             "https://data.nodc.noaa.gov/woa/WOA13/DATAv2/" + file,
-            wget_options=[]
-
-        )
+            wget_options=[])
 
     download("temperature/netcdf/decav81B0/1.00/woa13_decav81B0_t00_01.nc")
     download("salinity/netcdf/decav81B0/1.00/woa13_decav81B0_s00_01.nc")

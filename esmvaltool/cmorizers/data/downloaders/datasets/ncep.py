@@ -6,8 +6,7 @@ from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -52,10 +51,10 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         downloader.download_file(f"uwnd.{year}.nc", sub_folder='pressure')
         downloader.download_file(f"vwnd.{year}.nc", sub_folder='pressure')
         downloader.set_cwd("/Datasets/ncep.reanalysis.dailyavgs/surface_gauss")
-        downloader.download_file(
-            f"prate.sfc.gauss.{year}.nc", sub_folder='surface')
+        downloader.download_file(f"prate.sfc.gauss.{year}.nc",
+                                 sub_folder='surface')
         downloader.set_cwd("/Datasets/ncep.reanalysis.dailyavgs/other_gauss")
-        downloader.download_file(
-            f"ulwrf.ntat.gauss.{year}.nc", sub_folder='surface')
+        downloader.download_file(f"ulwrf.ntat.gauss.{year}.nc",
+                                 sub_folder='surface')
 
         loop_date += relativedelta.relativedelta(years=1)

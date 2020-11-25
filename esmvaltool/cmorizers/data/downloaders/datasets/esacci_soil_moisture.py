@@ -1,13 +1,13 @@
 """Script to download ESACCI-SOIL-MOISTURE."""
-from dateutil import relativedelta
 from datetime import datetime
+
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------

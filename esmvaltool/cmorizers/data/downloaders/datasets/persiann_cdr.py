@@ -1,14 +1,14 @@
 """Script to download PERSIANN-CDR."""
 
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -38,8 +38,5 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         "https://www.ncei.noaa.gov/data/precipitation-persiann/access/"
         "{year}/")
     while loop_date <= end_date:
-        downloader.download_folder(
-            base_path.format(year=loop_date.year),
-            []
-        )
+        downloader.download_folder(base_path.format(year=loop_date.year), [])
         loop_date += relativedelta.relativedelta(years=1)

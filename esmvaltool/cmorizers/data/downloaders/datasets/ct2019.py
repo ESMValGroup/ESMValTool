@@ -1,14 +1,14 @@
 """Script to download CT2019 from NOAA's webpage."""
 
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -29,12 +29,10 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         end_date = datetime(2018, 12, 31)
     loop_date = start_date
 
-    downloader = FTPDownloader(
-        config=config,
-        dataset=dataset,
-        overwrite=overwrite,
-        server='aftp.cmdl.noaa.gov'
-    )
+    downloader = FTPDownloader(config=config,
+                               dataset=dataset,
+                               overwrite=overwrite,
+                               server='aftp.cmdl.noaa.gov')
     downloader.connect()
     downloader.set_cwd(
         'products/carbontracker/co2/CT2019/molefractions/co2_total_monthly/')

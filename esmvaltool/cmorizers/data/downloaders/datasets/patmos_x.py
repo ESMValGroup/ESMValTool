@@ -1,14 +1,14 @@
 """Script to download PATMOS-x from CCI CEDA ftp."""
 
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -41,6 +41,5 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         downloader.download_folder(
             base_path.format(year=loop_date.year),
             # ["--accept='*NOAA*.nc'", "--reject='*preliminary*'"]
-            []
-        )
+            [])
         loop_date += relativedelta.relativedelta(years=1)

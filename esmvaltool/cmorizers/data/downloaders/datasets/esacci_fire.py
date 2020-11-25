@@ -6,8 +6,7 @@ from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -24,11 +23,9 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     """
     loop_date = start_date
 
-    downloader = CCIDownloader(
-        config=config,
-        dataset=dataset,
-        overwrite=overwrite
-    )
+    downloader = CCIDownloader(config=config,
+                               dataset=dataset,
+                               overwrite=overwrite)
     downloader.connect()
 
     downloader.set_cwd('burned_area/MERIS/grid/v4.1/')

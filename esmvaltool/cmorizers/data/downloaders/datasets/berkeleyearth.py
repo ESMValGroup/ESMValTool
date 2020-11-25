@@ -4,8 +4,7 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -29,5 +28,4 @@ def download_dataset(config, dataset, _, __, overwrite):
     downloader.download_file(
         "http://berkeleyearth.lbl.gov/auto/Global/Gridded/"
         "Land_and_Ocean_LatLong1.nc",
-        wget_options=[]
-    )
+        wget_options=[])

@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -31,6 +30,4 @@ def download_dataset(config, dataset, _, __, overwrite):
 
     downloader.download_file(
         "https://scrippsco2.ucsd.edu/assets/data/atmospheric/stations/"
-        "flask_co2/monthly/monthly_flask_co2_kum.csv",
-        []
-    )
+        "flask_co2/monthly/monthly_flask_co2_kum.csv", [])

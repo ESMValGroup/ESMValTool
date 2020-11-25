@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -35,5 +34,5 @@ def download_dataset(config, dataset, _, __, overwrite):
         "https://data.icos-cp.eu/objects/OT_YY6iORypk2yAcwjMpUQpo",
         wget_options=[
             f"--output-document={downloader.local_folder}/"
-            "Global_Carbon_Budget_2018v1.0.xlsx"]
-    )
+            "Global_Carbon_Budget_2018v1.0.xlsx"
+        ])

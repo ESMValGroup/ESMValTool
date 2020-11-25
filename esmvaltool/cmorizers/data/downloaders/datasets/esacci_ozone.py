@@ -1,14 +1,14 @@
 """Script to download ESACCI-OZONE from the Climate Data Store(CDS)."""
 
-from dateutil import relativedelta
 from datetime import datetime
+
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
 def download_dataset(config, dataset, start_date, end_date, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------

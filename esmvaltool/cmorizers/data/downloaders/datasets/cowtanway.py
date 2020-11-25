@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, _, __, overwrite):
-    """
-    Download dataset.
+    """Download dataset.
 
     Parameters
     ----------
@@ -33,8 +32,7 @@ def download_dataset(config, dataset, _, __, overwrite):
     def download_file(path):
         downloader.download_file(
             "https://www-users.york.ac.uk/~kdc3/papers/coverage2013/" + path,
-            []
-        )
+            [])
 
     download_file("had4_krig_v1_0_0.nc.gz")
     download_file("had4_uah_v1_0_0.nc.gz")
