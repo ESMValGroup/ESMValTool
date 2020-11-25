@@ -113,7 +113,7 @@ begin
       colors := colors(1:)
     end if
     ; Add multi-model mean as it's not in diag_script_info
-     colors := array_append_record(colors, "red", 0)
+    colors := array_append_record(colors, "red", 0)
 
     ; calc min and max dT,
     min_X = min(source1)
