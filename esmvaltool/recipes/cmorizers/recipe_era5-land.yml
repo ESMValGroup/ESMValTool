@@ -8,7 +8,7 @@ documentation:
     - weigel_katja
 
   references:
-    - era5
+    - era5-land
 
   projects:
     - eval4cmip
