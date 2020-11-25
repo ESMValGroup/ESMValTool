@@ -11,19 +11,24 @@ import iris.util
 import matplotlib.pyplot as plt
 import numpy as np
 from dask import array as da
+from esmvalcore.preprocessor import (
+    annual_statistics,
+    extract_levels,
+    regrid,
+    seasonal_statistics,
+)
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as shared_names
-from esmvalcore.preprocessor import (annual_statistics, extract_levels, regrid,
-                                     seasonal_statistics)
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata
-
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
 class EadyGrowthRate(object):
-    """Class used to compute the Eady Growth Rate."""
+    """
+    Class used to compute the Eady Growth Rate.
+    """
     def __init__(self, config):
         """
         Set diagnostic parameters and constants.
@@ -39,15 +44,15 @@ class EadyGrowthRate(object):
         self.fill_value = 1e20
         """Fill Value."""
         self.ref_p = 1000.0
-        """Reference Pressure [Pa]"""
+        """Reference Pressure [Pa]."""
         self.gravity = 9.80665
-        """Gravity [m/s]"""
+        """Gravity [m/s]."""
         self.con = 0.3098
-        """Constant"""
+        """Constant."""
         self.omega = 7.292e-5
-        """Rotation of the Earth [rad/s]"""
+        """Rotation of the Earth [rad/s]."""
         self.time_statistic = self.cfg['time_statistic']
-        """Time statistic to perform"""
+        """Time statistic to perform."""
 
     def compute(self):
         """
@@ -102,7 +107,8 @@ class EadyGrowthRate(object):
             self.save(cube_egr, alias, data)
 
     def potential_temperature(self, temperature, plev):
-        """Computes the potential temperature.
+        """
+        Computes the potential temperature.
 
         Parameters
         ----------
@@ -132,7 +138,8 @@ class EadyGrowthRate(object):
         return theta
 
     def vertical_integration(self, var_x, var_y):
-        """Perform a non-cyclic centered finite-difference to integrate
+        """
+        Perform a non-cyclic centered finite-difference to integrate
         variable x with respect to variable y along pressure levels.
 
         Parameters
@@ -142,8 +149,8 @@ class EadyGrowthRate(object):
         y: iris.cube.Cube
             Cube of variable y.
 
-        Returns:
-        --------
+        Returns
+        -------
         dxdy: iris.cube.Cube
             Cube of variable integrated along pressure levels.
         """
@@ -179,7 +186,8 @@ class EadyGrowthRate(object):
         return dxdy
 
     def brunt_vaisala_frq(self, theta, geopotential):
-        """Compute Brunt-Väisälä frequency.
+        """
+        Compute Brunt-Väisälä frequency.
 
         Parameters
         ----------
@@ -188,8 +196,8 @@ class EadyGrowthRate(object):
         geopotential: iris.cube.Cube
             Cube of variable zg.
 
-        Returns:
-        --------
+        Returns
+        -------
         brunt: da.array
             Array containing Brunt-Väisälä frequency.
         """
@@ -202,7 +210,8 @@ class EadyGrowthRate(object):
         return brunt
 
     def coriolis(self, lats, ndim):
-        """Compute Coriolis force.
+        """
+        Compute Coriolis force.
 
         Parameters
         ----------
@@ -211,8 +220,8 @@ class EadyGrowthRate(object):
         ndim: int
             Number of dimension.
 
-        Returns:
-        --------
+        Returns
+        -------
         fcor: da.array
             Array containing Coriolis force.
         """
@@ -223,7 +232,8 @@ class EadyGrowthRate(object):
         return fcor
 
     def eady_growth_rate(self, fcor, eastward_wind, geopotential, brunt):
-        """Compute Eady Growth Rate.
+        """
+        Compute Eady Growth Rate.
 
         Parameters
         ----------
@@ -234,8 +244,8 @@ class EadyGrowthRate(object):
         brunt: da.array
             Array containing Brunt-Väisäla frequency
 
-        Returns:
-        --------
+        Returns
+        -------
         egr: da.array
             Array containing Eady Growth Rate.
         """
@@ -245,7 +255,8 @@ class EadyGrowthRate(object):
         return egr
 
     def seasonal_plots(self, egr, alias):
-        """Plot seasonal Eady Growth rate values.
+        """
+        Plot seasonal Eady Growth rate values.
         Parameters
         ----------
         egr: iris.cube.Cube
@@ -277,25 +288,27 @@ class EadyGrowthRate(object):
             plt.close()
 
     def save(self, egr, alias, data):
-        """Save results and write provenance."""
+        """
+        Save results and write provenance.
+        """
         script = self.cfg[shared_names.SCRIPT]
         info = data[alias][0]
         keys = [
             str(info[key]) for key in ('project', 'dataset', 'exp', 'ensemble',
                                        'diagnostic', 'start_year', 'end_year')
             if key in info
-        ]
+            ]
         output_name = '_'.join(keys) + '.nc'
         output_file = os.path.join(
             self.cfg[shared_names.WORK_DIR], output_name)
         iris.save(egr, output_file)
 
         caption = ("{script} between {start} and {end}"
-                   "according to {dataset}").format(script=script.replace(
-                       " ", '_'),
-                                                    start=info['start_year'],
-                                                    end=info['end_year'],
-                                                    dataset=info['dataset'])
+                   "according to {dataset}").format(
+                       script=script.replace(" ", '_'),
+                       start=info['start_year'],
+                       end=info['end_year'],
+                       dataset=info['dataset'])
         ancestors = []
         for i in range(len(data[alias])):
             ancestors.append(data[alias][i]['filename'])
@@ -311,7 +324,9 @@ class EadyGrowthRate(object):
 
 
 def main():
-    """Run Eady Growth Rate diagnostic"""
+    """
+    Run Eady Growth Rate diagnostic.
+    """
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         EadyGrowthRate(config).compute()
 
