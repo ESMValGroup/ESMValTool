@@ -1,7 +1,7 @@
 .. _reviewing:
 
-Contributing a pull request review
-==================================
+Review of pull requests
+=======================
 
 In the ESMValTool community we use pull request reviews to ensure all code and
 documentation contributions are of good quality.
@@ -128,13 +128,15 @@ How do I actually do a review?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To do a review, go to the pull request on GitHub, the list of all pull requests
-is available here https://github.com/ESMValGroup/ESMValCore/pulls, click the
+is available here https://github.com/ESMValGroup/ESMValCore/pulls for the ESMValCore
+and here https://github.com/ESMValGroup/ESMValTool/pulls for the ESMValTool, click the
 pull request you would like to review.
 The top comment should contain (a selection of) the checklist available in the
 `pull request template`_.
 If it is not there, copy the relevant items from the `pull request template`_.
 Which items from the checklist are relevant, depends on which files are changed
-in the pull request.
+in the pull request. A list of items to check with brief explanations is given in
+section :numref:`checklists`. The items are grouped by technical and scientific review.
 To see which files have changed, click the tab 'Files changed'.
 To comment on specific lines of code or documentation, click the 'plus' icon
 next to a line of code and write your comment.
@@ -163,37 +165,30 @@ their opinion and try to find a solution.
 Checklists for reviewing a pull request
 ---------------------------------------
 
-General tasks
-~~~~~~~~~~~~~
-After merging a pull request successfully:
+Below are general checklists for doing technical and scientific reviews including brief descriptions of the tasks to do. Reviewing
+CMORizer scripts constists mostly of technical tasks but differs slightly from the technical review tasks and is therefore listed
+in a third table below.
 
-*	Close related issue if existent
-*	Delete feature branch
-
-ESMValTool diagnostics
-~~~~~~~~~~~~~~~~~~~~~~
+Technical reviews
+~~~~~~~~~~~~~~~~~
 
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
 | Item                                | Comments                                                                                         |
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
 | Documentation added to user’s guide | Check that the scientific documentation of the new diagnostic has been added to the user’s guide |
 |                                     |                                                                                                  |
-|                                     | * ./doc/sphinx/source/recipes/recipe_<diagnostic>.rst                                            |
-|                                     | * include documentation in ./doc/sphinx/source/recipes/index.rst                                 |
+|                                     | * A file ./doc/sphinx/source/recipes/recipe_<diagnostic>.rst exists                              |
+|                                     | * New documentation is included in ./doc/sphinx/source/recipes/index.rst                         |
 |                                     | * documentation follows template (./doc/sphinx/source/recipes/recipe_template.rst.template)      |
-|                                     | * typos                                                                                          |
-|                                     | * references                                                                                     |
 |                                     | * configuration options                                                                          |
 |                                     | * variables                                                                                      |
-|                                     | * observations                                                                                   |
 |                                     | * valid image files                                                                              |
 |                                     | * resolution of image files (~150 dpi is usually enough; file size should be kept small)         |
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
-| recipe                              | Check that new recipe has been added to the testing recipe                                       |
-|                                     | ./esmvaltool/recipes/examples/recipe_check_obs.yml                                               |
+| recipe                              | Check yaml syntax and that new recipe contains                                                   |
 |                                     |                                                                                                  |
 |                                     | * documentation: description, authors, maintainer, references, projects                          |
-|                                     | * provenance: themes, realms                                                                     |
+|                                     | * provenance tags: themes, realms                                                                |
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
 | diagnostic script                   | Check that the new diagnostic script(s) meet(s) standards. This includes the following items:    |
 |                                     |                                                                                                  |
@@ -212,11 +207,53 @@ ESMValTool diagnostics
 |                                     | * Netcdf output has been written                                                                 |
 |                                     | * Output contains (some) valid values (e.g. not only nan or zeros)                               |
 |                                     | * Provenance information has been written                                                        |
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+| Check autoamted tests               | Check for errors reported by automated tests                                                     |
+|                                     |                                                                                                  |
+|                                     | * Codacy                                                                                         |
+|                                     | * CircleCI                                                                                       |
+|                                     | * documentation build                                                                            |
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+
+
+Scientific reviews
+~~~~~~~~~~~~~~~~~~
+
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+| Item                                | Comments                                                                                         |
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+| Documentation added to user’s guide | Check that the scientific documentation of the new diagnostic                                    |
+|                                     | ./doc/sphinx/source/recipes/recipe_<diagnostic>.rst                                              |
+|                                     |                                                                                                  |
+|                                     | * meets scientific documentation standard (brief description of method, references, typos,       |
+|                                     |   understandable language)                                                                       |
+|                                     | * references are complete                                                                        |
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+| recipe                              | Check that new recipe contains valid                                                             |
+|                                     |                                                                                                  |
+|                                     | * documentation: description, references                                                         |
+|                                     | * provenance tags: themes, realms                                                                |
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+| diagnostic script                   | Check that the new diagnostic script(s) meet(s) scientific standards. This can include the       |
+|                                     | following items:                                                                                 |
+|                                     |                                                                                                  |
+|                                     | * Clear and understandable in-code documentation including brief description of diagnostic       |
+|                                     | * References                                                                                     |
+|                                     | * Method / equations match reference(s) given                                                    |
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+| run recipe                          | Make sure new diagnostic(s) is working by running the ESMValTool                                 |
++-------------------------------------+--------------------------------------------------------------------------------------------------+
+| Check output of diagnostic          | After successfully running the new recipe, check that                                            |
+|                                     |                                                                                                  |
+|                                     | * Output contains (some) valid values (e.g. not only nan or zeros)                               |
 |                                     | * If applicable, check plots and compare with corresponding plots in the paper(s) cited          |
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
 
-ESMValTool CMORizer scripts
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CMORizer scripts
+~~~~~~~~~~~~~~~~
+
+Reviewing CMORizer scripts differs slightly from reviewing technical changes or scientific reviews of new diagnostics. A review typically
+contains mostly technical aspects given in the checklist below.
 
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
 | Dataset description added to user’s | Check that new dataset has been added to the table of observations defined in the ESMValTool     |
@@ -251,37 +288,22 @@ ESMValTool CMORizer scripts
 |                                     |                                                                                                  |
 |                                     | Run ./esmvaltool/recipes/examples/recipe_check_obs.yml for new dataset                           |
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
-| RAW data                            | Contact person in charge of ESMValTool data pool (on Mistral: Axel) and request to copy RAW data |
-|                                     | to RAWOBS/Tier2 (Tier3) (on Mistral: /work/bd0854/DATA/ESMValTool2/RAWOBS)                       |
+| RAW data                            | Contact person in charge of ESMValTool data pool and request to copy RAW data                    |
+|                                     | to RAWOBS/Tier2 (Tier3)                                                                          |
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
-| CMORized data                       | Contact person in charge of ESMValTool data pool (on Mistral: Axel) and request to               |
+| CMORized data                       | Contact person in charge of ESMValTool data pool and request to                                  |
 |                                     |                                                                                                  |
-|                                     | * Copy CMORized dataset to OBS/Tier2 (Tier3) (on Mistral: /work/bd0854/DATA/ESMValTool2/OBS)     |
-|                                     | * Set file access rights for new dataset (on Mistral: /work/bd0854/DATA/set_rights.csh)          |
+|                                     | * Copy CMORized dataset to OBS/Tier2 (Tier3)                                                     |
+|                                     | * Set file access rights for new dataset                                                         |
 +-------------------------------------+--------------------------------------------------------------------------------------------------+
 
-ESMValCore pull requests
-~~~~~~~~~~~~~~~~~~~~~~~~
 
-+---------------+----------------------------------------+
-| Item          | Comments                               |
-+---------------+----------------------------------------+
-| Documentation	| In-code documentation                  |
-+---------------+----------------------------------------+
-| user’s guide  |                                        |
-+---------------+----------------------------------------+
-| Code quality  |                                        |
-+---------------+----------------------------------------+
-| Unit tests    | Check that unit test has been provided |
-+---------------+----------------------------------------+
-| Tests	Codacy  |                                        |
-+---------------+----------------------------------------+
-| CircleCI      |                                        |
-+---------------+----------------------------------------+
-| VM            |                                        |
-+---------------+----------------------------------------+
-| Installation  |                                        |
-+---------------+----------------------------------------+
+After merging a pull request
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+After merging a pull request successfully, the :ref:`core-team` will:
+
+*	Close related issue if existent
+*	Delete feature branch
 
 
 .. _`The Turing Way`: https://the-turing-way.netlify.app/reproducible-research/reviewing.html
