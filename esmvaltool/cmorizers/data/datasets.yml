@@ -111,7 +111,7 @@ datasets:
 
   CDS-XCH4:
     tier: 3
-    source:  https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-methane?tab=form
+    source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-methane?tab=form
     last_access: 20190311
     info: |
       Select Processing level "Level 3", variable "Column-average dry-air mole
@@ -251,7 +251,7 @@ datasets:
           https://confluence.ecmwf.int/display/WEBAPI/Access+ECMWF+Public+Datasets
           https://confluence.ecmwf.int/display/WEBAPI/Python+ERA-interim+examples
       A registration is required for downloading the data.
-      It is alo possible to use the script in:
+      It is also possible to use the script in:
       esmvaltool/cmorizers/obs/download_scripts/download_era-interim.py
       This cmorization script currently supports daily and monthly data of
       the following variables:
@@ -394,7 +394,7 @@ datasets:
         ancillary/v04.2/
       Put all files under a single directory (no subdirectories with years).
 
-  ESACCI-SST:
+  ESACCI-SEASURFACE-SALINITY:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_surface_salinity/data
     last_access: 20200921
@@ -472,7 +472,9 @@ datasets:
 
   GHCN-CAMS:
     tier: 2
-    source: https://www.esrl.noaa.gov/psd/data/gridded/data.ghcncams.html     ftp://ftp.cdc.noaa.gov/Datasets/ghcncams/air.mon.mean.nc
+    source: |
+      https://www.esrl.noaa.gov/psd/data/gridded/data.ghcncams.html
+      ftp://ftp.cdc.noaa.gov/Datasets/ghcncams/air.mon.mean.nc
     last_access: 20200304
     info: Use automatic download feature to get the data
 
@@ -492,7 +494,9 @@ datasets:
 
   GPCC:
     tier: 2
-    source: https://opendata.dwd.de/climate_environment/GPCC/html/fulldata-monthly_v2018_doi_download.html https://opendata.dwd.de/climate_environment/GPCC/full_data_2018/full_data_monthly_v2018_[025 05 10 25].nc.gz # noqa
+    source: |
+      https://opendata.dwd.de/climate_environment/GPCC/html/fulldata-monthly_v2018_doi_download.html
+      https://opendata.dwd.de/climate_environment/GPCC/full_data_2018/full_data_monthly_v2018_[025 05 10 25].nc.gz
     last_access: 20200225
     info: |
       Download the following files:
@@ -500,7 +504,7 @@ datasets:
 
   HadCRUT3:
     tier: 2
-    source:    http://www.metoffice.gov.uk/hadobs/hadcrut3/data/download.html
+    source: http://www.metoffice.gov.uk/hadobs/hadcrut3/data/download.html
     last_access: 20190221
     info: |
       Download the HadCRUT3v.nc file (variance adjusted dataset).
@@ -510,7 +514,7 @@ datasets:
 
   HadCRUT4:
     tier: 2
-    source:  https://crudata.uea.ac.uk/cru/data/temperature/
+    source: https://crudata.uea.ac.uk/cru/data/temperature/
     last_access: 20190208
     info: |
       Download the dataset "HadCRUT4" (median temperature anomalies) and
@@ -586,7 +590,7 @@ datasets:
       (Department of Earth and Environment, Boston University). See link above
       for more information.
 
-      By default, this dataset is regridded to a 1°x1° grid (original resoultion
+      By default, this dataset is regridded to a 1°x1° grid (original resolution
       is 1/12°). If you want to use the original resolution, remove the `regrid`
       section in the configuration file (`LAI3g.yml`). Note that in this case,
       preprocessing the dataset with ESMValTool (i.e. every time you run the
@@ -734,7 +738,7 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
-  NSIDC-0116-nh:
+  NSIDC-0116-sh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
     last_access: 20190513
@@ -811,7 +815,7 @@ datasets:
 
   PIOMAS:
     tier: 2
-    source:  http://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/data/model_grid
+    source: http://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/data/model_grid
     last_access: 20190510
     info: |
       Download and unpack the sithick files from:
@@ -826,7 +830,7 @@ datasets:
 
   REGEN:
     tier: 2
-    source:  https://researchdata.ands.org.au/rainfall-estimates-gridded-v1-2019/1408744
+    source: https://researchdata.ands.org.au/rainfall-estimates-gridded-v1-2019/1408744
     last_access: 20200226
     info: |
       Download the following files:
@@ -860,5 +864,3 @@ datasets:
         nitrate/netcdf/all/1.00/woa13_all_n00_01.nc
         phosphate/netcdf/all/1.00/woa13_all_p00_01.nc
         silicate/netcdf/all/1.00/woa13_all_i00_01.nc
-
-

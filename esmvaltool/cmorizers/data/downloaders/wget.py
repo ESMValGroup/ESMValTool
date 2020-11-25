@@ -10,10 +10,8 @@ logger = logging.getLogger(__name__)
 
 class WGetDownloader(BaseDownloader):
     """Data downloader based on wget."""
-
     def download_folder(self, server_path, wget_options):
-        """
-        Download folder.
+        """Download folder.
 
         Parameters
         ----------
@@ -32,8 +30,7 @@ class WGetDownloader(BaseDownloader):
         subprocess.check_output(command)
 
     def download_file(self, server_path, wget_options):
-        """
-        Download file.
+        """Download file.
 
         Parameters
         ----------
@@ -54,13 +51,14 @@ class WGetDownloader(BaseDownloader):
     def overwrite_options(self):
         """Get overwrite options as configured in downloader."""
         if not self.overwrite:
-            return ['--no-clobber', ]
+            return [
+                '--no-clobber',
+            ]
         return []
 
 
 class NASADownloader(WGetDownloader):
     """Downloader for the NASA repository."""
-
     def __init__(self, config, dataset, overwrite):
         super().__init__(config, dataset, overwrite)
         self.tier = 3
@@ -73,8 +71,7 @@ class NASADownloader(WGetDownloader):
         ]
 
     def download_folder(self, server_path, wget_options=None):
-        """
-        Download folder.
+        """Download folder.
 
         Parameters
         ----------
@@ -83,15 +80,12 @@ class NASADownloader(WGetDownloader):
         """
         if wget_options is None:
             wget_options = []
-        wget_options = self._wget_common_options + [
-            "-np",
-            "--accept=nc,nc4"
-        ] + wget_options
+        wget_options = self._wget_common_options + ["-np", "--accept=nc,nc4"
+                                                    ] + wget_options
         super().download_folder(server_path, wget_options)
 
     def download_file(self, server_path, wget_options=None):
-        """
-        Download file.
+        """Download file.
 
         Parameters
         ----------
@@ -100,5 +94,5 @@ class NASADownloader(WGetDownloader):
         """
         if wget_options is None:
             wget_options = []
-        super().download_file(
-            server_path, self._wget_common_options + wget_options)
+        super().download_file(server_path,
+                              self._wget_common_options + wget_options)

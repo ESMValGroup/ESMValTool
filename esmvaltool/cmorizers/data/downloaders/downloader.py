@@ -4,8 +4,7 @@ import os
 
 
 class BaseDownloader():
-    """
-    Base class for all downloaders.
+    """Base class for all downloaders.
 
     Parameters
     ----------
@@ -16,7 +15,6 @@ class BaseDownloader():
     overwrite : bool
         Overwrite already downloaded files
     """
-
     def __init__(self, config, dataset, overwrite):
         self._config = config
         self.tier = 3
@@ -25,21 +23,19 @@ class BaseDownloader():
 
     @property
     def local_folder(self):
-        """
-        Folder to store the downloader date.
+        """Folder to store the downloader date.
 
         Returns
         -------
         str
             Path to the download folder
         """
-        return os.path.join(
-            self.rawobs_folder, f'Tier{self.tier}', self.dataset)
+        return os.path.join(self.rawobs_folder, f'Tier{self.tier}',
+                            self.dataset)
 
     @property
     def rawobs_folder(self):
-        """
-        RAWOBS base path.
+        """RAWOBS base path.
 
         Returns
         -------

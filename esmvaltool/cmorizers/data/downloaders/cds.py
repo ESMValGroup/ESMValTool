@@ -1,8 +1,9 @@
 """Downloader for the Climate Data Store."""
 
-import os
 import logging
+import os
 from collections.abc import Iterable
+
 import cdsapi
 
 from .downloader import BaseDownloader
@@ -11,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class CDSDownloader(BaseDownloader):
-    """
-    Downloader class for the climate data store.
+    """Downloader class for the climate data store.
 
     Parameters
     ----------
@@ -30,9 +30,13 @@ class CDSDownloader(BaseDownloader):
         Some products have a subfix appended to their name for certain
         variables. This parameter is to specify it, by default ''
     """
-
-    def __init__(self, product_name, config, request_dictionary, dataset,
-                 overwrite, extra_name=''):
+    def __init__(self,
+                 product_name,
+                 config,
+                 request_dictionary,
+                 dataset,
+                 overwrite,
+                 extra_name=''):
         super().__init__(config, dataset, overwrite)
         self._client = cdsapi.Client()
         self._product_name = product_name
@@ -40,8 +44,7 @@ class CDSDownloader(BaseDownloader):
         self.extra_name = extra_name
 
     def download(self, year, month, day=None):
-        """
-        Download a specfic month from the CDS.
+        """Download a specific month from the CDS.
 
         Parameters
         ----------
@@ -71,8 +74,7 @@ class CDSDownloader(BaseDownloader):
         self.download_request(file_path, request_dict)
 
     def download_request(self, filename, request=None):
-        """
-        Download a specific request.
+        """Download a specific request.
 
         Parameters
         ----------
@@ -90,8 +92,8 @@ class CDSDownloader(BaseDownloader):
             if self.overwrite:
                 os.remove(filename)
             else:
-                logger.info(
-                    'File %s already downloaded. Skipping...', filename)
+                logger.info('File %s already downloaded. Skipping...',
+                            filename)
                 return
         self._client.retrieve(
             self._product_name,

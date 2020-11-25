@@ -1,16 +1,19 @@
 """Common tools to CMORize NSIDC-0116 northern and sothern data."""
 
+import glob
 import logging
 import os
-import glob
-import numpy as np
+
 import iris
+import numpy as np
 from iris.coords import AuxCoord
 from iris.cube import Cube
 
-
-from esmvaltool.cmorizers.data.utilities import fix_var_metadata, \
-    save_variable, set_global_atts
+from esmvaltool.cmorizers.data.utilities import (
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -74,9 +77,7 @@ def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
     cube.add_dim_coord(sample_cube.coord('projection_x_coordinate'), 1)
     fix_var_metadata(cube, var_info)
     set_global_atts(cube, glob_attrs)
-    save_variable(
-        cube, var_info.short_name, out_dir, glob_attrs, zlib=True
-    )
+    save_variable(cube, var_info.short_name, out_dir, glob_attrs, zlib=True)
 
 
 def _create_coord(cubes, var_name, standard_name):

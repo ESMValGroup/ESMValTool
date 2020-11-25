@@ -1,22 +1,26 @@
 """Downloader for FTP repositories."""
 
-import os
 import ftplib
 import logging
+import os
 import re
 
-from progressbar import ProgressBar, Bar, DataSize, ETA,\
-    FileTransferSpeed, Percentage
+from progressbar import (
+    ETA,
+    Bar,
+    DataSize,
+    FileTransferSpeed,
+    Percentage,
+    ProgressBar,
+)
 
 from .downloader import BaseDownloader
-
 
 logger = logging.getLogger(__name__)
 
 
 class FTPDownloader(BaseDownloader):
-    """
-    Downloader for FTP repositories.
+    """Downloader for FTP repositories.
 
     Parameters
     ----------
@@ -29,7 +33,6 @@ class FTPDownloader(BaseDownloader):
     overwrite : bool
         Overwrite already downloaded files
     """
-
     def __init__(self, config, server, dataset, overwrite):
         super().__init__(config, dataset, overwrite)
         self._client = None
@@ -43,8 +46,7 @@ class FTPDownloader(BaseDownloader):
         self._client.login()
 
     def set_cwd(self, path):
-        """
-        Set current working directory in the remote.
+        """Set current working directory in the remote.
 
         Parameters
         ----------
@@ -57,8 +59,7 @@ class FTPDownloader(BaseDownloader):
         logger.debug('New working directory: %s', self._client.pwd())
 
     def list_folders(self, server_path='.'):
-        """
-        List folder in the remote.
+        """List folder in the remote.
 
         Parameters
         ----------
@@ -72,13 +73,11 @@ class FTPDownloader(BaseDownloader):
         """
         filenames = self._client.mlsd(server_path, facts=['type'])
         return [
-            filename for filename, facts in filenames
-            if facts['type'] == 'dir'
+            filename for filename, facts in filenames if facts['type'] == 'dir'
         ]
 
     def exists(self, server_path):
-        """
-        Check if a given path exists in the server.
+        """Check if a given path exists in the server.
 
         Parameters
         ----------
@@ -88,8 +87,7 @@ class FTPDownloader(BaseDownloader):
         return server_path in self._client.nlst()
 
     def download_folder(self, server_path, sub_folder='', filter_files=None):
-        """
-        Download files from a given folder.
+        """Download files from a given folder.
 
         Parameters
         ----------
@@ -114,8 +112,7 @@ class FTPDownloader(BaseDownloader):
             self.download_file(filename, sub_folder)
 
     def download_file(self, server_path, sub_folder=''):
-        """
-        Download a file from the server.
+        """Download a file from the server.
 
         Parameters
         ----------
@@ -125,8 +122,8 @@ class FTPDownloader(BaseDownloader):
             Name of the local subfolder to store the results in, by default ''
         """
         os.makedirs(os.path.join(self.local_folder, sub_folder), exist_ok=True)
-        local_path = os.path.join(
-            self.local_folder, sub_folder, os.path.basename(server_path))
+        local_path = os.path.join(self.local_folder, sub_folder,
+                                  os.path.basename(server_path))
         if not self.overwrite and os.path.isfile(local_path):
             logger.info('File %s already downloaded. Skipping...', server_path)
             return
@@ -137,22 +134,25 @@ class FTPDownloader(BaseDownloader):
         size = self._client.size(server_path)
 
         widgets = [
-            DataSize(), Bar(), Percentage(), ' ', FileTransferSpeed(),
-            ' (', ETA(), ')'
+            DataSize(),
+            Bar(),
+            Percentage(), ' ',
+            FileTransferSpeed(), ' (',
+            ETA(), ')'
         ]
 
         progress = ProgressBar(max_value=size, widgets=widgets)
         progress.start()
 
         with open(local_path, 'wb') as file_handler:
+
             def _file_write(data):
                 file_handler.write(data)
                 nonlocal progress
                 progress += len(data)
 
             try:
-                self._client.retrbinary(
-                    f'RETR {server_path}', _file_write)
+                self._client.retrbinary(f'RETR {server_path}', _file_write)
             except Exception:
                 file_handler.close()
                 if os.path.exists(local_path):
@@ -163,8 +163,7 @@ class FTPDownloader(BaseDownloader):
 
 
 class CCIDownloader(FTPDownloader):
-    """
-    Downloader for the CDA ESA-CCI repository.
+    """Downloader for the CDA ESA-CCI repository.
 
     Parameters
     ----------
@@ -175,14 +174,12 @@ class CCIDownloader(FTPDownloader):
     overwrite : bool
         Overwrite already downloaded files
     """
-
     def __init__(self, config, dataset, overwrite):
         super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset, overwrite)
         self.ftp_name = self.dataset_name[7:]
 
     def set_cwd(self, path):
-        """
-        Set current work directory.
+        """Set current work directory.
 
         Relative to the dataset root folder.
 
@@ -194,10 +191,9 @@ class CCIDownloader(FTPDownloader):
         cwd = f'/neodc/esacci/{self.ftp_name}/data/{path}'
         super().set_cwd(cwd)
 
-    @ property
+    @property
     def dataset_name(self):
-        """
-        Name of the dataset in the repository.
+        """Name of the dataset in the repository.
 
         Returns
         -------
@@ -207,8 +203,7 @@ class CCIDownloader(FTPDownloader):
         return self.dataset.lower().replace('-', '_')
 
     def download_year(self, year):
-        """
-        Download a specific year.
+        """Download a specific year.
 
         Parameters
         ----------

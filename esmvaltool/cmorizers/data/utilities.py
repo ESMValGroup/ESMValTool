@@ -1,21 +1,22 @@
 """Utils module for Python cmorizers."""
-from pathlib import Path
 import datetime
+import gzip
 import logging
 import os
 import re
 import shutil
-import gzip
 from contextlib import contextmanager
+from pathlib import Path
 
 import iris
 import numpy as np
 import yaml
 from cf_units import Unit
 from dask import array as da
-
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvaltool import __version__ as version, __file__ as esmvaltool_file
+
+from esmvaltool import __file__ as esmvaltool_file
+from esmvaltool import __version__ as version
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +31,12 @@ def add_height2m(cube):
 def add_scalar_height_coord(cube, height=2.):
     """Add scalar coordinate 'height' with value of `height`m."""
     logger.debug("Adding height coordinate (%sm)", height)
-    height_coord = iris.coords.AuxCoord(
-        height,
-        var_name='height',
-        standard_name='height',
-        long_name='height',
-        units=Unit('m'),
-        attributes={'positive': 'up'})
+    height_coord = iris.coords.AuxCoord(height,
+                                        var_name='height',
+                                        standard_name='height',
+                                        long_name='height',
+                                        units=Unit('m'),
+                                        attributes={'positive': 'up'})
     cube.add_aux_coord(height_coord, ())
 
 
@@ -194,12 +194,9 @@ def extract_doi_value(tag):
         reference_entry = bibtex_file.read_text()
         if re.search("doi", reference_entry):
             reference_doi = (
-                f'doi:{re.search(pattern, reference_entry).group(1)}'
-            )
+                f'doi:{re.search(pattern, reference_entry).group(1)}')
     else:
-        logger.warning(
-            'The reference file %s does not exist.', bibtex_file
-        )
+        logger.warning('The reference file %s does not exist.', bibtex_file)
     return reference_doi
 
 
@@ -277,8 +274,7 @@ def fix_dim_coordnames(cube):
             logger.warning(
                 'Multiple coordinates for axis %s. '
                 'This may be an error, specially for regular grids',
-                coord_type
-            )
+                coord_type)
             continue
 
         if coord_type == 'T':
@@ -352,8 +348,7 @@ def set_units(cube, units):
 
 
 def unpack_files_in_folder(folder):
-    """
-    Unpack all compressed and tarred files in a given folder.
+    """Unpack all compressed and tarred files in a given folder.
 
     This function flattens the folder hierarchy, both outside
     and inside the given folder. It also unpack nested files
@@ -372,10 +367,7 @@ def unpack_files_in_folder(folder):
                 logger.info('Moving files from folder %s', filename)
                 folder_files = os.listdir(full_path)
                 for file_path in folder_files:
-                    shutil.move(
-                        os.path.join(full_path, file_path),
-                        folder
-                    )
+                    shutil.move(os.path.join(full_path, file_path), folder)
                 os.rmdir(full_path)
                 decompress = True
                 continue
@@ -397,6 +389,8 @@ def _gunzip(file_name, work_dir):
 
 
 try:
-    shutil.register_unpack_format('gz', ['.gz', ], _gunzip)
+    shutil.register_unpack_format('gz', [
+        '.gz',
+    ], _gunzip)
 except shutil.RegistryError:
     logger.debug('Format gz already registered. Skipping...')
