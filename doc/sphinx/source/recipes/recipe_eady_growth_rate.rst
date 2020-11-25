@@ -1,7 +1,7 @@
 .. _recipes_eady_growth_rate:
 
 Eady growth rate
-===========
+================
 
 Overview
 --------
