@@ -155,7 +155,6 @@ begin
     opt_mask = ""
   end if
 
-  diag_script_info@var_plotname = "XCO~B~2~N~"
   ; Formatted varname for plots
   if (isatt(diag_script_info, "var_plotname")) then
       var0_plotname = diag_script_info@var_plotname
@@ -169,18 +168,14 @@ begin
   amp_series&model = DATASETS
   amp_series!1 = "time"
   amp_series&time = ispan(start_year, end_year, 1)
-  amp_series@units = variable_info[0]@units
   amp_series@var = "sca"
   amp_series@long_name = "Seasonal Cycle Amplitude"
   amp_series@var_yaxis = True
   amp_series@region = region
   amp_series@diag_script = DIAG_SCRIPT
 
-  print(variable_info[0])
-
   growth_series = amp_series
   growth_series@long_name = "Growth Rate"
-  growth_series@units = amp_series@units + " yr-1"
   growth_series@var = "gr"
 
   var0_yr = amp_series
@@ -240,6 +235,9 @@ begin
     if DATASETS(imod).eq."multi-model mean" then
       var0_mod = mmm_array / tofloat(dimsizes(DATASETS) - subtract_mmm)
       copy_VarMeta(mmm_array, var0_mod)
+      amp_series@units = var0_mod@units
+      growth_series@units = amp_series@units + " yr-1"
+      var0_yr@units = amp_series@units
     else
       if imod.ne.ref_ind then
         tmp = read_data(INFO0[imod])

@@ -158,12 +158,10 @@ begin
   model_arr!1 = "time"
   model_arr&model = array_append_record("OBS", DATASETS(mod_inds), 0)
   model_arr&time = time
-  model_arr@units = variable_info[0]@units
   model_arr@var = var0
   model_arr@diag_script = (/DIAG_SCRIPT/)
 
   gr_arr = model_arr
-  gr_arr@units = gr_arr@units + " yr-1"
   gr_arr@var = "gr"
   sca_arr = model_arr
   sca_arr@var = "sca"
@@ -175,7 +173,6 @@ begin
   growth_series&time = ispan(start_year, end_year, 1)
 
   amp_series = growth_series
-  amp_series@units = model_arr@units
   amp_series@long_name = "Seasonal Cycle Amplitude"
   amp_series@var_yaxis = True
 
@@ -192,6 +189,11 @@ end
 begin
   ; First read obs to have it ready for masking
   obs_data = read_data(INFO0[ref_ind])
+
+  model_arr@units = obs_data@units
+  gr_arr@units = obs_data@units + " yr-1"
+  growth_series@units = gr_arr@units
+  amp_series@units = obs_data@units
 
   do imod = 0, dim_MOD - 1
     if DATASETS(imod).eq."multi-model mean" then

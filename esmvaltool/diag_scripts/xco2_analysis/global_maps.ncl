@@ -135,6 +135,7 @@ begin
       mod_var = tofloat(tmp)
       copy_VarMeta(tmp, mod_var)
       delete(tmp)
+      var0_units = mod_var@units
 
       if .not. isdefined("mmm_array") then
         mmm_array =  area_hi2lores_Wrap(mod_var&lon, mod_var&lat, mod_var, \
@@ -361,7 +362,7 @@ begin
 
     res@gsnLeftString = "OBS to sampled " + DATASETS(imod) + " difference"
     res@lbTitleString = "Seasonal cycle amplitude difference [" \
-      + variable_info[0]@units + "]"
+      + var0_units + "]"
     seasamp_obsdiff = dim_avg_n_Wrap(mod_mv_seasamp, 0)
     seasamp_obsdiff = dim_avg_n_Wrap(obs_seasamp, 0) \
       - dim_avg_n_Wrap(mod_mv_seasamp, 0)
@@ -382,17 +383,17 @@ begin
     res@cnLevelSpacingF = 1.
     mean_plot = avg(seasamp_obsdiff)
     res@gsnRightString = sprintf("%1.2f", mean_plot) + " " \
-      + variable_info[0]@units
+      + var0_units
     res@cnFillPalette = div_cm
     plot_seasamp_diff = gsn_csm_contour_map(wks, seasamp_obsdiff, res)
 
     res@gsnLeftString = "Unsampled to sampled " + DATASETS(imod) \
                         + " difference"
     res@lbTitleString = "Seasonal cycle amplitude difference [" \
-      + variable_info[0]@units + "]"
+      + var0_units + "]"
     mean_plot = avg(seasamp_diff)
     res@gsnRightString = sprintf("%1.2f", mean_plot) + " " \
-      + variable_info[0]@units
+      + var0_units
 
     seasamp_plots(3) = gsn_csm_contour_map(wks, seasamp_diff, res)
 
@@ -411,13 +412,13 @@ begin
 
     mean_plot = avg(mod_mv_seasamp)
     res@gsnRightString = sprintf("%1.2f", mean_plot) + " " \
-      + variable_info[0]@units
+      + var0_units
     seasamp_plots(0) = \
       gsn_csm_contour_map(wks, dim_avg_n_Wrap(mod_mv_seasamp, 0), res)
 
     mean_plot = avg(mod_nomv_seasamp)
     res@gsnRightString = sprintf("%1.2f", mean_plot) + " " \
-      + variable_info[0]@units
+      + var0_units
     res@gsnLeftString = "Unsampled " + DATASETS(imod)
     seasamp_plots(1) = \
       gsn_csm_contour_map(wks, dim_avg_n_Wrap(mod_nomv_seasamp, 0), res)
@@ -426,7 +427,7 @@ begin
 
     mean_plot = avg(obs_seasamp)
     res@gsnRightString = sprintf("%1.2f", mean_plot) + " " \
-      + variable_info[0]@units
+      + var0_units
     seasamp_plots(2) = \
       gsn_csm_contour_map(wks, dim_avg_n_Wrap(obs_seasamp, 0), res)
 
@@ -440,7 +441,7 @@ begin
     pres@lbTitleOn = True
     pres@lbTitlePosition = "Bottom"
     pres@lbTitleString = "Mean seasonal cycle amplitude [" \
-      + variable_info[0]@units + "]"
+      + var0_units + "]"
     pres@lbLabelFontHeightF = 0.012
     pres@lbTitleFontHeightF = 0.015
     pres@lbBottomMarginF = -0.2
@@ -550,7 +551,7 @@ begin
     res_sca_panel_plots@gsnLeftString = mod_names(imod)
     mean_sca_mod = avg(sca_p_array(imod, :, :))
     res_sca_panel_plots@gsnRightString = \
-      sprintf("%1.2f", mean_sca_mod) + " " + variable_info[0]@units
+      sprintf("%1.2f", mean_sca_mod) + " " + var0_units
     sca_panel_plots(imod) = \
       gsn_csm_contour_map(wks_scap, sca_p_array(imod, :, :), \
                           res_sca_panel_plots)
@@ -565,7 +566,7 @@ begin
   pres@lbTitleOn = True
   pres@lbTitlePosition = "Bottom"
   pres@lbTitleString = \
-    "Mean seasonal cycle amplitude [" + variable_info[0]@units + "]"
+    "Mean seasonal cycle amplitude [" + var0_units + "]"
   pres@lbLabelFontHeightF = 0.012
   pres@lbTitleFontHeightF = 0.015
   pres@lbBottomMarginF = -1
