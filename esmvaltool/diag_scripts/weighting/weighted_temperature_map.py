@@ -11,14 +11,16 @@ import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-from climwip import (
-    get_diagnostic_filename,
-    get_plot_filename,
+from climwip.io_functions import (
     log_provenance,
     read_model_data,
 )
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic,
+    get_plot_filename,
+    get_diagnostic_filename,
+)
 from esmvaltool.diag_scripts.weighting.plot_utilities import (
     calculate_percentiles,
     read_metadata,
