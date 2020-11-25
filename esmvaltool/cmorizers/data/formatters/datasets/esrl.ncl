@@ -42,8 +42,7 @@
 ;    20140122-righi_mattia: written.
 ;
 ; ######################################################################
-loadscript(getenv("esmvaltool_root") + \
-           "/data/formatters/interface.ncl"))
+loadscript(getenv("esmvaltool_root") + "/data/formatters/interface.ncl")
 
 begin
 
@@ -73,7 +72,7 @@ begin
   CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_co2s.dat"
 
   ; Type
-  TYPE = "ground"
+  TYPE = "g round"
 
   ; Stations list
   FILE_STAT = input_dir_path + OBSNAME + "_stations.csv"
@@ -85,10 +84,6 @@ begin
         "Dr. Ralph Keeling, Scripps Institution of Oceanography " + \
         "(scrippsco2.ucsd.edu/)"
   COMMENT = ""
-
-end
-
-begin
 
   ; Create time coordinate
   timec = create_timec(YEAR1, YEAR2)
