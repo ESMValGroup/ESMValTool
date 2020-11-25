@@ -19,7 +19,6 @@ Download and processing instructions
         'ghcn_short_uah_v2_0_0.nc.gz'
         'had4sst4_krig_v2_0_0.nc.gz'
         'had4_krig_v2_0_0.nc.gz'
-
 """
 
 import gzip
@@ -97,9 +96,9 @@ def cmorization(in_dir, out_dir, cfg, _, __, ___):
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
         for (vkey, version) in cfg['attributes']['version'].items():
-            logger.info("CMORizing variable '%s' version '%s'",
-                        short_name, version)
+            logger.info("CMORizing variable '%s' version '%s'", short_name,
+                        version)
             filepath = raw_filepath.format(version=version)
-            _extract_variable(short_name, var, vkey, version, cfg,
-                              filepath, out_dir)
+            _extract_variable(short_name, var, vkey, version, cfg, filepath,
+                              out_dir)
             _clean(filepath)

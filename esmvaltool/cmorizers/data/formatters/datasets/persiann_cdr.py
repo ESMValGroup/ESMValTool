@@ -14,7 +14,6 @@ Download and processing instructions
     Files are stored as daily nc-files in individual year
         folders.
     Please copy all files in a single directory.
-
 """
 
 import glob
@@ -37,8 +36,7 @@ def fix_coord_dimensions(cube):
     """Fix the order of lat and lon."""
     # Swap latitude and longitude coordinates
     flipped_data = np.moveaxis(cube.core_data(), 2, 1)
-    coord_spec = [(cube.coord('time'), 0),
-                  (cube.coord('latitude'), 1),
+    coord_spec = [(cube.coord('time'), 0), (cube.coord('latitude'), 1),
                   (cube.coord('longitude'), 2)]
     new_cube = iris.cube.Cube(flipped_data, dim_coords_and_dims=coord_spec)
     new_cube.metadata = cube.metadata

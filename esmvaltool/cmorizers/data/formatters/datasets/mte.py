@@ -13,7 +13,6 @@ Download and processing instructions
     Download the following files:
         EnsembleGPP_GL.nc
     A registration is required for downloading the data.
-
 """
 
 import logging

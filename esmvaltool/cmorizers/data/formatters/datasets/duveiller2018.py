@@ -34,9 +34,12 @@ import cf_units
 import iris
 import numpy as np
 
-
 from esmvaltool.cmorizers.data.utilities import (
-    fix_coords, fix_var_metadata, save_variable, set_global_atts)
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -98,8 +101,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             # Extracting a certain vegetation transition code
             itr = raw_info['iTr']
             itr_index = np.where(
-                cube.coord('Vegetation transition code').points ==
-                itr)[0][0]
+                cube.coord('Vegetation transition code').points == itr)[0][0]
             cube = cube[itr_index, :, :, :]
             # Add the vegetation transition code as an attribute
             cube.attributes['Vegetation transition code'] = itr

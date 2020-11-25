@@ -12,14 +12,13 @@ Last access
 Download and processing instructions
     Download the following files:
         full_data_monthly_{version}.nc.gz
-
 """
 
 import logging
 import os
 from warnings import catch_warnings, filterwarnings
-import cf_units
 
+import cf_units
 import iris
 
 from esmvaltool.cmorizers.data import utilities as utils

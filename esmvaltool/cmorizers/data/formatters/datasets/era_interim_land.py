@@ -12,10 +12,9 @@ Last access
 
 Download and processing instructions
      See script cmorize_obs_era_interim.py
-
 """
 
-from esmvaltool.cmorizers.data.formatters.datasets.era_interim import \
-    cmorization
+from esmvaltool.cmorizers.data.formatters.datasets.era_interim import (
+    cmorization, )
 
 __all__ = ['cmorization']

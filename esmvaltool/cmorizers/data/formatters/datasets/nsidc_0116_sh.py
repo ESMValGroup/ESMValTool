@@ -15,8 +15,6 @@ Download and processing instructions
     https://nsidc.org/data/NSIDC-0116
 
     Login required for download, but requires citation only to use
-
-
 """
 from esmvaltool.cmorizers.data.formatters.nsidc_common import cmorize
 

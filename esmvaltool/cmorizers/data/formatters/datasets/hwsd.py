@@ -13,7 +13,6 @@ Download and processing instructions
     Download the following file:
         HWSD_SOIL_CLM_RES.nc4
     A registration is required for downloading the data.
-
 """
 
 import logging

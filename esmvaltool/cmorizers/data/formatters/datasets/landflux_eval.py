@@ -15,7 +15,6 @@ Download and processing instructions
     A registration is required for downloading the data (see
     <http://www.iac.ethz.ch/group/land-climate-dynamics/research/
     landflux-eval.html>).
-
 """
 
 import logging
@@ -40,8 +39,11 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     utils.convert_timeunits(cube, 1950)
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
-    utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=['time'])
+    utils.save_variable(cube,
+                        var,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=['time'])
 
 
 def _fix_time_coord(cube):

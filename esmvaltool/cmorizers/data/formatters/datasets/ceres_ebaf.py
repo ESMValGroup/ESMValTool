@@ -12,7 +12,6 @@ Last access
 Download and processing instructions
     Select: "TOA Fluxes" ("Shortwave Flux" and "Longwave Flux", "All Sky"
     and "Clear Sky"), "Monthly Mean", "Regional 1x1 global grid".
-
 """
 
 import logging

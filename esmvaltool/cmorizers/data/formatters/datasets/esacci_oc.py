@@ -18,7 +18,6 @@ Download and processing instructions
 
 Modification history
    20190227-lovato_tomas: written.
-
 """
 
 import glob
@@ -29,8 +28,12 @@ import iris
 import xarray as xr
 
 from esmvaltool.cmorizers.data.utilities import (
-    constant_metadata, fix_coords, fix_var_metadata,
-    save_variable, set_global_atts)
+    constant_metadata,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +51,12 @@ def _add_depth_coord(cube):
     """Add depth auxiliary coordinate for CMIP5 standard."""
     if not cube.coords('depth'):
         depth = 1.
-        depth_coord = iris.coords.AuxCoord(
-            depth,
-            standard_name='depth',
-            long_name='depth',
-            var_name='depth',
-            units='m',
-            attributes={'positive': 'down'})
+        depth_coord = iris.coords.AuxCoord(depth,
+                                           standard_name='depth',
+                                           long_name='depth',
+                                           var_name='depth',
+                                           units='m',
+                                           attributes={'positive': 'down'})
         cube.add_aux_coord(depth_coord)
         cube.coordinates = 'depth'
 

@@ -43,8 +43,8 @@ from warnings import catch_warnings, filterwarnings
 
 import cf_units
 import iris
-
 from esmvalcore.preprocessor import regrid
+
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
@@ -60,12 +60,14 @@ def _attrs_are_the_same(cubelist):
         # This exception is needed for valid_range, which is an
         # array and therefore not hashable
         except TypeError:
-            unique_attr_vals = {tuple(cube.attributes[key])
-                                for cube in cubelist}
+            unique_attr_vals = {
+                tuple(cube.attributes[key])
+                for cube in cubelist
+            }
         if len(unique_attr_vals) > 1:
             attrs_the_same = False
-            print("Different values found for {0}-attribute: {1}"
-                  .format(key, unique_attr_vals))
+            print("Different values found for {0}-attribute: {1}".format(
+                key, unique_attr_vals))
     return attrs_the_same
 
 
@@ -78,9 +80,8 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cmor_table = cfg['cmor_table']
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
-    cube = iris.load_cube(
-        str(in_file),
-        constraint=utils.var_name_constraint(var['raw']))
+    cube = iris.load_cube(str(in_file),
+                          constraint=utils.var_name_constraint(var['raw']))
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -102,8 +103,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
 
 def _regrid_dataset(in_dir, var, cfg):
-    """
-    Regridding of original files.
+    """Regridding of original files.
 
     This function regrids each file and write to disk appending 'regrid'
     in front of filename.
@@ -137,8 +137,9 @@ def _set_time_bnds(in_dir, var):
     """Set time_bnds by using attribute and returns a cubelist."""
     # This is a complicated expression, but necessary to keep local
     # variables below the limit, otherwise prospector complains.
-    cubelist = iris.load(glob.glob(os.path.join(
-        in_dir, var['file'].replace('c3s', 'c3s_regridded'))))
+    cubelist = iris.load(
+        glob.glob(
+            os.path.join(in_dir, var['file'].replace('c3s', 'c3s_regridded'))))
 
     # The purpose of the following loop is to remove any attributes
     # that differ between cubes (otherwise concatenation over time fails).
@@ -199,15 +200,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start, end):
         for platformname in ['SPOT-4', 'SPOT-5']:
             # Now split the cubelist on the different platform
             logger.info("Start processing part of dataset: %s", platformname)
-            cubelist_platform = cubelist.extract(iris.AttributeConstraint(
-                platform=platformname))
+            cubelist_platform = cubelist.extract(
+                iris.AttributeConstraint(platform=platformname))
             for n_cube, _ in enumerate(cubelist_platform):
                 cubelist_platform[n_cube].attributes.pop('identifier')
             if cubelist_platform:
                 assert _attrs_are_the_same(cubelist_platform)
                 cube = cubelist_platform.concatenate_cube()
             else:
-                logger.warning("No files found for platform %s \
+                logger.warning(
+                    "No files found for platform %s \
                                (check input data)", platformname)
                 continue
             savename = os.path.join(cfg['work_dir'],

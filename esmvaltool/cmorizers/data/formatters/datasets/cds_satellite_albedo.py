@@ -34,8 +34,8 @@ from warnings import catch_warnings, filterwarnings
 
 import cf_units
 import iris
-
 from esmvalcore.preprocessor import regrid
+
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
@@ -94,8 +94,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
 
 def _regrid_dataset(in_dir, var, cfg):
-    """
-    Regridding of original files.
+    """Regridding of original files.
 
     This function regrids each file and write to disk appending 'regrid'
     in front of filename.

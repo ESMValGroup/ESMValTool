@@ -15,21 +15,24 @@ Download and processing instructions
 
 Modification history
    20190515-lovato_tomas: written.
-
 """
 
+import glob
 import logging
 import os
-import glob
 from datetime import datetime as dt
-import xarray as xr
-import numpy as np
 
 import iris
+import numpy as np
+import xarray as xr
 
 from esmvaltool.cmorizers.data.utilities import (
-    constant_metadata, fix_coords, fix_var_metadata, save_variable,
-    set_global_atts)
+    constant_metadata,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -76,16 +79,15 @@ def merge_data(in_dir, out_dir, raw_info):
             'fakeDim1': 'lon'
         })
         # create coordinates
-        ds = ds.assign_coords(
-            time=dt.strptime(ds.attrs['Start_Time_String'],
-                             '%m/%d/%Y %H:%M:%S'))
+        ds = ds.assign_coords(time=dt.strptime(ds.attrs['Start_Time_String'],
+                                               '%m/%d/%Y %H:%M:%S'))
         ds = ds.expand_dims(dim='time', axis=0)
         dx = 90. / ds.dims['lat']
-        ds = ds.assign_coords(
-            lat=np.linspace(-90. + dx, 90. - dx, ds.dims['lat']))
+        ds = ds.assign_coords(lat=np.linspace(-90. + dx, 90. -
+                                              dx, ds.dims['lat']))
         ds.lat.attrs = {'long_name': 'Latitude', 'units': 'degrees_north'}
-        ds = ds.assign_coords(
-            lon=np.linspace(-180. + dx, 180. - dx, ds.dims['lon']))
+        ds = ds.assign_coords(lon=np.linspace(-180. + dx, 180. -
+                                              dx, ds.dims['lon']))
         ds.lon.attrs = {'long_name': 'Longitude', 'units': 'degrees_east'}
         # get current file data
         da.append(ds[var])

@@ -50,11 +50,10 @@ Refs:
 """
 
 import logging
-from warnings import catch_warnings, filterwarnings
 from pathlib import Path
+from warnings import catch_warnings, filterwarnings
 
 import iris
-
 from esmvalcore.preprocessor import monthly_statistics
 
 from esmvaltool.cmorizers.data import utilities as utils

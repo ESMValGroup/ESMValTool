@@ -12,7 +12,6 @@ Last access
 Download and processing instructions
     Download the following file:
         Global_Carbon_Budget_2018v1.0.xlsx
-
 """
 
 import logging

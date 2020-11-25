@@ -16,11 +16,12 @@ Download and processing instructions
 
 import logging
 import os
+
 import iris
 import numpy as np
 from cf_units import Unit
-
 from esmvalcore.preprocessor import monthly_statistics
+
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
@@ -143,9 +144,10 @@ def cmorization(in_dir, out_dir, cfg, _, __, ___):
     ver = cfg['attributes']['version']
     for res in cfg['attributes']['resolution'].values():
         for (short_name, var) in cfg['variables'].items():
-            logger.info("CMORizing variable '%s' on %s°x%s°",
-                        short_name, res, res)
+            logger.info("CMORizing variable '%s' on %s°x%s°", short_name, res,
+                        res)
             raw_var = var.get('raw', short_name)
-            filepath = raw_filepath.format(raw_name=raw_var, resolution=res,
+            filepath = raw_filepath.format(raw_name=raw_var,
+                                           resolution=res,
                                            version=ver)
             _extract_variable(short_name, var, res, cfg, filepath, out_dir)

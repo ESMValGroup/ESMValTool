@@ -22,7 +22,6 @@ Modification history
    20130328-lovato_tomas: cmorizer revision
    20190131-predoi_valeriu: adapted to v2.
    20190131-demora_lee: written.
-
 """
 
 import logging
@@ -31,8 +30,13 @@ import os
 import iris
 
 from esmvaltool.cmorizers.data.utilities import (
-    constant_metadata, convert_timeunits, fix_coords,
-    fix_var_metadata, save_variable, set_global_atts)
+    constant_metadata,
+    convert_timeunits,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +68,11 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
             fix_coords(cube)
             _fix_data(cube, var)
             set_global_atts(cube, attrs)
-            save_variable(
-                cube, var, out_dir, attrs, unlimited_dimensions=['time'])
+            save_variable(cube,
+                          var,
+                          out_dir,
+                          attrs,
+                          unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _, __, ___):

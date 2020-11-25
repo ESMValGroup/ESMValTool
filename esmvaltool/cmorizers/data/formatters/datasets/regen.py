@@ -11,7 +11,6 @@ Last access
 Download and processing instructions
     Download the following files:
         REGEN_AllStns_{version}_[1950..2016].nc
-
 """
 
 import logging
@@ -19,8 +18,8 @@ from pathlib import Path
 
 import cf_units
 import iris
-
 from esmvalcore.preprocessor import monthly_statistics
+
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)

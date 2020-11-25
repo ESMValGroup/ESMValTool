@@ -19,7 +19,6 @@ Download and processing instructions
     control of the RHI data (see Data Quality Document for MLS-AURA for more
     information).
     A registration is required for downloading the data.
-
 """
 
 import glob

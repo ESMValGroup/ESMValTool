@@ -2,13 +2,16 @@
 
 import logging
 import os
+
 import iris
 from iris.experimental.equalise_cubes import equalise_attributes
 from iris.util import unify_time_units
 
-
-from esmvaltool.cmorizers.data.utilities import fix_var_metadata, \
-    save_variable, set_global_atts
+from esmvaltool.cmorizers.data.utilities import (
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 

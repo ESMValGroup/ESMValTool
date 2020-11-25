@@ -12,7 +12,6 @@ Last access
 Download and processing instructions
     Download the following file:
         monthly_flask_co2_kum.csv
-
 """
 
 import logging
@@ -28,13 +27,16 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-
-LAT_COORD = iris.coords.DimCoord([19.5], var_name='lat',
+LAT_COORD = iris.coords.DimCoord([19.5],
+                                 var_name='lat',
                                  standard_name='latitude',
-                                 long_name='latitude', units='degrees')
-LON_COORD = iris.coords.DimCoord([205.2], var_name='lon',
+                                 long_name='latitude',
+                                 units='degrees')
+LON_COORD = iris.coords.DimCoord([205.2],
+                                 var_name='lon',
                                  standard_name='longitude',
-                                 long_name='longitude', units='degrees')
+                                 long_name='longitude',
+                                 units='degrees')
 
 
 def _get_time_coord(year, month):

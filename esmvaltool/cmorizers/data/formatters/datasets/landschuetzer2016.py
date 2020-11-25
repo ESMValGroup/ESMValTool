@@ -1,4 +1,3 @@
-
 """ESMValTool CMORizer for Landschuetzer2016 data.
 
 Tier
@@ -15,7 +14,6 @@ Download and processing instructions
 
 Modification history
    20190227-lovato_tomas: written.
-
 """
 
 import logging
@@ -26,8 +24,12 @@ import iris
 from dask import array as da
 
 from esmvaltool.cmorizers.data.utilities import (
-    constant_metadata, fix_coords, fix_var_metadata, save_variable,
-    set_global_atts)
+    constant_metadata,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 

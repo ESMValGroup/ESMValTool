@@ -15,7 +15,6 @@ Download and processing instructions
     data will be stored. The download of the data is automatically handled by
     this script. If data is already present in this directory, the download is
     skipped (to force a new download delete your old files).
-
 """
 
 import fnmatch
@@ -45,8 +44,9 @@ def _add_aux_coords(cube, input_files, coords_to_add):
         if 'boundary' in dim_coords:
             (points, bounds) = _interpolate_center(coord_cube)
             attributes = {
-                'comment': 'Coordinate points where estimated as arithmetic '
-                           'mean from given coordinate bounds',
+                'comment':
+                'Coordinate points where estimated as arithmetic '
+                'mean from given coordinate bounds',
             }
         else:
             points = coord_cube.core_data()
@@ -71,8 +71,8 @@ def _add_aux_coords(cube, input_files, coords_to_add):
 def _download_files(in_dir, cfg):
     """Download input files using FTP."""
     logger.info("Downloading data from FTP server %s", cfg['ftp_host'])
-    logger.info("Looking for files matching %s", os.path.join(
-        cfg['data_dir'], cfg['input_file_pattern']))
+    logger.info("Looking for files matching %s",
+                os.path.join(cfg['data_dir'], cfg['input_file_pattern']))
     input_files = []
     with FTP(cfg['ftp_host']) as ftp_client:
         logger.info(ftp_client.getwelcome())

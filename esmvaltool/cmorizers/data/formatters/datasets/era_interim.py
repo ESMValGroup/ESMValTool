@@ -79,7 +79,6 @@ For further details on obtaining daily values from ERA-Interim,
     https://confluence.ecmwf.int/display/CKB/ERA-Interim
     https://confluence.ecmwf.int/display/CKB/ERA-Interim+documentation#ERA-Interimdocumentation-Monthlymeans
     https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+How+to+calculate+daily+total+precipitation
-
 """
 import logging
 import re
@@ -93,7 +92,6 @@ from warnings import catch_warnings, filterwarnings
 
 import iris
 import numpy as np
-
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import daily_statistics, monthly_statistics
 
@@ -204,7 +202,6 @@ def _compute_monthly(cube):
     """Convert various frequencies to daily frequency.
 
     ERA-Interim-Land is in 6hr freq need to convert to monthly
-
     """
     cube = monthly_statistics(cube, operator='mean')
     # Remove monthly statistics aux coordinates
@@ -218,7 +215,6 @@ def _compute_daily(cube):
 
     ERA-Interim is in 3hr or 6hr or 12hr freq need to convert to daily
     Only variables with step 12 need accounting time 00 AM as time 24 PM
-
     """
     # Account for time 00 AM as time 24 PM
     if cube.var_name in {

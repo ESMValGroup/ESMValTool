@@ -13,7 +13,6 @@ Download and processing instructions
     Download the following file:
         ndp017b.tar.gz
     A registration is required for downloading the data.
-
 """
 
 import gzip

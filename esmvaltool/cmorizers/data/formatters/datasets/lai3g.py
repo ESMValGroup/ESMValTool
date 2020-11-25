@@ -19,7 +19,6 @@ Download and processing instructions
     section in the configuration file (`LAI3g.yml`). Note that in this case,
     preprocessing the dataset with ESMValTool (i.e. every time you run the
     tool) can take a very long time (> 30 min).
-
 """
 
 import glob
@@ -33,7 +32,6 @@ import iris
 import iris.coord_categorisation
 import numpy as np
 from cf_units import Unit
-
 from esmvalcore.preprocessor import regrid
 
 from esmvaltool.cmorizers.data import utilities as utils

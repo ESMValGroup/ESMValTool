@@ -27,8 +27,10 @@ Download and processing instructions
 import logging
 import os
 import re
-import numpy as np
+
 import iris
+import numpy as np
+
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)

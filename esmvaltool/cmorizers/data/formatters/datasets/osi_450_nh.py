@@ -21,7 +21,6 @@ Download and processing instructions
     If you also want to cmorize the sh, download everything and create a link
     for OSI-450-sh pointing to the data folder. Both cmorizers will ignore
     files belonging to the other hemisphere
-
 """
 from esmvaltool.cmorizers.data.formatters.osi_common import OSICmorizer
 

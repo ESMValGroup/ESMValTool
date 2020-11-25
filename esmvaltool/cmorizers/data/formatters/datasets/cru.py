@@ -13,7 +13,6 @@ Download and processing instructions
     Download the following files:
         {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
     where {raw_name} is the name of the desired variable(s).
-
 """
 
 import gzip

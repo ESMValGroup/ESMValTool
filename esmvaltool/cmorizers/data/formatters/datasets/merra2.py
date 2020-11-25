@@ -12,7 +12,6 @@ Last access
 
 Download and processing instructions
     - For download instructions see the download script `download_merra2.sh`.
-
 """
 import glob
 import logging
@@ -23,7 +22,6 @@ from datetime import datetime
 import cf_units
 import iris
 from dask import array as da
-
 from esmvalcore.cmor.table import CMOR_TABLES
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -37,16 +35,15 @@ def _fix_time_monthly(cube):
     dataset_time_unit = str(cube.coord('time').units)
     dataset_time_calender = cube.coord('time').units.calendar
     # Convert datetime
-    time_as_datetime = cf_units.num2date(cube.coord('time').core_points(),
-                                         dataset_time_unit,
-                                         dataset_time_calender)
+    time_as_datetime = cf_units.num2date(
+        cube.coord('time').core_points(), dataset_time_unit,
+        dataset_time_calender)
     newtime = []
     for timepoint in time_as_datetime:
         midpoint = datetime(timepoint.year, timepoint.month, 15)
         newtime.append(midpoint)
 
-    newtime = cf_units.date2num(newtime,
-                                dataset_time_unit,
+    newtime = cf_units.date2num(newtime, dataset_time_unit,
                                 dataset_time_calender)
     # Put them on the file
     cube.coord('time').points = newtime
@@ -59,18 +56,21 @@ def _load_cube(in_files, var):
     selected = [c for c in cube_list if c.var_name == var['raw']]
     selected = iris.cube.CubeList(selected)
 
-    drop_attrs = ['History', 'Filename', 'Comment', 'RangeBeginningDate',
-                  'RangeEndingDate', 'GranuleID', 'ProductionDateTime',
-                  'Source']
-    drop_time_attrs = ['begin_date', 'begin_time',
-                       'time_increment', 'valid_range', 'vmax', 'vmin']
+    drop_attrs = [
+        'History', 'Filename', 'Comment', 'RangeBeginningDate',
+        'RangeEndingDate', 'GranuleID', 'ProductionDateTime', 'Source'
+    ]
+    drop_time_attrs = [
+        'begin_date', 'begin_time', 'time_increment', 'valid_range', 'vmax',
+        'vmin'
+    ]
     for cube in selected:
         for attr in drop_attrs:
             cube.attributes.pop(attr)
         for attr in drop_time_attrs:
             cube.coord('time').attributes.pop(attr)
-        cube.coord('time').points = cube.coord(
-            'time').core_points().astype('float64')
+        cube.coord('time').points = cube.coord('time').core_points().astype(
+            'float64')
 
     iris.util.unify_time_units(selected)
     cube = selected.concatenate_cube()
@@ -132,12 +132,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cube = _fix_time_monthly(cube)
 
     logger.debug("Saving cube\n%s", cube)
-    utils.save_variable(
-        cube,
-        cube.var_name,
-        out_dir,
-        attributes
-    )
+    utils.save_variable(cube, cube.var_name, out_dir, attributes)
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
 

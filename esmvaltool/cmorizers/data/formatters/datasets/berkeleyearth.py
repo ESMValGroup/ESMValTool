@@ -1,5 +1,4 @@
-"""
-ESMValTool CMORizer for BerkeleyEarth data.
+"""ESMValTool CMORizer for BerkeleyEarth data.
 
 Tier
     Tier 2: other freely-available dataset.
@@ -17,7 +16,6 @@ Last access
 Download and processing instructions
     Download the following file:
     http://berkeleyearth.lbl.gov/auto/Global/Gridded/Land_and_Ocean_LatLong1.nc
-
 """
 
 import logging
@@ -25,9 +23,9 @@ import os
 import re
 from warnings import catch_warnings, filterwarnings
 
-import numpy as np
 import cf_units
 import iris
+import numpy as np
 from iris import coord_categorisation
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -36,8 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
-    """
-    Fix broken time.
+    """Fix broken time.
 
     The time coordinates are a big mess (given as floats in years A.D.)
     best to reinitialize them from scratch
@@ -50,14 +47,13 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
     n_days = (n_years + n_add_mon / 12) * 365.25 + 50  # have some extra length
     climcenter = (climend - climstart) // 2
 
-    times = iris.coords.DimCoord(np.arange(int(n_days), dtype=float),
-                                 var_name='time',
-                                 standard_name='time',
-                                 long_name='time',
-                                 units=cf_units.Unit(
-                                     'days since {}-01-01 00:00:00'.format(
-                                         start_year),
-                                     calendar=cf_units.CALENDAR_STANDARD))
+    times = iris.coords.DimCoord(
+        np.arange(int(n_days), dtype=float),
+        var_name='time',
+        standard_name='time',
+        long_name='time',
+        units=cf_units.Unit('days since {}-01-01 00:00:00'.format(start_year),
+                            calendar=cf_units.CALENDAR_STANDARD))
 
     # init a dummy cube to enable coord_categorisation
     dummycube = iris.cube.Cube(np.zeros(int(n_days), np.int),
@@ -71,8 +67,8 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
     timecoord_anom = dummycube.coord('time')
 
     # build timecoord for the climatology cube
-    dummycube_clim = dummycube.extract(iris.Constraint(
-        year=lambda cell: cell == climstart + climcenter))
+    dummycube_clim = dummycube.extract(
+        iris.Constraint(year=lambda cell: cell == climstart + climcenter))
     timecoord_clim = dummycube_clim.coord('time')
 
     # change to the new time coordinates
@@ -115,14 +111,15 @@ def calc_abs_temperature(cube_anom, cube_clim, short_name):
             filterwarnings(
                 action='ignore',
                 message='.* not used since it\ncannot be safely cast to'
-                        ' variable data type *',
+                ' variable data type *',
                 category=UserWarning,
                 module='iris',
             )
             array[i] = cube_clim[i % 12].data + cube_anom[i].data
 
     # build absolute tas cube
-    cube_abs = iris.cube.Cube(array, var_name=var_name,
+    cube_abs = iris.cube.Cube(array,
+                              var_name=var_name,
                               units=units,
                               dim_coords_and_dims=crds_n_dims)
 
@@ -142,7 +139,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
         filterwarnings(
             action='ignore',
             message='.* not used since it\ncannot be safely cast to variable'
-                    ' data type *',
+            ' data type *',
             category=UserWarning,
             module='iris',
         )
@@ -156,12 +153,13 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     raw_var_clim = var.get('rawclim', short_name)
     cube_clim = cubes.extract(utils.var_name_constraint(raw_var_clim))[0]
     # information on time for the climatology are only present in the long_name
-    climstart, climend = [int(x) for x in re.findall(r"\d{4}",
-                                                     cube_clim.long_name)]
+    climstart, climend = [
+        int(x) for x in re.findall(r"\d{4}", cube_clim.long_name)
+    ]
 
     # redo the broken time coordinate
-    cube_anom, cube_clim = reinit_broken_time(cube_anom, cube_clim,
-                                              climstart, climend)
+    cube_anom, cube_clim = reinit_broken_time(cube_anom, cube_clim, climstart,
+                                              climend)
 
     # derive absolute tas values
     cube_abs = calc_abs_temperature(cube_anom, cube_clim, short_name)
@@ -186,11 +184,15 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
 
     # save temperature data
     logger.info("Saving temperature data")
-    comments = {'tas': "Temperature time-series calculated from the anomaly "
-                       "time-series by adding the temperature climatology "
-                       "for {}-{}".format(climstart, climend),
-                'tasa': "Temperature anomaly with respect to the period"
-                        " {}-{}".format(climstart, climend)}
+    comments = {
+        'tas':
+        "Temperature time-series calculated from the anomaly "
+        "time-series by adding the temperature climatology "
+        "for {}-{}".format(climstart, climend),
+        'tasa':
+        "Temperature anomaly with respect to the period"
+        " {}-{}".format(climstart, climend)
+    }
 
     for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
         attrs['comment'] = comments[s_name]
@@ -223,9 +225,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     logger.info("Saving sftlf")
     utils.fix_var_metadata(cube_sftlf, cmor_info_sftlf)
     utils.set_global_atts(cube_sftlf, attrs_sftlf)
-    utils.save_variable(cube_sftlf,
-                        var['rawsftlf_varname'],
-                        out_dir,
+    utils.save_variable(cube_sftlf, var['rawsftlf_varname'], out_dir,
                         attrs_sftlf)
 
 

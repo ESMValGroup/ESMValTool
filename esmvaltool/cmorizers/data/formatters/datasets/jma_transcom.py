@@ -14,7 +14,6 @@ Download and processing instructions
     (Department of Atmosphere, Ocean and Earth System Modeling Research,
     Meteorological Research Institute, Tsukuba City, Japan). See link above
     for more information.
-
 """
 
 import logging
@@ -27,7 +26,6 @@ import iris
 import iris.coord_categorisation
 import numpy as np
 from cf_units import Unit
-
 from esmvalcore.preprocessor import mask_landsea
 
 from esmvaltool.cmorizers.data import utilities as utils

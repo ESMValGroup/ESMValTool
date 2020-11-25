@@ -21,14 +21,14 @@ Download and processing instructions
    should be achievable for most of them just modifying the config file
 """
 
+import collections
+import glob
 import logging
 import os
-import glob
-import collections
 
+import iris
 import numpy as np
 from cf_units import Unit
-import iris
 from iris.coords import AuxCoord, DimCoord
 
 from esmvaltool.cmorizers.data.utilities import save_variable, set_global_atts
@@ -59,7 +59,6 @@ Coords = collections.namedtuple('Coords', 'lat lon')
 
 class PIOMAS():
     """Cmorizer class for PIOMAS."""
-
     def __init__(self, cfg, in_dir, out_dir):
         self.cfg = cfg
         self.in_dir = in_dir
@@ -70,14 +69,14 @@ class PIOMAS():
 
     def prepare_grid_info(self):
         """Read grid information."""
-        grids = np.loadtxt(os.path.join(
-            self.in_dir, self.cfg['custom']['scalar_file']))
+        grids = np.loadtxt(
+            os.path.join(self.in_dir, self.cfg['custom']['scalar_file']))
         grids = grids.reshape(2, NY, NX)
         self.scalar_coords = self._create_lat_lon_coords(
             grids[1, ...], grids[0, ...])
 
-        grids = np.loadtxt(os.path.join(
-            self.in_dir, self.cfg['custom']['vector_file']))
+        grids = np.loadtxt(
+            os.path.join(self.in_dir, self.cfg['custom']['vector_file']))
         grids = grids.reshape(7, NY, NX)
         self.vector_coords = self._create_lat_lon_coords(
             grids[1, ...], grids[0, ...])
@@ -100,43 +99,36 @@ class PIOMAS():
                 cube = self._create_areacello(coords, var_info)
                 set_global_atts(cube, self.cfg['attributes'])
                 save_variable(
-                    cube, var_info.short_name, self.out_dir,
+                    cube,
+                    var_info.short_name,
+                    self.out_dir,
                     self.cfg['attributes'],
                 )
             else:
                 self._cmorize_var(var_info, vals, coords)
 
     def _cmorize_var(self, var_info, vals, coords):
-        file_expression = os.path.join(
-            self.in_dir, '{0}.H????'.format(vals['raw']))
+        file_expression = os.path.join(self.in_dir,
+                                       '{0}.H????'.format(vals['raw']))
         for file_path in glob.glob(file_expression):
-            cube = PIOMAS._create_cube(
-                PIOMAS._read_binary_file(file_path),
-                coords,
-                int(file_path[-4:]),
-                var_info,
-                vals['units']
-            )
+            cube = PIOMAS._create_cube(PIOMAS._read_binary_file(file_path),
+                                       coords, int(file_path[-4:]), var_info,
+                                       vals['units'])
             set_global_atts(cube, self.cfg['attributes'])
-            save_variable(
-                cube, var_info.short_name, self.out_dir, self.cfg['attributes']
-            )
+            save_variable(cube, var_info.short_name, self.out_dir,
+                          self.cfg['attributes'])
 
     @staticmethod
     def _create_lat_lon_coords(lat, lon):
-        lon_coord = AuxCoord(
-            lon,
-            standard_name='longitude',
-            var_name='lon',
-            units='degrees_east'
-        )
+        lon_coord = AuxCoord(lon,
+                             standard_name='longitude',
+                             var_name='lon',
+                             units='degrees_east')
 
-        lat_coord = AuxCoord(
-            lat,
-            standard_name='latitude',
-            var_name='lat',
-            units='degrees_north'
-        )
+        lat_coord = AuxCoord(lat,
+                             standard_name='latitude',
+                             var_name='lat',
+                             units='degrees_north')
         return Coords(lat_coord, lon_coord)
 
     @staticmethod
