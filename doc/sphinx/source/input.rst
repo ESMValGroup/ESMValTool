@@ -43,7 +43,10 @@ user configuration file. Alternatively, it can use an external
 tool called `Synda <http://prodiguer.github.io/synda/index.html>`__. If you
 do not have access to a compute cluster with the data already mounted, this is
 the recommended approach for first-time users to obtain some data for
-running ESMValTool.
+running ESMValTool. It is also possible to manually download the files from
+ESGF, see
+`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__
+for a tutorial.
 
 Installing Synda for use from ESMValTool
 ----------------------------------------
@@ -137,7 +140,7 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 .. code-block:: bash
 
-    esmvaltool -c [CONFIG_FILE] cmorizers/recipe_era5.yml
+    esmvaltool run cmorizers/recipe_era5.yml
 
 (Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
 
@@ -280,6 +283,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | PIOMAS                       | sit (day)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | REGEN                        | pr (day, Amon)                                                                                       |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| Scripps-CO2-KUM              | co2s (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | UWisc                        | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+

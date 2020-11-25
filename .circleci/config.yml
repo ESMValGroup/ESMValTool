@@ -27,7 +27,7 @@ jobs:
     steps:
       - checkout
       - run:
-          # Update/Create Conda environment and run tests
+          # Update environment if needed and run tests
           command: |
             pip install .[test]
             esmvaltool install Julia
@@ -83,7 +83,7 @@ jobs:
             echo 0 | cdo -f nc input,r1x1 tmp.nc
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
-          no_output_timeout: 20m
+          no_output_timeout: 30m
       - save_cache:
           key: test-install-{{ .Branch }}
           paths:
@@ -128,7 +128,7 @@ jobs:
             esmvaltool -h
             ncl -V
             cdo --version
-          no_output_timeout: 20m
+          no_output_timeout: 30m
       - store_artifacts:
           path: /logs
 
@@ -168,6 +168,8 @@ jobs:
       - checkout
       - check_changes
       - run:
+          environment:
+            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x

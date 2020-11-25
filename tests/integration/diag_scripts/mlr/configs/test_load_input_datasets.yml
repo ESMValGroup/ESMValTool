@@ -1,0 +1,1717 @@
+---
+- cfg:
+    imputation_strategy: mean
+    input_data: {}
+    input_files:
+      - /ancestor/1
+      - /ancestor/2
+    output_file_type: png
+    plot_dir: /plot/dir/1
+    work_dir: /work/dir_2
+    write_plots: true
+  logger: []
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: No 'feature' data found
+- cfg:
+    accept_only_scalar_data: false
+    allow_missing_features: true
+    imputation_strategy: mean
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_1
+        filename: path/3
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_1
+        var_type: wrong_var_type
+      dataset_1:
+        broadcast_from: 0
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_1
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_3
+        var_type: feature
+      dataset_2:
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_3
+        var_type: label
+      dataset_3:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_3
+        var_type: label
+      dataset_4:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_2
+        var_type: label
+      dataset_5:
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_3
+        var_type: wrong_var_type
+    input_files:
+      - /ancestor/1
+      - /ancestor/2
+    mlr_model_type: gbr
+    output_file_type: png
+    parameters:
+      a: 1
+    plot_dir: /plot/dir/2
+    work_dir: /work/dir/1
+    write_plots: false
+  logger:
+    - error
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: true
+    coords_as_features:
+      - latitude
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    input_data:
+      dataset_0:
+        broadcast_from: 0
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_3
+        var_type: feature
+      dataset_1:
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_1
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_2
+        var_type: prediction_input
+      dataset_2:
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_1
+        var_type: label
+      dataset_3:
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_2
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_1
+        var_type: label
+      dataset_4:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_1
+        tag: tag_2
+        units: units_2
+        var_type: label
+      dataset_5:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: prediction_input
+    input_files: []
+    output_file_type: ps
+    plot_dir: /plot/dir/2
+    work_dir: /work/dir_2
+    write_plots: false
+  logger: []
+  output:
+    feature:
+      - broadcast_from: 0
+        dataset: dataset_2
+        filename: /path/1
+        group_attribute: dataset_2-project_3
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_3
+        var_type: feature
+    label:
+      - dataset: dataset_2
+        filename: /path/2
+        group_attribute: dataset_2-project_3
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_1
+        var_type: label
+      - dataset: dataset_2
+        filename: /path/1
+        group_attribute: dataset_2-project_1
+        long_name: long_name_2
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_1
+        var_type: label
+      - broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_1
+        filename: path/3
+        group_attribute: dataset_1-project_3
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_1
+        tag: tag_2
+        units: units_2
+        var_type: label
+    prediction_input:
+      null:
+        - dataset: dataset_2
+          filename: /path/1
+          group_attribute: null
+          long_name: long_name_1
+          project: project_1
+          short_name: short_name_2
+          standard_name: std_name_2
+          tag: tag_3
+          units: units_2
+          var_type: prediction_input
+      pred_name_2:
+        - broadcast_from:
+            - 4
+            - 5
+          dataset: dataset_3
+          filename: /path/2
+          group_attribute: null
+          long_name: long_name_3
+          prediction_name: pred_name_2
+          project: project_3
+          short_name: short_name_1
+          standard_name: std_name_3
+          tag: tag_2
+          units: units_2
+          var_type: prediction_input
+    prediction_input_error: {}
+    prediction_reference: {}
+- cfg:
+    accept_only_scalar_data: false
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_1
+        units: units_3
+        var_type: wrong_var_type
+      dataset_1:
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_3
+        var_type: feature
+      dataset_2:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_1
+        tag: tag_1
+        units: units_2
+        var_type: wrong_var_type
+      dataset_3:
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_1
+        project: project_2
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_3
+        var_type: feature
+    input_files: []
+    output_file_type: png
+    plot_dir: /plot/dir/2
+    test_size: 0.25
+    work_dir: /work/dir/1
+    write_plots: true
+  logger:
+    - error
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: true
+    coords_as_features:
+      - latitude
+    grid_search_cv_param_grid:
+      - a:
+          - 1
+          - 2
+        b:
+          - 3.14
+          - 2.71
+      - b:
+          - 6.28
+          - -1
+    group_datasets_by_attributes:
+      - dataset
+    imputation_strategy: mean
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_3
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_1
+        var_type: prediction_input
+      dataset_1:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_1
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_1
+        var_type: feature
+      dataset_2:
+        broadcast_from:
+          - 0
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_3
+        var_type: wrong_var_type
+      dataset_3:
+        broadcast_from: 0
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_2
+        var_type: label
+    input_files:
+      - /ancestor/1
+    mlr_model_type: gbr
+    output_file_type: png
+    parameters:
+      a: 1
+      b: 3.1415
+    plot_dir: /plot/dir/2
+    predict_kwargs:
+      return_var: true
+    test_size: 2.5
+    work_dir: /work/dir/1
+    write_plots: true
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: false
+    grid_search_cv_param_grid:
+      a:
+        - 1
+        - 2
+        - 3
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_3
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_1
+        var_type: prediction_input
+      dataset_1:
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_2
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_2
+        var_type: label
+      dataset_2:
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_1
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_1
+        var_type: wrong_var_type
+      dataset_3:
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_3
+        project: project_3
+        short_name: short_name_1
+        tag: tag_3
+        units: units_2
+        var_type: wrong_var_type
+      dataset_4:
+        broadcast_from:
+          - 0
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_1
+        units: units_1
+        var_type: label
+      dataset_5:
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_3
+        var_type: prediction_input
+      dataset_6:
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_2
+        units: units_1
+        var_type: prediction_input
+      dataset_7:
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_2
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_1
+        var_type: wrong_var_type
+    input_files: []
+    output_file_type: png
+    plot_dir: /plot/dir/2
+    test_size: 0.25
+    work_dir: /work/dir/1
+    write_plots: true
+  logger:
+    - error
+    - error
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    allow_missing_features: true
+    coords_as_features:
+      - air_pressure
+      - latitude
+    grid_search_cv_param_grid:
+      a:
+        - 1
+        - 2
+        - 3
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_3
+        var_type: wrong_var_type
+      dataset_1:
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_2
+        var_type: label
+      dataset_2:
+        broadcast_from:
+          - 0
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_3
+        var_type: prediction_input
+      dataset_3:
+        broadcast_from: 0
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_3
+        var_type: label
+    input_files:
+      - /ancestor/1
+      - /ancestor/2
+    output_file_type: png
+    plot_dir: /plot/dir/2
+    work_dir: /work/dir_2
+    write_plots: false
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: false
+    allow_missing_features: false
+    grid_search_cv_param_grid:
+      a:
+        - 1
+        - 2
+        - 3
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    imputation_strategy: mean
+    input_data:
+      dataset_0:
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_2
+        project: project_3
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_1
+        var_type: prediction_input
+      dataset_1:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_3
+        var_type: label
+      dataset_2:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_1
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_1
+        var_type: label
+      dataset_3:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_2
+        units: units_3
+        var_type: prediction_input
+    input_files: []
+    mlr_model_type: gpr
+    output_file_type: pdf
+    plot_dir: /plot/dir/2
+    predict_kwargs:
+      return_var: true
+    test_size: -1.0
+    work_dir: /work/dir/1
+    write_plots: false
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: At least one 'label' dataset does not have necessary MLR attributes
+- cfg:
+    accept_only_scalar_data: true
+    grid_search_cv_param_grid:
+      a:
+        - 1
+        - 2
+        - 3
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    input_data:
+      dataset_0:
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_1
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_2
+        var_type: label
+      dataset_1:
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_1
+        var_type: wrong_var_type
+      dataset_2:
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_2
+        var_type: wrong_var_type
+      dataset_3:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_2
+        project: project_2
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_2
+        var_type: wrong_var_type
+      dataset_4:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_1
+        units: units_3
+        var_type: feature
+    input_files:
+      - /ancestor/1
+      - /ancestor/2
+    mlr_model_type: gbr
+    output_file_type: pdf
+    parameters:
+      a: 1
+      b: 3.1415
+    plot_dir: /plot/dir/1
+    test_size: 0.25
+    work_dir: /work/dir_2
+    write_plots: false
+  logger:
+    - error
+    - error
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: true
+    grid_search_cv_param_grid:
+      - a:
+          - 1
+          - 2
+        b:
+          - 3.14
+          - 2.71
+      - b:
+          - 6.28
+          - -1
+    group_datasets_by_attributes:
+      - dataset
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_1
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_1
+        units: units_3
+        var_type: feature
+      dataset_1:
+        broadcast_from:
+          - 0
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_3
+        var_type: wrong_var_type
+      dataset_2:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: feature
+      dataset_3:
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_3
+        var_type: feature
+      dataset_4:
+        broadcast_from:
+          - 0
+        dataset: dataset_3
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_3
+        var_type: feature
+      dataset_5:
+        broadcast_from: 0
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_3
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_2
+        var_type: label
+      dataset_6:
+        broadcast_from: 0
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_3
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_1
+        units: units_3
+        var_type: prediction_input
+      dataset_7:
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: feature
+    input_files:
+      - /ancestor/1
+    mlr_model_type: gpr
+    output_file_type: png
+    parameters:
+      a: 1
+    plot_dir: /plot/dir/1
+    test_size: 0.25
+    work_dir: /work/dir_2
+    write_plots: false
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: false
+    coords_as_features:
+      - latitude
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 0
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_2
+        units: units_2
+        var_type: label
+      dataset_1:
+        broadcast_from: 0
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_2
+        var_type: wrong_var_type
+      dataset_2:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_3
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_1
+        units: units_3
+        var_type: label
+      dataset_3:
+        broadcast_from: 0
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_1
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_3
+        units: units_1
+        var_type: label
+      dataset_4:
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_1
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_2
+        var_type: label
+      dataset_5:
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_2
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_2
+        var_type: feature
+      dataset_6:
+        broadcast_from: 0
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_2
+        standard_name: std_name_1
+        tag: tag_1
+        units: units_3
+        var_type: label
+    input_files:
+      - /ancestor/1
+    mlr_model_type: gpr
+    output_file_type: pdf
+    parameters:
+      a: 1
+      b: 3.1415
+    plot_dir: /plot/dir/2
+    predict_kwargs:
+      return_var: true
+    work_dir: /work/dir_2
+    write_plots: false
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: true
+    allow_missing_features: true
+    grid_search_cv_param_grid:
+      a:
+        - 1
+        - 2
+        - 3
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_1
+        var_type: wrong_var_type
+      dataset_1:
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: label
+    input_files: []
+    output_file_type: ps
+    plot_dir: /plot/dir/2
+    work_dir: /work/dir/1
+    write_plots: false
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    coords_as_features:
+      - latitude
+    group_datasets_by_attributes:
+      - dataset
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_3
+        project: project_2
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_1
+        var_type: prediction_input
+      dataset_1:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_1
+        var_type: wrong_var_type
+      dataset_2:
+        broadcast_from:
+          - 0
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_1
+        var_type: prediction_input
+      dataset_3:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_1
+        filename: path/3
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_2
+        var_type: wrong_var_type
+      dataset_4:
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_1
+        project: project_1
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_3
+        var_type: wrong_var_type
+      dataset_5:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_1
+        var_type: label
+      dataset_6:
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_2
+        var_type: feature
+      dataset_7:
+        broadcast_from: 0
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_2
+        var_type: prediction_input
+    input_files:
+      - /ancestor/1
+      - /ancestor/2
+    mlr_model_type: gpr
+    output_file_type: png
+    plot_dir: /plot/dir/1
+    test_size: 0.25
+    work_dir: /work/dir_2
+    write_plots: true
+  logger:
+    - error
+    - error
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: true
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: wrong_var_type
+      dataset_1:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_2
+        var_type: wrong_var_type
+      dataset_2:
+        broadcast_from:
+          - 0
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_2
+        var_type: label
+      dataset_3:
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_1
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_3
+        var_type: wrong_var_type
+    input_files:
+      - /ancestor/1
+    mlr_model_type: gpr
+    output_file_type: pdf
+    parameters:
+      a: 1
+    plot_dir: /plot/dir/1
+    predict_kwargs:
+      return_var: true
+    test_size: 0.25
+    work_dir: /work/dir_2
+    write_plots: true
+  logger:
+    - error
+    - error
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: false
+    allow_missing_features: false
+    grid_search_cv_param_grid:
+      - a:
+          - 1
+          - 2
+        b:
+          - 3.14
+          - 2.71
+      - b:
+          - 6.28
+          - -1
+    group_datasets_by_attributes:
+      - dataset
+    imputation_strategy: mean
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 0
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_2
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_1
+        var_type: prediction_input
+      dataset_1:
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_1
+        var_type: wrong_var_type
+      dataset_2:
+        broadcast_from: 0
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_1
+        units: units_1
+        var_type: label
+      dataset_3:
+        broadcast_from: 0
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_3
+        var_type: feature
+      dataset_4:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_2
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_1
+        units: units_1
+        var_type: wrong_var_type
+      dataset_5:
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_3
+        var_type: prediction_input
+    input_files:
+      - /ancestor/1
+    output_file_type: pdf
+    plot_dir: /plot/dir/2
+    test_size: 0.25
+    work_dir: /work/dir/1
+    write_plots: false
+  logger:
+    - error
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    allow_missing_features: false
+    group_datasets_by_attributes:
+      - dataset
+    input_data:
+      dataset_0:
+        broadcast_from: 0
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_2
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_1
+        var_type: label
+      dataset_1:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_2
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_1
+        units: units_1
+        var_type: feature
+    input_files:
+      - /ancestor/1
+      - /ancestor/2
+    output_file_type: pdf
+    plot_dir: /plot/dir/2
+    test_size: -1.0
+    work_dir: /work/dir/1
+    write_plots: false
+  logger: []
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: No 'prediction_input' data found
+- cfg:
+    accept_only_scalar_data: true
+    allow_missing_features: false
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        broadcast_from: 0
+        dataset: dataset_1
+        filename: path/3
+        long_name: long_name_3
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_3
+        units: units_1
+        var_type: feature
+      dataset_1:
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_1
+        standard_name: std_name_1
+        tag: tag_1
+        units: units_2
+        var_type: feature
+      dataset_2:
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: label
+      dataset_3:
+        broadcast_from:
+          - 0
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_3
+        project: project_2
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_2
+        var_type: wrong_var_type
+      dataset_4:
+        dataset: dataset_3
+        filename: /path/1
+        long_name: long_name_2
+        project: project_3
+        short_name: short_name_1
+        standard_name: std_name_2
+        tag: tag_2
+        units: units_2
+        var_type: feature
+      dataset_5:
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_1
+        prediction_name: pred_name_2
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_1
+        units: units_1
+        var_type: label
+      dataset_6:
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_2
+        var_type: label
+    input_files:
+      - /ancestor/1
+      - /ancestor/2
+    mlr_model_type: gbr
+    output_file_type: pdf
+    parameters:
+      a: 1
+      b: 3.1415
+    plot_dir: /plot/dir/1
+    predict_kwargs:
+      return_var: true
+    test_size: 0.25
+    work_dir: /work/dir_2
+    write_plots: true
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: false
+    allow_missing_features: true
+    coords_as_features:
+      - air_pressure
+      - latitude
+    imputation_strategy: remove
+    input_data:
+      dataset_0:
+        broadcast_from: 0
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_3
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_1
+        var_type: label
+    input_files: []
+    output_file_type: png
+    plot_dir: /plot/dir/1
+    predict_kwargs:
+      return_var: true
+    test_size: -1.0
+    work_dir: /work/dir_2
+    write_plots: true
+  logger: []
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: No 'feature' data found
+- cfg:
+    accept_only_scalar_data: false
+    grid_search_cv_param_grid:
+      - a:
+          - 1
+          - 2
+        b:
+          - 3.14
+          - 2.71
+      - b:
+          - 6.28
+          - -1
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: prediction_input
+      dataset_1:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_1
+        prediction_name: pred_name_1
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_2
+        var_type: label
+      dataset_2:
+        broadcast_from:
+          - 4
+          - 5
+        dataset: dataset_3
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_2
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_1
+        units: units_3
+        var_type: prediction_input
+      dataset_3:
+        broadcast_from:
+          - 0
+        dataset: dataset_1
+        filename: /path/1
+        long_name: long_name_3
+        prediction_name: pred_name_2
+        project: project_2
+        short_name: short_name_3
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_2
+        var_type: feature
+      dataset_4:
+        dataset: dataset_2
+        filename: /path/2
+        long_name: long_name_3
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_3
+        tag: tag_2
+        units: units_1
+        var_type: prediction_input
+      dataset_5:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_2
+        filename: /path/1
+        long_name: long_name_3
+        project: project_1
+        short_name: short_name_2
+        standard_name: std_name_1
+        tag: tag_3
+        units: units_2
+        var_type: prediction_input
+      dataset_6:
+        broadcast_from: 0
+        dataset: dataset_3
+        filename: path/3
+        long_name: long_name_3
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_1
+        var_type: prediction_input
+      dataset_7:
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_1
+        project: project_2
+        short_name: short_name_1
+        standard_name: std_name_2
+        units: units_1
+        var_type: wrong_var_type
+      dataset_8:
+        dataset: dataset_1
+        filename: /path/2
+        long_name: long_name_2
+        prediction_name: pred_name_1
+        project: project_2
+        short_name: short_name_2
+        standard_name: std_name_2
+        tag: tag_3
+        units: units_1
+        var_type: prediction_input
+    input_files: []
+    output_file_type: png
+    parameters:
+      a: 1
+    plot_dir: /plot/dir/2
+    predict_kwargs:
+      return_var: true
+    work_dir: /work/dir_2
+    write_plots: false
+  logger:
+    - error
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: Data with invalid 'var_type' given
+- cfg:
+    accept_only_scalar_data: true
+    allow_missing_features: false
+    grid_search_cv_param_grid:
+      - a:
+          - 1
+          - 2
+        b:
+          - 3.14
+          - 2.71
+      - b:
+          - 6.28
+          - -1
+    group_datasets_by_attributes:
+      - dataset
+      - project
+    imputation_strategy: mean
+    input_data:
+      dataset_0:
+        broadcast_from:
+          - 0
+          - 1
+        dataset: dataset_2
+        filename: path/3
+        long_name: long_name_2
+        project: project_3
+        short_name: short_name_3
+        standard_name: std_name_3
+        tag: tag_1
+        units: units_3
+        var_type: prediction_input
+    input_files: []
+    mlr_model_type: gpr
+    output_file_type: png
+    parameters:
+      a: 1
+    plot_dir: /plot/dir/1
+    test_size: 2.5
+    work_dir: /work/dir/1
+    write_plots: false
+  logger: []
+  output:
+    EXCEPTION:
+      type: ValueError
+      value: No 'feature' data found

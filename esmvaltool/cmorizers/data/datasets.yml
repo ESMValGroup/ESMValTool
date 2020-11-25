@@ -832,6 +832,15 @@ datasets:
       Download the following files:
         REGEN_AllStns_{version}_[1950..2016].nc
 
+  Scripps-CO2-KUM:
+    tier: 2
+    source: https://scrippsco2.ucsd.edu/data/atmospheric_co2/kum.html
+    last_access: 20201125
+    info: |
+      Download the following file:
+        monthly_flask_co2_kum.csv
+
+
   UWisc:
     tier: 3
     source: Data provided by Ralf Bennartz.

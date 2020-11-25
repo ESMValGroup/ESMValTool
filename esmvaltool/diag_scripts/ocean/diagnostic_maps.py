@@ -40,15 +40,15 @@ This tool is part of the ocean diagnostic tools package in the ESMValTool.
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 """
+import itertools
 import logging
 import os
 import sys
-from itertools import product
-import matplotlib.pyplot as plt
 
+import cartopy
 import iris
 import iris.quickplot as qplt
-import cartopy
+import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -269,7 +269,7 @@ def multi_model_contours(
     thresholds = diagtools.load_thresholds(cfg, metadata)
 
     # Make a plot for each layer and each threshold
-    for layer, threshold in product(layers, thresholds):
+    for layer, threshold in itertools.product(layers, thresholds):
 
         title = ''
         z_units = ''
