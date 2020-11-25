@@ -135,8 +135,8 @@ def combine_ensemble_members(
 
 
 def calculate_weights(
-        performance: Union['xr.DataArray',
-                           None], independence: Union['xr.DataArray', None],
+        performance: Union['xr.DataArray', None],
+        independence: Union['xr.DataArray', None],
         performance_sigma: Union[float, None],
         independence_sigma: Union[float, None]) -> 'xr.DataArray':
     """Calculate normalized weights for each model N.
