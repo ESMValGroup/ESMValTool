@@ -66,7 +66,7 @@ def convert_timeunits(cube, start_year):
 def fix_coords(cube):
     """Fix the time units and values to CMOR standards."""
     # first fix any completely missing coord var names
-    _fix_dim_coordnames(cube)
+    fix_dim_coordnames(cube)
     # fix individual coords
     for cube_coord in cube.coords():
         # fix time
@@ -74,7 +74,7 @@ def fix_coords(cube):
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            _fix_bounds(cube, cube.coord('time'))
+            fix_bounds(cube, cube.coord('time'))
 
         # fix longitude
         if cube_coord.var_name == 'lon':
@@ -84,26 +84,26 @@ def fix_coords(cube):
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
                         cube_coord.points + 180.
-                    _fix_bounds(cube, cube_coord)
+                    fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
-                    _roll_cube_data(cube, nlon // 2, -1)
+                    roll_cube_data(cube, nlon // 2, -1)
 
         # fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
-            _fix_bounds(cube, cube.coord('latitude'))
+            fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
-            _fix_bounds(cube, cube.coord('depth'))
+            fix_bounds(cube, cube.coord('depth'))
 
         # fix air_pressure
         if cube_coord.var_name == 'air_pressure':
             logger.info("Fixing air pressure...")
-            _fix_bounds(cube, cube.coord('air_pressure'))
+            fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
     cube.coord('latitude').coord_system = None
@@ -120,7 +120,7 @@ def fix_var_metadata(cube, var_info):
         cube.standard_name = var_info.standard_name
     cube.var_name = var_info.short_name
     cube.long_name = var_info.long_name
-    _set_units(cube, var_info.units)
+    set_units(cube, var_info.units)
     return cube
 
 
@@ -150,7 +150,7 @@ def read_cmor_config(dataset):
 
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
-    _fix_dtype(cube)
+    fix_dtype(cube)
     # CMOR standard
     try:
         time = cube.coord('time')
@@ -253,7 +253,7 @@ def var_name_constraint(var_name):
     return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
 
 
-def _fix_bounds(cube, dim_coord):
+def fix_bounds(cube, dim_coord):
     """Reset and fix all bounds."""
     if len(cube.coord(dim_coord).points) > 1:
         if cube.coord(dim_coord).has_bounds():
@@ -266,7 +266,7 @@ def _fix_bounds(cube, dim_coord):
     return cube
 
 
-def _fix_dim_coordnames(cube):
+def fix_dim_coordnames(cube):
     """Perform a check on dim coordinate names."""
     # first check for CMOR standard coord;
     for coord in cube.coords():
@@ -315,7 +315,7 @@ def _fix_dim_coordnames(cube):
     return cube
 
 
-def _fix_dtype(cube):
+def fix_dtype(cube):
     """Fix `dtype` of a cube and its coordinates."""
     if cube.dtype != np.float32:
         logger.info("Converting data type of data from '%s' to 'float32'",
@@ -336,13 +336,13 @@ def _fix_dtype(cube):
                                                       casting='same_kind')
 
 
-def _roll_cube_data(cube, shift, axis):
+def roll_cube_data(cube, shift, axis):
     """Roll a cube data on specified axis."""
     cube.data = da.roll(cube.core_data(), shift, axis=axis)
     return cube
 
 
-def _set_units(cube, units):
+def set_units(cube, units):
     """Set units in compliance with cf_unit."""
     special = {'psu': 1.e-3, 'Sv': '1e6 m3 s-1'}
     if units in list(special.keys()):

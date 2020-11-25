@@ -48,7 +48,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    utils._set_units(cube, var.get('raw_units', short_name))
+    utils.set_units(cube, var.get('raw_units', short_name))
     # fix calendar type
     cal_time = var.get('calendar', short_name)
     origin_time = cube.coord('time').units.origin
