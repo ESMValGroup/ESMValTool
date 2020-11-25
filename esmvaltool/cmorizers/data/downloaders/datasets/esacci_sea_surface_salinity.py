@@ -9,7 +9,6 @@ from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 logger = logging.getLogger(__name__)
 
 
-
 def download_dataset(config, dataset, start_date, end_date, overwrite):
     """
     Download dataset.
@@ -47,5 +46,6 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
                 downloader.download_year(loop_date.year)
             else:
                 logger.info(
-                    f'Year {loop_date.year} not available for version {version}')
+                    f'Year {loop_date.year} not available for '
+                    f'version {version}')
             loop_date += relativedelta.relativedelta(years=1)

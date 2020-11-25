@@ -35,7 +35,7 @@ def cmorization(in_dir, out_dir, cfg, _, __, ___):
             equalise_attributes(cubes)
             unify_time_units(cubes)
             cube = cubes.concatenate_cube()
-            cube.units='0.001'
+            cube.units = '0.001'
             logger.info(cube)
             glob_attrs['mip'] = vals['mip']
             glob_attrs['version'] = version

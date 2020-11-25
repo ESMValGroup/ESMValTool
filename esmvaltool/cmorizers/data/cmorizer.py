@@ -394,7 +394,7 @@ class DataCommand():
     def __init__(self):
         datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
         with open(datasets_file) as data:
-            self._info =  yaml.safe_load(data)
+            self._info = yaml.safe_load(data)
         self.formatter = Formatter(self._info)
 
     def list(self):
