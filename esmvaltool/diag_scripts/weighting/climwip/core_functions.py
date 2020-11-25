@@ -181,3 +181,49 @@ def calculate_weights(
     weights.attrs['units'] = '1'
 
     return weights
+
+
+def weighted_quantile(values: list,
+                      quantiles: list,
+                      weights: list = None) -> 'np.array':
+    """Calculate weighted quantiles.
+
+    Analogous to np.quantile, but supports weights.
+
+    Based on: https://stackoverflow.com/a/29677616/6012085
+
+    Parameters
+    ----------
+    values: array_like
+        List of input values.
+    quantiles: array_like
+        List of quantiles between 0.0 and 1.0.
+    weights: array_like
+        List with same length as `values` containing the weights.
+
+    Returns
+    -------
+    np.array
+        Numpy array with computed quantiles.
+    """
+    values = np.array(values)
+    quantiles = np.array(quantiles)
+    if weights is None:
+        weights = np.ones(len(values))
+    weights = np.array(weights)
+
+    if not np.all((quantiles >= 0) & (quantiles <= 1)):
+        raise ValueError('Quantiles should be between 0.0 and 1.0')
+
+    idx = np.argsort(values)
+    values = values[idx]
+    weights = weights[idx]
+
+    weighted_quantiles = np.cumsum(weights) - 0.5 * weights
+
+    # Cast weighted quantiles to 0-1 To be consistent with np.quantile
+    min_val = weighted_quantiles.min()
+    max_val = weighted_quantiles.max()
+    weighted_quantiles = (weighted_quantiles - min_val) / max_val
+
+    return np.interp(quantiles, weighted_quantiles, values)
