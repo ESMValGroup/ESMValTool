@@ -22,11 +22,20 @@ documentation:
     - lorenz2018
     - knutti2017
 
-datasets: &model_data  # a minimal selection to demonstrate functionality
+datasets: &model_data
   - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
   - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
   - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: "r(1:4)i1p1"}
   - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+
+
+#  - {project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-CM2, ensemble: r(1:3)i1p1f1, grid: gn}
+#  - {project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r(1:10)i1p1f1, grid: gn}
+#  - {project: CMIP6, exp: [historical, ssp585], dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn}
+#  - {project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+# ... add more models
+#  - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r(1:4)i1p1f2, grid: gn}
+#  - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r8i1p1f2, grid: gn}
 
 obs_data: &obs_data  # for climwip performance metrics
   - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
@@ -36,8 +45,6 @@ preprocessors:
     regrid:
       target_grid: 2.5x2.5
       scheme: linear
-#    mask_landsea:
-#      mask_out: sea
 
   climatological_mean:
     <<: *general
@@ -71,12 +78,6 @@ preprocessors:
     area_statistics:
       operator: mean
 
-#  local_anomalies: # we need CLIM - global_mean, how to do in preprocessor????
-  local_anomalies:
-    <<: *general
-    climate_statistics:
-      operator: mean
-
   temperature_anomalies:
     custom_order: true
     area_statistics:
@@ -97,34 +98,37 @@ preprocessors:
 diagnostics:
   calculate_weights_climwip:
     variables:
-      tas_CLIM: &independence_settings
+      tas_CLIM_i: &independence_settings
         short_name: tas
         start_year: 1995
         end_year: 2014
         mip: Amon
         preprocessor: climatological_mean
         additional_datasets: *obs_data
-        independence: true
-        performance: false
-      psl_CLIM:
+      psl_CLIM_i:
         <<: *independence_settings
         short_name: psl
-      tas_ANOM: &performance_settings
+      tas_CLIM: &performance_settings
         short_name: tas
         start_year: 1995
         end_year: 2014
         mip: Amon
-        preprocessor: local_anomalies
+        preprocessor: climatological_mean
         additional_datasets: *obs_data
-        independence: false
-        performance: true
+#      tas_GLOBAL:
+#        <<: *performance_settings
+#        preprocessor: global_mean
       tas_STD:
         <<: *performance_settings
         preprocessor: detrended_std
-      psl_ANOM:
+      psl_CLIM:
         <<: *performance_settings
         short_name: psl
-        preprocessor: local_anomalies
+        preprocessor: climatological_mean
+#      psl_GLOBAL:
+#        <<: *performance_settings
+#        short_name: psl
+#        preprocessor: global_mean
       psl_STD:
         <<: *performance_settings
         short_name: psl
@@ -137,8 +141,18 @@ diagnostics:
       climwip:
         script: weighting/climwip.py
         obs_data: native6
-        sigma_performance: 0.43
-        sigma_independence: 0.54
+        combine_ensemble_members: true
+        performance_sigma: 0.43
+        performance_contributions:
+          tas_CLIM: 1
+          tas_STD: 1
+          psl_CLIM: 1
+          psl_STD: 1
+          tas_TREND: 2
+        independence_sigma: 0.54
+        independence_contributions:
+          tas_CLIM_i: 1
+          psl_CLIM_i: 1
 
   weighted_temperature_graph:
     variables:
@@ -157,23 +171,28 @@ diagnostics:
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
 
-  weighted_boxplot:
+  weighted_temperature_map_box:
     variables:
-      tas_future:
+      tas: &map_settings
         short_name: tas
         start_year: 2081
         end_year: 2100
         mip: Amon
         preprocessor: climatological_mean
       tas_reference:
-        short_name: tas
+        <<: *map_settings
         start_year: 1995
         end_year: 2014
-        mip: Amon
-        preprocessor: climatological_mean
-
     scripts:
+      weighted_temperature_map:
+        script: weighting/weighted_temperature_map.py
+        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        weights: 'weights.nc'
+        # optional arguments
+        model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
+        xticks: [0, 10, 20, 30, 40]  # if not given ticks will be set automatically
+        yticks: [30, 40, 50, 60, 70, 80]
       boxplot_weighting_cmip:
         script: weighting/boxplot_weighting_cmip.py
-        ancestors: [calculate_weights_climwip/climwip, tas_future, tas_reference]
+        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
         weights: 'weights.nc'

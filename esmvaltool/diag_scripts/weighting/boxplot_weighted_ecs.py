@@ -3,6 +3,7 @@ import logging
 import os
 from collections import defaultdict
 from pathlib import Path
+import numpy as np
 
 import matplotlib.pyplot as plt
 import requests
@@ -11,43 +12,30 @@ from plot_utilities import boxplot
 from climwip import get_diagnostic_filename, log_provenance
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
+from esmvaltool.diag_scripts.weighting.plot_utilities import (
+    calculate_percentiles,
+    read_metadata,
+    read_weights,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-
-def read_weights(filename: str) -> dict:
-    """Read a `.nc` file into a weights DataArray."""
-    weights_ds = xr.open_dataset(filename)
-    return weights_ds.to_dataframe().to_dict()['weight']
-
-
-def read_metadata(cfg: dict) -> dict:
-    """Read the metadata from the configure file."""
-    datasets = defaultdict(list)
-
-    metadata = cfg['input_data'].values()
-
-    for item in metadata:
-        variable = item['variable_group']
-
-        datasets[variable].append(item)
-
-    return datasets
-
-
 def reformat_model_strings(weights):
     """Reformat the model strings to compare to model strings in ECS data."""
-    models_weights = list(weights.keys())
+    #models_weights = list(weights.keys())
+    #import ipdb; ipdb.set_trace()
+    models_weights = np.ndarray.tolist(weights.model_ensemble.values)
     new_models = list()
+    new_weights = dict()
     for model in models_weights:
         # remove experiment from identifiers
         string1 = model.split("_")[0]
         string2 = model.split("_")[1]
         model_id = '%s_%s' % (string1, string2)
         new_models.append(model_id)
-        weights[model_id] = weights.pop(model)
+        new_weights[model_id] = weights.sel(model_ensemble = model)
 
-    return new_models, weights
+    return new_models, new_weights
 
 
 def read_ecs(models, cmip):

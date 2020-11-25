@@ -8,6 +8,7 @@ import logging
 import os
 from collections import defaultdict
 from pathlib import Path
+import numpy as np
 
 import matplotlib.pyplot as plt
 import xarray as xr
@@ -20,36 +21,22 @@ from climwip import (
 )
 
 from esmvaltool.diag_scripts.shared import get_plot_filename, run_diagnostic
+from esmvaltool.diag_scripts.weighting.plot_utilities import (
+    calculate_percentiles,
+    read_metadata,
+    read_weights,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-def read_weights(filename: str) -> dict:
-    """Read a `.nc` file into a weights DataArray."""
-    weights_ds = xr.open_dataset(filename)
-    return weights_ds.to_dataframe().to_dict()['weight']
-
-
-def read_metadata(cfg: dict) -> dict:
-    """Read the metadata from the configure file."""
-    datasets = defaultdict(list)
-
-    metadata = cfg['input_data'].values()
-
-    for item in metadata:
-        variable = item['variable_group']
-
-        datasets[variable].append(item)
-
-    return datasets
-
 
 def _visualize_and_save_percentiles(data: 'xr.DataArray', weights: dict,
                                     models_fut: list, cfg: dict,
                                     ancestors: list):
     """Visualize data in boxplot and save percentiles."""
     # ensure weighhts are sorted the same way as data and convert to list
-    weights = [weights[member] for member in data.model_ensemble.values]
+    #import ipdb; ipdb.set_trace()
+    weights = [weights.sel(model_ensemble = member) for member in data.model_ensemble.values]
+    #weights = np.ndarray.tolist(weights.values)
 
     figure, axes = plt.subplots(1, 1, figsize=(4, 10), dpi=300)
     figure.subplots_adjust(left=.1, right=.99, bottom=.22, top=.91)
@@ -108,21 +95,24 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models_fut = read_metadata(cfg)['tas_future']
-    models_pres = read_metadata(cfg)['tas_reference']
+    models = read_metadata(cfg)['tas']
+    model_data, model_data_files = read_model_data(models)
 
-    model_data1, model_data_files1 = read_model_data(models_fut)
-    model_data2, model_data_files2 = read_model_data(models_pres)
+    # if a historical period is given calculate the change
+    if 'tas_reference' in read_metadata(cfg).keys():
+        models_hist = read_metadata(cfg)['tas_reference']
+        model_data_hist, model_data_files_hist = read_model_data(models_hist)
+        model_data_files += model_data_files_hist
+        model_data = model_data - model_data_hist
 
-    future_change = model_data1 - model_data2
-    area_mean_change = area_weighted_mean(future_change)
+    area_mean_change = area_weighted_mean(model_data)
 
     _visualize_and_save_percentiles(
         area_mean_change,
         weights,
-        models_fut,
+        models,
         cfg,
-        [model_data_files1, model_data_files2],
+        model_data_files,
     )
 
 
