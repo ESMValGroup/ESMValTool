@@ -160,10 +160,6 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
-      weighted_boxplot_ecs:
-        script: weighting/boxplot_weighted_ecs.py
-        ancestors: [calculate_weights_climwip/climwip, tas]
-        weights: 'weights.nc'
 
   weighted_temperature_map_box:
     variables:
@@ -186,7 +182,3 @@ diagnostics:
         model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
         xticks: [0, 10, 20, 30, 40]  # if not given ticks will be set automatically
         yticks: [30, 40, 50, 60, 70, 80]
-      boxplot_weighting_cmip:
-        script: weighting/boxplot_weighting_cmip.py
-        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
-        weights: 'weights.nc'
