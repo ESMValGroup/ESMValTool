@@ -10,5 +10,6 @@ Contributing to the community
 		Release schedule and procedure <release_strategy>
 		Contributing a new diagnostic or recipe <diagnostic>
 		Porting a namelist (recipe) or diagnostic from version 1 to version 2 <porting>
+		Moving work from the private to the public repository <private_repository>
     GitHub workflow <repository>
 		Contact information <contact>
