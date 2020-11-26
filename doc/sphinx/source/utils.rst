@@ -119,7 +119,7 @@ Key features
   for the total data length specified by ``start_year`` and ``end_year``; equivalent to
   ESMValTool's syntax on multiple experiments; this option needs an ensemble
   to be declared explicitly; it will return no entry if there are gaps in data;
-- `start_year` and `end_year` are required and are used to filter out the
+- ``start_year`` and ``end_year`` are required and are used to filter out the
   datasets that don't have data in the interval; as noted above, the tool will not
   return datasets with partial coverage from `start_year` to `end_year`;
 - `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
