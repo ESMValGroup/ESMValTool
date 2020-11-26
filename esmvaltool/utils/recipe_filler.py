@@ -427,8 +427,7 @@ def _check_recipe(recipe_dict):
                     logger.error("define an ensemble for this case.")
                     do_exit = True
     if do_exit:
-        logger.error("Please fix the issues in recipe and rerun. Exiting.")
-        sys.exit(1)
+        raise ValueError("Please fix the issues in recipe and rerun")
 
 
 def _check_config_file(user_config_file):
