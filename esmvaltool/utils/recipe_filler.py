@@ -318,7 +318,7 @@ def list_all_files(file_dict, cmip_era):
                     logger.error("Could not expand ~ to user home dir "
                                  "please expand it in the config user file!")
                     sys.exit(1)
-                logger.warning(f"Expanding path to {new_path}")
+                logger.info(f"Expanding path to {new_path}")
 
             # Globs all the wildcards into a list of files.
             files = glob(new_path)
