@@ -19,7 +19,7 @@ jobs:
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
-      - uses: goanpeca/setup-miniconda@v1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: esmvaltool
           environment-file: environment.yml
@@ -54,7 +54,7 @@ jobs:
     name: OSX Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
-      - uses: goanpeca/setup-miniconda@v1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: esmvaltool
           environment-file: environment.yml
