@@ -367,7 +367,9 @@ def _file_to_recipe_dataset(fn, cmip_era, file_dict):
                 output_dataset['ensemble'] = fn_key
             elif base_key == "grid*.nc":
                 output_dataset['grid'] = fn_key
-            elif base_key not in ["shortname", "ensemble*.nc", "*.nc"]:
+            elif base_key == "shortname":
+                pass
+            else:
                 output_dataset[base_key] = fn_key
     if "exp" in file_dict:
         if isinstance(file_dict["exp"], list):
