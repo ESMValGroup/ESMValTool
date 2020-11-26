@@ -136,7 +136,7 @@ The top comment should contain (a selection of) the checklist available in the
 If it is not there, copy the relevant items from the `pull request template`_.
 Which items from the checklist are relevant, depends on which files are changed
 in the pull request. A list of items to check with brief explanations is given in
-section :numref:`checklists`. The items are grouped by technical and scientific review.
+section :ref:`checklists`. The items are grouped by technical and scientific review.
 To see which files have changed, click the tab 'Files changed'.
 To comment on specific lines of code or documentation, click the 'plus' icon
 next to a line of code and write your comment.
@@ -166,7 +166,7 @@ Checklists for reviewing a pull request
 ---------------------------------------
 
 Below are general checklists for doing technical and scientific reviews including brief descriptions of the tasks to do. Reviewing
-CMORizer scripts constists mostly of technical tasks but differs slightly from the technical review tasks and is therefore listed
+CMORizer scripts consists mostly of technical tasks but differs slightly from the technical review tasks and is therefore listed
 in a third table below.
 
 Technical reviews
