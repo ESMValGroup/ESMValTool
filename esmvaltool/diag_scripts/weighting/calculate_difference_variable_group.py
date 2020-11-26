@@ -12,7 +12,7 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
-from esmvaltool.diag_scripts.weighting.climwip import (
+from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
     read_metadata,
     read_model_data,
     read_observation_data,
@@ -22,23 +22,12 @@ from esmvaltool.diag_scripts.weighting.climwip import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(caption: str, ancestors: list):
-    """Create a provenance record describing the diagnostic data and plots."""
-    record = {
-        'caption': caption,
-        'domains': ['reg'],
-        'statistics': ['mean', 'diff'],
-        'authors': ['lorenz_ruth'],
-        'references': ['brunner2020'],
-        'ancestors': ancestors,
-    }
-    return record
-
 def _save_data(data: 'xr.DataArray', name: str, cfg: dict,
               ancestors: list):
     """ Save data to netcdf for further use"""
 
-    filename_data = get_diagnostic_filename('%s%s_ANOM' %(name, data.short_name), cfg, extension='nc')
+    filename_data = get_diagnostic_filename(
+        '%s%s_ANOM' %(name, data.short_name), cfg, extension='nc')
     data.to_netcdf(filename_data)
 
     caption = '%s%s_ANOM' %(name, data.short_name)
