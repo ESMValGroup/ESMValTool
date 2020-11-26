@@ -4,7 +4,7 @@ from collections import defaultdict
 import numpy as np
 import xarray as xr
 
-from utilities import weighted_quantile
+from climwip.core_functions import weighted_quantile
 
 
 def read_weights(filename: str) -> dict:

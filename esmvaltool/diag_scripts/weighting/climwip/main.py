@@ -8,20 +8,21 @@ import os
 from typing import Union
 
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 import xarray as xr
-from calibrate_sigmas import calibrate_sigmas
-from utilities import area_weighted_mean
-from utilities import calculate_model_distances as calculate_independence
-from utilities import (
+from core_functions import (
+    area_weighted_mean,
+    calculate_independence,
     calculate_weights,
     combine_ensemble_members,
     compute_overall_mean,
+)
+from io_functions import (
     log_provenance,
     read_input_data,
     read_metadata,
     read_model_data,
-    split_ensemble_members,
 )
 
 from esmvaltool.diag_scripts.shared import (
@@ -152,6 +153,25 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
+def split_ensemble_members(dataset: 'xr.DataArray',
+                           groups: dict) -> 'xr.DataArray':
+    """Split combined ensemble members of the same model."""
+    model_ensemble = []
+    nr_members = []
+    for model in dataset['model_ensemble'].values:
+        model_ensemble += groups[model]
+        nr_members.append(len(groups[model]))
+
+    data_scaled = dataset.values / nr_members
+    data_expanded = np.repeat(data_scaled, nr_members)
+
+    return xr.DataArray(data_expanded,
+                        coords={'model_ensemble': model_ensemble},
+                        dims='model_ensemble',
+                        name=dataset.name,
+                        attrs=dataset.attrs)
+
+
 def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
                                ancestors: list):
     """Visualize weights."""
@@ -180,23 +200,10 @@ def parse_contributions_sigma(metric: str,
             for key, value in cfg[f'{metric}_contributions'].items()
             if value > 0
         }
-
-    # TODO: it could make sense to move these checks to 'calibrate_sigmas'
     sigma = cfg.get(f'{metric}_sigma')
-    calibrate = cfg.get(f'calibrate_{metric}_sigma')
-    if calibrate and sigma:
-        errmsg = f'{metric}_sigma and calibrate_{metric}_sigma can not bot be set!'
+    if contributions and sigma is None:
+        errmsg = f'{metric}_sigma must be set if {metric}_contributions is set'
         raise IOError(errmsg)
-
-    if contributions:
-        if not (calibrate or sigma):
-            errmsg = ' '.join([
-                f'Either {metric}_sigma or calibrate_{metric}_sigma must be',
-                f'set if {metric}_contributions is set!'
-            ])
-            raise IOError(errmsg)
-        elif calibrate:
-            return contributions, 'calibrate'
     return contributions, sigma
 
 
@@ -280,10 +287,6 @@ def main(cfg):
                                        model_ancestors + obs_ancestors)
     else:
         overall_performance = None
-
-    independence_sigma, performance_sigma = calibrate_sigmas(
-        independence_sigma, performance_sigma, overall_independence,
-        performance_contributions, cfg)
 
     if cfg['combine_ensemble_members']:
         overall_independence, groups_independence = combine_ensemble_members(
