@@ -447,8 +447,7 @@ def _check_config_file(user_config_file):
             logger.error(f"Config file missing drs for {proj}")
             do_exit = True
     if do_exit:
-        logger.error("Please fix issues in config file and rerun. Exiting.")
-        sys.exit(1)
+        raise ValueError("Please fix issues in config file and rerun")
 
 
 def _parse_recipe_to_dicts(yamlrecipe):
