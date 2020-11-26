@@ -112,7 +112,7 @@ Key features
   tool will use the ``"*"`` wildcard and find all available combinations;
 - you can restrict the number of datasets to be looked for with the ``dataset:``
   key for each variable, pass a list of datasets as value, e.g.
-  `dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]`;
+  ``dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]``;
 - you can specify a pair of experiments eg `exp: [historical, rcp85]`
   for each variable; this will look for each available dataset per experiment
   and assemble an aggregated data stretch from each experiment to complete
