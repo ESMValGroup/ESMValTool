@@ -124,7 +124,7 @@ Key features
   return datasets with partial coverage from ``start_year`` to ``end_year``;
 - ``config-user: rootpath: CMIPX`` may be a list, rootpath lists are supported;
 - all major DRS paths (including ``default``, ``BADC``, ``ETHZ`` etc) are supported;
-- speedup is achieved through CMIP mip tables lookup, so `mip` is required in recipe;
+- speedup is achieved through CMIP mip tables lookup, so ``mip`` is required in recipe;
 
 Caveats
 -------
