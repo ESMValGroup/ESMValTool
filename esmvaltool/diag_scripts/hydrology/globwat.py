@@ -64,11 +64,9 @@ def _convert_units(cube):
 
     mip = cube.attributes['mip']
 
-    # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm month-1'
+    # Unit conversion from 'kg m-2 s-1' to 'mm month-1 or day-1'
     if mip == 'Amon':
         cube.convert_units('mm month-1')
-
-    # Unit conversion of pr and pet from 'kg m-2 s-1' to 'mm day-1'
     elif mip == 'day':
         cube.convert_units('mm day-1')
     return cube
@@ -101,13 +99,13 @@ def load_target(cfg):
     return cube
 
 
-def arora_pet(tas):
-    """Calculate potential ET using Arora method.
+def langbein_pet(tas):
+    """Calculate potential ET using Langbein method.
 
-    Arora is a temperature-based method for calculating potential ET.
-    In this equation, t is the monthly average temperature in degree Celcius
-    pet is in mm per month (Arora, V. K., 2002).
-    https://doi.org/10.1016/S0022-1694(02)00101-4
+    Langbein curve is a temperature-based method for calculating potential ET.
+    In this equation, T is the annual average temperature in degree Celcius,
+    and pet is in mm per year.
+    Reference: https://doi.org/10.3133/cir52
     """
     tas.convert_units('degC')
     constant_a = iris.coords.AuxCoord(np.float32(325),
@@ -116,22 +114,21 @@ def arora_pet(tas):
                                       long_name='second constant', units=None)
     constant_c = iris.coords.AuxCoord(np.float32(0.9),
                                       long_name='third constant', units=None)
-    mip = tas.attributes['mip'] 
-    if mip == "Amon":
-        conversion = 12
-        unit = 'mm month-1'
-    else:
-        conversion = tas.coord('time').shape[0]
-        unit = 'mm day-1'
-    # assumption here: tas is constant over time, then the monthly/daily    
+
+    # assumption here: tas is constant over time, then the monthly/daily
     # average value is equal to the annual average.
-    pet_annual = constant_a + constant_b * (tas) + constant_c * (tas ** 2)
-    pet = pet_annual / conversion
-    pet.units = unit
+    pet = constant_a + constant_b * (tas) + constant_c * (tas ** 2)
+    pet.units = 'mm year-1'
     pet.var_name = 'evspsblpot'
     pet.standard_name = 'water_potential_evaporation_flux'
     pet.long_name = 'Potential Evapotranspiration'
     pet.attributes['mip'] = tas.attributes['mip']
+
+    # Unit conversion from 'mm year-1' to 'mm month-1 or day-1'
+    if pet.attributes['mip'] == 'Amon':
+        pet.convert_units('mm month-1')
+    elif pet.attributes['mip'] == 'day':
+        pet.convert_units('mm day-1')
     return pet
 
 
@@ -264,9 +261,9 @@ def main(cfg):
     for dataset_name, metadata in group_metadata(input_metadata,
                                                  'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
-        if cfg['pet_arora']:
+        if cfg['langbein_pet']:
             logger.info("Calculation PET uisng arora method")
-            all_vars.update(pet=arora_pet(all_vars['tas']))
+            all_vars.update(pet=langbein_pet(all_vars['tas']))
         else:
             logger.info("Calculation PET uisng debruin method")
             all_vars.update(pet=debruin_pet(

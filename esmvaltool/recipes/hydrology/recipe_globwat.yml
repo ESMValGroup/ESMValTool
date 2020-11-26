@@ -8,11 +8,11 @@ documentation:
     GlobWat is a Global Hydrological Model provided by FAO
     http://www.fao.org/nr/water/aquamaps/
 
-    By default, PET is calculated by the Arora method. However, users 
-    can choose the De Bruin method by setting the pet_arora in the recipe
-    to True.
-    More information about the Arora method can be found at:
-    https://doi.org/10.1016/S0022-1694(02)00101-4
+    By default, PET is calculated by the Langbein method. However, users
+    can choose the De Bruin method by setting the langbein_pet in the recipe
+    to False.
+    More information about the Langbein method can be found at:
+    https://doi.org/10.3133/cir52
     More information about the De Bruin method can be found at:
     https://doi.org/10.1175/JHM-D-15-0006.1
 
@@ -40,7 +40,7 @@ diagnostics:
   #   description: daily precipitation of ERA5 & ERA-Interim
   #   additional_datasets:
   #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #     # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+  #     # - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
   #   variables:
   #     pr: &daily_var
   #       mip: day
@@ -48,7 +48,7 @@ diagnostics:
   #       end_year: 2004
   #       preprocessor: rough_cutout
   #     tas: *daily_var
-  #     # uncomment psl, rsds and rsdt if pet_arora is false
+  #     # uncomment psl, rsds and rsdt if langbein_pet is False
   #     psl: *daily_var
   #     rsds: *daily_var
   #     rsdt:
@@ -58,7 +58,7 @@ diagnostics:
   #     script:
   #       script: hydrology/globwat.py
   #       target_file: 'globwat/globwat_target_grid.nc'
-  #       pet_arora: True
+  #       langbein_pet: True
   #       regrid_scheme: linear
 
   diagnostic_monthly_GlobWat:
@@ -73,7 +73,7 @@ diagnostics:
           end_year: 2004
           preprocessor: rough_cutout
         tas: *var_monthly
-        #uncomment psl, rsds and rsdt if pet_arora is false
+        # uncomment psl, rsds and rsdt if langbein_pet is False
         # psl: *var_monthly
         # rsds: *var_monthly
         # rsdt: *var_monthly
@@ -81,5 +81,5 @@ diagnostics:
         script:
           script: hydrology/globwat.py
           target_file: 'globwat/globwat_target_grid.nc'
-          pet_arora: True
+          langbein_pet: True
           regrid_scheme: linear
