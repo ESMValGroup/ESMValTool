@@ -315,9 +315,7 @@ def list_all_files(file_dict, cmip_era):
             if new_path.startswith("~"):
                 new_path = os.path.expanduser(new_path)
                 if not new_path.startswith(os.sep):
-                    logger.error("Could not expand ~ to user home dir "
-                                 "please expand it in the config user file!")
-                    sys.exit(1)
+                    raise ValueError("Could not expand ~ to user home dir please expand it in the config user file!")
                 logger.info(f"Expanding path to {new_path}")
 
             # Globs all the wildcards into a list of files.
