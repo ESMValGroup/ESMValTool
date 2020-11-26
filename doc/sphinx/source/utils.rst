@@ -116,7 +116,7 @@ Key features
 - you can specify a pair of experiments, e.g. ``exp: [historical, rcp85]``
   for each variable; this will look for each available dataset per experiment
   and assemble an aggregated data stretch from each experiment to complete
-  for the total data length specified by `start_year` and `end_year`; equivalent to
+  for the total data length specified by ``start_year`` and ``end_year``; equivalent to
   `esmvaltool`'s syntax on multiple experiments; this option needs an ensemble
   to be declared explicitly; it will return no entry if there are gaps in data;
 - `start_year` and `end_year` are required and are used to filter out the
