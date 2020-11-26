@@ -83,7 +83,7 @@ Recipe filler
 
 If you need to fill in a blank recipe with additional datasets, you can do that with
 the command `recipe_filler`. This runs a tool to obtain a set of additional datasets when
-given a blank recipe, and you can give as many or as few data parameters. The blank recipe
+given a blank recipe, and you can give an arbitrary number of data parameters. The blank recipe
 should contain, to the very least, a list of diagnostics, each with their variable(s).
 Example of running the tool:
 
