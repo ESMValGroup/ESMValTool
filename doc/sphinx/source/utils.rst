@@ -113,7 +113,7 @@ Key features
 - you can restrict the number of datasets to be looked for with the ``dataset:``
   key for each variable, pass a list of datasets as value, e.g.
   ``dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]``;
-- you can specify a pair of experiments eg `exp: [historical, rcp85]`
+- you can specify a pair of experiments, e.g. ``exp: [historical, rcp85]``
   for each variable; this will look for each available dataset per experiment
   and assemble an aggregated data stretch from each experiment to complete
   for the total data length specified by `start_year` and `end_year`; equivalent to
