@@ -90,6 +90,39 @@ preprocessors:
       standardize: false
 
 diagnostics:
+  # if local anomalies are needed as predictors they need to be calculated first
+  calculate_local_anomalies_tas:
+    variables:
+      tas_CLIM: &performance_settings
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+        additional_datasets: *obs_data
+      tas_GLOBAL:
+        <<: *performance_settings
+        preprocessor: global_mean
+    scripts:
+      local_anomalies:
+        script: weighting/calculate_difference_variable_group.py
+        obs_data: native6
+
+  calculate_local_anomalies_psl:
+    variables:
+      psl_CLIM:
+        <<: *performance_settings
+        short_name: psl
+        preprocessor: climatological_mean
+      psl_GLOBAL:
+        <<: *performance_settings
+        short_name: psl
+        preprocessor: global_mean
+    scripts:
+      local_anomalies:
+        script: weighting/calculate_difference_variable_group.py
+        obs_data: native6
+
   calculate_weights_climwip:
     variables:
       tas_CLIM_i: &independence_settings
@@ -102,27 +135,9 @@ diagnostics:
       psl_CLIM_i:
         <<: *independence_settings
         short_name: psl
-      tas_CLIM: &performance_settings
-        short_name: tas
-        start_year: 1995
-        end_year: 2014
-        mip: Amon
-        preprocessor: climatological_mean
-        additional_datasets: *obs_data
-#      tas_GLOBAL:
-#        <<: *performance_settings
-#        preprocessor: global_mean
       tas_STD:
         <<: *performance_settings
         preprocessor: detrended_std
-      psl_CLIM:
-        <<: *performance_settings
-        short_name: psl
-        preprocessor: climatological_mean
-#      psl_GLOBAL:
-#        <<: *performance_settings
-#        short_name: psl
-#        preprocessor: global_mean
       psl_STD:
         <<: *performance_settings
         short_name: psl
@@ -135,12 +150,15 @@ diagnostics:
       climwip:
         script: weighting/climwip.py
         obs_data: native6
+#        ancestors: [calculate_local_anomalies_tas/tas_CLIM,
+#                    calculate_local_anomalies_psl/psl_CLIM,
+#                    tas_CLIM_i, psl_CLIM_i, tas_STD, psl_STD, tas_TREND]
         combine_ensemble_members: true
         performance_sigma: 0.43
         performance_contributions:
-          tas_CLIM: 1
+#          tas_CLIM: 1
           tas_STD: 1
-          psl_CLIM: 1
+#          psl_CLIM: 1
           psl_STD: 1
           tas_TREND: 2
         independence_sigma: 0.54
