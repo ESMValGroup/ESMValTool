@@ -134,8 +134,7 @@ def _determine_basepath(cmip_era):
                                     _get_input_file(cmip_era))
         else:
             basepath = os.path.join(rootpath, _get_input_file(cmip_era))
-        while basepath.find('//') > -1:
-            basepath = basepath.replace('//', '/')
+        basepath = basepath.replace('//', '/')
         basepaths.append(basepath)
     logger.debug(f"We will look for files of patterns {basepaths}")
 
