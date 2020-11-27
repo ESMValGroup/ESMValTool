@@ -5,7 +5,7 @@ Tier
 Source
    https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2
 Last access
-   20200612
+   20201127
 
 Download and processing instructions
  - Go to the above link
@@ -23,6 +23,7 @@ Download and processing instructions
 
 Modification history
    20200630-crezee_bas: written.
+   20201127-kazeroni_remi: updated for latest dataset
 """
 
 import logging
@@ -52,8 +53,15 @@ def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
 
     # Construct the time axis
     time_axis = []
-    start_date = datetime(2002, 4, 15)
-    end_date = datetime(2019, 12, 15)
+    # read the first and last years from the csv table
+    start_year = grace_months_table['YEAR'].iloc[0]
+    end_year = grace_months_table['YEAR'].iloc[-1]
+    # read the first and last months from the csv table
+    # and convert month anmes to numbers
+    start_month = datetime.strptime(grace_months_table['MONTH'].iloc[0], '%b').month
+    end_month = datetime.strptime(grace_months_table['MONTH'].iloc[-1], '%b').month
+    start_date = datetime(start_year, start_month, 15)
+    end_date = datetime(end_year, end_month, 15)
     while start_date <= end_date:
         time_axis.append(start_date)
         start_date += relativedelta.relativedelta(months=1)
