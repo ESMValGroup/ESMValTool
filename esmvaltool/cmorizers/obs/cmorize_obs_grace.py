@@ -48,8 +48,11 @@ def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
     original = xr.open_dataset(in_file)[raw_varname]
 
     months_table_file = os.path.join(cfg['in_dir'], cfg['grace_table'])
-    grace_months_table = pd.read_csv(months_table_file)
-
+    # Read CSV file if available
+    if os.path.isfile(months_table_file):
+        grace_months_table = pd.read_csv(months_table_file)
+    else:
+        logger.error("CSV file %s does not exist", months_table_file)
     # Construct the time axis
     time_axis = []
     # read the first and last years from the csv table
