@@ -38,7 +38,7 @@
 
 - [ ] [Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do
 
-## Checklist for technical review
+## Checklist
 
 - [ ] PR has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/changelog.html)
 - [ ] Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
@@ -55,7 +55,6 @@
 -->
 - [ ] New dependencies are added to the [project requirements](FIXME)
 
-### Automated checks
 <!--
     Automated checks are run automatically when you add new commits to your PR.
     They appear at the bottom of the PR. Click on `Details` for more information
@@ -74,29 +73,9 @@
 - [ ] [Documentation] for the recipe/diagnostic is available
 <!-- Make sure that no warnings related to provenance are generated when running the recipe -->
 - [ ] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
-
-### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
-
-- [ ] Dataset is added to the table in the [documentation](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets)
-
-<!--
-     Add the test to recipes/example/recipe_check_obs.yml and run the recipe, to make sure the CMOR checks pass without errors
--->
-- [ ] Tests for the CMORized data are available
-- [ ] Clear instructions on how to obtain the data are available
-<!--
-    Tag @remi-kazeroni in this pull request, so that the new dataset can be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin
--->
-- [ ] Data set is added added to the OBS data pool
-
-## Checklist for scientific review
-
-### New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
-
 <!--
     The new/updated recipes/diagnostics clearly describes what the recipe does and how to use it
  -->
-- [ ] [The documentation](https://docs.esmvaltool.org/en/latest/recipes/index.html) is available
 - [ ] Recipe runs successfully on your own machine
 - [ ] Recipe runs successfully using [`@esmvalbot`](https://github.com/apps/esmvalbot)
 <!--
@@ -111,6 +90,17 @@
 ### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
 
 - [ ] Numbers/ units of the data look physically meaningful
+- [ ] Dataset is added to the table in the [documentation](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets)
+
+<!--
+     Add the test to recipes/example/recipe_check_obs.yml and run the recipe, to make sure the CMOR checks pass without errors
+-->
+- [ ] Tests for the CMORized data are available
+- [ ] Clear instructions to obtain the data are available
+<!--
+    Tag @remi-kazeroni in this pull request, so that the new dataset can be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin
+-->
+- [ ] Data set is added to the OBS data pool
 
 * * *
 
