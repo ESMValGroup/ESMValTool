@@ -1,8 +1,9 @@
 ; #############################################################################
-; SCRIPT TO REPRODUCE FIG. 14 OF EYRING ET AL. (JGR, 2006)
-; Author: Irene Cionni (ENEA, Italy), Veronika Eyring (DLR, Germany)
-; PROJECT-NAME CCMI
-; #############################################################################
+; SCRIPT TO REPRODUCE FIG. 15 OF EYRING ET AL. (JGR, 2006)
+; Authors:  Irene Cionni (ENEA, Italy) and Veronika Eyring (DLR, Germany)
+; CCMI Project
+; ############################################################################
+;
 ; Description
 ;   Latitudinal distribution of the total column of ozone
 ;   climatological mean annual cycle
@@ -207,6 +208,7 @@ begin
            "Chartreuse3", "GreenYellow", "Yellow", "Orange", "OrangeRed",\
            "OrangeRed4", "Black"/)
   gsn_define_colormap(wks, cmap)
+  
   do ipanel = 0, dimTot - 1
 
     res = True
@@ -248,11 +250,13 @@ begin
                                                   month|:, stat|0), res)
     delete(res)
   end do
+  
   ; Call legend-plotting routine
   Pres = True
   Pres@gsnFrame = False
   Pres@gsnPanelBottom = 0.2
   Pres@amJust = "TopLeft"
+  
   ; Call panel routine
   if (dimTot .gt. 3) then
     gsn_panel(wks, plot_d, (/1 + dimTot / 3, 3/), Pres)
@@ -260,6 +264,7 @@ begin
     gsn_panel(wks, plot_d, (/1, 3/), Pres)
   end if
   frame(wks)
+
   ; output file
   month_names = (/"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", \
                   "SEP", "OCT", "NOV", "DEC"/)
@@ -273,6 +278,7 @@ begin
   Xdata&month = month_names
   Xdata&lat = lat0
   nc_outfile = ncdf_write(Xdata, nc_filename)
+  
   ; Call provenance logger
   log_provenance(nc_filename, \
                  plotpath + "." + file_type, \
