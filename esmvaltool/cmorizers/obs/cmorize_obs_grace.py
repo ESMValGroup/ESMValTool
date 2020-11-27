@@ -37,8 +37,8 @@ import pandas as pd
 import xarray as xr
 from cf_units import Unit
 from dateutil import relativedelta
-
 from esmvalcore.preprocessor import regrid_time
+
 from esmvaltool.cmorizers.obs import utilities as utils
 
 logger = logging.getLogger(__name__)
@@ -47,8 +47,7 @@ logger = logging.getLogger(__name__)
 def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
     original = xr.open_dataset(in_file)[raw_varname]
 
-    months_table_file = os.path.join(cfg['in_dir'],
-                                     'GRACE_GRACE-FO_Months_RL06.csv')
+    months_table_file = os.path.join(cfg['in_dir'], cfg['grace_table'])
     grace_months_table = pd.read_csv(months_table_file)
 
     # Construct the time axis
@@ -58,8 +57,10 @@ def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
     end_year = grace_months_table['YEAR'].iloc[-1]
     # read the first and last months from the csv table
     # and convert month anmes to numbers
-    start_month = datetime.strptime(grace_months_table['MONTH'].iloc[0], '%b').month
-    end_month = datetime.strptime(grace_months_table['MONTH'].iloc[-1], '%b').month
+    start_month = datetime.strptime(grace_months_table['MONTH'].iloc[0],
+                                    '%b').month
+    end_month = datetime.strptime(grace_months_table['MONTH'].iloc[-1],
+                                  '%b').month
     start_date = datetime(start_year, start_month, 15)
     end_date = datetime(end_year, end_month, 15)
     while start_date <= end_date:
@@ -67,7 +68,7 @@ def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
         start_date += relativedelta.relativedelta(months=1)
 
     # Initialize data array with nan
-    data = np.ones((len(time_axis),) + original.shape[1:])
+    data = np.ones((len(time_axis), ) + original.shape[1:])
     data[:] = np.nan
 
     # Now fill the array with grace data
@@ -89,10 +90,8 @@ def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
 
 def _apply_gain_and_land_sea_mask(in_file, out_file, cfg):
 
-    gain_file = os.path.join(cfg['rawobsdir'], 'Tier3/GRACE/',
-                             'CLM4.SCALE_FACTOR.JPL.MSCNv02CRI.nc')
-    lsm_file = os.path.join(cfg['rawobsdir'], 'Tier3/GRACE/',
-                            'LAND_MASK.CRI.nc')
+    gain_file = os.path.join(cfg['in_dir'], cfg['auxfiles']['scale_factor'])
+    lsm_file = os.path.join(cfg['in_dir'], cfg['auxfiles']['land_mask'])
 
     gain = xr.open_dataset(gain_file)
     lsm = xr.open_dataset(lsm_file)
