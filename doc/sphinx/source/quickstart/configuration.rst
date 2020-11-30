@@ -25,4 +25,4 @@ a recipe.
 There is an episode available in the 
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
 that describes how to personalize the configuration file. It can be found
-`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/03-configuration/index.html>`_.
+`at this site <https://esmvalgroup.github.io/ESMValTool_Tutorial/03-configuration/index.html>`_.
