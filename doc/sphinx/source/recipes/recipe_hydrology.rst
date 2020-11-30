@@ -40,7 +40,7 @@ HYPE is developed at the Swedish Meteorological and Hydrological Institute. The 
 
 GlobWat
 *******
-GlobWat is a soil water balance model that has been provided by the Food and Agriculture Organization (FAO) to assess water use in irrigated agriculture. http://www.fao.org/nr/water/aquamaps. The recipe pre-processes ERA-Interim and ERA5 reanalyses data for use in the GlobWat. GlobWat requires potential evapotranspiration (evspsblpot). The variable evspsblpot is not available in ERA-Interim. Thus, we use the arora (Arora. 2002) or debruin function (De Bruin et al. 2016) to obtain evspsblpot using both ERA-Interim and ERA5. The arora function needs the variable tas and the debruin function besides that needs the variables psl, rsds, and rsdt as input.
+GlobWat is a soil water balance model that has been provided by the Food and Agriculture Organization (FAO) to assess water use in irrigated agriculture (http://www.fao.org/nr/water/aquamaps). The recipe pre-processes ERA-Interim and ERA5 reanalyses data for use in the GlobWat. GlobWat requires potential evapotranspiration (evspsblpot). The variable evspsblpot is not available in ERA-Interim. Thus, we use the debruin function (De Bruin et al. 2016) to obtain evspsblpot using both ERA-Interim and ERA5. The debruin function needs variables tas, psl, rsds, and rsdt as input.
 
 
 Available recipes and diagnostics
@@ -163,8 +163,6 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 
    * extract_region: A region bounding box to extract the data for a specific region
    * regrid_scheme: Can be chosen among regridding schemes (default is linear)
-   * pet_arora: Can be set to False to use De Bruin function for calculating evspsblpot (default is True)
-
 
 Variables
 ---------
@@ -262,4 +260,3 @@ References
 * Lindström, G., Pers, C.P., Rosberg, R., Strömqvist, J., Arheimer, B. 2010. Development and test of the HYPE (Hydrological Predictions for the Environment) model – A water quality model for different spatial scales. Hydrology Research 41.3-4:295-319.
 * van der Knijff, J. M., Younis, J. and de Roo, A. P. J.: LISFLOOD: A GIS-based distributed model for river basin scale water balance and flood simulation, Int. J. Geogr. Inf. Sci., 24(2), 189–212, 2010.
 * Hoogeveen, J., Faurès, J. M., Peiser, L., Burke, J., de Giesen, N. V.: GlobWat--a global water balance model to assess water use in irrigated agriculture, Hydrology & Earth System Sciences Discussions, 2015 Jan 1;12(1), Doi:10.5194/hess-19-3829-2015.
-* Arora, V. K.: The use of the aridity index to assess climate change effect on annual runoff, Journal of hydrology, 2002 Aug 30;265(1-4):164-77. https://doi.org/10.1016/S0022-1694(02)00101-4.
