@@ -6,6 +6,12 @@ library(abind)
 library(parallel)
 library(ClimProjDiags) # nolint
 
+# function to flatten nested lists
+flatten_lists <- function(x) {
+  if (!inherits(x, "list")) return(list(x))
+  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+}
+
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 plot_dir <- params$plot_dir
@@ -157,7 +163,7 @@ for (j in 1:4) { # nolint
   attr(historical_data, "Variables")$dat1$time <- time
 
   base_sd <- base_sd_historical <- base_mean <- list()
-  for (m in 1:length(metric)) {
+  for (m in seq_along(metric)) {
     if (var0 != "pr") {
       thresholds <- Threshold(
         # nolint
@@ -212,7 +218,7 @@ for (j in 1:4) { # nolint
   # and standard deviation from the index
   projection_filenames <- fullpath_filenames[projection_files]
 
-  for (i in 1:length(projection_filenames)) {
+  for (i in seq_along(projection_filenames)) {
     proj_nc <- nc_open(projection_filenames[i])
     projection_data <- ncvar_get(proj_nc, var0)
     time <- ncvar_get(proj_nc, "time")
@@ -266,7 +272,7 @@ for (j in 1:4) { # nolint
       projection_data <- 0.5 * 1.23 * (projection_data**3)
     }
 
-    for (m in 1:length(metric)) {
+    for (m in seq_along(metric)) {
       if (var0 != "pr") {
         projection_index <-
           Climdex(
@@ -415,7 +421,7 @@ for (j in 1:4) { # nolint
         # Set provenance for output files
         xprov <-
           list(
-            ancestors = list(projection_filenames, reference_filenames),
+            ancestors = flatten_lists(list(projection_filenames, reference_filenames)),
             authors = list(
               "hunter_alasdair",
               "manubens_nicolau",
@@ -496,8 +502,9 @@ file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data)
 nc_close(file)
 
+
 xprov <- list(
-  ancestors = list(fullpath_filenames),
+  ancestors = fullpath_filenames,
   authors = list(
     "hunter_alasdair",
     "manubens_nicolau",

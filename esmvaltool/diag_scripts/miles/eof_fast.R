@@ -90,7 +90,8 @@ miles_eofs_fast <- # nolint
       "zg",
       tmonths = timeseason,
       tyears = years,
-      rotate = rotation
+      rotate = rotation,
+      fillmiss = T
     )
     print(str(fieldlist))
 
@@ -109,7 +110,6 @@ miles_eofs_fast <- # nolint
 
     # new faster monthly mean function
     z500monthly <- monthly_mean(ics, ipsilon, z500, etime)
-
     # climatology
     print("climatological mean...")
     z500clim <-

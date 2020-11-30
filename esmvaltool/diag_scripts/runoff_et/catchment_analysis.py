@@ -475,7 +475,13 @@ def get_catchment_data(cfg):
     """
     catchments = get_defaults()
     catchments['refname'] = 'default'
-    catchment_filepath = cfg.get('catchmentmask')
+    if not cfg.get('catchmentmask'):
+        raise ValueError('A catchment mask file needs to be specified in the '
+                         'recipe (see recipe description for details)')
+    catchment_filepath = os.path.join(cfg['auxiliary_data_dir'],
+                                      cfg.get('catchmentmask'))
+    if not os.path.isfile(catchment_filepath):
+        raise IOError('Catchment file {} not found'.format(catchment_filepath))
     catchments['cube'] = iris.load_cube(catchment_filepath)
     if catchments['cube'].coord('latitude').bounds is None:
         catchments['cube'].coord('latitude').guess_bounds()

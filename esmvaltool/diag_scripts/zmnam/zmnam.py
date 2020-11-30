@@ -14,11 +14,10 @@ Modification history
 
 """
 
-import os
 import logging
+import os
 
-from esmvaltool.diag_scripts.shared import run_diagnostic, ProvenanceLogger
-
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 # Import zmnam diagnostic routines
 from zmnam_calc import zmnam_calc
 from zmnam_plot import zmnam_plot
@@ -67,41 +66,30 @@ def main(cfg):
     write_plots = cfg['write_plots']
     fig_fmt = cfg['output_file_type']
 
-    filenames_cat = []
-    fileprops_cat = []
-
-    # Loop over input cfg
-    for key, value in input_files.items():
-
-        # Collect file names
-        filenames_cat.append(key)
-
-        # Collect relevant information for outputs naming
-        fileprops_cat.append([
-            value['project'], value['dataset'], value['exp'],
-            value['ensemble'],
-            str(value['start_year']) + '-' + str(value['end_year'])
-        ])
-
     # Go to work_dir for running
     os.chdir(out_dir)
 
-    # Process list of input files
-    for indfile, ifile in enumerate(filenames_cat):
+    # Loop over input cfg
+    for ifile, props in input_files.items():
 
-        ifile_props = fileprops_cat[indfile]
+        # Collect relevant information for outputs naming
+        ifile_props = [
+            props['project'], props['dataset'], props['exp'],
+            props['ensemble'],
+            str(props['start_year']) + '-' + str(props['end_year'], )
+        ]
 
         # Call diagnostics functions
         print("prepro")
         (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile)
         print("calc")
         outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
-        provenance_record = get_provenance_record(
-            list(input_files.values())[0], ancestor_files=ifile)
+        provenance_record = get_provenance_record(props,
+                                                  ancestor_files=[ifile])
         if write_plots:
             print("plot_files")
-            plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir +
-                                    '/', ifile_props, fig_fmt, write_plots)
+            plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir + '/',
+                                    ifile_props, fig_fmt, write_plots)
         else:
             plot_files = []
         for file in outfiles + plot_files:

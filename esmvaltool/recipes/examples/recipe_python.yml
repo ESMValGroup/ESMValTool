@@ -2,7 +2,8 @@
 # recipe_python.yml
 ---
 documentation:
-  description: Example recipe that plots the mean precipitation and temperature.
+  description: |
+    Example recipe that plots a map and timeseries of temperature.
 
   authors:
     - andela_bouwe
@@ -19,42 +20,75 @@ documentation:
     - c3s-magic
 
 datasets:
+  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
 
-  preprocessor1:
-    extract_levels:
-      levels: 85000
-      scheme: nearest
-    regrid:
-      target_grid: 1x1
+  select_january:
+    extract_month:
+      month: 1
+
+  annual_mean_amsterdam:
+    extract_point:
+      latitude: 52.379189
+      longitude: 4.899431
       scheme: linear
+    annual_statistics:
+      operator: mean
     multi_model_statistics:
+      statistics:
+        - mean
       span: overlap
-      statistics: [mean, median]
+
+  annual_mean_global:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
 
 diagnostics:
 
-  diagnostic1:
-    description: Air temperature and precipitation Python tutorial diagnostic.
+  map:
+    description: Global map of temperature in January 2000.
     themes:
       - phys
     realms:
       - atmos
     variables:
-      ta:
-        preprocessor: preprocessor1
+      tas:
         mip: Amon
+        preprocessor: select_january
         start_year: 2000
-        end_year: 2002
-      pr:
-        mip: Amon
-        start_year: 2000
-        end_year: 2002
+        end_year: 2000
     scripts:
       script1:
         script: examples/diagnostic.py
         quickplot:
           plot_type: pcolormesh
+          cmap: Reds
+
+  timeseries:
+    description: Annual mean temperature in Amsterdam and global mean since 1850.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas_amsterdam:
+        short_name: tas
+        mip: Amon
+        preprocessor: annual_mean_amsterdam
+        start_year: 1850
+        end_year: 2000
+      tas_global:
+        short_name: tas
+        mip: Amon
+        preprocessor: annual_mean_global
+        start_year: 1850
+        end_year: 2000
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: plot
