@@ -7,10 +7,7 @@ import os
 import shutil
 import sys
 import time
-from pathlib import Path
 
-import iris
-import matplotlib.pyplot as plt
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -30,6 +27,7 @@ def get_plot_filename(basename, cfg):
     -------
     str:
         A valid path for saving a diagnostic plot.
+
     """
     return os.path.join(
         cfg['plot_dir'],
@@ -53,86 +51,12 @@ def get_diagnostic_filename(basename, cfg, extension='nc'):
     -------
     str:
         A valid path for saving a diagnostic data file.
+
     """
     return os.path.join(
         cfg['work_dir'],
         f"{basename}.{extension}",
     )
-
-
-def save_figure(basename, provenance, cfg, figure=None, close=True, **kwargs):
-    """Save a figure to file.
-
-    Parameters
-    ----------
-    basename: str
-        The basename of the file.
-    provenance: dict
-        The provenance record for the figure.
-    cfg: dict
-        Dictionary with diagnostic configuration.
-    figure: matplotlib.figure.Figure
-        Figure to save.
-    close: bool
-        Close the figure after saving.
-    **kwargs:
-        Keyword arguments to pass to :obj:`matplotlib.figure.Figure.savefig`.
-
-    See Also
-    --------
-    ProvenanceLogger: For an example provenance record that can be used
-        with this function.
-    """
-    if cfg.get('output_file_type') is None:
-        extensions = ('png', 'pdf')
-    elif isinstance(cfg['output_file_type'], str):
-        extensions = (cfg['output_file_type'], )
-    else:
-        extensions = cfg['output_file_type']
-
-    for ext in extensions:
-        filename = Path(cfg['plot_dir']) / ext / f"{basename}.{ext}"
-        filename.parent.mkdir(exist_ok=True)
-        logger.info("Plotting analysis results to %s", filename)
-        fig = plt if figure is None else figure
-        fig.savefig(filename, **kwargs)
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(filename, provenance)
-
-    if close:
-        plt.close(figure)
-
-
-def save_data(basename, provenance, cfg, cube, **kwargs):
-    """Save the data used to create a plot to file.
-
-    Parameters
-    ----------
-    basename: str
-        The basename of the file.
-    provenance: dict
-        The provenance record for the data.
-    cfg: dict
-        Dictionary with diagnostic configuration.
-    cube: iris.cube.Cube
-        Data cube to save.
-    **kwargs:
-        Extra keyword arguments to pass to :obj:`iris.save`.
-
-    See Also
-    --------
-    ProvenanceLogger: For an example provenance record that can be used
-        with this function.
-    """
-    if 'target' in kwargs:
-        raise ValueError(
-            "Please use the `basename` argument to specify the output file")
-    if cfg.get('write_netcdf', True):
-        filename = get_diagnostic_filename(basename, cfg)
-        logger.info("Saving analysis results to %s", filename)
-        iris.save(cube, target=filename, **kwargs)
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(filename, provenance)
 
 
 class ProvenanceLogger:
@@ -150,14 +74,15 @@ class ProvenanceLogger:
             record = {
                 'caption': "This is a nice plot.",
                 'statistics': ['mean'],
-                'domain': ['global'],
-                'plot_type': ['zonal'],
+                'domain': 'global',
+                'plot_type': 'zonal',
+                'plot_file': '/path/to/result.png',
                 'authors': [
                     'first_author',
                     'second_author',
                 ],
                 'references': [
-                    'author20journal',
+                    'acknow_project',
                 ],
                 'ancestors': [
                     '/path/to/input_file_1.nc',
@@ -168,7 +93,9 @@ class ProvenanceLogger:
 
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(output_file, record)
+
     """
+
     def __init__(self, cfg):
         """Create a provenance logger."""
         self._log_file = os.path.join(cfg['run_dir'],
@@ -191,22 +118,18 @@ class ProvenanceLogger:
             Dictionary with the provenance information to be logged.
 
             Typical keys are:
+                - plot_type
+                - plot_file
+                - caption
                 - ancestors
                 - authors
-                - caption
-                - domain
-                - plot_type
                 - references
-                - statistics
 
         Note
         ----
-            See the provenance `documentation`_ for more information.
+            See also esmvaltool/config-references.yml
 
-        .. _documentation: https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance
-        """  # noqa
-        if isinstance(filename, Path):
-            filename = str(filename)
+        """
         if filename in self.table:
             raise KeyError(
                 "Provenance record for {} already exists.".format(filename))
@@ -246,6 +169,7 @@ def select_metadata(metadata, **attributes):
     -------
     :obj:`list` of :obj:`dict`
         A list of matching metadata.
+
     """
     selection = []
     for attribs in metadata:
@@ -272,6 +196,7 @@ def group_metadata(metadata, attribute, sort=None):
     -------
     :obj:`dict` of :obj:`list` of :obj:`dict`
         A dictionary containing the requested groups.
+
     """
     groups = {}
     for attributes in metadata:
@@ -302,6 +227,7 @@ def sorted_metadata(metadata, sort):
     -------
     :obj:`list` of :obj:`dict`
         The sorted list of variable metadata.
+
     """
     if isinstance(sort, str):
         sort = [sort]
@@ -330,6 +256,7 @@ def sorted_group_metadata(metadata_groups, sort):
     -------
     :obj:`dict` of :obj:`list` of :obj:`dict`
         A dictionary containing the requested groups.
+
     """
     if sort is True:
         sort = []
@@ -364,6 +291,7 @@ def extract_variables(cfg, as_iris=False):
     dict
         Variable information in :obj:`dict`s (values) for each `short_name`
         (key).
+
     """
     keys_to_extract = [
         'short_name',
@@ -407,6 +335,7 @@ def variables_available(cfg, short_names):
     -------
     bool
         `True` if all variables available, `False` if not.
+
     """
     input_data = cfg['input_data'].values()
     available_short_names = list(group_metadata(input_data, 'short_name'))
@@ -467,6 +396,7 @@ def run_diagnostic():
 
     The `cfg` dict passed to `main` contains the script configuration that
     can be used with the other functions in this module.
+
     """
     # Implemented as context manager so we can support clean up actions later
     parser = argparse.ArgumentParser(description="Diagnostic script")

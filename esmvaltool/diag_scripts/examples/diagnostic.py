@@ -1,21 +1,17 @@
 """Python example diagnostic."""
 import logging
-from pathlib import Path
+import os
 from pprint import pformat
 
 import iris
 
-from esmvaltool.diag_scripts.shared import (
-    group_metadata,
-    run_diagnostic,
-    save_data,
-    save_figure,
-    select_metadata,
-    sorted_metadata,
-)
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
+                                            select_metadata, sorted_metadata)
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
-logger = logging.getLogger(Path(__file__).stem)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 def get_provenance_record(attributes, ancestor_files):
@@ -46,21 +42,26 @@ def compute_diagnostic(filename):
     cube = iris.load_cube(filename)
 
     logger.debug("Running example computation")
-    cube = iris.util.squeeze(cube)
-    return cube
+    return cube.collapsed('time', iris.analysis.MEAN)
 
 
 def plot_diagnostic(cube, basename, provenance_record, cfg):
     """Create diagnostic data and plot it."""
+    diagnostic_file = get_diagnostic_filename(basename, cfg)
 
-    # Save the data used for the plot
-    save_data(basename, provenance_record, cfg, cube)
+    logger.info("Saving analysis results to %s", diagnostic_file)
+    iris.save(cube, target=diagnostic_file)
 
-    if cfg.get('quickplot'):
-        # Create the plot
-        quickplot(cube, **cfg['quickplot'])
-        # And save the plot
-        save_figure(basename, provenance_record, cfg)
+    if cfg['write_plots'] and cfg.get('quickplot'):
+        plot_file = get_plot_filename(basename, cfg)
+        logger.info("Plotting analysis results to %s", plot_file)
+        provenance_record['plot_file'] = plot_file
+        quickplot(cube, filename=plot_file, **cfg['quickplot'])
+
+    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                pformat(provenance_record))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, provenance_record)
 
 
 def main(cfg):
@@ -69,33 +70,30 @@ def main(cfg):
     input_data = cfg['input_data'].values()
 
     # Demonstrate use of metadata access convenience functions.
-    selection = select_metadata(input_data, short_name='tas', project='CMIP5')
-    logger.info("Example of how to select only CMIP5 temperature data:\n%s",
+    selection = select_metadata(input_data, short_name='pr', project='CMIP5')
+    logger.info("Example of how to select only CMIP5 precipitation data:\n%s",
                 pformat(selection))
 
     selection = sorted_metadata(selection, sort='dataset')
     logger.info("Example of how to sort this selection by dataset:\n%s",
                 pformat(selection))
 
-    grouped_input_data = group_metadata(input_data,
-                                        'variable_group',
-                                        sort='dataset')
+    grouped_input_data = group_metadata(
+        input_data, 'standard_name', sort='dataset')
     logger.info(
-        "Example of how to group and sort input data by variable groups from "
-        "the recipe:\n%s", pformat(grouped_input_data))
+        "Example of how to group and sort input data by standard_name:"
+        "\n%s", pformat(grouped_input_data))
 
     # Example of how to loop over variables/datasets in alphabetical order
-    groups = group_metadata(input_data, 'variable_group', sort='dataset')
-    for group_name in groups:
-        logger.info("Processing variable %s", group_name)
-        for attributes in groups[group_name]:
+    for standard_name in grouped_input_data:
+        logger.info("Processing variable %s", standard_name)
+        for attributes in grouped_input_data[standard_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
             cube = compute_diagnostic(input_file)
 
-            output_basename = Path(input_file).stem
-            if group_name != attributes['short_name']:
-                output_basename = group_name + '_' + output_basename
+            output_basename = os.path.splitext(
+                os.path.basename(input_file))[0] + '_mean'
             provenance_record = get_provenance_record(
                 attributes, ancestor_files=[input_file])
             plot_diagnostic(cube, output_basename, provenance_record, cfg)

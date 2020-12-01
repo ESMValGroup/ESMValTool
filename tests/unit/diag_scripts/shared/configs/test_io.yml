@@ -13,7 +13,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: true
-    n_logger: 0
   - input:
     - dataset: model
       filename: path/to/model
@@ -22,7 +21,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: true
-    n_logger: 0
   - input:
     - filename: path/to/model
       long_name: 'Loooong name'
@@ -30,7 +28,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       long_name: 'Loooong name'
@@ -38,7 +35,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       filename: path/to/model
@@ -46,7 +42,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       filename: path/to/model
@@ -54,7 +49,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       filename: path/to/model
@@ -62,7 +56,6 @@ _has_necessary_attributes:
       project: CMIP42
       units: KiB
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       filename: path/to/model
@@ -70,7 +63,6 @@ _has_necessary_attributes:
       project: CMIP42
       short_name: var
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       long_name: 'Loooong name'
@@ -84,7 +76,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       filename: path/to/model
@@ -98,7 +89,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 1
   - input:
     - dataset: model
       long_name: 'Loooong name'
@@ -111,7 +101,6 @@ _has_necessary_attributes:
       project: CMIP42
       short_name: var
     output: false
-    n_logger: 2
   - input:
     - dataset: model
       long_name: 'Loooong name'
@@ -123,7 +112,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 3
   - kwargs:
       only_var_attrs: true
     input:
@@ -140,7 +128,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: true
-    n_logger: 0
   - kwargs:
       only_var_attrs: true
     input:
@@ -151,7 +138,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: true
-    n_logger: 0
   - kwargs:
       only_var_attrs: true
     input:
@@ -161,7 +147,6 @@ _has_necessary_attributes:
     - long_name: 'Loooong name'
       units: KiB
     output: false
-    n_logger: 1
   - kwargs:
       only_var_attrs: true
     input:
@@ -172,7 +157,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: true
-    n_logger: 0
   - kwargs:
       only_var_attrs: true
     input:
@@ -182,7 +166,6 @@ _has_necessary_attributes:
       short_name: var
       units: KiB
     output: false
-    n_logger: 1
   - kwargs:
       only_var_attrs: true
     input:
@@ -198,10 +181,8 @@ _has_necessary_attributes:
       project: CMIP42
       short_name: var
     output: false
-    n_logger: 1
   - kwargs:
       only_var_attrs: true
     input:
     - {}
     output: false
-    n_logger: 3

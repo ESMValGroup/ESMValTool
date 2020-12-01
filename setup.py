@@ -8,8 +8,7 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-sys.path.insert(0, os.path.dirname(__file__))
-from esmvaltool import __version__  # noqa: E402
+from esmvaltool import __version__
 
 PACKAGES = [
     'esmvaltool',
@@ -33,14 +32,12 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.1.0,<2.2',
+        'esmvalcore>=2.0.0,<2.1',
         'fiona',
         'GDAL',
         'jinja2',
         'joblib',
-        'lime',
-        'matplotlib>=3,<3.3',
-        'natsort',
+        'matplotlib',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
@@ -48,16 +45,14 @@ REQUIREMENTS = {
         'pynio',
         'pyproj>=2.1'
         'pyyaml',
-        'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=2.2.1,<3',
+        'scitools-iris>=2.2.1',
         'seaborn',
         'seawater',
         'shapely',
         'xarray>=0.12',
         'xesmf',
-        'xgboost',
         'xlsxwriter',
     ],
     # Test dependencies
@@ -74,7 +69,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm<0.2.0',
+        'autodocsumm!=0.2.0',
         'codespell',
         'docformatter',
         'isort',

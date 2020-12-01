@@ -1,4 +1,4 @@
-autodocsumm<0.2.0
+autodocsumm!=0.2.0
 cdo
 cdsapi
 cmocean
@@ -9,7 +9,6 @@ eofs
 fiona
 jinja2
 joblib
-lime
 matplotlib
 nc-time-axis
 netCDF4
@@ -24,6 +23,5 @@ seawater
 shapely
 sphinx>2
 xarray
-xgboost
 xlsxwriter
 yamale
