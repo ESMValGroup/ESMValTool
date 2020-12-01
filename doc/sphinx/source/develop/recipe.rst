@@ -16,7 +16,7 @@ the specific parameters needed by a recipe that runs a personal diagnostic are:
 
 i.e. the full path to the personal diagnostic that the user needs to run.
 
-There is also an episode available in the 
+There is also a lesson available in the 
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
 that describes in a step-by-step procedure how to write your own recipe. It can be found
 `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/05-preprocessor/index.html>`_.
