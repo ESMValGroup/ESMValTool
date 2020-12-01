@@ -63,6 +63,12 @@
 - [ ] [Clear instructions to obtain the data](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???) are available
 - [ ] Data set is added to the [OBS data pool](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???)
 
+***
+
+To help with the number pull requests:
+
+- [ ] I have [reviewed](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
+
 <!--
 If you need help with any of the items on the checklists above, please do not hesitate to ask by commenting in the issue or pull request.
 -->
