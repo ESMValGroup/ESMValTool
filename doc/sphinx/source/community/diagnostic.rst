@@ -45,14 +45,24 @@ Always make sure your code is or can be released under a license that is compati
 
 If you have existing code in a supported scripting language, you have two options for re-using it. If it is fairly
 mature and a large amount of code, the preferred way is to package and publish it on the
-official package repository for that language and add it as a dependency of esmvaltool.
+official package repository for that language and add it as a dependency of ESMValTool.
 If it is just a few simple scripts or packaging is not possible (i.e. for NCL) you can simply copy
-and paste the source code into the esmvaltool/diag_scripts directory.
+and paste the source code into the ``esmvaltool/diag_scripts`` directory.
 
 If you have existing code in a compiled language like
 C, C++, or Fortran that you want to re-use, the recommended way to proceed is to add Python bindings and publish
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
+
+Additional dependencies
+=======================
+
+Add any additional dependencies needed for the diagnostic script to ``setup.py,``
+``esmvaltool/install/R/r_requirements.txt`` or ``esmvaltool/install/Julia/Project.toml``
+(depending on the language of your script) and also to ``package/meta.yaml`` for
+conda dependencies (includes Python and others, but not R/Julia). Also check
+that the license of the dependency you want to add and any of its dependencies
+are compatible with `Apache2.0 <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE >`_.
 
 Recording provenance
 ====================

@@ -126,6 +126,10 @@ Go to the directory where the repository is cloned and run
 ``pytest``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
 
+These automated checks are run automatically when you add new commits to your PR.
+They appear at the bottom of the PR. Click on `Details` for more information
+
+
 Code style
 ----------
 
@@ -338,8 +342,9 @@ whenever you read it.
 
 It is recommended that you open a `draft pull
 request <https://github.blog/2019-02-14-introducing-draft-pull-requests/>`__
-early, as this will cause CircleCI to run the unit tests and Codacy to
-analyse your code. It’s also easier to get help from other developers if
+early, as this will cause CircleCI to run the unit tests, Codacy to
+analyse your code, and readthedocs to build the documentation.
+It’s also easier to get help from other developers if
 your code is visible in a pull request.
 
 You can view the results of the automatic checks below your pull
@@ -348,6 +353,10 @@ approval sign, please click the link and try to solve the issue. Note
 that this kind of automated checks make it easier to review code, but
 they are not flawless, so occasionally Codacy will report false
 positives.
+
+The documentation can be seen by clicking on `Details`. Make sure the
+documentation is nicely formatted, and (if necessary) add the link to the
+top of the PR.
 
 Diagnostic script contributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
