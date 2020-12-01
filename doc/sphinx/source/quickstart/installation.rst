@@ -93,6 +93,11 @@ Note that it is only necessary to install Julia prior to the conda installation 
 
 Note that the ESMValTool source code is contained in the ``esmvaltool-python`` package, so this package will always be installed as a dependency if you install one or more of the packages for other languages.
 
+There is also a lesson available in the 
+`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+that describes the installation of the ESMValTool in more detail. It can be found
+`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/02-installation/index.html>`_.
+
 Pip installation
 ================
 
@@ -302,7 +307,7 @@ where ``<prefix>`` is the install location of your anaconda or miniconda
     Note that during the installation, conda will ask you
     if you want the installation to be automatically sourced from your
     ``.bashrc`` or ``.bash-profile`` files; if you answered yes, then conda
-    will write bash directives to those files and everytime you get to your
+    will write bash directives to those files and every time you get to your
     shell, you will automatically be inside conda's ``(base)`` environment.
     To deactivate this feature, look for the ``# >>> conda initialize >>>``
     code block in your ``.bashrc`` or ``.bash-profile`` and comment the whole block out.
@@ -387,10 +392,3 @@ To do this, run the tool with:
 
 If everything was installed properly, ESMValTool should have printed a
 help message to the console.
-
-For a more complete installation verification, run the automated tests and
-confirm that no errors are reported:
-
-.. code-block:: bash
-
-    python setup.py test

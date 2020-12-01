@@ -61,6 +61,11 @@ It is also possible to get help on specific commands, e.g.
 
 will display the help message with all options for the ``run`` command.
 
+There is a step-by-step description available in the 
+`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+on how to run your first recipe. It can be found
+`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
+
 Available diagnostics and metrics
 =================================
 
