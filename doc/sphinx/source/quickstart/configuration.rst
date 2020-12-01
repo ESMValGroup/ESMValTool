@@ -22,7 +22,7 @@ Note that this file needs to be customized using the instructions above, so
 the ``esmvaltool`` command can find the data on your system, before it can run
 a recipe.
 
-There is an episode available in the 
+There is a lesson available in the 
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
 that describes how to personalize the configuration file. It can be found
 `at this site <https://esmvalgroup.github.io/ESMValTool_Tutorial/03-configuration/index.html>`_.
