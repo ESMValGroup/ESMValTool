@@ -62,7 +62,7 @@ Add any additional dependencies needed for the diagnostic script to ``setup.py,`
 (depending on the language of your script) and also to ``package/meta.yaml`` for
 conda dependencies (includes Python and others, but not R/Julia). Also check
 that the license of the dependency you want to add and any of its dependencies
-are compatible with Apache 2.0 (`link <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE >`_).
+are compatible with Apache 2.0 (`link <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE/>`_).
 
 Recording provenance
 ====================

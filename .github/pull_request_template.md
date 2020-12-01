@@ -50,7 +50,7 @@
 
 - [ ] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic is available
 - [ ] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
-- [ ] [Recipe runs successfully](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/review.html#run-recipe) on your own machine
+- [ ] [Recipe runs successfully](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#???) on your own machine
 - [ ] Recipe runs successfully using [`@esmvalbot`](https://github.com/apps/esmvalbot)
 - [ ] Figure(s)/data look as expected
 - [ ] Code is well documented
@@ -58,9 +58,9 @@
 ### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
 
 - [ ] Numbers/units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???)
-- [ ] Dataset is added to the table in the [documentation](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets)
-- [ ] Tests for the CMORized data are [available](https://docs.esmvaltool.org/en/latest/develop/dataset.html#test-the-cmorized-dataset)
-- [ ] Clear instructions to obtain [the data are available](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???)
+- [ ] Dataset is added to the [table in the documentation](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets)
+- [ ] [Tests for the CMORized data](https://docs.esmvaltool.org/en/latest/develop/dataset.html#test-the-cmorized-dataset) are available
+- [ ] [Clear instructions to obtain the data](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???) are available
 - [ ] Data set is added to the [OBS data pool](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???)
 
 <!--
