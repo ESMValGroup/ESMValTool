@@ -88,6 +88,7 @@ def get_input_cubes(metadata):
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
         all_vars[short_name] = change_data_type(cube)
+        cube.attributes['mip'] = attributes['mip']
         provenance['ancestors'].append(filename)
     return all_vars, provenance
 
