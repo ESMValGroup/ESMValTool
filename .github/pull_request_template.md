@@ -40,7 +40,7 @@
 - [ ] PR has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/changelog.html)
 - [ ] Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
 - [ ] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
-- [ ] YAML files have been tested with [`pre-commit`](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/introduction.html#pre-commit) or [`yamllint`](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/introduction.html#yaml)
+- [ ] YAML files pass [`pre-commit`](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/introduction.html#pre-commit) or [`yamllint`](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/introduction.html#yaml) checks
 - [ ] New dependencies are added to the [project requirements](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/diagnostic.html#additional-dependencies)
 - [ ] [Circle/CI tests pass](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/introduction.html#Branches-pull-requests-and-code-review)
 - [ ] [Codacy code quality checks pass]((https://esmvaltool--1924.org.readthedocs.build/en/1924/community/introduction.html#Branches-pull-requests-and-code-review))
