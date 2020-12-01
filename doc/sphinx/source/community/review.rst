@@ -309,12 +309,14 @@ CMORizer script
 Check that the new CMORizer script (``./esmvaltool/cmorizers/obs/cmorize_obs_<dataset>.{py,ncl,r}``) meets standards. This includes the following items:
 
 * In-code documentation (header) contains
-  (1) Download instructions
-  (2) Reference(s)
+
+  1. Download instructions
+  2. Reference(s)
 
 * Code quality checks
-  (1) Code quality (e.g. no hardcoded pathnames)
-  (2) No Codacy errors reported
+
+  1. Code quality (e.g. no hardcoded pathnames)
+  2. No Codacy errors reported
 
 
 Config file
