@@ -13,6 +13,11 @@ Improvements
 - Pin matplotlib to <3.3 and add compilers (`#1898 <https://github.com/ESMValGroup/ESMValTool/pull/1898>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 - Pin esmvaltool subpackages to the same version and build as the esmvaltool conda package (`#1899 <https://github.com/ESMValGroup/ESMValTool/pull/1899>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
+Documentation
+~~~~~~~~~~~~~
+
+- Release notes v2.1.1 (`#1932 <https://github.com/ESMValGroup/ESMValTool/pull/1932>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
 v2.1.0
 ------
 
