@@ -171,7 +171,7 @@ begin
       tval_A2 = A2trend@tval
       b_A2 = 0.5
       df_A2 = A2trend@nptxy - 2
-      prob_A2 = (/1 - betainc(df_A2 / df_A2 + tval_A2 ^ 2),\
+      prob_A2 = (/1 - betainc(df_A2 / (df_A2 + tval_A2 ^ 2),\
                  df_A2 / 2.0, b_A2)/)
     else
       A1 = time_operations(A0, -1, -1, "average", season, True)
