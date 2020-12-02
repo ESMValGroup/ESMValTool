@@ -3,17 +3,16 @@
 ; PROJECT-NAME CCMI
 ; #############################################################################
 ; Description
-; Latitudinal distribution of the total column of ozone climatological
-; mean annual cycle
+;  Calculation of the long-term mean and trend of the zonal wind
 ;
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;    @e13fig12_Max:   max limit contour interval
-;    @e13fig12_Min:   min limit contour interval
-;    @e13fig12_Spacing:  contour interval
+;    @e13fig12_Max: max limit contour interval
+;    @e13fig12_Min: min limit contour interval
+;    @e13fig12_Spacing: contour interval
 ;    @e13fig12_start_year: year when start the climatology calculation
 ;    @e13fig12_start_year: year when end the climatology calculation
-;    @e13fig12_multimean:  multimodel mean
+;    @e13fig12_multimean: multimodel mean
 ;    @e13fig12_season: season
 ;    @e13fig12_exp_MMM: name of the experiments dor the MMM
 ; Caveats
@@ -64,6 +63,13 @@ begin
   else
     LONG_NAME = var0
   end if
+
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
@@ -182,7 +188,7 @@ begin
       b_A2 = (/0.5/)
       df_A2 = A2trend@nptxy - 2
       prob_A2 = A2(0, :, :)
-      prob_A2 = onedtond((/1 - betainc(df_A2 / (df_A2 + tval_A2^2),\
+      prob_A2 = onedtond((/1 - betainc(df_A2 / (df_A2 + tval_A2 ^ 2), \
                           df_A2 / 2.0, b_A2)/), dimsizes(A2(0, :, :)))
       delete(df_A2)
       delete(tval_A2)
@@ -222,9 +228,10 @@ begin
   X_MMM_std = (/dim_stddev_n(XXdata(index_mod, :, :, :), 0)/)
   plot_d = new(dimTot, "graphic")
 
-  ; *************************plotting*******************************************************
+  ; *************************plotting******************************************
   do ipanel = 0, dimTot - 1
-    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring13f12_" + var0 + "_" + plotMod(ipanel))
+    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring13f12_" + \
+                  var0 + "_" + plotMod(ipanel))
     gsn_define_colormap(wks, "BlueYellowRed")
     res = True                  ; plot mods desired
     res@gsnDraw = False
@@ -238,9 +245,9 @@ begin
     res@tmYLLabelFont = "helvetica"
     res@lbLabelFont = "helvetica"
     res@cnLevelSelectionMode = "ExplicitLevels"
-    res@cnLevels = (/-1.6, -1.4, -1.2, -1.0, -0.8, -0.6, -0.4, -0.2, 0., \
-                    0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6/) \
-                    ; scale bar from Eyring et al. (2013)
+    res@cnLevels = (/-1.6, -1.4, -1.2, -1.0, -0.8, -0.6, -0.4, \
+                    -0.2, 0., 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, \
+                    1.4, 1.6/)  ; scale bar from Eyring et al. (2013)
     res@tmXBMode = "Explicit"
     res@tmXBValues = (/-60., -30., 0., 30., 60./)
     res@tmXBLabels = (/"60S", "30S", "0", "30N", "60N"/)
@@ -249,26 +256,26 @@ begin
     res@tmYLLabels = (/"1000", "800", "600", "400", "200"/)
     res@trYMinF = 100.
     res@trYMaxF = 1000.
-    res@cnLineLabelsOn = False                 ; turn off line labels
+    res@cnLineLabelsOn = False           ; turn off line labels
     res@cnFillOn = True                  ; turn on color fill
     res@cnLinesOn = False
-    res@cnInfoLabelOn = False                 ; turn off contour label
-    res@gsnSpreadColors = True                  ; use full range of colors
-    res@lbLabelAutoStride = True                  ; optimal labels
-    res@gsnLeftString = LONG_NAME + \
-            "[" + UNITS+ "/decade]"
+    res@cnInfoLabelOn = False            ; turn off contour label
+    res@gsnSpreadColors = True           ; use full range of colors
+    res@lbLabelAutoStride = True         ; optimal labels
+    res@gsnLeftString = LONG_NAME + "[" + UNITS + "/decade]"
 
     res@gsnRightString = years1(ipanel) + "-" + years2(ipanel)
     res@gsnLeftStringFontHeightF = 0.017
     res@gsnRightStringFontHeightF = 0.017
     res@tmXBMode = "Explicit"            ; explicit labels
     ; location of labels
-    ; res@vpHeightF = 0.4                   ; change aspect ratio of plot
+    ; res@vpHeightF = 0.4         ; change aspect ratio of plot
     ; res@vpWidthF = 0.75
     ; res@lbLabelFontHeightF = 0.011
-    ; res@tiYAxisString = "Latitude"            ; y-axis label
+    ; res@tiYAxisString = "Latitude"         ; y-axis label
     ; plot_d(ipanel) = gsn_csm_lat_time(wks, XXdata(line|ipanel, \
     ;                                   lat|:, month|:, stat|0), res)
+
     plotu = gsn_csm_pres_hgt(wks, XXdata(ipanel, :, :, 1), res)
     res2 = True
     res2@gsnDraw = False
@@ -282,8 +289,8 @@ begin
     res2@gsnContourNegLineDashPattern = 1
     res2@cnFillOn = False
     res2@cnLinesOn = True
-    res2@cnLineColor = "Black"                   ; color of second contours
-    res2@cnLineThicknessF = 2.                       ; line thickness
+    res2@cnLineColor = "Black"             ; color of second contours
+    res2@cnLineThicknessF = 2.             ; line thickness
     res2@txFont = diag_script_info@font
     res2@tmXBLabelFont = diag_script_info@font
     res2@tmYLLabelFont = diag_script_info@font
@@ -301,7 +308,7 @@ begin
     res2@lbTitleFontHeightF = 0.01  ; default: 0.025
     res2@lbTitleOffsetF = -0.25  ; default: 0.03 (negative values move it down)
     res2@lbTopMarginF = 0.1  ; default: 0.05 (negative values move it up)
-    res2@lbTitleJust = "BottomCenter" ; default: CenterCenter
+    res2@lbTitleJust = "BottomCenter"  ; default: CenterCenter
     res2@lbLabelFontHeightF = 0.025
     ; res2@lbTitleString = variable_info@long_name
     ; Data to plot
@@ -313,6 +320,7 @@ begin
     ; res2@gsnRightString = fmt + " " + variable_info@units
     res2@gsnRightStringFontHeightF = 0.023
     res2@gsnLeftStringFontHeightF = 0.023
+
     plotv = gsn_csm_pres_hgt(wks, XXdata(ipanel, :, :, 0), res2)
     delete(res)
     res3 = True
@@ -326,6 +334,7 @@ begin
     res3@cnInfoLabelOn = False
     res3@cnFillOn = False
     res3@cnLinesOn = False
+
     plotz = gsn_csm_pres_hgt(wks, XXdata(ipanel, :, :, 2), res3)
     opt = True
     opt@gsnShadeFillType = "pattern"      ; pattern fill
@@ -361,4 +370,17 @@ begin
   Xdata&plev = plev0
   Xdata&lat = lat0
   nc_outfile = ncdf_write(Xdata, nc_filename)
+
+  ; Call provenance logger
+  plotpath = config_user_info@plot_dir + "eyring13f12_" + var0
+  log_provenance(nc_filename, \
+                 plotpath + "." + file_type, \
+                 "Long-term mean and trend of " + var0, \
+                 (/"mean", "trend"/), \
+                 (/"global"/), \
+                 "pro", \
+                 (/"cionni_irene", "eyring_veronika"/), \
+                 (/"eyring13jgr"/), \
+                 metadata_att_as_array(info0, "filename"))
+
 end
