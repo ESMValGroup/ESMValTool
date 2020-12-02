@@ -43,7 +43,6 @@ import itertools
 import logging
 import os
 import shutil
-import sys
 from glob import glob
 
 import yaml
@@ -202,6 +201,9 @@ def filter_years(files, start_year, end_year, overlap=False):
     valid_files = []
     available_years = {}
 
+    if start_year == "*" and end_year == "*":
+        return files
+
     if not files:
         return valid_files
 
@@ -315,7 +317,9 @@ def list_all_files(file_dict, cmip_era):
             if new_path.startswith("~"):
                 new_path = os.path.expanduser(new_path)
                 if not new_path.startswith(os.sep):
-                    raise ValueError("Could not expand ~ to user home dir please expand it in the config user file!")
+                    raise ValueError(
+                        "Could not expand ~ to user home dir "
+                        "please expand it in the config user file!")
                 logger.info(f"Expanding path to {new_path}")
 
             # Globs all the wildcards into a list of files.
