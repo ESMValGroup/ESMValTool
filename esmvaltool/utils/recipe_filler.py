@@ -28,7 +28,8 @@ Key features:
   esmvaltool's syntax of multiple experiments; this option needs an ensemble
   to be declared explicitly; it will return no entry if there are gaps in data
 - `start_year` and `end_year` are mandatory and are used to filter out the
-  datasets that don't have data in the interval;
+  datasets that don't have data in the interval; if you want all possible years
+  hence no filtering on years just use "*" for start and end years;
 - `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
 
 Caveats:
