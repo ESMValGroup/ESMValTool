@@ -15,28 +15,28 @@ pressure levels.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in esmvaltool/recipes/
+Recipes are stored in ``esmvaltool/recipes/``
 
-    * recipe_eady_growth_rate.yml
+    * ``recipe_eady_growth_rate.yml``
 
-Diagnostics are stored in esmvaltool/diag_scripts/eady_growth_rate/
+Diagnostics are stored in ``esmvaltool/diag_scripts/eady_growth_rate/``
 
-    * eady_growth_rate.py: Computes and stores the eady growth rate. 
+    * ``eady_growth_rate.py``: Computes and stores the eady growth rate. 
       Plots can be produced for the seasonal mean over the North Atlantic region.
 
 
 User settings in recipe
 -----------------------
 
-#. Script eady_growth_rate.py
+#. Script ``eady_growth_rate.py``
 
    *Required settings for script*
 
-   * time_statistic: Set to 'annual' to compute the annual mean. Set to 'seasonal' to compute the seasonal mean.
+   * ``time_statistic``: Set to `'annual'` to compute the annual mean. Set to `'seasonal'` to compute the seasonal mean.
 
    *Optional settings for script*
 
-   * plot_levels: list of pressure levels to be plotted for the seasonal mean. If not specified, all levels will be plotted.
+   * ``plot_levels``: list of pressure levels to be plotted for the seasonal mean. If not specified, all levels will be plotted.
 
 
 Variables
