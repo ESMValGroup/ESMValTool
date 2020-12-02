@@ -66,8 +66,6 @@ begin
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
-  delete(idx)
-
   ; save input files for writing provenance
 
   infiles = metadata_att_as_array(input_file_info, "filename")
@@ -76,10 +74,10 @@ begin
   ; is equal for each variable
 
   do i = 0, dim_VAR - 1
-    if (isatt(variable_info[i], "reference_dataset")) then
-      refname(i) = variable_info[i]@reference_dataset
+    if (isatt(variable_info[idx(i)], "reference_dataset")) then
+      refname(i) = variable_info[idx(i)]@reference_dataset
     end if
-    info = select_metadata_by_name(input_file_info, variables(i))
+    info = select_metadata_by_name(input_file_info, variables(idx(i)))
     if (i .eq. 0) then
       dim_MOD = ListCount(info)
     else
@@ -92,6 +90,8 @@ begin
     end if
     delete(info)
   end do
+
+  delete(idx)
 
   ; Set default values for non-required diag_script_info attributes
 
@@ -144,8 +144,20 @@ begin
   refidx_clw = ind(names_clw .eq. refname(0))
   refidx_cli = ind(names_cli .eq. refname(1))
 
-  if (ismissing(refidx_clw)) then
-    refidx_clw = -1
+  if (ismissing(refidx_clw) .or. ismissing(refidx_cli)) then
+    if (ismissing(refidx_clw)) then
+      str = refname(0)
+    end if
+    if (ismissing(refidx_cli)) then
+      if (isdefined("str")) then
+        str = str + " + " + refname(1)
+      else
+        str = refname(1)
+      end if
+    end if
+
+    error_msg("f", DIAG_SCRIPT, "", "the following reference dataset(s) " \
+              + "are not available: " + str)
   end if
 
   do ii = 0, dim_MOD - 1
@@ -266,6 +278,11 @@ begin
     names = names_cli
     projects = projects_cli
 
+    ; if reference datasets for clw and cli are from different sources
+    if (refname(0) .ne. refname(1)) then
+      names(refidx_cli) = refname(0) + "/" + refname(1)
+    end if
+
     ; ###########################################
     ; # Style dependent annotation              #
     ; ###########################################
@@ -366,7 +383,7 @@ begin
     ; *** icefrac ***
 
     data1 = icefrac
-    data1@var = names(imod)
+    data1@var = str_sub_str(names(imod), "/", "-")
 
     ; vertical coordinate might have a different name, which prevents
     ; all data to be written to the same netcdf file
@@ -383,7 +400,7 @@ begin
     ; *** liqfrac ***
 
     data1 = liqfrac
-    data1@var = names(imod)
+    data1@var = str_sub_str(names(imod), "/", "-")
 
     ; vertical coordinate might have a different name, which prevents
     ; all data to be written to the same netcdf file
@@ -454,9 +471,9 @@ begin
       ; print dataset name on each panel
       pres@gsnPanelFigureStrings = names(plotind)
     end if
-    pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
+    pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
                                                 / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 \
+    pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
                                                 / tofloat((dim_MOD + 1) / 2)/))
     pres@lbAutoManage                     = False
     pres@lbTopMarginF                     = 0.1
