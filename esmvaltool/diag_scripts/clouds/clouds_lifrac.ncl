@@ -370,9 +370,9 @@ begin
       ;       attributes cannot be assigned to each array element
       ;       individually
       wksice = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
-                       icefrac@var +"_annual" + filename_add)
+                       icefrac@var + "_annual" + filename_add)
       wksliq = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
-                       liqfrac@var +"_annual" + filename_add)
+                       liqfrac@var + "_annual" + filename_add)
     end if
 
     maps_ice(imod) = gsn_csm_pres_hgt(wksice, icefrac, res)

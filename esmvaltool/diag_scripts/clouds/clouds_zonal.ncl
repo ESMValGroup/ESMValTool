@@ -285,8 +285,8 @@ begin
 
       if (nyears .lt. 3) then
         log_info("warning: cannot calculate t-test for dataset " \
-          + names(imod) + "; need at least 3 years, dataset length = " \
-          + tostring(nyears) + " years; disabling t-test")
+                 + names(imod) + "; need at least 3 years, dataset " \
+                 + "length = " + tostring(nyears) + " years; disabling t-test")
         t_test = False
       else
         data1_t_stddev = interannual_variability(A0, -1, -1, timemean, "None")
@@ -838,7 +838,7 @@ begin
         tres@cnLinesOn = False
         tres@cnLineLabelsOn = False
         tres@lbLabelBarOn = False
-        tres@gsnRightString   = ""    
+        tres@gsnRightString   = ""
         tres@gsnLeftString    = ""
         tres@gsnCenterString  = ""
 
@@ -1252,8 +1252,7 @@ begin
 
         if (t_test) then
           caption = caption \
-            + " Non-significant grid cells are hatched."  ;masked out in gray."
-;;            + " Non-significant grid cells are masked out in gray."
+            + " Non-significant grid cells are hatched."
         end if
 
         log_provenance(nc_outfile_bias, outfile_d(is), caption, statistics, \
