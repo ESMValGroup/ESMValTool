@@ -13,7 +13,7 @@ import seaborn as sns
 import xarray as xr
 from core_functions import (
     area_weighted_mean,
-    calculate_independence,
+    calculate_model_distances,
     calculate_weights,
     combine_ensemble_members,
     compute_overall_mean,
@@ -24,6 +24,7 @@ from io_functions import (
     read_metadata,
     read_model_data,
 )
+from calibrate_sigmas import calibrate_performance_sigma
 
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
@@ -190,7 +191,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
 
 
 def parse_contributions_sigma(metric: str,
-                              cfg: dict) -> (list, Union[float, None]):
+                        cfg: dict) -> dict:
     """Return contributions > 0 and sigma for a given metric."""
     if cfg.get(f'{metric}_contributions') is None:  # not set or set to None
         contributions = {}
@@ -201,9 +202,6 @@ def parse_contributions_sigma(metric: str,
             if value > 0
         }
     sigma = cfg.get(f'{metric}_sigma')
-    if contributions and sigma is None:
-        errmsg = f'{metric}_sigma must be set if {metric}_contributions is set'
-        raise IOError(errmsg)
     return contributions, sigma
 
 
@@ -238,7 +236,7 @@ def main(cfg):
         model_data, model_data_files = read_model_data(datasets_model)
 
         logger.info('Calculating independence for %s', variable_group)
-        independence = calculate_independence(model_data)
+        independence = calculate_model_distances(model_data)
         visualize_and_save_independence(independence, cfg, model_data_files)
         logger.debug(independence.values)
         independences[variable_group] = independence
@@ -275,6 +273,11 @@ def main(cfg):
             independence, independence_contributions)
         visualize_and_save_independence(overall_independence, cfg,
                                         model_ancestors)
+        if independence_sigma is None:
+            errmsg = ' '.join([
+                'independence_sigma must be set if independence_contributions',
+                'is set'])
+            raise NotImplementedError(errmsg)
     else:
         overall_independence = None
 
@@ -285,6 +288,10 @@ def main(cfg):
                                                    performance_contributions)
         visualize_and_save_performance(overall_performance, cfg,
                                        model_ancestors + obs_ancestors)
+        if performance_sigma is None:
+            performance_sigma = calibrate_performance_sigma(
+                performance_contributions, overall_independence,
+                independence_sigma, cfg)
     else:
         overall_performance = None
 
