@@ -5,12 +5,12 @@ https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
 import logging
 import os
-from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import xarray as xr
+from calibrate_sigmas import calibrate_performance_sigma
 from core_functions import (
     area_weighted_mean,
     calculate_model_distances,
@@ -24,7 +24,6 @@ from io_functions import (
     read_metadata,
     read_model_data,
 )
-from calibrate_sigmas import calibrate_performance_sigma
 
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
@@ -190,8 +189,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def parse_contributions_sigma(metric: str,
-                        cfg: dict) -> dict:
+def parse_contributions_sigma(metric: str, cfg: dict) -> dict:
     """Return contributions > 0 and sigma for a given metric."""
     if cfg.get(f'{metric}_contributions') is None:  # not set or set to None
         contributions = {}
@@ -276,7 +274,8 @@ def main(cfg):
         if independence_sigma is None:
             errmsg = ' '.join([
                 'independence_sigma must be set if independence_contributions',
-                'is set'])
+                'is set'
+            ])
             raise NotImplementedError(errmsg)
     else:
         overall_independence = None
@@ -297,7 +296,8 @@ def main(cfg):
 
     if cfg['combine_ensemble_members']:
         overall_independence, groups_independence = combine_ensemble_members(
-            overall_independence)
+            overall_independence,
+            ['model_ensemble', 'model_ensemble_reference'])
         overall_performance, groups_performance = combine_ensemble_members(
             overall_performance)
         # one of them could be empty if metric is not calculated
