@@ -54,7 +54,7 @@ def distance_matrix(values: 'np.ndarray',
     return d_matrix
 
 
-def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
+def calculate_model_distances(data_array: 'xr.DataArray') -> 'xr.DataArray':
     """Calculate independence.
 
     The independence is calculated as a distance matrix between the
@@ -211,6 +211,11 @@ def weighted_quantile(values: list,
     if weights is None:
         weights = np.ones(len(values))
     weights = np.array(weights)
+
+    # remove nans
+    not_nan = np.where((np.isfinite(values) & np.isfinite(weights)))[0]
+    values = values[not_nan]
+    weights = weights[not_nan]
 
     if not np.all((quantiles >= 0) & (quantiles <= 1)):
         raise ValueError('Quantiles should be between 0.0 and 1.0')
