@@ -23,3 +23,4 @@ dependencies:
   # Multi language support:
   - ncl>=6.5.0  # this should always install 6.6.0 though
   - r-base>=3.5
+  - r-udunits2  # needed by the docker build
