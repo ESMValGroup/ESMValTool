@@ -48,7 +48,6 @@ REQUIREMENTS = {
         'pynio',
         'pyproj>=2.1'
         'pyyaml',
-        'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
         'scipy',
