@@ -114,6 +114,10 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
+    mask_landseaice:
+      mask_out: ice
+    mask_landsea: 
+      mask_out: sea
     mask_fillvalues:
       threshold_fraction: 0.95
 
@@ -139,23 +143,22 @@ diagnostics:
          start_year: 1980, end_year: 1999, tier: 3}
     scripts:
       clim: &clim_settings
-        script:  /home/irene/ESMValTool/esmvaltool/diag_scripts/regional_downscaling/Figure9.38.ncl
+        script:  $diag_scripts/regional_downscaling/Figure9.38.ncl
         # projection
         # ----------
         # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
         projection: CylindricalEquidistant
-       # timemean: annualclim  
-       # timemean
+        # timemean: annualclim  
+        # timemean
         # --------
         showdiff: false
-        #e06fig02_latmin: [ -60. ]
-        #e06fig02_latmax: [ -55. ]
         styleset: CMIP5
         fig938_region_label: ["WNA","ENA","CAM","TSA","SSA","EUM","NAF","CAF","SAF","NAS","CAS","EAS","SAS","SEA","AUS"]
         fig938_project_MMM: ["CMIP5"]
         fig938_experiment_MMM: ["historical"]
         fig938_mip_MMM: ["Amon"]
         fig938_colors_MMM: ["red"]
+        fig938_refModel: ERA-Interim 
 #        @legend_position        : legend position in ncd coordinates     
 #        @fig938_YMin        : minimum Y Axis
 #        @fig938_YMax        : maximum Y Axis 
