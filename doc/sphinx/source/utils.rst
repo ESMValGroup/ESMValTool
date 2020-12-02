@@ -122,6 +122,8 @@ Key features
 - ``start_year`` and ``end_year`` are required and are used to filter out the
   datasets that don't have data in the interval; as noted above, the tool will not
   return datasets with partial coverage from ``start_year`` to ``end_year``;
+  if you want all possible years hence no filtering on years just use ``"*"``
+  for start and end years;
 - ``config-user: rootpath: CMIPX`` may be a list, rootpath lists are supported;
 - all major DRS paths (including ``default``, ``BADC``, ``ETHZ`` etc) are supported;
 - speedup is achieved through CMIP mip tables lookup, so ``mip`` is required in recipe;
