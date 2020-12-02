@@ -228,18 +228,18 @@ def calculate_weights(
     else:
         independence_core_dims = ['model_ensemble', 'model_ensemble_reference']
 
-        weights = xr.apply_ufunc(
-            calculate_weights_data,
-            performance,
-            independence,
-            performance_sigma,
-            independence_sigma,
-            input_core_dims=[
-                performance_core_dims, independence_core_dims, [], []
-            ],
-            output_core_dims=[['model_ensemble']],
-            vectorize=True,
-        )
+    weights = xr.apply_ufunc(
+        calculate_weights_data,
+        performance,
+        independence,
+        performance_sigma,
+        independence_sigma,
+        input_core_dims=[
+            performance_core_dims, independence_core_dims, [], []
+        ],
+        output_core_dims=[['model_ensemble']],
+        vectorize=True,
+    )
 
     weights.name = 'weight'
     weights.attrs['variable_group'] = 'weight'  # used in barplot
