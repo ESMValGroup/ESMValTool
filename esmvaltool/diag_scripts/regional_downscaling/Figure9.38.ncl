@@ -584,11 +584,11 @@ begin
   end if
   gsn_panel(wks, plot, (/n_p, 5/), pan)
   ;frame(wks)
-  ;  add_legenda(wks, models1, colors1, dashes1,lin_mar_mod1,\
+  ;  add_legend(wks, models1, colors1, dashes1,lin_mar_mod1,\
   ;   thicks1, diag_script_info@legend_position)
   ;  if(isatt(diag_script_info, "legend_position")) then
   ; else
-  add_legenda(wks, models1, colors1, dashes1, lin_mar_mod1, thicks1, "0.2")
+  add_legend(wks, models1, colors1, dashes1, lin_mar_mod1, thicks1, "0.2")
   ; end if
   frame(wks)
   if (diag_script_info@fig938_MMM.eq."True")    
@@ -602,11 +602,11 @@ begin
       end if
       gsn_panel(wks_MMM, plot_MMM, (/n_p, 5/), pan1)
       if(isatt(diag_script_info, "legend_position")) then
-        add_legenda(wks_MMM, names_MMM, colors_MMM, \
+        add_legend(wks_MMM, names_MMM, colors_MMM, \
                     dashes_MMM, lin_mar_mod_MMM, thicks_MMM,\
                     diag_script_info@legend_position)
       else
-        add_legenda(wks_MMM, names_MMM, colors_MMM,\
+        add_legend(wks_MMM, names_MMM, colors_MMM,\
                     dashes_MMM, lin_mar_mod_MMM, thicks_MMM, "0.2")
       end if
   end if
