@@ -13,8 +13,8 @@
 ## Description
 
 <!--
-    Describe the idea of your changes here to communicate why we should accept
-    this pull request and what problem it solves.
+    Please describe your changes here, especially why this pull request makes
+    ESMValTool better and what problem it solves.
 
     Before you start, please read our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html).
 
@@ -65,7 +65,7 @@
 
 ***
 
-To help with the number pull requests:
+To help with the number pull requests (for regular contributors):
 
 - [ ] I have [reviewed](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
 
