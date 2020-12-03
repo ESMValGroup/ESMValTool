@@ -32,8 +32,8 @@ datasets:
 #  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
 #     start_year: 1980, end_year: 1999}
 # was the test model
-  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1979, end_year: 2005}
+#  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#     start_year: 1979, end_year: 2005}
 #  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
 #     start_year: 1979, end_year: 2005}
 #  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -57,8 +57,8 @@ datasets:
   # - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1,
   #    start_year: 1986, end_year: 1999}
 # was the test model
-  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
-     start_year: 1979, end_year: 2005}
+ # - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ #    start_year: 1979, end_year: 2005}
  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
  #    start_year: 1980, end_year: 1999}
   # - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -96,8 +96,8 @@ datasets:
  # - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
  #    start_year: 1986, end_year: 1999}
 # was the test model
-  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
-     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+ # - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
+ #    ensemble: r1i1p1, start_year: 1979, end_year: 2005}
  # - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
  #    start_year: 1986, end_year: 1999}
  # - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -111,12 +111,12 @@ datasets:
  # - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1,
  #    start_year: 1986, end_year: 1999}
 # CMIP6
-  # - {dataset: CESM2, project: CMIP6, exp: historical, grid: gn,
-     # ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
-  # - {dataset: BCC-ESM1, project: CMIP6, exp: historical, grid: gn,
-     # ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
-  # - {dataset: MIROC6, project: CMIP6, exp: historical, grid: gn,
-     # ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
+   - {dataset: CESM2, project: CMIP6, exp: historical, grid: gn,
+      ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
+   - {dataset: BCC-ESM1, project: CMIP6, exp: historical, grid: gn,
+      ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
+   - {dataset: MIROC6, project: CMIP6, exp: historical, grid: gn,
+      ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
 
 preprocessors:
   zonal:
@@ -147,21 +147,18 @@ diagnostics:
       - atmos
     variables:
       ua:
-        derive: false
-        force_derivation: false
         preprocessor: zonal
         reference_dataset: ERA-Interim
         mip: Amon
+        start_year: 1979
+        end_year: 2005
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          start_year: 1979, end_year: 2005, tier: 3}
     scripts:
       clim: &clim_settings
         script: eyring13jgr/eyring13jgr_fig12.ncl
-        projection: CylindricalEquidistant
         # --------
-        showdiff: false
-        styleset: CMIP5
         e13fig12_exp_MMM: "historical"
         e13fig12_season: "DJF"
         e13fig12_multimean: True

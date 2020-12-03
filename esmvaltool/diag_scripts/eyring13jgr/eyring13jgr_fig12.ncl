@@ -7,11 +7,8 @@
 ;
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;    @e13fig12_Max: max limit contour interval
-;    @e13fig12_Min: min limit contour interval
-;    @e13fig12_Spacing: contour interval
 ;    @e13fig12_start_year: year when start the climatology calculation
-;    @e13fig12_start_year: year when end the climatology calculation
+;    @e13fig12_end_year: year when end the climatology calculation
 ;    @e13fig12_multimean: multimodel mean
 ;    @e13fig12_season: season
 ;    @e13fig12_exp_MMM: name of the experiments dor the MMM
@@ -55,7 +52,7 @@ begin
   if(isatt(variable_info, "units")) then
     UNITS = variable_info@units
   else
-    UNITS = "m s ~S~-1~N~"
+    UNITS = "m s~S~-1~N~"
   end if
 
   if(isatt(variable_info, "long_name")) then
@@ -77,15 +74,10 @@ begin
 
   ; Set default values for optional diag_script_info attributes
 
-  set_default_att(diag_script_info, "styleset", "CMIP5")
-  ; set_default_att(diag_script_info, "e13fig12_Min", 185.)
-  ; set_default_att(diag_script_info, "e13fig12_Max", 500.)
-  ; set_default_att(diag_script_info, "e13fig12_Spacing", 25.)
   set_default_att(diag_script_info, "e13fig12_multimean", False)
   set_default_att(diag_script_info, "e13fig12_start_year", max(y1))
   set_default_att(diag_script_info, "e13fig12_end_year", min(y2))
   set_default_att(diag_script_info, "e13fig12_season", "ANN")
-  ; set_default_att(diag_script_info, "e13fig12_exp", " ")
   flag_mod = where(projects.ne."OBS6" .and. projects.ne."OBS" .and.\
                    projects.ne."obs4mips", 1, 0)
 
@@ -107,7 +99,6 @@ begin
   exp_MMM = diag_script_info@e13fig12_exp_MMM
   multimean = diag_script_info@e13fig12_multimean
   season = diag_script_info@e13fig12_season
-  ; sel_exp = diag_script_info@e13fig12_exp
   if (multimean) then
     dimTot = dim_MOD + dim_OBS + 1
     if (dimsizes(exp_MMM).gt.1) then
@@ -116,7 +107,6 @@ begin
   else
     dimTot = dim_MOD + dim_OBS
   end if
-  ; flag_exp = where(exps_name.eq.diag_script_info@e13fig12_exp, 1, 0)
 
   ; make sure path for (mandatory) netcdf output exists
   year_start = toint(diag_script_info@e13fig12_start_year)
@@ -166,7 +156,7 @@ begin
     years1(imod) = y1(imod)
     years2(imod) = y2(imod)
     years = tofloat(ispan(years1(imod), years2(imod), 1))
-    plotMod(imod) = names(imod) + " " + exps_name(imod)
+    plotMod(imod) = names(imod) + "_" + exps_name(imod)
     ; Extract data
     A0 = read_data(info0[imod])
     if (season.eq."ANN") then
@@ -218,7 +208,7 @@ begin
       index_exp = ind(flag_exp(:, id).gt.0)
       XXdata(dimTot - 1, :, :, :) = \
         (/dim_avg_n(XXdata(index_exp, :, :, :), 0)/)
-      plotMod(dimTot - 1) = "MMM " + exps_name(id)
+      plotMod(dimTot - 1) = "MMM_" + exps_name(id)
       years1(dimTot - 1) = max(y1)
       years2(dimTot - 1) = min(y2)
       delete(index_exp)
@@ -262,7 +252,7 @@ begin
     res@cnInfoLabelOn = False            ; turn off contour label
     res@gsnSpreadColors = True           ; use full range of colors
     res@lbLabelAutoStride = True         ; optimal labels
-    res@gsnLeftString = LONG_NAME + "[" + UNITS + "/decade]"
+    res@gsnLeftString = LONG_NAME + " [" + UNITS + "/decade]"
 
     res@gsnRightString = years1(ipanel) + "-" + years2(ipanel)
     res@gsnLeftStringFontHeightF = 0.017
@@ -288,12 +278,10 @@ begin
     res2@gsnContourZeroLineThicknessF = 2. 	; doubles thickness of zero contour
     res2@gsnContourNegLineDashPattern = 1
     res2@cnFillOn = False
+    res2@cnInfoLabelOn = False
     res2@cnLinesOn = True
     res2@cnLineColor = "Black"             ; color of second contours
     res2@cnLineThicknessF = 2.             ; line thickness
-    res2@txFont = diag_script_info@font
-    res2@tmXBLabelFont = diag_script_info@font
-    res2@tmYLLabelFont = diag_script_info@font
     res2@tmXBMode = "Explicit"
     res2@tmXBValues = (/-60., -30., 0., 30., 60./)
     res2@tmXBLabels = (/"60S", "30S", "0", "30N", "60N"/)
@@ -303,8 +291,6 @@ begin
     ; res2@trYMinF = 100.
     ; res2@trYMaxF = 1000.
     ; res2@cnInfoLabelOn = False
-    res2@lbLabelFont = diag_script_info@font
-    res2@lbTitleFont = diag_script_info@font
     res2@lbTitleFontHeightF = 0.01  ; default: 0.025
     res2@lbTitleOffsetF = -0.25  ; default: 0.03 (negative values move it down)
     res2@lbTopMarginF = 0.1  ; default: 0.05 (negative values move it up)
@@ -318,8 +304,6 @@ begin
     ; res2@gsnLeftString = LONG_NAME + \
     ;   " [" + UNITS + "]"
     ; res2@gsnRightString = fmt + " " + variable_info@units
-    res2@gsnRightStringFontHeightF = 0.023
-    res2@gsnLeftStringFontHeightF = 0.023
 
     plotv = gsn_csm_pres_hgt(wks, XXdata(ipanel, :, :, 0), res2)
     delete(res)
@@ -360,7 +344,8 @@ begin
   ;   gsn_panel(wks, plot_d, (/1, 3/), Pres)
   ; end if
   ; frame(wks)
-; *******************OUTPUT FILE******************************************
+
+  ; *******************OUTPUT FILE******************************************
   nc_filename = work_dir + "eyring13f12_" + var0 + ".nc"
   Xdata = XXdata(line|:, plev|:, lat|:, stat|:)
   Xdata@var = var0
@@ -372,7 +357,8 @@ begin
   nc_outfile = ncdf_write(Xdata, nc_filename)
 
   ; Call provenance logger
-  plotpath = config_user_info@plot_dir + "eyring13f12_" + var0
+  plotpath = config_user_info@plot_dir + "eyring13f12_" + var0 + "_" \
+             +  plotMod(dimTot - 1) 
   log_provenance(nc_filename, \
                  plotpath + "." + file_type, \
                  "Long-term mean and trend of " + var0, \
