@@ -334,7 +334,7 @@ def list_all_files(file_dict, cmip_era):
     return all_files
 
 
-def _file_to_recipe_dataset(fn, cmip_era, file_dict):
+def _file_to_recipe_dataset(fn_path, cmip_era, file_dict):
     """Convert a filename to an recipe ready dataset."""
     # Add the obvious ones - ie the one you requested!
     output_dataset = {}
@@ -347,7 +347,7 @@ def _file_to_recipe_dataset(fn, cmip_era, file_dict):
 
     # Split file name and base path into directory structure and filenames.
     basefiles = _determine_basepath(cmip_era)
-    _, fnfile = os.path.split(fn)
+    _, fnfile = os.path.split(fn_path)
 
     for basefile in basefiles:
         _, basefile = os.path.split(basefile)
@@ -504,30 +504,34 @@ def _find_all_datasets(recipe_dict, cmip_eras):
             logger.info("DRS is %s; filter on dataset disabled.", drs)
             datasets = ["*"]
         else:
-            if drs in ["BADC", "DKRZ", "CP4CDS"]:
-                institutes_path = os.path.join(site_path, activity)
-            elif drs in ["ETHZ", "RCAST"]:
-                exp = recipe_dict["exp"][0]
-                if exp == "*":
-                    exp = "piControl"  # all institutes have piControl
-                mip = recipe_dict["mip"]
-                var = recipe_dict["short_name"]
-                institutes_path = os.path.join(site_path, exp, mip, var)
+            if not isinstance(site_path, list):
+                site_path = [site_path]
+            for site_pth in site_path:
+                if drs in ["BADC", "DKRZ", "CP4CDS"]:
+                    institutes_path = os.path.join(site_pth, activity)
+                elif drs in ["ETHZ", "RCAST"]:
+                    exp = recipe_dict["exp"][0]
+                    if exp == "*":
+                        exp = "piControl"  # all institutes have piControl
+                    mip = recipe_dict["mip"]
+                    var = recipe_dict["short_name"]
+                    institutes_path = os.path.join(site_pth, exp, mip, var)
 
-            if not os.path.isdir(institutes_path):
-                logger.warning("Path to data %s "
-                               "does not exist; will look everywhere.",
-                               institutes_path)
-                datasets = ["*"]
-                return datasets
+                if not os.path.isdir(institutes_path):
+                    logger.warning("Path to data %s "
+                                   "does not exist; will look everywhere.",
+                                   institutes_path)
+                    datasets = ["*"]
+                    return datasets
 
-            institutes = os.listdir(institutes_path)
-            if drs in ["BADC", "DKRZ", "CP4CDS"]:
-                for institute in institutes:
-                    datasets.extend(
-                        os.listdir(os.path.join(institutes_path, institute)))
-            else:
-                datasets.extend(institutes)
+                institutes = os.listdir(institutes_path)
+                if drs in ["BADC", "DKRZ", "CP4CDS"]:
+                    for institute in institutes:
+                        datasets.extend(
+                            os.listdir(os.path.join(institutes_path,
+                                                    institute)))
+                else:
+                    datasets.extend(institutes)
 
     return datasets
 
