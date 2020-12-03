@@ -38,11 +38,11 @@ preprocessors:
       statistics: [mean]
       exclude: [reference_dataset]
 
-  clim_global:
-    area_statistics:
-      operator: mean
-    annual_statistics:
-      operator: mean
+  #clim_global:
+  #  area_statistics:
+  #    operator: mean
+  #  annual_statistics:
+  #    operator: mean
 
 
 CMIP6_tas: &cmip6_tas
@@ -71,7 +71,7 @@ CMIP6_tas: &cmip6_tas
   - {dataset: FGOALS-f3-L}
   - {dataset: FGOALS-g3, grid: gn}
   - {dataset: FIO-ESM-2-0, grid: gn}
-  - {dataset: GFDL-CM4, grid: gr1}
+  #- {dataset: GFDL-CM4, grid: gr1} #permission denied
   - {dataset: GFDL-ESM4, grid: gr1}
   - {dataset: GISS-E2-1-G, grid: gn}
   #- {dataset: GISS-E2-1-G-CC, grid: gn, institute: NASA-GISS} #permission denied
@@ -90,7 +90,7 @@ CMIP6_tas: &cmip6_tas
   - {dataset: MPI-ESM1-2-LR, grid: gn}
   - {dataset: MRI-ESM2-0, grid: gn}
   - {dataset: NESM3, grid: gn}
-  - {dataset: NorCPM1, grid: gn, institute: NCC}
+  #- {dataset: NorCPM1, grid: gn, institute: NCC} # no pr data
   - {dataset: NorESM2-LM, grid: gn, institute: NCC}
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
@@ -164,8 +164,6 @@ CMIP5_tas: &cmip5_tas
   - {dataset: MRI-ESM1, start_year: 1851}
   - {dataset: NorESM1-M}
   - {dataset: NorESM1-ME}
-  - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2,
-     end_year: 2017}
 
 
 CMIP3_tas: &cmip3_tas
@@ -191,8 +189,6 @@ CMIP3_tas: &cmip3_tas
   - {dataset: ncar_pcm1, start_year: 1890}
   - {dataset: ukmo_hadcm3, start_year: 1860}
   - {dataset: ukmo_hadgem1, start_year: 1860}
-  - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2,
-     mip: Amon, end_year: 2017}
 
 
 diagnostics:
@@ -238,7 +234,10 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 1850
         end_year: 2004
-    additional_datasets: *cmip5_tas 
+        additional_datasets: *cmip5_tas 
+    additional_datasets:
+      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2,
+         end_year: 2017}
     scripts:
       tsline_anom:
         <<: *tsline_settings
@@ -257,7 +256,10 @@ diagnostics:
         ensemble: run1
         start_year: 1850
         end_year: 1999
-    additional_datasets: *cmip3_tas 
+        additional_datasets: *cmip3_tas 
+    additional_datasets:
+      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2,
+         end_year: 2017, mip: Amon}
     scripts:
       tsline_anom:
         <<: *tsline_settings
@@ -268,9 +270,9 @@ diagnostics:
     variables:
       tas: 
         <<: *var_tas_tsline
-      tasStderr:
-        <<: *var_tas_tsline
-        preprocessor: clim_global
+      #tasStderr:
+      #  <<: *var_tas_tsline
+      #  preprocessor: clim_global
     additional_datasets:
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
          start_year: 1850, end_year: 2017, tier: 2}
@@ -278,7 +280,8 @@ diagnostics:
       collect: 
         <<: *tsline_settings
         script: bock20jgr/tsline_collect.ncl
-        ancestors: [tas, tasStderr, 'fig_1_*/tsline_anom*']
+        #ancestors: [tas, tasStderr, 'fig_1_*/tsline_anom*']
+        ancestors: [tas, 'fig_1_*/tsline_anom*']
         start_year: 1850
         end_year: 2017
         y_max: 1.2
@@ -289,174 +292,178 @@ diagnostics:
         ref_stderr: True
     
 
-  fig_3_cmip6:
-    description: CMIP6 multi-model mean and bias of near-surface temperature
-    variables:
-      tas: &var_cmip6_bias
-        preprocessor: clim
-        reference_dataset: ERA5
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        start_year: 1995
-        end_year: 2014
-        additional_datasets: *cmip6_tas 
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias: &model_bias_settings
-        script: bock20jgr/model_bias.ncl
-        projection: Robinson
-        timemean: annualclim
-
-
-  fig_3_cmip5:
-    description: CMIP5 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        project: CMIP5
-        ensemble: r1i1p1
-        start_year: 1985
-        end_year: 2004
-        additional_datasets: *cmip5_tas 
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_3_cmip3:
-    description: CMIP3 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        mip: A1
-        project: CMIP3
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
-        ensemble: run1
-        start_year: 1980
-        end_year: 1999
-        additional_datasets: *cmip3_tas 
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_3_highresmip_low:
-    description: CMIP6 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        additional_datasets: *cmip6_highresmip_low 
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_3_highresmip_high:
-    description: CMIP6 multi-model mean and bias of near-surface temperature
-    variables:
-      tas:
-        <<: *var_cmip6_bias
-        additional_datasets: *cmip6_highresmip_high 
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-
-  fig_4_cmip6:
-    description: CMIP6 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        additional_datasets: *cmip6_tas 
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_cmip5:
-    description: CMIP5 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        project: CMIP5
-        ensemble: r1i1p1
-        start_year: 1985
-        end_year: 2004
-        additional_datasets: *cmip5_tas 
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_cmip3:
-    description: CMIP3 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        mip: A1
-        project: CMIP3
-        modeling_realm: atm
-        exp: 20c3m
-        frequency: mo
-        ensemble: run1
-        start_year: 1980
-        end_year: 1999
-        additional_datasets: *cmip3_tas 
-    additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
-         tier: 1}
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_highresmip_low:
-    description: CMIP6 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        additional_datasets: *cmip6_highresmip_low 
-    additional_datasets: *cmip6_hist_models_pr_gpcp
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
-  fig_4_highresmip_high:
-    description: CMIP6 multi-model mean and bias of percipitation
-    variables:
-      pr:
-        <<: *var_cmip6_bias
-        reference_dataset: GPCP-SG
-        additional_datasets: *cmip6_highresmip_high
-    additional_datasets: *cmip6_hist_models_pr_gpcp
-    scripts:
-      model_bias:
-        <<: *model_bias_settings
-
-
+#  fig_3_cmip6:
+#    description: CMIP6 multi-model mean and bias of near-surface temperature
+#    variables:
+#      tas: &var_cmip6_bias
+#        preprocessor: clim
+#        reference_dataset: ERA5
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        start_year: 1995
+#        end_year: 2014
+#        additional_datasets: *cmip6_tas 
+#    additional_datasets:
+#      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+#    scripts:
+#      model_bias: &model_bias_settings
+#        script: bock20jgr/model_bias.ncl
+#        projection: Robinson
+#        timemean: annualclim
+#
+#
+#  fig_3_cmip5:
+#    description: CMIP5 multi-model mean and bias of near-surface temperature
+#    variables:
+#      tas:
+#        <<: *var_cmip6_bias
+#        project: CMIP5
+#        ensemble: r1i1p1
+#        start_year: 1985
+#        end_year: 2004
+#        additional_datasets: *cmip5_tas 
+#    additional_datasets:
+#      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+#    scripts:
+#      model_bias:
+#        <<: *model_bias_settings
+#
+#
+#  fig_3_cmip3:
+#    description: CMIP3 multi-model mean and bias of near-surface temperature
+#    variables:
+#      tas:
+#        <<: *var_cmip6_bias
+#        mip: A1
+#        project: CMIP3
+#        modeling_realm: atm
+#        exp: 20c3m
+#        frequency: mo
+#        ensemble: run1
+#        start_year: 1980
+#        end_year: 1999
+#        additional_datasets: *cmip3_tas 
+#    additional_datasets:
+#      - {dataset: ERA5, project: OBS6, mip: Amon, type: reanaly, version: v1, tier: 3}
+#    scripts:
+#      model_bias:
+#        <<: *model_bias_settings
+#
+#
+##  fig_3_highresmip_low:
+##    description: CMIP6 multi-model mean and bias of near-surface temperature
+##    variables:
+##      tas:
+##        <<: *var_cmip6_bias
+##        additional_datasets: *cmip6_highresmip_low 
+##    additional_datasets:
+##      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+##    scripts:
+##      model_bias:
+##        <<: *model_bias_settings
+##
+##
+##  fig_3_highresmip_high:
+##    description: CMIP6 multi-model mean and bias of near-surface temperature
+##    variables:
+##      tas:
+##        <<: *var_cmip6_bias
+##        additional_datasets: *cmip6_highresmip_high 
+##    additional_datasets:
+##      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+##    scripts:
+##      model_bias:
+##        <<: *model_bias_settings
+#
+#
+#
+#  fig_4_cmip6:
+#    description: CMIP6 multi-model mean and bias of percipitation
+#    variables:
+#      pr:
+#        <<: *var_cmip6_bias
+#        reference_dataset: GPCP-SG
+#        additional_datasets: *cmip6_tas 
+#    additional_datasets:
+#      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+#         tier: 1}
+#    scripts:
+#      model_bias:
+#        <<: *model_bias_settings
+#
+#
+#  fig_4_cmip5:
+#    description: CMIP5 multi-model mean and bias of percipitation
+#    variables:
+#      pr:
+#        <<: *var_cmip6_bias
+#        reference_dataset: GPCP-SG
+#        project: CMIP5
+#        ensemble: r1i1p1
+#        start_year: 1985
+#        end_year: 2004
+#        additional_datasets: *cmip5_tas 
+#    additional_datasets:
+#      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+#         tier: 1}
+#    scripts:
+#      model_bias:
+#        <<: *model_bias_settings
+#
+#
+#  fig_4_cmip3:
+#    description: CMIP3 multi-model mean and bias of percipitation
+#    variables:
+#      pr:
+#        <<: *var_cmip6_bias
+#        reference_dataset: GPCP-SG
+#        mip: A1
+#        project: CMIP3
+#        modeling_realm: atm
+#        exp: 20c3m
+#        frequency: mo
+#        ensemble: run1
+#        start_year: 1980
+#        end_year: 1999
+#        additional_datasets: *cmip3_tas 
+#    additional_datasets:
+#      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+#         tier: 1, mip: Amon}
+#    scripts:
+#      model_bias:
+#        <<: *model_bias_settings
+#
+#
+##  fig_4_highresmip_low:
+##    description: CMIP6 multi-model mean and bias of percipitation
+##    variables:
+##      pr:
+##        <<: *var_cmip6_bias
+##        reference_dataset: GPCP-SG
+##        additional_datasets: *cmip6_highresmip_low 
+##    additional_datasets:
+##      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+##         tier: 1}
+##    scripts:
+##      model_bias:
+##        <<: *model_bias_settings
+##
+##
+##  fig_4_highresmip_high:
+##    description: CMIP6 multi-model mean and bias of percipitation
+##    variables:
+##      pr:
+##        <<: *var_cmip6_bias
+##        reference_dataset: GPCP-SG
+##        additional_datasets: *cmip6_highresmip_high
+##    additional_datasets:
+##      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3,
+##         tier: 1}
+##    scripts:
+##      model_bias:
+##        <<: *model_bias_settings
+#
+#

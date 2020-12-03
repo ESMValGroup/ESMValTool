@@ -51,13 +51,14 @@ begin
   ind_tas = ind(var_names .eq. "tas")
   info_items = select_metadata_by_name(input_file_info, var0)
   units0 = info_items[0]@units
-  if(any(var_names .eq. "tasStderr")) then
-    obs_stderr = True
-    var1 = "tasStderr"
-    info_items1 = select_metadata_by_name(input_file_info, var1)
-  else
-    obs_stderr = False
-  end if
+  ; if(any(var_names .eq. "tasStderr")) then
+  ;   obs_stderr = True
+  ;   var1 = "tasStderr"
+  ;   info_items1 = select_metadata_by_name(input_file_info, var1)
+  ; else
+  ;   obs_stderr = False
+  ; end if
+  obs_stderr = True
 
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
