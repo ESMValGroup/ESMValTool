@@ -6,14 +6,17 @@ Diagnostics of stratospheric dynamics and chemistry
 Overview
 --------
 
-This recipe reproduces the figures of `Eyring et al. (2006)`_
+This recipe reproduces the figures of `Eyring et al. (2006)`_ and `Eyring et al. (2013)`_.
 The following plots are reproduced:
 
 * Vertical profile climatological mean bias of climatological mean for selected seasons and latitudinal region.
 * Vertical and latitudinal profile of climatological mean for selected seasons this figure and setting is valid for figure 5 (CH4) figure 6 (H2O) figure 11 (HCL) figure 13 (tro3).
 * Total ozone anomalies at different latitudinal band and seasons.
+* Zonal mean of long-term with linear trend
 
 .. _`Eyring et al. (2006)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2006JD007327
+
+.. _`Eyring et al. (2013)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/jgrd.50316
 
 Available recipes and diagnostics
 ---------------------------------
@@ -21,6 +24,7 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/
 
 * recipe_eyring06jgr.yml
+* recipe_eyring13jgr_12.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/eyring06jgr/
 
@@ -29,12 +33,16 @@ Diagnostics are stored in esmvaltool/diag_scripts/eyring06jgr/
 * eyring06jgr_fig05b.ncl
 * eyring06jgr_fig15.ncl
 
+Diagnostics are stored in esmvaltool/diag_scripts/eyring13jgr/
+
+* eyring13jgr_fig12.ncl
+
 User settings in recipe
 -----------------------
 #. Preprocessor
 
    * ``regrid_interp_lev_zonal``: Regridding and interpolation reference_dataset levels used by eyring06jgr_fig01 and eyring06jgr_fig05
-   * ``zonal`` : Regridding and zonal mean used by eyring06jgr_fig15
+   * ``zonal`` : Regridding and zonal mean used by eyring06jgr_fig15 and eyring13jgr_fig12
 
 
 #. Script <eyring06jgr_fig01.ncl>
@@ -49,7 +57,6 @@ User settings in recipe
    * ``levmin``: array of float, min limit Y axis [1., 1., 1., 1.]
    * ``levmax``: array of float, max limit Y axis [350., 350., 350., 350.]
 
-
    *Optional settings for script*
    
    * ``start_year``: int,  year when start the climatology calculation [1980] (default max among the models start year).
@@ -62,13 +69,39 @@ User settings in recipe
    * ``reference_dataset``: name of the reference model or observation for regridding and bias calculation (e.g. ERA-Interim").
    *  ``mip``:  Amon.
 
+#. Script <eyring13jgr_fig12.ncl>
 
+   *Required settings for script*
+
+   * ``e13fig12_exp_MMM``: name of the experiments for the MMM
+
+   *Optional settings for script*
+
+   * ``e13fig12_start_year``: year when start the climatology calculation
+   * ``e13fig12_end_year``: year when end the climatology calculation
+   * ``e13fig12_multimean``: calculate multimodel mean (default: False)
+   * ``e13fig12_season``: season (default: ANN (annual))
+
+   *Required settings for variables*
+   
+   * ``preprocessor``: zonal
+   * ``reference_dataset``: name of the reference model or observation for regridding and bias calculation (e.g. ERA-Interim").
+   *  ``mip``:  Amon.
 
 Variables
 ---------
 
 *  ta (atmos, monthly mean, longitude latitude level time)
+*  ua (atmos, monthly mean, longitude latitude level time)
 
+Observations and reformat scripts
+---------------------------------
+
+* ERA-Interim
+* HALOE
+* NIWA-BS
+* ERA5
+  *Reformatting with:* recipes/cmorizers/recipe_era5.yml
 
 
 Example plots
