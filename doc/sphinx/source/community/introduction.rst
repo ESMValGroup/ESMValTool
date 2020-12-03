@@ -358,6 +358,9 @@ The documentation can be seen by clicking on `Details`. Make sure the
 documentation is nicely formatted, and (if necessary) add the link to the
 top of the PR.
 
+Make sure your PR has a descriptive title that can be used in the
+`changelog <https://docs.esmvaltool.org/en/latest/changelog.html>`__.
+
 Diagnostic script contributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
