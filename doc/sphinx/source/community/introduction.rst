@@ -307,7 +307,7 @@ used in those recipes.
 When adding a new recipe, please start from the
 `template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
 and do not forget to add your recipe to the
-`<index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
 Note that there is no need to write extensive documentation for functions that
 are not visible in the online documentation.
 However, a short description in the docstring helps other contributors to
