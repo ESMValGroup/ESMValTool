@@ -67,7 +67,6 @@ begin
     file_type = "ps"
   end if
 
-
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -358,7 +357,7 @@ begin
 
   ; Call provenance logger
   plotpath = config_user_info@plot_dir + "eyring13f12_" + var0 + "_" \
-             +  plotMod(dimTot - 1) 
+                                       + plotMod(dimTot - 1)
   log_provenance(nc_filename, \
                  plotpath + "." + file_type, \
                  "Long-term mean and trend of " + var0, \

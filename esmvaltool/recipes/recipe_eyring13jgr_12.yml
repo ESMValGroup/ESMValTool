@@ -3,8 +3,8 @@
 ---
 documentation:
   description: |
-    Diagnostics of stratospheric dynamics and chemistry reproducing selected figures
-    from Eyring et al. JGR (2006).
+    Diagnostics of stratospheric dynamics and chemistry reproducing selected 
+    figures from Eyring et al. JGR (2006).
 
   authors:
     - cionni_irene
@@ -16,7 +16,7 @@ documentation:
     - eyring13jgr
 
   projects:
-    - crescendo 
+    - crescendo
 
 
 datasets:
@@ -111,17 +111,18 @@ datasets:
  # - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1,
  #    start_year: 1986, end_year: 1999}
 # CMIP6
-   - {dataset: CESM2, project: CMIP6, exp: historical, grid: gn,
-      ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
-   - {dataset: BCC-ESM1, project: CMIP6, exp: historical, grid: gn,
-      ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
-   - {dataset: MIROC6, project: CMIP6, exp: historical, grid: gn,
-      ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
+  - {dataset: CESM2, project: CMIP6, exp: historical, grid: gn,
+     ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
+  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, grid: gn,
+     ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
+  - {dataset: MIROC6, project: CMIP6, exp: historical, grid: gn,
+     ensemble: r1i1p1f1, start_year: 1979, end_year: 2005}
 
 preprocessors:
   zonal:
     regrid:
-      target_grid: reference_dataset
+      #target_grid: reference_dataset
+      target_grid: 1x1
       scheme: linear
     extract_levels:
       scheme: linear
@@ -148,12 +149,14 @@ diagnostics:
     variables:
       ua:
         preprocessor: zonal
-        reference_dataset: ERA-Interim
+        reference_dataset: ERA5
         mip: Amon
         start_year: 1979
         end_year: 2005
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+      #- {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+      #   start_year: 1979, end_year: 2005, tier: 3}
+      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1,
          start_year: 1979, end_year: 2005, tier: 3}
     scripts:
       clim: &clim_settings
