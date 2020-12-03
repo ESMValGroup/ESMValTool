@@ -7,7 +7,7 @@ Making a new dataset
 If you are contributing a new dataset, please have a look at the `documentation <https://esmvaltool.org.readthedocs.build/en/latest/dataset.html>`_ for how to do so.
 
 
-.. dataset-documentation:
+.. _dataset-documentation:
 
 Documentation
 =============
@@ -16,15 +16,13 @@ Make sure that the new dataset is added to the `table in the documentation <http
 
 The documentation should have clear instructions on how to obtain the data.
 
-.. dataset-tests:
-
 Testing
 =======
 
 Add a test for the CMORized data to ``recipes/example/recipe_check_obs.yml`` and run the recipe, to make sure the CMOR checks pass without errors.
 
-Scientific output
-=================
+CMORizer output
+===============
 
 When contributing a new dataset, we expect that the numbers and units of the dataset look physically meaningful.
 

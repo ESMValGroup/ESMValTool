@@ -53,16 +53,16 @@ It is the responsibility of the author to make sure the PR is ready to review. T
 - [ ] [🛠][1] New dependencies are added to the [project requirements](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/diagnostic.html#additional-dependencies)
 - [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes how the recipe works
 - [ ] [🧪][2] Recipe runs successfully on your own machine or [`@esmvalbot`](https://github.com/apps/esmvalbot)
-- [ ] [🧪][2] Figure(s)/data look as expected
-- [ ] [🧪][2] Code is well documented / scientifically sound
+- [ ] [🧪][2] Figure(s)/data [look as expected](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/diagnostic.html#recording-provenance)
+- [ ] [🧪][2] Code is [well documented](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/introduction.html#what-should-be-documented) and scientifically sound
 
 ### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
 
-- [ ] [🛠][1] Dataset is added to the [table in the documentation](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#dataset-documentation)
-- [ ] [🛠][1] [Tests for the CMORized data](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#dataset-tests) are available
-- [ ] [🛠][1] Clear instructions to obtain the data are [documented](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#dataset-documentation)
-- [ ] [🛠][1] Data set is added to the [OBS data pool](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#adding-your-dataset-to-the-obs-data-pool)
-- [ ] [🧪][2] Numbers/units of the data look [physically meaningful](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#scientific-output)
+- [ ] [🛠][1] Dataset is added to the [table in the documentation](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/dataset.html#dataset-documentation)
+- [ ] [🛠][1] Documentation contains [instructions to obtain the data](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/dataset.html#dataset-documentation)
+- [ ] [🛠][1] [Tests for the CMORized data](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/dataset.html#dataset-tests) are available
+- [ ] [🧪][2] Numbers/units of the data look [physically meaningful](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/dataset.html#cmorizer-output)
+- [ ] [🛠][1] Data set is added to the [OBS data pool](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/dataset.html#adding-your-dataset-to-the-obs-data-pool)
 
 ***
 
