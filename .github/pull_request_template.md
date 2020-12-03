@@ -33,9 +33,11 @@
     to open a new issue on GitHub.
 -->
 
-- [ ] [Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do ☝
+- [ ] [☝ Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do
 
 ## Checklist
+
+It is the responsibility of the author to make sure the PR is ready to review. The icons indicate whether the item will be subject to the [🛠 Technical][1] or [🧪 Scientific][2] review.
 
 - [ ] [🛠][1] PR has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/changelog.html)
 - [ ] [🛠][1] Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
@@ -48,31 +50,30 @@
 
 ### New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
 
-- [ ] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic is available
-- [ ] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
-- [ ] [Recipe runs successfully](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#???) on your own machine
-- [ ] Recipe runs successfully using [`@esmvalbot`](https://github.com/apps/esmvalbot)
+- [ ] [🛠][1] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
+- [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes how the recipe works
+- [ ]  [🧪][2] [Recipe runs successfully](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#???) on your own machine or [`@esmvalbot`](https://github.com/apps/esmvalbot)
 - [ ] [🧪][2] Figure(s)/data look as expected
-- [ ] Code is well documented
+- [ ] [🧪][2] Code is well documented / scientifically sound
 
 ### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
 
+- [ ] [🛠][1] Dataset is added to the [table in the documentation](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets)
+- [ ] [🛠][1] [Tests for the CMORized data](https://docs.esmvaltool.org/en/latest/develop/dataset.html#test-the-cmorized-dataset) are available
+- [ ] [🛠][1] [Clear instructions to obtain the data](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???) are available
+- [ ] [🛠][1] Data set is added to the [OBS data pool](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???)
 - [ ] [🧪][2] Numbers/units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???)
-- [ ] [🧪][2] Dataset is added to the [table in the documentation](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets)
-- [ ] [Tests for the CMORized data](https://docs.esmvaltool.org/en/latest/develop/dataset.html#test-the-cmorized-dataset) are available
-- [ ] [🧪][2] [Clear instructions to obtain the data](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???) are available
-- [ ] [🧪][2] Data set is added to the [OBS data pool](https://docs.esmvaltool.org/en/latest/develop/dataset.html#???)
+
 
 ***
 
 To help with the number pull requests:
 
-- [ ] I have [reviewed](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
+- [ ] 🚀 I have [reviewed](https://esmvaltool--1924.org.readthedocs.build/en/1924/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
 
 <!--
 If you need help with any of the items on the checklists above, please do not hesitate to ask by commenting in the issue or pull request.
 -->
-
 
 [1]: https://docs.esmvaltool.org/en/latest/community/review.html#technical-reviews
 [2]: https://docs.esmvaltool.org/en/latest/community/review.html#scientific-reviews
