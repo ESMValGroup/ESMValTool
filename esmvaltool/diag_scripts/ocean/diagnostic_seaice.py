@@ -61,10 +61,10 @@ This tool is part of the ocean diagnostic tools package in the ESMValTool.
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 """
+import itertools
 import logging
 import os
 import sys
-from itertools import product
 
 import cartopy
 import iris
@@ -430,7 +430,7 @@ def make_map_plots(
     # Making plots for each layer
     plot_types = ['Fractional cover', 'Ice Extent']
     plot_times = [0, -1]
-    for plot_type, plot_time in product(plot_types, plot_times):
+    for plot_type, plot_time in itertools.product(plot_types, plot_times):
         for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
             layer = str(layer)
 

@@ -8,7 +8,8 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-from esmvaltool import __version__
+sys.path.insert(0, os.path.dirname(__file__))
+from esmvaltool import __version__  # noqa: E402
 
 PACKAGES = [
     'esmvaltool',
@@ -17,7 +18,6 @@ PACKAGES = [
 REQUIREMENTS = {
     # Installation script (this file) dependencies
     'setup': [
-        'pytest-runner',
         'setuptools_scm',
     ],
     # Installation dependencies
@@ -33,12 +33,14 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.0.0,<2.1',
+        'esmvalcore>=2.1.0,<2.2',
         'fiona',
         'GDAL',
         'jinja2',
         'joblib',
-        'matplotlib',
+        'lime',
+        'matplotlib>=3,<3.3',
+        'natsort',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
@@ -46,30 +48,33 @@ REQUIREMENTS = {
         'pynio',
         'pyproj>=2.1'
         'pyyaml',
+        'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=2.2.1',
+        'scitools-iris>=2.2.1,<3',
         'seaborn',
         'seawater',
         'shapely',
         'xarray>=0.12',
         'xesmf',
+        'xgboost',
         'xlsxwriter',
     ],
     # Test dependencies
-    # Execute 'python setup.py test' to run tests
+    # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
-        'pytest-cov',
+        'pytest-cov>=2.10.1',
         'pytest-env',
-        'pytest-flake8',
+        'pytest-flake8>=1.0.6',
         'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
+        'pytest-xdist',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm!=0.2.0',
+        'autodocsumm<0.2.0',
         'codespell',
         'docformatter',
         'isort',
@@ -77,7 +82,7 @@ REQUIREMENTS = {
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
         'sphinx>2',
         'sphinx_rtd_theme',
-        'vmprof',
+        'vprof',
         'yamllint',
         'yapf',
     ],

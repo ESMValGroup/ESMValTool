@@ -1,0 +1,85 @@
+name: Anaconda Publish
+
+on:
+  release:
+    types: [published]
+  # use this to test before actual release and publish
+  push:
+    branches:
+      - master
+
+jobs:
+
+  publish:
+    name: publish / python-3.8 / ubuntu-latest
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.8"
+          miniconda-version: "latest"
+          channels: conda-forge
+      - name: Show conda config
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+      - name: Python info
+        shell: bash -l {0}
+        run: |
+          which python
+          python --version
+      - name: Install build dependencies
+        shell: bash -l {0}
+        run: conda install -y conda-build conda-verify ripgrep anaconda-client
+      - name: Build the conda package
+        shell: bash -l {0}
+        run: |
+          conda config --set anaconda_upload no
+          export BUILD_FOLDER=/tmp/esmvaltool/_build
+          mkdir -p $BUILD_FOLDER
+          conda build package \
+            --channel esmvalgroup --channel conda-forge \
+            --croot $BUILD_FOLDER \
+      - name: Push the package to anaconda cloud
+        if: startsWith(github.ref, 'refs/tags')
+        shell: bash -l {0}
+        run: |
+          export BUILD_FOLDER=/tmp/esmvaltool/_build
+          # use --label test before actual release and check all works well
+          anaconda --token ${{ secrets.ANACONDA_TOKEN }} upload --user esmvalgroup $BUILD_FOLDER/noarch/*.tar.bz2
+  verify:
+    name: verify / python-${{ matrix.python-version }} / ${{ matrix.os }}
+    if: startsWith(github.ref, 'refs/tags')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest']  # may extent to osx in the future
+        python-version: ["3.6", "3.7", "3.8"]
+    runs-on: ${{ matrix.os }}
+    needs: publish
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: esmvalgroup,conda-forge
+      - shell: bash -l {0}
+        run: conda --version
+      - shell: bash -l {0}
+        run: which conda
+      - shell: bash -l {0}
+        run: python -V
+      - shell: bash -l {0}
+        run: conda install esmvaltool
+      - shell: bash -l {0}
+        run: esmvaltool --help
+      - shell: bash -l {0}
+        run: esmvaltool version
