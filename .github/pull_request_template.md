@@ -58,11 +58,11 @@ It is the responsibility of the author to make sure the PR is ready to review. T
 
 ### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
 
-- [ ] [🛠][1] Dataset is added to the table in the documentation
-- [ ] [🛠][1] [Tests for the CMORized data](https://esmvaltool--1924.org.readthedocs.build/en/1924/develop/dataset.html#test-the-cmorized-dataset) are available
-- [ ] [🛠][1] Clear instructions to obtain the data are available
-- [ ] [🛠][1] Data set is added to the OBS data pool
-- [ ] [🧪][2] Numbers/units of the data look physically meaningful
+- [ ] [🛠][1] Dataset is added to the [table in the documentation](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#dataset-documentation)
+- [ ] [🛠][1] [Tests for the CMORized data](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#dataset-tests) are available
+- [ ] [🛠][1] Clear instructions to obtain the data are [documented](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#dataset-documentation)
+- [ ] [🛠][1] Data set is added to the [OBS data pool](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#adding-your-dataset-to-the-obs-data-pool)
+- [ ] [🧪][2] Numbers/units of the data look [physically meaningful](file://///wsl$/Ubuntu/home/stef/r/esmvaltool/doc/sphinx/build/html/community/dataset.html#scientific-output)
 
 ***
 

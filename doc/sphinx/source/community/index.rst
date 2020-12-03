@@ -9,6 +9,7 @@ Contributing to the community
 		Introduction <introduction>
 		Release schedule and procedure <release_strategy>
 		Contributing a diagnostic or recipe <diagnostic>
+        Contributing a dataset <dataset>
 		Contributing a review <review>
 		Porting a namelist (recipe) or diagnostic from version 1 to version 2 <porting>
     GitHub workflow <repository>
