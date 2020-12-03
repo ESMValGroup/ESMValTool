@@ -112,3 +112,9 @@ Example plots
    :align:   center
 
    Climatological mean temperature biases for (top) 60–90N and (bottom) 60–90S for the (left) winter and (right) spring seasons. The climatological means for the CCMs and ERA-Interim data from 1980 to 1999 are included. Biases are calculated relative to ERA-Interim reanalyses. The grey area shows ERA-Interim plus and minus 1 standard deviation (s) about the climatological mean. The turquoise area shows plus and minus 1 standard deviation about the multi-model mean.
+
+.. _fig_eyring13jgr_12:
+.. figure::  /recipes/figures/eyring13jgr/fig_eyr13jgr_12.png
+   :align:   center
+
+   Long-term mean (thin black contour) and linear trend (colour) of zonal mean DJF zonal winds for the multi-model mean over 1979-2014
