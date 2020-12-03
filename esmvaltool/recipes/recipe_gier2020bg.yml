@@ -318,6 +318,9 @@ diagnostics:
         masking: obs
         var_order: ["xco2", "tas", "tasa"]
         region: [-30, 30]
+        # MODIS Land Cover map.
+        # Obtainable from https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=968
+        # https://thredds.daac.ornl.gov/thredds/catalog/ornldaac/968/catalog.html
         modis_path: /work/bd0854/b309137/data_ext/Land_Cover_Class_1degree.nc4
 
 #  station_comparison:
