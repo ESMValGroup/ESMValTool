@@ -98,11 +98,11 @@ def _get_site_rootpath(cmip_era):
         yamlconf = yaml.safe_load(yamf)
     drs = yamlconf['drs'][cmip_era]
     rootdir = yamlconf['rootpath'][cmip_era]
-    logger.debug(f"{cmip_era} root directory {rootdir}")
+    logger.debug("%s root directory %s", cmip_era, rootdir)
     if drs == 'default' and 'default' in yamlconf['rootpath']:
         rootdir = yamlconf['rootpath']['default']
         logger.debug("Using drs default and "
-                     f"default: {rootdir} data directory")
+                     "default: %s data directory", rootdir)
 
     return drs, rootdir
 
@@ -136,7 +136,7 @@ def _determine_basepath(cmip_era):
             basepath = os.path.join(rootpath, _get_input_file(cmip_era))
         basepath = basepath.replace('//', '/')
         basepaths.append(basepath)
-    logger.debug(f"We will look for files of patterns {basepaths}")
+    logger.debug("We will look for files of patterns %s", basepaths)
 
     return basepaths
 
@@ -159,8 +159,9 @@ def _overlapping_datasets(files, all_years, start_year, end_year):
             logger.info("Contiguous data from multiple experiments.")
         else:
             logger.warning("Data from multiple exps has >1 year gaps! ")
-            logger.debug(f"Start {start_year}/end {end_year} requested - "
-                         f"files covering {yr_pairs} found.")
+            logger.debug("Start %s/end %s requested - "
+                         "files covering %s found.",
+                         start_year, end_year, yr_pairs)
 
     return valid_files
 
@@ -239,7 +240,7 @@ def filter_years(files, start_year, end_year, overlap=False):
 
     if not valid_files:
         logger.warning("No data found to fully cover start "
-                       f"{start_year} / end {end_year} as requested!")
+                       "%s / end %s as requested!", start_year, end_year)
 
     return valid_files
 
@@ -296,8 +297,9 @@ def list_all_files(file_dict, cmip_era):
         realms = CMOR_TABLES[cmip_era].get_variable(mip,
                                                     short_name).modeling_realm
     except AttributeError:
-        logger.warning(f"Could not find {cmip_era} CMOR table "
-                       f"for variable {short_name} with mip {mip}")
+        logger.warning("Could not find %s CMOR table "
+                       "for variable %s with mip %s",
+                       cmip_era, short_name, mip)
         return []
     file_dict['frequency'] = frequency
 
@@ -321,7 +323,7 @@ def list_all_files(file_dict, cmip_era):
                     raise ValueError(
                         "Could not expand ~ to user home dir "
                         "please expand it in the config user file!")
-                logger.info(f"Expanding path to {new_path}")
+                logger.info("Expanding path to %s", new_path)
 
             # Globs all the wildcards into a list of files.
             files = glob(new_path)
@@ -412,23 +414,23 @@ def _check_recipe(recipe_dict):
         do_exit = True
     for diag_name, diag in recipe_dict["diagnostics"].items():
         if "variables" not in diag:
-            logger.error(f"Diagnostic {diag_name} missing variables.")
+            logger.error("Diagnostic %s missing variables.", diag_name)
             do_exit = True
         for var_name, var_pars in diag["variables"].items():
             if "mip" not in var_pars:
-                logger.error(f"Variable {var_name} missing mip.")
+                logger.error("Variable %s missing mip.", var_name)
                 do_exit = True
             if "start_year" not in var_pars:
-                logger.error(f"Variable {var_name} missing start_year.")
+                logger.error("Variable %s missing start_year.", var_name)
                 do_exit = True
             if "end_year" not in var_pars:
-                logger.error(f"Variable {var_name} missing end_year.")
+                logger.error("Variable %s missing end_year.", var_name)
                 do_exit = True
             if "exp" in var_pars:
                 if isinstance(var_pars["exp"],
                               list) and "ensemble" not in var_pars:
                     logger.error("Asking for experiments list for ")
-                    logger.error(f"variable {var_name} - you need to ")
+                    logger.error("variable %s - you need to ", var_name)
                     logger.error("define an ensemble for this case.")
                     do_exit = True
     if do_exit:
@@ -446,10 +448,10 @@ def _check_config_file(user_config_file):
         do_exit = True
     for proj in cmip_eras:
         if proj not in user_config_file["rootpath"].keys():
-            logger.error(f"Config file missing rootpath for {proj}")
+            logger.error("Config file missing rootpath for %s", proj)
             do_exit = True
         if proj not in user_config_file["drs"].keys():
-            logger.error(f"Config file missing drs for {proj}")
+            logger.error("Config file missing drs for %s", proj)
             do_exit = True
     if do_exit:
         raise ValueError("Please fix issues in config file and rerun")
@@ -499,7 +501,7 @@ def _find_all_datasets(recipe_dict, cmip_eras):
             activity = ""
         drs, site_path = _get_site_rootpath(cmip_era)
         if drs in ["default", "SMHI"]:
-            logger.info(f"DRS is {drs}; filter on dataset disabled.")
+            logger.info("DRS is %s; filter on dataset disabled.", drs)
             datasets = ["*"]
         else:
             if drs in ["BADC", "DKRZ", "CP4CDS"]:
@@ -513,8 +515,9 @@ def _find_all_datasets(recipe_dict, cmip_eras):
                 institutes_path = os.path.join(site_path, exp, mip, var)
 
             if not os.path.isdir(institutes_path):
-                logger.warning(f"Path to data {institutes_path} "
-                               "does not exist; will look everywhere.")
+                logger.warning("Path to data %s "
+                               "does not exist; will look everywhere.",
+                               institutes_path)
                 datasets = ["*"]
                 return datasets
 
@@ -533,10 +536,10 @@ def _get_exp(recipe_dict):
     """Get the correct exp as list of single or multiple exps."""
     if isinstance(recipe_dict["exp"], list):
         exps_list = recipe_dict["exp"]
-        logger.info(f"Multiple {exps_list} experiments requested")
+        logger.info("Multiple %s experiments requested", exps_list)
     else:
         exps_list = [recipe_dict["exp"]]
-        logger.info(f"Single {exps_list} experiment requested")
+        logger.info("Single %s experiment requested", exps_list)
 
     return exps_list
 
@@ -548,10 +551,10 @@ def _get_datasets(recipe_dict, cmip_eras):
         return datasets
     if isinstance(recipe_dict['dataset'], list):
         datasets = recipe_dict['dataset']
-        logger.info(f"Multiple {datasets} datasets requested")
+        logger.info("Multiple %s datasets requested", datasets)
     else:
         datasets = [recipe_dict['dataset']]
-        logger.info(f"Single {datasets} dataset requested")
+        logger.info("Single %s dataset requested", datasets)
 
     return datasets
 
@@ -620,11 +623,11 @@ def run():
     log_files = configure_logging(output_dir=run_dir,
                                   console_log_level=config_user['log_level'])
     logger.info(HEADER)
-    logger.info(f"Using user configuration file: {args.config_file}")
-    logger.info(f"Using pilot recipe file: {input_recipe}")
-    logger.info(f"Writing filled out recipe to: {output_recipe}")
+    logger.info("Using user configuration file: %s", args.config_file)
+    logger.info("Using pilot recipe file: %s", input_recipe)
+    logger.info("Writing filled out recipe to: %s", output_recipe)
     log_files = "\n".join(log_files)
-    logger.info(f"Writing program log files to:\n{log_files}")
+    logger.info("Writing program log files to:\n%s", log_files)
 
     # check config user file
     _check_config_file(config_user)
@@ -639,7 +642,7 @@ def run():
     additional_datasets = {}
     for (diag, variable), recipe_dict in recipe_dicts.items():
         logger.info("Looking for data for "
-                    f"variable {variable} in diagnostic {diag}")
+                    "variable %s in diagnostic %s", variable, diag)
         new_datasets = []
         if "short_name" not in recipe_dict:
             recipe_dict['short_name'] = variable
@@ -657,7 +660,7 @@ def run():
         # loop through datasets
         for dataset in datasets:
             recipe_dict['dataset'] = dataset
-            logger.info(f"Seeking data for dataset: {dataset}")
+            logger.info("Seeking data for dataset: %s", dataset)
             for cmip_era in cmip_eras:
                 files = _get_timefiltered_files(recipe_dict, exps_list,
                                                 cmip_era)
@@ -666,9 +669,9 @@ def run():
                 add_datasets = []
                 for fn in sorted(files):
                     fn_dir = os.path.dirname(fn)
-                    logger.info(f"Data directory: {fn_dir}")
+                    logger.info("Data directory: %s", fn_dir)
                     out = _file_to_recipe_dataset(fn, cmip_era, recipe_dict)
-                    logger.info(f"New recipe entry: {out}", out)
+                    logger.info("New recipe entry: %s", out)
                     if out is None:
                         continue
                     add_datasets.append(out)
