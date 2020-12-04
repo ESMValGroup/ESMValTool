@@ -96,9 +96,9 @@ def _get_rows_and_fill_value(filepath):
         data_rows = [0, 1, 3]
         fill_v = -999.99
     else:
-        raise ValueError("Unexpected number of columns, only monthly data"
-                         " from insitu or flask measurements"
-                         "currently supported")
+        raise NotImplementedError("Unexpected number of columns, "
+                                  "only monthly data rom insitu or flask "
+                                  "measurements currently supported")
     return data_rows, fill_v
 
 
@@ -252,11 +252,21 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
-        filepath = _get_filenames(var['stations'],
-                                  cfg, in_dir)
-        for station in var['stations']:
-            logger.info("Reading file '%s'", filepath[station][0])
-            logger.info("CMORizing variable '%s' for station '%s'"
-                        % (short_name, station))
-            _extract_variable(short_name, var, cfg, filepath[station][0],
-                              out_dir, station_dict[station.upper()])
+        # Check for wrong station names
+        stat_upper = [element.upper() for element in var['stations']]
+        false_keys = np.setdiff1d(stat_upper, list(station_dict.keys()))
+        if len(false_keys) == 0:
+            filepath = _get_filenames(var['stations'],
+                                      cfg, in_dir)
+            for station in var['stations']:
+                logger.info("Reading file '%s'", filepath[station][0])
+                logger.info("CMORizing variable '%s' for station '%s'"
+                            % (short_name, station))
+                _extract_variable(short_name, var, cfg, filepath[station][0],
+                                  out_dir, station_dict[station.upper()])
+        else:
+            raise ValueError("Could not find the following station(s): %s. "
+                             "Please double-check your spelling in the "
+                             "cmor config file. The following is a list of "
+                             "valid stations: %s."
+                             % (false_keys, list(station_dict.keys())))
