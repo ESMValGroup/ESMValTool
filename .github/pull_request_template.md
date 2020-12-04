@@ -68,7 +68,7 @@ It is the responsibility of the author to make sure the PR is ready to review. T
 
 To help with the number pull requests:
 
-- [ ]  We kindly ask you to [review](https://docs.esmvaltool.org/en/latest/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
+- [ ] 🙏 We kindly ask you to [review](https://docs.esmvaltool.org/en/latest/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
 
 <!--
 If you need help with any of the items on the checklists above, please do not hesitate to ask by commenting in the issue or pull request.
