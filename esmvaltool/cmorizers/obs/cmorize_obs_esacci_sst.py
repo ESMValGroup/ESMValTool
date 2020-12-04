@@ -68,7 +68,7 @@ def cmorization(in_dir, out_dir, cfg, _):
         raw_info = {'name': vals['raw'], 'file': vals['file']}
         inpfile = os.path.join(in_dir, cfg['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile)
-        years = range(1982, 2017)
+        years = range(1982, 2020)
         months = ["0" + str(mo) for mo in range(1, 10)] + ["10", "11", "12"]
         for year in years:
             monthly_cubes = []
