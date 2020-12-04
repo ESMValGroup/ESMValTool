@@ -37,7 +37,7 @@ code.
 User mailing list
 -----------------
 
-The ESMValTool user mailing list is open for all general and technical questions on the ESMValTool, for example about installation, application, development, etc.
+The ESMValTool user mailing list `esmvaltool@listserv.dfn.de <mailto:esmvaltool@listserv.dfn.de>`_ is open for all general and technical questions on the ESMValTool, for example about installation, application, development, etc.
 
 To subscribe send an email to `sympa@listserv.dfn.de <mailto:sympa@listserv.dfn.de?subject=subscribe%20esmvaltool>`_ with the following subject line:
 
