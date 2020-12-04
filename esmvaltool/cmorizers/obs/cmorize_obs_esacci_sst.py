@@ -11,7 +11,9 @@ Last access
 
 Download and processing instructions
    Download the following files:
-     <insert here>
+     Go to http://surftemp.net/regridding/index.html and request regridded data with the default options
+     except for the time resolution, which must be monthly. At the time of writing the script the period
+     of the data was from 1982 to 2019 inclusive.
 
 Modification history
    20202203-predoi_valeriu: written.
