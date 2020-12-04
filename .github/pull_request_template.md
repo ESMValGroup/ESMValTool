@@ -44,7 +44,7 @@ It is the responsibility of the author to make sure the PR is ready to review. T
 - [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
 - [ ] [🛠][1] YAML files pass [`pre-commit`](https://docs.esmvaltool.org/en/latest/community/introduction.html#pre-commit) or [`yamllint`](https://docs.esmvaltool.org/en/latest/community/introduction.html#yaml) checks
 - [ ] [🛠][1] [Circle/CI tests pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
-- [ ] [🛠][1] [Codacy code quality checks pass]((https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review))
+- [ ] [🛠][1] [Codacy code quality checks pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
 - [ ] [🛠][1] [Documentation builds successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review) on readthedocs
 
 ### New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
@@ -68,7 +68,7 @@ It is the responsibility of the author to make sure the PR is ready to review. T
 
 To help with the number pull requests:
 
-- [ ] 🚀 I have [reviewed](https://docs.esmvaltool.org/en/latest/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
+- [ ]  We kindly ask you to [review](https://docs.esmvaltool.org/en/latest/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
 
 <!--
 If you need help with any of the items on the checklists above, please do not hesitate to ask by commenting in the issue or pull request.
