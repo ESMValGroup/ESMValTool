@@ -39,21 +39,21 @@
 
 It is the responsibility of the author to make sure the PR is ready to review. The icons indicate whether the item will be subject to the [🛠 Technical][1] or [🧪 Scientific][2] review.
 
-- [ ] [🛠][1] PR has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/community/introduction.html#Branches-pull-requests-and-code-review)
+- [ ] [🛠][1] PR has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
 - [ ] [🛠][1] Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
 - [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
 - [ ] [🛠][1] YAML files pass [`pre-commit`](https://docs.esmvaltool.org/en/latest/community/introduction.html#pre-commit) or [`yamllint`](https://docs.esmvaltool.org/en/latest/community/introduction.html#yaml) checks
-- [ ] [🛠][1] [Circle/CI tests pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#Branches-pull-requests-and-code-review)
-- [ ] [🛠][1] [Codacy code quality checks pass]((https://docs.esmvaltool.org/en/latest/community/introduction.html#Branches-pull-requests-and-code-review))
-- [ ] [🛠][1] [Documentation builds successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#Branches-pull-requests-and-code-review) on readthedocs
+- [ ] [🛠][1] [Circle/CI tests pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
+- [ ] [🛠][1] [Codacy code quality checks pass]((https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review))
+- [ ] [🛠][1] [Documentation builds successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review) on readthedocs
 
 ### New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
 
 - [ ] [🛠][1] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
 - [ ] [🛠][1] New dependencies are added to the [project requirements](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#additional-dependencies)
-- [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes how the recipe works
-- [ ] [🧪][2] Recipe runs successfully on your own machine or [`@esmvalbot`](https://github.com/apps/esmvalbot)
-- [ ] [🧪][2] Figure(s)/data [look as expected](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance)
+- [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
+- [ ] [🧪][2] Recipe runs successfully on [`@esmvalbot`](https://docs.esmvaltool.org/en/latest/community/introduction.html#running-tests) or some other machine
+- [ ] [🧪][2] Figure(s)/data [look as expected](https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review)
 - [ ] [🧪][2] Code is [well documented](https://docs.esmvaltool.org/en/latest/community/introduction.html#what-should-be-documented) and scientifically sound
 
 ### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
