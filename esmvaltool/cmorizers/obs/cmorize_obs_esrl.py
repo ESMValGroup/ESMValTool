@@ -20,14 +20,14 @@ import logging
 import os
 from datetime import datetime
 from pprint import pformat
+import glob
+from ftplib import FTP
 
 import iris
-import glob
 import numpy as np
 import pandas as pd
 import requests
 from cf_units import Unit
-from ftplib import FTP
 
 from . import utilities as utils
 
@@ -103,14 +103,14 @@ def _get_rows_and_fill_value(filepath):
 
 
 def _get_station_dictionary():
-    """Get station information from online table"""
+    """Get station information from online table."""
     url = "https://www.esrl.noaa.gov/gmd/dv/site/?program=ccgg"
-    df_list = pd.read_html(requests.get(url).content)
-    df = df_list[-1]
+    stat_list = pd.read_html(requests.get(url).content)
+    stats = stat_list[-1]
     # Remove asterisk from station names (flags inactive stations)
-    df['Code'] = df['Code'].str.replace('*', '')
-    df.set_index("Code", drop=False, inplace=True)
-    station_dict = df.to_dict(orient="index")
+    stats['Code'] = stats['Code'].str.replace('*', '')
+    stats.set_index("Code", drop=False, inplace=True)
+    station_dict = stats.to_dict(orient="index")
 
     # Add entry for Global
     station_dict['GLOBAL'] = {'Latitude': 0.0, 'Longitude': 180.0,
@@ -141,15 +141,15 @@ def _get_time_coord(year, month):
     return time_coord
 
 
-def _extract_variable(short_name, var, cfg, filepath, out_dir, station_dic):
+def _extract_variable(short_name, var, cfg, out_dir, station_dic):
     """Extract variable."""
-    data = pd.read_csv(filepath, sep=' {1,}', comment='#', engine='python',
-                       header=None)
+    data = pd.read_csv(station_dic['filepath'], sep=' {1,}', comment='#',
+                       engine='python', header=None)
     # Insitu tower monthly had uncommented header, remove
     if data.shape[1] == 17:
         data = data.drop(0)
 
-    data_rows, fill_v = _get_rows_and_fill_value(filepath)
+    data_rows, fill_v = _get_rows_and_fill_value(station_dic['filepath'])
 
     # Resample data to monthly, pad with missing values as needed
     data[data_rows[2]] = pd.to_numeric(data[data_rows[2]])
@@ -192,7 +192,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, station_dic):
 
 
 def _make_station_lat_lon_coord(station_dic):
-    """Make iris coordinates for given latitude and longitude"""
+    """Make iris coordinates for given latitude and longitude."""
     lat = station_dic['Latitude']
     lon = station_dic['Longitude']
 
@@ -221,7 +221,7 @@ def _make_station_lat_lon_coord(station_dic):
 
 
 def _get_filenames(stations, cfg, in_dir):
-    """Get filename given pattern and station name"""
+    """Get filename given pattern and station name."""
     input_files = {}
     download_files = []
     for station in stations:
@@ -246,7 +246,6 @@ def _get_filenames(stations, cfg, in_dir):
 
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-
     # read station information
     station_dict = _get_station_dictionary()
 
@@ -260,10 +259,13 @@ def cmorization(in_dir, out_dir, cfg, _):
                                       cfg, in_dir)
             for station in var['stations']:
                 logger.info("Reading file '%s'", filepath[station][0])
-                logger.info("CMORizing variable '%s' for station '%s'"
-                            % (short_name, station))
-                _extract_variable(short_name, var, cfg, filepath[station][0],
-                                  out_dir, station_dict[station.upper()])
+                logger.info("CMORizing variable '%s' for station '%s'",
+                            short_name, station)
+                # Add filepath to station_dict
+                station_dict[station.upper()]['filepath'] = \
+                    filepath[station][0]
+                _extract_variable(short_name, var, cfg, out_dir,
+                                  station_dict[station.upper()])
         else:
             raise ValueError("Could not find the following station(s): %s. "
                              "Please double-check your spelling in the "
