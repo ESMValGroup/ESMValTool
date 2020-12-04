@@ -34,7 +34,7 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _download_files(in_dir, cfg, file_pattern, stations):
+def _download_files(in_dir, cfg, stations):
     """Download input files using FTP."""
     logger.info("Downloading data from FTP server %s", cfg['ftp_host'])
     files = {}
@@ -44,8 +44,8 @@ def _download_files(in_dir, cfg, file_pattern, stations):
             files[station] = {'name': "co2_" + station.lower()
                                       + '_surface-insitu_1_ccgg_'
                                         'MonthlyData.txt',
-                              'folder':  cfg['data_dir'] + 'in-situ/surface/'
-                                         + station.lower()}
+                              'folder': cfg['data_dir'] + 'in-situ/surface/'
+                                        + station.lower()}
         elif station.lower() == 'global':
             files[station] = {'name': 'co2_mm_gl.txt',
                               'folder': 'products/trends/co2/'}
@@ -57,7 +57,6 @@ def _download_files(in_dir, cfg, file_pattern, stations):
     with FTP(cfg['ftp_host']) as ftp_client:
         logger.info(ftp_client.getwelcome())
         ftp_client.login()
-        #ftp_client.cwd(cfg['data_dir'])
         for station in files:
             logger.info("Downloading %s", files[station]["name"])
             new_path = os.path.join(in_dir, files[station]["name"])
@@ -71,8 +70,8 @@ def _download_files(in_dir, cfg, file_pattern, stations):
 
 def _get_cube(row, column_ind, fill_value, station_dict):
     """Create :class:`iris.cube.Cube` from :class:`pandas.Series`."""
-    time_coord = _get_time_coord(int(row[column_ind[0]]),
-                                 int(row[column_ind[1]]))
+    time_coord = _get_time_coord(int(row['year']),
+                                 int(row['month']))
     lat_coord, lon_coord = _make_station_lat_lon_coord(station_dict)
     data = np.ma.masked_equal(float(row[column_ind[2]]), fill_value)
     cube = iris.cube.Cube(
@@ -152,6 +151,17 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, station_dic):
 
     data_rows, fill_v = _get_rows_and_fill_value(filepath)
 
+    # Resample data to monthly, pad with missing values as needed
+    data[data_rows[2]] = pd.to_numeric(data[data_rows[2]])
+    data = data.replace(fill_v, np.nan)
+    data = data.rename(columns={data_rows[0]: "year", data_rows[1]: "month"})
+    data['day'] = 15
+    data['datetime'] = pd.to_datetime(data[['year', 'month', 'day']])
+    data = data.resample('M', on="datetime").mean()
+    data = data.fillna(fill_v)
+    data['year'] = data.index.year
+    data['month'] = data.index.month
+
     # Extract cube
     cubes = iris.cube.CubeList()
     for (_, row) in data.iterrows():
@@ -228,8 +238,7 @@ def _get_filenames(stations, cfg, in_dir):
         else:
             input_files[station] = input_file
     if len(download_files) > 0:
-        input_files_dl = _download_files(in_dir, cfg, st_filepattern,
-                                         download_files)
+        input_files_dl = _download_files(in_dir, cfg, download_files)
         input_files.update(input_files_dl)
     logger.debug("Found input files:\n%s", pformat(input_files))
     return input_files

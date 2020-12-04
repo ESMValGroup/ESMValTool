@@ -19,4 +19,7 @@ attributes:
 variables:
   co2s:
     mip: Amon
-    stations: ['GLOBAL', 'ask']
+    # Supports stations, see list at
+    # https://www.esrl.noaa.gov/gmd/dv/site/?program=ccgg
+    # Also supports NOAA ESRL global data
+    stations: ['ask', 'mlo', 'global']
