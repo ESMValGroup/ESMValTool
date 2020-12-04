@@ -4,10 +4,10 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
-   https:<insert_here>
+   http://surftemp.net/regridding/index.html
 
 Last access
-   20202203
+   20200412
 
 Download and processing instructions
    Download the following files:
@@ -16,8 +16,7 @@ Download and processing instructions
      of the data was from 1982 to 2019 inclusive.
 
 Modification history
-   20202203-predoi_valeriu: written.
-   <insert_revision>
+   20200412-roberts_charles: written.
    <insert_approval>
 
 """
