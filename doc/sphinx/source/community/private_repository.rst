@@ -51,9 +51,11 @@ and push your branch to the public repository
 
 6) Make a pull request in the public repository
 ===============================================
-go to https://github.com/esmalgroup/esmvaltool/pulls and click the 'New pull request button'. Process reviewer comments and get it merged.
+Go to https://github.com/esmalgroup/esmvaltool/pulls and click the 'New pull request button'. Process reviewer comments and get it merged.
 
 7) Obtain a DOI for your code and add it to your paper
 ======================================================
-Wait for (or request by opening an issue) a new release of ESMValTool. With the next release, your diagnostic recipe and source code will automatically be included in the archive on Zenodo and you can add the DOI from Zenodo to your paper: https://zenodo.org/record/3698045
+Wait for a new release of ESMValTool. Releases are scheduled normally 
+`every four months <https://docs.esmvaltool.org/en/latest/community/release_strategy.html>`_. 
+With the next release, your diagnostic recipe and source code will automatically be included in the archive on Zenodo and you can add the DOI from Zenodo to your paper: https://zenodo.org/record/3698045
 
