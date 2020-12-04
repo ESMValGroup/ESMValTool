@@ -28,3 +28,4 @@ dependencies:
   - r-lintr
   - r-styler
   - r-yaml
+  - r-udunits2  # needed by the docker build
