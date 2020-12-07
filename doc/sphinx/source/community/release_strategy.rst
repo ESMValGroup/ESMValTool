@@ -44,6 +44,8 @@ Timeline
 Release schedule
 ~~~~~~~~~~~~~~~~
 
+.. _release_schedule:
+
 With the following release schedule, we strive to have three releases per year and to avoid releases too close to holidays, as well as avoiding weekends.
 
 
