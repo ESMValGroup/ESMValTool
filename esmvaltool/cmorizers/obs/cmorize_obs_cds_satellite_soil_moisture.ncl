@@ -10,13 +10,14 @@
 ;    satellite-soil-moisture?tab=form
 ;
 ; Last access
-;    20190314
+;    20201207
 ;
 ; Download and processing instructions
 ;    - Use the download script to retrieve the data.
 ;    - Use the configuration file to choose what data to process.
 ;
 ; Modification history
+;    20201207-kazeroni-remi: fix ACTIVE version
 ;    20200722-crezee_bas: added PASSIVE/ACTIVE versions
 ;    20200602-crezee_bas: include ICDR
 ;    20200525-righi_mattia: fix time checker.
@@ -86,7 +87,8 @@ begin
   ; Version
   VERSIONS = (/"COMBINED", "PASSIVE", "ACTIVE"/)
   PATTERNS = (/"????000000-?CDR-v201?12.0.0.nc", \
-               "????000000-?CDR-v201?12.0.0.nc", ".nc"/)
+               "????000000-?CDR-v201?12.0.0.nc", \
+               "????000000-?CDR-v201?12.0.0.nc"/)
 
 end
 
@@ -114,15 +116,10 @@ begin
           end if
 
           ; Retrieve start and end date (YYYYMM(DD))
-          if VERSIONS(xx) .eq. "ACTIVE" then
-            start_date = yy + "0101"
-            end_date = yy + "1231"
-          else
-            start_date = systemfunc("basename " + files(0))
-            start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 7)
-            end_date = systemfunc("basename " + files(dimsizes(files) - 1))
-            end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 7)
-          end if
+          start_date = systemfunc("basename " + files(0))
+          start_date := str_get_cols(str_get_field(start_date, 7, "-"), 0, 7)
+          end_date = systemfunc("basename " + files(dimsizes(files) - 1))
+          end_date := str_get_cols(str_get_field(end_date, 7, "-"), 0, 7)
 
           ; Read data
           f = addfiles(files, "r")
