@@ -12,5 +12,5 @@ Contributing to the community
         Contributing a dataset <dataset>
 		Contributing a review <review>
 		Porting a namelist (recipe) or diagnostic from version 1 to version 2 <porting>
-    GitHub workflow <repository>
+        GitHub workflow <repository>
 		Contact information <contact>
