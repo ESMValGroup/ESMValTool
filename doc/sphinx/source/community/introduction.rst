@@ -126,8 +126,8 @@ Go to the directory where the repository is cloned and run
 ``pytest``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
 
-These automated checks are run automatically when you add new commits to your PR.
-They appear at the bottom of the PR. Click on `Details` for more information
+These automated checks are run automatically when you add new commits to your pull request.
+They appear at the bottom of the pull request. Click on `Details` for more information
 
 
 Code style
@@ -356,9 +356,9 @@ positives.
 
 The documentation can be seen by clicking on `Details`. Make sure the
 documentation is nicely formatted, and (if necessary) add the link to the
-top of the PR.
+top of the pull request.
 
-Make sure your PR has a descriptive title that can be used in the
+Make sure your pull request has a descriptive title that can be used in the
 `changelog <https://docs.esmvaltool.org/en/latest/changelog.html>`__.
 
 Diagnostic script contributions
