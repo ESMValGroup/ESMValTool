@@ -348,11 +348,12 @@ It’s also easier to get help from other developers if
 your code is visible in a pull request.
 
 You can view the results of the automatic checks below your pull
-request. If one of the tests shows a red cross instead of a green
+request by clicking on ``Details``. If one of the tests shows a red cross instead of a green
 approval sign, please click the link and try to solve the issue. Note
 that this kind of automated checks make it easier to review code, but
-they are not flawless, so occasionally Codacy will report false
-positives.
+they are not flawless. Preferably Codacy code quality checks pass, however
+a few remaining hard to solve Codacy issues are still acceptable.
+If you suspect Codacy may be wrong, please ask by commenting.
 
 The documentation can be seen by clicking on `Details`. Make sure the
 documentation is nicely formatted, and (if necessary) add the link to the

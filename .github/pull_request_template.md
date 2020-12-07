@@ -52,7 +52,7 @@ It is the responsibility of the author to make sure the PR is ready to review. T
 - [ ] [🛠][1] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
 - [ ] [🛠][1] New dependencies are added to the [project requirements](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#additional-dependencies)
 - [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
-- [ ] [🧪][2] Recipe runs successfully on [`@esmvalbot`](https://docs.esmvaltool.org/en/latest/community/introduction.html#running-tests) or some other machine
+- [ ] [🧪][2] Recipe runs successfully on [`@esmvalbot`](https://docs.esmvaltool.org/en/latest/community/introduction.html#running-tests) or some other machine without modification
 - [ ] [🧪][2] Figure(s)/data [look as expected](https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review)
 - [ ] [🧪][2] Code is [well documented](https://docs.esmvaltool.org/en/latest/community/introduction.html#what-should-be-documented) and scientifically sound
 

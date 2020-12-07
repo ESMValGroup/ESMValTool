@@ -66,12 +66,15 @@ are compatible with Apache 2.0 (`link <https://github.com/ESMValGroup/ESMValTool
 
 Recording provenance
 ====================
-When ESMValCore (the ``esmvaltool`` command) runs a recipe, it will first find all data and run the default preprocessor steps plus any
+When ESMValCore (the ``esmvaltool`` command) runs a recipe,
+it will first find all data and run the default preprocessor steps plus any
 additional preprocessing steps defined in the recipe. Next it will run the diagnostic script defined in the recipe
 and finally it will store provenance information. Provenance information is stored in the
 `W3C PROV XML format <https://www.w3.org/TR/prov-xml/>`_
 and also plotted in an SVG file for human inspection. In addition to provenance information, a caption is also added
 to the plots.
+When contributing a diagnostic, please make sure it records the provenance,
+and that no warnings related to provenance are generated when running the recipe.
 
 Provenance items provided by the recipe
 ---------------------------------------
