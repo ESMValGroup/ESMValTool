@@ -54,18 +54,24 @@ def _download_files(in_dir, cfg, stations):
                                       + '_surface-flask_1_ccgg_month.txt',
                               'folder': cfg['data_dir'] + 'flask/surface/'}
     input_files = {}
+    rm_stat = []
     with FTP(cfg['ftp_host']) as ftp_client:
         logger.info(ftp_client.getwelcome())
         ftp_client.login()
         for station in files:
-            logger.info("Downloading %s", files[station]["name"])
-            new_path = os.path.join(in_dir, files[station]["name"])
             filename_full = os.path.join(files[station]["folder"],
                                          files[station]["name"])
-            with open(new_path, mode='wb') as outfile:
-                ftp_client.retrbinary(f'RETR {filename_full}', outfile.write)
-            input_files[station] = [new_path]
-    return input_files
+            if filename_full in ftp_client.nlst(files[station]["folder"]):
+                logger.info("Downloading %s", files[station]["name"])
+                new_path = os.path.join(in_dir, files[station]["name"])
+                with open(new_path, mode='wb') as outfile:
+                    ftp_client.retrbinary(f'RETR {filename_full}',
+                                          outfile.write)
+                input_files[station] = [new_path]
+            else:
+                rm_stat.append(station)
+                logger.info("Removing stations %s", station)
+    return input_files, rm_stat
 
 
 def _get_cube(row, column_ind, fill_value, station_dict):
@@ -97,7 +103,7 @@ def _get_rows_and_fill_value(filepath):
         fill_v = -999.99
     else:
         raise NotImplementedError("Unexpected number of columns, "
-                                  "only monthly data rom insitu or flask "
+                                  "only monthly data from in situ or flask "
                                   "measurements currently supported")
     return data_rows, fill_v
 
@@ -220,7 +226,7 @@ def _make_station_lat_lon_coord(station_dic):
     return lat_coord, lon_coord
 
 
-def _get_filenames(stations, cfg, in_dir):
+def _get_filenames(stations, cfg, in_dir, all):
     """Get filename given pattern and station name."""
     input_files = {}
     download_files = []
@@ -238,10 +244,28 @@ def _get_filenames(stations, cfg, in_dir):
         else:
             input_files[station] = input_file
     if len(download_files) > 0:
-        input_files_dl = _download_files(in_dir, cfg, download_files)
-        input_files.update(input_files_dl)
+        if cfg['download']:
+            input_files_dl, rm_stat = _download_files(in_dir, cfg,
+                                                      download_files)
+            input_files.update(input_files_dl)
+            if all:
+                # When selecting "all", some stations may not have available
+                # data at the moment, so remove these from to process files
+                stations = [x for x in stations if x not in rm_stat]
+            else:
+                raise ValueError("No data found for %s on the ftp server. ",
+                                 rm_stat)
+        else:
+            if all:
+                logger.info("Not processing stations %s as no data available, "
+                            "and download option not enabled.", download_files)
+                stations = [x for x in stations if x not in download_files]
+            else:
+                raise ValueError("No local data found for stations %s, "
+                                 "consider turning on the download option.",
+                                 download_files)
     logger.debug("Found input files:\n%s", pformat(input_files))
-    return input_files
+    return input_files, stations
 
 
 def cmorization(in_dir, out_dir, cfg, _):
@@ -251,13 +275,19 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
+        # Read station names
+        if 'all' in var['stations']:
+            stations = station_dict.keys()
+            all = True
+        else:
+            stations = var['stations']
+            all = False
         # Check for wrong station names
-        stat_upper = [element.upper() for element in var['stations']]
+        stat_upper = [element.upper() for element in stations]
         false_keys = np.setdiff1d(stat_upper, list(station_dict.keys()))
         if len(false_keys) == 0:
-            filepath = _get_filenames(var['stations'],
-                                      cfg, in_dir)
-            for station in var['stations']:
+            filepath, stations = _get_filenames(stations, cfg, in_dir, all)
+            for station in stations:
                 logger.info("Reading file '%s'", filepath[station][0])
                 logger.info("CMORizing variable '%s' for station '%s'",
                             short_name, station)
