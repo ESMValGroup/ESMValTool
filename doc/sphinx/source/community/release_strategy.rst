@@ -40,11 +40,9 @@ Timeline
 7. ESMValTool release
 8. Soon after the release, the core development team meets to coordinate the content of the milestone for the next release
 
-
+.. _release_schedule:
 Release schedule
 ~~~~~~~~~~~~~~~~
-
-.. _release_schedule:
 
 With the following release schedule, we strive to have three releases per year and to avoid releases too close to holidays, as well as avoiding weekends.
 
