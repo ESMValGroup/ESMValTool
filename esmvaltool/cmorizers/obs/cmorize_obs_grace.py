@@ -57,17 +57,18 @@ def _make_monthly_data_contiguous(in_file, out_file, cfg):
         logger.error("CSV file %s does not exist", months_table_file)
     # Construct the time axis
     time_axis = []
-    # read the first and last years from the csv table
-    start_year = grace_months_table['YEAR'].iloc[0]
-    end_year = grace_months_table['YEAR'].iloc[-1]
     # read the first and last months from the csv table
     # and convert month anmes to numbers
     start_month = datetime.strptime(grace_months_table['MONTH'].iloc[0],
                                     '%b').month
     end_month = datetime.strptime(grace_months_table['MONTH'].iloc[-1],
                                   '%b').month
-    start_date = datetime(start_year, start_month, 15)
-    end_date = datetime(end_year, end_month, 15)
+    start_date = datetime(grace_months_table['YEAR'].iloc[0],
+                          start_month,
+                          15)
+    end_date = datetime(grace_months_table['YEAR'].iloc[-1],
+                        end_month,
+                        15)
     while start_date <= end_date:
         time_axis.append(start_date)
         start_date += relativedelta.relativedelta(months=1)
