@@ -1,59 +1,47 @@
 ---
-version: 2
+version: 2.1
 
-aliases:
-  check_changes: &check_changes
-    name: Check changes
-    command: |
-      if (test "$CIRCLE_BRANCH" = master ||
-          git --no-pager diff --name-only origin/master... |
-          grep -q -E -f .circleci/install_triggers)
-      then
-        echo Running installation tests
-      else
-        echo Skipping installation tests
-        circleci step halt
-      fi
+orbs:
+  coverage-reporter: codacy/coverage-reporter@11.1.1
+
+commands:
+  check_changes:
+    steps:
+      - run: |
+          if (test "$CIRCLE_BRANCH" = master ||
+            git --no-pager diff --name-only origin/master... |
+            grep -q -E -f .circleci/install_triggers)
+          then
+            echo Running installation tests
+          else
+            echo Skipping installation tests
+            circleci step halt
+          fi
 
 jobs:
   test:
     # Run Python 3 tests
     working_directory: /test
     docker:
-      - image: continuumio/miniconda3
+      - image: esmvalgroup/esmvaltool:development
     steps:
       - checkout
       - run:
+          # Update environment if needed and run tests
           command: |
-            # Create a file to checksum as cache key
-            date --rfc-3339 date > cache_key.txt
-            cat environment.yml >> cache_key.txt
-      - restore_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - run:
-          # Update/Create Conda environment and run tests
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
-            # conda update -y conda >> /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            conda activate esmvaltool
-            # Install r-lintr for r linter test
-            Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
-            # Run tests
-            python setup.py test --addopts '-m "not installation"'
-          no_output_timeout: 20m
-      - save_cache:
-          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-          paths:
-            - "/opt/conda/envs/esmvaltool"
-            - ".eggs"
-      - store_artifacts:
-          path: /logs
+            pip install .[test]
+            esmvaltool install Julia
+            esmvaltool install R
+            # Remove source to test installed software
+            rm -r esmvaltool
+            pytest -n 2
       - store_artifacts:
           path: test-reports/
       - store_test_results:
           path: test-reports/
+      - coverage-reporter/send_report:
+          coverage-reports: 'test-reports/coverage.xml'
+          project-token: $CODACY_PROJECT_TOKEN
 
   test_installation:
     # Test Python 3 installation
@@ -62,7 +50,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
-      - run: *check_changes
+      - check_changes
       - restore_cache:
           key: test-install-{{ .Branch }}
       - run:
@@ -77,15 +65,17 @@ jobs:
             # conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
-            pip install . > /logs/install.txt 2>&1
-            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
+            pip install .[test] > /logs/install.txt 2>&1
+            esmvaltool install R
+            esmvaltool install Julia
+            # Remove source to test installed software
+            rm -r esmvaltool
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            python setup.py test
+            pytest -n 2
             esmvaltool -h
             ncl -V
             # cdo test, check that it supports hdf5
@@ -93,7 +83,7 @@ jobs:
             echo 0 | cdo -f nc input,r1x1 tmp.nc
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
-          no_output_timeout: 20m
+          no_output_timeout: 30m
       - save_cache:
           key: test-install-{{ .Branch }}
           paths:
@@ -105,17 +95,6 @@ jobs:
           path: test-reports/
       - store_test_results:
           path: test-reports/
-      - run:
-          when: always
-          command: |
-            if [[ -v CODACY_PROJECT_TOKEN ]]
-            then
-              echo Uploading coverage report
-              pip install codacy-coverage
-              python-codacy-coverage -r test-reports/coverage.xml
-            else
-              echo Not uploading coverage report
-            fi
 
   develop:
     # Test development installation
@@ -124,7 +103,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
-      - run: *check_changes
+      - check_changes
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -138,18 +117,18 @@ jobs:
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
-            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
+            esmvaltool install R
+            esmvaltool install Julia
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
+            pytest -n 2
             esmvaltool -h
-            python setup.py test
             ncl -V
             cdo --version
-          no_output_timeout: 20m
+          no_output_timeout: 30m
       - store_artifacts:
           path: /logs
 
@@ -187,8 +166,10 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
-      - run: *check_changes
+      - check_changes
       - run:
+          environment:
+            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
@@ -236,6 +217,7 @@ jobs:
             esmvaltool -h
             ncl -V
             cdo --version
+          no_output_timeout: 30m
 
   ncl_cdo_test:
     # Test ncl and cdo conda packages
@@ -264,7 +246,6 @@ jobs:
           path: /logs
 
 workflows:
-  version: 2
   commit:
     jobs:
       - test

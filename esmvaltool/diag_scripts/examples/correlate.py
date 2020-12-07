@@ -36,7 +36,10 @@ def get_provenance_record(attributes, ancestor_files, plot_type):
 def main(cfg):
     """Compute the time average for each input dataset."""
     input_data = group_metadata(
-        cfg['input_data'].values(), 'standard_name', sort='dataset')
+        cfg['input_data'].values(),
+        'standard_name',
+        sort='dataset',
+    )
 
     for standard_name in input_data:
         logger.info("Processing variable %s", standard_name)
@@ -67,6 +70,13 @@ def main(cfg):
                 "Computing correlation with settings %s between "
                 "reference and cube:\n%s\n%s", kwargs, filename, dataset)
             dataset = dataset.collapsed('time', MEAN)
+            # Fix issue with losing vertical bounds in extract_level
+            # preprocessor
+            if reference.coords(axis='Z'):
+                ref_coord = reference.coord(axis='Z')
+                coord = dataset.coord(ref_coord)
+                if not coord.has_bounds():
+                    coord.bounds = ref_coord.bounds
             cube = pearsonr(dataset, reference, **kwargs)
 
             name = '{}_correlation_with_{}'.format(

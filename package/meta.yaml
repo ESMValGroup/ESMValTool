@@ -1,11 +1,11 @@
 # Conda build recipe
 ---
 
-# Build commmand:
+# Build command:
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.0.0b4" %}
+{% set version = "2.1.1" %}
 
 package:
   name: esmvaltool
@@ -26,30 +26,33 @@ build:
 
 requirements:
   run:
-    - esmvaltool-julia
-    - esmvaltool-ncl
-    - esmvaltool-python
-    - esmvaltool-r
+    - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-python', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-r', exact=True) }}
 
 test:
   source_files:
     - tests
     - setup.cfg
   requires:
-    - pytest>=3.9
+    - pytest>=3.9,!=6.0.0rc1,!=6.0.0
     - pytest-cov
     - pytest-env
     - pytest-flake8
     - pytest-html!=2.1.0
     - pytest-metadata>=1.5.1
+    - pytest-xdist
   imports:
     - esmvaltool
   commands:
-    - pytest --ignore=run_test.py
+    - pytest -n 2 --ignore=run_test.py
     - cmorize_obs --help
     - nclcodestyle --help
-    - showcolortables --help
+    - esmvaltool colortables --help
     - test_recipe --help
+    - ncl -V
+    - cdo -V
 
 outputs:
 
@@ -60,12 +63,12 @@ outputs:
     requirements:
       build:
         - git
-        - pytest-runner
         - python>=3.6
         - setuptools_scm
       run:
         - cartopy
         - cdo>=1.9.7
+        - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
         - cdsapi
         - cf-units
         - cftime
@@ -74,26 +77,32 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.0.0b9,<2.1  # in esmvalgroup channel
+        - esmvalcore>=2.1.0,<2.2  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=2.2.1
+        - iris>=2.2.1,<3
         - jinja2
-        - matplotlib>=3
+        - joblib
+        - lime
+        - matplotlib>=3,<3.3
+        - natsort
         - nc-time-axis
         - netCDF4
         - numpy
         - pandas
+        - pynio
         - pyproj>=2.1
         - python>=3.6
         - python-cdo
         - pyyaml
+        - scikit-image
         - scikit-learn
         - seaborn
         - seawater
         - shapely
         - xarray>=0.12.0
         - xesmf
+        - xgboost
         - xlsxwriter
 
   - name: esmvaltool-julia
@@ -122,11 +131,10 @@ outputs:
     requirements:
       run:
         - cdo>=1.9.7
+        - compilers
         - esmvaltool-python
         - nco
         - r-base>=3.5
-        - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
-        - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
 
 about:
   home: https://www.esmvaltool.org
