@@ -15,6 +15,8 @@
 ; Download and processing instructions
 ;    - Use the download script to retrieve the data.
 ;    - Use the configuration file to choose what data to process.
+;    - Available years: 1992-2019 (ACTIVE) or 1979-2019 (others).
+;    - Versions: v201812.0.0 and v201912.0.0
 ;
 ; Modification history
 ;    20201207-kazeroni-remi: fix ACTIVE version
