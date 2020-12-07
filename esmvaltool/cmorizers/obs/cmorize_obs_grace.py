@@ -44,7 +44,9 @@ from esmvaltool.cmorizers.obs import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _make_monthly_data_contiguous(in_file, out_file, raw_varname, cfg):
+def _make_monthly_data_contiguous(in_file, out_file, cfg):
+
+    raw_varname = cfg['variables']['lweGrace']['raw']
     original = xr.open_dataset(in_file)[raw_varname]
 
     months_table_file = os.path.join(cfg['in_dir'], cfg['grace_table'])
@@ -173,7 +175,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         logger.info("Structure monthly data")
         out_file = os.path.join(cfg['work_dir'],
                                 'grace_monthly_data_contiguous.nc')
-        _make_monthly_data_contiguous(in_file, out_file, var['raw'], cfg)
+        _make_monthly_data_contiguous(in_file, out_file, cfg)
         in_file = out_file
         out_file = os.path.join(
             cfg['work_dir'],
