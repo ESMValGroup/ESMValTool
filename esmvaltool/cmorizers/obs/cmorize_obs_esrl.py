@@ -70,7 +70,6 @@ def _download_files(in_dir, cfg, stations):
                 input_files[station] = [new_path]
             else:
                 rm_stat.append(station)
-                logger.info("Removing stations %s", station)
     return input_files, rm_stat
 
 
@@ -256,11 +255,7 @@ def _get_filenames(stations, cfg, in_dir, all):
                 raise ValueError("No data found for %s on the ftp server. ",
                                  rm_stat)
         else:
-            if all:
-                logger.info("Not processing stations %s as no data available, "
-                            "and download option not enabled.", download_files)
-                stations = [x for x in stations if x not in download_files]
-            else:
+            if not all:
                 raise ValueError("No local data found for stations %s, "
                                  "consider turning on the download option.",
                                  download_files)
