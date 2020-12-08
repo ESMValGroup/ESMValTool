@@ -214,7 +214,7 @@ def calibrate_performance_sigma(
         independence_sigma: Union[float, None],
         cfg: dict) -> float:
     """Calibrate the performance sigma using a perfect model approach."""
-    settings = cfg['performance_sigma_options']
+    settings = cfg['calibrate_performance_sigma']
     models, _ = read_metadata(cfg)
 
     performances_matrix = {}
