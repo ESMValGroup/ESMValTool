@@ -120,8 +120,8 @@ def compute_overall_mean(dataset: 'xr.Dataset',
 
 
 def combine_ensemble_members(
-    dataset: Union['xr.DataArray', None],
-    dimns: Union[str, list] = 'model_ensemble',
+        dataset: Union['xr.DataArray', None],
+        dimns: Union[str, list] = 'model_ensemble',
 ) -> (Union['xr.DataArray', None], dict):
     """Combine ensemble members of the same model.
 

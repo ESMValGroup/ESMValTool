@@ -25,7 +25,7 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 SIGMA_RANGE = (.1, 2)
-confidence_test_values = {'baseline': None}
+confidence_test_values = {'baseline': {}}
 
 
 def optimize_confidence(target, weights_matrix, performance_sigma):
@@ -38,7 +38,7 @@ def optimize_confidence(target, weights_matrix, performance_sigma):
         {'model_ensemble': 'perfect_model_ensemble'})
 
     # calculate the equally weighted case once as baseline
-    if confidence_test_values['baseline'] is None:
+    if len(confidence_test_values['baseline']) == 0:
         equal_weights_matrix = weights_matrix * 0 + 1
         percentiles_data = xr.apply_ufunc(
             weighted_quantile,
@@ -99,9 +99,8 @@ def optimize_confidence(target, weights_matrix, performance_sigma):
 
 
 def evaluate_target(performance_sigma, overall_performance, target,
-                    overall_independence, independence_sigma, cfg):
+                    overall_independence, independence_sigma):
     """Evaluate the weighting in the target period."""
-
     performance_sigma = performance_sigma[0]
 
     # exclude perfect model in each row by setting it to nan
@@ -151,14 +150,14 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
                  label='Unweighted baseline: {:.0%}'.format(
                      baseline['inside_ratio']))
     axes.axvline(performance_sigma, color='k', ls='-.',
-                 label='Selected performance sigma: {:.2f}'.format(performance_sigma))
+                 label='Selected performance sigma: {:.2f}'.format(
+                     performance_sigma))
 
     # optional: sharpness
-    sharpness = xr.concat([
-        confidence_test_values[sigma]['sharpness'].expand_dims(
-            {'sigma': [sigma]}) for sigma in sigmas
-    ],
-                          dim='sigma')
+    sharpness = xr.concat(
+        [confidence_test_values[sigma]['sharpness'].expand_dims(
+            {'sigma': [sigma]}) for sigma in sigmas],
+        dim='sigma')
     axes.plot(sigmas,
               sharpness.mean('perfect_model_ensemble'),
               color='lightgray',
@@ -209,13 +208,12 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
     confidence.to_netcdf(filename_data)
 
 
-def calibrate_performance_sigma(performance_contributions: list,
-                                overall_independence: Union['xr.DataArray',
-                                                            None],
-                                independence_sigma: Union[float, None],
-                                cfg: dict) -> float:
+def calibrate_performance_sigma(
+        performance_contributions: list,
+        overall_independence: Union['xr.DataArray', None],
+        independence_sigma: Union[float, None],
+        cfg: dict) -> float:
     """Calibrate the performance sigma using a perfect model approach."""
-
     settings = cfg['performance_sigma_options']
     models, _ = read_metadata(cfg)
 
@@ -248,13 +246,13 @@ def calibrate_performance_sigma(performance_contributions: list,
             overall_performance, ['model_ensemble', 'perfect_model_ensemble'])
         target_data, _ = combine_ensemble_members(target_data)
 
-    performance_sigma, _, grid, fgrid = brute(
+    performance_sigma, _, _, fgrid = brute(
         evaluate_target,
         ranges=(SIGMA_RANGE, ),
         Ns=100,
         finish=None,
         args=(overall_performance, target_data, overall_independence,
-              independence_sigma, cfg),
+              independence_sigma),
         full_output=True,
     )
 
