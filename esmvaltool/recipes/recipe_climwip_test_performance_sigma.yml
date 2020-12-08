@@ -144,7 +144,7 @@ diagnostics:
         script: weighting/climwip/main.py
         obs_data: native6
         combine_ensemble_members: true
-        performance_sigma_options:
+        calibrate_performance_sigma:
           target: tas_CLIM_future
         performance_contributions:
           tas_CLIM: 1
