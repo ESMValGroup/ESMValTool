@@ -5,155 +5,33 @@ https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
 import logging
 import os
-from collections import defaultdict
-from datetime import datetime
 from typing import Union
 
 import matplotlib.pyplot as plt
-import natsort
 import numpy as np
 import seaborn as sns
 import xarray as xr
-from scipy.spatial.distance import pdist, squareform
+from core_functions import (
+    area_weighted_mean,
+    calculate_independence,
+    calculate_weights,
+    combine_ensemble_members,
+    compute_overall_mean,
+)
+from io_functions import (
+    log_provenance,
+    read_input_data,
+    read_metadata,
+    read_model_data,
+)
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
     get_diagnostic_filename,
     get_plot_filename,
-    group_metadata,
     run_diagnostic,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-def get_provenance_record(caption: str, ancestors: list):
-    """Create a provenance record describing the diagnostic data and plots."""
-    record = {
-        'caption':
-        caption,
-        'domains': ['reg'],
-        'authors': [
-            'kalverla_peter',
-            'smeets_stef',
-            'brunner_lukas',
-            'camphuijsen_jaro',
-        ],
-        'references': [
-            'brunner2019',
-            'lorenz2018',
-            'knutti2017',
-        ],
-        'ancestors':
-        ancestors,
-    }
-    return record
-
-
-def log_provenance(caption: str, filename: str, cfg: dict, ancestors: list):
-    """Log provenance info."""
-    provenance_record = get_provenance_record(caption, ancestors=ancestors)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance_record)
-
-    logger.info('Output stored as %s', filename)
-
-
-def read_metadata(cfg: dict) -> tuple:
-    """Read the metadata from the config file.
-
-    Returns a two dicts, one for the model data and one for the
-    observational data. They are split based on the value of the
-    'obs_data' variable in the recipe. The dictionaries are sorted by
-    the variable.
-    """
-    obs_ids = cfg['obs_data']
-    if isinstance(obs_ids, str):
-        obs_ids = [obs_ids]
-
-    input_data = cfg['input_data'].values()
-    projects = group_metadata(input_data, attribute='project')
-
-    observations = defaultdict(list)
-    models = defaultdict(list)
-
-    for project, metadata in projects.items():
-
-        for item in metadata:
-            variable_group = item['variable_group']
-
-            if project in obs_ids:
-                observations[variable_group].append(item)
-            else:
-                models[variable_group].append(item)
-
-    return models, observations
-
-
-def make_standard_calendar(xrds: 'xr.Dataset'):
-    """Make sure time coordinate uses the default calendar.
-
-    Workaround for incompatible calendars 'standard' and 'no-leap'.
-    Assumes yearly data.
-    """
-    try:
-        years = xrds.time.dt.year.values
-        xrds['time'] = [datetime(year, 7, 1) for year in years]
-    except TypeError:
-        # Time dimension is 0-d array
-        pass
-    except AttributeError:
-        # Time dimension does not exist
-        pass
-
-
-def read_input_data(metadata: list,
-                    dim: str = 'data_ensemble',
-                    identifier_fmt: str = '{dataset}') -> tuple:
-    """Load data from metadata.
-
-    Read the input data from the list of given data sets. `metadata` is
-    a list of metadata containing the filenames to load. Only returns
-    the given `variable`. The datasets are stacked along the `dim`
-    dimension. Returns an xarray.DataArray.
-    """
-    data_arrays = []
-    identifiers = []
-    input_files = []
-    for info in metadata:
-        filename = info['filename']
-        short_name = info['short_name']
-        variable_group = info['variable_group']
-
-        xrds = xr.open_dataset(filename)
-        make_standard_calendar(xrds)
-        xrda = xrds[short_name]
-        xrda = xrda.rename(variable_group)
-        data_arrays.append(xrda)
-
-        identifier = identifier_fmt.format(**info)
-        identifiers.append(identifier)
-        input_files.append(filename)
-
-    diagnostic = xr.concat(data_arrays, dim=dim)
-    diagnostic[dim] = identifiers
-
-    # Clean up unnecessary coordinate info
-    redundant_dims = np.setdiff1d(diagnostic.coords, diagnostic.dims)
-    diagnostic = diagnostic.drop(redundant_dims)
-
-    # Use natural sorting order
-    sorting = natsort.natsorted(identifiers, alg=natsort.IC)
-    diagnostic = diagnostic.sel(indexers={dim: sorting})
-
-    return diagnostic, input_files
-
-
-def read_model_data(datasets: list) -> tuple:
-    """Load model data from list of metadata."""
-    return read_input_data(datasets,
-                           dim='model_ensemble',
-                           identifier_fmt='{dataset}_{ensemble}_{exp}')
 
 
 def read_observation_data(datasets: list) -> tuple:
@@ -177,77 +55,6 @@ def aggregate_obs_data(data_array: 'xr.DataArray',
         raise ValueError(f'No such operator `{operator}`')
 
     return output
-
-
-def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
-    """Calculate area mean weighted by the latitude.
-
-    Returns a data array consisting of N values, where N == number of
-    ensemble members.
-    """
-    weights_lat = np.cos(np.radians(data_array.lat))
-    means = data_array.weighted(weights_lat).mean(dim=['lat', 'lon'])
-
-    return means
-
-
-def distance_matrix(values: 'np.ndarray',
-                    weights: 'np.ndarray' = None) -> 'np.ndarray':
-    """Calculate the pairwise distance between model members.
-
-    Takes a dataset with ensemble member/lon/lat. Flattens lon/lat
-    into a single dimension. Calculates the distance between every
-    ensemble member.
-
-    If weights are passed, they should have the same shape as values.
-
-    Returns 2D NxN array, where N == number of ensemble members.
-    """
-    n_members = values.shape[0]
-
-    values = values.reshape(n_members, -1)
-
-    # pdist does not work with NaN
-    not_nan = np.where(np.all(np.isfinite(values), axis=0))[0]
-    values = values[:, not_nan]
-
-    if weights is not None:
-        # Reshape weights to match values array
-        weights = weights.reshape(n_members, -1)
-        weights = weights[:, not_nan]
-        weights = weights[0]  # Weights are equal along first dim
-
-    d_matrix = squareform(pdist(values, metric='euclidean', w=weights))
-
-    return d_matrix
-
-
-def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
-    """Calculate independence.
-
-    The independence is calculated as a distance matrix between the
-    datasets defined in the `data_array`. Returned is a square matrix
-    with where the number of elements along each edge equals the number
-    of ensemble members.
-    """
-    weights = np.cos(np.radians(data_array.lat))
-    weights, _ = xr.broadcast(weights, data_array)
-
-    diff = xr.apply_ufunc(
-        distance_matrix,
-        data_array,
-        weights,
-        input_core_dims=[['model_ensemble', 'lat', 'lon'],
-                         ['model_ensemble', 'lat', 'lon']],
-        output_core_dims=[['perfect_model_ensemble', 'model_ensemble']],
-    )
-
-    diff.name = f'd{data_array.name}'
-    diff.attrs['variable_group'] = data_array.name
-    diff.attrs["units"] = data_array.units
-    diff['perfect_model_ensemble'] = diff.model_ensemble.values
-
-    return diff
 
 
 def visualize_and_save_independence(independence: 'xr.DataArray', cfg: dict,
@@ -346,57 +153,6 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def compute_overall_mean(dataset: 'xr.Dataset',
-                         weights: dict) -> 'xr.DataArray':
-    """Normalize all variables in a dataset and return their weighted mean.
-
-    Relative weights for each variable group are passed via the recipe.
-    """
-    if 'perfect_model_ensemble' in dataset.dims:
-        median_dim = ['perfect_model_ensemble', 'model_ensemble']
-    else:
-        median_dim = 'model_ensemble'
-
-    normalized = dataset / dataset.median(dim=median_dim)
-
-    weights_selected = xr.DataArray(
-        [weights[variable_group] for variable_group in dataset],
-        coords={'variable_group': list(dataset)},
-        dims='variable_group')
-    overall_mean = normalized.to_array(
-        dim='variable_group').weighted(weights_selected).mean('variable_group')
-    overall_mean.name = 'overall_mean'
-    overall_mean.attrs['variable_group'] = 'overall_mean'
-    overall_mean.attrs['units'] = '1'
-    return overall_mean
-
-
-def combine_ensemble_members(dataset: Union['xr.DataArray', None]) -> (
-        Union['xr.DataArray', None], dict):
-    """Combine ensemble members of the same model."""
-    if dataset is None:
-        return None, {}
-
-    groups = defaultdict(list)
-    models = []
-    for name in dataset['model_ensemble'].values:
-        model = name.split('_')[0]
-        groups[model].append(name)
-        models.append(model)
-
-    for dimn in ['model_ensemble', 'perfect_model_ensemble']:
-        if dimn in dataset.dims:
-            model = xr.DataArray(models, dims=dimn)
-            dataset = dataset.groupby(model).mean(keep_attrs=True).rename(
-                {'group': dimn})
-
-    if 'perfect_model_ensemble' in dataset.dims:
-        # need to set the diagonal elements back to zero after averaging
-        dataset.values[np.diag_indices(dataset['model_ensemble'].size)] = 0
-
-    return dataset, groups
-
-
 def split_ensemble_members(dataset: 'xr.DataArray',
                            groups: dict) -> 'xr.DataArray':
     """Split combined ensemble members of the same model."""
@@ -414,55 +170,6 @@ def split_ensemble_members(dataset: 'xr.DataArray',
                         dims='model_ensemble',
                         name=dataset.name,
                         attrs=dataset.attrs)
-
-
-def calculate_weights(
-        performance: Union['xr.DataArray', None],
-        independence: Union['xr.DataArray', None],
-        performance_sigma: Union[float, None],
-        independence_sigma: Union[float, None]) -> 'xr.DataArray':
-    """Calculate normalized weights for each model N.
-
-    Parameters
-    ----------
-    performance : array_like, shape (N,) or None
-        Array specifying the model performance. None is mutually exclusive
-        with independence being None.
-    independence : array_like, shape (N, N) or None
-        Array specifying the model independence. None is mutually exclusive
-        with performance being None.
-    performance_sigma : float or None
-        Sigma value defining the form of the weighting function
-        for the performance. Can be one only if performance is also None.
-    independence_sigma : float or None
-        Sigma value defining the form of the weighting function
-            for the independence. Can be one only if independence is also None.
-
-    Returns
-    -------
-    weights : ndarray, shape (N,)
-    """
-    if performance is not None:
-        numerator = np.exp(-((performance / performance_sigma)**2))
-    else:
-        numerator = 1
-    if independence is not None:
-        exp = np.exp(-((independence / independence_sigma)**2))
-        # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
-        denominator = exp.sum('perfect_model_ensemble')
-    else:
-        denominator = 1
-
-    weights = numerator / denominator
-
-    # Normalize weights
-    weights /= weights.sum()
-
-    weights.name = 'weight'
-    weights.attrs['variable_group'] = 'weight'  # used in barplot
-    weights.attrs['units'] = '1'
-
-    return weights
 
 
 def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
