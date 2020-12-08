@@ -34,12 +34,20 @@ BaseVariable = collections.namedtuple('Variable', [n.SHORT_NAME,
 
 
 class Variable(BaseVariable):
-    """Variable class containing all relevant information."""
+    """Variable class containing all relevant information.
+
+    Note
+    ----
+    This class has been deprecated in version 2.2 and will be removed to minor
+    releases later in version 2.4.
+
+    """
 
     def __new__(cls, short_name, standard_name, long_name, units):
         """Deprecate this class."""
         warnings.warn(
-            "'Variable' is deprecated and will be removed in version 2.3",
+            "'Variable' has been deprecated in version 2.2 and will be "
+            "removed two minor releases later in version 2.4",
             ESMValToolDeprecationWarning)
         self = super().__new__(cls, short_name, standard_name, long_name,
                                units)
@@ -48,6 +56,11 @@ class Variable(BaseVariable):
 
 class Variables(object):
     """Class to easily access a recipe's variables in a diagnostic.
+
+    Note
+    ----
+    This class has been deprecated in version 2.2 and will be removed to minor
+    releases later in version 2.4.
 
     Examples
     --------
@@ -85,7 +98,8 @@ class Variables(object):
 
         """
         warnings.warn(
-            "'Variables' is deprecated and will be removed in version 2.3",
+            "'Variables' has been deprecated in version 2.2 and will be "
+            "removed two minor releases later in version 2.4",
             ESMValToolDeprecationWarning)
         self._dict = {}
 
@@ -339,6 +353,11 @@ class Variables(object):
 class Datasets(object):
     """Class to easily access a recipe's datasets in a diagnostic script.
 
+    Note
+    ----
+    This class has been deprecated in version 2.2 and will be removed to minor
+    releases later in version 2.4.
+
     Examples
     --------
     Get all variables of a recipe configuration `cfg`::
@@ -378,7 +397,8 @@ class Datasets(object):
 
         """
         warnings.warn(
-            "'Datasets' is deprecated and will be removed in version 2.3",
+            "'Datasets' has been deprecated in version 2.2 and will be "
+            "removed two minor releases later in version 2.4",
             ESMValToolDeprecationWarning)
         self._iter_counter = 0
         self._paths = []
