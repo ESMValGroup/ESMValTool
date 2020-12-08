@@ -1,3 +1,4 @@
+---
 # Full list of authors and references for the currently implemented
 # diagnostics.
 #
@@ -633,6 +634,7 @@ authors:
 #  - add the file to the folder esmvaltool/references.
 
 projects:
+  4c: EU 2020 project 4C
   applicate: EU Horizon 2020 Advanced prediction in polar regions and beyond
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
@@ -650,6 +652,7 @@ projects:
   russell_project: US Clivar, Ocean Carbon Biogeochemistry, ESGF, NOAA, NSF, NASA, US Antarctic program
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
+  usmile: ERC Synergy Grant USMILE
 
 realms:
   aerosol: aerosol
@@ -675,6 +678,7 @@ themes:
   phys: physics
   seaIce: sea ice
   varmodes: modes of variability
+  ML: machine learning
 
 domains:
   eq: equatorial
@@ -714,6 +718,8 @@ plot_types:
   zonal: zonal mean
   pro: profile  # (any other kind of line chart)
   box: boxplot
+  line: line plot
+  probability: probability distribution
   other: other plot types
 
 statistics:
