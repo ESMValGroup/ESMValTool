@@ -54,7 +54,8 @@ and push your branch to the public repository
 
 6) Make a pull request in the public repository
 -----------------------------------------------
-Go to https://github.com/esmalgroup/esmvaltool/pulls and click the 'New pull request button'. Process reviewer comments and get it merged.
+Go to https://github.com/esmalgroup/esmvaltool/pulls and click the 'New pull request button'.
+Process reviewer comments and get it merged as described in :ref:`reviewing`.
 
 7) Obtain a DOI for your code and add it to your paper
 ------------------------------------------------------
