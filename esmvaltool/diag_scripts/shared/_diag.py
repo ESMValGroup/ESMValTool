@@ -8,11 +8,6 @@ Import and use these basic classes by e.g.::
     datasets = e.Datasets(cfg)
     variables = e.Variables(cfg)
 
-Notes
------
-An example diagnostic using these classes is given in
-`diag_scripts/examples/diagnostic_object_oriented.py`.
-
 """
 
 
