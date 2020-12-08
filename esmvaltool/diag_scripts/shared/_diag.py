@@ -38,7 +38,7 @@ class Variable(BaseVariable):
 
     Note
     ----
-    This class has been deprecated in version 2.2 and will be removed to minor
+    This class has been deprecated in version 2.2 and will be removed two minor
     releases later in version 2.4.
 
     """
@@ -59,7 +59,7 @@ class Variables(object):
 
     Note
     ----
-    This class has been deprecated in version 2.2 and will be removed to minor
+    This class has been deprecated in version 2.2 and will be removed two minor
     releases later in version 2.4.
 
     Examples
@@ -355,7 +355,7 @@ class Datasets(object):
 
     Note
     ----
-    This class has been deprecated in version 2.2 and will be removed to minor
+    This class has been deprecated in version 2.2 and will be removed two minor
     releases later in version 2.4.
 
     Examples
