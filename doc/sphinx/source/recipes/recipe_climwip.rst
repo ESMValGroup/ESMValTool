@@ -25,7 +25,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
     * ``main.py``: Compute weights for each input dataset
     * ``calibrate_sigmas.py``: Compute the sigma values on the fly
     * ``core_functions.py``: A collection of core functions used by the scripts
-    * ``io_functions.py``: A collection of input/output functions used be the scripts
+    * ``io_functions.py``: A collection of input/output functions used by the scripts
 
 Plot scripts are stored in esmvaltool/diag_scripts/weighting/
 
