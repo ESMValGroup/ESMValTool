@@ -18,6 +18,9 @@ An example diagnostic using these classes is given in
 
 import collections
 import logging
+import warnings
+
+from esmvaltool import ESMValToolDeprecationWarning
 
 from . import names as n
 
@@ -29,10 +32,23 @@ DEFAULT_INFO = 'not_specified'
 
 
 # Variable class containing all relevant information
-Variable = collections.namedtuple('Variable', [n.SHORT_NAME,
-                                               n.STANDARD_NAME,
-                                               n.LONG_NAME,
-                                               n.UNITS])
+BaseVariable = collections.namedtuple('Variable', [n.SHORT_NAME,
+                                                   n.STANDARD_NAME,
+                                                   n.LONG_NAME,
+                                                   n.UNITS])
+
+
+class Variable(BaseVariable):
+    """Variable class containing all relevant information."""
+
+    def __new__(cls, short_name, standard_name, long_name, units):
+        """Deprecate this class."""
+        warnings.warn(
+            "'Variable' is deprecated and will be removed in version 2.3",
+            ESMValToolDeprecationWarning)
+        self = super().__new__(cls, short_name, standard_name, long_name,
+                               units)
+        return self
 
 
 class Variables(object):
@@ -73,6 +89,9 @@ class Variables(object):
             `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
+        warnings.warn(
+            "'Variables' is deprecated and will be removed in version 2.3",
+            ESMValToolDeprecationWarning)
         self._dict = {}
 
         # Add variables from cfg file
@@ -363,6 +382,9 @@ class Datasets(object):
             If recipe configuration dictionary is not valid.
 
         """
+        warnings.warn(
+            "'Datasets' is deprecated and will be removed in version 2.3",
+            ESMValToolDeprecationWarning)
         self._iter_counter = 0
         self._paths = []
         self._data = {}
