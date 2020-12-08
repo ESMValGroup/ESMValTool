@@ -46,8 +46,7 @@ logger = logging.getLogger(__name__)
 
 def _make_monthly_data_contiguous(in_file, out_file, cfg):
 
-    raw_varname = cfg['variables']['lweGrace']['raw']
-    original = xr.open_dataset(in_file)[raw_varname]
+    original = xr.open_dataset(in_file)[cfg['variables']['lweGrace']['raw']]
 
     months_table_file = os.path.join(cfg['in_dir'], cfg['grace_table'])
     # Read CSV file if available
@@ -57,18 +56,18 @@ def _make_monthly_data_contiguous(in_file, out_file, cfg):
         logger.error("CSV file %s does not exist", months_table_file)
     # Construct the time axis
     time_axis = []
-    # read the first and last months from the csv table
-    # and convert month anmes to numbers
-    start_month = datetime.strptime(grace_months_table['MONTH'].iloc[0],
-                                    '%b').month
-    end_month = datetime.strptime(grace_months_table['MONTH'].iloc[-1],
-                                  '%b').month
-    start_date = datetime(grace_months_table['YEAR'].iloc[0],
-                          start_month,
-                          15)
-    end_date = datetime(grace_months_table['YEAR'].iloc[-1],
-                        end_month,
-                        15)
+    # read the first and last years and months from the csv table
+    time_grace = [[], []]  # [start time], [end time]
+    time_grace[0].append(grace_months_table['YEAR'].iloc[0])
+    time_grace[1].append(grace_months_table['YEAR'].iloc[-1])
+    time_grace[0].append(
+        datetime.strptime(grace_months_table['MONTH'].iloc[0], '%b').month)
+    time_grace[1].append(
+        datetime.strptime(grace_months_table['MONTH'].iloc[-1], '%b').month)
+    time_grace[0].append(15)
+    time_grace[1].append(15)
+    start_date = datetime(*time_grace[0])
+    end_date = datetime(*time_grace[1])
     while start_date <= end_date:
         time_axis.append(start_date)
         start_date += relativedelta.relativedelta(months=1)
@@ -90,7 +89,7 @@ def _make_monthly_data_contiguous(in_file, out_file, cfg):
                               },
                               dims=['time', 'lat', 'lon'])
 
-    dataset = data_array.to_dataset(name=raw_varname)
+    dataset = data_array.to_dataset(name=cfg['variables']['lweGrace']['raw'])
     dataset.to_netcdf(out_file)
 
 
