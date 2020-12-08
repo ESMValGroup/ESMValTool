@@ -1,4 +1,4 @@
-"""A collection of functions to calibrate the sigma values."""
+"""A collection of functions to calibrate the shape parameters (sigmas)."""
 import logging
 import os
 from typing import Union
@@ -22,8 +22,6 @@ from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
 )
 
-# from scipy.optional import minimize
-
 logger = logging.getLogger(os.path.basename(__file__))
 
 SIGMA_RANGE = (.1, 2)
@@ -31,19 +29,7 @@ confidence_test_values = {'baseline': None}
 
 
 def optimize_confidence(target, weights_matrix, performance_sigma):
-    """Optimize the performance_sigma for confidence.
-
-    Cost function
-    -------------
-    - If the weighted distribution is to narrow (overconfident) the cost
-      function strongly decreases with increasing sigma to guide the minimizer
-      towards larger sigma values (weaker weighting).
-    - If the weighted distribution is wide enough the cost function decreases
-      with decreasing sigma to guide the minimizer towards smaller sigma values
-      (stronger weighting).
-    - If not sigma can be found the value case with least overconfidence will
-      be selected with a small scaling towards smaller sigma values
-    """
+    """Optimize the performance_sigma for confidence."""
     percentiles = xr.DataArray([.1, .9], dims='percentile')
     inside_ratio_reference = (percentiles[1] - percentiles[0]).values
 
@@ -53,7 +39,7 @@ def optimize_confidence(target, weights_matrix, performance_sigma):
 
     # calculate the equally weighted case once as baseline
     if confidence_test_values['baseline'] is None:
-        equal_weights_matrix = weights_matrix * 0 + 1  # might be less than 80%
+        equal_weights_matrix = weights_matrix * 0 + 1
         percentiles_data = xr.apply_ufunc(
             weighted_quantile,
             target,
@@ -113,9 +99,8 @@ def optimize_confidence(target, weights_matrix, performance_sigma):
 
 
 def evaluate_target(performance_sigma, overall_performance, target,
-                    overall_independence, independence_sigma):
-    """For each perfect_model and each sigma compare the weighted mean to the
-    'truth'."""
+                    overall_independence, independence_sigma, cfg):
+    """Evaluate the weighting in the target period."""
 
     performance_sigma = performance_sigma[0]
 
@@ -129,34 +114,23 @@ def evaluate_target(performance_sigma, overall_performance, target,
 
     cost_function = optimize_confidence(target, weights_matrix,
                                         performance_sigma)
-
-    # TODO: optimize for different metric
-    # cost_function = optimise_skill(
-    #     target, percentiles, weights_matrix, performance_sigma)
-
     return cost_function
 
 
-def visualize_and_save_calibration(x0, costf, confidence_test_values, cfg):
+def visualize_save_calibration(performance_sigma, costf, cfg):
+    """Visualize a summary of the calibartion."""
     baseline = confidence_test_values.pop('baseline')
-    sigmas = sorted([key for key in confidence_test_values.keys()])
+    sigmas = sorted(confidence_test_values)
     inside_ratios = [
         confidence_test_values[sigma]['inside_ratio'] for sigma in sigmas
     ]
     confidence = xr.Dataset(
         data_vars={
-            'inside_ratio_reference': ((), baseline['inside_ratio_reference'], {
-                'units': '1'
-            }),
-            'inside_ratio': ('sigma', inside_ratios, {
-                'units': '1'
-            }),
-            'sigma': ('sigma', sigmas, {
-                'units': '1'
-            }),
-        },
-        # attrs={}
-    )
+            'inside_ratio_reference': (
+                (), baseline['inside_ratio_reference'], {'units': '1'}),
+            'inside_ratio': ('sigma', inside_ratios, {'units': '1'}),
+            'sigma': ('sigma', sigmas, {'units': '1'}),
+        })
 
     figure, axes = plt.subplots(figsize=(12, 8))
     axes.plot(sigmas,
@@ -176,23 +150,27 @@ def visualize_and_save_calibration(x0, costf, confidence_test_values, cfg):
                  ls=':',
                  label='Unweighted baseline: {:.0%}'.format(
                      baseline['inside_ratio']))
-    axes.axvline(x0, color='k', ls='--')
+    axes.axvline(performance_sigma, color='k', ls='-.',
+                 label='Selected performance sigma: {:.2f}'.format(performance_sigma))
 
     # optional: sharpness
-    sharpness = xr.concat(
-        [confidence_test_values[sigma]['sharpness'].expand_dims(
-            {'sigma': [sigma]}) for sigma in sigmas],
-        dim='sigma')
+    sharpness = xr.concat([
+        confidence_test_values[sigma]['sharpness'].expand_dims(
+            {'sigma': [sigma]}) for sigma in sigmas
+    ],
+                          dim='sigma')
     axes.plot(sigmas,
               sharpness.mean('perfect_model_ensemble'),
               color='lightgray',
-              label='Spread relative to unweighted')
-    axes.fill_between(sigmas,
-                      sharpness.min('perfect_model_ensemble'),
-                      sharpness.max('perfect_model_ensemble'),
-                      facecolor='lightgray',
-                      edgecolor='none',
-                      alpha=.3)
+              label='Spread relative to unweighted (mean & 80% range)')
+    axes.fill_between(
+        sigmas,
+        *sharpness.quantile((.1, .9), 'perfect_model_ensemble'),
+        # sharpness.min('perfect_model_ensemble'),
+        # sharpness.max('perfect_model_ensemble'),
+        facecolor='lightgray',
+        edgecolor='none',
+        alpha=.3)
     axes.axhline(1, color='lightgray', ls='--')
 
     sharpness.attrs['units'] = '1'
@@ -236,6 +214,7 @@ def calibrate_performance_sigma(performance_contributions: list,
                                                             None],
                                 independence_sigma: Union[float, None],
                                 cfg: dict) -> float:
+    """Calibrate the performance sigma using a perfect model approach."""
 
     settings = cfg['performance_sigma_options']
     models, _ = read_metadata(cfg)
@@ -258,9 +237,8 @@ def calibrate_performance_sigma(performance_contributions: list,
                                                performance_contributions)
 
     target = models[settings['target']]
-    target_data, target_data_files = read_model_data(target)
+    target_data, _ = read_model_data(target)
     target_data = area_weighted_mean(target_data)
-    # TODO: log_provenance ?
 
     if cfg['combine_ensemble_members']:
         overall_independence, _ = combine_ensemble_members(
@@ -270,40 +248,26 @@ def calibrate_performance_sigma(performance_contributions: list,
             overall_performance, ['model_ensemble', 'perfect_model_ensemble'])
         target_data, _ = combine_ensemble_members(target_data)
 
-    # res = minimize(
-    #     evaluate_future,
-    #     x0=overall_performance.mean(),  # mean model distance is first estimate
-    #     bounds=((.1, 2),),
-    #     args=(overall_performance, target_data, overall_independence,
-    #           independence_sigma),
-    # )
-
-    #     if res.fun > 999:
-    #     logmsg = ' '.join([
-    #         'No confident sigma could be found! Using largest possible value.',
-    #         'Bad choice of predictors or target or too small sigma range?'
-    #     ])
-    #     logger.warning(logmsg)
-
-    # return res.x
-
-    x0, fval, grid, fgrid = brute(
+    performance_sigma, _, grid, fgrid = brute(
         evaluate_target,
         ranges=(SIGMA_RANGE, ),
         Ns=100,
         finish=None,
         args=(overall_performance, target_data, overall_independence,
-              independence_sigma),
+              independence_sigma, cfg),
         full_output=True,
     )
 
-    visualize_and_save_calibration(x0, fgrid, confidence_test_values, cfg)
+    visualize_save_calibration(performance_sigma, fgrid, cfg)
 
-    if x0 == SIGMA_RANGE[1]:
+    if performance_sigma == SIGMA_RANGE[1]:
         logmsg = ' '.join([
             'No confident sigma could be found! Using largest possible value.',
             'Bad choice of predictors or target or too small sigma range?'
         ])
         logger.warning(logmsg)
+    else:
+        logmsg = f'Found optimal performance sigma value: {performance_sigma}'
+        logger.info(logmsg)
 
-    return x0
+    return performance_sigma

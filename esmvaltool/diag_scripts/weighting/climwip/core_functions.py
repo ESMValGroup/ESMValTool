@@ -121,13 +121,15 @@ def compute_overall_mean(dataset: 'xr.Dataset',
 
 def combine_ensemble_members(
     dataset: Union['xr.DataArray', None],
-    dimns: Union[str, list] = 'model_ensemble'
+    dimns: Union[str, list] = 'model_ensemble',
 ) -> (Union['xr.DataArray', None], dict):
     """Combine ensemble members of the same model.
 
     Parameters
     ----------
     dataset : None or data_array, shape (N,) or (N, N)
+        A vector containing model-observations distances or a matirx containing
+        model-model distances.
     dimns : string or list of up to two strings
         Spezifies the dimensions along which ensemble members are combined.
 
@@ -214,11 +216,11 @@ def calculate_weights_data(performance, independence, performance_sigma,
 
 
 def calculate_weights(
-        performance: Union['xr.DataArray', None],
-        independence: Union['xr.DataArray', None],
+        performance: Union['xr.DataArray',
+                           None], independence: Union['xr.DataArray', None],
         performance_sigma: Union[float, None],
         independence_sigma: Union[float, None]) -> 'xr.DataArray':
-    """xarray wrapper for calculate_weights_data."""
+    """Xarray wrapper for calculate_weights_data."""
     if performance is None:
         performance_core_dims = []
     else:
