@@ -15,22 +15,34 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * ``recipe_climwip.yml``
+    * ``recipe_climwip_test_basic.yml``
+    * ``recipe_climwip_test_performance_sigma.yml``
 
-Diagnostics are stored in esmvaltool/diag_scripts/weighting/
+(A recipe adding a 'real' case will be added in due time.)
 
-    * ``climwip.py``: Compute weights for each input dataset
-    * ``weighted_temperature_graph.py``: Show the difference between weighted and non-weighted temperature anomalies.
+Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
+
+    * ``main.py``: Compute weights for each input dataset
+    * ``calibrate_sigmas.py``: Compute the sigma values on the fly
+    * ``core_functions.py``: A collection of core functions used by the scripts
+    * ``io_functions.py``: A collection of input/output functions used be the scripts
+
+Plot skripts are stored in esmvaltool/diag_scripts/weighting/
+    * ``weighted_temperature_graph.py``: Show the difference between weighted and non-weighted temperature anomalies as time series.
+    * ``weighted_temperature_map.py``: Show the difference between weighted and non-weighted temperature anomalies as map.
+    * ``plot_utilities.py``: A collection of functions use by the plot scripts.
 
 
 User settings in recipe
 -----------------------
 
-1. Script ``climwip.py``
+1. Script ``main.py``
 
   *Required settings for script*
-    * ``performance_sigma``: shape parameter weights calculation (determined offline). Can be skipped or not set if ``performance_contributions`` is skipped or not set.
-    * ``independence_sigma``: shape parameter for weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
+    * ``performance_sigma`` xor ``calibrate_performance_sigma``: If ``performance_contributions`` is given exactly one of the two has to be given. Otherwise they can be skipped or not set.
+        * ``performance_sigma``: float setting the shape parameter for the performance weights calculation (determined offline).
+        * ``calibrate_performance_sigma``: dictionary giving setting the performance sigma calibration. Has to contain at least the key-value pair specifying target: variable_group. Optional parameters for adjusting the calibration are not yet implemented.
+    * ``independence_sigma``: float setting the shape parameter for the independence weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
     * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with ``independence_contributions`` being skipped or not set).
     * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with ``performance_contributions`` being skipped or not set).
     * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble members per model.
@@ -114,7 +126,7 @@ multiple datasets.
 References
 ----------
 
-* `Brunner et al. 2020 (accepted), Earth Syst. Dynam., <https://doi.org/10.5194/esd-2020-23>`_.
+* `Brunner et al. 2020, Earth Syst. Dynam., <https://doi.org/10.5194/esd-11-995-2020>`_.
 * `Merrifield et al. 2020, Earth Syst. Dynam., 11, 807-834, <https://doi.org/10.5194/esd-11-807-2020>`_.
 * `Brunner et al. 2019, Environ. Res. Lett., 14, 124010, <https://doi.org/10.1088/1748-9326/ab492f>`_.
 
@@ -146,6 +158,12 @@ Example plots
    Interquartile range of temperature anomalies relative to 1981-2010, weighted versus non-weighted.
 
    .. _fig_climwip_5:
+.. figure::  /recipes/figures/climwip/performance_sigma_calibration.png
+   :align:   center
+
+   Performance sigma calibration: The tick black line gives the reliability (c.f., weather forecast verification) which should reach at least 80%. The thick black line gives the mean change in spread between unweighted and weighted 80% ranges as an indication of the weighting strength. The smallest sigma (i.e., strongest weighting) with is not overconfident (reliability >= 80%) is selected based on cost function (red line).
+
+   .. _fig_climwip_6:
 .. figure::  /recipes/figures/climwip/temperature_change_weighted_map.png
    :align:   center
 
