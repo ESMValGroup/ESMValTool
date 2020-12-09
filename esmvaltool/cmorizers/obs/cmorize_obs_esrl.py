@@ -225,7 +225,7 @@ def _make_station_lat_lon_coord(station_dic):
     return lat_coord, lon_coord
 
 
-def _get_filenames(stations, cfg, in_dir, all):
+def _get_filenames(stations, cfg, in_dir, all_stat):
     """Get filename given pattern and station name."""
     input_files = {}
     download_files = []
@@ -252,13 +252,13 @@ def _get_filenames(stations, cfg, in_dir, all):
                 # data at the moment, so remove these from to process files
                 stations = [x for x in stations if x not in rm_stat]
             else:
-                raise ValueError("No data found for %s on the ftp server. ",
-                                 rm_stat)
+                raise ValueError("No data found for %s on the ftp server. "
+                                 % rm_stat)
         else:
-            if not all:
+            if not all_stat:
                 raise ValueError("No local data found for stations %s, "
-                                 "consider turning on the download option.",
-                                 download_files)
+                                 "consider turning on the download option."
+                                 % download_files)
     logger.debug("Found input files:\n%s", pformat(input_files))
     return input_files, stations
 
@@ -273,15 +273,16 @@ def cmorization(in_dir, out_dir, cfg, _):
         # Read station names
         if 'all' in var['stations']:
             stations = station_dict.keys()
-            all = True
+            all_stat = True
         else:
             stations = var['stations']
-            all = False
+            all_stat = False
         # Check for wrong station names
         stat_upper = [element.upper() for element in stations]
         false_keys = np.setdiff1d(stat_upper, list(station_dict.keys()))
         if len(false_keys) == 0:
-            filepath, stations = _get_filenames(stations, cfg, in_dir, all)
+            filepath, stations = _get_filenames(stations, cfg, in_dir,
+                                                all_stat)
             for station in stations:
                 logger.info("Reading file '%s'", filepath[station][0])
                 logger.info("CMORizing variable '%s' for station '%s'",
