@@ -9,12 +9,11 @@ did not change the model code for this aim yet.
 import logging
 from pathlib import Path
 
-import iris
-import iris.analysis
 import numpy as np
 import xarray as xr
 import pandas as pd
 import dask.array as da
+import iris
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
@@ -120,7 +119,7 @@ def langbein_pet(tas):
     # average value is equal to the annual average.
     pet = constant_a + constant_b * (tas) + constant_c * (tas ** 2)
     pet.units = 'kg m-2 year-1'  # equivalent to mm year-1
-    pet.convert_units('kg m-2 s-1') # convert to a cmor compatible unit
+    pet.convert_units('kg m-2 s-1')  # convert to a cmor compatible unit
     pet.var_name = 'evspsblpot'
     pet.standard_name = 'water_potential_evaporation_flux'
     pet.long_name = 'Potential Evapotranspiration'
@@ -128,7 +127,7 @@ def langbein_pet(tas):
 
 
 def get_cube_time_info(cube):
-    """Get year, month and day from the cube."""
+    """Return year, month and day from the cube."""
     coord_time = cube.coord('time')
     year = coord_time.cell(0).point.year
     month = str(coord_time.cell(0).point.month).zfill(2)
@@ -137,7 +136,7 @@ def get_cube_time_info(cube):
 
 
 def get_cube_data_info(cube):
-    """Get short_name, and mip from the cube."""
+    """Return short_name, and mip from the cube."""
     short_name = cube.var_name
     mip = cube.attributes['mip']
     return short_name, mip
@@ -217,7 +216,7 @@ def save_to_ascii(cube, file_name):
 
 
 def make_filename(dataset_name, cfg, cube, extension='asc'):
-    """Get a valid path for saving a diagnostic data file.
+    """Return a valid path for saving a diagnostic data file.
 
     filenames are specific to Globwat.
     """
