@@ -13,8 +13,8 @@
 ## Description
 
 <!--
-    Describe the idea of your changes here to communicate why we should accept
-    this pull request and what problem it solves.
+    Please describe your changes here, especially focusing on why this PR makes
+    ESMValTool better and what problem it solves.
 
     Before you start, please read our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html).
 
