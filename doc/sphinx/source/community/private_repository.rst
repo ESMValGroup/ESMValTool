@@ -1,3 +1,5 @@
+.. _private_repository:
+
 Moving work from the private to the public repository
 *****************************************************
 
