@@ -9,10 +9,12 @@ Contributions are very welcome
 We greatly value contributions of any kind.
 Contributions could include, but are not limited to documentation improvements, bug reports, new or improved diagnostic code, scientific and technical code reviews, infrastructure improvements, mailing list and chat participation, community help/building, education and outreach.
 We value the time you invest in contributing and strive to make the process as easy as possible.
-If you have suggestions for improving the process of contributing, please do not hesitate to propose them.
+If you have suggestions for improving the process of contributing, please do
+not hesitate to propose them, for example by starting a discussion on our
+`discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__.
 
-If you have a bug or other issue to report or just need help, please open an issue on the `issues tab on the
-ESMValTool github
+If you have a bug or other issue to report, please open an issue on the
+`issues tab on the ESMValTool github
 repository <https://github.com/ESMValGroup/ESMValTool/issues>`__.
 
 If you would like to contribute a new diagnostic and recipe or a new
@@ -20,7 +22,7 @@ feature, please discuss your idea with the development team before
 getting started, to avoid double work and/or disappointment later. A
 good way to do this is to open an `issue on
 GitHub <https://github.com/ESMValGroup/ESMValTool/issues>`__. This is
-also a good way to get help.
+also a good way to get help with the implementation.
 
 Getting started
 ---------------
