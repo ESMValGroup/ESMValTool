@@ -49,7 +49,7 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.2.0 (Release Manager: tbd)
+- 2.2.0 (Release Manager: Javier Vegas-Regidor)
 
 +------------+--------------------------+
 | 2021-02-01 |ESMValCore feature freeze |
