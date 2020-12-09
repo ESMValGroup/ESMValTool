@@ -91,7 +91,7 @@ preprocessors:
 
 diagnostics:
   # if local anomalies are needed as predictors they need to be calculated first
-  calculate_local_anomalies_tas:
+  calculate_local_anomalies:
     variables:
       tas_CLIM: &performance_settings
         short_name: tas
@@ -103,13 +103,6 @@ diagnostics:
       tas_GLOBAL:
         <<: *performance_settings
         preprocessor: global_mean
-    scripts:
-      local_anomalies:
-        script: weighting/calculate_difference_variable_group.py
-        obs_data: native6
-
-  calculate_local_anomalies_psl:
-    variables:
       psl_CLIM:
         <<: *performance_settings
         short_name: psl
@@ -122,6 +115,7 @@ diagnostics:
       local_anomalies:
         script: weighting/calculate_difference_variable_group.py
         obs_data: native6
+
 
   calculate_weights_climwip:
     variables:
@@ -150,8 +144,7 @@ diagnostics:
       climwip:
         script: weighting/climwip/main.py
         obs_data: native6
-#        ancestors: [calculate_local_anomalies_tas/tas_CLIM,
-#                    calculate_local_anomalies_psl/psl_CLIM,
+#        ancestors: [calculate_local_anomalies/local_anomalies,
 #                    tas_CLIM_i, psl_CLIM_i, tas_STD, psl_STD, tas_TREND]
         combine_ensemble_members: true
         performance_sigma: 0.43

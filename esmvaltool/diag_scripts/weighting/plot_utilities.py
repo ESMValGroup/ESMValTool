@@ -3,10 +3,6 @@ from collections import defaultdict
 
 import numpy as np
 import xarray as xr
-import seaborn as sns
-import matplotlib.patches as mpatches
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Rectangle
 
 from climwip.core_functions import weighted_quantile
 

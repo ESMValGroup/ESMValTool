@@ -1,14 +1,12 @@
-"""Calculating the difference between two preprocessed files
- to be further used as other variable groups
+"""Calculating the difference between two preprocessed files.
 
 """
 import logging
 import os
+import xarray as xr
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
     get_diagnostic_filename,
-    group_metadata,
     run_diagnostic,
 )
 
@@ -21,13 +19,27 @@ from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+def calculate_diff(ds1: 'xr.DataSet', ds2: 'xr.DataSet',
+                   observations=False) -> tuple:
+    """Read data, calculate difference, return difference and ancestor files"""
+    if observations:
+        data1, data_files1 = read_observation_data(ds1)
+        data2, data_files2 = read_observation_data(ds2)
+    else:
+        data1, data_files1 = read_model_data(ds1)
+        data2, data_files2 = read_model_data(ds2)
+    data_files1.extend(data_files2)
+
+    diff = data1 - data2
+    diff.attrs['short_name'] = ds1[0]['short_name']
+
+    return diff, data_files1
 
 def _save_data(data: 'xr.DataArray', name: str, cfg: dict,
-              ancestors: list):
-    """ Save data to netcdf for further use"""
-
+               ancestors: list):
+    """Save data to netcdf for further use"""
     filename_data = get_diagnostic_filename(
-        '%s%s_ANOM' %(name, data.short_name), cfg, extension='nc')
+        '%s%s_ANOM' %(name, data.short_name), cfg, extension = 'nc')
     data.to_netcdf(filename_data)
 
     caption = '%s%s_ANOM' %(name, data.short_name)
@@ -35,33 +47,26 @@ def _save_data(data: 'xr.DataArray', name: str, cfg: dict,
 
 def main(cfg):
     """Compute the difference between the two given variable groups."""
-
     models, observations = read_metadata(cfg)
-    variable_group = list(models)
-
-    dataset1_model = models[variable_group[0]]
-    model_data1, model_data_files1 = read_model_data(dataset1_model)
-
-    dataset2_model = models[variable_group[1]]
-    model_data2, model_data_files2 = read_model_data(dataset2_model)
-    model_data_files1.extend(model_data_files2)
-
-    diff_model_data = model_data1 - model_data2
-    diff_model_data.attrs['short_name'] = dataset1_model[0]['short_name']
+    variable_groups = list(models)
+    varnames = list()
+    for variable_group in variable_groups:
+         varname = variable_group.split("_")[0]
+         varnames.append(varname)
+    short_names = set(varnames)
     #import ipdb; ipdb.set_trace()
-    _save_data(diff_model_data, 'MODELS_', cfg, ancestors=model_data_files1)
 
-    dataset1_obs = observations[variable_group[0]]
-    obs_data1, obs_data_files1 = read_observation_data(dataset1_obs)
+    for short_name in short_names:
+        ds1 = models[short_name+'_GLOBAL']
+        ds2 = models[short_name+'_CLIM']
+        diff, data_files_models = calculate_diff(ds1, ds2)
+        _save_data(diff, 'MODELS_', cfg, ancestors=data_files_models)
 
-    dataset2_obs = observations[variable_group[1]]
-    obs_data2, obs_data_files2 = read_observation_data(dataset2_obs)
-    obs_data_files1.extend(obs_data_files2)
+        obs1 = observations[short_name+'_GLOBAL']
+        obs2 = observations[short_name+'_CLIM']
+        diff_obs, data_files_obs = calculate_diff(obs1, obs2, observations=True)
+        _save_data(diff_obs, 'OBS_', cfg, ancestors=data_files_obs)
 
-    diff_obs_data = obs_data1 - obs_data2
-    diff_obs_data.attrs['short_name'] = dataset1_obs[0]['short_name']
-
-    _save_data(diff_obs_data, 'OBS_', cfg, ancestors=obs_data_files1)
 
 if __name__ == '__main__':
 
