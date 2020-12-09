@@ -1,3 +1,4 @@
+"""Diagnostic for PRIMAVERA Eady Growth Rate"""
 import logging
 import os
 import sys
@@ -18,14 +19,16 @@ from esmvalcore.preprocessor import (
     seasonal_statistics,
 )
 
-import esmvaltool.diag_scripts.shared
-import esmvaltool.diag_scripts.shared.names as shared_names
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata
-
+from esmvaltool.diag_scripts.shared import (
+    group_metadata,
+    names,
+    ProvenanceLogger,
+    run_diagnostic
+)
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class EadyGrowthRate(object):
+class EadyGrowthRate:
     """Class used to compute the Eady Growth Rate."""
 
     def __init__(self, config):
@@ -36,11 +39,9 @@ class EadyGrowthRate(object):
         ----------
             config : dict
                 Dictionary containing configuration settings.
-
         """
 
         self.cfg = config
-        self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.fill_value = 1e20
         """Fill Value."""
         self.ref_p = 1000.0
@@ -285,14 +286,14 @@ class EadyGrowthRate(object):
             plotname = '_'.join([alias, diagnostic,
                                  str(int(level))]) + f'.{extension}'
             plt.savefig(os.path.join(
-                self.cfg[shared_names.PLOT_DIR], plotname))
+                self.cfg[names.PLOT_DIR], plotname))
             plt.close()
 
     def save(self, egr, alias, data):
         """
         Save results and write provenance.
         """
-        script = self.cfg[shared_names.SCRIPT]
+        script = self.cfg[names.SCRIPT]
         info = data[alias][0]
         keys = [
             str(info[key]) for key in ('project', 'dataset', 'exp', 'ensemble',
@@ -300,7 +301,7 @@ class EadyGrowthRate(object):
             if key in info]
         output_name = '_'.join(keys) + '.nc'
         output_file = os.path.join(
-            self.cfg[shared_names.WORK_DIR], output_name)
+            self.cfg[names.WORK_DIR], output_name)
         iris.save(egr, output_file)
 
         caption = ("{script} between {start} and {end}"
@@ -327,7 +328,7 @@ def main():
     """
     Run Eady Growth Rate diagnostic.
     """
-    with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
+    with run_diagnostic() as config:
         EadyGrowthRate(config).compute()
 
 
