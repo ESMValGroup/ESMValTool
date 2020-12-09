@@ -15,7 +15,7 @@ or
 
 
 2. Make a branch to develop your recipe and diagnostic
-------------------------------------------------------
+======================================================
 ``git checkout master``
 
 ``git pull``
@@ -24,7 +24,7 @@ or
 
 
 3. Develop your diagnostic in that branch and push it to the private repository
--------------------------------------------------------------------------------
+===============================================================================
 ``git push -u origin my-awesome-diagnostic``
 
 the first time and
@@ -35,10 +35,10 @@ any other time
 
 
 4. Write and submit your paper
-------------------------------
+==============================
 
 5. Push your branch to the public repository
---------------------------------------------
+============================================
 Add the public repository as a remote
 
 ``git remote add public git@github.com:esmvalgroup/esmvaltool``
@@ -53,11 +53,11 @@ and push your branch to the public repository
 
 
 6. Make a pull request in the public repository
------------------------------------------------
+===============================================
 Go to https://github.com/esmalgroup/esmvaltool/pulls and click the 'New pull request button'.
 Process reviewer comments and get it merged as described in :ref:`reviewing`.
 
 7. Obtain a DOI for your code and add it to your paper
-------------------------------------------------------
+======================================================
 Wait for a new release of ESMValTool. Releases are scheduled normally every four months. Find the release schedule here: :ref:`release_schedule`.
 With the next release, your diagnostic recipe and source code will automatically be included in the archive on Zenodo and you can add the DOI from Zenodo to your paper: https://zenodo.org/record/3698045
