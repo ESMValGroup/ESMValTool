@@ -11,8 +11,10 @@ Last access
 
 Download and processing instructions
    Download the following files:
-     Go to http://surftemp.net/regridding/index.html and request regridded data with the default options
-     except for the time resolution, which must be monthly. At the time of writing the script the period
+     Go to http://surftemp.net/regridding/index.html
+     and request regridded data with the default options
+     except for the time resolution, which must be monthly.
+     At the time of writing the script the period
      of the data was from 1982 to 2019 inclusive.
 
 Modification history
@@ -27,23 +29,14 @@ import os
 import iris
 
 from esmvalcore.preprocessor._io import concatenate
-from .utilities import (constant_metadata, convert_timeunits, fix_coords,
-                        fix_var_metadata, save_variable, set_global_atts)
+from .utilities import (convert_timeunits, fix_coords, fix_var_metadata,
+                        save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 
 
-def _fix_data(cube, var):
-    """Specific data fixes for different variables."""
-    logger.info("Fixing data ...")
-    with constant_metadata(cube):
-        logger.info("Pending")
-    return cube
-
-
-def extract_variable(var_info, raw_info, out_dir, attrs, year):
+def extract_variable(var_info, raw_info, attrs, year):
     """Extract to all vars."""
-    var = var_info.short_name
     cubes = iris.load(raw_info['file'])
     rawvar = raw_info['name']
 
@@ -52,7 +45,6 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
             fix_var_metadata(cube, var_info)
             convert_timeunits(cube, year)
             fix_coords(cube)
-            _fix_data(cube, var)
             set_global_atts(cube, attrs)
             return cube
 
@@ -75,9 +67,13 @@ def cmorization(in_dir, out_dir, cfg, _):
             monthly_cubes = []
             for month in months:
                 raw_info['file'] = inpfile.format(year=year, month=month)
-                logger.info("CMORizing var %s from file type %s", var, raw_info['file'])
-                cube = extract_variable(var_info, raw_info, out_dir, glob_attrs, year)
+                logger.info("CMORizing var %s from file type %s", var,
+                            raw_info['file'])
+                cube = extract_variable(var_info, raw_info, glob_attrs, year)
                 monthly_cubes.append(cube)
             yearly_cube = concatenate(monthly_cubes)
-            save_variable(
-                yearly_cube, var, out_dir, glob_attrs, unlimited_dimensions=['time'])
+            save_variable(yearly_cube,
+                          var,
+                          out_dir,
+                          glob_attrs,
+                          unlimited_dimensions=['time'])
