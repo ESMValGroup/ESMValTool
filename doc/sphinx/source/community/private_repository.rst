@@ -4,7 +4,7 @@ Moving work from the private to the public repository
 In case you develop a new diagnostic with the ESMValTool, and you plan on publishing the results of the diagnostic in a peer-reviewed paper, you might want to develop the diagnostic in a slightly less open setting than the ESMValTool-public repository. That is what the ESMValTool-private repository is for. It would be great, though, if you would make the diagnostic available for the whole community after your paper was accepted. The steps that you need to take to develop a diagnostic in the private repository and then open a pull request for it in the public repository are described in the following:
 
 1. Clone the private repository
--------------------------------
+===============================
 For example, to clone a repository called esmvaltool-private, you would run:
 
 ``git clone git@github.com:esmvalgroup/esmvaltool-private``
