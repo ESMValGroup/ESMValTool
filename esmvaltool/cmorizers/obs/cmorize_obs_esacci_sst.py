@@ -12,10 +12,19 @@ Last access
 Download and processing instructions
    Download the following files:
      Go to http://surftemp.net/regridding/index.html
-     and request regridded data with the default options
-     except for the time resolution, which must be monthly.
-     At the time of writing the script the period
-     of the data was from 1982 to 2019 inclusive.
+     and request regridded data with the following options:
+       Time Resolution: monthly
+       Longitude Resolution: 0.5
+       Latitude Resolution: 0.5
+       Start Date: 1982-01-01
+       End Date: 2019-12-31
+       Exclude data above sea ice threshold: True
+         (Threshold: 100 %)
+       Include post-hoc SST bias adjustments: True
+       Output Absolute or Anomaly SST: absolute
+       Generate Sea Ice Fraction: True
+       Error Correlation in Time (Days): 7
+       Error Correlation In Space (Degrees): 3.0
 
 Modification history
    20200412-roberts_charles: written.
