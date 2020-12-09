@@ -14,8 +14,8 @@ or
 ``git clone https://github.com/esmvalgroup/esmvaltool-private``
 
 
-2. Make a branch to develop your recipe and diagnostic:
--------------------------------------------------------
+2. Make a branch to develop your recipe and diagnostic
+------------------------------------------------------
 ``git checkout master``
 
 ``git pull``
