@@ -58,17 +58,17 @@ def change_data_type(cube):
 
 
 def _convert_units(cube):
-    """Convert unit of cube."""
-    cube.units = cube.units / 'kg m-3'
-    cube.data = cube.core_data() / 1000.
+    """Convert unit of cube.
 
+    From kg m-2 s-1 to kg m-2 month-1 or kg m-2 day-1.
+    Note that the unit kg m-2 s-1 is equivalent to mm s-1.
+    """
     mip = cube.attributes['mip']
 
-    # Unit conversion from 'kg m-2 s-1' to 'mm month-1 or day-1'
     if mip == 'Amon':
-        cube.convert_units('mm month-1')
+        cube.convert_units('kg m-2 month-1')  # equivalent to mm/month
     elif mip == 'day':
-        cube.convert_units('mm day-1')
+        cube.convert_units('kg m-2 day-1')  # equivalent to mm/day
     return cube
 
 
@@ -119,17 +119,11 @@ def langbein_pet(tas):
     # assumption here: tas is constant over time, then the monthly/daily
     # average value is equal to the annual average.
     pet = constant_a + constant_b * (tas) + constant_c * (tas ** 2)
-    pet.units = 'mm year-1'
+    pet.units = 'kg m-2 year-1'  # equivalent to mm year-1
+    pet.convert_units('kg m-2 s-1') # convert to a cmor compatible unit
     pet.var_name = 'evspsblpot'
     pet.standard_name = 'water_potential_evaporation_flux'
     pet.long_name = 'Potential Evapotranspiration'
-    pet.attributes['mip'] = tas.attributes['mip']
-
-    # Unit conversion from 'mm year-1' to 'mm month-1 or day-1'
-    if pet.attributes['mip'] == 'Amon':
-        pet.convert_units('mm month-1')
-    elif pet.attributes['mip'] == 'day':
-        pet.convert_units('mm day-1')
     return pet
 
 
@@ -272,17 +266,18 @@ def main(cfg):
                 rsds=all_vars['rsds'],
                 rsdt=all_vars['rsdt'],
                 tas=all_vars['tas']))
-            # Convert unit of pet
-            _convert_units(all_vars['pet'])
 
-        # Convert unit of pr
-        _convert_units(all_vars['pr'])
+        # Add mip to pet cube attribute
+        all_vars['pet'].attributes['mip'] = all_vars['pr'].attributes['mip']
 
         # Change negative values for pr to zero
         _fix_negative_values(all_vars['pr'])
 
         for key in ['pr', 'pet']:
             cube = all_vars[key]
+
+            # Convert unit
+            _convert_units(cube)
 
             # Re-grid data according to the target cube
             cube = lazy_regrid(cube, target_cube, cfg['regrid_scheme'])
