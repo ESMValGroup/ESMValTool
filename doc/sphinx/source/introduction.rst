@@ -62,9 +62,9 @@ See `www.esmvaltool.org <https://www.esmvaltool.org>`_ for general contact infor
 User mailing list
 -----------------
 
-Subscribe to the ESMValTool user mailing list
+Subscribe to the ESMValTool announcements mailing list
 `esmvaltool@listserv.dfn.de <mailto:esmvaltool@listserv.dfn.de>`__
-to stay up to date about our the monthly online meetings, upcoming workshops, and trainings.
+to stay up to date about new releases, monthly online meetings, upcoming workshops, and trainings.
 
 To subscribe, send an email to
 `sympa@listserv.dfn.de <mailto:sympa@listserv.dfn.de?subject=subscribe%20esmvaltool>`_
@@ -84,7 +84,7 @@ Discussions page
 ----------------
 
 The `ESMValTool Discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__
-is open for all general and technical questions on the ESMValTool, for example about installation, application, development, etc.
+is open for all general and technical questions on the ESMValTool: installation, application, development, or any other question or comment you may have.
 
 .. _core-team:
 
@@ -104,9 +104,7 @@ Core development team
 -  Deutsches Zentrum für Luft- und Raumfahrt (DLR), Institut für Physik
    der Atmosphäre, Germany (PI)
 
-   ESMValTool Core PI and Developer: contact for requests to use the
-   ESMValTool and for collaboration with the development team, access to
-   the PRIVATE GitHub repository.
+   - ESMValTool Core PI and Developer: contact for requests to use the ESMValTool and for collaboration with the development team, access to the PRIVATE GitHub repository.
 
 -  Alfred Wegener institute (AWI) Bremerhaven, Germany
 -  Barcelona Supercomputing Center (BSC), Spain
