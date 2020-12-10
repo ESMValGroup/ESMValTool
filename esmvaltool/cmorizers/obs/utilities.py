@@ -198,7 +198,7 @@ def extract_doi_value(tags):
             if re.search("doi", reference_entry):
                 reference_doi.append(
                     f'doi:{re.search(pattern, reference_entry).group(1)}'
-                    )
+                )
             else:
                 reference_doi.append('doi not found')
                 logger.warning(
