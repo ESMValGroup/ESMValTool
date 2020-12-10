@@ -1,4 +1,4 @@
-"""Diagnostic for PRIMAVERA Eady Growth Rate"""
+"""Diagnostic for PRIMAVERA Eady Growth Rate."""
 import logging
 import os
 import sys
@@ -32,8 +32,7 @@ class EadyGrowthRate:
     """Class used to compute the Eady Growth Rate."""
 
     def __init__(self, config):
-        """
-        Set diagnostic parameters and constants.
+        """Set diagnostic parameters and constants.
 
         Parameters
         ----------
