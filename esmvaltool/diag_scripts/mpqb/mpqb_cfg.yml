@@ -73,43 +73,93 @@ datasetcolors:
 #  '#17becf'
 # Hint: use colorbrewer for setting colors.
 
-colors:
+colormaps:
+  default:
+    pearsonr:
+      title: pearsonr
+      vmin: -1.
+      vmax: 1.
+      cmap: BrBG
+      extend: both
+    ubrmsd:
+      title: ubrmsd
+      vmin: 0.
+      vmax: .1
+      cmap: YlGn
+      extend: max
+    rmsd:
+      title: rmsd
+      vmin: 0.
+      vmax: .4
+      cmap: YlGn
+      extend: max
+    absdiff:
+      title: absdiff
+      vmin: -0.5
+      vmax: 0.5
+      cmap: BrBG
+      extend: both
+    reldiff:
+      title: reldiff
+      cmap: BrBG
+      vmin: -150
+      vmax: 150
+      extend: both
+    theilsenmk:
+      title: theilsen
+      cmap: BrBG
+      vmin: -0.001
+      vmax: 0.001
+      extend: both
+    timemean:
+      title: timemean
+      cmap: YlGn
+      vmin: 0.
+      vmax: 0.6
+      extend: max
   sm:
     pearsonr:
       title: pearsonr
       vmin: -1.
       vmax: 1.
       cmap: BrBG
+      extend: both
     ubrmsd:
       title: ubrmsd
       vmin: 0.
       vmax: .1
       cmap: YlGn
+      extend: max
     rmsd:
       title: rmsd
       vmin: 0.
       vmax: .4
       cmap: YlGn
+      extend: max
     absdiff:
       title: absdiff
       vmin: -0.5
       vmax: 0.5
       cmap: BrBG
+      extend: both
     reldiff:
       title: reldiff
       cmap: BrBG
       vmin: -150
       vmax: 150
+      extend: both
     theilsenmk:
       title: theilsen
       cmap: BrBG
       vmin: -0.001
       vmax: 0.001
+      extend: both
     timemean:
       title: timemean
       cmap: YlGn
       vmin: 0.
       vmax: 0.6
+      extend: max
 
   lweGrace:
     pearsonr:
@@ -142,11 +192,13 @@ colors:
       cmap: BrBG
       vmin: -0.02
       vmax: 0.02
+      extend: both
     timemean:
       title: timemean
       cmap: YlGn
-      vmin: 0.
+      vmin: 0
       vmax: 0.6
+      extend: max
 
   sm1m:
     pearsonr:
@@ -154,36 +206,43 @@ colors:
       vmin: -1.
       vmax: 1.
       cmap: BrBG
+      extend: both
     ubrmsd:
       title: ubrmsd
       vmin: 0.
       vmax: .1
       cmap: YlGn
+      extend: max
     rmsd:
       title: rmsd
       vmin: 0.
       vmax: .4
       cmap: YlGn
+      extend: max
     absdiff:
       title: absdiff
       vmin: -0.5
-      vmax: .5
+      vmax: 0.5
       cmap: BrBG
+      extend: both
     reldiff:
       title: reldiff
       cmap: BrBG
       vmin: -150
       vmax: 150
+      extend: both
     theilsenmk:
       title: theilsen
       cmap: BrBG
       vmin: -0.001
       vmax: 0.001
+      extend: both
     timemean:
       title: timemean
       cmap: YlGn
       vmin: 0.
       vmax: 0.6
+      extend: max
 
   lai:
     pearsonr:
@@ -216,11 +275,13 @@ colors:
       cmap: BrBG
       vmin: -0.05
       vmax: 0.05
+      extend: both
     timemean:
       title: timemean
-      cmap: YlOrBr
-      vmin: 0.0
+      cmap: BrBG
+      vmin: -0.5
       vmax: 0.5
+      extend: both
 
   # For now the same as LAI, can be adapted
   bdalb:

@@ -16,7 +16,8 @@ from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (
     absdiffaxismean1d, pearsonr1d, reldiffaxismean1d, rmsd1d, ubrmsd1d)
 from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import \
     parallel_apply_along_axis
-from mpqb_plots import read_mpqb_cfg, mpqb_mapplot
+from mpqb_plots import mpqb_mapplot
+from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -117,8 +118,8 @@ class MPQBpair:
                 plot_file
             }
 
-            metrics_plot_dictionary = read_mpqb_cfg()['colors'][self.ds_cfg[
-                self.ds1][0]['short_name']]
+            metrics_plot_dictionary = get_mpqb_cfg(
+                'colormap',self.ds_cfg[self.ds1][0]['short_name'])
             plot_kwargs = metrics_plot_dictionary[metricname]
             # Overwrite plot title to be dataset name
             plot_kwargs['title'] = self.ds1

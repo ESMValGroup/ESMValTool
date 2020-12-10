@@ -10,7 +10,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from mpqb_plots import read_mpqb_cfg
+from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -27,13 +27,12 @@ def main(cfg):
     datasets = []
     names = []
 
-    datasetnames = read_mpqb_cfg()['datasetnames']
-
     for alias in grouped_input_data:
+        label = get_mpqb_cfg('datasetname', alias)
         logger.info("Opening dataset: %s", alias)
         datasets.append(
             iris.load_cube(grouped_input_data[alias][0]['filename']))
-        names.append(datasetnames[alias])
+        names.append(label)
 
     res_data = _get_tim_res(datasets, names)
 

@@ -6,6 +6,7 @@ import os
 import cf_units
 import iris
 import numpy as np
+import yaml
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
@@ -13,7 +14,8 @@ from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (
     mannkendall1d, theilslopes1d)
 from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import \
     parallel_apply_along_axis
-from mpqb_plots import read_mpqb_cfg, mpqb_mapplot, read_mpqb_cfg
+from mpqb_plots import mpqb_mapplot
+from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -82,14 +84,19 @@ def main(cfg):
                                f"_{dataset_cfg['start_year']}-" \
                                f"{dataset_cfg['end_year']}"
                 plot_file = get_plot_filename(baseplotname, cfg)
-                metrics_plot_dictionary = read_mpqb_cfg()['colors'][
-                    dataset_cfg['short_name']]
+                metrics_plot_dictionary = get_mpqb_cfg('colormap',
+                    dataset_cfg['short_name'])
                 plot_kwargs = metrics_plot_dictionary[metricname]
                 # Overwrite plot title to be dataset name
                 plot_kwargs['title'] = alias
+                # Specify to add small text with field mean for timemean
+                if metricname == 'timemean':
+                    plot_kwargs['addglobmeanvalue'] = True
                 mpqb_mapplot(resultcube, cfg, plot_file, **plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
+
+
 
 
 if __name__ == '__main__':

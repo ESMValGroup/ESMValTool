@@ -11,7 +11,7 @@ from scipy.stats import pearsonr
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from mpqb_plots import read_mpqb_cfg
+from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -45,7 +45,6 @@ def main(cfg):
     grouped_input_data = _organize_datasets_for_mpqb(cfg)
 
     # Read from mpqb cfg
-    datasetnames = read_mpqb_cfg()['datasetnames']
     reference_dataset = cfg['reference_dataset']
 
     # Create a pair of two datasets for inter-comparison
@@ -56,6 +55,7 @@ def main(cfg):
     std_list = []
     labels = []
     for alias in grouped_input_data.keys():
+        label = get_mpqb_cfg('datasetname',alias)
         dataset = grouped_input_data[alias][0]['dataset']
         dat = iris.load_cube(grouped_input_data[alias][0]['filename'])
         # Create common masking
@@ -66,8 +66,9 @@ def main(cfg):
         rvalue_list.append(pearsonr(adat, bdat)[0])
         rmsd_list.append(sm.centered_rms_dev(adat, bdat))
         std_list.append(np.std(bdat))
-        labels.append(datasetnames[alias])
+        labels.append(label)
 
+    obslabel = get_mpqb_cfg('datasetname', cfg['reference_dataset'])
     sm.taylor_diagram(np.array(std_list),
                       np.array(rmsd_list),
                       np.array(rvalue_list),
@@ -78,7 +79,7 @@ def main(cfg):
                       rmsLabelFormat='0:.2f',
                       colObs='k',
                       markerObs='x',
-                      titleOBS=datasetnames[reference_dataset],
+                      titleOBS=obslabel,
                       checkstats='on')
     plot_filename = get_plot_filename('taylordiagram', cfg)
     logger.info("Writing plot to: %s", plot_filename)

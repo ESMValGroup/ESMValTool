@@ -11,7 +11,7 @@ from cf_units import Unit
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from mpqb_plots import read_mpqb_cfg
+from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -43,8 +43,6 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-    mpqb_cfg = read_mpqb_cfg()
-    datasetnames = mpqb_cfg['datasetnames']
 
     grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
@@ -59,20 +57,29 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    fig = plt.figure(figsize=(10, 4))
-    ax1 = fig.add_subplot()
+    fig, (ax,lax) = plt.subplots(nrows=2, gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
 
+    plt.sca(ax)
     for dataset in grouped_input_data:
         dataset_cfg = grouped_input_data[dataset][0]
         alias = dataset_cfg['alias']
 
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
+<<<<<<< HEAD
         _unify_time_coord(cube)
         
         iris.quickplot.plot(cube, label=datasetnames[alias],
                             color=mpqb_cfg['datasetcolors'][alias])
     plt.legend()
+=======
+
+        # Set default if not defined.
+        label = get_mpqb_cfg('datasetname', alias)
+        color = get_mpqb_cfg('datasetcolor', alias)
+
+        iris.quickplot.plot(cube, label=label, color=color)
+>>>>>>> 8feb11d3d9540e1afeca1bcb27ee60ce2d3d5f49
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:
@@ -81,20 +88,30 @@ def main(cfg):
     # Time axis formatting
     years = mdates.YearLocator()  # every year
     years_fmt = mdates.DateFormatter('%Y')
-    ax1 = plt.gca()
-    ax1.xaxis.set_major_locator(years)
-    ax1.xaxis.set_major_formatter(years_fmt)
-    ax1.grid(True, which='major', axis='x')
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(years)
+    ax.xaxis.set_major_formatter(years_fmt)
+    ax.grid(True, which='major', axis='x')
+    ax.set_ylim(ylims)
 
+    h,l = ax.get_legend_handles_labels()
+    leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')
+    for legobj in leg.legendHandles:
+        legobj.set_linewidth(2.0)
+    lax.axis("off")
+
+<<<<<<< HEAD
     ax1.set_ylim(ylims)
     #ax1.set_yticklabels(ax1.yaxis * 86400.)
     #ax1.set_xlabel('mm d-1')
+=======
+>>>>>>> 8feb11d3d9540e1afeca1bcb27ee60ce2d3d5f49
 
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
-    fig.savefig(filename)
+    fig.savefig(filename, bbox_inches='tight')
     plt.close(fig)
     logger.info("Finished!")
 
