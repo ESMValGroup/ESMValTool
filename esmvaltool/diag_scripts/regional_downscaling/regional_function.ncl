@@ -1091,4 +1091,124 @@ begin
 
     return(inout)
 end
+undef("add_legenda_page")
+procedure add_legenda_page(wks,MODEL:string,colors:string,dashs:numeric,scatters:string,ticknesses:numeric,place:string)
+local MODEL,dim_mod,colors,dashs,edge_x,edge_y,edge_res,tx1res,dim_lb,xleg,xl,yleg,yl,xtxt,ytxt,place,dim_lines,space_lines,lin_sp,scatters,ticknesses
+begin
+   ;***************Create Legend***********************************
+   dim_mod = dimsizes(MODEL)
+   dim_lines = floattoint(dim_mod/3)+1
+   if ((mod(dim_mod,3)).eq.0 ) then
+      dim_lines = floattoint(dim_mod/3)+1
+   else
+      dim_lines = floattoint(dim_mod/3)+2
+   end if
+   lin_sp = 0.025
+   space_lines = (dim_lines+1)*lin_sp
+
+   if (place.eq."bottom")
+      top_line = 0.20;8
+   end if
+   if (place.eq."middle")
+      top_line = 0.42
+   end if
+   if (place.eq."top")
+      top_line = 0.99
+   end if
+   if ((place.ne."bottom").and.(place.ne."middle").and.(place.ne."top")) then
+        top_line = tofloat(place)
+   end if
+   bot_line = top_line-space_lines
+  ; edge_x = (/ 0.12,0.92,0.92,0.12,0.12/)
+
+     edge_x = (/ 0.22,0.76,0.76,0.22,0.22/)
+
+
+   edge_y = (/ space_lines+bot_line,space_lines+bot_line,bot_line,bot_line,space_lines+bot_line/)
+   edge_res = True             ; Indicate you want to set some resources.
+   edge_res@gsLineColor="white"
+   gsn_polyline_ndc(wks,edge_x,edge_y,edge_res)
+
+   ;****************************************************************
+
+   dim_lb = dimsizes(MODEL)
+
+   gs1res               = True
+   tx1res               = True
+   tx1res@txFontHeightF = lin_sp/5*2
+
+   xleg = new((/3*dim_lines,4/),"float")
+   xl = new((/3,4/),"float")
+
+   do i=0,2
+      xl(0,:) = fspan((edge_x(0)+0.02),(edge_x(0)+0.07),4)
+      xl(1,:) = fspan(((edge_x(2)+edge_x(0))/2-0.09),((edge_x(2)+edge_x(0))/2-0.04),4)
+      xl(2,:) = fspan((edge_x(2)-0.20),(edge_x(2)-0.15),4)
+   end do
+
+   nt = 0
+   do  j=0,dim_lines-1
+      do i=0,2
+         xleg(nt,:) = (/xl(i,:)/)
+         nt = nt+1
+      end do
+   end do
+
+   yleg = new((/3*dim_lines,4/),"float")
+   yl = new(dim_lines,"float")
+
+   do i=0,dim_lines-1
+      yl(dim_lines-1-i) = edge_y(3)+(((edge_y(0) - (edge_y(3)))/dim_lines)*(i+1))-(lin_sp)
+   end do
+
+   nt = 0
+   do j=0,dim_lines-1
+      do i=0,2
+         yleg(nt,:) = (/yl(j)/)
+         nt = nt+1
+      end do
+   end do
+
+   xtxt = new((/dim_lines*3/),"float")
+   ytxt = new((/dim_lines*3/),"float")
+
+   nt = 0
+   do j=0,dim_lines-1
+      do i=0,2
+         xtxt(nt) = xl(i,3)+lin_sp/5.
+         nt = nt+1
+      end do
+   end do
+   nt = 0
+   do i=0,dim_lines-1
+      do j=0,2
+         ytxt(nt) = (/yl(i)/)
+         nt = nt+1
+      end do
+   end do
+
+   do i=0,(dimsizes(MODEL)-1)
+      gs1res@gsLineColor = colors(i)
+      gs1res@gsLineDashPattern = dashs(i)
+      gs1res@gsLineThicknessF=ticknesses(i)
+      tx1res@txFontColor = colors(i)
+      tx1res@txJust      = "CenterLeft"             ; change justification
+      ;if (((MODEL(i).eq."HALOE").and.(dashs(i).eq.16)).or.((MODEL(i).eq."NCEP").and.(dashs(i).eq.16)).or.((MODEL(i).eq."UKMO").and.(dashs(i).eq.2))) then
+     if (scatters(i).eq."Markers")
+         gs1res@gsMarkerColor = colors(i)
+         gs1res@gsMarkerIndex = dashs(i)
+         gs1res@gsMarkerSizeF = 0.01
+         gs1res@gsMarkerThicknessF=1.5
+         gsn_polymarker_ndc(wks, xleg(i,2),yleg(i,2),gs1res)
+      else
+
+         gsn_polyline_ndc(wks, xleg(i,:),yleg(i,:),gs1res)
+      end if
+
+      gsn_text_ndc(wks,MODEL(i),xtxt(i),ytxt(i),tx1res)
+   end do
+
+end
+
+;##################################################################################
 
