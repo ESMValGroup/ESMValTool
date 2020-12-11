@@ -59,7 +59,7 @@ def calculate_model_distances(
         dimn: str = 'model_ensemble_reference') -> 'xr.DataArray':
     """Calculate pair-wise distances between all values in data_array.
 
-    Distances are calculated as the area weighted eclidean distance
+    Distances are calculated as the area weighted euclidean distance
     between each pair of models in data_array. Returned is a square matrix
     with where the number of elements along each edge equals the number
     of ensemble members.
@@ -221,14 +221,8 @@ def calculate_weights(
         performance_sigma: Union[float, None],
         independence_sigma: Union[float, None]) -> 'xr.DataArray':
     """Xarray wrapper for calculate_weights_data."""
-    if performance is None:
-        performance_core_dims = []
-    else:
-        performance_core_dims = ['model_ensemble']
-    if independence is None:
-        independence_core_dims = []
-    else:
-        independence_core_dims = ['model_ensemble', 'model_ensemble_reference']
+    performance_core_dims = [] if performance is None else ['model_ensemble']
+    independence_core_dims = [] if independence is None else ['model_ensemble', 'model_ensemble_reference']
 
     weights = xr.apply_ufunc(
         calculate_weights_data,

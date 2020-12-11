@@ -272,11 +272,8 @@ def main(cfg):
         visualize_and_save_independence(overall_independence, cfg,
                                         model_ancestors)
         if independence_sigma is None:
-            errmsg = ' '.join([
-                'independence_sigma must be set if independence_contributions',
-                'is set'
-            ])
-            raise NotImplementedError(errmsg)
+            raise NotImplementedError('`independence_sigma` must be set if '
+                                      '`independence_contributions` is set')
     else:
         overall_independence = None
 
