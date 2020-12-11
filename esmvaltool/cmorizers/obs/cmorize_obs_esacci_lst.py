@@ -44,10 +44,11 @@ def cmorization(in_dir, out_dir, cfg, _):
         glob_attrs['mip'] = vals['mip']
 
         for key in vals.keys():
-            logger.info("%s %s" % (key, vals[key]))
+            logger.info("%s %s", key, vals[key])
 
         variable = vals['raw']
-        platform = 'MODISA'  # not currently used
+        # not currently used, but referenced for future
+        # platform = 'MODISA'
 
         # loop over years and months
         # get years from start_year and end_year
@@ -62,8 +63,7 @@ def cmorization(in_dir, out_dir, cfg, _):
                                                   vals['file_night'],
                                                   year,
                                                   month,
-                                                  variable,
-                                                  platform
+                                                  variable
                                                   )
 
                 monthly_cube = make_monthly_average(day_cube, night_cube,
@@ -89,7 +89,7 @@ def cmorization(in_dir, out_dir, cfg, _):
             )
 
 
-def load_cubes(in_dir, file_day, file_night, year, month, variable, platform):
+def load_cubes(in_dir, file_day, file_night, year, month, variable):
     """
     Variable description.
 
@@ -97,10 +97,11 @@ def load_cubes(in_dir, file_day, file_night, year, month, variable, platform):
     platform = AQUA not used for now
                but in place for future expansion to all ESC CCI LST plaforms
     """
-    logger.info('%s/%s%s%02d*.nc' % (in_dir, file_day, year, month))
+    logger.info('Loading %s/%s%s%s*.nc', in_dir, file_day, year, month)
     day_cube = iris.load_cube('%s/%s%s%02d*.nc' % (in_dir, file_day,
                                                    year, month),
                               variable)
+    logger.info('Loading %s/%s%s%s*.nc', in_dir, file_night, year, month)
     night_cube = iris.load_cube('%s/%s%s%02d*.nc' % (in_dir, file_night,
                                                      year, month),
                                 variable)
