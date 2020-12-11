@@ -186,7 +186,6 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
                          coords={'sigma': sigmas},
                          attrs={'units': '1'})
     confidence['cost_function'] = costf
-    # ---
 
     axes.set_xlim(SIGMA_RANGE)
     axes.set_ylim(0, 1.3)
