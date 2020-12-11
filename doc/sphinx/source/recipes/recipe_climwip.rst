@@ -43,7 +43,7 @@ User settings in recipe
     * ``performance_sigma`` xor ``calibrate_performance_sigma``: If ``performance_contributions`` is given exactly one of the two has to be given. Otherwise they can be skipped or not set.
 
         * ``performance_sigma``: float setting the shape parameter for the performance weights calculation (determined offline).
-        * ``calibrate_performance_sigma``: dictionary giving setting the performance sigma calibration. Has to contain at least the key-value pair specifying target: variable_group. Optional parameters for adjusting the calibration are not yet implemented.
+        * ``calibrate_performance_sigma``: dictionary setting the performance sigma calibration. Has to contain at least the key-value pair specifying target: ``variable_group``. Optional parameters for adjusting the calibration are not yet implemented.
 
     * ``independence_sigma``: float setting the shape parameter for the independence weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
     * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with ``independence_contributions`` being skipped or not set).
