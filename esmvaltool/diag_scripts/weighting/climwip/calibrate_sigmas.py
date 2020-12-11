@@ -165,8 +165,6 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
     axes.fill_between(
         sigmas,
         *sharpness.quantile((.1, .9), 'perfect_model_ensemble'),
-        # sharpness.min('perfect_model_ensemble'),
-        # sharpness.max('perfect_model_ensemble'),
         facecolor='lightgray',
         edgecolor='none',
         alpha=.3)
