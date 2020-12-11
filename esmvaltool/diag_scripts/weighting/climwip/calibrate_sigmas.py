@@ -162,9 +162,9 @@ def optimize_confidence(target: 'xr.DataArray', weights_matrix: 'xr.DataArray',
 
     percentiles_spread, inside_ratio = calculate_percentiles(
         target, weights_matrix, percentiles)
-    confidence_test_values[performance_sigma]['percentile_spread'] = (
-        percentiles_spread)
-    confidence_test_values[performance_sigma]['inside_ratio'] = inside_ratio
+    confidence_test_values[performance_sigma] = {
+        'percentile_spread': percentiles_spread,
+        'inside_ratio': inside_ratio}
 
     ratio_difference = inside_ratio - inside_ratio_reference
 
@@ -242,13 +242,12 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
               color='k',
               lw=2,
               label='Perfect models inside the {:.0%} range'.format(
-                  baseline['inside_ratio_reference']),
+                  inside_ratio_reference),
               zorder=99)
-    axes.axhline(baseline['inside_ratio_reference'],
+    axes.axhline(inside_ratio_reference,
                  color='k',
                  ls='--',
-                 label='Reference: {:.0%}'.format(
-                     baseline['inside_ratio_reference']))
+                 label='Reference: {:.0%}'.format(inside_ratio_reference))
     axes.axhline(baseline['inside_ratio'],
                  color='k',
                  ls=':',
@@ -264,7 +263,7 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
     sharpness = xr.concat([
         confidence_test_values[sigma]['percentile_spread'].expand_dims(
             {'sigma': [sigma]}) for sigma in sigmas], dim='sigma')
-    sharpness /= confidence_test_values['baseline']['percentile_spread']
+    sharpness /= baseline['percentile_spread']
     axes.plot(sigmas,
               sharpness.mean('perfect_model_ensemble'),
               color='lightgray',
@@ -310,11 +309,11 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
     confidence.to_netcdf(filename_data)
 
 
-def calibrate_performance_sigma(performance_contributions: list,
-                                overall_independence: Union['xr.DataArray',
-                                                            None],
-                                independence_sigma: Union[float, None],
-                                cfg: dict) -> float:
+def calibrate_performance_sigma(
+        performance_contributions: list,
+        overall_independence: Union['xr.DataArray', None],
+        independence_sigma: Union[float, None],
+        cfg: dict) -> float:
     """Calibrate the performance sigma using a perfect model approach."""
     settings = cfg['calibrate_performance_sigma']
     models, _ = read_metadata(cfg)
