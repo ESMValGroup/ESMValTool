@@ -102,7 +102,7 @@ begin
     file_type = "png"
   end if
 
-  ; Output plot directory
+  ; Output directories
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
   work_dir = config_user_info@work_dir

@@ -8,7 +8,6 @@
 ;    region: region to average over
 ;    masking: the kind of masking to apply prior to region average
 ;    var_order: First main variable, then temperature variable to compare
-;    modis_path: path to MODIS landcover file required for deltaT masking
 ;
 ; Optional diag_script_info attributes:
 ;    styleset: styleset for color cording panels
@@ -60,6 +59,8 @@ begin
   DATASETS2 = where(DATASETS2.eq."MultiModelMean", "multi-model mean", \
                     DATASETS2)
   ALL_FILES = metadata_att_as_array(INFO0, "filename")
+  ALL_FILES := array_append_record(ALL_FILES, \
+                                   metadata_att_as_array(INFO1, "filename"), 0)
   experiments = metadata_att_as_array(INFO0, "exp")
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -185,7 +186,9 @@ begin
   var0_units = obs_data@units
 
   ; Prepare tas data
-  MODIS_dum = addfile(diag_script_info@modis_path, "r")
+  MODIS_path = diag_script_info@auxiliary_data_dir \
+    + "/Land_Cover_Class_1degree.nc4"
+  MODIS_dum = addfile(MODIS_path, "r")
   MOD_map = byte2flt(MODIS_dum->land_cover_class)
   MOD_map = where(MOD_map.eq.0 .or. MOD_map.eq.15 .or. MOD_map.eq.16,\
                   MOD_map@_FillValue, 1.)
