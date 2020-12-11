@@ -59,7 +59,7 @@ def calculate_model_distances(
         dimn: str = 'model_ensemble_reference') -> 'xr.DataArray':
     """Calculate pair-wise distances between all values in data_array.
 
-    Distances are calculated as the area weighted eclidean distance
+    Distances are calculated as the area weighted euclidean distance
     between each pair of models in data_array. Returned is a square matrix
     with where the number of elements along each edge equals the number
     of ensemble members.
