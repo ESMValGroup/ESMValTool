@@ -25,46 +25,55 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 SIGMA_RANGE = (.1, 2)
+PERCENTILES = [.1, .9]  # allow this to be set by the recipe later
+
 confidence_test_values = {'baseline': {}}
 
 
-def optimize_confidence(target, weights_matrix, performance_sigma):
-    """Optimize the performance_sigma for confidence."""
-    percentiles = xr.DataArray([.1, .9], dims='percentile')
-    inside_ratio_reference = (percentiles[1] - percentiles[0]).values
+def calculate_percentiles(
+        target: 'xr.DataArray', weights_matrix: 'xr.DataArray',
+        percentiles: list, weighted: bool=True):
+    """Calculate (equally) weighted percentiles based on each perfect model.
+
+    Parameters
+    ----------
+    target : array_like, shape (N,)
+    weights_matrix : array_like, shape (N, N)
+        For each perfect model in the perfect_model_ensemble dimension
+        the weights_matrix contains the respective model weight in the
+        model_ensemble dimension.
+
+        Special feature: nan values in the model_ensemble dimension will lead
+        to the model beeing excluded from the weights calculation. This is
+        is always the case for the perfect model itself (diagonal of the
+        matrix) but might also be the case for other models. This is
+        particularly important for a correct calculation of the independence
+        weighting.
+    percentiles : array_like, shape (2,)
+    weighted : bool, optional
+        If weighted is set to False (default: True) all weights in the weights
+        matrix will be set to 1 except for nan values which will be preserved.
+        This can be used to calculated the unweighted baseline for each perfect
+        model, while still excluding the same models as for the weighted case.
+
+    Returns
+    -------
+    percentile_spread : array_like, shape (N,)
+        Full range spanned by the two percentiles for each perfect model.
+    inside_ratio: float
+        Ratio of perfect models inside their respective percentile_spread.
+    """
+    inside_ratio_reference = percentiles[1] - percentiles[0]
+    percentiles = xr.DataArray(percentiles, dims='percentile')
 
     # need to rename for the inside_count comparison
     target_perfect = target.rename(
         {'model_ensemble': 'perfect_model_ensemble'})
 
-    # calculate the equally weighted case once as baseline
-    if len(confidence_test_values['baseline']) == 0:
-        equal_weights_matrix = weights_matrix * 0 + 1
-        percentiles_data = xr.apply_ufunc(
-            weighted_quantile,
-            target,
-            percentiles,
-            equal_weights_matrix,
-            input_core_dims=[['model_ensemble'], ['percentile'],
-                             ['model_ensemble']],
-            output_core_dims=[['percentile']],
-            vectorize=True,
-        )
-        inside_count = xr.ufuncs.logical_and(
-            target_perfect >= percentiles_data.isel(percentile=0),
-            target_perfect <= percentiles_data.isel(percentile=1)).values
-        inside_ratio_baseline = inside_count.sum() / len(inside_count)
+    if not weighted:  #  replace with equal weight but keep nans
+        weights_matrix = 0*weights_matrix + 1
 
-        confidence_test_values['baseline'] = {
-            'inside_ratio':
-            inside_ratio_baseline,
-            'inside_ratio_reference':
-            inside_ratio_reference,
-            'percentiles_spread': (percentiles_data.isel(percentile=1) -
-                                   percentiles_data.isel(percentile=0)),
-        }
-
-    percentiles_data_weighted = xr.apply_ufunc(
+    percentiles_data = xr.apply_ufunc(
         weighted_quantile,
         target,
         percentiles,
@@ -76,22 +85,36 @@ def optimize_confidence(target, weights_matrix, performance_sigma):
     )
 
     inside_count = xr.ufuncs.logical_and(
-        target_perfect >= percentiles_data_weighted.isel(percentile=0),
-        target_perfect <= percentiles_data_weighted.isel(percentile=1)).values
+        target_perfect >= percentiles_data.isel(percentile=0),
+        target_perfect <= percentiles_data.isel(percentile=1)).values
     inside_ratio = inside_count.sum() / len(inside_count)
-    ratio_difference = inside_ratio - inside_ratio_reference
 
-    # save intermediate results
-    percentiles_spread_weighted = (
-        percentiles_data_weighted.isel(percentile=1) -
-        percentiles_data_weighted.isel(percentile=0))
-    confidence_test_values[performance_sigma] = {
-        'inside_ratio':
-        inside_ratio,
-        'sharpness':
-        (percentiles_spread_weighted /
-         confidence_test_values['baseline']['percentiles_spread']),
-    }
+    percentile_spread = (percentiles_data.isel(percentile=1) -
+                         percentiles_data.isel(percentile=0)),
+
+    return percentiles_spread, inside_ratio
+
+
+def optimize_confidence(target, weights_matrix, performance_sigma):
+    """Optimize the performance_sigma for confidence."""
+    percentiles = PERCENTILES
+    inside_ratio_reference = percentiles[1] - percentiles[0]
+
+    # calculate the equally weighted case once as baseline
+    if len(confidence_test_values['baseline']) == 0:
+         percentiles_spread, inside_ratio = calculate_percentiles(
+            target, weights_matrix, percentiles, weighted=False)
+         confidence_test_values['baseline']['percentile_spread'] = (
+             percentiles_spread)
+         confidence_test_values['baseline']['inside_ratio'] = inside_ratio
+
+     percentiles_spread, inside_ratio = calculate_percentiles(
+            target, weights_matrix, percentiles)
+     confidence_test_values[performance_sigma]['percentile_spread'] = (
+             percentiles_spread)
+     confidence_test_values[performance_sigma]['inside_ratio'] = inside_ratio
+
+    ratio_difference = inside_ratio - inside_ratio_reference
 
     if ratio_difference < 0:
         return np.abs(ratio_difference) + SIGMA_RANGE[1] - performance_sigma
@@ -118,6 +141,9 @@ def evaluate_target(performance_sigma, overall_performance, target,
 
 def visualize_save_calibration(performance_sigma, costf, cfg):
     """Visualize a summary of the calibartion."""
+    percentiles = PERCENTILES
+    inside_ratio_reference = percentiles[1] - percentiles[0]
+
     baseline = confidence_test_values.pop('baseline')
     sigmas = sorted(confidence_test_values)
     inside_ratios = [
@@ -126,7 +152,7 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
     confidence = xr.Dataset(
         data_vars={
             'inside_ratio_reference': (
-                (), baseline['inside_ratio_reference'], {'units': '1'}),
+                (), inside_ratio_reference, {'units': '1'}),
             'inside_ratio': ('sigma', inside_ratios, {'units': '1'}),
             'sigma': ('sigma', sigmas, {'units': '1'}),
         })
@@ -155,9 +181,10 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
 
     # optional: sharpness
     sharpness = xr.concat(
-        [confidence_test_values[sigma]['sharpness'].expand_dims(
+        [confidence_test_values[sigma]['percentile_spread'].expand_dims(
             {'sigma': [sigma]}) for sigma in sigmas],
         dim='sigma')
+    sharpness /= confidence_test_values['baseline']['percentile_spread']
     axes.plot(sigmas,
               sharpness.mean('perfect_model_ensemble'),
               color='lightgray',
