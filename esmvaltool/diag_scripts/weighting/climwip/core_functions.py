@@ -78,7 +78,7 @@ def calculate_model_distances(
     distances : array_like, shape (N, N)
         Symmetric matrix of pairwise model distances.
     """
-    assert dimension != 'model_ensemble', 'dimension must not be "model_ensemble"'
+    assert dimension != 'model_ensemble', f'{dimension} != "model_ensemble"'
     weights = np.cos(np.radians(data_array.lat))
     weights, _ = xr.broadcast(weights, data_array)
 
@@ -120,8 +120,8 @@ def compute_overall_mean(dataset: 'xr.Dataset',
 
 
 def combine_ensemble_members(
-    dataset: Union['xr.DataArray', None],
-    dimensions: Union[str, list] = 'model_ensemble',
+        dataset: Union['xr.DataArray', None],
+        dimensions: Union[str, list] = 'model_ensemble',
 ) -> (Union['xr.DataArray', None], dict):
     """Combine ensemble members of the same model.
 

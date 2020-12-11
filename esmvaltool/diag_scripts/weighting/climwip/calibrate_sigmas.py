@@ -191,7 +191,9 @@ def evaluate_target(performance_sigma: list,
     target : array_like, shape (N,)
         See calculate_percentiles for more information.
     overall_independence : array_like, shape (N, N)
+        Matix containing model-model distances for independence.
     independence_sigma : float
+        Independence weighting shape parameter.
 
     Returns
     -------
