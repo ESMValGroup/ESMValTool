@@ -117,7 +117,7 @@ def evaluate_target(performance_sigma, overall_performance, target,
 
 
 def visualize_save_calibration(performance_sigma, costf, cfg):
-    """Visualize a summary of the calibartion."""
+    """Visualize a summary of the calibration."""
     baseline = confidence_test_values.pop('baseline')
     sigmas = sorted(confidence_test_values)
     inside_ratios = [
