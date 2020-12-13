@@ -19,92 +19,90 @@ documentation:
 
 
 datasets:
-#  - {dataset: ERA-40, project: OBS, type: reanaly, version: v1,
-#         start_year: 1980, end_year: 1999, tier: 3}
-#  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1990, end_year: 1999}
-#  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-  # - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
-  #    ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-#  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical,
-#     ensemble: r1i1p1, start_year: 1986, end_year: 1999}
-#  - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-#  - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#     start_year: 1980, end_year: 1999}
-  # - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1,
-  #    start_year: 1980, end_year: 1999}
-  # - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1,
-  #    start_year: 1980, end_year: 1999}
-  # - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1,
-  #    start_year: 1986, end_year: 1999}
-  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
     start_year: 1980, end_year: 1999}
- # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
-  # - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
-  #    start_year: 1980, end_year: 1999}
- # - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
- # - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
- # - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
- # - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
-  # - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1,
-  #    start_year: 1980, end_year: 1999}
- # - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
- # - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
-  # - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
-  #    start_year: 1980, end_year: 1999}
-  # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1,
-  #    start_year: 1980, end_year: 1999}
- # - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1980, end_year: 1999}
- # - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
-  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+ - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: CESM1-BGC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: CESM1-CAM5-1-FV, project: CMIP5, exp: historical,
+   ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+ - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical,
+   ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+ - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+   start_year: 1980, end_year: 1999}
+ - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1986, end_year: 1999}
+ - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1986, end_year: 1999}
+ - {dataset: MIROC4h, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1986, end_year: 1999}
+ - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1986, end_year: 1999}
+ - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1980, end_year: 1999}
- # - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
- #    ensemble: r1i1p1, start_year: 1980, end_year: 1999}
- # - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
- # - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1,
- #    start_year: 1986, end_year: 1999}
+ - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
+    ensemble: r1i1p1, start_year: 1980, end_year: 1999}
+ - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1986, end_year: 1999}
+ - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
+ - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1,
+    start_year: 1980, end_year: 1999}
 
 preprocessors:
   annual_cycle:
@@ -114,13 +112,41 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
-    mask_landseaice:
-      mask_out: ice
+    #mask_landseaice:
+    #  mask_out: ice
     mask_landsea: 
       mask_out: sea
     mask_fillvalues:
       threshold_fraction: 0.95
+  clima:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: month
+    #mask_landseaice:
+    #  mask_out: ice
+    mask_landsea:
+      mask_out: sea
+    mask_fillvalues:
+      threshold_fraction: 0.95
+  clima_nomask:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: month
+    mask_fillvalues:
+      threshold_fraction: 0.95
+  regr:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
 
+
+    
 diagnostics:
 
   # ==========================================================================
@@ -142,14 +168,12 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 2,
          start_year: 1980, end_year: 1999, tier: 3}
     scripts:
-      clim: &clim_settings
-        script:  $diag_scripts/regional_downscaling/Figure9.38.ncl
+      clim: &Fig938_settings
+        script: diag_scripts/regional_downscaling/Figure9.38.ncl
         # projection
         # ----------
         # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
         projection: CylindricalEquidistant
-        # timemean: annualclim  
-        # timemean
         # --------
         showdiff: false
         styleset: CMIP5
@@ -159,8 +183,122 @@ diagnostics:
         fig938_mip_MMM: ["Amon"]
         fig938_colors_MMM: ["red"]
         fig938_refModel: ERA-Interim 
-#        @legend_position        : legend position in ncd coordinates     
+        fig938_MMM: True
+#       @legend_position        : legend position in ncd coordinates     
 #        @fig938_YMin        : minimum Y Axis
-#        @fig938_YMax        : maximum Y Axis 
-#                                                     
+#        @fig938_YMax        : maximum Y Axis
+  # ==========================================================================
+  # Chapter 9  - Figure939 
+  # ==========================================================================
+
+  regional_downscaling_Fig939:
+    description: Creates seasonal or annual bias box plots at selected regions over the selected project&experiemnt&mip over the selected project&experiemnt&mip
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: clima
+        reference_dataset: ERA-Interim
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 2,
+         start_year: 1986, end_year: 2005, tier: 3}
+    scripts:
+      clim: &Fig939_settings
+        script: diag_scripts/regional_downscaling/Figure9.39.ncl
+        # projection
+        # ----------
+        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+        projection: CylindricalEquidistant
+        # timemean: annualclim  
+        # timemean
+        # --------
+        showdiff: false
+        styleset: CMIP5
+        fig939_season: ["DJF","JJA","ANN"]
+        fig939_region_label: ["ALA","CGI","WNA","CNA","ENA","CAM","AMZ","NEB","WSA","SSA","NEU","CEU","MED","SAH","WAF","EAF","SAF","NAS","WAS","CAS","TIB","EAS","SAS","SEA","NAU","SAU"]
+        fig939_project_MMM: ["CMIP5"]
+        fig939_experiment_MMM: ["historical"]
+        fig939_mip_MMM: ["Amon"]
+        fig939_colors_MMM: ["red"]
+        fig939_refModel: ERA-Interim
+        fig939_MMM: True
+  # ==========================================================================
+  # Chapter 9  - Figure940 
+  # ==========================================================================
+
+  regional_downscaling_Fig940:
+    description: Creates annual cycle regional plots for individual models and mumltimodel over the selected project&experiemnt&mip
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: clima_nomask
+        reference_dataset: ERA-Interim
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 2,
+         start_year: 1986, end_year: 2005, tier: 3}
+    scripts:
+      clim: &Fig940_settings
+        script: diag_scripts/regional_downscaling/Figure9.40.ncl
+        # projection
+        # ----------
+        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+        projection: CylindricalEquidistant
+        # timemean: annualclim  
+        # timemean
+        # --------
+        showdiff: false
+        styleset: CMIP5
+        fig940_season: ["DJF","JJA","ANN"]
+        fig940_region_label: ["Arctic_land","Arctic_sea","Antarctic_land","Antarctic_sea","Caribbean","WesternIndianOcean","NorthernIndianOcean","NorthernTropicalPacific","EquatorialTropicalPacific","SouthernTropicalPacific","World_land","World_sea","World"]
+        fig940_project_MMM: ["CMIP5"]
+        fig940_experiment_MMM: ["historical"]
+        fig940_mip_MMM: ["Amon"]
+        fig940_colors_MMM: ["red"]
+        fig940_refModel: ERA-Interim
+        fig940_MMM: True
+#      fig940_mode: "cumulative"
+#       fig940_vert_line_pos: [6,10,13,17,24,26]
+#       fig940_vert_line_label=["North America","South America","Europe","Africa","Asia","Australia"]
+#        @legend_position        : legend position in ncd coordinates     
+#        @fig940_YMin        : minimum Y Axis
+#        @fig940_YMax        : maxi Y Axis                                                     
 #
+# ==========================================================================
+# Chapter 9  - Figure941 
+# ==========================================================================
+
+  regional_downscaling_Fig941:
+    description:
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: regr
+        reference_dataset: ERA-Interim
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 2,
+         start_year: 1986, end_year: 2005, tier: 3}
+    scripts:
+      clim: &Fig941_settings
+        script: diag_scripts/regional_downscaling/Figure9.41.ncl
+        # projection
+        # ----------
+        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+        projection: CylindricalEquidistant
+        # timemean: annualclim  
+        # timemean
+        # --------
+        showdiff: false
+        styleset: CMIP5
+        fig941_region_label: ["MED"]
+
