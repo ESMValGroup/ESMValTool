@@ -53,8 +53,6 @@ load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/regional_downscaling/regional_function.ncl"
-; load "$diag_scripts/shared/latlon.ncl"
-load "$diag_scripts/regional_downscaling/regional_function.ncl"
 
 
 begin
@@ -519,6 +517,7 @@ begin
     res1@gsnLeftStringFontHeightF = 0.04
     res1@gsnRightStringFontHeightF = 0.04
     res1@tfPolyDrawOrder = "Draw"
+    print("ci sono")
     plot_MMM(ir) = gsn_csm_xy(wks_MMM, months, MMM, res1)
     xp = new((/2 * 13/), typeof(MMM))
     yp = new((/2 * 13, dimsizes(diag_script_info@fig938_project_MMM)/), \
@@ -602,11 +601,11 @@ begin
       end if
       gsn_panel(wks_MMM, plot_MMM, (/n_p, 5/), pan1)
       if(isatt(diag_script_info, "legend_position")) then
-        add_legend(wks_MMM, names_MMM, colors_MMM, \
+        add_legenda(wks_MMM, names_MMM, colors_MMM, \
                     dashes_MMM, lin_mar_mod_MMM, thicks_MMM,\
                     diag_script_info@legend_position)
       else
-        add_legend(wks_MMM, names_MMM, colors_MMM,\
+        add_legenda(wks_MMM, names_MMM, colors_MMM,\
                     dashes_MMM, lin_mar_mod_MMM, thicks_MMM, "0.2")
       end if
   end if

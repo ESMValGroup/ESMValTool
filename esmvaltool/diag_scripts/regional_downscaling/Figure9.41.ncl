@@ -26,12 +26,7 @@
 ; #############################################################################
 ; #############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
-
 load "$diag_scripts/shared/statistics.ncl"
-; load "$diag_scripts/shared/plot/aux_plotting.ncl"
-; load "$diag_scripts/shared/plot/style.ncl"
-; load "$diag_scripts/regional_downscaling/regional_function.ncl"
-; load "$diag_scripts/shared/latlon.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/regional_downscaling/regional_function.ncl"

@@ -64,10 +64,6 @@
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
 load "$diag_scripts/shared/statistics.ncl"
-; load "$diag_scripts/shared/plot/aux_plotting.ncl"
-; load "$diag_scripts/shared/plot/style.ncl"
-; load "$diag_scripts/regional_downscaling/regional_function.ncl"
-; load "$diag_scripts/shared/latlon.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/regional_downscaling/regional_function.ncl"
@@ -121,8 +117,8 @@ begin
   set_default_att(diag_script_info, "legend_position", "0.2")
   set_default_att(diag_script_info, "fig939_season", "DJF")
   set_default_att(diag_script_info, "refModel", "CRU")
-  ; set_default_att(diag_script_info, "Figure_938_YMin", "0")
-  ; set_default_att(diag_script_info, "Figure_938_YMax", "0")
+  ; set_default_att(diag_script_info, "fig939_YMin", "0")
+  ; set_default_att(diag_script_info, "fig939_YMax", "0")
 
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
@@ -695,12 +691,12 @@ begin
   lg_y = new((/1, 6/), "float")
   lg_y(0, 0:4) = (/5., 25., 50., 75., 95./)
   plot_lg = box_plot_lg(wks_l, 1, lg_y, False, res1, False)
-  duml1 = new(dimsizes(diag_script_info@Figure_939_project_MMM), "graphic")
-  duml2 = new(dimsizes(diag_script_info@Figure_939_project_MMM), "graphic")
-  duml3 = new(dimsizes(diag_script_info@Figure_939_project_MMM), "graphic")
-  duml4 = new(dimsizes(diag_script_info@Figure_939_project_MMM), "graphic")
-  duml5 = new(dimsizes(diag_script_info@Figure_939_project_MMM), "graphic")
-  do iin = 1, dimsizes(diag_script_info@Figure_939_project_MMM) - 1
+  duml1 = new(dimsizes(project_MMM), "graphic")
+  duml2 = new(dimsizes(project_MMM), "graphic")
+  duml3 = new(dimsizes(project_MMM), "graphic")
+  duml4 = new(dimsizes(project_MMM), "graphic")
+  duml5 = new(dimsizes(project_MMM), "graphic")
+  do iin = 1, dimsizes(project_MMM) - 1
     mresl = True                     ; marker mods desired
     mresl@gsMarkerIndex = scatters_def(iin)             ; polymarker style
     ; mresl@gsMarkerSizeF = 60./dim_reg                   ; polymarker size
