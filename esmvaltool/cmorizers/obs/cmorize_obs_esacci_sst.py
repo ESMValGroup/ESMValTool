@@ -7,7 +7,7 @@ Source
    http://surftemp.net/regridding/index.html
 
 Last access
-   20200412
+   20201214
 
 Download and processing instructions
    Download the following files:
@@ -27,8 +27,9 @@ Download and processing instructions
        Error Correlation In Space (Degrees): 3.0
 
 Modification history
-   20200412-roberts_charles: written.
-   <insert_approval>
+   20201204-roberts_charles: written.
+   20201214-predoi_valeriu: approved.
+   20201214-lauer_axel: approved.
 
 """
 
