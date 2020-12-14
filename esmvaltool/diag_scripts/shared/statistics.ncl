@@ -150,6 +150,7 @@ function time_operations(field:numeric,
 ; References
 ;
 ; Modification history
+;    20201214-lauer_axel:   bugfix time weights
 ;    20190503-righi_mattia: removed obsolete option "mymm" (used only in
 ;                           reformat_obs, now outdated).
 ;    20140703-gottschaldt_klaus-dirk: added option "mymm".
@@ -197,6 +198,11 @@ begin
   date := cd_calendar(field&time, 0)
   year := date(:, 0)
   month := date(:, 1)
+  if (isatt(field&time, "calendar")) then
+    cal = field&time@calendar
+  else
+    cal = "standard"  ; this is the default setting for 'days_in_month'
+  end if
 
   ; Determine indexes for the requested time range
   if (y1.eq.-1) then
@@ -244,7 +250,9 @@ begin
 
   ; Define weights as days-per-month
   if (l_wgt) then
-    weights = days_in_month(toint(year), toint(month))
+    iyear = toint(year)
+    iyear@calendar = cal
+    weights = days_in_month(iyear, toint(month))
   else
     weights = tofloat(subfield&time)
     weights = 1.
