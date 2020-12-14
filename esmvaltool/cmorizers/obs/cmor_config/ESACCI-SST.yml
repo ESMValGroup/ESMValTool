@@ -1,0 +1,23 @@
+---
+# Common global attributes for Cmorizer output
+filename: '{year}{month}15_regridded_sst.nc'
+attributes:
+  dataset_id: ESACCI-SST
+  version: '2.2'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS
+  source: 'http://surftemp.net/regridding/index.html'
+  reference: ["esacci-sst", "esacci-sst-bias-correction"]
+  comment: "Note that the variable tsStderr is an uncertainty not a standard error."
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  ts:
+    mip: Amon
+    raw: sst
+    file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB
+  tsStderr:
+    mip: Amon
+    raw: sst_uncertainty
+    file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB

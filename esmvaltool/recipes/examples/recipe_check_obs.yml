@@ -246,7 +246,7 @@ diagnostics:
       tsStderr:
     additional_datasets:
       - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: L4-GHRSST-SSTdepth-OSTIA-GLOB,
+         type: sat, version: 2.1,
          start_year: 1992, end_year: 2010}
     scripts: null
 
