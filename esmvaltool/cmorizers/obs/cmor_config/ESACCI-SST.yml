@@ -3,13 +3,13 @@
 filename: '{year}{month}15_regridded_sst.nc'
 attributes:
   dataset_id: ESACCI-SST
-  version: '2.1'
+  version: '2.2'
   tier: 2
   modeling_realm: sat
   project_id: OBS
   source: 'http://surftemp.net/regridding/index.html'
-  reference: "esacci-sst"
-  comment: ""
+  reference: ["esacci-sst", "esacci-sst-bias-correction"]
+  comment: "Note that the variable tsStderr is an uncertainty not a standard error."
 
 # Variables to cmorize (here use only filename prefix)
 variables:
