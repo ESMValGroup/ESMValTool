@@ -69,7 +69,9 @@ begin
   CMOR_TABLE2 = getenv("cmor_tables") + \
     "/custom/CMOR_tasa.dat"
   CMOR_TABLE3 = getenv("cmor_tables") + \
-    "/custom/CMOR_tasStderr.dat"
+    "/custom/CMOR_tasConf5.dat"
+  CMOR_TABLE4 = getenv("cmor_tables") + \
+    "/custom/CMOR_tasConf95.dat"
 
   ; Version
   VERSION = "1"
@@ -203,30 +205,22 @@ begin
   ; Read uncertainty file
   fname = input_dir_path + "HadCRUT.4.6.0.0.monthly_ns_avg.txt"
 
-  tmp = asciiread(fname, (/169 * 12, 12/), "float")
+  ntime = 12 * (YEAR2 - YEAR1 + 1)
+  tmp = asciiread(fname, (/ntime, 13/), "float")
 
-  data1 = tmp(:, 10)
-  data2 = tmp(:, 11)
+  data1 = tmp(:, 11)
+  data2 = tmp(:, 12)
 
   delete(tmp)
 
 printVarSummary(data1)
-  ; Format coordinates
-  ntime = 12 * (YEAR2 - YEAR1 + 1)
-  time = new(ntime, integer)
-  do yy = YEAR1, YEAR2
-    do mm = 1, 12
-      time(12 * (yy - YEAR1) + mm - 1) = 100 * yy + mm
-    end do
-  end do
   data1!0 = "time"
-printVarSummary(data1)
-printVarSummary(time)
-  data1&time = time
+  data1&time =  create_timec(YEAR1, YEAR2)
+print(data1&time)
 printVarSummary(data1)
   format_coords(data1, YEAR1 + "0101", YEAR2 + "1231", FREQ)
   data2!0 = "time"
-  data2&time = time
+  data2&time = create_timec(YEAR1, YEAR2)
   format_coords(data2, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
   ; Set variable attributes
@@ -234,7 +228,7 @@ printVarSummary(data1)
   delete(data1)
   data1 = tmp
   delete(tmp)
-  tmp = format_variable(data2, VAR(3), CMOR_TABLE3)
+  tmp = format_variable(data2, VAR(3), CMOR_TABLE4)
   delete(data2)
   data2 = tmp
   delete(tmp)
