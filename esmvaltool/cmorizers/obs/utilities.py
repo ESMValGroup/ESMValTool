@@ -183,23 +183,33 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
 
-def extract_doi_value(tag):
-    """Extract doi from a bibtex entry."""
-    reference_doi = 'doi not found'
+def extract_doi_value(tags):
+    """Extract doi(s) from a bibtex entry."""
+    reference_doi = []
     pattern = r'doi\ = {(.*?)\},'
 
-    bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
-    if bibtex_file.is_file():
-        reference_entry = bibtex_file.read_text()
-        if re.search("doi", reference_entry):
-            reference_doi = (
-                f'doi:{re.search(pattern, reference_entry).group(1)}'
+    if not isinstance(tags, list):
+        tags = [tags]
+
+    for tag in tags:
+        bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
+        if bibtex_file.is_file():
+            reference_entry = bibtex_file.read_text()
+            if re.search("doi", reference_entry):
+                reference_doi.append(
+                    f'doi:{re.search(pattern, reference_entry).group(1)}'
+                )
+            else:
+                reference_doi.append('doi not found')
+                logger.warning(
+                    'The reference file %s does not have a doi.', bibtex_file
+                )
+        else:
+            reference_doi.append('doi not found')
+            logger.warning(
+                'The reference file %s does not exist.', bibtex_file
             )
-    else:
-        logger.warning(
-            'The reference file %s does not exist.', bibtex_file
-        )
-    return reference_doi
+    return ', '.join(reference_doi)
 
 
 def set_global_atts(cube, attrs):

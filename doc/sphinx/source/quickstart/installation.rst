@@ -93,6 +93,11 @@ Note that it is only necessary to install Julia prior to the conda installation 
 
 Note that the ESMValTool source code is contained in the ``esmvaltool-python`` package, so this package will always be installed as a dependency if you install one or more of the packages for other languages.
 
+There is also a lesson available in the 
+`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+that describes the installation of the ESMValTool in more detail. It can be found
+`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/02-installation/index.html>`_.
+
 Pip installation
 ================
 
