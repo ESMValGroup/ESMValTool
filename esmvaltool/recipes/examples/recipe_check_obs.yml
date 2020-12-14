@@ -257,14 +257,12 @@ diagnostics:
       co2s:
         mip: Amon
     additional_datasets:
-      - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
-         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2,
+         start_year: 2000, end_year: 2002}
+      - {dataset: ESRL, project: OBS, type: ground, version: GLOBAL, tier: 2,
+         start_year: 2000, end_year: 2002}
       - {dataset: ESRL, project: OBS, type: ground, version: MLO, tier: 2,
-         start_year: 1973, end_year: 2019}
-      - {dataset: ESRL, project: OBS, type: ground, version: SMO, tier: 2,
-         start_year: 1973, end_year: 2019}
-      - {dataset: ESRL, project: OBS, type: ground, version: SPO, tier: 2,
-         start_year: 1973, end_year: 2019}
+         start_year: 2000, end_year: 2002}
     scripts: null
 
 

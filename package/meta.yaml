@@ -5,7 +5,7 @@
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.1.0" %}
+{% set version = "2.1.1" %}
 
 package:
   name: esmvaltool
@@ -26,10 +26,10 @@ build:
 
 requirements:
   run:
-    - esmvaltool-julia
-    - esmvaltool-ncl
-    - esmvaltool-python
-    - esmvaltool-r
+    - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-python', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-r', exact=True) }}
 
 test:
   source_files:
@@ -84,7 +84,7 @@ outputs:
         - jinja2
         - joblib
         - lime
-        - matplotlib>=3
+        - matplotlib>=3,<3.3
         - natsort
         - nc-time-axis
         - netCDF4
@@ -131,11 +131,10 @@ outputs:
     requirements:
       run:
         - cdo>=1.9.7
+        - compilers
         - esmvaltool-python
         - nco
         - r-base>=3.5
-        - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
-        - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
 
 about:
   home: https://www.esmvaltool.org
