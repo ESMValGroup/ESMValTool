@@ -42,7 +42,7 @@ datasets:
   - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
   - {dataset: E3SM-1-0}
-  - {dataset: E3SM-1-1, institute: E3SM-Project}
+  #- {dataset: E3SM-1-1, institute: E3SM-Project} # strange outliers in polar regions
   - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
   #- {dataset: EC-Earth3} # empty folder
   - {dataset: EC-Earth3-Veg}

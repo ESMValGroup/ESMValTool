@@ -69,4 +69,4 @@ Example plots
 .. figure::  /recipes/figures/eyring13jgr/fig_eyr13jgr_12.png
    :align:   center
 
-   Long-term mean (thin black contour) and linear trend (colour) of zonal mean DJF zonal winds for the multi-model mean over 1995-2014
+   Long-term mean (thin black contour) and linear trend (colour) of zonal mean DJF zonal winds for the multi-model mean CMIP6 over 1995-2014
