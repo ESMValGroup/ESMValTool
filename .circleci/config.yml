@@ -197,6 +197,8 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - run:
+          environment:
+            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
