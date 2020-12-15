@@ -66,20 +66,12 @@ def main(cfg):
 
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
-<<<<<<< HEAD
-        _unify_time_coord(cube)
-        
-        iris.quickplot.plot(cube, label=datasetnames[alias],
-                            color=mpqb_cfg['datasetcolors'][alias])
-    plt.legend()
-=======
 
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
 
         iris.quickplot.plot(cube, label=label, color=color)
->>>>>>> 8feb11d3d9540e1afeca1bcb27ee60ce2d3d5f49
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:
@@ -99,13 +91,6 @@ def main(cfg):
     for legobj in leg.legendHandles:
         legobj.set_linewidth(2.0)
     lax.axis("off")
-
-<<<<<<< HEAD
-    ax1.set_ylim(ylims)
-    #ax1.set_yticklabels(ax1.yaxis * 86400.)
-    #ax1.set_xlabel('mm d-1')
-=======
->>>>>>> 8feb11d3d9540e1afeca1bcb27ee60ce2d3d5f49
 
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 

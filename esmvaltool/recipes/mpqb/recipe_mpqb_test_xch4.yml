@@ -77,8 +77,10 @@ default_pp_maps_without_gl: &pp_maps_without_gl
   custom_order: true
   mask_below_threshold:
     threshold: 0.0000000001
-  mask_multimodel:    
   <<: *mpqbregridder
+    
+  # mask_multimodel:    
+  # <<: *mpqbregridder
   # mask_landsea:
     # mask_out: sea
   # mask_fillvalues:
@@ -100,7 +102,7 @@ default_pp_maps_without_samonsoon: &pp_maps_without_samonsoon
   custom_order: true
   mask_below_threshold:
     threshold: 0.0000000001
-  mask_multimodel:    
+  # mask_multimodel:    
   <<: *mpqbregridder
   <<: *extr_samonsoon
 
@@ -120,7 +122,7 @@ default_pp_maps_without_europe: &pp_maps_without_europe
   custom_order: true
   mask_below_threshold:
     threshold: 0.0000000001
-  mask_multimodel:    
+  # mask_multimodel:    
   <<: *mpqbregridder
   <<: *extr_europe
  
@@ -128,7 +130,7 @@ default_pp_maps_without_northamerica: &pp_maps_without_northamerica
   custom_order: true
   mask_below_threshold:
     threshold: 0.0000000001
-  mask_multimodel:    
+  # mask_multimodel:    
   <<: *mpqbregridder
   <<: *extr_northamerica
     
@@ -396,43 +398,43 @@ diagnostics:
       # lineplot_gl:
         # script: mpqb/mpqb_lineplot.py
   ### works!!      
-  # lineplots_anncyc_without_gl:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_anncyc_without_gl
-        # derive: true
-        # <<: *xch4def
-    # scripts:
-      # lineplot_trop:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_samonsoon:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_anncyc_without_samonsoon
-        # <<: *xch4def
-    # scripts:
-      # lineplot_samonsoon:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_europe:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_anncyc_without_europe
-        # <<: *xch4def
-    # scripts:
-      # lineplot_europe:
-        # script: mpqb/mpqb_lineplot_anncyc.py
-  # lineplots_anncyc_without_northamerica:
-    # description: lineplots
-    # variables:
-      # xch4:
-        # preprocessor: pp_lineplots_anncyc_without_northamerica
-        # <<: *xch4def
-    # scripts:
-      # lineplot_northamerica:
-        # script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_gl:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_without_gl
+        derive: true
+        <<: *xch4def
+    scripts:
+      lineplot_trop:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_samonsoon:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_without_samonsoon
+        <<: *xch4def
+    scripts:
+      lineplot_samonsoon:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_europe:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_without_europe
+        <<: *xch4def
+    scripts:
+      lineplot_europe:
+        script: mpqb/mpqb_lineplot_anncyc.py
+  lineplots_anncyc_without_northamerica:
+    description: lineplots
+    variables:
+      xch4:
+        preprocessor: pp_lineplots_anncyc_without_northamerica
+        <<: *xch4def
+    scripts:
+      lineplot_northamerica:
+        script: mpqb/mpqb_lineplot_anncyc.py
   ###
   # lineplots_without_europe_std:
     # description: lineplots_std
