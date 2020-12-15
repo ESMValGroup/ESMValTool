@@ -198,11 +198,7 @@ begin
   date := cd_calendar(field&time, 0)
   year := date(:, 0)
   month := date(:, 1)
-  if (isatt(field&time, "calendar")) then
-    cal = field&time@calendar
-  else
-    cal = "standard"  ; this is the default setting for 'days_in_month'
-  end if
+  cal = field&time@calendar
 
   ; Determine indexes for the requested time range
   if (y1.eq.-1) then
