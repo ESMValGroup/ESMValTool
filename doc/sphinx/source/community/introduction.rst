@@ -330,11 +330,15 @@ errors.
 Branches, pull requests and code review
 ---------------------------------------
 
-New development should preferably be done in the main ESMValTool github
-repository, however, for scientists requiring confidentiality, private
-repositories are available. The default git branch is ``master``. Use
+New development should preferably be done in the
+`ESMValTool <https://github.com/ESMValGroup/ESMValTool>`__
+GitHub repository.
+However, for scientists requiring confidentiality, private repositories are
+available, see :ref:`private_repository` for more information.
+The default git branch is ``master``. Use
 this branch to create a new feature branch from and make a pull request
-against. This
+against.
+This
 `page <https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow>`__
 offers a good introduction to git branches, but it was written for
 BitBucket while we use GitHub, so replace the word BitBucket by GitHub

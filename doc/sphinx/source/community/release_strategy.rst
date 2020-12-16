@@ -40,6 +40,7 @@ Timeline
 7. ESMValTool release
 8. Soon after the release, the core development team meets to coordinate the content of the milestone for the next release
 
+.. _release_schedule:
 
 Release schedule
 ~~~~~~~~~~~~~~~~
