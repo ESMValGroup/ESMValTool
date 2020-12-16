@@ -66,6 +66,7 @@ def main(cfg):
 
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
+        _unify_time_coord(cube)
 
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
