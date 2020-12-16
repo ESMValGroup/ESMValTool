@@ -32,7 +32,7 @@ To install in development mode, follow these instructions.
    (this should be done even if the system in use already has a
    preinstalled version of conda, as problems have been reported with
    NCL when using such a version)
--  To make the ``conda`` command availble, add
+-  To make the ``conda`` command available, add
    ``source <prefix>/etc/profile.d/conda.sh`` to your ``.bashrc`` file
    and restart your shell. If using (t)csh shell, add
    ``source <prefix>/etc/profile.d/conda.csh`` to your
@@ -51,16 +51,16 @@ To install in development mode, follow these instructions.
    you can declare them with the option ``--trusted-host``, e.g.
    ``pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]``
 -  If you want to use R diagnostics, run
-   ``Rscript esmvaltool/install/R/setup.R`` to install the R
-   dependences. Note that if you only want to run the lint test for R
+   ``esmvaltool install R`` to install the R
+   dependencies. Note that if you only want to run the lint test for R
    scripts you will have to install the ``lintr`` package. You can do
    that by running ``Rscript esmvaltool/install/R/setup_devutils.R``.
 -  If you want to use Julia diagnostics, first install Julia as
    described below in section “Installing Julia”, then run
-   ``julia esmvaltool/install/Julia/setup.jl`` to install the Julia
-   dependences. Install Julia dependences after R dependences if you
+   ``esmvaltool install Julia`` to install the Julia
+   dependencies. Install Julia dependencies after R dependencies if you
    plan to use both.
--  Test that your installation was succesful by running
+-  Test that your installation was successful by running
    ``esmvaltool -h``.
 -  If you log into a cluster or other device via ``ssh`` and your origin
    machine sends the ``locale`` environment via the ``ssh`` connection,
@@ -73,14 +73,14 @@ To install in development mode, follow these instructions.
    environment since that will update some packages that are pinned to
    specific versions for the correct functionality of the environment.
 
-Using the development version of the ESMValTool Core package
+Using the development version of the ESMValCore package
 ------------------------------------------------------------
 
-If you need the latest developments of the ESMValTool Core package, you
+If you need the latest developments of the ESMValCore package, you
 can install it from source into the same conda environment. First follow
 the steps above and then:
 
--  Clone the ESMValTool Core github repository:
+-  Clone the ESMValCore github repository:
    ``git clone git@github.com:ESMValGroup/ESMValCore``)
 -  Go to the esmvalcore directory: ``cd ESMValCore``
 -  Update the esmvaltool conda environment
@@ -123,7 +123,7 @@ Running tests
 -------------
 
 Go to the directory where the repository is cloned and run
-``python setup.py test``. Tests will also be run automatically by
+``pytest``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
 
 Code style
@@ -135,6 +135,68 @@ requests are reviewed and tested by one or more members of the core
 development team. For code in all languages, it is highly recommended
 that you split your code up in functions that are short enough to view
 without scrolling.
+
+We include checks for Python, R, NCL, and yaml files, most of which are
+described in more detail in the sections below.
+This includes checks for invalid syntax and formatting errors.
+`Pre-commit <https://pre-commit.com/>`__ is a handy tool that can run
+all of these checks automatically.
+It knows knows which tool to run for each filetype, and therefore provides
+a simple way to check your code!
+
+Pre-commit
+~~~~~~~~~~
+
+To run ``pre-commit`` on your code, go to the ESMValTool directory
+(``cd ESMValTool``) and run
+
+::
+
+   pre-commit run
+
+By default, pre-commit will only run on the files that have been changed,
+meaning those that have been staged in git (i.e. after
+``git add your_script.py``).
+
+To make it only check some specific files, use
+
+::
+
+   pre-commit run --files your_script.py
+
+or
+
+::
+
+   pre-commit run --files your_script.R
+
+Alternatively, you can configure ``pre-commit`` to run on the staged files before
+every commit (i.e. ``git commit``), by installing it as a `git hook <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__ using
+
+::
+
+   pre-commit install
+
+Pre-commit hooks are used to inspect the code that is about to be committed. The
+commit will be aborted if files are changed or if any issues are found that
+cannot be fixed automatically. Some issues cannot be fixed (easily), so to
+bypass the check, run
+
+::
+
+   git commit --no-verify
+
+or
+
+::
+
+   git commit -n
+
+or uninstall the pre-commit hook
+
+::
+
+   pre-commit uninstall
 
 Python
 ~~~~~~
@@ -154,16 +216,23 @@ running the commands
 
    isort some_file.py
 
-to sort the imports in the standard way and
+to sort the imports in `the standard way <https://www.python.org/dev/peps/pep-0008/#imports>`__
+using `isort <https://pycqa.github.io/isort/>`__ and
 
 ::
 
    yapf -i some_file.py
 
-to add/remove whitespace as required by the standard.
+to add/remove whitespace as required by the standard using `yapf <https://github.com/google/yapf>`__,
+
+::
+
+   docformatter -i your_script.py
+
+to run `docformatter <https://github.com/myint/docformatter>`__ which helps formatting the doc strings (such as line length, spaces).
 
 To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``. and run
+the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`__
 
 ::
 
@@ -177,7 +246,7 @@ Run
 
 to see the warnings about the code style of the entire project.
 
-We use ``pycodestyle`` on CircleCI to automatically check that there are
+We use `flake8 <https://flake8.pycqa.org/en/latest/>`__ on CircleCI to automatically check that there are
 no formatting mistakes and Codacy for monitoring (Python) code quality.
 Running prospector locally will give you quicker and sometimes more
 accurate results.
@@ -187,7 +256,7 @@ NCL
 
 Because there is no standard best practices document for NCL, we use
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ for NCL code as
-well, with some minor adjustments to accomodate for differences in the
+well, with some minor adjustments to accommodate for differences in the
 languages. The most important difference is that for NCL code the
 indentation should be 2 spaces instead of 4. Use the command
 ``nclcodestyle /path/to/file.ncl`` to check if your code follows the
@@ -225,14 +294,22 @@ What should be documented
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Any code documentation that is visible on
-`readthedocs <https://docs.esmvaltool.org>`__ should be well
-written and adhere to the standards for documentation for the respective
-language. Recipes should have a page in the *Recipes* section on
-readthedocs. This is also the place to document recipe options for the
-diagnostic scripts used in those recipes. Note that there is no need to
-write extensive documentation for functions that are not visible on
-readthedocs. However, adding a one line docstring describing what a
-function does is always a good idea.
+`docs.esmvaltool.org <https://docs.esmvaltool.org>`__
+should be well written and adhere to the standards for documentation for the
+respective language.
+Recipes should have a page in the :ref:`recipes` section.
+This is also the place to document recipe options for the diagnostic scripts
+used in those recipes.
+When adding a new recipe, please start from the
+`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+and do not forget to add your recipe to the
+`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+Note that there is no need to write extensive documentation for functions that
+are not visible in the online documentation.
+However, a short description in the docstring helps other contributors to
+understand what a function is intended to do and and what its capabilities are.
+For short functions, a one-line docstring is usually sufficient, but more
+complex functions might require slightly more extensive documentation.
 
 How to build the documentation locally
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -249,11 +326,15 @@ errors.
 Branches, pull requests and code review
 ---------------------------------------
 
-New development should preferably be done in the main ESMValTool github
-repository, however, for scientists requiring confidentiality, private
-repositories are available. The default git branch is ``master``. Use
+New development should preferably be done in the
+`ESMValTool <https://github.com/ESMValGroup/ESMValTool>`__
+GitHub repository.
+However, for scientists requiring confidentiality, private repositories are
+available, see :ref:`private_repository` for more information.
+The default git branch is ``master``. Use
 this branch to create a new feature branch from and make a pull request
-against. This
+against.
+This
 `page <https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow>`__
 offers a good introduction to git branches, but it was written for
 BitBucket while we use GitHub, so replace the word BitBucket by GitHub
@@ -291,50 +372,3 @@ name to the list of authors in CITATION.cff and regenerate the file
 
    pip install cffconvert
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
-
-How to make a release
----------------------
-
-To make a new release of the package, follow these steps:
-
-1. Check that the nightly build on CircleCI was successful
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Check the ``nightly`` `build on
-CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/master>`__.
-All tests should pass before making a release.
-
-2. Make a pull request to increase the version number
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The version number is stored in ``esmvaltool/__init__.py``,
-``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files. See
-https://semver.org for more information on choosing a version number.
-
-3. Make the release on GitHub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Click the `releases
-tab <https://github.com/ESMValGroup/ESMValTool/releases>`__ and draft
-the new release. Do not forget to tick the pre-release box for a beta
-release. Use the script
-```esmvalcore/utils/draft_release_notes.py`` <https://github.com/ESMValGroup/ESMValCore/blob/master/esmvalcore/utils/draft_release_notes.py>`__
-from the ESMValCore project to create a draft version of the release
-notes and edit those.
-
-4. Create and upload the Conda package
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Follow these steps to create a new conda package:
-
--  Check out the tag corresponding to the release, e.g.
-   ``git checkout v2.0.0b2``
--  Edit package/meta.yaml and uncomment the lines starting with
-   ``git_rev`` and ``git_url``, remove the line starting with ``path``
-   in the ``source`` section.
--  Activate the base environment ``conda activate base``
--  Run ``conda build package -c conda-forge -c esmvalgroup`` to build
-   the conda package
--  If the build was successful, upload all the packages to the esmvalgroup
-   conda channel, e.g.
-   ``anaconda upload --user esmvalgroup /path/to/conda/conda-bld/noarch/esmvaltool-2.0.0b2-py_0.tar.bz2``.

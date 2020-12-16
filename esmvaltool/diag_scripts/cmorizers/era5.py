@@ -1,13 +1,14 @@
-"""native6 diagnostic."""
+"""Rename preprocessor output files so they are named according to OBS6."""
 
 import logging
 import shutil
 from pathlib import Path
 
+import iris
+from esmvalcore.cmor.table import CMOR_TABLES
+
 from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
                                             run_diagnostic)
-
-from esmvalcore.cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -26,9 +27,19 @@ def main(cfg):
                     basename = basename.replace('E1hr', mip)
             basename = basename.replace('E1hr', 'day')
 
-        if 'fx' not in basename:
-            end_year = basename[-4:]
-            basename = basename.replace(end_year, f'{int(end_year) - 1}')
+        cube = iris.load_cube(file)
+        try:
+            time = cube.coord('time')
+        except iris.exceptions.CoordinateNotFoundError:
+            pass
+        else:
+            if info['diagnostic'] == "monthly":
+                start = time.cell(0).point.strftime("%Y%m")
+                end = time.cell(-1).point.strftime("%Y%m")
+            else:
+                start = time.cell(0).point.strftime("%Y%m%d")
+                end = time.cell(-1).point.strftime("%Y%m%d")
+            basename = f"{basename.rstrip('0123456789-')}{start}-{end}"
 
         outfile = get_diagnostic_filename(basename, cfg)
         logger.info('Moving %s to %s', file, outfile)

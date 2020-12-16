@@ -1,5 +1,5 @@
 # ESMValTool
-# namelist_landcover.yml
+# recipe_landcover.yml
 ---
 documentation:
   description: |
@@ -14,7 +14,7 @@ documentation:
     - stacke_tobias
 
   maintainer:
-    righi_mattia
+    - righi_mattia
 
   references:
     - georgievski18tac
