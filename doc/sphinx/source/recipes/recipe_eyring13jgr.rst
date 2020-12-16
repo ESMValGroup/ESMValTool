@@ -6,7 +6,7 @@ Ozone and associated climate impacts
 Overview
 --------
 
-This recipe implemented into the ESMValTool to evaluate atmospheric chemistry and the climate impact of stratospheric ozone changes, reproduces selected plots from Eyring et al. (2013).
+This recipe is implemented into the ESMValTool to evaluate atmospheric chemistry and the climate impact of stratospheric ozone changes. It reproduces selected plots from Eyring et al. (2013).
 
 The following plots are reproduced:
 
@@ -39,15 +39,15 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * ``e13fig12_start_year``: year when start the climatology calculation
-   * ``e13fig12_end_year``: year when end the climatology calculation
+   * ``e13fig12_start_year``: year when to start the climatology calculation
+   * ``e13fig12_end_year``: year when to end the climatology calculation
    * ``e13fig12_multimean``: calculate multimodel mean (default: False)
    * ``e13fig12_season``: season (default: ANN (annual))
 
    *Required settings for variables*
    
    * ``preprocessor``: zonal
-   * ``reference_dataset``: name of the reference model or observation for regridding and bias calculation (e.g. ERA-Interim").
+   * ``reference_dataset``: name of the reference model or observation for regridding and bias calculation (e.g. ERA5).
    *  ``mip``:  Amon.
 
 Variables
