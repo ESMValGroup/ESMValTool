@@ -245,10 +245,11 @@ def _shift_era5_time_coordinate(cube):
     time format [1990, 1, 1, 11, 30, 0] will be [1990, 1, 1, 12, 0, 0].
     For aggregated variables, already time format is [1990, 1, 1, 12, 0, 0].
     """
-    time = cube.coord(axis='T')
-    time.points = time.points + 30 / (24 * 60)
-    time.bounds = None
-    time.guess_bounds()
+    if not cube.attributes['mip'] == 'Amon':
+        time = cube.coord(axis='T')
+        time.points = time.points + 30 / (24 * 60)
+        time.bounds = None
+        time.guess_bounds()
     return cube
 
 
