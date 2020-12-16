@@ -1,5 +1,7 @@
-import yaml
+#!/usr/bin/env python
+"""Python example diagnostic."""
 import os
+import yaml
 
 # Get metrics dict, get dataset color(s) or get datasetnames
 def get_mpqb_cfg(cfgtype, cfgkey):

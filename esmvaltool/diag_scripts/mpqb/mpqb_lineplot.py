@@ -9,11 +9,12 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from cf_units import Unit
 
+from mpqb_utils import get_mpqb_cfg
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 def _unify_time_coord(cube):
     """Unify time coordinate of cube."""
@@ -43,7 +44,6 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
 
-
     grouped_input_data = group_metadata(input_data, 'alias', sort='alias')
 
     logger.info(
@@ -57,9 +57,10 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    fig, (ax,lax) = plt.subplots(nrows=2, gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
+    fig, (ax1,lax) = plt.subplots(nrows=2, 
+        gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
 
-    plt.sca(ax)
+    plt.sca(ax1)
     for dataset in grouped_input_data:
         dataset_cfg = grouped_input_data[dataset][0]
         alias = dataset_cfg['alias']
@@ -81,19 +82,21 @@ def main(cfg):
     # Time axis formatting
     years = mdates.YearLocator()  # every year
     years_fmt = mdates.DateFormatter('%Y')
-    ax = plt.gca()
-    ax.xaxis.set_major_locator(years)
-    ax.xaxis.set_major_formatter(years_fmt)
-    ax.grid(True, which='major', axis='x')
-    ax.set_ylim(ylims)
+    ax1 = plt.gca()
+    ax1.xaxis.set_major_locator(years)
+    ax1.xaxis.set_major_formatter(years_fmt)
+    ax1.grid(True, which='major', axis='x')
+    ax1.set_ylim(ylims)
 
-    h,l = ax.get_legend_handles_labels()
+    h,l = ax1.get_legend_handles_labels()
     leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')
     for legobj in leg.legendHandles:
         legobj.set_linewidth(2.0)
     lax.axis("off")
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
+    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_
+                   {dataset_cfg['start_year']}-
+                   {dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)

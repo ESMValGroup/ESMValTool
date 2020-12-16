@@ -5,35 +5,13 @@ import os
 from pprint import pformat
 
 import iris
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-# from cf_units import Unit
 
+from mpqb_utils import get_mpqb_cfg
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-from mpqb_utils import get_mpqb_cfg
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-# def _unify_time_coord(cube):
-    # """Unify time coordinate of cube."""
-    # if not cube.coords('time', dim_coords=True):
-        # return
-    # time_coord = cube.coord('time')
-    # dates_points = time_coord.units.num2date(time_coord.points)
-    # dates_bounds = time_coord.units.num2date(time_coord.bounds)
-    # new_units = Unit('days since 1850-01-01 00:00:00')
-    # new_time_coord = iris.coords.DimCoord(
-        # new_units.date2num(dates_points),
-        # bounds=new_units.date2num(dates_bounds),
-        # var_name='time',
-        # standard_name='time',
-        # long_name='time',
-        # units=new_units,
-    # )
-    # coord_dims = cube.coord_dims('time')
-    # cube.remove_coord('time')
-    # cube.add_dim_coord(new_time_coord, coord_dims)
 
 
 def main(cfg):
@@ -57,7 +35,6 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    #fig, (ax,lax) = plt.subplots(nrows=2, gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
     fig = plt.figure(figsize=(10, 4))
     ax1 = fig.add_subplot()
 
@@ -71,7 +48,7 @@ def main(cfg):
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
-        
+
         iris.quickplot.plot(cube, label=label, color=color)
     plt.legend()
     #plt.xticks(rotation=90)
@@ -87,14 +64,17 @@ def main(cfg):
     #ax1.xaxis.set_major_locator(months)
     ##ax1.xaxis.set_major_formatter(years_fmt)
     ax1.set_xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    ax1.set_xticklabels(['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'])
+    ax1.set_xticklabels(['J', 'F', 'M', 'A', 'M', 'J',
+                         'J', 'A', 'S', 'O', 'N', 'D'])
     ax1.set_xlabel('month')
     ax1.grid(True, which='major', axis='x')
 
     ax1.set_ylim(ylims)
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
-                   
+    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_
+                              {dataset_cfg['start_year']}-
+                              {dataset_cfg['end_year']}"
+
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
     fig.savefig(filename, bbox_inches='tight')
