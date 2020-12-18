@@ -33,6 +33,7 @@ User settings in recipe
     * ``independence_sigma``: shape parameter for weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
     * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with ``independence_contributions`` being skipped or not set).
     * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with ``performance_contributions`` being skipped or not set).
+    * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble members per model.
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*

@@ -147,12 +147,15 @@ def _get_provenance_record(attributes, ancestor_files):
 def _diagnostic(config):
     """Perform the control for the ESA CCI LST diagnostic.
 
-    Inputs:
-    config = the preprocessor nested dictionary holding
-             all the needed information.
+    Parameters
+    ----------
+    config: dict
+        the preprocessor nested dictionary holding
+        all the needed information.
 
-    Outputs:
-    The saved plot from make_plots function.
+    Returns
+    -------
+    figures made by make_plots.
     """
     # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
