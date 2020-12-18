@@ -10,8 +10,29 @@ import matplotlib.pyplot as plt
 from mpqb_utils import get_mpqb_cfg
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def get_provenance_record(caption):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'lineplot',
+        'authors': [
+            'mueller_benjamin',
+            'crezee_bas',
+            'hassler_birgit',
+        ],
+        'projects': ['cmug'],
+        'references': [
+            'acknow_project',
+        ],
+    }
+    return record
 
 
 def main(cfg):
@@ -71,13 +92,23 @@ def main(cfg):
 
     ax1.set_ylim(ylims)
 
-    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_
-                              {dataset_cfg['start_year']}-
-                              {dataset_cfg['end_year']}"
+    baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)
     logger.info("Saving as %s", filename)
     fig.savefig(filename, bbox_inches='tight')
+
+    # Provenance
+    caption = (
+        "Global mean annual cycle of {long_name} between "
+        "{start_year} and {end_year} ")
+
+    provenance_record = get_provenance_record(caption)
+    #provenance_record['ancestors'] = ancestor_files
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance_record)
+
+
     plt.close(fig)
     logger.info("Finished!")
 
