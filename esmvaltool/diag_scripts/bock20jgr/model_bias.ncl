@@ -1,6 +1,6 @@
 ; MODEL_BIAS
 ; ############################################################################
-; Author: Lisa Bock (DLR, Germany)
+; Author: Lisa Bock (DLR, Germany), Axel Lauer (DLR, Germany)
 ; Crescendo, IPCC-AR6
 ; ############################################################################
 ; Description
@@ -42,6 +42,7 @@ begin
 
   var0 = variable_info[0]@short_name
   info0 = select_metadata_by_name(input_file_info, var0)
+  project = input_file_info[1]@project
   dim_MOD = ListCount(info0)
   if (isatt(variable_info[0], "reference_dataset")) then
     refname = variable_info[0]@reference_dataset
@@ -236,12 +237,12 @@ begin
 
   diff@res_tiMainFontHeightF  = 0.016
 
-  diff@res_tiMainString = "Multi-Model Mean Bias"
+  diff@res_tiMainString = project + " Multi-Model Mean Bias"
 
   copy_VarMeta(diff, mmdata)
   delete(mmdata@res_cnLevels)
 
-  mmdata@res_tiMainString = "Multi-Model Mean"
+  mmdata@res_tiMainString = project + " Multi-Model Mean"
 
   mmdata@res_gsnLeftStringFontHeightF = 0.015
   mmdata@res_gsnRightStringFontHeightF = 0.015
@@ -307,7 +308,7 @@ begin
   pres@gsnPanelRowSpec = True  ; tell panel what order to plot
   pres@gsnPanelYWhiteSpacePercent = 5
   pres@gsnPanelXWhiteSpacePercent = 5
-  pres@gsnPanelFigureStrings = (/"a)", "b)", "c)", "d)"/)
+  pres@gsnPanelFigureStrings = (/"a)", "b)"/)
   pres@gsnPanelFigureStringsPerimOn = False
   pres@gsnPanelFigureStringsJust = "TopLeft"
   pres@gsnPanelFigureStringsFontHeightF = 0.016
@@ -325,7 +326,7 @@ begin
       end if
 
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "model_bias_" + var0 \
-                    + "_" + season(is))
+                    + "_" + season(is) + "_" + project)
 
       plotfile(is) = wks@fullname
 
@@ -352,7 +353,7 @@ begin
   ; # output to netCDF                        #
   ; ###########################################
 
-  nc_filename = work_dir + "model_bias_" + var0 + ".nc"
+  nc_filename = work_dir + "model_bias_" + var0 + "_" + project + ".nc"
   nc_filename@existing = "overwrite"
 
   mmdata@var = var0 + "_mean"
