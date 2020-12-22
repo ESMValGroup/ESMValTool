@@ -46,19 +46,24 @@ begin
   enter_msg(DIAG_SCRIPT, "")
   diag_script_base = basename(DIAG_SCRIPT)
 
-  var_names = metadata_att_as_array(variable_info, "short_name")
+  var_names = metadata_att_as_array(variable_info, "variable_group")
   var0 = "tas"
   ind_tas = ind(var_names .eq. "tas")
   info_items = select_metadata_by_name(input_file_info, var0)
   units0 = info_items[0]@units
-  ; if(any(var_names .eq. "tasStderr")) then
-  ;   obs_stderr = True
-  ;   var1 = "tasStderr"
-  ;   info_items1 = select_metadata_by_name(input_file_info, var1)
-  ; else
-  ;   obs_stderr = False
-  ; end if
-  obs_stderr = True
+  if(any(var_names .eq. "tasUnc1") .and. any(var_names .eq. "tasUnc2")) then
+    obs_unc = True
+    var1 = "tasUnc1"
+    var2 = "tasUnc2"
+    ind1 = ind(var_names .eq. var1)
+    ind2 = ind(var_names .eq. var2)
+    info_items1 = select_metadata_by_name(input_file_info, \
+                                          variable_info[ind1]@short_name)
+    info_items2 = select_metadata_by_name(input_file_info, \
+                                          variable_info[ind2]@short_name)
+  else
+    obs_unc = False
+  end if
 
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
@@ -95,6 +100,9 @@ begin
   end_year = diag_script_info@end_year
   all_years = ispan(start_year, end_year, 1)
   nyears = end_year - start_year + 1
+
+  ref_start = diag_script_info@ref_start
+  ref_end = diag_script_info@ref_end
 
   ; Anomaly
   if (isatt(diag_script_info, "ts_anomaly")) then
@@ -207,20 +215,26 @@ begin
 
   end do
 
-  if (obs_stderr) then
+  if (obs_unc) then
+
+    A_ref1 = read_data(info_items1[0])
+    A_ref2 = read_data(info_items2[0])
+
+    if (time_avg .eq. "yearly") then
+      A_ref1 := time_operations(A_ref1, -1, -1, "average", "yearly", True)
+      A_ref2 := time_operations(A_ref2, -1, -1, "average", "yearly", True)
+    end if
 
     data_ref_stderr = new((/2, ntime/), double)
     data_ref_stderr!0 = "statistics"
     data_ref_stderr!1 = "time"
     data_ref_stderr&time = time
 
-    fdata = "/work/bd0854/b309059/data/HadCRUT4/HadCRUT.4.6.0.0.annual_ns_avg.txt"
-    data   = asciiread(fdata, (/171, 12/), "float")
+    data_ref_stderr(0, :) = (/data_ref(0, :) - A_ref1/)
+    data_ref_stderr(1, :) = (/data_ref(0, :) + A_ref2/)
 
-    data_temp = data(:, 1) - data(:, 10)
-    data_ref_stderr(0, :) = data_ref(0, :) - (/data_temp(0:(ntime-1))/)
-    data_temp = data(:, 11) - data(:, 1)
-    data_ref_stderr(1, :) = data_ref(0, :) + (/data_temp(0:(ntime-1))/)
+    delete(A_ref1)
+    delete(A_ref2)
 
   else
 
@@ -322,8 +336,6 @@ begin
   end if
 
   res0 = True
-  ref_start = diag_script_info@ref_start
-  ref_end = diag_script_info@ref_end
 
   if (isatt(diag_script_info, "ref")) then
     xy_line_collect(wks, data_mean, data_ref, data_ref_stderr, data_ref&time, \
@@ -352,7 +364,7 @@ begin
   end if
 
   caption = "Multi model mean time series of the " + statistics + \
-             " for variable " + varname + ", similar to IPCC AR5, fig. 10.21."
+            " for variable " + varname + ", similar to IPCC AR5, fig. 10.21."
 
   ; Call provenance logger
   log_provenance(ncdf_outfile, \

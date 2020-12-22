@@ -56,6 +56,9 @@ begin
   var0 = variable_info[0]@short_name
   exp0 = variable_info[0]@exp
   project0 = input_file_info[0]@project
+  if (project0 .eq. "OBS") then
+    project0 = input_file_info[1]@project
+  end if
   info_items = select_metadata_by_name(input_file_info, var0)
   datasetnames = metadata_att_as_array(info_items, "dataset")
   dim_MOD = ListCount(info_items)

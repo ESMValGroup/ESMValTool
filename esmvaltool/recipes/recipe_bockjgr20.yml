@@ -51,51 +51,51 @@ CMIP6_tas: &cmip6_tas
   #- {dataset: AWI-CM-1-1-MR, grid: gn, start_year: 1851} #newest version just 1850
   - {dataset: AWI-ESM-1-1-LR, grid: gn}
   - {dataset: BCC-CSM2-MR, grid: gn}
-  - {dataset: BCC-ESM1, grid: gn}
-  - {dataset: CAMS-CSM1-0, grid: gn}
-  - {dataset: CanESM5, grid: gn}
-  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
-  - {dataset: CESM2, grid: gn}
-  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
-  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
-  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
-  - {dataset: CIESM}
-  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
-  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
-  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
-  - {dataset: E3SM-1-0}
-  - {dataset: E3SM-1-1, institute: E3SM-Project}
-  #- {dataset: E3SM-1-1-ECA, institute: E3SM-Project} #strange outlier
-  #- {dataset: EC-Earth3, ensemble: r22i1p1f1} #not available
-  - {dataset: EC-Earth3-Veg}
-  - {dataset: FGOALS-f3-L}
-  - {dataset: FGOALS-g3, grid: gn}
-  - {dataset: FIO-ESM-2-0, grid: gn}
-  #- {dataset: GFDL-CM4, grid: gr1} #permission denied
-  - {dataset: GFDL-ESM4, grid: gr1}
-  - {dataset: GISS-E2-1-G, grid: gn}
-  #- {dataset: GISS-E2-1-G-CC, grid: gn, institute: NASA-GISS} #permission denied
-  - {dataset: GISS-E2-1-H, grid: gn}
-  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
-  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
-  - {dataset: INM-CM4-8, grid: gr1}
-  - {dataset: INM-CM5-0, grid: gr1}
-  - {dataset: IPSL-CM6A-LR}
-  - {dataset: KACE-1-0-G}
-  - {dataset: MCM-UA-1-0, grid: gn}
-  - {dataset: MIROC6, grid: gn}
-  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
-  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
-  - {dataset: MPI-ESM1-2-HR, grid: gn}
-  - {dataset: MPI-ESM1-2-LR, grid: gn}
-  - {dataset: MRI-ESM2-0, grid: gn}
-  - {dataset: NESM3, grid: gn}
-  #- {dataset: NorCPM1, grid: gn, institute: NCC} # no pr data
-  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
-  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
-  - {dataset: SAM0-UNICON, grid: gn}
-  #- {dataset: TaiESM1, grid: gn} #permission denied
-  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+#  - {dataset: BCC-ESM1, grid: gn}
+#  - {dataset: CAMS-CSM1-0, grid: gn}
+#  - {dataset: CanESM5, grid: gn}
+#  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+#  - {dataset: CESM2, grid: gn}
+#  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CIESM}
+#  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+#  - {dataset: E3SM-1-0}
+#  - {dataset: E3SM-1-1, institute: E3SM-Project}
+#  #- {dataset: E3SM-1-1-ECA, institute: E3SM-Project} #strange outlier
+#  #- {dataset: EC-Earth3, ensemble: r22i1p1f1} #not available
+#  - {dataset: EC-Earth3-Veg}
+#  - {dataset: FGOALS-f3-L}
+#  - {dataset: FGOALS-g3, grid: gn}
+#  - {dataset: FIO-ESM-2-0, grid: gn}
+#  #- {dataset: GFDL-CM4, grid: gr1} #permission denied
+#  - {dataset: GFDL-ESM4, grid: gr1}
+#  - {dataset: GISS-E2-1-G, grid: gn}
+#  #- {dataset: GISS-E2-1-G-CC, grid: gn, institute: NASA-GISS} #permission denied
+#  - {dataset: GISS-E2-1-H, grid: gn}
+#  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: INM-CM4-8, grid: gr1}
+#  - {dataset: INM-CM5-0, grid: gr1}
+#  - {dataset: IPSL-CM6A-LR}
+#  - {dataset: KACE-1-0-G}
+#  - {dataset: MCM-UA-1-0, grid: gn}
+#  - {dataset: MIROC6, grid: gn}
+#  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+#  - {dataset: MPI-ESM1-2-HR, grid: gn}
+#  - {dataset: MPI-ESM1-2-LR, grid: gn}
+#  - {dataset: MRI-ESM2-0, grid: gn}
+#  - {dataset: NESM3, grid: gn}
+#  #- {dataset: NorCPM1, grid: gn, institute: NCC} # no pr data
+#  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
+#  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+#  - {dataset: SAM0-UNICON, grid: gn}
+#  #- {dataset: TaiESM1, grid: gn} #permission denied
+#  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
 
 CMIP6_HighResMIP_low: &cmip6_highresmip_low
   - {dataset: CMCC-CM2-HR4, exp: hist-1950, grid: gn}  # CMCC
@@ -119,51 +119,51 @@ CMIP5_tas: &cmip5_tas
   - {dataset: ACCESS1-3}
   - {dataset: bcc-csm1-1}
   - {dataset: bcc-csm1-1-m}
-  - {dataset: BNU-ESM}
-  #- {dataset: CanCM4} #no data before 1961
-  - {dataset: CanESM2}
-  - {dataset: CCSM4}
-  - {dataset: CESM1-BGC}
-  - {dataset: CESM1-CAM5-1-FV2}
-  - {dataset: CESM1-CAM5}
-  - {dataset: CESM1-FASTCHEM}
-  - {dataset: CESM1-WACCM}
-  - {dataset: CMCC-CESM}
-  - {dataset: CMCC-CM}
-  - {dataset: CMCC-CMS}
-  - {dataset: CNRM-CM5-2}
-  - {dataset: CNRM-CM5}
-  - {dataset: CSIRO-Mk3-6-0}
-  - {dataset: FGOALS-g2}
-  #- {dataset: FGOALS-s2}
-  - {dataset: FIO-ESM}
-  - {dataset: GFDL-CM2p1, start_year: 1861}
-  - {dataset: GFDL-CM3, start_year: 1860}
-  - {dataset: GFDL-ESM2G, start_year: 1861}
-  - {dataset: GFDL-ESM2M, start_year: 1861}
-  - {dataset: GISS-E2-H-CC}
-  - {dataset: GISS-E2-H}
-  - {dataset: GISS-E2-R-CC}
-  - {dataset: GISS-E2-R}
-  - {dataset: HadCM3, start_year: 1860}
-  - {dataset: HadGEM2-AO, start_year: 1860}
-  - {dataset: HadGEM2-CC, start_year: 1860}
-  - {dataset: HadGEM2-ES, start_year: 1860}
-  - {dataset: inmcm4}
-  - {dataset: IPSL-CM5A-LR}
-  - {dataset: IPSL-CM5A-MR}
-  - {dataset: IPSL-CM5B-LR}
-  #- {dataset: MIROC4h} # start 1950
-  - {dataset: MIROC5}
-  - {dataset: MIROC-ESM}
-  - {dataset: MIROC-ESM-CHEM}
-  - {dataset: MPI-ESM-LR}
-  - {dataset: MPI-ESM-MR}
-  - {dataset: MPI-ESM-P}
-  - {dataset: MRI-CGCM3}
-  - {dataset: MRI-ESM1, start_year: 1851}
-  - {dataset: NorESM1-M}
-  - {dataset: NorESM1-ME}
+#  - {dataset: BNU-ESM}
+#  #- {dataset: CanCM4} #no data before 1961
+#  - {dataset: CanESM2}
+#  - {dataset: CCSM4}
+#  - {dataset: CESM1-BGC}
+#  - {dataset: CESM1-CAM5-1-FV2}
+#  - {dataset: CESM1-CAM5}
+#  - {dataset: CESM1-FASTCHEM}
+#  - {dataset: CESM1-WACCM}
+#  - {dataset: CMCC-CESM}
+#  - {dataset: CMCC-CM}
+#  - {dataset: CMCC-CMS}
+#  - {dataset: CNRM-CM5-2}
+#  - {dataset: CNRM-CM5}
+#  - {dataset: CSIRO-Mk3-6-0}
+#  - {dataset: FGOALS-g2}
+#  #- {dataset: FGOALS-s2}
+#  - {dataset: FIO-ESM}
+#  - {dataset: GFDL-CM2p1, start_year: 1861}
+#  - {dataset: GFDL-CM3, start_year: 1860}
+#  - {dataset: GFDL-ESM2G, start_year: 1861}
+#  - {dataset: GFDL-ESM2M, start_year: 1861}
+#  - {dataset: GISS-E2-H-CC}
+#  - {dataset: GISS-E2-H}
+#  - {dataset: GISS-E2-R-CC}
+#  - {dataset: GISS-E2-R}
+#  - {dataset: HadCM3, start_year: 1860}
+#  - {dataset: HadGEM2-AO, start_year: 1860}
+#  - {dataset: HadGEM2-CC, start_year: 1860}
+#  - {dataset: HadGEM2-ES, start_year: 1860}
+#  - {dataset: inmcm4}
+#  - {dataset: IPSL-CM5A-LR}
+#  - {dataset: IPSL-CM5A-MR}
+#  - {dataset: IPSL-CM5B-LR}
+#  #- {dataset: MIROC4h} # start 1950
+#  - {dataset: MIROC5}
+#  - {dataset: MIROC-ESM}
+#  - {dataset: MIROC-ESM-CHEM}
+#  - {dataset: MPI-ESM-LR}
+#  - {dataset: MPI-ESM-MR}
+#  - {dataset: MPI-ESM-P}
+#  - {dataset: MRI-CGCM3}
+#  - {dataset: MRI-ESM1, start_year: 1851}
+#  - {dataset: NorESM1-M}
+#  - {dataset: NorESM1-ME}
 
 
 CMIP3_tas: &cmip3_tas
@@ -171,24 +171,24 @@ CMIP3_tas: &cmip3_tas
   - {dataset: cccma_cgcm3_1}
   - {dataset: cccma_cgcm3_1_t63}
   - {dataset: csiro_mk3_0, start_year: 1871}
-  - {dataset: gfdl_cm2_0, start_year: 1861}
-  - {dataset: gfdl_cm2_1, start_year: 1861} 
-  - {dataset: giss_aom}
-  - {dataset: giss_model_e_h, start_year: 1880}
-  - {dataset: giss_model_e_r, start_year: 1880}
-  - {dataset: iap_fgoals1_0_g}
-  - {dataset: ingv_echam4, start_year: 1870}
-  - {dataset: inmcm3_0, start_year: 1871}
-  - {dataset: ipsl_cm4, start_year: 1860}
-  #- {dataset: miroc3_2_hires, institute: NIES, start_year: 1900}
-  - {dataset: miroc3_2_medres}
-  #- {dataset: miub_echo_g} #something wrong with numeration of years
-  - {dataset: mpi_echam5, start_year: 1860}
-  - {dataset: mri_cgcm2_3_2a, start_year: 1851}
-  - {dataset: ncar_ccsm3_0, start_year: 1870}
-  - {dataset: ncar_pcm1, start_year: 1890}
-  - {dataset: ukmo_hadcm3, start_year: 1860}
-  - {dataset: ukmo_hadgem1, start_year: 1860}
+#  - {dataset: gfdl_cm2_0, start_year: 1861}
+#  - {dataset: gfdl_cm2_1, start_year: 1861} 
+#  - {dataset: giss_aom}
+#  - {dataset: giss_model_e_h, start_year: 1880}
+#  - {dataset: giss_model_e_r, start_year: 1880}
+#  - {dataset: iap_fgoals1_0_g}
+#  - {dataset: ingv_echam4, start_year: 1870}
+#  - {dataset: inmcm3_0, start_year: 1871}
+#  - {dataset: ipsl_cm4, start_year: 1860}
+#  #- {dataset: miroc3_2_hires, institute: NIES, start_year: 1900}
+#  - {dataset: miroc3_2_medres}
+#  #- {dataset: miub_echo_g} #something wrong with numeration of years
+#  - {dataset: mpi_echam5, start_year: 1860}
+#  - {dataset: mri_cgcm2_3_2a, start_year: 1851}
+#  - {dataset: ncar_ccsm3_0, start_year: 1870}
+#  - {dataset: ncar_pcm1, start_year: 1890}
+#  - {dataset: ukmo_hadcm3, start_year: 1860}
+#  - {dataset: ukmo_hadgem1, start_year: 1860}
 
 
 diagnostics:
@@ -270,9 +270,12 @@ diagnostics:
     variables:
       tas: 
         <<: *var_tas_tsline
-      #tasStderr:
-      #  <<: *var_tas_tsline
-      #  preprocessor: clim_global
+      tasUnc1:
+        short_name: tasConf5
+        mip: Amon
+      tasUnc2:
+        short_name: tasConf95
+        mip: Amon
     additional_datasets:
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
          start_year: 1850, end_year: 2017, tier: 2}
@@ -280,8 +283,7 @@ diagnostics:
       collect: 
         <<: *tsline_settings
         script: bock20jgr/tsline_collect.ncl
-        #ancestors: [tas, tasStderr, 'fig_1_*/tsline_anom*']
-        ancestors: [tas, 'fig_1_*/tsline_anom*']
+        ancestors: [tas, tasUnc1, tasUnc2, 'fig_1_*/tsline_anom*']
         start_year: 1850
         end_year: 2017
         y_max: 1.2
