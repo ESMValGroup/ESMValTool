@@ -17,7 +17,9 @@ Instead, the regular nature of the release guarantees that every feature can be
 released in a timely manner even if a specific target release is missed.
 
 Because of limited resources, only the latest released versions of ESMValTool and ESMValCore is maintained.
-If your project requires longer maintenance or you have other concerns about the release strategy, please contact the ESMValTool core development team.
+If your project requires longer maintenance or you have other concerns about
+the release strategy, please contact the ESMValTool core development team, see
+:ref:`contact`.
 
 
 Overall Procedure
