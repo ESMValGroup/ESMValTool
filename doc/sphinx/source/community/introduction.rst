@@ -9,10 +9,12 @@ Contributions are very welcome
 We greatly value contributions of any kind.
 Contributions could include, but are not limited to documentation improvements, bug reports, new or improved diagnostic code, scientific and technical code reviews, infrastructure improvements, mailing list and chat participation, community help/building, education and outreach.
 We value the time you invest in contributing and strive to make the process as easy as possible.
-If you have suggestions for improving the process of contributing, please do not hesitate to propose them.
+If you have suggestions for improving the process of contributing, please do
+not hesitate to propose them, for example by starting a discussion on our
+`discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__.
 
-If you have a bug or other issue to report or just need help, please open an issue on the `issues tab on the
-ESMValTool github
+If you have a bug or other issue to report, please open an issue on the
+`issues tab on the ESMValTool github
 repository <https://github.com/ESMValGroup/ESMValTool/issues>`__.
 
 If you would like to contribute a new diagnostic and recipe or a new
@@ -20,7 +22,7 @@ feature, please discuss your idea with the development team before
 getting started, to avoid double work and/or disappointment later. A
 good way to do this is to open an `issue on
 GitHub <https://github.com/ESMValGroup/ESMValTool/issues>`__. This is
-also a good way to get help.
+also a good way to get help with the implementation.
 
 Getting started
 ---------------
@@ -125,6 +127,10 @@ Running tests
 Go to the directory where the repository is cloned and run
 ``pytest``. Tests will also be run automatically by
 `CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
+
+These automated checks are run automatically when you add new commits to your pull request.
+They appear at the bottom of the pull request. Click on `Details` for more information
+
 
 Code style
 ----------
@@ -303,7 +309,7 @@ used in those recipes.
 When adding a new recipe, please start from the
 `template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
 and do not forget to add your recipe to the
-`<index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
 Note that there is no need to write extensive documentation for functions that
 are not visible in the online documentation.
 However, a short description in the docstring helps other contributors to
@@ -326,11 +332,15 @@ errors.
 Branches, pull requests and code review
 ---------------------------------------
 
-New development should preferably be done in the main ESMValTool github
-repository, however, for scientists requiring confidentiality, private
-repositories are available. The default git branch is ``master``. Use
+New development should preferably be done in the
+`ESMValTool <https://github.com/ESMValGroup/ESMValTool>`__
+GitHub repository.
+However, for scientists requiring confidentiality, private repositories are
+available, see :ref:`private_repository` for more information.
+The default git branch is ``master``. Use
 this branch to create a new feature branch from and make a pull request
-against. This
+against.
+This
 `page <https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow>`__
 offers a good introduction to git branches, but it was written for
 BitBucket while we use GitHub, so replace the word BitBucket by GitHub
@@ -338,16 +348,25 @@ whenever you read it.
 
 It is recommended that you open a `draft pull
 request <https://github.blog/2019-02-14-introducing-draft-pull-requests/>`__
-early, as this will cause CircleCI to run the unit tests and Codacy to
-analyse your code. It’s also easier to get help from other developers if
+early, as this will cause CircleCI to run the unit tests, Codacy to
+analyse your code, and readthedocs to build the documentation.
+It’s also easier to get help from other developers if
 your code is visible in a pull request.
 
 You can view the results of the automatic checks below your pull
-request. If one of the tests shows a red cross instead of a green
+request by clicking on ``Details``. If one of the tests shows a red cross instead of a green
 approval sign, please click the link and try to solve the issue. Note
 that this kind of automated checks make it easier to review code, but
-they are not flawless, so occasionally Codacy will report false
-positives.
+they are not flawless. Preferably Codacy code quality checks pass, however
+a few remaining hard to solve Codacy issues are still acceptable.
+If you suspect Codacy may be wrong, please ask by commenting.
+
+The documentation can be seen by clicking on `Details`. Make sure the
+documentation is nicely formatted, and (if necessary) add the link to the
+top of the pull request.
+
+Make sure your pull request has a descriptive title that can be used in the
+`changelog <https://docs.esmvaltool.org/en/latest/changelog.html>`__.
 
 Diagnostic script contributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
