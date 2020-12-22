@@ -200,7 +200,7 @@ diagnostics:
     additional_datasets:
       - {dataset: ESACCI-LST, project: OBS, mip: Amon, tier: 2,
          type: sat, version: "1.00",
-         start_year: 2004, end_year: 2006}
+         start_year: 2003, end_year: 2018}
     scripts: null
 
 
