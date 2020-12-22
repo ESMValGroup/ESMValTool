@@ -1,6 +1,8 @@
 Changelog
 =========
 
+.. _changelog-v2-1-1:
+
 v2.1.1
 ------
 
@@ -17,6 +19,8 @@ Documentation
 ~~~~~~~~~~~~~
 
 - Release notes v2.1.1 (`#1932 <https://github.com/ESMValGroup/ESMValTool/pull/1932>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
+.. _changelog-v2-1-0:
 
 v2.1.0
 ------
@@ -72,6 +76,8 @@ Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Added CMORizer for Scripps-CO2-KUM (`#1857 <https://github.com/ESMValGroup/ESMValTool/pull/1857>`__) `Manuel Schlund <https://github.com/schlunma>`__
+
+.. _changelog-v2-0-0:
 
 v2.0.0
 ------
@@ -181,6 +187,8 @@ Observational and re-analysis dataset support
 -  Add standard_name attribute to lon and lat in cmorize_obs_esacci_oc.py (`#1760 <https://github.com/ESMValGroup/ESMValTool/pull/1760>`__) `Tomas Lovato <https://github.com/tomaslovato>`__
 -  Allow for incomplete months on daily frequency in cmorizer ncl utilities (`#1754 <https://github.com/ESMValGroup/ESMValTool/pull/1754>`__) `Mattia Righi <https://github.com/mattiarighi>`__
 -  Fix AURA-TES cmorizer (`#1766 <https://github.com/ESMValGroup/ESMValTool/pull/1766>`__) `Mattia Righi <https://github.com/mattiarighi>`__
+
+.. _changelog-v2-0-0b4:
 
 v2.0.0b4
 --------
