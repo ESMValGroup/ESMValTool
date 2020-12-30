@@ -12,6 +12,7 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
+   recipe_climwip
    recipe_clouds
    recipe_crem
    recipe_combined_climate_extreme_index
@@ -19,11 +20,14 @@ Atmosphere
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_extreme_events
+   recipe_eyring06jgr
+   recipe_eyring13jgr
    recipe_heatwaves_coldwaves
    recipe_hyint
    recipe_modes_of_variability
    recipe_quantilebias
    recipe_spei
+   recipe_martin18grl
    recipe_autoassess_stratosphere
    recipe_zmnam
    recipe_thermodyn_diagtool
@@ -42,14 +46,17 @@ Future projections
 .. toctree::
    :maxdepth: 1
 
+   recipe_li17natcc
+   recipe_schlund20jgr
    recipe_emergent_constraints
    recipe_wenzel14jgr
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
+   recipe_kcs
    recipe_wenzel16jclim
+   recipe_wenzel16nat
    recipe_tcr
-   recipe_li17natcc
 
 IPCC
 ^^^^
@@ -65,6 +72,7 @@ Land
    :maxdepth: 1
 
    recipe_albedolandcover
+   recipe_carvalhais14nat
    recipe_hydrology
    recipe_landcover
    recipe_anav13jclim
@@ -86,6 +94,7 @@ Other
 .. toctree::
    :maxdepth: 1
 
+   recipe_examples
    recipe_capacity_factor
    recipe_ensclus
    recipe_multimodel_products

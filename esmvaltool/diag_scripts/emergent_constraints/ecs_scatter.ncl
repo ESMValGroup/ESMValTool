@@ -22,14 +22,20 @@
 ;
 ; Required diag_script_info attributes (diagnostics specific)
 ;   diag: emergent constraint to calculate ("itczidx", "humidx", "ltmi",
-;         "covrefl", "shhc")
+;         "covrefl", "shhc", "sherwood_s", "sherwood_d")
 ;   ecs_file:  path + file name of netCDF containing precalculated
-;              ECS values
+;              ECS values (only necessary if 'output_diag_only' is not True)
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   calcmm:         - False (default) = do not calculate multi-model mean
 ;                   - True = calculate multi-model mean
 ;   legend_outside: True, False
+;   output_diag_only: - False (default) = output full emergent constraint
+;                                         (X and Y axis, plots)
+;                     - True = output only X axis (no plots)
+;   output_attributes: Additional attributes for the output files
+;   output_models_only: Only write models (no reference datasets) to netcdf
+;                       files.
 ;   predef_minmax:  True, False
 ;   styleset:       "CMIP5" (if not set, ECS_SCATTER will create a color table
 ;                   and symbols for plotting)
@@ -45,12 +51,13 @@
 ;   none
 ;
 ; Modification history
-;    20190226-A_laue_ax: added output of provenance (v2.0)
-;    20181022-A-laue_ax: code rewritten for ESMValTool v2.0
-;    20170818-A-laue_ax: preparation of code for reporting (tags)
-;    20170810-A-laue_ax: added emergent constraint "covariance of shortwave
-;                        cloud reflection" (Brient and Schneider, 2016)
-;    20161007-A-laue_ax: written.
+;    20200102-schlund_manuel: added Sherwood S and D index.
+;    20190226-lauer_axel: added output of provenance (v2.0)
+;    20181022-lauer_axel: code rewritten for ESMValTool v2.0
+;    20170818-lauer_axel: preparation of code for reporting (tags)
+;    20170810-lauer_axel: added emergent constraint "covariance of shortwave
+;                         cloud reflection" (Brient and Schneider, 2016)
+;    20161007-lauer_axel: written.
 ;
 ; #############################################################################
 ; List of functions
@@ -58,6 +65,8 @@
 ;   function humidx: tropical mid-tropopheric humidity asymmetry index
 ;   function itczidx: southern ITCZ index
 ;   function ltmi: lower tropospheric mixing index (LTMI)
+;   function sherwood_d: Sherwood D index
+;   function sherwood_s: Sherwood S index
 ;   function shhc: Southern hemisphere Hadley cell extent
 ; #############################################################################
 
@@ -462,7 +471,7 @@ end
 ; - dataset: name of dataset
 ; - variables: names of available variables
 ; - ldebug: output debug data as netCDF (true, false)
-; - SEPavg_ref: average over southeastern Pacific for referene dataset
+; - SEPavg_ref: average over southeastern Pacific for reference dataset
 ;   in mm/day
 ;
 ; Reference
@@ -544,8 +553,8 @@ begin
 end
 
 ; =============================================================================
-; Function ltmi
-; Calculate lower tropospheric mixing index (LTMI) for one dataset.
+; Function sherwood_d
+; Calculate Sherwood D index.
 ;
 ; Arguments
 ; - dataset: names of datasets
@@ -556,7 +565,141 @@ end
 ; - Sherwood et al. (2014)
 ; =============================================================================
 
-function ltmi(dataset[*]:string, variables[*]:string, ldebug:logical)
+function sherwood_d(dataset[*]:string, variables[*]:string, ldebug:logical)
+begin
+  wap_idx = ind(variables.eq."wap")
+
+  ; vertical velocity (at 850, 700, 600, 500, 400 hPa)
+
+  atts = True
+  atts@short_name = variables(wap_idx)
+  atts@dataset = dataset(wap_idx)
+  info = select_metadata_by_atts(input_file_info, atts)
+  delete(atts)
+
+  omega = read_data(info[0])
+  delete(info)
+
+  omega_mean = time_operations(omega, -1, -1, "average", "annualclim", True)
+
+  ; grid boxes with upward motion at 500 hPa (annual mean)
+  ascend = where(omega_mean({50000}, :, :).lt.0, \
+                 -1.0 * omega_mean({50000}, :, :), omega_mean@_FillValue)
+  ascend@_FillValue = omega_mean@_FillValue
+  ascend!0 = "lat"
+  ascend!1 = "lon"
+  ascend&lat = omega_mean&lat
+  ascend&lon = omega_mean&lon
+
+  ; generate land-/sea-mask
+  a = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
+  lsdata = a->LSMASK
+  lsm0  = landsea_mask(lsdata, omega_mean&lat, omega_mean&lon)
+  lsm = where(lsm0.eq.0, 0, lsm0@_FillValue)
+  copy_VarMeta(lsm0, lsm)
+  delete(lsdata)
+  delete(lsm0)
+  delete(omega_mean)
+
+  ; upper quartile of the annual mean mid-tropospheric (500 hPa) ascent rate
+  ; in ascending regions (over the tropical ocean 30S-30N only)
+
+  ascend = ascend + lsm
+  ascend({-90.:-30.}, :) = ascend@_FillValue
+  ascend({30.:90.}, :) = ascend@_FillValue
+
+  statb = stat_dispersion(ascend, False)
+  q25 = statb(10)
+
+  ; mask all grid cells with ascend rates lower than the upper quartile
+  omgmask = where(ascend.ge.q25, 0.0, ascend@_FillValue)
+  omgmask@_FillValue = ascend@_FillValue
+
+  ; average omega at 850 hPa, 700 hPa
+  omega1 = (omega(:, {85000}, :, :) + omega(:, {70000}, :, :)) / 2.0
+  ; average omega at 600 hPa, 500 hPa, 400 hPa
+  omega2 = (omega(:, {60000}, :, :) + omega(:, {50000}, :, :) \
+            + omega(:, {40000}, :, :)) / 3.0
+  delta = omega2 - omega1
+
+  D1 = where((delta.gt.0.).and.(omega1.lt.0.), delta, 0.)
+  D2 = where(omega2.lt.0., -1. * omega2, 0.)
+
+  D1!0 = "time"
+  D1!1 = "lat"
+  D1!2 = "lon"
+  D1&time = omega&time
+  D1&lat = omega&lat
+  D1&lon = omega&lon
+
+  D2!0 = "time"
+  D2!1 = "lat"
+  D2!2 = "lon"
+  D2&time = omega&time
+  D2&lat = omega&lat
+  D2&lon = omega&lon
+
+  ; average over tropical ocean regions: 160W-30E, 30S-30N
+  ; (ocean grid cells only)
+
+  lsmC = conform_dims(dimsizes(D1), lsm, (/1, 2/))
+  D1 = D1 + lsmC
+  D2 = D2 + lsmC
+  delete(lsmC)
+
+  D1_avg = avg(area_operations(D1, -30., 30., 200., 30., "average", True))
+  D2_avg = avg(area_operations(D2, -30., 30., 200., 30., "average", True))
+
+  if (D2_avg.ne.0.) then
+    result = D1_avg / D2_avg
+  else
+    result = D@_FillValue
+  end if
+
+  result@standard_name = "Sherwood_D"
+  result@long_name = "Sherwood D index"
+  result@units = "1"
+
+  ; optionally write debug output
+
+  if (ldebug) then
+    tmp = get_unique_values(dataset)
+    if (dimsizes(tmp) .eq. 1) then
+      refstr = tmp
+    else
+      refstr = tmp(0)
+      do i = 1, dimsizes(tmp) - 1
+        refstr = refstr + "_" + tmp(i)
+      end do
+    end if
+    fname = config_user_info@work_dir + "/debug_D_" + refstr + ".nc"
+    system("rm " + fname)
+    debugfile = addfile(fname, "c")
+    debugfile->omgmask = omgmask
+    debugfile->ascend = ascend
+    debugfile->lsm = lsm
+    debugfile->delta = delta
+    debugfile->D1 = D1
+    debugfile->D2 = D2
+  end if
+
+  return(result)
+end
+
+; =============================================================================
+; Function sherwood_s
+; Calculate Sherwood S index
+;
+; Arguments
+; - dataset: names of datasets
+; - variables: names of available variables
+; - ldebug: output debug data as netCDF (true, false)
+;
+; Reference
+; - Sherwood et al. (2014)
+; =============================================================================
+
+function sherwood_s(dataset[*]:string, variables[*]:string, ldebug:logical)
 begin
   hur_idx = ind(variables.eq."hur")
   ta_idx = ind(variables.eq."ta")
@@ -715,48 +858,11 @@ begin
   S&lat = ta_mean&lat
   S&lon = ta_mean&lon
 
-  S_avg = area_operations(S, -90., 90., 0., 360., "average", True)
+  result = area_operations(S, -90., 90., 0., 360., "average", True)
 
-  ; average omega at 850 hPa, 700 hPa
-  omega1 = (omega(:, {85000}, :, :) + omega(:, {70000}, :, :)) / 2.0
-  ; average omega at 600 hPa, 500 hPa, 400 hPa
-  omega2 = (omega(:, {60000}, :, :) + omega(:, {50000}, :, :) \
-            + omega(:, {40000}, :, :)) / 3.0
-  delta = omega2 - omega1
-
-  D1 = where((delta.gt.0.).and.(omega1.lt.0.), delta, 0.)
-  D2 = where(omega2.lt.0., -1. * omega2, 0.)
-
-  D1!0 = "time"
-  D1!1 = "lat"
-  D1!2 = "lon"
-  D1&time = omega&time
-  D1&lat = omega&lat
-  D1&lon = omega&lon
-
-  D2!0 = "time"
-  D2!1 = "lat"
-  D2!2 = "lon"
-  D2&time = omega&time
-  D2&lat = omega&lat
-  D2&lon = omega&lon
-
-  ; average over tropical ocean regions: 160W-30E, 30S-30N
-  ; (ocean grid cells only)
-
-  lsmC = conform_dims(dimsizes(D1), lsm, (/1, 2/))
-  D1 = D1 + lsmC
-  D2 = D2 + lsmC
-  delete(lsmC)
-
-  D1_avg = avg(area_operations(D1, -30., 30., 200., 30., "average", True))
-  D2_avg = avg(area_operations(D2, -30., 30., 200., 30., "average", True))
-
-  if (D2_avg.ne.0.) then
-    D_avg = D1_avg / D2_avg
-  else
-    D_avg = D@_FillValue
-  end if
+  result@standard_name = "Sherwood_S"
+  result@long_name = "Sherwood S index"
+  result@units = "1"
 
   ; optionally write debug output
 
@@ -770,25 +876,44 @@ begin
         refstr = refstr + "_" + tmp(i)
       end do
     end if
-    fname = config_user_info@work_dir + "/debug_" + refstr + ".nc"
+    fname = config_user_info@work_dir + "/debug_S_" + refstr + ".nc"
     system("rm " + fname)
     debugfile = addfile(fname, "c")
     debugfile->S = S
     debugfile->omgmask = omgmask
     debugfile->ascend = ascend
     debugfile->lsm = lsm
-    debugfile->delta = delta
-    debugfile->D1 = D1
-    debugfile->D2 = D2
   end if
 
-  result = D_avg + S_avg  ; lower tropospheric mixing index
+  return(result)
+end
+
+; =============================================================================
+; Function ltmi
+; Calculate lower tropospheric mixing index (LTMI) for one dataset.
+;
+; Arguments
+; - dataset: names of datasets
+; - variables: names of available variables
+; - ldebug: output debug data as netCDF (true, false)
+;
+; Reference
+; - Sherwood et al. (2014)
+; =============================================================================
+
+function ltmi(dataset[*]:string, variables[*]:string, ldebug:logical)
+begin
+
+  D_idx = sherwood_d(dataset, variables, ldebug)
+  S_idx = sherwood_s(dataset, variables, ldebug)
+
+  result = D_idx + S_idx  ; lower tropospheric mixing index
 
   result@standard_name = "LTMI"
   result@long_name = "lower_tropospheric_mixing_index"
   result@units = "1"
-  result@S = S_avg
-  result@D = D_avg
+  result@S = S_idx
+  result@D = D_idx
 
   return(result)
 end
@@ -935,7 +1060,8 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
-  variables = metadata_att_as_array(variable_info, "short_name")
+  variables = metadata_att_as_array(input_file_info, "short_name")
+  variables := get_unique_values(variables)
   dim_VAR = dimsizes(variables)
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -985,6 +1111,18 @@ begin
     varlist = (/"ta", "hur", "wap"/)
     caption = caption + "lower tropospheric mixing index (LTMI) " \
       + "(Sherwood et al., 2014)."
+  end if
+
+  ; Sherwood D index (Sherwood et al., Nature, 2014)
+  if (diag .eq. "sherwood_d") then
+    varlist = (/"wap"/)
+    caption = caption + "Sherwood D index (Sherwood et al., 2014)."
+  end if
+
+  ; Sherwood S index (Sherwood et al., Nature, 2014)
+  if (diag .eq. "sherwood_s") then
+    varlist = (/"ta", "hur", "wap"/)
+    caption = caption + "Sherwood S index (Sherwood et al., 2014)."
   end if
 
   ; SH Hadley cell extent (SHHC) (Lipat et al., 2017, Geophys. Res. Lett.)
@@ -1054,13 +1192,29 @@ begin
 
   refname = new(dim_VAR, string)
   do i = 0, dim_VAR - 1
-    if (isatt(variable_info[i], "reference_dataset")) then
-      refname(i) = variable_info[i]@reference_dataset
-    else
-      error_msg("f", DIAG_SCRIPT, "", "reference dataset not defined for " \
-                + "variable " + variables(i))
-    end if
+    short_name = variables(i)
+    short_name_data = select_metadata_by_name(input_file_info, short_name)
+    do idat = 0, ListCount(short_name_data) - 1
+      if (.not. isatt(short_name_data[idat], "reference_dataset")) then
+        error_msg("f", DIAG_SCRIPT, "", "reference dataset not defined " + \
+                  "for dataset " + short_name_data[idat]@filename)
+      end if
+      if (isdefined("short_name_ref")) then
+        if (short_name_ref .ne. short_name_data[idat]@reference_dataset) then
+          error_msg("f", DIAG_SCRIPT, "", "Differing reference datasets " + \
+                    "variable " + short_name + ", got " + short_name_ref + \
+                    " and " + short_name_data[idat]@reference_dataset)
+        end if
+      else
+        short_name_ref = short_name_data[idat]@reference_dataset
+        log_info("Using reference dataset " + short_name_ref + " for " + \
+                 "variable " + short_name)
+      end if
+    end do
+    refname(i) = short_name_ref
+    delete(short_name_ref)
   end do
+  dim_REF = dimsizes(refname)
 
   ; dataset indices with no reference dataset(s) and no multi-model mean
 
@@ -1091,54 +1245,11 @@ begin
   set_default_att(diag_script_info, "ecs_file", "ECS.nc")
   set_default_att(diag_script_info, "legend_outside", False)
   set_default_att(diag_script_info, "predef_minmax", False)
+  set_default_att(diag_script_info, "output_diag_only", False)
+  set_default_att(diag_script_info, "output_models_only", False)
 
   legend_outside = diag_script_info@legend_outside
   ecsfile = diag_script_info@ecs_file
-
-  ; ==================== read precalculated ECS from file ==================
-
-  if (isfilepresent(ecsfile)) then
-    log_info("Read in: " + ecsfile)
-    ecs_tmp = ncdf_read(ecsfile, "ecs")
-  else
-    error_msg("f", DIAG_SCRIPT, "", "file with precalculated ECS data (" + \
-              ecsfile + ") not found.")
-  end if
-
-  ; now copy the precalculated ECS values read from the external file to the
-  ; array ECS
-
-  ECS = new(dim_MOD, float)
-  ECS = ecs_tmp@_FillValue
-  ECS@_FillValue = ecs_tmp@_FillValue
-  ECS@units = ecs_tmp@units
-  ECS@standard_name = ecs_tmp@standard_name
-
-  exit_flag = False
-
-  do i = 0, dim_MOD - 1
-    if (any(i.eq.ref_ind).or.(i.eq.mmm_ind)) then
-      continue
-    end if
-    name = names(i)
-    idx = ind(name.eq.ecs_tmp&model)
-    if (ismissing(idx)) then
-      log_info("no pre-calcuated ECS value for model " + name + " available")
-      exit_flag = True
-    else
-      ECS(i) = ecs_tmp(idx)
-      log_info("pre-calcuated ECS value for model " + name + " = " + ECS(i))
-    end if
-    delete(idx)
-  end do
-
-  if (exit_flag) then
-    error_msg("f", DIAG_SCRIPT, "", "precalculated ECS data (" + \
-              ecsfile + ") not available for all models.")
-  end if
-
-  f = addfile(ecsfile, "r")
-  climofiles = array_append_record(infiles, getfilepath(f), 0)
 
   ; ============================ calculations ==============================
 
@@ -1247,6 +1358,82 @@ begin
     diagdata@units = "1"
   end if
 
+  ; Sherwood D index (Sherwood et al., 2014)
+
+  if (diag.eq."sherwood_d") then
+    obs_done = False
+    datasets = new(dim_VAR, string)
+    do imod = 0, dim_MOD - 1
+      ; skip multi-model mean entry
+      if (imod.eq.mmm_ind) then
+        continue
+      end if
+
+      if (any(ref_ind.eq.imod)) then
+        do_obs = True
+        datasets = names(ref_ind)
+        if (.not.isvar("ref0")) then
+          ref0 = imod
+        end if
+      else
+        do_obs = False
+        datasets(:) = names(imod)
+      end if
+
+      ; all observations (possibly from different sources = different datasets)
+      ; are processed at the same time --> skip all observations if
+      ; observations have been processed already
+
+      if (do_obs.and.obs_done) then
+        continue
+      end if
+
+      diagdata(imod) = sherwood_d(datasets, variables, debug_out)
+
+    end do  ; imod-loop
+
+    diagdata@standard_name = "Sherwood_D_index"
+    diagdata@units = "1"
+  end if
+
+  ; Sherwood S index (Sherwood et al., 2014)
+
+  if (diag.eq."sherwood_s") then
+    obs_done = False
+    datasets = new(dim_VAR, string)
+    do imod = 0, dim_MOD - 1
+      ; skip multi-model mean entry
+      if (imod.eq.mmm_ind) then
+        continue
+      end if
+
+      if (any(ref_ind.eq.imod)) then
+        do_obs = True
+        datasets = names(ref_ind)
+        if (.not.isvar("ref0")) then
+          ref0 = imod
+        end if
+      else
+        do_obs = False
+        datasets(:) = names(imod)
+      end if
+
+      ; all observations (possibly from different sources = different datasets)
+      ; are processed at the same time --> skip all observations if
+      ; observations have been processed already
+
+      if (do_obs.and.obs_done) then
+        continue
+      end if
+
+      diagdata(imod) = sherwood_s(datasets, variables, debug_out)
+
+    end do  ; imod-loop
+
+    diagdata@standard_name = "Sherwood_S_index"
+    diagdata@units = "1"
+  end if
+
   ; covariance of shortwave cloud reflectivity (Brient and Schneider, 2016)
 
   if (diag.eq."covrefl") then
@@ -1307,9 +1494,119 @@ begin
     diagdata@units = "degrees"
   end if
 
+  ; ==================== calculate MMM if desired ==================
+
+  if (flag_mean) then
+    diagdata(mmm_ind) = avg(diagdata(model_ind_worefmmm))
+  end if
+
+  ; ------------------------------------------------------------------------
+  ; Skip further calculation/output if desired
+  ; ------------------------------------------------------------------------
+
+  if (diag_script_info@output_diag_only) then
+    log_info("Returning only X axis of emergent constraint because " + \
+             "'output_diag_only' is set to True")
+
+    outfile = str_sub_str(diagdata@standard_name, " ", "_") + "_ref"
+    n = dimsizes(ref_ind)
+    do i = 0, n - 1
+      outfile = outfile + "_" + names(ref_ind(i))
+    end do
+    if (isatt(diag_script_info, "suffix")) then
+      outfile = outfile + "_" + diag_script_info@suffix
+    end if
+
+    diagdata!0 = "model"
+    diagdata&model = names
+    diagdata@var = diag
+    diagdata@diag_script = DIAG_SCRIPT
+
+    ; Additional attributes
+    if (isdefined("output_attributes")) then
+      atts = getvaratts(output_attributes)
+      do iatt = 0, dimsizes(atts) - 1
+        diagdata@$atts(iatt)$ = output_attributes@$atts(iatt)$
+      end do
+    end if
+
+    ; Reference datasets
+    do iref = 0,  dim_REF - 1
+      if (.not. isvar("ref_str")) then
+        ref_str = refname(iref)
+      else
+        ref_str = ref_str + "|" + refname(iref)
+      end if
+    end do
+    if (isvar("ref_str")) then
+      diagdata@reference_dataset = ref_str
+    end if
+
+    nc_filename = work_dir + outfile + ".nc"
+    if (diag_script_info@output_models_only) then
+      nc_outfile = ncdf_write(diagdata(model_ind_woref), nc_filename)
+    else
+      nc_outfile = ncdf_write(diagdata, nc_filename)
+    end if
+
+    plotfile = new(1, string)
+    log_provenance(nc_outfile, plotfile, caption, "other", "reg", "", "", "", \
+                   infiles)
+
+    leave_msg(DIAG_SCRIPT, "")
+    exit
+
+  end if
+
+  ; ==================== read precalculated ECS from file ==================
+
+  if (isfilepresent(ecsfile)) then
+    log_info("Read in: " + ecsfile)
+    ecs_tmp = ncdf_read(ecsfile, "ecs")
+  else
+    error_msg("f", DIAG_SCRIPT, "", "file with precalculated ECS data (" + \
+              ecsfile + ") not found.")
+  end if
+
+  ; now copy the precalculated ECS values read from the external file to the
+  ; array ECS
+
+  ECS = new(dim_MOD, float)
+  ECS = ecs_tmp@_FillValue
+  ECS@_FillValue = ecs_tmp@_FillValue
+  ECS@units = ecs_tmp@units
+  ECS@standard_name = ecs_tmp@standard_name
+
+  exit_flag = False
+
+  do i = 0, dim_MOD - 1
+    if (any(i.eq.ref_ind).or.(i.eq.mmm_ind)) then
+      continue
+    end if
+    name = names(i)
+    idx = ind(name.eq.ecs_tmp&model)
+    if (ismissing(idx)) then
+      log_info("no pre-calcuated ECS value for model " + name + " available")
+      exit_flag = True
+    else
+      ECS(i) = ecs_tmp(idx)
+      log_info("pre-calcuated ECS value for model " + name + " = " + ECS(i))
+    end if
+    delete(idx)
+  end do
+
+  if (exit_flag) then
+    error_msg("f", DIAG_SCRIPT, "", "precalculated ECS data (" + \
+              ecsfile + ") not available for all models.")
+  end if
+
+  f = addfile(ecsfile, "r")
+  climofiles = array_append_record(infiles, getfilepath(f), 0)
+
+  ; ==================== calculate MMM if desired ==================
+
   if (flag_mean) then
     ECS(mmm_ind) = avg(ECS(model_ind_worefmmm))
-    diagdata(mmm_ind) = avg(diagdata(model_ind_worefmmm))
   end if
 
   ; ============================ plot results ==============================
@@ -1467,6 +1764,10 @@ begin
       data_arr@trYMinF = min((/ymin, yregmin/))
       data_arr@trYMaxF = max((/ymax, yregmax/))
 
+      data_arr@res_gsnRightString = "R~S~2~N~ = " \
+        + tostring_with_format(rc@r2, "%3.2f")
+      data_arr@res_gsnRightStringFontHeightF = 0.025
+
       delete(yyy)
       delete(mean_se_fit)
       delete(x)
@@ -1479,7 +1780,7 @@ begin
 
     if (diag_script_info@predef_minmax) then
       data_arr@trYMinF = 2.0     ; CMIP3/CMIP5
-      data_arr@trYMaxF = 6.5     ; CMIP3/CMIP5: 5.0, CMIP6: 6.5
+      data_arr@trYMaxF = 5.0  ; 6.5     ; CMIP3/CMIP5: 5.0, CMIP6: 6.5
       if (diag.eq."itczidx") then
         data_arr@trXMinF = -1.0    ; southern ITCZ index
         data_arr@trXMaxF = 3.0     ; southern ITCZ index
@@ -1487,6 +1788,14 @@ begin
       if (diag.eq."humidx") then
         data_arr@trXMinF = -15.0   ; tropical mid-tropos. humidity asym. index
         data_arr@trXMaxF = 40.0    ; tropical mid-tropos. humidity asym. index
+      end if
+      if (diag.eq."sherwood_d") then
+        data_arr@trXMinF = 0.0     ; Sherwood D index
+        data_arr@trXMaxF = 0.6     ; Sherwood D index
+      end if
+      if (diag.eq."sherwood_s") then
+        data_arr@trXMinF = 0.1     ; Sherwood S index
+        data_arr@trXMaxF = 0.8     ; Sherwood S index
       end if
       if (diag.eq."ltmi") then
         data_arr@trXMinF = 0.4     ; lower tropospheric mixing index (LTMI)
@@ -1515,7 +1824,8 @@ begin
 
     ; plot observational uncertainty (if available)
 
-    if (isdefined("diagminmax")) then
+    if (.not.all(ismissing(diagminmax))) then
+;    if (isdefined("diagminmax")) then
       x = (/diagminmax(0), diagminmax(0), diagminmax(1), diagminmax(1), \
            diagminmax(0)/)
       y = (/y0, y1, y1, y0, y0/)
@@ -1594,16 +1904,45 @@ begin
   diagdata&model = names
   diagdata@var = diag
   diagdata@diag_script = DIAG_SCRIPT
-  nc_filename = work_dir + outfile + ".nc"
-  nc_filename@existing = "append"
-  nc_outfile = ncdf_write(diagdata, nc_filename)
 
+  ; Additional attributes
+  if (isdefined("output_attributes")) then
+    atts = getvaratts(output_attributes)
+    do iatt = 0, dimsizes(atts) - 1
+      diagdata@$atts(iatt)$ = output_attributes@$atts(iatt)$
+    end do
+  end if
+
+  ; Reference datasets
+  do iref = 0,  dim_REF - 1
+    if (.not. isvar("ref_str")) then
+      ref_str = refname(iref)
+    else
+      ref_str = ref_str + "|" + refname(iref)
+    end if
+  end do
+  if (isvar("ref_str")) then
+    diagdata@reference_dataset = ref_str
+  end if
+
+  nc_filename = work_dir + outfile + ".nc"
+  if (diag_script_info@output_models_only) then
+    nc_outfile = ncdf_write(diagdata(model_ind_woref), nc_filename)
+  else
+    nc_outfile = ncdf_write(diagdata, nc_filename)
+  end if
+
+  nc_filename@existing = "append"
   ECS!0 = "model"
   ECS&model = names
   ECS@var = "ECS"
   ECS@diag_script = DIAG_SCRIPT
 
-  nc_outfile = ncdf_write(ECS, nc_filename)
+  if (diag_script_info@output_models_only) then
+    nc_outfile = ncdf_write(ECS(model_ind_woref), nc_filename)
+  else
+    nc_outfile = ncdf_write(ECS, nc_filename)
+  end if
 
   ; ------------------------------------------------------------------------
   ; write provenance to netcdf output and plot file

@@ -1,9 +1,18 @@
+# ESMValTool
+# recipe_spei.yml
 ---
 documentation:
-  description: 'Calculates the SPI and SPEI drought indices.'
-  authors: ['berg_peter']
-  projects: ['c3s-magic']
-  references: ['acknow_project']
+  description: |
+    Calculates the SPI and SPEI drought indices
+
+  authors:
+    - berg_peter
+
+  projects:
+    - c3s-magic
+
+  references:
+    - acknow_project
 
 datasets:
 #  - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}

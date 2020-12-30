@@ -184,7 +184,6 @@ def _get_reconstructed_albedos(model_data, cfg):
                 x_0, y_0, lc_logical = _prepare_data_for_linreg(model_data,
                                                                 islice,
                                                                 jslice)
-
                 alb_lc[:, i, j] = _reconstruct_albedo_pixel(x_0, y_0,
                                                             lc_logical)
 
@@ -323,8 +322,8 @@ def main(cfg):
                                       if key in lc3_class]
 
         # Load all data
-        model_data = {fracKey: iris.load_cube(datadict[fracKey]['filename'])
-                      for fracKey in this_models_xxfracs}
+        model_data = {frac_key: iris.load_cube(datadict[frac_key]['filename'])
+                      for frac_key in this_models_xxfracs}
         # Load albedo and snow cover
         model_data['alb'] = iris.load_cube(datadict['alb']['filename'])
         model_data['snc'] = iris.load_cube(datadict['snc']['filename'])
@@ -340,7 +339,11 @@ def main(cfg):
         # Now get albedo change due to landcover change
         alb_lc = _get_reconstructed_albedos(model_data, cfg)
 
-        # Calculate differences between them
+        # Now mask where albedo values are physically impossible
+        alb_lc[alb_lc < 0] = np.nan
+        alb_lc[alb_lc > 1] = np.nan
+
+        # Calculate differences between them and save
         _write_albedochanges_to_disk(alb_lc, model_data['snc'],
                                      datadict, cfg)
 

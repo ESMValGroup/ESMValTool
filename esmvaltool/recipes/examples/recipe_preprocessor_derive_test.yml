@@ -8,6 +8,7 @@ documentation:
   authors:
     - andela_bouwe
     - schlund_manuel
+    - vegas-regidor_javier
 
   maintainer:
     - righi_mattia
@@ -15,106 +16,232 @@ documentation:
   projects:
     - c3s-magic
 
-preprocessors:
-
-  regrid:
-    regrid:
-      target_grid: CanESM2
-      scheme: linear
-
 
 diagnostics:
 
-  diag1:
-    description: Test variable derivation
+  cmip5:
+    description: Test variable derivation for CMIP5 models.
     variables:
-      toz: &toz
+      alb: &alb_cmip5
         project: CMIP5
         mip: Amon
         exp: historical
-        start_year: 2000
+        start_year: 2004
         end_year: 2005
         derive: true
         force_derivation: false
         additional_datasets:
           - {dataset: GFDL-CM3, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, ensemble: r1i1p2}
-          - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      swcre:
-        <<: *toz
-      lwcre:
-        <<: *toz
-      clhmtisccp: &cloud
+      amoc:
+        <<: *alb_cmip5
+        mip: Omon
+        additional_datasets:
+          - {dataset: CanESM2, ensemble: r1i1p1}
+      asr:
+        <<: *alb_cmip5
+      clhmtisccp: &cloud_cmip5
         project: CMIP5
         mip: cfMon
         exp: amip
-        start_year: 1985
+        start_year: 1987
         end_year: 1988
         ensemble: r1i1p1
         derive: true
         force_derivation: false
         additional_datasets:
-          - {dataset: HadGEM2-A}
-    scripts: null
-
-  diag2:
-    description: Test variable derivation
-    variables:
-      rtnt:
-        <<: *toz
+          - {dataset: HadGEM2-A, ensemble: r1i1p1}
       clhtkisccp:
-        <<: *cloud
-    scripts: null
-
-  diag3:
-    description: Test variable derivation
-    variables:
-      rsnt:
-        <<: *toz
-      clmmtisccp:
-        <<: *cloud
-    scripts: null
-
-  diag4:
-    description: Test variable derivation
-    variables:
-      rsns:
-        <<: *toz
-      clmtkisccp:
-        <<: *cloud
-    scripts: null
-
-  diag5:
-    description: Test variable derivation
-    variables:
-      rlns:
-        <<: *toz
-      clmtkisccp:
-        <<: *cloud
-    scripts: null
-
-  diag6:
-    description: Test variable derivation
-    variables:
-      lwp:
-        <<: *toz
+        <<: *cloud_cmip5
       cllmtisccp:
-        <<: *cloud
-    scripts: null
-
-  diag7:
-    description: Test variable derivation
-    variables:
+        <<: *cloud_cmip5
       clltkisccp:
-        <<: *cloud
+        <<: *cloud_cmip5
+      clmmtisccp:
+        <<: *cloud_cmip5
+      clmtkisccp:
+        <<: *cloud_cmip5
+      co2s:
+        <<: *alb_cmip5
+        additional_datasets:
+          - {dataset: CanESM2, ensemble: r1i1p1}
+      ctotal:
+        <<: *alb_cmip5
+        mip: Lmon
+        additional_datasets:
+          - {dataset: CanESM2, ensemble: r1i1p1}
+      et:
+        <<: *alb_cmip5
+        mip: Lmon
+      lvp:
+        <<: *alb_cmip5
+      lwcre:
+        <<: *alb_cmip5
+      lwp:
+        <<: *alb_cmip5
       netcre:
-        <<: *toz
+        <<: *alb_cmip5
+      ohc:
+        <<: *alb_cmip5
+        mip: Omon
+        additional_datasets:
+          - {dataset: CanESM2, ensemble: r1i1p1}
+      rlns:
+        <<: *alb_cmip5
+      rlnstcs:
+        <<: *alb_cmip5
+      rlnst:
+        <<: *alb_cmip5
+      rlntcs:
+        <<: *alb_cmip5
+      rsns:
+        <<: *alb_cmip5
+      rsnstcsnorm:
+        <<: *alb_cmip5
+      rsnstcs:
+        <<: *alb_cmip5
+      rsnst:
+        <<: *alb_cmip5
+      rsntcs:
+        <<: *alb_cmip5
+      rsnt:
+        <<: *alb_cmip5
+      rtnt:
+        <<: *alb_cmip5
+      sispeed:
+        <<: *alb_cmip5
+        mip: day
+        start_year: 1979
+        end_year: 1979
+      sithick:
+        <<: *alb_cmip5
+        mip: day
+        start_year: 1979
+        end_year: 1979
+      sm:
+        <<: *alb_cmip5
+        mip: Lmon
+      swcre:
+        <<: *alb_cmip5
+      toz:
+        <<: *alb_cmip5
+      uajet:
+        <<: *alb_cmip5
+      vegfrac:
+        <<: *alb_cmip5
+        mip: Lmon
+        additional_datasets:
+          - {dataset: HadGEM2-ES, ensemble: r1i1p1}
     scripts: null
 
-  diag8:
-    description: Test sispeed
+  cmip6:
+    description: Test variable derivation for CMIP6 models.
     variables:
+      alb: &alb_cmip6
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        start_year: 2004
+        end_year: 2005
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr}
+      # Issues with required variables [#359]
+      # amoc:
+      #   <<: *alb_cmip6
+      #   mip: Omon
+      asr:
+        <<: *alb_cmip6
+      clhmtisccp: &cloud_cmip6
+        project: CMIP6
+        mip: CFmon
+        exp: hist-nat
+        start_year: 1987
+        end_year: 1988
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+      clhtkisccp:
+        <<: *cloud_cmip6
+      cllmtisccp:
+        <<: *cloud_cmip6
       clltkisccp:
-        <<: *cloud
-        mip: OImon
+        <<: *cloud_cmip6
+      clmmtisccp:
+        <<: *cloud_cmip6
+      clmtkisccp:
+        <<: *cloud_cmip6
+      co2s:
+        <<: *alb_cmip6
+        additional_datasets:
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      ctotal:
+        <<: *alb_cmip6
+        mip: Lmon
+      et:
+        <<: *alb_cmip6
+        mip: Lmon
+      lvp:
+        <<: *alb_cmip6
+      lwcre:
+        <<: *alb_cmip6
+      lwp:
+        <<: *alb_cmip6
+      netcre:
+        <<: *alb_cmip6
+      ohc:
+        <<: *alb_cmip6
+        mip: Omon
+        additional_datasets:
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      rlns:
+        <<: *alb_cmip6
+      rlnstcs:
+        <<: *alb_cmip6
+      rlnst:
+        <<: *alb_cmip6
+      rlntcs:
+        <<: *alb_cmip6
+      rsns:
+        <<: *alb_cmip6
+      rsnstcsnorm:
+        <<: *alb_cmip6
+      rsnstcs:
+        <<: *alb_cmip6
+      rsnst:
+        <<: *alb_cmip6
+      rsntcs:
+        <<: *alb_cmip6
+      rsnt:
+        <<: *alb_cmip6
+      rtnt:
+        <<: *alb_cmip6
+      sispeed:
+        <<: *alb_cmip6
+        mip: SImon
+        start_year: 1979
+        end_year: 1979
+        additional_datasets:
+          - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn}
+      sithick:
+        <<: *alb_cmip6
+        mip: SImon
+        additional_datasets:
+          - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn}
+      sm:
+        <<: *alb_cmip6
+        mip: Lmon
+      swcre:
+        <<: *alb_cmip6
+      toz:
+        <<: *alb_cmip6
+        exp: G1
+        start_year: 1948
+        end_year: 1949
+      uajet:
+        <<: *alb_cmip6
+      vegfrac:
+        <<: *alb_cmip6
+        mip: Lmon
     scripts: null

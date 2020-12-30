@@ -6,9 +6,14 @@ Running
 
 ESMValTool is mostly used as a command line tool. Whenever your
 conda environment for ESMValTool is active, you can just run the command
-``esmvaltool <options> <recipe>``. One of the options that must be specified
-is the user configuration file, which is specified using the
-option ``-c /path/to/config-user.yaml``. An
+``esmvaltool``. See
+`running esmvaltool <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/quickstart/run.html>`_
+in the ESMValCore documentation for a short introduction.
+
+Running a recipe
+================
+
+An
 `example recipe <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_python.yml>`_
 is available in the ESMValTool installation folder as
 ``examples/recipe_python.yml``.
@@ -23,9 +28,9 @@ and then run ESMValTool with
 
 .. code:: bash
 
-	esmvaltool -c /path/to/config-user.yml recipe_python.yml --synda
+	esmvaltool run recipe_python.yml --synda-download
 
-The ``--synda`` option tells ESMValTool to use Synda to search for and download
+The ``--synda-download`` option tells ESMValTool to use Synda to search for and download
 the necessary datasets.
 
 ESMValTool will also find recipes that are stored in its installation directory.
@@ -35,7 +40,7 @@ Thus, the following also works:
 
 .. code:: bash
 
-	esmvaltool -c /path/to/config-user.yml examples/recipe_python.yml
+	esmvaltool run examples/recipe_python.yml
 
 Note that this command does not call Synda. The required data should thus be
 located in the directories specified in your user configuration file.
@@ -48,6 +53,18 @@ To get help on additional commands, please use
 
 	esmvaltool --help
 
+It is also possible to get help on specific commands, e.g.
+
+.. code:: bash
+
+	esmvaltool run --help
+
+will display the help message with all options for the ``run`` command.
+
+There is a step-by-step description available in the 
+`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+on how to run your first recipe. It can be found
+`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
 
 Available diagnostics and metrics
 =================================
@@ -55,6 +72,11 @@ Available diagnostics and metrics
 See Section :doc:`Recipes <../recipes/index>` for a description of all
 available recipes.
 
+To see a list of installed recipes run
+
+.. code:: bash
+
+	esmvaltool recipes list
 
 Running multiple recipes
 ========================

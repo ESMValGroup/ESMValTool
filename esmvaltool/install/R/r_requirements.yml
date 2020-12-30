@@ -1,0 +1,54 @@
+---
+# R packages to be installed
+# We support several installation procedures:
+
+# Latest version from CRAN:
+#  mypackage:
+
+# Specific version from CRAN (use only if last version can not be used):
+#   mypackage:
+#     origin: cran
+#     version: my_version
+
+# The next ones are NOT allowed on final code, but we support them to
+# facilitate developing and testing of recipes before merging if the CRAN
+# version is not available yet
+
+# From GitHub:
+#   mypackage:
+#     origin: github
+#     path: my_user/my_packge_repo@my_version
+
+# From a generic git:
+#   mypackage:
+#     origin: git
+#     url: my_repo_url
+#     ref: my_branch_commit_or_tag
+
+abind:
+akima:
+climdex.pcic:
+ClimProjDiags:
+docopt:
+dotCall64:
+functional:
+ggplot2:
+gridExtra:
+lintr:
+logging:
+mapproj:
+maps:
+multiApply:
+ncdf4:
+ncdf4.helpers:
+PCICt:
+plyr:
+RColorBrewer:
+Rcpp:
+s2dverification:
+snow:
+SPEI:
+styler:
+tools:
+udunits2:
+yaml:

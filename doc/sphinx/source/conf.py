@@ -12,10 +12,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -38,6 +38,7 @@ if rtd_version not in ["latest", "doc"]:  # TODO: add "stable" once we have it
 # Generate gallery
 sys.path.append(os.path.dirname(__file__))
 import generate_gallery
+
 generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
@@ -58,27 +59,31 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'autodocsumm',
 ]
 
-autodoc_default_flags = [
-    'members',
-    'undoc-members',
-    'inherited-members',
-    'show-inheritance',
-]
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+    'autosummary': True,
+}
 
 autodoc_mock_imports = [
     'cartopy',
     'cftime',
     'cf_units',
-    'ESMF',
+    'ESMPy',
     'esmvalcore',
+    'GDAL',
     'iris',
-    'PIL',
-    'prov',
     'psutil',
+    'pynio',
     'scipy',
-    'stratify',
+    'sklearn',
+    'xesmf',
+    'xgboost',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -95,8 +100,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'{0}, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'.format(
-    datetime.now().year)
+copyright = u'{0}, ESMValTool Development Team'.format(datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -416,18 +420,24 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
-    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-    'esmvaltool':
-    ('https://esmvaltool.readthedocs.io/en/%s/' % rtd_version, None),
+    'cf_units': ('https://scitools.org.uk/cf-units/docs/latest/', None),
     'esmvalcore':
-    ('https://esmvaltool.readthedocs.io/projects/esmvalcore/en/%s/' %
-     rtd_version, None),
+    (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
+     None),
+    'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
+    'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
+    'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
+    'python': ('https://docs.python.org/3/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'seaborn': ('https://seaborn.pydata.org/', None),
+    'sklearn': ('https://scikit-learn.org/stable', None),
 }
 
 # -- Custom Document processing ----------------------------------------------
 
 import gensidebar
+
 gensidebar.generate_sidebar(globals(), "esmvaltool")

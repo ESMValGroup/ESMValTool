@@ -2,7 +2,8 @@
 # recipe_example_r.yml
 ---
 documentation:
-  description: Recipe for example diagnostic written in R.
+  description: |
+    Recipe for example diagnostic written in R.
 
   authors:
     - arnone_enrico

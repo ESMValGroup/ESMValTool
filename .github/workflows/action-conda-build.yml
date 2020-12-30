@@ -1,0 +1,47 @@
+name: Conda-build
+
+# runs on a push on master and at the end of every day
+on:
+  push:
+    branches:
+    - master
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"  # use only Linux for conda build
+    strategy:
+      matrix:
+        python-version: [3.8]  # use only the latest for conda build
+      fail-fast: false
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: conda-forge
+      - shell: bash -l {0}
+        run: mkdir -p condabuild_artifacts_python_${{ matrix.python-version }}
+      - shell: bash -l {0}
+        run: conda --version 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - shell: bash -l {0}
+        run: python -V 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+      - shell: bash -l {0}
+        run: tar xfz julia-*-linux-x86_64.tar.gz
+      #- shell: bash -l {0}
+      #  run: ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
+      - shell: bash -l {0}
+        run: conda install -y conda-build conda-verify 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/install_conda_buildtools.txt
+      - shell: bash -l {0}
+        run: conda build package -c conda-forge -c esmvalgroup 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/conda_build.txt
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v2
+        with:
+          name: Condabuild_python_${{ matrix.python-version }}
+          path: condabuild_artifacts_python_${{ matrix.python-version }}

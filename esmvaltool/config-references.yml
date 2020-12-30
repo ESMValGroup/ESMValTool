@@ -1,3 +1,4 @@
+---
 # Full list of authors and references for the currently implemented
 # diagnostics.
 #
@@ -109,6 +110,10 @@ authors:
     name: Bojovic, Dragana
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-7354-1885
+  brunner_lukas:
+    name: Brunner, Lukas
+    institute: ETH Zurich, Switzerland
+    orcid: https://orcid.org/0000-0001-5760-4524
   cagnazzo_chiara:
     name: Cagnazzo, Chiara
     institute: CNR, Italy
@@ -140,6 +145,7 @@ authors:
   cowtan_kevin:
     name: Cowtan, Kevin
     institute: University of York 
+    orcid: https://orcid.org/0000-0002-0189-1437
   crezee_bas:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
@@ -251,7 +257,11 @@ authors:
   kirchmeier-young_megan:
     name: Kirchmeier-Young, Megan
     institute: Environment and Climate Change Canada
-    orcid:
+    orcid: https://orcid.org/0000-0003-3907-8510
+  koirala_sujan:
+    name: Koirala, Sujan
+    institute: MPI-BGC, Germany
+    orcid: https://orcid.org/0000-0001-5681-1986
   krasting_john:
     name: Krasting, John
     institute: NOAA, USA
@@ -371,9 +381,16 @@ authors:
     name: Rio, Catherine
     institute: IPSL, France
     orcid: https://orcid.org/0000-0002-6590-7733
+  roberts_charles:
+    name: Roberts, Charles
+    institute: University of Reading, UK
+    orcid: https://orcid.org/0000-0002-1147-8961
   roehrig_romain:
     name: Roehrig, Romain
     institute: MeteoFr, France
+  rol_evert:
+    name: Rol, Evert
+    orcid: https://orcid.org/0000-0001-8357-4453
   russell_joellen:
     name: Russell, Joellen
     institute: Univ. of Arizona, USA
@@ -386,6 +403,10 @@ authors:
     name: Serva, Federico
     institute: CNR, Italy
     orcid: https://orcid.org/0000-0002-7118-0817
+  smeets_stef:
+    name: Smeets, Stef
+    institute: NLeSC, Netherlands
+    orcid: https://orcid.org/0000-0002-5413-9038
   sommer_philipp:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -589,6 +610,10 @@ authors:
     institute: NCAR, US
     orcid:
   # Former viewers (not active viewers)
+  adeniyi_kemisola:
+    name: Adeniyi, Kemisola
+    institute: University of Bremen, Germany
+    orcid:
   butchart_neal:
     name: Butchart, Neal
     institute: MetOffice, UK
@@ -625,6 +650,7 @@ authors:
 #  - add the file to the folder esmvaltool/references.
 
 projects:
+  4c: EU 2020 project 4C
   applicate: EU Horizon 2020 Advanced prediction in polar regions and beyond
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
@@ -642,6 +668,7 @@ projects:
   russell_project: US Clivar, Ocean Carbon Biogeochemistry, ESGF, NOAA, NSF, NASA, US Antarctic program
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
+  usmile: ERC Synergy Grant USMILE
 
 realms:
   aerosol: aerosol
@@ -667,6 +694,7 @@ themes:
   phys: physics
   seaIce: sea ice
   varmodes: modes of variability
+  ML: machine learning
 
 domains:
   eq: equatorial
@@ -706,6 +734,8 @@ plot_types:
   zonal: zonal mean
   pro: profile  # (any other kind of line chart)
   box: boxplot
+  line: line plot
+  probability: probability distribution
   other: other plot types
 
 statistics:
