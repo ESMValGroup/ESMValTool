@@ -55,9 +55,9 @@ def main(cfg):
     obs=cfg['obs']
 #    obs='had4'
     if obs=='had5':
-        obs_file='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.analysis.anomalies.ensemble_median.nc'
+        obs_file='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.anomalies.ensemble_median.nc'
         hadlabel='HadCRUT5'
-        ensobs='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.analysis.anomalies.' #If set apply multi-model analysis using ensemble obs data.
+        ensobs='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
     elif obs=='had4':
         obs_file='/home/rng/data/esmvaltool/HadCRUT.4.6.0.0.median.nc'  #Updated to end of 2019.
         hadlabel='HadCRUT4'
@@ -66,6 +66,7 @@ def main(cfg):
         exit('Obs not recognised')
     sftlf_file='/home/rng/data/esmvaltool/CNRM-CM6-1-5x5-sftlf.nc' #Hard-coded path to sftlf file for CNRM-CM6 on a 5x5 grid. (Can't input through pre-processor at the moment. Update with sftlf for each model through preprocessor later.)
 
+    print ('Obs_file',obs_file)
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='ensemble')

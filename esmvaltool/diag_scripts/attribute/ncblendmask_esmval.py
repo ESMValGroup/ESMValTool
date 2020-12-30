@@ -18,7 +18,6 @@ def areas( grid ):
                 math.sin(math.radians(180.0/grid)) )
   return area
 
-
 def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,dec_warming,obs_dec_warming,ann_warming,gmst_comp_warming,diag_name,obs='had4',ensobs='',ensobs_diag=[],ensobs_dec_warming=[]):
 # MAIN PROGRAM
 
@@ -99,6 +98,9 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
     cvgmsk=cvgmsk[:,:,regrid_index]
     #Print missing value fraction
     print('Missing value frction',1.0*numpy.count_nonzero(cvgmsk<-100.)/numpy.size(cvgmsk),file=sys.stderr)
+    print ('Obs file',obs_file)
+    print ('obs',obs)
+    exit()
 
   sic = sic[0:tas.shape[0],:,:]
 

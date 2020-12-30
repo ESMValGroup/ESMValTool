@@ -92,8 +92,8 @@ def main(cfg):
 #    simple_uncert=False #Flag to add simple uncertainty estimate in attributable warming to plots, considering only uncertainty in regression coeffs, for comparison.
     pool_int_var=True #Flag to pool internal variability estimates.
     if obs=='had5':
-        obs_file='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.analysis.anomalies.ensemble_median.nc'
-        ensobs='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.analysis.anomalies.' #If set apply multi-model analysis using ensemble obs data.
+        obs_file='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.anomalies.ensemble_median.nc'
+        ensobs='/home/rng/data/esmvaltool/HadCRUT.5.0.0.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
     elif obs=='had4':
         obs_file='/home/rng/data/esmvaltool/HadCRUT.4.6.0.0.median.nc'  #Updated to end of 2019.
         ensobs='/home/rng/data/esmvaltool/HadCRUT.4.6.0.0.anomalies.' #If set apply multi-model analysis using ensemble obs data.
