@@ -54,10 +54,14 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   var0 = variable_info[0]@short_name
-  exp0 = variable_info[0]@exp
   project0 = input_file_info[0]@project
   if (project0 .eq. "OBS") then
     project0 = input_file_info[1]@project
+    exp0 = input_file_info[1]@exp
+    obs_first = True
+  else
+    exp0 = input_file_info[0]@exp
+    obs_first = False
   end if
   info_items = select_metadata_by_name(input_file_info, var0)
   datasetnames = metadata_att_as_array(info_items, "dataset")
@@ -323,6 +327,22 @@ begin
     delete(date)
 
   end do
+
+  ;put OBS to last entry
+  if (obs_first) then
+    tmp = model_arr(0, :)
+    tmp1 =  info_items[0]
+    do i = 0, dim_MOD - 3
+      model_arr(i, :) = model_arr(i + 1, :) 
+      model_arr&model(i) = model_arr&model(i + 1)
+      info_items[i] = info_items[i + 1]
+    end do
+    model_arr(dim_MOD - 2, :) = tmp
+    model_arr&model(dim_MOD - 2) = variable_info[0]@reference_dataset
+    info_items[dim_MOD - 2] = tmp1
+    delete(tmp)
+    delete(tmp1)
+  end if 
 
   ; Convert time coordinate to years (required by the plot routine)
   if (time_avg.eq."monthly") then
