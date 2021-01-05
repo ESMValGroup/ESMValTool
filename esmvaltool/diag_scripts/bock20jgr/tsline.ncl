@@ -328,12 +328,12 @@ begin
 
   end do
 
-  ;put OBS to last entry
+  ; rm OBS from last entry
   if (obs_first) then
     tmp = model_arr(0, :)
     tmp1 =  info_items[0]
     do i = 0, dim_MOD - 3
-      model_arr(i, :) = model_arr(i + 1, :) 
+      model_arr(i, :) = model_arr(i + 1, :)
       model_arr&model(i) = model_arr&model(i + 1)
       info_items[i] = info_items[i + 1]
     end do
@@ -342,7 +342,7 @@ begin
     info_items[dim_MOD - 2] = tmp1
     delete(tmp)
     delete(tmp1)
-  end if 
+  end if
 
   ; Convert time coordinate to years (required by the plot routine)
   if (time_avg.eq."monthly") then
