@@ -165,29 +165,36 @@ References
 Example plots
 -------------
 
-.. _fig_1:
-.. figure::  /recipes/figures/clouds/liq_h2o_path_multi.png
+.. _fig_bock20jgr_1:
+.. figure::  /recipes/figures/bock20jgr/tas_Global_CMIP6_historical_anom_1850-2014.png
    :align:   center
 
-   The 20-yr average LWP (1986-2005) from the CMIP5 historical model runs and
-   the multi-model mean in comparison with the UWisc satellite climatology
-   (1988-2007) based on SSM/I, TMI, and AMSR-E (O'Dell et al. 2008).
+   Observed and simulated time series of the anomalies in annual and global mean
+   surface temperature. All anomalies are differences from the 1850–1900 time 
+   mean of each individual time series.
 
-.. _fig_2:
-.. figure::  /recipes/figures/clouds/liq_h2o_taylor.png
+.. _fig_bock20jgr_2:
+.. figure::  /recipes/figures/bock20jgr/tas_Global_multimodel_anom_1850-2017.png
    :align:   center
    :width:   7cm
 
-   Taylor diagram showing the 20-yr annual average performance of CMIP5 models
-   for total cloud fraction as compared to MODIS satellite observations.
+   Observed and simulated time series of the anomalies in annual
+   and global mean surface temperature as in Figure 1; all anomalies are
+   calculated by subtracting the 1850–1900 time mean from the time series.
+   Displayed are the multimodel means of all three CMIP ensembles with
+   shaded range of the respective standard deviation. In black the HadCRUT4
+   data set (HadCRUT4; Morice et al., 2012). Gray shading shows the 5% to
+   95% confidence interval of the combined effects of all the uncertainties
+   described in the HadCRUT4 error model (measurement and sampling, bias,
+   and coverage uncertainties) (Morice et al., 2012).
 
-.. _fig_3:
-.. figure::  /recipes/figures/clouds/cloud_sweffect.png
+.. _fig_bock20jgr_3:
+.. figure::  /recipes/figures/bock20jgr/model_bias_tas_annual_CMIP6.png
    :align:   center
    :width:   9cm
 
-.. _fig_4:
-.. figure::  /recipes/figures/clouds/cloud_lweffect.png
-   :align:   center
-   :width:   9cm
-
+   Annual mean near‐surface (2 m) air temperature (°C). (a) Multimodel (ensemble)
+   mean constructed with one realization of CMIP6 historical experiments for the
+   period 1995–2014. Multimodel‐mean bias of (b) CMIP6 (1995–2014) compared to
+   the corresponding time period of the climatology from ERA5
+   (Copernicus Climate Change Service (C3S), 2017).
