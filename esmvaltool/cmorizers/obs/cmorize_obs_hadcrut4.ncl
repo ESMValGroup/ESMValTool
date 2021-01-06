@@ -28,7 +28,7 @@
 ;    temperature time-series and one with the anomaly time-series
 ;
 ; Modification history
-;    20201125-bock_lisa: add tasStderr
+;    20201125-bock_lisa: add tas uncertainty
 ;    20190916-righi_mattia: remove no-longer used climatology output.
 ;    20190229-righi_mattia: added output for anomaly (tasa).
 ;    20190208-righi_mattia: added output for climatology and adapted to v2.
