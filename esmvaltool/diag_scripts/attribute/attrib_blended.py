@@ -1,14 +1,11 @@
-"""Perform attribution using blended and masked temperatures."""
+"""Perform attribution using blended and masked temperatures, as in Gillett et al.."""
 import logging
 import os
 import xarray as xr
 from pprint import pformat
 from scipy.stats import t
-import netCDF4
 
-import iris
-
-import numpy,time
+import numpy
 import detatt_mk as da
 import matplotlib
 matplotlib.use('Agg') #Turn off interactive plots.
@@ -24,9 +21,10 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def attrib_warming(beta,betaCI,dec_warming,ci95_dec_warming,ci95_beta_obs=0.):
+def attrib_warming(beta,betaCI,dec_warming,ci90_dec_warming,ci90_beta_obs=0.):
+  #Calculate attributable warming and confidence range.
   attrib_warming=beta*dec_warming
-  attrib_range=[attrib_warming-numpy.absolute(beta)*dec_warming*(((beta-betaCI[0])/beta)**2+(ci95_dec_warming/dec_warming)**2+(ci95_beta_obs/beta)**2)**0.5,attrib_warming+numpy.absolute(beta)*dec_warming*(((betaCI[1]-beta)/beta)**2+(ci95_dec_warming/dec_warming)**2+(ci95_beta_obs/beta)**2)**0.5]
+  attrib_range=[attrib_warming-numpy.absolute(beta)*dec_warming*(((beta-betaCI[0])/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5,attrib_warming+numpy.absolute(beta)*dec_warming*(((betaCI[1]-beta)/beta)**2+(ci90_dec_warming/dec_warming)**2+(ci90_beta_obs/beta)**2)**0.5]
   return (attrib_warming,numpy.sort(attrib_range))
 
 
@@ -141,15 +139,15 @@ def main(cfg):
     nens_max=100
     mean_diag=numpy.zeros((ldiag,nexp,nmodel))
     mean_dec_warming=numpy.zeros((nexp,nmodel))
-    ci95_dec_warming=numpy.zeros((nexp,nmodel))
+    ci90_dec_warming=numpy.zeros((nexp,nmodel))
     anom=numpy.zeros((ldiag,anom_max))
     anom_mod=numpy.zeros((anom_max))
     anom_index=0
     ens_sizes=numpy.zeros((nexp,nmodel))
     ensobs_diag=[]
     ensobs_dec_warming=[]
-    ci95_beta_obs2=numpy.zeros((2))
-    ci95_beta_obs3=numpy.zeros((3))
+    ci90_beta_obs2=numpy.zeros((2))
+    ci90_beta_obs3=numpy.zeros((3))
     
     for mm, dataset in enumerate(grouped_input_data):
 #        if mm > 3: continue
@@ -186,9 +184,9 @@ def main(cfg):
             mean_diag[:,experiment,mm]=numpy.mean(exp_diags,axis=1)
             mean_dec_warming[experiment,mm]=numpy.mean(exp_dec_warming)
             if nens==1:
-                ci95_dec_warming[experiment,mm]=ci95_dec_warming[numpy.nonzero(ci95_dec_warming*(ens_sizes**0.5))].mean() #use mean of CIs already calculated, corrected for ensemble size if ensemble size is 1.
+                ci90_dec_warming[experiment,mm]=ci90_dec_warming[numpy.nonzero(ci90_dec_warming*(ens_sizes**0.5))].mean() #use mean of CIs already calculated, corrected for ensemble size if ensemble size is 1.
             else:        
-                ci95_dec_warming[experiment,mm]=(numpy.std(exp_dec_warming,ddof=1)/((nens)**0.5))*t.ppf(0.95,nens-1)
+                ci90_dec_warming[experiment,mm]=(numpy.std(exp_dec_warming,ddof=1)/((nens)**0.5))*t.ppf(0.95,nens-1)
             if nens>1: anom[:,anom_index:anom_index+nens-1]=(exp_diags[:,0:nens-1]-mean_diag[:,experiment:experiment+1,mm])*((nens/(nens-1))**0.5) #Intra-ensemble anomalies for use as pseudo-control. Only use nens-1 ensemble members to ensure independence, and inflate variance by sqrt (nens / (nens-1)) to account for subtraction of ensemble mean.
             anom_mod[anom_index:anom_index+nens-1]=mm
             anom_index=anom_index+nens-1
@@ -241,13 +239,13 @@ def main(cfg):
       plt.close()
 
       for experiment in range(2):      
-        ci95_beta_obs2[experiment]=numpy.std(beta2[experiment,:],ddof=1)*t.ppf(0.95,enssize-1)
+        ci90_beta_obs2[experiment]=numpy.std(beta2[experiment,:],ddof=1)*t.ppf(0.95,enssize-1)
       for experiment in range (3):
-        ci95_beta_obs3[experiment]=numpy.std(beta3[experiment,:],ddof=1)*t.ppf(0.95,enssize-1)
+        ci90_beta_obs3[experiment]=numpy.std(beta3[experiment,:],ddof=1)*t.ppf(0.95,enssize-1)
 
       print ('beta2',beta2)
-      print ('ci95_beta_obs2', ci95_beta_obs2)
-      print ('ci95_beta_obs3', ci95_beta_obs3)
+      print ('ci90_beta_obs2', ci90_beta_obs2)
+      print ('ci90_beta_obs3', ci90_beta_obs3)
 
 #Calculate uncertainty in obs warming.
 #      ens_warming=numpy.zeros(enssize)
@@ -271,7 +269,6 @@ def main(cfg):
         model_names.append(dataset)
         model_indices.append(mm)
         print ('Model:',dataset)
-        start=time.time()
         if pool_int_var:
           model_anom=anom
           nanom=anom_index
@@ -279,11 +276,7 @@ def main(cfg):
           model_anom=anom[:,(anom_mod==mm)] #Use only anomalies from one model.
           nanom=numpy.count_nonzero(anom_mod==mm)
         (xr,yr,cn1,cn2)=da.reduce_dim(mean_diag[:,[0,1,2],mm],had4_diag[:,None],model_anom[:,list(range(0,nanom,2))],model_anom[:,list(range(1,nanom,2))])
-        time1 =time.time()
-        print ('1***',time1-start)
         att_out[dataset]=da.tls(xr[:,0:2],yr,cn1,ne=ens_sizes[[0,1],mm],cn2=cn2,flag_2S=1,RCT_flag=rcplot)
-        time2=time.time()
-        print ('2***',time2-time1)
         att_out3[dataset]=da.tls(xr[:,0:3],yr,cn1,ne=ens_sizes[[0,1,2],mm],cn2=cn2,flag_3S=1,RCT_flag=rcplot)
 # Replace beta confidence interval bounds with large positive and negative numbers if NaNs.
         print ('model, att_out3',dataset,att_out3[dataset])
@@ -305,8 +298,6 @@ def main(cfg):
                 att_out[dataset]['betaCI'][pat,1]=1000.
                 
                 
-        time3=time.time()
-        print ('3***',time3-time2)
         if mm_attrib == 0:
             ant='ANT'
             nat='NAT'
@@ -342,10 +333,10 @@ def main(cfg):
           plt.bar([mm_attrib+1],[att_out[dataset]['rc_pvalue']],color='gray')
 #2-way attributable warming.
         plt.subplot(bottomleft)
-        [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],mean_dec_warming[0,mm]-mean_dec_warming[1,mm],(ci95_dec_warming[0,mm]**2+ci95_dec_warming[1,mm]**2)**0.5)
+        [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],mean_dec_warming[0,mm]-mean_dec_warming[1,mm],(ci90_dec_warming[0,mm]**2+ci90_dec_warming[1,mm]**2)**0.5)
         plt.plot([mm_attrib+0.9,mm_attrib+0.9],att_warming_range,color=colors[1,:],linewidth=2,label=ant)
         plt.plot(mm_attrib+0.9,att_warming,color=colors[1,:],marker='+')
-        [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],mean_dec_warming[1,mm],ci95_dec_warming[1,mm])
+        [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],mean_dec_warming[1,mm],ci90_dec_warming[1,mm])
         plt.plot  ([mm_attrib+1.1,mm_attrib+1.1],att_warming_range,color=colors[4,:],linewidth=2,label=nat)
         plt.plot(mm_attrib+1.1,att_warming,color=colors[4,:],marker='+')
         if simple_uncert:
@@ -365,17 +356,17 @@ def main(cfg):
             plt.bar([mm_attrib+1],[att_out3[dataset]['rc_pvalue']],color='gray')
 #3-way attributable warming.
         plt.subplot(bottomright)
-        [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],mean_dec_warming[2,mm],ci95_dec_warming[2,mm])
+        [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],mean_dec_warming[2,mm],ci90_dec_warming[2,mm])
         plt.plot([mm_attrib+0.8,mm_attrib+0.8],att_warming_range,color=cols[2,:],linewidth=2,label=label[2])
         plt.plot(mm_attrib+0.8,att_warming,color=cols[2,:],marker='+')
 
         
-        [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],mean_dec_warming[1,mm],ci95_dec_warming[1,mm])
+        [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],mean_dec_warming[1,mm],ci90_dec_warming[1,mm])
         plt.plot([mm_attrib+1.0,mm_attrib+1.0],att_warming_range,color=cols[1,:],linewidth=2,label=label[1])
         plt.plot(mm_attrib+1.0,att_warming,color=cols[1,:],marker='+')
 
         
-        [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],mean_dec_warming[0,mm]-mean_dec_warming[1,mm]-mean_dec_warming[2,mm],(ci95_dec_warming[0,mm]**2+ci95_dec_warming[1,mm]**2+ci95_dec_warming[2,mm]**2)**0.5)
+        [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],mean_dec_warming[0,mm]-mean_dec_warming[1,mm]-mean_dec_warming[2,mm],(ci90_dec_warming[0,mm]**2+ci90_dec_warming[1,mm]**2+ci90_dec_warming[2,mm]**2)**0.5)
         plt.plot([mm_attrib+1.2,mm_attrib+1.2],att_warming_range,color=cols[0,:],linewidth=2,label=label[0])
         plt.plot(mm_attrib+1.2,att_warming,color=cols[0,:],marker='+')
         if simple_uncert:
@@ -409,9 +400,9 @@ def main(cfg):
     print ('ratio',mean_dec_warming/mean_dec_warming_gmst)
     print (numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1))
     print (numpy.mean(mean_dec_warming_gmst,axis=1))
-    multim_ci95_dec_warming=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming_gmst,axis=1)
-#    multim_ci95_dec_warming=(numpy.mean(ci95_dec_warming[:,model_indices]**2,axis=1)/len(model_indices))**0.5
-    print ('multim_ci95_dec_warming',multim_ci95_dec_warming)
+    multim_ci90_dec_warming=numpy.std(mean_dec_warming/mean_dec_warming_gmst,ddof=1,axis=1)*t.ppf(0.95,nmodel-1)*numpy.mean(mean_dec_warming_gmst,axis=1)
+#    multim_ci90_dec_warming=(numpy.mean(ci90_dec_warming[:,model_indices]**2,axis=1)/len(model_indices))**0.5
+    print ('multim_ci90_dec_warming',multim_ci90_dec_warming)
     print ('Ratio of historical GSAT to GMST mean',numpy.mean(mean_dec_warming[0,:])/numpy.mean(mean_dec_warming_gmst[0,:]))
 
     if pool_int_var: #Only plot multi model results if pooling internal var.
@@ -428,11 +419,11 @@ def main(cfg):
   #2-way attributable warming.
       plt.subplot(bottomleft)
       print ('Two-way attributable warming')
-      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming[0]-multim_mean_dec_warming[1],(multim_ci95_dec_warming[0]**2+multim_ci95_dec_warming[1]**2)**0.5,ci95_beta_obs2[0])
+      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming[0]-multim_mean_dec_warming[1],(multim_ci90_dec_warming[0]**2+multim_ci90_dec_warming[1]**2)**0.5,ci90_beta_obs2[0])
       plt.plot([mm_attrib+0.9,mm_attrib+0.9],att_warming_range,color=colors[1,:],linewidth=2,label=ant)
       plt.plot(mm_attrib+0.9,att_warming,color=colors[1,:],marker='+')
       print ('ANT:',att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming[1],multim_ci95_dec_warming[1],ci95_beta_obs2[1])
+      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming[1],multim_ci90_dec_warming[1],ci90_beta_obs2[1])
       plt.plot  ([mm_attrib+1.1,mm_attrib+1.1],att_warming_range,color=colors[4,:],linewidth=2,label=nat)
       plt.plot(mm_attrib+1.1,att_warming,color=colors[4,:],marker='+')
       print ('NAT:',att_warming_range)
@@ -456,15 +447,15 @@ def main(cfg):
   #3-way attributable warming.
       print ('Three-way attributable warming')
       plt.subplot(bottomright)
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming[2],multim_ci95_dec_warming[2],ci95_beta_obs3[2])
+      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming[2],multim_ci90_dec_warming[2],ci90_beta_obs3[2])
       plt.plot([mm_attrib+0.8,mm_attrib+0.8],att_warming_range,color=cols[2,:],linewidth=2)
       plt.plot(mm_attrib+0.8,att_warming,color=cols[2,:],marker='+')
       print (exp_flag,att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming[1],multim_ci95_dec_warming[1],ci95_beta_obs3[1])
+      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming[1],multim_ci90_dec_warming[1],ci90_beta_obs3[1])
       plt.plot([mm_attrib+1.0,mm_attrib+1.0],att_warming_range,color=cols[1,:],linewidth=2)    
       plt.plot(mm_attrib+1.0,att_warming,color=cols[1,:],marker='+')
       print ('NAT:',att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming[0]-multim_mean_dec_warming[1]-multim_mean_dec_warming[2],(multim_ci95_dec_warming[0]**2+multim_ci95_dec_warming[1]**2+multim_ci95_dec_warming[2]**2)**0.5,ci95_beta_obs3[0])
+      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming[0]-multim_mean_dec_warming[1]-multim_mean_dec_warming[2],(multim_ci90_dec_warming[0]**2+multim_ci90_dec_warming[1]**2+multim_ci90_dec_warming[2]**2)**0.5,ci90_beta_obs3[0])
       plt.plot([mm_attrib+1.2,mm_attrib+1.2],att_warming_range,color=cols[0,:],linewidth=2)
       plt.plot(mm_attrib+1.2,att_warming,color=cols[0,:],marker='+')
       print ('OTH:',att_warming_range)
@@ -475,16 +466,16 @@ def main(cfg):
 
 #Calculate attributable warming ranges in GMST.
       print ('Two-way attributable warming - GMST')
-      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1],0.,ci95_beta_obs2[0])
+      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[0])
       print ('ANT:',att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci95_beta_obs2[1])
+      [att_warming,att_warming_range]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs2[1])
       print ('NAT:',att_warming_range)
       print ('Three-way attributable warming - GMST')
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming_gmst[2],0.,ci95_beta_obs3[2])
+      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][2],att_out3[dataset]['betaCI'][2,:],multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[2])
       print (exp_flag,att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci95_beta_obs3[1])
+      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][1],att_out3[dataset]['betaCI'][1,:],multim_mean_dec_warming_gmst[1],0.,ci90_beta_obs3[1])
       print ('NAT:',att_warming_range)
-      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1]-multim_mean_dec_warming_gmst[2],0.,ci95_beta_obs3[0])
+      [att_warming,att_warming_range]=attrib_warming(att_out3[dataset]['beta'][0],att_out3[dataset]['betaCI'][0,:],multim_mean_dec_warming_gmst[0]-multim_mean_dec_warming_gmst[1]-multim_mean_dec_warming_gmst[2],0.,ci90_beta_obs3[0])
       print ('OTH:',att_warming_range)
         
       
