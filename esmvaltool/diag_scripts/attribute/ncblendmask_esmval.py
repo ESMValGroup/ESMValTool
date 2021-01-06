@@ -100,7 +100,6 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
     print('Missing value frction',1.0*numpy.count_nonzero(cvgmsk<-100.)/numpy.size(cvgmsk),file=sys.stderr)
     print ('Obs file',obs_file)
     print ('obs',obs)
-    exit()
 
   sic = sic[0:tas.shape[0],:,:]
 
