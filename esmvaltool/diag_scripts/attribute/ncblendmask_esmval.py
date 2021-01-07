@@ -2,10 +2,12 @@ import sys, numpy, scipy.stats, math
 import netCDF4
 # Following two functions for blending and masking modified from Cowtan 2015.
 # Calculate blended temperatures using general methods
+# Source of original Cowtan code:
+# http://www-users.york.ac.uk//~kdc3/papers/robust2015/methods.html
 # Usage:
 #  python ncblendmask.py <mode> tas.nc tos.nc sic.nc sftlf.nc obs.nc dec_warming obs_dec_warming ann_warming gmst_comp_warming diag_name obs ensobs ensobs_diag ensobs_dec_warming
 #  <mode> is one of xxx, mxx, xax, max, xxf, mxf, xaf, maf
-# max means use masking of anomalies, with time-varying sea ice. See Cowtan website below for more details.
+# max means use masking of anomalies, with time-varying sea ice. See Cowtan website for more details.
 # tas.nc. tos.nc, sic.nc, sftlf.nc and obs.nc are names of NetCDF files containing tas, tos, siconc, sftlf from the simulation.
 # obs.nc is the name of the observations NetCDF file (the median if using an ensemble obs dataset).
 # dec_warming is 2010-2019 warming in GSAT from the model.
@@ -21,9 +23,7 @@ import netCDF4
 # diag is the requested diagnostic (e.g. gmst05) for the model.
 # obs_diag is the requested dignostic (e.g. gmst05) for the obs.
 
-# Source of original Cowtan code:
-# http://www-users.york.ac.uk//~kdc3/papers/robust2015/methods.html
-# Nathan Gillett - Adapted from ncblendmask-nc4.py from Cowtan 2015
+## Nathan Gillett - Adapted from ncblendmask-nc4.py from Cowtan 2015
 
 # cell areas, used for calculating area weighted averages
 def areas( grid ):
@@ -80,8 +80,6 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
   lons4 = nc.variables["lon"][:]
   sftof = 1-numpy.ma.filled(nc.variables["sftlf"][:,:],-1.0e30) #NPG - added '1-' to use lf.
   nc.close()
-
-
 
   if 'm' in options:
     # read HadCRUT4 data as mask
@@ -208,7 +206,6 @@ def ncblendmask_esmval(options,sic_file,tas_file,tos_file,sftlf_file,obs_file,de
     for m in range(12):
       norm = numpy.mean(base[m::12,:,:],axis=0)
       tos[m::12,:,:] = tos[m::12,:,:] - norm
-
 
   # deal with any remaining nans
   for m in range(sic.shape[0]):
