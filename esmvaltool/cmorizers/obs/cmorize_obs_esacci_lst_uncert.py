@@ -102,6 +102,7 @@ def cmorization(in_dir, out_dir, cfg, _):
             logger.info(out_dir)
             iris.save(monthly_cubes, '%s/test_%s_%02d.nc' % (out_dir,year,month))
 
+        # Not sure how to use the util saver with cube lists
         # utils.save_variable(
         #     monthly_cubes,
         #     var,
