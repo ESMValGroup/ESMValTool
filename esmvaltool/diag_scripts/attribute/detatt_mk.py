@@ -355,8 +355,7 @@ def tls(x,y,cn1,cn2,ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3S=0,fla
 			lam2_hat[j] = lam[j]/(np.dot(np.dot(um.T,np.dot(w2,w2.T)),um)/p2)
 			
 		#use m-sphere as in AS03 and Ribes code
-		npt = 10000 #Original version. Replaced with 2000 to speed up code for testing.
-#		npt = 2000 
+		npt = 10000 
 
 		if m==1:
 			pts = np.array([1,-1])
