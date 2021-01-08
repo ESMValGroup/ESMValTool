@@ -349,6 +349,9 @@ diagnostics:
         simple_uncert: false
       fig3:
         script: attribute/attrib_xval.py
+        obs: had4
+        exp_flag: AER
+        diag_name: gmst05
       figEDF2: 
         script: attribute/attrib_blended.py
         obs: had4

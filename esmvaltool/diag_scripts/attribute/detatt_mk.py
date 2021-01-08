@@ -4,6 +4,18 @@
 #
 # Many functions adapted from other code as noted.
 #
+# to use:
+#import detatt_mk as da
+#                            
+#reduce dimensions
+#model response ensemble mean xem2 and obs y2 should be column data (and centered), so use [:,None] if a single forcing
+#xcl1 and xcl2 are the climate noise array (n_years x n_realizations) split into two parts
+#(xr,yr,cn1,cn2) = da.reduce_dim(xem2[:,None],y2[:,None],xcl1,xcl2)
+#                              
+#run d/a; see code for flag options
+#z = da.tls(xr,yr,ne=ne,cn1=cn1,cn2=cn2)
+#
+#
 # References:
 #	Allen, M. R., and S. F. B. Tett, 1999: Checking for model consistency in optimal fingerprinting. Climate Dyn., 15, 419-434, doi:10.1007/s003820050291.
 #	Allen, M. R., and P. A. Stott, 2003: Estimating signal amplitudes in optimal fingerprinting, part I: Theory. Climate Dyn., 21, 477-491, doi:10.1007/s00382-003-0313-9.
@@ -33,7 +45,6 @@ def regC(xL, center_flag=1):
 		xLc = xL	
 	
 	#calculate covariance matrix estimate
-	#c_hat = np.dot(xLc.T,xLc)/n
 	c_hat = np.dot(xLc,xLc.T)/p
 
 
@@ -67,7 +78,7 @@ def regC(xL, center_flag=1):
 	return cl_hat
 
 #################################################################################
-def reduce_dim(x,y,noise1,noise2,ns=1,ind='None',return_flag=0,order='F'):
+def reduce_dim(x,y,noise1,noise2,ns=1,ind=None,return_flag=0,order='F'):
 	
 	#reduces the dimension of the input variables so Cov matrix will be full-rank
 	#used when the data are centered (because one entry is linear combination 
@@ -87,11 +98,10 @@ def reduce_dim(x,y,noise1,noise2,ns=1,ind='None',return_flag=0,order='F'):
 	
 	n1 = np.size(y)	#assumes y is a single column of data (or row, I guess)
 	if np.mod(float(n1),ns)!= 0:
-		#raise ValueError('please check your dimensions')
-		if ind is 'None':
+		if ind == None:
 			raise ValueError('check dimensions or supply indices')
 
-	if ind is 'None':	
+	if ind == None:	
 		n = int(n1/ns)
 		m = np.eye(n) - 1./n
 		
@@ -108,20 +118,20 @@ def reduce_dim(x,y,noise1,noise2,ns=1,ind='None',return_flag=0,order='F'):
 
 			yr = np.dot(p,np.reshape(y,(-1,ns),order=order)).flatten(order=order)[:,None]
 			xr = np.zeros(((n-1)*ns,len(x[0,:])))
-			for j in xrange(len(x[0,:])):
+			for j in range(len(x[0,:])):
 				xr[:,j] = np.dot(p,np.reshape(x[:,j],(-1,ns),order=order)).flatten(order=order)
 			cn1 = np.zeros(((n-1)*ns,len(noise1[0,:])))
-			for j in xrange(len(noise1[0,:])):
+			for j in range(len(noise1[0,:])):
 				cn1[:,j] = np.dot(p,np.reshape(noise1[:,j],(-1,ns),order=order)).flatten(order=order)	
 			cn2 = np.zeros(((n-1)*ns,len(noise2[0,:])))
-			for j in xrange(len(noise2[0,:])):
+			for j in range(len(noise2[0,:])):
 				cn2[:,j] = np.dot(p,np.reshape(noise2[:,j],(-1,ns),order=order)).flatten(order=order)					
 
 	else:
 		
 		if len(ind) != ns:
 			raise ValueError('please provide nt for each spatial entry')
-		if order is 'C':
+		if order == 'C':
 			raise ValueError('can only handle missing data when grouped by spatial dimension')
 		if return_flag!=1:
 			raise ValueError('getting the p matrix probably will not be useful here')
@@ -132,7 +142,7 @@ def reduce_dim(x,y,noise1,noise2,ns=1,ind='None',return_flag=0,order='F'):
 		cn2 = np.zeros((sum(ind)-ns,len(noise2[0,:])))
 		
 		q = 0;w=0
-		for i in xrange(ns):
+		for i in range(ns):
 			n = ind[i]
 			m = np.eye(n) - 1./n
 			u,s,v1 = linalg.svd(m)
@@ -142,11 +152,11 @@ def reduce_dim(x,y,noise1,noise2,ns=1,ind='None',return_flag=0,order='F'):
 			if len(x[0,:])==1:
 				xr[q:q+n-1,:] = np.dot(p,x[w:w+n])[:,None]
 			else:
-				for j in xrange(len(x[0,:])):
+				for j in range(len(x[0,:])):
 					xr[q:q+n-1,j] = np.dot(p,x[w:w+n,j])
-			for j in xrange(len(noise1[0,:])):
+			for j in range(len(noise1[0,:])):
 				cn1[q:q+n-1,j] = np.dot(p,noise1[w:w+n,j])
-			for j in xrange(len(noise2[0,:])):
+			for j in range(len(noise2[0,:])):
 				cn2[q:q+n-1,j] = np.dot(p,noise2[w:w+n,j])
 			w=w+n;q=q+n-1	
 
@@ -191,7 +201,6 @@ def rct_mc(C, x0, ne, n1, n2, nmc=10000, flag_plotden=0):
 		
 	beta0 = np.ones((m,1))
 
-	#c12 = np.real(linalg.inv(linalg.sqrtm(C)))
 	c12 = np.real(linalg.sqrtm(C))
 	
 	r2s = np.zeros((nmc,1))
@@ -232,7 +241,7 @@ def rct_mc(C, x0, ne, n1, n2, nmc=10000, flag_plotden=0):
 		
 #################################################################################
 
-def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3S=0,flag_4S=0,error_flag=0,RCT_flag=True):
+def tls(x,y,cn1,cn2,ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3S=0,flag_4S=0,error_flag=0,RCT_flag=1):
 	
 	# returns the coefficients from a total least squares regression
 	# expects x and y to have column data (and should be centered)
@@ -244,10 +253,9 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 	#     a single input is allowed
 	# cn11 and cn22 are sections of the data (probably from a control run) 
 	#     used for calculating the covariance matrix; cn=climate noise
-	#     cn11 is used for calculating the regularized covariance matrix and
-	#     in the the residual consistency test Monte Carlo simulations
-	#	 if cn2 input, will be used for the residual consistency test
-	#     --does not need to be regularized
+	#     cn1 is used for calculating the regularized covariance matrix cn2 
+	#     (does not need to be regularized) will be used for the residual 
+	#     consistency test
 	# rof_flag is a flag indicating whether to use the ROF approach (1)
 	# CI_flag is a flag indicating whether the confidence intervals of beta 
 	#     should be calculated; default is yes (1)
@@ -255,6 +263,8 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 	# flag_2S is a flag indicating whether to adjust the output for a combination
 	#     of forcing signals (e.g., if 1 with inputs ALL+NAT, switch to ANT+NAT)
 	# error_flag determines if errors on x and y will be calculated/output
+	# RCT_flag is a flag indicating whether to perform the residual consistency
+	#     test (1)
 	#
 	# References:
 	#      Ribes et al. (2013), Allen and Stott (2003), Van Huffel and 
@@ -275,10 +285,10 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 	if np.shape(cn1)[0]!=n:
 		raise ValueError('dimension mismatch: x and cn1')
 	p1 = np.shape(cn1)[1]
-	if cn2 is not 'None':
-		if np.shape(cn2)[0]!=n:
-			raise ValueError('dimension mismatch: x and cn2')
-		p2 = np.shape(cn2)[1]
+	
+	if np.shape(cn2)[0]!=n:
+		raise ValueError('dimension mismatch: x and cn2')
+	p2 = np.shape(cn2)[1]
 	
 	#if ne is a single value, assume all signals have same ensemble size 
 	#   and expand ne to size m
@@ -287,7 +297,7 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 	else:
 		ne = np.array(ne,dtype='float')	
 
-	#scale variance or something
+	#scale variance
 	if m==1:
 		x1 = x*np.sqrt(ne)
 	else:
@@ -300,33 +310,29 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 		cl12 = np.real(linalg.inv(linalg.sqrtm(creg)))
 		x1 = np.dot(cl12,x1)
 		y = np.dot(cl12,y)
-	
+		w2 = np.dot(cl12,cn2)
+	else:
+		w2 = cn2
+			
 	z = np.hstack((x1,y))		#combine x and y into one matrix
 	u,s,v1 = linalg.svd(z)
 	v = v1.T
 	
 	#method for computation of TLS coefs from Van Huffel and Vandewalle (1991)
 	beta = np.dot(linalg.inv(np.dot(x1.T,x1)-(s[m]**2)*np.identity(m)),np.dot(x1.T,y))
-	#scale results by sqrt(ensemble size) because other people do this	
+	#scale results by sqrt(ensemble size)	
 	beta = np.array(beta)*np.expand_dims(np.sqrt(ne),axis=1)
 	
 	###########################
 	#residual consistency test#
 	###########################
-	if RCT_flag:
+	if RCT_flag==1:
 		lam = s**2
-		if rof_flag==0:
-			w2 = cn2
-		else:
-			w2 = np.dot(cl12,cn2)
 			
 		um = np.expand_dims(u[:,m], axis=1)	  #want (m+1)th column of u
 		r2 = lam[-1]/(np.dot(np.dot(np.dot(um.T,w2),w2.T),um)/p2)	#from AS03
-		print (r2)
+		#print(r2)
 
-		#cna = np.hstack((cn1,cn2))
-		#chat = np.dot(cna,cna.T)/p1
-		#r2s = rct_mc(chat,x,ne=ne,n1=p1,n2=p2)
 		r2s = rct_mc(creg,x,ne=ne,n1=p1,n2=p2)
 		nr = np.size(r2s)
 		h = 1.06*np.std(r2s,ddof=1)*nr**(-1./5)	#following Ribes2013 (see function gke)
@@ -339,10 +345,7 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 	#calculate CIs#
 	###############
 	if CI_flag==1:
-		if rof_flag==0: #NPG - copied here, so code will run even if RCT_flag not set.
-			w2 = cn2
-		else:
-			w2 = np.dot(cl12,cn2)
+
 		betaCI = np.empty((m,2))
 
 		lam2_hat = np.empty((m+1,1))
@@ -351,7 +354,7 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 			um = np.matrix(u[:,j]).T
 			lam2_hat[j] = lam[j]/(np.dot(np.dot(um.T,np.dot(w2,w2.T)),um)/p2)
 			
-		#use m-sphere or whatever, as in AS03 and Ribes code
+		#use m-sphere as in AS03 and Ribes code
 		npt = 10000 #Original version. Replaced with 2000 to speed up code for testing.
 #		npt = 2000 
 
@@ -363,13 +366,13 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 			pts = pts1 / (np.expand_dims(np.sqrt(np.sum(pts1**2,axis=1)),axis=1)*np.ones((1,m)))
 			
 		dlam2 = lam2_hat - np.min(lam2_hat)
-		critf = (stats.f.ppf(.9,1,p2))	#because Ribes code
+		critf = (stats.f.ppf(.9,1,p2))	#following Ribes code
 		a = np.sqrt(critf)*pts
 		if np.sum(dlam2[:-1])!=0:
 			b_m1 = a / np.dot(np.ones((np.size(pts[:,0]),1)),np.sqrt(dlam2[:-1]).T)
 			b_m2 = np.lib.scimath.sqrt(1-np.sum(b_m1**2,axis=1)) #this sqrt function returns complex values if input is (-)
 			
-			b_m2 = np.expand_dims(b_m2,axis=1)	#put the needed dimension back in; no idea why this pos removed it in the first place
+			b_m2 = np.expand_dims(b_m2,axis=1)	#put the needed dimension back in
 			cont = 1 	#continue flag
 		else:
 			betaCI[:] = np.nan
@@ -390,7 +393,7 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 					vpts2[:,2] = vpts2[:,0] + vpts2[:,2]
 					vpts2[:,3] = vpts2[:,0] + vpts2[:,3]
 				for i in np.arange(m):
-					vc_2d_pts = vpts2[:,i]+1j*vpts2[:,m]	#1j gives complex i because python
+					vc_2d_pts = vpts2[:,i]+1j*vpts2[:,m]	#1j gives complex i in python
 					vs = v1[:,-1]					
 					vc_2d_ref = vs[i]*np.sqrt(ne[i])+1j*vs[m]
 					vprod_2d = vc_2d_pts/vc_2d_ref
@@ -443,219 +446,6 @@ def tls(x,y,cn1,cn2='None',ne=1,rof_flag=1,CI_flag=1,alpha=0.10,flag_2S=0,flag_3
 	return out
 	
 #################################################################################
-def adjust_beta(xa,y,cn1,xn='None',weights='None'):
-	
-	#returns the time series in columns of xa (ALL) and xn (NAT) that have 
-	#    been adjusted using the scaling factors
-	#the inputs xa, xn, and y should be for the same years
-	#assumes xa and xn have same number of ensemble members
-	
-	import numpy as np
-	from scipy import linalg
-	
-	#add checks for appropriate size of inputs	
-	
-	n,ne = np.shape(xa)	
-	
-	#calculate ensemble mean
-	if weights is 'None':
-		ema = np.mean(xa,axis=1)
-		ne2 = ne
-		if xn is not 'None':		
-			emn = np.mean(xn,axis=1)
-	else:
-		ema = np.squeeze(np.sum(xa*np.tile(weights[None,:], (np.shape(xa)[0],1)),axis=1))
-		ne2 = 1/np.sum(weights**2)
-		if xn is not 'None':	
-			emn = np.squeeze(np.sum(xn*np.tile(weights[None,:], (np.shape(xn)[0],1)),axis=1))
-	
-	#calculate anomalies
-	mt = np.mean(ema)
-	ema1 = ema - mt
-	xa1 = xa - mt
-	y1 = y - np.mean(y)
-	if xn is not 'None':
-		xn1 = xn - mt
-		emn1 = emn - np.mean(emn)	
-	
-	#scale variance
-	ema2 = ema1*np.sqrt(ne2)
-	if xn is not 'None':
-		emn2 = emn1*np.sqrt(ne2)
-		
-	#reduce dimensions
-
-		
-	#pre-whiten with regularized cov. matrix
-	creg = regC(cn1,center_flag=0)
-	cl12 = np.real(linalg.inv(linalg.sqrtm(creg)))
-	xac = np.dot(cl12,xa1)
-	emac = np.dot(cl12,ema2)
-	if xn is not 'None':	
-		xnc = np.dot(cl12,xn1)
-		emnc = np.dot(cl12,emn2)
-
-	#fit scaling factors
-	outdict1 = tls(ema1[:,None],y1,cn1,ne=ne2,CI_flag=0,error_flag=1)
-	beta1 = outdict1['beta']; err1 = outdict1['err']
-	if xn is not 'None':	
-		outdict2 = tls(np.vstack((ema1,emn1)).T,y1,cn1,ne=ne2,CI_flag=0,flag_2S=1,error_flag=1)
-		beta2 = outdict2['beta']; err2 = outdict1['err']
-
-	#adjust with beta
-	emat = np.tile(emac[:,None],(1,ne))
-	era = err1[:,0]
-	xab = xac - emat + beta1*(emat - era[:,None])
-	if xn is not 'None':
-		emnt = np.tile(emnc[:,None],(1,ne))
-		ern = err2[:,1]
-		xnb = xnc - emnt + beta2[1]*(emnt - ern[:,None])
-	
-	#un-pre-whiten
-	q = linalg.inv(cl12)
-	xab1 = np.dot(q,xab)
-	if xn is not 'None':
-		xnb1 = np.dot(q,xnb)
-		
-	#un-reduce dims
-	
-	
-	if xn is not 'None':
-		return xab1,xnb1
-	else:
-		return xab1
-	
-#################################################################################
-def att_trend(emA,y,cn1,cn2,ne,yrs,emN='None',start_year='None',end_year='None',o_flag=0):
-	
-	#returns the trends attributable to ALL (and NAT if supplied) forcings over
-	#  the period provided (or the whole time series, which is default)
-	#uses the CI on beta to provide a CI on the trend
-	#should input the ensemble means
-	#if o_flag is set to 1, then will also output rescaled ensemble means
-	
-	import numpy as np
-	from scipy import linalg
-	import statfunc_mk as sf
-	
-	#add checks for appropriate size of inputs	
-	
-	n = np.size(emA)
-	
-	if np.shape(emA) != np.shape(y):
-		raise ValueError('emA and y must have same shape')
-	if emN is not 'None':
-		if np.shape(emA) != np.shape(emN):
-			raise ValueError('emA and emN must have same shape')
-	if np.size(yrs) != n:
-		raise ValueError('yrs must match size of emA')
-	
-	if np.shape(cn1)[0]!=n:
-		raise ValueError('dimension mismatch: x and cn1')	
-	
-	ne = float(ne)
-	
-	if np.size(np.shape(y))==1:
-		y = y[:,None]
-	if np.size(np.shape(emA))==1:
-		emA = emA[:,None]
-	if emN is not 'None':
-		if np.size(np.shape(emN))==1:
-			emN = emN[:,None]
-	
-	#make sure time series are centered
-	mt = np.mean(emA)
-	ema1 = emA - mt
-	y1 = y - np.mean(y)
-	if emN is not 'None':
-		emn1 = emN - np.mean(emN)	
-	
-	#scale variance
-	ema2 = ema1*np.sqrt(ne)
-	if emN is not 'None':
-		emn2 = emn1*np.sqrt(ne)
-		
-	#pre-whiten with regularized cov. matrix
-	creg = regC(cn1,center_flag=0)
-	cl12 = np.real(linalg.inv(linalg.sqrtm(creg)))
-	emac = np.dot(cl12,ema2)
-	if emN is not 'None':	
-		emnc = np.dot(cl12,emn2)
-
-	#fit scaling factors
-	outdict1 = tls(ema1,y1,cn1,cn2,ne=ne,CI_flag=1,error_flag=1)
-	beta1 = outdict1['beta']; beta1CI=outdict1['beta1CI']; err1=outdict1['err']
-	if emN is not 'None':	
-		outdict2 = tls(np.hstack((ema1,emn1)),y1,cn1,cn2,ne=ne,CI_flag=1,flag_2S=1,error_flag=1)
-		beta2 = outdict2['beta']; beta2CI=outdict2['beta1CI']; err2=outdict2['err']
-		
-	#adjust with beta
-	xab = beta1*(emac - err1[:,0][:,None])
-	xabl = beta1CI[0,0]*(emac - err1[:,0][:,None])
-	xabu = beta1CI[0,1]*(emac - err1[:,0][:,None])
-	if emN is not 'None':
-		xnb = beta2[1]*(emnc - err2[:,1][:,None])
-		xnbl = beta2CI[1,0]*(emac - err2[:,1][:,None])
-		xnbu = beta2CI[1,1]*(emac - err2[:,1][:,None])
-	
-	#un-pre-whiten
-	q = linalg.inv(cl12)
-	xab1 = np.dot(q,xab)
-	xabl1 = np.dot(q,xabl)
-	xabu1 = np.dot(q,xabu)
-	if emN is not 'None':
-		xnb1 = np.dot(q,xnb)
-		xnbu1 = np.dot(q,xnbu)
-		xnbl1 = np.dot(q,xnbl)
-		
-	#un-reduce dims
-	
-	#un-scale var
-	xab1 = xab1 / np.sqrt(ne)
-	xabu1 = xabu1 / np.sqrt(ne)
-	xabl1 = xabl1 / np.sqrt(ne)
-	if emN is not 'None':
-		xnb1 = xnb1 / np.sqrt(ne)
-		xnbu1 = xnbu1 / np.sqrt(ne)
-		xnbl1 = xnbl1 / np.sqrt(ne)		
-	
-	#calculate trend
-	if start_year is 'None':
-		start_year = np.min(yrs)
-	if end_year is 'None':
-		end_year = np.max(yrs)
-	
-	ind = np.zeros((n,))
-	ind[(yrs>=start_year)&(yrs<=end_year)] = 1
-	ind = ind.astype('bool')
-	ny = np.sum(ind)
-	
-	tA = []
-	tA.append(sf.regr(yrs[ind],xabl1[ind,:],add_int=1)[1]*ny)
-	tA.append(sf.regr(yrs[ind],xab1[ind,:],add_int=1)[1]*ny)
-	tA.append(sf.regr(yrs[ind],xabu1[ind,:],add_int=1)[1]*ny)
-	tA = np.squeeze(tA)	
-	
-	if emN is not 'None':
-		tN = []
-		tN.append(sf.regr(yrs[ind],xnbl1[ind,:],add_int=1)[1]*ny)
-		tN.append(sf.regr(yrs[ind],xnb1[ind,:],add_int=1)[1]*ny)
-		tN.append(sf.regr(yrs[ind],xnbu1[ind,:],add_int=1)[1]*ny)
-		tN = np.squeeze(tN)
-	
-	if emN is not 'None':
-		if o_flag==1:
-			emA1 = [xabl1,xab1,xabu1]
-			emN1 = [xnbl1,xnb1,xnbu1]
-			return tA,tN,emA1,emN1
-		else:
-			return tA,tN
-	else:
-		if o_flag==1:
-			emA1 = [xabl1,xab1,xabu1]
-			return tA,emA1
-		else:
-			return tA	
 	
 	
 	
