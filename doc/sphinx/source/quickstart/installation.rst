@@ -21,6 +21,12 @@ The ESMValTool supports five different installation methods:
 The next sections will detail the procedure to install ESMValTool for each of
 this methods.
 
+Note that there is also a
+`Tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`__
+available with more explanations and guidance if the installation instructions
+here are too concise.
+See `common installation issues`_ if you run into trouble.
+
 
 Conda installation
 ==================
@@ -93,7 +99,7 @@ Note that it is only necessary to install Julia prior to the conda installation 
 
 Note that the ESMValTool source code is contained in the ``esmvaltool-python`` package, so this package will always be installed as a dependency if you install one or more of the packages for other languages.
 
-There is also a lesson available in the 
+There is also a lesson available in the
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
 that describes the installation of the ESMValTool in more detail. It can be found
 `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/02-installation/index.html>`_.
@@ -239,10 +245,13 @@ To run the container using the image file ``esmvaltool.sif`` use:
 
    singularity run esmvaltool.sif run examples/recipe_python.yml
 
+.. _install_from_source:
 
 Install from source
 ===================
 
+Installing the tool from source is recommended if you need the very latest
+features or if you would like to contribute to its development.
 
 Obtaining the source code
 -------------------------
@@ -255,19 +264,39 @@ The easiest way to obtain it is to clone the repository using git
 
 .. code-block:: bash
 
-    git clone https://github.com/ESMValGroup/ESMValTool.git
+    git clone https://github.com/ESMValGroup/ESMValTool
+
+or
+
+.. code-block:: bash
+
+    git clone git@github.com:ESMValGroup/ESMValTool
+
+if you prefer to connect to the repository over SSH.
+
+The command above will create a folder called ``ESMValTool``
+containing the source code of the tool in the current working directory.
+
+.. note::
+    Using SSH is much more convenient if you push to the repository regularly
+    (recommended to back up your work), because then you do not need to type
+    your password over and over again.
+    See
+    `this guide <https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account>`__
+    for information on how to set it up if you have not done so yet.
+    If you are developing ESMValTool on a shared compute cluster, you can set up
+    `SSH agent forwarding <https://docs.github.com/en/free-pro-team@latest/developers/overview/using-ssh-agent-forwarding>`__
+    to use your local SSH keys also from the remote machine.
 
 It is also possible to work in one of the ESMValTool private repositories, e.g.:
 
 .. code-block:: bash
 
-    git clone https://github.com/ESMValGroup/ESMValTool-private.git
+    git clone https://github.com/ESMValGroup/ESMValTool-private
 
-By default, this command will create a folder called ESMValTool containing the
-source code of the tool.
-
-GitHub also allows one to download the source code in as a tar.gz or zip file. If
-you choose to use this option, download the compressed file and extract its
+GitHub also allows one to download the source code in as a ``tar.gz`` or ``zip``
+file.
+If you choose to use this option, download the compressed file and extract its
 contents at the desired location.
 
 
@@ -318,7 +347,7 @@ for those cases in which a conda installation is not possible or advisable.
 From now on, we will assume that the installation is going to be done through
 conda.
 
-Ideally, you should create a conda environment for ESMValTool, so it is
+Ideally, you should create a separate conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
 Note that it is advisable to update conda to the latest version before
@@ -329,17 +358,24 @@ installing ESMValTool, using the command (as mentioned above)
     conda update --name base conda
 
 To create an environment, go to the directory containing the ESMValTool source
-code (called ESMValTool if you did not choose a different name) and run
+code (called ``ESMValTool`` if you did not choose a different name)
+
+.. code-block:: bash
+
+    cd ESMValTool
+
+and run
 
 .. code-block:: bash
 
     conda env create --name esmvaltool --file environment.yml
 
-This installs the ESMValCore package from conda as a dependency.
+This command installs many of the required dependencies from conda, including
+the ESMValCore package and Python, R, and NCL interpreters.
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
-the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should then activate
-the environment using the command:
+the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should
+then activate the environment using the command:
 
 .. code-block:: bash
 
@@ -363,7 +399,7 @@ Software installation
 
 Once all prerequisites are fulfilled, ESMValTool can be installed by running
 the following commands in the directory containing the ESMValTool source code
-(called ESMValTool if you did not choose a different name):
+(called ``ESMValTool`` if you did not choose a different name):
 
 .. code-block:: bash
 
@@ -392,3 +428,159 @@ To do this, run the tool with:
 
 If everything was installed properly, ESMValTool should have printed a
 help message to the console.
+
+Using the development version of the ESMValCore package
+-------------------------------------------------------
+
+If you need the latest developments of the ESMValCore package, you
+can install it from source into the same conda environment.
+
+.. attention::
+    The recipes and diagnostics in the ESMValTool repository are compatible
+    with the latest released version of the ESMValCore.
+    Using the development version of the ESMValCore package is only recommended
+    if you are planning to develop new features for the ESMValCore, e.g.
+    you want to implement a new preprocessor function.
+
+First follow all steps above.
+Next, go to the place where you would like to keep the source code and clone the
+ESMValCore github repository:
+
+.. code-block:: bash
+
+    git clone https://github.com/ESMValGroup/ESMValCore
+
+or
+
+.. code-block:: bash
+
+    git clone git@github.com:ESMValGroup/ESMValCore
+
+The command above will create a folder called ``ESMValCore``
+containing the source code of the tool in the current working directory.
+
+Go into the folder you just downloaded
+
+.. code-block:: bash
+
+    cd ESMValCore
+
+and then install ESMValCore in development mode
+
+.. code-block:: bash
+
+    pip install -e '.[develop]'
+
+To check that the installation was successful, run
+
+.. code-block:: bash
+
+    python -c 'import esmvalcore; print(esmvalcore.__path__[0])'
+
+this should show the directory of the source code that you just downloaded.
+
+If the command above shows a directory inside your conda environment instead,
+e.g. ``~/conda/envs/esmvaltool/lib/python3.8/site-packages/esmvalcore``, you
+may need to manually remove that directory and run
+```pip install -e '.[develop]'``
+again.
+
+.. _`common installation issues`:
+
+Common installation problems and their solutions
+================================================
+
+Conda fails to solve the environment
+------------------------------------
+If you see the text ``Solving environment:`` with the characters ``-\|/`` rotating
+behind it for more than 10 minutes, conda may be having problems finding a
+working combination of versions of the packages that the ESMValTool depends on.
+Because the ESMValTool is a community tool, there is no strict selection of
+which tools can be used and installing the ESMValTool requires installing almost
+any package that is available for processing climate data.
+To help conda solve the environment, you can try the following.
+
+Always use the latest version of conda, as problems have been reported by people
+using older versions, to update, run:
+
+.. code-block:: bash
+
+    conda update --name base conda
+
+Usually conda is much better at solving new environments than updating older
+environments, so it is often a good idea to create a new environment if updating
+does not work.
+
+It can help conda if you let it know what version of certain packages you want,
+for example by running
+
+.. code-block:: bash
+
+    conda create -n esmvaltool -c conda-forge -c esmvalgroup esmvaltool python=3.8
+
+you ask for Python 3.8 specifically and that makes it much easier for conda to
+solve the environment, because now it can ignore any packages that were built
+for other Python versions.
+
+Problems with proxies
+---------------------
+If you are installing ESMValTool from source from behind a proxy that does not
+trust the usual PyPI URLs you can declare them with the option
+``--trusted-host``, e.g.
+
+.. code-block:: bash
+
+    pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]
+
+If R packages fail to download, you might be able to solve this by
+setting the environment variable ``http_proxy`` to the correct value, e.g.
+in bash:
+
+.. code-block:: bash
+
+    export http_proxy=http://user:pass@proxy_server:port
+
+the username and password can be omitted if they are not required. See e.g.
+`here <https://support.rstudio.com/hc/en-us/articles/200488488-Configuring-R-to-Use-an-HTTP-or-HTTPS-Proxy>`__
+for more information.
+
+Installation of R packages fails
+--------------------------------
+Problems have been reported if the ``R`` interpreter was made available
+through the ``module load`` command in addition to installation from conda.
+ESMValTool works fine with either way of installing R, but do not try to use
+both installation methods at the same time.
+If your ESMValTool conda environment is called ``esmvaltool`` and you want to
+use the R interpreter installed from conda, the path to the R interpreter should
+end with ``conda/envs/esmvaltool/bin/R``.
+When the conda environment for ESMValTool is activated, you can check which R
+interpreter is used by running
+
+.. code-block:: bash
+
+    which R
+
+The Modules package is often used by system administrators to make software
+available to users of scientific compute clusters.
+To list any currently loaded modules run ``module list``, run ``module help``
+or ``man module`` for more information about the Modules package.
+
+Problems when using ssh
+-----------------------
+If you log in to a cluster or other device via SSH and your origin
+machine sends the ``locale`` environment via the SSH connection,
+make sure the environment is set correctly, specifically ``LANG`` and
+``LC_ALL`` are set correctly (for GB English UTF-8 encoding these
+variables must be set to ``en_GB.UTF-8``; you can set them by adding
+``export LANG=en_GB.UTF-8`` and ``export LC_ALL=en_GB.UTF-8``) in your
+origin or login machines’ ``.profile``.
+
+Problems when updating the conda environment
+--------------------------------------------
+Usually conda is much better at solving new environments than updating older
+environments, so it is often a good idea to create a new environment if updating
+does not work. See also `Conda fails to solve the environment`_.
+
+Do not run ``conda update --update-all`` in the ``esmvaltool``
+environment since that will update some packages that are pinned to
+specific versions for the correct functionality of the tool.
