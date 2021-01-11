@@ -466,7 +466,6 @@ def main(cfg):
 
     print ('Obs warming',obs_warming)
     print ('Obs warming in GMST',obs_dec_warming[0])
-    print ('att_out3',att_out3)
     #Finish off plots.
     panel_labels=['a','b','c','d','e','f']
     panel_counter=0
