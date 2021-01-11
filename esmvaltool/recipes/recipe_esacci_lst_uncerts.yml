@@ -1,19 +1,19 @@
-# Recipe to call ESA CCI LST diagnostic.
+# Recipe to call ESA CCI LST with uncertainties diagnostic.
 ---
-# documentation:
-#   description: |
-#     Please add description here
-#   authors:
-#     - king_robert
+documentation:
+  description: |
+    Please add description here
+  authors:
+    - king_robert
 
-#   maintainer:
-#     - king_robert
+  maintainer:
+    - king_robert
 
-#   references:
-#     - esacci-lst
+  references:
+    - esacci-lst
 
-#   projects:
-#     - cmug
+  projects:
+    - cmug
 
 datasets:
 #  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r(2:3)i1p1f1, start_year: 2004, end_year: 2005, grid: gn}
@@ -56,7 +56,7 @@ diagnostics:
     variables:
       ts:
         mip: Amon
-        preprocessor: lst_preprocessor
+        #preprocessor: lst_preprocessor
 
     scripts:
       script1:

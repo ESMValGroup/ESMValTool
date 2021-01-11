@@ -16,7 +16,7 @@ attributes:
   reference: 'esacci_lst'
   comment: ''
   start_year: 2010
-  end_year: 2011
+  end_year: 2010
 
 # Variables to cmorize
 # These go into the vals dictionary in the python script
@@ -30,4 +30,4 @@ variables:
     # plan to make it possible to change MODISA here but only placeholders in the python there for now
     start_year: 2010
     # 2003 Only has data from July onwards for Aqua MODIS
-    end_year: 2011
+    end_year: 2010
