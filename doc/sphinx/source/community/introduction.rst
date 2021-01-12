@@ -52,16 +52,11 @@ To install in development mode, follow these instructions.
    are installing behind a proxy that does not trust the usual pip-urls
    you can declare them with the option ``--trusted-host``, e.g.
    ``pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]``
--  If you want to use R diagnostics, run
-   ``esmvaltool install R`` to install the R
-   dependencies. Note that if you only want to run the lint test for R
-   scripts you will have to install the ``lintr`` package. You can do
-   that by running ``Rscript esmvaltool/install/R/setup_devutils.R``.
+-  If you want to use R diagnostics, run ``esmvaltool install R`` to install
+   the R dependencies.
 -  If you want to use Julia diagnostics, first install Julia as
    described below in section “Installing Julia”, then run
-   ``esmvaltool install Julia`` to install the Julia
-   dependencies. Install Julia dependencies after R dependencies if you
-   plan to use both.
+   ``esmvaltool install Julia`` to install the Julia dependencies.
 -  Test that your installation was successful by running
    ``esmvaltool -h``.
 -  If you log into a cluster or other device via ``ssh`` and your origin
