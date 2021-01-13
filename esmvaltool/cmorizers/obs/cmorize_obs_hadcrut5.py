@@ -67,6 +67,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     # Fix coordinates
+    utils._fix_dim_coordnames(cube)
     cube_coord = cube.coord('longitude')
     if cube_coord.points[0] < 0. and \
             cube_coord.points[-1] < 181.:
