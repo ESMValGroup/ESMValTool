@@ -167,87 +167,116 @@ Checklists for reviewing a pull request
 
 Below are general checklists for doing technical and scientific reviews including brief descriptions of the tasks to do. Reviewing
 CMORizer scripts consists mostly of technical tasks but differs slightly from the technical review tasks and is therefore listed
-in a third table below.
+in a third section below.
 
 Technical reviews
 ~~~~~~~~~~~~~~~~~
 
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Item                                | Comments                                                                                         |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Documentation added to user’s guide | Check that the scientific documentation of the new diagnostic has been added to the user’s guide |
-|                                     |                                                                                                  |
-|                                     | * A file ./doc/sphinx/source/recipes/recipe_<diagnostic>.rst exists                              |
-|                                     | * New documentation is included in ./doc/sphinx/source/recipes/index.rst                         |
-|                                     | * documentation follows template (./doc/sphinx/source/recipes/recipe_template.rst.template)      |
-|                                     | * configuration options                                                                          |
-|                                     | * variables                                                                                      |
-|                                     | * valid image files                                                                              |
-|                                     | * resolution of image files (~150 dpi is usually enough; file size should be kept small)         |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| recipe                              | Check yaml syntax and that new recipe contains                                                   |
-|                                     |                                                                                                  |
-|                                     | * documentation: description, authors, maintainer, references, projects                          |
-|                                     | * provenance tags: themes, realms                                                                |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| diagnostic script                   | Check that the new diagnostic script(s) meet(s) standards. This includes the following items:    |
-|                                     |                                                                                                  |
-|                                     | * In-code documentation                                                                          |
-|                                     | * Code quality checks                                                                            |
-|                                     |                                                                                                  |
-|                                     |   (1) code quality (e.g. no hardcoded pathnames)                                                 |
-|                                     |   (2) no Codacy errors reported                                                                  |
-|                                     | * Re-use of existing functions whenever possible                                                 |
-|                                     | * Provenance implemented                                                                         |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| run recipe                          | Make sure new diagnostic(s) is working by running the ESMValTool                                 |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Check output of diagnostic          | After successfully running the new recipe, check that                                            |
-|                                     |                                                                                                  |
-|                                     | * Netcdf output has been written                                                                 |
-|                                     | * Output contains (some) valid values (e.g. not only nan or zeros)                               |
-|                                     | * Provenance information has been written                                                        |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Check autoamted tests               | Check for errors reported by automated tests                                                     |
-|                                     |                                                                                                  |
-|                                     | * Codacy                                                                                         |
-|                                     | * CircleCI                                                                                       |
-|                                     | * documentation build                                                                            |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
+Documentation
+*************
+
+Check that the scientific documentation of the new diagnostic has been added to the user’s guide:
+
+* A file (``./doc/sphinx/source/recipes/recipe_<diagnostic>.rst``) exists
+* New documentation is included in ``./doc/sphinx/source/recipes/index.rst``
+* Documentation follows template (``./doc/sphinx/source/recipes/recipe_template.rst.template``)
+* Description of configuration options
+* Description of variables
+* Valid image files
+* Resolution of image files (~150 dpi is usually enough; file size should be kept small)
+
+
+Recipe
+******
+
+Check yaml syntax and that new recipe contains:
+
+* Documentation: description, authors, maintainer, references, projects
+* Provenance tags: themes, realms
+
+
+Diagnostic script
+*****************
+
+Check that the new diagnostic script(s) meet(s) standards. This includes the following items:
+
+* In-code documentation (comments, docstrings)
+* Code quality (e.g. no hardcoded pathnames)
+* No Codacy errors reported
+* Re-use of existing functions whenever possible
+* Provenance implemented
+
+Run recipe
+**********
+
+Make sure new diagnostic(s) is working by running the ESMValTool with the recipe.
+
+Check output of diagnostic
+**************************
+
+After successfully running the new recipe, check that:
+
+* Netcdf output has been written
+* Output contains (some) valid values (e.g. not only nan or zeros)
+* Provenance information has been written
+
+
+Check automated tests
+**********************
+
+Check for errors reported by automated tests
+
+* Codacy
+* CircleCI
+* Documentation build
 
 
 Scientific reviews
 ~~~~~~~~~~~~~~~~~~
 
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Item                                | Comments                                                                                         |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Documentation added to user’s guide | Check that the scientific documentation of the new diagnostic                                    |
-|                                     | ./doc/sphinx/source/recipes/recipe_<diagnostic>.rst                                              |
-|                                     |                                                                                                  |
-|                                     | * meets scientific documentation standard (brief description of method, references, typos,       |
-|                                     |   understandable language)                                                                       |
-|                                     | * references are complete                                                                        |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| recipe                              | Check that new recipe contains valid                                                             |
-|                                     |                                                                                                  |
-|                                     | * documentation: description, references                                                         |
-|                                     | * provenance tags: themes, realms                                                                |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| diagnostic script                   | Check that the new diagnostic script(s) meet(s) scientific standards. This can include the       |
-|                                     | following items:                                                                                 |
-|                                     |                                                                                                  |
-|                                     | * Clear and understandable in-code documentation including brief description of diagnostic       |
-|                                     | * References                                                                                     |
-|                                     | * Method / equations match reference(s) given                                                    |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| run recipe                          | Make sure new diagnostic(s) is working by running the ESMValTool                                 |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Check output of diagnostic          | After successfully running the new recipe, check that                                            |
-|                                     |                                                                                                  |
-|                                     | * Output contains (some) valid values (e.g. not only nan or zeros)                               |
-|                                     | * If applicable, check plots and compare with corresponding plots in the paper(s) cited          |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
+Documentation added to user’s guide
+***********************************
+
+Check that the scientific documentation of the new diagnostic (``./doc/sphinx/source/recipes/recipe_<diagnostic>.rst``):
+
+* Meets scientific documentation standard and
+* Contains brief description of method
+* Contains references
+* Check for typos / broken text
+* Documentation is complete and written in an understandable language
+* References are complete
+
+Recipe
+******
+
+Check that new recipe contains valid:
+
+* Documentation: description, references
+* Provenance tags: themes, realms
+
+Diagnostic script
+*****************
+
+Check that the new diagnostic script(s) meet(s) scientific standards. This can include the following items:
+
+* Clear and understandable in-code documentation including brief description of diagnostic
+* References
+* Method / equations match reference(s) given
+
+Run recipe
+**********
+
+Make sure new diagnostic(s) is working by running the ESMValTool.
+
+Check output of diagnostic
+**************************
+
+After successfully running the new recipe, check that:
+
+* Output contains (some) valid values (e.g. not only nan or zeros)
+* If applicable, check plots and compare with corresponding plots in the paper(s) cited
+
+
 
 CMORizer scripts
 ~~~~~~~~~~~~~~~~
@@ -255,47 +284,77 @@ CMORizer scripts
 Reviewing CMORizer scripts differs slightly from reviewing technical changes or scientific reviews of new diagnostics. A review typically
 contains mostly technical aspects given in the checklist below.
 
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Dataset description added to user’s | Check that new dataset has been added to the table of observations defined in the ESMValTool     |
-| guide                               | user’s guide in section “Obtaining input data” (./doc/sphinx/source/input.rst).                  |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| BibTeX info file                    | Check that a BibTeX file (i.e. <dataset>.bibtex) defining the reference(s) for the new dataset   |
-|                                     | has been created in ./esmvaltool/references/.                                                    |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| recipe_check_obs.yml                | Check that new dataset has been added to the testing recipe                                      |
-|                                     | ./esmvaltool/recipes/examples/recipe_check_obs.yml                                               |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| CMORizer script                     | Check that the new CMORizer script (./esmvaltool/cmorizers/obs/cmorize_obs_<dataset>.py/.ncl/.r) |
-|                                     | meets standards. This includes the following items:                                              |
-|                                     |                                                                                                  |
-|                                     | * In-code documentation (header) contains                                                        |
-|                                     |                                                                                                  |
-|                                     |   (1) download instructions                                                                      |
-|                                     |   (2) reference(s)                                                                               |
-|                                     | * Code quality checks                                                                            |
-|                                     |                                                                                                  |
-|                                     |   (1) code quality (e.g. no hardcoded pathnames)                                                 |
-|                                     |   (2) no Codacy errors reported                                                                  |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Config file                         | If present, check config file <dataset>.yml in ./esmvaltool/cmorizers/obs/cmor_config/.          |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Run CMORizer                        | Make sure CMORizer is working by running ''cmorize_obs -c <config-file> -o <dataset>''           |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| Check output of CMORizer            | After successfully running the new CMORizer, check that                                          |
-|                                     |                                                                                                  |
-|                                     | * Output contains (some) valid values (e.g. not only nan or zeros)                               |
-|                                     | * Metadata is defined properly                                                                   |
-|                                     |                                                                                                  |
-|                                     | Run ./esmvaltool/recipes/examples/recipe_check_obs.yml for new dataset                           |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| RAW data                            | Contact person in charge of ESMValTool data pool and request to copy RAW data                    |
-|                                     | to RAWOBS/Tier2 (Tier3)                                                                          |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
-| CMORized data                       | Contact person in charge of ESMValTool data pool and request to                                  |
-|                                     |                                                                                                  |
-|                                     | * Copy CMORized dataset to OBS/Tier2 (Tier3)                                                     |
-|                                     | * Set file access rights for new dataset                                                         |
-+-------------------------------------+--------------------------------------------------------------------------------------------------+
+
+Dataset description
+*******************
+
+Check that new dataset has been added to the table of observations defined in the ESMValTool guide user’s guide in section “Obtaining input data” (``./doc/sphinx/source/input.rst``).
+
+
+BibTeX info file
+****************
+
+Check that a BibTeX file (i.e. ``<dataset>.bibtex``) defining the reference(s) for the new dataset has been created in ``./esmvaltool/references/``.
+
+
+recipe_check_obs.yml
+********************
+
+Check that new dataset has been added to the testing recipe ``./esmvaltool/recipes/examples/recipe_check_obs.yml``
+
+
+CMORizer script
+***************
+
+Check that the new CMORizer script (``./esmvaltool/cmorizers/obs/cmorize_obs_<dataset>.{py,ncl,r}``) meets standards. This includes the following items:
+
+* In-code documentation (header) contains
+
+  1. Download instructions
+  2. Reference(s)
+
+* Code quality checks
+
+  1. Code quality (e.g. no hardcoded pathnames)
+  2. No Codacy errors reported
+
+
+Config file
+***********
+
+If present, check config file ``<dataset>.yml`` in ``./esmvaltool/cmorizers/obs/cmor_config/``.
+
+
+Run CMORizer
+************
+
+Make sure CMORizer is working by running ``cmorize_obs -c <config-file> -o <dataset>``
+
+
+Check output of CMORizer
+************************
+
+After successfully running the new CMORizer, check that:
+
+* Output contains (some) valid values (e.g. not only nan or zeros)
+* Metadata is defined properly
+
+Run ``./esmvaltool/recipes/examples/recipe_check_obs.yml`` for new dataset.
+
+
+RAW data
+********
+
+Contact person in charge of ESMValTool data pool and request to copy RAW data to RAWOBS/Tier2 (Tier3).
+
+
+CMORized data
+*************
+
+Contact person in charge of ESMValTool data pool and request to
+
+* Copy CMORized dataset to OBS/Tier2 (Tier3)
+* Set file access rights for new dataset
 
 
 After merging a pull request
