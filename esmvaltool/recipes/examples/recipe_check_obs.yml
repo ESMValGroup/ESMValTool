@@ -54,7 +54,9 @@ diagnostics:
       pr:
     additional_datasets:
       - {dataset: CRU, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
+         type: reanaly, version: TS4.04, start_year: 1901, end_year: 2017}
+      - {dataset: CRU, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: TS4.04-stn1, start_year: 1901, end_year: 2017}
     scripts: null
 
 
