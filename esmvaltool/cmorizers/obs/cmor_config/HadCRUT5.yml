@@ -1,0 +1,29 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: HadCRUT5
+  version: '1'
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'https://crudata.uea.ac.uk/cru/data/temperature/'
+  reference: 'hadcrut5'
+  comment: '2 versions, statistical infilling and no-infilling'
+
+climatology:
+  filename: 'absolute_v5.nc'
+
+filenames:
+  analysis:
+    'HadCRUT.5.0.0.0.analysis.anomalies.ensemble_mean.nc'
+  noninfilled:
+    'HadCRUT.5.0.0.0.anomalies.ensemble_mean.nc'
+
+# Variables to cmorize
+variables:
+  tas:
+    mip: Amon
+    raw: tas_mean
+    raw_units: K
+    raw_clim: tem
+    raw_clim_units: celsius
