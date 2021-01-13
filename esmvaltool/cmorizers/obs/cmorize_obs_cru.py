@@ -26,12 +26,19 @@ import logging
 import os
 import shutil
 import numpy as np
+from cf_units import Unit
 
 import iris
 
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
+
+import IPython
+from traitlets.config import get_config
+c = get_config()
+c.InteractiveShellEmbed.colors = "Linux"
+# IPython.embed(config=c)
 
 
 def _clean(filepath):
@@ -51,7 +58,11 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
         cube.units = var['raw_units']
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     cube.convert_units(cmor_info.units)
-    utils.convert_timeunits(cube, 1950)
+    # fix time units
+    cube.coord('time').convert_units(
+        Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+
+    IPython.embed(config=c)
 
     # Fix coordinates
     utils.fix_coords(cube)
@@ -76,7 +87,9 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     constr_cube = iris.load_cube(filepath,
                                  utils.var_name_constraint(constraint_var))
     utils.fix_coords(constr_cube)
-    utils.convert_timeunits(constr_cube, 1950)
+    # fix time units
+    cube.coord('time').convert_units(
+        Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     cube.data = np.ma.masked_where(constr_cube.data < 1., cube.data)
 
