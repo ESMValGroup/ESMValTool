@@ -51,9 +51,9 @@ def _get_centered_timecoord(cube):
         for c in times
     ]
     ends = [
-        cftime.DatetimeNoLeap(c.year, c.month +
-                                1, 1) if c.month < 12 else
-        cftime.DatetimeNoLeap(c.year + 1, 1, 1) for c in times
+        cftime.DatetimeNoLeap(c.year, c.month + 1, 1) if c.month < 12
+        else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
+        for c in times
     ]
     time.bounds = time.units.date2num(np.stack([starts, ends], -1))
 
