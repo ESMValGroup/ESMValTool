@@ -99,7 +99,8 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 def _get_centered_timecoord(cube):
     """CRU timepoints are not in the center of the month.
 
-    Added bounds by utils.fix_coords are incorrect."""
+    Added bounds by utils.fix_coords are incorrect.
+    """
     time = cube.coord('time')
     times = time.units.num2date(time.points)
 
