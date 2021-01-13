@@ -1,15 +1,22 @@
-.. _recipe_python:
+.. _recipe_examples:
 
-Example recipe Python
-=====================
+Example recipes
+===============
 
 Overview
 --------
 
-This is an example recipe calling a simple diagnostic script written in Python.
-The recipe produces time series plots of global mean temperature and for the
-temperature in Amsterdam. It also produces a map of global temperature in
-January 2020.
+These are example recipes calling example diagnostic scripts.
+
+The recipe examples/recipe_python.yml produces time series plots of global mean
+temperature and for the temperature in Amsterdam.
+It also produces a map of global temperature in January 2020.
+
+The recipe examples/recipe_extract_shape.yml produces a map of the mean
+temperature in the Elbe catchment over the years 2000 to 2002.
+Some example shapefiles for use with this recipe are available
+`here <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/shapeselect/testdata>`__,
+make sure to download all files with the same name but different extensions.
 
 For detailed instructions on obtaining input data, please refer to
 :ref:`inputdata`. However, in case you just quickly want to run through the
@@ -28,10 +35,11 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/
 
     * examples/recipe_python.yml
+    * examples/recipe_extract_shape.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
-    * examples/diagnostic.py: visualize cubes and store provenance information
+    * examples/diagnostic.py: visualize results and store provenance information
 
 
 User settings in recipe
@@ -42,13 +50,13 @@ User settings in recipe
    *Required settings for script*
 
    * ``quickplot: plot_type``: which of `Iris' quickplot <https://scitools.org.uk/iris/docs/latest/iris/iris/quickplot.html>`_ functions to use.
-
+     Arguments that are accepted by these functions can also be specified here, e.g. ``cmap``.
+     Preprocessors need to be configured such that the resulting data matches the plot type, e.g. a timeseries or a map.
 
 Variables
 ---------
 
 * tas (atmos, monthly, longitude, latitude, time)
-
 
 Example plots
 -------------
@@ -64,3 +72,9 @@ Example plots
    :align:   center
 
    Amsterdam air temperature (multimodel mean of CMIP5 CanESM2 and CMIP6 BCC-ESM1).
+
+.. _elbe:
+.. figure::  /recipes/figures/examples/elbe.png
+   :align:   center
+
+   Mean air temperature over the Elbe catchment during 2000-2002 according to CMIP5 CanESM2.

@@ -85,10 +85,19 @@ diagnostics:
 
     scripts:
       climwip:
-        script: weighting/climwip.py
+        script: weighting/climwip/main.py
         obs_data: native6
-        sigma_performance: 0.5
-        sigma_independence: 0.5
+        combine_ensemble_members: true
+        performance_sigma: 0.5
+        performance_contributions:
+          tas_CLIM: 1
+          pr_CLIM: 2
+          psl_CLIM: 1
+        independence_sigma: 0.5
+        independence_contributions:
+          tas_CLIM: .5
+          pr_CLIM: .25
+          psl_CLIM: 0  # equivalent to not setting it
 
   weighted_temperature_graph:
     variables:
@@ -102,3 +111,25 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
+
+  weighted_temperature_map:
+    variables:
+      tas: &map_settings
+        short_name: tas
+        start_year: 2081
+        end_year: 2100
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_reference:
+        <<: *map_settings
+        start_year: 1995
+        end_year: 2014
+    scripts:
+      weighted_temperature_map:
+        script: weighting/weighted_temperature_map.py
+        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        weights: 'weights.nc'
+        # optional arguments
+        model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
+        xticks: [0, 10, 20, 30, 40]  # if not given ticks will be set automatically
+        yticks: [30, 40, 50, 60, 70, 80]
