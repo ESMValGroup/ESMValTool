@@ -1,0 +1,135 @@
+# ESMValTool
+# recipe_eyring13jgr.yml
+---
+documentation:
+  description: |
+    Diagnostics of stratospheric dynamics and chemistry reproducing selected
+    figures from Eyring et al. JGR (2013).
+
+  authors:
+    - cionni_irene
+
+  maintainer:
+    - bock_lisa
+
+  references:
+    - eyring13jgr
+
+  projects:
+    - crescendo
+
+
+datasets:
+  # CMIP6
+  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+  - {dataset: AWI-CM-1-1-MR, grid: gn}
+  - {dataset: AWI-ESM-1-1-LR, grid: gn}
+  - {dataset: BCC-CSM2-MR, grid: gn}
+  - {dataset: BCC-ESM1, grid: gn}
+  - {dataset: CAMS-CSM1-0, grid: gn}
+  - {dataset: CanESM5, grid: gn}
+  - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+  - {dataset: CAS-ESM2-0, institute: CAS, grid: gn}
+  - {dataset: CESM2, grid: gn}
+  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+  - {dataset: CIESM}
+  - {dataset: CMCC-CM2-HR4, grid: gn}
+  - {dataset: CMCC-CM2-SR5, grid: gn}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+  - {dataset: E3SM-1-0}
+  # - {dataset: E3SM-1-1, institute: E3SM-Project} # strange outliers
+  - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+  # - {dataset: EC-Earth3} # empty folder
+  - {dataset: EC-Earth3-Veg}
+  - {dataset: EC-Earth3-Veg-LR}
+  - {dataset: FGOALS-f3-L}
+  - {dataset: FGOALS-g3, grid: gn}
+  # - {dataset: FIO-ESM-2-0, grid: gn} # variable ua: lat: is not monotonic
+  - {dataset: GFDL-CM4, grid: gr1}
+  - {dataset: GFDL-ESM4, grid: gr1}
+  - {dataset: GISS-E2-1-G, grid: gn}
+  - {dataset: GISS-E2-1-G-CC, grid: gn}
+  - {dataset: GISS-E2-1-H, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: IITM-ESM, grid: gn}
+  - {dataset: INM-CM4-8, grid: gr1}
+  - {dataset: INM-CM5-0, grid: gr1}
+  - {dataset: IPSL-CM6A-LR}
+  - {dataset: KACE-1-0-G}
+  - {dataset: KIOST-ESM, grid: gr1}
+  - {dataset: MCM-UA-1-0, grid: gn}
+  - {dataset: MIROC6, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, grid: gn}
+  - {dataset: MRI-ESM2-0, grid: gn}
+  - {dataset: NESM3, grid: gn}
+  # - {dataset: NorCPM1, grid: gn, institute: NCC} # empty directory
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
+  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+  - {dataset: SAM0-UNICON, grid: gn}
+  - {dataset: TaiESM1, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+  # CMIP5
+  # - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1979, end_year: 2005}
+  # - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+  #    start_year: 1979, end_year: 2005}
+  # - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
+  #    ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+
+
+preprocessors:
+  zonal:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      scheme: linear
+      levels: reference_dataset
+    zonal_statistics:
+      operator: mean
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+
+diagnostics:
+
+  # ==========================================================================
+  # Eyring et al. (2013) - Figure 12
+  # Longterm mean and trend of the zonal wind
+  # ==========================================================================
+
+  eyring13jgr_fig12:
+    description: Longterm mean and trend zonal wind
+    themes:
+      - chem
+    realms:
+      - atmos
+    variables:
+      ua:
+        preprocessor: zonal
+        reference_dataset: ERA5
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        grid: gr
+        ensemble: r1i1p1f1
+        start_year: 1995
+        end_year: 2014
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, type: reanaly, version: 1,
+         start_year: 1995, end_year: 2014, tier: 3}
+    scripts:
+      clim: &clim_settings
+        script: eyring13jgr/eyring13jgr_fig12.ncl
+        e13fig12_exp_MMM: "historical"
+        e13fig12_season: "DJF"
+        e13fig12_multimean: true
