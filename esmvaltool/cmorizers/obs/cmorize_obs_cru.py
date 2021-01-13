@@ -14,8 +14,8 @@ Download and processing instructions
         {raw_name}/cru_ts4.04.1901.2019.{raw_name}.dat.nc.gz
     where {raw_name} is the name of the desired variable(s).
 
-Two files are generated per variable, one with version (e.g. TS4.04),
-one with version + _stn1 (i.e. TS4.04-stn1), which is constrained on holding
+Two files are generated per variable, one with version (i.e. TS4.04),
+one with version + -stn1 (i.e. TS4.04-stn1), which is constrained on holding
 gridpoint values relying on data from at least one station (i.e. removing
 gridpoints solely relying on climatological infilling).
 """
