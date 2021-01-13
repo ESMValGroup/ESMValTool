@@ -19,13 +19,13 @@ Download and processing instructions
             [Source]/absolute_v5.nc
 """
 
+import copy
 import logging
 import os
-import copy
-import numpy as np
-from cf_units import Unit
 
 import iris
+import numpy as np
+from cf_units import Unit
 
 from . import utilities as utils
 
@@ -58,7 +58,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
     clim_data = np.tile(clim_data, [cube.shape[0] // 12, 1, 1])
     if cube.shape[0] % 12 != 0:
         for i in range(cube.shape[0] % 12):
-            clim_data = np.vstack([clim_data, clim_data[i:i+1]])
+            clim_data = np.vstack([clim_data, clim_data[i:i + 1]])
 
     cube.data = cube.data + clim_data
 
