@@ -1,0 +1,64 @@
+name: Full Development Test (Python)
+
+# runs on a push on master and at the end of every day
+on:
+  push:
+    branches:
+    - master
+    - ga_full_develop_test  # testing branch
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+      fail-fast: false
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: esmvaltool
+          environment-file: environment.yml
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: conda-forge
+      - shell: bash -l {0}
+        run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
+      - shell: bash -l {0}
+        run: conda --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - shell: bash -l {0}
+        run: python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+      - shell: bash -l {0}
+        run: esmvaltool --help
+      - shell: bash -l {0}
+        run: esmvaltool version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - shell: bash -l {0}
+        run: cd ../..
+      - shell: bash -l {0}
+        run: git clone https://github.com/ESMValGroup/ESMValCore.git
+      - shell: bash -l {0}
+        run: cd ESMValCore
+      - shell: bash -l {0}
+        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install_esmvalcore.txt
+      - shell: bash -l {0}
+        run: cd ../ESMValTool/ESMValTool
+      - shell: bash -l {0}
+        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+      - shell: bash -l {0}
+        run: esmvaltool install R
+      - shell: bash -l {0}
+        run: esmvaltool install Julia
+      - shell: bash -l {0}
+        run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v2
+        with:
+          name: Source_Install_Linux_python_${{ matrix.python-version }}
+          path: develop_test_linux_artifacts_python_${{ matrix.python-version }}
