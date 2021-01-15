@@ -30,13 +30,11 @@ jobs:
           conda --version
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
-          conda env update -n esmvaltool -f environment.yml
           pip install -e .[develop]
           pytest -n 2 -m "not installation"
           cd ..
           git clone https://github.com/ESMValGroup/ESMValTool.git
           cd ESMValTool
-          conda env update -n esmvaltool -f environment.yml
           pip install -e .[develop]
           esmvaltool install R
           esmvaltool install Julia
