@@ -1,4 +1,4 @@
-
+"""Diagnostic for PRIMAVERA Cyclone Tracker."""
 import os
 import logging
 import shutil
@@ -10,34 +10,61 @@ import iris.util
 
 import cf_units
 
-import esmvaltool.diag_scripts.shared
-import esmvaltool.diag_scripts.shared.names as n
-from esmvaltool.diag_scripts.shared import group_metadata
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import (
+    group_metadata,
+    names,
+    ProvenanceLogger,
+    run_diagnostic
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class CycloneTracker(object):
+class CycloneTracker:
+    """Class used to prepare the input for the Cyclone Tracker."""
+
     def __init__(self, config):
+        """Set diagnostic parameters and constants.
+
+        Parameters
+        ----------
+            config : dict
+                Dictionary containing configuration settings.
+        """
         self.cfg = config
-        self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.atcffreq = None
+        """Frequency of the output [x100 hr]."""
         self.westbd = self.cfg['westbd']
+        """West boundary of the domain."""
         self.eastbd = self.cfg['eastbd']
+        """East boundary of the domain."""
         self.northbd = self.cfg['northbd']
+        """North boundary of the domain."""
         self.southbd = self.cfg['southbd']
+        """South boundary of the domain."""
         self.tracktype = self.cfg['type']
+        """Type of tracking to perform."""
         self.mslpthresh = self.cfg['mslpthresh']
+        """Minimum MSLP gradient threshold [hPa/km]."""
         self.mslpthresh2 = self.cfg['mslpthresh2']
+        """Maximum pressure threshold [hPa]."""
         self.v850thresh = self.cfg['v850thresh']
+        """Minimum azimutally-average 850hPa windspeed threshold [m/s]."""
         self.contint = self.cfg['contint']
+        """Interval minimum pressure of a new low and the closed isobar[Pa]."""
         self.wcore_depth = self.cfg['wcore_depth']
+        """Contour interval [K]."""
         self.ikeflag = self.cfg['ikeflag']
+        """Compute Integrated Kinetic Energy (y/n)."""
         self.verb = self.cfg['verb']
+        """Verbosity (0/1/2/3)."""
         self.tracker_exe = self.cfg['tracker_exe']
+        """Path to the tracker executable."""
 
     def compute(self):
+        """
+        Prepares the input and calls the tracker.
+        """
         data = group_metadata(self.cfg['input_data'].values(), 'dataset')
         for alias in data:
             var = group_metadata(data[alias], 'short_name')
@@ -45,42 +72,43 @@ class CycloneTracker(object):
             uas = iris.load_cube(var['uas'][0]['filename'])
             vas = iris.load_cube(var['vas'][0]['filename'])
             if 'ua7h' not in var.keys():
-                ua = iris.load_cube(var['ua'][0]['filename'])
-                va = iris.load_cube(var['va'][0]['filename'])
-                ta = iris.load_cube(var['ta'][0]['filename'])
+                eastward_wind = iris.load_cube(var['ua'][0]['filename'])
+                northward_wind = iris.load_cube(var['va'][0]['filename'])
+                temperature = iris.load_cube(var['ta'][0]['filename'])
                 try:
-                    zg = iris.load_cube(var['zg'][0]['filename'])
+                    geopotential = iris.load_cube(var['zg'][0]['filename'])
                 except KeyError:
-                    zg = iris.load_cube(var['zg7h'][0]['filename'])
-                    zg.var_name = 'zg'
+                    geopotential = iris.load_cube(var['zg7h'][0]['filename'])
+                    geopotential.var_name = 'zg'
 
             else:
-                ua = iris.load_cube(var['ua7h'][0]['filename'])
-                ua.var_name = 'ua'
-                va = iris.load_cube(var['va7h'][0]['filename'])
-                va.var_name = 'va'
-                ta = iris.load_cube(var['ta7h'][0]['filename'])
-                ta.var_name = 'ta'
-                zg = iris.load_cube(var['zg7h'][0]['filename'])
-                zg.var_name = 'zg'
+                eastward_wind = iris.load_cube(var['ua7h'][0]['filename'])
+                eastward_wind.var_name = 'ua'
+                northward_wind = iris.load_cube(var['va7h'][0]['filename'])
+                northward_wind.var_name = 'va'
+                temperature = iris.load_cube(var['ta7h'][0]['filename'])
+                temperature.var_name = 'ta'
+                geopotential = iris.load_cube(var['zg7h'][0]['filename'])
+                geopotential.var_name = 'zg'
 
-                ua.remove_coord('time')
-                ua.add_dim_coord(psl.coord('time'), 0)
-                va.remove_coord('time')
-                va.add_dim_coord(psl.coord('time'), 0)
+                eastward_wind.remove_coord('time')
+                eastward_wind.add_dim_coord(psl.coord('time'), 0)
+                northward_wind.remove_coord('time')
+                northward_wind.add_dim_coord(psl.coord('time'), 0)
                 uas = iris.load_cube(var['uas'][0]['filename'])
                 uas.remove_coord('time')
                 uas.add_dim_coord(psl.coord('time'), 0)
                 vas = iris.load_cube(var['vas'][0]['filename'])
                 vas.remove_coord('time')
                 vas.add_dim_coord(psl.coord('time'), 0)
-                ta.remove_coord('time')
-                ta.add_dim_coord(psl.coord('time'), 0)
-                zg.remove_coord('time')
-                zg.add_dim_coord(psl.coord('time'), 0)
+                temperature.remove_coord('time')
+                temperature.add_dim_coord(psl.coord('time'), 0)
+                geopotential.remove_coord('time')
+                geopotential.add_dim_coord(psl.coord('time'), 0)
 
-            ta = ta.collapsed('air_pressure', iris.analysis.MEAN)
-            ta.coords('air_pressure')[0].points = [40100]
+            temperature = temperature.collapsed('air_pressure',
+                                                iris.analysis.MEAN)
+            temperature.coords('air_pressure')[0].points = [40100]
             self.atcffreq = '600'
             freq = psl.attributes['frequency']
             if 'day' in freq:
@@ -97,7 +125,8 @@ class CycloneTracker(object):
                 iris.coord_categorisation.add_month_number(psl, 'time')
                 months = set(psl.coord('month_number').points)
 
-            total = [psl, ua, va, uas, vas, ta, zg]
+            total = [psl, eastward_wind, northward_wind,
+                     uas, vas, temperature, geopotential]
             output = '{project}_' \
                      '{dataset}_' \
                      '{mip}_' \
@@ -113,7 +142,7 @@ class CycloneTracker(object):
                                         start=data[alias][0]['start_year'],
                                         end=data[alias][0]['end_year'])
 
-            output_file = open(os.path.join(self.cfg[n.WORK_DIR], output),
+            output_file = open(os.path.join(self.cfg[names.WORK_DIR], output),
                                'wb')
 
             try:
@@ -136,8 +165,29 @@ class CycloneTracker(object):
 
     def run_custom_time(self, dataset, total, years,
                         months, start_day, end_day, output_file):
+        """
+        Prepares output file for a custom time period.
+
+        Parameters
+        ----------
+        dataset: str
+            Name of the dataset
+        total: list
+            List containing all the variables' cubes.
+        years: set
+            Value of the years present in the variables.
+        months: set
+            Value of the months present in the variables.
+        start_day: int
+            Value of the variables' start day.
+        end_day: int
+            Value of the variables' end day.
+        output_file: file
+            Output txt file.
+
+        """
         total_period = []
-        for i, variable in enumerate(total):
+        for i, _ in enumerate(total):
             total_period.append(total[i])
             calendar = total_period[i].coord('time').units.calendar
             total_period[i].coord('time').convert_units(cf_units.Unit(
@@ -158,7 +208,24 @@ class CycloneTracker(object):
                           list(years)[0], list(months)[0])
 
     def call_tracker(self, variables, filename, output, year, month):
-        input_path = os.path.join(self.cfg[n.WORK_DIR], filename + '.nc')
+        """
+        Calls the tracker.
+
+        Parameters
+        ----------
+        variables: list.
+            List containing the variables' cube.
+        filename: str.
+            NetCDF file containing the input for the tracker.
+        output: str
+            Output text file.
+        year: int.
+            First year present in the dataset.
+        month: int.
+            First month present in the dataset.
+
+        """
+        input_path = os.path.join(self.cfg[names.WORK_DIR], filename + '.nc')
         iris.save(variables, input_path)
         time = variables[0].coord('time').points
         path = os.path.join(self.cfg['run_dir'], filename)
@@ -174,6 +241,16 @@ class CycloneTracker(object):
         shutil.copyfileobj(open('fort.66', 'rb'), output)
 
     def write_fort15(self, path, time):
+        """
+        Writes the fort.15 file.
+
+        Parameters
+        ----------
+        path: str
+            Path to the fort.15 file
+        time: list
+            List containing the variables' timesteps.
+        """
         fort15_file = open(os.path.join(path, 'fort.15'), 'w')
         for timestep, value in enumerate(time):
             fort15_file.write('{0:4} {1:5}\n'.format(timestep + 1,
@@ -181,10 +258,30 @@ class CycloneTracker(object):
         fort15_file.close()
 
     def write_fort14(self, path):
+        """
+        Writes the fort.14 file.
+
+        Parameters
+        ----------
+        path: str
+            Path to the fort.14 file
+        """
         fort14_file = open(os.path.join(path, 'fort.14'), 'w')
         fort14_file.close()
 
     def write_namelist(self, path, month, year):
+        """
+        Write namelist
+
+        Parameters
+        ----------
+        path: str
+            Path to the namelist.
+        month: int
+            Input month for the run.
+        year: int
+            Input year for the run.
+        """
         namelist_file = open(os.path.join(path, 'namelist'), 'w')
         namelist_file.write('&datein \n')
         namelist_file.write('  inp%bcc={0}, \n'.format(str(year)[0:2]))
@@ -247,6 +344,19 @@ class CycloneTracker(object):
         namelist_file.close()
 
     def write_provenance(self, alias, data, output_file):
+        """
+        Write provenance
+
+        Parameters
+        ----------
+        alias: str
+            Alias of the dataset
+        data: dict
+            Dictionary containing the dataset information.
+        output_file: str
+            Path of the output netcdf file.
+
+        """
         ancestors = []
         for i in range(len(data[alias])):
             ancestors.append(data[alias][i]['filename'])
@@ -268,7 +378,10 @@ class CycloneTracker(object):
 
 
 def main():
-    with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
+    """
+    Run Cyclone Tracker diagnostic
+    """
+    with run_diagnostic() as config:
         CycloneTracker(config).compute()
 
 
