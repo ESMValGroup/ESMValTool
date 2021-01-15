@@ -52,7 +52,7 @@ begin
   TIER = 3
 
   ; Period
-  YEAR1 = 1992  ; 1979
+  YEAR1 = 1979  ; 1992
   YEAR2 = 2019  ; 2020
 
   ; Selected variables (standard name)

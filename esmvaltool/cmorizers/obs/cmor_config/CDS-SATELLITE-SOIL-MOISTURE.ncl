@@ -2,4 +2,4 @@
 ; [daily, monthly] x [combined, passive, active]
 JOBS = (/(/False, False/), \
          (/False, False/), \
-         (/False, True/)/)
+         (/False, False/)/)
