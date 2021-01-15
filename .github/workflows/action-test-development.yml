@@ -39,11 +39,9 @@ jobs:
       - shell: bash -l {0}
         run: esmvaltool install Julia
       - shell: bash -l {0}
-        run: cd ..
-      - shell: bash -l {0}
-        run: git clone https://github.com/ESMValGroup/ESMValCore.git
-      - shell: bash -l {0}
         run: |
+          cd ..
+          git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
           pip install -e .[develop]
       - shell: bash -l {0}
