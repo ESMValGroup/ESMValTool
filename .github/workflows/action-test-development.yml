@@ -39,13 +39,15 @@ jobs:
       - shell: bash -l {0}
         run: esmvaltool install Julia
       - shell: bash -l {0}
+        run: cd ..
+      - shell: bash -l {0}
         run: git clone https://github.com/ESMValGroup/ESMValCore.git
       - shell: bash -l {0}
         run: cd ESMValCore
       - shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/esmvalcore_install.txt
       - shell: bash -l {0}
-        run: cd ..
+        run: cd ../ESMValTool
       - shell: bash -l {0}
         run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
