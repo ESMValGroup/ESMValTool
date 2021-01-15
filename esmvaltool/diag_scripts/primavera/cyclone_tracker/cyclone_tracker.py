@@ -1,7 +1,9 @@
 """Diagnostic for PRIMAVERA Cyclone Tracker."""
 import os
+import subprocess
 import logging
 import shutil
+import sys
 
 import iris
 import iris.analysis
@@ -237,7 +239,16 @@ class CycloneTracker:
         self.write_fort14(path)
         os.chdir(path)
         args = self.tracker_exe + ' < namelist'
-        os.system(args)
+        try:
+            subprocess.run([args], check=True)
+        except subprocess.CalledProcessError:
+            logger.info(
+                "Path to the executable parameter tracker_exe "
+                "is not is not recognized or has not been provided. "
+                "Input has been prepared but the tracker has not been"
+                "executed. Please contact the authors to get the tracker "
+                "executable.")
+            sys.exit()
         shutil.copyfileobj(open('fort.66', 'rb'), output)
 
     def write_fort15(self, path, time):
