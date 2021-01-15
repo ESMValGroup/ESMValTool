@@ -24,7 +24,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"
       - name: Setup esmvalcore and esmvaltool in dev mode
-        working-directory: ./esmval
         run: |
           conda --version
           git clone https://github.com/ESMValGroup/ESMValCore.git
