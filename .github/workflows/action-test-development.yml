@@ -14,7 +14,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.8]  # latest stable for both esmvaltool and core
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
@@ -23,43 +23,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"
-      - shell: bash -l {0}
-        run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
-      - shell: bash -l {0}
-        run: conda --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
-      - shell: bash -l {0}
-        run: python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
-      - shell: bash -l {0}
-        run: git clone https://github.com/ESMValGroup/ESMValCore.git
-      - shell: bash -l {0}
-        run: cd ESMValCore
-      - shell: bash -l {0}
-        run: conda env create -n esmvaltool -f environment.yml 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/env_create_esmvalcore.txt
-      - shell: bash -l {0}
-        run: conda activate esmvaltool
-      - shell: bash -l {0}
-        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install_esmvalcore.txt
-      - shell: bash -l {0}
-        run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report_esmvalcore.txt
-      - shell: bash -l {0}
-        run: cd ..
-      - shell: bash -l {0}
-        run: git clone https://github.com/ESMValGroup/ESMValTool.git
-      - shell: bash -l {0}
-        run: cd ESMValTool
-      - shell: bash -l {0}
-        run: conda env update -n esmvaltool -f environment.yml 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/env_update_esmvaltool.txt
-      - shell: bash -l {0}
-        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install_esmvaltool.txt
-      - shell: bash -l {0}
-        run: esmvaltool install R
-      - shell: bash -l {0}
-        run: esmvaltool install Julia
-      - shell: bash -l {0}
-        run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report_esmvaltool.txt
-      - name: Upload artifacts
-        if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v2
-        with:
-          name: Source_Install_Linux_python_${{ matrix.python-version }}
-          path: develop_test_linux_artifacts_python_${{ matrix.python-version }}
+      - name: Setup esmvalcore and esmvaltool in dev mode
+        working-directory: ./esmval
+        run: |
+          conda --version 2>&1
+          git clone https://github.com/ESMValGroup/ESMValCore.git
+          cd ESMValCore
+          conda env create -n esmvaltool -f environment.yml
+          conda activate esmvaltool
+          pip install -e .[develop]
+          pytest -n 2 -m "not installation"
+          cd ..
+          git clone https://github.com/ESMValGroup/ESMValTool.git
+          cd ESMValTool
+          conda env update -n esmvaltool -f environment.yml
+          pip install -e .[develop]
+          esmvaltool install R
+          esmvaltool install Julia
+          pytest -n 2 -m "not installation"
