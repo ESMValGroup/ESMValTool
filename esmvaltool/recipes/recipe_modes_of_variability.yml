@@ -21,7 +21,7 @@ documentation:
     - c3s-magic
 
   references:
-    - fuckar
+    - fuckar15cd
 
 datasets:
   - {dataset: CNRM-CM5, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical}

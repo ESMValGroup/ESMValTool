@@ -3,7 +3,6 @@
 #-------------E. Arnone (June 2017)------------------#
 ######################################################
 
-
 # MAIN TRENDS FUNCTION
 hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
   # setup useful strings
@@ -129,7 +128,7 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
 
     # setup time array
     times <- as.numeric(year1) + 1:ntime - 1
-    rettimes <- 1:length(times)
+    rettimes <- seq_along(times)
     if (trend_years[1] != F) {
       # apply trend to limited time interval if required
       rettimes <- which((times >= trend_years[1]) &
@@ -214,7 +213,7 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
 
   # variables definition
   for (var in field_names) {
-    for (itype in 1:length(var_type)) {
+    for (itype in seq_along(var_type)) {
       svar <- paste0(var, "_", var_type[itype])
       rfield <- get(svar, rtseries_list)
       rfield[is.nan(rfield)] <- NA
@@ -314,8 +313,16 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
     " according to ",
     models_name[model_idx]
   )
+
+
+  #ancs <- list(infile)
+  #if (length(infile) == 1) {
+  #  ancs <- infile
+  #}
+
+  anc_list <- flatten_lists(prov_info[[infile]]$ancestors)
   xprov <- list(
-    ancestors = list(infile),
+    ancestors = anc_list,
     model_idx = list(model_idx),
     caption = caption
   )

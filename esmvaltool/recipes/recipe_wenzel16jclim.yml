@@ -1,0 +1,392 @@
+# ESMValTool
+# recipe_wenzel16jclim.yml
+---
+documentation:
+  description: |
+    Calculates process oriented diagnostics from all model ensemble members and
+    compares results with future projections of zonal mean zonal wind and
+    performs a Multiple Linear Regression (MDER) analysis.
+
+  authors:
+    - wenzel_sabrina
+    - schlund_manuel
+
+  projects:
+    - esmval
+    - crescendo
+
+
+DATASET_ANCHOR: &datasets
+  - {dataset: ACCESS1-0,      ensemble: r1i1p1}
+  - {dataset: ACCESS1-3,      ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
+  - {dataset: BNU-ESM,        ensemble: r1i1p1}
+  - {dataset: CanESM2,        ensemble: r1i1p1}
+  - {dataset: CanESM2,        ensemble: r2i1p1}
+  - {dataset: CanESM2,        ensemble: r3i1p1}
+  - {dataset: CanESM2,        ensemble: r4i1p1}
+  - {dataset: CanESM2,        ensemble: r5i1p1}
+  - {dataset: CESM1-BGC,      ensemble: r1i1p1}
+  - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
+  - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
+  - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
+  - {dataset: CMCC-CMS,       ensemble: r1i1p1}
+  - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
+  - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+  - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
+  - {dataset: inmcm4,         ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+  - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+  - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+  - {dataset: MIROC5,         ensemble: r1i1p1}
+  - {dataset: MIROC5,         ensemble: r2i1p1}
+  - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+  - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+  - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+  - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+  - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+  - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+  - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
+  - {dataset: NorESM1-M,      ensemble: r1i1p1}
+
+
+preprocessors:
+
+  sh:
+    extract_region:
+      start_latitude: -90
+      end_latitude: -20
+      start_longitude: 0
+      end_longitude: 360
+
+  mean_sp50:
+    extract_levels:
+      levels: 5000
+      scheme: linear
+    extract_region:
+      start_latitude: -90
+      end_latitude: -60
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+
+  mean_sp100:
+    extract_levels:
+      levels: 10000
+      scheme: linear
+    extract_region:
+      start_latitude: -90
+      end_latitude: -60
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+
+  mean_ng50:
+    extract_levels:
+      levels: 5000
+      scheme: linear
+    extract_region:
+      start_latitude: -82.5
+      end_latitude: 82.5
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+
+  mean_ng100:
+    extract_levels:
+      levels: 10000
+      scheme: linear
+    extract_region:
+      start_latitude: -90
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+
+  mean_trop250:
+    extract_levels:
+      levels: 25000
+      scheme: linear
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  diag_ta_sp100:
+    description: Calculate temperature trends and climatological means of ta.
+    variables:
+      ta: &mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_sp100
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        start_year: 1979
+        end_year: 2005
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
+    scripts:
+      ta_sp100: &ta_sp100
+        script: austral_jet/main.ncl
+        domain: sh
+        average_ens: true
+        styleset: CMIP5
+        season: ['ONDJ']
+        e13fig10_yr_min: 1979
+        e13fig10_yr_max: 2005
+        wdiag: ['T-SP_t', 'T-SP_c']
+        wdiag_title: ['T-SP_t', 'T-SP_c']
+        ref_dataset: ['ERA-Interim']
+      select_for_mder:
+        <<: *ta_sp100
+        script: mder/select_for_mder.ncl
+        ancestors: ['ta', 'ta_sp100']
+
+  diag_ta_ng100:
+    description: Calculate temperature trends and climatological means of ta.
+    variables:
+      ta:
+        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_ng100
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
+    scripts:
+      ta_ng100: &ta_ng100
+        <<: *ta_sp100
+        season: ['yearly']
+        wdiag: ['T-NGlob_t', 'T-NGlob_c']
+        wdiag_title: ['T-NGlob_t', 'T-NGlob_c']
+      select_for_mder:
+        <<: *ta_ng100
+        script: mder/select_for_mder.ncl
+        ancestors: ['ta', 'ta_ng100']
+
+  diag_ta_trop250:
+    description: Calculate temperature trends and climatological means of ta.
+    variables:
+      ta:
+        <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
+        preprocessor: mean_trop250
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
+    scripts:
+      ta_trop250: &ta_trop250
+        <<: *ta_sp100
+        season: ['DJF']
+        wdiag: ['T-Trop_t', 'T-Trop_c']
+        wdiag_title: ['T-Trop_t', 'T-Trop_c']
+      select_for_mder:
+        <<: *ta_trop250
+        script: mder/select_for_mder.ncl
+        ancestors: ['ta', 'ta_trop250']
+
+  diag_uajet_sh850:
+    description: Calculate temperature trends and climatological means of uajet.
+    variables:
+      uajet: &cmip5_amon_t0m_historical_1979_2005
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        start_year: 1979
+        end_year: 2005
+        derive: true
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
+    scripts:
+      uajet_sh850: &uajet_sh850
+        <<: *ta_sp100
+        season: ['DJF']
+        wdiag: ['U-Jet_t', 'U-Jet_c']
+        wdiag_title: ['U-Jet_t', 'U-Jet_c']
+      select_for_mder:
+        <<: *uajet_sh850
+        script: mder/select_for_mder.ncl
+        ancestors: ['uajet', 'uajet_sh850']
+
+  diag_tpp_sh50:
+    description: Calculate temperature trends and climatological means of tpp.
+    variables:
+      ta: &cmip5_amon_t3m_historical_1979_2005
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        start_year: 1979
+        end_year: 2005
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
+    scripts:
+      tpp_sh50: &tpp_sh50
+        <<: *ta_sp100
+        season: ['DJF']
+        wdiag: ['P-SH_t', 'P-SH_c']
+        wdiag_title: ['P-SH_t', 'P-SH_c']
+        derive_var: tpp
+        derive_lev: 5000
+        derive_latrange: [-90, -50]
+      select_for_mder:
+        <<: *tpp_sh50
+        script: mder/select_for_mder.ncl
+        ancestors: ['ta', 'tpp_sh50']
+
+  diag_mmstf_sh500:
+    description: Calculate temperature trends and climatological means of southern hemisphere Hadley cell boundary.
+    variables:
+      va:
+        <<: *cmip5_amon_t3m_historical_1979_2005
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      ps:
+        <<: *cmip5_amon_t3m_historical_1979_2005
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
+    scripts:
+      mmstf_sh500: &mmstf_sh500
+        <<: *ta_sp100
+        season: ['DJF']
+        wdiag: ['H-SH_t', 'H-SH_c']
+        wdiag_title: ['H-SH_t', 'H-SH_c']
+        derive_var: mmstf
+        derive_lev: 50000
+        derive_latrange: [-80, -20]
+      select_for_mder:
+        <<: *mmstf_sh500
+        script: mder/select_for_mder.ncl
+        ancestors: ['va', 'ps', 'mmstf_sh500']
+
+  diag_asr_sh:
+    description: Calculate temperature trends and climatological means of asr.
+    variables:
+      asr:
+        preprocessor: sh
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        start_year: 2000
+        end_year: 2005
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001}
+    additional_datasets: *datasets
+    scripts:
+      asr_sh: &asr_sh
+        <<: *ta_sp100
+        script: austral_jet/asr.ncl
+        season: monthlyclim
+        wdiag: ['ASR-SH']
+        wdiag_title: ['ASR-SH']
+        ref_dataset: ['CERES-EBAF']
+      select_for_mder:
+        <<: *asr_sh
+        script: mder/select_for_mder.ncl
+        ancestors: ['asr', 'asr_sh']
+
+  diag_mder:
+    description: Performs Multiple Diagnostic Ensemble Regression (MDER).
+    variables:
+      uajet:
+        <<: *cmip5_amon_t0m_historical_1979_2005
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3, end_year: 2012}
+          - {dataset: ACCESS1-0,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: ACCESS1-3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1-m,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: BNU-ESM,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+          - {dataset: CESM1-BGC,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: CMCC-CMS,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CNRM-CM5,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r6i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r7i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r8i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r9i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r10i1p1}
+          - {dataset: GFDL-CM3,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: HadGEM2-AO,     exp: rcp45, start_year: 2006, end_year: 2099, ensemble: r1i1p1}
+          - {dataset: inmcm4,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+          - {dataset: IPSL-CM5A-MR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5B-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: MIROC-ESM,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM-CHEM, exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: MRI-CGCM3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: NorESM1-M,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+    additional_datasets: *datasets
+    scripts:
+      absolute_correlation: &absolute_correlation
+        <<: *ta_sp100
+        script: mder/absolute_correlation.ncl
+        ancestors: ['uajet', '*/select_for_mder']
+        time_opt: DJF
+        time_oper: extract
+        calc_type: pos
+        p_time: [2015, 2040]
+        p_step: 19
+        scal_time: [1979, 1998]
+      regression_stepwise:
+        <<: *absolute_correlation
+        script: mder/regression_stepwise.ncl
+        p_value: 0.05
+        wregr: true
+        wexit: true
+        smooth: true
+        iter: 29
+        cross_validation_mode: false

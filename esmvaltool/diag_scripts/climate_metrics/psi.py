@@ -17,10 +17,12 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-window_length : int, optional (default: 55)
-    Number of years used for the moving window average.
 lag : int, optional (default: 1)
     Lag (in years) for the autocorrelation function.
+output_attributes : dict, optional
+    Write additional attributes to netcdf files.
+window_length : int, optional (default: 55)
+    Number of years used for the moving window average.
 
 """
 
@@ -29,12 +31,14 @@ import os
 
 import cf_units
 import iris
+import iris.coord_categorisation
 import numpy as np
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, group_metadata, io,
-    run_diagnostic, select_metadata)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            group_metadata, io, run_diagnostic,
+                                            select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -65,18 +69,19 @@ def calculate_psi(cube, cfg):
         psis.append(np.std(tas) / np.sqrt(-np.log(autocorr)))
 
     # Return new cube
-    year_coord = iris.coords.DimCoord(
-        np.array(psi_years),
-        var_name='year',
-        long_name='year',
-        units=cf_units.Unit('year'))
+    year_coord = iris.coords.DimCoord(np.array(psi_years),
+                                      var_name='year',
+                                      long_name='year',
+                                      units=cf_units.Unit('year'))
     psi_cube = iris.cube.Cube(
         np.array(psis),
         dim_coords_and_dims=[(year_coord, 0)],
         attributes={
             'window_length': window_length,
-            'lag': lag
-        })
+            'lag': lag,
+            **cfg.get('output_attributes', {}),
+        },
+    )
     return psi_cube
 
 
@@ -93,6 +98,21 @@ def get_provenance_record(caption, ancestor_files):
         'ancestors': ancestor_files,
     }
     return record
+
+
+def get_attributes(cfg, single_psi_cube, input_data):
+    """Get attributes for psi cube for all datasets."""
+    datasets = "|".join({str(d['dataset']) for d in input_data})
+    projects = "|".join({str(d['project']) for d in input_data})
+    ref = "|".join({str(d.get('reference_dataset')) for d in input_data})
+    attrs = single_psi_cube.attributes
+    attrs.update({
+        'dataset': datasets,
+        'project': projects,
+        'reference_dataset': ref,
+    })
+    attrs.update(cfg.get('output_attributes', {}))
+    return attrs
 
 
 def main(cfg):
@@ -114,6 +134,7 @@ def main(cfg):
     for (dataset, [data]) in grouped_data.items():
         logger.info("Processing %s", dataset)
         cube = iris.load_cube(data['filename'])
+        iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
         data.update(psi_attrs)
@@ -137,8 +158,8 @@ def main(cfg):
 
     # Save averaged psis for every dataset in one file
     out_path = get_diagnostic_filename('psi', cfg)
-    io.save_scalar_data(
-        psis, out_path, psi_attrs, attributes=psi_cube.attributes)
+    attrs = get_attributes(cfg, psi_cube, input_data)
+    io.save_scalar_data(psis, out_path, psi_attrs, attributes=attrs)
 
     # Provenance
     caption = "{long_name} for mutliple climate models.".format(**psi_attrs)

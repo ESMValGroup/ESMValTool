@@ -1,0 +1,110 @@
+# ESMValTool
+# recipe_seaice_drift.yml
+---
+documentation:
+  description: |
+    'Sea ice drift evaluation'
+
+  authors:
+    - 'docquier_david'
+
+  projects:
+    - primavera
+
+  references:
+    - 'docquier2017cryo'
+
+  mantainer:
+    - vegas-regidor_javier
+
+datasets:
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical,
+     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+
+preprocessors:
+  extract:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 40
+      end_latitude: 90
+
+  extract_and_clim:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 40
+      end_latitude: 90
+    climate_statistics:
+      period: mon
+      operator: mean
+
+diagnostics:
+  seaice_drift:
+    description: Sea-ice drift
+    variables:
+      sic:
+        mip: day
+        preprocessor: extract_and_clim
+        reference_dataset: OSI-450-nh
+        additional_datasets:
+          - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v2,
+             mip: OImon, tier: 2, start_year: 1979, end_year: 2005}
+
+      sithick:
+        mip: day
+        preprocessor: extract_and_clim
+        reference_dataset: PIOMAS
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: PIOMAS, project: OBS, type: reanaly, version: 2.1,
+             mip: day, tier: 2, start_year: 1979, end_year: 2005}
+
+      sispeed:
+        mip: day
+        preprocessor: extract_and_clim
+        reference_dataset: NSIDC-0116-nh
+        derive: true
+        force_derivation: false
+        additional_datasets:
+          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: 4.1,
+             mip: day, tier: 3, start_year: 1979, end_year: 2005}
+
+      areacello:
+        mip: fx
+        preprocessor: extract
+        additional_datasets:
+          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: 4.1,
+             tier: 3, start_year: 1979, end_year: 2005}
+          - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v2,
+             tier: 2, start_year: 1979, end_year: 2005}
+          - {dataset: PIOMAS, project: OBS, type: reanaly, version: 2.1,
+             tier: 2, start_year: 1979, end_year: 2005}
+
+    scripts:
+      sea_ice_drift:
+        script: seaice_drift/seaice_drift.py
+        latitude_treshold: 50
+      sea_ice_drift_SCICEX:
+        script: seaice_drift/seaice_drift.py
+        # lon, lat tuples
+        polygon:
+          - [-15., 87.]
+          - [-60., 86.58]
+          - [-130., 80]
+          - [-141., 80]
+          - [-141., 70]
+          - [-155., 72]
+          - [175., 75.5]
+          - [172., 78.5]
+          - [163, 80.5]
+          - [126, 78.5]
+          - [110, 84.33]
+          - [80, 84.42]
+          - [57, 85.17]
+          - [33, 83.8]
+          - [8, 84.08]
+        polygon_name: SCICEX

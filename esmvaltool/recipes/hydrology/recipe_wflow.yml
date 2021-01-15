@@ -1,0 +1,57 @@
+# ESMValTool
+# recipe_wflow.yml
+---
+documentation:
+  description: |
+    Pre-processes climate data for the WFlow hydrological model.
+    
+  authors:
+    - kalverla_peter
+    - camphuijsen_jaro
+    - alidoost_sarah
+    - aerts_jerom
+    - andela_bouwe
+    
+  projects:
+    - ewatercycle
+  
+  references:
+    - acknow_project
+
+preprocessors:
+  rough_cutout:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 6.75
+      start_latitude: 47.25
+      end_latitude: 52.5
+
+diagnostics:
+  wflow_daily:
+    description: WFlow input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      orog:
+        mip: fx
+        preprocessor: rough_cutout
+      tas: &daily_var
+        mip: day
+        preprocessor: rough_cutout
+        start_year: 1990
+        end_year: 1990
+      pr: *daily_var
+      # evspsblpot:  # doesn't exist for ERA-Interim.
+      # Reconstruct evspsblpot using:
+      psl: *daily_var
+      rsds: *daily_var
+      rsdt:
+        <<: *daily_var
+        mip: CFday
+    scripts:
+      script:
+        script: hydrology/wflow.py
+        basin: Meuse
+        dem_file: 'wflow/wflow_dem_Meuse.nc'
+        regrid: area_weighted

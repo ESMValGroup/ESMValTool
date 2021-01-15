@@ -1,0 +1,53 @@
+# ESMValTool
+# recipe_marrmot.yml
+---
+documentation:
+  description: |
+    Recipe pre-processes ERA-Interim and ERA-5 data
+    for use in the MARRMoT hydrological model.
+
+    MARRMoT is the Modular Assessment of Rainfall-Runnoff Models Toolbox ...
+    https://www.geosci-model-dev.net/12/2463/2019/
+
+  authors:
+    - kalverla_peter
+    - camphuijsen_jaro
+    - alidoost_sarah
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
+
+preprocessors:
+  daily: &daily
+    extract_shape:
+      # Lumped model: needs catchment-aggregated input data
+      shapefile: Meuse/Meuse.shp  # In aux (config-user.yml)
+      method: contains
+      crop: true
+
+diagnostics:
+  diagnostic_daily:
+    description: marrmot input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: &var_daily
+        mip: day
+        start_year: 1990
+        end_year: 2018
+        preprocessor: daily
+      pr: *var_daily
+      # MARRMoT requires PET. Thus, we need psl, rsds, rsdt
+      psl: *var_daily
+      rsds: *var_daily
+      rsdt:
+        <<: *var_daily
+        mip: CFday
+    scripts:
+      script:
+        script: hydrology/marrmot.py
+        basin: Meuse

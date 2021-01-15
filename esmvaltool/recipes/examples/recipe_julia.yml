@@ -1,0 +1,37 @@
+# ESMValTool
+# recipe_julia.yml
+---
+documentation:
+  description: |
+    Recipe for example diagnostic written in Julia.
+
+  authors:
+    - vonhardenberg_jost
+
+  maintainer:
+    - vonhardenberg_jost
+
+datasets:
+  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+  preproc:
+    regrid:
+      scheme: linear
+      target_grid: 1x1
+
+diagnostics:
+  example:
+    description: Example diagnostic written in Julia
+    variables:
+      tas:
+        mip: Amon
+        start_year: 1997
+        end_year: 1997
+        preprocessor: preproc
+        reference_dataset: "CESM1-CAM5"
+
+    scripts:
+      main:
+        script: examples/diagnostic.jl
+        parameter1: 1  # example parameter

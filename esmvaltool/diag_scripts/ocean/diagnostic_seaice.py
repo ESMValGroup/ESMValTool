@@ -61,13 +61,14 @@ This tool is part of the ocean diagnostic tools package in the ESMValTool.
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 """
+import itertools
 import logging
 import os
 import sys
-from itertools import product
 
 import cartopy
 import iris
+import iris.coord_categorisation
 import iris.quickplot as qplt
 import matplotlib
 import matplotlib.pyplot as plt
@@ -177,6 +178,7 @@ def make_ts_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 
@@ -287,7 +289,7 @@ def make_polar_map(
         ax1 = plt.subplot(111, projection=cartopy.crs.SouthPolarStereo())
         ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
 
-    linrange = np.linspace(0., 100., 21.)
+    linrange = np.linspace(0, 100, 21)
     qplt.contourf(cube, linrange, cmap=cmap, linewidth=0, rasterized=True)
     plt.tight_layout()
 
@@ -411,6 +413,7 @@ def make_map_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 
@@ -427,7 +430,7 @@ def make_map_plots(
     # Making plots for each layer
     plot_types = ['Fractional cover', 'Ice Extent']
     plot_times = [0, -1]
-    for plot_type, plot_time in product(plot_types, plot_times):
+    for plot_type, plot_time in itertools.product(plot_types, plot_times):
         for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
             layer = str(layer)
 
@@ -525,6 +528,7 @@ def make_map_extent_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
+    iris.coord_categorisation.add_year(cube, 'time')
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = agregate_by_season(cube)
 

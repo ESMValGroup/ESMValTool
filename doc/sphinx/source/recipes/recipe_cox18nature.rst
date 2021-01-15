@@ -50,8 +50,8 @@ User settings in recipe
 
 #. Script emergent_constraints/cox18nature.py
 
-   * ``confidence_level``, *float*, optional (default: 0.66): Confidence level for
-     ECS error estimation.
+   * ``confidence_level``, *float*, optional (default: 0.66): Confidence level
+     for ECS error estimation.
 
 #. Script climate_metrics/ecs.py
 
@@ -60,11 +60,12 @@ User settings in recipe
 
 #. Script climate_metrics/psi.py
 
-   * ``window_length``, *int*, optional (default: 55): Number of years used for
-     the moving window average.
-
+   * ``output_attributes``, *dict*, optional: Write additional attributes to
+     all output netcdf files.
    * ``lag``, *int*, optional (default: 1): Lag (in years) for the
      autocorrelation function.
+   * ``window_length``, *int*, optional (default: 55): Number of years used for
+     the moving window average.
 
 
 Variables

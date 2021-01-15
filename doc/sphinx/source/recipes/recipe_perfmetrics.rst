@@ -6,7 +6,7 @@ Performance metrics for essential climate parameters
 Overview
 --------
 
-The goal is to create a standard recipe for the calculation of performance metrics to quantify the ability of the models to reproduce the climatological mean annual cycle for selected "Essential Climate Variables" (ECVs) plus some additional corresponding diagnostics and plots to better understand and interpret the results. 
+The goal is to create a standard recipe for the calculation of performance metrics to quantify the ability of the models to reproduce the climatological mean annual cycle for selected "Essential Climate Variables" (ECVs) plus some additional corresponding diagnostics and plots to better understand and interpret the results.
 
 The recipe can be used to calculate performance metrics at different vertical levels (e.g., 5, 30, 200, 850 hPa as in `Gleckler et al. (2008) <http://dx.doi.org/10.1029/2007JD008972>`_ and in different regions. As an additional reference, we consider `Righi et al. (2015) <https://doi.org/10.5194/gmd-8-733-2015>`_.
 
@@ -16,6 +16,8 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
 
 * recipe_perfmetrics_CMIP5.yml
+* recipe_perfmetrics_CMIP5_cds.yml
+* recipe_perfmetrics_land_CMIP5.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
 
@@ -36,9 +38,9 @@ User settings in recipe
    * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon), cycle_zonal (time, plev, lat)
    * time_avg: type of time average (monthlyclim, seasonalclim, annualclim)
    * region: selected region (global, trop, nhext, shext, nhtrop, shtrop, nh, sh, nhmidlat, shmidlat, nhpolar, shpolar, eq)
-   
+
    *Optional settings (scripts)*
-   
+
    * styleset: for plot_type cycle only (cmip5, righi15gmd, cmip6, default)
    * plot_stddev: for plot_type cycle only, plots standard deviation as shading
    * legend_outside: for plot_type cycle only, plots the legend in a separate file
@@ -57,11 +59,11 @@ User settings in recipe
    * zonal_ymin: for plot_type zonal only, minimum pressure level on the y-axis (default: 5. hPa)
    * latlon_cmap: for plot_type latlon only, chosen color table (default: "amwg_blueyellowred")
    * plot_units: plotting units (if different from standard CMOR units)
-   
+
    *Required settings (variables)*
-   
+
    * reference_dataset: reference dataset to compare with (usually the observations).
-   
+
    *Optional settings (variables)*
 
    * alternative_dataset: a second dataset to compare with.
@@ -76,9 +78,9 @@ User settings in recipe
    * label_bounds: for RMSD and BIAS metrics, min and max of the labelbar
    * label_scale: for RMSD and BIAS metrics, bin width of the labelbar
    * colormap: for RMSD and BIAS metrics, color table of the labelbar
-   
+
    *Optional settings (scripts)*
-   
+
    * label_lo: adds lower triange for values outside range
    * label_hi: adds upper triange for values outside range
    * cm_interval: min and max color of the color table
@@ -93,41 +95,64 @@ User settings in recipe
 
 Variables
 ---------
+#.  recipe_perfmetrics_CMIP5.yml
 
-* clt (atmos, monthly mean, longitude latitude time)
-* hus (atmos, monthly mean, longitude latitude lev time)
-* od550aer, od870aer, od550abs, od550lt1aer (aero, monthly mean, longitude latitude time)
-* pr (atmos, monthly mean, longitude latitude time)
-* rlut, rlutcs, rsut, rsutcs (atmos, monthly mean, longitude latitude time)
-* sm (land, monthly mean, longitude latitude time)
-* ta (atmos, monthly mean, longitude latitude lev time)
-* tas (atmos, monthly mean, longitude latitude time)
-* toz (atmos, monthly mean, longitude latitude time)
-* ts (atmos, monthly mean, longitude latitude time)
-* ua (atmos, monthly mean, longitude latitude lev time)
-* va (atmos, monthly mean, longitude latitude lev time)
-* zg (atmos, monthly mean, longitude latitude lev time)
+    * clt (atmos, monthly mean, longitude latitude time)
+    * hus (atmos, monthly mean, longitude latitude lev time)
+    * od550aer, od870aer, od550abs, od550lt1aer (aero, monthly mean, longitude latitude time)
+    * pr (atmos, monthly mean, longitude latitude time)
+    * rlut, rlutcs, rsut, rsutcs (atmos, monthly mean, longitude latitude time)
+    * sm (land, monthly mean, longitude latitude time)
+    * ta (atmos, monthly mean, longitude latitude lev time)
+    * tas (atmos, monthly mean, longitude latitude time)
+    * toz (atmos, monthly mean, longitude latitude time)
+    * ts (atmos, monthly mean, longitude latitude time)
+    * ua (atmos, monthly mean, longitude latitude lev time)
+    * va (atmos, monthly mean, longitude latitude lev time)
+    * zg (atmos, monthly mean, longitude latitude lev time)
+
+#. recipe_perfmetrics_land_CMIP5.yml
+
+    * sm (land, monthly mean, longitude latitude time)
+    * nbp (land, monthly mean, longitude latitude time)
+    * gpp (land, monthly mean, longitude latitude time)
+    * lai (land, monthly mean, longitude latitude time)
+    * fgco2 (ocean, monthly mean, longitude latitude time)
+    * et (land, monthly mean, longitude latitude time)
+    * rlus, rlds, rsus, rdsd (atmos, monthly mean, longitude latitude time)
 
 Observations and reformat scripts
 ---------------------------------
 
 The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
+<https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
+#.  recipe_perfmetrics_CMIP5.yml
 
-* AIRS (hus - obs4mips)
-* CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
-* ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-AEROSOL.ncl)
-* ESACCI-CLOUD (clt - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-CLOUD.ncl)
-* ESACCI-OZONE (toz - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-OZONE.ncl)
-* ESACCI-SOILMOISTURE (sm - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
-* ESACCI-SST (ts - esmvaltool/utils/cmorizers/obs/cmorize_obs_ESACCI-SST.ncl)
-* GPCP-SG (pr - obs4mips)
-* HadISST (ts - esmvaltool/utils/cmorizers/obs/cmorize_obs_HadISST.ncl)
-* MODIS (od550aer - esmvaltool/utils/cmorizers/obs/cmorize_obs_MODIS.ncl)
-* NCEP (tas, ta, ua, va, zg - esmvaltool/utils/cmorizers/obs/cmorize_obs_NCEP.ncl)
-* NIWA-BS (toz - esmvaltool/utils/cmorizers/obs/cmorize_obs_NIWA-BS.ncl)
-* PATMOS-x (clt - esmvaltool/utils/cmorizers/obs/cmorize_obs_PATMOS-x.ncl)
+    * AIRS (hus - obs4mips)
+    * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
+    * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+    * ESACCI-AEROSOL (od550aer, od870aer, od550abs, od550lt1aer - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-AEROSOL.ncl)
+    * ESACCI-CLOUD (clt - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-CLOUD.ncl)
+    * ESACCI-OZONE (toz - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-OZONE.ncl)
+    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
+    * ESACCI-SST (ts - esmvaltool/ucmorizers/obs/cmorize_obs_ESACCI-SST.ncl)
+    * GPCP-SG (pr - obs4mips)
+    * HadISST (ts - esmvaltool/cmorizers/obs/cmorize_obs_HadISST.ncl)
+    * MODIS (od550aer - esmvaltool/cmorizers/obs/cmorize_obs_MODIS.ncl)
+    * NCEP (tas, ta, ua, va, zg - esmvaltool/cmorizers/obs/cmorize_obs_NCEP.ncl)
+    * NIWA-BS (toz - esmvaltool/cmorizers/obs/cmorize_obs_NIWA-BS.ncl)
+    * PATMOS-x (clt - esmvaltool/cmorizers/obs/cmorize_obs_PATMOS-x.ncl)
+
+#. recipe_perfmetrics_land_CMIP5.yml
+
+    * CERES-EBAF (rlus, rlds, rsus, rsds - obs4mips)
+    * ESACCI-SOILMOISTURE (sm - esmvaltool/cmorizers/obs/cmorize_obs_ESACCI-SOILMOISTURE.ncl)
+    * FLUXCOM (gpp - esmvaltool/cmorizers/obs/cmorize_obs_fluxcom.py)
+    * JMA-TRANSCOM (nbp, fgco2 - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
+    * LAI3d (lai - esmvaltool/cmorizers/obs/cmorize_obs_lai3g.py)
+    * LandFlux-EVAL (et - esmvaltool/cmorizers/obs/cmorize_obs_landflux_eval.py)
+    * Landschuetzer2016 (fgco2 - esmvaltool/cmorizers/obs/cmorize_obs_landschuetzer2016.py)
+    * MTE (gpp - esmvaltool/cmorizers/obs/cmorize_obs_mte.py)
 
 References
 ----------
@@ -163,4 +188,4 @@ Example plots
    :width: 90%
    :align: center
 
-   Relative space-time root-mean-square deviation (RMSD) calculated from the climatological seasonal cycle of CMIP5 simulations. A relative performance is displayed, with blue shading indicating better and red shading indicating worse performance than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternative data set (upper left triangle). White boxes are used when data are not available for a given model and variable. 
+   Relative space-time root-mean-square deviation (RMSD) calculated from the climatological seasonal cycle of CMIP5 simulations. A relative performance is displayed, with blue shading indicating better and red shading indicating worse performance than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternative data set (upper left triangle). White boxes are used when data are not available for a given model and variable.

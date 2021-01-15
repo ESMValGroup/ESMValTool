@@ -1,0 +1,98 @@
+# ESMValTool
+# recipe_seaice_feedback.yml
+---
+documentation:
+  description: |
+    This recipe is related to the negative sea-ice growth–thickness feedback
+    In this recipe, one process-based diagnostic named the
+    Ice Formation Efficiency (IFE) is computed based on monthly mean
+    sea-ice volume estimated north of 80°N. The choice of this domain
+    is motivated by the desire to minimize the influence of dynamic
+    processes but also by the availability of sea-ice thickness measurements.
+    The diagnostic intends to evaluate the strength of the negative sea-ice
+    thickness/growth feedback, which causes late-summer negative anomalies
+    in sea-ice area and volume to be partially recovered during the next
+    growing season. A chief cause behind the existence of this feedback is
+    the non-linear inverse dependence between heat conduction fluxes and
+    sea-ice thickness, which implies that thin sea ice grows faster than thick
+    sea ice. To estimate the strength of that feedback, anomalies of the annual
+    minimum of sea-ice volume north of 80°N are first estimated. Then,
+    the increase in sea-ice volume until the next annual maximum is computed
+    for each year. The IFE is defined as the regression of this ice volume
+    production onto the baseline summer volume anomaly.
+
+  authors:
+    - massonnet_francois
+
+  mantainer:
+    - vegas-regidor_javier
+
+  references:
+    - massonet18natcc
+
+  projects:
+    - applicate
+    - primavera
+
+datasets:
+  - &cmip5 {project: CMIP5, exp: historical, dataset: ACCESS1-0,  ensemble: r1i1p1, start_year: 1979, end_year: 2004}
+  - {<<: *cmip5, dataset: ACCESS1-3}
+  - {<<: *cmip5, dataset: bcc-csm1-1}
+  - {<<: *cmip5, dataset: BNU-ESM}
+  - {<<: *cmip5, dataset: CCSM4}
+  - {<<: *cmip5, dataset: CESM1-BGC}
+  - {<<: *cmip5, dataset: CESM1-CAM5}
+  - {<<: *cmip5, dataset: CESM1-FASTCHEM}
+  - {<<: *cmip5, dataset: CESM1-WACCM}
+  - {<<: *cmip5, dataset: CMCC-CESM}
+  - {<<: *cmip5, dataset: CMCC-CM}
+  - {<<: *cmip5, dataset: CMCC-CMS}
+  - {<<: *cmip5, dataset: CNRM-CM5}
+  - {<<: *cmip5, dataset: CNRM-CM5-2}
+  - {<<: *cmip5, dataset: FGOALS-g2}
+  - {<<: *cmip5, dataset: GFDL-CM2p1}
+  - {<<: *cmip5, dataset: GFDL-CM3}
+  - {<<: *cmip5, dataset: GFDL-ESM2G}
+  - {<<: *cmip5, dataset: GFDL-ESM2M}
+  - {<<: *cmip5, dataset: HadCM3}
+  - {<<: *cmip5, dataset: HadGEM2-CC}
+  - {<<: *cmip5, dataset: HadGEM2-ES}
+  - {<<: *cmip5, dataset: IPSL-CM5A-LR}
+  - {<<: *cmip5, dataset: IPSL-CM5A-MR}
+  - {<<: *cmip5, dataset: IPSL-CM5B-LR}
+  - {<<: *cmip5, dataset: MPI-ESM-LR}
+  - {<<: *cmip5, dataset: MPI-ESM-MR}
+  - {<<: *cmip5, dataset: MPI-ESM-P}
+  - {<<: *cmip5, dataset: NorESM1-M}
+  - {<<: *cmip5, dataset: NorESM1-ME}
+  - {<<: *cmip5, dataset: CanCM4}
+  - {<<: *cmip5, dataset: CanESM2}
+  - {<<: *cmip5, dataset: CSIRO-Mk3-6-0}
+  - {<<: *cmip5, dataset: EC-EARTH}
+  - {<<: *cmip5, dataset: GISS-E2-H, ensemble: r1i1p2}
+  - {<<: *cmip5, dataset: GISS-E2-R, ensemble: r1i1p2}
+
+  # Missing areacello
+  # - {<<: *cmip5, dataset: bcc-csm1-1-m}
+  # - {<<: *cmip5, dataset: CESM1-CAM5-1-FV2}
+  # - {<<: *cmip5, dataset: FIO-ESM}
+  # - {<<: *cmip5, dataset: GISS-E2-H-CC}
+  # - {<<: *cmip5, dataset: GISS-E2-R-CC}
+  # - {<<: *cmip5, dataset: HadGEM2-AO}
+  # - {<<: *cmip5, dataset: inmcm4}
+
+diagnostics:
+  NegativeSeaIceFeedback:
+    description: Computes the negative seaice feedback
+    variables:
+      sit:
+        mip: OImon
+      areacello:
+        mip: fx
+    scripts:
+      negative_seaice_feedback:
+        script: seaice_feedback/negative_seaice_feedback.py
+        plot:
+          point_color: black
+          point_size: 10
+          show_values: False

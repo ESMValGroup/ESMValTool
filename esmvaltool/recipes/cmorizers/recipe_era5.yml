@@ -1,0 +1,349 @@
+# ESMValTool
+# recipe_era5.yml
+---
+documentation:
+  description: CMORize ERA5 data
+
+  authors:
+    - andela_bouwe
+    - kalverla_peter
+
+  references:
+    - acknow_project
+
+  projects:
+    - ewatercycle
+
+datasets:
+  # For the daily diagnostic, always add the next year, otherwise the last day is not cmor compatible
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1991}
+
+preprocessors:
+  add_one_day: &add_one_day
+    extract_time:
+      start_year: 1990
+      start_month: 1
+      start_day: 1
+      end_year: 1991
+      end_month: 1
+      end_day: 1
+
+  daily_mean:
+    <<: *add_one_day
+    daily_statistics:
+      operator: mean
+  daily_min:
+    <<: *add_one_day
+    daily_statistics:
+      operator: min
+  daily_max:
+    <<: *add_one_day
+    daily_statistics:
+      operator: max
+
+diagnostics:
+  hourly:
+    description: CMORize hourly ERA5 data
+    scripts:
+      rename:
+        script: cmorizers/era5.py
+    variables:
+      clt:
+        mip: E1hr
+        era5_name: total_cloud_cover
+        era5_freq: hourly
+      evspsbl:
+        mip: E1hr
+        era5_name: evaporation
+        era5_freq: hourly
+      evspsblpot:
+        mip: E1hr
+        era5_name: potential_evaporation
+        era5_freq: hourly
+      mrro:
+        mip: E1hr
+        era5_name: runoff
+        era5_freq: hourly
+      orog:
+        mip: fx
+        era5_name: orography
+        era5_freq: hourly
+      pr:
+        mip: E1hr
+        era5_name: total_precipitation
+        era5_freq: hourly
+      prsn:
+        mip: E1hr
+        era5_name: snowfall
+        era5_freq: hourly
+      psl:
+        mip: E1hr
+        era5_name: mean_sea_level_pressure
+        era5_freq: hourly
+      ps:
+        mip: E1hr
+        era5_name: surface_pressure
+        era5_freq: hourly
+      ptype:
+        mip: E1hr
+        era5_name: precipitation_type
+        era5_freq: hourly
+      rlds:
+        mip: E1hr
+        era5_name: surface_thermal_radiation_downwards
+        era5_freq: hourly
+      rls:
+        mip: E1hr
+        era5_name: mean_surface_net_long_wave_radiation_flux
+        era5_freq: hourly
+      rsds:
+        mip: E1hr
+        era5_name: surface_solar_radiation_downwards
+        era5_freq: hourly
+      rsdt:
+        mip: E1hr
+        era5_name: toa_incident_solar_radiation
+        era5_freq: hourly
+      rss:
+        mip: E1hr
+        era5_name: surface_net_solar_radiation
+        era5_freq: hourly
+      tas:
+        mip: E1hr
+        era5_name: 2m_temperature
+        era5_freq: hourly
+      tasmax:
+        mip: E1hr
+        era5_name: maximum_2m_temperature_since_previous_post_processing
+        era5_freq: hourly
+      tasmin:
+        mip: E1hr
+        era5_name: minimum_2m_temperature_since_previous_post_processing
+        era5_freq: hourly
+      tdps:
+        mip: E1hr
+        era5_name: 2m_dewpoint_temperature
+        era5_freq: hourly
+      ts:
+        mip: E1hr
+        era5_name: skin_temperature
+        era5_freq: hourly
+      tsn:
+        mip: E1hr
+        era5_name: temperature_of_snow_layer
+        era5_freq: hourly
+      uas:
+        mip: E1hr
+        era5_name: 10m_u_component_of_wind
+        era5_freq: hourly
+      vas:
+        mip: E1hr
+        era5_name: 10m_v_component_of_wind
+        era5_freq: hourly
+
+  daily:
+    description: Create daily ERA5 data
+    scripts:
+      rename:
+        script: cmorizers/era5.py
+    variables:
+      clt:
+        mip: E1hr
+        era5_name: total_cloud_cover
+        era5_freq: hourly
+        preprocessor: daily_mean
+      evspsbl:
+        mip: E1hr
+        era5_name: evaporation
+        era5_freq: hourly
+        preprocessor: daily_mean
+      evspsblpot:
+        mip: E1hr
+        era5_name: potential_evaporation
+        era5_freq: hourly
+        preprocessor: daily_mean
+      mrro:
+        mip: E1hr
+        era5_name: runoff
+        era5_freq: hourly
+        preprocessor: daily_mean
+      pr:
+        mip: E1hr
+        era5_name: total_precipitation
+        era5_freq: hourly
+        preprocessor: daily_mean
+      prsn:
+        mip: E1hr
+        era5_name: snowfall
+        era5_freq: hourly
+        preprocessor: daily_mean
+      ps:
+        mip: E1hr
+        era5_name: surface_pressure
+        era5_freq: hourly
+        preprocessor: daily_mean
+      psl:
+        mip: E1hr
+        era5_name: mean_sea_level_pressure
+        era5_freq: hourly
+        preprocessor: daily_mean
+      rlds:
+        mip: E1hr
+        era5_name: surface_thermal_radiation_downwards
+        era5_freq: hourly
+        preprocessor: daily_mean
+      rls:
+        mip: E1hr
+        era5_name: mean_surface_net_long_wave_radiation_flux
+        era5_freq: hourly
+        preprocessor: daily_mean
+      rsds:
+        mip: E1hr
+        era5_name: surface_solar_radiation_downwards
+        era5_freq: hourly
+        preprocessor: daily_mean
+      rsdt:
+        mip: E1hr
+        era5_name: toa_incident_solar_radiation
+        era5_freq: hourly
+        preprocessor: daily_mean
+      rss:
+        mip: E1hr
+        era5_name: surface_net_solar_radiation
+        era5_freq: hourly
+        preprocessor: daily_mean
+      tas:
+        mip: E1hr
+        era5_name: 2m_temperature
+        era5_freq: hourly
+        preprocessor: daily_mean
+      tasmax:
+        mip: E1hr
+        era5_name: maximum_2m_temperature_since_previous_post_processing
+        era5_freq: hourly
+        preprocessor: daily_max
+      tasmin:
+        mip: E1hr
+        era5_name: minimum_2m_temperature_since_previous_post_processing
+        era5_freq: hourly
+        preprocessor: daily_min
+      tdps:
+        mip: E1hr
+        era5_name: 2m_dewpoint_temperature
+        era5_freq: hourly
+        preprocessor: daily_mean
+      ts:
+        mip: E1hr
+        era5_name: skin_temperature
+        era5_freq: hourly
+        preprocessor: daily_mean
+      tsn:
+        mip: E1hr
+        era5_name: temperature_of_snow_layer
+        era5_freq: hourly
+        preprocessor: daily_mean
+      uas:
+        mip: E1hr
+        era5_name: 10m_u_component_of_wind
+        era5_freq: hourly
+        preprocessor: daily_mean
+      vas:
+        mip: E1hr
+        era5_name: 10m_v_component_of_wind
+        era5_freq: hourly
+        preprocessor: daily_mean
+
+  monthly:
+    description: CMORize monthly ERA5 data
+    scripts:
+      rename:
+        script: cmorizers/era5.py
+    variables:
+      clt:
+        mip: Amon
+        era5_name: total_cloud_cover
+        era5_freq: monthly
+      evspsbl:
+        mip: Amon
+        era5_name: evaporation
+        era5_freq: monthly
+      evspsblpot:
+        mip: Amon
+        era5_name: potential_evaporation
+        era5_freq: monthly
+      mrro:
+        mip: Amon
+        era5_name: runoff
+        era5_freq: monthly
+      pr:
+        mip: Amon
+        era5_name: total_precipitation
+        era5_freq: monthly
+      prsn:
+        mip: Amon
+        era5_name: snowfall
+        era5_freq: monthly
+      psl:
+        mip: Amon
+        era5_name: mean_sea_level_pressure
+        era5_freq: monthly
+      ps:
+        mip: Amon
+        era5_name: surface_pressure
+        era5_freq: monthly
+      ptype:
+        mip: Amon
+        era5_name: precipitation_type
+        era5_freq: monthly
+      rlds:
+        mip: Amon
+        era5_name: surface_thermal_radiation_downwards
+        era5_freq: monthly
+      rls:
+        mip: Amon
+        era5_name: mean_surface_net_long_wave_radiation_flux
+        era5_freq: monthly
+      rsds:
+        mip: Amon
+        era5_name: surface_solar_radiation_downwards
+        era5_freq: monthly
+      rsdt:
+        mip: Amon
+        era5_name: toa_incident_solar_radiation
+        era5_freq: monthly
+      rss:
+        mip: Amon
+        era5_name: surface_net_solar_radiation
+        era5_freq: monthly
+      ta:
+        mip: Amon
+        era5_name: temperature
+        era5_freq: monthly
+      tas:
+        mip: Amon
+        era5_name: 2m_temperature
+        era5_freq: monthly
+      tdps:
+        mip: Amon
+        era5_name: 2m_dewpoint_temperature
+        era5_freq: monthly
+      ts:
+        mip: Amon
+        era5_name: skin_temperature
+        era5_freq: monthly
+      tsn:
+        mip: Amon
+        era5_name: temperature_of_snow_layer
+        era5_freq: monthly
+      ua:
+        mip: Amon
+        era5_name: u_component_of_wind
+        era5_freq: monthly
+      va:
+        mip: Amon
+        era5_name: v_component_of_wind
+        era5_freq: monthly
+      zg:
+        mip: Amon
+        era5_name: geopotential
+        era5_freq: monthly

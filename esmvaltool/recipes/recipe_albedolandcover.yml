@@ -1,0 +1,150 @@
+# ESMValTool
+# recipe_albedolandcover.yml
+---
+documentation:
+  description: |
+    This recipe analyzes the relationship between landcover and albedo
+    in CMIP models
+
+  authors:
+    - crezee_bas
+    - lejeune_quentin
+
+
+albedolandcover_parameters: &albedolandcover_parameters
+  params:
+    #
+    # size of the big box in the latitudinal direction.
+    # Recommended value: 5
+    latsize_BB: 5
+    #
+    # size of the big box in the longitudinal direction.
+    # Recommended value: 5
+    lonsize_BB: 5
+    # 
+    # minimum grid cell area fraction that must be
+    # covered by the sum of the area fractions of all
+    # land cover classes included in the local
+    # regression for one grid cell, for this grid cell
+    # to be included in the regression.
+    # Recommended value: 90
+    threshold_sumpred: 90
+    # 
+    # minimum number of grid cells with non-zero area fraction
+    # covered by one land cover class within a big box, for this
+    # land cover class to be included as a predictor in the local
+    # regression.
+    # Recommended value: 2
+    mingc: 2
+    #
+    # minimum number of grid cells with relevant
+    # information required within a big box to perform
+    # the local regression.
+    # Recommended value: 15
+    minnum_gc_bb: 15
+    snowfree: true
+    lc1_class: ['treeFrac']
+    lc2_class: ['shrubFrac']
+    lc3_class: ['grassFrac', 'cropFrac', 'pastureFrac']
+
+
+CMIP6_landcover: &CMIP6_landcover
+  additional_datasets:
+    - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: historical,
+       ensemble: r1i1p1f3}
+
+CMIP5_landcover: &CMIP5_landcover
+  additional_datasets:
+    - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+
+preprocessors:
+  pp_cmip:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_month:
+      month: 7
+    climate_statistics:
+      operator: mean
+    mask_landsea:
+      mask_out: sea
+  pp_obs:
+    mask_landsea:
+      mask_out: sea
+    extract_month:
+      month: 7
+
+
+diagnostics:
+  albedolandcover_cmip5:
+    description: "Multiple linear regression between albedo and xxFrac"
+    variables:
+      treeFrac: &variable_settings_cmip5
+        preprocessor: pp_cmip
+        mip: Lmon
+        exp: historical
+        start_year: 2000
+        end_year: 2004
+        <<: *CMIP5_landcover
+      snc:
+        <<: *variable_settings_cmip5
+        mip: LImon
+      alb:
+        <<: *variable_settings_cmip5
+        mip: Amon
+        derive: true
+        force_derivation: false
+      cropFrac:
+        <<: *variable_settings_cmip5
+      grassFrac:
+        <<: *variable_settings_cmip5
+      shrubFrac:
+        <<: *variable_settings_cmip5
+      pastureFrac:
+        <<: *variable_settings_cmip5
+    scripts:
+      albedolandcover:
+        script: landcover/albedolandcover.py
+        <<: *albedolandcover_parameters
+
+  albedolandcover_cmip6:
+    description: "Multiple linear regression between albedo and xxFrac"
+    variables:
+      treeFrac: &variable_settings_cmip6
+        preprocessor: pp_cmip
+        mip: Lmon
+        exp: historical
+        start_year: 2000
+        end_year: 2004
+        <<: *CMIP6_landcover
+      snc:
+        <<: *variable_settings_cmip6
+        mip: LImon
+      alb:
+        <<: *variable_settings_cmip6
+        mip: Amon
+        derive: true
+        force_derivation: false
+      grassFrac:
+        <<: *variable_settings_cmip6
+      shrubFrac:
+        <<: *variable_settings_cmip6
+    scripts:
+      albedolandcover:
+        script: landcover/albedolandcover.py
+        <<: *albedolandcover_parameters
+
+  albedolandcover_obs:
+    description: "Multiple linear regression between albedo and xxFrac"
+    variables:
+      albDiffiTr13:
+        preprocessor: pp_obs
+        mip: Amon
+        additional_datasets:
+          - {dataset: Duveiller2018, project: OBS, tier: 2, version: v2018,
+             start_year: 2010, end_year: 2010, frequency: mon, type: clim}
+    scripts:
+      albedolandcover:
+        script: landcover/albedolandcover.py
+        <<: *albedolandcover_parameters

@@ -265,9 +265,9 @@ def koven_temp_offsets(soiltemp, airtemp):
     # interpolate to depth required
     # the soil temperatures are for the middle of the layer not the bottom of
     # the layer
-    soiltemp_surf = iris.analysis.interpolate.linear(soiltemp,
-                                                     [('depth', 0.0)])
-    soiltemp_1m = iris.analysis.interpolate.linear(soiltemp, [('depth', 1.0)])
+    linear = iris.analysis.Linear()
+    soiltemp_surf = soiltemp.interpolate([('depth', 0.0)], linear)
+    soiltemp_1m = soiltemp.interpolate([('depth', 1.0)], linear)
 
     # extract points for eachsite
     airtemp_1d = extract_sites(ex_points, airtemp)
@@ -305,11 +305,10 @@ def koven_temp_atten(soiltemp, airtemp):
 
     # interpolate the log to the correct depth
     soiltemp_log = iris.analysis.maths.log(soiltemp_ampl)
-    soiltemp_log_surf = iris.analysis.interpolate.linear(
-        soiltemp_log, [('depth', 0.0)])
+    linear = iris.analysis.Linear()
+    soiltemp_log_surf = soiltemp_log.interpolate([('depth', 0.0)], linear)
     soiltemp_ampl_surf = iris.analysis.maths.exp(soiltemp_log_surf)
-    soiltemp_log_1m = iris.analysis.interpolate.linear(soiltemp_log,
-                                                       [('depth', 1.0)])
+    soiltemp_log_1m = soiltemp_log.interpolate([('depth', 1.0)], linear)
     soiltemp_ampl_1m = iris.analysis.maths.exp(soiltemp_log_1m)
 
     # extract points for eachsite
