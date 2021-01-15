@@ -200,6 +200,8 @@ def _make_station_lat_lon_coord(station_dic):
     """Make iris coordinates for given latitude and longitude."""
     lat = station_dic['Latitude']
     lon = station_dic['Longitude']
+    if lon < 0:
+        lon = lon + 360
 
     # Treat Global data differently
     if lat == 0.0 and lon == 180.0:
