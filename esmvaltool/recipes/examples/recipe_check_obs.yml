@@ -522,6 +522,14 @@ diagnostics:
          type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
       - {dataset: REGEN, project: OBS, mip: day, tier: 2,
          type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: V1-2019-reducedmasked, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: V1-2019-reducedmasked, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: V1-2019-masked, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: V1-2019-masked, start_year: 1950, end_year: 2016}
     scripts: null
 
 
