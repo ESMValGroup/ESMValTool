@@ -45,9 +45,15 @@ jobs:
       - shell: bash -l {0}
         run: cd ESMValCore
       - shell: bash -l {0}
+        run: conda env update -n esmvaltool -f environment.yml 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/env_update_esmvalcore.txt
+      - shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install_esmvalcore.txt
       - shell: bash -l {0}
-        run: cd ../ESMValTool/ESMValTool
+        run: cd ..
+      - shell: bash -l {0}
+        run: ls -la
+      - shell: bash -l {0}
+        run: cd ESMValTool
       - shell: bash -l {0}
         run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - shell: bash -l {0}
