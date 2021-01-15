@@ -26,7 +26,7 @@ jobs:
       - name: Setup esmvalcore and esmvaltool in dev mode
         working-directory: ./esmval
         run: |
-          conda --version 2>&1
+          conda --version
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
           conda env create -n esmvaltool -f environment.yml
