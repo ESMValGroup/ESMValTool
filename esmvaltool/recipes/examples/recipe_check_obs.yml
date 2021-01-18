@@ -535,6 +535,34 @@ diagnostics:
     scripts: null
 
 
+  WFDE5:
+    description: WFDE5 check
+    variables:
+      tas:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.0-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.0-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: hour, tier: 2,
+            type: ground, version: v1.0-CRU, start_year: 1979, end_year: 2018}
+      pr:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.0-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.0-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: hour, tier: 2,
+            type: ground, version: v1.0-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.0-CRU+GPCC, start_year: 1979, end_year: 2016}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.0-CRU+GPCC, start_year: 1979, end_year: 2016}
+          - {dataset: WFDE5, project: OBS, mip: hour, tier: 2,
+            type: ground, version: v1.0-CRU+GPCC, start_year: 1979, end_year: 2016}
+    scripts: null
+
+
   WOA:
     description: WOA check
     variables:
