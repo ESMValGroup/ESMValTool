@@ -1,18 +1,19 @@
-"""ESMValTool CMORizer for CRU data.
+"""ESMValTool CMORizer for WFDE5 data.
 
 Tier
     Tier 2: other freely-available dataset.
 
 Source
-    https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
+    https://doi.org/10.24381/cds.20d54e34
 
 Last access
-    20190516
+    20210118
 
 Download and processing instructions
-    Download the following files:
-        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
-    where {raw_name} is the name of the desired variable(s).
+    Download the following variables from the cds:
+        Near-surface air temperature ("CRU")
+        Rainfall flux ("CRU" as well as "CRU and GPCC")
+    and unzip the downloaded files
 """
 
 import copy
