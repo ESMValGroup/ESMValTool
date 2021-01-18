@@ -13,7 +13,8 @@ Download and processing instructions
     Download the following variables from the cds:
         Near-surface air temperature ("CRU")
         Rainfall flux ("CRU" as well as "CRU and GPCC")
-    and unzip the downloaded files
+    unzip the downloaded files
+    rename to follow syntax '{raw_name}_WFDE5_{reference}_*_v1.0.nc'
 """
 
 import copy
