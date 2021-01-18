@@ -403,7 +403,14 @@ the following commands in the directory containing the ESMValTool source code
 
 .. code-block:: bash
 
-    pip install -e '.[develop]'
+    pip install --editable '.[develop]'
+
+Using the ``--editable`` flag will cause the installer to create a symbolic link
+from the installation location to your source code, so any changes you make to
+the source code will immediately be available in the installed version of the
+tool.
+This command will also install extra development dependencies needed for
+building the documentation, running the unit tests, etc.
 
 If you would like to run Julia diagnostic scripts, you will also need to
 `install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
@@ -469,7 +476,7 @@ and then install ESMValCore in development mode
 
 .. code-block:: bash
 
-    pip install -e '.[develop]'
+    pip install --editable '.[develop]'
 
 To check that the installation was successful, run
 
