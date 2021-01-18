@@ -34,37 +34,87 @@ Conda installation
 In order to install the `Conda <https://docs.conda.io>`_ package, you will need
 both Conda and Julia pre-installed, this is because Julia cannot be installed
 from Conda.
+
 For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
 It is recommended that you always use the latest version of Conda, as problems
 have been reported when trying to use older versions.
+
+First download the installation file for
+`Linux <https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh>`_
+or
+`MacOSX <https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh>`_.
+After downloading the installation file from one of the links above, execute it
+by running (Linux example):
+
+.. code-block:: bash
+
+    bash Miniconda3-latest-Linux-x86_64.sh
+
+and follow the instructions on your screen.
+Immediately update conda after installing it:
+
+.. code-block:: bash
+
+    conda update --name base conda
+
+You can check that Conda installed correctly by running
+
+.. code-block:: bash
+
+    which conda
+
+this should show the path to your Conda executable, e.g.
+``~/miniconda3/bin/conda``.
+
 Installation instructions for Julia can be found on the
 `Julia installation instructions page <https://julialang.org/downloads/platform/>`_.
+One way to install Julia is by using `Jill.py <https://github.com/johnnychen94/jill.py>`_
+
+.. code-block:: bash
+
+    conda create --name jill pip
+    conda activate jill
+    pip install jill
+    jill install
+    conda deactivate
+
+You can check that Julia installed correctly by running
+
+.. code-block:: bash
+
+    which julia
+
+this should show the path to your Julia executable, e.g. ``~/.local/bin/julia``.
 
 Once you have installed the above prerequisites, you can install ESMValTool by running:
 
 .. code-block:: bash
 
-    conda install esmvaltool -c esmvalgroup -c conda-forge
+    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool
 
 Here ``conda`` is the executable calling the Conda package manager to install
 ``esmvaltool`` and the ``-c`` flag specifies the Conda software channels in which the
 ``esmvaltool`` package and its dependencies can be found.
 
-It is also possible to create a new
+This will create a new
 `Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
-and install ESMValTool into it with a single command:
-
-.. code-block:: bash
-
-    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool
-
-Don't forget to activate the newly created environment after the installation:
+and install ESMValTool into it with a single command.
 
 .. code-block:: bash
 
     conda activate esmvaltool
 
 Of course it is also possible to choose a different name than ``esmvaltool`` for the environment.
+
+The next step is to check that the installation works properly.
+To do this, run the tool with:
+
+.. code-block:: bash
+
+    esmvaltool --help
+
+If everything was installed properly, ESMValTool should have printed a help
+message to the console.
 
 .. note::
 
@@ -413,7 +463,23 @@ This command will also install extra development dependencies needed for
 building the documentation, running the unit tests, etc.
 
 If you would like to run Julia diagnostic scripts, you will also need to
-`install Julia <https://julialang.org/downloads/platform/>`_ and the Julia dependencies:
+`install Julia <https://julialang.org/downloads/platform/>`_.
+One way to install Julia is by using `Jill.py <https://github.com/johnnychen94/jill.py>`_
+
+.. code-block:: bash
+
+    pip install jill
+    jill install
+
+You can check that Julia installed correctly by running
+
+.. code-block:: bash
+
+    which julia
+
+this should show the path to your Julia executable.
+
+Next, install the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
