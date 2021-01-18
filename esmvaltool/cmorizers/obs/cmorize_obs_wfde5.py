@@ -19,7 +19,6 @@ Download and processing instructions
 
 import copy
 import logging
-import os
 from pathlib import Path
 
 import iris
