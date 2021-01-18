@@ -184,7 +184,7 @@ def _extract_variable(short_name, var, cfg, out_dir, station_dic):
     attrs['version'] = station_dic['Code'].upper()
     attrs['mip'] = var['mip']
     attrs['altitude'] = station_dic['Elevation (meters)']
-    attrs['altitude units'] = 'm'
+    attrs['altitude_units'] = 'm'
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
