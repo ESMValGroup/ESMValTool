@@ -1,3 +1,10 @@
+# Action that runs the full development stack:
+# Steps (Python-only):
+# - creates esmvaltool conda environment and pip-installs esmvaltool
+# - downloads latest master of esmvalcore and installs it in development mode
+# - runs tests of esmvaltool
+# Triggered by a push to master and nightly
+
 name: Develop Test
 
 # runs on a push on master and at the end of every day
