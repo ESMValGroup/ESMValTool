@@ -54,7 +54,7 @@ jobs:
       - checkout
       - check_changes
       - restore_cache:
-          key: test-install-{{ .Branch }}
+          key: test-install-{{ .Branch }}-{{ checksum "setup.py" }}-{{ checksum "environment.yml" }}
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -87,7 +87,7 @@ jobs:
             cdo -f nc copy tmp.nc tmp2.nc
           no_output_timeout: 30m
       - save_cache:
-          key: test-install-{{ .Branch }}
+          key: test-install-{{ .Branch }}-{{ checksum "setup.py" }}-{{ checksum "environment.yml" }}
           paths:
             - "/opt/conda/pkgs"
             - ".eggs"
