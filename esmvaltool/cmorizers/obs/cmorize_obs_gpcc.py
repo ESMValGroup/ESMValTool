@@ -12,8 +12,14 @@ Last access
 Download and processing instructions
     Download the following files:
         full_data_monthly_{version}.nc.gz
+
+Two files are generated per version, one with version_grid (i.e. v2018_25),
+one with version_grid-numgauge1 (i.e. v2018_25-numgauge1), which is constrained
+on holding gridpoint values relying on data from at least one station (i.e.
+removing gridpoints solely relying on climatological infilling).
 """
 
+import copy
 import gzip
 import logging
 import os
@@ -46,13 +52,10 @@ def _get_centered_timecoord(cube):
     times = time.units.num2date(time.points)
 
     # get bounds
-    starts = [
-        cftime.DatetimeNoLeap(c.year, c.month, 1)
-        for c in times
-    ]
+    starts = [cftime.DatetimeNoLeap(c.year, c.month, 1) for c in times]
     ends = [
-        cftime.DatetimeNoLeap(c.year, c.month + 1, 1) if c.month < 12
-        else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
+        cftime.DatetimeNoLeap(c.year, c.month + 1, 1)
+        if c.month < 12 else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
         for c in times
     ]
     time.bounds = time.units.date2num(np.stack([starts, ends], -1))
@@ -114,6 +117,51 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
     utils.set_global_atts(cube, attrs)
 
     # Save variable
+    utils.save_variable(cube,
+                        short_name,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=['time'])
+
+    # build contrainted cube on numgauge < 1
+    constraint_var = var.get('constraint', short_name)
+    with catch_warnings():
+        filterwarnings(
+            action='ignore',
+            message='Ignoring netCDF variable .* invalid units .*',
+            category=UserWarning,
+            module='iris',
+        )
+        constr_cube = iris.load_cube(filepath,
+                                     utils.var_name_constraint(constraint_var))
+
+    # fix flipped latitude
+    utils.flip_dim_coord(constr_cube, 'latitude')
+    utils._fix_dim_coordnames(constr_cube)
+    cube_coord = constr_cube.coord('latitude')
+    utils._fix_bounds(constr_cube, cube_coord)
+
+    # fix longitude
+    cube_coord = constr_cube.coord('longitude')
+    if cube_coord.points[0] < 0. and \
+            cube_coord.points[-1] < 181.:
+        cube_coord.points = \
+            cube_coord.points + 180.
+        utils._fix_bounds(constr_cube, cube_coord)
+        constr_cube.attributes['geospatial_lon_min'] = 0.
+        constr_cube.attributes['geospatial_lon_max'] = 360.
+        nlon = len(cube_coord.points)
+        utils._roll_cube_data(constr_cube, nlon // 2, -1)
+
+    cube.data = np.ma.masked_where(constr_cube.data < 1., cube.data)
+
+    # Save variable
+    attrs = copy.deepcopy(cfg['attributes'])
+    attrs.update({'comment': 'contrained on gridpoint values beeing based on'\
+                             'at least 1 station',
+                  'version': attrs['version'] + '-numgauge1'})
+    attrs['mip'] = var['mip']
+
     utils.save_variable(cube,
                         short_name,
                         out_dir,
