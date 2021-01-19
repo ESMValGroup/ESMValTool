@@ -29,6 +29,8 @@ jobs:
       - run:
           # Update environment if needed and run tests
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            conda activate esmvaltool
             pip install .[test]
             esmvaltool install Julia
             esmvaltool install R
