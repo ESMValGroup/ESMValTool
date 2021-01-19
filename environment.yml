@@ -17,7 +17,6 @@ dependencies:
   - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
   - imagemagick
   - nco
-  - pynio
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
 
   # Multi language support:
