@@ -65,11 +65,9 @@ def _get_mask_qbased(cube, cfg, var_str):
     """Get percentile based mask."""
     q_target = cfg['masking_thresholds'].get(var_str)
     qs = [np.percentile(data.compressed(), q_target) for data in cube.data]
-    # for data, q, m in zip(cube.data, qs, mask):
-    #     m[np.where(data >= q)] = 1
     mask = np.zeros(cube.shape)
     for data, q, m in zip(cube.data, qs, mask):
-        m[np.where(data > q)] = 1
+        m[np.where(data >= q)] = 1
     return mask.astype('bool')
 
 
