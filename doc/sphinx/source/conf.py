@@ -79,7 +79,6 @@ autodoc_mock_imports = [
     'GDAL',
     'iris',
     'psutil',
-    'pynio',
     'scipy',
     'sklearn',
     'xesmf',
