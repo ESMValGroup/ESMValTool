@@ -218,7 +218,7 @@ jobs:
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation
-            esmvaltool version
+            esmvaltool -h
             ncl -V
             cdo --version
           no_output_timeout: 30m
