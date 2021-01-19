@@ -13,15 +13,14 @@ Last access
 
 Download and processing instructions
     Download the txt files from the ftp server/data interface
-
 """
 
+import glob
 import logging
 import os
 from datetime import datetime
-from pprint import pformat
-import glob
 from ftplib import FTP
+from pprint import pformat
 
 import iris
 import numpy as np
@@ -41,18 +40,23 @@ def _download_files(in_dir, cfg, stations):
     for station in stations:
         # First look for baseline observatories
         if station.upper() in ['MLO', 'BRW', 'SMO', 'SPO']:
-            files[station] = {'name': "co2_" + station.lower()
-                                      + '_surface-insitu_1_ccgg_'
-                                        'MonthlyData.txt',
-                              'folder': cfg['data_dir'] + 'in-situ/surface/'
-                                        + station.lower()}
+            files[station] = {
+                'name': "co2_" + station.lower() + '_surface-insitu_1_ccgg_'
+                'MonthlyData.txt',
+                'folder':
+                cfg['data_dir'] + 'in-situ/surface/' + station.lower()
+            }
         elif station.lower() == 'global':
-            files[station] = {'name': 'co2_mm_gl.txt',
-                              'folder': 'products/trends/co2/'}
+            files[station] = {
+                'name': 'co2_mm_gl.txt',
+                'folder': 'products/trends/co2/'
+            }
         else:
-            files[station] = {'name': 'co2_' + station.lower()
-                                      + '_surface-flask_1_ccgg_month.txt',
-                              'folder': cfg['data_dir'] + 'flask/surface/'}
+            files[station] = {
+                'name':
+                'co2_' + station.lower() + '_surface-flask_1_ccgg_month.txt',
+                'folder': cfg['data_dir'] + 'flask/surface/'
+            }
     input_files = {}
     rm_stat = []
     with FTP(cfg['ftp_host']) as ftp_client:
@@ -75,8 +79,7 @@ def _download_files(in_dir, cfg, stations):
 
 def _get_cube(row, column_ind, fill_value, station_dict):
     """Create :class:`iris.cube.Cube` from :class:`pandas.Series`."""
-    time_coord = _get_time_coord(int(row['year']),
-                                 int(row['month']))
+    time_coord = _get_time_coord(int(row['year']), int(row['month']))
     lat_coord, lon_coord = _make_station_lat_lon_coord(station_dict)
     data = np.ma.masked_equal(float(row[column_ind[2]]), fill_value)
     cube = iris.cube.Cube(
@@ -118,8 +121,12 @@ def _get_station_dictionary():
     station_dict = stats.to_dict(orient="index")
 
     # Add entry for Global
-    station_dict['GLOBAL'] = {'Latitude': 0.0, 'Longitude': 180.0,
-                              'Elevation (meters)': 0, 'Code': 'GLOBAL'}
+    station_dict['GLOBAL'] = {
+        'Latitude': 0.0,
+        'Longitude': 180.0,
+        'Elevation (meters)': 0,
+        'Code': 'GLOBAL'
+    }
     return station_dict
 
 
@@ -148,8 +155,11 @@ def _get_time_coord(year, month):
 
 def _extract_variable(short_name, var, cfg, out_dir, station_dic):
     """Extract variable."""
-    data = pd.read_csv(station_dic['filepath'], sep=' {1,}', comment='#',
-                       engine='python', header=None)
+    data = pd.read_csv(station_dic['filepath'],
+                       sep=' {1,}',
+                       comment='#',
+                       engine='python',
+                       header=None)
     # Insitu tower monthly had uncommented header, remove
     if data.shape[1] == 17:
         data = data.drop(0)
@@ -203,7 +213,8 @@ def _make_station_lat_lon_coord(station_dic):
 
     # Treat Global data differently
     if lat == 0.0 and lon == 180.0:
-        lat_coord = iris.coords.DimCoord([0.0], bounds=[[-90.0, 90.0]],
+        lat_coord = iris.coords.DimCoord([0.0],
+                                         bounds=[[-90.0, 90.0]],
                                          var_name='lat',
                                          standard_name='latitude',
                                          long_name='latitude',
@@ -215,10 +226,13 @@ def _make_station_lat_lon_coord(station_dic):
                                          long_name='longitude',
                                          units=Unit('degrees_east'))
     else:
-        lat_coord = iris.coords.DimCoord([lat], var_name='lat',
+        lat_coord = iris.coords.DimCoord([lat],
+                                         var_name='lat',
                                          standard_name='latitude',
-                                         long_name='latitude', units='degrees')
-        lon_coord = iris.coords.DimCoord([lon], var_name='lon',
+                                         long_name='latitude',
+                                         units='degrees')
+        lon_coord = iris.coords.DimCoord([lon],
+                                         var_name='lon',
                                          standard_name='longitude',
                                          long_name='longitude',
                                          units='degrees')
@@ -252,13 +266,13 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
                 # data at the moment, so remove these from to process files
                 stations = [x for x in stations if x not in rm_stat]
             else:
-                raise ValueError("No data found for %s on the ftp server. "
-                                 % rm_stat)
+                raise ValueError("No data found for %s on the ftp server. " %
+                                 rm_stat)
         else:
             if not all_stat:
                 raise ValueError("No local data found for stations %s, "
-                                 "consider turning on the download option."
-                                 % download_files)
+                                 "consider turning on the download option." %
+                                 download_files)
     logger.debug("Found input files:\n%s", pformat(input_files))
     return input_files, stations
 
@@ -296,5 +310,5 @@ def cmorization(in_dir, out_dir, cfg, _):
             raise ValueError("Could not find the following station(s): %s. "
                              "Please double-check your spelling in the "
                              "cmor config file. The following is a list of "
-                             "valid stations: %s."
-                             % (false_keys, list(station_dict.keys())))
+                             "valid stations: %s." %
+                             (false_keys, list(station_dict.keys())))

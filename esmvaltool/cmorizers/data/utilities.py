@@ -198,18 +198,15 @@ def extract_doi_value(tags):
             reference_entry = bibtex_file.read_text()
             if re.search("doi", reference_entry):
                 reference_doi.append(
-                    f'doi:{re.search(pattern, reference_entry).group(1)}'
-                )
+                    f'doi:{re.search(pattern, reference_entry).group(1)}')
             else:
                 reference_doi.append('doi not found')
-                logger.warning(
-                    'The reference file %s does not have a doi.', bibtex_file
-                )
+                logger.warning('The reference file %s does not have a doi.',
+                               bibtex_file)
         else:
             reference_doi.append('doi not found')
-            logger.warning(
-                'The reference file %s does not exist.', bibtex_file
-            )
+            logger.warning('The reference file %s does not exist.',
+                           bibtex_file)
     return ', '.join(reference_doi)
 
 

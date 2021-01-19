@@ -30,17 +30,21 @@ Modification history
    20201204-roberts_charles: written.
    20201214-predoi_valeriu: approved.
    20201214-lauer_axel: approved.
-
 """
 
 import logging
 import os
 
 import iris
-
 from esmvalcore.preprocessor._io import concatenate
-from .utilities import (convert_timeunits, fix_coords, fix_var_metadata,
-                        save_variable, set_global_atts)
+
+from .utilities import (
+    convert_timeunits,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
