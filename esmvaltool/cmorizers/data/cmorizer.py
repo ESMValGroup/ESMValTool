@@ -19,7 +19,8 @@ from pathlib import Path
 
 import esmvalcore
 import yaml
-from esmvalcore._config import configure_logging, read_config_user_file
+from esmvalcore._config import read_config_user_file
+from esmvalcore._logging import configure_logging
 from esmvalcore._task import write_ncl_settings
 
 from esmvaltool.cmorizers.data.utilities import read_cmor_config

@@ -394,7 +394,7 @@ datasets:
         ancillary/v04.2/
       Put all files under a single directory (no subdirectories with years).
 
-  ESACCI-SEASURFACE-SALINITY:
+  ESACCI-SEA-SURFACE-SALINITY:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_surface_salinity/data
     last_access: 20200921
@@ -504,7 +504,7 @@ datasets:
 
   GRACE:
     tier: 3
-    source:  https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2
+    source: https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2
     last_access: 20201127
     info: |
       Download and processing instructions
@@ -519,11 +519,6 @@ datasets:
         on data coverage. Save it in the RAWOBSDIR.
             https://podaac-tools.jpl.nasa.gov/drive/files/allData/tellus/L3/docs/GRACE_GRACE-FO_Months_RL06.csv
       - Manually inspect and check the months table
-
-
-Modification history
-   20200630-crezee_bas: written.
-   20201127-kazeroni_remi: updated for latest dataset
 
   HadCRUT3:
     tier: 2
