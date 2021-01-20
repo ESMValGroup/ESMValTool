@@ -30,7 +30,7 @@ jobs:
           # Update environment if needed and run tests
           command: |
             . /opt/conda/etc/profile.d/conda.sh
-            set -x; mkdir /logs; set +x
+            mkdir /logs
             conda -V > /logs/conda_version.txt
             conda activate esmvaltool
             python -V > /logs/python_version.txt
