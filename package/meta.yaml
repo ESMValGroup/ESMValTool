@@ -84,7 +84,7 @@ outputs:
         - jinja2
         - joblib
         - lime
-        - matplotlib>=3,<3.3
+        - matplotlib
         - natsort
         - nc-time-axis
         - netCDF4
