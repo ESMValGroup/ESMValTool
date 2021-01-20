@@ -39,7 +39,7 @@ REQUIREMENTS = {
         'jinja2',
         'joblib',
         'lime',
-        'matplotlib>=3,<3.3',
+        'matplotlib',  # bug in 3.3.1, 3.3.3 fine
         'natsort',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
