@@ -31,12 +31,12 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            conda -V > /logs/conda_version.txt
+            conda --version > /logs/conda_version.txt
             conda activate esmvaltool
-            python -V > /logs/python_version.txt
+            python --version > /logs/python_version.txt
             conda env export > /logs/environment.yml
             pip install .[test] > /logs/install.txt
-            esmvaltool install Julia > > /logs/install_Julia.txt
+            esmvaltool install Julia > /logs/install_Julia.txt
             esmvaltool install R > /logs/install_R.txt
             # Remove source to test installed software
             rm -r esmvaltool
