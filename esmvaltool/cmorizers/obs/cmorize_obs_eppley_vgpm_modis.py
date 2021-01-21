@@ -70,7 +70,7 @@ def merge_data(in_dir, out_dir, raw_info):
     var = raw_info['name']
     filelist = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.hdf'))
     for filename in filelist:
-        ds = xr.open_dataset(filename).rename({
+        ds = xr.open_dataset(filename, engine='rasterio').rename({
             'fakeDim0': 'lat',
             'fakeDim1': 'lon'
         })
