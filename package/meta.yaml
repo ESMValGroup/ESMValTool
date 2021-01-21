@@ -94,6 +94,7 @@ outputs:
         - python>=3.6
         - python-cdo
         - pyyaml
+        - rasterio  # replaces pynio
         - scikit-image
         - scikit-learn
         - seaborn
