@@ -47,6 +47,7 @@ REQUIREMENTS = {
         'pandas',
         'pyproj>=2.1'
         'pyyaml',
+        'rasterio',  # replaces pynio
         'scikit-image',
         'scikit-learn',
         'scipy',
