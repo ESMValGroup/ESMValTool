@@ -84,7 +84,7 @@ outputs:
         - jinja2
         - joblib
         - lime
-        - matplotlib
+        - matplotlib>3.3.1  # bug in 3.3.1
         - natsort
         - nc-time-axis
         - netCDF4
