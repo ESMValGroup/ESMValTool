@@ -303,8 +303,11 @@ begin
 
   colors = project_style(INFO0, diag_script_info, "colors")
   colors := array_append_record(colors, "red", 0)
-  thicks = project_style(INFO0, diag_script_info, "thicks")
-  thicks := array_append_record(thicks, 6., 0)
+  ; Thicker lines for OBS (first) and MMM (last)
+  thicks = new(dim_MOD, float)
+  thicks(0) = 6.
+  thicks(1:dim_MOD-2) = 3.
+  thicks(dim_MOD-1) = 6.
   dashes = project_style(INFO0, diag_script_info, "dashes")
   dashes := array_append_record(dashes, 0, 0)
 
@@ -438,7 +441,7 @@ begin
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
                  + "Similar to Gier et al. 2020 Fig 3", \
-                 (/"mean", "difference", "detrend"/), \
+                 (/"mean", "diff", "detrend"/), \
                  DOMAIN, \
                  "times", \
                  AUTHORS, \

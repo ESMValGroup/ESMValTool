@@ -363,7 +363,7 @@ begin
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
                  + ". Similar to Gier et al 2020, Fig. 7.", \
-                 (/"mean", "correlation"/), \
+                 (/"mean", "corr"/), \
                  DOMAIN, \
                  "scatter", \
                  AUTHORS, \
@@ -394,7 +394,7 @@ begin
                  + var0 + " for " + region + ", " + start_year + "-" \
                  + end_year + ". Using masking: " + opt_mask \
                  + ". Similar to Gier et al 2020, Fig. 7.", \
-                 (/"mean", "correlation"/), \
+                 (/"mean", "corr"/), \
                  DOMAIN, \
                  "scatter", \
                  AUTHORS, \

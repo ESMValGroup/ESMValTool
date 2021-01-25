@@ -82,14 +82,12 @@ diagnostics:
         exp: esm-hist
         start_year: 2003
         end_year: 2014
-        reference_dataset: C3S
+        reference_dataset: CDS-XCO2
         derive: true
         additional_datasets:
-          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30,
-             tier: 1, derive: false}
-          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: ACCESS-ESM1-5, ensemble: r2i1p1f1, grid: gn}
-          - {dataset: ACCESS-ESM1-5, ensemble: r3i1p1f1, grid: gn}
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          - {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r(1:7)i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r(9:10)i1p1f1, grid: gn}
           - {dataset: CanESM5-CanOE, ensemble: r(1:3)i1p2f1, grid: gn}
@@ -126,13 +124,11 @@ diagnostics:
         exp: esm-hist
         start_year: 2003
         end_year: 2014
-        reference_dataset: CDS-XCO2 #C3S
+        reference_dataset: CDS-XCO2
         derive: true
         additional_datasets:
           - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
              tier: 3, derive: false}
- #         - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30,
- #            tier: 1, derive: false}
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
@@ -171,18 +167,14 @@ diagnostics:
         var_plotname: "XCO~B~2~N~"
       panels_obs:
         <<: *panel_cfg
-        # Possible masking options: obs, land, sciamachy, gosat
         masking: ["obs"]
       panels_scia:
         <<: *panel_cfg
-        # Possible masking options: obs, land, sciamachy, gosat
         masking: ["sciamachy"]
         obs_in_panel: false
       panels_gosat:
         <<: *panel_cfg
-        # Possible masking options: obs, land, sciamachy, gosat
         masking: ["gosat"]
-        # Possible area averaging options: full-area, lat-first
         area_avg: "full-area"
         obs_in_panel: false
 
@@ -196,17 +188,17 @@ diagnostics:
         exp: esm-hist
         start_year: 2003
         end_year: 2014
-        reference_dataset: C3S
+        reference_dataset: CDS-XCO2
         derive: true
         additional_datasets:
-          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30,
-             tier: 1, derive: false}
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
     scripts:
       sat_masks:
         script: xco2_analysis/sat_masks.ncl
         output_file_type: "png"
         var_plotname: "XCO~B~2~N~"
-        c3splots: true
+        c3s_plots: true
 
   delta_T:
     description: Figure C1
@@ -219,11 +211,11 @@ diagnostics:
         exp: esm-hist
         start_year: 2003
         end_year: 2014
-        reference_dataset: C3S
+        reference_dataset: CDS-XCO2
         derive: true
         additional_datasets:
-          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30,
-             tier: 1, derive: false}
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
@@ -279,11 +271,11 @@ diagnostics:
         exp: esm-hist
         start_year: 2003
         end_year: 2014
-        reference_dataset: C3S
+        reference_dataset: CDS-XCO2
         derive: true
         additional_datasets:
-          - {dataset: C3S, project: obs4mips, level: sat, version: l3-v30,
-             tier: 1, derive: false}
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
           - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
@@ -320,11 +312,11 @@ diagnostics:
         start_year: 2003
         end_year: 2014
         additional_datasets:
-          - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2}
-          - {dataset: ESRL, project: OBS, type: ground, version: CGO, tier: 2}
-          - {dataset: ESRL, project: OBS, type: ground, version: HUN, tier: 2}
-          - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 2}
-          - {dataset: ESRL, project: OBS, type: ground, version: WIS, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 1}
+          - {dataset: ESRL, project: OBS, type: ground, version: CGO, tier: 1}
+          - {dataset: ESRL, project: OBS, type: ground, version: HUN, tier: 1}
+          - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 1}
+          - {dataset: ESRL, project: OBS, type: ground, version: WIS, tier: 1}
     scripts:
       station_comparison:
         script: xco2_analysis/station_comparison.ncl

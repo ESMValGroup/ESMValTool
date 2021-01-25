@@ -477,7 +477,7 @@ begin
                  + "Bottom: Difference between observations and models " \
                  + "(left) and sampled and unsampled model (right)." \
                  + " Similar to Gier et al. 2020, Figure 6.", \
-                 (/"mean", "difference"/), \
+                 (/"mean", "diff"/), \
                  DOMAIN, \
                  "geo", \
                  AUTHORS, \

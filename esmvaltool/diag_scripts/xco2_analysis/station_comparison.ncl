@@ -146,6 +146,7 @@ begin
 
   ; Make arrays to hold masked station data and corresponding sat measurement
   station_array_masked = station_array
+  station_array_masked = station_array
   station_array_masked@var = station_array@var + "_masked"
   sat_array = station_array
   sat_array@var = var0
