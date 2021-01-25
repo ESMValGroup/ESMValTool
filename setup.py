@@ -23,7 +23,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'cartopy',
+        'cartopy>=0.18',
         'cdo',
         'cdsapi',
         'cf-units',
