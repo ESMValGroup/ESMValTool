@@ -6,6 +6,7 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
+  - cartopy>=0.18
   - compilers
   - gdal
   - esmpy
