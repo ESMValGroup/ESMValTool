@@ -1,0 +1,17 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-SEA-SURFACE-SALINITY
+  versions: ['fv1.8', 'fv2.31']
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_surface_salinity'
+  reference: "esacci-sea-surface-salinity"
+  comment: ""
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  sos:
+    mip: Omon
+    raw: sss
