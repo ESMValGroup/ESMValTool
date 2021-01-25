@@ -71,7 +71,8 @@ jobs:
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
+            # conda env update >> /logs/conda.txt 2>&1
+            conda env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install .[test] > /logs/install.txt 2>&1
             esmvaltool install R
@@ -122,7 +123,8 @@ jobs:
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
+            # conda env update >> /logs/conda.txt 2>&1
+            conda env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             esmvaltool install R
@@ -183,16 +185,16 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
+            apt update && apt install time
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            # conda update -y conda > /logs/conda_base.txt 2>&1
-            conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
+            conda create -y -n build conda-build conda-verify
+            conda activate build
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export -n base > /logs/build_environment.yml
+            conda env export > /logs/build_environment.yml
             # Build conda package
-            apt update && apt install time
             \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
           no_output_timeout: 30m
       - store_artifacts:
