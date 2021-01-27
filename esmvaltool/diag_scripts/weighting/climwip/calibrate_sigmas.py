@@ -102,7 +102,7 @@ def calculate_percentiles(target: 'xr.DataArray',
     return percentiles_spread, inside_ratio
 
 
-def optimize_confidence(target: 'xr.DataArray', weights_matrix: 'xr.DataArray',
+def compute_cost_function(target: 'xr.DataArray', weights_matrix: 'xr.DataArray',
                         performance_sigma: float) -> float:
     """Optimize the performance sigma for confidence.
 
