@@ -20,7 +20,7 @@
 
     Please fill in the GitHub issue that is closed by this pull request, e.g. Closes #1903
 -->
-- Closes/Fixes: #issue_number
+- Closes #issue_number
 - Link to documentation:
 
 * * *
