@@ -130,7 +130,7 @@ def optimize_confidence(target: 'xr.DataArray', weights_matrix: 'xr.DataArray',
     - It is highly recommended to visually inspect the graphical output of this
     process to ensure the optimisation worked as intended.
 
-    - Using cases where the largest possible sigma value was pickt is not
+    - Using cases where the largest possible sigma value was picked is not
     recommended. This is normally a sign that
         * not enough models where used
         * the diagnostics where not well chose with respect to the target
