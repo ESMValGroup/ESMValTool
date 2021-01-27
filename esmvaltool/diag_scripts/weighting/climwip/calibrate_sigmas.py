@@ -102,8 +102,9 @@ def calculate_percentiles(target: 'xr.DataArray',
     return percentiles_spread, inside_ratio
 
 
-def compute_cost_function(target: 'xr.DataArray', weights_matrix: 'xr.DataArray',
-                        performance_sigma: float) -> float:
+def compute_cost_function(target: 'xr.DataArray',
+                          weights_matrix: 'xr.DataArray',
+                          performance_sigma: float) -> float:
     """Optimize the performance sigma for confidence.
 
     Parameters
@@ -120,34 +121,30 @@ def compute_cost_function(target: 'xr.DataArray', weights_matrix: 'xr.DataArray'
     cost_function_value : float
         Value of the cost function based on the given performance sigma value.
         The cost function is a discontinuous function distinguishing two cases:
-        * overconfident weighting (ratio_difference < 0.):
-            The value is positive and decreases with increasing sigma
-        * not overconfident (reliable) weighting (ratio_difference >= 0.):
-            The value is negative and increases with increasing sigma
+              99 + abs(difference)  if overconfident
+        f = {
+              sigma                 else
 
     WARNING
     -------
-    - It is highly recommended to visually inspect the graphical output of this
+    It is highly recommended to visually inspect the graphical output of this
     process to ensure the optimisation worked as intended.
 
-    - Using cases where the largest possible sigma value was picked is not
-    recommended. This is normally a sign that
-        * not enough models where used
-        * the diagnostics where not well chosen with respect to the target
 
     Additional information
     ----------------------
     After evaluating all possible sigma values the sigma which leads to the
     smallest cost function will be selected. Two different cases need to be
     disdinguished:
-    * the cost function is negative for at least one sigma:
+    * the cost function is > 99 for all cases:
+        All sigma values lead to overconfident weighting. The script will
+        plot a visualization of the test and will then raise an error. The user
+        can decide to select a sigma value manually (e.g., if the test only
+        failed by a narrow margin) and set in in the config file.
+    * the cost function is < 99 for at least one sigma:
         For this case the cost function increases linearly with sigma,
         therefore the smallest possible sigma where this is true will be
-        selected.
-    * the cost function is non-negative:
-        For this case the cost function decreases linearly with sigma and
-        with decreasing absolute value ratio_difference. This will normally
-        lead to the largest possible sigma value being selected.
+        selected on the fly and used in the computation of weights.
     """
     percentiles = PERCENTILES
     inside_ratio_reference = percentiles[1] - percentiles[0]
@@ -164,13 +161,14 @@ def compute_cost_function(target: 'xr.DataArray', weights_matrix: 'xr.DataArray'
         target, weights_matrix, percentiles)
     confidence_test_values[performance_sigma] = {
         'percentile_spread': percentiles_spread,
-        'inside_ratio': inside_ratio}
+        'inside_ratio': inside_ratio
+    }
 
-    ratio_difference = inside_ratio - inside_ratio_reference
+    difference = inside_ratio - inside_ratio_reference
 
-    if ratio_difference < 0:
-        return np.abs(ratio_difference) + SIGMA_RANGE[1] - performance_sigma
-    return performance_sigma - SIGMA_RANGE[1]
+    if difference < 0:  # overconfident
+        return 99 - difference
+    return performance_sigma
 
 
 def evaluate_target(performance_sigma: list,
@@ -191,7 +189,7 @@ def evaluate_target(performance_sigma: list,
     target : array_like, shape (N,)
         See calculate_percentiles for more information.
     overall_independence : array_like, shape (N, N)
-        Matix containing model-model distances for independence.
+        Matrix containing model-model distances for independence.
     independence_sigma : float
         Independence weighting shape parameter.
 
@@ -211,11 +209,11 @@ def evaluate_target(performance_sigma: list,
                                        independence_sigma)
 
     cost_function_value = compute_cost_function(target, weights_matrix,
-                                              performance_sigma)
+                                                performance_sigma)
     return cost_function_value
 
 
-def visualize_save_calibration(performance_sigma, costf, cfg):
+def visualize_save_calibration(performance_sigma, costf, cfg, success):
     """Visualize a summary of the calibration."""
     percentiles = PERCENTILES
     inside_ratio_reference = percentiles[1] - percentiles[0]
@@ -255,11 +253,22 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
                  ls=':',
                  label='Unweighted baseline: {:.0%}'.format(
                      baseline['inside_ratio']))
-    axes.axvline(
-        performance_sigma,
-        color='k',
-        ls='-.',
-        label='Selected performance sigma: {:.2f}'.format(performance_sigma))
+
+    if success:
+        axes.axvline(performance_sigma,
+                     color='k',
+                     ls='-.',
+                     label='Selected performance sigma: {:.2f}'.format(
+                         performance_sigma))
+        axes.set_title('Performance sigma calibration')
+    else:
+        axes.axvline(
+            performance_sigma,
+            color='gray',
+            ls='-.',
+            label='Best performance sigma: {:.2f} (set manually to use)'.
+            format(performance_sigma))
+        axes.set_title('Performance sigma calibration (FAILED)')
 
     # optional: sharpness
     sharpness = xr.concat([
@@ -280,24 +289,10 @@ def visualize_save_calibration(performance_sigma, costf, cfg):
     sharpness.attrs['units'] = '1'
     confidence['sharpness'] = sharpness
 
-    # optional: cost function on second yaxis
-    axes2 = axes.twinx()
-    axes2.plot(sigmas, costf, color='red', lw=.5)
-    axes2.set_ylabel('Cost function (1)')
-    axes2.yaxis.label.set_color('red')
-    axes2.tick_params(axis='y', colors='red')
-
-    costf = xr.DataArray(costf,
-                         dims=['sigma'],
-                         coords={'sigma': sigmas},
-                         attrs={'units': '1'})
-    confidence['cost_function'] = costf
-
     axes.set_xlim(SIGMA_RANGE)
     axes.set_ylim(0, 1.3)
     axes.set_xlabel('sigma (1)')
     axes.set_ylabel('Ratio (1)')
-    axes.set_title('Performance sigma calibration')
 
     axes.legend()
 
@@ -349,7 +344,7 @@ def calibrate_performance_sigma(
             overall_performance, ['model_ensemble', 'perfect_model_ensemble'])
         target_data, _ = combine_ensemble_members(target_data)
 
-    performance_sigma, _, _, fgrid = brute(
+    performance_sigma, fval, _, fgrid = brute(
         evaluate_target,
         ranges=(SIGMA_RANGE, ),
         Ns=100,
@@ -359,16 +354,14 @@ def calibrate_performance_sigma(
         full_output=True,
     )
 
-    visualize_save_calibration(performance_sigma, fgrid, cfg)
+    success = np.min(fval) < 99
+    visualize_save_calibration(performance_sigma, fgrid, cfg, success=success)
 
-    if performance_sigma == SIGMA_RANGE[1]:
-        logmsg = ' '.join([
-            'No confident sigma could be found! Using largest possible value.',
-            'Bad choice of predictors or target or too small sigma range?'
-        ])
-        logger.warning(logmsg)
-    else:
+    if success:
         logmsg = f'Found optimal performance sigma value: {performance_sigma}'
         logger.info(logmsg)
+        return performance_sigma
 
-    return performance_sigma
+    errmsg = ('No confident sigma could be found! Bad choice of predictors or '
+              'target or too small sigma range?')
+    raise ValueError(errmsg)
