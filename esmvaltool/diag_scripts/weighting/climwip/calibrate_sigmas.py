@@ -210,7 +210,7 @@ def evaluate_target(performance_sigma: list,
                                        overall_independence, performance_sigma,
                                        independence_sigma)
 
-    cost_function_value = optimize_confidence(target, weights_matrix,
+    cost_function_value = compute_cost_function(target, weights_matrix,
                                               performance_sigma)
     return cost_function_value
 
