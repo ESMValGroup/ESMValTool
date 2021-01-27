@@ -213,7 +213,7 @@ def evaluate_target(performance_sigma: list,
     return cost_function_value
 
 
-def visualize_save_calibration(performance_sigma, costf, cfg, success):
+def visualize_save_calibration(performance_sigma, cfg, success):
     """Visualize a summary of the calibration."""
     percentiles = PERCENTILES
     inside_ratio_reference = percentiles[1] - percentiles[0]
@@ -344,7 +344,7 @@ def calibrate_performance_sigma(
             overall_performance, ['model_ensemble', 'perfect_model_ensemble'])
         target_data, _ = combine_ensemble_members(target_data)
 
-    performance_sigma, fval, _, fgrid = brute(
+    performance_sigma, fval, _, _ = brute(
         evaluate_target,
         ranges=(SIGMA_RANGE, ),
         Ns=100,
@@ -354,8 +354,8 @@ def calibrate_performance_sigma(
         full_output=True,
     )
 
-    success = np.min(fval) < 99
-    visualize_save_calibration(performance_sigma, fgrid, cfg, success=success)
+    success = fval < 99
+    visualize_save_calibration(performance_sigma, cfg, success=success)
 
     if success:
         logmsg = f'Found optimal performance sigma value: {performance_sigma}'
