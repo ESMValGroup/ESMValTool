@@ -85,6 +85,7 @@ outputs:
         - joblib
         - lime
         - matplotlib>3.3.1  # bug in 3.3.1
+        - mpich<3.4
         - natsort
         - nc-time-axis
         - netCDF4
