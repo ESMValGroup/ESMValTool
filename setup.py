@@ -44,6 +44,7 @@ REQUIREMENTS = {
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
+        'mpich<3.4',
         'pandas',
         'pyproj>=2.1'
         'pyyaml',
