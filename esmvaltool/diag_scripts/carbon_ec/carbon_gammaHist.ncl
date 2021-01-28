@@ -174,9 +174,9 @@ begin
     ; set years with big vulcanic eruptions to _FillValues
     if (diag_script_info@ec_volc .eq. True) then
 
-      ; remove 2 yrs after Krakatoa, Santa Maria, Agung, El Chichon, Pinatubo
+      ; remove 2 yrs after Krakatoa, Santa Maria, Agung, El Chichon, Pinatubo, Eyjafjallajökull
       volc_years = (/1883, 1884, 1902, 1903, 1963, \
-                    1964, 1982, 1983, 1991, 1992/)
+                    1964, 1982, 1983, 1991, 1992, 2010,2011/)
 
       do y = 0, dimsizes(tmp_A0&year)-1
         tmp0 = where(any(tmp_A0&year(y).eq.volc_years), \
@@ -233,10 +233,9 @@ begin
                                aY2reg(idx_mod, tmin:tmax))/)
     var(0, idx_mod) = (/stddev(aY1reg(idx_mod, tmin:tmax))/)
     var(1, idx_mod) = (/stddev(aY2reg(idx_mod, tmin:tmax))/)
-
     delete([/rc, df, tmin, tmax/])
   end do     ; model loop
-
+print(var)
   ; counting ref_models only as one model
   datasetnames0 = where(datasetnames0.eq.variable_info[0]@reference_dataset, \
                         "OBS", datasetnames0)
@@ -312,7 +311,30 @@ begin
   gsn_panel(wks, plot, (/mm, mm/), pan)
   frame(wks)
 
-  delete([/plot, pan/])
+  delete([/plot, pan, data_arr/])
+
+  ; Create Plot 1b:
+  ; ----------------------------------------------------------
+  var@info = info0
+
+  YStg = "Sensitivity of land+ocean CO~B~2~N~ flux," \
+         + "~F8~g~F21~~B~IAV~N~ (GtC/yr/K)"
+
+  data_arr = new((/dim_MOD, 1/), float)
+  data_arr(:, 0) = var
+  data_arr!0 = "datasets"
+  data_arr&datasets(0) = datasetnames
+  data_arr!1 = "yaxis"
+  data_arr&yaxis = YStg
+  data_arr@res_tiMainString    = ""
+  data_arr@res_tiMainFontHeightF = 0.025
+  data_arr@res_gsnCenterString = ""
+
+  plot = barchart(wks, data_arr, var, info0)
+  draw(plot)
+  frame(wks)  
+  delete([plot, data_arr])
+
 
   ; Save data for later use
   if (config_user_info@write_netcdf) then

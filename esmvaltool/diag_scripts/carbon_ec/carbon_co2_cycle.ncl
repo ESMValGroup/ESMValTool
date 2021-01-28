@@ -142,6 +142,7 @@ begin
 
     ; Regression between [CO2] Amplitude (x) and [CO2] ann mean (Y)
     rc = regline_stats(Xdata(imod, :), Ydata(imod, :))
+
     rcc(imod, 1) = rc
     rcc(imod, 0) = rc@b(0)
     stdrc(imod, :) = rc@stderr
@@ -156,6 +157,7 @@ begin
   ; Save in array w/o OBS
   betaGPP = new((/2, dim_MOD-1/), float)
   rcGPP   = new((/(dim_MOD-1)*2/), float)
+  beta_calc = beta@beta_calc
 
   betaGPP(:, :) = beta
   rcGPP(1::2) = betaGPP@rcgpp
@@ -173,8 +175,8 @@ begin
   nfit = fspan(0, 50, 50)
 
   ; amplitude trends
-  minx = min(rcc(idat, 1))-1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
-  maxx = max(rcc(idat, 1))+1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1)))
+  minx = min(rcc(idat, 1))-1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1))) 
+  maxx = max(rcc(idat, 1))+1.1*(max(rcc(idat, 1)) + max(rcc(idat, 1))) 
 
   rc = regline_stats(rcc(idat, 1), betaGPP(0, :))
   arc_bco2  = rc@r
@@ -196,6 +198,48 @@ begin
   end if
   co2_Py_pr = PDF@Py_pr
   co2_y     = PDF@y
+
+  ;this is for adding CMIP5 results to plots
+  esrl = False
+  if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
+    if (datasetnames(iref) .eq. "ESRL") then
+      esrl = True
+      if (beta_calc .eq. "increment")then
+        CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM"/)    
+        CMIP5aX = (/0.020, 0.023, 0.027, 0.051, 0.067, 0.020/)
+        CMIP5aY = (/0.219, 0.154, 1.32, 1.51, 1.54, 0.159/)
+      else
+        CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM","UKESM1-0-LL"/)    
+        CMIP5aX = (/0.020, 0.023, 0.027, 0.051, 0.067, 0.020, 0.108/)
+        CMIP5aY = (/1.18, 1.22, 1.25, 1.38, 1.48, 1.25, 1.62/)
+      end if
+    else
+      if (beta_calc .eq. "increment")then
+        CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM"/)    
+        CMIP5aX = (/0.01, 0.00, 0.02, 0.019, 0.031, -0.001/)
+        CMIP5aY = (/6.04, 3.92, 14.91, 7.66, 18.75, 3.46/)
+      else
+        CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM","UKESM1-0-LL"/)    
+        CMIP5aX = (/0.01, 0.00, 0.019, 0.019, 0.031, -0.001, 0.038/)
+        CMIP5aY = (/1.33, 1.26, 1.44, 1.34, 1.56, 1.21, 1.59/)
+      end if
+    end if
+
+    CMIP5rc = regline_stats(CMIP5aX, CMIP5aY)
+    CMIP5arc_bco2  = rc@r
+    CMIP5prc_bco2  = rc@F_pval
+    CMIP5xfit_bco2 = minx + (maxx - minx) * nfit/dimsizes(nfit)
+    CMIP5yfit_bco2 = CMIP5rc * CMIP5xfit_bco2 + CMIP5rc@yintercept
+
+    ; Calculate prior distribution
+    CMIP5PDF = Cond_PDF(CMIP5xfit_bco2, CMIP5yfit_bco2, CMIP5aX, \
+                        CMIP5aY, CMIP5rc@MSE, \
+                        (/rcc(iref, 1), stdrc(iref, 1)/))
+
+    CMIP5co2_Py    = CMIP5PDF@Py
+    CMIP5co2_Py_pr = CMIP5PDF@Py_pr
+    CMIP5co2_y     = CMIP5PDF@y
+  end if
 
   ; this is for plotting the regression line with confidence intervalls
   yfit_bco2_std = new((/2, dimsizes(yfit_bco2)/), typeof(yfit_bco2))
@@ -228,7 +272,18 @@ begin
   marker_sizes  = new(dimsizes(datasetnames), float)
   marker_thicks = 3
   marker_sizes  = 0.02
-  marker   = new(dim_MOD, "graphic")
+
+  ;set specific markers and fill patterns
+  ncyc = (/"ACCESS-ESM1-5", "CESM2", "MIROC-ES2L", "MPI-ESM1-2-LR", "NorESM2-LM", "UKESM1-0-LL"/)
+  bpattern = new(dim_MOD, integer)
+
+  do imod  = 0, dim_MOD-1
+    if (any(datasetnames(imod) .eq. ncyc)) then
+      bpattern(imod) = 16
+    else
+      bpattern(imod) = 0
+    end if
+  end do
 
   ; Create Plots 1a:
   ; -----------------------------------------------------------
@@ -298,6 +353,7 @@ begin
   data_arr@res_tiMainString    = ""
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString = ""
+  data_arr@res_gsnXYBarChartPatterns2 = bpattern
 
   plot = barchart(wks, data_arr, var, info0)
   draw(plot)
@@ -327,7 +383,12 @@ begin
 
   MainStg = ""
   XStg    = "Sensitivity of CO~B~2~N~ Amplitude to CO~B~2~N~"
-  YStg    = "GPP(2xCO~B~2~N~)/GPP(1xCO~B~2~N~)"
+
+  if (beta_calc .eq. "increment") then
+    YStg    = "GPP(2xCO~B~2~N~) - GPP(1xCO~B~2~N~)"
+  else
+    YStg    = "GPP(2xCO~B~2~N~)/GPP(1xCO~B~2~N~)"
+  end if
 
   data_arr = (/xCO2(0, :), yBETA(0, :)/)
   data_arr!0 = "datasets"
@@ -336,16 +397,21 @@ begin
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString   = ""
   data_arr@res_gsnMaximize       = True
-  data_arr@res_xyMarkerSizeF     = 1.
-  data_arr@res_trXMinF           = min(xCO2(0, :))
-  data_arr@res_trXMaxF           = 0.1  ; max(xCO2(0, :))
-  data_arr@res_trYMinF           = 1.1  ; 0
-  data_arr@res_trYMaxF = max(yBETA(0, :)) + 0.25 * max(yBETA(0, :))
+  data_arr@res_xyMarkerSizeF     = 1.      
+  if (esrl .eq. True) then
+    data_arr@res_trXMinF         = 0 ;min(xCO2(0,:))-0.25*min(xCO2(0,:))
+    data_arr@res_trXMaxF         = 0.12 ;max(xCO2(0,:))+ 0.25*max(xCO2(0,:))
+  else
+    data_arr@res_trXMinF         = -0.005
+    data_arr@res_trXMaxF         = max(xCO2(0,:))+ 0.25*max(xCO2(0,:)) ;0.06
+  end if 
+  data_arr@res_trYMinF           = 0 ;1.1
+  data_arr@res_trYMaxF           = max(yBETA(0, :)) + 0.25 * max(yBETA(0, :))
   data_arr@res_vpWidthF          = 0.5
   data_arr@res_vpHeightF         = 0.4
   data_arr@diag_script = DIAG_SCRIPT
   diag_script_info@scatter_log = False
-
+print(data_arr)
   plot = scatterplot(wks, data_arr, var, False, False, input_file_info)
 
   ; add confidence intervall of regression line
@@ -375,22 +441,70 @@ begin
   ; add regression line
   lres = True
   lres@gsLineColor       = "red"
-  lres@gsLineThicknessF  = 1.5
+  lres@gsLineThicknessF  = 4
   fit_line = gsn_add_polyline(wks, plot, xfit_bco2, yfit_bco2, lres)
 
-  ; add colored markers
+  ; add CMIP5 regression line
+  if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
+    CMIP5lres = True
+    CMIP5lres@gsLineColor       = "lightskyblue4"
+    CMIP5lres@gsLineThicknessF  = 2
+    CMIP5fit_line = gsn_add_polyline(wks, plot, CMIP5xfit_bco2, CMIP5yfit_bco2, CMIP5lres)
+
+    ; add colored markers CMIP5
+    XCMIP5 = new(dimsizes(datasetnames), typeof(CMIP5aX))
+    XCMIP5@_FillValue = default_fillvalue(typeof(CMIP5aX)) 
+    YCMIP5 = new(dimsizes(datasetnames), typeof(CMIP5aY))
+    do imod = 0, dimsizes(datasetnames) -1
+      do i = 0,  dimsizes(CMIP5names) -1 
+        if (datasetnames(imod) .eq. CMIP5names(i)) then
+          XCMIP5(imod) = CMIP5aX(i)
+          YCMIP5(imod) = CMIP5aY(i)
+        end if
+      end do
+    end do
+
+    cmres = True
+    cmres@gsMarkerSizeF = 10.
+    cmres@gsMarkerThicknessF = 3.
+    do imod = 2, dimsizes(datasetnames) - 1
+      cmres@gsMarkerColor = xcolors(imod)
+      cmres@gsMarkerIndex = markers(imod)
+      add_markers(wks, plot, cmres, XCMIP5(imod), YCMIP5(imod))
+    end do
+
+  ; add colored markers CMIP6
+  txres = True
+  MarkerSizeF = where(datasetnames0.eq."CESM1-BGC", 18., 15.)
+  txres@gsMarkerThicknessF = 4
+
+  ;do imod  = 0, dim_MOD-1
+  ;  txres@gsMarkerColor = colors(imod)
+  ;  txres@gsMarkerSizeF = MarkerSizeF(imod)
+  ;  if (any(datasetnames(imod) .eq. ncyc)) then
+  ;    txres@gsMarkerIndex = 5
+  ;  else
+  ;    txres@gsMarkerIndex = 4
+  ;  end if
+  ;  markers(imod) = txres@gsMarkerIndex
+  ;  mres@gsMarkerColor = xcolors(imod)      
+  ;  
+  ;  add_markers(wks, plot, mres, xCO2(0, imod), yBETA(0, imod))
+  ;end do
+
   mres = True
-  mres@gsMarkerSizeF = 20.
+  mres@gsMarkerSizeF = 10.
   mres@gsMarkerThicknessF = 3.
-  do imod = 1, dim_MOD - 1
+  mres@gsMarkerIndex = 16
+  do imod = 2, dimsizes(datasetnames) - 1
     mres@gsMarkerColor = xcolors(imod)
-    mres@gsMarkerIndex = xmarkers(imod)
     add_markers(wks, plot, mres, xCO2(0, imod), yBETA(0, imod))
   end do
 
   ; add xy error bars
   eres = True
   eres@gsLineColor = colors(idat)
+  eres@gsLineThicknessF  = 4
   add_errorbar(wks, plot, eres, xCO2(:, 2:), yBETA(:, 2:))
 
   draw(plot)
@@ -402,26 +516,6 @@ begin
   ; -----------------------------------------------
   plot_pdf = new(1, graphic)
 
-  bres  = True
-  bres@gsnDraw          = False
-  bres@gsnFrame         = False
-  bres@xyLineThicknessF = 2.
-  bres@xyLineColor      = (/"black"/)
-  bres@tiXAxisString    = "GPP(2xCO~B~2~N~)/GPP(1xCO~B~2~N~)"
-  bres@tiYAxisString    = "Probability Density"
-  bres@trXMinF          = 0.6
-  bres@trXMaxF          = 2.0
-  bres@trYMinF          = 0.
-  bres@trYMaxF          = max(co2_Py)*1.2
-  bres@gsnXYBarChart    = True
-  bres@tiMainString     = ""
-  bres@vpWidthF         = 0.5
-  bres@vpHeightF        = 0.4
-  bres@tmXTLabelFontHeightF = 0.025
-  bres@tmYLLabelFontHeightF = 0.025
-  bres@tiXAxisFontHeightF   = 0.025
-  bres@tiYAxisFontHeightF   = 0.022
-
   ; create line plot with PDFs
   diag_script_info@multi_model_mean = False
   diag_script_info@scatter_log = False
@@ -429,7 +523,7 @@ begin
 
   pres = True
   pres@tiMainString       = ""
-  pres@tiXAxisString      = XStg
+  pres@tiXAxisString      = YStg
   pres@tiYAxisString      = "Probability Density"
   pres@vpWidthF           = 0.4
   if (rcc(iref, 1).eq.0) then
@@ -438,11 +532,22 @@ begin
     pres@trYMinF        = 0
       xy_line(wks, co2_Py_pr, co2_y, 0., pres, input_file_info)
   else
-    pres@xyLineColors   = (/"black", "red"/)
-    pres@xyDashPatterns = (/2, 0/)
-    pres@trYMinF        = 0
+    if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
+      pres@xyLineColors   = (/"red", "red", "lightskyblue4", "lightskyblue4"/)
+      pres@xyDashPatterns = (/2, 0, 2, 0/)
+      pres@xyLineThicknessF = 4
+      pres@trYMinF        = 0
+      xy_line(wks, (/co2_Py_pr, co2_Py, CMIP5co2_Py_pr, CMIP5co2_Py/), \
+                   (/co2_y, co2_y, CMIP5co2_y, CMIP5co2_y/), \
+                    0., pres, input_file_info)
+    else 
+      pres@xyLineColors   = (/"red", "red", "lightskyblue4", "lightskyblue4"/)
+      pres@xyDashPatterns = (/2, 0, 2, 0/)
+      pres@xyLineThicknessF = 4
+      pres@trYMinF        = 0
       xy_line(wks, (/co2_Py_pr, co2_Py/), (/co2_y, co2_y/), \
               0., pres, input_file_info)
+    end if
   end if
 
   obsres = True
@@ -496,15 +601,15 @@ begin
 
   ; -----------------------------------------------------------
   ; Call provenance logger
-  log_provenance(ncdf_outfile, \
-                 plotname, \
-                 XStg + " vs " + YStg, \
-                 (/"anomaly", "corr", "stddev"/), \
-                 (/"global"/),\
-                 (/""/), \
-                 (/"zechlau_sabrina"/), \
-                 (/"wenzel16nat"/), \
-                 metadata_att_as_array(info, "filename"))
+;  log_provenance(ncdf_outfile, \
+;                 plotname, \
+;                 XStg + " vs " + YStg, \
+;                 (/"anomaly", "corr", "stddev"/), \
+;                 (/"global"/),\
+;                 (/""/), \
+;                 (/"zechlau_sabrina"/), \
+;                 (/"wenzel16nat"/), \
+;                 metadata_att_as_array(info, "filename"))
+; ###############################################################
 
 end
-; ###############################################################

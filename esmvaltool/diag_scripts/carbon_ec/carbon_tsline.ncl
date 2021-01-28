@@ -29,7 +29,7 @@
 ;    y-max: set max of y-axis
 ;    mean_nh_sh: if true, calculate first NH and SH mean
 ;    volcanoes: if true, lines of main volcanic eruptions will be added
-;    run_ave: if not equal 0 than calculate running mean over this number
+;    run_ave: if not equal 10 than calculate running mean over this number
 ;             of years
 ;    header: if true, region name as header
 ;
@@ -157,7 +157,7 @@ begin
   if (isatt(diag_script_info, "area_opper")) then
     area_opper = diag_script_info@area_opper
     if (all(area_opper.ne.(/"sum", "average"/))) then
-      error_msg("f", diag_script, "", \
+      error_msg("f", DIAG_SCRIPT, "", \
                 "area opperation option " + area_opper + " not yet " + \
                 "implemented")
     end if
@@ -461,16 +461,21 @@ begin
   res = True
   res@trXMinF = xmin
   res@trXMaxF = xmax
-  ; res@trXMaxF = xmax + 0.25 * (xmax - xmin)
+  if (isatt(diag_script_info, "ts_xminyear")) then
+    res@trXMinF = diag_script_info@ts_xminyear
+  end if
+  if (isatt(diag_script_info, "ts_xmaxyear")) then
+    res@trXMaxF = diag_script_info@ts_xmaxyear
+  end if
   res@tmXBMode = "Explicit"
   if (xmax - xmin.gt.20) then
-    res@tmXBValues = ispan(xmin, xmax, 10)
-    res@tmXBLabels = ispan(xmin, xmax, 10)
-    res@tmXBMinorValues =  ispan(xmin, xmax, 5)
+    res@tmXBValues = ispan(res@trXMinF, res@trXMaxF, 10)
+    res@tmXBLabels = ispan(res@trXMinF, res@trXMaxF, 10)
+    res@tmXBMinorValues =  ispan(res@trXMinF, res@trXMaxF, 5)
   else
-    res@tmXBValues = ispan(xmin, xmax, 5)
-    res@tmXBLabels = ispan(xmin, xmax, 5)
-    res@tmXBMinorValues =  ispan(xmin, xmax, 1)
+    res@tmXBValues = ispan(res@trXMinF, res@trXMaxF, 5)
+    res@tmXBLabels = ispan(res@trXMinF, res@trXMaxF, 5)
+    res@tmXBMinorValues =  ispan(res@trXMinF, res@trXMaxF, 1)
   end if
   res@tmXBLabelAngleF = 45
   res@tmXBLabelJust     = "CenterRight"
@@ -483,6 +488,10 @@ begin
 
   res@tmXBMode         = "Manual"
   res@tmXBTickSpacingF = 20
+
+  dashes = project_style(info_items, diag_script_info, "dashes")
+  dashes = 0
+  res@xyDashPatterns = dashes
 
   if (diag_script_info@header) then
     res@tiMainString = diag_script_info@region
@@ -512,6 +521,7 @@ begin
     res@tiYAxisString = varname + " (" + units + ")"
   end if
 
+  
   xy_line(wks, model_arr, model_arr&time, model_arr_stddev, res, info_items)
 
   log_info(" wrote " + outfile + "." + file_type)

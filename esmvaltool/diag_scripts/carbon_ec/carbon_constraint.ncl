@@ -99,7 +99,6 @@ begin
   temp_dir = temp_dir + "gIAV_" \
                       + diag_script_info@gIAV_start + "-" \
                       + diag_script_info@gIAV_end + ".nc"
-
   ; ==================================================================
   ;  setup data holders for plots
   xMax_year = max(metadata_att_as_array(info0, "end_year"))
@@ -179,11 +178,15 @@ begin
   IAV = ncdf_read(temp_dir, "gIAV")
 
   if (dimsizes(IAV(0, :)).eq.dim_MOD+1) then
-    Y6data  = IAV(:, 1:dim_MOD)         ; Gamma_IAV from the models
-    obs_std = IAV(:, 0)                 ; Gamma_IAV from the OBS
+    idxm = ind(IAV&model.ne."OBS")
+    idxr = ind(IAV&model.eq."OBS")
+    Y6data  = IAV(:, idxm)         ; Gamma_IAV from the models
+    obs_std = IAV(:, idxr)         ; Gamma_IAV from the OBS (/-4.42, 0.6/)
+    ;elete([/idxm, idxr/])
   else
     Y6data = IAV
     obs_std = (/0, 0/)
+    idxm = ispan(0, dim_MOD-1 , 1)
   end if
 
   ; exclude models from regression if appropriate
@@ -204,7 +207,7 @@ begin
   rc = regline_stats(aX(0, :), aY(:))
   arc  = rc@r
   prc  = rc@F_pval
-  xfit = minx+(maxx-minx)*nfit/dimsizes(nfit)
+  xfit = minx+(maxx-minx)*nfit/dimsizes(nfit)*3
   yfit = rc*xfit + rc@yintercept
 
   PDF = Cond_PDF(xfit, yfit, aX(0, :), aY(:), rc@MSE, obs_std)
@@ -222,6 +225,33 @@ begin
   yfit_std(0, :) = yfit+PDF@sigma
   yfit_std(1, :) = yfit-PDF@sigma
 
+  ; adding CMIP5 and C4MIP ECs to plot
+  ; calculate PDF vor CMIP5
+  CMIP5aX = (/-7.4, 0.2, -12, -5.9, -3.7, -6.9, -0.8/)
+  CMIP5aY = (/-74.3, -6.7, -116.4, -60.2, -22.9, -58.4, -7.2/)
+
+  CMIP5rc = regline_stats(CMIP5aX, CMIP5aY)
+  CMIP5arc  = CMIP5rc@r
+  CMIP5prc  = CMIP5rc@F_pval
+  CMIP5yfit = CMIP5rc*xfit + CMIP5rc@yintercept
+  CMIP5PDF  = Cond_PDF(xfit, CMIP5yfit, CMIP5aX, CMIP5aY, CMIP5rc@MSE, obs_std)
+  CMIP5Py_pr = CMIP5PDF@Py_pr
+  CMIP5y     = CMIP5PDF@y
+  CMIP5Py    = CMIP5PDF@Py
+
+  ; calculate PDF vor C4MIP
+  C4MIPaX = (/ -7.5, -4.8, -3.6, -5.6, -2.5, -9.0/)
+  C4MIPaY = (/-96., -60., -40., -64., -28., -138./)
+
+  C4MIPrc = regline_stats(C4MIPaX, C4MIPaY)
+  C4MIParc  = C4MIPrc@r
+  C4MIPprc  = C4MIPrc@F_pval
+  C4MIPyfit = C4MIPrc*xfit + C4MIPrc@yintercept
+  C4MIPPDF  = Cond_PDF(xfit, C4MIPyfit, C4MIPaX, C4MIPaY, C4MIPrc@MSE, obs_std)
+  C4MIPPy_pr = C4MIPPDF@Py_pr
+  C4MIPy     = C4MIPPDF@y
+  C4MIPPy    = C4MIPPDF@Py
+
   ; ==================================================================
   ; PLOTTING
 
@@ -237,6 +267,52 @@ begin
   thicks = project_style(info0, diag_script_info, "thicks")
   plot_num = integertochar(ispan(97, 122, 1))
 
+
+  ; Create Plot 1b:
+  ; ----------------------------------------------------------
+  var@info = info0
+
+  YStg = "Sensitivity of land+ocean CO~B~2~N~ flux," \
+         + "~F8~g~F21~~B~IAV~N~ (GtC/yr/K)"
+
+  data_arr = new((/dim_MOD, 1/), float)
+  data_arr(:, 0) = var
+  data_arr!0 = "datasets"
+  data_arr&datasets(0) = datasetnames
+  data_arr!1 = "yaxis"
+  data_arr&yaxis = YStg
+  data_arr@res_tiMainString    = ""
+  data_arr@res_tiMainFontHeightF = 0.025
+  data_arr@res_gsnCenterString = ""
+
+  plot = barchart(wks, data_arr, var, info0)
+  draw(plot)
+  frame(wks)  
+  delete([plot, data_arr])
+  ; Create Plot 1b:
+  ; ----------------------------------------------------------
+  var@info = info0
+
+  YStg = "Carbon Cycle Climate Feedback, ~F8~g~F21~~B~LT~N~ (GtC/K)"
+
+  data_arr = new((/dim_MOD, 1/), float)
+  data_arr(:, 0) = tofloat(Y6data(0, :))
+  data_arr!0 = "datasets"
+  data_arr&datasets(0) = datasetnames
+  data_arr!1 = "yaxis"
+  data_arr&yaxis = YStg
+  data_arr@res_tiMainString    = ""
+  data_arr@res_tiMainFontHeightF = 0.025
+  data_arr@res_gsnCenterString = ""
+
+  plot = barchart(wks, data_arr, var, info0)
+  draw(plot)
+  frame(wks)  
+  delete([plot, data_arr])
+
+
+  ;EC Plot
+  ;--------------------------
   XStg = "Sensitivity of land+ocean CO~B~2~N~ flux," \
          + "~F8~g~F21~~B~IAV~N~ (GtC/yr/K)"
   YStg = "Carbon Cycle Climate Feedback, ~F8~g~F21~~B~LT~N~ (GtC/K)"
@@ -253,10 +329,10 @@ begin
   data_arr@res_tiMainString      = ""
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString   = ""
-  data_arr@res_trXMinF           = min(Y6data(0, :))-0.2*abs(min(Y6data(0, :)))
-  data_arr@res_trXMaxF           = max(Y6data(0, :))+0.2*abs(max(Y6data(0, :)))
-  data_arr@res_trYMinF           = min(gamma_LT)-0.2*abs(min(gamma_LT))
-  data_arr@res_trYMaxF           = max(gamma_LT)+0.2*abs(max(gamma_LT))
+  data_arr@res_trXMinF           = -13 ;min(Y6data(0, :))-0.2*abs(min(Y6data(0, :)));
+  data_arr@res_trXMaxF           = 3 ;max(Y6data(0, :))+0.2*abs(max(Y6data(0, :)));
+  data_arr@res_trYMinF           = -140 ;min(gamma_LT)-0.2*abs(min(gamma_LT));
+  data_arr@res_trYMaxF           = 0 ;max(gamma_LT)+0.2*abs(max(gamma_LT));
   plot = scatterplot(wks, data_arr, var0, False, False, input_file_info)
 
   peres = True
@@ -282,6 +358,20 @@ begin
   lres@gsLineThicknessF  = 1.5
   fit_line = gsn_add_polyline(wks, plot, xfit, yfit, lres)
 
+  ; add CMIP5 regression line
+  o5lres = True
+  o5lres@gsLineColor       = "lightskyblue4"
+  o5lres@gsLineDashPattern = 1
+  o5lres@gsLineThicknessF  = 2
+  CMIP5_fit = gsn_add_polyline(wks, plot, xfit, CMIP5yfit, o5lres)
+
+  ; add C4MIP regression line
+  o4lres = True
+  o4lres@gsLineColor       = "lightskyblue2"
+  o4lres@gsLineDashPattern = 3
+  o4lres@gsLineThicknessF  = 2
+  C4MIP_fit = gsn_add_polyline(wks, plot, xfit, C4MIPyfit, o4lres)
+
   ; add colored markers
   mres = True
   mres@xyMarker      = 0
@@ -302,8 +392,8 @@ begin
   diag_script_info@scatter_log = False
   diag_script_info@xy_line_legend = False
   pres = True
-  pres@tiMainString       = plot_num(1)+") "
-  pres@tiXAxisString      = XStg
+  pres@tiMainString       = ""
+  pres@tiXAxisString      = YStg
   pres@tiYAxisString      = "Probability Density"
   pres@vpWidthF           = 0.4
   if (obs_std(0).eq.0) then
@@ -312,33 +402,36 @@ begin
     pres@trYMinF        = 0
     xy_line(wks, Py_pr, y, 0., pres, False)
   else
-    pres@xyLineColors   = (/"black", "red"/)
-    pres@xyDashPatterns = (/2, 0/)
+    pres@xyLineColors   = (/"red", "red", "lightskyblue4", "lightskyblue4", "lightskyblue2", "lightskyblue2"/)
+    pres@xyDashPatterns = (/2, 0, 1, 0, 3, 0/)
+    pres@gsLineThicknessF = 2
     pres@trYMinF        = 0
-    xy_line(wks, (/Py_pr, Py/), (/y, y/), 0., pres, input_file_info)
+    xy_line(wks, (/Py_pr, Py, CMIP5Py_pr, CMIP5Py, C4MIPPy_pr, C4MIPPy/), \
+                 (/y, y, CMIP5y, CMIP5y, C4MIPy, C4MIPy/), 0., pres, input_file_info)
   end if
+
 
   ; *************************************
   ; output to NetCDF
-  out_path = config_user_info@work_dir
-  system("mkdir -p " + out_path)
-  out_path1 = out_path + "constraint_" + var1 + "_" \
-                       + diag_script_info@gIAV_start + "-" \
-                       + diag_script_info@gIAV_end + ".nc"
-  data_arr@ncdf = out_path
-  data_arr@var = var0
-  ncdf_outfile  = ncdf_write(data_arr, out_path1)
+  ;out_path = config_user_info@work_dir
+  ;system("mkdir -p " + out_path)
+  ;out_path1 = out_path + "constraint_" + var1 + "_" \
+  ;                     + diag_script_info@gIAV_start + "-" \
+  ;                     + diag_script_info@gIAV_end + ".nc"
+  ;data_arr@ncdf = out_path
+  ;data_arr@var = var0
+  ;ncdf_outfile  = ncdf_write(data_arr, out_path1)
 
   ; Call provenance logger
-  log_provenance(ncdf_outfile, \
-                 output_dir + "." + file_type, \
-                 XStg + " vs " + YStg, \
-                 (/"anomaly", "corr", "stddev"/), \
-                 (/"trop", "global"/),\
-                 (/""/), \
-                 (/"wenzel_sabrina"/), \
-                 (/"wenzel14jgr"/), \
-                 metadata_att_as_array(info0, "filename"))
+;  log_provenance(ncdf_outfile, \
+;                 output_dir + "." + file_type, \
+;                 XStg + " vs " + YStg, \
+;                 (/"anomaly", "corr", "stddev"/), \
+;                 (/"trop", "global"/),\
+;                 (/""/), \
+;                 (/"wenzel_sabrina"/), \
+;                 (/"wenzel14jgr"/), \
+;                 metadata_att_as_array(info0, "filename"))
 
 end
 ; ###########################################################################

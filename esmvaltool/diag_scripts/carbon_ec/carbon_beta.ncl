@@ -81,6 +81,9 @@ begin
     xMin_year = max(metadata_att_as_array(info, "start_year"))
   end if
 
+  set_default_att(diag_script_info, "beta_type", "False")
+  beta_calc = diag_script_info@beta_type  
+
   ; Call plot scripts
   plot_file = "beta_" + xMin_year + "-" + xMax_year
   wks = gsn_open_wks(file_type, plot_dir + plot_file)
@@ -102,7 +105,6 @@ begin
   end do
   pctco!0 = "year"
   pctco&year = ispan(nyMin-10, nyMax, 1)
-
   ; --------------------------------------------------------------
   ; define arrey
   betaGPP = new((/dim_MOD/), float)
@@ -131,35 +133,52 @@ begin
     Yfitda(imod, ymin:ymax) = rc@Yest
 
     rcgpp(imod) = tofloat(rc)
+    print(beta_calc)
+    if (beta_calc .eq. "increment") then
+      if (xMin_year.ge.info[imod]@start_year) then
+        delta0(imod) = (avg(tofloat(tmp0({time|xMax_year-4:xMax_year}))) - \
+                        avg(tofloat(tmp0({time|xMin_year:xMin_year+4}))))
 
-    if (xMin_year.ge.info[imod]@start_year) then
-      delta0(imod) = (avg(tofloat(tmp0({time|xMax_year-4:xMax_year})))/ \
-                      avg(tofloat(tmp0({time|xMin_year:xMin_year+4}))))
+        delta0_std(imod) = stddev(tofloat(tmp0({time|xMax_year-4:xMax_year}))) +  \
+                           stddev(tofloat(tmp0({time|xMin_year:xMin_year+4})))
+      else
+        delta0(imod) = (avg(tmp0({time|xMax_year-4:xMax_year})) - \
+                        avg(tmp0(0:4)))
+        delta0_std(imod) = stddev(tmp0({time|xMax_year-4:xMax_year})) +  \
+                           stddev(tmp0(0:4))
+      end if
+      betaGPP(imod) = delta0(imod)
 
-      delta0_std(imod) = sqrt( \
-                         (stddev(tofloat(tmp0( \
-                             {time|xMax_year-4:xMax_year})))/ \
-                          avg(tofloat(tmp0( \
-                              {time|xMin_year:xMin_year+4})))) ^ 2 + \
-                         (stddev(tofloat(tmp0( \
-                             {time|xMin_year:xMin_year+4}))) * \
-                          avg(tofloat(tmp0( \
-                              {time|xMax_year-4:xMax_year})))/ \
-                          avg(tofloat(tmp0( \
-                              {time|xMin_year:xMin_year+4}))) ^ 2) ^ 2)
     else
-      delta0(imod) = (avg(tmp0({time|xMax_year-4:xMax_year}))/ \
-                      avg(tmp0(0:4)))
 
-      delta0_std(imod) = sqrt( \
-        (stddev(tmp0({time|xMax_year-4:xMax_year}))/ \
-          avg(tmp0(0:4))) ^ 2 + (stddev(tmp0(0:4)) * \
-                                 avg(tmp0({time|xMax_year-4:xMax_year}))/ \
-                                 avg(tmp0(0:4)) ^ 2) ^ 2)
-
+      if (xMin_year.ge.info[imod]@start_year) then
+        delta0(imod) = (avg(tofloat(tmp0({time|xMax_year-4:xMax_year})))/ \
+        avg(tofloat(tmp0({time|xMin_year:xMin_year+4}))))
+        
+        delta0_std(imod) = sqrt( \
+                               (stddev(tofloat(tmp0( \
+                                {time|xMax_year-4:xMax_year})))/ \
+                               avg(tofloat(tmp0( \
+                                {time|xMin_year:xMin_year+4})))) ^ 2 + \
+                               (stddev(tofloat(tmp0( \
+                                {time|xMin_year:xMin_year+4}))) * \
+                               avg(tofloat(tmp0( \
+                                {time|xMax_year-4:xMax_year})))/ \
+                               avg(tofloat(tmp0( \
+                                {time|xMin_year:xMin_year+4}))) ^ 2) ^ 2)
+      else
+        delta0(imod) = (avg(tmp0({time|xMax_year-4:xMax_year}))/ \
+                        avg(tmp0(0:4)));
+        
+        delta0_std(imod) = sqrt( \
+                               (stddev(tmp0({time|xMax_year-4:xMax_year}))/ \
+                                avg(tmp0(0:4))) ^ 2 + (stddev(tmp0(0:4)) * \
+                                avg(tmp0({time|xMax_year-4:xMax_year}))/ \
+                                avg(tmp0(0:4)) ^ 2) ^ 2)
+      end if
+      betaGPP(imod) = delta0(imod) * 1/0.9
     end if
-    betaGPP(imod) = delta0(imod) * 1/0.9
-
+print(betaGPP(imod))
     delete([/tmp0, ymin, ymax, A0, rc/])
   end do     ; model loop
 
@@ -180,12 +199,25 @@ begin
   betavar@rcgpp    = rcgpp
   betavar@betaGPP  = betaGPP
   betavar@delta0_std = delta0_std
+  betavar@beta_calc = diag_script_info@beta_type
 
   ; Write NetCDF output
   ncdf_outfile = ncdf_write(betavar, new_path)
 
   ; -----------------------------------------------------------
   ; creat plots
+
+  ;set specific markers and fill patterns
+  ncyc = (/"ACCESS-ESM1-5", "CESM2", "MIROC-ES2L", "MPI-ESM1-2-LR", "NorESM2-LM", "UKESM1-0-LL"/)
+  bpattern = new(dim_MOD, integer)
+
+  do imod  = 0, dim_MOD-1
+    if (any(datasetnames(imod) .eq. ncyc)) then
+      bpattern(imod) = 16
+    else
+      bpattern(imod) = 0
+    end if
+  end do
 
   ; PLOT - Panel A
   XStg    = "Annual CO~B~2~N~ [ppmv]"
@@ -200,8 +232,8 @@ begin
   data_arr@res_xyMonoMarker    = False
   data_arr@res_xyMarkers       = markers
   data_arr@res_xyMarkerColors  = "white"
-  data_arr@res_trXMinF         = min(pctco({year|nyMin:nyMax}))
-  data_arr@res_trXMaxF         = max(pctco({year|nyMin:nyMax}))
+  data_arr@res_trXMinF         = min(pctco({year|xMin_year:xMax_year}))
+  data_arr@res_trXMaxF         = max(pctco({year|xMin_year:xMax_year}))
   data_arr@res_trYMinF         = 0
   data_arr@res_trYMaxF         = max(aY0data) + 0.5*max(aY0data)
   data_arr@res_vpWidthF        = 0.5
@@ -226,7 +258,7 @@ begin
     txres@gsMarkerColor = colors(imod)
     txres@gsMarkerSizeF = MarkerSizeF(imod)
     txres@gsMarkerIndex = markers(imod)
-    add_markers(wks, plot, txres, pctco({year|nyMin:nyMax}), aY0data(imod, :))
+    add_markers(wks, plot, txres, pctco({year|xMin_year:xMax_year}), aY0data(imod, :))
 
     lineres@gsLineColor = colors(imod)
     plot@$marker$ = gsn_add_polyline(wks, plot, Yfitda(imod, :), \
@@ -239,7 +271,11 @@ begin
   ; PLOT - Panel B
   print(datasetnames + " " + betaGPP)
 
-  YStg = str_upper(var) + "(2xCO~B~2~N~)/" + str_upper(var) + "(1xCO~B~2~N~)"
+  if (beta_calc .eq. "increment") then
+    YStg = str_upper(var) + "(2xCO~B~2~N~) - " + str_upper(var) + "(1xCO~B~2~N~)"
+  else
+    YStg = str_upper(var) + "(2xCO~B~2~N~)/" + str_upper(var) + "(1xCO~B~2~N~)"
+  end if
 
   data_arr = new((/dimsizes(betaGPP), 1/), float)
   data_arr(:, 0) = betaGPP
@@ -250,6 +286,7 @@ begin
   data_arr@res_tiMainString    = ""
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString = ""
+  data_arr@res_gsnXYBarChartPatterns2 = bpattern
 
   plot = barchart(wks, data_arr, var, info)
   draw(plot)
@@ -282,14 +319,14 @@ begin
   plotname = plot_dir + plot_file + "." + file_type
 
   ; Call provenance logger
-  log_provenance(ncdf_outfile, \
-                 plotname, \
-                 "Climate models vs " + YStg, \
-                 (/"anomaly", "corr", "stddev"/), \
-                 (/"global"/),\
-                 (/""/), \
-                 (/"zechlau_sabrina"/), \
-                 (/"wenzel16nat"/), \
-                 metadata_att_as_array(info, "filename"))
+;  log_provenance(ncdf_outfile, \
+;                 plotname, \
+;                 "Climate models vs " + YStg, \
+;                 (/"anomaly", "corr", "stddev"/), \
+;                 (/"global"/),\
+;                 (/""/), \
+;                 (/"zechlau_sabrina"/), \
+;                 (/"wenzel16nat"/), \
+;,                 metadata_att_as_array(info, "filename"))
 
 end
