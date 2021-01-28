@@ -21,6 +21,7 @@ Atmosphere
    recipe_diurnal_temperature_index
    recipe_extreme_events
    recipe_eyring06jgr
+   recipe_eyring13jgr
    recipe_heatwaves_coldwaves
    recipe_hyint
    recipe_modes_of_variability
@@ -93,10 +94,10 @@ Other
 .. toctree::
    :maxdepth: 1
 
+   recipe_examples
    recipe_capacity_factor
    recipe_ensclus
    recipe_multimodel_products
-   recipe_python
    recipe_rainfarm
    recipe_seaice_feedback
    recipe_seaice
