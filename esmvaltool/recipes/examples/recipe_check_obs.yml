@@ -9,6 +9,9 @@ documentation:
   authors:
     - righi_mattia
 
+  maintainer:
+    - predoi_valeriu
+
 diagnostics:
 
   ### TIER 2 ##################################################################
@@ -246,7 +249,7 @@ diagnostics:
       tsStderr:
     additional_datasets:
       - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: L4-GHRSST-SSTdepth-OSTIA-GLOB,
+         type: sat, version: 2.1,
          start_year: 1992, end_year: 2010}
     scripts: null
 
@@ -257,14 +260,12 @@ diagnostics:
       co2s:
         mip: Amon
     additional_datasets:
-      - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
-         start_year: 1973, end_year: 2019}
+      - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2,
+         start_year: 2000, end_year: 2002}
+      - {dataset: ESRL, project: OBS, type: ground, version: GLOBAL, tier: 2,
+         start_year: 2000, end_year: 2002}
       - {dataset: ESRL, project: OBS, type: ground, version: MLO, tier: 2,
-         start_year: 1973, end_year: 2019}
-      - {dataset: ESRL, project: OBS, type: ground, version: SMO, tier: 2,
-         start_year: 1973, end_year: 2019}
-      - {dataset: ESRL, project: OBS, type: ground, version: SPO, tier: 2,
-         start_year: 1973, end_year: 2019}
+         start_year: 2000, end_year: 2002}
     scripts: null
 
 
@@ -521,6 +522,16 @@ diagnostics:
          type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
       - {dataset: REGEN, project: OBS, mip: day, tier: 2,
          type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+    scripts: null
+
+
+  Scripps-CO2-KUM:
+    description: Scripps-CO2-KUM check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: Scripps-CO2-KUM, project: OBS6, mip: Amon, tier: 2,
+         type: ground, version: 15-Nov-2019, start_year: 1979, end_year: 2019}
     scripts: null
 
 
