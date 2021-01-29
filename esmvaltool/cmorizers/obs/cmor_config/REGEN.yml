@@ -58,7 +58,8 @@ masking_thresholds:
   ek: 95
   cov: 95
   s: 1
-  monthly_statisitcs: 0.8
+  # monthly_statisitcs: 0.8
+  monthly_statisitcs: 0.6 # 0.8
 
 # Variables to cmorize
 variables:

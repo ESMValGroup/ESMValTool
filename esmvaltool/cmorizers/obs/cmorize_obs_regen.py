@@ -37,12 +37,17 @@ import cftime
 import iris
 import numpy as np
 from cf_units import Unit
-from esmvalcore.preprocessor import monthly_statistics
+from esmvalcore.preprocessor import (monthly_statistics, annual_statistics)
 
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+import IPython
+from traitlets.config import get_config
+c = get_config()
+c.InteractiveShellEmbed.colors = "Linux"
+# IPython.embed(config=c)
 
 def _fix_time_coord(cube, var):
     """Correct wrong time points."""
@@ -61,12 +66,10 @@ def _fix_time_coord(cube, var):
     cube.coord('time').points = time.units.date2num(points)
 
 
-def _get_mask_qbased(cube, cfg, var_str):
+def _get_mask_qbased(cube, q):
     """Get percentile based mask."""
-    q_target = cfg['masking_thresholds'].get(var_str)
-    qs = [np.percentile(data.compressed(), q_target) for data in cube.data]
     mask = np.zeros(cube.shape)
-    for data, q, m in zip(cube.data, qs, mask):
+    for data, m in zip(cube.data, mask):
         m[np.where(data >= q)] = 1
     return mask.astype('bool')
 
@@ -109,10 +112,11 @@ def _build_monthy_masked_cube(cube, cfg):
     return cube_amon
 
 
-def _extract_variable(short_name, var, cfg, file_path, out_dir):
+def _extract_variable(short_name, qs, cfg, file_path, out_dir):
     """Extract variable."""
+    var = cfg['variables'].get(short_name)
 
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw')
     cube = iris.load_cube(file_path, utils.var_name_constraint(raw_var))
 
     # Fix units
@@ -167,24 +171,28 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
     # masking reduced
     logger.info("Deriving mask based on krigging error and coefficient of "\
                 "variation")
+    raw_sd = cfg['masking_variables_raw']['sd'].get('raw', short_name)
+    raw_ek = cfg['masking_variables_raw']['ek'].get('raw', short_name)
+    cov_q, ek_q = qs
+
+    # IPython.embed(config=c)
+
 
     ## krigging error
-    raw_var = cfg['masking_variables_raw']['ek'].get('raw', short_name)
-    ek_cube = iris.load_cube(file_path, utils.var_name_constraint(raw_var))
+    ek_cube = iris.load_cube(file_path, utils.var_name_constraint(raw_ek))
     _fix_time_coord(ek_cube, cfg['masking_variables_raw']['ek'])
     utils.fix_coords(ek_cube)
 
-    ek_mask = _get_mask_qbased(ek_cube, cfg, 'ek')
+    ek_mask = _get_mask_qbased(ek_cube, ek_q)
 
     ## coefficient of variation
-    raw_var = cfg['masking_variables_raw']['sd'].get('raw', short_name)
-    sd_cube = iris.load_cube(file_path, utils.var_name_constraint(raw_var))
+    sd_cube = iris.load_cube(file_path, utils.var_name_constraint(raw_sd))
     _fix_time_coord(sd_cube, cfg['masking_variables_raw']['sd'])
     utils.fix_coords(sd_cube)
 
     sd_cube.units = cfg['masking_variables_raw']['sd']['raw_units']
     sd_cube.convert_units(cmor_info.units)
-    cov_mask = _get_mask_qbased(sd_cube / cube, cfg, 'cov')
+    cov_mask = _get_mask_qbased(sd_cube / cube, cov_q)
 
     ## resulting mask
     res_mask = np.ma.mask_or(ek_mask, cov_mask)
@@ -270,6 +278,62 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
                                 unlimited_dimensions=['time'])
 
 
+def _get_timemean_q_thresholds(short_name, var, cfg, file_names, in_dir):
+    """Extract timemean q based thresholds."""
+    logger.info("Building time mean percentiles")
+
+    raw_var = var.get('raw', short_name)
+    raw_sd = cfg['masking_variables_raw']['sd'].get('raw', short_name)
+    raw_ek = cfg['masking_variables_raw']['ek'].get('raw', short_name)
+    # Fix units
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+
+    mean_ek, mean_cov, weights = [], [], []
+
+    for file_path in sorted(Path(in_dir).glob(file_names)):
+        logger.info("Loading '%s'", file_path)
+
+        file_path = str(file_path)
+        cube = iris.load_cube(file_path, utils.var_name_constraint(raw_var))
+        _fix_time_coord(cube, var)
+        utils.fix_coords(cube)
+        if 'raw_units' in var:
+            cube.units = var['raw_units']
+        cube.convert_units(cmor_info.units)
+
+        ek_cube = iris.load_cube(file_path, utils.var_name_constraint(raw_ek))
+        _fix_time_coord(ek_cube, cfg['masking_variables_raw']['ek'])
+        utils.fix_coords(ek_cube)
+        ek_cube = annual_statistics(ek_cube)
+
+        ## coefficient of variation
+        sd_cube = iris.load_cube(file_path, utils.var_name_constraint(raw_sd))
+        _fix_time_coord(sd_cube, cfg['masking_variables_raw']['sd'])
+        utils.fix_coords(sd_cube)
+        sd_cube.units = cfg['masking_variables_raw']['sd']['raw_units']
+        sd_cube.convert_units(cmor_info.units)
+        cov_cube = sd_cube / cube
+        cov_cube = annual_statistics(cov_cube)
+
+        mean_ek.append(ek_cube.data)
+        mean_cov.append(cov_cube.data)
+        weights.append(cube.shape[0])
+
+    mean_ek = np.ma.array(mean_ek)
+    mean_cov = np.ma.array(mean_cov)
+    weights = np.array(weights)
+
+    IPython.embed(config=c)
+
+    mean_ek_t = np.average(mean_ek, axis=0, weights=weights)
+    mean_cov_t = np.average(mean_cov, axis=0, weights=weights)
+
+    cov_q = np.percentile(mean_cov.compressed(), cfg['masking_thresholds'].get('cov'))
+    ek_q = np.percentile(mean_ek.compressed(), cfg['masking_thresholds'].get('ek'))
+
+    return(cov_q, ek_q)
+
+
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     raw_filename = cfg['filename']
@@ -278,6 +342,10 @@ def cmorization(in_dir, out_dir, cfg, _):
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", short_name)
-        for file_path in sorted(Path(in_dir).glob(file_names)):
-            logger.info("Loading '%s'", file_path)
-            _extract_variable(short_name, var, cfg, str(file_path), out_dir)
+        # Calculate time mean 95p
+        qs = _get_timemean_q_thresholds(short_name, var, cfg, file_names, in_dir)
+        logger.info("{}".format(qs))
+
+        # for file_path in sorted(Path(in_dir).glob(file_names)):
+        #     logger.info("Loading '%s'", file_path)
+        #     _extract_variable(short_name, qs, cfg, str(file_path), out_dir)
