@@ -43,8 +43,7 @@ User settings in recipe
     * ``performance_sigma`` xor ``calibrate_performance_sigma``: If ``performance_contributions`` is given exactly one of the two has to be given. Otherwise they can be skipped or not set.
 
         * ``performance_sigma``: float setting the shape parameter for the performance weights calculation (determined offline).
-        * ``calibrate_performance_sigma``: dictionary setting the performance sigma calibration. Has to contain at least the key-value pair specifying ``target``: ``variable_group``. Optional parameters for adjusting the calibration are not yet implemented.
-
+        * ``calibrate_performance_sigma``: dictionary setting the performance sigma calibration. Has to contain at least the key-value pair specifying ``target``: ``variable_group``. Optional parameters for adjusting the calibration are not yet implemented. WARNING: It is highly recommended to visually inspect the graphical output of the calibration to check if everything worked as intended. In case the calibration fails, the best performance sigma will still be indicated in the figure (see example figure 5 below) but not automatically picked - the user can decide to use it anyway by setting it in the recipe (not recommenced).
     * ``independence_sigma``: float setting the shape parameter for the independence weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
     * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with ``independence_contributions`` being skipped or not set).
     * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with ``performance_contributions`` being skipped or not set).
@@ -164,7 +163,7 @@ Example plots
 .. figure::  /recipes/figures/climwip/performance_sigma_calibration.png
    :align:   center
 
-   Performance sigma calibration: The tick black line gives the reliability (c.f., weather forecast verification) which should reach at least 80%. The thick grey line gives the mean change in spread between unweighted and weighted 80% ranges as an indication of the weighting strength. The smallest sigma (i.e., strongest weighting) with is not overconfident (reliability >= 80%) is selected based on cost function (red line).
+   Performance sigma calibration: The thick black line gives the reliability (c.f., weather forecast verification) which should reach at least 80%. The thick grey line gives the mean change in spread between the unweighted and weighted 80% ranges as an indication of the weighting strength (if it reaches 1, the weighting has no effect on uncertainty). The smallest sigma (i.e., strongest weighting) with is not overconfident (reliability >= 80%) is selected. If the test fails (like in this example) the smallest sigma which comes closest to 80% will be indicated in the legend (but NOT automatically selected).
 
    .. _fig_climwip_6:
 .. figure::  /recipes/figures/climwip/temperature_change_weighted_map.png
