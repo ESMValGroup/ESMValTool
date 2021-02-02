@@ -40,14 +40,28 @@ User settings in recipe
 1. Script ``main.py``
 
   *Required settings for script*
-    * ``performance_sigma`` xor ``calibrate_performance_sigma``: If ``performance_contributions`` is given exactly one of the two has to be given. Otherwise they can be skipped or not set.
+    * ``performance_sigma`` xor ``calibrate_performance_sigma``: If ``performance_contributions`` is given exactly one of the two
+      has to be given. Otherwise they can be skipped or not set.
 
         * ``performance_sigma``: float setting the shape parameter for the performance weights calculation (determined offline).
-        * ``calibrate_performance_sigma``: dictionary setting the performance sigma calibration. Has to contain at least the key-value pair specifying ``target``: ``variable_group``. Optional parameters for adjusting the calibration are not yet implemented. WARNING: It is highly recommended to visually inspect the graphical output of the calibration to check if everything worked as intended. In case the calibration fails, the best performance sigma will still be indicated in the figure (see example :numref:`fig_climwip_5` below) but not automatically picked - the user can decide to use it anyway by setting it in the recipe (not recommenced).
-    * ``independence_sigma``: float setting the shape parameter for the independence weights calculation (determined offline). Can be skipped or not set if ``independence_contributions`` is skipped or not set.
-    * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with ``independence_contributions`` being skipped or not set).
-    * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group. Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with ``performance_contributions`` being skipped or not set).
-    * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble members per model.
+        * ``calibrate_performance_sigma``: dictionary setting the performance sigma calibration. Has to contain at least the
+          key-value pair specifying ``target``: ``variable_group``. Optional parameters for adjusting the calibration are not
+          yet implemented. WARNING: It is highly recommended to visually inspect the graphical output of the calibration to
+          check if everything worked as intended. In case the calibration fails, the best performance sigma will still be
+          indicated in the figure (see example :numref:`fig_climwip_5` below) but not automatically picked - the user can decide
+          to use it anyway by setting it in the recipe (not recommenced).
+    * ``independence_sigma``: float setting the shape parameter for the independence weights calculation (determined offline).
+      Can be skipped or not set if ``independence_contributions`` is skipped or not set.
+    * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance
+      calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
+      Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with
+      ``independence_contributions`` being skipped or not set).
+    * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence
+      calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
+      Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with
+      ``performance_contributions`` being skipped or not set).
+    * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing
+      (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble members per model.
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
@@ -59,7 +73,8 @@ User settings in recipe
     * ``additional_datasets``: provide a list of model data for performance calculation.
 
   *Required settings for preprocessor*
-    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
+    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time
+      dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
 
   *Optional settings for preprocessor*
     * ``extract_region`` or ``extract_shape`` can be used to crop the input data.
@@ -80,7 +95,8 @@ User settings in recipe
     * ``preprocessor``: temperature_anomalies
 
   *Required settings for preprocessor*
-    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
+    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the
+      latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
 
   *Optional settings for preprocessor*
     * Can be a global mean or focus on a point, region or shape
@@ -106,7 +122,8 @@ User settings in recipe
      * ``preprocessor``: temperature_anomalies
 
    *Optional settings for variables*
-     * A second variable is optional: temperature reference (tas_reference). If given, maps of temperature change to the reference are drawn, otherwise absolute temperature are drawn.
+     * A second variable is optional: temperature reference (tas_reference). If given, maps of temperature change to
+       the reference are drawn, otherwise absolute temperature are drawn.
      * tas_reference takes the same fields as tas
 
 
@@ -163,7 +180,11 @@ Example plots
 .. figure::  /recipes/figures/climwip/performance_sigma_calibration.png
    :align:   center
 
-   Performance sigma calibration: The thick black line gives the reliability (c.f., weather forecast verification) which should reach at least 80%. The thick grey line gives the mean change in spread between the unweighted and weighted 80% ranges as an indication of the weighting strength (if it reaches 1, the weighting has no effect on uncertainty). The smallest sigma (i.e., strongest weighting) with is not overconfident (reliability >= 80%) is selected. If the test fails (like in this example) the smallest sigma which comes closest to 80% will be indicated in the legend (but NOT automatically selected).
+   Performance sigma calibration: The thick black line gives the reliability (c.f., weather forecast verification) which should
+   reach at least 80%. The thick grey line gives the mean change in spread between the unweighted and weighted 80% ranges as an
+   indication of the weighting strength (if it reaches 1, the weighting has no effect on uncertainty). The smallest sigma (i.e.,
+   strongest weighting) with is not overconfident (reliability >= 80%) is selected. If the test fails (like in this example) the
+   smallest sigma which comes closest to 80% will be indicated in the legend (but NOT automatically selected).
 
    .. _fig_climwip_6:
 .. figure::  /recipes/figures/climwip/temperature_change_weighted_map.png
