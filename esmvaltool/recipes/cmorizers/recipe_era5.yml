@@ -21,6 +21,9 @@ datasets:
 preprocessors:
   add_one_day: &add_one_day
     extract_time:
+      start_year: 1990
+      start_month: 1
+      start_day: 1
       end_year: 1991
       end_month: 1
       end_day: 1
@@ -331,6 +334,10 @@ diagnostics:
       tsn:
         mip: Amon
         era5_name: temperature_of_snow_layer
+        era5_freq: monthly
+      ua:
+        mip: Amon
+        era5_name: u_component_of_wind
         era5_freq: monthly
       va:
         mip: Amon

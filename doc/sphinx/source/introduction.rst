@@ -50,6 +50,80 @@ these challenging objectives the ESMValTool is conceived as a framework
 which allows community contributions to be bound into a coherent
 framework.
 
+.. _contact:
+
+Contact
+=======
+
+See `www.esmvaltool.org <https://www.esmvaltool.org>`_ for general contact information.
+
+.. _mailing-list:
+
+User mailing list
+-----------------
+
+Subscribe to the ESMValTool announcements mailing list
+`esmvaltool@listserv.dfn.de <mailto:esmvaltool@listserv.dfn.de>`__
+to stay up to date about new releases, monthly online meetings, upcoming workshops, and trainings.
+
+To subscribe, send an email to
+`sympa@listserv.dfn.de <mailto:sympa@listserv.dfn.de?subject=subscribe%20esmvaltool>`_
+with the following subject line:
+
+-  *subscribe esmvaltool*
+
+or
+
+-  *subscribe esmvaltool YOUR_FIRSTNAME YOUR_LASTNAME*
+
+The mailing list also has a `public archive <https://www.listserv.dfn.de/sympa/arc/esmvaltool>`_ online.
+
+.. _discussions_page:
+
+Discussions page
+----------------
+
+The `ESMValTool Discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__
+is open for all general and technical questions on the ESMValTool: installation, application, development, or any other question or comment you may have.
+
+.. _core-team:
+
+Monthly meetings
+----------------
+
+We have monthly online meetings using `zoom <https://zoom.us/>`__, anyone with
+an interest in the ESMValTool is welcome to join these meetings to connect with
+the community.
+These meetings are always announced in an issue
+on the `ESMValTool <https://github.com/ESMValGroup/ESMValTool/issues>`_
+repository and on the mailing-list_.
+
+Core development team
+---------------------
+
+-  Deutsches Zentrum für Luft- und Raumfahrt (DLR), Institut für Physik
+   der Atmosphäre, Germany (Co-PI)
+
+   - ESMValTool Core Co-PI and Developer: contact for requests to use the ESMValTool and for collaboration with the development team, access to the PRIVATE GitHub repository.
+
+-  Met Office, United Kingdom (Co-PI)
+-  Alfred Wegener institute (AWI) Bremerhaven, Germany
+-  Barcelona Supercomputing Center (BSC), Spain
+-  Netherlands eScience Center (NLeSC), The Netherlands
+-  Ludwig Maximilian University of Munich, Germany
+-  Plymouth Marine Laboratory (PML), United Kingdom
+-  Swedish Meteorological and Hydrological Institute (SMHI), Sweden
+-  University of Bremen, Germany
+-  University of Reading, United Kingdom
+
+Recipes and diagnostics
+-----------------------
+
+Contacts for specific diagnostic sets are the respective authors, as
+listed in the corresponding :ref:`recipe and diagnostic documentation<recipes>`
+and in the source code.
+
+
 License
 =======
 
@@ -68,7 +142,7 @@ and version number:
    Little, B., Loosveldt Tomas, S., and Zimmermann, K.: Earth System
    Model Evaluation Tool (ESMValTool) v2.0 – technical overview, Geosci.
    Model Dev., 13, 1179–1199, https://doi.org/10.5194/gmd-13-1179-2020,
-   2020. 
+   2020.
 
 Besides the above citation, users are kindly asked to register any
 journal articles (or other scientific documents) that use the software
@@ -176,9 +250,9 @@ Run the preprocessor
    iris cubes and passed through the preprocessing steps required by the
    user and specified in the preprocessor section, using the specific
    preprocessing step parameters provided by the user as keys (for the
-   parameter name) and values (for the paramater value); the
+   parameter name) and values (for the parameter value); the
    preprocessing order is very imprtant since a number of steps depend
-   on prior excution of other steps (e.g. :ref:`multimodel
+   on prior execution of other steps (e.g. :ref:`multimodel
    statistics <esmvalcore:Multi-model statistics>` can not be computed
    unless all models are on a common grid, hence a prior
    :ref:`regridding

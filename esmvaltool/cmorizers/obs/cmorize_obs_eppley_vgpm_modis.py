@@ -21,9 +21,9 @@ Modification history
 import logging
 import os
 import glob
-from datetime import datetime as dt
 import xarray as xr
 import numpy as np
+import pandas as pd
 
 import iris
 
@@ -70,24 +70,23 @@ def merge_data(in_dir, out_dir, raw_info):
     var = raw_info['name']
     filelist = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.hdf'))
     for filename in filelist:
-        ds = xr.open_dataset(filename, engine='pynio').rename({
-            'fakeDim0': 'lat',
-            'fakeDim1': 'lon'
-        })
+        ds = xr.open_rasterio(filename).rename({
+            'y': 'lat',
+            'x': 'lon'
+        }).squeeze().drop('band')
         # create coordinates
         ds = ds.assign_coords(
-            time=dt.strptime(ds.attrs['Start_Time_String'],
-                             '%m/%d/%Y %H:%M:%S'))
+            time=pd.to_datetime(filename[-11:-4], format='%Y%j'))
         ds = ds.expand_dims(dim='time', axis=0)
-        dx = 90. / ds.dims['lat']
-        ds = ds.assign_coords(
-            lat=np.linspace(-90. + dx, 90. - dx, ds.dims['lat']))
+        dx = 90. / ds.lat.size
+        ds = ds.assign_coords(lat=np.linspace(-90. + dx, 90. -
+                                              dx, ds.lat.size))
         ds.lat.attrs = {'long_name': 'Latitude', 'units': 'degrees_north'}
-        ds = ds.assign_coords(
-            lon=np.linspace(-180. + dx, 180. - dx, ds.dims['lon']))
+        ds = ds.assign_coords(lon=np.linspace(-180. + dx, 180. -
+                                              dx, ds.lon.size))
         ds.lon.attrs = {'long_name': 'Longitude', 'units': 'degrees_east'}
         # get current file data
-        da.append(ds[var])
+        da.append(ds)
     damerge = xr.concat(da, dim='time')
 
     # need data flip to match coordinates
@@ -106,7 +105,7 @@ def merge_data(in_dir, out_dir, raw_info):
             'calendar': 'gregorian'
         },
         var: {
-            '_FillValue': ds[var].attrs['Hole_Value']
+            '_FillValue': -9999.0
         }
     }
     filename = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
@@ -128,7 +127,7 @@ def cmorization(in_dir, out_dir, cfg, _):
         glob_attrs['mip'] = vals['mip']
         raw_info = {'name': vals['raw'], 'file': vals['file']}
 
-        # merge yearly data and apply binning
+        # merge data
         inpfile = merge_data(in_dir, out_dir, raw_info)
 
         logger.info("CMORizing var %s from file %s", var, inpfile)
