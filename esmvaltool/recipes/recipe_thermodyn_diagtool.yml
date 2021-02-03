@@ -64,8 +64,8 @@ preprocessors:
   regrid_preproc:
     regrid:
       target_grid: 1.875x1.25
-      lon_offset: True
-      lat_offset: True
+      lon_offset: true
+      lat_offset: true
       scheme: area_weighted
 
 diagnostics:
@@ -126,7 +126,7 @@ diagnostics:
         short_name: vas
         preprocessor: regrid_preproc
         additional_datasets: *hadgem_only
-      vas_2: &variable_settings 
+      vas_2: &variable_settings
         mip: day
         short_name: vas
         additional_datasets: *all_data
