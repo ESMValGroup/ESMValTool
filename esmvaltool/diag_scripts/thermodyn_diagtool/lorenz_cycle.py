@@ -1054,7 +1054,7 @@ def varatts(w_nc_var, varname, tres, vres):
     """Add attributes to the variables, depending on name and time res.
 
     Arguments:
-    ----------
+    ---------
     w_nc_var: a variable object;
     varname: the name of the variable, among ta, ua, va and wap;
     tres: the time resolution (daily or annual);
@@ -1108,7 +1108,7 @@ def weights(lev, nlev, lat):
     """Compute weights for vertical integration and meridional averages.
 
     Arguments:
-    ----------
+    ---------
     lev: the pressure levels;
     nlev: the number of pressure levels;
     lat: the latitudes in degrees;
