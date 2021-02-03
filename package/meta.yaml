@@ -1,11 +1,11 @@
 # Conda build recipe
 ---
 
-# Build commmand:
+# Build command:
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.0.0" %}
+{% set version = "2.1.1" %}
 
 package:
   name: esmvaltool
@@ -26,10 +26,10 @@ build:
 
 requirements:
   run:
-    - esmvaltool-julia
-    - esmvaltool-ncl
-    - esmvaltool-python
-    - esmvaltool-r
+    - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-python', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-r', exact=True) }}
 
 test:
   source_files:
@@ -51,6 +51,8 @@ test:
     - nclcodestyle --help
     - esmvaltool colortables --help
     - test_recipe --help
+    - ncl -V
+    - cdo -V
 
 outputs:
 
@@ -64,8 +66,9 @@ outputs:
         - python>=3.6
         - setuptools_scm
       run:
-        - cartopy
+        - cartopy>=0.18
         - cdo>=1.9.7
+        - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
         - cdsapi
         - cf-units
         - cftime
@@ -74,28 +77,32 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.0.0,<2.1  # in esmvalgroup channel
+        - esmvalcore>=2.1.0,<2.2  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=2.2.1
+        - iris>=2.2.1,<3
         - jinja2
         - joblib
-        - matplotlib>=3
+        - lime
+        - matplotlib>3.3.1  # bug in 3.3.1
+        - natsort
         - nc-time-axis
         - netCDF4
         - numpy
         - pandas
-        - pynio
         - pyproj>=2.1
         - python>=3.6
         - python-cdo
         - pyyaml
+        - rasterio  # replaces pynio
+        - scikit-image
         - scikit-learn
         - seaborn
         - seawater
         - shapely
         - xarray>=0.12.0
         - xesmf
+        - xgboost
         - xlsxwriter
 
   - name: esmvaltool-julia
@@ -124,11 +131,10 @@ outputs:
     requirements:
       run:
         - cdo>=1.9.7
+        - compilers
         - esmvaltool-python
         - nco
         - r-base>=3.5
-        - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
-        - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
 
 about:
   home: https://www.esmvaltool.org

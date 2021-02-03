@@ -1,0 +1,135 @@
+# ESMValTool
+# recipe_climwip.yml
+---
+documentation:
+  description: EUCP ClimWIP
+
+  authors:
+    - kalverla_peter
+    - smeets_stef
+    - brunner_lukas
+    - camphuijsen_jaro
+    - lorenz_ruth
+
+  maintainer:
+    - kalverla_peter
+    - smeets_stef
+    - brunner_lukas
+    - lorenz_ruth
+
+  references:
+    - brunner2019
+    - lorenz2018
+    - knutti2017
+
+datasets: &model_data  # a minimal selection to demonstrate functionality
+  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: "r(1:4)i1p1"}
+  - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+
+obs_data: &obs_data  # for climwip performance metrics
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+
+preprocessors:
+  climwip_general: &general
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear
+    mask_landsea:
+      mask_out: sea
+    extract_region:
+      start_longitude: 0.0
+      end_longitude: 39.0
+      start_latitude: 30.0
+      end_latitude: 76.25
+
+  climatological_mean:
+    <<: *general
+    climate_statistics:
+      operator: mean
+
+  temperature_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference:
+        start_year: 1981
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+
+diagnostics:
+  calculate_weights_climwip:
+    variables:
+      tas_CLIM: &common_settings
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+        additional_datasets: *obs_data
+      pr_CLIM:
+        <<: *common_settings
+        short_name: pr
+      psl_CLIM:
+        <<: *common_settings
+        short_name: psl
+
+    scripts:
+      climwip:
+        script: weighting/climwip/main.py
+        obs_data: native6
+        combine_ensemble_members: true
+        performance_sigma: 0.5
+        performance_contributions:
+          tas_CLIM: 1
+          pr_CLIM: 2
+          psl_CLIM: 1
+        independence_sigma: 0.5
+        independence_contributions:
+          tas_CLIM: .5
+          pr_CLIM: .25
+          psl_CLIM: 0  # equivalent to not setting it
+
+  weighted_temperature_graph:
+    variables:
+      tas:
+        start_year: 1960
+        end_year: 2100
+        mip: Amon
+        preprocessor: temperature_anomalies
+    scripts:
+      weighted_temperature_graph:
+        script: weighting/weighted_temperature_graph.py
+        ancestors: [calculate_weights_climwip/climwip, tas]
+        weights: 'weights.nc'
+
+  weighted_temperature_map:
+    variables:
+      tas: &map_settings
+        short_name: tas
+        start_year: 2081
+        end_year: 2100
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_reference:
+        <<: *map_settings
+        start_year: 1995
+        end_year: 2014
+    scripts:
+      weighted_temperature_map:
+        script: weighting/weighted_temperature_map.py
+        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        weights: 'weights.nc'
+        # optional arguments
+        model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
+        xticks: [0, 10, 20, 30, 40]  # if not given ticks will be set automatically
+        yticks: [30, 40, 50, 60, 70, 80]

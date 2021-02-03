@@ -33,11 +33,16 @@ import numpy as np
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            io, plot, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    plot,
+    run_diagnostic,
+    select_metadata,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -150,11 +155,12 @@ def _save_fig(cfg, basename, legend=None):
 def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
     cubes = iris.cube.CubeList()
+    input_data = list(cfg['input_data'].values())
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
         cube = cube.extract(
-            ih.iris_project_constraint(['OBS'], cfg, negate=True))
+            ih.iris_project_constraint(['OBS'], input_data, negate=True))
         cubes.append(cube)
     cubes = ih.intersect_dataset_coordinates(cubes)
     return (cubes[0], cubes[1], cubes[2])
@@ -330,10 +336,9 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         obs_std = np.std(obs_cube.data)
 
         # Calculate regression line
-        lines = ec.regression_surface(psi_cube.data, ecs_cube.data,
-                                      n_points=1000)
+        lines = ec.regression_line(psi_cube.data, ecs_cube.data)
         logger.info("Found emergent relationship with slope %.2f (R2 = %.2f)",
-                    lines['coef'], lines['R2'])
+                    lines['slope'], lines['rvalue']**2)
 
         # Plot points
         for model in psi_cube.coord('dataset').points:
@@ -486,11 +491,11 @@ def get_ecs_range(cfg, ecs_lin, ecs_pdf):
     conf_low = (1.0 - confidence_level) / 2.0
     conf_high = (1.0 + confidence_level) / 2.0
 
-    # Calculate CDF
-    ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
+    # Mean ECS
+    ecs_mean = np.sum(ecs_lin * ecs_pdf) / np.sum(ecs_pdf)
 
     # Calculate constrained ECS range
-    ecs_mean = ecs_lin[np.argmax(ecs_pdf)]
+    ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
     ecs_index_range = np.where((ecs_cdf >= conf_low)
                                & (ecs_cdf <= conf_high))[0]
     ecs_range = ecs_lin[ecs_index_range]
@@ -524,9 +529,9 @@ def main(cfg):
         obs_cube = psi_cubes[obs_name]
         plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube,
                                    obs_cube)
-        (ecs_lin, ecs_pdf) = ec.gaussian_pdf(psi_cube.data, ecs_cube.data,
-                                             np.mean(obs_cube.data),
-                                             np.var(obs_cube.data))
+        (ecs_lin, ecs_pdf) = ec.target_pdf(psi_cube.data, ecs_cube.data,
+                                           np.mean(obs_cube.data),
+                                           np.std(obs_cube.data))
         plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
         plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
 

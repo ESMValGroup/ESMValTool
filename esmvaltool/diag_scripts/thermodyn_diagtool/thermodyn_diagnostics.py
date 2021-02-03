@@ -137,8 +137,7 @@ USAGE
    section (see Sect. 1).
 
 4: Run the tool by typing:
-         esmvaltool -c $CONFIG_FILE \\
-             esmvaltool/recipes/recipe_thermodyn_diagtool.yml
+         esmvaltool run esmvaltool/recipes/recipe_thermodyn_diagtool.yml
 
 OUTPUT
 
