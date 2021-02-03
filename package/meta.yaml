@@ -80,11 +80,12 @@ outputs:
         - esmvalcore>=2.1.0,<2.2  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=2.2.1,<3
+        - iris>=3.0.1
         - jinja2
         - joblib
         - lime
         - matplotlib>3.3.1  # bug in 3.3.1
+        - mpich<3.4
         - natsort
         - nc-time-axis
         - netCDF4
