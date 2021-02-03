@@ -144,7 +144,7 @@ def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
             met: a flag for the material entropy production method
             (1: indirect, 2, direct, 3: both));
 
-    Returns:
+    Returns
     -------
     A list of files cotiaining the components of the MEP with the direct
     method.
