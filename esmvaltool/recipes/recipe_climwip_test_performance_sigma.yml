@@ -50,6 +50,7 @@ datasets: &model_data  # a minimal selection to demonstrate functionality
   # - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r13i1p1f1, grid: gr}
   # - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r15i1p1f1, grid: gr}
   # - {project: CMIP6, exp: [historical, ssp585], dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+  # - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r(4:5)i1p1f1, grid: gn}
   # DEBUG: fails, all nan?
   # - {project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
   - {project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-g3, ensemble: r(1:4)i1p1f1, grid: gn}
@@ -67,7 +68,7 @@ datasets: &model_data  # a minimal selection to demonstrate functionality
   - {project: CMIP6, exp: [historical, ssp585], dataset: KACE-1-0-G, ensemble: r(1:3)i1p1f1, grid: gr}
   - {project: CMIP6, exp: [historical, ssp585], dataset: MCM-UA-1-0, ensemble: r1i1p1f2, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
-  - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r(1:5)i1p1f1, grid: gn}
+  - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r(1:3)i1p1f1, grid: gn}
   # DEBUG: fails, unclear why
   # - {project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-HR, ensemble: r(1:2)i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-LR, ensemble: r(1:10)i1p1f1, grid: gn}
