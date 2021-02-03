@@ -22,9 +22,6 @@ documentation:
     - lorenz2018
     - knutti2017
 
-    /work/ik1017/CMIP6/data/CMIP6/CMIP/CSIRO-ARCCSS/ACCESS-CM2/historical/r3i1p1f1/Amon/tas/gn/v20200306/tas_Amon_ACCESS-CM2_historical_r3i1p1f1_gn*.nc
-/work/ik1017/CMIP6/data/CMIP6/CMIP/CSIRO-ARCCSS/ACCESS-CM2/historical/r3i1p1f1/Amon/tas/gn/v20200306/tas_Amon_ACCESS-CM2_ssp585_r3i1p1f1_gn*.nc
-
 datasets: &model_data  # a minimal selection to demonstrate functionality
   - {project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-CM2, ensemble: r(1:2)i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r(1:10)i1p1f1, grid: gn}
