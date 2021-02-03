@@ -396,7 +396,7 @@ def main(cfg):
         if lsm == 'True':
             sftlf_files = e.select_metadata(input_data, short_name='sftlf',
                                             dataset=model)
-            if model == 'HadGEM3-GC31-LL' or model == 'CNRM-ESM2-1':
+            if model in ['HadGEM3-GC31-LL', 'CNRM-ESM2-1']:
                 sftlf_files = e.select_metadata(sftlf_files,
                                                 variable_group='sftlf_piC')
             else:
