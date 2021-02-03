@@ -51,6 +51,8 @@ datasets: &model_data  # a minimal selection to demonstrate functionality
   # - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r15i1p1f1, grid: gr}
   # - {project: CMIP6, exp: [historical, ssp585], dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
   # - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r(4:5)i1p1f1, grid: gn}
+  # - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r(1:4)i1p1f2, grid: gn}
+  # - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r8i1p1f2, grid: gn}
   # DEBUG: fails, all nan?
   # - {project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
   - {project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-g3, ensemble: r(1:4)i1p1f1, grid: gn}
@@ -78,8 +80,6 @@ datasets: &model_data  # a minimal selection to demonstrate functionality
   - {project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
-  - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r(1:4)i1p1f2, grid: gn}
-  - {project: CMIP6, exp: [historical, ssp585], dataset: UKESM1-0-LL, ensemble: r8i1p1f2, grid: gn}
 
 obs_data: &obs_data  # for climwip performance metrics
   - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
