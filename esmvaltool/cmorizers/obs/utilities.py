@@ -64,7 +64,40 @@ def convert_timeunits(cube, start_year):
 def fix_coords(cube, fix_time_bounds=True, fix_lon_bounds=True,
                fix_lat_bounds=True, fix_lev_bounds=True,
                fix_airpres_bounds=True):
-    """Fix the time units and values to CMOR standards."""
+    """
+    Fix coordinates to CMOR standards.
+
+    Fixes coordinates eg time to have correct units, bounds etc;
+    longitude to be CMOR-compliant 0-360deg; fixes some attributes
+    and bounds - the user can avert bounds fixing by using supplied
+    arguments; if bounds are None they will be fixed regardless.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube with coordinates to be fixed.
+
+    fix_time_bounds: bool (optional)
+        set to False not to fix time bounds.
+
+    fix_lon_bounds: bool (optional)
+        set to False not to fix longitude bounds.
+
+    fix_lat_bounds: bool (optional)
+        set to False not to fix latitude bounds.
+
+    fix_lev_bounds: bool (optional)
+        set to False not to fix depth bounds.
+
+    fix_airpres_bounds: bool (optional)
+        set to False not to fix air pressure bounds.
+
+    Returns
+    -------
+    cube: iris.cube.Cube
+        data cube with fixed coordinates.
+
+    """
     # first fix any completely missing coord var names
     _fix_dim_coordnames(cube)
     # fix individual coords
