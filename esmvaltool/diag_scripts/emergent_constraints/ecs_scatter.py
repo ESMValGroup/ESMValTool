@@ -57,11 +57,15 @@ from scipy.stats import linregress
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            io, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    run_diagnostic,
+    select_metadata,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -129,7 +133,7 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
     air_pressure_coord = cube.coord('air_pressure')
     if air_pressure_coord.bounds is None:
         raise ValueError(
-            f"Derived coordiante 'air_pressure' of cube "
+            f"Derived coordinate 'air_pressure' of cube "
             f"{cube.summary(shorten=True)} does not have bounds")
     if air_pressure_coord.shape == cube.shape:
         air_pressure_bounds = air_pressure_coord.bounds
@@ -156,7 +160,7 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
                          f"{zg_cube.summary(shorten=True)}, got shapes "
                          f"{air_pressure_bounds.shape} and {ref_zg.shape}")
 
-    # Cacluate level widths in parallel
+    # Calculate level widths in parallel
     parallel = Parallel(n_jobs=n_jobs)
     level_widths = parallel(
         [delayed(_get_level_width)(b, l, z) for (b, l, z) in zip(
@@ -178,7 +182,7 @@ def _get_level_width_coord(cube, zg_cube, n_jobs=1):
         logger.info("Calculating level widths from 'altitude' coordinate")
         if altitude_coord.bounds is None:
             raise ValueError(
-                f"Height coordiante 'altitude' of cube "
+                f"Height coordinate 'altitude' of cube "
                 f"{cube.summary(shorten=True)} does not have bounds")
         level_widths = np.abs(altitude_coord.bounds[..., 1] -
                               altitude_coord.bounds[..., 0])
@@ -670,7 +674,7 @@ def zhai(grouped_data, cfg):
         logger.info("Processing dataset '%s'", dataset_name)
         _check_variables(datasets, {'cl', 'wap', 'tos'})
 
-        # Consider both hemispheres seperately
+        # Consider both hemispheres separately
         n_h = (20.0, 40.0)
         s_h = (-40.0, -20.0)
         for lat_constraint in (n_h, s_h):
@@ -751,6 +755,7 @@ def check_input_data(input_data):
 
 def get_default_settings(cfg):
     """Get default configuration settings."""
+    cfg = deepcopy(cfg)
     cfg.setdefault('metric', 'regression_slope')
     cfg.setdefault('n_jobs', 1)
     cfg.setdefault('savefig_kwargs', {

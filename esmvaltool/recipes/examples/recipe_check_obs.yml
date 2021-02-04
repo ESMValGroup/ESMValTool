@@ -9,6 +9,9 @@ documentation:
   authors:
     - righi_mattia
 
+  maintainer:
+    - predoi_valeriu
+
 diagnostics:
 
   ### TIER 2 ##################################################################
