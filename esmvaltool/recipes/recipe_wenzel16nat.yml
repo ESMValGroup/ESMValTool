@@ -102,62 +102,49 @@ diagnostics:
 
   ### Wenzel et al. 2016:  Analysis for Pt. Barrow, Alaska ###
   
-  diag_extFig1:
-    description: Fig 1a integrated NBP in the idealized coupled simulation
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      co2s:
-        short_name: co2s
-        derive: true
-        preprocessor: default #highlat_co2
-        project: CMIP6
-        mip: Amon
-        exp: esm-hist
-        ensemble: r1i1p1
-        start_year: 1860
-        end_year: 2005
-        cumulate: True
-        additional_datasets:
-          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-          #- {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
-          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
-          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-      co2s_obs:
-        short_name: co2s
-        preprocessor: BRW_co2
-        project: CMIP6
-        mip: Amon
-        exp: esm-hist
-        ensemble: r1i1p1
-        start_year: 1974
-        end_year: 2005
-        reference_dataset: ESRL
-        additional_datasets:
-          - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
-             start_year: 1973, end_year: 2005}
-    scripts:
-      carbon_tsline_BRW:
-        script: carbon_ec/carbon_tsline.ncl
-        ts_minlat: 60
-        ts_maxlat: 90
-        ts_minlon: 0
-        ts_maxlon: 360
-        multi_model_mean: False
-        #plot_units: ppmv
-        time_avg: "yearly"
-        area_opper: "average"
-        align: True
-        styleset: CMIP6       # Plot style
-        xy_line_legend: True
+#  diag_extFig1:
+#    description: Fig 1a integrated NBP in the idealized coupled simulation
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      co2s:
+#        short_name: co2s
+#        derive: true
+#        preprocessor: default #highlat_co2
+#        project: CMIP6
+#        mip: Amon
+#        exp: esm-hist
+#        ensemble: r1i1p1
+#        start_year: 1860
+#        end_year: 2005
+#        cumulate: True
+#        additional_datasets:
+#          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+#          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+#          #- {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+#          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+#          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+#          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+#    scripts:
+#      carbon_tsline_BRW:
+#        script: carbon_ec/carbon_tsline.ncl
+#        ts_minlat: 71
+#        ts_maxlat: 71
+#        ts_minlon: 203
+#        ts_maxlon: 203
+#        multi_model_mean: False
+#        #plot_units: ppmv
+#        #time_avg: "monthly"
+#        area_opper: "extract"
+#        align: True
+#        styleset: CMIP6       # Plot style
+#        xy_line_legend: True
         
 #  diag_beta_Fig2:
 #    description: |
@@ -272,7 +259,7 @@ diagnostics:
 #        reference_dataset: ESRL
 #        additional_datasets:
 #          - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
-#             start_year: 1973, end_year: 2005}
+##             start_year: 1973, end_year: 2005}
 #    scripts:
 #      carbon_cycle:
 #        script: carbon_ec/carbon_co2_cycle.ncl
@@ -300,7 +287,7 @@ diagnostics:
         mip: Amon
         exp: esm-hist
         ensemble: r1i1p1
-        start_year: 1860
+        start_year: 1850
         end_year: 2005
         additional_datasets:
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
@@ -313,27 +300,27 @@ diagnostics:
           - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
           - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
           - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-      co2s_amp:
-        short_name: co2s
-        preprocessor: highlat_amp
-        derive: true
-        project: CMIP6
-        mip: Amon
-        exp: esm-hist
-        ensemble: r1i1p1
-        start_year: 1860
-        end_year: 2005
-        additional_datasets:
-          - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-         #- {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
-          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
-          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      #co2s_amp:
+      #  short_name: co2s
+      #  preprocessor: highlat_amp
+      #  derive: true
+      #  project: CMIP6
+      #  mip: Amon
+      #  exp: esm-hist
+      #  ensemble: r1i1p1
+      #  start_year: 1860
+      #  end_year: 2005
+      #  additional_datasets:
+      #    - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+      #    - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+      #   #- {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+      #    #- {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+      #    - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      #    - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+      #   # - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      #    - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+      #    - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+      #    - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       gpp_bgc:
         short_name: gpp
         preprocessor: highlat_gpp
@@ -361,7 +348,7 @@ diagnostics:
         mip: Lmon
         exp: esm-hist
         ensemble: r1i1p1
-        start_year: 1860
+        start_year: 1850
         end_year: 2005
         additional_datasets:
           - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
@@ -380,47 +367,47 @@ diagnostics:
         cl_mean: false
         cl_output: true
         bc_xmax_year: 1920
-        bc_xmin_year: 1860
+        bc_xmin_year: 1850
         styleset: CMIP6
         
   ### Wenzel et al. 2016:  Analysis for Cape Kumukahi, Mauna Loa, Hawaii ###
 
-  diag_beta-trop_Fig2:
-    description: |
-      Fig. 2: Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGCn simulations.
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      gpp:
-        preprocessor: tropical_gpp
-        project: CMIP6
-        mip: Lmon
-        exp: 1pctCO2-bgc
-        ensemble: r1i1p1
-        start_year: 1850
-        end_year: 1989
-    additional_datasets:
-      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, start_year: 101, end_year: 240}
-      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-      #- {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, start_year: 1, end_year: 140}
-      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, start_year: 1, end_year: 140}
-      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
-      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
-      - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
-      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, start_year: 1, end_year: 140}
-      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-    scripts:
-     carbon_beta:
-        script: carbon_ec/carbon_beta.ncl
-        cl_mean: false
-        cl_output: true
-        beta_type: false #increment
-        bc_xmax_year: 1920
-        bc_xmin_year: 1860
-        styleset: CMIP6
+#  diag_beta-trop_Fig2:
+#    description: |
+#      Fig. 2: Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGCn simulations.
+#    themes:
+#      - phys
+#    realms:
+#      - land
+#    variables:
+#      gpp:
+#        preprocessor: tropical_gpp
+#        project: CMIP6
+#        mip: Lmon
+#        exp: 1pctCO2-bgc
+#        ensemble: r1i1p1
+#        start_year: 1850
+#        end_year: 1989
+#    additional_datasets:
+#      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, start_year: 101, end_year: 240}
+#      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+#      #- {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, start_year: 1, end_year: 140}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, start_year: 1, end_year: 140}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, start_year: 1, end_year: 140}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+#    scripts:
+#     carbon_beta:
+#        script: carbon_ec/carbon_beta.ncl
+#        cl_mean: false
+#        cl_output: true
+#        beta_type: false #increment
+#        bc_xmax_year: 1920
+#        bc_xmin_year: 1860
+#        styleset: CMIP6
 
 #  diag_co2cycle-trop_Fig1and3:
 #    description: |

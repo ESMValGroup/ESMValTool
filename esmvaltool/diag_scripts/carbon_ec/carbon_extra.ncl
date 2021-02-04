@@ -46,7 +46,7 @@ begin
   gpp_bgc = ind(tmp.eq."gpp_bgc")
   gpp_hist = ind(tmp.eq."gpp_hist")
   co2s = ind(tmp.eq."co2s")
-  co2s_amp = ind(tmp.eq."co2s_amp")
+  ;co2s_amp = ind(tmp.eq."co2s_amp")
 
   delete(tmp)
 
@@ -60,7 +60,7 @@ begin
 
   infob = select_metadata_by_name(input_file_info, "co2s")
   info2 = infob[co2s-(2*dim_MOD)]
-  info3 = infob[co2s_amp-(2*dim_MOD)]
+  ;info3 = infob[co2s_amp-(2*dim_MOD)]
 
   delete(infoa)
   delete(infob)
@@ -109,7 +109,7 @@ begin
   ; setup data holders for plots
   nyMax = max(metadata_att_as_array(info0, "end_year"))
   nyMin = max(metadata_att_as_array(info0, "start_year"))
-  nMax = nyMax - nyMin + 1
+  nMax = nyMax - nyMin + 10
 
   pctco = new((/nMax+10/), double)
   pctco(0) = 285
@@ -141,11 +141,8 @@ begin
     A0&time = pctco&year(10:)
     A1 = read_data(info1[imod])
     A2 = read_data(info2[imod])
-    A3 = read_data(info3[imod])
+    ;A3 = read_data(info3[imod])
 
-    if (datasetnames(impod).eq."NorESM2-LM") then
-      print(A2)
-    end if
     ; calculate annual mean for VAR:
     ymin = 0
     ymax = toint(dimsizes(A0)-1)
@@ -167,23 +164,23 @@ begin
     copy_VarMeta(A1, tmp0)
     aY1data(imod, ymin:ymax) = (/tmp0/)
     aY2data(imod, ymin:ymax) = (/A2/)
-    aY3data(imod, ymin:ymax) = A3 - dim_avg(A3)
+    ;aY3data(imod, ymin:ymax) = A3 - dim_avg(A3)
 
     rc_hist= regline_stats(aY2data(imod, ymin:ymax), aY1data(imod, ymin:ymax))
     Yfit_hist(imod, ymin:ymax) = rc_hist@Yest
     rcgpp_hist(imod) = tofloat(rc_hist)
 
     ; calculate regression linse for Fig 2
-    mean_a1(imod, ymin:ymax) = aY1data(imod, ymin:ymax) - dim_avg(aY1data(imod, ymin:ymax))
-    rc_change= regline_stats(aY3data(imod, ymin:ymax), mean_a1(imod, ymin:ymax))
+    ;mean_a1(imod, ymin:ymax) = aY1data(imod, ymin:ymax) - dim_avg(aY1data(imod, ymin:ymax))
+    ;rc_change= regline_stats(aY3data(imod, ymin:ymax), mean_a1(imod, ymin:ymax))
     ;Yfit_change(imod, ymin:ymax) = rc_change@Yest
 
-    minx = min(aY3data(imod, ymin:ymax))-1.1*(max(aY3data(imod, ymin:ymax)) - min(aY3data(imod, ymin:ymax)))
-    maxx = max(aY3data(imod, ymin:ymax))+1.1*(max(aY3data(imod, ymin:ymax)) + max(aY3data(imod, ymin:ymax))) 
+    ;minx = min(aY3data(imod, ymin:ymax))-1.1*(max(aY3data(imod, ymin:ymax)) - min(aY3data(imod, ymin:ymax)))
+    ;maxx = max(aY3data(imod, ymin:ymax))+1.1*(max(aY3data(imod, ymin:ymax)) + max(aY3data(imod, ymin:ymax))) 
 
-    Xfit_change(imod, 0:dimsizes(nfit)-1) = minx + (maxx - minx) * nfit/dimsizes(nfit)
-    Yfit_change(imod, 0:dimsizes(nfit)-1) = rc_change * Xfit_change(imod, 0:dimsizes(nfit)-1) + \
-                                            rc_change@yintercept
+    ;Xfit_change(imod, 0:dimsizes(nfit)-1) = minx + (maxx - minx) * nfit/dimsizes(nfit)
+    ;Yfit_change(imod, 0:dimsizes(nfit)-1) = rc_change * Xfit_change(imod, 0:dimsizes(nfit)-1) + \
+    ;                                        rc_change@yintercept
 
     delete([/tmp0, ymin, ymax, A1, A2, rc_hist/])
 
@@ -196,54 +193,54 @@ begin
   ; creat plots
 
   ; PLOT - Ext. Fig 2
-  XStg    = "Change in CO~B~2~N~ amplitude, BRW [ppmv]"
-  YStg    = "Change in Mean GPP [GtC/yr], 60N-90N"
-  data_arr = (/aY3data(0, :), mean_a1(0, :)/)
-  data_arr!0 = "datasets"
-  data_arr&datasets = (/XStg, YStg/)
-  data_arr@res_tiMainString    = ""
-  data_arr@res_tiMainFontHeightF = 0.025
-  data_arr@res_gsnCenterString = ""
-  data_arr@res_gsnMaximize     = True
-  data_arr@res_xyMonoMarker    = False
-  data_arr@res_xyMarker        = 1
-  data_arr@res_xyMarkerColors  = "white"
-  data_arr@res_trXMinF         = -10 
-  data_arr@res_trXMaxF         = 14
-  data_arr@res_trYMinF         = -2
-  data_arr@res_trYMaxF         = 4
-  data_arr@res_vpWidthF        = 0.5
-  data_arr@res_vpHeightF       = 0.4
+  ;XStg    = "Change in CO~B~2~N~ amplitude, BRW [ppmv]"
+  ;YStg    = "Change in Mean GPP [GtC/yr], 60N-90N"
+  ;data_arr = (/aY3data(0, :), mean_a1(0, :)/)
+  ;data_arr!0 = "datasets"
+  ;data_arr&datasets = (/XStg, YStg/)
+  ;data_arr@res_tiMainString    = ""
+  ;data_arr@res_tiMainFontHeightF = 0.025
+  ;data_arr@res_gsnCenterString = ""
+  ;data_arr@res_gsnMaximize     = True
+  ;data_arr@res_xyMonoMarker    = False
+  ;data_arr@res_xyMarker        = 1
+  ;data_arr@res_xyMarkerColors  = "white"
+  ;data_arr@res_trXMinF         = -10 
+  ;data_arr@res_trXMaxF         = 14
+  ;data_arr@res_trYMinF         = -2
+  ;data_arr@res_trYMaxF         = 4
+  ;data_arr@res_vpWidthF        = 0.5
+  ;data_arr@res_vpHeightF       = 0.4
 
-  data_arr@diag_script = DIAG_SCRIPT
-  diag_script_info@scatter_log = False
+  ;data_arr@diag_script = DIAG_SCRIPT
+  ;diag_script_info@scatter_log = False
 
-  plot = scatterplot(wks, data_arr, var, False, False, input_file_info)
+  ;plot = scatterplot(wks, data_arr, var, False, False, input_file_info)
 
-  txres = True
-  MarkerSizeF = where(datasetnames.eq."CESM1-BGC", 20., 17.)
-  txres@gsMarkerThicknessF = 3
+  ;txres = True
+  ;MarkerSizeF = where(datasetnames.eq."CESM1-BGC", 20., 17.)
+  ;txres@gsMarkerThicknessF = 3
 
-  lineres = True
-  lineres@gsLineDashPattern = 0
-  lineres@gsLineThicknessF  = 3
-  linehist = lineres
+  ;lineres = True
+  ;lineres@gsLineDashPattern = 0
+  ;lineres@gsLineThicknessF  = 3
+  ;linehist = lineres
 
   ; Add markers
-  do imod  = 0, dim_MOD-1
-    marker = unique_string("marker")
-    txres@gsMarkerColor = colors(imod)
-    txres@gsMarkerSizeF = 10. ;MarkerSizeF(imod)
-    txres@gsMarkerIndex = 5 ;circl
-    add_markers(wks, plot, txres, aY3data(imod, :), mean_a1(imod, :))
+  ;do imod  = 0, dim_MOD-1
+  ;  marker = unique_string("marker")
+  ;  txres@gsMarkerColor = colors(imod)
+  ;  txres@gsMarkerSizeF = 10. ;MarkerSizeF(imod)
+  ;  txres@gsMarkerIndex = 5 ;circl
+  ;  add_markers(wks, plot, txres, aY3data(imod, :), mean_a1(imod, :))
 
-    lineres@gsLineColor = colors(imod)
-    plot@$marker$ = gsn_add_polyline(wks, plot, Xfit_change(imod, :), Yfit_change(imod, :), lineres)
+  ;  lineres@gsLineColor = colors(imod)
+  ;  plot@$marker$ = gsn_add_polyline(wks, plot, Xfit_change(imod, :), Yfit_change(imod, :), lineres)
 
-  end do
-  draw(plot)
-  frame(wks)
-  delete([/plot, XStg, YStg, data_arr, marker, txres/])
+  ;end do
+  ;draw(plot)
+  ;frame(wks)
+  ;delete([/plot, XStg, YStg, data_arr, marker, txres/])
 
   ; PLOT - Panel A
   XStg    = "CO~B~2~N~ at BRW [ppmv]"
@@ -271,7 +268,7 @@ begin
   plot = scatterplot(wks, data_arr, var, False, False, input_file_info)
 
   txres = True
-  MarkerSizeF = where(datasetnames.eq."CESM1-BGC", 20., 17.)
+  MarkerSizeF = where(datasetnames.eq."CESM1-BGC", 15., 10.)
   txres@gsMarkerThicknessF = 3
 
   lineres = True
@@ -281,7 +278,8 @@ begin
 
   ; Add markers
   do imod  = 0, dim_MOD-1
-    marker = unique_string("marker")
+    marker1 = unique_string("marker1")
+    marker2 = unique_string("marker2")
     txres@gsMarkerColor = colors(imod)
     txres@gsMarkerSizeF = MarkerSizeF(imod)
     txres@gsMarkerIndex = 4 ;circl
@@ -298,7 +296,7 @@ begin
   end do
   draw(plot)
   frame(wks)
-  delete([/plot, XStg, YStg, data_arr, marker, txres/])
+  delete([/plot, XStg, YStg, data_arr, marker1, marker2, txres/])
 
 
   ; PLOT - Panel B
@@ -319,15 +317,15 @@ begin
   data_arr@res_xyMonoMarker    = False
   data_arr@res_xyMarkers       = markers
   data_arr@res_xyMarkerColors  = "white";colors
-  data_arr@res_trXMinF         = 0 ;min(rcgpp_bgc)- 0.25 * min(rcgpp_bgc) ;
-  data_arr@res_trXMaxF         = 0.04;max(rcgpp_bgc)+ 0.25 * max(rcgpp_bgc) ;0.035
-  data_arr@res_trYMinF         = 0 ;min(rcgpp_hist)- 0.25 * min(rcgpp_hist) ;data_arr@res_trXMinF
-  data_arr@res_trYMaxF         = 0.04 ;max(rcgpp_hist)+ 0.25 * max(rcgpp_hist) ;data_arr@res_trXMaxF
+  data_arr@res_trXMinF         = -0.0005 ;min(rcgpp_bgc)- 0.25 * min(rcgpp_bgc) ;
+  data_arr@res_trXMaxF         = 0.035;max(rcgpp_bgc)+ 0.25 * max(rcgpp_bgc) ;0.035
+  data_arr@res_trYMinF         = -0.0005 ;min(rcgpp_hist)- 0.25 * min(rcgpp_hist) ;data_arr@res_trXMinF
+  data_arr@res_trYMaxF         = 0.035 ;max(rcgpp_hist)+ 0.25 * max(rcgpp_hist) ;data_arr@res_trXMaxF
   data_arr@res_vpWidthF        = 0.5
   data_arr@res_vpHeightF       = 0.4
   data_arr@diag_script = DIAG_SCRIPT
   diag_script_info@scatter_log = False
-print(data_arr)
+
   plot = scatterplot(wks, data_arr, var, False, False, input_file_info)
 
   ;Add markers
