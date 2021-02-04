@@ -61,7 +61,9 @@ def convert_timeunits(cube, start_year):
     return cube
 
 
-def fix_coords(cube):
+def fix_coords(cube, fix_time_bounds=True, fix_lon_bounds=True,
+               fix_lat_bounds=True, fix_lev_bounds=True,
+               fix_airpres_bounds=True):
     """Fix the time units and values to CMOR standards."""
     # first fix any completely missing coord var names
     _fix_dim_coordnames(cube)
@@ -72,7 +74,8 @@ def fix_coords(cube):
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            _fix_bounds(cube, cube.coord('time'))
+            if fix_time_bounds or not cube.coord('time').has_bounds():
+                _fix_bounds(cube, cube.coord('time'))
 
         # fix longitude
         if cube_coord.var_name == 'lon':
@@ -82,7 +85,8 @@ def fix_coords(cube):
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
                         cube_coord.points + 180.
-                    _fix_bounds(cube, cube_coord)
+                    if fix_lon_bounds or not cube_coord.has_bounds():
+                        _fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
@@ -91,17 +95,21 @@ def fix_coords(cube):
         # fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
-            _fix_bounds(cube, cube.coord('latitude'))
+            if fix_lat_bounds or not cube.coord('latitude').has_bounds():
+                _fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
-            _fix_bounds(cube, cube.coord('depth'))
+            if fix_lev_bounds or not cube.coord('depth').has_bounds():
+                _fix_bounds(cube, cube.coord('depth'))
 
         # fix air_pressure
         if cube_coord.var_name == 'air_pressure':
             logger.info("Fixing air pressure...")
-            _fix_bounds(cube, cube.coord('air_pressure'))
+            if fix_airpres_bounds \
+                    or not cube.coord('air_pressure').has_bounds():
+                _fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
     cube.coord('latitude').coord_system = None
