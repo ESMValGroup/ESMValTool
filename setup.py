@@ -23,7 +23,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'cartopy',
+        'cartopy>=0.18',
         'cdo',
         'cdsapi',
         'cf-units',
@@ -39,15 +39,15 @@ REQUIREMENTS = {
         'jinja2',
         'joblib',
         'lime',
-        'matplotlib>=3,<3.3',
+        'matplotlib>3.3.1',  # bug in 3.3.1, 3.3.2 and 3 fine
         'natsort',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
         'pandas',
-        'pynio',
         'pyproj>=2.1'
         'pyyaml',
+        'rasterio',  # replaces pynio
         'scikit-image',
         'scikit-learn',
         'scipy',
