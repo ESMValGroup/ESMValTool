@@ -215,6 +215,28 @@ def save_to_ascii(cube, file_name):
                       header=False, index=False, mode='a')
 
 
+# def make_filename(dataset_name, cfg, cube, extension='asc'):
+#     """Return a valid path for saving a diagnostic data file.
+
+#     filenames are specific to Globwat.
+#     """
+#     names_map = {'pr': 'prc', 'evspsblpot': 'eto'}
+
+#     nyear, nmonth, nday = get_cube_time_info(cube)
+#     short_name, mip = get_cube_data_info(cube)
+
+#     if mip == 'Amon':
+#         filename = f"{names_map[short_name]}{nmonth}wb.{extension}"
+#         freq = 'Monthly'
+
+#     else:
+#         filename = f"{names_map[short_name]}{nmonth}{nday}wb.{extension}"
+#         freq = 'Daily'
+
+#     data_dir = Path(f"{cfg['work_dir']}/{dataset_name}/{nyear}/{freq}")
+#     data_dir.mkdir(parents=True, exist_ok=True)
+#     return str(data_dir / f"{filename}")
+
 def make_filename(dataset_name, cfg, cube, extension='asc'):
     """Return a valid path for saving a diagnostic data file.
 
@@ -226,11 +248,13 @@ def make_filename(dataset_name, cfg, cube, extension='asc'):
     short_name, mip = get_cube_data_info(cube)
 
     if mip == 'Amon':
-        filename = f"{names_map[short_name]}{nmonth}wb.{extension}"
+        filename = f"globwat_{dataset_name}_{names_map[short_name]}_{nyear}_
+                    {nmonth}.{extension}"
         freq = 'Monthly'
 
     else:
-        filename = f"{names_map[short_name]}{nmonth}{nday}wb.{extension}"
+        filename = f"globwat_{dataset_name}_{names_map[short_name]}_{nyear}_
+                    {nmonth}_{nday}.{extension}"
         freq = 'Daily'
 
     data_dir = Path(f"{cfg['work_dir']}/{dataset_name}/{nyear}/{freq}")
