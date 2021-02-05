@@ -82,9 +82,9 @@ def plot_timeseries_data(cfg, time_unit: str = 'D', title: str = 'plot'):
 
     datasets = {}
     for filename, metadata in input_data.items():
-        alias = metadata['alias']
+        name = metadata['dataset']
         dataset = xr.load_dataset(filename)
-        datasets[alias] = dataset
+        datasets[name] = dataset
 
     start_date = np.datetime_as_string(dataset.time.min(), unit=time_unit)
     end_date = np.datetime_as_string(dataset.time.max(), unit=time_unit)
@@ -108,8 +108,8 @@ def plot_climatology(cfg, title: str = 'plot'):
 
     datasets = {}
     for filename, metadata in input_data.items():
-        alias = metadata['dataset']
-        datasets[alias] = xr.load_dataset(filename)
+        name = metadata['dataset']
+        datasets[name] = xr.load_dataset(filename)
 
     plot_data(
         cfg=cfg,
