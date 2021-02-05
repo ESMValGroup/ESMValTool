@@ -46,14 +46,16 @@ Diagnostics are stored in diag_scripts
 
     * emergent_constraints/ecs_scatter.ncl: calculate emergent constraints for ECS
     * emergent_constraints/ecs_scatter.py: calculate further emergent constraints for ECS
-    * emergent_constraints/univariate_constraint.py: create scatterplots for emergent constraints
+    * emergent_constraints/single_constraint.py: create scatterplots for emergent constraints
     * climate_metrics/psi.py: calculate temperature variabililty metric (Cox et al., 2018)
 
 
 User settings in recipe
 -----------------------
 
-#. Script emergent_constraints/ecs_scatter.ncl
+.. _ecs_scatter.ncl:
+
+* Script emergent_constraints/ecs_scatter.ncl
 
    *Required settings (scripts)*
 
@@ -90,82 +92,21 @@ User settings in recipe
    none
 
 
-#. Script emergent_constraints/ecs_scatter.py
+* Script emergent_constraints/ecs_scatter.py
 
-   *Required settings (scripts)*
-
-   * diag: emergent constraint to calculate ("brient_shal", "su", "volodin",
-     "zhai")
-
-   *Optional settings (scripts)*
-
-   * metric: Metric to measure model error, only relevant for Su et al. (2014)
-     constraint ("regression_slope", "correlation_coefficient")
-   * output_attributes: Additonal attributes for all output netcdf files
-   * pattern: Only accept ancestor files that match that pattern
-   * savefig_kwargs: Keyword arguments for matplotlib.pyplot's ``savefig()``
-     function, see https://matplotlib.org/3.2.0/api/_as_gen/matplotlib.pyplot.savefig.html
-   * seaborn_settings: Options for seaborn's ``set()`` methods (affects all
-     plots), see https://seaborn.pydata.org/generated/seaborn.set.html
-
-   *Required settings (variables)*
-
-   * reference_dataset: name of reference data set
-
-   *Optional settings (variables)*
-
-   none
+   See
+   :ref:`here<api.esmvaltool.diag_scripts.emergent_constraints.ecs_scatter>`.
 
 
-#. Script emergent_constraints/univariate_constraint.py
+* Script emergent_constraints/single_constraint.py
 
-   All input data for this diagnostic must be marked with a ``var_type``
-   (either ``feature``, ``label``, ``prediction_input`` or
-   ``prediction_input_error``) and a ``tag``, which describes the data.  This
-   diagnostic supports only a single ``tag`` for ``label`` and ``feature``. For
-   every ``tag``, a ``reference_dataset`` can be specified, which will be
-   automatically considered as ``prediction_input``. If ``reference_dataset``
-   contains ``'|'`` (e.g. ``'OBS1|OBS2'``), mutliple datasets are considered as
-   ``prediction_input`` (in this case ``'OBS1'`` and ``'OBS2'``).
-
-   *Required settings (scripts)*
-
-   none
-
-   *Optional settings (scripts)*
-
-   * all_data_label: Label used in plots when all input data is considered.
-     Only relevant if ``group_by`` is not used
-   * confidence_level: Confidence level for estimation of constrained target
-     variable.
-   * group_by: Group input data by an attribute (e.g. produces separate plots
-     for the individual groups, etc.)
-   * ignore_patterns: Ignore ancestor files that match that patterns
-   * merge_identical_pred_input: Use identical prediction_input values as
-     single value
-   * numbers_as_markers: Use numbers as markers in scatterplots
-   * patterns: Only accept ancestor files that match that patterns
-   * read_external_file: Read input datasets from external file given as
-     absolute path or relative path. In the latter case,
-     ``'auxiliary_data_dir'`` from the user configuration file is used as base
-     directory
-   * savefig_kwargs: Keyword arguments for matplotlib.pyplot's ``savefig()``
-     function, see https://matplotlib.org/3.2.0/api/_as_gen/matplotlib.pyplot.savefig.html
-   * seaborn_settings: Options for seaborn's ``set()`` methods (affects all
-     plots), see https://seaborn.pydata.org/generated/seaborn.set.html
-
-   *Required settings (variables)*
-
-   * reference_dataset: name of reference data set
-
-   *Optional settings (variables)*
-
-   none
+   See
+   :ref:`here<api.esmvaltool.diag_scripts.emergent_constraints.single_constraint>`.
 
 
-#. Script climate_metrics/psi.py
+* Script climate_metrics/psi.py
 
-   See :ref:`recipes_cox18nature`.
+   See :ref:`here<psi.py>`.
 
 
 Variables
