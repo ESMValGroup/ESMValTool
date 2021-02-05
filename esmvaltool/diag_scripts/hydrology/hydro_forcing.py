@@ -108,7 +108,7 @@ def plot_climatology(cfg, title: str = 'plot'):
 
     datasets = {}
     for filename, metadata in input_data.items():
-        alias = metadata['alias']
+        alias = metadata['dataset']
         datasets[alias] = xr.load_dataset(filename)
 
     plot_data(
@@ -118,7 +118,7 @@ def plot_climatology(cfg, title: str = 'plot'):
         yaxis='pr',
         xlabel='Month number',
         ylabel='{long_name} / {units}'.format(**metadata),
-        caption=f"{title} per month",
+        caption=f"{title}",
         filename=title.lower().replace(' ', '_') + '_plot',
         ancestors=list(input_data.keys()),
     )
