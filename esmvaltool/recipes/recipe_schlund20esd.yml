@@ -12,16 +12,7 @@ documentation:
     - schlund_manuel
 
   references:
-    - gregory04grl
-    - sherwood14nat
-    - tian15grl
-    - lipat17grl
-    - brient16jclim
-    - cox18nature
-    - volodin08izvestiya
-    - zhai15grl
-    - brient16climdyn
-    - su14jgr
+    - schlund20esd
 
   projects:
     - 4c
