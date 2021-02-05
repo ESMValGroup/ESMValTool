@@ -5,7 +5,6 @@ To use this tool, follow these steps:
 2) Create an access token and store it in the file ~/.github_api_key, see:
 https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 3) set PREVIOUS_RELEASE to the date/time of the previous release in code below
-
 """
 import datetime
 from pathlib import Path
@@ -23,16 +22,20 @@ except FileNotFoundError:
           "authenticating-to-github/creating-a-personal-access-token-"
           "for-the-command-line")
 
-from esmvaltool import __version__
+from esmvalcore import __version__
 
 VERSION = f"v{__version__}"
-GITHUB_REPO = "ESMValGroup/ESMValTool"
+GITHUB_REPO = "ESMValGroup/ESMValCore"
 
 TITLES = {
     'bug': 'Bug fixes',
+    'deprecated feature': 'Deprecations',
+    'cmor': 'CMOR standard',
     'diagnostic': 'Diagnostics',
     'fix for dataset': 'Fixes for datasets',
     'observations': 'Observational and re-analysis dataset support',
+    'testing': 'Automatic testing',
+    'api': 'Notebook API (experimental)',
     'enhancement': 'Improvements',
 }
 
@@ -56,6 +59,7 @@ def draft_notes_since(previous_release_date, labels):
     )
 
     lines = {}
+    labelless_pulls = []
     for pull in pulls:
         print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         if pull.updated_at < previous_release_date:
@@ -68,19 +72,27 @@ def draft_notes_since(previous_release_date, labels):
                 if label in pr_labels:
                     break
             else:
+                labelless_pulls.append(pull)
                 label = 'enhancement'
 
             user = pull.user
             username = user.login if user.name is None else user.name
             title = pull.title
             title = title[0].upper() + title[1:]
-            line = (
-                f"-  {title} (`#{pull.number} "
-                f"<https://github.com/{GITHUB_REPO}/pull/{pull.number}>`__) "
-                f"`{username} <https://github.com/{user.login}>`__")
+            line = (f"-  {title} (`#{pull.number} "
+                    f"<{pull.html_url}>`__) "
+                    f"`{username} <https://github.com/{user.login}>`__")
             if label not in lines:
                 lines[label] = []
             lines[label].append((pull.closed_at, line))
+
+    # Warn about label-less PR:
+
+    if labelless_pulls:
+        print('\nPlease add labels to the following PR:')
+        for pull in labelless_pulls:
+            print(pull.html_url)
+        print('\n')
 
     # Create sections
     sections = [
@@ -89,8 +101,11 @@ def draft_notes_since(previous_release_date, labels):
         '',
         "This release includes",
     ]
-    for label in sorted(lines):
-        entries = sorted(lines[label])  # sort by merge time
+    for label in labels:
+        try:
+            entries = sorted(lines[label])  # sort by merge time
+        except KeyError:
+            continue
         title = TITLES.get(label, label.title())
         sections.append('\n'.join(['', title, '~' * len(title), '']))
         sections.append('\n'.join(entry for _, entry in entries))
@@ -101,14 +116,18 @@ def draft_notes_since(previous_release_date, labels):
 
 if __name__ == '__main__':
 
-    PREVIOUS_RELEASE = datetime.datetime(2020, 8, 3, 18)
+    PREVIOUS_RELEASE = datetime.datetime(2020, 10, 13, 00)
     LABELS = (
         'bug',
+        'deprecated feature',
         'documentation',
         'diagnostic',
         'fix for dataset',
+        'cmor',
         'preprocessor',
         'observations',
+        'api',
+        'testing',
         'enhancement',
     )
 
