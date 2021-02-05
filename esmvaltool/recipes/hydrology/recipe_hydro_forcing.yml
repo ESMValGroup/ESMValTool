@@ -16,27 +16,28 @@ documentation:
     - acknow_project
 
 datasets:
-  # - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-  # - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
   - {dataset: MSWEP, project: native6, exp: historical, ensemble: r1i1p1, type: reanaly, version: 220, tier: 3}
 
 
 preprocessors:
   daily:
-    # extract_shape: &extract_shape
-    #   shapefile: Meuse/Meuse.shp  # In aux (config-user.yml)
-    #   method: contains
-    #   crop: true
+    extract_shape: &extract_shape
+      # In aux (config-user.yml)
+      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp
+      method: contains
+      crop: true
     area_statistics:
       operator: mean
   monthly:
-    # extract_shape: *extract_shape
+    extract_shape: *extract_shape
     area_statistics:
       operator: mean
     monthly_statistics:
       operator: sum
   climatology:
-    # extract_shape: *extract_shape
+    extract_shape: *extract_shape
     area_statistics:
       operator: mean
     climate_statistics:
