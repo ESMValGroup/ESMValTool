@@ -249,13 +249,15 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
             input_files_dl, rm_stat = _download_files(in_dir, cfg,
                                                       download_files)
             input_files.update(input_files_dl)
-            if all_stat:
-                # When selecting "all", some stations may not have available
-                # data at the moment, so remove these from to process files
-                stations = [x for x in stations if x not in rm_stat]
-            else:
-                raise ValueError("No data found for %s on the ftp server. "
-                                 % rm_stat)
+            if len(rm_stat) > 0:
+                if all_stat:
+                    # When selecting "all", some stations may not have
+                    # available data at the moment,
+                    # so remove these from to process files
+                    stations = [x for x in stations if x not in rm_stat]
+                else:
+                    raise ValueError("No data found for %s on the ftp server. "
+                                     % rm_stat)
         else:
             if not all_stat:
                 raise ValueError("No local data found for stations %s, "
