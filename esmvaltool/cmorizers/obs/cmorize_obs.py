@@ -20,8 +20,7 @@ import subprocess
 from pathlib import Path
 
 import esmvalcore
-from esmvalcore._config import read_config_user_file
-from esmvalcore._logging import configure_logging
+from esmvalcore._config import configure_logging, read_config_user_file
 from esmvalcore._task import write_ncl_settings
 
 from .utilities import read_cmor_config

@@ -1,0 +1,60 @@
+# Action that runs the full development stack:
+# Steps (Python-only):
+# - creates esmvaltool conda environment and pip-installs esmvaltool
+# - downloads latest master of esmvalcore and installs it in development mode
+# - runs tests of esmvaltool
+# Triggered by a push to master and nightly
+
+name: Develop Test
+
+# runs on a push on master and at the end of every day
+on:
+  push:
+    branches:
+    - master
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+      fail-fast: false
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: esmvaltool
+          environment-file: environment.yml
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: conda-forge
+      - shell: bash -l {0}
+        run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
+      - shell: bash -l {0}
+        run: conda --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - shell: bash -l {0}
+        run: python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+      - shell: bash -l {0}
+        run: esmvaltool install R
+      - shell: bash -l {0}
+        run: esmvaltool install Julia
+      - shell: bash -l {0}
+        run: |
+          cd ..
+          git clone https://github.com/ESMValGroup/ESMValCore.git
+          cd ESMValCore
+          pip install -e .[develop]
+      - shell: bash -l {0}
+        run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v2
+        with:
+          name: Develop_Test_Linux_python_${{ matrix.python-version }}
+          path: develop_test_linux_artifacts_python_${{ matrix.python-version }}
