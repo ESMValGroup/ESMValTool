@@ -19,7 +19,7 @@ Configuration options in recipe
 -------------------------------
 diag: str
   Emergent constraint to calculate (must be one of ``'brient_shal'``, ``'su'``,
-  ``'volodin'``, ``'zhai'``.
+  ``'volodin'``, ``'zhai'``).
 metric: str, optional (default: 'regression_slope')
     Metric to measure model error. Only relevant for Su et al. (2014)
     constraint. Must be one of ``'regression_slope'``,
@@ -33,8 +33,7 @@ pattern: str, optional
 savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict
-    Options for :func:`seaborn.set` (affects all plots), see
-    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 

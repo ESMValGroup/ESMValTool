@@ -326,8 +326,7 @@ User settings in recipe
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
    * save: :obj:`dict` containing keyword arguments for the function
      :func:`matplotlib.pyplot.savefig`.
-   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
-     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
+   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
 
 #. Script ipcc_ar5/ch09_fig09_42b.py
 
@@ -341,8 +340,7 @@ User settings in recipe
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
    * log_x: Apply logarithm to X axis (ECS).
    * log_y: Apply logarithm to Y axis (TCR).
-   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
-     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
+   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
 
 #. Script emergent_constraints/snowalbedo.ncl
 

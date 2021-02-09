@@ -23,8 +23,7 @@ dataset_style : str, optional
 pattern : str, optional
     Pattern to filter list of input data.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 y_range : list of float, optional
     Range for the y axis in the plot.
 

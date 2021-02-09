@@ -22,8 +22,7 @@ label_attribute : str, optional
 patterns : list of str, optional
     Patterns to filter list of input data.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 sort_ascending : bool, optional (default: False)
     Sort bars in ascending order.
 sort_descending : bool, optional (default: False)

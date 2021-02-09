@@ -25,8 +25,7 @@ read_external_file : str, optional
     Read ECS and feedback parameters from external file. The path can be given
     relative to this diagnostic script or as absolute path.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 

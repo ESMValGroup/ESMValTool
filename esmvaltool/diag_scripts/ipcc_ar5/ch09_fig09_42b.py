@@ -25,8 +25,7 @@ log_x : bool, optional (default: False)
 log_y : bool, optional (default: False)
     Apply logarithm to Y axis (TCR).
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 
