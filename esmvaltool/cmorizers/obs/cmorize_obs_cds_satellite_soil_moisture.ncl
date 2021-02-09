@@ -53,7 +53,7 @@ begin
 
   ; Period
   YEAR1 = 1979  ; 1992
-  YEAR2 = 2019  ; 2020
+  YEAR2 = 2020  ; 2019
 
   ; Selected variables (standard name)
   VAR = (/"sm", "sm"/)
