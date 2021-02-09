@@ -502,6 +502,22 @@ To do this, run the tool with:
 If everything was installed properly, ESMValTool should have printed a
 help message to the console.
 
+For a more complete installation verification, run the automated tests and
+confirm that no errors are reported:
+
+.. code-block:: bash
+
+    pytest -m "not installation"
+
+or if you want to run the full test suite remove the ``-m "not installation"`` flag;
+also if you want to run the tests on multiple threads, making the run faster, use
+the `-n N` flag where N is the number of available threads e.g:
+
+.. code-block:: bash
+
+    pytest -n 4
+
+
 Using the development version of the ESMValCore package
 -------------------------------------------------------
 
