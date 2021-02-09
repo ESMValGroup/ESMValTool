@@ -77,7 +77,7 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.1.0,<2.2  # in esmvalgroup channel
+        - esmvalcore>=2.2.0  # in esmvalgroup channel
         - fiona
         - gdal
         - iris>=3.0.1
@@ -85,7 +85,7 @@ outputs:
         - joblib
         - lime
         - matplotlib>3.3.1  # bug in 3.3.1
-        - mpich<3.4
+        - mpich<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
         - natsort
         - nc-time-axis
         - netCDF4
