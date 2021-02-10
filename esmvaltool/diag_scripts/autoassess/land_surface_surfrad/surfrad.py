@@ -32,7 +32,7 @@ def land_surf_rad(run):
     # replaced with a constant sftlf mask; original was
     # lnd = get_supermean('land_area_fraction', 'ann', supermean_data_dir)
     cubes = iris.load(os.path.join(supermean_data_dir, 'cubeList.nc'))
-    lnd = cubes.extract_strict(iris.Constraint(name='land_area_fraction'))
+    lnd = cubes.extract_cube(iris.Constraint(name='land_area_fraction'))
 
     metrics = dict()
     for season in rad_seasons:

@@ -210,7 +210,7 @@ def get_landfr_mask(run):
     name_constraint = iris.Constraint(name='land_area_fraction')
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
-    cube = cubes.extract_strict(name_constraint)
+    cube = cubes.extract_cube(name_constraint)
 
     return cube
 
@@ -235,7 +235,7 @@ def get_nonice_mask(run):
         name='soil_moisture_content_at_field_capacity')
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
-    cube = cubes.extract_strict(name_constraint)
+    cube = cubes.extract_cube(name_constraint)
 
     # TODO: mrsofc does not have depth
     # cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
