@@ -10,7 +10,7 @@ dependencies:
   - compilers
   - gdal
   - esmpy
-  - esmvalcore>=2.2.0
+  - esmvalcore>=2.2.0,<2.3
   - iris>=3.0.1
   - matplotlib>3.3.1  # bug in 3.3.1 but 3.3.3 gets installed automatically
   # Non-Python dependencies
