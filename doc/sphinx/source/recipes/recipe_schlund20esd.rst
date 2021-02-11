@@ -13,7 +13,12 @@ considered emergent constraints have been developed on the CMIP6 ensemble, this
 allows an out-of-sample testing of the emergent constraints. Most emergent
 constraints show a reduced skill in CMIP6 when compared to CMIP5.
 
+.. note::
+   Due to `#1903`_ this recipe needs to be run with the ``--check-level
+   ignore`` option.
+
 .. _`Schlund et al., Earth Sys. Dyn. (2020)`: https://doi.org/10.5194/esd-11-1233-2020
+.. _`#1903`: https://github.com/ESMValGroup/ESMValTool/issues/1903
 
 
 Available recipes and diagnostics
