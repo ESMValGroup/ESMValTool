@@ -8,7 +8,7 @@ Overview
 
 This recipe reproduces the analysis of `Schlund et al., Earth Sys. Dyn.
 (2020)`_. In this paper, emergent constraints on the equilibrium climate
-sensitivity are evaluated on the CMIP5 and CMIP6 models. Since none of the
+sensitivity are evaluated on CMIP5 and CMIP6 models. Since none of the
 considered emergent constraints have been developed on the CMIP6 ensemble, this
 allows an out-of-sample testing of the emergent constraints. Most emergent
 constraints show a reduced skill in CMIP6 when compared to CMIP5.
