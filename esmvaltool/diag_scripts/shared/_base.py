@@ -517,9 +517,9 @@ def run_diagnostic():
     }
 
     output_directories = []
-    if cfg['write_netcdf']:
+    if cfg.get('write_netcdf', True):
         output_directories.append(cfg['work_dir'])
-    if cfg['write_plots']:
+    if cfg.get('write_plots', True):
         output_directories.append(cfg['plot_dir'])
 
     old_content = [p for p in output_directories if os.path.exists(p)]
