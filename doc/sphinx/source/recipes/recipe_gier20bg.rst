@@ -48,7 +48,7 @@ User settings in recipe
     * Required diag_script_info attributes:
         * ``region``: region to average over
         * ``masking``: the kind of masking to apply prior to region average
-            * options: obs, land, sciamachy, gosat, none
+          (possible options: obs, land, sciamachy, gosat, none)
         * ``var_order``: First main variable, then temperature variable to compare
 
     * Optional diag_script_info attributes:
