@@ -1,4 +1,4 @@
-"""Blocking diagnostic"""
+"""Blocking diagnostic."""
 import os
 import logging
 import itertools
@@ -24,14 +24,17 @@ import cartopy.crs as ccrs
 
 import skill_metrics
 
-import esmvaltool.diag_scripts.shared
-import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared import (
+    names,
+    ProvenanceLogger,
+    run_diagnostic
+)
 from esmvalcore.preprocessor import regrid
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class Blocking(object):
+class Blocking:
     """
     Blocking diagnostic
 
@@ -63,7 +66,7 @@ class Blocking(object):
             )
             break
         self.ref_alias = self.datasets.get_info(
-            n.ALIAS, self.reference_dataset
+            names.ALIAS, self.reference_dataset
         )
         self.compute_1d = self.cfg.get('compute_1d', True)
         self.compute_2d = self.cfg.get('compute_2d', True)
@@ -98,7 +101,7 @@ class Blocking(object):
         self._compute_index = _get_index
 
     def compute(self):
-        """Compute blocking diagnostic"""
+        """Compute blocking diagnostic."""
         logger.info('Computing blocking')
 
         logger.info('Reference dataset %s', self.reference_dataset)
@@ -157,7 +160,7 @@ class Blocking(object):
         if self.cfg[n.WRITE_PLOTS] and self.compute_2d:
             self.create_comparison_plot(
                 datasets, skills['total'], 'blocking2D',
-                f'Blocking'
+                'Blocking'
             )
             for month in range(1, 13):
                 metrics = skills[month]
@@ -266,7 +269,7 @@ class Blocking(object):
         if self.cfg[n.WRITE_NETCDF]:
             new_filename = os.path.basename(filename).replace('zg',
                                                               'blocking1D')
-            netcdf_path = os.path.join(self.cfg[n.WORK_DIR],
+            netcdf_path = os.path.join(self.cfg[names.WORK_DIR],
                                        new_filename)
             iris.save(result, target=netcdf_path, zlib=True)
 
@@ -296,11 +299,10 @@ class Blocking(object):
 
     def _get_plot_name(self, name, filename, month=None,
                        add_alias_folder=False):
-        alias = self.datasets.get_info(n.ALIAS, filename)
-        start = self.datasets.get_info(n.START_YEAR, filename)
-        end = self.datasets.get_info(n.END_YEAR, filename)
-
-        plot_path = os.path.join(self.cfg[n.PLOT_DIR])
+        alias = self.datasets.get_info(names.ALIAS, filename)
+        start = self.datasets.get_info(names.START_YEAR, filename)
+        end = self.datasets.get_info(names.END_YEAR, filename)
+        plot_path = os.path.join(self.cfg[names.PLOT_DIR])
         if add_alias_folder:
             plot_path = os.path.join(plot_path, alias)
         if not os.path.isdir(plot_path):
@@ -308,7 +310,7 @@ class Blocking(object):
 
         if month is not None:
             name = '{}_{:02}'.format(name, month)
-        out_type = self.cfg[n.OUTPUT_FILE_TYPE]
+        out_type = self.cfg[names.OUTPUT_FILE_TYPE]
 
         plot_filename = f'{name}_{alias}_{start}-{end}.{out_type}'
         return os.path.join(plot_path, plot_filename)
@@ -320,14 +322,14 @@ class Blocking(object):
         smoothed = np.empty_like(cube.data)
         coord = cube.coord('longitude')
         coord_dim = cube.coord_dims(coord)[0]
-        for x in range(coord.shape[0]):
-            longitude = coord.points[x]
+        for index in range(coord.shape[0]):
+            longitude = coord.points[index]
             lon_window = cube.intersection(
                 longitude=(longitude - self.smoothing_window / 2.,
                            longitude + self.smoothing_window / 2.)
             )
             lon_mean = lon_window.collapsed('longitude', iris.analysis.MEAN)
-            slices = [x if coord_dim == n else slice(None) for n in range(cube.ndim)]
+            slices = [index if coord_dim == n else slice(None) for n in range(cube.ndim)]
             smoothed[slices] = lon_mean.data
         cube = cube.copy(smoothed)
         logger.debug('Smoothing finished!')
@@ -364,8 +366,8 @@ class Blocking(object):
             self._apply_persistence(blocking_cube)
         return blocking_cube
 
-    def _create_blocking_cube(self, blocking_index, zg500, central_latitude,
-                              bounds):
+    @static_method
+    def _create_blocking_cube(blocking_index, zg500, central_latitude, bounds):
         blocking_cube = iris.cube.Cube(
             blocking_index,
             var_name="blocking",
@@ -404,7 +406,7 @@ class Blocking(object):
         if self.cfg[n.WRITE_NETCDF]:
             new_filename = os.path.basename(filename).replace('zg',
                                                               'blocking')
-            netcdf_path = os.path.join(self.cfg[n.WORK_DIR],
+            netcdf_path = os.path.join(self.cfg[names.WORK_DIR],
                                        new_filename)
             iris.save(blocking_index, netcdf_path, zlib=True)
 
@@ -417,7 +419,7 @@ class Blocking(object):
                 ((0.92, 0.92, 0.92), (0.7, 0.1, 0.09)),
                 N=self.max_color_scale
             )
-            alias = self.datasets.get_info(n.ALIAS, filename)
+            alias = self.datasets.get_info(names.ALIAS, filename)
             for month_slice in blocking_index.slices_over('month_number'):
                 month_number = month_slice.coord('month_number').points[0]
                 month_name = calendar.month_name[month_number]
@@ -552,12 +554,13 @@ class Blocking(object):
             frameon=False,
         )
 
-    def _get_marker(self, num):
+   @static_method
+    def _get_marker(num):
         return '$\\mathrm{{{0}}}$'.format(chr(num + ord('A')))
 
 
 def main():
-    with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
+    with run_diagnostic() as config:
         Blocking(config).compute()
 
 
