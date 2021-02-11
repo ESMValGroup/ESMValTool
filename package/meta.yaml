@@ -63,7 +63,7 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.6
+        - python=3.9
         - setuptools_scm
       run:
         - cartopy>=0.18
@@ -92,7 +92,7 @@ outputs:
         - numpy
         - pandas
         - pyproj>=2.1
-        # - python>=3.6  ## this makes the env solver descend into an infinite loop; unpinning doesnt solve this
+        - python=3.9
         - python-cdo
         - pyyaml
         - rasterio  # replaces pynio
