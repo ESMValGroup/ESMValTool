@@ -132,9 +132,9 @@ USAGE
        - met: if set to 1, the program will compute the MEP with the indirect
               method, if set to 2 with the direct method, if set to 3, both
               methods will be computed and compared with each other;
-   In the 'variables' subsection of the 'diagnostics' section, you have to 
+   In the 'variables' subsection of the 'diagnostics' section, you have to
    comment the fields that are not needed depending on the options set in
-   the 'scripts' section. Energy budget and transport computations are 
+   the 'scripts' section. Energy budget and transport computations are
    performed by default, and required fields have to be provided in any
    case.
 
