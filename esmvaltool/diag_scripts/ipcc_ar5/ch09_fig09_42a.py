@@ -38,12 +38,17 @@ import os
 import iris
 import seaborn as sns
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            extract_variables,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            io, plot, run_diagnostic,
-                                            variables_available)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    extract_variables,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    plot,
+    run_diagnostic,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 

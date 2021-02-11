@@ -43,10 +43,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, io,
-                                            iris_helpers, run_diagnostic)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    io,
+    iris_helpers,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 

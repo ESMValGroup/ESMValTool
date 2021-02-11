@@ -40,8 +40,15 @@ import yaml
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    group_metadata, io, run_diagnostic, select_metadata, variables_available)
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    run_diagnostic,
+    select_metadata,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
