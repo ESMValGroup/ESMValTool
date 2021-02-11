@@ -35,7 +35,7 @@ def cmorize(cfg, region, in_dir, out_dir):
         for var, vals in cfg['variables'].items():
             var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
             logger.info('Cmorizing var %s', var)
-            cube = cubes.extract_strict(iris.Constraint(vals['raw']))
+            cube = cubes.extract_cube(iris.Constraint(vals['raw']))
             cube.add_aux_coord(lat_coord, (1, 2))
             cube.add_aux_coord(lon_coord, (1, 2))
             cube.convert_units(var_info.units)
@@ -79,7 +79,7 @@ def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
 
 
 def _create_coord(cubes, var_name, standard_name):
-    cube = cubes.extract_strict(standard_name)
+    cube = cubes.extract_cube(standard_name)
     coord = AuxCoord(
         cube.data,
         standard_name=standard_name,

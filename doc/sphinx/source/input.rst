@@ -146,6 +146,7 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
 
+.. _supported_datasets:
 
 Supported datasets
 ------------------
@@ -232,6 +233,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | GISTEMP                      | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GPCC                         | pr (Amon)                                                                                            |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| GRACE                        | lweGrace (Lmon)                                                                                      |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadCRUT3                     | tas, tasa (Amon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+

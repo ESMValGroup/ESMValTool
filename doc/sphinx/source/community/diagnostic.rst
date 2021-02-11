@@ -45,23 +45,36 @@ Always make sure your code is or can be released under a license that is compati
 
 If you have existing code in a supported scripting language, you have two options for re-using it. If it is fairly
 mature and a large amount of code, the preferred way is to package and publish it on the
-official package repository for that language and add it as a dependency of esmvaltool.
+official package repository for that language and add it as a dependency of ESMValTool.
 If it is just a few simple scripts or packaging is not possible (i.e. for NCL) you can simply copy
-and paste the source code into the esmvaltool/diag_scripts directory.
+and paste the source code into the ``esmvaltool/diag_scripts`` directory.
 
 If you have existing code in a compiled language like
 C, C++, or Fortran that you want to re-use, the recommended way to proceed is to add Python bindings and publish
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
 
+Additional dependencies
+=======================
+
+Add any additional dependencies needed for the diagnostic script to ``setup.py,``
+``esmvaltool/install/R/r_requirements.txt`` or ``esmvaltool/install/Julia/Project.toml``
+(depending on the language of your script) and also to ``package/meta.yaml`` for
+conda dependencies (includes Python and others, but not R/Julia). Also check
+that the license of the dependency you want to add and any of its dependencies
+are compatible with Apache 2.0 (`link <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE/>`_).
+
 Recording provenance
 ====================
-When ESMValCore (the ``esmvaltool`` command) runs a recipe, it will first find all data and run the default preprocessor steps plus any
+When ESMValCore (the ``esmvaltool`` command) runs a recipe,
+it will first find all data and run the default preprocessor steps plus any
 additional preprocessing steps defined in the recipe. Next it will run the diagnostic script defined in the recipe
 and finally it will store provenance information. Provenance information is stored in the
 `W3C PROV XML format <https://www.w3.org/TR/prov-xml/>`_
 and also plotted in an SVG file for human inspection. In addition to provenance information, a caption is also added
 to the plots.
+When contributing a diagnostic, please make sure it records the provenance,
+and that no warnings related to provenance are generated when running the recipe.
 
 Provenance items provided by the recipe
 ---------------------------------------
