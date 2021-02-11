@@ -105,6 +105,7 @@ diagnostics:
       main_ensemble:
         script: xco2_analysis/main.ncl
         styleset: CMIP6
+        output_file_type: "png"
         region: [-90, 90]
         # Possible masking options: obs
         masking: ["obs"]

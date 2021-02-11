@@ -103,6 +103,8 @@ begin
   ; Plot file type
   if (isatt(diag_script_info, "output_file_type")) then
     file_type = diag_script_info@output_file_type
+  elseif (isatt(config_user_info, "output_file_type")) then
+    file_type = config_user_info@output_file_type
   else
     file_type = "png"
   end if

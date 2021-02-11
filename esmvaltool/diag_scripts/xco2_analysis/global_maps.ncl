@@ -60,9 +60,12 @@ begin
   min_nmonth = 7
 
   ; Plot file type
-  file_type = config_user_info@output_file_type
-  if (ismissing(file_type)) then
-    file_type = "ps"
+  if (isatt(diag_script_info, "output_file_type")) then
+    file_type = diag_script_info@output_file_type
+  elseif (isatt(config_user_info, "output_file_type")) then
+    file_type = config_user_info@output_file_type
+  else
+    file_type = "png"
   end if
 
   ; Output plot directory
