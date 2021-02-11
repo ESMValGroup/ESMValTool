@@ -72,8 +72,7 @@ User settings in recipe
         * ``styleset``: styleset to use for plotting colors, linestyles...
         * ``region``: latitude range for averaging
         * ``masking``: different masking options are available to use on dataset:
-            * "none" - no masking
-            * "obs" - observational masking
+          (possible options: none, obs)
         * ``ensemble_mean``: if true calculates multi-model mean only
           accounting for the ensemble member named in "ensemble_refs"
 
@@ -91,12 +90,7 @@ User settings in recipe
         * ``styleset``: styleset to use for plotting colors, linestyles...
         * ``region``: latitude range for averaging
         * ``masking``: different masking options are available to use on dataset:
-            * "none" - no masking
-            * "obs" - observational
-            * "land" - only consider land values
-            * satellite dataset specific:
-            * "sciamachy" - masking according to period for Sciamachy only
-            * "gosat" - masking according to period for Gosat only
+          (possible options: obs, land, sciamachy, gosat, none)
         * ``obs_in_panel``: True if observations should be included in plot
         * ``area_avg``: Type of area averaging: "full-area" normal area-average
           "lat-first" calculate zonal means first, then average these
