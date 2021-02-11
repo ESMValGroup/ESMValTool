@@ -132,9 +132,10 @@ USAGE
        - met: if set to 1, the program will compute the MEP with the indirect
               method, if set to 2 with the direct method, if set to 3, both
               methods will be computed and compared with each other;
-   In the 'variables' section of the 'diagnostics' section, you can comment the
-   fields that are needed according to the options set in the 'scripts'
-   section (see Sect. 1).
+   In the 'variables' subsection of the 'diagnostics' section, you have to comment the
+   fields that are not needed depending on the options set in the 'scripts'
+   section. Energy budget and transport computations are performed by default, and
+   required fields have to be provided in any case.
 
 4: Run the tool by typing:
          esmvaltool run esmvaltool/recipes/recipe_thermodyn_diagtool.yml
@@ -253,6 +254,7 @@ for immediate model intercomparison.
 20191030-lembo_valerio: updated ingestion of input fields and several minor
                         fixings
 20191113-lembo_valerio: updated documentation
+20210211-lembo_valerio: updated documentation
 #############################################################################
 """
 

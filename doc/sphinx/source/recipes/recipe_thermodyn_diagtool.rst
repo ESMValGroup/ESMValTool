@@ -76,12 +76,10 @@ Besides the datasets, to be set according to usual ESMValTool convention, the us
 Variables
 ---------
 
+Default variables needed for computation of energy budgets and transports:
+
 * hfls    (atmos,  monthly mean, time latitude longitude)
 * hfss    (atmos,  monthly mean, time latitude longitude)
-* hus     (atmos,  monthly mean, time plev latitude longitude)
-* pr      (atmos,  monthly mean, time latitude longitude)
-* prsn    (atmos,  monthly mean, time latitude longitude)
-* ps      (atmos,  monthly mean, time latitude longitude)
 * rlds    (atmos,  monthly mean, time latitude longitude)
 * rlus    (atmos,  monthly mean, time latitude longitude)
 * rlut    (atmos,  monthly mean, time latitude longitude)
@@ -89,19 +87,42 @@ Variables
 * rsdt    (atmos,  monthly mean, time latitude longitude)
 * rsus    (atmos,  monthly mean, time latitude longitude)
 * rsut    (atmos,  monthly mean, time latitude longitude)
+
+Additional variables needed for water mass and latent energy computation (optional, with 'wat' set to 'true'):
+
+* pr      (atmos,  monthly mean, time latitude longitude)
+* prsn    (atmos,  monthly mean, time latitude longitude)
+
+Additional variable needed for LEC computations (optional, with 'lec' set to 'true'):
+
 * ta      (atmos,  daily   mean, time plev latitude longitude)
 * tas     (atmos,  daily   mean, time latitude longitude)
-* ts      (atmos,  monthly mean, time latitude longitude)
 * ua      (atmos,  daily   mean, time plev latitude longitude)
 * uas     (atmos,  daily   mean, time latitude longitude)
 * va      (atmos,  daily   mean, time plev latitude longitude)
 * vas     (atmos,  daily   mean, time latitude longitude)
 * wap     (atmos,  daily   mean, time plev latitude longitude)
 
+Additional variables needed for material entropy production computations with direct method (optional, with 'entr' set to 'true' and 'mep' to '2' or '3'):
+
+* hus     (atmos,  monthly mean, time plev latitude longitude)
+* pr      (atmos,  monthly mean, time latitude longitude)
+* prsn    (atmos,  monthly mean, time latitude longitude)
+* ps      (atmos,  monthly mean, time latitude longitude)
+* ts      (atmos,  monthly mean, time latitude longitude)
+
+Additional variables needed for material entropy production computations with indirect method (optional, with 'entr' set to 'true' and 'mep' to '1' or '3'):
+
+* tas     (atmos,  daily   mean, time latitude longitude)
+* uas     (atmos,  daily   mean, time latitude longitude)
+* vas     (atmos,  daily   mean, time latitude longitude)
+
+Depending on the user's options, variables listed above must be provided. All other variables shall be commented in the recipe file.
+
 
 References
 ----------
-* Lembo V, Lunkeit F, Lucarini V (2019) A new diagnostic tool for diagnosing water, energy and entropy budgets in climate models. Geophys Mod Dev Disc. doi:10.5194/gmd-2019-37. in review.
+* Lembo V, Lunkeit F, Lucarini V (2019) A new diagnostic tool for diagnosing water, energy and entropy budgets in climate models. Geophys Mod Dev Disc. doi:10.5194/gmd-12-3805-2019
 * Liepert BG, Previdi M (2012) Inter-model variability and biases of the global water cycle in CMIP3 coupled climate models. Environ Res Lett 7:014006. doi: 10.1088/1748-9326/7/1/014006
 * Lorenz EN (1955) Available Potential Energy and the Maintenance of the General Circulation. Tellus 7:157–167. doi: 10.1111/j.2153-3490.1955.tb01148.x
 * Lucarini V, Fraedrich K, Ragone F (2010) New Results on the Thermodynamical Properties of the Climate System. J Atmo 68:. doi: 10.1175/2011JAS3713.1
