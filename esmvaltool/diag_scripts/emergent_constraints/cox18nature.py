@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Diagnostic script to reproduce Cox et al. (2018).
+"""Diagnostic script to reproduce emergent constraint of Cox et al. (2018).
 
 Description
 -----------
-Plot equilibrium climate sensitivity ECS vs. temperature variability metric psi
+Plot equilibrium climate sensitivity ECS vs. temperature variability metric Ψ
 to establish an emergent relationship for ECS.
 
 Author
@@ -17,7 +17,7 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-confidence_level : float, optional (default: 0.66)
+confidence_level: float, optional (default: 0.66)
     Confidence level for ECS error estimation.
 
 """

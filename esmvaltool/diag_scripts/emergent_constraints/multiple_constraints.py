@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Diagnostic script to evaluate a single emergent constraint.
+"""Diagnostic script to evaluate multiple emergent constraints simultaneously.
 
 Description
 -----------
-Establish a single emergent constraint for an arbitrary input variable and an
+Establish multiple emergent constraints for arbitrary input variables and an
 arbitrary target variable. All input datasets need to be one-dimensional and
 must include a coordinate ``'dataset'`` or ``'model'`` (thus, the data
 describes a single scalar value for each dataset). All input datasets must be
 marked with a ``var_type`` (either ``feature``, ``label``, ``prediction_input``
 or ``prediction_input_error``) and a ``tag``, which describes the type of data.
-This diagnostic supports only a single ``tag`` for ``label`` and ``feature``.
-For every ``tag``, a ``'reference_dataset'`` can be specified, which will be
-automatically considered as ``prediction_input``. If ``reference_dataset``
-contains ``'|'`` (e.g. ``'OBS1|OBS2'``), multiple datasets are considered as
+This diagnostic supports only a single ``tag`` for ``label`` and an arbitrary
+number of ``tag`` s for ``feature``. For every ``tag``, a
+``'reference_dataset'`` can be specified, which will be automatically
+considered as ``prediction_input``.  If ``reference_dataset`` contains ``'|'``
+(e.g. ``'OBS1|OBS2'``), multiple datasets are considered as
 ``prediction_input`` (in this case ``'OBS1'`` and ``'OBS2'``).
 
 Author
@@ -73,15 +74,6 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def check_training_data(training_data):
-    """Check training data."""
-    features = training_data.x
-    if len(features.columns) != 1:
-        raise ValueError(
-            f"Expected exactly 1 'feature' variable, got "
-            f"{len(features.columns):d}")
-
-
 def get_default_settings(cfg):
     """Get default configuration settings."""
     cfg = deepcopy(cfg)
@@ -89,6 +81,7 @@ def get_default_settings(cfg):
     cfg.setdefault('combine_groups', False)
     cfg.setdefault('confidence_level', 0.66)
     cfg.setdefault('merge_identical_pred_input', True)
+    cfg.setdefault('patterns', [])
     cfg.setdefault('savefig_kwargs', {
         'bbox_inches': 'tight',
         'dpi': 600,
@@ -103,40 +96,34 @@ def main(cfg):
     cfg = get_default_settings(cfg)
     sns.set(**cfg['seaborn_settings'])
 
-    # Load data
+    # Load data and perform PCA
     (training_data, prediction_data, attributes) = ec.get_input_data(cfg)
-    check_training_data(training_data)
+    training_data_no_nans = training_data.dropna()
 
     # Plots
     with pd.option_context(*ec.PANDAS_PRINT_OPTIONS):
         logger.info(
             "Correlation of training data (considering all available data):\n"
             "%s", training_data.corr())
+        logger.info(
+            "Correlation of training data (considering only climate models "
+            "where data for all constraints is available):\n%s",
+            training_data_no_nans.corr())
     ec.plot_individual_scatterplots(training_data,
                                     prediction_data,
                                     attributes,
                                     'training_data',
                                     cfg)
-    ec.plot_merged_scatterplots(training_data,
-                                prediction_data,
-                                attributes,
-                                'training_data',
-                                cfg)
+    ec.plot_merged_scatterplots(training_data, prediction_data, attributes,
+                                'training_data', cfg)
+    ec.plot_target_distributions(training_data, prediction_data, attributes,
+                                 'training_data', cfg)
 
     # Export CSV
     ec.export_csv(training_data, attributes, 'training_data', cfg)
+    ec.export_csv(training_data_no_nans, attributes, 'training_data_no_nans',
+                  cfg)
     ec.export_csv(prediction_data, attributes, 'prediction_data', cfg)
-
-    # Print constraint
-    label = training_data.y.columns[0]
-    units = attributes[label]['units']
-    constrained_target = ec.get_constraint_from_df(training_data,
-                                                   prediction_data,
-                                                   cfg['confidence_level'])
-    logger.info(
-        "Constraint on target variable '%s': [%.2f, %.2f] %s with best "
-        "estimate %.2f %s", label, constrained_target[0],
-        constrained_target[2], units, constrained_target[1], units)
 
 
 if __name__ == '__main__':
