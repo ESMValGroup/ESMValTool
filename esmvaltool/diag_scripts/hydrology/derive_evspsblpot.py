@@ -32,8 +32,9 @@ def tetens_derivative(tas):
     emp_b = iris.coords.AuxCoord(np.float32(243.5),
                                  long_name='Empirical constant b',
                                  units='degC')
-    exponent = iris.analysis.maths.exp(emp_a * tas / (emp_b + tas))
-    return (emp_a * emp_b) * (e0_const * exponent / (emp_b + tas)**2)
+    exponent = iris.analysis.maths.exp(emp_a * tas / (tas + emp_b))
+
+    return  (exponent * e0_const / (tas + emp_b)**2) * (emp_a * emp_b)
 
 
 def get_constants(psl):
@@ -79,9 +80,10 @@ def get_constants(psl):
                                     long_name='Empirical constant',
                                     units='W m-2')
 
-    # gamma = rv/rd * cp*msl/lambda_
+    # source = De Bruin (10.1175/JHM-D-15-0006.1), page 1376
+    # gamma = (rv/rd) * (cp*msl/lambda_)
     # iris.exceptions.NotYetImplementedError: coord / coord
-    gamma = rv_const.points[0] / rd_const.points[0] * cp_const * psl / lambda_
+    gamma = (rv_const.points[0] / rd_const.points[0]) * (psl * cp_const / lambda_)
     return gamma, cs_const, beta, lambda_
 
 
@@ -98,9 +100,9 @@ def debruin_pet(psl, rsds, rsdt, tas):
     kdown = rsds
     kdown_ext = rsdt
     # Equation 6
-    rad_term = np.float32(1 - 0.23) * kdown - cs_const * kdown / kdown_ext
+    rad_term = (np.float32(1 - 0.23) * kdown) - (kdown * cs_const / kdown_ext)
     # the unit is W m-2
-    ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
+    ref_evap = ((delta_svp / (delta_svp + gamma)) * rad_term) + beta
 
     pet = ref_evap / lambda_
     pet.var_name = 'evspsblpot'
