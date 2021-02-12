@@ -4,9 +4,9 @@ from pathlib import Path
 
 import numpy as np
 from osgeo import gdal
+from esmvalcore.preprocessor import regrid
 import iris
 
-from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
