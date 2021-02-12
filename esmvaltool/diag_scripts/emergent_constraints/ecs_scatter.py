@@ -49,13 +49,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from esmvalcore.cmor.fixes import add_plev_from_altitude, add_sigma_factory
 from joblib import Parallel, delayed
 from scipy.interpolate import interp1d
 from scipy.stats import linregress
 
 import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvalcore.cmor.fixes import add_plev_from_altitude, add_sigma_factory
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
