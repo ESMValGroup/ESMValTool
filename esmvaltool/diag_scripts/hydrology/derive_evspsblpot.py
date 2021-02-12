@@ -33,7 +33,6 @@ def tetens_derivative(tas):
                                  long_name='Empirical constant b',
                                  units='degC')
     exponent = iris.analysis.maths.exp(emp_a * tas / (tas + emp_b))
-
     return  (exponent * e0_const / (tas + emp_b)**2) * (emp_a * emp_b)
 
 
