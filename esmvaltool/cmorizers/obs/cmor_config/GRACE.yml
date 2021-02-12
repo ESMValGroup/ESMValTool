@@ -5,7 +5,7 @@ attributes:
   project_id: OBS6
   tier: 3
   version: '1'
-  modeling_realm: satellite
+  modeling_realm: sat
   source: 'https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2'
   reference: 'grace'
   comment: |

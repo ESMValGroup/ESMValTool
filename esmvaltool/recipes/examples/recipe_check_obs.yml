@@ -1106,6 +1106,17 @@ diagnostics:
     scripts: null
 
 
+  GRACE:
+    description: GRACE check
+    variables:
+      lweGrace:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: GRACE, project: OBS6, tier: 3, type: sat,
+         version: 1, start_year: 2002, end_year: 2020}
+    scripts: null
+
+
   HWSD:
     description: HWSD check
     variables:
