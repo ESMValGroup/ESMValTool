@@ -1496,7 +1496,7 @@ begin
         if (all(ismissing(patcor_nam_djf(hh,{20:},:)))) then
            finpr_nam_djf = finpr_nam_djf+sprintf(format2,9.99)+"/"+sprintf(format3,9.99)
         else
-           finpr_nam_djf = finpr_nam_djf+sprintf(format2,(pattern_cor(patcor_nam_djf(0,{20:},:),patcor_nam_djf(hh,{20:},:),clat({20:}),0)))+"/"+sprintf(format3,(dim_rmsd(ndtooned(NewCosWeight(patcor_nam_djf(0,{20:},:))),ndtooned(NewCosWeight(patcor_nam_djf(hh,{20:},:))))))
+           finpr_nam_djf = finpr_nam_djf+sprintf(format2,(pattern_cor(patcor_nam_djf(0,{20:},:),patcor_nam_djf(hh,{20:},:),clat({20:}),0)))+"/"+sprintf(format3,(wgt_arearmse(patcor_nam_djf(0,{20:},:),patcor_nam_djf(hh,{20:},:),clat({20:}),1.0,0)))
         end if  
      end do
 ;     

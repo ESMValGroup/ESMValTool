@@ -21,5 +21,6 @@ engines:
 exclude_paths: [
     'doc/sphinx/**',
     'esmvaltool/cmor/tables/**',
-    'tests/**'
+    'tests/**',
+    'esmvaltool/diag_scripts/cvdp/cvdp/**'
 ]

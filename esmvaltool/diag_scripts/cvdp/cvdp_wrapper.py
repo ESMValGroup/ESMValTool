@@ -1,4 +1,5 @@
 """wrapper diagnostic for the NCAR CVDP (p)ackage."""
+import glob
 import logging
 import os
 import re
@@ -6,8 +7,9 @@ import shutil
 import subprocess
 
 from esmvalcore._task import DiagnosticError
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic)
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger, group_metadata,
+                                            run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -23,30 +25,45 @@ def setup_driver(cfg):
         'obs': 'False',
         'zp': os.path.join(cvdp_root, "ncl_scripts/"),
         'run_style': 'serial',
+        'modular': 'False',
         'webpage_title': 'CVDP run via ESMValTool'
     }
+
+    if 'cvdp_modules' in cfg:
+        settings['modular'] = "True"
+        settings['modular_list'] = ','.join(cfg['cvdp_modules'])
+
     settings['output_data'] = "True" if _nco_available() else "False"
 
     def _update_settings(line):
 
+        logger.debug("Line before: %s", line)
         for key, value in settings.items():
-            pattern = r'\s*{0}\s*=.*\n'.format(key)
+            pattern = r'^\s*{0}\s*=.*\n'.format(key)
             search_results = re.findall(pattern, line)
             if search_results == []:
                 continue
+            logger.debug("Search Results: %s", ';'.join(search_results))
             return re.sub(r'".+?"',
                           '"{0}"'.format(value),
                           search_results[0],
                           count=1)
 
+        logger.debug("Line after: %s", line)
         return line
 
     content = []
     driver = os.path.join(cvdp_root, "driver.ncl")
 
     with open(driver, 'r') as driver_file:
+        modify = True
         for line in driver_file:
-            content.append(_update_settings(line))
+            if "END USER MODIFICATIONS" in line:
+                modify = False
+            if modify:
+                content.append(_update_settings(line))
+            else:
+                content.append(line)
 
     new_driver = os.path.join(cfg['run_dir'], "driver.ncl")
 
@@ -280,9 +297,9 @@ def set_provenance(cfg):
         }
 
     ancestors = _get_global_ancestors(cfg)
-    logger.info("Path to work_dir: %s", cfg['work_dir'])
+    logger.info("Path to plot_dir: %s", cfg['plot_dir'])
     with ProvenanceLogger(cfg) as provenance_logger:
-        for root, _, files in os.walk(cfg['work_dir']):
+        for root, _, files in os.walk(cfg['plot_dir']):
             for datei in files:
                 path = os.path.join(root, datei)
                 if _is_png(path):
@@ -298,12 +315,20 @@ def _execute_cvdp(cfg):
                           cwd=os.path.join(cfg['run_dir']))
 
 
+def _move_imagefiles(cfg):
+    suffixes = ['png', 'txt', 'html', 'namelist_*', 'bibtex']
+    for suffix in suffixes:
+        for _file in glob.glob(os.path.join(cfg['work_dir'], f'*{suffix}')):
+            shutil.move(_file, cfg['plot_dir'])
+
+
 def main(cfg):
     """Set and execute the cvdp package."""
     cfg['lnk_dir'] = os.path.join(cfg['run_dir'], "links")
     setup_driver(cfg)
     setup_namelist(cfg)
     _execute_cvdp(cfg)
+    _move_imagefiles(cfg)
     set_provenance(cfg)
 
 

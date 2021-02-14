@@ -4,7 +4,7 @@
 ; to a file named file.out, type: ncl driver.ncl >&! file.out &
 ; 
 ;============================================================================================
-  outdir            = "/project/CVDP/"   ; location of output files   (must end in a "/")
+  outdir            = "/project/CVDP/"                     ; location of output files   (must end in a "/")
                                                            ; It is recommended that a new or empty directory be pointed to here 
                                                            ; as existing files in outdir can get removed.
 
@@ -65,7 +65,7 @@
   machine_casesen = "True"  ; True = Your filesystem is case sensitive  (Default)
                              ; False = Your filesystem is case insensitive                                                          
 ;========END USER MODIFICATIONS===========================================================
-  version = "5.0.0"
+  version = "5.1.1"
 
   print("Starting: Climate Variability Diagnostics Package ("+systemfunc("date")+")")
 
@@ -96,7 +96,7 @@
   end if
 
   if (.not.isfilepresent2(outdir)) then
-     system("mkdir "+outdir)
+     system("mkdir -p "+outdir)
   end if
   envvar_str = "   export OUTDIR="+outdir+";   export OBS="+obs+";   export SCALE_TIMESERIES="+scale_timeseries+";   "+\
          "export OUTPUT_DATA="+output_data+";   export VERSION="+version+";   export PNG_SCALE="+png_scale+";   "+\
@@ -197,7 +197,7 @@
      end if
 ;     print("cd "+outdir+"; tar -cf cvdp.tar *")
      system("cd "+outdir+"; tar -cf cvdp.tar *")
-     system("cd "+outdir+"; rm *.png *.ps *.txt *.html *.nc namelist*")
+     system("cd "+outdir+"; rm *.gif *.png *.ps *.txt *.html *.nc namelist*")
   end if
 ;-------------------------------
 ; Cleanup

@@ -19,10 +19,26 @@ documentation:
     - esmval
     - c3s-magic
 
+preprocessors:
+
+  multi_model:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+
+
 datasets:
   - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
   - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
   - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
+
+
 
 diagnostics:
 
@@ -30,15 +46,40 @@ diagnostics:
     description: Run the NCAR CVDPackage.
     variables:
       ts:
+        preprocessor: multi_model
         mip: Amon
       tas:
+        preprocessor: multi_model
         mip: Amon
       pr:
+        preprocessor: multi_model
         mip: Amon
       psl:
+        preprocessor: multi_model
         mip: Amon
     scripts:
       cvdp:
         script: cvdp/cvdp_wrapper.py
+        cvdp_modules:
+          #- aice.mean_stddev
+          #- aice.trends_timeseries
+          #- amo
+          #- amoc
+          #- ipo
+          #- pdo
+          #- pr.mean_stddev
+          #- pr.trends_timeseries
+          #- psl.mean_stddev
+          #- psl.nam_nao
+          #- psl.pna_npo
+          #- psl.sam_psa
+          #- psl.trends
+          #- snd.mean_stddev
+          #- snd.trends
+          #- sst.indices
+          #- sst.mean_stddev
+          #- sst.trends_timeseries
+          #- tas.mean_stddev
+          - tas.trends_timeseries
         quickplot:
           plot_type: pcolormesh

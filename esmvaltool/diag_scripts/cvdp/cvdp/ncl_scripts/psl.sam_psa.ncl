@@ -1162,31 +1162,31 @@ begin
         z->psa2_timeseries_son = set_varAtts(psa2_pc_son,"PSA2 normalized principal component timeseries (SON)","1","")
         z->psa2_timeseries_ann = set_varAtts(psa2_pc_ann,"PSA2 normalized principal component timeseries (annual)","1","")
         
-        z->sam_djf = set_varAtts(sam_djf,"SAM spatial pattern (DJF)","","")
-        z->sam_mam = set_varAtts(sam_mam,"SAM spatial pattern (MAM)","","")
-        z->sam_jja = set_varAtts(sam_jja,"SAM spatial pattern (JJA)","","")
-        z->sam_son = set_varAtts(sam_son,"SAM spatial pattern (SON)","","")
-        z->sam_ann = set_varAtts(sam_ann,"SAM spatial pattern (annual)","","")
+        z->sam_pattern_djf = set_varAtts(sam_djf,"SAM spatial pattern (DJF)","","")
+        z->sam_pattern_mam = set_varAtts(sam_mam,"SAM spatial pattern (MAM)","","")
+        z->sam_pattern_jja = set_varAtts(sam_jja,"SAM spatial pattern (JJA)","","")
+        z->sam_pattern_son = set_varAtts(sam_son,"SAM spatial pattern (SON)","","")
+        z->sam_pattern_ann = set_varAtts(sam_ann,"SAM spatial pattern (annual)","","")
         
-        z->psa1_djf = set_varAtts(psa1_djf,"PSA1 spatial pattern (DJF)","","")
-        z->psa1_mam = set_varAtts(psa1_mam,"PSA1 spatial pattern (MAM)","","")
-        z->psa1_jja = set_varAtts(psa1_jja,"PSA1 spatial pattern (JJA)","","")
-        z->psa1_son = set_varAtts(psa1_son,"PSA1 spatial pattern (SON)","","")
-        z->psa1_ann = set_varAtts(psa1_ann,"PSA1 spatial pattern (annual)","","")
+        z->psa1_pattern_djf = set_varAtts(psa1_djf,"PSA1 spatial pattern (DJF)","","")
+        z->psa1_pattern_mam = set_varAtts(psa1_mam,"PSA1 spatial pattern (MAM)","","")
+        z->psa1_pattern_jja = set_varAtts(psa1_jja,"PSA1 spatial pattern (JJA)","","")
+        z->psa1_pattern_son = set_varAtts(psa1_son,"PSA1 spatial pattern (SON)","","")
+        z->psa1_pattern_ann = set_varAtts(psa1_ann,"PSA1 spatial pattern (annual)","","")
         
-        z->psa2_djf = set_varAtts(psa2_djf,"PSA2 spatial pattern (DJF)","","")
-        z->psa2_mam = set_varAtts(psa2_mam,"PSA2 spatial pattern (MAM)","","")
-        z->psa2_jja = set_varAtts(psa2_jja,"PSA2 spatial pattern (JJA)","","")
-        z->psa2_son = set_varAtts(psa2_son,"PSA2 spatial pattern (SON)","","")
-        z->psa2_ann = set_varAtts(psa2_ann,"PSA2 spatial pattern (annual)","","")
+        z->psa2_pattern_djf = set_varAtts(psa2_djf,"PSA2 spatial pattern (DJF)","","")
+        z->psa2_pattern_mam = set_varAtts(psa2_mam,"PSA2 spatial pattern (MAM)","","")
+        z->psa2_pattern_jja = set_varAtts(psa2_jja,"PSA2 spatial pattern (JJA)","","")
+        z->psa2_pattern_son = set_varAtts(psa2_son,"PSA2 spatial pattern (SON)","","")
+        z->psa2_pattern_ann = set_varAtts(psa2_ann,"PSA2 spatial pattern (annual)","","")
 
         if (COMPUTE_MODES_MON.eq."True") then   
            z->sam_timeseries_mon = set_varAtts(sam_pc_mon,"SAM principal component timeseries (monthly)","","")
            z->psa1_timeseries_mon = set_varAtts(psa1_pc_mon,"PSA1 principal component timeseries (monthly)","","")
            z->psa2_timeseries_mon = set_varAtts(psa2_pc_mon,"PSA2 principal component timeseries (monthly)","","")
-           z->sam_mon = set_varAtts(sam_mon,"SAM spatial pattern (monthly)","","")
-           z->psa1_mon = set_varAtts(psa1_mon,"PSA1 spatial pattern (monthly)","","")
-           z->psa2_mon = set_varAtts(psa2_mon,"PSA2 spatial pattern (monthly)","","")
+           z->sam_pattern_mon = set_varAtts(sam_mon,"SAM spatial pattern (monthly)","","")
+           z->psa1_pattern_mon = set_varAtts(psa1_mon,"PSA1 spatial pattern (monthly)","","")
+           z->psa2_pattern_mon = set_varAtts(psa2_mon,"PSA2 spatial pattern (monthly)","","")
         end if
         delete(z)
         delete([/modname,fn/])
@@ -1753,7 +1753,7 @@ begin
         if (all(ismissing(patcor_sam_djf(hh,{:-20},:)))) then
            finpr_sam_djf = finpr_sam_djf+sprintf(format2,9.99)+"/"+sprintf(format3,9.99)
         else
-           finpr_sam_djf = finpr_sam_djf+sprintf(format2,(pattern_cor(patcor_sam_djf(0,{:-20},:),patcor_sam_djf(hh,{:-20},:),clat({:-20}),0)))+"/"+sprintf(format3,(dim_rmsd(ndtooned(NewCosWeight(patcor_sam_djf(0,{:-20},:))),ndtooned(NewCosWeight(patcor_sam_djf(hh,{:-20},:))))))
+           finpr_sam_djf = finpr_sam_djf+sprintf(format2,(pattern_cor(patcor_sam_djf(0,{:-20},:),patcor_sam_djf(hh,{:-20},:),clat({:-20}),0)))+"/"+sprintf(format3,(wgt_arearmse(patcor_sam_djf(0,{:-20},:),patcor_sam_djf(hh,{:-20},:),clat({:-20}),1.0,0)))
         end if        
      end do
 ;     

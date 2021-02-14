@@ -93,7 +93,7 @@ begin
   
   do gg = 0,dimsizes(files)-1
      if (.not.fileexists(OUTDIR+files(gg))) then
-        print("1 or more metrics files missing, exiting metrics.ncl")
+        print("1 or more metrics files missing, cannot create summary metrics tables, exiting metrics.ncl")
         exit
      end if
   end do
@@ -131,9 +131,9 @@ begin
   end do
   delete(cntr)
 
-  do gg = 0,dimsizes(files)-1  ; remove individual metrics files
-     system("rm "+OUTDIR+files(gg))
-  end do
+;  do gg = 0,dimsizes(files)-1        ; Individual metrics files no longer removed in case comparison
+;     system("rm "+OUTDIR+files(gg))  ; is rerun. This ensures that the metrics tables get updated. 
+;  end do
 
   names = ch(:,0)
   do gg = 0,nsim-1   ; check to see if data is observations or models by seeing if every name matches
