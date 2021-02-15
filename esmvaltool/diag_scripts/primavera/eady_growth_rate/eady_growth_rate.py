@@ -27,7 +27,6 @@ from esmvaltool.diag_scripts.shared import (
 )
 logger = logging.getLogger(os.path.basename(__file__))
 
-
 class EadyGrowthRate:
     """Class used to compute the Eady Growth Rate."""
 
@@ -39,7 +38,6 @@ class EadyGrowthRate:
             config : dict
                 Dictionary containing configuration settings.
         """
-
         self.cfg = config
         self.fill_value = 1e20
         """Fill Value."""
@@ -56,8 +54,7 @@ class EadyGrowthRate:
 
     def compute(self):
         """
-        Computes the Eady Growth Rate and
-        either it's annual or the seasonal mean.
+        Computes the Eady Growth Rate and either it's annual or seasonal mean.
         """
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
@@ -279,7 +276,8 @@ class EadyGrowthRate:
             # North Atlantic
             axes.set_extent((-90.0, 30.0, 20.0, 80.0), crs=crs_latlon)
             axes.set_yticks(np.linspace(25, 75, 6))
-            qplt.contourf(cube, levels=np.arange(0, np.max(cube.data), 0.05))
+            # Relevant range
+            qplt.contourf(cube, levels=np.arange(0, 1.1, 0.05))
             extension = self.cfg['output_file_type']
             diagnostic = self.cfg['script']
             plotname = '_'.join([alias, diagnostic,

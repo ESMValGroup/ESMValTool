@@ -2,7 +2,9 @@
 ---
 documentation:
   description: |
-    Recipe to compute the annual mean or the seasonal mean the Eady Growth Rate (EGR). 
+    Recipe to compute the annual mean or the seasonal mean of the maximum Eady Growth Rate 
+    (EGR, Brian J Hoskins and Paul J Valdes. On the existence of storm-tracks. 
+    Journal of the atmospheric sciences, 47(15):1854–1864, 1990.). 
     The output produces netcdf files for each model. In the case of the seasonal means, a plot is
     produced for each specified level showing the EGR values over the North-Atlantic region.
 
@@ -18,25 +20,9 @@ documentation:
     - primavera
 
 datasets:
-   - {dataset: CMCC-CM2-HR4, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
-   - {dataset: CNRM-CM6-1, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
-   - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
-   - {dataset: ECMWF-IFS-HR, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
-   - {dataset: ECMWF-IFS-LR, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
-   - {dataset: HadGEM3-GC31-HM, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
    - {dataset: HadGEM3-GC31-LM, project: CMIP6, exp: highresSST-present,
       ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
    - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
-   - {dataset: MPI-ESM1-2-XR, project: CMIP6, exp: highresSST-present,
-      ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
-   - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: highresSST-present,
       ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
 
 

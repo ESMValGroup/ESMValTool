@@ -6,7 +6,7 @@ Eady growth rate
 Overview
 --------
 
-This recipe computes the Eady growth rate and performs the annual and seasonal means, storing 
+This recipe computes the maximum Eady Growth Rate and performs the annual and seasonal means, storing 
 the results for each dataset. 
 For the seasonal means, the results are plotted over the North-Atlantic region for the selected
 pressure levels.
@@ -46,6 +46,10 @@ Variables
 * zg (atmos, monthly mean, longitude latitude level time)
 * ua (atmos, monthly mean, longitude latitude level time) 
 
+References
+----------
+
+Brian J Hoskins and Paul J Valdes. On the existence of storm-tracks. Journal of the atmospheric sciences, 47(15):1854–1864, 1990.)
 
 Example plots
 -------------
