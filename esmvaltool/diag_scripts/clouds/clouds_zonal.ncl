@@ -327,7 +327,8 @@ begin
 
     ; annotation
 
-    res@tiMainOn             = False
+;    res@tiMainOn             = False
+    res@tiMainString = names(ii)
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
 
@@ -455,8 +456,8 @@ begin
     ; # create the plot                         #
     ; ###########################################
 
-    res@gsnDraw        = False  ; do not draw yet
-    res@gsnFrame       = False  ; don't advance frame
+;    res@gsnDraw        = False  ; do not draw yet
+;    res@gsnFrame       = False  ; don't advance frame
 
     ; function in aux_plotting.ncl
 
@@ -623,7 +624,8 @@ begin
       dres@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
                                             / tofloat((dim_MOD + 1) / 2)/))
 
-      dres@tiMainOn       = False
+;      dres@tiMainOn       = False
+      dres@tiMainString = names(ii) + " - " + refname
 
       dres@cnFillOn       = True      ; color plot desired
       dres@cnLineLabelsOn = False     ; contour lines
@@ -746,8 +748,8 @@ begin
       ; # create the plot                         #
       ; ###########################################
 
-      dres@gsnDraw        = False  ; do not draw yet
-      dres@gsnFrame       = False  ; don't advance frame
+;      dres@gsnDraw        = False  ; do not draw yet
+;      dres@gsnFrame       = False  ; don't advance frame
 
       ; ----------------------------------------------------------------------
 

@@ -221,13 +221,14 @@ begin
     do i = 0, dim_VAR - 1
       if (variables(i) .eq. "cli") then
         dims = getvardims(cli)
-        vcoord = dims(1)  ; save name of vertical coordinate variable
+        vcoordi = dims(1)  ; save name of vertical coordinate variable
         if (ii .eq. 0) then
-          vcoord0_var = cli&$vcoord$
-          vcoord0 = vcoord
+          vcoord0_var = cli&$vcoordi$
+          vcoord0 = vcoordi
         end if
       else
         dims = getvardims(clw)
+        vcoordl = dims(1)  ; save name of vertical coordinate variable
       end if
       idx = ind(dims .eq. "lat")
       if (ismissing(idx)) then
@@ -304,10 +305,10 @@ begin
 
     ; annotation
 
-    res@tiMainOn             = False
+;    res@tiMainOn             = False
     res@cnLevelSelectionMode = "ExplicitLevels"
     res@cnLinesOn            = False
-    res@lbLabelBarOn         = False
+;    res@lbLabelBarOn         = False
     res@gsnRightString       = ""
     res@cnMissingValFillColor = "Gray"
     res@cnInfoLabelOn      = False    ; turn off cn info label
@@ -317,11 +318,11 @@ begin
     nc_filename_ice@existing = "append"
     nc_filename_liq@existing = "append"
 
-    if (isatt(icefrac&$vcoord$, "standard_name")) then
-      res@tiYAxisString = icefrac&$vcoord$@standard_name
-      if (isatt(icefrac&$vcoord$, "units")) then
+    if (isatt(icefrac&$vcoordi$, "standard_name")) then
+      res@tiYAxisString = icefrac&$vcoordi$@standard_name
+      if (isatt(icefrac&$vcoordi$, "units")) then
           res@tiYAxisString = res@tiYAxisString + " (" \
-            + icefrac&$vcoord$@units + ")"
+            + icefrac&$vcoordi$@units + ")"
       end if
     end if
 
@@ -352,17 +353,14 @@ begin
     liqfrac@var_long_name = liqfrac@long_name
     liqfrac@var_units = liqfrac@units
 
-    res@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-                                         / tofloat((dim_MOD + 1) / 2)/))
-    res@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-                                         / tofloat((dim_MOD + 1) / 2)/))
+    res@tiMainString             = names(ii)
 
     ; ###########################################
     ; # create the plots                        #
     ; ###########################################
 
-    res@gsnDraw        = False  ; do not draw yet
-    res@gsnFrame       = False  ; don't advance frame
+;    res@gsnDraw        = False  ; do not draw yet
+;    res@gsnFrame       = False  ; don't advance frame
 
     ; function in aux_plotting.ncl
 
@@ -371,9 +369,9 @@ begin
       ;       attributes cannot be assigned to each array element
       ;       individually
       wksice = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
-                       icefrac@var + "_annual" + filename_add)
+                       icefrac@var + filename_add)
       wksliq = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_zonal_" + \
-                       liqfrac@var + "_annual" + filename_add)
+                       liqfrac@var + filename_add)
     end if
 
     maps_ice(imod) = gsn_csm_pres_hgt(wksice, icefrac, res)
@@ -390,7 +388,7 @@ begin
     ; all data to be written to the same netcdf file
     ; --> rename vertical coordinate to match the one of the first dataset
     ;     written to the netcdf file
-    delete(data1&$vcoord$)
+    delete(data1&$vcoordi$)
     data1!0 = vcoord0
     data1&$vcoord0$ = vcoord0_var
 
@@ -407,7 +405,7 @@ begin
     ; all data to be written to the same netcdf file
     ; --> rename vertical coordinate to match the one of the first dataset
     ;     written to the netcdf file
-    delete(data1&$vcoord$)
+    delete(data1&$vcoordl$)
     data1!0 = vcoord0
     data1&$vcoord0$ = vcoord0_var
 
@@ -467,7 +465,7 @@ begin
 
     pres                      = True    ; needed to override
                                         ; panelling defaults
-    pres@gsnPanelLabelBar     = True    ; add common colorbar
+;    pres@gsnPanelLabelBar     = True    ; add common colorbar
     if (panel_labels) then
       ; print dataset name on each panel
       pres@gsnPanelFigureStrings = names(plotind)
@@ -559,13 +557,11 @@ begin
     domain = "global"
     plottype = "zonal"
 
-    caption = "Zonal mean values for variable " + icefrac@var \
-              + " (annual mean)."
+    caption = "Zonal mean values for variable " + icefrac@var + "."
     log_provenance(nc_outfile_ice, outfile_ice, caption, statistics, \
                    domain, plottype, "", "", infiles)
 
-    caption = "Zonal mean values for variable " + liqfrac@var \
-              + " (annual mean)."
+    caption = "Zonal mean values for variable " + liqfrac@var + "."
     log_provenance(nc_outfile_liq, outfile_liq, caption, statistics, \
                    domain, plottype, "", "", infiles)
 
