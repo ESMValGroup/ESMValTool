@@ -2,7 +2,13 @@
 # recipe_climwip.yml
 ---
 documentation:
-  description: EUCP ClimWIP
+  description: Calculate weights for CMIP type models based on performance and independence. Developed based on the ClimWIP method in the frame of EUCP and CRESCENDO.
+
+  themes:
+    - phys
+
+  realms:
+    - atmos
 
   authors:
     - kalverla_peter
@@ -153,6 +159,12 @@ diagnostics:
           psl_CLIM: 1
 
   weighted_temperature_graph:
+    description: Plot timeseries of all included models including interquartile range for weighted and unweighted case.
+    themes:
+      - phys
+    realms:
+    - atmos
+
     variables:
       tas:
         start_year: 1960
@@ -166,6 +178,12 @@ diagnostics:
         weights: 'weights.nc'
 
   weighted_temperature_map:
+    description: Plot map of weighted multi-model mean and difference between weighted and unweighted multi-model mean.
+    themes:
+      - phys
+    realms:
+      - atmos
+
     variables:
       tas: &map_settings
         short_name: tas
