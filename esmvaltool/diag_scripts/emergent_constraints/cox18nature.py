@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Diagnostic script to reproduce Cox et al. (2018).
+"""Diagnostic script to reproduce emergent constraint of Cox et al. (2018).
 
 Description
 -----------
-Plot equilibrium climate sensitivity ECS vs. temperature variability metric psi
+Plot equilibrium climate sensitivity ECS vs. temperature variability metric Ψ
 to establish an emergent relationship for ECS.
 
 Author
@@ -17,7 +17,7 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-confidence_level : float, optional (default: 0.66)
+confidence_level: float, optional (default: 0.66)
     Confidence level for ECS error estimation.
 
 """
@@ -336,10 +336,9 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         obs_std = np.std(obs_cube.data)
 
         # Calculate regression line
-        lines = ec.regression_surface(psi_cube.data, ecs_cube.data,
-                                      n_points=1000)
+        lines = ec.regression_line(psi_cube.data, ecs_cube.data)
         logger.info("Found emergent relationship with slope %.2f (R2 = %.2f)",
-                    lines['coef'], lines['R2'])
+                    lines['slope'], lines['rvalue']**2)
 
         # Plot points
         for model in psi_cube.coord('dataset').points:
@@ -492,11 +491,11 @@ def get_ecs_range(cfg, ecs_lin, ecs_pdf):
     conf_low = (1.0 - confidence_level) / 2.0
     conf_high = (1.0 + confidence_level) / 2.0
 
-    # Calculate CDF
-    ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
+    # Mean ECS
+    ecs_mean = np.sum(ecs_lin * ecs_pdf) / np.sum(ecs_pdf)
 
     # Calculate constrained ECS range
-    ecs_mean = ecs_lin[np.argmax(ecs_pdf)]
+    ecs_cdf = ec.cdf(ecs_lin, ecs_pdf)
     ecs_index_range = np.where((ecs_cdf >= conf_low)
                                & (ecs_cdf <= conf_high))[0]
     ecs_range = ecs_lin[ecs_index_range]
@@ -530,9 +529,9 @@ def main(cfg):
         obs_cube = psi_cubes[obs_name]
         plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube,
                                    obs_cube)
-        (ecs_lin, ecs_pdf) = ec.gaussian_pdf(psi_cube.data, ecs_cube.data,
-                                             np.mean(obs_cube.data),
-                                             np.var(obs_cube.data))
+        (ecs_lin, ecs_pdf) = ec.target_pdf(psi_cube.data, ecs_cube.data,
+                                           np.mean(obs_cube.data),
+                                           np.std(obs_cube.data))
         plot_pdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
         plot_cdf(cfg, ecs_lin, ecs_pdf, ecs_cube, obs_name)
 

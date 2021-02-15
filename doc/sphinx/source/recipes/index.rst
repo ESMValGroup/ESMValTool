@@ -22,6 +22,8 @@ Atmosphere
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_eyring06jgr
+   recipe_eyring13jgr
+   recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
    recipe_modes_of_variability
@@ -46,16 +48,18 @@ Future projections
 .. toctree::
    :maxdepth: 1
 
+   recipe_li17natcc
+   recipe_schlund20jgr
    recipe_emergent_constraints
    recipe_wenzel14jgr
+   recipe_schlund20esd
    recipe_cox18nature
    recipe_snowalbedo
    recipe_ecs
+   recipe_kcs
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
-   recipe_li17natcc
-   recipe_kcs
 
 IPCC
 ^^^^
@@ -93,10 +97,10 @@ Other
 .. toctree::
    :maxdepth: 1
 
+   recipe_examples
    recipe_capacity_factor
    recipe_ensclus
    recipe_multimodel_products
-   recipe_python
    recipe_rainfarm
    recipe_seaice_feedback
    recipe_seaice

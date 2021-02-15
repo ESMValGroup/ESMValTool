@@ -1,0 +1,17 @@
+# Configuration file for general tests.
+---
+args:
+  - []
+
+kwargs: &kwargs
+  input_data: []
+  input_files: []
+  output_file_type: pdf
+  plot_dir: /luke/i/am/your/father
+  work_dir: /no
+  write_plots: true
+  parameters:
+    very: 3.0
+    cool: 1
+    params: [4, 1, 5]
+  sub_dir: /sub/dir
