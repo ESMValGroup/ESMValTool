@@ -21,8 +21,9 @@ import subprocess
 import time
 from pathlib import Path
 
-import esmvalcore.cmor
 import yaml
+
+import esmvalcore.cmor
 
 from .utilities import read_cmor_config
 
