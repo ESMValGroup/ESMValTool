@@ -20,16 +20,17 @@ from esmvalcore.preprocessor import (
 )
 
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     group_metadata,
     names,
-    ProvenanceLogger,
-    run_diagnostic
+    run_diagnostic,
 )
+
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 class EadyGrowthRate:
     """Class used to compute the Eady Growth Rate."""
-
     def __init__(self, config):
         """Set diagnostic parameters and constants.
 
@@ -53,9 +54,8 @@ class EadyGrowthRate:
         """Time statistic to perform."""
 
     def compute(self):
-        """
-        Computes the Eady Growth Rate and either it's annual or seasonal mean.
-        """
+        """Computes the Eady Growth Rate and either it's annual or seasonal
+        mean."""
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
             var = group_metadata(data[alias], 'short_name')
@@ -75,11 +75,12 @@ class EadyGrowthRate:
 
             eastward_wind = iris.load_cube(var['ua'][0]['filename'])
             if eastward_wind.shape is not geopotential.shape:
-                eastward_wind = regrid(
-                    eastward_wind, geopotential, scheme='linear')
+                eastward_wind = regrid(eastward_wind,
+                                       geopotential,
+                                       scheme='linear')
 
-            egr = self.eady_growth_rate(
-                fcor, eastward_wind, geopotential, brunt)
+            egr = self.eady_growth_rate(fcor, eastward_wind, geopotential,
+                                        brunt)
 
             cube_egr = eastward_wind.copy(egr * 86400)
 
@@ -104,8 +105,7 @@ class EadyGrowthRate:
             self.save(cube_egr, alias, data)
 
     def potential_temperature(self, temperature, plev):
-        """
-        Computes the potential temperature.
+        """Computes the potential temperature.
 
         Parameters
         ----------
@@ -118,17 +118,13 @@ class EadyGrowthRate:
         -------
         theta: iris.cube.Cube
             Cube of potential temperature theta.
-
         """
         reference_pressure = iris.coords.AuxCoord(
-            self.ref_p,
-            long_name='reference_pressure',
-            units='hPa')
+            self.ref_p, long_name='reference_pressure', units='hPa')
         reference_pressure.convert_units(plev.units)
         pressure = (reference_pressure.points / plev.points)**(2 / 7)
         theta = temperature * iris.util.broadcast_to_shape(
-            pressure,
-            temperature.shape,
+            pressure, temperature.shape,
             temperature.coord_dims('air_pressure'))
         theta.long_name = 'potential_air_temperature'
 
@@ -136,8 +132,7 @@ class EadyGrowthRate:
 
     @staticmethod
     def vertical_integration(var_x, var_y):
-        """
-        Perform a non-cyclic centered finite-difference to integrate
+        """Perform a non-cyclic centered finite-difference to integrate
         variable x with respect to variable y along pressure levels.
 
         Parameters
@@ -159,17 +154,15 @@ class EadyGrowthRate:
             (var_x[:, 1, :, :].lazy_data() - var_x[:, 0, :, :].lazy_data()) /
             (var_y[:, 1, :, :].lazy_data() - var_y[:, 0, :, :].lazy_data()))
 
-        dxdy_centre = (
-            (var_x[:, 2:plevs, :, :].lazy_data() -
-             var_x[:, 0:plevs - 2, :, :].lazy_data()) /
-            (var_y[:, 2:plevs, :, :].lazy_data() -
-             var_y[:, 0:plevs - 2, :, :].lazy_data()))
+        dxdy_centre = ((var_x[:, 2:plevs, :, :].lazy_data() -
+                        var_x[:, 0:plevs - 2, :, :].lazy_data()) /
+                       (var_y[:, 2:plevs, :, :].lazy_data() -
+                        var_y[:, 0:plevs - 2, :, :].lazy_data()))
 
-        dxdy_end = (
-            (var_x[:, plevs - 1, :, :].lazy_data() -
-             var_x[:, plevs - 2, :, :].lazy_data()) /
-            (var_y[:, plevs - 1, :, :].lazy_data() -
-             var_y[:, plevs - 2, :, :].lazy_data()))
+        dxdy_end = ((var_x[:, plevs - 1, :, :].lazy_data() -
+                     var_x[:, plevs - 2, :, :].lazy_data()) /
+                    (var_y[:, plevs - 1, :, :].lazy_data() -
+                     var_y[:, plevs - 2, :, :].lazy_data()))
 
         bounds = [dxdy_end, dxdy_0]
         stacked_bounds = da.stack(bounds, axis=1)
@@ -184,8 +177,7 @@ class EadyGrowthRate:
         return dxdy
 
     def brunt_vaisala_frq(self, theta, geopotential):
-        """
-        Compute Brunt-Väisälä frequency.
+        """Compute Brunt-Väisälä frequency.
 
         Parameters
         ----------
@@ -208,8 +200,7 @@ class EadyGrowthRate:
         return brunt
 
     def coriolis(self, lats, ndim):
-        """
-        Compute Coriolis force.
+        """Compute Coriolis force.
 
         Parameters
         ----------
@@ -230,8 +221,7 @@ class EadyGrowthRate:
         return fcor
 
     def eady_growth_rate(self, fcor, eastward_wind, geopotential, brunt):
-        """
-        Compute Eady Growth Rate.
+        """Compute Eady Growth Rate.
 
         Parameters
         ----------
@@ -282,31 +272,28 @@ class EadyGrowthRate:
             diagnostic = self.cfg['script']
             plotname = '_'.join([alias, diagnostic,
                                  str(int(level))]) + f'.{extension}'
-            plt.savefig(os.path.join(
-                self.cfg[names.PLOT_DIR], plotname))
+            plt.savefig(os.path.join(self.cfg[names.PLOT_DIR], plotname))
             plt.close()
 
     def save(self, egr, alias, data):
-        """
-        Save results and write provenance.
-        """
+        """Save results and write provenance."""
         script = self.cfg[names.SCRIPT]
         info = data[alias][0]
         keys = [
             str(info[key]) for key in ('project', 'dataset', 'exp', 'ensemble',
                                        'diagnostic', 'start_year', 'end_year')
-            if key in info]
+            if key in info
+        ]
         output_name = '_'.join(keys) + '.nc'
-        output_file = os.path.join(
-            self.cfg[names.WORK_DIR], output_name)
+        output_file = os.path.join(self.cfg[names.WORK_DIR], output_name)
         iris.save(egr, output_file)
 
         caption = ("{script} between {start} and {end}"
-                   "according to {dataset}").format(
-                       script=script.replace(" ", '_'),
-                       start=info['start_year'],
-                       end=info['end_year'],
-                       dataset=info['dataset'])
+                   "according to {dataset}").format(script=script.replace(
+                       " ", '_'),
+                                                    start=info['start_year'],
+                                                    end=info['end_year'],
+                                                    dataset=info['dataset'])
         ancestors = []
         for i in range(len(data[alias])):
             ancestors.append(data[alias][i]['filename'])
@@ -322,9 +309,7 @@ class EadyGrowthRate:
 
 
 def main():
-    """
-    Run Eady Growth Rate diagnostic.
-    """
+    """Run Eady Growth Rate diagnostic."""
     with run_diagnostic() as config:
         EadyGrowthRate(config).compute()
 
