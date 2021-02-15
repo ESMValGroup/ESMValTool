@@ -26,6 +26,8 @@ build:
 
 requirements:
   run:
+    - python>=3.6
+    - iris>=3.0.1
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
     - {{ pin_subpackage('esmvaltool-python', exact=True) }}
