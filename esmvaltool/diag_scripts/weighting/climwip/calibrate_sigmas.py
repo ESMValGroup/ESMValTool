@@ -181,8 +181,9 @@ def evaluate_target(performance_sigma: list,
     Parameters
     ----------
     performance_sigma : list of one float
-        Performance weighting shape parameter, determines how strong the weighting
-        for performance is (smaller values correspond to stronger weighting)
+        Performance weighting shape parameter, determines how strong the
+        weighting for performance is (smaller values correspond to stronger
+        weighting)
     overall_performance : array_like, shape (N, N)
         Contains the generalised distance for each model in the model_ensemble
         dimension for each perfect model in the perfect_model_ensemble
