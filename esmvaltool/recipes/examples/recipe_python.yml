@@ -64,7 +64,6 @@ diagnostics:
     scripts:
       script1:
         script: examples/diagnostic.py
-        write_netcdf: true
         quickplot:
           plot_type: pcolormesh
           cmap: Reds
@@ -91,6 +90,5 @@ diagnostics:
     scripts:
       script1:
         script: examples/diagnostic.py
-        write_netcdf: true
         quickplot:
           plot_type: plot
