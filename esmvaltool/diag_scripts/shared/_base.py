@@ -516,13 +516,9 @@ def run_diagnostic():
         'log.txt', 'profile.bin', 'resource_usage.txt', 'settings.yml'
     }
 
-    output_directories = []
-    if cfg.get('write_netcdf', True):
-        output_directories.append(cfg['work_dir'])
-    if cfg.get('write_plots', True):
-        output_directories.append(cfg['plot_dir'])
-
-    old_content = [p for p in output_directories if os.path.exists(p)]
+    output_directories = (cfg['work_dir'], cfg['plot_dir'])
+    old_content = [p for p in output_directories
+                   if Path(p).exists() and any(Path(p).iterdir())]
     old_content.extend(p for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
                        if not os.path.basename(p) in default_files)
 
