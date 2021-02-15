@@ -8,7 +8,9 @@ import xarray as xr
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
+    get_diagnostic_filename,
     get_plot_filename,
+    group_metadata,
     run_diagnostic,
 )
 
@@ -53,13 +55,17 @@ def plot_data(
     xlabel: str,
     ylabel: str,
     caption: str,
-    filename: str,
+    name: str,
     ancestors: list,
 ):
     """Plot data."""
     figure, axes = plt.subplots(dpi=300)
 
-    for label, dataset in datasets.items():
+    for label in datasets.dataset:
+        label = str(label.data)
+        dataset = datasets.sel(dataset=label)
+        if 'time' in dataset:
+            dataset = dataset.dropna(dim='time')  # remove nan
         plt.plot(dataset[xaxis], dataset[yaxis], label=label)
 
     plt.xlabel(xlabel)
@@ -68,7 +74,7 @@ def plot_data(
     plt.legend()
     plt.show()
 
-    filename_plot = get_plot_filename(filename, cfg)
+    filename_plot = get_plot_filename(name + '_plot', cfg)
     figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
     plt.close(figure)
 
@@ -76,40 +82,48 @@ def plot_data(
     log_provenance(caption, filename_plot, cfg, ancestors)
 
 
-def plot_timeseries_data(cfg, time_unit: str = 'D', title: str = 'plot'):
+def plot_timeseries_data(cfg,
+                         metadata,
+                         time_unit: str = 'D',
+                         title: str = 'plot'):
     """Plot timeseries data."""
-    input_data = cfg['input_data']
+    datasets = read_input_data(metadata)
+    ancestors = [info['filename'] for info in metadata]
 
-    datasets = {}
-    for filename, metadata in input_data.items():
-        name = metadata['dataset']
-        dataset = xr.load_dataset(filename)
-        datasets[name] = dataset
+    var = datasets.pr
 
-    start_date = np.datetime_as_string(dataset.time.min(), unit=time_unit)
-    end_date = np.datetime_as_string(dataset.time.max(), unit=time_unit)
+    start_date = np.datetime_as_string(datasets.time.min(), unit=time_unit)
+    end_date = np.datetime_as_string(datasets.time.max(), unit=time_unit)
+
+    name = title.lower().replace(' ', '_')
+    caption = f"{title} for {start_date}:{end_date}"
 
     plot_data(
         cfg=cfg,
         datasets=datasets,
         xaxis='time',
         yaxis='pr',
-        xlabel='time / {mip}'.format(**metadata),
-        ylabel='{long_name} / {units}'.format(**metadata),
-        caption=f"{title} for {start_date}:{end_date}",
-        filename=title.lower().replace(' ', '_') + '_plot',
-        ancestors=list(input_data.keys()),
+        xlabel='time / {mip}'.format(**datasets.attrs),
+        ylabel=f'{var.long_name} / {var.units}',
+        caption=caption,
+        name=name,
+        ancestors=ancestors,
     )
 
+    filename_data = get_diagnostic_filename(name, cfg, extension='nc')
+    datasets.to_netcdf(filename_data)
+    log_provenance(caption, filename_data, cfg, ancestors)
 
-def plot_climatology(cfg, title: str = 'plot'):
+
+def plot_climatology(cfg, metadata, title: str = 'plot'):
     """Plot climatology data."""
-    input_data = cfg['input_data']
+    datasets = read_input_data(metadata)
+    var = datasets.pr
 
-    datasets = {}
-    for filename, metadata in input_data.items():
-        name = metadata['dataset']
-        datasets[name] = xr.load_dataset(filename)
+    ancestors = [info['filename'] for info in metadata]
+
+    name = title.lower().replace(' ', '_')
+    caption = f"{title}"
 
     plot_data(
         cfg=cfg,
@@ -117,36 +131,73 @@ def plot_climatology(cfg, title: str = 'plot'):
         xaxis='month_number',
         yaxis='pr',
         xlabel='Month number',
-        ylabel='{long_name} / {units}'.format(**metadata),
-        caption=f"{title}",
-        filename=title.lower().replace(' ', '_') + '_plot',
-        ancestors=list(input_data.keys()),
+        ylabel=f'{var.long_name} / {var.units}',
+        caption=caption,
+        name=name,
+        ancestors=ancestors,
     )
+
+    filename_data = get_diagnostic_filename(name, cfg, extension='nc')
+    datasets.to_netcdf(filename_data)
+    log_provenance(caption, filename_data, cfg, ancestors)
+
+
+def read_input_data(metadata: list, dim: str = 'dataset'):
+    """Load data from metadata.
+
+    Read the input data from the list of given data sets. `metadata` is
+    a list of metadata containing the filenames to load. The datasets
+    are stacked along the `dim` dimension. Returns an xarray.DataArray.
+    """
+    identifiers = []
+    datasets = []
+    for info in metadata:
+        filename = info['filename']
+        dataset = xr.load_dataset(filename)
+        datasets.append(dataset)
+
+        identifier = info[dim]
+        identifiers.append(identifier)
+
+    stacked_datasets = xr.concat(datasets, dim=dim)
+    stacked_datasets[dim] = identifiers
+
+    return stacked_datasets
+
+
+def get_diagnostic_data(cfg):
+    """Get diagnostic name and data."""
+    input_data = cfg['input_data'].values()
+    diagnostic_data = group_metadata(input_data, 'diagnostic')
+    return list(diagnostic_data.items())[0]
 
 
 def main(cfg):
     """Main function."""
-    script = cfg['script']
+    diagnostic, metadata = get_diagnostic_data(cfg)
 
-    if script == 'plot_sample_year':
+    if diagnostic == 'sample_year':
         plot_timeseries_data(
             cfg,
+            metadata=metadata,
             time_unit='D',
             title='Daily precipitation',
         )
-    elif script == 'plot_total_precip':
+    elif diagnostic == 'total_precipitation':
         plot_timeseries_data(
             cfg,
+            metadata=metadata,
             time_unit='M',
             title='Monthly total precipitation',
         )
-    elif script == 'plot_climatology':
+    elif diagnostic == 'climatology':
         plot_climatology(
             cfg,
+            metadata=metadata,
             title='Precipitation per month',
         )
     else:
-        raise ValueError(f'Unknown script: {script}')
+        raise ValueError(f'Unknown diagnostic: {diagnostic}')
 
 
 if __name__ == '__main__':

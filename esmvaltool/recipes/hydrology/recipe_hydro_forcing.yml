@@ -46,7 +46,7 @@ preprocessors:
 
 
 diagnostics:
-  sample_year_plot:
+  sample_year:
     variables:
       pr:
         mip: day
@@ -54,10 +54,10 @@ diagnostics:
         end_year: 2016
         preprocessor: daily
     scripts:
-      plot_sample_year:
+      plot:
         script: hydrology/hydro_forcing.py
 
-  total_precip_plot:
+  total_precipitation:
     variables:
       pr:
         mip: day
@@ -65,10 +65,10 @@ diagnostics:
         end_year: 2016
         preprocessor: monthly
     scripts:
-      plot_total_precip:
+      plot:
         script: hydrology/hydro_forcing.py
 
-  climatology_plot:
+  climatology:
     variables:
       pr:
         mip: day
@@ -76,5 +76,5 @@ diagnostics:
         end_year: 2016
         preprocessor: climatology
     scripts:
-      plot_climatology:
+      plot:
         script: hydrology/hydro_forcing.py
