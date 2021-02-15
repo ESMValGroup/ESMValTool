@@ -25,8 +25,7 @@ log_x : bool, optional (default: False)
 log_y : bool, optional (default: False)
     Apply logarithm to Y axis (TCR).
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 
@@ -39,10 +38,15 @@ import numpy as np
 import seaborn as sns
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, io,
-                                            iris_helpers, plot, run_diagnostic)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    io,
+    iris_helpers,
+    plot,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
