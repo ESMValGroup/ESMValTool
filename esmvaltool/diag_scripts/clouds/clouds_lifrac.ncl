@@ -43,6 +43,7 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
+  diag = "clouds_lifrac.ncl"
   variables = metadata_att_as_array(variable_info, "short_name")
   dim_VAR = dimsizes(variables)
   refname = new(dim_VAR, string)

@@ -1,0 +1,433 @@
+; CLOUDS_SCATTER
+; ############################################################################
+; Author: Axel Lauer (DLR, Germany)
+; ############################################################################
+; Description
+;   Calculates mean values of variable y per bin of variable x and displays
+;   the results as scatter plot.
+;
+; Required diag_script_info attributes (diagnostic specific)
+;   var_x: short name of variable on x-axis
+;   var_y: short name of variable on y-axis
+;   xmin:  min x value for generating bins
+;   xmax:  max x value for generating bins
+;
+; Optional diag_script_info attributes (diagnostic specific)
+;   filename_add: optionally add this string to plot filesnames
+;   nbins: number of equally spaced bins (var_x), default = 20
+;
+; Required variable attributes (variable specific)
+;   none
+;
+; Optional variable_info attributes (variable specific)
+;   reference_dataset: reference dataset
+;
+; Caveats
+;   none
+;
+; Modification history
+;   20210210-lauer_axel: written.
+;
+; ############################################################################
+
+load "$diag_scripts/../interface_scripts/interface.ncl"
+
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+
+begin
+
+  enter_msg(DIAG_SCRIPT, "")
+
+  diag = "clouds_scatter.ncl"
+  variables = metadata_att_as_array(variable_info, "short_name")
+  dim_VAR = dimsizes(variables)
+  refname = new(dim_VAR, string)
+
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + variables + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+
+  ; Check required diag_script_info attributes
+  exit_if_missing_atts(diag_script_info, (/"var_x", "var_y", "xmin", "xmax"/))
+
+  file_type = output_type()
+
+  ; make sure required variables are available
+  var_x = diag_script_info@var_x
+  var_y = diag_script_info@var_y
+  varlist = (/var_x, var_y/)
+  idx = new(dimsizes(varlist), integer)
+
+  do i = 0, dimsizes(varlist) - 1
+    idx(i) = ind(variables .eq. varlist(i))
+  end do
+
+  if (any(ismissing(idx))) then
+    errstr = "diagnostic " + diag + " requires the following variable(s): " \
+             + str_join(varlist, ", ")
+    error_msg("f", DIAG_SCRIPT, "", errstr)
+  end if
+
+  ; save input files for writing provenance
+
+  infiles = metadata_att_as_array(input_file_info, "filename")
+
+  ; get reference datasets (if present) and check that number of datasets
+  ; is equal for each variable
+
+  do i = 0, dim_VAR - 1
+    if (isatt(variable_info[idx(i)], "reference_dataset")) then
+      refname(i) = variable_info[idx(i)]@reference_dataset
+    end if
+    info = select_metadata_by_name(input_file_info, variables(idx(i)))
+    if (i .eq. 0) then
+      dim_MOD = ListCount(info)
+    else
+      dim_test = ListCount(info)
+      if (dim_test .ne. dim_MOD) then
+        error_msg("f", DIAG_SCRIPT, "", "number of datasets for variable " \
+                  + variables(i) + " does not match number of datasets for " \
+                  + variables(0))
+      end if
+    end if
+    delete(info)
+  end do
+
+  delete(idx)
+
+  ; Set default values for non-required diag_script_info attributes
+
+  set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "nbins", 20)
+
+  if (diag_script_info@filename_add .ne. "") then
+    filename_add = "_" + diag_script_info@filename_add
+  else
+    filename_add = ""
+  end if
+
+  nbins = toint(diag_script_info@nbins)
+
+  ; make sure path for (mandatory) netcdf output exists
+
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
+
+  if (config_user_info@write_plots.eq."True") then
+    write_plots = True
+  else
+    write_plots = False
+  end if
+
+end
+
+begin
+  ; ############
+  ; # get data #
+  ; ############
+
+  info_x = select_metadata_by_name(input_file_info, var_x)
+  names_x = metadata_att_as_array(info_x, "dataset")
+  projects_x = metadata_att_as_array(info_x, "project")
+  info_y = select_metadata_by_name(input_file_info, var_y)
+  names_y = metadata_att_as_array(info_y, "dataset")
+  projects_y = metadata_att_as_array(info_y, "project")
+
+  refidx_x = ind(names_x .eq. refname(0))
+  refidx_y = ind(names_y .eq. refname(1))
+
+  if (ismissing(refidx_x) .or. ismissing(refidx_y)) then
+    refidx_x = -1
+    refidx_y = -1
+  end if
+
+  result = new((/dim_MOD, nbins/), float)
+  bincenter = new((/nbins/), float)
+
+  xmax = diag_script_info@xmax
+  xmin = diag_script_info@xmin
+  binsize = tofloat(xmax - xmin) / nbins
+
+  do n = 0, nbins - 1
+    x0 = n * binsize
+    x1 = x0 + binsize
+    bincenter(n) = 0.5 * (x0 + x1)
+  end do
+
+  do ii = 0, dim_MOD - 1
+    atts_x = True
+    atts_x@short_name = var_x
+
+    atts_y = True
+    atts_y@short_name = var_y
+
+    ; reference datasets may have different names
+    if (ii .eq. refidx_x) then
+      atts_y@dataset = refname(1)
+      atts_x@dataset = refname(0)
+    ; all other datasets: force same dataset name for var_x and var_y
+    else
+      atts_y@dataset = names_x(ii)
+      atts_x@dataset = names_x(ii)
+    end if
+
+    ; read var_x
+
+    info = select_metadata_by_atts(input_file_info, atts_x)
+    x = read_data(info[0])
+    delete(info)
+
+    ; read var_y
+
+    info = select_metadata_by_atts(input_file_info, atts_y)
+    y = read_data(info[0])
+    delete(info)
+
+    ; check dimensions
+
+    dims_x = dimsizes(x)
+    dims_y = dimsizes(y)
+
+    dimerror = False
+
+    if (dimsizes(dims_x) .eq. dimsizes(dims_y)) then
+      if (any(dims_x - dims_y .ne. 0)) then
+        dimerror = True
+      end if
+    else
+      dimerror = True
+    end if
+
+    if (dimerror) then
+      error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
+                + atts_x@dataset + " (variable " + var_x + ") and " \
+                + atts_y@dataset + " (variable " + var_y + ") do not match.")
+    end if
+
+    ; check dimensions
+
+    if (dimsizes(dims_x) .ne. 3 .or. dimsizes(dims_y) .ne. 3) then
+      error_msg("f", DIAG_SCRIPT, "", "all variables need to have 3 " + \
+                " dimensions (time, latitude, longitude)")
+    end if
+
+    do i = 0, dim_VAR - 1
+      if (variables(i) .eq. var_x) then
+        dims = getvardims(x)
+      else
+        dims = getvardims(y)
+      end if
+      idx = ind(dims .eq. "lon")
+      if (ismissing(idx)) then
+        error_msg("f", DIAG_SCRIPT, "", variables(i) + ": no lon dimension")
+      end if
+      idx = ind(dims .eq. "lat")
+      if (ismissing(idx)) then
+        error_msg("f", DIAG_SCRIPT, "", variables(i) + ": no lat dimension")
+      end if
+      idx = ind(dims .eq. "time")
+      if (ismissing(idx)) then
+        error_msg("f", DIAG_SCRIPT, "", variables(i) + ": no time dimension")
+      end if
+      delete(dims)
+    end do
+
+    delete(dims_x)
+    delete(dims_y)
+    delete(idx)
+
+    ref_ind = refidx_x
+    if (ismissing(ref_ind)) then
+      ref_ind = -1
+    end if
+    names = names_x
+    projects = projects_x
+
+    if (refidx_x .ge. 0) then
+      ; if reference datasets for var_x and var_y are from different sources
+      if (refname(0) .ne. refname(1)) then
+        names(refidx_x) = refname(0) + "/" + refname(1)
+      end if
+    end if
+
+    ; save attributes long_name and units
+    long_name = y@long_name
+    units = y@units
+    xunits = x@units
+
+    x1d = ndtooned(x)
+    delete(x)
+    y1d = ndtooned(y)
+    delete(y)
+
+    do n = 0, nbins - 1
+      x0 = n * binsize
+      x1 = x0 + binsize
+      idx = ind((x1d .gt. x0) .and. (x1d .le. x1))
+      if (.not.all(ismissing(idx))) then
+        result(ii, n) = avg(y1d(idx))
+      else
+        result(ii, n) = result@_FillValue
+      end if
+      delete(idx)
+    end do
+
+    delete(x1d)
+    delete(y1d)
+  end do  ; ii-loop (models)
+
+  ; if MultiModelMean is present, calculate standard deviation of all models
+
+  mm_ind = ind(names .eq. "MultiModelMean")
+
+  if (.not.ismissing(mm_ind)) then
+    mmstd = new(nbins, float)
+    imod = ispan(0, dim_MOD - 1, 1)
+    idx = ind((imod .ne. refidx_x) .and. (imod .ne. mm_ind))
+    if (.not.all(ismissing(idx))) then
+      do n = 0, nbins - 1
+        mmstd(n) = stddev(result(idx, n))
+      end do
+    end if
+    delete(idx)
+    delete(imod)
+  else
+    mm_ind = -1
+  end if
+
+  ; ###########################################
+  ; # netCDF output                           #
+  ; ###########################################
+
+  nc_filename = work_dir + "clouds_scatter_" + var_x + "_" + var_y + \
+                filename_add + ".nc"
+
+  result!0 = "model"
+  result!1 = "bin"
+
+  result&model = str_sub_str(names, "/", "-")
+  result&bin = bincenter
+
+  result@diag_script = (/DIAG_SCRIPT/)
+  result@var = var_y
+  result@var_long_name = long_name
+  result@var_units = units
+
+  nc_outfile = ncdf_write(result, nc_filename)
+
+  ; ###########################################
+  ; # create the plots                        #
+  ; ###########################################
+
+  if (write_plots) then
+
+    plots = new(dim_MOD, graphic)
+    res = True
+
+;    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_scatter_" + \
+;                  var_x + "_" + var_y + filename_add)
+;    wks_single = new(dim_MOD, graphic)
+
+    data = new((/2, nbins/),float)
+    if (ref_ind .gt. 0) then
+      data(0, :) = result(ref_ind, :)
+    else
+      data(0, :) = data@_FillValue
+    end if
+
+    do ii = 0, dim_MOD - 1
+      if (ii .eq. refidx_x) then
+        continue
+      end if
+
+      res@gsnDraw        = False  ; do not draw yet
+      res@gsnFrame       = False  ; don't advance frame
+
+      res@xyMarkLineMode    = "Markers"
+      res@xyMarkers         = (/4, 16/)
+      res@xyMonoMarkerColor = False
+      res@xyMarkerColors    = (/"black", "red"/)
+      res@xyMarkerSizeF     = 0.01
+      res@tmLabelAutoStride = True
+
+      res@tiMainFontHeightF = 0.025
+      res@tiYAxisFontHeightF = 0.025
+      res@tiXAxisFontHeightF = 0.025
+      res@tiXAxisString = var_x + " (" + xunits + ")"
+      res@tiYAxisString = var_y + " (" + units + ")"
+
+      data(1, :) = result(ii, :)
+
+;      plots(ii) = gsn_csm_xy(wks, result&bin, data, res)
+;
+;      ; also plot each model invidually
+;
+;      res_single = True
+;      copy_VarMeta(res, res_single)
+;      res_single@tiMainString = names(ii)
+      res@tiMainString = names(ii)
+
+      wks_single = get_wks("wks_" + names(ii), DIAG_SCRIPT, \
+                   "clouds_scatter_" + var_x + "_" + var_y + "_" + names(ii))
+
+      plots(ii) = gsn_csm_xy(wks_single, result&bin, data, res)
+
+      if (ii .eq. mm_ind) then
+        res_std = True
+        res_std@gsnDraw        = False  ; do not draw yet
+        res_std@gsnFrame       = False  ; don't advance frame
+        res_std@gsnXYFillColors = "lightpink"
+        res_std@xyLineColor = -1  ; Make lines transparent
+        mmstddev = new((/2, nbins/), float)
+        mmstddev(0, :) = result(mm_ind, :) - mmstd(:)
+        mmstddev(1, :) = result(mm_ind, :) + mmstd(:)
+        plotstd = gsn_csm_xy(wks_single, result&bin, mmstddev, res_std)
+        delete(mmstddev)
+        overlay(plots(ii), plotstd)
+      end if
+
+      draw(plots(ii))
+      frame(wks_single)
+      delete(wks_single)
+
+    end do
+
+;    pres                      = True    ; needed to override
+;                                        ; panelling defaults
+;    pres@gsnPanelCenter                   = False
+;
+;    idx = ind(.not.ismissing(plots))
+;    n = dimsizes(idx)
+;    pres@gsnPanelFigureStrings = names(idx)
+;    pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
+;                                                / tofloat((dim_MOD + 1) / 2)/))
+;    pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
+;                                                / tofloat((dim_MOD + 1) / 2)/))
+;    outfile = panelling(wks, plots(idx), (n + 3) / 4, 4, pres)
+;    delete(idx)
+;
+;    log_info("Wrote " + outfile)
+    outfile = ""
+  else
+    outfile = ""
+  end if  ; if write_plots
+
+  ; ==========================================================================
+
+  ; ----------------------------------------------------------------------
+  ; write provenance to netcdf output (and plot file)
+  ; ----------------------------------------------------------------------
+
+  statistics = (/"clim", "mean"/)
+  domain = "reg"
+  plottype = "scatter"
+  caption = "Scatterplot of " + var_x + " (x) vs. " + var_y + " (y)."
+  log_provenance(nc_outfile, outfile, caption, statistics, \
+                 domain, plottype, "", "", infiles)
+
+  leave_msg(DIAG_SCRIPT, "")
+
+end

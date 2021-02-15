@@ -75,7 +75,7 @@ begin
   enter_msg(scriptname, funcname)
 
   ; Open workstation
-  wks_legend = gsn_open_wks("epsi", outfile)
+  wks_legend = gsn_open_wks(output_type, outfile)
 
   ; General resources
   res = True
