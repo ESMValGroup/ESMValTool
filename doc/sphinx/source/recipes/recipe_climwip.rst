@@ -145,9 +145,11 @@ multiple datasets.
 References
 ----------
 
-* `Brunner et al. 2020, Earth Syst. Dynam., <https://doi.org/10.5194/esd-11-995-2020>`_.
+* `Brunner et al. 2020, Earth Syst. Dynam., 11, 995-1012, <https://doi.org/10.5194/esd-11-995-2020>`_.
 * `Merrifield et al. 2020, Earth Syst. Dynam., 11, 807-834, <https://doi.org/10.5194/esd-11-807-2020>`_.
 * `Brunner et al. 2019, Environ. Res. Lett., 14, 124010, <https://doi.org/10.1088/1748-9326/ab492f>`_.
+* `Lorenz et al. 2018, J. Geophys. Res.: Atmos., 9, 4509-4526, <https://doi.org/10.1029/2017JD027992>`_.
+* `Knutti et al. 2017, Geophys. Res. Lett., 44, 1909-1918, <https://doi.org/10.1002/2016GL072012>`_.
 
 Example plots
 -------------
@@ -183,7 +185,7 @@ Example plots
    Performance sigma calibration: The thick black line gives the reliability (c.f., weather forecast verification) which should
    reach at least 80%. The thick grey line gives the mean change in spread between the unweighted and weighted 80% ranges as an
    indication of the weighting strength (if it reaches 1, the weighting has no effect on uncertainty). The smallest sigma (i.e.,
-   strongest weighting) with is not overconfident (reliability >= 80%) is selected. If the test fails (like in this example) the
+   strongest weighting) which is not overconfident (reliability >= 80%) is selected. If the test fails (like in this example) the
    smallest sigma which comes closest to 80% will be indicated in the legend (but NOT automatically selected).
 
    .. _fig_climwip_6:

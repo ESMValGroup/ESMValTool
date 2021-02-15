@@ -42,7 +42,7 @@ def calculate_percentiles(target: 'xr.DataArray',
         Array of model values that will be evaluated in order to estimate the
         optimal sigma value. For each perfect model, the perfect model (and
         potentially additional models) are excluded from the target, the
-        rest is weighted. The perfect model is then used to evalued the
+        rest is weighted. The perfect model is then used to evaluate the
         weighted distribution (see also weights_matrix).
     weights_matrix : array_like, shape (N, N)
         For each perfect model in the perfect_model_ensemble dimension
@@ -50,7 +50,7 @@ def calculate_percentiles(target: 'xr.DataArray',
         model_ensemble dimension based on this perfect model.
 
         Special feature: nan values in the model_ensemble dimension will lead
-        to the model being excluded from the weights calculation. This is
+        to the model being excluded from the weights calculation. This
         is always the case for the perfect model itself (diagonal of the
         matrix) but might also be the case for other models. This is
         particularly important for a correct calculation of the independence
@@ -140,7 +140,7 @@ def compute_cost_function(target: 'xr.DataArray',
         All sigma values lead to overconfident weighting. The script will
         plot a visualization of the test and will then raise an error. The user
         can decide to select a sigma value manually (e.g., if the test only
-        failed by a narrow margin) and set in in the config file.
+        failed by a narrow margin) and set it in the recipe.
     * the cost function is < 99 for at least one sigma:
         For this case the cost function increases linearly with sigma,
         therefore the smallest possible sigma where this is true will be
@@ -181,7 +181,8 @@ def evaluate_target(performance_sigma: list,
     Parameters
     ----------
     performance_sigma : list of one float
-        See calculate_percentiles for more information.
+        Performance weighting shape parameter, determines how strong the weighting
+        for performance is (smaller values correspond to stronger weighting)
     overall_performance : array_like, shape (N, N)
         Contains the generalised distance for each model in the model_ensemble
         dimension for each perfect model in the perfect_model_ensemble
@@ -196,7 +197,7 @@ def evaluate_target(performance_sigma: list,
     Returns
     -------
     cost_function_value : float
-        See optimize_confidence for more information.
+        See compute_cost_function for more information.
     """
     performance_sigma = performance_sigma[0]
 

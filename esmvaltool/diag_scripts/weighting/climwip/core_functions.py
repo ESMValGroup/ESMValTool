@@ -128,7 +128,7 @@ def combine_ensemble_members(
     Parameters
     ----------
     dataset : None or data_array, shape (N,) or (N, N)
-        A vector containing model-observations distances or a matirx containing
+        A vector containing model-observations distances or a matrix containing
         model-model distances.
     dimensions : string or list of up to two strings
         Spezifies the dimensions along which ensemble members are combined.
@@ -182,7 +182,7 @@ def calculate_weights_data(
     performance : array_like, shape (N,) or None
         Array specifying the model performance. None is mutually exclusive
         with independence being None. Single values in performance can be
-        nan, then they will be excluded from the indepence calculation as
+        nan, then they will be excluded from the independence calculation as
         well (used for the perfect model test).
     independence : array_like, shape (N, N) or None
         Array specifying the model independence. None is mutually exclusive
