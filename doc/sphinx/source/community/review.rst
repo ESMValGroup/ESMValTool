@@ -21,6 +21,7 @@ If you are a regular contributor, please try to review a bit more than two
 other pull requests for every pull request you create yourself, to make sure
 that each pull request gets the attention it deserves.
 
+.. _technical_review:
 
 1. Technical review
 -------------------
@@ -41,6 +42,8 @@ questions, and other technical issues.
 The technical review team can be contacted by writing
 `@ESMValGroup/tech-reviewers`_ in a comment on an issue or pull request on
 GitHub.
+
+.. _scientific_review:
 
 2. Scientific review
 --------------------

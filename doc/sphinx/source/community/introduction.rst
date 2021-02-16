@@ -7,8 +7,12 @@ Contributions are very welcome
 ------------------------------
 
 We greatly value contributions of any kind.
-Contributions could include, but are not limited to documentation improvements, bug reports, new or improved diagnostic code, scientific and technical code reviews, infrastructure improvements, mailing list and chat participation, community help/building, education and outreach.
-We value the time you invest in contributing and strive to make the process as easy as possible.
+Contributions could include, but are not limited to documentation improvements,
+bug reports, new or improved diagnostic code, scientific and technical code
+reviews, infrastructure improvements, mailing list and chat participation,
+community help/building, education and outreach.
+We value the time you invest in contributing and strive to make the process as
+easy as possible.
 If you have suggestions for improving the process of contributing, please do
 not hesitate to propose them, for example by starting a discussion on our
 `discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__.
@@ -29,6 +33,49 @@ Getting started
 
 See :ref:`install_from_source` for instructions on how to set up a development
 installation.
+
+Checklist for pull requests
+---------------------------
+
+To clearly communicate up front what is expected from a pull request, we have
+the following checklist.
+Please try to do everything on the list before requesting a review.
+If you are unsure about something on the list, please ask the
+`@ESMValGroup/tech-reviewers`_ or `@ESMValGroup/science-reviewers`_ for help
+by commenting on your (draft) pull request or by starting a new
+`discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__.
+
+The icons indicate whether the item will be checked during the
+:ref:`🛠 Technical review <technical_review>` or
+:ref:`🧪 Scientific review <scientific_review>`.
+
+- 🛠 This pull request has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
+- 🛠 Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
+- 🛠 [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
+- 🛠 YAML files pass [`yamllint`](https://docs.esmvaltool.org/en/latest/community/introduction.html#yaml) checks
+- 🛠 [Circle/CI tests pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
+- 🛠 [Codacy code quality checks pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
+- 🛠 [Documentation builds successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review) on readthedocs
+
+### New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
+
+- 🛠 [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
+- 🛠 New dependencies are added to the [project requirements](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#additional-dependencies)
+- 🧪 [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
+- 🧪 Recipe runs successfully on [`@esmvalbot`](https://docs.esmvaltool.org/en/latest/community/introduction.html#running-tests) or some other machine without modification
+- 🧪 Figure(s)/data [look as expected](https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review)
+- 🧪 Code is [well documented](https://docs.esmvaltool.org/en/latest/community/introduction.html#what-should-be-documented) and scientifically sound
+
+### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
+
+- 🛠 Dataset is added to the [table in the documentation](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation)
+- 🛠 Documentation contains [instructions to obtain the data](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation)
+- 🛠 [Tests for the CMORized data](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-tests) are available
+- 🧪 Numbers/units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/community/dataset.html#cmorizer-output)
+- 🛠 Data set is added to the [OBS data pool](https://docs.esmvaltool.org/en/latest/community/dataset.html#adding-your-dataset-to-the-obs-data-pool)
+
+.. _`@ESMValGroup/tech-reviewers`: https://github.com/orgs/ESMValGroup/teams/tech-reviewers
+.. _`@ESMValGroup/science-reviewers`: https://github.com/orgs/ESMValGroup/teams/science-reviewers
 
 Running tests
 -------------

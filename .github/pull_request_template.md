@@ -13,7 +13,7 @@
 ## Description
 
 <!--
-    Please describe your changes here, especially focusing on why this PR makes
+    Please describe your changes here, especially focusing on why this pull request makes
     ESMValTool better and what problem it solves.
 
     Before you start, please read our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html).
@@ -33,16 +33,16 @@
     to open a new issue on GitHub.
 -->
 
-- [ ] [☝ Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do
+- [ ] [☝ Create an issue](https://docs.esmvaltool.org/en/latest/community/introduction.html#contributions-are-very-welcome) to discuss what you are going to do
 
 ## Checklist
 
-It is the responsibility of the author to make sure the PR is ready to review. The icons indicate whether the item will be subject to the [🛠 Technical][1] or [🧪 Scientific][2] review.
+It is the responsibility of the author to make sure the pull request is ready to review. The icons indicate whether the item will be subject to the [🛠 Technical][1] or [🧪 Scientific][2] review.
 
-- [ ] [🛠][1] PR has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
+- [ ] [🛠][1] This pull request has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
 - [ ] [🛠][1] Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
 - [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
-- [ ] [🛠][1] YAML files pass [`pre-commit`](https://docs.esmvaltool.org/en/latest/community/introduction.html#pre-commit) or [`yamllint`](https://docs.esmvaltool.org/en/latest/community/introduction.html#yaml) checks
+- [ ] [🛠][1] YAML files pass [`yamllint`](https://docs.esmvaltool.org/en/latest/community/introduction.html#yaml) checks
 - [ ] [🛠][1] [Circle/CI tests pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
 - [ ] [🛠][1] [Codacy code quality checks pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
 - [ ] [🛠][1] [Documentation builds successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review) on readthedocs
