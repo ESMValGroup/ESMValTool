@@ -57,9 +57,9 @@ def plot_data(
         caption: str,
         name: str,
         ancestors: list,
-    ):
+        ):
     """Plot data."""
-    figure, axes = plt.subplots(dpi=300)
+    figure, _ = plt.subplots(dpi=300)
 
     for label in datasets.dataset:
         label = str(label.data)
