@@ -60,6 +60,10 @@ diagnostics:
       pr: &var_daily
         mip: day
         start_year: 1990
+        # if end_year increases, regrid processor might fail due to memory error.
+        # two fixes are:
+        # runing the recipe on a machine with enough memory
+        # providing a cube as a target_grid in the processor
         end_year: 1990
         preprocessor: daily_water
       tas:
