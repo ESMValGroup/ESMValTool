@@ -1,0 +1,526 @@
+# ESMValTool
+# recipe_gier2020bg.yml
+# Diagnostic with growing season temperature requires MODIS Land Cover map in
+# auxiliary data directory, download from:
+# https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=968 or
+# https://thredds.daac.ornl.gov/thredds/catalog/ornldaac/968/catalog.html
+---
+documentation:
+
+  description: |
+    Analysis of column-averaged CO2 (XCO2) emission driven model data in
+    comparison to satellite data (Gier et al., 2020).
+  authors:
+    - gier_bettina
+
+  maintainer:
+    - gier_bettina
+
+  references:
+    - gier20bg
+
+  projects:
+    - eval4cmip
+    - 4c
+
+# YAML anchors
+
+PROVENANCE_ANCHOR: &provenance
+  realms:
+    - atmos
+  themes:
+    - phys
+    - ghg
+    - carbon
+
+preprocessors:
+
+  conv_units: &convert_units
+    convert_units:
+      units: ppmv
+
+  mmm_ref:
+    <<: *convert_units
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+  mmm_2x2:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+  mmm:
+    <<: *convert_units
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    extract_levels:
+      levels: [100000., 92500., 85000., 70000., 60000., 50000., 40000., 30000.,
+               25000., 20000., 15000., 10000., 7000., 5000., 3000., 2000.,
+               1000.]
+      scheme: nearest
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+diagnostics:
+
+  # CMIP6
+
+  cmip6_ensemble_analysis:
+    <<: *provenance
+    description: figure 3
+    variables:
+      xco2:
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          #- {dataset: ACCESS-ESM1-5, ensemble: r(1:3)i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r(1:7)i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r(9:10)i1p1f1, grid: gn}
+          - {dataset: CanESM5-CanOE, ensemble: r(1:3)i1p2f1, grid: gn}
+          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MIROC-ES2L, ensemble: r(1:3)i1p1f2, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r(1:10)i1p1f1, grid: gn}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      main_ensemble:
+        script: xco2_analysis/main.ncl
+        styleset: CMIP6
+        output_file_type: "png"
+        region: [-90, 90]
+        # Possible masking options: obs
+        masking: ["obs"]
+        ensemble_mean: true
+        ensemble_refs: [["ACCESS-ESM1-5", "r1i1p1f1"],
+                        ["CanESM5", "r1i1p1f1"],
+                        ["CanESM5-CanOE", "r1i1p2f1"],
+                        ["MIROC-ES2L", "r1i1p1f2"],
+                        ["MPI-ESM1-2-LR", "r1i1p1f1"]]
+
+
+  cmip6_analysis:
+    description: figures (3), 4, 5, 6, 7, 9
+    <<: *provenance
+    variables:
+      xco2:
+        preprocessor: conv_units
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      maps:
+        script: xco2_analysis/global_maps.ncl
+        output_file_type: "png"
+        contour_max_level: 18
+      main:
+        script: xco2_analysis/main.ncl
+        styleset: CMIP6
+        region: [-90, 90]
+        # Possible masking options: obs
+        masking: ["obs"]
+        ensemble_mean: false
+        output_file_type: "png"
+        var_plotname: "XCO~B~2~N~"
+      panels_unsampled: &panel_cfg
+        script: xco2_analysis/panel_plots.ncl
+        styleset: CMIP6
+        output_file_type: "png"
+        region: [30, 60]
+        # Possible masking options: obs, land, sciamachy, gosat, "none"
+        masking: ["none"]
+        # Possible area averaging options: full-area, lat-first
+        area_avg: "full-area"
+        obs_in_panel: true
+        plot_var2_mean: true
+        var_plotname: "XCO~B~2~N~"
+      panels_obs:
+        <<: *panel_cfg
+        masking: ["obs"]
+      panels_scia:
+        <<: *panel_cfg
+        masking: ["sciamachy"]
+        obs_in_panel: false
+      panels_gosat:
+        <<: *panel_cfg
+        masking: ["gosat"]
+        area_avg: "full-area"
+        obs_in_panel: false
+
+  sat_masks:
+    description: Figures 1, 8
+    <<: *provenance
+    variables:
+      xco2:
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+    scripts:
+      sat_masks:
+        script: xco2_analysis/sat_masks.ncl
+        output_file_type: "png"
+        var_plotname: "XCO~B~2~N~"
+        c3s_plots: true
+
+  cmip6_delta_T:
+    description: Figure C1
+    <<: *provenance
+    variables:
+      xco2:
+        preprocessor: mmm_ref
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      tas:
+        preprocessor: mmm_2x2
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      tasa:
+        mip: Amon
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: GISTEMP, project: OBS, type: ground, version: v4,
+             tier: 2}
+    scripts:
+      delta_T:
+        script: xco2_analysis/delta_T.ncl
+        styleset: CMIP6
+        output_file_type: "png"
+        masking: obs
+        var_order: ["xco2", "tas", "tasa"]
+        region: [-30, 30]
+
+  cmip6_station_comparison:
+    description: Figure 2
+    <<: *provenance
+    variables:
+      xco2:
+        preprocessor: mmm_ref
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      co2:
+        preprocessor: mmm
+        project: CMIP6
+        mip: Amon
+        exp: esm-hist
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          #- {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn}
+          - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, grid: gr}
+          - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+          - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
+          - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+      co2s_obs:
+        preprocessor: conv_units
+        short_name: co2s
+        project: CMIP5
+        mip: Amon
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: CGO, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: HUN, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: WIS, tier: 2}
+    scripts:
+      station_comparison:
+        script: xco2_analysis/station_comparison.ncl
+        var_order: ["xco2", "co2", "co2s"]
+        output_file_type: "png"
+        var_plotnames: ["XCO~B~2~N~", "CO~B~2~N~"]
+        # Overwrite station altitudes in case timeseries considered uses a
+        # different altitude than the current one
+        overwrite_altitudes: [2710, 94, 248, 868, 482]
+        output_map: true
+
+  # CMIP5
+  cmip5_analysis:
+    description: figures 3, 4, 8, 10-12
+    <<: *provenance
+    variables:
+      xco2:
+        preprocessor: conv_units
+        project: CMIP5
+        mip: Amon
+        exp: [esmHistorical, esmrcp85]
+        ensemble: r1i1p1
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: FIO-ESM}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MRI-ESM1}
+          - {dataset: NorESM1-ME}
+    scripts:
+      maps:
+        script: xco2_analysis/global_maps.ncl
+        contour_max_level: 18
+        output_file_type: "png"
+      main:
+        script: xco2_analysis/main.ncl
+        styleset: CMIP5
+        region: [-90, 90]
+        # Possible masking options: obs
+        masking: ["obs"]
+        ensemble_mean: false
+        output_file_type: "png"
+        var_plotname: "XCO~B~2~N~"
+      panels_unsampled:
+        <<: *panel_cfg
+        styleset: CMIP5
+      panels_obs:
+        <<: *panel_cfg
+        styleset: CMIP5
+        masking: ["obs"]
+      panels_scia:
+        <<: *panel_cfg
+        styleset: CMIP5
+        masking: ["sciamachy"]
+        obs_in_panel: false
+      panels_gosat:
+        <<: *panel_cfg
+        styleset: CMIP5
+        masking: ["gosat"]
+        area_avg: "full-area"
+        obs_in_panel: false
+
+  cmip5_delta_T:
+    description: Plots XCO2 IAV against growing season temperature anomaly
+    <<: *provenance
+    variables:
+      xco2:
+        preprocessor: mmm_ref
+        project: CMIP5
+        mip: Amon
+        exp: [esmHistorical, esmrcp85]
+        ensemble: r1i1p1
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: FIO-ESM}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MRI-ESM1}
+          - {dataset: NorESM1-ME}
+      tas:
+        preprocessor: mmm_2x2
+        project: CMIP5
+        mip: Amon
+        exp: [esmHistorical, esmrcp85]
+        ensemble: r1i1p1
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: FIO-ESM}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MRI-ESM1}
+          - {dataset: NorESM1-ME}
+      tasa:
+        mip: Amon
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: GISTEMP, project: OBS, type: ground, version: v4,
+             tier: 2}
+    scripts:
+      delta_T:
+        script: xco2_analysis/delta_T.ncl
+        styleset: CMIP5
+        output_file_type: "png"
+        masking: obs
+        var_order: ["xco2", "tas", "tasa"]
+        region: [-30, 30]
+
+  cmip5_station_comparison:
+    description: Comparison of CO2 and XCO2 at select NOAA-ESRL stations
+    <<: *provenance
+    variables:
+      xco2:
+        preprocessor: mmm_ref
+        project: CMIP5
+        mip: Amon
+        exp: [esmHistorical, esmrcp85]
+        ensemble: r1i1p1
+        start_year: 2003
+        end_year: 2014
+        reference_dataset: CDS-XCO2
+        derive: true
+        additional_datasets:
+          - {dataset: CDS-XCO2, project: OBS, type: sat, version: L3,
+             tier: 3, derive: false}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: FIO-ESM}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MRI-ESM1}
+          - {dataset: NorESM1-ME}
+      co2:
+        preprocessor: mmm
+        project: CMIP5
+        mip: Amon
+        exp: [esmHistorical, esmrcp85]
+        ensemble: r1i1p1
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2G}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: FIO-ESM}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MRI-ESM1}
+          - {dataset: NorESM1-ME}
+      co2s_obs:
+        preprocessor: conv_units
+        short_name: co2s
+        project: CMIP5
+        mip: Amon
+        start_year: 2003
+        end_year: 2014
+        additional_datasets:
+          - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: CGO, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: HUN, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: LEF, tier: 2}
+          - {dataset: ESRL, project: OBS, type: ground, version: WIS, tier: 2}
+    scripts:
+      station_comparison:
+        script: xco2_analysis/station_comparison.ncl
+        var_order: ["xco2", "co2", "co2s"]
+        output_file_type: "png"
+        var_plotnames: ["XCO~B~2~N~", "CO~B~2~N~"]
+        # Overwrite station altitudes in case timeseries considered uses a
+        # different altitude than the current one
+        overwrite_altitudes: [2710, 94, 248, 868, 482]
+        output_map: true

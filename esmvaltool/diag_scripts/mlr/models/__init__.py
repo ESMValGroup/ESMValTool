@@ -262,8 +262,7 @@ plot_units: dict
 savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict
-    Options for :func:`seaborn.set` (affects all plots), see
-    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
+    Options for :func:`seaborn.set` (affects all plots).
 standardize_data: bool (default: True)
     Linearly standardize numerical input data by removing mean and scaling to
     unit variance.
