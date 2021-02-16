@@ -639,7 +639,7 @@ the username and password can be omitted if they are not required. See e.g.
 `here <https://support.rstudio.com/hc/en-us/articles/200488488-Configuring-R-to-Use-an-HTTP-or-HTTPS-Proxy>`__
 for more information.
 
-HTTP connection errorrs (of e.g. type 404) to the Anaconda servers are rather common, and usually a retry
+HTTP connection errors (of e.g. type 404) to the Anaconda servers are rather common, and usually a retry
 will solve the problem.
 
 Installation of R packages fails
