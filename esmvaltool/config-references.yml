@@ -106,6 +106,10 @@ authors:
     name: Bock, Lisa
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0001-7058-5938
+  boe_julien:
+    name: Boe, Julien
+    institute: CERFACS, France
+    orcid:
   bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
@@ -272,6 +276,10 @@ authors:
     orcid:
   lledo_llorenc:
     name: Lledo, Llorenc
+    institute: BSC, Spain
+    orcid:
+  loosveldt-tomas_saskia:
+    name: Loosveldt-Tomas, Saskia
     institute: BSC, Spain
     orcid:
   lorenz_ruth:

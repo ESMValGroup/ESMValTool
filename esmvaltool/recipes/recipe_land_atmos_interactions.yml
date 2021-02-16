@@ -1,0 +1,113 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    This is an example recipe for a personal diagnostic.
+    You can run any Python diagnostic of your choice
+    without installing ESMValTool as developer or git pushing.
+    Simply include the full path to your script of choice in script,
+    see example /path/to/your/my_little_diagnostic.py
+    An example personal diagnostic can be found in
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+
+  authors:
+    - boe_julien
+
+  projects:
+    - primavera
+
+  maintainer:
+    - loosveldt_tomas-saskia
+
+datasets:
+  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,
+     exp: piControl,  ensemble: r1i1p1f1, grid: gn,
+     start_year: 2000,  end_year: 2002}
+
+preprocessors:
+  ppsummer:
+    extract_season:
+      season: 'JJA'
+    seasonal_statistics:
+
+  ppmrso:
+    seasonal_statistics:
+
+  ppsummerdetrend:
+    extract_season:
+      season: 'JJA'
+    seasonal_statistics:
+    detrend:
+
+  ppmrsodetrend:
+    seasonal_statistics:
+    detrend:
+
+diagnostics:
+  interactions:
+    description: "Simple personal diagnostic"
+    variables:
+      hfls:
+        mip: Amon
+        preprocessor: ppsummer
+      hfss:
+        mip: Amon
+        preprocessor: ppsummer
+      rsds:
+        mip: Amon
+        preprocessor: ppsummer
+      rlds:
+        mip: Amon
+        preprocessor: ppsummer
+      clt:
+        mip: Amon
+        preprocessor: ppsummer
+      tas:
+        mip: Amon
+        preprocessor: ppsummer
+      mrso:
+        mip: Lmon
+        preprocessor: ppmrso
+      sftlf:
+        mip: fx
+
+    scripts:
+      interactions:
+        script: primavera/interactions/land_atmos_interactions.py
+        target_grid: '1x1' # in MxN degrees
+
+  detrended_interactions:
+    variables:
+      hfls:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      hfss:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      rsds:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      rlds:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      clt:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      tas:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      mrso:
+        mip: Lmon
+        preprocessor: ppmrsodetrend
+      sftlf:
+        mip: fx
+
+
+    scripts:
+      detrended_interactions:
+        script: primavera/interactions/land_atmos_interactions.py
+        target_grid: '1x1' # in MxN degrees
+
+
+
+
