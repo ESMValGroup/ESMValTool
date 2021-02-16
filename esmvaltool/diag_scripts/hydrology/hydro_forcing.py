@@ -46,18 +46,16 @@ def log_provenance(caption: str, filename: str, cfg: dict, ancestors: list):
     logger.info('Output stored as %s', filename)
 
 
-def plot_data(
-        *,
-        cfg: dict,
-        datasets: dict,
-        xaxis: str,
-        yaxis: str,
-        xlabel: str,
-        ylabel: str,
-        caption: str,
-        name: str,
-        ancestors: list,
-        ):
+def plot_data(*,
+              cfg: dict,
+              datasets: dict,
+              xaxis: str,
+              yaxis: str,
+              xlabel: str,
+              ylabel: str,
+              caption: str,
+              name: str,
+              ancestors: list):
     """Plot data."""
     figure, _ = plt.subplots(dpi=300)
 
