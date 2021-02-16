@@ -61,9 +61,9 @@ def convert_timeunits(cube, start_year):
     return cube
 
 
-def fix_coords(cube, fix_time_bounds=True, fix_lon_bounds=True,
-               fix_lat_bounds=True, fix_lev_bounds=True,
-               fix_airpres_bounds=True):
+def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
+               overwrite_lat_bounds=True, overwrite_lev_bounds=True,
+               overwrite_airpres_bounds=True):
     """
     Fix coordinates to CMOR standards.
 
@@ -77,20 +77,20 @@ def fix_coords(cube, fix_time_bounds=True, fix_lon_bounds=True,
     cube: iris.cube.Cube
         data cube with coordinates to be fixed.
 
-    fix_time_bounds: bool (optional)
-        set to False not to fix time bounds.
+    overwrite_time_bounds: bool (optional)
+        set to False not to overwrite time bounds.
 
-    fix_lon_bounds: bool (optional)
-        set to False not to fix longitude bounds.
+    overwrite_lon_bounds: bool (optional)
+        set to False not to overwrite longitude bounds.
 
-    fix_lat_bounds: bool (optional)
-        set to False not to fix latitude bounds.
+    overwrite_lat_bounds: bool (optional)
+        set to False not to overwrite latitude bounds.
 
-    fix_lev_bounds: bool (optional)
-        set to False not to fix depth bounds.
+    overwrite_lev_bounds: bool (optional)
+        set to False not to overwrite depth bounds.
 
-    fix_airpres_bounds: bool (optional)
-        set to False not to fix air pressure bounds.
+    overwrite_airpres_bounds: bool (optional)
+        set to False not to overwrite air pressure bounds.
 
     Returns
     -------
@@ -107,7 +107,7 @@ def fix_coords(cube, fix_time_bounds=True, fix_lon_bounds=True,
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            if fix_time_bounds or not cube.coord('time').has_bounds():
+            if overwrite_time_bounds or not cube.coord('time').has_bounds():
                 _fix_bounds(cube, cube.coord('time'))
 
         # fix longitude
@@ -118,7 +118,7 @@ def fix_coords(cube, fix_time_bounds=True, fix_lon_bounds=True,
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
                         cube_coord.points + 180.
-                    if fix_lon_bounds or not cube_coord.has_bounds():
+                    if overwrite_lon_bounds or not cube_coord.has_bounds():
                         _fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
@@ -128,19 +128,19 @@ def fix_coords(cube, fix_time_bounds=True, fix_lon_bounds=True,
         # fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
-            if fix_lat_bounds or not cube.coord('latitude').has_bounds():
+            if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
                 _fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
-            if fix_lev_bounds or not cube.coord('depth').has_bounds():
+            if overwrite_lev_bounds or not cube.coord('depth').has_bounds():
                 _fix_bounds(cube, cube.coord('depth'))
 
         # fix air_pressure
         if cube_coord.var_name == 'air_pressure':
             logger.info("Fixing air pressure...")
-            if fix_airpres_bounds \
+            if overwrite_airpres_bounds \
                     or not cube.coord('air_pressure').has_bounds():
                 _fix_bounds(cube, cube.coord('air_pressure'))
 
