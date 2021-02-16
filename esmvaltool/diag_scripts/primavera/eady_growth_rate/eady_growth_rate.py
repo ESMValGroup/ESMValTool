@@ -32,7 +32,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 class EadyGrowthRate:
     """Class used to compute the Eady Growth Rate."""
     def __init__(self, config):
-        """Set diagnostic parameters and constants.
+        """
+        Set diagnostic parameters and constants.
 
         Parameters
         ----------
@@ -54,8 +55,7 @@ class EadyGrowthRate:
         """Time statistic to perform."""
 
     def compute(self):
-        """Computes the Eady Growth Rate and either it's annual or seasonal
-        mean."""
+        """Compute Eady Growth Rate and either it's annual or seasonal mean."""
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
             var = group_metadata(data[alias], 'short_name')
@@ -105,7 +105,7 @@ class EadyGrowthRate:
             self.save(cube_egr, alias, data)
 
     def potential_temperature(self, temperature, plev):
-        """Computes the potential temperature.
+        """Compute potential temperature.
 
         Parameters
         ----------
@@ -132,7 +132,10 @@ class EadyGrowthRate:
 
     @staticmethod
     def vertical_integration(var_x, var_y):
-        """Perform a non-cyclic centered finite-difference to integrate
+        """
+        Vertical integration.
+
+        Perform a non-cyclic centered finite-difference to integrate
         variable x with respect to variable y along pressure levels.
 
         Parameters
@@ -147,7 +150,6 @@ class EadyGrowthRate:
         dxdy: iris.cube.Cube
             Cube of variable integrated along pressure levels.
         """
-
         plevs = var_x.shape[1]
 
         dxdy_0 = (
@@ -225,6 +227,8 @@ class EadyGrowthRate:
 
         Parameters
         ----------
+        fcor: da.array
+            Array containing Coriolis force.
         eastward_wind: iris.cube.Cube
             Cube containing variable ua.
         geopotential: iris.cube.Cube
@@ -245,6 +249,7 @@ class EadyGrowthRate:
     def seasonal_plots(self, egr, alias):
         """
         Plot seasonal Eady Growth rate values.
+
         Parameters
         ----------
         egr: iris.cube.Cube
@@ -288,12 +293,9 @@ class EadyGrowthRate:
         output_file = os.path.join(self.cfg[names.WORK_DIR], output_name)
         iris.save(egr, output_file)
 
-        caption = ("{script} between {start} and {end}"
-                   "according to {dataset}").format(script=script.replace(
-                       " ", '_'),
-                                                    start=info['start_year'],
-                                                    end=info['end_year'],
-                                                    dataset=info['dataset'])
+        script_name = script.replace(" ", '_')
+        caption = (f"{script_name} between {info['start_year']} "
+                   f"and {info['end_year']} according to {info['dataset']}")
         ancestors = []
         for i in range(len(data[alias])):
             ancestors.append(data[alias][i]['filename'])
