@@ -513,12 +513,18 @@ def run_diagnostic():
 
     # Clean run_dir and output directories from previous runs
     default_files = {
-        'log.txt', 'profile.bin', 'resource_usage.txt', 'settings.yml'
+        'diagnostic_provenance.yml',
+        'log.txt',
+        'profile.bin',
+        'resource_usage.txt',
+        'settings.yml',
     }
 
     output_directories = (cfg['work_dir'], cfg['plot_dir'])
-    old_content = [p for p in output_directories
-                   if Path(p).exists() and any(Path(p).iterdir())]
+    old_content = [
+        p for p in output_directories
+        if Path(p).exists() and any(Path(p).iterdir())
+    ]
     old_content.extend(p for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
                        if not os.path.basename(p) in default_files)
 
@@ -540,13 +546,13 @@ def run_diagnostic():
 
     # Create output directories
     for output_directory in output_directories:
-        logger.info("Creating %s", output_directory)
-        if args.ignore_existing and os.path.exists(output_directory):
-            continue
-        os.makedirs(output_directory)
+        if not os.path.isdir(output_directory):
+            logger.info("Creating %s", output_directory)
+            os.makedirs(output_directory)
 
     provenance_file = os.path.join(cfg['run_dir'], 'diagnostic_provenance.yml')
     if os.path.exists(provenance_file):
+        logger.info("Removing %s from previous run.", provenance_file)
         os.remove(provenance_file)
 
     yield cfg
