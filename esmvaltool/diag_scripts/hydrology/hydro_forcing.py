@@ -47,17 +47,17 @@ def log_provenance(caption: str, filename: str, cfg: dict, ancestors: list):
 
 
 def plot_data(
-    *,
-    cfg: dict,
-    datasets: dict,
-    xaxis: str,
-    yaxis: str,
-    xlabel: str,
-    ylabel: str,
-    caption: str,
-    name: str,
-    ancestors: list,
-):
+        *,
+        cfg: dict,
+        datasets: dict,
+        xaxis: str,
+        yaxis: str,
+        xlabel: str,
+        ylabel: str,
+        caption: str,
+        name: str,
+        ancestors: list,
+    ):
     """Plot data."""
     figure, axes = plt.subplots(dpi=300)
 
@@ -173,7 +173,7 @@ def get_diagnostic_data(cfg):
 
 
 def main(cfg):
-    """Main function."""
+    """Load and plot hydro forcing data."""
     diagnostic, metadata = get_diagnostic_data(cfg)
 
     if diagnostic == 'sample_year':
