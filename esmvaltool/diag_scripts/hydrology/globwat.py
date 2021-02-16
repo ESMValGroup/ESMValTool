@@ -14,11 +14,11 @@ import xarray as xr
 import pandas as pd
 import dask.array as da
 import iris
-from datetime import datetime
 
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger, 
+                                            get_diagnostic_filename,
                                             group_metadata,
                                             run_diagnostic)
 
@@ -127,21 +127,13 @@ def langbein_pet(tas):
     return pet
 
 
-# def get_cube_time_info(cube):
-#     """Return year, month and day from the cube."""
-#     coord_time = cube.coord('time')
-#     year = coord_time.cell(0).point.year
-#     month = str(coord_time.cell(0).point.month).zfill(2)
-#     day = str(coord_time.cell(0).point.day).zfill(2)
-#     return year, month, day
-
 def get_cube_time_info(cube):
     """Return year, month and day from the cube."""
     coord_time = cube.coord('time')
     time = coord_time.cell(0).point
-    monthly_time_step = time.strftime("%Y%m")
-    daily_time_step = time.strftime("%Y%m%d")
-    return monthly_time_step , daily_time_step
+    time_step = time.strftime("%Y%m%d")
+    return time_step
+
 
 def get_cube_data_info(cube):
     """Return short_name, and mip from the cube."""
@@ -223,62 +215,28 @@ def save_to_ascii(cube, file_name):
                       header=False, index=False, mode='a')
 
 
-# def make_filename(dataset_name, cfg, cube, extension='asc'):
-#     """Return a valid path for saving a diagnostic data file.
-
-#     filenames are specific to Globwat.
-#     """
-#     names_map = {'pr': 'prc', 'evspsblpot': 'eto'}
-
-#     nyear, nmonth, nday = get_cube_time_info(cube)
-#     short_name, mip = get_cube_data_info(cube)
-
-#     if mip == 'Amon':
-#         filename = f"{names_map[short_name]}{nmonth}wb.{extension}"
-#         freq = 'Monthly'
-
-#     else:
-#         filename = f"{names_map[short_name]}{nmonth}{nday}wb.{extension}"
-#         freq = 'Daily'
-
-#     data_dir = Path(f"{cfg['work_dir']}/{dataset_name}/{nyear}/{freq}")
-#     data_dir.mkdir(parents=True, exist_ok=True)
-#     return str(data_dir / f"{filename}")
-
-
 def make_filename(dataset_name, cfg, cube, extension='asc'):
     """Return a valid path for saving a diagnostic data file.
 
     filenames are specific to Globwat.
     """
-    nmonth, nday = get_cube_time_info(cube)
+    time_stamp = get_cube_time_info(cube)
     short_name, mip = get_cube_data_info(cube)
-
-    if mip == 'Amon':
-        if short_name == 'evspsblpot':
-            if cfg['langbein_pet']:
-                filename = (f"globwat_{dataset_name}_langbein_eto_"
-                            f"{nmonth}.{extension}")
-            else:
-                filename = (f"globwat_{dataset_name}_debruin_eto_"
-                            f"{nmonth}.{extension}")
-        else:
-            filename = f"globwat_{dataset_name}_pr_{nmonth}.{extension}"
+    if cfg['langbein_pet']:
+        pet_method_name = 'langbein_eto_'
     else:
-        if short_name == 'evspsblpot':
-            if cfg['langbein_pet']:
-                filename = (f"globwat_{dataset_name}_langbein_eto_"
-                            f"{nday}.{extension}")
-            else:
-                filename = (f"globwat_{dataset_name}_debruin_eto_"
-                            f"{nday}.{extension}")
-        else:
-            filename = f"globwat_{dataset_name}_pr_{nday}.{extension}"
+        pet_method_name = 'debruin_eto_'
 
-    data_dir = Path(f"{cfg['work_dir']}/{dataset_name}")
-    data_dir.mkdir(parents=True, exist_ok=True)
-    return str(data_dir / f"{filename}")
-
+    if short_name == 'pet':
+        pet_method = pet_method_name
+    else:
+        pet_method = ''
+    
+    base_name = (f"globwat_{dataset_name}_{mip}_{short_name}_{pet_method}"
+                f"{time_stamp}")
+    filename = get_diagnostic_filename(base_name, cfg, extension=extension)
+    
+    return filename
 
 def _shift_era5_time_coordinate(cube):
     """Shift instantaneous variables 30 minutes forward in time.
@@ -333,6 +291,7 @@ def main(cfg):
 
         # Add mip to pet cube attribute
         all_vars['pet'].attributes['mip'] = all_vars['pr'].attributes['mip']
+        all_vars['pet'].var_name = 'pet'
 
         # Change negative values for pr to zero
         _fix_negative_values(all_vars['pr'])
