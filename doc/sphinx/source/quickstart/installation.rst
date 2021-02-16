@@ -120,6 +120,10 @@ message to the console.
 
 	  Creating a new Conda environment is often much faster and more reliable than trying to update an existing Conda environment.
 
+.. note::
+
+          The esmvaltool conda package will require Python>=3.7 so make sure that your conda is new enough to be able to install the required version of Python; we recommend that the conda version should be at least 4.9.
+
 Installation of subpackages
 ---------------------------
 
@@ -609,7 +613,9 @@ for example by running
 
 you ask for Python 3.8 specifically and that makes it much easier for conda to
 solve the environment, because now it can ignore any packages that were built
-for other Python versions.
+for other Python versions. Note that, since the esmvaltool package is built with Python>=3.7,
+asking for an older Python version, e.g. `python=3.6`, in this way, it will result in
+installation failure.
 
 Problems with proxies
 ---------------------
@@ -632,6 +638,11 @@ in bash:
 the username and password can be omitted if they are not required. See e.g.
 `here <https://support.rstudio.com/hc/en-us/articles/200488488-Configuring-R-to-Use-an-HTTP-or-HTTPS-Proxy>`__
 for more information.
+
+Anaconda servers connection issues
+----------------------------------
+HTTP connection errors (of e.g. type 404) to the Anaconda servers are rather common, and usually a retry
+will solve the problem.
 
 Installation of R packages fails
 --------------------------------
