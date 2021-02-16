@@ -216,8 +216,10 @@ def test_fix_coords():
     assert cube.coord("depth").has_bounds()
     assert cube.coord('latitude').coord_system is None
     assert cube.coord('longitude').coord_system is None
-    utils.fix_coords(cube_2, fix_time_bounds=False, fix_lon_bounds=False,
-                     fix_lat_bounds=False, fix_lev_bounds=False)
+    utils.fix_coords(cube_2, overwrite_time_bounds=False,
+                     overwrite_lon_bounds=False,
+                     overwrite_lat_bounds=False,
+                     overwrite_lev_bounds=False)
     assert cube_2.coord("time").bounds[0][1] == 30.
     assert cube_2.coord("longitude").bounds[1][1] == 180.
     assert cube_2.coord("latitude").bounds[1][1] == 3.
