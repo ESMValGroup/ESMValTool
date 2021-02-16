@@ -146,6 +146,7 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
 
+.. _supported_datasets:
 
 Supported datasets
 ------------------

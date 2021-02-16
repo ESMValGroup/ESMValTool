@@ -5,7 +5,7 @@
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.1.1" %}
+{% set version = "2.2.0" %}
 
 package:
   name: esmvaltool
@@ -26,6 +26,8 @@ build:
 
 requirements:
   run:
+    - python>=3.7
+    - iris>=3.0.1
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
     - {{ pin_subpackage('esmvaltool-python', exact=True) }}
@@ -63,7 +65,7 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.6
+        - python>=3.7
         - setuptools_scm
       run:
         - cartopy>=0.18
@@ -92,7 +94,7 @@ outputs:
         - numpy
         - pandas
         - pyproj>=2.1
-        - python>=3.6
+        - python>=3.7
         - python-cdo
         - pyyaml
         - rasterio  # replaces pynio
