@@ -5,7 +5,7 @@ on:
   push:
     branches:
     - master
-    - github-actions2  # testing branch
+    - ga_python39
   schedule:
     - cron: '0 0 * * *'
 
@@ -14,7 +14,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
