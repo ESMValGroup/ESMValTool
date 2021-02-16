@@ -5,7 +5,6 @@ on:
   push:
     branches:
     - master
-    - ga_python39
   schedule:
     - cron: '0 4 * * *'
 
