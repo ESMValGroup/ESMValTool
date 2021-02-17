@@ -111,8 +111,6 @@ def get_provenance_record(caption, ancestor_files, **kwargs):
 
 def plot_data(cfg, all_data, metadata):
     """Create barplot."""
-    if not cfg['write_plots']:
-        return None
     logger.debug("Plotting barplot")
     (_, axes) = plt.subplots(figsize=(8, 4))
 
@@ -201,11 +199,10 @@ def main(cfg):
     # Provenance
     caption = f"{metadata['long_name']} for multiple datasets."
     provenance_record = get_provenance_record(caption, all_files)
-    if plot_path is not None:
-        provenance_record.update({
-            'plot_file': plot_path,
-            'plot_types': ['bar'],
-        })
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['bar'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 

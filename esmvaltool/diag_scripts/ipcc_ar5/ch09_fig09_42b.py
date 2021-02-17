@@ -85,8 +85,6 @@ def get_provenance_record(project, ancestor_files):
 
 def plot_data(cfg, ecs_cube, tcr_cube):
     """Plot data."""
-    if not cfg['write_plots']:
-        return None
     logger.debug("Plotting Fig. 9.42b of IPCC AR5")
     (_, axes) = plt.subplots()
     project = ecs_cube.attributes['project']
@@ -195,11 +193,10 @@ def main(cfg):
     # Provenance
     ancestor_files = [ecs_file, tcr_file]
     provenance_record = get_provenance_record(project, ancestor_files)
-    if plot_path is not None:
-        provenance_record.update({
-            'plot_file': plot_path,
-            'plot_types': ['scatter'],
-        })
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['scatter'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 

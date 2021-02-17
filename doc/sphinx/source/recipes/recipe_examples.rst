@@ -53,6 +53,11 @@ User settings in recipe
      Arguments that are accepted by these functions can also be specified here, e.g. ``cmap``.
      Preprocessors need to be configured such that the resulting data matches the plot type, e.g. a timeseries or a map.
 
+   *Optional settings for script*
+
+   * ``write_netcdf``: ``true`` (default) or ``false``.
+     This can be used to disable writing the results to netcdf files.
+
 Variables
 ---------
 
