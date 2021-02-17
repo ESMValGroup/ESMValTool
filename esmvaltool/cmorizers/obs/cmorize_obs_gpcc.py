@@ -160,7 +160,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
 
     # Save variable
     attrs = copy.deepcopy(cfg['attributes'])
-    attrs.update({'comment': 'contrained on gridpoint values beeing based on'\
+    attrs.update({'comment': 'constrained on gridpoint values beeing based on'
                              'at least 1 station',
                   'version': attrs['version'] + '-numgauge1'})
     attrs['mip'] = var['mip']
