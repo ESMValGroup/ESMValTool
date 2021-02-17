@@ -4,15 +4,14 @@ Iris issue requesting the feature:
 https://github.com/SciTools/iris/issues/3808
 """
 import numpy as np
-import iris
+from esmvalcore.preprocessor import regrid
 
-HORIZONTAL_SCHEMES = {
-    'linear': iris.analysis.Linear(extrapolation_mode='mask'),
-    'linear_extrapolate':
-    iris.analysis.Linear(extrapolation_mode='extrapolate'),
-    'nearest': iris.analysis.Nearest(extrapolation_mode='mask'),
-    'area_weighted': iris.analysis.AreaWeighted(),
-}
+HORIZONTAL_SCHEMES = [
+    'linear',
+    'linear_extrapolate',
+    'nearest',
+    'area_weighted',
+]
 """Supported horizontal regridding schemes."""
 
 
@@ -48,13 +47,12 @@ def _compute_chunks(src, tgt):
     return src_chunks
 
 
-def lazy_regrid(src, tgt, scheme):
+def rechunk_and_regrid(src, tgt, scheme):
     """Regrid cube src onto the grid of cube tgt."""
     src_chunks = _compute_chunks(src, tgt)
 
     if scheme not in HORIZONTAL_SCHEMES:
         raise ValueError(f"Regridding scheme {scheme} not supported, "
-                         f"choose from {HORIZONTAL_SCHEMES.keys()}.")
-    regridder = HORIZONTAL_SCHEMES[scheme].regridder(src, tgt)
+                         f"choose from {HORIZONTAL_SCHEMES}.")
     src.data = src.lazy_data().rechunk(src_chunks)
-    return regridder(src)
+    return regrid(src, tgt, scheme)
