@@ -63,8 +63,6 @@ def get_provenance_record(caption, ancestor_files, **kwargs):
 
 def plot_data(cfg, cube):
     """Create scatterplot for cube."""
-    if not cfg['write_plots']:
-        return None
     logger.debug("Plotting scatterplot for cube %s",
                  cube.summary(shorten=True))
     (_, axes) = plt.subplots()
@@ -149,11 +147,10 @@ def main(cfg):
     caption = "{}{} for multiple datasets.".format(
         cube.long_name, '' if project is None else f' for {project}')
     provenance_record = get_provenance_record(caption, [input_file])
-    if plot_path is not None:
-        provenance_record.update({
-            'plot_file': plot_path,
-            'plot_types': ['scatter'],
-        })
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['scatter'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 
