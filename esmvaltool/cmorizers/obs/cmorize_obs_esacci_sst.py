@@ -38,7 +38,7 @@ import os
 
 import iris
 
-from esmvalcore.preprocessor._io import concatenate
+from esmvalcore.preprocessor import concatenate
 from .utilities import (convert_timeunits, fix_coords, fix_var_metadata,
                         save_variable, set_global_atts)
 
