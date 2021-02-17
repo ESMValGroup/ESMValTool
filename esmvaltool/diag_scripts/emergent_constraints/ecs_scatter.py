@@ -4,8 +4,8 @@
 
 Description
 -----------
-Calculate the X-axis of various emergent constraint for the Equilibrium
-Climate Sensitivity (ECS).
+Calculate the X axis of various emergent constraints for the equilibrium
+climate sensitivity (ECS).
 
 Author
 ------
@@ -17,24 +17,23 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-diag : str
+diag: str
   Emergent constraint to calculate (must be one of ``'brient_shal'``, ``'su'``,
-  ``'volodin'``, ``'zhai'``.
-metric : str, optional (default: 'regression_slope')
+  ``'volodin'``, ``'zhai'``).
+metric: str, optional (default: 'regression_slope')
     Metric to measure model error. Only relevant for Su et al. (2014)
     constraint. Must be one of ``'regression_slope'``,
     ``'correlation_coefficient'``.
-n_jobs : int, optional (default: 1)
+n_jobs: int, optional (default: 1)
     Maximum number of jobs spawned by this class.
-output_attributes : dict, optional
+output_attributes: dict, optional
     Write additional attributes to netcdf files.
-pattern : str, optional
+pattern: str, optional
     Pattern matched against ancestor file names.
-savefig_kwargs : dict, optional
+savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+seaborn_settings: dict
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 

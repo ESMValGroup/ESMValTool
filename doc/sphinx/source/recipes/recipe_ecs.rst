@@ -34,11 +34,13 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-#. Preprocessor
+* Preprocessor
 
    * ``area_statistics`` (*operation: mean*): Calculate global mean.
 
-#. Script climate_metrics/ecs.py
+.. _ecs.py:
+
+* Script climate_metrics/ecs.py
 
    * ``calculate_mmm``, *bool*, optional (default: ``True``): Calculate
      multi-model mean ECS.
@@ -47,19 +49,17 @@ User settings in recipe
    * ``read_external_file``, *str*, optional: Read ECS and net climate feedback
      parameter from external file. Can be given relative to the diagnostic
      script or as absolute path.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
 
-#. Script climate_metrics/create_barplot.py
+* Script climate_metrics/create_barplot.py
 
    * ``label_attribute``, *str*, optional: Attribute of the cube which is used
      as label for the different input files in the barplot.
    * ``patterns``, *list of str*, optional: Patterns to filter list of input
      files.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
    * ``sort_ascending``, *bool*, optional (default: ``False``): Sort bars in
      ascending order.
    * ``sort_descending``, *bool*, optional (default: ``False``): Sort bars in
@@ -68,14 +68,13 @@ User settings in recipe
      value of that bar.
    * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
-#. Script climate_metrics/create_scatterplot.py
+* Script climate_metrics/create_scatterplot.py
 
    * ``dataset_style``, *str*, optional: Name of the style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
    * ``pattern``, *str*, optional: Pattern to filter list of input files.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
    * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
 
