@@ -47,9 +47,8 @@ User settings in recipe
    * ``read_external_file``, *str*, optional: Read TCR from external file. Can
      be given relative to the diagnostic
      script or as absolute path.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
 
 #. Script climate_metrics/create_barplot.py
 

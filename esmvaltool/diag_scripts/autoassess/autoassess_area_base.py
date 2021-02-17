@@ -51,7 +51,7 @@ def _import_package(area):
 
 def _fix_cube(cube_list):
     """Apply some ad hoc fixes to cubes."""
-    # force add a long_name; supermeans uses extract_strict
+    # force add a long_name; supermeans uses extract_cube
     # and for derived vars there is only
     # invalid_standard_name which is an attribute
     for cube in cube_list:

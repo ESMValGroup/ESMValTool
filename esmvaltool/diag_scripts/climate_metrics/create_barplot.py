@@ -22,8 +22,7 @@ label_attribute : str, optional
 patterns : list of str, optional
     Patterns to filter list of input data.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 sort_ascending : bool, optional (default: False)
     Sort bars in ascending order.
 sort_descending : bool, optional (default: False)
@@ -44,10 +43,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, io,
-                                            iris_helpers, run_diagnostic)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    io,
+    iris_helpers,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
