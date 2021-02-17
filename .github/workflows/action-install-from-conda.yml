@@ -5,16 +5,15 @@ on:
   push:
     branches:
     - master
-    - github-actions2  # testing branch
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 4 * * *'
 
 jobs:
   linux:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.7, 3.8, 3.9]
       # fail-fast set to False allows all other tests
       # in the worflow to run regardless of any fail
       fail-fast: false

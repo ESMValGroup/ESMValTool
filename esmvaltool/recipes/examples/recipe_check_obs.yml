@@ -9,6 +9,9 @@ documentation:
   authors:
     - righi_mattia
 
+  maintainer:
+    - predoi_valeriu
+
 diagnostics:
 
   ### TIER 2 ##################################################################
@@ -257,7 +260,7 @@ diagnostics:
       tsStderr:
     additional_datasets:
       - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: L4-GHRSST-SSTdepth-OSTIA-GLOB,
+         type: sat, version: 2.1,
          start_year: 1992, end_year: 2010}
     scripts: null
 
@@ -333,6 +336,14 @@ diagnostics:
          type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: v2018_25, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_025-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_05-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_10-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
     scripts: null
 
 
@@ -354,6 +365,18 @@ diagnostics:
     additional_datasets:
       - {dataset: HadCRUT4, project: OBS, mip: Amon, tier: 2,
          type: ground, version: 1, start_year: 1850, end_year: 2018}
+    scripts: null
+
+
+  HadCRUT5:
+    description: HadCRUT5 check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: analysis, start_year: 1850, end_year: 2018}
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: noninfilled, start_year: 1850, end_year: 2018}
     scripts: null
 
 
@@ -1111,6 +1134,17 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly,
          version: 1, start_year: 1990, end_year: 1990}
+    scripts: null
+
+
+  GRACE:
+    description: GRACE check
+    variables:
+      lweGrace:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: GRACE, project: OBS6, tier: 3, type: sat,
+         version: 1, start_year: 2002, end_year: 2020}
     scripts: null
 
 
