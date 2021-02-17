@@ -349,6 +349,18 @@ diagnostics:
     scripts: null
 
 
+  HadCRUT5:
+    description: HadCRUT5 check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: analysis, start_year: 1850, end_year: 2018}
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: noninfilled, start_year: 1850, end_year: 2018}
+    scripts: null
+
+
   HadISST:
     description: HadISST check
     variables:
