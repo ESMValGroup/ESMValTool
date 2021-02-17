@@ -37,10 +37,6 @@ output_dir: ./esmvaltool_output
 # Auxiliary data directory (used for some additional datasets)
 auxiliary_data_dir: ./auxiliary_data
 
-# Diagnostics create plots? [true]/false
-write_plots: true
-# Diagnositcs write NetCDF files? [true]/false
-write_netcdf: true
 # Set the console log level debug, [info], warning, error
 log_level: info
 # Exit on warning (only for NCL diagnostic scripts)? true/[false]
