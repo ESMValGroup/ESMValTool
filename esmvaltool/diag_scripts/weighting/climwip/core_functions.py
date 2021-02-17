@@ -54,14 +54,31 @@ def distance_matrix(values: 'np.ndarray',
     return d_matrix
 
 
-def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
-    """Calculate independence.
+def calculate_model_distances(
+        data_array: 'xr.DataArray',
+        dimension: str = 'model_ensemble_reference') -> 'xr.DataArray':
+    """Calculate pair-wise distances between all values in data_array.
 
-    The independence is calculated as a distance matrix between the
-    datasets defined in the `data_array`. Returned is a square matrix
+    Distances are calculated as the area weighted euclidean distance
+    between each pair of models in data_array. Returned is a square matrix
     with where the number of elements along each edge equals the number
     of ensemble members.
+
+    Parameters
+    ----------
+    data_array : array_like, shape (N,...)
+        Array of (2 dimensional) model fields.
+    dimension : string
+        Name of the newly created reference dimension (default:
+        'model_ensemble_reference'. Must not be equal to the existing
+        model dimension ('model_ensemble')!
+
+    Returns
+    -------
+    distances : array_like, shape (N, N)
+        Symmetric matrix of pairwise model distances.
     """
+    assert dimension != 'model_ensemble', f'{dimension} != "model_ensemble"'
     weights = np.cos(np.radians(data_array.lat))
     weights, _ = xr.broadcast(weights, data_array)
 
@@ -71,13 +88,13 @@ def calculate_independence(data_array: 'xr.DataArray') -> 'xr.DataArray':
         weights,
         input_core_dims=[['model_ensemble', 'lat', 'lon'],
                          ['model_ensemble', 'lat', 'lon']],
-        output_core_dims=[['perfect_model_ensemble', 'model_ensemble']],
+        output_core_dims=[[dimension, 'model_ensemble']],
     )
 
     diff.name = f'd{data_array.name}'
     diff.attrs['variable_group'] = data_array.name
     diff.attrs["units"] = data_array.units
-    diff['perfect_model_ensemble'] = diff.model_ensemble.values
+    diff[dimension] = diff.model_ensemble.values
 
     return diff
 
@@ -88,12 +105,7 @@ def compute_overall_mean(dataset: 'xr.Dataset',
 
     Relative weights for each variable group are passed via the recipe.
     """
-    if 'perfect_model_ensemble' in dataset.dims:
-        median_dim = ['perfect_model_ensemble', 'model_ensemble']
-    else:
-        median_dim = 'model_ensemble'
-
-    normalized = dataset / dataset.median(dim=median_dim)
+    normalized = dataset / dataset.median()
 
     weights_selected = xr.DataArray(
         [weights[variable_group] for variable_group in dataset],
@@ -108,9 +120,33 @@ def compute_overall_mean(dataset: 'xr.Dataset',
 
 
 def combine_ensemble_members(
-        dataset: Union['xr.DataArray', None]) -> (
-            Union['xr.DataArray', None], dict):
-    """Combine ensemble members of the same model."""
+        dataset: Union['xr.DataArray', None],
+        dimensions: Union[str, list] = 'model_ensemble',
+) -> (Union['xr.DataArray', None], dict):
+    """Combine ensemble members of the same model.
+
+    Parameters
+    ----------
+    dataset : None or data_array, shape (N,) or (N, N)
+        A vector containing model-observations distances or a matrix containing
+        model-model distances.
+    dimensions : string or list of up to two strings
+        Spezifies the dimensions along which ensemble members are combined.
+
+    Returns
+    -------
+    dataset : None or data_array, shape (M,), (M, L) with M, L <= N
+        data_array where ensemble members along the given dimensions are
+        combined by averaging.
+    groups : dict of form {string: list}
+        Dictionary mapping the combined model names (keys) to the original
+        ensemble member names (values).
+    """
+    if isinstance(dimensions, str):
+        dimensions = [dimensions]
+    assert len(
+        dimensions) <= 2, 'dimensions can contain a maximum of two strings'
+
     if dataset is None:
         return None, {}
 
@@ -121,31 +157,33 @@ def combine_ensemble_members(
         groups[model].append(name)
         models.append(model)
 
-    for dimn in ['model_ensemble', 'perfect_model_ensemble']:
-        if dimn in dataset.dims:
-            model = xr.DataArray(models, dims=dimn)
+    for dimension in dimensions:
+        if dimension in dataset.dims:
+            model = xr.DataArray(models, dims=dimension)
             dataset = dataset.groupby(model).mean(keep_attrs=True).rename(
-                {'group': dimn})
+                {'group': dimension})
 
-    if 'perfect_model_ensemble' in dataset.dims:
+    if len(dimensions) == 2:
         # need to set the diagonal elements back to zero after averaging
         dataset.values[np.diag_indices(dataset['model_ensemble'].size)] = 0
 
     return dataset, groups
 
 
-def calculate_weights(
-        performance: Union['xr.DataArray', None],
-        independence: Union['xr.DataArray', None],
+def calculate_weights_data(
+        performance: Union['np.array', None],
+        independence: Union['np.array', None],
         performance_sigma: Union[float, None],
-        independence_sigma: Union[float, None]) -> 'xr.DataArray':
+        independence_sigma: Union[float, None]) -> 'np.array':
     """Calculate normalized weights for each model N.
 
     Parameters
     ----------
     performance : array_like, shape (N,) or None
         Array specifying the model performance. None is mutually exclusive
-        with independence being None.
+        with independence being None. Single values in performance can be
+        nan, then they will be excluded from the independence calculation as
+        well (used for the perfect model test).
     independence : array_like, shape (N, N) or None
         Array specifying the model independence. None is mutually exclusive
         with performance being None.
@@ -160,21 +198,49 @@ def calculate_weights(
     -------
     weights : ndarray, shape (N,)
     """
+    numerator = 1
+    not_nan = True
+    denominator = 1
+
     if performance is not None:
         numerator = np.exp(-((performance / performance_sigma)**2))
-    else:
-        numerator = 1
+        # nans in the performance vector indicate models to be excluded
+        not_nan = np.isfinite(performance)
     if independence is not None:
-        exp = np.exp(-((independence / independence_sigma)**2))
+        # don't consider nan models for independence of other models!
+        exp = np.exp(-((independence[:, not_nan] / independence_sigma)**2))
         # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
-        denominator = exp.sum('perfect_model_ensemble')
-    else:
-        denominator = 1
+        denominator = exp.sum(axis=1)
 
     weights = numerator / denominator
+    weights /= weights.sum(where=not_nan)
 
-    # Normalize weights
-    weights /= weights.sum()
+    return weights
+
+
+def calculate_weights(
+        performance: Union['xr.DataArray', None],
+        independence: Union['xr.DataArray', None],
+        performance_sigma: Union[float, None],
+        independence_sigma: Union[float, None]) -> 'xr.DataArray':
+    """Xarray wrapper for calculate_weights_data."""
+    performance_core_dims = [] if performance is None else ['model_ensemble']
+    independence_core_dims = [] if independence is None else [
+        'model_ensemble', 'model_ensemble_reference'
+    ]
+
+    weights = xr.apply_ufunc(
+        calculate_weights_data,
+        performance,
+        independence,
+        performance_sigma,
+        independence_sigma,
+        input_core_dims=[
+            performance_core_dims, independence_core_dims, [], []
+        ],
+        output_core_dims=[['model_ensemble']],
+        vectorize=True,
+    )
 
     weights.name = 'weight'
     weights.attrs['variable_group'] = 'weight'  # used in barplot
@@ -211,6 +277,11 @@ def weighted_quantile(values: list,
     if weights is None:
         weights = np.ones(len(values))
     weights = np.array(weights)
+
+    # remove nans
+    not_nan = np.where((np.isfinite(values) & np.isfinite(weights)))[0]
+    values = values[not_nan]
+    weights = weights[not_nan]
 
     if not np.all((quantiles >= 0) & (quantiles <= 1)):
         raise ValueError('Quantiles should be between 0.0 and 1.0')
