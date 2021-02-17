@@ -274,6 +274,10 @@ authors:
     name: Lledo, Llorenc
     institute: BSC, Spain
     orcid:
+  loosveldt-tomas_saskia:
+    name: Loosveldt-Tomas, Saskia
+    institute: BSC, Spain
+    orcid:
   lorenz_ruth:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
@@ -318,6 +322,10 @@ authors:
     name: Mello, Felipe
     institute: INPE, Brazil
     orcid: https://orcid.org/0000-0002-8832-2869
+  moreno-chamarro_eduardo:
+    name: Moreno-Chamarro, Eduardo
+    institute: BSC, Spain
+    orcid:
   dalvi_mohit:
     name: Dalvi, Mohit
     institute: MetOffice, UK
@@ -387,6 +395,10 @@ authors:
     name: Senftleben, Daniel
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0002-3903-3841
+  sanchez-gomez_emilia:
+    name: Sanchez, Emilia
+    institute: CERFACS, France
+    orcid:
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -636,6 +648,7 @@ authors:
 #  - make a bibtex file for a reference entry. There are some online tools to convert a doi to bibtex format like https://doi2bib.org/
 #  - rename the file to the tag used in the recipe or diagnostic.
 #  - add the file to the folder esmvaltool/references.
+
 
 projects:
   4c: EU H2020 project 4C
