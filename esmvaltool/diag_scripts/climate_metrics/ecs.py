@@ -290,8 +290,6 @@ def read_external_file(cfg):
 
 def plot_ecs_regression(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
     """Plot linear regression used to calculate ECS."""
-    if not cfg['write_plots']:
-        return (None, None)
     ecs = -reg_stats.intercept / (2 * reg_stats.slope)
 
     # Regression line
@@ -451,10 +449,9 @@ def main(cfg):
                                                   rtnt_cube, reg)
 
         # Provenance
-        if path is not None:
-            provenance_record['ancestors'] = ancestor_files
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(path, provenance_record)
+        provenance_record['ancestors'] = ancestor_files
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
         # Save data
         if cfg.get('read_external_file') and dataset_name in ecs:
