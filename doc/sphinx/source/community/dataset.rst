@@ -4,7 +4,7 @@
 Making a new dataset
 ********************
 
-If you are contributing a new dataset, please have a look at the `documentation <https://esmvaltool.org.readthedocs.build/en/latest/dataset.html>`_ for how to do so.
+If you are contributing a new dataset, please have a look at :ref:`new-cmorizer` for how to do so.
 
 
 .. _dataset-documentation:
@@ -12,7 +12,7 @@ If you are contributing a new dataset, please have a look at the `documentation 
 Documentation
 =============
 
-Make sure that the new dataset is added to the `table in the documentation <https://docs.esmvaltool.org/en/latest/input.html#supported-datasets>`_.
+Make sure that the new dataset is added to :ref:`supported_datasets`.
 
 The documentation should have clear instructions on how to obtain the data.
 
@@ -30,4 +30,4 @@ When contributing a new dataset, we expect that the numbers and units of the dat
 Adding your dataset to the OBS data pool
 ========================================
 
-Once your contribution has been accepted, tag `@remi-kazeroni` in your pull request, so that the new dataset can be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin
+Once your contribution has been accepted, tag `@remi-kazeroni <https://github.com/remi-kazeroni>`_ in your pull request, so that the new dataset can be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin

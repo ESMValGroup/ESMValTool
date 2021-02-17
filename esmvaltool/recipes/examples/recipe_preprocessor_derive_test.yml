@@ -84,7 +84,7 @@ diagnostics:
         <<: *alb_cmip5
         mip: Omon
         additional_datasets:
-          - {dataset: CanESM2, ensemble: r1i1p1}
+          - {dataset: CCSM4, ensemble: r1i1p1}
       rlns:
         <<: *alb_cmip5
       rlnstcs:

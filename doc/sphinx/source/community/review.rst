@@ -60,7 +60,10 @@ GitHub.
 3. Merge
 --------
 
-Pull requests are merged by the :ref:`core-team`.
+Pull requests are merged by the `@ESMValGroup/esmvaltool-coreteam`_.
+Specifically, pull requests containing a :ref:`CMORizer script<new-dataset>` can only be merged by
+`@remi-kazeroni`_, who will then add the CMORized data to the OBS data pool at
+DKRZ and CEDA-Jasmin.
 The team member who does the merge first checks that both the technical and
 scientific reviewer approved the pull request and that the reviews were
 conducted thoroughly.
@@ -345,24 +348,24 @@ Run ``./esmvaltool/recipes/examples/recipe_check_obs.yml`` for new dataset.
 RAW data
 ********
 
-Contact person in charge of ESMValTool data pool and request to copy RAW data to RAWOBS/Tier2 (Tier3).
+Contact person in charge of ESMValTool data pool (`@remi-kazeroni`_) and request to copy RAW data to RAWOBS/Tier2 (Tier3).
 
 
 CMORized data
 *************
 
-Contact person in charge of ESMValTool data pool and request to
+Contact person in charge of ESMValTool data pool (`@remi-kazeroni`_) and request to
 
+* Merge the pull request
 * Copy CMORized dataset to OBS/Tier2 (Tier3)
 * Set file access rights for new dataset
 
 
 After merging a pull request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-After merging a pull request successfully, the :ref:`core-team` will:
+After merging a pull request successfully, the `@ESMValGroup/esmvaltool-coreteam` member who merged the pull request will:
 
 *	Close related issue if existent
-*	Delete feature branch
 
 
 .. _`The Turing Way`: https://the-turing-way.netlify.app/reproducible-research/reviewing.html
@@ -371,6 +374,7 @@ After merging a pull request successfully, the :ref:`core-team` will:
 .. _`@ESMValGroup/tech-reviewers`: https://github.com/orgs/ESMValGroup/teams/tech-reviewers
 .. _`@ESMValGroup/science-reviewers`: https://github.com/orgs/ESMValGroup/teams/science-reviewers
 .. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam
+.. _`@remi-kazeroni`: https://github.com/remi-kazeroni
 .. _`pull request template`: https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/.github/pull_request_template.md
 .. _`Google meet`: https://meet.google.com
 .. _`Jitsi meet`: https://meet.jit.si

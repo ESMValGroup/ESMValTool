@@ -315,7 +315,7 @@ begin
   delete([/plot, pan/])
 
   ; Save data for later use
-  if (config_user_info@write_netcdf) then
+  if (diag_script_info@write_netcdf) then
     new_path = config_user_info@run_dir
     new_path = new_path + "gIAV_" \
                         + diag_script_info@start_year + "-" \
