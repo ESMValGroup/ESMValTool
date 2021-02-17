@@ -407,7 +407,7 @@ begin
   draw(plot)
   frame(wks)
   ; Write output
-  if config_user_info@write_netcdf then
+  if diag_script_info@write_netcdf then
     system("mkdir -p " + config_user_info@work_dir)
     workpath = config_user_info@work_dir + "pattern_cor.nc"
     ncdf_outfile = ncdf_write(data_all, workpath)

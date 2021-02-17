@@ -190,7 +190,7 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_plots) then
+  if (diag_script_info@write_plots) then
     data_arr = new((/DIM_VAR, DIM_DAT(0)/), float)
 
     ; Collect data
