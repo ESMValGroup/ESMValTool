@@ -1,7 +1,10 @@
 """ESMValTool CMORizer for ESACCI-LST data.
 
-Tier 2 # Is this the right tier????
+Tier
+   Tier 2: other freely-available dataset.
+
 Source
+   On CEDA-JASMIN
    /group_workspaces/jasmin2/esacci_lst/public
 
 Download and processing instructions
