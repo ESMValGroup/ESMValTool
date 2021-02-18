@@ -6,8 +6,9 @@ import numpy as np
 from osgeo import gdal
 import iris
 
+from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
-from esmvaltool.diag_scripts.hydrology.lazy_regrid import rechunk_and_regrid
+from esmvaltool.diag_scripts.hydrology.compute_chunks import compute_chunks
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -37,6 +38,13 @@ def create_provenance_record():
         'ancestors': [],
     }
     return record
+
+
+def rechunk_and_regrid(src, tgt, scheme):
+    """Rechunk cube src and regrid it onto the grid of cube tgt."""
+    src_chunks = compute_chunks(src, tgt)
+    src.data = src.lazy_data().rechunk(src_chunks)
+    return regrid(src, tgt, scheme)
 
 
 def get_input_cubes(metadata):

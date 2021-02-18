@@ -1,21 +1,15 @@
-"""Lazy regridding, because this is not supported by iris (yet).
+"""Re-chunk the time dimension, to be used by the regrid processor.
 
-Iris issue requesting the feature:
+For large cubes, regridding to a high resolution grid increases
+the size of the data. To solve this, we re-chunk the time dimension.
+
+Related iris issue:
 https://github.com/SciTools/iris/issues/3808
 """
 import numpy as np
-from esmvalcore.preprocessor import regrid
-
-HORIZONTAL_SCHEMES = [
-    'linear',
-    'linear_extrapolate',
-    'nearest',
-    'area_weighted',
-]
-"""Supported horizontal regridding schemes."""
 
 
-def _compute_chunks(src, tgt):
+def compute_chunks(src, tgt):
     """Compute the chunk sizes needed to regrid src to tgt."""
     block_bytes = 50 * (1 << 20)  # 50 MB block size
 
@@ -43,16 +37,4 @@ def _compute_chunks(src, tgt):
         (src.coord('latitude').shape[0], ),
         (src.coord('longitude').shape[0], ),
     )
-
     return src_chunks
-
-
-def rechunk_and_regrid(src, tgt, scheme):
-    """Regrid cube src onto the grid of cube tgt."""
-    src_chunks = _compute_chunks(src, tgt)
-
-    if scheme not in HORIZONTAL_SCHEMES:
-        raise ValueError(f"Regridding scheme {scheme} not supported, "
-                         f"choose from {HORIZONTAL_SCHEMES}.")
-    src.data = src.lazy_data().rechunk(src_chunks)
-    return regrid(src, tgt, scheme)
