@@ -89,8 +89,6 @@ def cmorization(in_dir, out_dir, cfg, _):
     # run the cmorization
     for var, vals in cfg['variables'].items():
         for yr in cfg['custom']['years']:
-            #file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
-            #inpfile = os.path.join(in_dir, vals['file'] + file_suffix)
             inpfile = os.path.join(in_dir, vals['file'])
             logger.info("CMORizing var %s from file %s", var, inpfile)
             var_info = cmor_table.get_variable(vals['mip'], var)

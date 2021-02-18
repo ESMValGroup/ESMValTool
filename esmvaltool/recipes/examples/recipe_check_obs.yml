@@ -566,14 +566,14 @@ diagnostics:
         mip: Omon
       thetao:
         mip: Omon
-      #no3:
-      #  mip: Oyr
-      #o2:
-      #  mip: Oyr
-      #po4:
-      #  mip: Oyr
-      #si:
-      #  mip: Oyr
+      no3:
+        mip: Oyr
+      o2:
+        mip: Oyr
+      po4:
+        mip: Oyr
+      si:
+        mip: Oyr
     additional_datasets:
       - {dataset: WOA, project: OBS, tier: 2,
          type: clim, version: 2018, start_year: 2315, end_year: 2315}
