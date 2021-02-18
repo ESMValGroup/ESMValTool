@@ -73,26 +73,13 @@ def _create_sample_cube():
 def put_dummy_data(data_path):
     """Create a small dummy netCDF file to be cmorized."""
     gen_cube = _create_sample_cube()
-    t_path = os.path.join(data_path, "woa13_decav81B0_t00_01.nc")
+    t_path = os.path.join(data_path, "woa18_decav_t00_01.nc")
     # correct var names
     gen_cube.var_name = "t_an"
     iris.save(gen_cube, t_path)
-    s_path = os.path.join(data_path, "woa13_decav81B0_s00_01.nc")
+    s_path = os.path.join(data_path, "woa18_decav_s00_01.nc")
     gen_cube.var_name = "s_an"
     iris.save(gen_cube, s_path)
-    # incorrect var names
-    o2_path = os.path.join(data_path, "woa13_all_o00_01.nc")
-    gen_cube.var_name = "o2"
-    iris.save(gen_cube, o2_path)
-    no3_path = os.path.join(data_path, "woa13_all_n00_01.nc")
-    gen_cube.var_name = "no3"
-    iris.save(gen_cube, no3_path)
-    po4_path = os.path.join(data_path, "woa13_all_p00_01.nc")
-    gen_cube.var_name = "po4"
-    iris.save(gen_cube, po4_path)
-    si_path = os.path.join(data_path, "woa13_all_i00_01.nc")
-    gen_cube.var_name = "si"
-    iris.save(gen_cube, si_path)
 
 
 def check_log_file(log_file, no_data=False):
@@ -109,12 +96,13 @@ def check_output_exists(output_path):
     """Check if cmorizer outputted."""
     # eg Tier2/WOA/OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc
     output_files = os.listdir(output_path)
-    # ['OBS_WOA_clim_2013v2_Omon_thetao_200001-200002.nc',
-    # 'OBS_WOA_clim_2013v2_Omon_so_200001-200002.nc']
-    assert len(output_files) == 2
+    assert len(output_files) == 4
     assert 'OBS_WOA_clim' in output_files[0]
-    assert 'thetao' in [s.split("_")[5] for s in output_files]
-    assert 'so' in [s.split("_")[5] for s in output_files]
+    out_files = [s.split("_")[5] for s in output_files]
+    assert 'thetao' in out_files
+    assert 'so' in out_files
+    assert 'sos' in out_files
+    assert 'tos' in out_files
 
 
 def check_conversion(output_path):
