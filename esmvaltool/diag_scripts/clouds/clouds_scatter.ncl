@@ -116,12 +116,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (config_user_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
-
 end
 
 begin
@@ -303,7 +297,7 @@ begin
   ; ###########################################
 
   nc_filename = work_dir + "clouds_scatter_" + var_x + "_" + var_y + \
-                filename_add + ".nc"
+    filename_add + ".nc"
 
   result!0 = "model"
   result!1 = "bin"
@@ -322,98 +316,80 @@ begin
   ; # create the plots                        #
   ; ###########################################
 
-  if (write_plots) then
+  plots = new(dim_MOD, graphic)
+  res = True
 
-    plots = new(dim_MOD, graphic)
-    res = True
+  wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_scatter_" + \
+                var_x + "_" + var_y + filename_add)
 
-;    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_scatter_" + \
-;                  var_x + "_" + var_y + filename_add)
-;    wks_single = new(dim_MOD, graphic)
+  data = new((/2, nbins/), float)
+  if (ref_ind .gt. 0) then
+    data(0, :) = result(ref_ind, :)
+  else
+    data(0, :) = data@_FillValue
+  end if
 
-    data = new((/2, nbins/),float)
-    if (ref_ind .gt. 0) then
-      data(0, :) = result(ref_ind, :)
-    else
-      data(0, :) = data@_FillValue
+  do ii = 0, dim_MOD - 1
+    if (ii .eq. refidx_x) then
+      continue
     end if
 
-    do ii = 0, dim_MOD - 1
-      if (ii .eq. refidx_x) then
-        continue
-      end if
+    res@gsnDraw        = False  ; do not draw yet
+    res@gsnFrame       = False  ; don't advance frame
 
-      res@gsnDraw        = False  ; do not draw yet
-      res@gsnFrame       = False  ; don't advance frame
+    res@xyMarkLineMode    = "Markers"
+    res@xyMarkers         = (/4, 16/)
+    res@xyMonoMarkerColor = False
+    res@xyMarkerColors    = (/"black", "red"/)
+    res@xyMarkerSizeF     = 0.01
+    res@tmLabelAutoStride = True
 
-      res@xyMarkLineMode    = "Markers"
-      res@xyMarkers         = (/4, 16/)
-      res@xyMonoMarkerColor = False
-      res@xyMarkerColors    = (/"black", "red"/)
-      res@xyMarkerSizeF     = 0.01
-      res@tmLabelAutoStride = True
+    res@tiMainFontHeightF = 0.025
+    res@tiYAxisFontHeightF = 0.025
+    res@tiXAxisFontHeightF = 0.025
+    res@tiXAxisString = var_x + " (" + xunits + ")"
+    res@tiYAxisString = var_y + " (" + units + ")"
 
-      res@tiMainFontHeightF = 0.025
-      res@tiYAxisFontHeightF = 0.025
-      res@tiXAxisFontHeightF = 0.025
-      res@tiXAxisString = var_x + " (" + xunits + ")"
-      res@tiYAxisString = var_y + " (" + units + ")"
+    data(1, :) = result(ii, :)
 
-      data(1, :) = result(ii, :)
+    res@tiMainString = names(ii)
 
-;      plots(ii) = gsn_csm_xy(wks, result&bin, data, res)
-;
-;      ; also plot each model invidually
-;
-;      res_single = True
-;      copy_VarMeta(res, res_single)
-;      res_single@tiMainString = names(ii)
-      res@tiMainString = names(ii)
+    plots(ii) = gsn_csm_xy(wks, result&bin, data, res)
 
-      wks_single = get_wks("wks_" + names(ii), DIAG_SCRIPT, \
-                   "clouds_scatter_" + var_x + "_" + var_y + "_" + names(ii))
+    if (ii .eq. mm_ind) then
+      res_std = True
+      res_std@gsnDraw        = False  ; do not draw yet
+      res_std@gsnFrame       = False  ; don't advance frame
+      res_std@gsnXYFillColors = "lightpink"
+      res_std@xyLineColor = -1  ; Make lines transparent
+      mmstddev = new((/2, nbins/), float)
+      mmstddev(0, :) = result(mm_ind, :) - mmstd(:)
+      mmstddev(1, :) = result(mm_ind, :) + mmstd(:)
+      plotstd = gsn_csm_xy(wks, result&bin, mmstddev, res_std)
+      delete(mmstddev)
+      overlay(plots(ii), plotstd)
+    end if
 
-      plots(ii) = gsn_csm_xy(wks_single, result&bin, data, res)
+    draw(plots(ii))
+    frame(wks)
 
-      if (ii .eq. mm_ind) then
-        res_std = True
-        res_std@gsnDraw        = False  ; do not draw yet
-        res_std@gsnFrame       = False  ; don't advance frame
-        res_std@gsnXYFillColors = "lightpink"
-        res_std@xyLineColor = -1  ; Make lines transparent
-        mmstddev = new((/2, nbins/), float)
-        mmstddev(0, :) = result(mm_ind, :) - mmstd(:)
-        mmstddev(1, :) = result(mm_ind, :) + mmstd(:)
-        plotstd = gsn_csm_xy(wks_single, result&bin, mmstddev, res_std)
-        delete(mmstddev)
-        overlay(plots(ii), plotstd)
-      end if
+  end do
 
-      draw(plots(ii))
-      frame(wks_single)
-      delete(wks_single)
+  pres                      = True    ; needed to override
+                                      ; panelling defaults
+  pres@gsnPanelCenter                   = False
 
-    end do
+  idx = ind(.not.ismissing(plots))
+  n = dimsizes(idx)
+  pres@gsnPanelFigureStrings = names(idx)
+  pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  outfile = panelling(wks, plots(idx), (n + 3) / 4, 4, pres)
+  delete(idx)
 
-;    pres                      = True    ; needed to override
-;                                        ; panelling defaults
-;    pres@gsnPanelCenter                   = False
-;
-;    idx = ind(.not.ismissing(plots))
-;    n = dimsizes(idx)
-;    pres@gsnPanelFigureStrings = names(idx)
-;    pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
-;                                                / tofloat((dim_MOD + 1) / 2)/))
-;    pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
-;                                                / tofloat((dim_MOD + 1) / 2)/))
-;    outfile = panelling(wks, plots(idx), (n + 3) / 4, 4, pres)
-;    delete(idx)
-;
-;    log_info("Wrote " + outfile)
-    outfile = ""
-  else
-    outfile = ""
-  end if  ; if write_plots
+  log_info("Wrote " + outfile)
 
   ; ==========================================================================
 

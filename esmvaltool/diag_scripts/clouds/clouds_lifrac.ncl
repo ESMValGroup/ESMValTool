@@ -119,12 +119,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (config_user_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
-
 end
 
 begin
@@ -417,205 +411,203 @@ begin
 
   end do  ; ii-loop (models)
 
-  if (write_plots) then
-    ; save default color map in case it is needed later for optionally
-    ; plotting color bar to a separate file
+  ; save default color map in case it is needed later for optionally
+  ; plotting color bar to a separate file
 
-    tmp_colors = gsn_retrieve_colormap(wksice)
-    cdims = dimsizes(tmp_colors)
-    nboxes = dimsizes(res@cnLevels)
-    clen = cdims(0)
-    stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
-    fill_colors = ispan(2, clen(0) - 1, stride)
-    mean_colors = tmp_colors(fill_colors, :)
-    delete(tmp_colors)
-    delete(fill_colors)
-    delete(cdims)
+  tmp_colors = gsn_retrieve_colormap(wksice)
+  cdims = dimsizes(tmp_colors)
+  nboxes = dimsizes(res@cnLevels)
+  clen = cdims(0)
+  stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
+  fill_colors = ispan(2, clen(0) - 1, stride)
+  mean_colors = tmp_colors(fill_colors, :)
+  delete(tmp_colors)
+  delete(fill_colors)
+  delete(cdims)
 
-    ; sort plots if needed (observations go first)
+  ; sort plots if needed (observations go first)
 
-    plottmp = ispan(0, dim_MOD - 1, 1)
-    plotind = plottmp
+  plottmp = ispan(0, dim_MOD - 1, 1)
+  plotind = plottmp
 
-    ; move plots of observational datasets (if present) into the first line(s)
-    ; of the panel plot
+  ; move plots of observational datasets (if present) into the first line(s)
+  ; of the panel plot
 
-    j = 0
-    do i = 0, dimsizes(plottmp) - 1
-      if (i.eq.ref_ind) then
-        plotind(j) = plottmp(i)
-        j = j + 1
-      else if (plottmp(i) .lt. dimsizes(projects)) then
-        if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
-          plotind(j) = plottmp(i)
-          j = j + 1
-        end if
-      end if
-      end if
-    end do
-
-    do i = 0, dimsizes(plottmp) - 1
-      if ((isStrSubset(str_lower(projects(plottmp(i))), \
-                       "obs")).or.(i.eq.ref_ind)) then
-      else
+  j = 0
+  do i = 0, dimsizes(plottmp) - 1
+    if (i.eq.ref_ind) then
+      plotind(j) = plottmp(i)
+      j = j + 1
+    else if (plottmp(i) .lt. dimsizes(projects)) then
+      if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
         plotind(j) = plottmp(i)
         j = j + 1
       end if
-    end do
+    end if
+    end if
+  end do
 
-    pres                      = True    ; needed to override
+  do i = 0, dimsizes(plottmp) - 1
+    if ((isStrSubset(str_lower(projects(plottmp(i))), \
+                     "obs")).or.(i.eq.ref_ind)) then
+    else
+      plotind(j) = plottmp(i)
+      j = j + 1
+    end if
+  end do
+
+  pres                      = True    ; needed to override
                                         ; panelling defaults
 ;    pres@gsnPanelLabelBar     = True    ; add common colorbar
-    if (panel_labels) then
-      ; print dataset name on each panel
-      pres@gsnPanelFigureStrings = names(plotind)
-    end if
-    pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbAutoManage                     = False
-    pres@lbTopMarginF                     = 0.1
-    pres@lbTitleOn                        = True
-    pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbTitlePosition                  = "Bottom"
-    pres@gsnPanelCenter                   = False
-    if (dim_MOD.le.8) then
-      pres@pmLabelBarOrthogonalPosF       = -0.03
+  if (panel_labels) then
+    ; print dataset name on each panel
+    pres@gsnPanelFigureStrings = names(plotind)
+  end if
+  pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbAutoManage                     = False
+  pres@lbTopMarginF                     = 0.1
+  pres@lbTitleOn                        = True
+  pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbTitlePosition                  = "Bottom"
+  pres@gsnPanelCenter                   = False
+  if (dim_MOD.le.8) then
+    pres@pmLabelBarOrthogonalPosF       = -0.03
+  else
+    pres@pmLabelBarOrthogonalPosF       = -0.01   ; shift label bar a bit to
+                                                  ; the bottom
+  end if
+
+  if (embracesetup) then
+    pres@gsnPanelRowSpec = True             ; tell panel what order to plt
+    pres@gsnPanelYWhiteSpacePercent = 5
+    pres@gsnPanelXWhiteSpacePercent = 5
+    if (isatt(diag_script_info, "PanelTop")) then
+      top = tofloat(diag_script_info@PanelTop)
     else
-      pres@pmLabelBarOrthogonalPosF       = -0.01   ; shift label bar a bit to
-                                                    ; the bottom
+      top = 0.99  ; default
+    end if
+    pres@gsnPanelTop = top
+
+    if (isvar("plotsperline")) then
+      delete(plotsperline)
     end if
 
-    if (embracesetup) then
-      pres@gsnPanelRowSpec = True             ; tell panel what order to plt
-      pres@gsnPanelYWhiteSpacePercent = 5
-      pres@gsnPanelXWhiteSpacePercent = 5
-      if (isatt(diag_script_info, "PanelTop")) then
-        top = tofloat(diag_script_info@PanelTop)
-      else
-        top = 0.99  ; default
+    plotsperline = new((dim_MOD + 1) / 2, integer)
+    plotsperline = 2
+
+    if ((isStrSubset(str_lower(projects(plotind(0))), \
+                     "obs")).and. \
+       .not.(isStrSubset(str_lower(projects(plotind(1))), \
+                         "obs"))) then
+      plotsperline(0) = 1
+    end if
+
+    if (sum(plotsperline).gt.dimsizes(plotind)) then
+      plotsperline(dimsizes(plotsperline) - 1) = 1
+    end if
+
+    if (sum(plotsperline).lt.dimsizes(plotind)) then
+      xadd = 1
+      xtmp = array_append_record(plotsperline, xadd, 0)
+      delete(plotsperline)
+      plotsperline = xtmp
+      delete(xtmp)
+    end if
+
+    pres_ice = pres
+    pres_liq = pres
+    pres_ice@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
+    pres_liq@lbTitleString = liqfrac@long_name + " (" + liqfrac@units + ")"
+
+    gsn_panel(wksice, maps_ice(plotind), plotsperline, pres_ice)
+    gsn_panel(wksliq, maps_liq(plotind), plotsperline, pres_liq)
+    outfile_ice = wksice@fullname
+    outfile_liq = wksliq@fullname
+
+  else  ; if embracesetup
+    pres_ice = pres
+    pres_liq = pres
+    pres_ice@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
+    pres_liq@lbTitleString = liqfrac@long_name + " (" + liqfrac@units + ")"
+
+    outfile_ice = panelling(wksice, maps_ice(plotind), (dim_MOD + 3) / 4, \
+                            4, pres_ice)
+    outfile_liq = panelling(wksliq, maps_liq(plotind), (dim_MOD + 3) / 4, \
+                            4, pres_liq)
+  end if  ; if embracesetup
+
+  log_info("Wrote " + outfile_ice + ", " + outfile_liq)
+
+  ; ----------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s) (mean)
+  ; ----------------------------------------------------------------------
+
+  statistics = (/"clim", "mean"/)
+  domain = "global"
+  plottype = "zonal"
+
+  caption = "Zonal mean values for variable " + icefrac@var + "."
+  log_provenance(nc_outfile_ice, outfile_ice, caption, statistics, \
+                 domain, plottype, "", "", infiles)
+
+  caption = "Zonal mean values for variable " + liqfrac@var + "."
+  log_provenance(nc_outfile_liq, outfile_liq, caption, statistics, \
+                 domain, plottype, "", "", infiles)
+
+  ; ======================================================================
+
+  ; optionally save legends to extra files
+
+  if (extralegend) then
+    nboxes = dimsizes(res@cnLevels) + 1
+    wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_lifrac_legend")
+    pres@lbMonoFillPattern = True
+    pres@lbOrientation = "Horizontal"
+    pres@vpWidthF = 0.7
+    pres@vpHeightF = 0.1
+    pres@lbLabelFontHeightF = 0.015
+    pres@lbLabelAlignment = "InteriorEdges"
+    pres@lbTitleFontHeightF = 0.015
+    pres@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
+
+    labels = tostring(res@cnLevels)
+
+    ; remove trailing zeros from strings
+
+    do i = 0, dimsizes(labels) - 1
+      i1  = str_index_of_substr(labels(i), ".", -1)
+      if (.not.ismissing(i1)) then
+        tmp = stringtochar(labels(i))
+        do j = dimsizes(tmp) - 2, i1, 1
+          if ((tmp(j).ne.".").and.(tmp(j).ne."0")) then
+            break
+          end if
+        end do
+        labels(i) = chartostring(tmp(0:j))
+        delete(tmp)
       end if
-      pres@gsnPanelTop = top
+    end do
 
-      if (isvar("plotsperline")) then
-        delete(plotsperline)
-      end if
+    if (isatt(icefrac, "res_cnFillColors")) then
+      pres@lbFillColors = res@cnFillColors
+    else if (isatt(icefrac, "res_cnFillPalette")) then
+      pres@lbFillColors = res@cnFillPalette
+    else
+      pres@lbFillColors = mean_colors  ; default colors
+    end if
+    end if
 
-      plotsperline = new((dim_MOD + 1) / 2, integer)
-      plotsperline = 2
+    gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
 
-      if ((isStrSubset(str_lower(projects(plotind(0))), \
-                       "obs")).and. \
-         .not.(isStrSubset(str_lower(projects(plotind(1))), \
-                           "obs"))) then
-        plotsperline(0) = 1
-      end if
+    delete(wksleg)
+    delete(labels)
+    delete(pres@lbFillColors)
 
-      if (sum(plotsperline).gt.dimsizes(plotind)) then
-        plotsperline(dimsizes(plotsperline) - 1) = 1
-      end if
-
-      if (sum(plotsperline).lt.dimsizes(plotind)) then
-        xadd = 1
-        xtmp = array_append_record(plotsperline, xadd, 0)
-        delete(plotsperline)
-        plotsperline = xtmp
-        delete(xtmp)
-      end if
-
-      pres_ice = pres
-      pres_liq = pres
-      pres_ice@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
-      pres_liq@lbTitleString = liqfrac@long_name + " (" + liqfrac@units + ")"
-
-      gsn_panel(wksice, maps_ice(plotind), plotsperline, pres_ice)
-      gsn_panel(wksliq, maps_liq(plotind), plotsperline, pres_liq)
-      outfile_ice = wksice@fullname
-      outfile_liq = wksliq@fullname
-
-    else  ; if embracesetup
-      pres_ice = pres
-      pres_liq = pres
-      pres_ice@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
-      pres_liq@lbTitleString = liqfrac@long_name + " (" + liqfrac@units + ")"
-
-      outfile_ice = panelling(wksice, maps_ice(plotind), (dim_MOD + 3) / 4, \
-                              4, pres_ice)
-      outfile_liq = panelling(wksliq, maps_liq(plotind), (dim_MOD + 3) / 4, \
-                              4, pres_liq)
-    end if  ; if embracesetup
-
-    log_info("Wrote " + outfile_ice + ", " + outfile_liq)
-
-    ; ----------------------------------------------------------------------
-    ; write provenance to netcdf output and plot file(s) (mean)
-    ; ----------------------------------------------------------------------
-
-    statistics = (/"clim", "mean"/)
-    domain = "global"
-    plottype = "zonal"
-
-    caption = "Zonal mean values for variable " + icefrac@var + "."
-    log_provenance(nc_outfile_ice, outfile_ice, caption, statistics, \
-                   domain, plottype, "", "", infiles)
-
-    caption = "Zonal mean values for variable " + liqfrac@var + "."
-    log_provenance(nc_outfile_liq, outfile_liq, caption, statistics, \
-                   domain, plottype, "", "", infiles)
-
-    ; ======================================================================
-
-    ; optionally save legends to extra files
-
-    if (extralegend) then
-      nboxes = dimsizes(res@cnLevels) + 1
-      wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_lifrac_legend")
-      pres@lbMonoFillPattern = True
-      pres@lbOrientation = "Horizontal"
-      pres@vpWidthF = 0.7
-      pres@vpHeightF = 0.1
-      pres@lbLabelFontHeightF = 0.015
-      pres@lbLabelAlignment = "InteriorEdges"
-      pres@lbTitleFontHeightF = 0.015
-      pres@lbTitleString = icefrac@long_name + " (" + icefrac@units + ")"
-
-      labels = tostring(res@cnLevels)
-
-      ; remove trailing zeros from strings
-
-      do i = 0, dimsizes(labels) - 1
-        i1  = str_index_of_substr(labels(i), ".", -1)
-        if (.not.ismissing(i1)) then
-          tmp = stringtochar(labels(i))
-          do j = dimsizes(tmp) - 2, i1, 1
-            if ((tmp(j).ne.".").and.(tmp(j).ne."0")) then
-              break
-            end if
-          end do
-          labels(i) = chartostring(tmp(0:j))
-          delete(tmp)
-        end if
-      end do
-
-      if (isatt(icefrac, "res_cnFillColors")) then
-        pres@lbFillColors = res@cnFillColors
-      else if (isatt(icefrac, "res_cnFillPalette")) then
-        pres@lbFillColors = res@cnFillPalette
-      else
-        pres@lbFillColors = mean_colors  ; default colors
-      end if
-      end if
-
-      gsn_labelbar_ndc(wksleg, nboxes, labels, 0.1, 0.9, pres)
-
-      delete(wksleg)
-      delete(labels)
-      delete(pres@lbFillColors)
-
-    end if  ; if (extralegend)
-  end if  ; if write_plots
+  end if  ; if (extralegend)
 
   ; ==========================================================================
 

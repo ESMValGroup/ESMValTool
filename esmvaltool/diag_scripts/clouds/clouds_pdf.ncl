@@ -71,12 +71,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (config_user_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
-
   ref_ind = -1  ; set to invalid value
 
   ; if attribute is present, use it so datasets can be sorted
@@ -276,144 +270,139 @@ begin
 
   end do  ; ii-loop (models)
 
-  if (write_plots) then
-    ; sort plots if needed (observations go first)
+  ; sort plots if needed (observations go first)
 
-    plottmp = ispan(0, dim_MOD - 1, 1)
-    plotind = plottmp
+  plottmp = ispan(0, dim_MOD - 1, 1)
+  plotind = plottmp
 
-    ; move plots of observational datasets (if present) into the first line(s)
-    ; of the panel plot
+  ; move plots of observational datasets (if present) into the first line(s)
+  ; of the panel plot
 
-    j = 0
-    do i = 0, dimsizes(plottmp) - 1
-      if (i.eq.ref_ind) then
-        plotind(j) = plottmp(i)
-        j = j + 1
-      else if (plottmp(i) .lt. dimsizes(projects)) then
-        if (isStrSubset(str_lower(projects(plottmp(i))), \
-                        "obs")) then
-          plotind(j) = plottmp(i)
-          j = j + 1
-        end if
-      end if
-      end if
-    end do
-
-    do i = 0, dimsizes(plottmp) - 1
-      if ((isStrSubset(str_lower(projects(plottmp(i))), \
-                       "obs")).or.(i.eq.ref_ind)) then
-      else
+  j = 0
+  do i = 0, dimsizes(plottmp) - 1
+    if (i.eq.ref_ind) then
+      plotind(j) = plottmp(i)
+      j = j + 1
+    else if (plottmp(i) .lt. dimsizes(projects)) then
+      if (isStrSubset(str_lower(projects(plottmp(i))), "obs")) then
         plotind(j) = plottmp(i)
         j = j + 1
       end if
-    end do
+    end if
+    end if
+  end do
 
-    pres                      = True    ; needed to override
-                                        ; panelling defaults
-
-    pres@gsnPanelFigureStrings = names(plotind)
-
-    pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbAutoManage                     = False
-    pres@lbTopMarginF                     = 0.1
-    pres@lbTitleOn                        = True
-    pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbTitlePosition                  = "Bottom"
-    pres@lbTitleString                    = data1@long_name + " (" \
-      + data1@units + ")"
-    pres@lbPerimOn                        = False   ; draw line around label
-                                                    ; bar area
-    pres@gsnPanelCenter                   = False
-    if (dim_MOD.le.8) then
-      pres@pmLabelBarOrthogonalPosF       = -0.03
+  do i = 0, dimsizes(plottmp) - 1
+    if ((isStrSubset(str_lower(projects(plottmp(i))), \
+                     "obs")).or.(i.eq.ref_ind)) then
     else
-      pres@pmLabelBarOrthogonalPosF       = -0.01   ; shift label bar a bit to
-                                                    ; the bottom
+      plotind(j) = plottmp(i)
+      j = j + 1
     end if
+  end do
 
-    pres@gsnPanelRowSpec = True             ; tell panel what order to plt
-    pres@gsnPanelYWhiteSpacePercent = 5
-    pres@gsnPanelXWhiteSpacePercent = 5
-    if (isatt(diag_script_info, "PanelTop")) then
-      top = tofloat(diag_script_info@PanelTop)
-    else
-      top = 0.99  ; default
-    end if
-    pres@gsnPanelTop = top
+  pres                      = True    ; needed to override
+                                      ; panelling defaults
 
-    if (isvar("plotsperline")) then
-      delete(plotsperline)
-    end if
+  pres@gsnPanelFigureStrings = names(plotind)
 
-    plotsperline = new((dim_MOD + 1) / 4, integer)
-    plotsperline = 4
+  pres@gsnPanelFigureStringsFontHeightF = min((/0.01, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbLabelFontHeightF               = min((/0.015, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbAutoManage                     = False
+  pres@lbTopMarginF                     = 0.1
+  pres@lbTitleOn                        = True
+  pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
+                                              / tofloat((dim_MOD + 1) / 2)/))
+  pres@lbTitlePosition                  = "Bottom"
+  pres@lbTitleString                    = data1@long_name + " (" \
+    + data1@units + ")"
+  pres@lbPerimOn                        = False   ; draw line around label
+                                                  ; bar area
+  pres@gsnPanelCenter                   = False
+  if (dim_MOD.le.8) then
+    pres@pmLabelBarOrthogonalPosF       = -0.03
+  else
+    pres@pmLabelBarOrthogonalPosF       = -0.01   ; shift label bar a bit to
+                                                  ; the bottom
+  end if
 
-    if ((isStrSubset(str_lower(projects(plotind(0))), \
-                     "obs")).and. \
-       .not.(isStrSubset(str_lower(projects(plotind(1))), \
-                         "obs"))) then
-      plotsperline(0) = 1
-    end if
+  pres@gsnPanelRowSpec = True             ; tell panel what order to plt
+  pres@gsnPanelYWhiteSpacePercent = 5
+  pres@gsnPanelXWhiteSpacePercent = 5
+  if (isatt(diag_script_info, "PanelTop")) then
+    top = tofloat(diag_script_info@PanelTop)
+  else
+    top = 0.99  ; default
+  end if
+  pres@gsnPanelTop = top
 
-    if (sum(plotsperline).gt.dimsizes(plotind)) then
-      plotsperline(dimsizes(plotsperline) - 1) = 1
-    end if
+  if (isvar("plotsperline")) then
+    delete(plotsperline)
+  end if
 
-    if (sum(plotsperline).lt.dimsizes(plotind)) then
-      xadd = 1
-      xtmp = array_append_record(plotsperline, xadd, 0)
-      delete(plotsperline)
-      plotsperline = xtmp
-      delete(xtmp)
-    end if
+  plotsperline = new((dim_MOD + 1) / 4, integer)
+  plotsperline = 4
 
-    gsn_panel(wks, plot(plotind), plotsperline, pres)
-    outfile = wks@fullname
+  if ((isStrSubset(str_lower(projects(plotind(0))), \
+                   "obs")).and. \
+     .not.(isStrSubset(str_lower(projects(plotind(1))), \
+                       "obs"))) then
+    plotsperline(0) = 1
+  end if
 
-    ; ========================================================================
+  if (sum(plotsperline).gt.dimsizes(plotind)) then
+    plotsperline(dimsizes(plotsperline) - 1) = 1
+  end if
 
-    delete(res)
-    res = True
-    res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
-    res@tiYAxisString = "Frequency (" + data_all@units + ")"
-    diag_script_info@xy_line_legend = False
-    data_all@legend_outside = True
-    wks_line@legendfile = get_plot_dir() + "clouds_pdf_" + var0 + filename_add + "_legend"
-    xy_line(wks_line, data_all, data_all&$var0$, dim_stddev_n(data_all, 0), \
-            res, info0)
-    outfile_line = wks_line@fullname
+  if (sum(plotsperline).lt.dimsizes(plotind)) then
+    xadd = 1
+    xtmp = array_append_record(plotsperline, xadd, 0)
+    delete(plotsperline)
+    plotsperline = xtmp
+    delete(xtmp)
+  end if
 
-    ; ========================================================================
+  gsn_panel(wks, plot(plotind), plotsperline, pres)
+  outfile = wks@fullname
 
-    log_info("Wrote " + outfile)
-    log_info("Wrote " + outfile_line)
+  ; ========================================================================
 
-    ; ------------------------------------------------------------------------
-    ; write provenance to netcdf output and plot file(s) (mean)
-    ; ------------------------------------------------------------------------
+  delete(res)
+  res = True
+  res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
+  res@tiYAxisString = "Frequency (" + data_all@units + ")"
+  diag_script_info@xy_line_legend = False
+  data_all@legend_outside = True
+  wks_line@legendfile = get_plot_dir() + "clouds_pdf_" + var0 \
+    + filename_add + "_legend"
+  xy_line(wks_line, data_all, data_all&$var0$, dim_stddev_n(data_all, 0), \
+          res, info0)
+  outfile_line = wks_line@fullname
 
-    statistics = (/"clim", "pdf"/)
-    if (isatt(diag_script_info, "region")) then
-      domain = "reg"
-    else
-      domain = "global"
-    end if
-    plottype = "geo"
+  ; ========================================================================
 
-    caption = "Pdf of variable " + var0 + ")."
-    log_provenance(nc_outfile, outfile, caption, statistics, \
-                   domain, plottype, "", "", climofiles)
+  log_info("Wrote " + outfile)
+  log_info("Wrote " + outfile_line)
 
-    ; ========================================================================
+  ; ------------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s) (mean)
+  ; ------------------------------------------------------------------------
 
-  end if  ; if write_plots
+  statistics = (/"clim", "pdf"/)
+  if (isatt(diag_script_info, "region")) then
+    domain = "reg"
+  else
+    domain = "global"
+  end if
+  plottype = "geo"
 
-  ; ==========================================================================
+  caption = "Pdf of variable " + var0 + ")."
+  log_provenance(nc_outfile, outfile, caption, statistics, \
+                 domain, plottype, "", "", climofiles)
+
+  ; ========================================================================
 
   leave_msg(DIAG_SCRIPT, "")
 
