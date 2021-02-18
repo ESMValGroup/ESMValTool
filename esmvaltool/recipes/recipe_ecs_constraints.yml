@@ -37,7 +37,7 @@ DIAG_NCL: &diag_ncl
   output_diag_only: true
 
 DIAG_EMERGENT_CONSTRAINT: &diag_emergent_constraint
-  script: emergent_constraints/univariate_constraint.py
+  script: emergent_constraints/single_constraint.py
   ancestors: [
     'ecs_predictor',
     'diag_y_ecs_cmip5/ecs',
