@@ -19,9 +19,9 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/bock20jgr/
 
-    * tsline.ncl: timeseries of global mean surface temperature anomaly
+    * tsline.ncl: timeseries of global mean surface temperature anomalies
     * tsline_collect.ncl: collect different timeseries from tsline.ncl to 
-      compare different models ensembels
+      compare different models ensembles
     * model_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias
 
@@ -39,8 +39,8 @@ User settings in recipe
 
    * time_avg: type of time average (currently only "yearly" and "monthly" are
      available).
-   * ts_anomaly: calculates anomalies with respect to the defined period;
-     for each gird point by removing the mean for the given
+   * ts_anomaly: calculates anomalies with respect to the defined reference
+     period; for each gird point by removing the mean for the given
      calendar month (requiring at least 50% of the data to be
      non-missing)
    * ref_start: start year of reference period for anomalies
@@ -53,8 +53,8 @@ User settings in recipe
    * y_max: set max of y-axis
    * mean_nh_sh: if true, calculate first NH and SH mean
    * volcanoes: if true, lines of main volcanic eruptions will be added
-   * header: if true, region name as header
-   * write_stat: if true, write multi model statistics in nc-file
+   * header: if true, use region name as header
+   * write_stat: if true, write multi-model statistics to nc-file
 
    *Required settings (variables)*
 
@@ -103,8 +103,8 @@ User settings in recipe
 
    *Optional settings (scripts)*
 
-   * projection:    map projection, e.g., Mollweide, Mercator
-   * timemean:      time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
+   * projection: map projection, e.g., Mollweide, Mercator
+   * timemean: time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
      "annualclim" (annual mean) 
 
    * Required settings (variables)*
@@ -151,6 +151,11 @@ References
   across different CMIP phases with the ESMValTool, Journal of Geophysical 
   Research: Atmospheres, 125, e2019JD032321. https://doi.org/10.1029/2019JD032321
 
+* Copernicus Climate Change Service (C3S), 2017: ERA5: Fifth generation of
+  ECMWF atmospheric reanalyses of the global climate, edited, Copernicus
+  Climate Change Service Climate Data Store (CDS).
+  https://cds.climate.copernicus.eu/cdsapp#!/home
+
 * Flato, G., J. Marotzke, B. Abiodun, P. Braconnot, S.C. Chou, W. Collins, P.
   Cox, F. Driouech, S. Emori, V. Eyring, C. Forest, P. Gleckler, E. Guilyardi,
   C. Jakob, V. Kattsov, C. Reason and M. Rummukainen, 2013: Evaluation of
@@ -161,6 +166,11 @@ References
   P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom
   and New York, NY, USA.
 
+* Morice, C. P., Kennedy, J. J., Rayner, N. A., & Jones, P., 2012: Quantifying
+  uncertainties in global and regional temperature change using an ensemble of
+  observational estimates: The HadCRUT4 data set, Journal of Geophysical
+  Research, 117, D08101. https://doi.org/10.1029/2011JD017187
+
 
 Example plots
 -------------
@@ -170,7 +180,7 @@ Example plots
    :align:   center
 
    Observed and simulated time series of the anomalies in annual and global mean
-   surface temperature. All anomalies are differences from the 1850–1900 time 
+   surface temperature. All anomalies are differences from the 1850-1900 time 
    mean of each individual time series.
 
 .. _fig_bock20jgr_2:
@@ -180,7 +190,7 @@ Example plots
 
    Observed and simulated time series of the anomalies in annual
    and global mean surface temperature as in Figure 1; all anomalies are
-   calculated by subtracting the 1850–1900 time mean from the time series.
+   calculated by subtracting the 1850-1900 time mean from the time series.
    Displayed are the multimodel means of all three CMIP ensembles with
    shaded range of the respective standard deviation. In black the HadCRUT4
    data set (HadCRUT4; Morice et al., 2012). Gray shading shows the 5% to
@@ -195,6 +205,6 @@ Example plots
 
    Annual mean near‐surface (2 m) air temperature (°C). (a) Multimodel (ensemble)
    mean constructed with one realization of CMIP6 historical experiments for the
-   period 1995–2014. Multimodel‐mean bias of (b) CMIP6 (1995–2014) compared to
+   period 1995-2014. Multimodel‐mean bias of (b) CMIP6 (1995-2014) compared to
    the corresponding time period of the climatology from ERA5
    (Copernicus Climate Change Service (C3S), 2017).
