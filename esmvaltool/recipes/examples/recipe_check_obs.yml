@@ -250,7 +250,7 @@ diagnostics:
     additional_datasets:
       - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
          type: sat, version: 2.1,
-         start_year: 1992, end_year: 2010}
+         start_year: 1982, end_year: 2019}
     scripts: null
 
 

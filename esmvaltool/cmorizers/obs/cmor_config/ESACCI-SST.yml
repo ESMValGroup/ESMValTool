@@ -3,7 +3,7 @@
 filename: '{year}{month}15_regridded_sst.nc'
 attributes:
   dataset_id: ESACCI-SST
-  version: '2.2'
+  version: '2.1'
   tier: 2
   modeling_realm: sat
   project_id: OBS
