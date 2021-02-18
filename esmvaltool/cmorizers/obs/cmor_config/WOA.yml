@@ -16,12 +16,10 @@ variables:
     mip: Omon
     raw: t_an
     file: woa18_decav_t00_01.nc
-    #file: woa13_decav81B0_t
   so:
     mip: Omon
     raw: s_an
     file: woa18_decav_s00_01.nc
-    #file: woa13_decav81B0_s
   tos:
     mip: Omon
     raw: t_an
@@ -30,22 +28,6 @@ variables:
     mip: Omon
     raw: s_an
     file: woa18_decav_s00_01.nc
-#  o2:
-#    mip: Oyr
-#    raw: o_an
-#    file: woa13_all_o
-#  no3:
-#    mip: Oyr
-#    raw: n_an
-#    file: woa13_all_n
-#  po4:
-#    mip: Oyr
-#    raw: p_an
-#    file: woa13_all_p
-#  si:
-#    mip: Oyr
-#    raw: i_an
-#    file: woa13_all_i
 
 # Custom dictionary for this cmorizer
 custom:
