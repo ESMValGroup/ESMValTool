@@ -10,7 +10,6 @@ from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
     get_plot_filename,
-    group_metadata,
     run_diagnostic,
 )
 
@@ -163,39 +162,33 @@ def read_input_data(metadata: list, dim: str = 'dataset'):
     return stacked_datasets
 
 
-def get_diagnostic_data(cfg):
-    """Get diagnostic name and data."""
-    input_data = cfg['input_data'].values()
-    diagnostic_data = group_metadata(input_data, 'diagnostic')
-    return list(diagnostic_data.items())[0]
-
-
 def main(cfg):
     """Load and plot hydro forcing data."""
-    diagnostic, metadata = get_diagnostic_data(cfg)
+    entry_point = cfg['entry_point']
+    metadata = list(cfg['input_data'].values())
 
-    if diagnostic == 'sample_year':
+    if entry_point == 'sample_year':
         plot_timeseries_data(
             cfg,
             metadata=metadata,
             time_unit='D',
             title='Daily precipitation',
         )
-    elif diagnostic == 'total_precipitation':
+    elif entry_point == 'total_precipitation':
         plot_timeseries_data(
             cfg,
             metadata=metadata,
             time_unit='M',
             title='Monthly total precipitation',
         )
-    elif diagnostic == 'climatology':
+    elif entry_point == 'climatology':
         plot_climatology(
             cfg,
             metadata=metadata,
             title='Precipitation per month',
         )
     else:
-        raise ValueError(f'Unknown diagnostic: {diagnostic}')
+        raise ValueError(f'Unknown entry_point: {entry_point!r}')
 
 
 if __name__ == '__main__':

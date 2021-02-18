@@ -60,6 +60,7 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
+        entry_point: sample_year
 
   total_precipitation:
     variables:
@@ -71,6 +72,7 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
+        entry_point: total_precipitation
 
   climatology:
     variables:
@@ -82,3 +84,4 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
+        entry_point: climatology

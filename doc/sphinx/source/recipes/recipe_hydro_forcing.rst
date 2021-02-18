@@ -34,10 +34,17 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 
 #. recipe ``hydrology/hydro_forcing.yml``
 
-   *Optional preprocessor settings:*
+  *Optional preprocessor settings:*
 
-      * extract_region: the region specified here should match the catchment
+    * ``extract_shape``: The region specified here should match the catchment
 
+  *Required settings for script:*
+
+    * ``entry_point``: Define which diagnostic function to run. Choices:
+
+      * ``sample_year``: Plot a timeseries of the raw daily data
+      * ``total_precipitation``: Plot monthly aggregrated data over a certain period
+      * ``climatology``: Plot the monthly climate statistics over a certain period
 
 Variables
 ---------
