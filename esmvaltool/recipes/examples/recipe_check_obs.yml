@@ -655,8 +655,14 @@ diagnostics:
         mip: day
     additional_datasets:
       - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
-         type: sat, version: CUSTOM-TCDR-ICDR-20200602,
-         start_year: 1978, end_year: 2020}
+         type: sat, version: ACTIVE,
+         start_year: 1992, end_year: 2020}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: COMBINED,
+         start_year: 1979, end_year: 2020}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: PASSIVE,
+         start_year: 1979, end_year: 2020}
     scripts: null
 
 
@@ -1225,7 +1231,8 @@ diagnostics:
       hurStderr:
         mip: Amon
     additional_datasets:
-      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004', start_year: 2005, end_year: 2019}
+      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004',
+         start_year: 2005, end_year: 2019}
     scripts: null
 
 
