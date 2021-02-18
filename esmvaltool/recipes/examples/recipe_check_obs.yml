@@ -467,23 +467,6 @@ diagnostics:
     scripts: null
 
 
-  NSIDC-0116:
-    description: NSIDC-0116 check
-    variables:
-      areacello:
-        mip: fx
-      usi:
-        mip: day
-      vsi:
-        mip: day
-    additional_datasets:
-      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
-         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
-      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
-         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
-    scripts: null
-
-
   PATMOS-x:
     description: PATMOS-x check
     variables:
@@ -1279,6 +1262,23 @@ diagnostics:
     additional_datasets:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
+    scripts: null
+
+
+  NSIDC-0116:
+    description: NSIDC-0116 check
+    variables:
+      areacello:
+        mip: fx
+      usi:
+        mip: day
+      vsi:
+        mip: day
+    additional_datasets:
+      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
 
