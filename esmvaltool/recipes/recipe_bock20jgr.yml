@@ -98,18 +98,18 @@ CMIP6_tas: &cmip6_tas
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
 
 CMIP6_HighResMIP_low: &cmip6_highresmip_low
-  # - {dataset: CMCC-CM2-HR4, exp: hist-1950, grid: gn}  # no data
+  - {dataset: CMCC-CM2-HR4, exp: hist-1950, grid: gn}
   - {dataset: CNRM-CM6-1, exp: hist-1950, ensemble: r1i1p1f2}
   - {dataset: ECMWF-IFS-LR, exp: hist-1950, ensemble: r1i1p1f1}
   - {dataset: HadGEM3-GC31-LL, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: MPI-ESM1-2-HR, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
 
 CMIP6_HighResMIP_high: &cmip6_highresmip_high
-  # - {dataset: CMCC-CM2-VHR4, exp: hist-1950, grid: gn}  # no data
+  - {dataset: CMCC-CM2-VHR4, exp: hist-1950, grid: gn}
   - {dataset: CNRM-CM6-1-HR, exp: hist-1950, ensemble: r1i1p1f2}
   - {dataset: ECMWF-IFS-HR, exp: hist-1950, ensemble: r1i1p1f1}
   - {dataset: HadGEM3-GC31-HM, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: MPI-ESM1-2-XR, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-XR, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
 
 
 CMIP5_tas: &cmip5_tas
