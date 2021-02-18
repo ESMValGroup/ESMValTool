@@ -5,9 +5,14 @@ To use this tool, follow these steps:
 2) Create an access token and store it in the file ~/.github_api_key, see:
 https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 3) set PREVIOUS_RELEASE to the date/time of the previous release in code below
+4) Call the script passing the project to create release notes on: esmvalcore
+or esmvaltool
 """
 import datetime
 from pathlib import Path
+
+import dateutil
+import fire
 
 try:
     from github import Github
@@ -22,10 +27,48 @@ except FileNotFoundError:
           "authenticating-to-github/creating-a-personal-access-token-"
           "for-the-command-line")
 
-from esmvalcore import __version__
+import esmvalcore
 
-VERSION = f"v{__version__}"
-GITHUB_REPO = "ESMValGroup/ESMValCore"
+import esmvaltool
+
+VERSION = {
+    'esmvalcore': f"v{esmvalcore.__version__}",
+    'esmvaltool': f"v{esmvaltool.__version__}"
+}
+GITHUB_REPO = {
+    'esmvalcore': "ESMValGroup/ESMValCore",
+    'esmvaltool': "ESMValGroup/ESMValTool",
+}
+
+PREVIOUS_RELEASE = {
+    'esmvalcore': datetime.datetime(2020, 10, 13, 00),
+    'esmvaltool': datetime.datetime(2020, 10, 26, 00),
+}
+LABELS = {
+    'esmvalcore': (
+        'bug',
+        'deprecated feature',
+        'documentation',
+        'fix for dataset',
+        'cmor',
+        'preprocessor',
+        'api',
+        'testing',
+        'installation',
+        'enhancement',
+    ),
+    'esmvaltool': (
+        'bug',
+        'deprecated feature',
+        'documentation',
+        'diagnostic',
+        'preprocessor',
+        'observations',
+        'testing',
+        'installation',
+        'enhancement',
+    )
+}
 
 TITLES = {
     'bug': 'Bug fixes',
@@ -40,18 +83,28 @@ TITLES = {
 }
 
 
-def draft_notes_since(previous_release_date, labels):
+def draft_notes_since(project, previous_release_date=None, labels=None):
     """Draft release notes containing the merged pull requests.
 
     Arguments
     ---------
+    project: str
+        Project to draft release notes from. Valid options are esmvaltool and
+        esmvalcore
     previous_release_date: datetime.datetime
         date of the previous release
     labels: list
         list of GitHub labels that deserve separate sections
     """
+    project = project.lower()
+    if previous_release_date is None:
+        previous_release_date = PREVIOUS_RELEASE[project]
+    else:
+        previous_release_date = dateutil.parse(previous_release_date)
+    if labels is None:
+        labels = LABELS[project]
     session = Github(GITHUB_API_KEY)
-    repo = session.get_repo(GITHUB_REPO)
+    repo = session.get_repo(GITHUB_REPO[project])
     pulls = repo.get_pulls(
         state='closed',
         sort='updated',
@@ -96,8 +149,8 @@ def draft_notes_since(previous_release_date, labels):
 
     # Create sections
     sections = [
-        VERSION,
-        '-' * len(VERSION),
+        VERSION[project],
+        '-' * len(VERSION[project]),
         '',
         "This release includes",
     ]
@@ -114,21 +167,18 @@ def draft_notes_since(previous_release_date, labels):
     print(notes)
 
 
+def main():
+    def display(lines, out):
+        text = "\n".join(lines) + "\n"
+        out.write(text)
+
+    fire.core.Display = display
+
+    try:
+        fire.Fire(draft_notes_since)
+    except fire.core.FireExit:
+        raise
+
+
 if __name__ == '__main__':
-
-    PREVIOUS_RELEASE = datetime.datetime(2020, 10, 13, 00)
-    LABELS = (
-        'bug',
-        'deprecated feature',
-        'documentation',
-        'diagnostic',
-        'fix for dataset',
-        'cmor',
-        'preprocessor',
-        'observations',
-        'api',
-        'testing',
-        'enhancement',
-    )
-
-    draft_notes_since(PREVIOUS_RELEASE, LABELS)
+    main()
