@@ -1,7 +1,7 @@
 """Re-chunk the time dimension, to be used by the regrid processor.
 
-For large cubes, regridding to a high resolution grid increases
-the size of the data. To solve this, we re-chunk the time dimension.
+For large cubes, regridding to a high resolution grid increases the size
+of the data. To reduce memory use, we re-chunk the time dimension.
 
 Related iris issue:
 https://github.com/SciTools/iris/issues/3808
