@@ -1,0 +1,28 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: GRACE
+  project_id: OBS6
+  tier: 3
+  version: '1'
+  modeling_realm: sat
+  source: 'https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06_V2'
+  reference: 'grace'
+  comment: |
+    'Grace'
+
+# Variables to CMORize
+variables:
+  lweGrace:
+    mip: Lmon
+    raw: lwe_thickness
+    file: 'GRCTellus.JPL.200204_202009.GLO.RL06M.MSCNv02CRI.nc'
+
+auxfiles:
+  land_mask:
+    'LAND_MASK.CRI.nc'
+  scale_factor:
+    'CLM4.SCALE_FACTOR.JPL.MSCNv02CRI.nc'
+
+grace_table:
+  'GRACE_GRACE-FO_Months_RL06.csv'

@@ -4,40 +4,97 @@
 Obtaining input data
 ********************
 
-ESMValTool accepts input data from various models as well as
-observations and reanalysis data, provided that they adhere to the
-CF/CMOR format. This section provides some guidelines for unfamiliar users.
+ESMValTool supports input data from climate models participating in
+`CMIP6 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip6>`__,
+`CMIP5 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip5>`__,
+`CMIP3 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip3>`__, and
+`CORDEX <https://cordex.org/>`__
+as well as observations, reanalysis, and any other data, provided that it
+adheres to the
+`CF conventions <https://cfconventions.org/>`__
+and the data is described in a
+`CMOR table <http://pcmdi.github.io/software/cmorTable/index.html>`__
+as used in the various
+`Climate Model Intercomparison Projects <http://pcmdi.github.io/mips/>`__.
+This section provides some guidelines for unfamiliar users.
+
+Because the amount of data required by ESMValTool is typically large, it is
+recommended that you use the tool on a compute cluster where the data is
+already available, for example because it is connected to an
+`ESGF node <https://esgf.llnl.gov/index.html>`__.
+Examples of such compute clusters are
+`Mistral <https://www.dkrz.de/up/systems/mistral>`__
+and
+`Jasmin <https://www.jasmin.ac.uk/>`__,
+but many more exist around the world.
+
+If you do not have access to such a facility through your institute or the
+project you are working on, you can request access by applying for the
+`IS-ENES3 Trans-national Access call <https://portal.enes.org/data/data-metadata-service/analysis-platforms>`__.
+
+If the options above are not available to you, ESMValTool also offers features
+to make it easier to download the data.
 
 Models
 ======
 
 ESMValTool will look for existing data in the directories specified in the
 user configuration file. Alternatively, it can use an external
-tool called Synda (http://prodiguer.github.io/synda/index.html). Here, we
-describe the basic steps to configure EMSValTool to work with Synda. This is
-the recommended approach for first-time users to quickly obtain some data for
-running ESMValTool.
+tool called `Synda <http://prodiguer.github.io/synda/index.html>`__. If you
+do not have access to a compute cluster with the data already mounted, this is
+the recommended approach for first-time users to obtain some data for
+running ESMValTool. It is also possible to manually download the files from
+ESGF, see
+`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__
+for a tutorial.
 
-To install Synda, follow the steps listed in the Synda documentation. This
-description assumes that you use the conda install. As the last step, Synda will
-ask to set your openID credentials. Therefore, you'll need to create an account
-at https://esgf-node.llnl.gov/projects/esgf-llnl/ and join a Data Access Control
-Group, e.g. CMIP5 Research. For more information, see
-https://esgf.github.io/esgf-user-support/user_guide.html.
+Installing Synda for use from ESMValTool
+----------------------------------------
+Here, we describe the basic steps to configure EMSValTool so it can use Synda
+to download CMIP6 or CMIP5 model data.
 
-Once you have set up Synda, you'll need to configure ESMValTool to recognize
+To install Synda, follow the steps listed in the
+`Synda installation documentation <http://prodiguer.github.io/synda/sdt/conda_install.html>`__.
+(This description assumes that Synda is installed using Conda.)
+As the last step, Synda will ask to set your openID credentials.
+Therefore, you'll need to create an account on an ESGF node, e.g.
+`the ESGF node at Lawrence Livermore National Laboratory <https://esgf-node.llnl.gov/projects/esgf-llnl/>`__
+and join a Data Access Control Group, e.g. 'CMIP5 Research'. For more information, see
+`the ESGF user guide <https://esgf.github.io/esgf-user-support/user_guide.html>`__.
+
+Once you have set up Synda, you'll need to configure ESMValTool to find
 your Synda installation. Note that it is not possible to combine the two in a
-single conda environment, for Synda requires python 2 and ESMValTool requires
-Python 3. Typing ``which synda`` while your synda environment
-is active will print its location. To make the ``synda`` program usable from ESMValTool we suggest
-creating a directory ``mkdir ~/bin`` and and appending that folder to your PATH
-environment variable, e.g. by adding the following line to your ``~/.bashrc`` file:
-``PATH=$PATH:$HOME/bin``.
+single
+`conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`__,
+because Synda requires python 2 and ESMValTool requires Python 3.
+Running
+
+.. code-block:: bash
+
+    which synda
+
+on the command line, while your synda environment is active, will print its location.
+To make the ``synda`` program usable from ESMValTool we suggest
+creating a directory
+
+.. code-block:: bash
+
+    mkdir ~/bin
+
+and appending that folder to your ``PATH`` environment variable,
+e.g. by adding the following line to your ``~/.bashrc`` file:
+
+.. code-block:: bash
+
+    PATH=$PATH:$HOME/bin
 
 Finally, in the new bin folder, make a link to synda:
-``ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda``.
 
-Now, ESMValTool should be able to recognize your Synda installation. First time
+.. code-block:: bash
+
+    ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda
+
+Now, ESMValTool should be able to find your Synda installation. First time
 users can now continue with :ref:`Running ESMValTool <running>`.
 
 Observations
@@ -75,7 +132,7 @@ To use this functionality, users need to provide a path for the ``native6`` proj
     datasets:
     - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
 
-Currently, the native6 project only supports ERA5 data in the format defined in the `config-developer file <https://github.com/ESMValGroup/ESMValCore/blob/a9312a7d5be4fa3aac55c0b2ef089c6b4e1a61a9/esmvalcore/config-developer.yml#L191-L201>`_. The filenames correspond to the default filenames from `era5cli <https://era5cli.readthedocs.io>`_ To support other datasets as well, we need to make it possible to have a dataset specific DRS. This is still on the horizon.
+Currently, the native6 project only supports ERA5 and ERA5-Land data in the format defined in the `config-developer file <https://github.com/ESMValGroup/ESMValCore/blob/a9312a7d5be4fa3aac55c0b2ef089c6b4e1a61a9/esmvalcore/config-developer.yml#L191-L201>`_. ERA5 data can be downloaded using `era5cli <https://era5cli.readthedocs.io>`_ To support other datasets as well, we need to make it possible to have a dataset specific DRS. This is still on the horizon.
 
 While it is not strictly necessary, it may still be useful in some cases to create a local pool of cmorized observations. This can be achieved by using a cmorizer *recipe*. For an example, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that operates on the data. In this example, the diagnostic renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, that can be used through the OBS6 project. As such, this example recipe does exactly the same as the cmorizer scripts described above: create a local pool of cmorized data. The advantage, in this case, is that the daily aggregation is performed only once, which can save a lot of time and compute if it is used often.
 
@@ -83,12 +140,13 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 .. code-block:: bash
 
-    esmvaltool -c [CONFIG_FILE] cmorizers/recipe_era5.yml
+    esmvaltool run cmorizers/recipe_era5.yml
 
 (Note that the ``recipe_era5.yml`` adds the next day of the new year to the input data. This is because one of the fixes needed for the ERA5 data is to shift (some of) the data half an hour back in time, resulting in a missing record on the last day of the year.)
 
 To add support for new variables using this method, one needs to add dataset-specific fixes to the ESMValCore. For more information about fixes, see: `fixing data <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/develop/fixing_data.html#fixing-data>`_.
 
+.. _supported_datasets:
 
 Supported datasets
 ------------------
@@ -139,6 +197,9 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | n/a             |
 |                              | tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx)                                                 |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ERA5-Land                    | pr                                                                                                   |   3  | n/a             |
+|                                                                                                                                     |      |                 |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
 |                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, ta, tas,      |      |                 |
 |                              | tasmax, tasmin, uas, va, vas, zg (day), evspsbl, tdps, ts, tsn, rss, tdps (Eday), tsn (LImon), hfds, |      |                 |
@@ -176,9 +237,13 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GPCC                         | pr (Amon)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| GRACE                        | lweGrace (Lmon)                                                                                      |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadCRUT3                     | tas, tasa (Amon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadCRUT4                     | tas, tasa (Amon)                                                                                     |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| HadCRUT5                     | tas (Amon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | HadISST                      | sic (OImon), tos (Omon), ts (Amon)                                                                   |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -226,6 +291,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | PIOMAS                       | sit (day)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | REGEN                        | pr (day, Amon)                                                                                       |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| Scripps-CO2-KUM              | co2s (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | UWisc                        | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
