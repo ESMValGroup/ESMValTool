@@ -18,7 +18,8 @@
 ;    For the 5% to 95% confidence interval of the combined effects of all the
 ;    uncertainties described in the HadCRUT4 error model (measurement and
 ;    sampling, bias, and coverage uncertainties) download:
-;    HadCRUT.4.6.0.0.monthly_ns_avg.txt
+;    HadCRUT.4.6.0.0.annual_ns_avg.txt from
+;    https://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html
 ;
 ; Caveats
 ;    In contrast to the HadCRUT3 reformat script which produces temperature
@@ -184,7 +185,7 @@ begin
   w->height = height
   delete(w)
   delete(gAtt1)
-  delet3(bounds1)
+  delete(bounds1)
   delete(output1)
 
   ; Write temperature anomaly time-series
