@@ -340,6 +340,7 @@ begin
     model_arr(dim_MOD - 2, :) = tmp
     model_arr&model(dim_MOD - 2) = variable_info[0]@reference_dataset
     info_items[dim_MOD - 2] = tmp1
+    ref_ind = dim_MOD - 2
     delete(tmp)
     delete(tmp1)
   end if
