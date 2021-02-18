@@ -13,7 +13,7 @@ Last access
 
 Download and processing instructions
    Download the following files:
-     WOA13: 
+     WOA13:
      temperature/netcdf/decav81B0/1.00/woa13_decav81B0_t00_01.nc
      salinity/netcdf/decav81B0/1.00/woa13_decav81B0_s00_01.nc
      oxygen/netcdf/all/1.00/woa13_all_o00_01.nc
@@ -66,11 +66,11 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
     for cube in cubes:
         if cube.var_name == rawvar:
             logger.info("CMORizing var %s", var)
-            if var in {'tos', 'sos'}:
-              logger.info("Extract level")
-              level_constraint = iris.Constraint(cube.var_name,
-                                                 depth=0)
-              cube = cube.extract(level_constraint)
+            if var in ['tos', 'sos']:
+                logger.info("Extract level")
+                level_constraint = iris.Constraint(cube.var_name,
+                                                   depth=0)
+                cube = cube.extract(level_constraint)
 
             fix_var_metadata(cube, var_info)
             convert_timeunits(cube, year)
@@ -88,11 +88,11 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # run the cmorization
     for var, vals in cfg['variables'].items():
-        for yr in cfg['custom']['years']:
+        for year in cfg['custom']['years']:
             inpfile = os.path.join(in_dir, vals['file'])
             logger.info("CMORizing var %s from file %s", var, inpfile)
             var_info = cmor_table.get_variable(vals['mip'], var)
             logger.info("units = %s", var_info.units)
             raw_info = {'name': vals['raw'], 'file': inpfile}
             glob_attrs['mip'] = vals['mip']
-            extract_variable(var_info, raw_info, out_dir, glob_attrs, yr)
+            extract_variable(var_info, raw_info, out_dir, glob_attrs, year)
