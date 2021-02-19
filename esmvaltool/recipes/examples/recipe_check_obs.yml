@@ -351,6 +351,8 @@ diagnostics:
     variables:
       tas:
       tasa:
+      tasConf5:
+      tasConf95:
     additional_datasets:
       - {dataset: HadCRUT4, project: OBS, mip: Amon, tier: 2,
          type: ground, version: 1, start_year: 1850, end_year: 2018}
