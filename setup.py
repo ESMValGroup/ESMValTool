@@ -74,7 +74,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm<0.2.0',
+        'autodocsumm>=0.2.2',
         'codespell',
         'docformatter',
         'isort',

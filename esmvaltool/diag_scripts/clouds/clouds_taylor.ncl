@@ -239,7 +239,7 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (config_user_info@write_plots.eq."True") then
+  if (diag_script_info@write_plots.eq."True") then
     write_plots = True
   else
     write_plots = False

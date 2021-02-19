@@ -11,14 +11,14 @@ on:
 jobs:
 
   publish:
-    name: publish / python-3.8 / ubuntu-latest
+    name: publish / python-3.9 / ubuntu-latest
     runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: "3.8"
+          python-version: "3.9"
           miniconda-version: "latest"
           channels: conda-forge
       - name: Show conda config
@@ -59,7 +59,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['ubuntu-latest']  # may extent to osx in the future
-        python-version: ["3.6", "3.7", "3.8"]
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
     runs-on: ${{ matrix.os }}
     needs: publish
     steps:

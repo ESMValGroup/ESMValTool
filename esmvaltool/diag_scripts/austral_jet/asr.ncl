@@ -180,7 +180,7 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Basic plotting settings
-  if (config_user_info@write_plots) then
+  if (diag_script_info@write_plots) then
     colors = project_style(INFO0, diag_script_info, "colors")
     thicks = project_style(INFO0, diag_script_info, "thicks")
     lg_labels = unique_labels_min(INFO0, (/"dataset", "ensemble"/))

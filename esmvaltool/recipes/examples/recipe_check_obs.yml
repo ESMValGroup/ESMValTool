@@ -249,8 +249,8 @@ diagnostics:
       tsStderr:
     additional_datasets:
       - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: 2.1,
-         start_year: 1992, end_year: 2010}
+         type: sat, version: 2.2,
+         start_year: 1982, end_year: 2019}
     scripts: null
 
 
@@ -325,6 +325,14 @@ diagnostics:
          type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: v2018_25, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_025-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_05-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_10-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
     scripts: null
 
 
@@ -343,9 +351,23 @@ diagnostics:
     variables:
       tas:
       tasa:
+      tasConf5:
+      tasConf95:
     additional_datasets:
       - {dataset: HadCRUT4, project: OBS, mip: Amon, tier: 2,
          type: ground, version: 1, start_year: 1850, end_year: 2018}
+    scripts: null
+
+
+  HadCRUT5:
+    description: HadCRUT5 check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: analysis, start_year: 1850, end_year: 2018}
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: noninfilled, start_year: 1850, end_year: 2018}
     scripts: null
 
 
@@ -444,23 +466,6 @@ diagnostics:
          type: reanaly, version: v2, start_year: 1979, end_year: 2015}
       - {dataset: OSI-450-sh, project: OBS, tier: 2,
          type: reanaly, version: v2, start_year: 1979, end_year: 2015}
-    scripts: null
-
-
-  NSIDC-0116:
-    description: NSIDC-0116 check
-    variables:
-      areacello:
-        mip: fx
-      usi:
-        mip: day
-      vsi:
-        mip: day
-    additional_datasets:
-      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
-         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
-      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
-         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
 
@@ -635,8 +640,14 @@ diagnostics:
         mip: day
     additional_datasets:
       - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
-         type: sat, version: CUSTOM-TCDR-ICDR-20200602,
-         start_year: 1978, end_year: 2020}
+         type: sat, version: ACTIVE,
+         start_year: 1992, end_year: 2020}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: COMBINED,
+         start_year: 1979, end_year: 2020}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: PASSIVE,
+         start_year: 1979, end_year: 2020}
     scripts: null
 
 
@@ -1205,7 +1216,8 @@ diagnostics:
       hurStderr:
         mip: Amon
     additional_datasets:
-      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004', start_year: 2005, end_year: 2019}
+      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004',
+         start_year: 2005, end_year: 2019}
     scripts: null
 
 
@@ -1259,6 +1271,23 @@ diagnostics:
     additional_datasets:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
+    scripts: null
+
+
+  NSIDC-0116:
+    description: NSIDC-0116 check
+    variables:
+      areacello:
+        mip: fx
+      usi:
+        mip: day
+      vsi:
+        mip: day
+    additional_datasets:
+      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
 
