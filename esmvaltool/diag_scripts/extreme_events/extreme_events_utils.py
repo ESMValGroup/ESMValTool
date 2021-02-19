@@ -615,18 +615,26 @@ def __calculate_base_percentiles__(base_cube, percentilelist):
     percentiles = []
     for doy in np.arange(1,367):
         doy_set = [__nonzero_mod__(doy-2, 365), __nonzero_mod__(doy+2, 365)]
+        print("doy")
+        print(doy)
+        print("doy_set")
+        print(doy_set)
         if doy_set[0] < doy_set[1]:
             constraint_5day = iris.Constraint(doy = lambda cell:
                 doy_set[0] <= cell <= doy_set[1])
         else:
             constraint_5day = iris.Constraint(doy = lambda cell:
                 doy_set[0] <= cell <= 366 or 0 <= cell <= doy_set[1])
+        
+        print("constraint_5day")
+        print(constraint_5day)
         loc_cube = lazy_percentiles(
                 base_cube.extract(constraint_5day),
                 [percentilelist], dims='time')
         loc_cube = loc_cube[percentilelist]
         loc_cube.remove_coord('doy')
-        loc_cube.remove_coord('height')
+        if 'height' in loc_cube.coords():
+            loc_cube.remove_coord('height')
         new_coord = iris.coords.AuxCoord(doy, long_name='doy', units='1')
         loc_cube.add_aux_coord(new_coord)
         loc_cube = iris.util.new_axis(loc_cube, 'doy')
@@ -714,6 +722,8 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
             cs_threshold = cs.copy(data=da.where(da.logical_or(da.logical_not(da.ma.getdata(thresh_data)), da.ma.getmaskarray(thresh_data)),0,cs.core_data()))
             cs_threshold = iris.util.new_axis(cs_threshold, 'time')
             cs_threshold.remove_coord('year')
+            if 'doy' in cs_threshold.coords():
+                cs_threshold.remove_coord('doy') # KW
             loc_cs_thresholds.append(cs_threshold)
         
         loc_cs_threshold = loc_cs_thresholds[0]
@@ -727,6 +737,8 @@ def sum_perc_ex_wd(alias_cubes, specs, cfg):
             ap_cube.metadata = cube.metadata
             ap_cube.rename(specs['cf_name'])
             ap_cube.units = Unit('mm per year')
+            if 'doy' in ap_cube.coords():
+                ap_cube.remove_coord('doy') # KW
     
     percentiles_threshold = iris.cube.CubeList(analysis_percentiles).concatenate_cube()
     statistic_function = getattr(esmvalcore.preprocessor, f"{specs['period']}_statistics", None)
