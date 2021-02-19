@@ -35,7 +35,6 @@ CFG = {
     'output_file_type': ['png', 'pdf', 'ps'],
     'plot_dir': ['/plot/dir/1', '/plot/dir/2'],
     'work_dir': ['/work/dir/1', '/work/dir_2'],
-    'write_plots': [True, False],
     'accept_only_scalar_data': [None, True, False],
     'allow_missing_features': [None, True, False],
     'grid_search_cv_param_grid': [

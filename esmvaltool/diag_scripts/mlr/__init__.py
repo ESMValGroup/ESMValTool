@@ -7,7 +7,6 @@ import warnings
 from copy import deepcopy
 from pprint import pformat
 
-import esmvalcore.preprocessor
 import iris
 import numpy as np
 import shapely.vectorized as shp_vect
@@ -15,6 +14,7 @@ from cartopy.io import shapereader
 from cf_units import Unit
 from iris.fileformats.netcdf import UnknownCellMethodWarning
 
+import esmvalcore.preprocessor
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     io,
@@ -95,10 +95,10 @@ def _get_ne_land_mask_cube(n_lats=1000, n_lons=2000):
     geometries = list(reader.geometries())
 
     # Setup grid
-    lat_coord = iris.coords.Coord(
+    lat_coord = iris.coords.DimCoord(
         np.linspace(-90.0, 90.0, n_lats), var_name='lat',
         standard_name='latitude', long_name='latitude', units='degrees')
-    lon_coord = iris.coords.Coord(
+    lon_coord = iris.coords.DimCoord(
         np.linspace(-180.0, 180.0, n_lons), var_name='lon',
         standard_name='longitude', long_name='longitude', units='degrees')
     (lats, lons) = np.meshgrid(lat_coord.points, lon_coord.points)

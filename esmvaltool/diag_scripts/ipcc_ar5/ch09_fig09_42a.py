@@ -28,8 +28,7 @@ matplotlib_style : str, optional
 save : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 
@@ -39,12 +38,17 @@ import os
 import iris
 import seaborn as sns
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            extract_variables,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            io, plot, run_diagnostic,
-                                            variables_available)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    extract_variables,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    plot,
+    run_diagnostic,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -71,8 +75,6 @@ def get_provenance_record(project, ancestor_files):
 
 def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Plot data."""
-    if not cfg['write_plots']:
-        return None
     x_data = []
     y_data = []
     dataset_names = []
@@ -205,11 +207,10 @@ def main(cfg):
     ancestor_files = [d['filename'] for d in input_data]
     ancestor_files.append(ecs_filepath)
     provenance_record = get_provenance_record(project, ancestor_files)
-    if plot_path is not None:
-        provenance_record.update({
-            'plot_file': plot_path,
-            'plot_types': ['scatter'],
-        })
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['scatter'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 
