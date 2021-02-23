@@ -124,7 +124,6 @@ def plot_climatology(cfg, metadata):
     datasets = read_input_data(metadata)
     var = datasets[short_name]
 
-    frequency = metadata[0]['frequency']
     xaxis = var.dims[-1]  # i.e. month_number / day_of_year
     xlabel = xaxis.replace('_', ' ')
     caption = f'{var.long_name} climatology statistics per {xlabel}'
