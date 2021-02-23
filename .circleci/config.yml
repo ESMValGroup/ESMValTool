@@ -166,7 +166,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test installation
-            pytest -n 2
+            pytest -n 2 -m "not installation"
             esmvaltool -h
             ncl -V
             cdo --version
