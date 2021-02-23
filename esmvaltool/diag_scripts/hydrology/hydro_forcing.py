@@ -64,6 +64,7 @@ def plot_data(*,
         dataset = datasets.sel(dataset=label)
         if 'time' in dataset:
             dataset = dataset.dropna(dim='time')  # remove nan
+            figure.autofmt_xdate()  # rotate date labels
         plt.plot(dataset[xaxis], dataset[yaxis], label=label)
 
     plt.xlabel(xlabel)
