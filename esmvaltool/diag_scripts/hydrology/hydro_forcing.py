@@ -10,6 +10,7 @@ from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
     get_plot_filename,
+    group_metadata,
     run_diagnostic,
 )
 
@@ -79,28 +80,32 @@ def plot_data(*,
     log_provenance(caption, filename_plot, cfg, ancestors)
 
 
-def plot_timeseries_data(cfg,
-                         metadata,
-                         time_unit: str = 'D',
-                         title: str = 'plot'):
+def plot_timeseries(cfg, metadata):
     """Plot timeseries data."""
+    short_name = 'pr'
+    xaxis = 'time'
+
     datasets = read_input_data(metadata)
     ancestors = [info['filename'] for info in metadata]
 
-    var = datasets.pr
+    frequency = metadata[0]['frequency']
+    time_period = cfg['time_period']
 
+    var = datasets[short_name]
+
+    time_unit = time_period[0].upper()
     start_date = np.datetime_as_string(datasets.time.min(), unit=time_unit)
     end_date = np.datetime_as_string(datasets.time.max(), unit=time_unit)
 
-    name = title.lower().replace(' ', '_')
-    caption = f"{title} for {start_date}:{end_date}"
+    name = f'{var.long_name}_{time_period}'
+    caption = f"{var.long_name} per {time_period} for {start_date}:{end_date}"
 
     plot_data(
         cfg=cfg,
         datasets=datasets,
-        xaxis='time',
-        yaxis='pr',
-        xlabel='time / {mip}'.format(**datasets.attrs),
+        xaxis=xaxis,
+        yaxis=short_name,
+        xlabel=f'{xaxis.capitalize()} / {time_period}',
         ylabel=f'{var.long_name} / {var.units}',
         caption=caption,
         name=name,
@@ -112,22 +117,28 @@ def plot_timeseries_data(cfg,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def plot_climatology(cfg, metadata, title: str = 'plot'):
+def plot_climatology(cfg, metadata):
     """Plot climatology data."""
+    short_name = 'pr'
+
     datasets = read_input_data(metadata)
-    var = datasets.pr
+    var = datasets[short_name]
+
+    frequency = metadata[0]['frequency']
+    xaxis = var.dims[-1]  # i.e. month_number / day_of_year
+    xlabel = xaxis.replace('_', ' ')
+    caption = f'{var.long_name} climatology statistics per {xlabel}'
 
     ancestors = [info['filename'] for info in metadata]
 
-    name = title.lower().replace(' ', '_')
-    caption = f"{title}"
+    name = f'{var.long_name}_climatology_{xaxis}'
 
     plot_data(
         cfg=cfg,
         datasets=datasets,
-        xaxis='month_number',
-        yaxis='pr',
-        xlabel='Month number',
+        xaxis=xaxis,
+        yaxis=short_name,
+        xlabel=xlabel.capitalize(),
         ylabel=f'{var.long_name} / {var.units}',
         caption=caption,
         name=name,
@@ -165,30 +176,22 @@ def read_input_data(metadata: list, dim: str = 'dataset'):
 def main(cfg):
     """Load and plot hydro forcing data."""
     entry_point = cfg['entry_point']
-    metadata = list(cfg['input_data'].values())
 
-    if entry_point == 'sample_year':
-        plot_timeseries_data(
-            cfg,
-            metadata=metadata,
-            time_unit='D',
-            title='Daily precipitation',
-        )
-    elif entry_point == 'total_precipitation':
-        plot_timeseries_data(
-            cfg,
-            metadata=metadata,
-            time_unit='M',
-            title='Monthly total precipitation',
-        )
-    elif entry_point == 'climatology':
-        plot_climatology(
-            cfg,
-            metadata=metadata,
-            title='Precipitation per month',
-        )
-    else:
-        raise ValueError(f'Unknown entry_point: {entry_point!r}')
+    input_data = cfg['input_data'].values()
+    variable_groups = group_metadata(input_data, 'variable_group')
+
+    plot_func_mapping = {
+        'climatology': plot_climatology,
+        'timeseries': plot_timeseries,
+    }
+
+    for variable_group, metadata in variable_groups.items():
+        try:
+            plot_func = plot_func_mapping[entry_point]
+        except KeyError:
+            raise ValueError(f'Unknown entry_point: {entry_point!r}')
+
+        plot_func(cfg, metadata=metadata)
 
 
 if __name__ == '__main__':

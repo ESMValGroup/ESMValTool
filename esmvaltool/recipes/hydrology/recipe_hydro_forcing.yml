@@ -41,12 +41,19 @@ preprocessors:
       operator: mean
     monthly_statistics:
       operator: sum
-  climatology:
+  climatology_month:
     extract_shape: *extract_shape
     area_statistics:
       operator: mean
     climate_statistics:
       period: month
+      operator: mean
+  climatology_day:
+    extract_shape: *extract_shape
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: day
       operator: mean
 
 diagnostics:
@@ -60,7 +67,8 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
-        entry_point: sample_year
+        entry_point: timeseries
+        time_period: day
 
   total_precipitation:
     variables:
@@ -72,15 +80,23 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
-        entry_point: total_precipitation
+        entry_point: timeseries
+        time_period: month
 
   climatology:
     variables:
-      pr:
+      pr_month:
         mip: day
+        short_name: pr
         start_year: 2015
         end_year: 2016
-        preprocessor: climatology
+        preprocessor: climatology_month
+      pr_day:
+        mip: day
+        short_name: pr
+        start_year: 2015
+        end_year: 2016
+        preprocessor: climatology_day
     scripts:
       plot:
         script: hydrology/hydro_forcing.py

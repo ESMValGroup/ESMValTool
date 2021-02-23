@@ -7,12 +7,12 @@ Overview
 --------
 
 This recipe can be used to assess the agreement between forcing datasets
-(i.e. MSWEP, ERA5, ERA-Interim) for a certain catchment. The recipe can be used
+(i.e. MSWEP, ERA5, ERA-Interim) for a defined catchment. The recipe can be used
 to:
 
 1. Plot a timeseries of the raw daily data
-2. Plot monthly aggregrated data over a certain period
-3. Plot the monthly climate statistics over a certain period
+2. Plot monthly aggregrated data over a defined period
+3. Plot the monthly / daily climatology statistics over a defined period
 
 
 Available recipes and diagnostics
@@ -30,7 +30,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/hydrology/
 User settings in recipe
 -----------------------
 
-All hydrological recipes require a shapefile as an input to produce forcing data. This shapefile determines the shape of the basin for which the data will be cut out and processed. All recipes are tested with `the shapefiles <https://github.com/eWaterCycle/recipes_auxiliary_datasets/tree/master/>`_  that are used for the eWaterCycle project. In principle any shapefile can be used, for example, the freely available basin shapefiles from the `HydroSHEDS project <https://www.hydrosheds.org/>`_.
+All hydrological recipes require a shapefile as an input to select forcing data. This shapefile determines the shape of the basin for which the data will be cut out and processed. All recipes are tested with `the shapefiles <https://github.com/eWaterCycle/recipes_auxiliary_datasets/tree/master/>`_ from HydroSHEDS that are used for the eWaterCycle project. In principle any shapefile can be used, for example, the freely available basin shapefiles from the `HydroSHEDS project <https://www.hydrosheds.org/>`_.
 
 #. recipe ``hydrology/hydro_forcing.yml``
 
@@ -40,11 +40,16 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 
   *Required settings for script:*
 
-    * ``entry_point``: Define which diagnostic function to run. Choices:
+    * ``entry_point``: Define which plot function to run. Choices:
 
-      * ``sample_year``: Plot a timeseries of the raw daily data
-      * ``total_precipitation``: Plot monthly aggregrated data over a certain period
-      * ``climatology``: Plot the monthly climate statistics over a certain period
+      * ``timeseries``: Plot a timeseries for the variable data over the defined period
+      * ``climatology``: Plot the climate statistics over the defined period
+
+  *Required settings for ``timeseries`` plots:*
+
+    * ``time_period``: Defines the period of the output for the correct captions/labels. This value should match the period used for the preprocessor. Choices: ``day``, ``month``.
+
+
 
 Variables
 ---------
@@ -70,19 +75,25 @@ Example plots
 -------------
 
 .. _fig_hydro_forcing_1:
-.. figure::  /recipes/figures/hydrology/daily_precipitation_plot.png
+.. figure::  /recipes/figures/hydrology/Precipitation_day_plot.png
   :align:   center
 
-  Daily precipitation for 2015-01-01:2016-12-31.
+  Precipitation per day for 2015-01-01:2016-12-31.
 
 .. _fig_hydro_forcing_2:
-.. figure::  /recipes/figures/hydrology/monthly_total_precipitation_plot.png
+.. figure::  /recipes/figures/hydrology/Precipitation_month_plot.png
   :align:   center
 
-  Monthly total precipitation for 2015-01:2016-12.
+  Precipitation per month for 2015-01:2016-12.
 
 .. _fig_hydro_forcing_3:
-.. figure::  /recipes/figures/hydrology/precipitation_per_month_plot.png
+.. figure::  /recipes/figures/hydrology/Precipitation_climatology_month_number_plot.png
   :align:   center
 
-  Precipitation per month for 2015:2016.
+  Precipitation climatology statistics per month number.
+
+.. _fig_hydro_forcing_4:
+.. figure::  /recipes/figures/hydrology/Precipitation_climatology_day_of_year_plot.png
+  :align:   center
+
+  Precipitation climatology statistics per day of year.
