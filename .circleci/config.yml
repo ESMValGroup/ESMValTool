@@ -145,6 +145,35 @@ jobs:
       - store_artifacts:
           path: /logs
 
+  python_test:
+    # Run the basic Python test suite
+    working_directory: /python_test
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run:
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            set -x
+            mkdir /logs
+            # Install just the Python bit
+            conda env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
+            set +x; conda activate esmvaltool; set -x
+            pip install -e .[develop] > /logs/install.txt 2>&1
+            # Log versions
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+            # Test installation
+            pytest -n 2
+            esmvaltool -h
+            ncl -V
+            cdo --version
+          no_output_timeout: 30m
+      - store_artifacts:
+          path: /logs
+
   documentation:
     # Test building documentation
     working_directory: /doc
