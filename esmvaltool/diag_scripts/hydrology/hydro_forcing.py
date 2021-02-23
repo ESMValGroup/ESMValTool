@@ -89,7 +89,6 @@ def plot_timeseries(cfg, metadata):
     datasets = read_input_data(metadata)
     ancestors = [info['filename'] for info in metadata]
 
-    frequency = metadata[0]['frequency']
     time_period = cfg['time_period']
 
     var = datasets[short_name]
@@ -186,11 +185,11 @@ def main(cfg):
         'timeseries': plot_timeseries,
     }
 
-    for variable_group, metadata in variable_groups.items():
+    for metadata in variable_groups.values():
         try:
             plot_func = plot_func_mapping[entry_point]
-        except KeyError:
-            raise ValueError(f'Unknown entry_point: {entry_point!r}')
+        except KeyError as err:
+            raise ValueError(f'Unknown entry_point: {entry_point!r}') from err
 
         plot_func(cfg, metadata=metadata)
 
