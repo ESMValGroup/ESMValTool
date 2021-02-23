@@ -297,6 +297,7 @@ workflows:
       - develop
       - documentation
       - conda_build
+      - python_test
   nightly:
     triggers:
       - schedule:
