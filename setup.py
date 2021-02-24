@@ -33,7 +33,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.1.0,<2.2',
+        'esmvalcore>=2.2.0,<2.3',
         'fiona',
         'GDAL',
         'jinja2',
@@ -51,7 +51,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=2.2.1,<3',
+        'scitools-iris>=3.0.1',
         'seaborn',
         'seawater',
         'shapely',
@@ -74,7 +74,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm<0.2.0',
+        'autodocsumm>=0.2.2',
         'codespell',
         'docformatter',
         'isort',

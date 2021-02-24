@@ -1,4 +1,4 @@
-autodocsumm<0.2.0
+autodocsumm>=0.2.2
 cdo
 cdsapi
 cmocean

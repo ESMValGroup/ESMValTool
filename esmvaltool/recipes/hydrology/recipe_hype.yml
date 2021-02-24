@@ -43,8 +43,8 @@ diagnostics:
     variables:
       tas: &var
         mip: day
-        start_year: 1979
-        end_year: 1979
+        start_year: 1990
+        end_year: 2001
         preprocessor: temperature
       tasmin: *var
       tasmax: *var

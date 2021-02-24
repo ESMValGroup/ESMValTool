@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  coverage-reporter: codacy/coverage-reporter@11.1.1
+  coverage-reporter: codacy/coverage-reporter@11.9.2
 
 commands:
   check_changes:
@@ -50,6 +50,9 @@ jobs:
       - coverage-reporter/send_report:
           coverage-reports: 'test-reports/coverage.xml'
           project-token: $CODACY_PROJECT_TOKEN
+          # Skip if token isn't defined.
+          # Useful to let forks CI pass without passing secrets
+          skip: true
 
   test_installation:
     # Test Python 3 installation
