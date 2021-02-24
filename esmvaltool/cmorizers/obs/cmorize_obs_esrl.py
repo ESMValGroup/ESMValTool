@@ -184,7 +184,7 @@ def _extract_variable(short_name, var, cfg, out_dir, station_dic):
     attrs['version'] = station_dic['Code'].upper()
     attrs['mip'] = var['mip']
     attrs['altitude'] = station_dic['Elevation (meters)']
-    attrs['altitude units'] = 'm'
+    attrs['altitude_units'] = 'm'
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
@@ -200,6 +200,8 @@ def _make_station_lat_lon_coord(station_dic):
     """Make iris coordinates for given latitude and longitude."""
     lat = station_dic['Latitude']
     lon = station_dic['Longitude']
+    if lon < 0:
+        lon = lon + 360
 
     # Treat Global data differently
     if lat == 0.0 and lon == 180.0:
@@ -247,13 +249,15 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
             input_files_dl, rm_stat = _download_files(in_dir, cfg,
                                                       download_files)
             input_files.update(input_files_dl)
-            if all_stat:
-                # When selecting "all", some stations may not have available
-                # data at the moment, so remove these from to process files
-                stations = [x for x in stations if x not in rm_stat]
-            else:
-                raise ValueError("No data found for %s on the ftp server. "
-                                 % rm_stat)
+            if len(rm_stat) > 0:
+                if all_stat:
+                    # When selecting "all", some stations may not have
+                    # available data at the moment,
+                    # so remove these from to process files
+                    stations = [x for x in stations if x not in rm_stat]
+                else:
+                    raise ValueError("No data found for %s on the ftp server. "
+                                     % rm_stat)
         else:
             if not all_stat:
                 raise ValueError("No local data found for stations %s, "

@@ -66,7 +66,7 @@ outputs:
         - python>=3.6
         - setuptools_scm
       run:
-        - cartopy
+        - cartopy>=0.18
         - cdo>=1.9.7
         - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
         - cdsapi
@@ -84,17 +84,17 @@ outputs:
         - jinja2
         - joblib
         - lime
-        - matplotlib>=3,<3.3
+        - matplotlib>3.3.1  # bug in 3.3.1
         - natsort
         - nc-time-axis
         - netCDF4
         - numpy
         - pandas
-        - pynio
         - pyproj>=2.1
         - python>=3.6
         - python-cdo
         - pyyaml
+        - rasterio  # replaces pynio
         - scikit-image
         - scikit-learn
         - seaborn
