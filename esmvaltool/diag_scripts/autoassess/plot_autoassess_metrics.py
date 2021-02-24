@@ -1,12 +1,15 @@
 """Standard MO metrics plotter."""
-import os
 import logging
+import os
 import sys
 
-import iris
 import yaml
+
 from esmvaltool.diag_scripts.autoassess._plot_mo_metrics import (
-    read_model_metrics, read_obs_metrics, plot_nac)
+    plot_nac,
+    read_model_metrics,
+    read_obs_metrics,
+)
 
 logger = logging.getLogger(__name__)
 
