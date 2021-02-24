@@ -1,6 +1,7 @@
 ---
 # Filename (will be extended by version)
 filename: 'REGEN_AllStns_{version}_*.nc'
+filename_mask: 'REGEN_AllStns_{version}_1950-2016_QualityMask.nc'
 
 # Common global attributes for Cmorizer output
 attributes:
@@ -12,54 +13,6 @@ attributes:
   source: 'https://researchdata.ands.org.au/rainfall-estimates-gridded-v1-2019/1408744'
   reference: 'regen'
   comment: ''
-
-attributes_reducedmasked:
-  dataset_id: REGEN
-  version: 'V1-2019-reducedmasked'
-  tier: 2
-  modeling_realm: reanaly
-  project_id: OBS
-  source: 'https://researchdata.ands.org.au/rainfall-estimates-gridded-v1-2019/1408744'
-  reference: 'regen'
-  comment: 'contrained on - kriging error within the 95th percentile of all the
-    grids on the day, - coefficient of variation within the 95th percentile of
-    all the grids on the day'
-
-attributes_masked:
-  dataset_id: REGEN
-  version: 'V1-2019-masked'
-  tier: 2
-  modeling_realm: reanaly
-  project_id: OBS
-  source: 'https://researchdata.ands.org.au/rainfall-estimates-gridded-v1-2019/1408744'
-  reference: 'regen'
-  comment: 'contrained on - kriging error within the 95th percentile of all the
-    grids on the day, - coefficient of variation within the 95th percentile of
-    all the grids on the day, - being based on at least one station'
-
-masking_variables_raw:
-  ek:
-    mip: day
-    raw: ek
-    raw_units: '%'
-    calendar: gregorian
-  sd:
-    mip: day
-    raw: sd
-    raw_units: kg m-2 day-1
-    calendar: gregorian
-  s:
-    mip: day
-    raw: s
-    raw_units: 1
-    calendar: gregorian
-
-masking_thresholds:
-  ek: 95
-  cov: 95
-  s: 1
-  # monthly_statisitcs: 0.8
-  monthly_statisitcs: 0.6 # 0.8
 
 # Variables to cmorize
 variables:
