@@ -48,6 +48,7 @@ REQUIREMENTS = {
         'pyproj>=2.1'
         'pyyaml',
         'rasterio',  # replaces pynio
+        'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
         'scipy',
