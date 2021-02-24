@@ -43,6 +43,7 @@ import argparse
 import datetime
 import itertools
 import logging
+import logging.config
 import os
 import shutil
 import time
