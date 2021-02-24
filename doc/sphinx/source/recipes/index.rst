@@ -28,6 +28,7 @@ Atmosphere
    recipe_hyint
    recipe_modes_of_variability
    recipe_quantilebias
+   recipe_bock20jgr
    recipe_spei
    recipe_martin18grl
    recipe_autoassess_stratosphere
