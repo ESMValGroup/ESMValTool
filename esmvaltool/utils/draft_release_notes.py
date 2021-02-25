@@ -10,9 +10,13 @@ or esmvaltool
 """
 import datetime
 from pathlib import Path
+from typing import DefaultDict
 
 import dateutil
+import esmvalcore
 import fire
+
+import esmvaltool
 
 try:
     from github import Github
@@ -26,10 +30,6 @@ except FileNotFoundError:
           "~/.github_api_key, see:\nhttps://help.github.com/en/github/"
           "authenticating-to-github/creating-a-personal-access-token-"
           "for-the-command-line")
-
-import esmvalcore
-
-import esmvaltool
 
 VERSION = {
     'esmvalcore': f"v{esmvalcore.__version__}",
@@ -111,7 +111,7 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
         direction='desc',
     )
 
-    lines = {}
+    lines = DefaultDict(list)
     labelless_pulls = []
     for pull in pulls:
         print(pull.updated_at, pull.merged_at, pull.number, pull.title)
@@ -128,24 +128,10 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
                 labelless_pulls.append(pull)
                 label = 'enhancement'
 
-            user = pull.user
-            username = user.login if user.name is None else user.name
-            title = pull.title
-            title = title[0].upper() + title[1:]
-            line = (f"-  {title} (`#{pull.number} "
-                    f"<{pull.html_url}>`__) "
-                    f"`{username} <https://github.com/{user.login}>`__")
-            if label not in lines:
-                lines[label] = []
-            lines[label].append((pull.closed_at, line))
+            lines[label].append((pull.closed_at, _compose_line(pull)))
 
     # Warn about label-less PR:
-
-    if labelless_pulls:
-        print('\nPlease add labels to the following PR:')
-        for pull in labelless_pulls:
-            print(pull.html_url)
-        print('\n')
+    _list_labelless_pulls(labelless_pulls)
 
     # Create sections
     sections = [
@@ -167,17 +153,33 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
     print(notes)
 
 
+def _list_labelless_pulls(labelless_pulls):
+    # Warn about label-less PR:
+    if labelless_pulls:
+        print('\nPlease add labels to the following PR:')
+        for pull in labelless_pulls:
+            print(pull.html_url)
+        print('\n')
+
+
+def _compose_line(pull):
+    user = pull.user
+    username = user.login if user.name is None else user.name
+    title = pull.title
+    title = title[0].upper() + title[1:]
+    return (f"-  {title} (`#{pull.number} "
+            f"<{pull.html_url}>`__) "
+            f"`{username} <https://github.com/{user.login}>`__")
+
+
 def main():
+    """Entry point for the scrip."""
     def display(lines, out):
         text = "\n".join(lines) + "\n"
         out.write(text)
 
     fire.core.Display = display
-
-    try:
-        fire.Fire(draft_notes_since)
-    except fire.core.FireExit:
-        raise
+    fire.Fire(draft_notes_since)
 
 
 if __name__ == '__main__':
