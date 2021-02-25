@@ -7,10 +7,12 @@ documentation:
     of CMIP5 / CMIP6 models with ESA CCI datasets.
 
   authors:
-    - lauer_axel
+    - willen_ulrika
+    - zimmermann_klaus
 
   maintainer:
-    - lauer_axel
+    - willen_ulrika
+    - zimmermann_klaus
 
   references:
     - lauer13jclim
