@@ -26,6 +26,7 @@ import logging
 import os
 
 import iris
+import numpy as np
 import xarray as xr
 
 from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
@@ -45,17 +46,43 @@ def _fix_data(cube, var):
 
 def _add_depth_coord(cube):
     """Add depth auxiliary coordinate for CMIP5 standard."""
+    def adjust_dim(dim):
+        if dim == 0:
+            return dim
+        return dim + 1
     if not cube.coords('depth'):
-        depth = 1.
-        depth_coord = iris.coords.AuxCoord(
-            depth,
+        assert len(cube.shape) == 3
+        depth_coord = iris.coords.DimCoord(
+            [0.],
             standard_name='depth',
             long_name='depth',
-            var_name='depth',
+            var_name='lev',
             units='m',
+            bounds=[0., 2.5],
             attributes={'positive': 'down'})
-        cube.add_aux_coord(depth_coord)
-        cube.coordinates = 'depth'
+        dim_coords = cube.coords(dim_coords=True)
+        aux_coords = cube.coords(dim_coords=False)
+        dim_coords_and_dims = [
+            (coord, adjust_dim(cube.coord_dims(coord)[0]))
+            for coord in dim_coords]
+        dim_coords_and_dims.append((depth_coord, 1))
+        aux_coords_and_dims = [
+            (coord, (adjust_dim(d) for d in cube.coord_dims(coord)))
+            for coord in aux_coords]
+        old_cube = cube
+        new_data = cube.core_data()[:, np.newaxis, :, :]
+        cube = iris.cube.Cube(
+            new_data,
+            old_cube.standard_name,
+            old_cube.long_name,
+            old_cube.var_name,
+            old_cube.units,
+            old_cube.attributes,
+            old_cube.cell_methods,
+            dim_coords_and_dims,
+            aux_coords_and_dims,
+        )
+    return cube
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
@@ -68,7 +95,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
         if cube.var_name == rawvar:
             fix_var_metadata(cube, var_info)
             fix_coords(cube)
-            _add_depth_coord(cube)
+            cube = _add_depth_coord(cube)
             _fix_data(cube, var)
             set_global_atts(cube, attrs)
             save_variable(
