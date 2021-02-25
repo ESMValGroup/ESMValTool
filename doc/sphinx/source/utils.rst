@@ -24,14 +24,15 @@ To use the tool, install the package pygithub_:
 Create a `GitHub access token`_ (leave all boxes for additional
 permissions unchecked) and store it in the file ``~/.github_api_key``.
 
-Edit the script and update the date and time of the previous release. If needed,
-change it so it uses the correct repository.
+Edit the script and update the date and time of the previous release.
 
 Run the script:
 
 .. code-block:: bash
 
-   python esmvaltool/utils/draft_release_notes.py
+   python esmvaltool/utils/draft_release_notes.py ${REPOSITORY}
+
+with ``REPOSITORY`` being either ``esmvalcore`` or ``esmvaltool``
 
 Review the resulting output (in ``.rst`` format) and if anything needs changing,
 change it on GitHub and re-run the script until the changelog looks acceptable.

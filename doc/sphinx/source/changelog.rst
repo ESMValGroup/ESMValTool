@@ -29,7 +29,7 @@ Bug fixes
 -  Fix logging import in cmorize_obs again since last merge was nulled by pre-commit hooks (`#2022 <https://github.com/ESMValGroup/ESMValTool/pull/2022>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Refactor the functions in derive_evspsblpot due to new iris (`#2023 <https://github.com/ESMValGroup/ESMValTool/pull/2023>`__) `SarahAlidoost <https://github.com/SarahAlidoost>`__
 -  Avoid importing private ESMValCore functions in CMORizer (`#2027 <https://github.com/ESMValGroup/ESMValTool/pull/2027>`__) `Bouwe Andela <https://github.com/bouweandela>`__
-
+-  Fix extract_seasons in validation recipe  (`#2054 <https://github.com/ESMValGroup/ESMValTool/pull/2054>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
 
 Deprecations
 ~~~~~~~~~~~~
