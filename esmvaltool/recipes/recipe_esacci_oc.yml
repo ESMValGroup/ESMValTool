@@ -1,0 +1,93 @@
+# ESMValTool
+# recipe_cmug_example.yml
+---
+documentation:
+  description: |
+    Example recipe for implementing ECV specific diagnostics for comparison
+    of CMIP5 / CMIP6 models with ESA CCI datasets.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer13jclim
+
+  projects:
+    - cmug
+
+
+datasets:
+  # - {dataset: EC-Earth3-Veg, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: IPSL-CM6A-LR, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: MPI-ESM1-LR, project: CMIP6, ensemble: r1i1p1, }
+  - {dataset: NorESM2-LM, project: CMIP6, ensemble: r1i1p1f1, grid: gr}
+  # - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f2, grid: gn}
+  # - {dataset: MIROC6, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: MPI-ESM1-2-LR, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+
+
+preprocessors:
+
+  prep_chl:
+    custom_order: true
+    extract_levels:
+      levels: 0.
+      scheme: nearest
+      squeeze: true
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    convert_units:
+      units: mg m-3
+    mask_above_threshold:
+      threshold: 1.5
+
+
+diagnostics:
+
+  oc_chl:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      chl:
+        preprocessor: prep_chl
+        # reference_dataset: ESACCI-OC
+        mip: Omon
+        exp: historical
+        start_year: 1998
+        end_year: 2014
+#        thresholds: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4]
+#        preprocessor: prep_surface_map_2D
+#        mip: Omon
+#        maps_range: [-0.12, 0.12]
+#        diff_range: [-0.09, 0.09]
+#        layout_rowcol: [4, 4]
+        additional_datasets:
+          - {dataset: ESACCI-OC, project: OBS6, type: sat, version: fv5.0, tier: 2}
+    scripts:
+#      Global_Ocean_Surface_mean_map: &Global_Ocean_Surface_mean_map
+#        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: ESACCI-OC,}
+
+#    scripts:
+#      Global_Ocean_multi_vs_obs:
+#        script: ocean/diagnostic_maps_multimodel.py
+#        observational_dataset: {dataset: ESACCI-OC, project: OBS, type: sat, version: fv3.1, tier: 2}
+
+#      Global_Ocean_map: &Global_Ocean_map
+#         script: ocean/diagnostic_maps_quad.py
+#         control_model: {dataset: NorESM2-LM, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1}
+#         exper_model: {dataset: NorESM2-LM, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1}
+#         observational_dataset: {dataset: ESACCI-OC, project: OBS}
+#        control_model: {dataset: ESACCI-OC, project: OBS}
+#         control_model: {dataset: ESACCI-OC, project: OBS, mip: Omon, exp: historical, ensemble: r1i1p1}
