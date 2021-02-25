@@ -11,8 +11,6 @@ This release includes
 Bug fixes
 ~~~~~~~~~
 
--  Fix mlr test with solution that works for CentOS too (`#1936 <https://github.com/ESMValGroup/ESMValTool/pull/1936>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Fix docker build (`#1934 <https://github.com/ESMValGroup/ESMValTool/pull/1934>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Bugfix: time weights in time_operations (`#1956 <https://github.com/ESMValGroup/ESMValTool/pull/1956>`__) `Axel Lauer <https://github.com/axel-lauer>`__
 -  Fix issues with bibtex references (`#1955 <https://github.com/ESMValGroup/ESMValTool/pull/1955>`__) `Stef Smeets <https://github.com/stefsmeets>`__
 -  Fix ImportError for `configure_logging` (`#1976 <https://github.com/ESMValGroup/ESMValTool/pull/1976>`__) `Stef Smeets <https://github.com/stefsmeets>`__
@@ -22,7 +20,7 @@ Bug fixes
 -  Fix logging import in cmorize_obs again since last merge was nulled by pre-commit hooks (`#2022 <https://github.com/ESMValGroup/ESMValTool/pull/2022>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Refactor the functions in derive_evspsblpot due to new iris (`#2023 <https://github.com/ESMValGroup/ESMValTool/pull/2023>`__) `SarahAlidoost <https://github.com/SarahAlidoost>`__
 -  Avoid importing private ESMValCore functions in CMORizer (`#2027 <https://github.com/ESMValGroup/ESMValTool/pull/2027>`__) `Bouwe Andela <https://github.com/bouweandela>`__
--  Fix flake8 raised by develop test in cmorize_obs_gpcc.py (`#2038 <https://github.com/ESMValGroup/ESMValTool/pull/2038>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+
 
 Deprecations
 ~~~~~~~~~~~~
@@ -81,12 +79,14 @@ Observational and re-analysis dataset support
 -  Cmorize gpcc masking (`#1995 <https://github.com/ESMValGroup/ESMValTool/pull/1995>`__) `mwjury <https://github.com/mwjury>`__
 -  Cmorize_utils_save_1mon_Amon (`#1990 <https://github.com/ESMValGroup/ESMValTool/pull/1990>`__) `mwjury <https://github.com/mwjury>`__
 -  Cmorize gpcc fix (`#1982 <https://github.com/ESMValGroup/ESMValTool/pull/1982>`__) `mwjury <https://github.com/mwjury>`__
+-  Fix flake8 raised by develop test in cmorize_obs_gpcc.py (`#2038 <https://github.com/ESMValGroup/ESMValTool/pull/2038>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
 
 -  Switched miniconda conda setup hooks for Github Actions workflows (`#1913 <https://github.com/ESMValGroup/ESMValTool/pull/1913>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fix style issue (`#1929 <https://github.com/ESMValGroup/ESMValTool/pull/1929>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Fix mlr test with solution that works for CentOS too (`#1936 <https://github.com/ESMValGroup/ESMValTool/pull/1936>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Temporary deactivation Github Actions on OSX (`#1939 <https://github.com/ESMValGroup/ESMValTool/pull/1939>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fix conda installation test on CircleCI (`#1952 <https://github.com/ESMValGroup/ESMValTool/pull/1952>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Github Actions: change time for cron job that installs from conda (`#1969 <https://github.com/ESMValGroup/ESMValTool/pull/1969>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
@@ -100,6 +100,7 @@ Installation
 ~~~~~~~~~~~~
 
 -  Simplify installation of R development dependencies (`#1930 <https://github.com/ESMValGroup/ESMValTool/pull/1930>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Fix docker build (`#1934 <https://github.com/ESMValGroup/ESMValTool/pull/1934>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Use new conda environment for installing ESMValTool in Docker containers (`#1993 <https://github.com/ESMValGroup/ESMValTool/pull/1993>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Fix conda build (`#2026 <https://github.com/ESMValGroup/ESMValTool/pull/2026>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
@@ -111,6 +112,7 @@ Improvements
 -  Align ESMValTool to ESMValCore=2.2.0 (adopt iris3, fix environment for new Core release) (`#1874 <https://github.com/ESMValGroup/ESMValTool/pull/1874>`__) `Stef Smeets <https://github.com/stefsmeets>`__
 -  Make it possible to use write_plots and write_netcdf from recipe instead of config-user.yml (`#2018 <https://github.com/ESMValGroup/ESMValTool/pull/2018>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Revise lisflood and hype recipes (`#2035 <https://github.com/ESMValGroup/ESMValTool/pull/2035>`__) `SarahAlidoost <https://github.com/SarahAlidoost>`__
+-  Set version to 2.2.0 (`#2042 <https://github.com/ESMValGroup/ESMValTool/pull/2042>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
 
 .. _changelog-v2-1-1:
 
