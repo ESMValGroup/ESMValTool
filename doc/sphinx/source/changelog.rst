@@ -61,6 +61,8 @@ Documentation
 -  List Remi Kazeroni as a code owner and sole merger of CMORizers (`#2017 <https://github.com/ESMValGroup/ESMValTool/pull/2017>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Install documentation: mention that we build conda package with python>=3.7 (`#2030 <https://github.com/ESMValGroup/ESMValTool/pull/2030>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Recipe and documentation update for ERA5-Land. (`#1906 <https://github.com/ESMValGroup/ESMValTool/pull/1906>`__) `katjaweigel <https://github.com/katjaweigel>`__
+-  Update changelog and changelog tool for v2.2.0 (`#2043 <https://github.com/ESMValGroup/ESMValTool/pull/2043>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
+-  Final update to the changelog for v2.2.0 (`#2056 <https://github.com/ESMValGroup/ESMValTool/pull/2056>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
 
 Diagnostics
 ~~~~~~~~~~~
