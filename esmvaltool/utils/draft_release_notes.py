@@ -103,13 +103,8 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
         previous_release_date = dateutil.parse(previous_release_date)
     if labels is None:
         labels = LABELS[project]
-    session = Github(GITHUB_API_KEY)
-    repo = session.get_repo(GITHUB_REPO[project])
-    pulls = repo.get_pulls(
-        state='closed',
-        sort='updated',
-        direction='desc',
-    )
+
+    pulls = _get_pull_requests(project)
 
     lines = DefaultDict(list)
     labelless_pulls = []
@@ -117,18 +112,16 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
         print(pull.updated_at, pull.merged_at, pull.number, pull.title)
         if pull.updated_at < previous_release_date:
             break
-        if pull.merged:
-            if pull.merged_at < previous_release_date:
-                continue
-            pr_labels = {label.name for label in pull.labels}
-            for label in labels:
-                if label in pr_labels:
-                    break
-            else:
-                labelless_pulls.append(pull)
-                label = 'enhancement'
-
-            lines[label].append((pull.closed_at, _compose_line(pull)))
+        if not pull.merged or pull.merged_at < previous_release_date:
+            continue
+        pr_labels = {label.name for label in pull.labels}
+        for label in labels:
+            if label in pr_labels:
+                break
+        else:
+            labelless_pulls.append(pull)
+            label = 'enhancement'
+        lines[label].append((pull.closed_at, _compose_note(pull)))
 
     # Warn about label-less PR:
     _list_labelless_pulls(labelless_pulls)
@@ -149,12 +142,21 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
         sections.append('\n'.join(['', title, '~' * len(title), '']))
         sections.append('\n'.join(entry for _, entry in entries))
     notes = '\n'.join(sections)
-
     print(notes)
 
 
+def _get_pull_requests(project):
+    session = Github(GITHUB_API_KEY)
+    repo = session.get_repo(GITHUB_REPO[project])
+    pulls = repo.get_pulls(
+        state='closed',
+        sort='updated',
+        direction='desc',
+    )
+    return pulls
+
+
 def _list_labelless_pulls(labelless_pulls):
-    # Warn about label-less PR:
     if labelless_pulls:
         print('\nPlease add labels to the following PR:')
         for pull in labelless_pulls:
@@ -162,7 +164,7 @@ def _list_labelless_pulls(labelless_pulls):
         print('\n')
 
 
-def _compose_line(pull):
+def _compose_note(pull):
     user = pull.user
     username = user.login if user.name is None else user.name
     title = pull.title
