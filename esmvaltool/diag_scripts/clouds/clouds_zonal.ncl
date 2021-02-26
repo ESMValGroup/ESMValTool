@@ -283,6 +283,12 @@ begin
                  + "length = " + tostring(nyears) + " years; disabling t-test")
         t_test = False
       else
+        if (isvar("data1_t_stddev")) then
+          delete(data1_t_stddev)
+        end if
+        if (isvar("data1_t_mean")) then
+          delete(data1_t_mean)
+        end if
         data1_t_stddev = interannual_variability(A0, -1, -1, timemean, "None")
         data1_t_mean = data1
       end if
@@ -416,7 +422,7 @@ begin
       error_msg("f", DIAG_SCRIPT, "", \
                 "Data are not on same grid (horizontal and / or vertical), " \
                 + "cannot calculate differences. " \
-                + "Set showdiff to False in namelist or regrid data to " \
+                + "Set showdiff to False in recipe or regrid data to " \
                 + "common grid (check/adjust " \
                 + "preprocessor settings in recipe).")
     end if
@@ -449,9 +455,6 @@ begin
     ; ###########################################
     ; # create the plot                         #
     ; ###########################################
-
-;    res@gsnDraw        = False  ; do not draw yet
-;    res@gsnFrame       = False  ; don't advance frame
 
     ; function in aux_plotting.ncl
 
@@ -744,8 +747,10 @@ begin
       ; # create the plot                         #
       ; ###########################################
 
-;      dres@gsnDraw        = False  ; do not draw yet
-;      dres@gsnFrame       = False  ; don't advance frame
+      if (t_test) then
+        dres@gsnDraw        = False  ; do not draw yet
+        dres@gsnFrame       = False  ; don't advance frame
+      end if
 
       ; ----------------------------------------------------------------------
 
@@ -823,9 +828,9 @@ begin
 
         tres = True
 
+        tres@gsnDraw        = False  ; do not draw yet
+        tres@gsnFrame       = False  ; don't advance frame
         tres@cnMissingValFillColor = -1
-        tres@gsnDraw = False
-        tres@gsnFrame = False
         tres@cnLevelSelectionMode = "ExplicitLevels"
         tres@cnLevels = 0.95
 ;        tres@cnFillColors = (/"gray70", "transparent"/)
@@ -835,10 +840,21 @@ begin
         tres@cnInfoLabelOn = False
         tres@cnLinesOn = False
         tres@cnLineLabelsOn = False
-;        tres@lbLabelBarOn = False
+        tres@lbLabelBarOn = False
         tres@gsnRightString   = ""
         tres@gsnLeftString    = ""
         tres@gsnCenterString  = ""
+        tres@tiYAxisOn = False
+        tres@tmXBBorderOn = False
+        tres@tmXTBorderOn = False
+        tres@tmYLBorderOn = False
+        tres@tmYRBorderOn = False
+        tres@tmXBLabelsOn = False
+        tres@tmYLLabelsOn = False
+        tres@tmXBOn = False
+        tres@tmXTOn = False
+        tres@tmYLOn = False
+        tres@tmYROn = False
 
         if (numseas.gt.1) then
           do is = 0, numseas - 1
@@ -880,8 +896,22 @@ begin
             end if
 
             overlay(maps_d(imod, is), tmask)
-
             delete(tmask)
+            draw(maps_d(imod, is))
+
+            if (is.eq.0) then
+              frame(wks0d)
+            end if
+            if (is.eq.1) then
+              frame(wks1d)
+            end if
+            if (is.eq.2) then
+              frame(wks2d)
+            end if
+            if (is.eq.3) then
+              frame(wks3d)
+            end if
+
           end do
         else
           x1 = data1_t_mean
@@ -900,8 +930,9 @@ begin
           end if
 
           overlay(maps_d(imod, 0), tmask)
-
           delete(tmask)
+          draw(maps_d(imod, 0))
+          frame(wks0d)
         end if
 
         delete([/x1, x2, s1, s2, prob/])

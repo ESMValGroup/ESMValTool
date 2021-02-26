@@ -29,8 +29,6 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     multi_model_statistics:
       span: overlap
       statistics: [mean]
@@ -53,8 +51,6 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-#    mask_fillvalues:
-#      threshold_fraction: 0.95
     multi_model_statistics:
       span: overlap
       statistics: [mean]
@@ -135,7 +131,7 @@ preprocessors:
 
 diagnostics:
 
-#  clwZONAL:
+#  clw_cmip6:
 #    description: cloud liquid water zonal mean
 #    themes:
 #      - phys
@@ -156,7 +152,6 @@ diagnostics:
 #      - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, mip: Amon, tier: 2}
 ##      - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-in-cloud-all, mip: Amon, tier: 2}
 ##      - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-in-cloud-noprecip, mip: Amon, tier: 2}
-#
 ##error_concatenating_cubes      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
 ##error_concatenating_cubes      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
@@ -167,7 +162,6 @@ diagnostics:
 #      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: CESM2-WACCM-FV2, ensemble: r1i1p1f1, grid: gn}
-##gone      - {dataset: CIESM, ensemble: r1i1p1f1, grid: gr}
 ##error      - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
 #      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
@@ -176,7 +170,6 @@ diagnostics:
 #      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
 ##ERROR_ps_missing      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
-##gone      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
 #      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
@@ -201,13 +194,89 @@ diagnostics:
 #        extralegend: false
 #        panel_labels: true
 #        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
-##        explicit_cn_dlevels: [-20., -15., -10., -5., 0, 5., 10., 15., 20.]
+#        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02, 0.03, 0.04, 0.05]
 #        units_to: g/kg
 #        showdiff: true
-#        rel_diff: true
+#        rel_diff: false
+#        t_test: true
 #        filename_add: cmip6
-
-#  clZONAL:
+#
+#  clw_cmip5:
+#    description: cloud liquid water zonal mean
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clw:
+#        preprocessor: pp27
+#        reference_dataset: CLOUDSAT-L2
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#    additional_datasets:
+##      - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-all, mip: Amon, tier: 2, start_year: 2006, end_year: 2015}
+#      - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, mip: Amon, tier: 2, start_year: 2006, end_year: 2015}
+##error_concatenating_cubes      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+##error_concatenating_cubes      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+#      - {dataset: BNU-ESM, ensemble: r1i1p1}
+#      - {dataset: CanESM2, ensemble: r1i1p1}
+#      - {dataset: CCSM4, ensemble: r1i1p1}
+#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+#      - {dataset: FIO-ESM, ensemble: r1i1p1}
+#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+#      - {dataset: inmcm4, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+##error      - {dataset: MIROC4h, ensemble: r1i1p1}
+##error_concatenating_cubes      - {dataset: MIROC5, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+#      - {dataset: NorESM1-M, ensemble: r1i1p1}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        embracesetup: false
+#        extralegend: false
+#        panel_labels: true
+#        explicit_cn_levels: [0., 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14]
+#        explicit_cn_dlevels: [-0.05, -0.04, -0.03, -0.02, -0.01, 0., 0.01, 0.02, 0.03, 0.04, 0.05]
+#        units_to: g/kg
+#        showdiff: true
+#        rel_diff: false
+#        t_test: true
+#        filename_add: cmip5
+#
+#  clcalipso_cmip6:
 #    description: cloud fraction zonal mean
 #    themes:
 #      - phys
@@ -243,7 +312,49 @@ diagnostics:
 #        panel_labels: true
 #        showdiff: true
 #        rel_diff: false
+#        t_test: true
 #        filename_add: cmip6
+#
+#  clcalispo_cmip5:
+#    description: cloud fraction zonal mean
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clcalipso:
+#        preprocessor: ppa40
+#        reference_dataset: CALIPSO-GOCCP
+#        mip: cfMon
+#        exp: historical
+#        project: CMIP5
+#        start_year: 1996
+#        end_year: 2005
+#    additional_datasets:
+#      - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2, mip: cfMon, tier: 2, start_year: 2007, end_year: 2014}
+#      - {dataset: CanESM2, ensemble: r1i1p1}
+#      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+#      - {dataset: MIROC5, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
+#        explicit_cn_dlevels: [-20., -15., -10., -5., 0, 5., 10., 15., 20.]
+#        embracesetup: true
+#        extralegend: false
+#        panel_labels: true
+#        showdiff: true
+#        rel_diff: false
+#        t_test: true
+#        filename_add: cmip5
 
 
 #  lifrac_cmip6:
@@ -258,65 +369,62 @@ diagnostics:
 #        preprocessor: ppSouthernOcean27
 #        mip: Amon
 #        project: CMIP6
-#        start_year: 2010
-#        end_year: 2010
+#        start_year: 2007
+#        end_year: 2014
+#        exp: historical
 #        reference_dataset: CLOUDSAT-L2
 #        additional_datasets:
-#          - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-all, tier: 2}
+##          - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-all, tier: 2}
 #          - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, tier: 2}
 #      cli:
 #        preprocessor: ppSouthernOcean27
 #        mip: Amon
 #        project: CMIP6
-#        start_year: 2010
-#        end_year: 2010
+#        start_year: 2007
+#        end_year: 2014
+#        exp: historical
 #        reference_dataset: CALIPSO-ICECLOUD
 #        additional_datasets:
 #          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon, tier: 2}
 #    additional_datasets:
-#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2-FV2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##disappeared      - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gr}
-#      - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##disappeared      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-##ERROR_ps_missing      - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-##disappeared      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
-##ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r3i1p1f1, grid: gr}
-#      - {dataset: KACE-1-0-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MIROC-ES2L, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
-#      - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: NESM3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##disappeared      - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+##error_concatenating_cubes      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
+##error_concatenating_cubes      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+##error      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+##ERROR_ps_missing      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+##ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+#      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
 #    scripts:
-#      zonal:
+#      lifrac:
 #        script: clouds/clouds_lifrac.ncl
 #        timemean: annualclim
-##        embracesetup: true
 #        filename_add: cmip6
 #        min_mass: 1.0e-6
 #        panel_labels: true
-#
+
 #  lifrac_cmip5:
 #    description: zonal mean ice / liquid fraction
 #    themes:
@@ -326,30 +434,407 @@ diagnostics:
 #      - atmos
 #    variables:
 #      clw:
-##        preprocessor: pp27
 #        preprocessor: ppSouthernOcean27
 #        mip: Amon
 #        project: CMIP5
 #        exp: historical
-#        start_year: 2005
+#        start_year: 1996
 #        end_year: 2005
 #        reference_dataset: CLOUDSAT-L2
 #        additional_datasets:
 ##          - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-all, tier: 2,
 #          - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, tier: 2,
-#             start_year: 2010, end_year: 2010}
+#             start_year: 2007, end_year: 2014}
 #      cli:
-##        preprocessor: pp27
 #        preprocessor: ppSouthernOcean27
 #        mip: Amon
 #        project: CMIP5
 #        exp: historical
-#        start_year: 2005
+#        start_year: 1996
 #        end_year: 2005
 #        reference_dataset: CALIPSO-ICECLOUD
 #        additional_datasets:
 #          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, tier: 2,
-#             start_year: 2010, end_year: 2010}
+#             start_year: 2007, end_year: 2014}
+#    additional_datasets:
+##error      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+##error      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+#      - {dataset: BNU-ESM, ensemble: r1i1p1}
+#      - {dataset: CanESM2, ensemble: r1i1p1}
+#      - {dataset: CCSM4, ensemble: r1i1p1}
+#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+##no_clw      - {dataset: CESM1-CAM5-1-FV2, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+#      - {dataset: FIO-ESM, ensemble: r1i1p1}
+#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+#      - {dataset: inmcm4, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+##error      - {dataset: MIROC4h, ensemble: r1i1p1}
+##error_concatenating_cubes      - {dataset: MIROC5, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+#      - {dataset: NorESM1-M, ensemble: r1i1p1}
+#    scripts:
+#      lifrac:
+#        script: clouds/clouds_lifrac.ncl
+#        timemean: annualclim
+#        filename_add: cmip5
+#        min_mass: 1.0e-6
+#        panel_labels: true
+#
+#
+#  hus_cmip6:
+#    description: water vapor zonal mean
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      hus:
+#        preprocessor: pp27
+#        reference_dataset: AIRS
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2010
+#    additional_datasets:
+#      - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CanESM5-CanOE, ensemble: r2i1p2f1, grid: gn}
+#      - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
+##invalid data (scrambled)     - {dataset: CAS-ESM2-0, institute: CAS, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: E3SM-1-0, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr}
+##missing_values_not_defined_properly      - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr}
+##permission denied      - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr}
+##incomplete time series      - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+##screwed up latitude bounds      - {dataset: FIO-ESM-2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+#      - {dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: MCM-UA-1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        explicit_cn_levels: [0., 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1., 2., 5., 10., 20.]
+#        explicit_cn_dlevels: [-5., -2., -1., -0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 1., 2., 5.]
+#        extralegend: false
+#        panel_labels: true
+#        showdiff: true
+#        t_test: true
+#        rel_diff: false
+#        units_to: g/kg
+#        filename_add: cmip6
+#
+#  hus_cmip5:
+#    description: water vapor zonal mean
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      hus:
+#        preprocessor: pp27
+#        reference_dataset: AIRS
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#    additional_datasets:
+#      - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
+#      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+#      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+#      - {dataset: BNU-ESM, ensemble: r1i1p1}
+#      - {dataset: CanESM2, ensemble: r1i1p1}
+#      - {dataset: CCSM4, ensemble: r1i1p1}
+#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5-1-FV2, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+#      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+#      - {dataset: CMCC-CM, ensemble: r1i1p1}
+#      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+#      - {dataset: CNRM-CM5, ensemble: r1i1p1}
+#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+#      - {dataset: EC-EARTH, ensemble: r1i1p1}
+#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+#      - {dataset: FIO-ESM, ensemble: r1i1p1}
+#      - {dataset: GFDL-CM2p1, ensemble: r1i1p1}
+#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+#      - {dataset: HadGEM2-AO, ensemble: r1i1p1}
+#      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+#      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+#      - {dataset: inmcm4, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+#      - {dataset: MIROC4h, ensemble: r1i1p1}
+#      - {dataset: MIROC5, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+#      - {dataset: NorESM1-M, ensemble: r1i1p1}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        explicit_cn_levels: [0., 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1., 2., 5., 10., 20.]
+#        explicit_cn_dlevels: [-5., -2., -1., -0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 1., 2., 5.]
+#        extralegend: false
+#        panel_labels: true
+#        showdiff: true
+#        t_test: true
+#        rel_diff: false
+#        units_to: g/kg
+#        filename_add: cmip5
+#
+#  cli_cmip6:
+#    description: cloud ice content zonal mean
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      cli:
+#        preprocessor: pp27
+#        reference_dataset: CALIPSO-ICECLOUD
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2007
+#        end_year: 2014
+#    additional_datasets:
+#      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon, tier: 2}
+##error_concatenating_cubes      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
+##error_concatenating_cubes      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+##error      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+##ERROR_ps_missing      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+##ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+#      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        t_test: false
+#        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
+#        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002, 0.004, 0.006, 0.008, 0.01]
+#        extralegend: false
+#        panel_labels: true
+#        showdiff: true
+#        t_test: true
+#        rel_diff: false
+#        units_to: g/kg
+#        filename_add: cmip6
+#
+#  cli_cmip5:
+#    description: cloud ice content zonal mean
+#    themes:
+#      - phys
+#    realms:
+#      - atmos
+#    variables:
+#      cli:
+#        preprocessor: pp27
+#        reference_dataset: CALIPSO-ICECLOUD
+#        mip: Amon
+#        exp: historical
+#        project: CMIP5
+#        start_year: 1996
+#        end_year: 2005
+#    additional_datasets:
+#      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon, tier: 2, start_year: 2007, end_year: 2014}
+##error_concatenating_cubes      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+##error_concatenating_cubes      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+#      - {dataset: BNU-ESM, ensemble: r1i1p1}
+#      - {dataset: CanESM2, ensemble: r1i1p1}
+#      - {dataset: CCSM4, ensemble: r1i1p1}
+#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+#      - {dataset: FIO-ESM, ensemble: r1i1p1}
+#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+#      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+#      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+#      - {dataset: inmcm4, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+##error_concatenating_cubes      - {dataset: MIROC5, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+#      - {dataset: NorESM1-M, ensemble: r1i1p1}
+#    scripts:
+#      zonal:
+#        script: clouds/clouds_zonal.ncl
+#        timemean: annualclim
+#        t_test: true
+#        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
+#        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002, 0.004, 0.006, 0.008, 0.01]
+#        extralegend: false
+#        panel_labels: true
+#        showdiff: true
+#        rel_diff: false
+#        units_to: g/kg
+#        filename_add: cmip5
+#
+#  scatter_cmip5_swcre:
+#    description: scatter plot cloud fraction vs shortwave cloud forcing
+#    themes:
+#      - phys
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clt:
+#        preprocessor: ppSouthernOcean
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
+#      clwvi:
+#        preprocessor: ppSouthernOcean
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2, start_year: 2001, end_year: 2010}
+#      swcre:
+#        preprocessor: ppSouthernOcean
+#        mip: Amon
+#        project: CMIP5
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001, end_year: 2010}
 #    additional_datasets:
 #      - {dataset: ACCESS1-0, ensemble: r1i1p1}
 #      - {dataset: ACCESS1-3, ensemble: r1i1p1}
@@ -359,7 +844,6 @@ diagnostics:
 #      - {dataset: CanESM2, ensemble: r1i1p1}
 #      - {dataset: CCSM4, ensemble: r1i1p1}
 #      - {dataset: CESM1-BGC, ensemble: r1i1p1}
-##no_clw      - {dataset: CESM1-CAM5-1-FV2, ensemble: r1i1p1}
 #      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
 #      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
 #      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
@@ -394,159 +878,242 @@ diagnostics:
 #      - {dataset: NorESM1-ME, ensemble: r1i1p1}
 #      - {dataset: NorESM1-M, ensemble: r1i1p1}
 #    scripts:
-#      zonal:
-#        script: clouds/clouds_lifrac.ncl
-#        timemean: annualclim
-##        embracesetup: true
+#      scatter_swcre:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: swcre
+#        xmin: 0
+#        xmax: 100
 #        filename_add: cmip5
-#        min_mass: 1.0e-6
-#        panel_labels: true
-
-
-#  husZONAL:
-#    description: water vapor zonal mean
+#      scatter_clivi:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: clwvi
+#        xmin: 0
+#        xmax: 100
+#        filename_add: cmip5
+#
+#  scatter_cmip6:
+#    description: scatter plot cloud fraction vs shortwave cloud forcing
 #    themes:
 #      - phys
+#      - clouds
 #    realms:
 #      - atmos
 #    variables:
-#      hus:
-#        preprocessor: pp27
-#        reference_dataset: AIRS
+#      clt:
+#        preprocessor: ppSouthernOcean
 #        mip: Amon
 #        project: CMIP6
-#        start_year: 2003
+#        exp: historical
+#        start_year: 2001
 #        end_year: 2010
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#      clwvi:
+#        preprocessor: ppSouthernOcean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        reference_dataset: ESACCI-CLOUD
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#      swcre:
+#        preprocessor: ppSouthernOcean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
 #    additional_datasets:
-#      - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
-#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: AWI-CM-1-1-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CanESM5-CanOE, project: CMIP6, exp: historical, ensemble: r2i1p2f1, grid: gn}
-#      - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##invalid data (scrambled)     - {dataset: CAS-ESM2-0, institute: CAS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2-FV2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2-WACCM-FV2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: E3SM-1-0, institute: E3SM-Project, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: E3SM-1-1, institute: E3SM-Project, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-##permission denied      - {dataset: EC-Earth3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-##incomplete time series      - {dataset: EC-Earth3-Veg, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gr}
-#      - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##screwed up latitude bounds      - {dataset: FIO-ESM-2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-#      - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-##disappeared      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
-#      - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
-#      - {dataset: INM-CM4-8, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-#      - {dataset: INM-CM5-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-#      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: KACE-1-0-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: MCM-UA-1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MIROC-ES2L, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
-#      - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: NESM3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: NorCPM1, institute: NCC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##disappeared      - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+#      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
 #    scripts:
-#      zonal:
-#        script: clouds/clouds_zonal.ncl
-#        timemean: annualclim
-#        explicit_cn_levels: [0., 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1., 2., 5., 10., 20.]
-#        explicit_cn_dlevels: [-5., -2., -1., -0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 1., 2., 5.]
-##        embracesetup: true
-#        extralegend: false
-#        panel_labels: true
-#        showdiff: true
-#        t_test: true
-#        rel_diff: false
-#        units_to: g/kg
-
-
-#  cliZONAL:
-#    description: cloud ice content zonal mean
+#      scatter_swcre:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: swcre
+#        xmin: 0
+#        xmax: 100
+#        filename_add: cmip6
+#      scatter_clivi:
+#        script: clouds/clouds_scatter.ncl
+#        var_x: clt
+#        var_y: clwvi
+#        xmin: 0
+#        xmax: 100
+#        filename_add: cmip6
+#
+#  pdf_clt_cmip6:
+#    description: climatological annual means
 #    themes:
-#      - phys
+#      - clouds
 #    realms:
 #      - atmos
 #    variables:
-#      cli:
-#        preprocessor: pp27
-#        reference_dataset: CALIPSO-ICECLOUD
-#        mip: Amon
+#      clt:
+#        preprocessor: ppSouthernOcean
+#        reference_dataset: ESACCI-CLOUD
 #        project: CMIP6
-#        start_year: 2010
+#        mip: Amon
+#        exp: historical
+#        start_year: 2001
 #        end_year: 2010
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
 #    additional_datasets:
-#      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, mip: Amon, tier: 2}
-#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: CESM2-FV2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-##      - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-##      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-##      - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gr}
-##      - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-###ERROR_ps_missing      - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-##      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
-###ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r3i1p1f1, grid: gr}
-##      - {dataset: KACE-1-0-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: MIROC-ES2L, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
-##      - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: NESM3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+##error_concatenating_cubes      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
+##error_concatenating_cubes      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CAS-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CIESM, ensemble: r1i1p1f1, grid: gr}
+##error      - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+#      - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr}
+##error      - {dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gr}
+##error      - {dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr}
+#      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+##error      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+#      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#      - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+##ERROR_coordinates_screwed      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+#      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+##error      - {dataset: MCM-UA-1-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+#      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
 #    scripts:
-#      zonal:
-#        script: clouds/clouds_zonal.ncl
-#        timemean: annualclim
-#        t_test: false
-#        explicit_cn_levels: [0., 0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.02, 0.022, 0.024, 0.026, 0.028]
-#        explicit_cn_dlevels: [-0.01, -0.008, -0.006, -0.004, -0.002, 0., 0.002, 0.004, 0.006, 0.008, 0.01]
-#        embracesetup: true
-#        extralegend: false
-#        panel_labels: true
-#        showdiff: true
-#        rel_diff: false
-#        units_to: g/kg
+#      pdf:
+#        script: clouds/clouds_pdf.ncl
+#        styleset: CMIP6
+#        filename_add: cmip6
+#
+#  pdf_clt_cmip5:
+#    description: climatological annual means
+#    themes:
+#      - clouds
+#    realms:
+#      - atmos
+#    variables:
+#      clt:
+#        preprocessor: ppSouthernOcean
+#        reference_dataset: ESACCI-CLOUD
+#        project: CMIP5
+#        mip: Amon
+#        exp: historical
+#        start_year: 1996
+#        end_year: 2005
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+#    additional_datasets:
+#      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+#      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+#      - {dataset: BNU-ESM, ensemble: r1i1p1}
+#      - {dataset: CanESM2, ensemble: r1i1p1}
+#      - {dataset: CCSM4, ensemble: r1i1p1}
+#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5-1-FV2, ensemble: r1i1p1}
+#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+##fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+#      - {dataset: FIO-ESM, ensemble: r1i1p1}
+#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+##time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+#      - {dataset: inmcm4, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+##error      - {dataset: MIROC4h, ensemble: r1i1p1}
+#      - {dataset: MIROC5, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+#      - {dataset: NorESM1-M, ensemble: r1i1p1}
+#    scripts:
+#      pdf:
+#        script: clouds/clouds_pdf.ncl
+#        styleset: CMIP5
+#        filename_add: cmip5
 
-  clStdZONAL_cmip6:
+  cl_cmip6:
     description: 3-dim cloud cover, zonal mean
     themes:
       - phys
@@ -555,13 +1122,16 @@ diagnostics:
     variables:
       cl:
         preprocessor: pp27noref
+#        reference_dataset: ERA5
         mip: Amon
         project: CMIP6
-        start_year: 2005
-        end_year: 2014
+        start_year: 1996
+        end_year: 2005
         project: CMIP6
         exp: historical
     additional_datasets:
+#      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+#      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
 #error_concatenating_cubes      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r1i1p1f1, grid: gn}
 #error_concatenating_cubes      - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn}
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
@@ -610,257 +1180,83 @@ diagnostics:
       zonal:
         script: clouds/clouds_zonal.ncl
         timemean: annualclim
-        t_test: false
-#        explicit_cn_levels: [0., 3., 6., 9., 12., 15., 18., 21., 24., 27., 30., 33., 36., 39., 42.]
-#        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15., 20., 25.]
+        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15., 20., 25.]
         explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
-        explicit_cn_dlevels: [-20., -15., -10., -5., 0, 5., 10., 15., 20.]
-#        embracesetup: true
         extralegend: false
         panel_labels: true
-#        showdiff: true
+        showdiff: false
+        t_test: false
         rel_diff: false
         filename_add: cmip6
 
-#  scatter:
-#    description: scatter plot cloud fraction vs shortwave cloud forcing
-#    themes:
-#      - phys
-#      - clouds
-#    realms:
-#      - atmos
-#    variables:
-#      clt:
-#        preprocessor: ppSouthernOcean
-#        mip: Amon
-#        project: CMIP5
-#        exp: historical
-#        start_year: 2005
-#        end_year: 2005
-#        reference_dataset: ESACCI-CLOUD
-#        additional_datasets:
-#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-##      clwvi:
-##        preprocessor: ppSouthernOcean
-##        mip: Amon
-##        project: CMIP5
-##        exp: historical
-##        start_year: 2005
-##        end_year: 2005
-##        reference_dataset: ESACCI-CLOUD
-##        additional_datasets:
-##          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-#      swcre:
-#        preprocessor: ppSouthernOcean
-#        mip: Amon
-#        project: CMIP5
-#        exp: historical
-#        start_year: 2005
-#        end_year: 2005
-#        derive: true
-#        reference_dataset: CERES-EBAF
-#        additional_datasets:
-#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
-#    additional_datasets:
-#      - {dataset: ACCESS1-0, ensemble: r1i1p1}
-#      - {dataset: ACCESS1-3, ensemble: r1i1p1}
-#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
-#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
-#      - {dataset: BNU-ESM, ensemble: r1i1p1}
-#      - {dataset: CanESM2, ensemble: r1i1p1}
-#      - {dataset: CCSM4, ensemble: r1i1p1}
-#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
-##no_clw      - {dataset: CESM1-CAM5-1-FV2, ensemble: r1i1p1}
-#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
-#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
-#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
-##fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
-##fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
-##fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
-#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
-#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
-#      - {dataset: FIO-ESM, ensemble: r1i1p1}
-#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
-#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
-#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
-##time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
-##time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
-#      - {dataset: inmcm4, ensemble: r1i1p1}
-#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
-#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
-#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
-##error      - {dataset: MIROC4h, ensemble: r1i1p1}
-#      - {dataset: MIROC5, ensemble: r1i1p1}
-#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
-#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
-#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
-#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
-#      - {dataset: NorESM1-M, ensemble: r1i1p1}
-#    scripts:
-#      cmip5:
-#        script: clouds/clouds_scatter.ncl
-#        var_x: clt
-##        var_y: clwvi
-#        var_y: swcre
-#        xmin: 0
-#        xmax: 100
-#        filename_add: cmip5
-
-#  scatter:
-#    description: scatter plot cloud fraction vs shortwave cloud forcing
-#    themes:
-#      - phys
-#      - clouds
-#    realms:
-#      - atmos
-#    variables:
-#      clt:
-#        preprocessor: ppSouthernOcean
-#        mip: Amon
-#        project: CMIP6
-#        exp: historical
-#        start_year: 2005
-#        end_year: 2005
-#        reference_dataset: ESACCI-CLOUD
-#        additional_datasets:
-#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-##      clwvi:
-##        preprocessor: ppSouthernOcean
-##        mip: Amon
-##        project: CMIP6
-##        exp: historical
-##        start_year: 2005
-##        end_year: 2005
-##        reference_dataset: ESACCI-CLOUD
-##        additional_datasets:
-##          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-#      swcre:
-#        preprocessor: ppSouthernOcean
-#        mip: Amon
-#        project: CMIP6
-#        exp: historical
-#        start_year: 2005
-#        end_year: 2005
-#        derive: true
-#        reference_dataset: CERES-EBAF
-#        additional_datasets:
-#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
-#    additional_datasets:
-#      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: AWI-ESM-1-1-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2-FV2, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-##nodata      - {dataset: CIESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
-#      - {dataset: FGOALS-f3-L, project: CMIP6, exp: historical, ensemble: r2i1p1f1, grid: gr}
-#      - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-#      - {dataset: GFDL-ESM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
-##nodata      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
-#      - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r3i1p1f1, grid: gr}
-#      - {dataset: KACE-1-0-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#      - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MIROC-ES2L, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
-#      - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: NESM3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#      - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
-#    scripts:
-#      cmip6:
-#        script: clouds/clouds_scatter.ncl
-#        var_x: clt
-##        var_y: clwvi
-#        var_y: swcre
-#        xmin: 0
-#        xmax: 100
-#        filename_add: cmip6
-
-#  pdf:
-#    description: climatological annual means
-#    themes:
-#      - clouds
-#    realms:
-#      - atmos
-#    variables:
-#      clt:
-#        preprocessor: ppSouthernOcean
-#        reference_dataset: ESACCI-CLOUD
-#        project: CMIP5
-#        mip: Amon
-#        exp: [historical, rcp45]
-#        # ESACCI-CLOUD
-#        start_year: 2005  #1982
-#        end_year: 2005  #2014
-#        additional_datasets:
-#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-#    additional_datasets:
-#      - {dataset: ACCESS1-0, ensemble: r1i1p1}
-#      - {dataset: ACCESS1-3, ensemble: r1i1p1}
-#      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
-#      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
-#      - {dataset: BNU-ESM, ensemble: r1i1p1}
-#      - {dataset: CanESM2, ensemble: r1i1p1}
-#      - {dataset: CCSM4, ensemble: r1i1p1}
-#      - {dataset: CESM1-BGC, ensemble: r1i1p1}
-##no_clw      - {dataset: CESM1-CAM5-1-FV2, ensemble: r1i1p1}
-#      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
-#      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
-#      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
-##fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
-##fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
-##fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
-#      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
-#      - {dataset: FGOALS-g2, ensemble: r1i1p1}
-#      - {dataset: FIO-ESM, ensemble: r1i1p1}
-#      - {dataset: GFDL-CM3, ensemble: r1i1p1}
-#      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
-#      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-H, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
-#      - {dataset: GISS-E2-R, ensemble: r1i1p1}
-##time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
-##time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
-#      - {dataset: inmcm4, ensemble: r1i1p1}
-#      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
-#      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
-#      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
-##error      - {dataset: MIROC4h, ensemble: r1i1p1}
-#      - {dataset: MIROC5, ensemble: r1i1p1}
-#      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-#      - {dataset: MIROC-ESM, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
-#      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
-#      - {dataset: MRI-ESM1, ensemble: r1i1p1}
-#      - {dataset: NorESM1-ME, ensemble: r1i1p1}
-#      - {dataset: NorESM1-M, ensemble: r1i1p1}
-#    scripts:
-#      cmip5:
-#        script: clouds/clouds_pdf.ncl
-#        styleset: CMIP5
-#        filename_add: cmip5
+  cl_cmip5:
+    description: 3-dim cloud cover, zonal mean
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      cl:
+        preprocessor: pp27noref
+#        reference_dataset: ERA5
+        mip: Amon
+        project: CMIP5
+        start_year: 1996
+        end_year: 2005
+        project: CMIP5
+        exp: historical
+    additional_datasets:
+#      - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: CanESM2, ensemble: r1i1p1}
+      - {dataset: CCSM4, ensemble: r1i1p1}
+      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      - {dataset: FIO-ESM, ensemble: r1i1p1}
+      - {dataset: GFDL-CM2p1, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+      - {dataset: inmcm4, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+      - {dataset: MIROC5, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
+    scripts:
+      zonal:
+        script: clouds/clouds_zonal.ncl
+        timemean: annualclim
+        explicit_cn_dlevels: [-25., -20., -15., -10., -5., 0., 5., 10., 15., 20., 25.]
+        explicit_cn_levels: [5., 10., 15., 20., 25., 30., 35., 40., 45., 50.]
+        extralegend: false
+        panel_labels: true
+        showdiff: false
+        t_test: false
+        rel_diff: false
+        filename_add: cmip5

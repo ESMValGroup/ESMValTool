@@ -42,12 +42,6 @@ begin
 
   diag = "clouds_scatter.ncl"
   variables = metadata_att_as_array(variable_info, "short_name")
-  dim_VAR = dimsizes(variables)
-  refname = new(dim_VAR, string)
-
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(DIAG_SCRIPT + " (var: " + variables + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"var_x", "var_y", "xmin", "xmax"/))
@@ -60,9 +54,16 @@ begin
   varlist = (/var_x, var_y/)
   idx = new(dimsizes(varlist), integer)
 
-  do i = 0, dimsizes(varlist) - 1
+  nVAR = dimsizes(varlist)
+  refname = new(nVAR, string)
+
+  do i = 0, nVAR - 1
     idx(i) = ind(variables .eq. varlist(i))
   end do
+
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + variables(idx) + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   if (any(ismissing(idx))) then
     errstr = "diagnostic " + diag + " requires the following variable(s): " \
@@ -77,7 +78,7 @@ begin
   ; get reference datasets (if present) and check that number of datasets
   ; is equal for each variable
 
-  do i = 0, dim_VAR - 1
+  do i = 0, nVAR - 1
     if (isatt(variable_info[idx(i)], "reference_dataset")) then
       refname(i) = variable_info[idx(i)]@reference_dataset
     end if
@@ -94,8 +95,6 @@ begin
     end if
     delete(info)
   end do
-
-  delete(idx)
 
   ; Set default values for non-required diag_script_info attributes
 
@@ -208,30 +207,31 @@ begin
                 " dimensions (time, latitude, longitude)")
     end if
 
-    do i = 0, dim_VAR - 1
-      if (variables(i) .eq. var_x) then
+    do i = 0, nVAR - 1
+      var = variables(idx(i))
+      if (var .eq. var_x) then
         dims = getvardims(x)
       else
         dims = getvardims(y)
       end if
-      idx = ind(dims .eq. "lon")
-      if (ismissing(idx)) then
-        error_msg("f", DIAG_SCRIPT, "", variables(i) + ": no lon dimension")
+      testidx = ind(dims .eq. "lon")
+      if (ismissing(testidx)) then
+        error_msg("f", DIAG_SCRIPT, "", var + ": no lon dimension")
       end if
-      idx = ind(dims .eq. "lat")
-      if (ismissing(idx)) then
-        error_msg("f", DIAG_SCRIPT, "", variables(i) + ": no lat dimension")
+      testidx = ind(dims .eq. "lat")
+      if (ismissing(testidx)) then
+        error_msg("f", DIAG_SCRIPT, "", var + ": no lat dimension")
       end if
-      idx = ind(dims .eq. "time")
-      if (ismissing(idx)) then
-        error_msg("f", DIAG_SCRIPT, "", variables(i) + ": no time dimension")
+      testidx = ind(dims .eq. "time")
+      if (ismissing(testidx)) then
+        error_msg("f", DIAG_SCRIPT, "", var + ": no time dimension")
       end if
       delete(dims)
     end do
 
     delete(dims_x)
     delete(dims_y)
-    delete(idx)
+    delete(testidx)
 
     ref_ind = refidx_x
     if (ismissing(ref_ind)) then
@@ -260,13 +260,13 @@ begin
     do n = 0, nbins - 1
       x0 = n * binsize
       x1 = x0 + binsize
-      idx = ind((x1d .gt. x0) .and. (x1d .le. x1))
-      if (.not.all(ismissing(idx))) then
-        result(ii, n) = avg(y1d(idx))
+      idx0 = ind((x1d .gt. x0) .and. (x1d .le. x1))
+      if (.not.all(ismissing(idx0))) then
+        result(ii, n) = avg(y1d(idx0))
       else
         result(ii, n) = result@_FillValue
       end if
-      delete(idx)
+      delete(idx0)
     end do
 
     delete(x1d)
@@ -280,13 +280,13 @@ begin
   if (.not.ismissing(mm_ind)) then
     mmstd = new(nbins, float)
     imod = ispan(0, dim_MOD - 1, 1)
-    idx = ind((imod .ne. refidx_x) .and. (imod .ne. mm_ind))
-    if (.not.all(ismissing(idx))) then
+    idx0 = ind((imod .ne. refidx_x) .and. (imod .ne. mm_ind))
+    if (.not.all(ismissing(idx0))) then
       do n = 0, nbins - 1
-        mmstd(n) = stddev(result(idx, n))
+        mmstd(n) = stddev(result(idx0, n))
       end do
     end if
-    delete(idx)
+    delete(idx0)
     delete(imod)
   else
     mm_ind = -1
@@ -379,15 +379,15 @@ begin
                                       ; panelling defaults
   pres@gsnPanelCenter                   = False
 
-  idx = ind(.not.ismissing(plots))
-  n = dimsizes(idx)
-  pres@gsnPanelFigureStrings = names(idx)
+  idx0 = ind(.not.ismissing(plots))
+  n = dimsizes(idx0)
+  pres@gsnPanelFigureStrings = names(idx0)
   pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
                                               / tofloat((dim_MOD + 1) / 2)/))
   pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
                                               / tofloat((dim_MOD + 1) / 2)/))
-  outfile = panelling(wks, plots(idx), (n + 3) / 4, 4, pres)
-  delete(idx)
+  outfile = panelling(wks, plots(idx0), (n + 3) / 4, 4, pres)
+  delete(idx0)
 
   log_info("Wrote " + outfile)
 
