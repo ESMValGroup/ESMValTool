@@ -36,12 +36,15 @@ Good example diagnostics are:
 -  julia: `esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
 -  ncl: `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 
-Unfortunately not much documentation is available at this stage,
-so have a look at the other recipes and diagnostics for further inspiration.
+For an explanation of the recipe format, you might want to read about the
+:ref:`ESMValTool recipe <esmvalcore:recipe_overview>` and have a look at the
+available :ref:`preprocessor functions <esmvalcore:preprocessor>`.
+For further inspiration, check out the already
+:ref:`available recipes and diagnostics <recipes>`.
 
 Re-using existing code
 ======================
-Always make sure your code is or can be released under a license that is compatible with the Apache 2 license.
+Always make sure your code is or can be released under a license that is compatible with the Apache 2.0 license.
 
 If you have existing code in a supported scripting language, you have two options for re-using it. If it is fairly
 mature and a large amount of code, the preferred way is to package and publish it on the
@@ -54,15 +57,7 @@ C, C++, or Fortran that you want to re-use, the recommended way to proceed is to
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
 
-Additional dependencies
-=======================
-
-Add any additional dependencies needed for the diagnostic script to ``setup.py,``
-``esmvaltool/install/R/r_requirements.txt`` or ``esmvaltool/install/Julia/Project.toml``
-(depending on the language of your script) and also to ``package/meta.yaml`` for
-conda dependencies (includes Python and others, but not R/Julia). Also check
-that the license of the dependency you want to add and any of its dependencies
-are compatible with Apache 2.0 (`link <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE/>`_).
+.. _recording-provenance:
 
 Recording provenance
 ====================

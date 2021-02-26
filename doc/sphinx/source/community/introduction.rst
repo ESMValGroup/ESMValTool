@@ -33,6 +33,9 @@ Getting started
 
 See :ref:`install_from_source` for instructions on how to set up a development
 installation.
+Most contributions are either a :ref:`new recipe and diagnostic <new-diagnostic>`
+or a :ref:`new dataset <new-dataset>`, have a look at those chapters for an
+introduction on how to contribute those.
 
 Checklist for pull requests
 ---------------------------
@@ -49,116 +52,57 @@ The icons indicate whether the item will be checked during the
 :ref:`🛠 Technical review <technical_review>` or
 :ref:`🧪 Scientific review <scientific_review>`.
 
-- 🛠 This pull request has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
-- 🛠 Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
-- 🛠 [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
-- 🛠 YAML files pass [`yamllint`](https://docs.esmvaltool.org/en/latest/community/introduction.html#yaml) checks
-- 🛠 [Circle/CI tests pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
-- 🛠 [Codacy code quality checks pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
-- 🛠 [Documentation builds successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review) on readthedocs
+- 🛠 :ref:`The pull request has a descriptive title <descriptive_pr_title>`
+- 🛠 Code is written according to the :ref:`code quality guidelines <code_quality>`
+- 🛠 Documentation_ is available
+- 🛠 Tests_ run successfully
+- 🛠 New dependencies are :ref:`added or removed correctly <dependencies>`
 
-### New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
+New or updated recipe and/or diagnostic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- 🛠 [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
-- 🛠 New dependencies are added to the [project requirements](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#additional-dependencies)
-- 🧪 [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
-- 🧪 Recipe runs successfully on [`@esmvalbot`](https://docs.esmvaltool.org/en/latest/community/introduction.html#running-tests) or some other machine without modification
-- 🧪 Figure(s)/data [look as expected](https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review)
-- 🧪 Code is [well documented](https://docs.esmvaltool.org/en/latest/community/introduction.html#what-should-be-documented) and scientifically sound
+- 🛠 :ref:`Provenance information <recording-provenance>` has been added
+- 🧪 Documentation_ for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
+- 🧪 :ref:`Recipe runs successfully <testing_recipes>`
+- 🧪 Figure(s) and data look as expected from literature
+- 🧪 Code is :ref:`well documented <doc_howto>` and scientifically sound
 
-### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
+New or updated data reformatting script
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- 🛠 Dataset is added to the [table in the documentation](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation)
-- 🛠 Documentation contains [instructions to obtain the data](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation)
-- 🛠 [Tests for the CMORized data](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-tests) are available
-- 🧪 Numbers/units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/community/dataset.html#cmorizer-output)
-- 🛠 Data set is added to the [OBS data pool](https://docs.esmvaltool.org/en/latest/community/dataset.html#adding-your-dataset-to-the-obs-data-pool)
+- 🛠 :ref:`Documentation <dataset-documentation>` is available
+- 🛠 The dataset has been :ref:`added to the CMOR check recipe <dataset-test>`
+- 🧪 Numbers and units of the data look :ref:`physically meaningful <dataset-sanity-check>`
 
-.. _`@ESMValGroup/tech-reviewers`: https://github.com/orgs/ESMValGroup/teams/tech-reviewers
-.. _`@ESMValGroup/science-reviewers`: https://github.com/orgs/ESMValGroup/teams/science-reviewers
+.. _descriptive_pr_title:
 
-Running tests
--------------
+Use a descriptive title for your pull request
+---------------------------------------------
 
-Go to the directory where the repository is cloned and run
-``pytest``. Tests will also be run automatically by
-`CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool>`__.
+The title of a pull request should clearly describe what the pull request changes.
+The titles of pull requests are used to compile the :ref:`changelog`, therefore
+it is important that they are easy to understand for people who are not
+familiar with the code or people in the project.
+Using descriptive pull request titles also makes it easier to find back what was
+changed when in case bugs were introduced.
 
-These automated checks are run automatically when you add new commits to your pull request.
-They appear at the bottom of the pull request. Click on `Details` for more information
+.. _code_quality:
 
-
-Code style
-----------
+Code and documentation quality
+------------------------------
 
 To increase the readability and maintainability or the ESMValTool source
-code, we aim to adhere to best practices and coding standards. All pull
-requests are reviewed and tested by one or more members of the core
-development team. For code in all languages, it is highly recommended
-that you split your code up in functions that are short enough to view
-without scrolling.
+code, we aim to adhere to best practices and coding standards.
+For code in all languages, it is highly recommended that you split your code up
+in functions that are short enough to view without scrolling, e.g. no more than
+50 lines long.
 
 We include checks for Python, R, NCL, and yaml files, most of which are
 described in more detail in the sections below.
 This includes checks for invalid syntax and formatting errors.
-`Pre-commit <https://pre-commit.com/>`__ is a handy tool that can run
-all of these checks automatically.
+:ref:`pre-commit` is a handy tool that can run all of these checks automatically.
 It knows knows which tool to run for each filetype, and therefore provides
 a simple way to check your code!
-
-Pre-commit
-~~~~~~~~~~
-
-To run ``pre-commit`` on your code, go to the ESMValTool directory
-(``cd ESMValTool``) and run
-
-::
-
-   pre-commit run
-
-By default, pre-commit will only run on the files that have been changed,
-meaning those that have been staged in git (i.e. after
-``git add your_script.py``).
-
-To make it only check some specific files, use
-
-::
-
-   pre-commit run --files your_script.py
-
-or
-
-::
-
-   pre-commit run --files your_script.R
-
-Alternatively, you can configure ``pre-commit`` to run on the staged files before
-every commit (i.e. ``git commit``), by installing it as a `git hook <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__ using
-
-::
-
-   pre-commit install
-
-Pre-commit hooks are used to inspect the code that is about to be committed. The
-commit will be aborted if files are changed or if any issues are found that
-cannot be fixed automatically. Some issues cannot be fixed (easily), so to
-bypass the check, run
-
-::
-
-   git commit --no-verify
-
-or
-
-::
-
-   git commit -n
-
-or uninstall the pre-commit hook
-
-::
-
-   pre-commit uninstall
 
 Python
 ~~~~~~
@@ -220,9 +164,11 @@ Because there is no standard best practices document for NCL, we use
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ for NCL code as
 well, with some minor adjustments to accommodate for differences in the
 languages. The most important difference is that for NCL code the
-indentation should be 2 spaces instead of 4. Use the command
-``nclcodestyle /path/to/file.ncl`` to check if your code follows the
-style guide.
+indentation should be 2 spaces instead of 4.
+Use the command ``nclcodestyle /path/to/file.ncl`` to check if your code
+follows the style guide.
+More information on the ``nclcodestyle`` command can be found
+:ref:`here <nclcodestyle>`.
 
 R
 ~
@@ -249,8 +195,11 @@ Any text file
 A generic tool to check for common spelling mistakes is
 `codespell <https://pypi.org/project/codespell/>`__.
 
+
 Documentation
 -------------
+
+.. _doc_howto:
 
 What should be documented
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -259,13 +208,6 @@ Any code documentation that is visible on
 `docs.esmvaltool.org <https://docs.esmvaltool.org>`__
 should be well written and adhere to the standards for documentation for the
 respective language.
-Recipes should have a page in the :ref:`recipes` section.
-This is also the place to document recipe options for the diagnostic scripts
-used in those recipes.
-When adding a new recipe, please start from the
-`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
-and do not forget to add your recipe to the
-`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
 Note that there is no need to write extensive documentation for functions that
 are not visible in the online documentation.
 However, a short description in the docstring helps other contributors to
@@ -273,17 +215,210 @@ understand what a function is intended to do and and what its capabilities are.
 For short functions, a one-line docstring is usually sufficient, but more
 complex functions might require slightly more extensive documentation.
 
-How to build the documentation locally
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Recipes should have a page in the :ref:`recipes` chapter.
+This is also the place to document recipe options for the diagnostic scripts
+used in those recipes.
+When adding a new recipe, please start from the
+`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+and do not forget to add your recipe to the
+`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
 
-Go to the directory where the repository is cloned and run
+Functions implementing scientific formula should contain comments with
+references to the paper and formula number(s).
+
+How to view the documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Whenever you make a pull request or push new commits to an existing pull
+request, readthedocs will automatically build the documentation.
+The link to the documentation will be shown in the list of checks below your
+pull request, click 'Details' behind the check
+``docs/readthedocs.org:esmvaltool`` to preview the documentation.
+If all checks were successful, you may need to click 'Show all checks' to see
+the individual checks.
+
+To build the documentation on your own computer, go to the directory where the
+repository was cloned and run
+
+::
+
+   python setup.py build_sphinx
+
+or
 
 ::
 
    python setup.py build_sphinx -Ea
 
+to build it from scratch.
 Make sure that your newly added documentation builds without warnings or
-errors.
+errors and looks correctly formatted.
+`CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_
+will build the documentation with the command
+
+::
+
+   python setup.py build_sphinx --warning-is-error
+
+to catch mistakes that can be detected automatically.
+
+When reviewing a pull request, always check that the documentation checks were
+successful.
+Successful checks have a green ✓ in front, a ❌ means the test job failed.
+
+.. _tests:
+
+Tests
+-----
+
+To check various aspects of the recipes and code, there tests available in the
+`tests <https://github.com/ESMValGroup/ESMValTool/tree/master/tests>`__
+directory.
+
+Whenever you make a pull request or push new commits to an existing pull
+request, these tests will be run automatically on CircleCI_.
+The results appear at the bottom of the pull request.
+Click on 'Details' for more information on a specific test job.
+
+To run the tests on your own computer, go to the directory where the repository
+is cloned and run the command ``pytest``.
+
+When reviewing a pull request, always check that all test jobs on CircleCI_ were
+successful.
+Successful test jobs have a green ✓ in front, a ❌ means the test job failed.
+
+.. _testing_recipes:
+
+Testing recipes
+~~~~~~~~~~~~~~~
+
+To test a recipe, you can run it yourself on your local infrastructure or you
+can ask the `@esmvalbot <https://github.com/apps/esmvalbot>`_ to run it for you.
+To request a run of ``recipe_xyz.yml``, write the following comment below a pull
+request:
+
+::
+
+   @esmvalbot Please run recipe_xyz.yml
+
+Note that only members of the `@ESMValGroup/esmvaltool-developmentteam`_
+can request runs. The memory of the `@esmvalbot`_ is limited to 16 GB and it only
+has access to data available at DKRZ.
+
+When reviewing a pull request, at the very least check that a recipes runs
+without any modifications.
+For a more thorough check, you might want to try out different datasets or
+changing some settings if the diagnostic scripts support those.
+A simple :ref:`tool <recipe_test_tool>` is available for testing recipes
+with various settings.
+
+
+.. _dependencies:
+
+Adding or removing dependencies
+-------------------------------
+
+Before considering adding a new dependency, carefully check that the license of
+the dependency you want to add and any of its dependencies are compatible with
+the
+`Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE/>`_
+license that applies to the ESMValTool.
+Note that GPL version 2 license is considered incompatible with the Apache 2.0
+license, while the compatibility of GPL version 3 license with the Apache 2.0
+license is questionable.
+See this `statement <https://www.apache.org/licenses/GPL-compatibility.html>`__
+by the authors of the Apache 2.0 license for more information.
+
+The following files contain lists of dependencies
+
+- ``environment.yml``
+  contains development dependencies that cannot be installed from
+  PyPI/CRAN/Julia package repository
+- ``docs/sphinx/source/requirements.txt``
+  contains Python dependencies needed to build the documentation that can be
+  installed from PyPI
+- ``docs/sphinx/source/conf.py``
+  contains a list of Python dependencies needed to build the documentation that
+  cannot be installed from PyPI and need to be mocked when building the
+  documentation
+- ``esmvaltool/install/R/r_requirements.txt``
+  contains R dependencies that can be installed from CRAN
+- ``esmvaltool/install/Julia/Project.toml``
+  contains Julia dependencies that can be installed from the Julia package
+  repository
+- ``setup.py``
+  contains all Python dependencies, regardless of their installation source
+- ``package/meta.yaml``
+  contains dependencies for the conda package, all Python and compiled
+  dependencies that can be installed from conda should be listed here, but no R
+  or Julia dependencies, because this would make it impossible to solve the
+  conda environment
+
+Note that packages may have a different name on conda than on PyPI or CRAN.
+
+Several test jobs on CircleCI_ related to the installation of the tool will only
+run if you change the dependencies, these will be skipped for most pull
+requests.
+
+When reviewing a pull request where dependencies are added or removed, always
+check that the changes have been applied in all relevant places.
+
+.. _pre-commit:
+
+Pre-commit
+----------
+
+To run ``pre-commit`` on your code, go to the ESMValTool directory
+(``cd ESMValTool``) and run
+
+::
+
+   pre-commit run
+
+By default, pre-commit will only run on the files that have been changed,
+meaning those that have been staged in git (i.e. after
+``git add your_script.py``).
+
+To make it only check some specific files, use
+
+::
+
+   pre-commit run --files your_script.py
+
+or
+
+::
+
+   pre-commit run --files your_script.R
+
+Alternatively, you can configure ``pre-commit`` to run on the staged files before
+every commit (i.e. ``git commit``), by installing it as a `git hook <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__ using
+
+::
+
+   pre-commit install
+
+Pre-commit hooks are used to inspect the code that is about to be committed. The
+commit will be aborted if files are changed or if any issues are found that
+cannot be fixed automatically. Some issues cannot be fixed (easily), so to
+bypass the check, run
+
+::
+
+   git commit --no-verify
+
+or
+
+::
+
+   git commit -n
+
+or uninstall the pre-commit hook
+
+::
+
+   pre-commit uninstall
+
 
 Branches, pull requests and code review
 ---------------------------------------
@@ -343,3 +478,7 @@ name to the list of authors in CITATION.cff and regenerate the file
 
    pip install cffconvert
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
+
+.. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
+.. _`@ESMValGroup/tech-reviewers`: https://github.com/orgs/ESMValGroup/teams/tech-reviewers
+.. _`@ESMValGroup/science-reviewers`: https://github.com/orgs/ESMValGroup/teams/science-reviewers

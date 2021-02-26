@@ -40,6 +40,8 @@ In particular, make sure that pull requests have the correct label, so they are
 listed in the correct category.
 Finally, copy and paste the generated content at the top of the changelog.
 
+.. _nclcodestyle:
+
 nclcodestyle
 ============
 
@@ -58,6 +60,8 @@ xml2yml
 A tool for converting version 1 recipes to version 2 recipes.
 See the README.md file in the directory esmvaltool/utils/xml2yml for detailed usage instructions.
 
+
+.. _recipe_test_tool:
 
 testing
 =======
