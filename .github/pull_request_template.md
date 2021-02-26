@@ -49,7 +49,7 @@ It is the responsibility of the author to make sure the pull request is ready to
 - [ ] [🛠][1] [Tests](https://docs.esmvaltool.org/en/latest/community/introduction.html#tests) run successfully
 - [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://docs.esmvaltool.org/en/latest/community/introduction.html#dependencies)
 
-### [New or updated recipe/diagnostic](https://docs.esmvaltool.org/en/latest/develop/diagnostic.html)
+### [New or updated recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html)
 
 - [ ] [🛠][1] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
 - [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
