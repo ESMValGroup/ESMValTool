@@ -19,6 +19,7 @@ Atmosphere
    recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
+   recipe_eady_growth_rate
    recipe_extreme_events
    recipe_eyring06jgr
    recipe_eyring13jgr
@@ -27,6 +28,7 @@ Atmosphere
    recipe_hyint
    recipe_modes_of_variability
    recipe_quantilebias
+   recipe_bock20jgr
    recipe_spei
    recipe_martin18grl
    recipe_autoassess_stratosphere

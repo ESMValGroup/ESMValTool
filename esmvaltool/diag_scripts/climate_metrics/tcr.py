@@ -99,7 +99,7 @@ def _get_anomaly_cube(onepct_cube, pi_cube):
 
 def _plot(cfg, cube, dataset_name, tcr):
     """Create scatterplot of temperature anomaly vs. time."""
-    if not cfg['write_plots'] or not cfg.get('plot', True):
+    if not cfg.get('plot', True):
         return (None, None)
     logger.debug("Plotting temperature anomaly vs. time for '%s'",
                  dataset_name)

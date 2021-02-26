@@ -13,7 +13,7 @@ jobs:
     runs-on: "ubuntu-latest"  # use only Linux for conda build
     strategy:
       matrix:
-        python-version: [3.8]  # use only the latest for conda build
+        python-version: [3.9]  # use only the latest for conda build
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
