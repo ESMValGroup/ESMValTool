@@ -39,30 +39,29 @@
 
 It is the responsibility of the author to make sure the pull request is ready to review. The icons indicate whether the item will be subject to the [🛠 Technical][1] or [🧪 Scientific][2] review.
 
-- [ ] [🛠][1] This pull request has a descriptive title for the [changelog](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
-- [ ] [🛠][1] Code follows the [style guide](https://docs.esmvaltool.org/en/latest/community/introduction.html#code-style)
-- [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
-- [ ] [🛠][1] YAML files pass [`yamllint`](https://docs.esmvaltool.org/en/latest/community/introduction.html#yaml) checks
-- [ ] [🛠][1] [Circle/CI tests pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
-- [ ] [🛠][1] [Codacy code quality checks pass](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review)
-- [ ] [🛠][1] [Documentation builds successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#branches-pull-requests-and-code-review) on readthedocs
+<!-- The next two lines turn the 🛠 and 🧪 below into hyperlinks -->
+[1]: https://docs.esmvaltool.org/en/latest/community/review.html#technical-review
+[2]: https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review
 
-### New or updated [recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html):
+- [ ] [🛠][1] The pull request has a [descriptive title](https://docs.esmvaltool.org/en/latest/community/introduction.html#descriptive_pr_title)
+- [ ] [🛠][1] Code is written according to the [code quality guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html#code_quality)
+- [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) is available
+- [ ] [🛠][1] [Tests](https://docs.esmvaltool.org/en/latest/community/introduction.html#tests) run successfully
+- [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://docs.esmvaltool.org/en/latest/community/introduction.html#dependencies)
+
+### [New or updated recipe/diagnostic](https://docs.esmvaltool.org/en/latest/develop/diagnostic.html)
 
 - [ ] [🛠][1] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
-- [ ] [🛠][1] New dependencies are added to the [project requirements](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#additional-dependencies)
-- [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
-- [ ] [🧪][2] Recipe runs successfully on [`@esmvalbot`](https://docs.esmvaltool.org/en/latest/community/introduction.html#running-tests) or some other machine without modification
-- [ ] [🧪][2] Figure(s)/data [look as expected](https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review)
-- [ ] [🧪][2] Code is [well documented](https://docs.esmvaltool.org/en/latest/community/introduction.html#what-should-be-documented) and scientifically sound
+- [ ] [🧪][2] [Documentation](https://docs.esmvaltool.org/en/latest/community/introduction.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
+- [ ] [🧪][2] [Recipe runs successfully](https://docs.esmvaltool.org/en/latest/community/introduction.html#testing_recipes)
+- [ ] [🧪][2] Figure(s) and data look as expected from literature
+- [ ] [🧪][2] Code is [well documented](https://docs.esmvaltool.org/en/latest/community/introduction.html#doc_howto) and scientifically sound
 
-### New or updated [data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html):
+### [New or updated data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html)
 
-- [ ] [🛠][1] Dataset is added to the [table in the documentation](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation)
-- [ ] [🛠][1] Documentation contains [instructions to obtain the data](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation)
-- [ ] [🛠][1] [Tests for the CMORized data](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-tests) are available
-- [ ] [🧪][2] Numbers/units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/community/dataset.html#cmorizer-output)
-- [ ] [🛠][1] Data set is added to the [OBS data pool](https://docs.esmvaltool.org/en/latest/community/dataset.html#adding-your-dataset-to-the-obs-data-pool)
+- [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/develop/dataset.html#dataset-documentation) is available
+- [ ] [🛠][1] The dataset has been [added to the CMOR check recipe](https://docs.esmvaltool.org/en/latest/develop/dataset.html#dataset-test)
+- [ ] [🧪][2] Numbers and units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/develop/dataset.html#dataset-sanity-check)
 
 ***
 
@@ -73,6 +72,3 @@ To help with the number pull requests:
 <!--
 If you need help with any of the items on the checklists above, please do not hesitate to ask by commenting in the issue or pull request.
 -->
-
-[1]: https://docs.esmvaltool.org/en/latest/community/review.html#technical-review
-[2]: https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review
