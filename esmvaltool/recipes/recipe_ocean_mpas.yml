@@ -123,25 +123,40 @@ diagnostics:
     variables:
       tos: 
         preprocessor: prep_regional_ts_2d
+        additional_datasets: &additional_datasets
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+
       tob: 
         preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
       zos: 
         preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
       sos: 
         preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
       chl: 
         preprocessor: prep_regional_ts_3d_surface
+        additional_datasets: *additional_datasets
       ph:
         preprocessor: prep_regional_ts_3d_surface
+        additional_datasets: *additional_datasets
       intpp: 
         preprocessor: prep_regional_ts_2d
+        additional_datasets: *additional_datasets
       no3: 
         preprocessor: prep_regional_ts_3d_surface
-
+        additional_datasets: *additional_datasets
       vo: 
         preprocessor: prep_regional_ts_3d_top
+        additional_datasets: *additional_datasets
       uo: 
         preprocessor: prep_regional_ts_3d_top
+        additional_datasets: *additional_datasets
     scripts:
       Regional_Ocean_Surface_mean_timeseries: 
         script: ocean/diagnostic_timeseries.py
@@ -153,12 +168,36 @@ diagnostics:
     variables:
       thetao:
         preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
       o2: 
         preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
     scripts:
       Regional_Ocean_Surface_mean_timeseries: 
         script:
         script: ocean/diagnostic_profiles.py
 
+  # --------------------------------------------------
+  # Regional maps
+  # --------------------------------------------------
+
+  diag_decadal_maps:
+    variables:
+      thetao:
+        preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
+      o2: 
+        preprocessor: prep_profile_2
+        additional_datasets: *additional_datasets
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries: 
+        script:
+        script: ocean/diagnostic_profiles.py
+        additional_datasets: &additional_datasets
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
 
 
