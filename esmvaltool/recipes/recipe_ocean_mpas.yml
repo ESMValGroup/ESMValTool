@@ -1,0 +1,164 @@
+# ESMValTool
+# recipe_ocean_example.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the monthly ocean
+    temperature. Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+datasets:
+   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
+   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp126, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp245, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+   - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2100}
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+
+
+  prep_regional_ts_2d: # For regional 2d fields
+    custom_order: true
+    extract_region:
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
+    area_statistics:
+      operator: mean
+
+
+  prep_regional_ts_3d_surface: # For regional fields
+    custom_order: true
+    extract_region:
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
+    extract_levels:
+      levels: [0., ]
+      scheme: linear_horizontal_extrapolate_vertical
+    area_statistics:
+      operator: mean
+
+  prep_regional_ts_3d_top: 
+    custom_order: true
+    extract_region:
+      start_longitude: -80.
+      end_longitude: 30.
+      start_latitude: -80.
+      end_latitude: 80.
+    extract_volume:
+      z_min: 0.
+      z_max: 100.
+    volume_statistics:
+      operator: mean
+
+
+
+
+
+
+
+  # --------------------------------------------------
+  # Map preprocessors - 2D fields
+  # --------------------------------------------------
+  prep_map_1: # For Global 2D fields
+    climate_statistics:
+      operator: mean
+
+  prep_map_2: # For Global 2D fields with regridding
+    custom_order: true
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    climate_statistics:
+      operator: mean
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean ]
+
+
+
+
+  # --------------------------------------------------
+  # Depth-profile preprocessors
+  # --------------------------------------------------
+
+  prep_profile_2: # For a regional profile
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 20.
+      start_latitude: -30.
+      end_latitude: 30.
+    area_statistics:
+      operator: mean
+
+
+
+
+diagnostics:
+
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+
+  diag_timeseries_3:
+    variables:
+      tos: 
+        preprocessor: prep_regional_ts_2d
+      tob: 
+        preprocessor: prep_regional_ts_2d
+      zos: 
+        preprocessor: prep_regional_ts_2d
+      sos: 
+        preprocessor: prep_regional_ts_2d
+      chl: 
+        preprocessor: prep_regional_ts_3d_surface
+      ph:
+        preprocessor: prep_regional_ts_3d_surface
+      intpp: 
+        preprocessor: prep_regional_ts_2d
+      no3: 
+        preprocessor: prep_regional_ts_3d_surface
+
+      vo: 
+        preprocessor: prep_regional_ts_3d_top
+      uo: 
+        preprocessor: prep_regional_ts_3d_top
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries: 
+        script: ocean/diagnostic_timeseries.py
+
+  # --------------------------------------------------
+  # Depth-profile diagnostics
+  # --------------------------------------------------
+  diag_timeseries_hovmoller:
+    variables:
+      thetao:
+        preprocessor: prep_profile_2
+      o2: 
+        preprocessor: prep_profile_2
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries: 
+        script:
+        script: ocean/diagnostic_profiles.py
+
+
+
