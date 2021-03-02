@@ -144,6 +144,12 @@ the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://pr
 
    prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
+A pull request should preferably not introduce any new prospector issues.
+However, we understand that there is a limit to how much time can be spend on
+polishing code, so up to 10 new (non-trivial) issues is still an acceptable
+amount.
+Formatting issues are considered trivial and need to be addressed.
+
 Run
 
 ::
@@ -152,10 +158,24 @@ Run
 
 to see the warnings about the code style of the entire project.
 
-We use `flake8 <https://flake8.pycqa.org/en/latest/>`__ on CircleCI to automatically check that there are
-no formatting mistakes and Codacy for monitoring (Python) code quality.
-Running prospector locally will give you quicker and sometimes more
-accurate results.
+We use `flake8 <https://flake8.pycqa.org/en/latest/>`_
+to automatically check for obvious bugs and easy to fix formatting mistakes.
+
+When you make a pull request, adhering to the Python style guide is checked in
+two ways:
+
+- As part of the unit tests, flake8_ is run by CircleCI_, see the also Tests_.
+- `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
+  is a service that runs prospector (and other code quality tools) on changed
+  files and reports the results.
+  Click the 'Details' link behind the Codacy check entry and then click
+  'View more details on Codacy Production' to see the results of the static
+  code analysis done by Codacy_.
+  If you need to log in, you can do so using your GitHub account.
+
+Note that running prospector locally will give you quicker and sometimes more
+accurate results than waiting for Codacy_.
+
 
 NCL
 ~~~
@@ -279,6 +299,8 @@ Whenever you make a pull request or push new commits to an existing pull
 request, these tests will be run automatically on CircleCI_.
 The results appear at the bottom of the pull request.
 Click on 'Details' for more information on a specific test job.
+To see some of the results on CircleCI, you may need to log in.
+You can do so using your GitHub account.
 
 To run the tests on your own computer, go to the directory where the repository
 is cloned and run the command ``pytest``.
@@ -459,20 +481,13 @@ top of the pull request.
 Make sure your pull request has a descriptive title that can be used in the
 `changelog <https://docs.esmvaltool.org/en/latest/changelog.html>`__.
 
-Diagnostic script contributions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-A pull request with diagnostic code should preferably not introduce new
-Codacy issues. However, we understand that there is a limit to how much
-time can be spend on polishing code, so up to 10 new (non-trivial)
-issues is still an acceptable amount.
 
 List of authors
 ~~~~~~~~~~~~~~~
 
-If you make a (significant) contribution to ESMValTool, please add your
-name to the list of authors in CITATION.cff and regenerate the file
-.zenodo.json by running the command
+If you make a contribution to ESMValTool, please add your name to the list of
+authors in CITATION.cff and regenerate the .zenodo.json file by running the
+command
 
 ::
 
