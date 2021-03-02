@@ -1,3 +1,5 @@
+.. _new-cmorizer:
+
 *********************************************************
 Contributing a CMORizing script for an additional dataset
 *********************************************************
@@ -102,7 +104,7 @@ that is available at the MPI for Biogeochemistry in Jena: `cmorize_obs_mte.py
 <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/cmorize_obs_mte.py>`_.
 
 All the necessary information about the dataset to write the filename
-correctly, and which variable is of interest, is stored in a seperate
+correctly, and which variable is of interest, is stored in a separate
 configuration file: `MTE.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_
 in the directory ``ESMValTool/esmvaltool/cmorizers/obs/cmor_config/``. Note
@@ -282,4 +284,3 @@ is called ``recipes/examples/recipe_check_obs.yml``. You just need to add a
 diagnostic for your dataset following the existing entries.
 Only the diagnostic of interest needs to be run, the others should be commented
 out for testing.
-

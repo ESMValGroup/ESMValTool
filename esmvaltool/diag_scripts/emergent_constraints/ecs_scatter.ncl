@@ -1164,7 +1164,7 @@ begin
 
   ; make sure path for (optional) netcdf output exists
 
-  if (config_user_info@write_netcdf.eq."True") then
+  if (diag_script_info@write_netcdf.eq."True") then
     write_nc = True
     work_dir = config_user_info@work_dir + "/"
     ; Create work dir
@@ -1611,7 +1611,7 @@ begin
 
   ; ============================ plot results ==============================
 
-  if (config_user_info@write_plots.eq."True") then
+  if (diag_script_info@write_plots.eq."True") then
     outfile = str_sub_str(diagdata@standard_name, " ", "_") + \
       "-" + str_sub_str(ECS@standard_name, " ", "_") + "_ref"
     n = dimsizes(ref_ind)
@@ -1887,7 +1887,7 @@ begin
     log_info("Wrote " + plotfile)
   else
     plotfile = ""
-  end if  ; if config_user_info@write_plots.eq."True"
+  end if  ; if diag_script_info@write_plots.eq."True"
 
   ; ======================== netcdf output ===========================
 

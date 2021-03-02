@@ -25,8 +25,7 @@ log_x : bool, optional (default: False)
 log_y : bool, optional (default: False)
     Apply logarithm to Y axis (TCR).
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 
@@ -39,10 +38,15 @@ import numpy as np
 import seaborn as sns
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, io,
-                                            iris_helpers, plot, run_diagnostic)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    io,
+    iris_helpers,
+    plot,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -81,8 +85,6 @@ def get_provenance_record(project, ancestor_files):
 
 def plot_data(cfg, ecs_cube, tcr_cube):
     """Plot data."""
-    if not cfg['write_plots']:
-        return None
     logger.debug("Plotting Fig. 9.42b of IPCC AR5")
     (_, axes) = plt.subplots()
     project = ecs_cube.attributes['project']
@@ -191,11 +193,10 @@ def main(cfg):
     # Provenance
     ancestor_files = [ecs_file, tcr_file]
     provenance_record = get_provenance_record(project, ancestor_files)
-    if plot_path is not None:
-        provenance_record.update({
-            'plot_file': plot_path,
-            'plot_types': ['scatter'],
-        })
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['scatter'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 
