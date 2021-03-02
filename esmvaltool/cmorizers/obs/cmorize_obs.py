@@ -225,6 +225,9 @@ def _assemble_datasets(raw_obs, obs_list):
     tiers = [
         tier for tier in tiers if os.path.exists(os.path.join(raw_obs, tier))
     ]
+    if not tiers:
+        logger.warning("Could not find any Tier1,2... dir in raw data %s dir",
+                       raw_obs)
     datasets = {tier: [] for tier in tiers}
 
     # if user specified obs list
