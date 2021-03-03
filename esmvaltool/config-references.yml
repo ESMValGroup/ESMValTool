@@ -391,10 +391,6 @@ authors:
     name: Russell, Joellen
     institute: Univ. of Arizona, USA
     orcid:
-  senftleben_daniel:
-    name: Senftleben, Daniel
-    institute: DLR, Germany
-    orcid: https://orcid.org/0000-0002-3903-3841
   sanchez-gomez_emilia:
     name: Sanchez, Emilia
     institute: CERFACS, France
@@ -604,7 +600,7 @@ authors:
   senftleben_daniel:
     name: Senftleben, Daniel
     institute: DLR, Germany
-    orcid:
+    orcid: https://orcid.org/0000-0002-3903-3841
   stevens_mark:
     name: Stevens, Mark
     institute: NCAR, US
@@ -671,6 +667,9 @@ projects:
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
   usmile: ERC Synergy Grant USMILE
+  isenes3: EU H2020 Infrastructure for the European Network for Earth System Modelling
+  eucp: EU H2020 European Climate prediction
+
 
 realms:
   aerosol: aerosol
