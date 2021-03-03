@@ -14,6 +14,7 @@
 
 - [**Documentation**](https://docs.esmvaltool.org/en/latest/)
 - [**ESMValTool Website**](https://www.esmvaltool.org/)
+- [**ESMValTool Tutorial**](https://esmvalgroup.github.io/ESMValTool_Tutorial/index.html)
 - [**ESMValGroup Project on GitHub**](https://github.com/ESMValGroup)
 - [**Gallery**](https://docs.esmvaltool.org/en/latest/gallery.html)
 
