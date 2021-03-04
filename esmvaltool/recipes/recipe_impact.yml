@@ -1,0 +1,99 @@
+# ESMValTool
+# recipe_impact.yml
+---
+documentation:
+  description: >
+    This recipe provides quick insight into the spread and performance of multiple models.
+
+    Many impact researchers do not have the time and finances to use a large
+    ensemble of climate model runs for their impact analysis. To get an idea of
+    the range of impacts of climate change it also suffices to use a small
+    number of climate model runs. In case a system is only sensitive to annual
+    temperature, one can select a run with a high change and one with a low
+    change of annual temperature, preferably both with a low bias.
+
+  authors:
+    - kalverla_peter
+  maintainer:
+    - kalverla_peter
+  project:
+    - isenes3
+
+datasets: &models
+  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: "r(1:4)i1p1"}
+  - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp26], ensemble: r1i1p1}
+  - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp45], ensemble: r1i1p1}
+  - {dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
+
+observations: &observations
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+
+common_dataset_keys: &common_keys
+  mip: Amon
+  start_year: 1981
+  end_year: 2099
+
+preprocessors:
+
+  calculate_anomalies:
+    extract_region: &region
+      start_longitude: 0.0
+      end_longitude: 39.0
+      start_latitude: 30.0
+      end_latitude: 76.25
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &reference_period
+        start_year: 1981
+        start_month: 1
+        start_day: 1
+        end_year: 2010
+        end_month: 12
+        end_day: 31
+      standardize: false
+
+  prepare_for_bias_calculation:
+    regrid:
+      target_grid: 2.5x2.5
+    extract_region:
+      <<: *region
+    extract_time:
+      <<: *reference_period
+
+diagnostics:
+  quick_insights:
+    description: >
+      - Calculate the RMSD between model and observations.
+      - Calculate the change with respect to the reference period.
+      - Visualize that in table and/or figure formats
+
+    variables:
+      tas_change: &tas_change
+        <<: *common_keys
+        short_name: tas
+        preprocessor: prepare_for_bias_calculation
+      pr_change: &pr_change
+        <<: *common_keys
+        short_name: pr
+        preprocessor: prepare_for_bias_calculation
+      tas_bias:
+        <<: *common_keys
+        short_name: tas
+        preprocessor: calculate_anomalies
+        additional_datasets: *observations
+      pr_bias:
+        <<: *common_keys
+        short_name: pr
+        preprocessor: calculate_anomalies
+        additional_datasets: *observations
+
+    scripts:
+      visualize:
+        script: impact/quick_insights.py
