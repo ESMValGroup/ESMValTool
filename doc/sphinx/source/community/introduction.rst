@@ -144,12 +144,6 @@ the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://pr
 
    prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
-A pull request should preferably not introduce any new prospector issues.
-However, we understand that there is a limit to how much time can be spend on
-polishing code, so up to 10 new (non-trivial) issues is still an acceptable
-amount.
-Formatting issues are considered trivial and need to be addressed.
-
 Run
 
 ::
@@ -158,7 +152,7 @@ Run
 
 to see the warnings about the code style of the entire project.
 
-We use `flake8 <https://flake8.pycqa.org/en/latest/>`_
+In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
 to automatically check for obvious bugs and easy to fix formatting mistakes.
 
 When you make a pull request, adhering to the Python style guide is checked in
@@ -173,9 +167,14 @@ two ways:
   code analysis done by Codacy_.
   If you need to log in, you can do so using your GitHub account.
 
+A pull request should preferably not introduce any new prospector issues.
+However, we understand that there is a limit to how much time can be spend on
+polishing code, so up to 10 new (non-trivial) issues is still an acceptable
+amount.
+Formatting issues are considered trivial and need to be addressed.
+
 Note that running prospector locally will give you quicker and sometimes more
 accurate results than waiting for Codacy_.
-
 
 NCL
 ~~~
