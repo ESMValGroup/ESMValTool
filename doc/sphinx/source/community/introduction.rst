@@ -40,6 +40,7 @@ Go to the directory where the repository is cloned and run
 These automated checks are run automatically when you add new commits to your pull request.
 They appear at the bottom of the pull request. Click on `Details` for more information
 
+In addition, a recipe tester Bot is also available (experimental at the moment).
 
 Code style
 ----------
