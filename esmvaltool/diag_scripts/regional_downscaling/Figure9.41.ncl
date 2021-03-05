@@ -32,6 +32,7 @@ load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/regional_downscaling/regional_function.ncl"
 
 
+
 begin
   enter_msg(DIAG_SCRIPT, "")
   var0 = variable_info[0]@short_name
@@ -141,7 +142,6 @@ begin
     qsort(A)  ; rank the observation in ascending order
     D = new((/dim_MOD, dimsizes(time)/), "double")
     C = new((/dim_MOD, dimsizes(time)/), "double")
-
     jmod = 0
     do imod = 0, dim_MOD - 1
       if (imod .ne. idx_ref) then
@@ -164,7 +164,7 @@ begin
         delete(B)
         colors1(jmod) = colors(imod)
         dashes1(jmod) = dashes(imod)
-        thicks1(jmod) = thicks(imod)
+        thicks1(jmod) = thicks(imod)+1
         markers1(jmod) = markers(imod)
         models1(jmod) = names(imod)
         lin_mar_mod1(jmod) = "Lines"
@@ -221,12 +221,12 @@ begin
   if (mod(dimsizes(plot), 3) .ne. 0) then
     n_p = n_p + 1
   end if
-  pan@txString = "Centred " + variable_info@long_name + " bias vs. " + \
+  pan@txString = "Centered " +LONG_NAME + " bias vs. " + \
                  names(idx_ref)
   gsn_panel(wks, plot1, (/3, n_p/), pan)
   ; ***********add legend****************************
   frame(wks)
-  pan@txString = "Uncentred " + variable_info@long_name + " bias vs. " + \
+  pan@txString = "Uncentered " + LONG_NAME + " bias vs. " + \
                  names(idx_ref)
   gsn_panel(wks_r, plot, (/3, n_p/), pan)
   frame(wks_r)
