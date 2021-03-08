@@ -94,6 +94,7 @@ All pull requests
 - 🛠 Documentation_ is available
 - 🛠 Tests_ run successfully
 - 🛠 New dependencies are :ref:`added or removed correctly <dependencies>`
+- 🛠 Add yourself to the :ref:`list of authors <authors>`
 
 New or updated recipe and/or diagnostic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,38 +183,31 @@ the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://pr
 
    prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
-Run
-
-::
-
-   python setup.py lint
-
-to see the warnings about the code style of the entire project.
-
 In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
 to automatically check for obvious bugs and easy to fix formatting mistakes.
 
 When you make a pull request, adherence of the Python development best practices
 is checked in two ways:
 
-- As part of the unit tests, flake8_ is run by CircleCI_, see the also Tests_.
-- `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
-  is a service that runs prospector (and other code quality tools) on changed
-  files and reports the results.
-  Click the 'Details' link behind the Codacy check entry and then click
-  'View more details on Codacy Production' to see the results of the static
-  code analysis done by Codacy_.
-  If you need to log in, you can do so using your GitHub account.
+#. As part of the unit tests, flake8_ is run by CircleCI_, see the section on
+   Tests_ for more information.
+#. `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
+   is a service that runs prospector (and other code quality tools) on changed
+   files and reports the results.
+   Click the 'Details' link behind the Codacy check entry and then click
+   'View more details on Codacy Production' to see the results of the static
+   code analysis done by Codacy_.
+   If you need to log in, you can do so using your GitHub account.
 
-A pull request should preferably not introduce any new prospector_ issues.
+A pull request should preferably not introduce any new prospector issues.
 However, we understand that there is a limit to how much time can be spent on
 polishing code, so up to 10 new (non-trivial) issues is still an acceptable
 amount.
 Formatting issues are considered trivial and need to be addressed.
 Note that the automatic code quality checks by prospector are really helpful to
 improve the quality of your code, but they are not flawless.
-If you suspect prospector or Codacy_ may be wrong, please ask by commenting
-on your pull request.
+If you suspect prospector or Codacy may be wrong, please ask the
+`@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
 
 Note that running prospector locally will give you quicker and sometimes more
 accurate results than waiting for Codacy.
@@ -249,6 +243,9 @@ YAML
 
 Please use ``yamllint`` to check that your YAML files do not contain
 mistakes.
+When the tool complains about the maximum line length or too many spaces, please
+use your own best judgement about whether solving the issue will make your
+recipe more readable.
 
 Any text file
 ~~~~~~~~~~~~~
@@ -384,10 +381,6 @@ is cloned and run the command ``pytest``.
 
 Have a look at :ref:`testing_recipes` for information on testing recipes.
 
-When reviewing a pull request, always check that all test jobs on CircleCI_ were
-successful.
-Successful test jobs have a green ✓ in front, a ❌ means the test job failed.
-
 Every night, more extensive tests are run to make sure that problems with the
 installation of the tool are discovered by the development team before users
 encounter them.
@@ -405,6 +398,10 @@ The configuration of the tests run by CircleCI can be found in the directory
 while the configuration of the tests run by GitHub Actions can be found in the
 directory
 `.github/workflows <https://github.com/ESMValGroup/ESMValTool/blob/master/.github/workflows>`__.
+
+When reviewing a pull request, always check that all test jobs on CircleCI_ were
+successful.
+Successful test jobs have a green ✓ in front, a ❌ means the test job failed.
 
 .. _dependencies:
 
@@ -454,21 +451,26 @@ run if you change the dependencies, these will be skipped for most pull
 requests.
 
 When reviewing a pull request where dependencies are added or removed, always
-check that the changes have been applied in all relevant places.
+check that the changes have been applied in all relevant files.
 
 .. _authors:
 
 List of authors
-~~~~~~~~~~~~~~~
+---------------
 
-If you make a contribution to ESMValTool, please add your name to the list of
-authors in CITATION.cff and regenerate the .zenodo.json file by running the
-command
+If you make a contribution to ESMValTool and you would like to be listed as an
+author (e.g. on `Zenodo <https://zenodo.org/record/4562215>`__), please add your
+name to the list of authors in ``CITATION.cff`` and generate the entry for the
+``.zenodo.json`` file by running the command
 
 ::
 
    pip install cffconvert
    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
+
+Note that authors of recipes and/or diagnostics also need to be added to the file
+`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`__,
+see :ref:`recording-provenance` for more information.
 
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
 .. _`@ESMValGroup/tech-reviewers`: https://github.com/orgs/ESMValGroup/teams/tech-reviewers
