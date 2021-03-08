@@ -49,7 +49,7 @@ def _fix_data(cube, var):
 
 
 def collect_files(in_dir, var, cfg):
-    """ compose input file list and download if missing """
+    """Compose input file list and download if missing."""
     file_list = []
     var_dict = cfg['variables'][var]
     in_dir = os.path.join(in_dir, var_dict['name'])
