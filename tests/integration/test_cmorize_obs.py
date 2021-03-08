@@ -27,6 +27,7 @@ def keep_cwd():
 
 
 def write_config_user_file(dirname):
+    """Replace config_user file values for testing."""
     config_file = dirname / 'config-user.yml'
     cfg = {
         'output_dir': str(dirname / 'output_dir'),
@@ -135,6 +136,7 @@ def check_conversion(output_path):
 
 @contextlib.contextmanager
 def arguments(*args):
+    """Arrange contextmanager."""
     backup = sys.argv
     sys.argv = list(args)
     yield
