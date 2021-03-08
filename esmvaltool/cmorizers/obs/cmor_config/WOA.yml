@@ -5,31 +5,53 @@ attributes:
   version: '2018'
   tier: 2
   modeling_realm: clim
-  project_id: OBS
-  source: 'https://www.nodc.noaa.gov/OC5/woa18/woa18data.html'
+  project_id: OBS6
+  source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
   reference: 'woa'
   comment: ''
 
 # Variables to cmorize (here use only filename prefix)
+# Temperature and salinity from 1981-2010 climatology (81B0)
 variables:
   thetao:
     mip: Omon
-    raw: t_an
-    file: woa18_decav_t00_01.nc
+    raw_var: t_an
+    name: temperature
+    file: woa18_decav81B0_t
+    srf_var: tos
   so:
     mip: Omon
-    raw: s_an
-    file: woa18_decav_s00_01.nc
-  tos:
+    raw_var: s_an
+    name: salinity
+    file: woa18_decav81B0_s
+    srf_var: sos
+  o2:
     mip: Omon
-    raw: t_an
-    file: woa18_decav_t00_01.nc
-  sos:
+    raw_var: o_an
+    name: oxygen
+    file: woa18_all_o
+    srf_var: o2os
+  no3:
     mip: Omon
-    raw: s_an
-    file: woa18_decav_s00_01.nc
+    raw_var: n_an
+    name: nitrate
+    file: woa18_all_n
+    srf_var: no3os
+  po4:
+    mip: Omon
+    raw_var: p_an
+    name: phosphate
+    file: woa18_all_p
+    srf_var: po4os
+  si:
+    mip: Omon
+    raw_var: i_an
+    name: silicate
+    file: woa18_all_i
+    srf_var: sios
 
 # Custom dictionary for this cmorizer
 custom:
-  # years to be analyzed
-  years: [0, ]
+  reference_year: 2000
+  resolution: '1.00'
+  compute_Oyr: True
