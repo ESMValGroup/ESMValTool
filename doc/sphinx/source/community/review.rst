@@ -366,7 +366,7 @@ Contact person in charge of ESMValTool data pool (`@remi-kazeroni`_) and request
 
 After merging a pull request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-After merging a pull request successfully, the `@ESMValGroup/esmvaltool-coreteam` member who merged the pull request will:
+After merging a pull request successfully, the `@ESMValGroup/esmvaltool-coreteam`_ member who merged the pull request will:
 
 *	Close related issue if existent
 

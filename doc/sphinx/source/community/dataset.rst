@@ -10,12 +10,14 @@ for the CMORizer script.
 
 .. _dataset-documentation:
 
-Documentation
-=============
+Dataset documentation
+=====================
 
 Make sure that the new dataset is added to the list of
 :ref:`supported_datasets`.
 The documentation should contain clear instructions on how to obtain the data.
+
+For more information on writing documentation, see :ref:`documentation`.
 
 .. _dataset-test:
 

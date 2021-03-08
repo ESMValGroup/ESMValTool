@@ -21,12 +21,12 @@ If you have a bug or other issue to report, please open an issue on the
 `issues tab on the ESMValTool github
 repository <https://github.com/ESMValGroup/ESMValTool/issues>`__.
 
-If you would like to contribute a new diagnostic and recipe or a new
-feature, please discuss your idea with the development team before
-getting started, to avoid double work and/or disappointment later. A
-good way to do this is to open an `issue on
-GitHub <https://github.com/ESMValGroup/ESMValTool/issues>`__. This is
-also a good way to get help with the implementation.
+If you would like to contribute a new diagnostic and recipe or a new feature,
+please discuss your idea with the development team before getting started, to
+avoid double work and/or disappointment later.
+A good way to do this is to open an
+`issue on GitHub <https://github.com/ESMValGroup/ESMValTool/issues>`__.
+This is also a good way to get help with the implementation.
 
 Getting started
 ---------------
@@ -34,8 +34,42 @@ Getting started
 See :ref:`install_from_source` for instructions on how to set up a development
 installation.
 Most contributions are either a :ref:`new recipe and diagnostic <new-diagnostic>`
-or a :ref:`new dataset <new-dataset>`, have a look at those chapters for an
-introduction on how to contribute those.
+or a :ref:`new dataset <new-dataset>`, check out these sections for an
+introduction on how to contribute one of those.
+
+New development should preferably be done in the
+`ESMValTool <https://github.com/ESMValGroup/ESMValTool>`__
+GitHub repository.
+However, for scientists requiring confidentiality, private repositories are
+available, see :ref:`private_repository` for more information.
+The default git branch is ``master``. Use
+this branch to create a new feature branch from and make a pull request
+against.
+This
+`page <https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow>`__
+offers a good introduction to git branches, but it was written for
+BitBucket while we use GitHub, so replace the word BitBucket by GitHub
+whenever you read it.
+
+It is recommended that you open a `draft pull
+request <https://github.blog/2019-02-14-introducing-draft-pull-requests/>`__
+early, as this will cause :ref:`CircleCI to run the unit tests <tests>`,
+:ref:`Codacy to analyse your code <code_quality>`, and
+:ref:`readthedocs to build the documentation <documentation>`.
+It’s also easier to get help from other developers if
+your code is visible in a pull request.
+
+Please review the results of the automatic checks below your pull request.
+If one of the tests shows a red cross instead of a green checkmark, please click
+the ``Details`` link behind the failing check and try to solve the issue.
+Ask `@ESMValGroup/tech-reviewers`_ for help if you do not know how to fix the
+failing check.
+Note that this kind of automated checks make it easier to
+:ref:`review code <reviewing>`, but they are not flawless.
+Preferably Codacy code quality checks pass, however a few remaining hard to
+solve Codacy issues are still acceptable.
+If you suspect Codacy may be wrong, please ask by commenting on your pull
+request.
 
 Checklist for pull requests
 ---------------------------
@@ -52,6 +86,9 @@ The icons indicate whether the item will be checked during the
 :ref:`🛠 Technical review <technical_review>` or
 :ref:`🧪 Scientific review <scientific_review>`.
 
+All pull requests
+~~~~~~~~~~~~~~~~~
+
 - 🛠 :ref:`The pull request has a descriptive title <descriptive_pr_title>`
 - 🛠 Code is written according to the :ref:`code quality guidelines <code_quality>`
 - 🛠 Documentation_ is available
@@ -61,16 +98,15 @@ The icons indicate whether the item will be checked during the
 New or updated recipe and/or diagnostic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- 🛠 :ref:`Provenance information <recording-provenance>` has been added
-- 🧪 Documentation_ for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
 - 🧪 :ref:`Recipe runs successfully <testing_recipes>`
+- 🧪 :ref:`recipe_documentation` is available
 - 🧪 Figure(s) and data look as expected from literature
-- 🧪 Code is :ref:`well documented <doc_howto>` and scientifically sound
+- 🛠 :ref:`Provenance information <recording-provenance>` has been added
 
 New or updated data reformatting script
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- 🛠 :ref:`Documentation <dataset-documentation>` is available
+- 🛠 :ref:`dataset-documentation` is available
 - 🛠 The dataset has been :ref:`added to the CMOR check recipe <dataset-test>`
 - 🧪 Numbers and units of the data look :ref:`physically meaningful <dataset-sanity-check>`
 
@@ -80,16 +116,18 @@ Use a descriptive title for your pull request
 ---------------------------------------------
 
 The title of a pull request should clearly describe what the pull request changes.
+If you need more text to describe what the pull request does, please add it in
+the description.
 The titles of pull requests are used to compile the :ref:`changelog`, therefore
 it is important that they are easy to understand for people who are not
 familiar with the code or people in the project.
 Using descriptive pull request titles also makes it easier to find back what was
-changed when in case bugs were introduced.
+changed when, in case a bugs were introduced.
 
 .. _code_quality:
 
-Code and documentation quality
-------------------------------
+Code quality
+------------
 
 To increase the readability and maintainability or the ESMValTool source
 code, we aim to adhere to best practices and coding standards.
@@ -109,9 +147,9 @@ Python
 
 The standard document on best practices for Python code is
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__ and there is
-`PEP257 <https://www.python.org/dev/peps/pep-0257/>`__ for
-documentation. We make use of `numpy style
-docstrings <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html>`__
+`PEP257 <https://www.python.org/dev/peps/pep-0257/>`__ for code documentation.
+We make use of
+`numpy style docstrings <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html>`__
 to document Python functions that are visible on
 `readthedocs <https://docs.esmvaltool.org>`__.
 
@@ -138,7 +176,7 @@ to add/remove whitespace as required by the standard using `yapf <https://github
 to run `docformatter <https://github.com/myint/docformatter>`__ which helps formatting the doc strings (such as line length, spaces).
 
 To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`__
+the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`_
 
 ::
 
@@ -155,8 +193,8 @@ to see the warnings about the code style of the entire project.
 In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
 to automatically check for obvious bugs and easy to fix formatting mistakes.
 
-When you make a pull request, adhering to the Python style guide is checked in
-two ways:
+When you make a pull request, adherence of the Python development best practices
+is checked in two ways:
 
 - As part of the unit tests, flake8_ is run by CircleCI_, see the also Tests_.
 - `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
@@ -167,14 +205,18 @@ two ways:
   code analysis done by Codacy_.
   If you need to log in, you can do so using your GitHub account.
 
-A pull request should preferably not introduce any new prospector issues.
-However, we understand that there is a limit to how much time can be spend on
+A pull request should preferably not introduce any new prospector_ issues.
+However, we understand that there is a limit to how much time can be spent on
 polishing code, so up to 10 new (non-trivial) issues is still an acceptable
 amount.
 Formatting issues are considered trivial and need to be addressed.
+Note that the automatic code quality checks by prospector are really helpful to
+improve the quality of your code, but they are not flawless.
+If you suspect prospector or Codacy_ may be wrong, please ask by commenting
+on your pull request.
 
 Note that running prospector locally will give you quicker and sometimes more
-accurate results than waiting for Codacy_.
+accurate results than waiting for Codacy.
 
 NCL
 ~~~
@@ -214,17 +256,40 @@ Any text file
 A generic tool to check for common spelling mistakes is
 `codespell <https://pypi.org/project/codespell/>`__.
 
+.. _documentation:
 
 Documentation
 -------------
+
+The documentation lives on `docs.esmvaltool.org <https://docs.esmvaltool.org>`_
+and is built using `Sphinx <https://www.sphinx-doc.org>`_.
+There are two main ways of adding documentation:
+
+#. As written text in the directory
+   `doc/sphinx/source <https://github.com/ESMValGroup/ESMValTool/tree/master/doc/sphinx/source>`__.
+   When writing
+   `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+   (``.rst``) files, please try to limit the line length to 80 characters and
+   always start a sentence on a new line.
+   This makes it easier to review changes to documentation on GitHub.
+
+#. As docstrings or comments in code.
+   For Python code, the
+   `docstrings <https://www.python.org/dev/peps/pep-0257/>`__
+   of Python modules, classes, and functions
+   that are mentioned in
+   `doc/sphinx/source/api <https://github.com/ESMValGroup/ESMValTool/tree/master/doc/sphinx/source/api>`__
+   are used to generate documentation.
+   This results in the :ref:`api`.
 
 .. _doc_howto:
 
 What should be documented
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Any code documentation that is visible on
-`docs.esmvaltool.org <https://docs.esmvaltool.org>`__
+See also :ref:`recipe_documentation` and :ref:`dataset-documentation`.
+
+Any code documentation that is visible on `docs.esmvaltool.org`_
 should be well written and adhere to the standards for documentation for the
 respective language.
 Note that there is no need to write extensive documentation for functions that
@@ -234,19 +299,8 @@ understand what a function is intended to do and and what its capabilities are.
 For short functions, a one-line docstring is usually sufficient, but more
 complex functions might require slightly more extensive documentation.
 
-Recipes should have a page in the :ref:`recipes` chapter.
-This is also the place to document recipe options for the diagnostic scripts
-used in those recipes.
-When adding a new recipe, please start from the
-`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
-and do not forget to add your recipe to the
-`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
-
-Functions implementing scientific formula should contain comments with
-references to the paper and formula number(s).
-
-How to view the documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How to build and view the documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whenever you make a pull request or push new commits to an existing pull
 request, readthedocs will automatically build the documentation.
@@ -275,15 +329,39 @@ errors and looks correctly formatted.
 `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_
 will build the documentation with the command
 
-::
+.. code-block:: bash
 
    python setup.py build_sphinx --warning-is-error
 
 to catch mistakes that can be detected automatically.
 
-When reviewing a pull request, always check that the documentation checks were
-successful.
+The configuration file for Sphinx_ is
+`doc/shinx/source/conf.py <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/conf.py>`_.
+
+When reviewing a pull request, always check that the documentation checks
+shown below the pull request were successful.
 Successful checks have a green ✓ in front, a ❌ means the test job failed.
+
+Integration with the ESMValCore documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The `ESMValCore documentation <https://docs.esmvaltool.org/projects/esmvalcore>`_
+is hosted as a
+`subproject <https://docs.readthedocs.io/en/stable/subprojects.html>`_
+of the ESMValTool documentation on readthedocs.
+To link to a section from the ESMValCore documentation from the reStructuredText
+(``.rst``) files, use the usual ``:ref:`` but prefix the reference with
+``esmvalcore:``.
+For example, ``:ref:`esmvalcore:recipe``` to link to
+:ref:`esmvalcore:recipe`.
+
+There is a script that generates the navigation menu shown on the left when
+you view the documentation.
+This script is called
+`doc/sphinx/source/gensidebar.py <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/gensidebar.py>`_
+in the ESMValTool repository and it should be identical to
+`doc/gensidebar.py <https://github.com/ESMValGroup/ESMValCore/blob/master/doc/gensidebar.py>`_
+in the ESMValCore repository, or the sidebar will change when navigating from
+the ESMValTool documentation to the ESMValCore documentation and vice-versa.
 
 .. _tests:
 
@@ -304,35 +382,29 @@ You can do so using your GitHub account.
 To run the tests on your own computer, go to the directory where the repository
 is cloned and run the command ``pytest``.
 
+Have a look at :ref:`testing_recipes` for information on testing recipes.
+
 When reviewing a pull request, always check that all test jobs on CircleCI_ were
 successful.
 Successful test jobs have a green ✓ in front, a ❌ means the test job failed.
 
-.. _testing_recipes:
+Every night, more extensive tests are run to make sure that problems with the
+installation of the tool are discovered by the development team before users
+encounter them.
+These nightly tests have been designed to mimic the installation procedures
+described in the documentation, e.g. in the :ref:`install` chapter.
+The nightly tests are run using both CircleCI and GitHub Actions, the
+result of the tests ran by CircleCI can be seen on the
+`CircleCI project page <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool?branch=master>`__
+and the result of the tests ran by GitHub Actions can be viewed on the
+`Actions tab <https://github.com/ESMValGroup/ESMValTool/actions>`__
+of the repository.
 
-Testing recipes
-~~~~~~~~~~~~~~~
-
-To test a recipe, you can run it yourself on your local infrastructure or you
-can ask the `@esmvalbot <https://github.com/apps/esmvalbot>`_ to run it for you.
-To request a run of ``recipe_xyz.yml``, write the following comment below a pull
-request:
-
-::
-
-   @esmvalbot Please run recipe_xyz.yml
-
-Note that only members of the `@ESMValGroup/esmvaltool-developmentteam`_
-can request runs. The memory of the `@esmvalbot`_ is limited to 16 GB and it only
-has access to data available at DKRZ.
-
-When reviewing a pull request, at the very least check that a recipes runs
-without any modifications.
-For a more thorough check, you might want to try out different datasets or
-changing some settings if the diagnostic scripts support those.
-A simple :ref:`tool <recipe_test_tool>` is available for testing recipes
-with various settings.
-
+The configuration of the tests run by CircleCI can be found in the directory
+`.circleci <https://github.com/ESMValGroup/ESMValTool/blob/master/.circleci>`__,
+while the configuration of the tests run by GitHub Actions can be found in the
+directory
+`.github/workflows <https://github.com/ESMValGroup/ESMValTool/blob/master/.github/workflows>`__.
 
 .. _dependencies:
 
@@ -354,7 +426,7 @@ The following files contain lists of dependencies
 
 - ``environment.yml``
   contains development dependencies that cannot be installed from
-  PyPI/CRAN/Julia package repository
+  `PyPI <https://pypi.org/>`__/`CRAN <https://cran.r-project.org/>`__/`Julia package registry <https://github.com/JuliaRegistries/General>`__
 - ``docs/sphinx/source/requirements.txt``
   contains Python dependencies needed to build the documentation that can be
   installed from PyPI
@@ -384,102 +456,7 @@ requests.
 When reviewing a pull request where dependencies are added or removed, always
 check that the changes have been applied in all relevant places.
 
-.. _pre-commit:
-
-Pre-commit
-----------
-
-To run ``pre-commit`` on your code, go to the ESMValTool directory
-(``cd ESMValTool``) and run
-
-::
-
-   pre-commit run
-
-By default, pre-commit will only run on the files that have been changed,
-meaning those that have been staged in git (i.e. after
-``git add your_script.py``).
-
-To make it only check some specific files, use
-
-::
-
-   pre-commit run --files your_script.py
-
-or
-
-::
-
-   pre-commit run --files your_script.R
-
-Alternatively, you can configure ``pre-commit`` to run on the staged files before
-every commit (i.e. ``git commit``), by installing it as a `git hook <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>`__ using
-
-::
-
-   pre-commit install
-
-Pre-commit hooks are used to inspect the code that is about to be committed. The
-commit will be aborted if files are changed or if any issues are found that
-cannot be fixed automatically. Some issues cannot be fixed (easily), so to
-bypass the check, run
-
-::
-
-   git commit --no-verify
-
-or
-
-::
-
-   git commit -n
-
-or uninstall the pre-commit hook
-
-::
-
-   pre-commit uninstall
-
-
-Branches, pull requests and code review
----------------------------------------
-
-New development should preferably be done in the
-`ESMValTool <https://github.com/ESMValGroup/ESMValTool>`__
-GitHub repository.
-However, for scientists requiring confidentiality, private repositories are
-available, see :ref:`private_repository` for more information.
-The default git branch is ``master``. Use
-this branch to create a new feature branch from and make a pull request
-against.
-This
-`page <https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow>`__
-offers a good introduction to git branches, but it was written for
-BitBucket while we use GitHub, so replace the word BitBucket by GitHub
-whenever you read it.
-
-It is recommended that you open a `draft pull
-request <https://github.blog/2019-02-14-introducing-draft-pull-requests/>`__
-early, as this will cause CircleCI to run the unit tests, Codacy to
-analyse your code, and readthedocs to build the documentation.
-It’s also easier to get help from other developers if
-your code is visible in a pull request.
-
-You can view the results of the automatic checks below your pull
-request by clicking on ``Details``. If one of the tests shows a red cross instead of a green
-approval sign, please click the link and try to solve the issue. Note
-that this kind of automated checks make it easier to review code, but
-they are not flawless. Preferably Codacy code quality checks pass, however
-a few remaining hard to solve Codacy issues are still acceptable.
-If you suspect Codacy may be wrong, please ask by commenting.
-
-The documentation can be seen by clicking on `Details`. Make sure the
-documentation is nicely formatted, and (if necessary) add the link to the
-top of the pull request.
-
-Make sure your pull request has a descriptive title that can be used in the
-`changelog <https://docs.esmvaltool.org/en/latest/changelog.html>`__.
-
+.. _authors:
 
 List of authors
 ~~~~~~~~~~~~~~~

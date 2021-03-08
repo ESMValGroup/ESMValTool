@@ -57,6 +57,29 @@ C, C++, or Fortran that you want to re-use, the recommended way to proceed is to
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
 
+.. _recipe_documentation:
+
+Recipe and diagnostic documentation
+===================================
+
+Recipes should have a page in the :ref:`recipes` chapter which describes what
+the recipe/diagnostic calculates from a scientific point of view.
+This is also the place to document recipe options for the diagnostic scripts
+used in those recipes.
+When adding a new recipe, please start from the
+`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+and do not forget to add your recipe to the
+`index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+
+Functions implementing scientific formula should contain comments with
+references to the source paper(s) and formula number(s).
+
+When reviewing diagnostic code, check that formulas are implemented according
+to the referenced paper(s), if applicable, and that the computed numbers look
+as expected from literature.
+
+For general information on writing documentation, see :ref:`documentation`.
+
 .. _recording-provenance:
 
 Recording provenance
@@ -275,3 +298,30 @@ Follow the steps below to add a reference to a recipe (or a diagnostic):
 -  add the file to the folder ``esmvaltool/references``.
 
 Note: the ``references`` section in ``config-references.yaml`` has been replaced by the folder ``esmvaltool/references``.
+
+.. _testing_recipes:
+
+Testing recipes
+===============
+
+To test a recipe, you can run it yourself on your local infrastructure or you
+can ask the `@esmvalbot <https://github.com/apps/esmvalbot>`_ to run it for you.
+To request a run of ``recipe_xyz.yml``, write the following comment below a pull
+request:
+
+::
+
+   @esmvalbot Please run recipe_xyz.yml
+
+Note that only members of the `@ESMValGroup/esmvaltool-developmentteam`_
+can request runs. The memory of the `@esmvalbot`_ is limited to 16 GB and it only
+has access to data available at DKRZ.
+
+When reviewing a pull request, at the very least check that a recipes runs
+without any modifications.
+For a more thorough check, you might want to try out different datasets or
+changing some settings if the diagnostic scripts support those.
+A simple :ref:`tool <recipe_test_tool>` is available for testing recipes
+with various settings.
+
+.. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
