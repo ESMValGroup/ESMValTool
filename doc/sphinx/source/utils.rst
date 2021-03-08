@@ -14,6 +14,14 @@ directory, while others can be installed using the usual package managers.
 Pre-commit
 ==========
 
+`pre-commit <https://pre-commit.com/>`__ is a handy tool that can run many
+tools for checking code quality with a single command.
+Usually it is used just before committing, to avoid accidentally committing
+mistakes.
+It knows knows which tool to run for each filetype, and therefore provides
+a convenient way to check your code!
+
+
 To run ``pre-commit`` on your code, go to the ESMValTool directory
 (``cd ESMValTool``) and run
 
