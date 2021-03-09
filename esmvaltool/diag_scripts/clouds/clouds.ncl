@@ -311,7 +311,9 @@ begin
 
     ; annotation
 
-    data1@res_tiMainOn             = False
+;    data1@res_tiMainOn             = False
+     data1@res_tiMainString =  names(imod)
+
     data1@res_cnLevelSelectionMode = "ExplicitLevels"
     data1@res_cnLinesOn            = False
 
@@ -345,7 +347,7 @@ begin
       data1@units = "degC"
     end if
 
-    if (var0.eq."clt") then
+    if ((var0.eq."clt") .or. (var0.eq."cltisccp")) then
       data1@res_cnLevels            = fspan(5, 100, 20)
     end if
 
@@ -369,7 +371,7 @@ begin
       data1@res_cnLevels            = ispan(-70, 70, 10)
     end if
 
-    data1@res_lbLabelBarOn         = False
+;    data1@res_lbLabelBarOn         = False
     data1@res_gsnRightString       = ""
 
     data1@res_mpFillDrawOrder       = "PostDraw"    ; draw map last
@@ -478,17 +480,17 @@ begin
       end if
     end if
 
-    data1@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
-    data1@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
+;    data1@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
+;                                              / tofloat((dim_MOD + 1) / 2)/))
+;    data1@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
+;                                              / tofloat((dim_MOD + 1) / 2)/))
 
     ; ###########################################
     ; # create the plot                         #
     ; ###########################################
 
-    data1@res_gsnDraw        = False  ; do not draw yet
-    data1@res_gsnFrame       = False  ; don't advance frame
+;    data1@res_gsnDraw        = False  ; do not draw yet
+;    data1@res_gsnFrame       = False  ; don't advance frame
 
     ; function in aux_plotting.ncl
 
@@ -593,6 +595,8 @@ begin
       diff@res_gsnLeftString  = ""
       diff@res_gsnRightString = ""
 
+      diff@res_tiMainString =  names(imod)+ " - " + refname
+
       rmsd = rmsd@_FillValue
       bias = bias@_FillValue
 
@@ -623,12 +627,12 @@ begin
       ; # plot ressources                         #
       ; ###########################################
 
-      diff@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-                                               / tofloat((dim_MOD + 1) / 2)/))
-      diff@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-                                               / tofloat((dim_MOD + 1) / 2)/))
+;      diff@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
+;                                               / tofloat((dim_MOD + 1) / 2)/))
+;      diff@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
+;                                               / tofloat((dim_MOD + 1) / 2)/))
 
-      diff@res_tiMainOn       = False
+;      diff@res_tiMainOn       = False
 
       diff@res_cnFillOn       = True      ; color plot desired
       diff@res_cnLineLabelsOn = False     ; contour lines
@@ -759,11 +763,11 @@ begin
 
       end if  ; if .not.isvar("cnLevels")
 
-      if (imod.eq.ref_ind) then
-        diff@res_lbLabelBarOn = True
-      else
-        diff@res_lbLabelBarOn = False
-      end if
+;      if (imod.eq.ref_ind) then
+;        diff@res_lbLabelBarOn = True
+;      else
+;        diff@res_lbLabelBarOn = False
+;      end if
 
       ; map attributes
 
@@ -814,8 +818,8 @@ begin
       ; # create the plot                         #
       ; ###########################################
 
-      diff@res_gsnDraw        = False  ; do not draw yet
-      diff@res_gsnFrame       = False  ; don't advance frame
+;      diff@res_gsnDraw        = False  ; do not draw yet
+;      diff@res_gsnFrame       = False  ; don't advance frame
 
       ; ----------------------------------------------------------------------
 
@@ -919,7 +923,7 @@ begin
 
     pres                      = True    ; needed to override
                                         ; panelling defaults
-    pres@gsnPanelLabelBar     = True    ; add common colorbar
+;    pres@gsnPanelLabelBar     = True    ; add common colorbar
     if (panel_labels) then
       ; print dataset name on each panel
       pres@gsnPanelFigureStrings = names(plotind)

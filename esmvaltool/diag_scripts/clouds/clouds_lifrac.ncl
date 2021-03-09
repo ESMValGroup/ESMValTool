@@ -11,6 +11,7 @@
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   embracesetup:       True = 2 plots per line, False = 4 plots per line
 ;                       (default)
+;   extralegend:        create additional plot with legend only
 ;   filename_add:       optionally add this string to plot filesnames
 ;   min_mass:           minimum cloud condensate (same units as clw, cli)
 ;   panel_labels:       label individual panels (true, false)

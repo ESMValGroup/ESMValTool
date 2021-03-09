@@ -147,7 +147,7 @@ begin
   do n = 0, nbins - 1
     x0 = n * binsize
     x1 = x0 + binsize
-    bincenter(n) = 0.5 * (x0 + x1)
+    bincenter(n) = xmin + 0.5 * (x0 + x1)
   end do
 
   do ii = 0, dim_MOD - 1
@@ -202,9 +202,11 @@ begin
 
     ; check dimensions
 
-    if (dimsizes(dims_x) .ne. 3 .or. dimsizes(dims_y) .ne. 3) then
-      error_msg("f", DIAG_SCRIPT, "", "all variables need to have 3 " + \
-                " dimensions (time, latitude, longitude)")
+    if ((dimsizes(dim_x) .ne. dimsizes(dim_y)) .or. (dimsizes(dim_x) .lt. 3) \
+      .or. (dimsizes(dim_x) .gt. 4)) then
+      error_msg("f", DIAG_SCRIPT, "", "all variables need to have the " + \
+                "same number of dimensions (time, [optional: level], " + \
+                "latitude, longitude)")
     end if
 
     do i = 0, nVAR - 1
@@ -258,7 +260,7 @@ begin
     delete(y)
 
     do n = 0, nbins - 1
-      x0 = n * binsize
+      x0 = xmin + n * binsize
       x1 = x0 + binsize
       idx0 = ind((x1d .gt. x0) .and. (x1d .le. x1))
       if (.not.all(ismissing(idx0))) then
