@@ -8,7 +8,6 @@ import shutil
 import sys
 import time
 from pathlib import Path
-from collections import defaultdict
 
 import iris
 import matplotlib.pyplot as plt
@@ -263,9 +262,9 @@ def group_metadata(metadata, attribute, sort=None):
     Parameters
     ----------
     metadata : :obj:`list` of :obj:`dict`
-        A list of metadata dictionaries describing preprocessed data.
+        A list of metadata describing preprocessed data.
     attribute : str
-        The attribute by which the metadata should be grouped.
+        The attribute name that the metadata should be grouped by.
     sort :
         See `sorted_group_metadata`.
 
@@ -274,11 +273,12 @@ def group_metadata(metadata, attribute, sort=None):
     :obj:`dict` of :obj:`list` of :obj:`dict`
         A dictionary containing the requested groups.
     """
-    groups = defaultdict(list)
-
-    for info in metadata:
-        key = info.get(attribute)
-        groups[key].append(info)
+    groups = {}
+    for attributes in metadata:
+        key = attributes.get(attribute)
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(attributes)
 
     if sort:
         groups = sorted_group_metadata(groups, sort)

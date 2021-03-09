@@ -1,14 +1,14 @@
 ---
-# # Filename
+# Filename 
 filename: 'GPP.ANN.CRUNCEPv6.monthly.*.nc'
 
-# # Common global attributes for Cmorizer output
+# Common global attributes for Cmorizer output
 attributes:
-  project_id: OBS6
   dataset_id: FLUXCOM
   version: 'ANN-v1'
   tier: 3
   modeling_realm: reanaly
+  project_id: OBS
   source: 'http://www.bgc-jena.mpg.de/geodb/BGI/Home'
   reference: 'fluxcom'
   comment: ''
