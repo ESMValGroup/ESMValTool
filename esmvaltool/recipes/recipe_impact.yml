@@ -20,13 +20,19 @@ documentation:
     - isenes3
 
 datasets:
-  # - {mip: Amon, dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, tag: model}
-  - {mip: Amon, dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, tag: model}
-  # - {mip: Amon, dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, tag: model}
-  # - {mip: Amon, dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: "r(1:4)i1p1", tag: model}
-  # - {mip: Amon, dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp26], ensemble: r1i1p1, tag: model}
-  # - {mip: Amon, dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp45], ensemble: r1i1p1, tag: model}
-  - {mip: Amon, dataset: BNU-ESM, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1, tag: model}
+  # CMIP5
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: ACCESS1-0, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: BNU-ESM, ensemble: r1i1p1, tag: model}
+  # CMIP6
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-CM2, ensemble: r(1:3)i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r(1:10)i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r(1:3)i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2, ensemble: r(1:2)i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2, ensemble: r4i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2, ensemble: r(10:11)i1p1f1, grid: gn}
+
 
 observations: &observations
   - {mip: Amon, dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, tag: observations}
@@ -34,14 +40,13 @@ observations: &observations
 preprocessors:
 
   calculate_anomalies:
+    custom_order: true
     extract_region: &region
       start_longitude: 0.0
       end_longitude: 39.0
       start_latitude: 30.0
       end_latitude: 76.25
     area_statistics:
-      operator: mean
-    annual_statistics:
       operator: mean
     anomalies:
       period: full
@@ -53,19 +58,28 @@ preprocessors:
         end_month: 12
         end_day: 31
       standardize: false
+    extract_time:  # Future period
+      start_year: 2035
+      start_month: 1
+      start_day: 1
+      end_year: 2065
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
 
   prepare_for_bias_calculation:
     regrid:
       scheme: linear
-      target_grid:
-        xinc: 2.5
-        yinc: 2.5
-        xfirst: 0
-        yfirst: 30
-        xsize: 16
-        ysize: 18
-    # extract_region:
-    #   <<: *region
+      target_grid: 2.5x2.5
+        # lon_step: 2.5
+        # lat_step: 2.5
+        # lon_start: 0.0
+        # lon_end: 39.0
+        # lat_start: 30.0
+        # lat_end: 76.25
+    extract_region:
+      <<: *region
     extract_time:
       <<: *reference_period
 

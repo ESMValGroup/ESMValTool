@@ -3,17 +3,35 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 import xarray as xr
 
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
     group_metadata,
     run_diagnostic,
     select_metadata,
 )
 
 logger = logging.getLogger(Path(__file__).stem)
+
+
+def log_provenance(filename, ancestors, caption, cfg):
+    # We'll add some extra code to make sure the output is saved and tracked
+    provenance = {
+        'caption': caption,
+        'domains': ['reg'],
+        'authors': ['kalverla_peter'],
+        'references': ['isenes3'],
+        'ancestors': ancestors,
+    }
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance)
 
 
 def make_standard_calendar(xrda: 'xr.DataArray'):
@@ -90,27 +108,79 @@ def calculate_bias(model_data: 'xr.DataArray',
     return bias
 
 
+def plot_scatter(tidy_df, ancestors, cfg):
+    """Plot bias on one axis and change on the other."""
+    grid = sns.relplot(
+        data=tidy_df,
+        x="bias",
+        y="change",
+        hue="dataset",
+        col="variable",
+        facet_kws=dict(sharex=False, sharey=False),
+        kind='scatter',
+    )
+
+    filename = get_plot_filename('bias_vs_change', cfg)
+    grid.fig.savefig(filename, bbox_inches='tight')
+
+    caption = "Bias and change for each variable"
+    log_provenance(filename, ancestors, caption, cfg)
+
+
+def plot_table(tidy_df, ancestors, cfg):
+    """Render pandas table as a matplotlib figure."""
+    fig, axes = plt.subplots()
+    pd.plotting.table(axes, tidy_df.reset_index().round(2))
+    axes.set_axis_off()
+
+    filename = get_plot_filename('table', cfg)
+    fig.savefig(filename, bbox_inches='tight')
+
+    caption = "Bias and change for each variable"
+    log_provenance(filename, ancestors, caption, cfg)
+
+
+def plot_htmltable(tidy_df, ancestors, cfg):
+    """Render pandas table as html output.
+
+    # https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
+    """
+    styled_table = (tidy_df.unstack('variable').style.background_gradient(
+        cmap='RdYlGn', low=.2, high=1, axis=0).format("{:.2e}",
+                                                      na_rep="-").render())
+    filename = get_diagnostic_filename('bias_vs_change', cfg, extension='html')
+    with open(filename, 'w') as htmloutput:
+        htmloutput.write(styled_table)
+
+    caption = "Bias and change for each variable"
+    log_provenance(filename, ancestors, caption, cfg)
+
+
 def main(cfg):
     metadata = cfg['input_data'].values()
     grouped_metadata = group_metadata(metadata, 'variable_group')
 
     biases = {}
     changes = {}
+    ancestors = []
     for group, metadata in grouped_metadata.items():
 
         model_metadata = select_metadata(metadata, tag='model')
         model_data, model_ancestors = load_data(model_metadata)
+        ancestors.extend(model_ancestors)
+
         variable = model_data.name
 
         if group.endswith('bias'):
             obs_metadata = select_metadata(metadata, tag='observations')
             obs_data, obs_ancestors = load_data(obs_metadata)
+            ancestors.extend(obs_ancestors)
 
             bias = calculate_bias(model_data, obs_data)
             biases[variable] = bias
 
         elif group.endswith('change'):
-            changes[variable] = model_data.mean('time')
+            changes[variable] = model_data
 
         else:
             logger.warning(
@@ -123,18 +193,15 @@ def main(cfg):
     combined = xr.concat([bias, change], dim='metric')
     combined['metric'] = ['bias', 'change']
     dataframe = combined.to_dataframe()
-    tidy_df = dataframe.reset_index()
+    dataframe.columns.name = 'variable'
+    tidy_df = dataframe.stack('variable').unstack('metric')
 
-    # TODO: add time average for change to the diagnostic, and add reference
-    # period for
+    # Plot stuff
+    plot_scatter(tidy_df, ancestors, cfg)
+    plot_table(tidy_df, ancestors, cfg)
+    plot_htmltable(tidy_df, ancestors, cfg)
 
-    # We'll add some extra code to make sure the output is saved and tracked
-    # provenance = {'caption': f"Climate model performance and change info for
-    # impact modellers", 'domains': ['reg'], 'authors': ['kalverla_peter'],
-    # 'references': ['acknow_project'], 'ancestors': [input_file],
-    # }
-
-    return tidy_df
+    return
 
 
 if __name__ == '__main__':
