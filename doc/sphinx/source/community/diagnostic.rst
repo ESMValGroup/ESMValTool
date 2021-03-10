@@ -15,9 +15,12 @@ This is also a good way to get help.
 Creating a recipe and diagnostic script(s)
 ==========================================
 First create a recipe in esmvaltool/recipes to define the input data your analysis script needs
-and optionally preprocessing and other settings. Also create a script in the esmvaltool/diag_scripts directory
-and make sure it is referenced from your recipe. The easiest way to do this is probably to copy the example recipe
-and diagnostic script and adjust those to your needs.
+and optionally preprocessing and other settings.
+Also create a script in the
+`esmvaltool/diag_scripts <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts>`_
+directory and make sure it is referenced from your recipe.
+The easiest way to do this is probably to copy the example recipe and diagnostic
+script and adjust those to your needs.
 
 If you have no preferred programming language yet, Python 3 is highly recommended, because it is most well supported.
 However, NCL, R, and Julia scripts are also supported.
@@ -42,6 +45,13 @@ available :ref:`preprocessor functions <esmvalcore:preprocessor>`.
 For further inspiration, check out the already
 :ref:`available recipes and diagnostics <recipes>`.
 
+There is a directory
+`esmvaltool/diag_scripts/shared <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/shared>`_
+for code that is shared by many diagnostics.
+This directory contains code for creating common plot types, generating output
+file names, selecting input data, and other commonly needed functions.
+See :ref:`api_shared` for the documentation of the shared Python code.
+
 Re-using existing code
 ======================
 Always make sure your code is or can be released under a license that is compatible with the Apache 2.0 license.
@@ -62,23 +72,60 @@ using a Python diagnostic.
 Recipe and diagnostic documentation
 ===================================
 
+This section describes how to document a recipe.
+For more general information on writing documentation, see :ref:`documentation`.
+
+On readthedocs
+--------------
+
 Recipes should have a page in the :ref:`recipes` chapter which describes what
 the recipe/diagnostic calculates from a scientific point of view.
 This is also the place to document recipe options for the diagnostic scripts
 used in those recipes.
-When adding a new recipe, please start from the
+When adding a completely new recipe, please start by copying the
 `template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+to a new file ``doc/sphinx/source/recipes/recipe_<name of diagnostic>.rst``
 and do not forget to add your recipe to the
 `index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
+Fill in the list of variables required to run the recipe.
+Some example images produced by the recipe should be added to the documentation
+page.
+The '.png' files can be stored in a subdirectory specific for the recipe under
+`doc/sphinx/source/recipes/figures <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/figures>`_
+and linked from the recipe documentation page.
+A resolution of 150 `dpi <https://en.wikipedia.org/wiki/Dots_per_inch>`_ is
+recommended for these image files, as this is high enough for the images to look
+good on the documentation webpage, but not so high that the files become large.
 
+In the recipe
+-------------
+Fill in the ``documentation`` section of the recipe as described in
+:ref:`esmvalcore:recipe_documentation` and add a ``description`` to each
+diagnostic entry.
+When reviewing a recipe, check that these entries have been filled with
+descriptive content.
+
+In the diagnostic scripts
+-------------------------
 Functions implementing scientific formula should contain comments with
 references to the source paper(s) and formula number(s).
 
 When reviewing diagnostic code, check that formulas are implemented according
-to the referenced paper(s), if applicable, and that the computed numbers look
-as expected from literature.
+to the referenced paper(s) and/or other resources and that the computed numbers
+look as expected from literature.
 
-For general information on writing documentation, see :ref:`documentation`.
+.. _diagnostic_output:
+
+Expected output
+===============
+Typically, diagnostic scripts create plots, but any other output such as e.g.
+text files or tables is also possible.
+If a diagnostic script creates plots, it should save the data used to create
+the a plot also to a NetCDF file (preferably following the CF-Conventions).
+Ideally there will be one NetCDF file for each plot the diagnostic script creates.
+If the output data is prohibitively large, diagnostics authors can choose to implement
+a ``write_netcdf: false`` diagnostic script option, so writing the NetCDF files
+can be disabled from the recipe.
 
 .. _recording-provenance:
 
@@ -113,7 +160,7 @@ For each output file produced by the diagnostic script, ESMValCore supports the 
 - :code:`caption` a caption text for the plot
 
 Note that the level of detail is limited, the only valid choices for ``ancestors`` are files produced by
-`ancestor tasks <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/recipe/overview.html#ancestor-tasks>`_.
+:ref:`ancestor tasks<esmvalcore:ancestor-tasks>`.
 
 It is also possible to add more information for the implemented diagnostics using the following items:
 
@@ -128,7 +175,8 @@ Arbitrarily named other items are also supported.
 
 Please see the (installed version of the) file
 `esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`_
-for all available information on each item.
+for all available information on each item, see :ref:`esmvalcore:config-ref` for
+an introduction.
 In this file, the information is written in the form of ``key: value``.
 Note that we add the keys to the diagnostics.
 The keys will automatically be replaced by their values in the final provenance records.
@@ -292,7 +340,7 @@ Follow the steps below to add a reference to a recipe (or a diagnostic):
 
 -  make a ``tag`` that is representative of the reference entry.
    For example, ``righi15gmd`` shows the last name of the first author, year and journal abbreviation.
--  add the ``tag`` to the ``references`` section in the recipe (or the diagnostic).
+-  add the ``tag`` to the ``references`` section in the recipe (or the diagnostic script provenance, see recording-provenance_).
 -  make a BibTeX file for the reference entry. There are some online tools to convert a doi to BibTeX format like https://doi2bib.org/
 -  rename the file to the ``tag``, keep the ``.bibtex`` extension.
 -  add the file to the folder ``esmvaltool/references``.

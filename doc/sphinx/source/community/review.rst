@@ -73,6 +73,9 @@ conducted thoroughly.
 He or she looks at the list of files that were changed
 in the pull request and checks that all relevant checkboxes from the checklist
 in the pull request template have been added and ticked.
+Any issues that were solved by the pull request can be closed after merging.
+It is always a good idea to check with the author of an issue and ask if it is
+completely solved by the related pull request before closing the issue.
 
 The core development team can be contacted by writing `@ESMValGroup/esmvaltool-coreteam`_
 in a comment on an issue or pull request on GitHub.
@@ -141,9 +144,18 @@ The top comment should contain (a selection of) the checklist available in the
 `pull request template`_.
 If it is not there, copy the relevant items from the `pull request template`_.
 Which items from the checklist are relevant, depends on which files are changed
-in the pull request. A list of items to check with brief explanations is given in
-section :ref:`checklists`. The items are grouped by technical and scientific review.
+in the pull request.
 To see which files have changed, click the tab 'Files changed'.
+Please make sure you are familiar with all items from the checklist by reading
+the content linked from :ref:`pull_request_checklist` and check all items
+that are relevant.
+An incomplete list with some of the items to check with brief explanations is
+given in section :ref:`checklists`.
+In addition to the items from the checklist, good questions to start a review
+with are 'Do I understand why these changes improve the tool?' (if not, ask the
+author to improve the documentation contained in the pull request and/or the
+description of the pull request on GitHub) and 'What could possibly go wrong if
+I run this code?'.
 To comment on specific lines of code or documentation, click the 'plus' icon
 next to a line of code and write your comment.
 When you are done reviewing, use the 'Review changes' button in the top right

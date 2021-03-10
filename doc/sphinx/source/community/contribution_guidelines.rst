@@ -33,9 +33,6 @@ Getting started
 
 See :ref:`install_from_source` for instructions on how to set up a development
 installation.
-Most contributions are either a :ref:`new recipe and diagnostic <new-diagnostic>`
-or a :ref:`new dataset <new-dataset>`, check out these sections for an
-introduction on how to contribute one of those.
 
 New development should preferably be done in the
 `ESMValTool <https://github.com/ESMValGroup/ESMValTool>`__
@@ -71,6 +68,8 @@ solve Codacy issues are still acceptable.
 If you suspect Codacy may be wrong, please ask by commenting on your pull
 request.
 
+.. _pull_request_checklist:
+
 Checklist for pull requests
 ---------------------------
 
@@ -94,10 +93,12 @@ All pull requests
 - 🛠 Documentation_ is available
 - 🛠 Tests_ run successfully
 - 🛠 New dependencies are :ref:`added or removed correctly <dependencies>`
-- 🛠 Add yourself to the :ref:`list of authors <authors>`
+- 🛠 The :ref:`list of authors <authors>` is up to date
 
 New or updated recipe and/or diagnostic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+See :ref:`new-diagnostic`
 
 - 🧪 :ref:`Recipe runs successfully <testing_recipes>`
 - 🧪 :ref:`recipe_documentation` is available
@@ -106,6 +107,8 @@ New or updated recipe and/or diagnostic
 
 New or updated data reformatting script
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+See :ref:`new dataset <new-dataset>`
 
 - 🛠 :ref:`dataset-documentation` is available
 - 🛠 The dataset has been :ref:`added to the CMOR check recipe <dataset-test>`

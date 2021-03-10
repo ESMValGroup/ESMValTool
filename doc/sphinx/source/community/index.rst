@@ -6,11 +6,11 @@ Contributing to the community
 .. toctree::
    :maxdepth: 1
 
-		Introduction <introduction>
-		Release schedule and procedure <release_strategy>
+		Contribution guidelines <contribution_guidelines>
 		Contributing a diagnostic or recipe <diagnostic>
 		Contributing a dataset <dataset>
 		Contributing a review <review>
-		Porting a namelist (recipe) or diagnostic from version 1 to version 2 <porting>
-		Moving work from the private to the public repository <private_repository>
+		Upgrading a namelist to a recipe <porting>
 		GitHub workflow <repository>
+		Moving work from the private to the public repository <private_repository>
+		Release schedule and procedure <release_strategy>
