@@ -1556,7 +1556,7 @@ def regression_line(x_data, y_data, n_points=1000):
     Returns
     -------
     dict
-        :class:`numpy.ndarray`s for the keys ``'x'``, ``'y'``,
+        :class:`numpy.ndarray` s for the keys ``'x'``, ``'y'``,
         ``'y_minus_err'``, ``'y_plus_err'``, ``'slope'``, ``'intercept'``,
         ``'pvalue'`` and ``'rvalue'``.
 

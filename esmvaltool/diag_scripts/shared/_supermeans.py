@@ -58,7 +58,7 @@ def get_supermean(name, season, data_dir, obs_flag=None):
         if cube.name() == 'unknown':
             cube.rename(str(cube.attributes['STASH']))
 
-    cube = cubes.extract_strict(name_constraint)
+    cube = cubes.extract_cube(name_constraint)
 
     if season in ['djf', 'mam', 'jja', 'son']:
         supermeans_cube = periodic_mean(cube, period='season')
