@@ -31,25 +31,15 @@ datasets:
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CIESM, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CanESM5, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: E3SM-1-1-ECA, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FIO-ESM-2-0, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gn}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MCM-UA-1-0, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
