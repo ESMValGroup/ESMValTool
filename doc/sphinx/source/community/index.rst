@@ -3,6 +3,14 @@
 Contributing to the community
 =============================
 
+**Contributions are very welcome**
+
+We greatly value contributions of any kind.
+This chapter explains how to contribute to ESMValTool.
+In case anything is unclear feel free to contact us for more information and
+help, e.g. on our
+`GitHub Discussions page <https://github.com/ESMValGroup/ESMValTool/discussions>`__.
+
 .. toctree::
    :maxdepth: 1
 
