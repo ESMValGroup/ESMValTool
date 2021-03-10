@@ -256,10 +256,6 @@ CMIP5_rtnt: &cmip5_rtnt
   - {dataset: NorESM1-M,     exp: piControl,   start_year:  700, end_year:  849}
   - {dataset: NorESM1-M,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
 
-CMIP5_rtmt: &cmip5_rtmt
-  - {dataset: IPSL-CM5A-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
-  - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-
 CMIP6_rtnt: &cmip6_rtnt
   - {dataset: ACCESS-CM2,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-CM2,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
@@ -345,8 +341,6 @@ CMIP6_rtmt: &cmip6_rtmt
   # branch_time_in_child weird
   - {dataset: MCM-UA-1-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   - {dataset: MCM-UA-1-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
-  - {dataset: UKESM1-0-LL,     exp: piControl,    ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2109}
-  - {dataset: UKESM1-0-LL,     exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
 
 
 diagnostics:
@@ -626,7 +620,7 @@ diagnostics:
       model_bias:
         <<: *model_bias_settings
 
-  ecs_cmip3:
+  fig_8_ecs_cmip3:
     description: Calculate ECS for all available CMIP3 models.
     scripts:
       ecs:
@@ -636,7 +630,7 @@ diagnostics:
         output_attributes:
           project: CMIP3
 
-  ecs_cmip5:
+  fig_8_ecs_cmip5:
     description: Calculate ECS for all available CMIP5 models.
     variables:
       tas_rtnt: &ecs_settings_cmip5
@@ -646,24 +640,17 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         additional_datasets: *cmip5_rtnt
-      tas_rtmt:
-        <<: *ecs_settings_cmip5
-        additional_datasets: *cmip5_rtmt
       rtnt:
         <<: *ecs_settings_cmip5
         short_name: rtnt
         derive: true
         additional_datasets: *cmip5_rtnt
-      rtmt:
-        <<: *ecs_settings_cmip5
-        short_name: rtmt
-        additional_datasets: *cmip5_rtmt
     scripts:
       ecs:
         script: climate_metrics/ecs.py
         calculate_mmm: false
 
-  ecs_cmip6:
+  fig_8_ecs_cmip6:
     description: Calculate ECS for all available CMIP6 models.
     variables:
       tas_rtnt: &ecs_settings_cmip6
@@ -695,9 +682,9 @@ diagnostics:
       barplot:
         script: climate_metrics/create_barplot.py
         ancestors: [
-          'ecs_cmip3/ecs',
-          'ecs_cmip5/ecs',
-          'ecs_cmip6/ecs',
+          'fig_8_ecs_cmip3/ecs',
+          'fig_8_ecs_cmip5/ecs',
+          'fig_8_ecs_cmip6/ecs',
         ]
         add_mean: true
         label_attribute: project
