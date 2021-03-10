@@ -36,11 +36,14 @@ jobs:
             python --version > /logs/python_version.txt
             conda env export > /logs/environment.yml
             pip install .[test] > /logs/install.txt
+            # Run flake8 check with source code (it doesn't work without it)
+            pytest -n 2 -m flake8
+            # Update/install Julia and R dependencies
             esmvaltool install Julia > /logs/install_Julia.txt
             esmvaltool install R > /logs/install_R.txt
             # Remove source to test installed software
             rm -r esmvaltool
-            pytest -n 2
+            pytest -n 2 -m 'not flake8'
       - store_artifacts:
           path: /logs
       - store_artifacts:
