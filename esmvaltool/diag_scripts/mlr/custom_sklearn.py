@@ -468,11 +468,16 @@ def _rfe_single_fit(rfe, estimator, x_data, y_data, train, test, scorer,
     """Return the score for a fit across one fold."""
     (x_train, y_train) = _safe_split(estimator, x_data, y_data, train)
     (x_test, y_test) = _safe_split(estimator, x_data, y_data, test, train)
-    (fit_kwargs_train, _) = _split_fit_kwargs(fit_kwargs, train, test)
+    (fit_kwargs_train, fit_kwargs_test) = _split_fit_kwargs(fit_kwargs, train,
+                                                            test)
+    if 'sample_weight' in fit_kwargs_test:
+        fit_kwargs_test['sample_weights'] = fit_kwargs_test.pop(
+            'sample_weight')
 
     def step_score(estimator, features):
         """Score for a single step in the recursive feature elimination."""
-        return _score_weighted(estimator, x_test[:, features], y_test, scorer)
+        return _score_weighted(estimator, x_test[:, features], y_test, scorer,
+                               **fit_kwargs_test)
 
     return rfe._fit(x_train, y_train, step_score=step_score,
                     **fit_kwargs_train).scores_
@@ -796,11 +801,11 @@ class AdvancedRFECV(AdvancedRFE):
         """Original constructor of :class:`sklearn.feature_selection.RFECV`."""
         self.estimator = estimator
         self.step = step
+        self.min_features_to_select = min_features_to_select
         self.cv = cv
         self.scoring = scoring
         self.verbose = verbose
         self.n_jobs = n_jobs
-        self.min_features_to_select = min_features_to_select
 
     def fit(self, x_data, y_data, groups=None, **fit_kwargs):
         """Expand :meth:`fit` to accept kwargs."""
@@ -836,10 +841,10 @@ class AdvancedRFECV(AdvancedRFE):
         # This branching is done so that to
         # make sure that user code that sets n_jobs to 1
         # and provides bound methods as scorers is not broken with the
-        # addition of n_jobs parameter in version 0.18.
+        # addition of n_jobs parameter.
 
         if effective_n_jobs(self.n_jobs) == 1:
-            parallel, func = list, _rfe_single_fit
+            (parallel, func) = (list, _rfe_single_fit)
         else:
             parallel = Parallel(n_jobs=self.n_jobs)
             func = delayed(_rfe_single_fit)

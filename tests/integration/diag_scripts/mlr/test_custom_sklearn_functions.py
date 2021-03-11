@@ -1025,7 +1025,7 @@ def test_perform_efecv():
                                             cv=2)
 
     assert isinstance(best_est, LinearRegression)
-    np.testing.assert_allclose(best_est.coef_, [1, -2])
+    np.testing.assert_allclose(best_est.coef_, [1.0, -2.0])
     np.testing.assert_allclose(best_est.intercept_, 1.0)
 
     assert isinstance(transformer, FeatureSelectionTransformer)

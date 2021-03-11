@@ -42,6 +42,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 
+from copy import deepcopy
+
 import numpy as np
 import pytest
 from sklearn.base import BaseEstimator, clone
@@ -53,9 +55,12 @@ from sklearn.metrics import make_scorer, mean_absolute_error
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
 
 from esmvaltool.diag_scripts.mlr.custom_sklearn import (
+    _DEFAULT_TAGS,
     AdvancedPipeline,
     AdvancedRFE,
+    AdvancedRFECV,
     AdvancedTransformedTargetRegressor,
+    FeatureSelectionTransformer,
     _score_weighted,
 )
 
@@ -361,8 +366,7 @@ class TestAdvancedRFE():
     Y_TRAIN = np.array([0.0, 1.0, -2.0])
     SAMPLE_WEIGHTS = np.array([1.0, 1.0, 0.0])
 
-    @staticmethod
-    def get_rfe(drop=False):
+    def get_rfe(self, drop=False):
         """``AdvancedRFE`` object."""
         if drop:
             column_transformer_args = [[
@@ -478,8 +482,7 @@ class TestAdvancedRFE():
         pred_one = rfe.predict(self.X_PRED, always_one=True)
         assert pred_one == 'one'
 
-    @staticmethod
-    def step_score(estimator, features):
+    def step_score(self, estimator, features):
         """Score for a single step rfe."""
         x_test = np.arange(20).reshape(1, 20)
         y_test = np.arange(1)
@@ -508,6 +511,86 @@ class TestAdvancedRFE():
         expected_support[zero_idx] = False
         np.testing.assert_array_equal(rfe.support_, expected_support)
         assert len(rfe.scores_) == 6
+
+
+# AdvancedRFECV
+
+
+class TestAdvancedRFECV():
+    """Tests for ``AdvancedRFECV``."""
+
+    @pytest.fixture
+    def lin(self):
+        """Return ``LinearRegression`` instance."""
+        return LinearRegression()
+
+    def test_init(self, lin):
+        """Test ``__init__``."""
+        rfecv = AdvancedRFECV(lin, step=2, min_features_to_select=3, cv=5,
+                              scoring='neg_mean_absolute_error', verbose=42,
+                              n_jobs=32)
+        assert rfecv.estimator is lin
+        assert rfecv.step == 2
+        assert rfecv.min_features_to_select == 3
+        assert rfecv.cv == 5
+        assert rfecv.scoring == 'neg_mean_absolute_error'
+        assert rfecv.verbose == 42
+        assert rfecv.n_jobs == 32
+
+    X_DATA = np.array([
+        [0, 0, 0],
+        [0, 0, 10],
+        [1, 1, 0],
+        [2, 0, 2],
+        [0, 3, 3],
+        [0, 3, 0],
+        [4, 4, 4],
+        [4, 4, 0],
+        [1000.0, 2000.0, 3000.0],
+    ])
+    Y_DATA = np.array([1, 1, 0, 3, -5, -5, -3, -3, -4])
+    SAMPLE_WEIGHTS = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
+
+    def test_fail(self, lin):
+        """Test ``AdvancedRFECV`` expected fail."""
+        msg = 'Step must be >0'
+        rfecv = AdvancedRFECV(lin, step=-1)
+        with pytest.raises(ValueError, match=msg):
+            rfecv.fit(self.X_DATA, self.Y_DATA)
+
+    def test_fit(self, lin):
+        """Test ``fit``."""
+        rfecv = AdvancedRFECV(lin, step=1, min_features_to_select=1, cv=2,
+                              verbose=1000, n_jobs=2)
+        rfecv.fit(self.X_DATA, self.Y_DATA, sample_weight=self.SAMPLE_WEIGHTS)
+
+        assert rfecv.n_features_ == 2
+        np.testing.assert_array_equal(rfecv.support_, [True, True, False])
+        np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
+        np.testing.assert_allclose(rfecv.grid_scores_,
+                                   [-7.14362865, -1.19939446, -1.19939446])
+
+        est = rfecv.estimator_
+        assert isinstance(est, LinearRegression)
+        np.testing.assert_allclose(est.coef_, [1.0, -2.0])
+        np.testing.assert_allclose(est.intercept_, [1.0])
+
+    def test_step_float(self, lin):
+        """Test float for ``step``."""
+        rfecv = AdvancedRFECV(lin, step=0.1, cv=2)
+        rfecv.fit(self.X_DATA, self.Y_DATA)
+
+        assert rfecv.n_features_ == 2
+        np.testing.assert_array_equal(rfecv.support_, [True, True, False])
+        np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
+        np.testing.assert_allclose(
+            rfecv.grid_scores_,
+            [-3529612.97421038, -1630914.07782768, -1630914.07782768])
+
+        est = rfecv.estimator_
+        assert isinstance(est, LinearRegression)
+        np.testing.assert_allclose(est.coef_, [0.90717478, -0.45471213])
+        np.testing.assert_allclose(est.intercept_, -1.7676405943575968)
 
 
 # AdvancedTransformedTargetRegressor
@@ -612,13 +695,11 @@ class TestAdvancedTransformedTargetRegressor():
         with pytest.raises(NotFittedError):
             reg.predict(X_TRAIN)
 
-    @staticmethod
-    def identity(y_data):
+    def identity(self, y_data):
         """Identity function."""
         return y_data
 
-    @staticmethod
-    def square(y_data):
+    def square(self, y_data):
         """Identity function."""
         return y_data**2
 
@@ -977,3 +1058,43 @@ class TestAdvancedTransformedTargetRegressor():
         reg._training_dim = training_dim
         squeezed = reg._to_be_squeezed(array, always_return_1d=always_1d)
         assert squeezed == output
+
+
+# FeatureSelectionTransformer
+
+
+class TestFeatureSelectionTransformer():
+    """Tests for ``FeatureSelectionTransformer``."""
+
+    @pytest.fixture
+    def fst(self):
+        """Return ``FeatureSelectionTransformer`` instance."""
+        return FeatureSelectionTransformer(grid_scores=1, n_features=2,
+                                           ranking=3, support=4)
+
+    def test_init(self, fst):
+        """Test ``__init__``."""
+        assert fst.grid_scores == 1
+        assert fst.n_features == 2
+        assert fst.ranking == 3
+        assert fst.support == 4
+
+    def test_fit(self, fst):
+        """Test ``fit``."""
+        output = fst.fit()
+        assert output is fst
+        output = fst.fit(1, 'a', valid_kwarg=2)
+        assert output is fst
+
+    def test_get_support_mask(self, fst):
+        """Test ``_get_support_mask``."""
+        mask = fst._get_support_mask()
+        assert mask == 4
+
+    def test_more_tags(self, fst):
+        """Test ``_more_tags``."""
+        tags = fst._more_tags()
+        assert tags['allow_nan'] is True
+        new_tags = deepcopy(_DEFAULT_TAGS)
+        new_tags['allow_nan'] = True
+        assert tags == new_tags
