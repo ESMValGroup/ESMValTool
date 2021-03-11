@@ -526,9 +526,9 @@ class TestAdvancedRFECV():
 
     def test_init(self, lin):
         """Test ``__init__``."""
-        rfecv = AdvancedRFECV(lin, step=2, min_features_to_select=3, cv=5,
-                              scoring='neg_mean_absolute_error', verbose=42,
-                              n_jobs=32)
+        rfecv = AdvancedRFECV(estimator=lin, step=2, min_features_to_select=3,
+                              cv=5, scoring='neg_mean_absolute_error',
+                              verbose=42, n_jobs=32)
         assert rfecv.estimator is lin
         assert rfecv.step == 2
         assert rfecv.min_features_to_select == 3
@@ -541,6 +541,7 @@ class TestAdvancedRFECV():
         [0, 0, 0],
         [0, 0, 10],
         [1, 1, 0],
+        [1, 1, 10],
         [2, 0, 2],
         [0, 3, 3],
         [0, 3, 0],
@@ -548,27 +549,28 @@ class TestAdvancedRFECV():
         [4, 4, 0],
         [1000.0, 2000.0, 3000.0],
     ])
-    Y_DATA = np.array([1, 1, 0, 3, -5, -5, -3, -3, -4])
-    SAMPLE_WEIGHTS = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
+    Y_DATA = np.array([1, 1, 0, 0, 3, -5, -5, -3, -3, -4])
+    SAMPLE_WEIGHTS = np.array(
+        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
 
     def test_fail(self, lin):
         """Test ``AdvancedRFECV`` expected fail."""
         msg = 'Step must be >0'
-        rfecv = AdvancedRFECV(lin, step=-1)
+        rfecv = AdvancedRFECV(estimator=lin, step=-1)
         with pytest.raises(ValueError, match=msg):
             rfecv.fit(self.X_DATA, self.Y_DATA)
 
     def test_fit(self, lin):
         """Test ``fit``."""
-        rfecv = AdvancedRFECV(lin, step=1, min_features_to_select=1, cv=2,
-                              verbose=1000, n_jobs=2)
+        rfecv = AdvancedRFECV(estimator=lin, step=1, min_features_to_select=1,
+                              cv=2, verbose=1000, n_jobs=2)
         rfecv.fit(self.X_DATA, self.Y_DATA, sample_weight=self.SAMPLE_WEIGHTS)
 
         assert rfecv.n_features_ == 2
         np.testing.assert_array_equal(rfecv.support_, [True, True, False])
         np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
         np.testing.assert_allclose(rfecv.grid_scores_,
-                                   [-7.14362865, -1.19939446, -1.19939446])
+                                   [-14.152778, -14.088235, -14.088235])
 
         est = rfecv.estimator_
         assert isinstance(est, LinearRegression)
@@ -577,20 +579,21 @@ class TestAdvancedRFECV():
 
     def test_step_float(self, lin):
         """Test float for ``step``."""
-        rfecv = AdvancedRFECV(lin, step=0.1, cv=2)
+        rfecv = AdvancedRFECV(estimator=lin, step=0.1, cv=2)
         rfecv.fit(self.X_DATA, self.Y_DATA)
 
-        assert rfecv.n_features_ == 2
-        np.testing.assert_array_equal(rfecv.support_, [True, True, False])
-        np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
+        assert rfecv.n_features_ == 3
+        np.testing.assert_array_equal(rfecv.support_, [True, True, True])
+        np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 1])
         np.testing.assert_allclose(
             rfecv.grid_scores_,
-            [-3529612.97421038, -1630914.07782768, -1630914.07782768])
+            [-1384182.300065, -1121262.013698, -1121262.013698])
 
         est = rfecv.estimator_
         assert isinstance(est, LinearRegression)
-        np.testing.assert_allclose(est.coef_, [0.90717478, -0.45471213])
-        np.testing.assert_allclose(est.intercept_, -1.7676405943575968)
+        np.testing.assert_allclose(est.coef_,
+                                   [0.94909893, -0.9647902, 0.32609818])
+        np.testing.assert_allclose(est.intercept_, -1.8222458070628846)
 
 
 # AdvancedTransformedTargetRegressor
