@@ -539,19 +539,16 @@ class TestAdvancedRFECV():
 
     X_DATA = np.array([
         [0, 0, 0],
-        [0, 0, 10],
         [1, 1, 0],
-        [1, 1, 10],
-        [2, 0, 2],
-        [0, 3, 3],
+        [2, 0, 0],
         [0, 3, 0],
-        [4, 4, 4],
+        [0, 3, 0],
         [4, 4, 0],
-        [1000.0, 2000.0, 3000.0],
+        [4, 4, 0],
+        [1000.0, 2000.0, 0.0],
     ])
-    Y_DATA = np.array([1, 1, 0, 0, 3, -5, -5, -3, -3, -4])
-    SAMPLE_WEIGHTS = np.array(
-        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
+    Y_DATA = np.array([1, 0, 3, -5, -5, -3, -3, -4])
+    SAMPLE_WEIGHTS = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
 
     def test_fail(self, lin):
         """Test ``AdvancedRFECV`` expected fail."""
@@ -565,12 +562,11 @@ class TestAdvancedRFECV():
         rfecv = AdvancedRFECV(estimator=lin, step=1, min_features_to_select=1,
                               cv=2, verbose=1000, n_jobs=2)
         rfecv.fit(self.X_DATA, self.Y_DATA, sample_weight=self.SAMPLE_WEIGHTS)
-
         assert rfecv.n_features_ == 2
         np.testing.assert_array_equal(rfecv.support_, [True, True, False])
         np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
         np.testing.assert_allclose(rfecv.grid_scores_,
-                                   [-14.152778, -14.088235, -14.088235])
+                                   [-7.28912807, -0.69779194, -0.69779194])
 
         est = rfecv.estimator_
         assert isinstance(est, LinearRegression)
@@ -582,18 +578,17 @@ class TestAdvancedRFECV():
         rfecv = AdvancedRFECV(estimator=lin, step=0.1, cv=2)
         rfecv.fit(self.X_DATA, self.Y_DATA)
 
-        assert rfecv.n_features_ == 3
-        np.testing.assert_array_equal(rfecv.support_, [True, True, True])
-        np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 1])
+        assert rfecv.n_features_ == 2
+        np.testing.assert_array_equal(rfecv.support_, [True, True, False])
+        np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
         np.testing.assert_allclose(
             rfecv.grid_scores_,
-            [-1384182.300065, -1121262.013698, -1121262.013698])
+            [-3949286.19763361, -1630913.74908173, -1630913.74908173])
 
         est = rfecv.estimator_
         assert isinstance(est, LinearRegression)
-        np.testing.assert_allclose(est.coef_,
-                                   [0.94909893, -0.9647902, 0.32609818])
-        np.testing.assert_allclose(est.intercept_, -1.8222458070628846)
+        np.testing.assert_allclose(est.coef_, [0.99952835, -0.5006662])
+        np.testing.assert_allclose(est.intercept_, -2.21009561525743)
 
 
 # AdvancedTransformedTargetRegressor
@@ -1098,6 +1093,7 @@ class TestFeatureSelectionTransformer():
         """Test ``_more_tags``."""
         tags = fst._more_tags()
         assert tags['allow_nan'] is True
+        assert tags is not _DEFAULT_TAGS
         new_tags = deepcopy(_DEFAULT_TAGS)
         new_tags['allow_nan'] = True
         assert tags == new_tags

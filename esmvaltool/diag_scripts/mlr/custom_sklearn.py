@@ -1065,6 +1065,6 @@ class FeatureSelectionTransformer(BaseEstimator, SelectorMixin):
 
     def _more_tags(self):
         """Additional estimator tags."""
-        more_tags = _DEFAULT_TAGS
+        more_tags = deepcopy(_DEFAULT_TAGS)
         more_tags['allow_nan'] = True
         return more_tags
