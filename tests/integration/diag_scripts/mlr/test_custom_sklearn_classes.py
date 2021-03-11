@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 # pylint: disable=arguments-differ
+# pylint: disable=attribute-defined-outside-init
 # pylint: disable=invalid-name
 # pylint: disable=no-self-use
 # pylint: disable=protected-access
@@ -48,12 +49,14 @@ from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
 from sklearn.decomposition import PCA
 from sklearn.exceptions import NotFittedError
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import make_scorer, mean_absolute_error
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
 
 from esmvaltool.diag_scripts.mlr.custom_sklearn import (
     AdvancedPipeline,
     AdvancedRFE,
     AdvancedTransformedTargetRegressor,
+    _score_weighted,
 )
 
 # AdvancedPipeline
@@ -133,6 +136,35 @@ class TestAdvancedPipeline():
             [('t', StandardScaler()), ('r', FeatureImportanceRegressor())],
         )
         assert pipeline.feature_importances_ == 42
+
+    def test_fit(self):
+        """Test ``_fit``."""
+        x_data = np.array([
+            [0, 1000],
+            [1, 0],
+            [2, 3000],
+            [0, -5000],
+            [4, -3000],
+            [4, -3000],
+        ])
+        y_data = np.array([1, 0, 3, -5, -3, -3])
+        pipeline = AdvancedPipeline([
+            ('t', StandardScaler()), ('r', LinearRegression()),
+        ])
+        sample_weights = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 1.0])
+        kwargs = {
+            't': {'sample_weight': sample_weights},
+            'r': {'sample_weight': sample_weights},
+        }
+        pipeline._fit(x_data, y_data, **kwargs)
+
+        transformer_ = pipeline.steps[0][1]
+        np.testing.assert_allclose(transformer_.scale_, [1.0, 1.0])
+        np.testing.assert_allclose(transformer_.mean_, [4.0, -3000.0])
+
+        regressor_ = pipeline.steps[1][1]
+        with pytest.raises(NotFittedError):
+            regressor_.predict([[0, 0]])
 
     AREG = AdvancedTransformedTargetRegressor(
         transformer=NonStandardScaler(),
@@ -363,10 +395,53 @@ class TestAdvancedRFE():
         """``AdvancedRFE`` object where features are dropped."""
         return self.get_rfe(drop=True)
 
+    class NoCoefReg(BaseEstimator):
+        """Estimator without ``coef_`` and ``feature_importances_``."""
+
+        def fit(self, *_):
+            """Fit method."""
+            return self
+
     def test_advanced_rfe_fail(self, rfe_drop):
         """Test ``AdvancedRFE`` expected fail."""
+        # Transformer that drops features
         with pytest.raises(NotImplementedError):
             rfe_drop.fit(self.X_TRAIN, self.Y_TRAIN)
+
+        # Regressor without coef_ or feature_importances_
+        msg = ("The classifier does not expose 'coef_' or "
+               "'feature_importances_' attributes")
+        fail_rfe = AdvancedRFE(self.NoCoefReg())
+        with pytest.raises(RuntimeError, match=msg):
+            fail_rfe.fit(np.arange(6).reshape(3, 2), np.arange(3))
+
+        # Invalid step
+        msg = "Step must be >0"
+        fail_rfe = AdvancedRFE(LinearRegression(), step=-1)
+        with pytest.raises(ValueError, match=msg):
+            fail_rfe.fit(np.arange(6).reshape(3, 2), np.arange(3))
+
+    class FIReg(BaseEstimator):
+        """Estimator with working ``feature_importances_``."""
+
+        def fit(self, x_data, *_):
+            """Fit method."""
+            self.feature_importances_ = np.full((4, x_data.shape[1]), 0.0)
+            for idx in range(self.feature_importances_.shape[1]):
+                self.feature_importances_[:, idx] = float(idx)
+            print(self.feature_importances_)
+            return self
+
+    def test_feature_importances(self):
+        """Test with ``feature_importances_``."""
+        firfe = AdvancedRFE(self.FIReg())
+        x_data = np.arange(3 * 6).reshape(3, 6)
+        y_data = np.arange(3)
+        firfe.fit(x_data, y_data)
+        assert firfe.n_features_ == 3
+        np.testing.assert_array_equal(firfe.ranking_, [4, 3, 2, 1, 1, 1])
+        np.testing.assert_array_equal(firfe.support_,
+                                      [False, False, False, True, True, True])
 
     def test_advanced_rfe_no_fit_kwargs(self, rfe):
         """Test ``AdvancedRFE`` without fit_kwargs."""
@@ -402,6 +477,37 @@ class TestAdvancedRFE():
         np.testing.assert_allclose(pred, [500.0, 1000.0])
         pred_one = rfe.predict(self.X_PRED, always_one=True)
         assert pred_one == 'one'
+
+    @staticmethod
+    def step_score(estimator, features):
+        """Score for a single step rfe."""
+        x_test = np.arange(20).reshape(1, 20)
+        y_test = np.arange(1)
+        scorer = make_scorer(mean_absolute_error)
+        return _score_weighted(estimator, x_test[:, features], y_test, scorer)
+
+    def test_alternative_kwargs(self):
+        """Test alternative kwargs."""
+        rfe_kwargs = {
+            'estimator': LinearRegression(),
+            'n_features_to_select': None,
+            'step': 0.1,
+        }
+        rfe = AdvancedRFE(**rfe_kwargs)
+        zero_idx = np.array([1, 3, 5, 7, 9, 11, 13, 15, 17, 19])
+        x_data = np.arange(3 * 20).reshape(3, 20)
+        x_data[:, zero_idx] = 0.0
+        y_data = np.arange(3)
+
+        rfe._fit(x_data, y_data, step_score=self.step_score)
+
+        assert rfe.n_features_ == 10
+        assert len(rfe.ranking_) == 20
+        assert len(rfe.support_) == 20
+        expected_support = np.full(20, True)
+        expected_support[zero_idx] = False
+        np.testing.assert_array_equal(rfe.support_, expected_support)
+        assert len(rfe.scores_) == 6
 
 
 # AdvancedTransformedTargetRegressor
@@ -575,6 +681,7 @@ class TestAdvancedTransformedTargetRegressor():
         areg = AdvancedTransformedTargetRegressor(
             func=self.identity,
             inverse_func=self.square,
+            check_inverse=False,
         )
         areg._fit_transformer(self.Y_2D)
         assert isinstance(areg.transformer_, FunctionTransformer)

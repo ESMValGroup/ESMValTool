@@ -731,9 +731,9 @@ class AdvancedRFE(RFE):
             except (AttributeError, KeyError):
                 coefs = getattr(estimator, 'feature_importances_', None)
             if coefs is None:
-                raise RuntimeError('The classifier does not expose '
-                                   '"coef_" or "feature_importances_" '
-                                   'attributes')
+                raise RuntimeError("The classifier does not expose "
+                                   "'coef_' or 'feature_importances_' "
+                                   "attributes")
 
             # Get ranks
             if coefs.ndim > 1:

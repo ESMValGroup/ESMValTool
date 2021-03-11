@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # pylint: disable=invalid-name
 # pylint: disable=no-self-use
 # pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 
@@ -79,6 +80,7 @@ from esmvaltool.diag_scripts.mlr.custom_sklearn import (
     _safe_split,
     _safe_tags,
     _score_weighted,
+    _split_fit_kwargs,
     _update_transformers_param,
     cross_val_score_weighted,
     get_rfecv_transformer,
@@ -609,6 +611,12 @@ def test_fit_and_score_weighted_failing():
     assert_raise_message(ValueError, "Failing classifier failed as required",
                          _fit_and_score_weighted, *fit_and_score_args,
                          **fit_and_score_kwargs)
+
+    # Wrong parameter type for error_score
+    fit_and_score_kwargs = {'error_score': 'wrong_type'}
+    with pytest.raises(ValueError):
+        _fit_and_score_weighted(*fit_and_score_args, **fit_and_score_kwargs)
+
     assert failing_clf.score() == 0.0
 
 
@@ -752,6 +760,55 @@ def test_score_weighted_weights(scorer, output):
                              sample_weights=SAMPLE_WEIGHTS)
     assert isinstance(result, float)
     np.testing.assert_allclose(result, output, atol=1e-10)
+
+
+# _split_fit_kwargs
+
+
+def test_split_fit_kwargs():
+    """Test ``_split_fit_kwargs``."""
+    fit_kwargs = {
+        'a': [1, 2],
+        'b': [1, 2],
+        'sample_weight': [1, 2],
+        'a__sample_weight__b': [1, 2],
+        'sample_weight_eval_set': [1, 2],
+        'a__sample_weight_eval_set__b': [1, 2],
+    }
+    train_idx = 0
+    test_idx = 1
+
+    (train_kwargs, test_kwargs) = _split_fit_kwargs(fit_kwargs, train_idx,
+                                                    test_idx)
+
+    assert train_kwargs is not fit_kwargs
+    assert test_kwargs is not fit_kwargs
+    assert len(train_kwargs) == len(fit_kwargs)
+    assert len(test_kwargs) == len(fit_kwargs)
+    for key in train_kwargs:
+        assert train_kwargs[key] is not fit_kwargs[key]
+    for key in test_kwargs:
+        assert test_kwargs[key] is not fit_kwargs[key]
+
+    expected_train_kwargs = {
+        'a': [1, 2],
+        'b': [1, 2],
+        'sample_weight': 1,
+        'a__sample_weight__b': 1,
+        'sample_weight_eval_set': [1, 2],
+        'a__sample_weight_eval_set__b': [1, 2],
+    }
+    assert train_kwargs == expected_train_kwargs
+
+    expected_test_kwargs = {
+        'a': [1, 2],
+        'b': [1, 2],
+        'sample_weight': 2,
+        'a__sample_weight__b': 2,
+        'sample_weight_eval_set': [1, 2],
+        'a__sample_weight_eval_set__b': [1, 2],
+    }
+    assert test_kwargs == expected_test_kwargs
 
 
 # _rfe_single_fit
