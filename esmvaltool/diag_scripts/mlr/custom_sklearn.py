@@ -814,7 +814,8 @@ class AdvancedRFECV(AdvancedRFE):
             force_all_finite=False)
 
         # Initialization
-        cv = check_cv(self.cv, y_data, is_classifier(self.estimator))
+        cv = check_cv(self.cv, y_data,
+                      classifier=is_classifier(self.estimator))
         scorer = check_scoring(self.estimator, scoring=self.scoring)
         n_features = x_data.shape[1]
 
