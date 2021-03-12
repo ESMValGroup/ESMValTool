@@ -114,8 +114,8 @@ the description.
 The titles of pull requests are used to compile the :ref:`changelog`, therefore
 it is important that they are easy to understand for people who are not
 familiar with the code or people in the project.
-Using descriptive pull request titles also makes it easier to find back what was
-changed when, in case a bugs were introduced.
+Descriptive pull request titles also makes it easier to find back what was
+changed when, which is useful in case a bug was introduced.
 
 .. _code_quality:
 
@@ -131,9 +131,10 @@ in functions that are short enough to view without scrolling, e.g. no more than
 We include checks for Python, R, NCL, and yaml files, most of which are
 described in more detail in the sections below.
 This includes checks for invalid syntax and formatting errors.
-:ref:`pre-commit` is a handy tool that can run all of these checks automatically.
+:ref:`pre-commit` is a handy tool that can run all of these checks automatically
+just before you commit your code.
 It knows knows which tool to run for each filetype, and therefore provides
-a simple way to check your code!
+a convenient way to check your code!
 
 Python
 ~~~~~~
@@ -164,7 +165,7 @@ to add/remove whitespace as required by the standard using `yapf <https://github
 
 ::
 
-   docformatter -i your_script.py
+   docformatter -i some_file.py
 
 to run `docformatter <https://github.com/myint/docformatter>`__ which helps formatting the doc strings (such as line length, spaces).
 
@@ -176,7 +177,7 @@ the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://pr
    prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
 In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
-to automatically check for obvious bugs and easy to fix formatting mistakes.
+to automatically check for obvious bugs and formatting mistakes.
 
 When you make a pull request, adherence of the Python development best practices
 is checked in two ways:
@@ -441,12 +442,14 @@ The following files contain lists of dependencies
 - ``docs/sphinx/source/conf.py``
   contains a list of Python dependencies needed to build the documentation that
   cannot be installed from PyPI and need to be mocked when building the
-  documentation
+  documentation.
+  We do not use conda to build the documentation because this is too time
+  consuming.
 - ``esmvaltool/install/R/r_requirements.txt``
   contains R dependencies that can be installed from CRAN
 - ``esmvaltool/install/Julia/Project.toml``
-  contains Julia dependencies that can be installed from the Julia package
-  repository
+  contains Julia dependencies that can be installed from the default Julia
+  package registry
 - ``setup.py``
   contains all Python dependencies, regardless of their installation source
 - ``package/meta.yaml``
@@ -455,7 +458,8 @@ The following files contain lists of dependencies
   or Julia dependencies, because this would make it impossible to solve the
   conda environment
 
-Note that packages may have a different name on conda than on PyPI or CRAN.
+Note that packages may have a different name on
+`conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
 
 Several test jobs on CircleCI_ related to the installation of the tool will only
 run if you change the dependencies, these will be skipped for most pull
@@ -485,13 +489,14 @@ You can attract the attention of the `@ESMValGroup/esmvaltool-coreteam`_ by
 mentioning them in the issue if it looks like no-one is working on solving the
 problem yet.
 The issue needs to be fixed in a separate pull request first.
-After that has been merged in the ``master`` branch and all checks are green
+After that has been merged into the ``master`` branch and all checks are green
 again on the ``master`` branch, merge it into your own branch to get the tests
 to pass.
 
 When reviewing a pull request, always make sure that all checks were successful.
-If the Codacy check keeps failing, please run ``prospector`` locally and try to
-address all issues, see the section on code_quality_ for more information.
+If the Codacy check keeps failing, please run ``prospector`` locally and if
+necessary, ask the pull request author to do the same and to address the
+reported issues, see the section on code_quality_ for more information.
 Never merge a pull request with failing CircleCI or readthedocs checks.
 
 .. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam

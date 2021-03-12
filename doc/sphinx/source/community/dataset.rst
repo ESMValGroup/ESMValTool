@@ -18,8 +18,9 @@ The documentation required for a CMORizer script is the following:
   :ref:`supported_datasets`
 - The in code documentation should contain clear instructions on how to obtain
   the data
-- A BibTeX file (named ``<dataset>.bibtex``) defining the reference for the new
-  dataset should be placed in the directory ``esmvaltool/references/``
+- A BibTeX file named ``<dataset>.bibtex`` defining the reference for the new
+  dataset should be placed in the directory ``esmvaltool/references/``, see
+  :ref:`adding_references` for detailed instructions.
 
 For more general information on writing documentation, see :ref:`documentation`.
 
@@ -37,7 +38,8 @@ To test a pull request for a new CMORizer script:
 #. Download the data following the instructions included in the script and place
    it in the ``RAWOBS`` path specified in your ``config-user.yml``
 #. Run the CMORizer script by running ``cmorize_obs -c <config-file> -o <dataset>``
-#. Copy the resulting data to the ``OBS`` or ``OBS6`` path specified in your
+#. Copy the resulting data to the ``OBS`` (for CMIP5 compliant data) or ``OBS6``
+   (for CMIP6 compliant data) path specified in your
    ``config-user.yml``
 #. Run ``recipes/examples/recipe_check_obs.yml`` with the new dataset to check that
    the data can be used
@@ -71,12 +73,12 @@ Dataset description
 
 Check that new dataset has been added to the table of observations defined in
 the ESMValTool guide user’s guide in section :ref:`inputdata`
-(``doc/sphinx/source/input.rst``).
+(generated from ``doc/sphinx/source/input.rst``).
 
 BibTeX info file
 ----------------
 
-Check that a BibTeX file (i.e. ``<dataset>.bibtex``) defining the reference for
+Check that a BibTeX file, i.e. ``<dataset>.bibtex`` defining the reference for
 the new dataset has been created in ``esmvaltool/references/``.
 
 recipe_check_obs.yml
@@ -89,7 +91,7 @@ CMORizer script
 ---------------
 
 Check that the new CMORizer script
-(``esmvaltool/cmorizers/obs/cmorize_obs_<dataset>.{py,ncl}``)
+``esmvaltool/cmorizers/obs/cmorize_obs_<dataset>.{py,ncl}``
 meets standards.
 This includes the following items:
 

@@ -82,8 +82,8 @@ On readthedocs
 Recipes should have a page in the :ref:`recipes` chapter which describes what
 the recipe/diagnostic calculates.
 
-When adding a completely new recipe, please start by copying the
-`template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
+When adding a completely new recipe, please start by copying
+`doc/sphinx/source/recipes/recipe_template.rst.template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
 to a new file ``doc/sphinx/source/recipes/recipe_<name of diagnostic>.rst``
 and do not forget to add your recipe to the
 `index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
@@ -130,7 +130,7 @@ Diagnostic output
 Typically, diagnostic scripts create plots, but any other output such as e.g.
 text files or tables is also possible.
 Figures should be saved in the ``plot_dir``, either in both ``.pdf`` and
-``.png`` format, or
+``.png`` format (preferred), or
 respect the ``output_file_type`` specified in the
 :ref:`esmvalcore:user configuration file`.
 Data should be saved in the ``work_dir``, preferably as a ``.nc``
@@ -183,6 +183,10 @@ were used to create what plots by the diagnostic script), it needs the
 
 Provenance items provided by the recipe
 ---------------------------------------
+Provenance tags can be added in several places in the recipe.
+The :ref:`esmvalcore:recipe_documentation` section provides information about
+the entire recipe.
+
 For each diagnostic in the recipe, ESMValCore supports the following additional information:
 
 - :code:`realms` a list of high-level modeling components
@@ -429,9 +433,9 @@ Documentation
 Check that the scientific documentation of the new diagnostic has been added to
 the user’s guide:
 
-* A file (``doc/sphinx/source/recipes/recipe_<diagnostic>.rst``) exists
+* A file ``doc/sphinx/source/recipes/recipe_<diagnostic>.rst`` exists
 * New documentation is included in ``doc/sphinx/source/recipes/index.rst``
-* Documentation follows template (``doc/sphinx/source/recipes/recipe_template.rst.template``)
+* Documentation follows template `doc/sphinx/source/recipes/recipe_template.rst.template`_
 * Description of configuration options
 * Description of variables
 * Valid image files
@@ -488,7 +492,7 @@ Documentation added to user’s guide
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Check that the scientific documentation of the new diagnostic
-(``doc/sphinx/source/recipes/recipe_<diagnostic>.rst``):
+in ``doc/sphinx/source/recipes/recipe_<diagnostic>.rst``:
 
 * Meets scientific documentation standard and
 * Contains brief description of method

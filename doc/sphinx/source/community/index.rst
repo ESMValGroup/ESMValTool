@@ -3,7 +3,7 @@
 Contributing to the community
 =============================
 
-**Contributions are very welcome**
+**Contributions are very welcome!**
 
 This chapter explains how to contribute to ESMValTool.
 We greatly value contributions of any kind.
@@ -23,7 +23,7 @@ help, e.g. on our
 .. toctree::
    :maxdepth: 1
 
-		Contribution code and documentation <code_documentation>
+		Contributing code and documentation <code_documentation>
 		Contributing a diagnostic or recipe <diagnostic>
 		Contributing a dataset <dataset>
 		Contributing a review <review>
