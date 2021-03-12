@@ -16,7 +16,7 @@
     Please describe your changes here, especially focusing on why this pull request makes
     ESMValTool better and what problem it solves.
 
-    Before you start, please read our [contribution guidelines](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/).
+    Before you start, please read our contribution guidelines: https://esmvaltool--2031.org.readthedocs.build/en/2031/community/
 
     Please fill in the GitHub issue that is closed by this pull request, e.g. Closes #1903
 -->
@@ -33,7 +33,7 @@
     to open a new issue on GitHub.
 -->
 
-- [ ] [☝ Create an issue](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#contributions-are-very-welcome) to discuss what you are going to do
+- [ ] [☝ Create an issue](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#contributing-code-and-documentation) to discuss what you are going to do
 
 ## Checklist
 
@@ -45,26 +45,26 @@ TODO: replace https://esmvaltool--2031.org.readthedocs.build/en/2031/ with https
 [1]: https://esmvaltool--2031.org.readthedocs.build/en/2031/community/review.html#technical-review
 [2]: https://esmvaltool--2031.org.readthedocs.build/en/2031/community/review.html#scientific-review
 
-- [ ] [🛠][1] The pull request has a [descriptive title](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#descriptive_pr_title)
-- [ ] [🛠][1] Code is written according to the [code quality guidelines](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#code_quality)
-- [ ] [🛠][1] [Documentation](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#documentation) is available
-- [ ] [🛠][1] [Tests](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#tests) run successfully
-- [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#dependencies)
+- [ ] [🛠][1] This pull request has a [descriptive title](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#descriptive-pull-request-title)
+- [ ] [🛠][1] Code is written according to the [code quality guidelines](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#code-quality)
+- [ ] [🛠][1] [Documentation](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#documentation) is available
+- [ ] [🛠][1] [Tests](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#tests) run successfully
+- [ ] [🛠][1] The [list of authors](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#list-of-authors) is up to date
+- [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#adding-or-removing-dependencies)
 - [ ] [🛠][1] All [checks below this pull request](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/code_documentation.html#pull-request-checks) were successful
 
 ### [New or updated recipe/diagnostic](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/diagnostic.html)
 
+- [ ] [🧪][2] [Recipe runs successfully](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/diagnostic.html#testing-recipes)
+- [ ] [🧪][2] [Recipe is well documented](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/diagnostic.html#recipe-and-diagnostic-documentation)
+- [ ] [🧪][2] [Figure(s) and data](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/diagnostic.html#diagnostic-output) look as expected from literature
 - [ ] [🛠][1] [Provenance information](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/diagnostic.html#recording-provenance) has been added
-- [ ] [🧪][2] [Documentation](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#documentation) for the recipe/diagnostic clearly describes what it calculates from a scientific point of view
-- [ ] [🧪][2] [Recipe runs successfully](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#testing_recipes)
-- [ ] [🧪][2] Figure(s) and data look as expected from literature
-- [ ] [🧪][2] Code is [well documented](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/introduction.html#doc_howto) and scientifically sound
 
 ### [New or updated data reformatting script](https://esmvaltool--2031.org.readthedocs.build/en/2031/develop/dataset.html)
 
-- [ ] [🛠][1] [Documentation](https://esmvaltool--2031.org.readthedocs.build/en/2031/develop/dataset.html#dataset-documentation) is available
-- [ ] [🛠][1] The dataset has been [added to the CMOR check recipe](https://esmvaltool--2031.org.readthedocs.build/en/2031/develop/dataset.html#dataset-test)
-- [ ] [🧪][2] Numbers and units of the data look [physically meaningful](https://esmvaltool--2031.org.readthedocs.build/en/2031/develop/dataset.html#dataset-sanity-check)
+- [ ] [🛠][1] [Documentation](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/dataset.html#dataset-documentation) is available
+- [ ] [🛠][1] The dataset has been [added to the CMOR check recipe](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/dataset.html#testing)
+- [ ] [🧪][2] Numbers and units of the data look [physically meaningful](https://esmvaltool--2031.org.readthedocs.build/en/2031/community/dataset.html#scientific-sanity-check)
 
 ***
 

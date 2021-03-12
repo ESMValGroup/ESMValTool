@@ -81,7 +81,7 @@ All pull requests
 - 🛠 Documentation_ is available
 - 🛠 Tests_ run successfully
 - 🛠 The :ref:`list of authors <authors>` is up to date
-- 🛠 New dependencies are :ref:`added or removed correctly <dependencies>`
+- 🛠 Changed dependencies are :ref:`added or removed correctly <dependencies>`
 - 🛠 The :ref:`checks shown below the pull request <pull_request_checks>` are successful
 
 New or updated recipe and/or diagnostic
