@@ -8,14 +8,14 @@ import tempfile
 import pytest
 import yaml
 
-import esmvalcore._config
+import esmvaltool.utils.recipe_filler as recipe_filler
 from esmvalcore.cmor.table import read_cmor_tables
 from esmvaltool.utils.recipe_filler import run
 
 # Initialize with standard config developer file
-esmvalcore._config.CFG = esmvalcore._config.read_config_developer_file()
+std_config = recipe_filler.read_config_developer_file()
 # Initialize CMOR tables
-read_cmor_tables(esmvalcore._config.CFG)
+read_cmor_tables(std_config)
 
 # Load test configuration
 with open(os.path.join(os.path.dirname(__file__),
