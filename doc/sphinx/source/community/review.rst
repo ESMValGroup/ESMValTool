@@ -107,6 +107,11 @@ idea to ask these people for a review.
 If there is no obvious reviewer, you can attract the attention of the relevant
 team of reviewers by writing to `@ESMValGroup/tech-reviewers`_ or
 `@ESMValGroup/science-reviewers`_ in a comment on your pull request.
+You can also label your pull request with one of the labels
+`looking for technical reviewer <https://github.com/ESMValGroup/ESMValTool/labels/looking%20for%20technical%20reviewer>`_
+or
+`looking for scientific reviewer <https://github.com/ESMValGroup/ESMValTool/labels/looking%20for%20scientific%20reviewer>`_,
+though asking people for a review directly is probably more effective.
 
 How do I optimize for a fast review?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,6 +136,9 @@ Please pick pull requests to review yourself based on your interest or
 expertise.
 We try to be self organizing, so there is no central authority that will assign
 you to review anything.
+People may advertise that they are looking for a reviewer by applying the label
+`looking for technical reviewer <https://github.com/ESMValGroup/ESMValTool/labels/looking%20for%20technical%20reviewer>`_
+or `looking for scientific reviewer <https://github.com/ESMValGroup/ESMValTool/labels/looking%20for%20scientific%20reviewer>`_.
 If someone knows you have expertise on a certain topic, they might request your
 review on a pull request though.
 If your review is requested, please try to respond within a few days if at all
@@ -145,6 +153,7 @@ To do a review, go to the pull request on GitHub, the list of all pull requests
 is available here https://github.com/ESMValGroup/ESMValCore/pulls for the ESMValCore
 and here https://github.com/ESMValGroup/ESMValTool/pulls for the ESMValTool, click the
 pull request you would like to review.
+
 The top comment should contain (a selection of) the checklist available in the
 `pull request template`_.
 If it is not there, copy the relevant items from the `pull request template`_.
@@ -154,13 +163,16 @@ To see which files have changed, click the tab 'Files changed'.
 Please make sure you are familiar with all items from the checklist by reading
 the content linked from :ref:`pull_request_checklist` and check all items
 that are relevant.
-An incomplete list with some of the items to check with brief explanations is
-given in section :ref:`checklists`.
+Checklists with some of the items to check are available:
+:ref:`recipe and diagnostic checklist <diagnostic_checklist>` and
+:ref:`dataset checklist <dataset_checklist>`.
+
 In addition to the items from the checklist, good questions to start a review
 with are 'Do I understand why these changes improve the tool?' (if not, ask the
 author to improve the documentation contained in the pull request and/or the
 description of the pull request on GitHub) and 'What could possibly go wrong if
 I run this code?'.
+
 To comment on specific lines of code or documentation, click the 'plus' icon
 next to a line of code and write your comment.
 When you are done reviewing, use the 'Review changes' button in the top right
