@@ -73,7 +73,10 @@ conducted thoroughly.
 He or she looks at the list of files that were changed in the pull request and
 checks that all relevant checkboxes from the checklist in the pull request
 template have been added and ticked.
-Finally, he or she checks that the :ref:`pull_request_checks` passed.
+Finally, he or she checks that the :ref:`pull_request_checks` passed and
+merges the pull request.
+The person doing the merge commit edits the merge commit message so it
+contains a concise and meaningful text.
 
 Any issues that were solved by the pull request can be closed after merging.
 It is always a good idea to check with the author of an issue and ask if it is
