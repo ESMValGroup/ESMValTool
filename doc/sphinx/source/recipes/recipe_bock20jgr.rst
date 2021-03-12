@@ -9,6 +9,14 @@ Overview
 The recipe recipe_bock20jgr.yml generates figures to quantify the progress across
 different CMIP phases.
 
+.. note::
+   The current recipe uses a horizontal 5x5 grid for figure 10, while the
+   original plot in the paper shows a 2x2 grid. This is solely done for
+   computational reasons (running the recipe with a 2x2 grid for figure 10
+   takes considerably more time than running it with a 5x5 grid) and can be
+   easily changed in the preprocessor section of the recipe if necessary.
+
+
 
 Available recipes and diagnostics
 ---------------------------------
