@@ -22,6 +22,9 @@ documentation:
     - lorenz2018
     - knutti2017
 
+  projects:
+    - eucp
+
 datasets: &model_data  # a minimal selection to demonstrate functionality
   - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
   - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
