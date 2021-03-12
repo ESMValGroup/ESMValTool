@@ -1,4 +1,4 @@
-.. _porting:
+.. _upgrading:
 
 ************************************************************
 Upgrading a namelist (recipe) or diagnostic to ESMValTool v2
