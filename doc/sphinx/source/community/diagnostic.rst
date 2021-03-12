@@ -1,6 +1,5 @@
 .. _new-diagnostic:
 
-*********************************
 Making a new diagnostic or recipe
 *********************************
 
@@ -81,17 +80,24 @@ On readthedocs
 --------------
 
 Recipes should have a page in the :ref:`recipes` chapter which describes what
-the recipe/diagnostic calculates from a scientific point of view.
-This is also the place to document recipe options for the diagnostic scripts
-used in those recipes.
+the recipe/diagnostic calculates.
+
 When adding a completely new recipe, please start by copying the
 `template <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/recipe_template.rst.template>`_
 to a new file ``doc/sphinx/source/recipes/recipe_<name of diagnostic>.rst``
 and do not forget to add your recipe to the
 `index <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/index.rst>`_.
-Fill in the list of variables required to run the recipe.
-Some example images produced by the recipe should be added to the documentation
-page.
+
+Fill all sections from the template:
+
+- Add a brief description of the method
+- Add references
+- Document recipe options for the diagnostic scripts
+- Fill in the list of variables required to run the recipe
+- Add example images
+
+An example image for each type of plot produced by the recipe should be added
+to the documentation page to show the kind of output the recipe produces.
 The '.png' files can be stored in a subdirectory specific for the recipe under
 `doc/sphinx/source/recipes/figures <https://github.com/ESMValGroup/ESMValTool/blob/master/doc/sphinx/source/recipes/figures>`_
 and linked from the recipe documentation page.
@@ -405,5 +411,124 @@ For a more thorough check, you might want to try out different datasets or
 changing some settings if the diagnostic scripts support those.
 A simple :ref:`tool <recipe_test_tool>` is available for testing recipes
 with various settings.
+
+.. _diagnostic_checklist:
+
+Detailed checklist for reviews
+==============================
+
+This (non-exhaustive) checklist provides ideas for things to check when reviewing
+pull requests for new or updated recipes and/or diagnostic scripts.
+
+Technical reviews
+-----------------
+
+Documentation
+~~~~~~~~~~~~~
+
+Check that the scientific documentation of the new diagnostic has been added to
+the user’s guide:
+
+* A file (``doc/sphinx/source/recipes/recipe_<diagnostic>.rst``) exists
+* New documentation is included in ``doc/sphinx/source/recipes/index.rst``
+* Documentation follows template (``doc/sphinx/source/recipes/recipe_template.rst.template``)
+* Description of configuration options
+* Description of variables
+* Valid image files
+* Resolution of image files (~150 dpi is usually enough; file size should be
+  kept small)
+
+Recipe
+~~~~~~
+
+Check yaml syntax (with ``yamllint``) and that new recipe contains:
+
+* Documentation: description, authors, maintainer, references, projects
+* Provenance tags: themes, realms
+
+Diagnostic script
+~~~~~~~~~~~~~~~~~
+
+Check that the new diagnostic script(s) meet(s) standards.
+This includes the following items:
+
+* In-code documentation (comments, docstrings)
+* Code quality (e.g. no hardcoded pathnames)
+* No Codacy errors reported
+* Re-use of existing functions whenever possible
+* Provenance implemented
+
+Run recipe
+~~~~~~~~~~
+
+Make sure new diagnostic(s) is working by running the ESMValTool with the recipe.
+
+Check output of diagnostic
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After successfully running the new recipe, check that:
+
+* NetCDF output has been written
+* Output contains (some) valid values (e.g. not only nan or zeros)
+* Provenance information has been written
+
+Check automated tests
+~~~~~~~~~~~~~~~~~~~~~
+
+Check for errors reported by automated tests
+
+* Codacy
+* CircleCI
+* Documentation build
+
+Scientific reviews
+------------------
+
+Documentation added to user’s guide
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check that the scientific documentation of the new diagnostic
+(``doc/sphinx/source/recipes/recipe_<diagnostic>.rst``):
+
+* Meets scientific documentation standard and
+* Contains brief description of method
+* Contains references
+* Check for typos / broken text
+* Documentation is complete and written in an understandable language
+* References are complete
+
+Recipe
+~~~~~~
+
+Check that new recipe contains valid:
+
+* Documentation: description, references
+* Provenance tags: themes, realms
+
+Diagnostic script
+~~~~~~~~~~~~~~~~~
+
+Check that the new diagnostic script(s) meet(s) scientific standards.
+This can include the following items:
+
+* Clear and understandable in-code documentation including brief description of
+  diagnostic
+* References
+* Method / equations match reference(s) given
+
+Run recipe
+~~~~~~~~~~
+
+Make sure new diagnostic(s) is working by running the ESMValTool.
+
+Check output of diagnostic
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After successfully running the new recipe, check that:
+
+* Output contains (some) valid values (e.g. not only nan or zeros)
+* If applicable, check plots and compare with corresponding plots in the
+  paper(s) cited
+
 
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
