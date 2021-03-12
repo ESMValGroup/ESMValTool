@@ -12,6 +12,8 @@ to avoid disappointment later. A good way to do this is to open an
 `issue on GitHub <https://github.com/ESMValGroup/ESMValTool/issues>`_.
 This is also a good way to get help.
 
+.. _diagnostic_from_example:
+
 Creating a recipe and diagnostic script(s)
 ==========================================
 First create a recipe in esmvaltool/recipes to define the input data your analysis script needs
@@ -116,30 +118,62 @@ look as expected from literature.
 
 .. _diagnostic_output:
 
-Expected output
-===============
+Diagnostic output
+=================
+
 Typically, diagnostic scripts create plots, but any other output such as e.g.
 text files or tables is also possible.
+Figures should be saved in the ``plot_dir``, either in both ``.pdf`` and
+``.png`` format, or
+respect the ``output_file_type`` specified in the
+:ref:`esmvalcore:user configuration file`.
+Data should be saved in the ``work_dir``, preferably as a ``.nc``
+(`NetCDF <https://www.unidata.ucar.edu/software/netcdf/>`__) file, following the
+`CF-Conventions <https://cfconventions.org/>`__ as much as possible.
+
+Have a look at the :ref:`example scripts <diagnostic_from_example>` for how to
+access the value of ``work_dir``, ``plot_dir``, and ``output_file_type`` from
+the diagnostic script code.
+More information on the interface between ESMValCore and the diagnostic script
+is available :ref:`here <esmvalcore:interface_esmvalcore_diagnostic>` and
+the description of the :ref:`outputdata` may also help to understand this.
+
 If a diagnostic script creates plots, it should save the data used to create
-the a plot also to a NetCDF file (preferably following the CF-Conventions).
-Ideally there will be one NetCDF file for each plot the diagnostic script creates.
-If the output data is prohibitively large, diagnostics authors can choose to implement
-a ``write_netcdf: false`` diagnostic script option, so writing the NetCDF files
-can be disabled from the recipe.
+those plots also to a NetCDF file.
+If at all possible, there will be one NetCDF file for each plot the diagnostic
+script creates.
+There are several reasons why it is useful to have the plotted data available
+in a NetCDF file:
+
+- for interactive visualization of the recipe on a website
+- for automated regression tests, e.g. checking that the numbers are still the
+  same with newer versions of libraries
+
+If the output data is prohibitively large, diagnostics authors can choose to
+implement a ``write_netcdf: false`` diagnostic script option, so writing the
+NetCDF files can be disabled from the recipe.
+
+When doing a scientific review, please check that the figures and data look as
+expected from the literature and that appropriate references have been added.
 
 .. _recording-provenance:
 
 Recording provenance
 ====================
+
 When ESMValCore (the ``esmvaltool`` command) runs a recipe,
 it will first find all data and run the default preprocessor steps plus any
 additional preprocessing steps defined in the recipe. Next it will run the diagnostic script defined in the recipe
 and finally it will store provenance information. Provenance information is stored in the
 `W3C PROV XML format <https://www.w3.org/TR/prov-xml/>`_
-and also plotted in an SVG file for human inspection. In addition to provenance information, a caption is also added
-to the plots.
+and provided that the provenance tree is small, also plotted in an SVG file for
+human inspection.
+In addition to provenance information, a caption is also added to the plots.
 When contributing a diagnostic, please make sure it records the provenance,
 and that no warnings related to provenance are generated when running the recipe.
+To allow the ESMValCore to keep track of provenance (e.g. which input files
+were used to create what plots by the diagnostic script), it needs the
+:ref:`esmvalcore:interface_diagnostic_esmvalcore`.
 
 Provenance items provided by the recipe
 ---------------------------------------

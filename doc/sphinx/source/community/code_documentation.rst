@@ -80,23 +80,24 @@ All pull requests
 - 🛠 Code is written according to the :ref:`code quality guidelines <code_quality>`
 - 🛠 Documentation_ is available
 - 🛠 Tests_ run successfully
-- 🛠 New dependencies are :ref:`added or removed correctly <dependencies>`
 - 🛠 The :ref:`list of authors <authors>` is up to date
+- 🛠 New dependencies are :ref:`added or removed correctly <dependencies>`
+- 🛠 The :ref:`checks shown below the pull request <pull_request_checks>` are successful
 
 New or updated recipe and/or diagnostic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See :ref:`new-diagnostic`
+See :ref:`new-diagnostic` for detailed instructions.
 
 - 🧪 :ref:`Recipe runs successfully <testing_recipes>`
 - 🧪 :ref:`recipe_documentation` is available
-- 🧪 Figure(s) and data look as expected from literature
+- 🧪 :ref:`Figure(s) and data <diagnostic_output>` look as expected from literature
 - 🛠 :ref:`Provenance information <recording-provenance>` has been added
 
 New or updated data reformatting script
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See :ref:`new dataset <new-dataset>`
+See :ref:`new dataset <new-dataset>` for detailed instructions.
 
 - 🛠 :ref:`dataset-documentation` is available
 - 🛠 The dataset has been :ref:`added to the CMOR check recipe <dataset-test>`
@@ -104,8 +105,8 @@ See :ref:`new dataset <new-dataset>`
 
 .. _descriptive_pr_title:
 
-Use a descriptive title for your pull request
----------------------------------------------
+Descriptive pull request title
+------------------------------
 
 The title of a pull request should clearly describe what the pull request changes.
 If you need more text to describe what the pull request does, please add it in
@@ -394,6 +395,25 @@ When reviewing a pull request, always check that all test jobs on CircleCI_ were
 successful.
 Successful test jobs have a green ✓ in front, a ❌ means the test job failed.
 
+.. _authors:
+
+List of authors
+---------------
+
+If you make a contribution to ESMValTool and you would like to be listed as an
+author (e.g. on `Zenodo <https://zenodo.org/record/4562215>`__), please add your
+name to the list of authors in ``CITATION.cff`` and generate the entry for the
+``.zenodo.json`` file by running the command
+
+::
+
+   pip install cffconvert
+   cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
+
+Note that authors of recipes and/or diagnostics also need to be added to the file
+`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`__,
+see :ref:`recording-provenance` for more information.
+
 .. _dependencies:
 
 Adding or removing dependencies
@@ -444,25 +464,37 @@ requests.
 When reviewing a pull request where dependencies are added or removed, always
 check that the changes have been applied in all relevant files.
 
-.. _authors:
+.. _pull_request_checks:
 
-List of authors
----------------
+Pull request checks
+-------------------
 
-If you make a contribution to ESMValTool and you would like to be listed as an
-author (e.g. on `Zenodo <https://zenodo.org/record/4562215>`__), please add your
-name to the list of authors in ``CITATION.cff`` and generate the entry for the
-``.zenodo.json`` file by running the command
+To check that a pull request is up to standard, several automatic checks are
+run when you make a pull request.
+Read more about it in the Tests_ and Documentation_ sections.
+Successful checks have a green ✓ in front, a ❌ means the check failed.
 
-::
+If you need help with the checks, please ask the technical reviewer of your pull
+request for help.
+Ask `@ESMValGroup/tech-reviewers`_ if you do not have a technical reviewer yet.
 
-   pip install cffconvert
-   cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json
+If the checks are broken because of something unrelated to the current
+pull request, please check if there is an open issue that reports the problem
+and create one if there is no issue yet.
+You can attract the attention of the `@ESMValGroup/esmvaltool-coreteam`_ by
+mentioning them in the issue if it looks like no-one is working on solving the
+problem yet.
+The issue needs to be fixed in a separate pull request first.
+After that has been merged in the ``master`` branch and all checks are green
+again on the ``master`` branch, merge it into your own branch to get the tests
+to pass.
 
-Note that authors of recipes and/or diagnostics also need to be added to the file
-`esmvaltool/config-references.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/config-references.yml>`__,
-see :ref:`recording-provenance` for more information.
+When reviewing a pull request, always make sure that all checks were successful.
+If the Codacy check keeps failing, please run ``prospector`` locally and try to
+address all issues, see the section on code_quality_ for more information.
+Never merge a pull request with failing CircleCI or readthedocs checks.
 
+.. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam
 .. _`@ESMValGroup/esmvaltool-developmentteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-developmentteam
 .. _`@ESMValGroup/tech-reviewers`: https://github.com/orgs/ESMValGroup/teams/tech-reviewers
 .. _`@ESMValGroup/science-reviewers`: https://github.com/orgs/ESMValGroup/teams/science-reviewers
