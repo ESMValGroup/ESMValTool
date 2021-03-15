@@ -40,7 +40,7 @@ All hydrological recipes require a shapefile as an input to select forcing data.
 
   *Required settings for script:*
 
-    * ``entry_point``: Define which plot function to run. Choices:
+    * ``plot_type``: Define which plot function to run. Choices:
 
       * ``timeseries``: Plot a timeseries for the variable data over the defined period
       * ``climatology``: Plot the climate statistics over the defined period

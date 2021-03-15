@@ -67,7 +67,7 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
-        entry_point: timeseries
+        plot_type: timeseries
         time_period: day
 
   total_precipitation:
@@ -80,7 +80,7 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
-        entry_point: timeseries
+        plot_type: timeseries
         time_period: month
 
   climatology:
@@ -100,4 +100,4 @@ diagnostics:
     scripts:
       plot:
         script: hydrology/hydro_forcing.py
-        entry_point: climatology
+        plot_type: climatology

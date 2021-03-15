@@ -46,15 +46,8 @@ def log_provenance(caption: str, filename: str, cfg: dict, ancestors: list):
     logger.info('Output stored as %s', filename)
 
 
-def plot_data(*,
-              cfg: dict,
-              datasets: dict,
-              xaxis: str,
-              yaxis: str,
-              xlabel: str,
-              ylabel: str,
-              caption: str,
-              name: str,
+def plot_data(*, cfg: dict, datasets: dict, xaxis: str, yaxis: str,
+              xlabel: str, ylabel: str, caption: str, name: str,
               ancestors: list):
     """Plot data."""
     figure, _ = plt.subplots(dpi=300)
@@ -174,7 +167,7 @@ def read_input_data(metadata: list, dim: str = 'dataset'):
 
 def main(cfg):
     """Load and plot hydro forcing data."""
-    entry_point = cfg['entry_point']
+    plot_type = cfg['plot_type']
 
     input_data = cfg['input_data'].values()
     variable_groups = group_metadata(input_data, 'variable_group')
@@ -186,9 +179,9 @@ def main(cfg):
 
     for metadata in variable_groups.values():
         try:
-            plot_func = plot_func_mapping[entry_point]
+            plot_func = plot_func_mapping[plot_type]
         except KeyError as err:
-            raise ValueError(f'Unknown entry_point: {entry_point!r}') from err
+            raise ValueError(f'Unknown plot_type: {plot_type!r}') from err
 
         plot_func(cfg, metadata=metadata)
 
