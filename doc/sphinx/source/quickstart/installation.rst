@@ -90,15 +90,13 @@ Once you have installed the above prerequisites, you can install ESMValTool by r
 
 .. code-block:: bash
 
-    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool python=3.9.2
+    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool python=3.9
 
 Here ``conda`` is the executable calling the Conda package manager to install
 ``esmvaltool`` and the ``-c`` flag specifies the Conda software channels in which the
 ``esmvaltool`` package and its dependencies can be found. The reason why we are also installing
-``python=3.9.2`` is that the environment ``esmvaltool`` is initially created with a very old
-``python=2.7`` and this will either stop or make the environment solving process extremely slow
-(at the time of this writing Python's latest stable version is 3.9.2, update to the latest stable version
-in the future).
+``python=3.9`` is that the environment ``esmvaltool`` is initially created with a very old
+``python=2.7`` and this will either stop or make the environment solving process extremely slow.
 
 This will create a new
 `Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
