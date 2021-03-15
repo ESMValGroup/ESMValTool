@@ -8,16 +8,14 @@ Import and use these basic classes by e.g.::
     datasets = e.Datasets(cfg)
     variables = e.Variables(cfg)
 
-Notes
------
-An example diagnostic using these classes is given in
-`diag_scripts/examples/diagnostic_object_oriented.py`.
-
 """
 
 
 import collections
 import logging
+import warnings
+
+from esmvaltool import ESMValToolDeprecationWarning
 
 from . import names as n
 
@@ -29,14 +27,40 @@ DEFAULT_INFO = 'not_specified'
 
 
 # Variable class containing all relevant information
-Variable = collections.namedtuple('Variable', [n.SHORT_NAME,
-                                               n.STANDARD_NAME,
-                                               n.LONG_NAME,
-                                               n.UNITS])
+BaseVariable = collections.namedtuple('Variable', [n.SHORT_NAME,
+                                                   n.STANDARD_NAME,
+                                                   n.LONG_NAME,
+                                                   n.UNITS])
+
+
+class Variable(BaseVariable):
+    """Variable class containing all relevant information.
+
+    Note
+    ----
+    This class has been deprecated in version 2.2 and will be removed two minor
+    releases later in version 2.4.
+
+    """
+
+    def __new__(cls, short_name, standard_name, long_name, units):
+        """Deprecate this class."""
+        warnings.warn(
+            "'Variable' has been deprecated in version 2.2 and will be "
+            "removed two minor releases later in version 2.4",
+            ESMValToolDeprecationWarning)
+        self = super().__new__(cls, short_name, standard_name, long_name,
+                               units)
+        return self
 
 
 class Variables(object):
     """Class to easily access a recipe's variables in a diagnostic.
+
+    Note
+    ----
+    This class has been deprecated in version 2.2 and will be removed two minor
+    releases later in version 2.4.
 
     Examples
     --------
@@ -73,6 +97,10 @@ class Variables(object):
             `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
+        warnings.warn(
+            "'Variables' has been deprecated in version 2.2 and will be "
+            "removed two minor releases later in version 2.4",
+            ESMValToolDeprecationWarning)
         self._dict = {}
 
         # Add variables from cfg file
@@ -325,6 +353,11 @@ class Variables(object):
 class Datasets(object):
     """Class to easily access a recipe's datasets in a diagnostic script.
 
+    Note
+    ----
+    This class has been deprecated in version 2.2 and will be removed two minor
+    releases later in version 2.4.
+
     Examples
     --------
     Get all variables of a recipe configuration `cfg`::
@@ -363,6 +396,10 @@ class Datasets(object):
             If recipe configuration dictionary is not valid.
 
         """
+        warnings.warn(
+            "'Datasets' has been deprecated in version 2.2 and will be "
+            "removed two minor releases later in version 2.4",
+            ESMValToolDeprecationWarning)
         self._iter_counter = 0
         self._paths = []
         self._data = {}

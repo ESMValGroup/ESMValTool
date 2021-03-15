@@ -13,12 +13,12 @@ jobs:
     runs-on: "ubuntu-latest"  # use only Linux for conda build
     strategy:
       matrix:
-        python-version: [3.8]  # use only the latest for conda build
+        python-version: [3.9]  # use only the latest for conda build
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
-      - uses: goanpeca/setup-miniconda@v1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"

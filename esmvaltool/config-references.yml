@@ -274,6 +274,10 @@ authors:
     name: Lledo, Llorenc
     institute: BSC, Spain
     orcid:
+  loosveldt-tomas_saskia:
+    name: Loosveldt-Tomas, Saskia
+    institute: BSC, Spain
+    orcid:
   lorenz_ruth:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
@@ -318,6 +322,10 @@ authors:
     name: Mello, Felipe
     institute: INPE, Brazil
     orcid: https://orcid.org/0000-0002-8832-2869
+  moreno-chamarro_eduardo:
+    name: Moreno-Chamarro, Eduardo
+    institute: BSC, Spain
+    orcid:
   dalvi_mohit:
     name: Dalvi, Mohit
     institute: MetOffice, UK
@@ -369,6 +377,10 @@ authors:
     name: Rio, Catherine
     institute: IPSL, France
     orcid: https://orcid.org/0000-0002-6590-7733
+  roberts_charles:
+    name: Roberts, Charles
+    institute: University of Reading, UK
+    orcid: https://orcid.org/0000-0002-1147-8961
   roehrig_romain:
     name: Roehrig, Romain
     institute: MeteoFr, France
@@ -379,10 +391,10 @@ authors:
     name: Russell, Joellen
     institute: Univ. of Arizona, USA
     orcid:
-  senftleben_daniel:
-    name: Senftleben, Daniel
-    institute: DLR, Germany
-    orcid: https://orcid.org/0000-0002-3903-3841
+  sanchez-gomez_emilia:
+    name: Sanchez, Emilia
+    institute: CERFACS, France
+    orcid:
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -588,7 +600,7 @@ authors:
   senftleben_daniel:
     name: Senftleben, Daniel
     institute: DLR, Germany
-    orcid:
+    orcid: https://orcid.org/0000-0002-3903-3841
   stevens_mark:
     name: Stevens, Mark
     institute: NCAR, US
@@ -633,8 +645,9 @@ authors:
 #  - rename the file to the tag used in the recipe or diagnostic.
 #  - add the file to the folder esmvaltool/references.
 
+
 projects:
-  4c: EU 2020 project 4C
+  4c: EU H2020 project 4C
   applicate: EU Horizon 2020 Advanced prediction in polar regions and beyond
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
@@ -647,12 +660,16 @@ projects:
   esmval: DLR project ESMVal
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   ewatercycle: eWaterCycle project
+  ipcc_ar6: IPCC AR6 WG1 contributions
   primavera: EU H2020 project PRIMAVERA
   qa4ecv: QA4ECV
   russell_project: US Clivar, Ocean Carbon Biogeochemistry, ESGF, NOAA, NSF, NASA, US Antarctic program
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
   usmile: ERC Synergy Grant USMILE
+  isenes3: EU H2020 Infrastructure for the European Network for Earth System Modelling - Phase 3
+  eucp: EU H2020 European Climate prediction
+
 
 realms:
   aerosol: aerosol

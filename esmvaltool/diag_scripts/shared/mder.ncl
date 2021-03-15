@@ -282,7 +282,7 @@ begin
   ; Check diag_script_info@wdiag
   if (isatt(diag_script_info, "wdiag") .and. \
       .not. any(diag_script_info@wdiag .eq. "")) then
-    if (config_user_info@write_netcdf) then
+    if (diag_script_info@write_netcdf) then
       if (.not. isatt(diag_script_info, "ref_dataset")) then
         error_msg("w", scriptname, funcname, "Skipping MDER output: " + \
                   "attribute 'ref_dataset' not given in recipe")

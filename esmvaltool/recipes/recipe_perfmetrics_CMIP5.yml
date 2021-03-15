@@ -592,7 +592,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: ESACCI-SST, project: OBS, type: sat,
-         version: L4-GHRSST-SSTdepth-OSTIA-GLOB, tier: 2}
+         version: 2.2, tier: 2}
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
