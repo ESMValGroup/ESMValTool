@@ -9,6 +9,14 @@ Overview
 The recipe recipe_bock20jgr.yml generates figures to quantify the progress across
 different CMIP phases.
 
+.. note::
+   The current recipe uses a horizontal 5x5 grid for figure 10, while the
+   original plot in the paper shows a 2x2 grid. This is solely done for
+   computational reasons (running the recipe with a 2x2 grid for figure 10
+   takes considerably more time than running it with a 5x5 grid) and can be
+   easily changed in the preprocessor section of the recipe if necessary.
+
+
 
 Available recipes and diagnostics
 ---------------------------------
@@ -17,13 +25,17 @@ Recipes are stored in recipes/
 
     * recipe_bock20jgr.yml
 
-Diagnostics are stored in diag_scripts/bock20jgr/
+Diagnostics are stored in diag_scripts/
 
-    * tsline.ncl: timeseries of global mean surface temperature anomalies
-    * tsline_collect.ncl: collect different timeseries from tsline.ncl to 
-      compare different models ensembles
-    * model_bias.ncl: global maps of the multi-model mean and the multi-model
-      mean bias
+    * bock20jgr/tsline.ncl: timeseries of global mean surface temperature
+      anomalies
+    * bock20jgr/tsline_collect.ncl: collect different timeseries from
+      tsline.ncl to compare different models ensembles
+    * bock20jgr/model_bias.ncl: global maps of the multi-model mean and the
+      multi-model mean bias
+    * climate_metrics/ecs.py
+    * climate_metrics/create_barplot.py
+    * climate_metrics/feedback_parameters.py
 
 
 User settings in recipe
@@ -105,7 +117,7 @@ User settings in recipe
 
    * projection: map projection, e.g., Mollweide, Mercator
    * timemean: time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
-     "annualclim" (annual mean) 
+     "annualclim" (annual mean)
 
    * Required settings (variables)*
 
@@ -121,12 +133,43 @@ User settings in recipe
    * variable "pr-mmday": diag_scripts/shared/plots/rgb/ipcc-ar6_precipitation_seq.rgb
      diag_scripts/shared/plot/rgb/ipcc-ar6_precipitation_div.rgb
 
+#. Script ecs.py
+
+   See :ref:`here<ecs.py>`.
+
+#. Script create_barplot.py
+
+   See :ref:`here<create_barplot.py>`.
+
+#. Script feedback_parameters.py
+
+   *Required settings (scripts)*
+
+   none
+
+   *Optional settings (scripts)*
+
+   * calculate_mmm: *bool* (default: ``True``). Calculate multi-model means.
+   * only_consider_mmm: *bool* (default: ``False``). Only consider multi-model
+     mean dataset. This automatically sets ``calculate_mmm`` to ``True``. For
+     large multi-dimensional datasets, this might significantly reduce the
+     computation time if only the multi-model mean dataset is relevant.
+   * output_attributes: *dict*. Write additional attributes to netcdf files.
+   * seaborn_settings: *dict*. Options for :func:`seaborn.set` (affects all
+     plots).
+
 
 Variables
 ---------
 
 * tas (atmos, monthly mean, longitude latitude time)
 * pr (atmos, monthly mean, longitude latitude time)
+* rlut (atmos, monthly, longitude latitude time)
+* rsdt (atmos, monthly, longitude latitude time)
+* rsut (atmos, monthly, longitude latitude time)
+* rtmt (atmos, monthly, longitude latitude time)
+* rlutcs (atmos, monthly, longitude latitude time)
+* rsutcs (atmos, monthly, longitude latitude time)
 
 
 Observations and reformat scripts
@@ -146,9 +189,9 @@ Observations and reformat scripts
 References
 ----------
 
-* Bock, L., Lauer, A., Schlund, M., Barreiro, M., Bellouin, N., Jones, C., 
-  Predoi, V., Meehl, G., Roberts, M., and Eyring, V.: Quantifying progress 
-  across different CMIP phases with the ESMValTool, Journal of Geophysical 
+* Bock, L., Lauer, A., Schlund, M., Barreiro, M., Bellouin, N., Jones, C.,
+  Predoi, V., Meehl, G., Roberts, M., and Eyring, V.: Quantifying progress
+  across different CMIP phases with the ESMValTool, Journal of Geophysical
   Research: Atmospheres, 125, e2019JD032321. https://doi.org/10.1029/2019JD032321
 
 * Copernicus Climate Change Service (C3S), 2017: ERA5: Fifth generation of
@@ -180,7 +223,7 @@ Example plots
    :align:   center
 
    Observed and simulated time series of the anomalies in annual and global mean
-   surface temperature. All anomalies are differences from the 1850-1900 time 
+   surface temperature. All anomalies are differences from the 1850-1900 time
    mean of each individual time series.
 
 .. _fig_bock20jgr_2:
