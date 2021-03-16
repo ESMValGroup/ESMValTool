@@ -127,10 +127,10 @@ def plot_scatter(tidy_df, ancestors, cfg):
     log_provenance(filename, ancestors, caption, cfg)
 
 
-def plot_table(tidy_df, ancestors, cfg):
+def plot_table(dataframe, ancestors, cfg):
     """Render pandas table as a matplotlib figure."""
     fig, axes = plt.subplots()
-    pd.plotting.table(axes, tidy_df.reset_index().round(2))
+    pd.plotting.table(axes, dataframe.reset_index().round(2))
     axes.set_axis_off()
 
     filename = get_plot_filename('table', cfg)
@@ -140,12 +140,12 @@ def plot_table(tidy_df, ancestors, cfg):
     log_provenance(filename, ancestors, caption, cfg)
 
 
-def plot_htmltable(tidy_df, ancestors, cfg):
+def plot_htmltable(dataframe, ancestors, cfg):
     """Render pandas table as html output.
 
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
     """
-    styled_table = (tidy_df.unstack('variable').style.background_gradient(
+    styled_table = (dataframe.unstack('variable').style.background_gradient(
         cmap='RdYlGn', low=.2, high=1, axis=0).format("{:.2e}",
                                                       na_rep="-").render())
     filename = get_diagnostic_filename('bias_vs_change', cfg, extension='html')
