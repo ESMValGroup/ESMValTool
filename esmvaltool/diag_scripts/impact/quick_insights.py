@@ -145,9 +145,29 @@ def plot_htmltable(dataframe, ancestors, cfg):
 
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
     """
-    styled_table = (dataframe.unstack('variable').style.background_gradient(
-        cmap='RdYlGn', low=.2, high=1, axis=0).format("{:.2e}",
-                                                      na_rep="-").render())
+    styles = [
+        {
+            "selector": ".index_name",
+            "props": [("text-align", "right")]
+        },
+        {
+            "selector": ".row_heading",
+            "props": [("text-align", "right")]
+        },
+        {
+            "selector": "td",
+            "props": [("padding", "3px 25px")]
+        },
+    ]
+
+    styled_table = dataframe\
+        .unstack('variable')\
+        .style\
+        .set_table_styles(styles)\
+        .background_gradient(cmap='RdYlGn', low=0, high=1, axis=0)\
+        .format("{:.2e}", na_rep="-")\
+        .render()
+
     filename = get_diagnostic_filename('bias_vs_change', cfg, extension='html')
     with open(filename, 'w') as htmloutput:
         htmloutput.write(styled_table)
@@ -157,7 +177,7 @@ def plot_htmltable(dataframe, ancestors, cfg):
 
 
 def main(cfg):
-   """Calculate, visualize and save the bias and change for each model."""
+    """Calculate, visualize and save the bias and change for each model."""
     metadata = cfg['input_data'].values()
     grouped_metadata = group_metadata(metadata, 'variable_group')
 
