@@ -48,6 +48,7 @@ REQUIREMENTS = {
         'pyproj>=2.1'
         'pyyaml',
         'rasterio',  # replaces pynio
+        'ruamel.yaml',
         'scikit-image',
         'scikit-learn',
         'scipy',
@@ -226,7 +227,9 @@ setup(
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
-            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
+            'recipe_filler = '
+            'esmvaltool.utils.recipe_filler:run'
         ],
         'esmvaltool_commands': [
             'colortables = '
