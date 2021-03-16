@@ -1,0 +1,27 @@
+---
+# Filename (will be extended by version)
+filename: 'full_data_monthly_{version}.nc.gz'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: GPCC
+  version:
+    v1: 'v2018_25'
+    v2: 'v2018_10'
+    v3: 'v2018_05'
+    v4: 'v2018_025'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://opendata.dwd.de/climate_environment/GPCC/html/fulldata-monthly_v2018_doi_download.html'
+  reference: 'gpcc'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  pr:
+    mip: Amon
+    raw: precip
+    raw_units: kg m-2 month-1
+    calendar: gregorian
+    constraint: numgauge

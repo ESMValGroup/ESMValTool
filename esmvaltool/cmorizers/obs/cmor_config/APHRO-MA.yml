@@ -1,0 +1,42 @@
+---
+# Filename (will be extended by version)
+filename: 'APHRO_MA{raw_file_var}_{version}.*.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: APHRO-MA
+  tier: 3
+  modeling_realm: ground
+  project_id: OBS
+  source:
+    http://aphrodite.st.hirosaki-u.ac.jp/download/
+  reference: ''
+  version: ''
+
+# Variables to cmorize
+variables:
+  pr:
+    mip: day
+    raw: precip
+    raw_units: kg m-2 day-1
+    calendar: standard
+    add_mon: true
+    raw_file_var: ''
+    version:
+      v1: '025deg_V1101'
+      v2: '050deg_V1101'
+      v3: '025deg_V1101_EXR1'
+      v4: '050deg_V1101_EXR1'
+    reference: 'aphro-ma-v1101'
+  tas:
+    mip: day
+    raw: tave
+    raw_fallback: ta
+    raw_units: degC
+    calendar: standard
+    add_mon: true
+    raw_file_var: '_TAVE'
+    version:
+      v1: '025deg_V1808'
+      v2: '050deg_V1808'
+    reference: 'aphro-ma-v1808'

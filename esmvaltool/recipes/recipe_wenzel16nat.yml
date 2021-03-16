@@ -1,0 +1,178 @@
+# ESMValTool
+# recipe_wenzel16nat.yml
+---
+documentation:
+  description: |
+    This recipe reproduces selected figures of Wenzel et al. (2016).
+
+  authors:
+    - wenzel_sabrina
+
+  references:
+    - wenzel16nat
+
+  projects:
+    - crescendo
+
+preprocessors:
+
+  highlat_gpp:
+    custom_order: true
+    weighting_landsea_fraction:
+      area_type: land
+    extract_region: &extract_region
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: 60.
+      end_latitude: 90.
+    area_statistics:
+      operator: sum
+    annual_statistics:
+      operator: mean
+
+  highlat_co2:
+    custom_order: true
+    extract_point: &extract_point
+      latitude: 71.322998046875
+      longitude: 203.3885955810546875
+      scheme: nearest
+    annual_statistics:
+      operator: mean
+
+  highlat_amp:
+    custom_order: true
+    extract_point: *extract_point
+    amplitude:
+      coords: year
+
+  BRW_co2:
+    custom_order: true
+    extract_point: *extract_point
+    annual_statistics:
+      operator: mean
+
+  BRW_amp:
+    custom_order: true
+    extract_point: *extract_point
+    amplitude:
+      coords: year
+
+diagnostics:
+
+  ### Wenzel et al. 2016:  Analysis for Pt. Barrow, Alaska ###
+
+  diag_beta_Fig2:
+    description: |
+      Fig. 2: Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC
+      simulations.
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      gpp:
+        preprocessor: highlat_gpp
+        project: CMIP5
+        mip: Lmon
+        exp: esmFixClim1
+        ensemble: r1i1p1
+        start_year: 1860
+        end_year: 1989
+    additional_datasets:
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC, start_year: 11, end_year: 140}
+      - {dataset: GFDL-ESM2M, start_year: 11, end_year: 140}
+      # - {dataset: HadGEM2-ES}
+      - {dataset: MIROC-ESM, start_year: 11, end_year: 140}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: NorESM1-ME, start_year: 11, end_year: 140}
+    scripts:
+      carbon_beta:
+        script: carbon_ec/carbon_beta.ncl
+        cl_mean: false
+        cl_output: true
+        bc_xmax_year: 1920
+        bc_xmin_year: 1860
+        styleset: CMIP5
+
+  diag_co2cycle_Fig1and3:
+    description: |
+      Fig. 1: Comparison of simulated annual mean GPP at 2xCO2 in the 1%BGC
+      simulations and Fig. 3: EC on the relative increase of large-scale GPP
+      for 2xCO2.
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      co2s:
+        short_name: co2s
+        preprocessor: highlat_co2
+        derive: true
+        project: CMIP5
+        mip: Amon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1850
+        end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
+          # - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+      co2s_obs:
+        short_name: co2s
+        preprocessor: BRW_co2
+        project: CMIP5
+        mip: Amon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1974
+        end_year: 2014
+        reference_dataset: ESRL
+        additional_datasets:
+          - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
+             start_year: 1973, end_year: 2014}
+      co2s_amp:
+        short_name: co2s
+        preprocessor: highlat_amp
+        derive: true
+        project: CMIP5
+        mip: Amon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1850
+        end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: CESM1-BGC}
+          - {dataset: GFDL-ESM2M, start_year: 1861, end_year: 2005}
+          # - {dataset: HadGEM2-ES, start_year: 1860, end_year: 2005}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
+      co2s_amp_obs:
+        short_name: co2s
+        preprocessor: BRW_amp
+        project: CMIP5
+        mip: Amon
+        exp: esmHistorical
+        ensemble: r1i1p1
+        start_year: 1974
+        end_year: 2014
+        reference_dataset: ESRL
+        additional_datasets:
+          - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
+             start_year: 1973, end_year: 2014}
+    scripts:
+      carbon_cycle:
+        script: carbon_ec/carbon_co2_cycle.ncl
+        ancestors: [diag_beta_Fig2/carbon_beta, co2s, co2s_obs, co2s_amp,
+                    co2s_amp_obs]
+        bc_xmax_year: 1920
+        bc_xmin_year: 1860
+        styleset: CMIP5
+        nc_infile: ../../diag_beta_Fig2/carbon_beta/

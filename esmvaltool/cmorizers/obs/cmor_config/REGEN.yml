@@ -1,0 +1,23 @@
+---
+# Filename (will be extended by version)
+filename: 'REGEN_AllStns_{version}_*.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: REGEN
+  version: 'V1-2019'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://researchdata.ands.org.au/rainfall-estimates-gridded-v1-2019/1408744'
+  reference: 'regen'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  pr:
+    mip: day
+    raw: p
+    raw_units: kg m-2 day-1
+    calendar: gregorian
+    add_mon: True

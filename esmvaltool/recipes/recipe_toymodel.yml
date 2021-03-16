@@ -9,7 +9,6 @@ documentation:
     distributions prescribing a linear trend. The toymodel allows to
     generate an aritifical forecast based on obsevations provided as input.
 
-
   authors:
     - bellprat_omar
 
@@ -17,7 +16,7 @@ documentation:
     - c3s-magic
 
   references:
-    - weigel
+    - weigel08qjrms
 
 
 datasets:

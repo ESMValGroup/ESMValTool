@@ -117,10 +117,14 @@ def merge_data(in_dir, out_dir, raw_info, bins):
 
         newda = xr.concat((newda, da), dim='time')
 
-    # save to file
+    # create dataset
     ds = newda.to_dataset(name=var)
     for x, y in dsmeta.items():
         ds.attrs[x] = y
+    ds['lon'].attrs = {'standard_name': 'longitude'}
+    ds['lat'].attrs = {'standard_name': 'latitude'}
+
+    # encoding
     thekeys = {
         'lat': {
             '_FillValue': False
@@ -135,6 +139,8 @@ def merge_data(in_dir, out_dir, raw_info, bins):
             '_FillValue': 1.e20
         }
     }
+
+    # save to file
     datafile = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
     ds.to_netcdf(datafile, encoding=thekeys, unlimited_dims='time')
 

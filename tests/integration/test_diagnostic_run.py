@@ -105,7 +105,7 @@ SCRIPTS = {
 }
 
 
-@pytest.mark.install
+@pytest.mark.installation
 @pytest.mark.parametrize('script_file, script', SCRIPTS.items())
 def test_diagnostic_run(tmp_path, script_file, script):
 
@@ -134,7 +134,8 @@ def test_diagnostic_run(tmp_path, script_file, script):
     config_user_file = write_config_user_file(tmp_path)
     with arguments(
             'esmvaltool',
-            '-c',
+            'run',
+            '--config_file',
             config_user_file,
             str(recipe_file),
     ):

@@ -22,8 +22,7 @@ read_external_file : str, optional
     Read TCR from external file. The path can be given relative to this
     diagnostic script or as absolute path.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 
@@ -41,8 +40,15 @@ import yaml
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    group_metadata, io, run_diagnostic, select_metadata, variables_available)
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    run_diagnostic,
+    select_metadata,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -93,7 +99,7 @@ def _get_anomaly_cube(onepct_cube, pi_cube):
 
 def _plot(cfg, cube, dataset_name, tcr):
     """Create scatterplot of temperature anomaly vs. time."""
-    if not cfg['write_plots'] or not cfg.get('plot', True):
+    if not cfg.get('plot', True):
         return (None, None)
     logger.debug("Plotting temperature anomaly vs. time for '%s'",
                  dataset_name)

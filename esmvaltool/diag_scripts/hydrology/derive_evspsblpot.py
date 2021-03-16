@@ -6,8 +6,8 @@ Grass Field Close to FAO Reference, Suitable for Remote Sensing Application,
 American Meteorological Society, 17, 1373-1382, DOI: 10.1175/JHM-D-15-0006.1,
 2016.
 """
-import iris
 import numpy as np
+import iris
 
 
 def tetens_derivative(tas):
@@ -23,22 +23,17 @@ def tetens_derivative(tas):
     tas.convert_units('degC')
 
     # Saturated vapour pressure at 273 Kelvin
-    e0_const = iris.coords.AuxCoord(6.112,
+    e0_const = iris.coords.AuxCoord(np.float32(6.112),
                                     long_name='Saturated vapour pressure',
                                     units='hPa')
-    emp_a = 17.67  # empirical constant a
+    emp_a = np.float32(17.67)  # empirical constant a
 
     # Empirical constant b in Tetens formula
-    emp_b = iris.coords.AuxCoord(243.5,
+    emp_b = iris.coords.AuxCoord(np.float32(243.5),
                                  long_name='Empirical constant b',
                                  units='degC')
-    exponent = iris.analysis.maths.exp(emp_a * tas / (emp_b + tas))
-    # return emp_a * emp_b * e0 * exponent / (emp_b + tas)**2
-    # iris.exceptions.NotYetImplementedError: coord * coord (emp_b * e0)
-    # workaround:
-    tmp1 = emp_a * emp_b
-    tmp2 = e0_const * exponent / (emp_b + tas)**2
-    return tmp1 * tmp2
+    exponent = iris.analysis.maths.exp(emp_a * tas / (tas + emp_b))
+    return (exponent * e0_const / (tas + emp_b)**2) * (emp_a * emp_b)
 
 
 def get_constants(psl):
@@ -54,39 +49,41 @@ def get_constants(psl):
 
     # Definition of constants
     # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-    rv_const = iris.coords.AuxCoord(461.51,
+    rv_const = iris.coords.AuxCoord(np.float32(461.51),
                                     long_name='Gas constant water vapour',
                                     units='J K-1 kg-1')
     # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-    rd_const = iris.coords.AuxCoord(287.0,
+    rd_const = iris.coords.AuxCoord(np.float32(287.0),
                                     long_name='Gas constant dry air',
                                     units='J K-1 kg-1')
 
     # Latent heat of vaporization in J kg-1 (or J m-2 day-1)
     # source='Wallace and Hobbs 2006'
-    lambda_ = iris.coords.AuxCoord(2.5e6,
+    lambda_ = iris.coords.AuxCoord(np.float32(2.5e6),
                                    long_name='Latent heat of vaporization',
                                    units='J kg-1')
 
     # Specific heat of dry air constant pressure
     # source='Wallace and Hobbs 2006',
-    cp_const = iris.coords.AuxCoord(1004,
+    cp_const = iris.coords.AuxCoord(np.float32(1004),
                                     long_name='Specific heat of dry air',
                                     units='J K-1 kg-1')
 
     # source='De Bruin (2016), section 4a',
-    beta = iris.coords.AuxCoord(20,
+    beta = iris.coords.AuxCoord(np.float32(20),
                                 long_name='Correction Constant',
                                 units='W m-2')
 
     # source = 'De Bruin (2016), section 4a',
-    cs_const = iris.coords.AuxCoord(110,
+    cs_const = iris.coords.AuxCoord(np.float32(110),
                                     long_name='Empirical constant',
                                     units='W m-2')
 
-    # gamma = rv/rd * cp*msl/lambda_
+    # source = De Bruin (10.1175/JHM-D-15-0006.1), page 1376
+    # gamma = (rv/rd) * (cp*msl/lambda_)
     # iris.exceptions.NotYetImplementedError: coord / coord
-    gamma = rv_const.points[0] / rd_const.points[0] * cp_const * psl / lambda_
+    rv_rd_const = rv_const.points[0] / rd_const.points[0]
+    gamma = rv_rd_const * (psl * cp_const / lambda_)
     return gamma, cs_const, beta, lambda_
 
 
@@ -102,13 +99,14 @@ def debruin_pet(psl, rsds, rsdt, tas):
     # the definition of the radiation components according to the paper:
     kdown = rsds
     kdown_ext = rsdt
+    # Equation 5
+    rad_factor = np.float32(1 - 0.23)
+    net_radiation = (rad_factor * kdown) - (kdown * cs_const / kdown_ext)
     # Equation 6
-    rad_term = (1 - 0.23) * kdown - cs_const * kdown / kdown_ext
     # the unit is W m-2
-    ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
+    ref_evap = ((delta_svp / (delta_svp + gamma)) * net_radiation) + beta
 
     pet = ref_evap / lambda_
-    pet.data = pet.core_data().astype(np.float32)
     pet.var_name = 'evspsblpot'
     pet.standard_name = 'water_potential_evaporation_flux'
     pet.long_name = 'Potential Evapotranspiration'

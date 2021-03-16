@@ -1,0 +1,94 @@
+# ESMValTool
+# recipe_lisflood.yml
+---
+documentation:
+  description: |
+    Recipe pre-process files for use in the LISFLOOD hydrological model.
+
+  authors:
+    - verhoeven_stefan
+    - kalverla_peter
+    - andela_bouwe
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+
+preprocessors:
+  general: &general
+    custom_order: true
+    extract_region:  # bounding box values depend on catchment
+      start_longitude: 0
+      end_longitude: 9
+      start_latitude: 45
+      end_latitude: 54
+    regrid:
+      target_grid: 0.1x0.1  # We're using the lisflood01degree version
+      lon_offset: true
+      lat_offset: true
+      scheme: linear
+    extract_shape:
+      # Perhaps a single shapefile needs to be created covering multiple basins
+      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp  # (config-user, aux)
+      method: contains
+      crop: true  # set to false to keep the entire globe (memory intensive!)
+  daily_water:
+    <<: *general
+    convert_units:
+      units: kg m-2 d-1
+  daily_temperature:
+    <<: *general
+    convert_units:
+      units: degC
+  daily_radiation:
+    <<: *general
+    convert_units:
+      units: J m-2 day-1
+  daily_windspeed:
+    <<: *general
+
+diagnostics:
+  diagnostic_daily:
+    description: LISFLOOD input preprocessor for ERA-Interim and ERA5 data
+    variables:
+      pr: &var_daily
+        mip: day
+        # if time length increases, regrid processor might fail due to memory error.
+        # two possible fixes are:
+        # running the recipe on a machine with enough memory
+        # providing a cube as a target_grid in the processor
+        start_year: 1990
+        end_year: 1990
+        preprocessor: daily_water
+      tas:
+        <<: *var_daily
+        preprocessor: daily_temperature
+      tasmax:
+        <<: *var_daily
+        preprocessor: daily_temperature
+      tasmin:
+        <<: *var_daily
+        preprocessor: daily_temperature
+      tdps:
+        <<: *var_daily
+        mip: Eday
+        preprocessor: daily_temperature
+      uas:
+        <<: *var_daily
+        preprocessor: daily_windspeed
+      vas:
+        <<: *var_daily
+        preprocessor: daily_windspeed
+      rsds:
+        <<: *var_daily
+        preprocessor: daily_radiation
+    scripts:
+      script:
+        script: hydrology/lisflood.py
+        catchment: Meuse

@@ -158,65 +158,68 @@ def calc_qbo_index(qbo):
     counterup = len(indiciesup)
     counterdown = len(indiciesdown)
 
+    # Did we start on an upwards or downwards cycle?
     if indiciesdown and indiciesup:
-        # Did we start on an upwards or downwards cycle?
         if indiciesdown[0] < indiciesup[0]:
             (kup, kdown) = (0, 1)
         else:
             (kup, kdown) = (1, 0)
-        # Translate upwards and downwards indices into U wind values
-        periodsmin = counterup - kup
-        periodsmax = counterdown - kdown
-        valsup = np.zeros(periodsmax)
-        valsdown = np.zeros(periodsmin)
-        for i in range(periodsmin):
-            valsdown[i] = np.amin(ufin[indiciesdown[i]:indiciesup[i + kup]])
-        for i in range(periodsmax):
-            valsup[i] = np.amax(ufin[indiciesup[i]:indiciesdown[i + kdown]])
-        # Calculate eastward QBO amplitude
-        counter = 0
-        totvals = 0
-        # valsup limit was initially hardcoded to +10.0
-        for i in range(periodsmax):
-            if valsup[i] > 0.:
-                totvals = totvals + valsup[i]
-                counter = counter + 1
-        if counter == 0:
-            ampl_east = 0.
-        else:
-            totvals = totvals / counter
-            ampl_east = totvals
-        # Calculate westward QBO amplitude
-        counter = 0
-        totvals = 0
-        for i in range(periodsmin):
-            # valdown limit was initially hardcoded to -20.0
-            if valsdown[i] < 0.:
-                totvals = totvals + valsdown[i]
-                counter = counter + 1
-        if counter == 0:
-            ampl_west = 0.
-        else:
-            totvals = totvals / counter
-            ampl_west = -totvals
-        # Calculate QBO period, set to zero if no full oscillations in data
-        period1 = 0.0
-        period2 = 0.0
-        if counterdown > 1:
-            period1 = (indiciesdown[counterdown - 1] - indiciesdown[0]) / (
-                counterdown - 1)
-        if counterup > 1:
-            period2 = \
-                (indiciesup[counterup - 1] - indiciesup[0]) / (counterup - 1)
-        # Pick larger oscillation period
-        if period1 < period2:
-            period = period2
-        else:
-            period = period1
     else:
-        period = 0.0
-        ampl_west = 0.0
-        ampl_east = 0.0
+        logger.warning('QBO metric can not be computed; no zero crossings!')
+        logger.warning(
+            "This means the model U(30hPa, around tropics) doesn't oscillate"
+            "between positive and negative"
+            "with a period<12 months, QBO can't be computed, set to 0."
+        )
+        (kup, kdown) = (0, 0)
+    # Translate upwards and downwards indices into U wind values
+    periodsmin = counterup - kup
+    periodsmax = counterdown - kdown
+    valsup = np.zeros(periodsmax)
+    valsdown = np.zeros(periodsmin)
+    for i in range(periodsmin):
+        valsdown[i] = np.amin(ufin[indiciesdown[i]:indiciesup[i + kup]])
+    for i in range(periodsmax):
+        valsup[i] = np.amax(ufin[indiciesup[i]:indiciesdown[i + kdown]])
+    # Calculate eastward QBO amplitude
+    counter = 0
+    totvals = 0
+    # valsup limit was initially hardcoded to +10.0
+    for i in range(periodsmax):
+        if valsup[i] > 0.:
+            totvals = totvals + valsup[i]
+            counter = counter + 1
+    if counter == 0:
+        ampl_east = 0.
+    else:
+        totvals = totvals / counter
+        ampl_east = totvals
+    # Calculate westward QBO amplitude
+    counter = 0
+    totvals = 0
+    for i in range(periodsmin):
+        # valdown limit was initially hardcoded to -20.0
+        if valsdown[i] < 0.:
+            totvals = totvals + valsdown[i]
+            counter = counter + 1
+    if counter == 0:
+        ampl_west = 0.
+    else:
+        totvals = totvals / counter
+        ampl_west = -totvals
+    # Calculate QBO period, set to zero if no full oscillations in data
+    period1 = 0.0
+    period2 = 0.0
+    if counterdown > 1:
+        period1 = (indiciesdown[counterdown - 1] - indiciesdown[0]) / (
+            counterdown - 1)
+    if counterup > 1:
+        period2 = (indiciesup[counterup - 1] - indiciesup[0]) / (counterup - 1)
+    # Pick larger oscillation period
+    if period1 < period2:
+        period = period2
+    else:
+        period = period1
 
     return (period, ampl_west, ampl_east)
 
@@ -337,8 +340,7 @@ def qbo_metrics(run, ucube, metrics):
 
     # write results to current working directory
     outfile = '{0}_qbo30_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(qbo30, outfile.format(run['runid'], run['period']))
+    iris.save(qbo30, outfile.format(run['runid'], run['period']))
 
     # Calculate QBO metrics
     (period, amp_west, amp_east) = calc_qbo_index(qbo30)
@@ -439,8 +441,7 @@ def teq_metrics(run, tcube, metrics):
 
     # write results to current working directory
     outfile = '{0}_teq100_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(t_months, outfile.format(run['runid'], run['period']))
+    iris.save(t_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     (tmean, tstrength) = mean_and_strength(t_months)
@@ -468,8 +469,7 @@ def t_metrics(run, tcube, metrics):
 
     # write results to current working directory
     outfile = '{0}_t100_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(t_months, outfile.format(run['runid'], run['period']))
+    iris.save(t_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     (tmean, tstrength) = mean_and_strength(t_months)
@@ -497,8 +497,7 @@ def q_metrics(run, qcube, metrics):
 
     # write results to current working directory
     outfile = '{0}_q70_{1}.nc'
-    with iris.FUTURE.context(netcdf_no_unlimited=True):
-        iris.save(q_months, outfile.format(run['runid'], run['period']))
+    iris.save(q_months, outfile.format(run['runid'], run['period']))
 
     # Calculate metrics
     qmean = q_mean(q_months)
@@ -756,9 +755,8 @@ def calc_merra(run):
         time=lambda cell:
         run['from_monthly'] <= cell.point <= run['to_monthly']
     )
-    with iris.FUTURE.context(cell_datetime_objects=True):
-        t = t.extract(time)
-        q = q.extract(time)
+    t = t.extract(time)
+    q = q.extract(time)
 
     # zonal mean
     t_cds = [cdt.standard_name for cdt in t.coords()]
@@ -816,9 +814,8 @@ def calc_erai(run):
         time=lambda cell:
         run['from_monthly'] <= cell.point <= run['to_monthly']
     )
-    with iris.FUTURE.context(cell_datetime_objects=True):
-        t = t.extract(time)
-        q = q.extract(time)
+    t = t.extract(time)
+    q = q.extract(time)
     # Calculate time mean
     t = t.collapsed('time', iris.analysis.MEAN)
     q = q.collapsed('time', iris.analysis.MEAN)

@@ -16,7 +16,7 @@ documentation:
     - c3s-magic
 
   references:
-    - alexander
+    - alexander06jgr
 
 datasets:
   - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}

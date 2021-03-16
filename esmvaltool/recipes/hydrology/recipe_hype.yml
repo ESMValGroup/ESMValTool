@@ -1,0 +1,56 @@
+# ESMValTool
+# recipe_hype.yml
+---
+documentation:
+  description: |
+    Recipe pre-processes ERA5 and ERA-Interim reanalyses files
+    for use in the Hype hydrological model.
+
+  authors:
+    - pelupessy_inti
+    - kalverla_peter
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
+
+preprocessors:
+  preprocessor: &general
+    extract_shape:
+      shapefile: Meuse_HYPE.shp
+      method: contains
+      decomposed: true
+    area_statistics:
+      operator: mean
+  temperature:
+    <<: *general
+    convert_units:
+      units: degC
+  water:
+    <<: *general
+    convert_units:
+      units: kg m-2 d-1
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+
+diagnostics:
+  hype:
+    description: HYPE input preprocessor for daily data
+    variables:
+      tas: &var
+        mip: day
+        start_year: 1990
+        end_year: 2001
+        preprocessor: temperature
+      tasmin: *var
+      tasmax: *var
+      pr:
+        <<: *var
+        preprocessor: water
+    scripts:
+      script:
+        script: hydrology/hype.py

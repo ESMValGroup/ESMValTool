@@ -8,6 +8,7 @@
 ;    procedure format_time
 ;    procedure format_plev
 ;    procedure format_lev
+;    procedure format_alt40
 ;    procedure format_lat
 ;    procedure format_lon
 ;    procedure format_coords
@@ -15,6 +16,7 @@
 ;    function format_variable
 ;    function guess_bounds_time
 ;    function guess_bounds_lev
+;    function guess_bounds_alt40
 ;    function guess_bounds_lat
 ;    function guess_bounds_lon
 ;    function guess_coord_bounds
@@ -90,6 +92,7 @@ procedure format_time(var:numeric,
 ; References
 ;
 ; Modification history
+;    20200518-righi_mattia: improve timesteps consistency check.
 ;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, ctime, ntime, year1, month1, day1, year2, month2, \
@@ -156,8 +159,8 @@ begin
     exp_ntime = year2 - year1 + 1
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                " expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
 
     ; Reset date (1st of July)
@@ -174,16 +177,13 @@ begin
   if (frequency.eq."mon") then
 
     ; Check size
-    if (year1.eq.year2) then
-      exp_ntime = month2 - month1 + 1
-    else
-      exp_ntime = (12 - month1 + 1) + month2 + \
-        12 * where((year2 - year1 - 1).gt.0, year2 - year1 - 1, 0)
-    end if
+    exp_ntime = 12 * (year2 - year1 + 1)
+    exp_ntime = exp_ntime - (month1 - 1)
+    exp_ntime = exp_ntime - (12 - month2)
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
 
     ; Reset date (middle of the month)
@@ -217,8 +217,8 @@ begin
       cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
     delete(opt)
 
@@ -230,7 +230,9 @@ begin
       m2 = where(yy.eq.year2, month2, 12)
       do mm = m1, m2
         date(tt, 1) = mm
-        do dd = day1, days_in_month(yy, mm)
+        d1 = where(yy.eq.year1 .and. mm.eq.m1, day1, 1)
+        d2 = where(yy.eq.year2 .and. mm.eq.m2, day2, days_in_month(yy, mm))
+        do dd = d1, d2
           date(tt, 2) = dd
           tt = tt + 1
         end do
@@ -253,8 +255,8 @@ begin
     exp_ntime = 4 * exp_ntime
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
     delete(opt)
 
@@ -272,8 +274,8 @@ begin
     exp_ntime = 8 * exp_ntime
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                "incorrect number of timesteps in input data: " + \
+                exp_ntime + " expected, " + ntime + " found")
     end if
     delete(opt)
 
@@ -434,6 +436,69 @@ begin
 end
 
 ; #############################################################################
+undef("format_alt40")
+procedure format_alt40(var:numeric)
+;
+; Arguments
+;    var: input variable
+;
+; Description
+;    Check the monotonicity of the alt40 (altitude) coordinate and set the
+;    standard CMOR attributes.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20200204-lauer_axel: written.
+;
+local funcname, scriptname, rank, clev, newlev
+begin
+
+  funcname = "format_alt40"
+  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+
+  ; Set rank
+  rank = dimsizes(dimsizes(var))
+
+  ; Check monotonicity
+  if (isMonotonic(var&alt40) .eq. 0) then
+    error_msg("f", scriptname, funcname, "non-monotonic vertical coordinate")
+  end if
+  if (isMonotonic(var&alt40).eq.-1) then  ; must be monotonically increasing
+    if (rank.eq.4) then
+      var = var(:, ::-1, :, :)
+    elseif (rank.eq.3) then
+      var = var(:, ::-1, :)
+    elseif (rank.eq.2) then
+      var = var(:, ::-1)
+    end if
+  end if
+
+  ; Read coordinate
+  calt = var&alt40
+
+  ; Set standard attributes
+  newalt = todouble(calt)  ; this also removes attributes
+  copy_VarCoords(calt, newalt)
+  newalt@bounds = "alt40_bnds"
+  newalt@positive = "up"
+  newalt@long_name = "altitude"
+  newalt@axis = "Z"
+  newalt@units = "m"
+  newalt@standard_name = "altitude"
+  if (isatt(newalt, "_FillValue")) then
+    delete(newalt@_FillValue)
+  end if
+
+  ; Reset lev coordinate
+  delete(var&alt40)
+  var&alt40 = newalt
+
+end
+
+; #############################################################################
 undef("format_lat")
 procedure format_lat(var:numeric)
 ;
@@ -462,8 +527,9 @@ begin
   dims = getvardims(var)
   dpos = ind(dims.eq."lat")
 
-  ; Check monotonicity
-  if (isMonotonic(var&lat) .eq. 0) then
+  ; Check monotonicity but not for point variables
+  if (isMonotonic(var&lat) .eq. 0 .and. \
+      dimsizes(var&lat) .gt.  1) then
     error_msg("f", scriptname, funcname, "non-monotonic latitude coordinate")
   end if
   if (isMonotonic(var&lat) .eq. -1) then  ; must be S->N
@@ -539,9 +605,10 @@ begin
   funcname = "format_lon"
   scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
 
-  ; Check monotonicity
-  if (isMonotonic(var&lon) .eq. 0) then
-    error_msg("f", scriptname, funcname, "non-monotonic lonfitude coordinate")
+  ; Check monotonicity but not for point variables
+  if (isMonotonic(var&lon) .eq. 0 .and. \
+      dimsizes(var&lon) .gt.  1) then
+    error_msg("f", scriptname, funcname, "non-monotonic longitude coordinate")
   end if
 
   ; Check that lon is 0:360
@@ -582,7 +649,6 @@ procedure format_coords(var:numeric,
 ;    date1: start date as YYYYMMDD
 ;    date2: end date as YYYYMMDD
 ;    frequency: time frequency ("3hr", "6hr", "day", "mon", "yr")
-
 ;
 ; Description
 ;    Format the coordinate according to the CF/CMOR standard.
@@ -619,6 +685,11 @@ begin
 
     if (dnames(dd).eq."lev") then
       format_lev(var)
+      found = True
+    end if
+
+    if (dnames(dd).eq."alt40") then
+      format_alt40(var)
       found = True
     end if
 
@@ -952,6 +1023,55 @@ begin
 end
 
 ; #############################################################################
+undef("guess_bounds_alt40")
+function guess_bounds_alt40(coord[*]:double)
+;
+; Arguments
+;    coord: input level coordinate.
+;
+; Return value
+;    A two dimensional array, with the first dimension of the same size of the
+;    input coordinate and the second dimension of size 2.
+;
+; Description
+;    Calculate the boundaries of the altitude40 coordinate as midpoints between
+;    the input levels. The first (top) boundary is set to a maximum of zero.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20200204-lauer_axel: written.
+;
+local funcname, scriptname, size, top
+begin
+
+  funcname = "guess_bounds_alt40"
+  scriptname = "esmvaltool/cmorizers/obs/utilities.ncl"
+
+  bounds = new((/dimsizes(coord), 2/), double)
+  bounds!0 = "alt40"
+  bounds&lev = coord
+  bounds!1 = "bnds"
+  delete(bounds@_FillValue)
+
+  size = dimsizes(coord)
+
+  bounds(1:size - 1, 0) = 0.5 * (coord(0:size - 2) + coord(1:size - 1))
+  bounds(0:size - 2, 1) = bounds(1:size - 1, 0)
+
+  ; Set top and bottom separately
+  top = coord(0) - 0.5 * (coord(1) - coord(0))
+  bounds(0, 0) = where(top.ge.0., top, 0.)
+  bounds(size - 1, 1) = \
+    coord(size - 1) + 0.5 * (coord(size - 1) - coord(size - 2))
+
+  return(bounds)
+
+end
+
+; #############################################################################
 undef("guess_bounds_lat")
 function guess_bounds_lat(coord[*]:double)
 ;
@@ -1082,6 +1202,12 @@ begin
     if (dnames(dd).eq."lev") then
       lev_bnds = guess_bounds_lev(var&lev)
       ListPush(bounds_list, lev_bnds)
+      continue
+    end if
+
+    if (dnames(dd).eq."alt40") then
+      alt40_bnds = guess_bounds_lev(var&alt40)
+      ListPush(bounds_list, alt40_bnds)
       continue
     end if
 

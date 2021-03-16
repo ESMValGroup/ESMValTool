@@ -1,3 +1,4 @@
+# ESMValTool
 # recipe_ecs_scatter.yml
 ---
 documentation:
@@ -106,10 +107,11 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: shhc
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
+        styleset: CMIP5
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_itczidx:
@@ -165,10 +167,11 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: itczidx
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
+        styleset: CMIP5
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_humidx:
@@ -226,10 +229,11 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: humidx
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
+        styleset: CMIP5
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_ltmi:
@@ -295,10 +299,11 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: ltmi
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
+        styleset: CMIP5
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip5_covrefl:
@@ -405,10 +410,11 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: covrefl
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
+        styleset: CMIP5
         script: emergent_constraints/ecs_scatter.ncl
 
   cmip6_itczidx:
@@ -454,7 +460,7 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: itczidx
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
@@ -505,7 +511,7 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: humidx
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
@@ -562,7 +568,7 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: ltmi
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
@@ -602,7 +608,7 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: shhc
-        calcmm: true
+        calcmm: false
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: false
         predef_minmax: true
