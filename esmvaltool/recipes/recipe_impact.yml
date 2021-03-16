@@ -31,7 +31,6 @@ datasets:
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn, tag: model}
-  # - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FIO-ESM-2-0, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, tag: model}
@@ -81,9 +80,6 @@ preprocessors:
     regrid:
       scheme: linear
       target_grid: 2.5x2.5
-        # <<: *region
-        # lon_step: 2.5
-        # lat_step: 2.5
     extract_region:
       <<: *region
     extract_time:

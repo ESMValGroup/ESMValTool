@@ -22,12 +22,12 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 def log_provenance(filename, ancestors, caption, cfg):
-    # We'll add some extra code to make sure the output is saved and tracked
+    """Create a provenance record for the output file."""
     provenance = {
         'caption': caption,
         'domains': ['reg'],
         'authors': ['kalverla_peter'],
-        'references': ['isenes3'],
+        'projects': ['isenes3'],
         'ancestors': ancestors,
     }
     with ProvenanceLogger(cfg) as provenance_logger:
@@ -157,6 +157,7 @@ def plot_htmltable(tidy_df, ancestors, cfg):
 
 
 def main(cfg):
+   """Calculate, visualize and save the bias and change for each model."""
     metadata = cfg['input_data'].values()
     grouped_metadata = group_metadata(metadata, 'variable_group')
 
@@ -196,7 +197,6 @@ def main(cfg):
     dataframe.columns.name = 'variable'
     tidy_df = dataframe.stack('variable').unstack('metric')
 
-    # Plot stuff
     plot_scatter(tidy_df, ancestors, cfg)
     plot_table(tidy_df, ancestors, cfg)
     plot_htmltable(tidy_df, ancestors, cfg)
@@ -205,6 +205,5 @@ def main(cfg):
 
 
 if __name__ == '__main__':
-
     with run_diagnostic() as config:
         main(config)

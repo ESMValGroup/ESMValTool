@@ -23,11 +23,11 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_impact.yml
+    * ``recipe_impact.yml``
 
-Diagnostics are stored in esmvaltool/diag_scripts/
+Diagnostics are stored in ``esmvaltool/diag_scripts/``
 
-    * impact/quick_insights.py: tabulate and visualize bias and change.
+    * ``impact/quick_insights.py``: tabulate and visualize bias and change.
 
 
 User settings in recipe
@@ -57,10 +57,6 @@ Observations and reformat scripts
 
 * ERA5 data can be used via the native6 project.
 
-References
-----------
-
-* None
 
 Example plots
 -------------
@@ -69,7 +65,7 @@ Example plots
 .. figure::  /recipes/figures/impact/bias_vs_change.png
    :align:   center
 
-   "Bias and change for each variable"
+   Bias and change for each variable.
 
 .. raw:: html
     <embed>
