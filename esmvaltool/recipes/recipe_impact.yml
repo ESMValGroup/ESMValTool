@@ -88,9 +88,9 @@ preprocessors:
 diagnostics:
   quick_insights:
     description: >
-      - Calculate the RMSD between model and observations.
-      - Calculate the change with respect to the reference period.
-      - Visualize that in table and/or figure formats
+      Provide quick insights into the behaviour of each model by plotting the
+      bias with respect to observations and change with respect to the reference
+      period.
 
     themes:
       - phys
