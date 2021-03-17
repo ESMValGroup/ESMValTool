@@ -42,10 +42,61 @@ import iris
 import xarray as xr
 import xesmf as xe
 
-from esmvalcore.preprocessor._regrid import _stock_cube
 from esmvaltool.cmorizers.obs import utilities as utils
 
 logger = logging.getLogger(__name__)
+
+
+def _stock_cube(spec, lat_offset=True, lon_offset=True):
+    """Create a stock cube.
+
+    Create a global cube with M degree-east by N degree-north regular grid
+    cells.
+
+    Should be identical to esmvalcore.preprocessor._regrid._global_stock_cube
+
+    The longitude range is from 0 to 360 degrees. The latitude range is from
+    -90 to 90 degrees. Each cell grid point is calculated as the mid-point of
+    the associated MxN cell.
+
+    Parameters
+    ----------
+    spec : str
+        Specifies the 'MxN' degree cell-specification for the global grid.
+    lat_offset : bool
+        Offset the grid centers of the latitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
+    lon_offset : bool
+        Offset the grid centers of the longitude coordinate w.r.t. Greenwich
+        meridian by half a grid step.
+        This argument is ignored if `target_grid` is a cube or file.
+
+    Returns
+    -------
+    :class:`~iris.cube.Cube`
+    """
+    dlon, dlat = parse_cell_spec(spec)
+    mid_dlon, mid_dlat = dlon / 2, dlat / 2
+
+    # Construct the latitude coordinate, with bounds.
+    if lat_offset:
+        latdata = np.linspace(_LAT_MIN + mid_dlat, _LAT_MAX - mid_dlat,
+                              int(_LAT_RANGE / dlat))
+    else:
+        latdata = np.linspace(_LAT_MIN, _LAT_MAX, int(_LAT_RANGE / dlat) + 1)
+
+    # Construct the longitude coordinat, with bounds.
+    if lon_offset:
+        londata = np.linspace(_LON_MIN + mid_dlon, _LON_MAX - mid_dlon,
+                              int(_LON_RANGE / dlon))
+    else:
+        londata = np.linspace(_LON_MIN, _LON_MAX - dlon,
+                              int(_LON_RANGE / dlon))
+
+    cube = _generate_cube_from_dimcoords(latdata=latdata, londata=londata)
+
+    return cube
 
 
 def _cmorize_dataset(in_file, var, cfg, out_dir):
