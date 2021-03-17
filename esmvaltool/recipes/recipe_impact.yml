@@ -86,7 +86,7 @@ preprocessors:
       <<: *reference_period
 
 diagnostics:
-  quick_insights:
+  bias_and_change:
     description: >
       Provide quick insights into the behaviour of each model by plotting the
       bias with respect to observations and change with respect to the reference
@@ -123,4 +123,4 @@ diagnostics:
 
     scripts:
       visualize:
-        script: impact/quick_insights.py
+        script: impact/bias_and_change.py

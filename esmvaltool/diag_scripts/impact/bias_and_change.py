@@ -1,4 +1,4 @@
-"""Python example diagnostic."""
+"""Calculate and plot bias and change for each model."""
 import logging
 from datetime import datetime
 from pathlib import Path

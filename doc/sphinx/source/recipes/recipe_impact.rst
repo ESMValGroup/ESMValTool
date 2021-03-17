@@ -27,7 +27,7 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
-    * impact/quick_insights.py: tabulate and visualize bias and change.
+    * impact/bias_and_change.py: tabulate and visualize bias and change.
 
 
 User settings in recipe
