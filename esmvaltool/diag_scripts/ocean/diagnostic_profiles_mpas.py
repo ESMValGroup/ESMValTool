@@ -207,6 +207,7 @@ def make_profiles_plots(
 def make_multi_model_profiles_plots(
         cfg,
         metadatas,
+        short_name,
         obs_metadata={},
         obs_filename='',
         time_range = [2040., 2050.],
@@ -231,17 +232,13 @@ def make_multi_model_profiles_plots(
         The preprocessed observational dataset file.
 
     """
-    # time_ranges = {[1890., 1900.]: 'black',
-    #                [1940., 1950.]: 'blue',
-    #                [1990., 2000.]: 'green',
-    #                [2040., 2050.]: 'orange',
-    #                [2090., 2100.]: 'red'}
     # Load cube and set up units
     fig = plt.figure()
 
-    for filename in  sorted(metadatas.keys()):
+    for filename, metadata in metadatas.items():
+        if short_name != metadata['short_name']:
+            continue
         cube = iris.load_cube(filename)
-        metadata = metadatas[filename]
         cube = diagtools.bgc_units(cube, metadata['short_name'])
         if not cube.coords('year'):
             iris.coord_categorisation.add_year(cube, 'time')
@@ -309,7 +306,7 @@ def make_multi_model_profiles_plots(
     path = diagtools.get_image_path(
             cfg,
             metadata,
-            prefix='_'.join(['multi_model', str(time_str)]),
+            prefix='_'.join(['multi_model', short_name, str(time_str)]),
             suffix='profile' + image_extention,
         )
 
@@ -339,6 +336,10 @@ def main(cfg):
     obs_key = 'observational_dataset'
     obs_metadata = {}
 
+    short_names = {}
+    for fn, metadata in metadatas.items():
+        short_names[metadata['short_name']] = True
+
     if obs_key in cfg:
         obs_filename = diagtools.match_model_to_key(obs_key,
                                                     cfg[obs_key],
@@ -350,14 +351,16 @@ def main(cfg):
 
     time_ranges = [[2040, 2050], [2090, 2100], [2050, 2100]]
     for time_range in time_ranges:
-        make_multi_model_profiles_plots(
-            cfg,
-            metadatas,
-            obs_metadata=obs_metadata,
-            obs_filename=obs_filename,
-            time_range=time_range,
-        )
-    return 
+        for short_name in short_names.keys():
+            make_multi_model_profiles_plots(
+                cfg,
+                metadatas,
+                short_name,
+                obs_metadata=obs_metadata,
+                obs_filename=obs_filename,
+                time_range=time_range,
+            )
+    return
 
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
