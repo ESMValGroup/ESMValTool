@@ -142,7 +142,7 @@ These are the detailed steps to take to make a release.
 
 4. ESMValCore release
 
-   - Make the release by following the `ESMValCore release instructions`_.
+   - Make the release by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
    - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, on twitter
 
 
@@ -353,5 +353,3 @@ Changelog
 - 2020-07-27 Update including tidying up and Glossary by Klaus Zimmermann and Bouwe Andela
 - 2020-07-23 Update to timeline format by Bouwe Andela and Klaus Zimmermann
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
-
-.. _ESMValCore release instructions: https://docs.esmvaltool.org/projects/esmvalcore/en/latest/contributing.html#how-to-make-a-release
