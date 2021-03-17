@@ -119,6 +119,7 @@ def setup_files(tmp_path, root, cfg):
     return user_config_file, recipe, output_recipe
 
 
+@pytest.mark.skip(reason="reactivate for esmvalcore=2.3.0")
 @pytest.mark.parametrize('cfg', CONFIG['has_additional_datasets'])
 def test_adding_datasets(tmp_path, root, cfg):
     """Test retrieving additional datasets."""
@@ -144,6 +145,7 @@ def test_adding_datasets(tmp_path, root, cfg):
         assert "additional_datasets" in var
 
 
+@pytest.mark.skip(reason="reactivate for esmvalcore=2.3.0")
 @pytest.mark.parametrize('cfg', CONFIG['no_additional_datasets'])
 def test_not_adding_datasets(tmp_path, root, cfg):
     """Test retrieving no additional datasets."""
@@ -169,6 +171,7 @@ def test_not_adding_datasets(tmp_path, root, cfg):
         assert "additional_datasets" not in var
 
 
+@pytest.mark.skip(reason="reactivate for esmvalcore=2.3.0")
 def test_bad_var(tmp_path, root):
     """Test a bad variable in the works."""
     cfg = CONFIG['bad_variable'][0]
