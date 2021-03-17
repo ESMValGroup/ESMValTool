@@ -211,6 +211,9 @@ def make_multi_model_profiles_plots(
         obs_metadata={},
         obs_filename='',
         time_range = [2040., 2050.],
+        figure_style = 'difference',
+        fig = None,
+        ax = None,
 
     ):
     """
@@ -233,8 +236,14 @@ def make_multi_model_profiles_plots(
 
     """
     # Load cube and set up units
-    fig = plt.figure()
+    if fig is None:
+        single_pane = True
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+    else:
+        single_pane = False
 
+    cubes = {}
     for filename, metadata in metadatas.items():
         if short_name != metadata['short_name']:
             continue
@@ -246,7 +255,10 @@ def make_multi_model_profiles_plots(
         raw_times = diagtools.cube_time_to_float(cube)
 
         times_float = diagtools.cube_time_to_float(cube)
+        dataset = metadata['dataset']
         scenario = metadata['exp']
+        ensemble = metadata['ensemble']
+
         if scenario == 'historical':
             cube = extract_time(cube, 1950, 1, 1, 2000, 1, 1)
         else:
@@ -256,20 +268,50 @@ def make_multi_model_profiles_plots(
         cube_min = cube.copy().collapsed('time', iris.analysis.MIN)
         cube_max = cube.copy().collapsed('time', iris.analysis.MAX)
 
+        cubes[(dataset, scenario, ensemble, 'mean')]  = cube_mean
+        cubes[(dataset, scenario, ensemble, 'min')]  = cube_min
+        cubes[(dataset, scenario, ensemble, 'max')]  = cube_max
+
+    for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
+        if metric !=  'mean': continue
+
+        cube_min = cubes[(dataset, scenario, ensemble, 'min')]
+        cube_max = cubes[(dataset, scenario, ensemble, 'max')]
+        cube_hist = cubes[(dataset, 'historical', ensemble, 'mean')]
+
         color = diagtools.ipcc_colours[scenario]
         plot_details = {}
-        plt.plot(cube_mean.data, cube_mean.coord('depth').points,
-            lw=2,
-            c=color)
-        print(cube_mean.data, '\n', cube_min.data, '\n', cube_max.data)
-        cube_min = extract_levels(cube_min, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
-        cube_max = extract_levels(cube_max, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
 
-        plt.fill_betweenx(cube_mean.coord('depth').points,
-            cube_min.data,
-            x2=cube_max.data,
-            alpha = 0.2,
-            color=color)
+
+        if figure_style == 'difference':
+            if scenario == 'historical':
+                continue
+            cube_mean = extract_levels(cube_mean, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
+            cube_min = extract_levels(cube_min, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
+            cube_max = extract_levels(cube_max, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
+
+            plt.plot(cube_mean.data - cube_hist.data, -1.*cube_hist.coord('depth').points,
+                lw=2,
+                c=color)
+
+            plt.fill_betweenx(-1.*cube_hist.coord('depth').points,
+                cube_min.data - cube_hist.data,
+                x2=cube_max.data - cube_hist.data,
+                alpha = 0.2,
+                color=color)
+
+        if figure_style == 'compare':
+            cube_min = extract_levels(cube_min, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
+            cube_max = extract_levels(cube_max, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
+            plt.plot(cube_mean.data, -1*.cube_mean.coord('depth').points,
+                lw=2,
+                c=color)
+
+            plt.fill_betweenx(-1.*cube_mean.coord('depth').points,
+                cube_min.data,
+                x2=cube_max.data,
+                alpha = 0.2,
+                color=color)
 
         plot_details[scenario] = {'c': color, 'ls': '-', 'lw': 1,
                                              'label': scenario}
@@ -306,10 +348,12 @@ def make_multi_model_profiles_plots(
     path = diagtools.get_image_path(
             cfg,
             metadata,
-            prefix='_'.join(['multi_model', short_name, str(time_str)]),
+            prefix='_'.join(['multi_model/', 'multi_model', short_name, figure_style, str(time_str)]),
             suffix='profile' + image_extention,
         )
 
+    if not single_pane:
+        return fig, ax
     # Saving files:
     if cfg['write_plots']:
         logger.info('Saving plots to %s', path)
@@ -352,10 +396,12 @@ def main(cfg):
     time_ranges = [[2040, 2050], [2090, 2100], [2050, 2100]]
     for time_range in time_ranges:
         for short_name in short_names.keys():
+            for figure_style in ['compare', 'difference']:
             make_multi_model_profiles_plots(
                 cfg,
                 metadatas,
                 short_name,
+                figure_style=figure_style,
                 obs_metadata=obs_metadata,
                 obs_filename=obs_filename,
                 time_range=time_range,
