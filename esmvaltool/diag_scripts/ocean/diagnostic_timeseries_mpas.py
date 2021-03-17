@@ -187,7 +187,7 @@ def make_time_series_plots(
         cfg,
         metadata,
         filename,
-        moving_average_str=None,
+        moving_average_str='',
 ):
     """
     Make a simple time series plot for an indivudual model 1D cube.
@@ -275,7 +275,7 @@ def make_time_series_plots(
 def multi_model_time_series(
         cfg,
         metadata,
-        moving_average_str=None,
+        moving_average_str='',
         colour_scheme = 'viridis',
 ):
     """
@@ -330,7 +330,7 @@ def multi_model_time_series(
                 else:
                     color = 'blue'
             if colour_scheme in 'IPCC':
-                color = ipcc_colours[]
+                color = ipcc_colours[scenario]
 
             # Take a moving average, if needed.
             if moving_average_str:
@@ -365,7 +365,7 @@ def multi_model_time_series(
                     'c': color,
                     'ls': '-',
                     'lw': 2.,
-                    'label': ' '.join([dataset, scenaio])
+                    'label': ' '.join([dataset, scenario])
                 }
 
             title = metadata[filename]['long_name']
@@ -387,7 +387,7 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', moving_average_str,
+                suffix='_'.join(['mpas_timeseries', moving_average_str,
                                  str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
@@ -416,7 +416,7 @@ def main(cfg):
 
     """
     moving_average_str = cfg.get('moving_average', None)
-    moving_average_strs = [None, 'annual', '5 years', '10 years', '20 years']
+    moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
     for moving_average_str in moving_average_strs:
         for index, metadata_filename in enumerate(cfg['input_files']):
             logger.info('metadata filename:\t%s', metadata_filename)
@@ -428,9 +428,10 @@ def main(cfg):
             multi_model_time_series(
                 cfg,
                 metadatas,
-                moving_average_str=moving_average_str
+                moving_average_str=moving_average_str,
+                colour_scheme = 'IPCC',
             )
-
+            continue 
             for filename in sorted(metadatas):
                 if metadatas[filename]['frequency'] != 'fx':
                     logger.info('-----------------')
