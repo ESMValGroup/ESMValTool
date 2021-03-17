@@ -59,6 +59,7 @@ import matplotlib.pyplot as plt
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvalcore.preprocessor._time import extract_time
+from esmvalcore.preprocessor._regrid import extract_levels
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -240,6 +241,7 @@ def make_multi_model_profiles_plots(
 
     for filename in  sorted(metadatas.keys()):
         cube = iris.load_cube(filename)
+        metadata = metadatas[filename]
         cube = diagtools.bgc_units(cube, metadata['short_name'])
         if not cube.coords('year'):
             iris.coord_categorisation.add_year(cube, 'time')
@@ -251,7 +253,7 @@ def make_multi_model_profiles_plots(
         if scenario == 'historical':
             cube = extract_time(cube, 1950, 1, 1, 2000, 1, 1)
         else:
-            cube = extract_time(time_range[0], 1, 1, time_range[1], 1, 1)
+            cube = extract_time(cube, time_range[0], 1, 1, time_range[1], 1, 1)
 
         cube_mean = cube.copy().collapsed('time', iris.analysis.MEAN)
         cube_min = cube.copy().collapsed('time', iris.analysis.MIN)
@@ -259,17 +261,21 @@ def make_multi_model_profiles_plots(
 
         color = diagtools.ipcc_colours[scenario]
         plot_details = {}
-        qplt.plot(cube_mean, cube_mean.coord('depth'),
+        plt.plot(cube_mean.data, cube_mean.coord('depth').points,
             lw=2,
             c=color)
+        print(cube_mean.data, '\n', cube_min.data, '\n', cube_max.data)
+        cube_min = extract_levels(cube_min, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
+        cube_max = extract_levels(cube_max, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
 
-        plt.fill_betweenx(cube_mean.coord('depth'),
-            cube_min.data, cube_max.data,
+        plt.fill_betweenx(cube_mean.coord('depth').points,
+            cube_min.data,
+            x2=cube_max.data,
             alpha = 0.2,
-            c=color)
+            color=color)
 
         plot_details[scenario] = {'c': color, 'ls': '-', 'lw': 1,
-                                             'label': str(int(time))}
+                                             'label': scenario}
 
     # Add observational data.
     if obs_filename:
@@ -303,7 +309,7 @@ def make_multi_model_profiles_plots(
     path = diagtools.get_image_path(
             cfg,
             metadata,
-            prefix='_'.join(['multi_model', str(time_str),
+            prefix='_'.join(['multi_model', str(time_str)]),
             suffix='profile' + image_extention,
         )
 
@@ -330,6 +336,9 @@ def main(cfg):
     """
     metadatas = diagtools.get_input_files(cfg)
     obs_filename = ''
+    obs_key = 'observational_dataset'
+    obs_metadata = {}
+
     if obs_key in cfg:
         obs_filename = diagtools.match_model_to_key(obs_key,
                                                     cfg[obs_key],
@@ -346,17 +355,14 @@ def main(cfg):
             metadatas,
             obs_metadata=obs_metadata,
             obs_filename=obs_filename,
-            time_range=time_range.
+            time_range=time_range,
         )
+    return 
 
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
-
-        obs_key = 'observational_dataset'
-        obs_filename = ''
-        obs_metadata = {}
 
         for filename in sorted(metadatas.keys()):
 

@@ -329,9 +329,10 @@ def multi_model_time_series(
                     color = cmap(index / (len(metadata) - 1.))
                 else:
                     color = 'blue'
+                label = dataset
             if colour_scheme in 'IPCC':
                 color = ipcc_colours[scenario]
-
+                label =  scenario
             # Take a moving average, if needed.
             if moving_average_str:
                 cube = moving_average(model_cubes[filename][layer],
@@ -351,7 +352,7 @@ def multi_model_time_series(
                     'c': color,
                     'ls': ':',
                     'lw': 2.,
-                    'label': ' '.join([dataset, scenaio])
+                    'label': label,
                 }
             else:
                 timeplot(
@@ -365,7 +366,7 @@ def multi_model_time_series(
                     'c': color,
                     'ls': '-',
                     'lw': 2.,
-                    'label': ' '.join([dataset, scenario])
+                    'label': label,
                 }
 
             title = metadata[filename]['long_name']
