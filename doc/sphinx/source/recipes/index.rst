@@ -78,6 +78,7 @@ Land
    recipe_albedolandcover
    recipe_carvalhais14nat
    recipe_hydrology
+   recipe_hydro_forcing
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et
