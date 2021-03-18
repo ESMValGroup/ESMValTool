@@ -156,6 +156,9 @@ def bgc_units(cube, name):
         # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
         new_units = 'Tg s-1'
 
+    if name in ['zos', 'zostoga']:
+        new_units = 'mm'
+
     if new_units != '':
         logger.info(' '.join(
             ["Changing units from",
