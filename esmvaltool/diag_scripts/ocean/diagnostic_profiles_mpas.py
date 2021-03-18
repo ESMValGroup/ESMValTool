@@ -236,7 +236,8 @@ def make_multi_model_profiles_plots(
         short_name,
         obs_metadata={},
         obs_filename='',
-        time_range = [2040., 2050.],
+        hist_time_range = [1990., 2000.],
+        ssp_time_range = [2040., 2050.],
         figure_style = 'difference',
         fig = None,
         gs0 = None,
@@ -293,9 +294,9 @@ def make_multi_model_profiles_plots(
         ensemble = metadata['ensemble']
 
         if scenario == 'historical':
-            cube = extract_time(cube, 1950, 1, 1, 2000, 1, 1)
+            cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 1, 1)
         else:
-            cube = extract_time(cube, time_range[0], 1, 1, time_range[1], 1, 1)
+            cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 1, 1)
 
         cube_mean = cube.copy().collapsed('time', iris.analysis.MEAN)
         cube_min = cube.copy().collapsed('time', iris.analysis.MIN)
@@ -320,7 +321,7 @@ def make_multi_model_profiles_plots(
             if figure_style == 'difference':
                 z_hist, z_cube_hist = extract_depth_range(cube_hist, cube_hist.coord('depth').points, drange=drange)
                 z_min, z_cube_min = extract_depth_range(cube_min, cube_hist.coord('depth').points, drange=drange)
-                z_max, z_cube_max = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
+                z_max, z_cube_max = extract_depth_range(cube_max, cube_hist.coord('depth').points, drange=drange)
                 z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
 
                 ax.plot(z_cube_mean.data - z_cube_hist.data, -1.*z_hist,
@@ -336,7 +337,7 @@ def make_multi_model_profiles_plots(
 
             if figure_style == 'compare':
                 z_min, z_cube_min = extract_depth_range(cube_min, cube_mean.coord('depth').points, drange=drange)
-                z_max, z_cube_max = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
+                z_max, z_cube_max = extract_depth_range(cube_max, cube_mean.coord('depth').points, drange=drange)
                 z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
 
                 ax.plot(z_cube_mean.data, -1.*z_mean,
@@ -353,6 +354,13 @@ def make_multi_model_profiles_plots(
         plot_details[scenario] = {'c': color, 'ls': '-', 'lw': 1,
                                              'label': scenario}
 
+    # Add units:
+    units = cubes[(dataset, scenario, ensemble,'mean')].units
+    if figure_style == 'difference':
+        ax.set_xlabel(r'$\Delta$ ' +str(units))
+    if figure_style == 'compare':
+        ax.set_xlabel(str(units))
+
     # Add observational data.
     if obs_filename:
         obs_cube = iris.load_cube(obs_filename)
@@ -365,7 +373,8 @@ def make_multi_model_profiles_plots(
         plot_details[obs_key] = {'c': 'black', 'ls': '-', 'lw': 1,
                                  'label': obs_key}
 
-    time_str = '-'.join([str(t) for t in time_range])
+    time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
+                         '-'.join([str(t) for t in ssp_time_range])])
 
     # set x axis limits:
     xlims = np.array([ax0.get_xlim(), ax1.get_xlim()])
@@ -376,16 +385,20 @@ def make_multi_model_profiles_plots(
     ax0.set_ylim([-1000., ylims.max()])
     ax1.set_ylim([ylims.min(), -1001.])
 
-    # hide between pane axes:
+    # hide between pane axes and ticks:
     ax0.spines['bottom'].set_visible(False)
+    ax0.xaxis.set_ticks_position('none')
+    ax0.xaxis.set_ticklabels([])
     ax1.spines['top'].set_visible(False)
 
 #    ax0.fill_bewteen([xlims.min(), xlims.max()],[-1000., -1000.], [-975., -975.], color= 'k', alpha=0.2)
 #    ax1.fill_bewteen([xlims.min(), xlims.max()],[-1100., -1100.],[-1000., -1000.], color= 'k', alpha=0.2)
 
-    ax0.axhline(-999., ls='--', lw=2.5, c='black')
+    # draw a line between figures
+    ax0.axhline(-999., ls='--', lw=1.5, c='black')
+    ax1.axhline(-1001., ls='--', lw=1.5, c='black')
 
-    if not single_pane:
+    if single_pane:
         # Add title to plot
         title = ' '.join([
             short_name,
@@ -393,10 +406,23 @@ def make_multi_model_profiles_plots(
             time_str
             ])
         ax0.set_title(title)
+    else:
+        #ax0.yaxis.set_ticks_position('both')
+        #ax1.yaxis.set_ticks_position('both')
+        if figure_style == 'difference':
+           ax0.yaxis.set_ticks_position('right')
+           ax1.yaxis.set_ticks_position('right')
+           ax0.yaxis.set_ticklabels([])
+           ax1.yaxis.set_ticklabels([])
+           ax0.set_title('Difference against historical')
+
+        else:
+             ax0.set_title('Mean and Range')
+
 
     # Add Legend outside right.
     if draw_legend:
-        ax1.legend()
+        ax1.legend(loc='lower left')
     #diagtools.add_legend_outside_right(plot_details, plt.gca())
 
     # Load image format extention
@@ -426,11 +452,14 @@ def make_multi_model_profiles_plot_pair(
         short_name,
         obs_metadata={},
         obs_filename='',
-        time_range = [2040., 2050.],
+        hist_time_range = [1990., 2000.],
+        ssp_time_range = [2040., 2050.],
+
     ):
 
     fig = plt.figure()
-    gs = matplotlib.gridspec.GridSpec(ncols=2, nrows=1) # master
+    fig.set_size_inches(10,6)
+    gs = matplotlib.gridspec.GridSpec(ncols=2, nrows=1, wspace=0.01) # master
 
     gs0 =gs[0, 0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
     gs1 =gs[0, 1].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
@@ -443,22 +472,31 @@ def make_multi_model_profiles_plot_pair(
             figure_style=figure_style,
             obs_metadata=obs_metadata,
             obs_filename=obs_filename,
-            time_range=time_range,
+            hist_time_range=hist_time_range,
+            ssp_time_range=ssp_time_range,
             fig=fig,
             gs0=gs_spot,
             draw_legend=draw_legend,
         )
 
-    time_str = '-'.join([str(t) for t in time_range])
-    pyplot.suptitle(' '.join([short_name, time_str])
+    time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs', 
+                         '-'.join([str(t) for t in ssp_time_range])])
+
+    long_name_dict = {
+        'thetao': 'Temperature',
+        'uo': 'Zonal Velocity',
+        'vo': 'Meridional Velocity',
+        'no3': 'Dissolved Nitrate',
+        'o2': 'Dissolved Oxygen',}
+
+    plt.suptitle(' '.join([long_name_dict[short_name], 'Profile in Ascension'
+                           ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
+                           'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
 
     # Determine image filename:
-    path = diagtools.get_image_path(
-            cfg,
-            metadata,
-            prefix='_'.join(['multi_model', short_name, str(time_str)]),
-            suffix='profile' + image_extention,
-        )
+    path = diagtools.folder(cfg['plot_dir'])
+    path += '_'.join(['multi_model_pair', short_name, str(time_str)])
+    path += diagtools.get_image_format(cfg)
 
     # Saving files:
     if cfg['write_plots']:
@@ -499,8 +537,10 @@ def main(cfg):
         else:
             obs_metadata = ''
 
-    time_ranges = [[2040, 2050], [2090, 2100], [2050, 2100]]
-    for time_range in time_ranges:
+    hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]] 
+    ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
+
+    for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
         for short_name in short_names.keys():
             make_multi_model_profiles_plot_pair(
                 cfg,
@@ -508,7 +548,8 @@ def main(cfg):
                 short_name,
                 obs_metadata=obs_metadata,
                 obs_filename=obs_filename,
-                time_range=time_range,
+                hist_time_range=hist_time_range,
+                ssp_time_range=ssp_time_range,
             )
             for figure_style in ['compare', 'difference']:
                 continue
@@ -519,7 +560,8 @@ def main(cfg):
                     figure_style=figure_style,
                     obs_metadata=obs_metadata,
                     obs_filename=obs_filename,
-                    time_range=time_range,
+                    hist_time_range=hist_time_range,
+                    ssp_time_range=ssp_time_range,
                 )
     return
 
