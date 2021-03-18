@@ -405,6 +405,24 @@ def multi_model_time_series(
         plt.close()
 
 
+def multi_model_clim_figure(
+    cfg,
+    metadatas,
+    short_name,
+    ):
+    """
+    produce a monthly climatology figure.
+    """
+    for filename, metadata in metadatas.items():
+        if short_name != metadata['short_name']:
+            continue
+        cube = iris.load_cube(filename)
+        cube = diagtools.bgc_units(cube, metadata['short_name'])
+        if not cube.coords('year'):
+            iris.coord_categorisation.add_year(cube, 'time')
+        if not cube.coords('month'):
+            iris.coord_categorisation.add_month(cube, 'time')
+
 def main(cfg):
     """
     Load the config file and some metadata, then pass them the plot making
@@ -417,6 +435,18 @@ def main(cfg):
 
     """
     moving_average_str = cfg.get('moving_average', None)
+    short_names = {}
+    for fn, metadata in metadatas.items():
+        short_names[metadata['short_name']] = True
+
+    for short_name in short_names.keys():
+        multi_model_clim_figure(
+            cfg,
+            metadatas,
+            short_name,
+        )
+
+
     moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
     for moving_average_str in moving_average_strs:
         for index, metadata_filename in enumerate(cfg['input_files']):
@@ -432,7 +462,7 @@ def main(cfg):
                 moving_average_str=moving_average_str,
                 colour_scheme = 'IPCC',
             )
-            continue 
+            continue
             for filename in sorted(metadatas):
                 if metadatas[filename]['frequency'] != 'fx':
                     logger.info('-----------------')
