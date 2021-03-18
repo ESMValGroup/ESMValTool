@@ -239,7 +239,8 @@ def make_multi_model_profiles_plots(
         time_range = [2040., 2050.],
         figure_style = 'difference',
         fig = None,
-        gs = None,
+        gs0 = None,
+        draw_legend=True
     ):
     """
     Make a profile plot for an individual model.
@@ -265,10 +266,10 @@ def make_multi_model_profiles_plots(
         single_pane = True
         fig = plt.figure()
         gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=1) # master
+        gs0 =gs[0,0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
     else:
         single_pane = False
 
-    gs0 =gs[0,0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
     #gs0 = gs[0].subgridspec(2, 1, hspace=0.35) # scatters
     #gs1 = gs[1].subgridspec(3, 1, hspace=0.06 ) # maps
         #scatters
@@ -365,7 +366,7 @@ def make_multi_model_profiles_plots(
                                  'label': obs_key}
 
     time_str = '-'.join([str(t) for t in time_range])
-   
+
     # set x axis limits:
     xlims = np.array([ax0.get_xlim(), ax1.get_xlim()])
     ax0.set_xlim([xlims.min(), xlims.max()])
@@ -384,17 +385,18 @@ def make_multi_model_profiles_plots(
 
     ax0.axhline(-999., ls='--', lw=2.5, c='black')
 
-    # Add title to plot
-    title = ' '.join([
-        short_name,
-        figure_style,
-        time_str
-        ])
-
-    ax0.set_title(title)
+    if not single_pane:
+        # Add title to plot
+        title = ' '.join([
+            short_name,
+            figure_style,
+            time_str
+            ])
+        ax0.set_title(title)
 
     # Add Legend outside right.
-    ax1.legend()
+    if draw_legend:
+        ax1.legend()
     #diagtools.add_legend_outside_right(plot_details, plt.gca())
 
     # Load image format extention
@@ -409,7 +411,55 @@ def make_multi_model_profiles_plots(
         )
 
     if not single_pane:
-        return fig, ax
+        return fig
+    # Saving files:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+
+    plt.close()
+
+
+def make_multi_model_profiles_plot_pair(
+        cfg,
+        metadatas,
+        short_name,
+        obs_metadata={},
+        obs_filename='',
+        time_range = [2040., 2050.],
+    ):
+
+    fig = plt.figure()
+    gs = matplotlib.gridspec.GridSpec(ncols=2, nrows=1) # master
+
+    gs0 =gs[0, 0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
+    gs1 =gs[0, 1].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
+
+    for figure_style, gs_spot, draw_legend in zip(['compare', 'difference'], [gs0, gs1], [True, False]):
+        fig = make_multi_model_profiles_plots(
+            cfg,
+            metadatas,
+            short_name,
+            figure_style=figure_style,
+            obs_metadata=obs_metadata,
+            obs_filename=obs_filename,
+            time_range=time_range,
+            fig=fig,
+            gs0=gs_spot,
+            draw_legend=draw_legend,
+        )
+
+    time_str = '-'.join([str(t) for t in time_range])
+    pyplot.suptitle(' '.join([short_name, time_str])
+
+    # Determine image filename:
+    path = diagtools.get_image_path(
+            cfg,
+            metadata,
+            prefix='_'.join(['multi_model', short_name, str(time_str)]),
+            suffix='profile' + image_extention,
+        )
+
     # Saving files:
     if cfg['write_plots']:
         logger.info('Saving plots to %s', path)
@@ -452,7 +502,16 @@ def main(cfg):
     time_ranges = [[2040, 2050], [2090, 2100], [2050, 2100]]
     for time_range in time_ranges:
         for short_name in short_names.keys():
+            make_multi_model_profiles_plot_pair(
+                cfg,
+                metadatas,
+                short_name,
+                obs_metadata=obs_metadata,
+                obs_filename=obs_filename,
+                time_range=time_range,
+            )
             for figure_style in ['compare', 'difference']:
+                continue
                 make_multi_model_profiles_plots(
                     cfg,
                     metadatas,
