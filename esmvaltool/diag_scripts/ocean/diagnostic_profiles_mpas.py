@@ -284,15 +284,14 @@ def make_multi_model_profiles_plots(
 
 
         if figure_style == 'difference':
-            if scenario == 'historical':
-                continue
             cube_mean = extract_levels(cube_mean, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
             cube_min = extract_levels(cube_min, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
             cube_max = extract_levels(cube_max, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
 
             plt.plot(cube_mean.data - cube_hist.data, -1.*cube_hist.coord('depth').points,
                 lw=2,
-                c=color)
+                c=color,
+                label= scenario)
 
             plt.fill_betweenx(-1.*cube_hist.coord('depth').points,
                 cube_min.data - cube_hist.data,
@@ -303,9 +302,10 @@ def make_multi_model_profiles_plots(
         if figure_style == 'compare':
             cube_min = extract_levels(cube_min, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
             cube_max = extract_levels(cube_max, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
-            plt.plot(cube_mean.data, -1*.cube_mean.coord('depth').points,
+            plt.plot(cube_mean.data, -1.*cube_mean.coord('depth').points,
                 lw=2,
-                c=color)
+                c=color, 
+                label=scenario)
 
             plt.fill_betweenx(-1.*cube_mean.coord('depth').points,
                 cube_min.data,
@@ -331,15 +331,16 @@ def make_multi_model_profiles_plots(
     time_str = '-'.join([str(t) for t in time_range])
     # Add title to plot
     title = ' '.join([
-        metadata['dataset'],
-        metadata['long_name'],
+        short_name,
+        figure_style,
         time_str
         ])
 
     plt.title(title)
 
     # Add Legend outside right.
-    diagtools.add_legend_outside_right(plot_details, plt.gca())
+    plt.legend()
+    #diagtools.add_legend_outside_right(plot_details, plt.gca())
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -348,7 +349,7 @@ def make_multi_model_profiles_plots(
     path = diagtools.get_image_path(
             cfg,
             metadata,
-            prefix='_'.join(['multi_model/', 'multi_model', short_name, figure_style, str(time_str)]),
+            prefix='_'.join(['multi_model', short_name, figure_style, str(time_str)]),
             suffix='profile' + image_extention,
         )
 
@@ -397,15 +398,15 @@ def main(cfg):
     for time_range in time_ranges:
         for short_name in short_names.keys():
             for figure_style in ['compare', 'difference']:
-            make_multi_model_profiles_plots(
-                cfg,
-                metadatas,
-                short_name,
-                figure_style=figure_style,
-                obs_metadata=obs_metadata,
-                obs_filename=obs_filename,
-                time_range=time_range,
-            )
+                make_multi_model_profiles_plots(
+                    cfg,
+                    metadatas,
+                    short_name,
+                    figure_style=figure_style,
+                    obs_metadata=obs_metadata,
+                    obs_filename=obs_filename,
+                    time_range=time_range,
+                )
     return
 
     for index, metadata_filename in enumerate(cfg['input_files']):
