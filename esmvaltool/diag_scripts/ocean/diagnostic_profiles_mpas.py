@@ -54,6 +54,7 @@ import iris
 import iris.coord_categorisation
 import iris.exceptions
 import iris.quickplot as qplt
+import matplotlib
 import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
@@ -216,14 +217,16 @@ def extract_depth_range(cube, target_depths, drange='surface', threshold=1000.):
     """
     if drange == 'surface':
         cube = extract_volume(cube.copy(), 0., threshold)
-        target_depths = np.ma.masked_where(target_depths > threshold, target_depths).compresssed()
+        target_depths = np.ma.masked_where(target_depths > threshold, target_depths).compressed()
     elif drange == 'depths':
         cube = extract_volume(cube.copy(), threshold, target_depths.max())
-        target_depths = np.ma.masked_where(target_depths < threshold, target_depths).compresssed()
+        target_depths = np.ma.masked_where(target_depths < threshold, target_depths).compressed()
 
-    target_depths = sorted(np.append(target_depths, threshold))
+    if threshold not in target_depths:
+        target_depths = np.array(sorted(np.append(target_depths, threshold)))
 
-    extract_levels(cube, target_depths, "nearest_horizontal_extrapolate_vertical")
+    cube = extract_levels(cube, target_depths, "nearest_horizontal_extrapolate_vertical")
+    print("extract_depth_range", target_depths, cube.coord('depth').points)
     return target_depths, cube
 
 
@@ -265,9 +268,12 @@ def make_multi_model_profiles_plots(
     else:
         single_pane = False
 
-    gs0 =gs[0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
-    ax0 = gs0.add_subplot(1, 1,) # surface
-    ax1 = s0.add_subplot(1, 2, ) # depths
+    gs0 =gs[0,0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
+    #gs0 = gs[0].subgridspec(2, 1, hspace=0.35) # scatters
+    #gs1 = gs[1].subgridspec(3, 1, hspace=0.06 ) # maps
+        #scatters
+    ax0=fig.add_subplot(gs0[0,0]) # surface
+    ax1=fig.add_subplot(gs0[1,0]) # depths
 
     cubes = {}
     for filename, metadata in metadatas.items():
@@ -316,12 +322,12 @@ def make_multi_model_profiles_plots(
                 z_max, z_cube_max = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
                 z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
 
-                plt.plot(z_cube_mean.data - z_cube_hist.data, -1.*z_hist,
+                ax.plot(z_cube_mean.data - z_cube_hist.data, -1.*z_hist,
                     lw=2,
                     c=color,
                     label= scenario)
 
-                plt.fill_betweenx(-1.*z_hist,
+                ax.fill_betweenx(-1.*z_hist,
                     z_cube_min.data - z_cube_hist.data,
                     x2=z_cube_max.data - z_cube_hist.data,
                     alpha = 0.2,
@@ -332,12 +338,12 @@ def make_multi_model_profiles_plots(
                 z_max, z_cube_max = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
                 z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
 
-                plt.plot(z_cube_mean.data, -1.*z_mean,
+                ax.plot(z_cube_mean.data, -1.*z_mean,
                     lw=2,
                     c=color,
                     label=scenario)
 
-                plt.fill_betweenx(-1.*z_mean,
+                ax.fill_betweenx(-1.*z_mean,
                     z_cube_min.data,
                     x2=z_cube_max.data,
                     alpha = 0.2,
@@ -359,6 +365,25 @@ def make_multi_model_profiles_plots(
                                  'label': obs_key}
 
     time_str = '-'.join([str(t) for t in time_range])
+   
+    # set x axis limits:
+    xlims = np.array([ax0.get_xlim(), ax1.get_xlim()])
+    ax0.set_xlim([xlims.min(), xlims.max()])
+    ax1.set_xlim([xlims.min(), xlims.max()])
+
+    ylims = np.array([ax0.get_ylim(), ax1.get_ylim()])
+    ax0.set_ylim([-1000., ylims.max()])
+    ax1.set_ylim([ylims.min(), -1001.])
+
+    # hide between pane axes:
+    ax0.spines['bottom'].set_visible(False)
+    ax1.spines['top'].set_visible(False)
+
+#    ax0.fill_bewteen([xlims.min(), xlims.max()],[-1000., -1000.], [-975., -975.], color= 'k', alpha=0.2)
+#    ax1.fill_bewteen([xlims.min(), xlims.max()],[-1100., -1100.],[-1000., -1000.], color= 'k', alpha=0.2)
+
+    ax0.axhline(-999., ls='--', lw=2.5, c='black')
+
     # Add title to plot
     title = ' '.join([
         short_name,
@@ -366,10 +391,10 @@ def make_multi_model_profiles_plots(
         time_str
         ])
 
-    plt.title(title)
+    ax0.set_title(title)
 
     # Add Legend outside right.
-    plt.legend()
+    ax1.legend()
     #diagtools.add_legend_outside_right(plot_details, plt.gca())
 
     # Load image format extention
