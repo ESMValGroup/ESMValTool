@@ -59,6 +59,8 @@ import matplotlib.pyplot as plt
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvalcore.preprocessor._time import extract_time
+from esmvalcore.preprocessor._volume import extract_volume
+
 from esmvalcore.preprocessor._regrid import extract_levels
 
 # This part sends debug statements to stdout
@@ -204,6 +206,27 @@ def make_profiles_plots(
     plt.close()
 
 
+def extract_depth_range(cube, target_depths, drange='surface', threshold=1000.):
+    """
+    Extract either the top 1000m or everything below there.
+
+    drange can be surface or depths.
+
+    Assuming everything is 1D at this stage!
+    """
+    if drange == 'surface':
+        cube = extract_volume(cube.copy(), 0., threshold)
+        target_depths = np.ma.masked_where(target_depths > threshold, target_depths).compresssed()
+    elif drange == 'depths':
+        cube = extract_volume(cube.copy(), threshold, target_depths.max())
+        target_depths = np.ma.masked_where(target_depths < threshold, target_depths).compresssed()
+
+    target_depths = sorted(np.append(target_depths, threshold))
+
+    extract_levels(cube, target_depths, "nearest_horizontal_extrapolate_vertical")
+    return target_depths, cube
+
+
 def make_multi_model_profiles_plots(
         cfg,
         metadatas,
@@ -213,8 +236,7 @@ def make_multi_model_profiles_plots(
         time_range = [2040., 2050.],
         figure_style = 'difference',
         fig = None,
-        ax = None,
-
+        gs = None,
     ):
     """
     Make a profile plot for an individual model.
@@ -239,9 +261,13 @@ def make_multi_model_profiles_plots(
     if fig is None:
         single_pane = True
         fig = plt.figure()
-        ax = fig.add_subplot(111)
+        gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=1) # master
     else:
         single_pane = False
+
+    gs0 =gs[0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
+    ax0 = gs0.add_subplot(1, 1,) # surface
+    ax1 = s0.add_subplot(1, 2, ) # depths
 
     cubes = {}
     for filename, metadata in metadatas.items():
@@ -273,7 +299,7 @@ def make_multi_model_profiles_plots(
         cubes[(dataset, scenario, ensemble, 'max')]  = cube_max
 
     for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
-        if metric !=  'mean': continue
+        if metric != 'mean': continue
 
         cube_min = cubes[(dataset, scenario, ensemble, 'min')]
         cube_max = cubes[(dataset, scenario, ensemble, 'max')]
@@ -282,36 +308,40 @@ def make_multi_model_profiles_plots(
         color = diagtools.ipcc_colours[scenario]
         plot_details = {}
 
+        for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
 
-        if figure_style == 'difference':
-            cube_mean = extract_levels(cube_mean, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
-            cube_min = extract_levels(cube_min, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
-            cube_max = extract_levels(cube_max, cube_hist.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
+            if figure_style == 'difference':
+                z_hist, z_cube_hist = extract_depth_range(cube_hist, cube_hist.coord('depth').points, drange=drange)
+                z_min, z_cube_min = extract_depth_range(cube_min, cube_hist.coord('depth').points, drange=drange)
+                z_max, z_cube_max = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
+                z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_hist.coord('depth').points, drange=drange)
 
-            plt.plot(cube_mean.data - cube_hist.data, -1.*cube_hist.coord('depth').points,
-                lw=2,
-                c=color,
-                label= scenario)
+                plt.plot(z_cube_mean.data - z_cube_hist.data, -1.*z_hist,
+                    lw=2,
+                    c=color,
+                    label= scenario)
 
-            plt.fill_betweenx(-1.*cube_hist.coord('depth').points,
-                cube_min.data - cube_hist.data,
-                x2=cube_max.data - cube_hist.data,
-                alpha = 0.2,
-                color=color)
+                plt.fill_betweenx(-1.*z_hist,
+                    z_cube_min.data - z_cube_hist.data,
+                    x2=z_cube_max.data - z_cube_hist.data,
+                    alpha = 0.2,
+                    color=color)
 
-        if figure_style == 'compare':
-            cube_min = extract_levels(cube_min, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
-            cube_max = extract_levels(cube_max, cube_mean.coord('depth').points, "nearest_horizontal_extrapolate_vertical")
-            plt.plot(cube_mean.data, -1.*cube_mean.coord('depth').points,
-                lw=2,
-                c=color, 
-                label=scenario)
+            if figure_style == 'compare':
+                z_min, z_cube_min = extract_depth_range(cube_min, cube_mean.coord('depth').points, drange=drange)
+                z_max, z_cube_max = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
+                z_mean, z_cube_mean = extract_depth_range(cube_mean, cube_mean.coord('depth').points, drange=drange)
 
-            plt.fill_betweenx(-1.*cube_mean.coord('depth').points,
-                cube_min.data,
-                x2=cube_max.data,
-                alpha = 0.2,
-                color=color)
+                plt.plot(z_cube_mean.data, -1.*z_mean,
+                    lw=2,
+                    c=color,
+                    label=scenario)
+
+                plt.fill_betweenx(-1.*z_mean,
+                    z_cube_min.data,
+                    x2=z_cube_max.data,
+                    alpha = 0.2,
+                    color=color)
 
         plot_details[scenario] = {'c': color, 'ls': '-', 'lw': 1,
                                              'label': scenario}
