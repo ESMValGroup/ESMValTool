@@ -51,7 +51,18 @@ begin
   ; make sure required variables are available
   var_x = diag_script_info@var_x
   var_y = diag_script_info@var_y
-  varlist = (/var_x, var_y/)
+
+  ; special case: columnicefrac = clivi / (clivi + lwp)
+  ; note: clwvi is not used since it contains lwp only for some models
+  ;       (by error)
+
+  calcicefrac = False
+  if (var_y .eq. "columnicefrac") then
+    calcicefrac = True
+    varlist = (/var_x, "clivi", "lwp"/)
+  else
+    varlist = (/var_x, var_y/)
+  end if
   idx = new(dimsizes(varlist), integer)
 
   nVAR = dimsizes(varlist)
@@ -122,10 +133,10 @@ begin
   ; # get data #
   ; ############
 
-  info_x = select_metadata_by_name(input_file_info, var_x)
+  info_x = select_metadata_by_name(input_file_info, varlist(0))
   names_x = metadata_att_as_array(info_x, "dataset")
   projects_x = metadata_att_as_array(info_x, "project")
-  info_y = select_metadata_by_name(input_file_info, var_y)
+  info_y = select_metadata_by_name(input_file_info, varlist(1))
   names_y = metadata_att_as_array(info_y, "dataset")
   projects_y = metadata_att_as_array(info_y, "project")
 
@@ -152,10 +163,10 @@ begin
 
   do ii = 0, dim_MOD - 1
     atts_x = True
-    atts_x@short_name = var_x
+    atts_x@short_name = varlist(0)
 
     atts_y = True
-    atts_y@short_name = var_y
+    atts_y@short_name = varlist(1)
 
     ; reference datasets may have different names
     if (ii .eq. refidx_x) then
@@ -178,6 +189,28 @@ begin
     info = select_metadata_by_atts(input_file_info, atts_y)
     y = read_data(info[0])
     delete(info)
+
+    if (calcicefrac) then
+      atts_y@short_name = varlist(2)
+      info = select_metadata_by_atts(input_file_info, atts_y)
+      z = read_data(info[0])
+      delete(info)
+      min_mass = 1.0e-6
+      ; filter valid values (needed for some models)
+      y = where(y .lt. 0.0, y@_FillValue, y)
+      y = where(isnan_ieee(y), y@_FillValue, y)
+      z = where(z .lt. 0.0, z@_FillValue, z)
+      z = where(isnan_ieee(z), z@_FillValue, z)
+      mass = y + z
+      mass = where(mass .lt. min_mass, mass@_FillValue, mass)
+
+      ; ice fraction = ice / (ice + lwp) * 100%
+      y = 100.0 * y / mass
+
+      y@units = "%"
+      y@long_name = "cloud ice fraction"
+      y@var = "columnicefrac"
+    end if
 
     ; check dimensions
 
@@ -202,8 +235,8 @@ begin
 
     ; check dimensions
 
-    if ((dimsizes(dim_x) .ne. dimsizes(dim_y)) .or. (dimsizes(dim_x) .lt. 3) \
-      .or. (dimsizes(dim_x) .gt. 4)) then
+    if ((dimsizes(dims_x) .ne. dimsizes(dims_y)) .or. \
+        (dimsizes(dims_x) .lt. 3) .or. (dimsizes(dims_x) .gt. 4)) then
       error_msg("f", DIAG_SCRIPT, "", "all variables need to have the " + \
                 "same number of dimensions (time, [optional: level], " + \
                 "latitude, longitude)")
@@ -211,7 +244,7 @@ begin
 
     do i = 0, nVAR - 1
       var = variables(idx(i))
-      if (var .eq. var_x) then
+      if (var .eq. varlist(0)) then
         dims = getvardims(x)
       else
         dims = getvardims(y)
