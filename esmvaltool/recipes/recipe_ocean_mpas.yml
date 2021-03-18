@@ -36,9 +36,9 @@ preprocessors:
     custom_order: true
     extract_region: &mpa_region
       start_longitude: -17.25 #14.25W
-      end_longitude: -11.25 # 
+      end_longitude: -11.25 #
       start_latitude: -10.56 # -7.56
-      end_latitude: -4.56 # 
+      end_latitude: -4.56 #
     area_statistics:
       operator: mean
       fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
@@ -55,7 +55,7 @@ preprocessors:
       operator: mean
       fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
 
-  prep_regional_ts_3d_top: 
+  prep_regional_ts_3d_top:
     custom_order: true
     extract_region: *mpa_region
     extract_volume:
@@ -107,7 +107,7 @@ diagnostics:
 
   diag_timeseries_3:
     variables:
-      tos: 
+      tos:
         preprocessor: prep_regional_ts_2d
         additional_datasets: &additional_datasets
          - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
@@ -122,16 +122,16 @@ diagnostics:
          #- {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp370, ensemble: r1i1p1f2, start_year: 2015, end_year: 2025}
          #- {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: ssp585, ensemble: r1i1p1f2, start_year: 2015, end_year: 2025}
 
-      tob: 
+      tob:
         preprocessor: prep_regional_ts_2d
         additional_datasets: *additional_datasets
-      zos: 
+      zos:
         preprocessor: prep_regional_ts_2d
         additional_datasets: *additional_datasets
-      sos: 
+      sos:
         preprocessor: prep_regional_ts_2d
         additional_datasets: *additional_datasets
-      chl: 
+      chl:
         preprocessor: prep_regional_ts_3d_surface
 #        additional_datasets: &additional_datasets
 #         - {project: CMIP6, mip: Omon, grid: gn, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014}
@@ -143,21 +143,21 @@ diagnostics:
       ph:
         preprocessor: prep_regional_ts_3d_surface
         additional_datasets: *additional_datasets
-      intpp: 
+      intpp:
         preprocessor: prep_regional_ts_2d
         additional_datasets: *additional_datasets
-      no3: 
+      no3:
         preprocessor: prep_regional_ts_3d_surface
         additional_datasets: *additional_datasets
-#      vo: 
+#      vo:
 #        preprocessor: prep_regional_ts_3d_top
 #        additional_datasets: *additional_datasets
-#      uo: 
+#      uo:
 #        preprocessor: prep_regional_ts_3d_top
 #        additional_datasets: *additional_datasets
     scripts:
-      Regional_Ocean_Surface_mean_timeseries: 
-        script: ocean/diagnostic_timeseries.py
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries_mpas.py
 
   # --------------------------------------------------
   # Depth-profile diagnostics
@@ -167,7 +167,7 @@ diagnostics:
       thetao:
         preprocessor: prep_profile_2
         additional_datasets: *additional_datasets
-      o2: 
+      o2:
         preprocessor: prep_profile_2
         additional_datasets: *additional_datasets
       vo:
@@ -182,9 +182,9 @@ diagnostics:
         additional_datasets: *additional_datasets
 
     scripts:
-      Regional_Ocean_Surface_mean_profiles: 
+      Regional_Ocean_Surface_mean_profiles:
         script:
-        script: ocean/diagnostic_profiles.py
+        script: ocean/diagnostic_profiles_mpas.py
 
   # --------------------------------------------------
   # Regional maps
@@ -221,7 +221,7 @@ diagnostics:
         additional_datasets: *decadal_datasets
 
       ph_full:
-        short_name: ph 
+        short_name: ph
         preprocessor: prep_map_surf
         additional_datasets: *decadal_datasets
 
@@ -231,8 +231,6 @@ diagnostics:
         additional_datasets: *decadal_datasets
 
     scripts:
-      Regional_Ocean_Surface_decadal_maps: 
+      Regional_Ocean_Surface_decadal_maps:
         script:
         script: ocean/diagnostic_maps.py
-
-
