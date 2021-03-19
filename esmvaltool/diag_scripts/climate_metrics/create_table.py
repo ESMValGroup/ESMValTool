@@ -39,9 +39,12 @@ import iris
 import numpy as np
 import pandas as pd
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename, io,
-                                            run_diagnostic)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    io,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
