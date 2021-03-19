@@ -170,8 +170,6 @@ ECS_CMIP6_RTMT: &ecs_cmip6_rtmt
   # branch_time_in_child weird
   - {dataset: MCM-UA-1-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   - {dataset: MCM-UA-1-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
-  - {dataset: UKESM1-0-LL,     exp: piControl,    ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2109}
-  - {dataset: UKESM1-0-LL,     exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
 
 TCR_CMIP5: &tcr_cmip5
   - {dataset: ACCESS1-0,     exp: piControl, start_year:  300, end_year:  439}
