@@ -66,7 +66,7 @@ It is the responsibility of the author to make sure the pull request is ready to
 
 ***
 
-To help with the number pull requests:
+To help with the number of pull requests:
 
 -  🙏 We kindly ask you to [review](https://docs.esmvaltool.org/en/latest/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
 
