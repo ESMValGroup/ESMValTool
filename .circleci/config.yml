@@ -224,11 +224,10 @@ jobs:
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
-            # Create and activate conda environment
-            conda create -y --name esmvaltool
+            # Install ESMValTool in a new conda environment
+            conda create -y --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool 'python=3.9'
+            # Activate the environment
             set +x; conda activate esmvaltool; set -x
-            # Install
-            conda install -y esmvaltool -c conda-forge -c esmvalgroup
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation

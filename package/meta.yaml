@@ -97,6 +97,7 @@ outputs:
         - python>=3.7
         - python-cdo
         - pyyaml
+        - ruamel.yaml
         - rasterio  # replaces pynio
         - scikit-image
         - scikit-learn
