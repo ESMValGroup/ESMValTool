@@ -13,10 +13,7 @@ documentation:
     - schlund_manuel
 
   references:
-    - flato13ipcc
-
-  projects:
-    - crescendo
+    - meehl20sciadv
 
 
 preprocessors:
@@ -28,8 +25,6 @@ preprocessors:
 
 
 ECS_CMIP5_RTNT: &ecs_cmip5_rtnt
-  # Models with missing data (on all ESGF nodes)
-  # EC-EARTH (no rsut)
   - {dataset: ACCESS1-0,     exp: piControl,   start_year:  300, end_year:  449}
   - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year:  300, end_year:  449}
   - {dataset: ACCESS1-3,     exp: piControl,   start_year:  250, end_year:  399}
@@ -89,10 +84,6 @@ ECS_CMIP5_RTNT: &ecs_cmip5_rtnt
   - {dataset: NorESM1-M,     exp: piControl,   start_year:  700, end_year:  849}
   - {dataset: NorESM1-M,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
 
-ECS_CMIP5_RTMT: &ecs_cmip5_rtmt
-  - {dataset: IPSL-CM5A-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
-  - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-
 ECS_CMIP6_RTNT: &ecs_cmip6_rtnt
   - {dataset: ACCESS-CM2,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-CM2,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
@@ -108,8 +99,6 @@ ECS_CMIP6_RTNT: &ecs_cmip6_rtnt
   - {dataset: CAMS-CSM1-0,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
   - {dataset: CanESM5,         exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5350}
   - {dataset: CanESM5,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-  - {dataset: CAS-ESM2-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: CAS}
-  - {dataset: CAS-ESM2-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: CAS}
   - {dataset: CESM2,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   - {dataset: CESM2,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   - {dataset: CESM2-FV2,       exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  321, end_year:  470, institute: NCAR}
@@ -168,8 +157,6 @@ ECS_CMIP6_RTNT: &ecs_cmip6_rtnt
   - {dataset: NESM3,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: NorCPM1,         exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  251, end_year:  400, institute: NCC}
   - {dataset: NorCPM1,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCC}
-  - {dataset: NorESM2-LM,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1600, end_year: 1749}
-  - {dataset: NorESM2-LM,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   - {dataset: NorESM2-MM,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1201, end_year: 1350}
   - {dataset: NorESM2-MM,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   # Issue #286 (manual copying was necessary)
@@ -260,9 +247,6 @@ TCR_CMIP6: &tcr_cmip6
   - {dataset: CAMS-CSM1-0,     exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gn,  start_year: 3030, end_year: 3169}
   - {dataset: CanESM5,         exp: piControl, ensemble: r1i1p1f1,   grid: gn,  start_year: 5201, end_year: 5340}
   - {dataset: CanESM5,         exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gn,  start_year: 1850, end_year: 1989}
-  # parent_time_units messed up
-  - {dataset: CAS-ESM2-0,      exp: piControl, ensemble: r1i1p1f1,   grid: gn,  start_year:  250, end_year:  389, institute: CAS}
-  - {dataset: CAS-ESM2-0,      exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gn,  start_year:  250, end_year:  389, institute: CAS}
   - {dataset: CESM2,           exp: piControl, ensemble: r1i1p1f1,   grid: gn,  start_year:  501, end_year:  640}
   - {dataset: CESM2,           exp: 1pctCO2,   ensemble: r1i1p1f1,   grid: gn,  start_year:    1, end_year:  140}
   - {dataset: CESM2-FV2,       exp: piControl, ensemble: r1i1p1f1,   grid: gn,  start_year:  321, end_year:  460, institute: NCAR}
@@ -351,18 +335,11 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         additional_datasets: *ecs_cmip5_rtnt
-      tas_rtmt:
-        <<: *variable_settings_cmip5
-        additional_datasets: *ecs_cmip5_rtmt
       rtnt:
         <<: *variable_settings_cmip5
         short_name: rtnt
         derive: true
         additional_datasets: *ecs_cmip5_rtnt
-      rtmt:
-        <<: *variable_settings_cmip5
-        short_name: rtmt
-        additional_datasets: *ecs_cmip5_rtmt
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py

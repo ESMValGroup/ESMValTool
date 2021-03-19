@@ -39,7 +39,8 @@ import iris
 import numpy as np
 import pandas as pd
 
-from esmvaltool.diag_scripts.shared import (get_diagnostic_filename, io,
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename, io,
                                             run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -50,15 +51,17 @@ PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
 
 def _add_numerical_index(data_frame, exclude_datasets):
     """Get numerical index."""
-    data_frame['idx'] = np.arange(len(data_frame.index)) + 1
+    data_frame.loc[:, 'idx'] = np.arange(len(data_frame.index)) + 1
     for exclude_dataset in exclude_datasets:
         idx_exclude_dataset = (data_frame.index.get_level_values('dataset') ==
                                exclude_dataset)
         data_frame.loc[idx_exclude_dataset, 'idx'] = EXCLUDE_VAL
     idx_exclude_vals = (data_frame['idx'] == EXCLUDE_VAL).to_numpy().nonzero()
     for idx in idx_exclude_vals[0]:
-        data_frame.loc[:, 'idx'].iloc[idx + 1:] -= 1
-        data_frame.loc[:, 'idx'].iloc[idx] = EXCLUDE_VAL
+        rows_above_exclude = data_frame.index[idx + 1:]
+        row_to_exclude = data_frame.index[idx]
+        data_frame.loc[rows_above_exclude, 'idx'] -= 1
+        data_frame.loc[row_to_exclude, 'idx'] = EXCLUDE_VAL
     data_frame = data_frame.set_index('idx', append=True)
     return data_frame
 
@@ -126,7 +129,8 @@ def create_data_frame(input_files, exclude_datasets):
 
         # Expand index
         for row in series.index.difference(data_frame.index):
-            data_frame = data_frame.append(pd.Series(name=row))
+            data_frame = data_frame.append(pd.Series(name=row,
+                                                     dtype=cube.dtype))
 
         # Add new data
         if cube.var_name in data_frame.columns:
@@ -141,7 +145,7 @@ def create_data_frame(input_files, exclude_datasets):
                             f"'{row}': {series.loc[row]:e} and "
                             f"{data_frame.loc[row, cube.var_name]:e}")
         else:
-            data_frame[cube.var_name] = series
+            data_frame.loc[:, cube.var_name] = series
 
     # Sort and add numerical index for labels
     data_frame.index.names = ['project', 'dataset']
@@ -149,6 +153,22 @@ def create_data_frame(input_files, exclude_datasets):
     data_frame = _add_numerical_index(data_frame, exclude_datasets)
 
     return data_frame
+
+
+def write_provenance(cfg, filename, data_frame, ancestors):
+    """Write provenance information."""
+    variables = ', '.join(data_frame.columns)
+    projects = ', '.join(list(set(data_frame.index.get_level_values(0))))
+    caption = (f"Table including variable(s) {variables} for datasets of "
+               f"project(s) {projects}.")
+    provenance_record = {
+        'caption': caption,
+        'authors': ['schlund_manuel'],
+        'references': ['acknow_project'],
+        'ancestors': ancestors,
+    }
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, provenance_record)
 
 
 def main(cfg):
@@ -185,6 +205,9 @@ def main(cfg):
     logger.info("Wrote %s", csv_path)
     with pd.option_context(*PANDAS_PRINT_OPTIONS):
         logger.info("Data:\n%s", data_frame)
+
+    # Provenance
+    write_provenance(cfg, csv_path, data_frame, input_files)
 
 
 if __name__ == '__main__':
