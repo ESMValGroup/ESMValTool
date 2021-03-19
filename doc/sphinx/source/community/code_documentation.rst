@@ -69,6 +69,9 @@ If you are unsure about something on the list, please ask the
 by commenting on your (draft) pull request or by starting a new
 `discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__.
 
+In the ESMValTool community we use
+:ref:`pull request reviews <reviewing>` to ensure all code and
+documentation contributions are of good quality.
 The icons indicate whether the item will be checked during the
 :ref:`🛠 Technical review <technical_review>` or
 :ref:`🧪 Scientific review <scientific_review>`.
@@ -134,7 +137,7 @@ This includes checks for invalid syntax and formatting errors.
 :ref:`pre-commit` is a handy tool that can run all of these checks automatically
 just before you commit your code.
 It knows knows which tool to run for each filetype, and therefore provides
-a convenient way to check your code!
+a convenient way to check your code.
 
 Python
 ~~~~~~
@@ -146,6 +149,43 @@ We make use of
 `numpy style docstrings <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html>`__
 to document Python functions that are visible on
 `readthedocs <https://docs.esmvaltool.org>`__.
+
+To check if your code adheres to the standard, go to the directory where
+the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`_
+
+::
+
+   prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
+
+In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
+to automatically check for obvious bugs and formatting mistakes.
+
+When you make a pull request, adherence of the Python development best practices
+is checked in two ways:
+
+#. As part of the unit tests, flake8_ is run by
+   `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_,
+   see the section on Tests_ for more information.
+#. `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
+   is a service that runs prospector (and other code quality tools) on changed
+   files and reports the results.
+   Click the 'Details' link behind the Codacy check entry and then click
+   'View more details on Codacy Production' to see the results of the static
+   code analysis done by Codacy_.
+   If you need to log in, you can do so using your GitHub account.
+
+A pull request should preferably not introduce any new prospector issues.
+However, we understand that there is a limit to how much time can be spent on
+polishing code, so up to 10 new (non-trivial) issues is still an acceptable
+amount.
+Formatting issues are considered trivial and need to be addressed.
+Note that the automatic code quality checks by prospector are really helpful to
+improve the quality of your code, but they are not flawless.
+If you suspect prospector or Codacy may be wrong, please ask the
+`@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
+
+Note that running prospector locally will give you quicker and sometimes more
+accurate results than waiting for Codacy.
 
 Most formatting issues in Python code can be fixed automatically by
 running the commands
@@ -167,43 +207,8 @@ to add/remove whitespace as required by the standard using `yapf <https://github
 
    docformatter -i some_file.py
 
-to run `docformatter <https://github.com/myint/docformatter>`__ which helps formatting the doc strings (such as line length, spaces).
-
-To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`_
-
-::
-
-   prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
-
-In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
-to automatically check for obvious bugs and formatting mistakes.
-
-When you make a pull request, adherence of the Python development best practices
-is checked in two ways:
-
-#. As part of the unit tests, flake8_ is run by CircleCI_, see the section on
-   Tests_ for more information.
-#. `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
-   is a service that runs prospector (and other code quality tools) on changed
-   files and reports the results.
-   Click the 'Details' link behind the Codacy check entry and then click
-   'View more details on Codacy Production' to see the results of the static
-   code analysis done by Codacy_.
-   If you need to log in, you can do so using your GitHub account.
-
-A pull request should preferably not introduce any new prospector issues.
-However, we understand that there is a limit to how much time can be spent on
-polishing code, so up to 10 new (non-trivial) issues is still an acceptable
-amount.
-Formatting issues are considered trivial and need to be addressed.
-Note that the automatic code quality checks by prospector are really helpful to
-improve the quality of your code, but they are not flawless.
-If you suspect prospector or Codacy may be wrong, please ask the
-`@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
-
-Note that running prospector locally will give you quicker and sometimes more
-accurate results than waiting for Codacy.
+to run `docformatter <https://github.com/myint/docformatter>`__ which helps
+formatting the docstrings (such as line length, spaces).
 
 NCL
 ~~~
@@ -234,8 +239,10 @@ to assess the quality of R code.
 YAML
 ~~~~
 
-Please use ``yamllint`` to check that your YAML files do not contain
-mistakes.
+Please use `yamllint <https://yamllint.readthedocs.io>`_ to check that your
+YAML files do not contain mistakes.
+``yamllint`` checks for valid syntax, common mistakes like key repetition and
+cosmetic problems such as line length, trailing spaces, wrong indentation, etc.
 When the tool complains about the maximum line length or too many spaces, please
 use your own best judgement about whether solving the issue will make your
 recipe more readable.
@@ -316,8 +323,7 @@ or
 to build it from scratch.
 Make sure that your newly added documentation builds without warnings or
 errors and looks correctly formatted.
-`CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_
-will build the documentation with the command
+CircleCI_ will build the documentation with the command
 
 .. code-block:: bash
 
@@ -331,6 +337,8 @@ The configuration file for Sphinx_ is
 When reviewing a pull request, always check that the documentation checks
 shown below the pull request were successful.
 Successful checks have a green ✓ in front, a ❌ means the test job failed.
+
+.. _esmvalcore-documentation-integration:
 
 Integration with the ESMValCore documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
