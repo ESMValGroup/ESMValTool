@@ -245,6 +245,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cube.long_name = definition.long_name
 
     # Convert units if required
+    cube.units = '1'
     cube.convert_units(definition.units)
 
     # Set global attributes
