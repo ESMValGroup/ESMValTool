@@ -35,6 +35,8 @@
 ;   treat_var_as_error: treat variable as error when averaging (true, false)
 ;                       true:  avg = sqrt(mean(var*var))
 ;                       false: avg = mean(var)
+;   var:                short_name of variable to process (default = "" - use
+;                       first variable in variable list)
 ;
 ; Required variable attributes (variable specific)
 ;   none
@@ -49,6 +51,8 @@
 ;   none
 ;
 ; Modification history
+;   20210318-lauer_axel: added option to speficfy variable if more than one
+;                        variable is present
 ;   20190220-lauer_axel: added output of provenance (v2.0)
 ;   20181119-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -71,19 +75,6 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
-  var0 = variable_info[0]@short_name
-  info0 = select_metadata_by_name(input_file_info, var0)
-  dim_MOD = ListCount(info0)
-  if (isatt(variable_info[0], "reference_dataset")) then
-    refname = variable_info[0]@reference_dataset
-  end if
-  names = metadata_att_as_array(info0, "dataset")
-  projects = metadata_att_as_array(info0, "project")
-
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
-  log_info("++++++++++++++++++++++++++++++++++++++++++")
-
   ; Set default values for non-required diag_script_info attributes
 
   set_default_att(diag_script_info, "embrace_setup", False)
@@ -95,6 +86,33 @@ begin
   set_default_att(diag_script_info, "showdiff", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
   set_default_att(diag_script_info, "treat_var_as_error", False)
+  set_default_att(diag_script_info, "var", "")
+
+  if (diag_script_info@var .eq. "") then
+    var0 = variable_info[0]@short_name
+  else
+    var0 = diag_script_info@var
+  end if
+
+  variables = metadata_att_as_array(variable_info, "short_name")
+  varidx = ind(variables .eq. var0)
+  if (ismissing(varidx)) then
+    errstr = "diagnostic " + diag + " requires the following variable: var0"
+    error_msg("f", DIAG_SCRIPT, "", errstr)
+  end if
+
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info0)
+
+  if (isatt(variable_info[varidx], "reference_dataset")) then
+    refname = variable_info[varidx]@reference_dataset
+  end if
+  names = metadata_att_as_array(info0, "dataset")
+  projects = metadata_att_as_array(info0, "project")
+
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
+  log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   flag_diff = diag_script_info@showdiff
   flag_rel_diff = diag_script_info@rel_diff
@@ -421,14 +439,14 @@ begin
       data1@diag_script = (/DIAG_SCRIPT/)
     end if
 
-    if (isatt(variable_info[0], "long_name")) then
-      data1@var_long_name = variable_info[0]@long_name
+    if (isatt(variable_info[varidx], "long_name")) then
+      data1@var_long_name = variable_info[varidx]@long_name
     end if
 
     data1@var = var0
 
-    if (isatt(variable_info[0], "units")) then
-      data1@var_units = variable_info[0]@units
+    if (isatt(variable_info[varidx], "units")) then
+      data1@var_units = variable_info[varidx]@units
     else
       data1@var_units = ""
     end if
@@ -702,15 +720,15 @@ begin
         end if
 
         if (var0.eq."swcre") then
-          data1@res_cnLevels          = ispan(-30, 30, 5)
+          diff@res_cnLevels          = ispan(-30, 30, 5)
         end if
 
         if (var0.eq."lwcre") then
-          data1@res_cnLevels          = ispan(-30, 30, 5)
+          diff@res_cnLevels          = ispan(-30, 30, 5)
         end if
 
         if (var0.eq."netcre") then
-          data1@res_cnLevels          = ispan(-30, 30, 5)
+          diff@res_cnLevels          = ispan(-30, 30, 5)
         end if
 
         ; ******************************************************

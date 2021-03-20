@@ -148,7 +148,8 @@ begin
     refidx_y = -1
   end if
 
-  result = new((/dim_MOD, nbins/), float)
+  result_avg = new((/dim_MOD, nbins/), float)
+  result_std = new((/dim_MOD, nbins/), float)
   bincenter = new((/nbins/), float)
 
   xmax = diag_script_info@xmax
@@ -297,9 +298,11 @@ begin
       x1 = x0 + binsize
       idx0 = ind((x1d .gt. x0) .and. (x1d .le. x1))
       if (.not.all(ismissing(idx0))) then
-        result(ii, n) = avg(y1d(idx0))
+        result_avg(ii, n) = avg(y1d(idx0))
+        result_std(ii, n) = stddev(y1d(idx0))
       else
-        result(ii, n) = result@_FillValue
+        result_avg(ii, n) = result_avg@_FillValue
+        result_std(ii, n) = result_std@_FillValue
       end if
       delete(idx0)
     end do
@@ -318,7 +321,7 @@ begin
     idx0 = ind((imod .ne. refidx_x) .and. (imod .ne. mm_ind))
     if (.not.all(ismissing(idx0))) then
       do n = 0, nbins - 1
-        mmstd(n) = stddev(result(idx0, n))
+        mmstd(n) = stddev(result_avg(idx0, n))
       end do
     end if
     delete(idx0)
@@ -334,24 +337,30 @@ begin
   nc_filename = work_dir + "clouds_scatter_" + var_x + "_" + var_y + \
     filename_add + ".nc"
 
-  result!0 = "model"
-  result!1 = "bin"
+  result_avg!0 = "model"
+  result_avg!1 = "bin"
 
-  result&model = str_sub_str(names, "/", "-")
-  result&bin = bincenter
+  result_avg&model = str_sub_str(names, "/", "-")
+  result_avg&bin = bincenter
 
-  result@diag_script = (/DIAG_SCRIPT/)
-  result@var = var_y
-  result@var_long_name = long_name
-  result@var_units = units
+  result_avg@diag_script = (/DIAG_SCRIPT/)
+  result_avg@var = var_y
+  result_avg@var_long_name = long_name
+  result_avg@var_units = units
 
-  nc_outfile = ncdf_write(result, nc_filename)
+  nc_outfile = ncdf_write(result_avg, nc_filename)
 
   ; ###########################################
   ; # create the plots                        #
   ; ###########################################
 
   plots = new(dim_MOD, graphic)
+  stdbar = new((/nbins, dim_MOD/), graphic)
+  centers = new((/nbins, dim_MOD/), graphic)
+  centersout = new((/nbins, dim_MOD/), graphic)
+  stdbarR = new((/nbins, dim_MOD/), graphic)
+  centersR = new((/nbins, dim_MOD/), graphic)
+  centersRout = new((/nbins, dim_MOD/), graphic)
   res = True
 
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_scatter_" + \
@@ -359,7 +368,7 @@ begin
 
   data = new((/2, nbins/), float)
   if (ref_ind .gt. 0) then
-    data(0, :) = result(ref_ind, :)
+    data(0, :) = result_avg(ref_ind, :)
   else
     data(0, :) = data@_FillValue
   end if
@@ -369,41 +378,80 @@ begin
       continue
     end if
 
-    res@gsnDraw        = False  ; do not draw yet
-    res@gsnFrame       = False  ; don't advance frame
-
-    res@xyMarkLineMode    = "Markers"
-    res@xyMarkers         = (/4, 16/)
-    res@xyMonoMarkerColor = False
-    res@xyMarkerColors    = (/"black", "red"/)
-    res@xyMarkerSizeF     = 0.01
-    res@tmLabelAutoStride = True
-
-    res@tiMainFontHeightF = 0.025
+    res@gsnDraw            = False  ; do not draw yet
+    res@gsnFrame           = False  ; don't advance frame
+    res@xyMarkLineMode     = "MarkLines"
+    res@xyDashPatterns     = (/0., 0./)
+    res@tmLabelAutoStride  = True
+    res@xyLineThicknesses  = (/2.0, 2.0/)
+    res@xyLineColors       = (/"black", "red"/)
+    res@tiMainFontHeightF  = 0.025
     res@tiYAxisFontHeightF = 0.025
     res@tiXAxisFontHeightF = 0.025
-    res@tiXAxisString = var_x + " (" + xunits + ")"
-    res@tiYAxisString = var_y + " (" + units + ")"
+    res@tiXAxisString      = var_x + " (" + xunits + ")"
+    res@tiYAxisString      = var_y + " (" + units + ")"
 
-    data(1, :) = result(ii, :)
+    polyres                  = True
+    polyres@gsMarkerSizeF    = 0.01
+    polyres@gsLineColor      = "red"
+    polyres@gsLineThicknessF = 1.0
+
+    polyresRef = True
+    polyresRef@gsMarkerSizeF    = 0.01
+    polyresRef@gsLineColor      = "black"
+    polyresRef@gsLineThicknessF = 1.0
+
+    data(1, :) = result_avg(ii, :)
 
     res@tiMainString = names(ii)
 
-    plots(ii) = gsn_csm_xy(wks, result&bin, data, res)
+    plots(ii) = gsn_csm_xy(wks, result_avg&bin, data, res)
 
     if (ii .eq. mm_ind) then
       res_std = True
-      res_std@gsnDraw        = False  ; do not draw yet
-      res_std@gsnFrame       = False  ; don't advance frame
+      res_std@gsnDraw         = False   ; do not draw yet
+      res_std@gsnFrame        = False  ; don't advance frame
       res_std@gsnXYFillColors = "lightpink"
-      res_std@xyLineColor = -1  ; Make lines transparent
+      res_std@xyLineColor     = -1  ; Make lines transparent
       mmstddev = new((/2, nbins/), float)
-      mmstddev(0, :) = result(mm_ind, :) - mmstd(:)
-      mmstddev(1, :) = result(mm_ind, :) + mmstd(:)
-      plotstd = gsn_csm_xy(wks, result&bin, mmstddev, res_std)
+      mmstddev(0, :) = result_avg(mm_ind, :) - mmstd(:)
+      mmstddev(1, :) = result_avg(mm_ind, :) + mmstd(:)
+      plotstd = gsn_csm_xy(wks, result_avg&bin, mmstddev, res_std)
       delete(mmstddev)
       overlay(plots(ii), plotstd)
     end if
+
+    do i = 0, nbins - 1
+      y0 = result_avg(ii, i)
+      if (.not.ismissing(y0)) then
+        x0 = result_avg&bin(i)
+        stdbar(i, ii) = gsn_add_polyline(wks, plots(ii), (/x0, x0/), \
+          (/y0 + result_std(ii, i), y0 - result_std(ii, i)/), polyres)
+        polyres@gsMarkerIndex = 16
+        polyres@gsMarkerColor = "red"
+        centers(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
+          (/y0, y0/), polyres)
+        polyres@gsMarkerIndex = 4
+        polyres@gsMarkerColor = "black"
+        centersout(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
+          (/y0, y0/), polyres)
+      end if
+      y0 = result_avg(ref_ind, i)
+      if (.not.ismissing(y0)) then
+        x0 = result_avg&bin(i)
+        stdbarR(i, ii) = gsn_add_polyline(wks, plots(ii), (/x0, x0/), \
+          (/y0 + result_std(ref_ind, i), y0 - result_std(ref_ind, i)/), \
+           polyresRef)
+        polyresRef@gsMarkerIndex = 16
+        polyresRef@gsMarkerColor = "white"
+        centersR(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
+          (/y0, y0/), polyresRef)
+        polyresRef@gsMarkerIndex = 4
+        polyresRef@gsMarkerColor = "black"
+        centersRout(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
+          (/y0, y0/), polyresRef)
+      end if
+    end do
 
     draw(plots(ii))
     frame(wks)

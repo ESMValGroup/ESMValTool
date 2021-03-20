@@ -47,6 +47,8 @@
 ;   valid_fraction:  used for creating sea ice mask (mask_ts_sea_ice = true):
 ;                    fraction of valid time steps required to mask grid cell
 ;                    as valid data
+;   var:             short_name of variable to process (default = "" - use
+;                    first variable in variable list)
 ;
 ; Required variable_info attributes (variable specific)
 ;   reference_dataset: name of reference data set
@@ -67,6 +69,8 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20210318-lauer_axel: added option to speficfy variable if more than one
+;                        variable is present
 ;   20190221-lauer_axel: added provenance to output (v2.0)
 ;   20181120-lauer_axel: adapted code to multi-variable capable framework
 ;   20180923-lauer_axel: added writing of results to netcdf
@@ -101,6 +105,7 @@ begin
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
   set_default_att(diag_script_info, "valid_fraction", 0.5)
+  set_default_att(diag_script_info, "var", "")
 
   estimate_obs_uncertainty = diag_script_info@estimate_obs_uncertainty
 
@@ -113,18 +118,12 @@ begin
   mainvarind = 0  ; default = main variable is first (and only) variable
   errvarind = -1  ; default = no error estimate available
 
-  if (numvars.gt.1) then
-    ; uncertainty estimates are identified by "err" in their short_name
-    do i = 0, numvars - 1
-      if (isStrSubset(variables(i), "err")) then
-        errvarind = i
-        break
-      end if
-    end do
-    ; now find the main variable:
+  if (diag_script_info@var .eq. "") then
     ; it is assumed that the main variable is either the first non-error
     ; variable or the first "derived" variable
-    idx = ind(ispan(0, numvars - 1, 1) .ne. errvarind)
+
+    ivar = ispan(0, numvars - 1, 1)
+    idx = ind(.not.(isStrSubset(variables(ivar), "err")))
     mainvarind = idx(0)  ; first non-error variable
     ; now check for possibly derived variables
     do ii = 1, dimsizes(idx) - 1
@@ -141,10 +140,31 @@ begin
         end if
       end do
     end do
+    var0 = variable_info[mainvarind]@short_name
   else
+    mainvarind = ind(variables .eq. diag_script_info@var)
+    var0 = diag_script_info@var
   end if
 
-  var0 = variable_info[mainvarind]@short_name
+  if (ismissing(mainvarind)) then
+    errstr = "diagnostic " + diag + " requires the following variable: var0"
+    error_msg("f", DIAG_SCRIPT, "", errstr)
+  end if
+
+  ; check if corresponding uncertainty estimates are available;
+  ; uncertainty estimates are identified by "err" in their short_name
+
+  if (numvars.gt.1) then
+    ; uncertainty estimates are identified by "err" in their short_name
+    do i = 0, numvars - 1
+      if (isStrSubset(variables(i), var0) .and. \
+          isStrSubset(variables(i), "err")) then
+        errvarind = i
+        break
+      end if
+    end do
+  end if
+
   info0 = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info0)
   if (isatt(variable_info[mainvarind], "reference_dataset")) then
