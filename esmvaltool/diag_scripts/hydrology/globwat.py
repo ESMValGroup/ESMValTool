@@ -15,9 +15,10 @@ import pandas as pd
 import dask.array as da
 import iris
 
+from esmvalcore.preprocessor import regrid
 from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
-from esmvaltool.diag_scripts.hydrology.lazy_regrid import lazy_regrid
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger, 
+from esmvaltool.diag_scripts.hydrology.compute_chunks import compute_chunks
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata,
                                             run_diagnostic)
@@ -44,6 +45,13 @@ def create_provenance_record():
         'ancestors': [],
     }
     return record
+
+
+def rechunk_and_regrid(src, tgt, scheme):
+    """Rechunk cube src and regrid it onto the grid of cube tgt."""
+    src_chunks = compute_chunks(src, tgt)
+    src.data = src.lazy_data().rechunk(src_chunks)
+    return regrid(src, tgt, scheme)
 
 
 def change_data_type(cube):
@@ -231,12 +239,12 @@ def make_filename(dataset_name, cfg, cube, extension='asc'):
         pet_method = pet_method_name
     else:
         pet_method = ''
-    
+
     base_name = (f"globwat_{dataset_name}_{mip}_{short_name}_{pet_method}"
-                f"{time_stamp}")
+                 f"{time_stamp}")
     filename = get_diagnostic_filename(base_name, cfg, extension=extension)
-    
     return filename
+
 
 def _shift_era5_time_coordinate(cube):
     """Shift instantaneous variables 30 minutes forward in time.
@@ -303,7 +311,7 @@ def main(cfg):
             _convert_units(cube)
 
             # Re-grid data according to the target cube
-            cube = lazy_regrid(cube, target_cube, cfg['regrid_scheme'])
+            cube = rechunk_and_regrid(cube, target_cube, cfg['regrid_scheme'])
 
             # Reindex data to a global coordinates set
             cube = _reindex_data(cube, target_cube)
