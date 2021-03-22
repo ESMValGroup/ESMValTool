@@ -151,7 +151,6 @@ diagnostics:
           - {dataset: FGOALS-f3-L,     ensemble: r1i1p1f1,   grid: gr,  start_year: 1850, end_year: 1989}
           - {dataset: GFDL-CM4,        ensemble: r1i1p1f1,   grid: gr1, start_year:    1, end_year:  140}
           - {dataset: GFDL-ESM4,       ensemble: r1i1p1f1,   grid: gr1, start_year:    1, end_year:  140}
-          - {dataset: GISS-E2-1-G,     ensemble: r101i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: GISS-E2-1-H,     ensemble: r1i1p1f1,   grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: GISS-E2-2-G,     ensemble: r1i1p1f1,   grid: gn,  start_year: 1850, end_year: 1989, institute: NASA-GISS}
           # Mixed ensemble members!
@@ -206,7 +205,6 @@ diagnostics:
           # Wrong start year (must be 101)
           - {dataset: GFDL-CM4,        ensemble: r1i1p1f1,   grid: gr1, start_year:  151, end_year:  290}
           - {dataset: GFDL-ESM4,       ensemble: r1i1p1f1,   grid: gr1, start_year:  101, end_year:  240}
-          - {dataset: GISS-E2-1-G,     ensemble: r101i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: GISS-E2-1-H,     ensemble: r1i1p1f1,   grid: gn,  start_year: 3180, end_year: 3319}
           - {dataset: GISS-E2-2-G,     ensemble: r1i1p1f1,   grid: gn,  start_year: 2000, end_year: 2139, institute: NASA-GISS}
           # Mixed ensemble members!
