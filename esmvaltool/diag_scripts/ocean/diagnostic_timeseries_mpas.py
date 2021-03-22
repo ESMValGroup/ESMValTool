@@ -409,19 +409,60 @@ def multi_model_clim_figure(
     cfg,
     metadatas,
     short_name,
+    figure_style = 'plot_all_years'
     ):
     """
     produce a monthly climatology figure.
     """
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
     for filename, metadata in metadatas.items():
         if short_name != metadata['short_name']:
             continue
+        scenario = metadata['exp']
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadata['short_name'])
+
         if not cube.coords('year'):
             iris.coord_categorisation.add_year(cube, 'time')
-        if not cube.coords('month'):
-            iris.coord_categorisation.add_month(cube, 'time')
+
+        if not cube.coords('month_number'):
+            iris.coord_categorisation.add_month_number(cube, 'time', name='month_number')
+
+        months =  cube.coord('month_number').points
+        years = cube.coord('year').points
+        years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
+        data = cube.data
+
+        if figure_style == 'plot_all_years':
+            for year in years_range:
+                t = np.ma.masked_where(years!= year, months)
+                d =  np.ma.masked_where(years!= year, data)
+                plt.plot(t, d, color = ipcc_colours[scenario], lw = 0.4)
+
+        if figure_style == 'mean_and_range':
+            cube_mean = cube.copy().collapsed('month_number', iris.analysis.MEAN)
+            cube_min = cube.copy().collapsed('month_number', iris.analysis.MIN)
+            cube_max = cube.copy().collapsed('month_number', iris.analysis.MAX)
+
+            plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2.)
+            ply.fill_between(cube_mean.coord('month_number').points,
+                    cube_min.data,
+                    cube_max.data,
+                    alpha = 0.2,
+                    color=ipcc_colours[scenario])
+
+    title = ' '.join([short_name])
+    # save and close.
+    path = diagtools.folder(cfg['plot_dir'])
+    path += '_'.join(['multi_model_clim', short_name, figure_style])
+    path += diagtools.get_image_format(cfg
+
+    logger.info('Saving plots to %s', path)
+    plt.savefig(path)
+    plt.close()
+
 
 def main(cfg):
     """
@@ -434,18 +475,21 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+
     moving_average_str = cfg.get('moving_average', None)
     short_names = {}
     for fn, metadata in metadatas.items():
         short_names[metadata['short_name']] = True
 
     for short_name in short_names.keys():
+        for figure_style in ['plot_all_years', 'mean_and_range']:
         multi_model_clim_figure(
             cfg,
             metadatas,
             short_name,
+            figure_style=figure_style
         )
-
+    assert 0
 
     moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
     for moving_average_str in moving_average_strs:
