@@ -417,6 +417,7 @@ def multi_model_clim_figure(
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
+    labels = []
     for filename, metadata in metadatas.items():
         if short_name != metadata['short_name']:
             continue
@@ -434,30 +435,48 @@ def multi_model_clim_figure(
         years = cube.coord('year').points
         years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
         data = cube.data
-
+        label = scenario
         if figure_style == 'plot_all_years':
             for year in years_range:
                 t = np.ma.masked_where(years!= year, months)
                 d =  np.ma.masked_where(years!= year, data)
-                plt.plot(t, d, color = ipcc_colours[scenario], lw = 0.4)
+                if int(year)%10==0: lw = 1
+                else: lw = 0.4
+                if label not in labels:
+                    plt.plot(t, d, color = ipcc_colours[scenario], lw = lw,label=label )
+                    labels.append(label) 
+                else:
+                    plt.plot(t, d, color = ipcc_colours[scenario], lw = lw )
 
         if figure_style == 'mean_and_range':
-            cube_mean = cube.copy().collapsed('month_number', iris.analysis.MEAN)
-            cube_min = cube.copy().collapsed('month_number', iris.analysis.MIN)
-            cube_max = cube.copy().collapsed('month_number', iris.analysis.MAX)
+            cube_mean = cube.copy().aggregated_by(['month_number', ], iris.analysis.MEAN)
+            cube_min = cube.copy().aggregated_by(['month_number', ], iris.analysis.MIN)
+            cube_max = cube.copy().aggregated_by(['month_number', ], iris.analysis.MAX)
 
-            plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2.)
-            ply.fill_between(cube_mean.coord('month_number').points,
+            if label not in labels:
+                plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2., label=label)
+                labels.append(label)
+            else:
+                plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2.)
+
+            plt. fill_between(cube_mean .coord('month_number').points,
                     cube_min.data,
                     cube_max.data,
                     alpha = 0.2,
                     color=ipcc_colours[scenario])
 
+    plt.legend()
+
     title = ' '.join([short_name])
+    plt.suptitle(title)
+    units = cube.units
+    ax.set_xlabel('Months')
+    ax.set_ylabel(' '.join([short_name+',', str(units)]))
+
     # save and close.
     path = diagtools.folder(cfg['plot_dir'])
     path += '_'.join(['multi_model_clim', short_name, figure_style])
-    path += diagtools.get_image_format(cfg
+    path += diagtools.get_image_format(cfg)
 
     logger.info('Saving plots to %s', path)
     plt.savefig(path)
@@ -476,20 +495,21 @@ def main(cfg):
 
     """
 
-    moving_average_str = cfg.get('moving_average', None)
+    #moving_average_str = cfg.get('moving_average', None)
     short_names = {}
+    metadatas = diagtools.get_input_files(cfg, )
     for fn, metadata in metadatas.items():
         short_names[metadata['short_name']] = True
 
     for short_name in short_names.keys():
         for figure_style in ['plot_all_years', 'mean_and_range']:
-        multi_model_clim_figure(
-            cfg,
-            metadatas,
-            short_name,
-            figure_style=figure_style
-        )
-    assert 0
+            multi_model_clim_figure(
+                cfg,
+                metadatas,
+                short_name,
+                figure_style=figure_style
+            )
+    return  
 
     moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
     for moving_average_str in moving_average_strs:
