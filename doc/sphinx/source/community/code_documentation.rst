@@ -412,7 +412,7 @@ List of authors
 If you make a contribution to ESMValTool and you would like to be listed as an
 author (e.g. on `Zenodo <https://zenodo.org/record/4562215>`__), please add your
 name to the list of authors in ``CITATION.cff`` and generate the entry for the
-``.zenodo.json`` file by running the command
+``.zenodo.json`` file by running the commands
 
 ::
 
@@ -428,9 +428,11 @@ see :ref:`recording-provenance` for more information.
 Adding or removing dependencies
 -------------------------------
 
-Before considering adding a new dependency, carefully check that the license of
-the dependency you want to add and any of its dependencies are compatible with
-the
+Before considering adding a new dependency, carefully check that the
+`license <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-software.html>`__
+of the dependency you want to add and any of its dependencies are
+`compatible <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-compatibility.html>`__
+with the
 `Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE/>`_
 license that applies to the ESMValTool.
 Note that GPL version 2 license is considered incompatible with the Apache 2.0
@@ -439,7 +441,8 @@ license is questionable.
 See this `statement <https://www.apache.org/licenses/GPL-compatibility.html>`__
 by the authors of the Apache 2.0 license for more information.
 
-The following files contain lists of dependencies
+When adding or removing dependencies, please consider applying the changes in
+the following files:
 
 - ``environment.yml``
   contains development dependencies that cannot be installed from
@@ -451,8 +454,8 @@ The following files contain lists of dependencies
   contains a list of Python dependencies needed to build the documentation that
   cannot be installed from PyPI and need to be mocked when building the
   documentation.
-  We do not use conda to build the documentation because this is too time
-  consuming.
+  (We do not use conda to build the documentation because this is too time
+  consuming.)
 - ``esmvaltool/install/R/r_requirements.txt``
   contains R dependencies that can be installed from CRAN
 - ``esmvaltool/install/Julia/Project.toml``
@@ -461,17 +464,17 @@ The following files contain lists of dependencies
 - ``setup.py``
   contains all Python dependencies, regardless of their installation source
 - ``package/meta.yaml``
-  contains dependencies for the conda package, all Python and compiled
+  contains dependencies for the conda package; all Python and compiled
   dependencies that can be installed from conda should be listed here, but no R
-  or Julia dependencies, because this would make it impossible to solve the
+  or Julia dependencies because doing that would make it impossible to solve the
   conda environment
 
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
 
 Several test jobs on CircleCI_ related to the installation of the tool will only
-run if you change the dependencies, these will be skipped for most pull
-requests.
+run if you change the dependencies.
+These will be skipped for most pull requests.
 
 When reviewing a pull request where dependencies are added or removed, always
 check that the changes have been applied in all relevant files.
@@ -502,9 +505,10 @@ again on the ``master`` branch, merge it into your own branch to get the tests
 to pass.
 
 When reviewing a pull request, always make sure that all checks were successful.
-If the Codacy check keeps failing, please run ``prospector`` locally and if
-necessary, ask the pull request author to do the same and to address the
-reported issues, see the section on code_quality_ for more information.
+If the Codacy check keeps failing, please run ``prospector`` locally.
+If necessary, ask the pull request author to do the same and to address the
+reported issues.
+See the section on code_quality_ for more information.
 Never merge a pull request with failing CircleCI or readthedocs checks.
 
 .. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam
