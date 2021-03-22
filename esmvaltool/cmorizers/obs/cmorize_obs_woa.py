@@ -37,6 +37,15 @@ from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
 logger = logging.getLogger(__name__)
 
 
+def _fix_data(cube, var):
+    """Specific data fixes for different variables."""
+    logger.info("Fixing data ...")
+    with constant_metadata(cube):
+        if var in ['o2', 'po4', 'si', 'no3']:
+            cube /= 1000.  # Convert from umol/kg to mol/m^3
+    return cube
+
+
 def collect_files(in_dir, var, cfg):
     """Compose input file list and download if missing."""
     file_list = []
@@ -88,6 +97,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
 
     fix_var_metadata(cube, var_info)
     fix_coords(cube)
+    _fix_data(cube, var)
     set_global_atts(cube, attrs)
     save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
