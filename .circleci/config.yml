@@ -182,7 +182,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
-      - check_changes
+      # - check_changes
       - run:
           environment:
             R_INSTALL_N_CPUS: 2
@@ -202,7 +202,7 @@ jobs:
             conda env export > /logs/build_environment.yml
             # Build conda package
             \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
-          no_output_timeout: 60m
+          # no_output_timeout: 60m
       - store_artifacts:
           path: /logs
 
