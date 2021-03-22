@@ -420,10 +420,12 @@ def multi_model_time_series(
 
 
 def multi_model_clim_figure(
-    cfg,
-    metadatas,
-    short_name,
-    figure_style = 'plot_all_years'
+        cfg,
+        metadatas,
+        short_name,
+        figure_style = 'plot_all_years',
+        hist_time_range = [1990., 2000.],
+        ssp_time_range = [2040., 2050.],
     ):
     """
     produce a monthly climatology figure.
@@ -447,6 +449,12 @@ def multi_model_clim_figure(
 
         months =  cube.coord('month_number').points
         years = cube.coord('year').points
+
+        if scenario == 'historical':
+            cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
+        else:
+            cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
+
         years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
         data = cube.data
         label = scenario
@@ -458,7 +466,7 @@ def multi_model_clim_figure(
                 else: lw = 0.4
                 if label not in labels:
                     plt.plot(t, d, color = ipcc_colours[scenario], lw = lw,label=label )
-                    labels.append(label) 
+                    labels.append(label)
                 else:
                     plt.plot(t, d, color = ipcc_colours[scenario], lw = lw )
 
@@ -481,15 +489,21 @@ def multi_model_clim_figure(
 
     plt.legend()
 
-    title = ' '.join([long_name_dict.get(short_name, short_name), ])
+    time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
+                         '-'.join([str(t) for t in ssp_time_range])])
+
+    plt.suptitle(' '.join([long_name_dict[short_name], 'in Ascension'
+                           ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
+                           'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
+
     plt.suptitle(title)
     units = cube.units
     ax.set_xlabel('Months')
     ax.set_ylabel(' '.join([short_name+',', str(units)]))
 
     # save and close.
-    path = diagtools.folder(cfg['plot_dir'])
-    path += '_'.join(['multi_model_clim', short_name, figure_style])
+    path = diagtools.folder(cfg['plot_dir']+'/clim')
+    path += '_'.join(['multi_model_clim', short_name, figure_style, time_str])
     path += diagtools.get_image_format(cfg)
 
     logger.info('Saving plots to %s', path)
@@ -516,14 +530,21 @@ def main(cfg):
         short_names[metadata['short_name']] = True
 
     for short_name in short_names.keys():
-        for figure_style in ['plot_all_years', 'mean_and_range']:
-            multi_model_clim_figure(
-                cfg,
-                metadatas,
-                short_name,
-                figure_style=figure_style
-            )
-    return  
+        hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
+        ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
+        for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
+
+            for figure_style in ['plot_all_years', 'mean_and_range']:
+
+                multi_model_clim_figure(
+                    cfg,
+                    metadatas,
+                    short_name,
+                    figure_style=figure_style,
+                    hist_time_range=hist_time_range,
+                    ssp_time_range=ssp_time_range,
+                )
+    return
 
     moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
     for moving_average_str in moving_average_strs:
