@@ -70,6 +70,20 @@ ipcc_colours={
     'ssp370': 'orange',
     'ssp585': 'red',}
 
+long_name_dict = {
+    'thetao': 'Temperature',
+    'tos': 'Surface Temperature',
+    'tob': 'Seafloor Temperature',
+    'sos': 'Surface Salinity',
+    'uo': 'Zonal Velocity',
+    'vo': 'Meridional Velocity',
+    'ph': 'Surface ph',
+    'chl': 'Surface chlorophyll',
+    'zos': 'Sea Surface Height',
+
+    'no3': 'Dissolved Nitrate',
+    'o2': 'Dissolved Oxygen',}
+
 def timeplot(cube, **kwargs):
     """
     Create a time series plot from the cube.
