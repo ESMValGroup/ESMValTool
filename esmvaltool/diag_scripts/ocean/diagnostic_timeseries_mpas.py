@@ -77,12 +77,12 @@ long_name_dict = {
     'sos': 'Surface Salinity',
     'uo': 'Zonal Velocity',
     'vo': 'Meridional Velocity',
-    'ph': 'Surface ph',
+    'ph': 'Surface pH',
     'chl': 'Surface chlorophyll',
     'zos': 'Sea Surface Height',
-
     'no3': 'Dissolved Nitrate',
-    'o2': 'Dissolved Oxygen',}
+    'o2': 'Dissolved Oxygen',
+    'intpp': 'Integrated Primary production'}
 
 def timeplot(cube, **kwargs):
     """
@@ -481,7 +481,7 @@ def multi_model_clim_figure(
 
     plt.legend()
 
-    title = ' '.join([short_name])
+    title = ' '.join([long_name_dict.get(short_name, short_name), ])
     plt.suptitle(title)
     units = cube.units
     ax.set_xlabel('Months')
