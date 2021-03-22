@@ -86,8 +86,7 @@ print_corr: bool, optional (default: False)
 savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
+    Options for :func:`seaborn.set` (affects all plots).
 years_in_title: bool, optional (default: False)
     Print years in default title of plots.
 

@@ -14,6 +14,9 @@ documentation:
     - kalverla_peter
     - alidoost_sarah
 
+  projects:
+    - eucp
+
 
 cmip5: &cmip5
   - {dataset: ACCESS1-0, project: CMIP5, mip: Amon, exp: [historical, rcp45], ensemble: r1i1p1, start_year: 1961, end_year: 2099}

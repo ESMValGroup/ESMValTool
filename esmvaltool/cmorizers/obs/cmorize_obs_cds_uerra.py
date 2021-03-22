@@ -35,17 +35,176 @@ Modification history
 import glob
 import logging
 import os
+import re
 from copy import deepcopy
 
 import cf_units
 import iris
+import numpy as np
 import xarray as xr
 import xesmf as xe
 
-from esmvalcore.preprocessor._regrid import _stock_cube
 from esmvaltool.cmorizers.obs import utilities as utils
 
 logger = logging.getLogger(__name__)
+
+
+# Regular expression to parse a "MxN" cell-specification.
+_CELL_SPEC = re.compile(
+    r'''\A
+        \s*(?P<dlon>\d+(\.\d+)?)\s*
+        x
+        \s*(?P<dlat>\d+(\.\d+)?)\s*
+        \Z
+     ''', re.IGNORECASE | re.VERBOSE)
+
+# Default fill-value.
+_MDI = 1e+20
+
+# Stock cube - global grid extents (degrees).
+_LAT_MIN = -90.0
+_LAT_MAX = 90.0
+_LAT_RANGE = _LAT_MAX - _LAT_MIN
+_LON_MIN = 0.0
+_LON_MAX = 360.0
+_LON_RANGE = _LON_MAX - _LON_MIN
+
+
+def _generate_cube_from_dimcoords(latdata, londata, circular: bool = False):
+    """Generate cube from lat/lon points.
+
+    Parameters
+    ----------
+    latdata : np.ndarray
+        List of latitudes.
+    londata : np.ndarray
+        List of longitudes.
+    circular : bool
+        Wrap longitudes around the full great circle. Bounds will not be
+        generated for circular coordinates.
+
+    Returns
+    -------
+    :class:`~iris.cube.Cube`
+    """
+    lats = iris.coords.DimCoord(latdata,
+                                standard_name='latitude',
+                                units='degrees_north',
+                                var_name='lat',
+                                circular=circular)
+
+    lons = iris.coords.DimCoord(londata,
+                                standard_name='longitude',
+                                units='degrees_east',
+                                var_name='lon',
+                                circular=circular)
+
+    if not circular:
+        # cannot guess bounds for wrapped coordinates
+        lats.guess_bounds()
+        lons.guess_bounds()
+
+    # Construct the resultant stock cube, with dummy data.
+    shape = (latdata.size, londata.size)
+    dummy = np.empty(shape, dtype=np.dtype('int8'))
+    coords_spec = [(lats, 0), (lons, 1)]
+    cube = iris.cube.Cube(dummy, dim_coords_and_dims=coords_spec)
+
+    return cube
+
+
+def parse_cell_spec(spec):
+    """Parse an MxN cell specification string.
+
+    Parameters
+    ----------
+    spec: str
+        ``MxN`` degree cell-specification for the global grid.
+
+    Returns
+    -------
+    tuple
+        tuple of (float, float) of parsed (lon, lat)
+
+    Raises
+    ------
+    ValueError
+        if the MxN cell specification is malformed.
+    ValueError
+        invalid longitude and latitude delta in cell specification.
+    """
+    cell_match = _CELL_SPEC.match(spec)
+    if cell_match is None:
+        emsg = 'Invalid MxN cell specification for grid, got {!r}.'
+        raise ValueError(emsg.format(spec))
+
+    cell_group = cell_match.groupdict()
+    dlon = float(cell_group['dlon'])
+    dlat = float(cell_group['dlat'])
+
+    if (np.trunc(_LON_RANGE / dlon) * dlon) != _LON_RANGE:
+        emsg = ('Invalid longitude delta in MxN cell specification '
+                'for grid, got {!r}.')
+        raise ValueError(emsg.format(dlon))
+
+    if (np.trunc(_LAT_RANGE / dlat) * dlat) != _LAT_RANGE:
+        emsg = ('Invalid latitude delta in MxN cell specification '
+                'for grid, got {!r}.')
+        raise ValueError(emsg.format(dlat))
+
+    return dlon, dlat
+
+
+def _stock_cube(spec, lat_offset=True, lon_offset=True):
+    """Create a stock cube.
+
+    Create a global cube with M degree-east by N degree-north regular grid
+    cells.
+
+    Should be identical to esmvalcore.preprocessor._regrid._global_stock_cube
+
+    The longitude range is from 0 to 360 degrees. The latitude range is from
+    -90 to 90 degrees. Each cell grid point is calculated as the mid-point of
+    the associated MxN cell.
+
+    Parameters
+    ----------
+    spec : str
+        Specifies the 'MxN' degree cell-specification for the global grid.
+    lat_offset : bool
+        Offset the grid centers of the latitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
+    lon_offset : bool
+        Offset the grid centers of the longitude coordinate w.r.t. Greenwich
+        meridian by half a grid step.
+        This argument is ignored if `target_grid` is a cube or file.
+
+    Returns
+    -------
+    :class:`~iris.cube.Cube`
+    """
+    dlon, dlat = parse_cell_spec(spec)
+    mid_dlon, mid_dlat = dlon / 2, dlat / 2
+
+    # Construct the latitude coordinate, with bounds.
+    if lat_offset:
+        latdata = np.linspace(_LAT_MIN + mid_dlat, _LAT_MAX - mid_dlat,
+                              int(_LAT_RANGE / dlat))
+    else:
+        latdata = np.linspace(_LAT_MIN, _LAT_MAX, int(_LAT_RANGE / dlat) + 1)
+
+    # Construct the longitude coordinat, with bounds.
+    if lon_offset:
+        londata = np.linspace(_LON_MIN + mid_dlon, _LON_MAX - mid_dlon,
+                              int(_LON_RANGE / dlon))
+    else:
+        londata = np.linspace(_LON_MIN, _LON_MAX - dlon,
+                              int(_LON_RANGE / dlon))
+
+    cube = _generate_cube_from_dimcoords(latdata=latdata, londata=londata)
+
+    return cube
 
 
 def _cmorize_dataset(in_file, var, cfg, out_dir):
@@ -86,6 +245,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cube.long_name = definition.long_name
 
     # Convert units if required
+    cube.units = '1'
     cube.convert_units(definition.units)
 
     # Set global attributes

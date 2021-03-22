@@ -1,6 +1,7 @@
-*********************************************************
-Contributing a CMORizing script for an additional dataset
-*********************************************************
+.. _new-cmorizer:
+
+Writing a CMORizer script for an additional dataset
+***************************************************
 
 ESMValTool is designed to work with `CF compliant <http://cfconventions.org/>`_
 data and follows the CMOR tables from the CMIP data request, therefore
@@ -102,7 +103,7 @@ that is available at the MPI for Biogeochemistry in Jena: `cmorize_obs_mte.py
 <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/cmorize_obs_mte.py>`_.
 
 All the necessary information about the dataset to write the filename
-correctly, and which variable is of interest, is stored in a seperate
+correctly, and which variable is of interest, is stored in a separate
 configuration file: `MTE.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_
 in the directory ``ESMValTool/esmvaltool/cmorizers/obs/cmor_config/``. Note
@@ -112,10 +113,16 @@ configuration file. That way, the variables defined in the CMIP6 CMOR table,
 augmented with the custom variables described above, are available to your script.
 
 The first part of this configuration file defines the filename of the raw
-observations file, the second part defines the common global attributes for
+observations file. The second part defines the common global attributes for
 the cmorizer output, e.g. information that is needed to piece together the
-final observations file name in the correct structure (see Section `6. Naming convention of the observational data files`_). The
-third part defines the variables that are supposed to be cmorized.
+final observations file name in the correct structure (see Section `6. Naming convention of the observational data files`_).
+Another global attribute is ``reference`` which includes a ``doi`` related to the dataset.
+Please see the section `adding references
+<https://docs.esmvaltool.org/en/latest/community/diagnostic.html#adding-references>`_
+on how to add reference tags to the ``reference`` section in the configuration file.
+If a single dataset has more than one reference,
+it is possible to add tags as a list e.g. ``reference: ['tag1', 'tag2']``.
+The third part in the configuration file defines the variables that are supposed to be cmorized.
 
 The actual cmorizing script ``cmorize_obs_mte.py`` consists of a header with
 information on where and how to download the data, and noting the last access
@@ -276,4 +283,3 @@ is called ``recipes/examples/recipe_check_obs.yml``. You just need to add a
 diagnostic for your dataset following the existing entries.
 Only the diagnostic of interest needs to be run, the others should be commented
 out for testing.
-

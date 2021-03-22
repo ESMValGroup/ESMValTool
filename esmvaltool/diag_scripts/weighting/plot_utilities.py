@@ -1,7 +1,6 @@
 """A collection of utility functions for dealing with weights."""
 from collections import defaultdict
 
-import numpy as np
 import xarray as xr
 
 from climwip.core_functions import weighted_quantile

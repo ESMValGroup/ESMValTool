@@ -300,13 +300,18 @@ authors:
     family-names: Weigel
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
+  -
+    affiliation: "University of Reading, UK"
+    family-names: Roberts
+    given-names: Charles
+    orcid: "https://orcid.org/0000-0002-1147-8961"
 
 cff-version: "1.0.3"
-date-released: 2020-10-26
+date-released: 2021-02-25
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.1.0"
+version: "v2.2.0"
 ...
