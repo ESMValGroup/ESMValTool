@@ -160,7 +160,7 @@ the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://pr
 In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
 to automatically check for obvious bugs and formatting mistakes.
 
-When you make a pull request, adherence of the Python development best practices
+When you make a pull request, adherence to the Python development best practices
 is checked in two ways:
 
 #. As part of the unit tests, flake8_ is run by
