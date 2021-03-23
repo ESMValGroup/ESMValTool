@@ -76,6 +76,7 @@ long_name_dict = {
     'o2': 'Dissolved Oxygen',
     'intpp': 'Integrated Primary production'}
 
+
 def make_map_plots(
         cfg,
         metadata,
@@ -385,7 +386,7 @@ def multi_model_map_figure(
         dataset='',
         ensemble='',
         figure_style = 'four_ssp',
-        hist_time_range = [1990., 2000.],
+        hist_time_range = [2004, 2014],
         ssp_time_range = [2040., 2050.],
     ):
     """
@@ -399,8 +400,12 @@ def multi_model_map_figure(
     div_cmap =' BrBG'
     if figure_style=='four_ssp':
         subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
+        subplot_style = {221: 'mean', 222: 'mean', 223: 'mean', 224: 'mean'}
+        cmaps =  {221: seq_cmap, 222:seq_cmap, 223: seq_cmap, 224: seq_cmap}
+    elif figure_style=='four_ssp_diff':
+        subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
         subplot_style = {221: 'diff', 222: 'diff', 223: 'diff', 224: 'diff'}
-        cmaps =  {221: div_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
+        cmaps =  {221: div_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap
     elif figure_style=='hist_and_ssp':
         subplots = {321: 'historical', 323: 'ssp126', 324: 'ssp245', 325: 'ssp370', 326: 'ssp585'}
         subplot_style = {321: 'mean', 323:'diff', 324: 'diff', 325: 'diff', 326: 'diff'}
@@ -411,6 +416,7 @@ def multi_model_map_figure(
         cmaps =  {221: seq_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
     else:
         assert 0
+
     cubes = {}
     for filename, metadata in metadatas.items():
         if short_name != metadata['short_name']:
@@ -431,14 +437,23 @@ def multi_model_map_figure(
         scenario = metadata['exp']
         ensemble = metadata['ensemble']
 
-        if scenario == 'historical':
-            cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
-        else:
-            cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
+        if 'time' in [c.name for c in cube.coords()]:
+            if scenario == 'historical':
+                cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
+            else:
+                cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
 
-        cube_mean = cube.copy().collapsed('time', iris.analysis.MEAN)
-        cube_min = cube.copy().collapsed('time', iris.analysis.MIN)
-        cube_max = cube.copy().collapsed('time', iris.analysis.MAX)
+            cube_mean = cube.copy().collapsed('time', iris.analysis.MEAN)
+            cube_min = cube.copy().collapsed('time', iris.analysis.MIN)
+            cube_max = cube.copy().collapsed('time', iris.analysis.MAX)
+        else:
+            if scenario == 'historical' and filename.find('-'.join([str(h) for h in hist_time_range]))>-1:
+                cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+                cubes[(dataset, scenario, ensemble, 'mean')] = cube
+            elif filename.find('-'.join([str(h) for h in ssp_time_range]))>-1:
+                cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+                cubes[(dataset, scenario, ensemble, 'mean')] = cube
+            continue
 
         cube_mean = cube_mean.intersection(longitude=(central_longitude-180., central_longitude+180.))
         cube_min = cube_min.intersection(longitude=(central_longitude-180., central_longitude+180.))
@@ -518,11 +533,11 @@ def main(cfg):
         ensembles[metadata['ensemble']] = True
 
     for short_name, dataset, ensemble in itertools.product(short_names.keys(), datasets.keys(), ensembles.keys()):
-        hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
-        ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
+        hist_time_ranges = [[2004, 2014], ] #[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
+        ssp_time_ranges  = [[2040, 2050], ] #[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
         for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
 
-            for figure_style in ['ssp126', 'ssp245', 'ssp370', 'ssp585', 'hist_and_ssp', 'four_ssp']:
+            for figure_style in ['hist_and_ssp', 'four_ssp', 'four_ssp_diff', 'ssp126', 'ssp245', 'ssp370', 'ssp585', ]:
                 multi_model_map_figure(
                     cfg,
                     metadatas,
