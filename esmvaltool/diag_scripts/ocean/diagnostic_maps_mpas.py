@@ -46,12 +46,16 @@ import os
 import sys
 
 import cartopy
+import cartopy.crs as ccrs
+
 import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvalcore.preprocessor._time import extract_time
+
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -513,7 +517,7 @@ def main(cfg):
         datasets[metadata['dataset']] = True
         ensembles[metadata['ensemble']] = True
 
-    for short_name, dataset, ensemble in itertools.product(short_names.keys(), datasets.keys(), ensembles()) :
+    for short_name, dataset, ensemble in itertools.product(short_names.keys(), datasets.keys(), ensembles.keys()):
         hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
         ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
         for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
