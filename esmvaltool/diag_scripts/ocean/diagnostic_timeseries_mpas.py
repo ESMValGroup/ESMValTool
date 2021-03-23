@@ -57,6 +57,8 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
+from esmvalcore.preprocessor._time import extract_time
+
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
@@ -447,13 +449,13 @@ def multi_model_clim_figure(
         if not cube.coords('month_number'):
             iris.coord_categorisation.add_month_number(cube, 'time', name='month_number')
 
-        months =  cube.coord('month_number').points
-        years = cube.coord('year').points
-
         if scenario == 'historical':
             cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
         else:
             cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
+
+        months =  cube.coord('month_number').points
+        years = cube.coord('year').points
 
         years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
         data = cube.data
@@ -496,7 +498,6 @@ def multi_model_clim_figure(
                            ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
                            'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
 
-    plt.suptitle(title)
     units = cube.units
     ax.set_xlabel('Months')
     ax.set_ylabel(' '.join([short_name+',', str(units)]))
