@@ -58,6 +58,20 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+long_name_dict = {
+    'thetao': 'Temperature',
+    'tos': 'Surface Temperature',
+    'tob': 'Seafloor Temperature',
+    'sos': 'Surface Salinity',
+    'uo': 'Zonal Velocity',
+    'vo': 'Meridional Velocity',
+    'ph': 'Surface pH',
+    'chl': 'Surface chlorophyll',
+    'zos': 'Sea Surface Height',
+    'no3': 'Dissolved Nitrate',
+    'o2': 'Dissolved Oxygen',
+    'intpp': 'Integrated Primary production'}
+
 def make_map_plots(
         cfg,
         metadata,
@@ -360,6 +374,126 @@ def multi_model_contours(
         plt.close()
 
 
+def multi_model_map_figure(
+        cfg,
+        metadatas,
+        short_name='',
+        dataset='',
+        ensemble='',
+        figure_style = 'four_ssp',
+        hist_time_range = [1990., 2000.],
+        ssp_time_range = [2040., 2050.],
+    ):
+    """
+    produce a monthly climatology figure.
+    """
+    central_longitude=-160.+3.5
+    proj = ccrs.Robinson(central_longitude=central_longitude)
+
+    fig = plt.figure()
+    seq_cmap = 'viridis'
+    div_cmap =' BrBG'
+    if figure_style=='four_ssp':
+        subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
+        subplot_style = {221: 'diff', 222: 'diff', 223: 'diff', 224: 'diff'}
+        cmaps =  {221: div_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
+    elif figure_style=='hist_and_ssp':
+        subplots = {321: 'historical', 323: 'ssp126', 324: 'ssp245', 325: 'ssp370', 326: 'ssp585'}
+        subplot_style = {321: 'mean', 323:'diff', 324: 'diff', 325: 'diff', 326: 'diff'}
+        cmaps = {321: seq_cmap, 323:div_cmap, 324: div_cmap, 325: div_cmap, 326: div_cmap}
+    elif figure_style in ['ssp126', 'ssp245', 'ssp370', 'ssp585']:
+        subplots = {221: 'historical', 222:figure_style, 223:figure_style, 224: figure_style}
+        subplot_style = {221:'mean',222: 'diff', 223: 'min_diff', 224: 'max_diff'}
+        cmaps =  {221: seq_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
+    else:
+        assert 0
+    cubes = {}
+    for filename, metadata in metadatas.items():
+        if short_name != metadata['short_name']:
+            continue
+        if dataset != metadata['dataset']:
+            continue
+        if ensemble != metadata['ensemble']:
+            continue
+        cube = iris.load_cube(filename)
+        cube = diagtools.bgc_units(cube, metadata['short_name'])
+        if not cube.coords('year'):
+            iris.coord_categorisation.add_year(cube, 'time')
+
+        raw_times = diagtools.cube_time_to_float(cube)
+
+        times_float = diagtools.cube_time_to_float(cube)
+        dataset = metadata['dataset']
+        scenario = metadata['exp']
+        ensemble = metadata['ensemble']
+
+        if scenario == 'historical':
+            cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
+        else:
+            cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
+
+        cube_mean = cube.copy().collapsed('time', iris.analysis.MEAN)
+        cube_min = cube.copy().collapsed('time', iris.analysis.MIN)
+        cube_max = cube.copy().collapsed('time', iris.analysis.MAX)
+
+        cube_mean = cube_mean.intersection(longitude=(central_longitude-180., central_longitude+180.))
+        cube_min = cube_min.intersection(longitude=(central_longitude-180., central_longitude+180.))
+        cube_max = cube_max.intersection(longitude=(central_longitude-180., central_longitude+180.))
+
+        cubes[(dataset, scenario, ensemble, 'mean')] = cube_mean
+        cubes[(dataset, scenario, ensemble, 'min')] = cube_min
+        cubes[(dataset, scenario, ensemble, 'max')] = cube_max
+
+    if len(cubes.keys()) == 0:
+        return
+
+    for sbp, exp in subplots.items():
+        ax = fig.add_subplot(subplot, projection=proj)
+        sbp_style = subplot_style[sbp]
+
+        if sbp_style in ['mean', 'min', 'max']:
+            cube = cubes[(dataset, exp, ensemble, sbp_style)]
+        if sbp_style == 'diff':
+            cube = cubes[(dataset, exp, ensemble, 'mean')] - cubes[(dataset, 'historical', ensemble, 'mean')]
+        if sbp_style == 'min_diff':
+            cube = cubes[(dataset, exp, ensemble, 'min')] - cubes[(dataset, 'historical', ensemble, 'min')]
+        if sbp_style == 'max_diff':
+            cube = cubes[(dataset, exp, ensemble, 'max')] - cubes[(dataset, 'historical', ensemble, 'max')]
+
+        qplot = iris.plot.contourf(
+            cube,
+            #nspace,
+            linewidth=0,
+            cmap=cmaps[sbp],
+            extend='neither',)
+            #zmin=plot_range[0],
+            #zmax=plot_range[1])
+
+        try:
+            plt.gca().coastlines()
+        except AttributeError:
+            logger.warning('Not able to add coastlines')
+
+        # Add title to plot
+        title = ' '.join([exp, sbp_style])
+        plt.title(title)
+
+    suptitle = ' '.join([dataset, ensemble, long_name_dict[short_name],
+                         '\n Historical', '-'.join([str(t) for t in hist_time_range]),
+                         'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ])
+
+    pyplot.suptitle(suptitle)
+
+    # save and close.
+    path = diagtools.folder(cfg['plot_dir']+'/'+'_'.join([short_name, dataset, ensemble]))
+    path += '_'.join([dataset, ensemble, short_name, figure_style, time_str])
+    path += diagtools.get_image_format(cfg)
+
+    logger.info('Saving plots to %s', path)
+    plt.savefig(path)
+    plt.close()
+
+
 def main(cfg):
     """
     Load the config file, and send it to the plot makers.
@@ -368,9 +502,34 @@ def main(cfg):
     ----------
     cfg: dict
         the opened global config dictionary, passed by ESMValTool.
-
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
+    short_names = {}
+    datasets = {}
+    ensembles = {}
+    metadatas = diagtools.get_input_files(cfg, )
+    for fn, metadata in metadatas.items():
+        short_names[metadata['short_name']] = True
+        datasets[metadata['dataset']] = True
+        ensembles[metadata['ensemble']] = True
+
+    for short_name, dataset, ensemble in itertools.product(short_names.keys(), datasets.keys(), ensembles()) :
+        hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
+        ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
+        for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
+
+            for figure_style in ['ssp126', 'ssp245', 'ssp370', 'ssp585', 'hist_and_ssp', 'four_ssp']:
+                multi_model_map_figure(
+                    cfg,
+                    metadatas,
+                    short_name=short_name,
+                    ensemble=ensemble,
+                    dataset=dataset,
+                    figure_style=figure_style,
+                    hist_time_range=hist_time_range,
+                    ssp_time_range=ssp_time_range,
+                )
+                assert 0
 
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
