@@ -349,9 +349,9 @@ begin
 
     if (var0.eq."lwp") then
       data1@res_cnLevels            = ispan(10, 200, 10) * 0.001
-      data1@res_mpOutlineOn         = False
-      data1@res_mpFillOn            = True
-      data1@res_mpLandFillColor     = "Black"
+;      data1@res_mpOutlineOn         = False
+;      data1@res_mpFillOn            = True
+;      data1@res_mpLandFillColor     = "Black"
       pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
       data1@res_cnFillColors        = pal
     end if

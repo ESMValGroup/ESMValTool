@@ -15,6 +15,8 @@
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   filename_add: optionally add this string to plot filesnames
 ;   nbins: number of equally spaced bins (var_x), default = 20
+;   ymin_mm:  min y value for plotting MultiModelMean
+;   ymax_mm:  max y value for plotting MultiModelMean
 ;
 ; Required variable attributes (variable specific)
 ;   none
@@ -57,11 +59,16 @@ begin
   ;       (by error)
 
   calcicefrac = False
+  calctcwp = False
   if (var_y .eq. "columnicefrac") then
     calcicefrac = True
     varlist = (/var_x, "clivi", "lwp"/)
+  else if (var_y .eq. "totalcwp") then
+    calctcwp = True
+    varlist = (/var_x, "clivi", "lwp"/)
   else
     varlist = (/var_x, var_y/)
+  end if
   end if
   idx = new(dimsizes(varlist), integer)
 
@@ -203,6 +210,7 @@ begin
       z = where(z .lt. 0.0, z@_FillValue, z)
       z = where(isnan_ieee(z), z@_FillValue, z)
       mass = y + z
+      delete(z)
       mass = where(mass .lt. min_mass, mass@_FillValue, mass)
 
       ; ice fraction = ice / (ice + lwp) * 100%
@@ -211,6 +219,22 @@ begin
       y@units = "%"
       y@long_name = "cloud ice fraction"
       y@var = "columnicefrac"
+    end if
+
+    ; calculate total cloud water path as sum of liquid water path (lwp)
+    ; and ice water path (clivi);
+    ; we do not use the CMOR variable clwvi directly as this variable
+    ; erroneously contains only cloud liquid water for some models
+
+    if (calctcwp) then
+      atts_y@short_name = varlist(2)
+      info = select_metadata_by_atts(input_file_info, atts_y)
+      z = read_data(info[0])
+      delete(info)
+      y = y + z
+      delete(z)
+      y@long_name = "Condensed Water Path"
+      y@var = "totalcwp"
     end if
 
     ; check dimensions
@@ -390,6 +414,22 @@ begin
     res@tiXAxisFontHeightF = 0.025
     res@tiXAxisString      = var_x + " (" + xunits + ")"
     res@tiYAxisString      = var_y + " (" + units + ")"
+
+    if (ii .eq. mm_ind) then
+      if (isatt(diag_script_info, "ymin_mm")) then
+        res@trYMinF = diag_script_info@ymin_mm
+      end if
+      if (isatt(diag_script_info, "ymax_mm")) then
+        res@trYMaxF = diag_script_info@ymax_mm
+      end if
+    else
+      if (isatt(res, "trYMinF")) then
+        delete(res@trYMinF)
+      end if
+      if (isatt(res, "trYMaxF")) then
+        delete(res@trYMaxF)
+      end if
+    end if
 
     polyres                  = True
     polyres@gsMarkerSizeF    = 0.01
