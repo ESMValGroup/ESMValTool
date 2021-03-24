@@ -113,6 +113,8 @@ or
 `looking for scientific reviewer <https://github.com/ESMValGroup/ESMValTool/labels/looking%20for%20scientific%20reviewer>`_,
 though asking people for a review directly is probably more effective.
 
+.. _easy_review:
+
 How do I optimize for a fast review?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

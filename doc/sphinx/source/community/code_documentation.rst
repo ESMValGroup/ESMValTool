@@ -108,8 +108,8 @@ See :ref:`new dataset <new-dataset>` for detailed instructions.
 
 .. _descriptive_pr_title:
 
-Descriptive pull request title
-------------------------------
+Pull request title
+------------------
 
 The title of a pull request should clearly describe what the pull request changes.
 If you need more text to describe what the pull request does, please add it in
@@ -425,8 +425,8 @@ see :ref:`recording-provenance` for more information.
 
 .. _dependencies:
 
-Adding or removing dependencies
--------------------------------
+Dependencies
+------------
 
 Before considering adding a new dependency, carefully check that the
 `license <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-software.html>`__

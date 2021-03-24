@@ -43,12 +43,12 @@ It is the responsibility of the author to make sure the pull request is ready to
 [1]: https://docs.esmvaltool.org/en/latest/community/review.html#technical-review
 [2]: https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review
 
-- [ ] [🛠][1] This pull request has a [descriptive title](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#descriptive-pull-request-title)
+- [ ] [🛠][1] This pull request has a [descriptive title](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#pull-request-title)
 - [ ] [🛠][1] Code is written according to the [code quality guidelines](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#code-quality)
 - [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#documentation) is available
 - [ ] [🛠][1] [Tests](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#tests) run successfully
 - [ ] [🛠][1] The [list of authors](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#list-of-authors) is up to date
-- [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#adding-or-removing-dependencies)
+- [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#dependencies)
 - [ ] [🛠][1] All [checks below this pull request](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#pull-request-checks) were successful
 
 ### [New or updated recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html)
