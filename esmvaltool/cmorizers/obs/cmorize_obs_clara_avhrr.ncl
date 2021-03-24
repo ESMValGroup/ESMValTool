@@ -16,7 +16,7 @@
 ;       https://wui.cmsaf.eu/safira/action/viewLogin?menuName=NUTZER_HOME
 ;    2) login (same URL as above)
 ;    3) Search data using search form at
-;       https://wui.cmsaf.eu/safira/action/viewProduktHome?menuName=PRODUKT_HOME
+;    https://wui.cmsaf.eu/safira/action/viewProduktHome?menuName=PRODUKT_HOME
 ;
 ;      - Product group: Climate Data Records
 ;      - Product family: CLARA-A ed. 2.1
@@ -67,7 +67,7 @@ begin
   ; Conversion factor
   ; Remark: total cloud cover (CFC) is reported as "1" but is actually "%"
   ; IWP and LWP use scale_factor to convert to kg/m2
-  ;CONV = (/1., 1., 1./)
+  ; CONV = (/1., 1., 1./)
 
   ; MIP
   MIP = (/"Amon", "Amon", "Amon"/)
