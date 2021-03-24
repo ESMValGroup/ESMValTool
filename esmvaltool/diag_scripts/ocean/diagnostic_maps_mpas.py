@@ -44,6 +44,7 @@ import itertools
 import logging
 import os
 import sys
+import numpy as np
 
 import cartopy
 import cartopy.crs as ccrs
@@ -51,10 +52,12 @@ import cartopy.crs as ccrs
 import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvalcore.preprocessor._time import extract_time
+from esmvalcore.preprocessor._regrid import regrid
 
 
 # This part sends debug statements to stdout
@@ -75,6 +78,15 @@ long_name_dict = {
     'no3': 'Dissolved Nitrate',
     'o2': 'Dissolved Oxygen',
     'intpp': 'Integrated Primary production'}
+
+
+def regrid_to_1x1(cube, scheme = 'linear'):
+    """
+    regrid a cube to a common 1x1 grid.
+    """
+    # regrid to a common grid:
+    return regrid(cube, '1x1', scheme)
+
 
 
 def make_map_plots(
@@ -378,6 +390,30 @@ def multi_model_contours(
         plt.savefig(path)
         plt.close()
 
+def compute_radius(ortho, radius_degrees, proj= ccrs.PlateCarree(), lat=0, lon=0):
+    """
+    catlculate the correct radius:
+    from:
+    https://stackoverflow.com/questions/52105543/drawing-circles-with-cartopy-in-orthographic-projection
+    """
+    phi1 = lat + radius_degrees if lat <= 0 else lat - radius_degrees
+    _, y1 = ortho.transform_point(lon, phi1, proj)
+    return abs(y1)
+
+
+def regrid_intersect(cube, region='global'):
+    central_longitude = -14.25 #W #-160.+3.5
+    central_latitude = -7.56
+    cube = regrid_to_1x1(cube)
+    if region=='global':
+        cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+    if region=='midatlantic':
+        lat_bnd = 20.
+        lon_bnd = 30.
+        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+                                 latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+    return cube
+
 
 def multi_model_map_figure(
         cfg,
@@ -388,36 +424,55 @@ def multi_model_map_figure(
         figure_style = 'four_ssp',
         hist_time_range = [2004, 2014],
         ssp_time_range = [2040., 2050.],
+        region='global',
     ):
     """
     produce a monthly climatology figure.
     """
-    central_longitude=-160.+3.5
-    proj = ccrs.Robinson(central_longitude=central_longitude)
+    central_longitude = -14.25 #W #-160.+3.5
+    central_latitude = -7.56
+    if region == 'global':
+        central_longitude = -14.25 #W #-160.+3.5
+        proj = ccrs.Robinson(central_longitude=central_longitude)
+
+    if region == 'midatlantic':
+        proj=cartopy.crs.PlateCarree()
 
     fig = plt.figure()
+    fig.set_size_inches(10,6)
+
     seq_cmap = 'viridis'
-    div_cmap =' BrBG'
+    div_cmap ='BrBG'
     if figure_style=='four_ssp':
         subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
         subplot_style = {221: 'mean', 222: 'mean', 223: 'mean', 224: 'mean'}
         cmaps =  {221: seq_cmap, 222:seq_cmap, 223: seq_cmap, 224: seq_cmap}
+    elif figure_style=='five_means':
+        subplots = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
+        subplot_style = {231: 'hist', 232:'mean', 233: 'mean', 235: 'mean', 236: 'mean'}
+        cmaps = {231: seq_cmap, 232:seq_cmap, 233: seq_cmap, 235: seq_cmap, 236: seq_cmap}
+        fig.set_size_inches(11,5)
+
     elif figure_style=='four_ssp_diff':
         subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
         subplot_style = {221: 'diff', 222: 'diff', 223: 'diff', 224: 'diff'}
-        cmaps =  {221: div_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap
+        cmaps =  {221: div_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
     elif figure_style=='hist_and_ssp':
-        subplots = {321: 'historical', 323: 'ssp126', 324: 'ssp245', 325: 'ssp370', 326: 'ssp585'}
-        subplot_style = {321: 'mean', 323:'diff', 324: 'diff', 325: 'diff', 326: 'diff'}
-        cmaps = {321: seq_cmap, 323:div_cmap, 324: div_cmap, 325: div_cmap, 326: div_cmap}
+        subplots = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
+        subplot_style = {231: 'hist', 232:'diff', 233: 'diff', 235: 'diff', 236: 'diff'}
+        cmaps = {231: seq_cmap, 232:div_cmap, 233: div_cmap, 235: div_cmap, 236: div_cmap}
+        fig.set_size_inches(11,5)
+
+
     elif figure_style in ['ssp126', 'ssp245', 'ssp370', 'ssp585']:
         subplots = {221: 'historical', 222:figure_style, 223:figure_style, 224: figure_style}
-        subplot_style = {221:'mean',222: 'diff', 223: 'min_diff', 224: 'max_diff'}
+        subplot_style = {221:'hist',222: 'diff', 223: 'min_diff', 224: 'max_diff'}
         cmaps =  {221: seq_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
     else:
         assert 0
 
     cubes = {}
+    style_range = {'hist':[], 'mean':[], 'diff':[], 'min_diff':[], 'max_diff':[]}
     for filename, metadata in metadatas.items():
         if short_name != metadata['short_name']:
             continue
@@ -446,47 +501,95 @@ def multi_model_map_figure(
             cube_mean = cube.copy().collapsed('time', iris.analysis.MEAN)
             cube_min = cube.copy().collapsed('time', iris.analysis.MIN)
             cube_max = cube.copy().collapsed('time', iris.analysis.MAX)
+
+            cube_mean = regrid_intersect(cube_mean, region=region)
+            cube_min  = regrid_intersect(cube_min , region=region)
+            cube_max  = regrid_intersect(cube_max , region=region)
+
+            cubes[(dataset, scenario, ensemble, 'mean')] = cube_mean
+            cubes[(dataset, scenario, ensemble, 'min')] = cube_min
+            cubes[(dataset, scenario, ensemble, 'max')] = cube_max
+                 
+ 
+
         else:
             if scenario == 'historical' and filename.find('-'.join([str(h) for h in hist_time_range]))>-1:
-                cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+                cube = regrid_intersect(cube, region=region)
                 cubes[(dataset, scenario, ensemble, 'mean')] = cube
+                style_range['hist'].extend([cube.data.min(), cube.data.max()])
             elif filename.find('-'.join([str(h) for h in ssp_time_range]))>-1:
-                cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+                cube = regrid_intersect(cube, region=region)
                 cubes[(dataset, scenario, ensemble, 'mean')] = cube
-            continue
-
-        cube_mean = cube_mean.intersection(longitude=(central_longitude-180., central_longitude+180.))
-        cube_min = cube_min.intersection(longitude=(central_longitude-180., central_longitude+180.))
-        cube_max = cube_max.intersection(longitude=(central_longitude-180., central_longitude+180.))
-
-        cubes[(dataset, scenario, ensemble, 'mean')] = cube_mean
-        cubes[(dataset, scenario, ensemble, 'min')] = cube_min
-        cubes[(dataset, scenario, ensemble, 'max')] = cube_max
+            style_range['mean'].extend([cube.data.min(), cube.data.max()])
 
     if len(cubes.keys()) == 0:
         return
 
+    # calculate diffs, and range.
+    diff_range = []
+    initial_metrics = [index for index in cubes.keys()] 
+    nspaces = {}
+
+    for (dat, exp, ens, metric) in initial_metrics:
+        if exp == 'historical': 
+             continue
+        cube = cubes[(dat, exp, ens, metric)]        
+        if metric == 'mean':
+            cube = cube - cubes[(dat, 'historical', ens, 'mean')]
+            cubes[(dat, exp, ens, 'diff')] = cube
+            style_range['diff'].extend([cube.data.min(), cube.data.max()])
+
+        if metric == 'min':
+            cube = cube - cubes[(dat, 'historical', ens, 'min')] 
+            cubes[(dat, exp, ens, 'min_diff')] = cube
+            style_range['min_diff'].extend([cube.data.min(), cube.data.max()])
+
+        if metric == 'max':
+            cube  = cube - cubes[(dat, 'historical', ens, 'max')]
+            cubes[(dat, exp, ens, 'max_diff')] = cube
+            style_range['max_diff'].extend([cube.data.min(), cube.data.max()])
+
+    cubes[(dataset, 'historical', ensemble, 'hist')] = cubes[(dataset, 'historical', ensemble, 'mean')]
+
+    for style, srange in style_range.items():
+        if not len(srange): continue
+        style_range[style] = [np.array(srange).min(), np.array(srange).max()]
+
+        if style in ['diff', 'min_diff', 'max_diff']:
+            new_max = np.abs(style_range[style]).max()
+            nspaces[style] = np.linspace(-new_max, new_max, 21)
+        else:
+            nspaces[style] = np.linspace(style_range[style][0], style_range[style][1], 11)
+
     for sbp, exp in subplots.items():
-        ax = fig.add_subplot(subplot, projection=proj)
+        ax = fig.add_subplot(sbp, projection=proj)
         sbp_style = subplot_style[sbp]
-
-        if sbp_style in ['mean', 'min', 'max']:
-            cube = cubes[(dataset, exp, ensemble, sbp_style)]
-        if sbp_style == 'diff':
-            cube = cubes[(dataset, exp, ensemble, 'mean')] - cubes[(dataset, 'historical', ensemble, 'mean')]
-        if sbp_style == 'min_diff':
-            cube = cubes[(dataset, exp, ensemble, 'min')] - cubes[(dataset, 'historical', ensemble, 'min')]
-        if sbp_style == 'max_diff':
-            cube = cubes[(dataset, exp, ensemble, 'max')] - cubes[(dataset, 'historical', ensemble, 'max')]
-
+        cube = cubes[(dataset, exp, ensemble, sbp_style)]
+        
+        print(figure_style, sbp, exp, sbp_style, style_range[sbp_style])
         qplot = iris.plot.contourf(
             cube,
-            #nspace,
+            nspaces[sbp_style],
             linewidth=0,
             cmap=cmaps[sbp],
-            extend='neither',)
-            #zmin=plot_range[0],
-            #zmax=plot_range[1])
+            extend='neither',
+            zmin=style_range[sbp_style][0],
+            zmax=style_range[sbp_style][1],
+            )
+
+        if region == 'midatlantic':
+            lat_bnd = 20.
+            lon_bnd = 30.
+            ax.set_extent([central_longitude-lon_bnd,
+                           central_longitude+lon_bnd, 
+                           central_latitude-lat_bnd,
+                           central_latitude+lat_bnd, ])
+
+        # Compute the required radius in projection native coordinates:
+        r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
+        ax.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.3, transform=proj, zorder=30))
+
+        plt.colorbar()
 
         try:
             plt.gca().coastlines()
@@ -494,18 +597,26 @@ def multi_model_map_figure(
             logger.warning('Not able to add coastlines')
 
         # Add title to plot
-        title = ' '.join([exp, sbp_style])
+        long_names = {
+           'diff':'difference',
+           'hist':'mean',
+        }
+
+        title = ' '.join([exp, long_names.get(sbp_style, sbp_style,)])
         plt.title(title)
 
     suptitle = ' '.join([dataset, ensemble, long_name_dict[short_name],
                          '\n Historical', '-'.join([str(t) for t in hist_time_range]),
                          'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ])
 
-    pyplot.suptitle(suptitle)
+    plt.suptitle(suptitle)
 
     # save and close.
+    time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
+                         '-'.join([str(t) for t in ssp_time_range])])
+
     path = diagtools.folder(cfg['plot_dir']+'/'+'_'.join([short_name, dataset, ensemble]))
-    path += '_'.join([dataset, ensemble, short_name, figure_style, time_str])
+    path += '_'.join([dataset, ensemble, short_name, figure_style, region, time_str])
     path += diagtools.get_image_format(cfg)
 
     logger.info('Saving plots to %s', path)
@@ -537,7 +648,8 @@ def main(cfg):
         ssp_time_ranges  = [[2040, 2050], ] #[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
         for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
 
-            for figure_style in ['hist_and_ssp', 'four_ssp', 'four_ssp_diff', 'ssp126', 'ssp245', 'ssp370', 'ssp585', ]:
+            for region, figure_style in itertools.product(['midatlantic', 'global'], ['hist_and_ssp', 'five_means', ]):#'four_ssp', ]: #'four_ssp_diff', ]: #'ssp126', 'ssp245', 'ssp370', 'ssp585', ]:
+ 
                 multi_model_map_figure(
                     cfg,
                     metadatas,
@@ -547,8 +659,8 @@ def main(cfg):
                     figure_style=figure_style,
                     hist_time_range=hist_time_range,
                     ssp_time_range=ssp_time_range,
+                    region=region, 
                 )
-                assert 0
 
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
