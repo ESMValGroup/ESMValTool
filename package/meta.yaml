@@ -65,7 +65,7 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.8
+        - python
         - setuptools_scm
       run:
         - cartopy>=0.18
@@ -94,7 +94,7 @@ outputs:
         - numpy>=1.20
         - pandas
         - pyproj>=2.1
-        - python>=3.8
+        - python
         - python-cdo
         - pyyaml
         - ruamel.yaml>=0.16.12
