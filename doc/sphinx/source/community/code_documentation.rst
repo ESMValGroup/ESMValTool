@@ -69,6 +69,9 @@ If you are unsure about something on the list, please ask the
 by commenting on your (draft) pull request or by starting a new
 `discussion <https://github.com/ESMValGroup/ESMValTool/discussions>`__.
 
+In the ESMValTool community we use
+:ref:`pull request reviews <reviewing>` to ensure all code and
+documentation contributions are of good quality.
 The icons indicate whether the item will be checked during the
 :ref:`🛠 Technical review <technical_review>` or
 :ref:`🧪 Scientific review <scientific_review>`.
@@ -105,8 +108,8 @@ See :ref:`new dataset <new-dataset>` for detailed instructions.
 
 .. _descriptive_pr_title:
 
-Descriptive pull request title
-------------------------------
+Pull request title
+------------------
 
 The title of a pull request should clearly describe what the pull request changes.
 If you need more text to describe what the pull request does, please add it in
@@ -134,7 +137,7 @@ This includes checks for invalid syntax and formatting errors.
 :ref:`pre-commit` is a handy tool that can run all of these checks automatically
 just before you commit your code.
 It knows knows which tool to run for each filetype, and therefore provides
-a convenient way to check your code!
+a convenient way to check your code.
 
 Python
 ~~~~~~
@@ -146,6 +149,43 @@ We make use of
 `numpy style docstrings <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html>`__
 to document Python functions that are visible on
 `readthedocs <https://docs.esmvaltool.org>`__.
+
+To check if your code adheres to the standard, go to the directory where
+the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`_
+
+::
+
+   prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
+
+In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
+to automatically check for obvious bugs and formatting mistakes.
+
+When you make a pull request, adherence to the Python development best practices
+is checked in two ways:
+
+#. As part of the unit tests, flake8_ is run by
+   `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_,
+   see the section on Tests_ for more information.
+#. `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
+   is a service that runs prospector (and other code quality tools) on changed
+   files and reports the results.
+   Click the 'Details' link behind the Codacy check entry and then click
+   'View more details on Codacy Production' to see the results of the static
+   code analysis done by Codacy_.
+   If you need to log in, you can do so using your GitHub account.
+
+A pull request should preferably not introduce any new prospector issues.
+However, we understand that there is a limit to how much time can be spent on
+polishing code, so up to 10 new (non-trivial) issues is still an acceptable
+amount.
+Formatting issues are considered trivial and need to be addressed.
+Note that the automatic code quality checks by prospector are really helpful to
+improve the quality of your code, but they are not flawless.
+If you suspect prospector or Codacy may be wrong, please ask the
+`@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
+
+Note that running prospector locally will give you quicker and sometimes more
+accurate results than waiting for Codacy.
 
 Most formatting issues in Python code can be fixed automatically by
 running the commands
@@ -167,43 +207,8 @@ to add/remove whitespace as required by the standard using `yapf <https://github
 
    docformatter -i some_file.py
 
-to run `docformatter <https://github.com/myint/docformatter>`__ which helps formatting the doc strings (such as line length, spaces).
-
-To check if your code adheres to the standard, go to the directory where
-the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://prospector.landscape.io/>`_
-
-::
-
-   prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
-
-In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
-to automatically check for obvious bugs and formatting mistakes.
-
-When you make a pull request, adherence of the Python development best practices
-is checked in two ways:
-
-#. As part of the unit tests, flake8_ is run by CircleCI_, see the section on
-   Tests_ for more information.
-#. `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
-   is a service that runs prospector (and other code quality tools) on changed
-   files and reports the results.
-   Click the 'Details' link behind the Codacy check entry and then click
-   'View more details on Codacy Production' to see the results of the static
-   code analysis done by Codacy_.
-   If you need to log in, you can do so using your GitHub account.
-
-A pull request should preferably not introduce any new prospector issues.
-However, we understand that there is a limit to how much time can be spent on
-polishing code, so up to 10 new (non-trivial) issues is still an acceptable
-amount.
-Formatting issues are considered trivial and need to be addressed.
-Note that the automatic code quality checks by prospector are really helpful to
-improve the quality of your code, but they are not flawless.
-If you suspect prospector or Codacy may be wrong, please ask the
-`@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
-
-Note that running prospector locally will give you quicker and sometimes more
-accurate results than waiting for Codacy.
+to run `docformatter <https://github.com/myint/docformatter>`__ which helps
+formatting the docstrings (such as line length, spaces).
 
 NCL
 ~~~
@@ -234,8 +239,10 @@ to assess the quality of R code.
 YAML
 ~~~~
 
-Please use ``yamllint`` to check that your YAML files do not contain
-mistakes.
+Please use `yamllint <https://yamllint.readthedocs.io>`_ to check that your
+YAML files do not contain mistakes.
+``yamllint`` checks for valid syntax, common mistakes like key repetition and
+cosmetic problems such as line length, trailing spaces, wrong indentation, etc.
 When the tool complains about the maximum line length or too many spaces, please
 use your own best judgement about whether solving the issue will make your
 recipe more readable.
@@ -316,8 +323,7 @@ or
 to build it from scratch.
 Make sure that your newly added documentation builds without warnings or
 errors and looks correctly formatted.
-`CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_
-will build the documentation with the command
+CircleCI_ will build the documentation with the command
 
 .. code-block:: bash
 
@@ -331,6 +337,8 @@ The configuration file for Sphinx_ is
 When reviewing a pull request, always check that the documentation checks
 shown below the pull request were successful.
 Successful checks have a green ✓ in front, a ❌ means the test job failed.
+
+.. _esmvalcore-documentation-integration:
 
 Integration with the ESMValCore documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -404,7 +412,7 @@ List of authors
 If you make a contribution to ESMValTool and you would like to be listed as an
 author (e.g. on `Zenodo <https://zenodo.org/record/4562215>`__), please add your
 name to the list of authors in ``CITATION.cff`` and generate the entry for the
-``.zenodo.json`` file by running the command
+``.zenodo.json`` file by running the commands
 
 ::
 
@@ -417,12 +425,14 @@ see :ref:`recording-provenance` for more information.
 
 .. _dependencies:
 
-Adding or removing dependencies
--------------------------------
+Dependencies
+------------
 
-Before considering adding a new dependency, carefully check that the license of
-the dependency you want to add and any of its dependencies are compatible with
-the
+Before considering adding a new dependency, carefully check that the
+`license <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-software.html>`__
+of the dependency you want to add and any of its dependencies are
+`compatible <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-compatibility.html>`__
+with the
 `Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE/>`_
 license that applies to the ESMValTool.
 Note that GPL version 2 license is considered incompatible with the Apache 2.0
@@ -431,7 +441,8 @@ license is questionable.
 See this `statement <https://www.apache.org/licenses/GPL-compatibility.html>`__
 by the authors of the Apache 2.0 license for more information.
 
-The following files contain lists of dependencies
+When adding or removing dependencies, please consider applying the changes in
+the following files:
 
 - ``environment.yml``
   contains development dependencies that cannot be installed from
@@ -443,8 +454,8 @@ The following files contain lists of dependencies
   contains a list of Python dependencies needed to build the documentation that
   cannot be installed from PyPI and need to be mocked when building the
   documentation.
-  We do not use conda to build the documentation because this is too time
-  consuming.
+  (We do not use conda to build the documentation because this is too time
+  consuming.)
 - ``esmvaltool/install/R/r_requirements.txt``
   contains R dependencies that can be installed from CRAN
 - ``esmvaltool/install/Julia/Project.toml``
@@ -453,17 +464,17 @@ The following files contain lists of dependencies
 - ``setup.py``
   contains all Python dependencies, regardless of their installation source
 - ``package/meta.yaml``
-  contains dependencies for the conda package, all Python and compiled
+  contains dependencies for the conda package; all Python and compiled
   dependencies that can be installed from conda should be listed here, but no R
-  or Julia dependencies, because this would make it impossible to solve the
+  or Julia dependencies because doing that would make it impossible to solve the
   conda environment
 
 Note that packages may have a different name on
 `conda-forge <https://conda-forge.org/>`__ than on PyPI or CRAN.
 
 Several test jobs on CircleCI_ related to the installation of the tool will only
-run if you change the dependencies, these will be skipped for most pull
-requests.
+run if you change the dependencies.
+These will be skipped for most pull requests.
 
 When reviewing a pull request where dependencies are added or removed, always
 check that the changes have been applied in all relevant files.
@@ -494,9 +505,10 @@ again on the ``master`` branch, merge it into your own branch to get the tests
 to pass.
 
 When reviewing a pull request, always make sure that all checks were successful.
-If the Codacy check keeps failing, please run ``prospector`` locally and if
-necessary, ask the pull request author to do the same and to address the
-reported issues, see the section on code_quality_ for more information.
+If the Codacy check keeps failing, please run prospector locally.
+If necessary, ask the pull request author to do the same and to address the
+reported issues.
+See the section on code_quality_ for more information.
 Never merge a pull request with failing CircleCI or readthedocs checks.
 
 .. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam
