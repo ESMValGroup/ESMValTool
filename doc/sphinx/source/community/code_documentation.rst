@@ -505,7 +505,7 @@ again on the ``master`` branch, merge it into your own branch to get the tests
 to pass.
 
 When reviewing a pull request, always make sure that all checks were successful.
-If the Codacy check keeps failing, please run ``prospector`` locally.
+If the Codacy check keeps failing, please run prospector locally.
 If necessary, ask the pull request author to do the same and to address the
 reported issues.
 See the section on code_quality_ for more information.
