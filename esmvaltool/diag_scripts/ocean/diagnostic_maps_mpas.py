@@ -509,8 +509,8 @@ def multi_model_map_figure(
             cubes[(dataset, scenario, ensemble, 'mean')] = cube_mean
             cubes[(dataset, scenario, ensemble, 'min')] = cube_min
             cubes[(dataset, scenario, ensemble, 'max')] = cube_max
-                 
- 
+
+
 
         else:
             if scenario == 'historical' and filename.find('-'.join([str(h) for h in hist_time_range]))>-1:
@@ -527,20 +527,20 @@ def multi_model_map_figure(
 
     # calculate diffs, and range.
     diff_range = []
-    initial_metrics = [index for index in cubes.keys()] 
+    initial_metrics = [index for index in cubes.keys()]
     nspaces = {}
 
     for (dat, exp, ens, metric) in initial_metrics:
-        if exp == 'historical': 
+        if exp == 'historical':
              continue
-        cube = cubes[(dat, exp, ens, metric)]        
+        cube = cubes[(dat, exp, ens, metric)]
         if metric == 'mean':
             cube = cube - cubes[(dat, 'historical', ens, 'mean')]
             cubes[(dat, exp, ens, 'diff')] = cube
             style_range['diff'].extend([cube.data.min(), cube.data.max()])
 
         if metric == 'min':
-            cube = cube - cubes[(dat, 'historical', ens, 'min')] 
+            cube = cube - cubes[(dat, 'historical', ens, 'min')]
             cubes[(dat, exp, ens, 'min_diff')] = cube
             style_range['min_diff'].extend([cube.data.min(), cube.data.max()])
 
@@ -565,7 +565,7 @@ def multi_model_map_figure(
         ax = fig.add_subplot(sbp, projection=proj)
         sbp_style = subplot_style[sbp]
         cube = cubes[(dataset, exp, ensemble, sbp_style)]
-        
+
         print(figure_style, sbp, exp, sbp_style, style_range[sbp_style])
         qplot = iris.plot.contourf(
             cube,
@@ -581,7 +581,7 @@ def multi_model_map_figure(
             lat_bnd = 20.
             lon_bnd = 30.
             ax.set_extent([central_longitude-lon_bnd,
-                           central_longitude+lon_bnd, 
+                           central_longitude+lon_bnd,
                            central_latitude-lat_bnd,
                            central_latitude+lat_bnd, ])
 
@@ -624,6 +624,48 @@ def multi_model_map_figure(
     plt.close()
 
 
+def calc_multi_model_stats(
+        cfg,
+        metadatas,
+        short_name='thetao',
+        scenario = 'historical'
+        ):
+    """
+    Calculates some statistics from the multi model mean.
+
+    returns a path to a multi_model_mean, multi_model_sd, multi_model_n file.
+    """
+    output_dir = diagtools.folder(cfg['work']+'/'+short_name)
+    datasets = {}
+    ensembles = {}
+
+    # Make a list of all datasets, ensembles
+    for filename, metadata in metadatas.items():
+        if short_name != metadata['short_name']:
+            continue
+        if scenario != metadata['exp']:
+            continue
+
+        datasets[metadata['dataset']] = True
+        ensembles[metadata['ensemble']] = True
+
+    for dataset in datasets.keys():
+        model_ensemble_mean = output_dir+'_'.join([dataset, scenario, short_name,'mean'])+'.nc'
+        model_ensemble_sd = output_dir+'_'.join([dataset, scenario, short_name,'mean'])+'.nc'
+
+        for filename, metadata in metadatas.items():
+            if short_name != metadata['short_name']:
+                continue
+            if scenario != metadata['exp']:
+                continue
+            if scenario != metadata['exp']:
+                continue
+
+    working here.
+
+
+
+
 def main(cfg):
     """
     Load the config file, and send it to the plot makers.
@@ -643,13 +685,27 @@ def main(cfg):
         datasets[metadata['dataset']] = True
         ensembles[metadata['ensemble']] = True
 
+    multi_model_means = {}
+    multi_model_sds = {}
+    multi_model_ns = {}
+    for short_name in short_names.keys():
+        multi_model_mean, multi_model_sd, multi_model_n = calc_multi_model_stats(
+            cfg,
+            metadatas,
+            short_name=short_name,
+            )
+
+
+
+
+
     for short_name, dataset, ensemble in itertools.product(short_names.keys(), datasets.keys(), ensembles.keys()):
         hist_time_ranges = [[2004, 2014], ] #[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
         ssp_time_ranges  = [[2040, 2050], ] #[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
         for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
 
             for region, figure_style in itertools.product(['midatlantic', 'global'], ['hist_and_ssp', 'five_means', ]):#'four_ssp', ]: #'four_ssp_diff', ]: #'ssp126', 'ssp245', 'ssp370', 'ssp585', ]:
- 
+
                 multi_model_map_figure(
                     cfg,
                     metadatas,
@@ -659,7 +715,7 @@ def main(cfg):
                     figure_style=figure_style,
                     hist_time_range=hist_time_range,
                     ssp_time_range=ssp_time_range,
-                    region=region, 
+                    region=region,
                 )
 
     for index, metadata_filename in enumerate(cfg['input_files']):
