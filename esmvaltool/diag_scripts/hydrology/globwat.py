@@ -126,7 +126,7 @@ def langbein_pet(tas):
 
     # assumption here: tas is constant over time, then the monthly/daily
     # average value is equal to the annual average.
-    pet = constant_a + constant_b * (tas) + constant_c * (tas ** 2)
+    pet = (tas) * constant_b + (tas ** 2) * constant_c + constant_a
     pet.units = 'kg m-2 year-1'  # equivalent to mm year-1
     pet.convert_units('kg m-2 s-1')  # convert to a cmor compatible unit
     pet.var_name = 'evspsblpot'
