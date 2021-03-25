@@ -195,6 +195,7 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
+            conda update -n base conda
             conda install -y python=3.9.2
             conda install -y -c conda-forge conda-build conda-verify
             # Build conda package
