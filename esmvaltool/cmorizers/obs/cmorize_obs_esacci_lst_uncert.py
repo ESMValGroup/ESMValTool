@@ -184,6 +184,7 @@ def make_monthly_average(day_cube, night_cube, year, month):
     monthly_lst.attributes = {'information':
                                'Mean of Day and Night Aqua MODIS monthly LST'
                                }
+    monthly_lst.long_name = 'surface temperature'
 
     output.append(monthly_lst)
 
