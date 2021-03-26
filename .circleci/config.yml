@@ -198,6 +198,7 @@ jobs:
             conda update -y -n base conda
             conda install -y python=3.9.2
             conda install -y -c conda-forge conda-build conda-verify
+            conda config --set channel_priority strict
             # Build conda package
             \time -v conda build package -c conda-forge -c esmvalgroup --debug
           no_output_timeout: 60m
