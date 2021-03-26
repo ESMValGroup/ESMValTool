@@ -32,6 +32,7 @@ def calculate_diff(ds1: 'xr.DataSet', ds2: 'xr.DataSet',
 
     diff = data1 - data2
     diff.attrs['short_name'] = ds1[0]['short_name']
+    diff.attrs['units'] = ds1[0]['units']
 
     return diff, data_files1
 
@@ -54,16 +55,15 @@ def main(cfg):
          varname = variable_group.split("_")[0]
          varnames.append(varname)
     short_names = set(varnames)
-    #import ipdb; ipdb.set_trace()
 
     for short_name in short_names:
-        ds1 = models[short_name+'_GLOBAL']
-        ds2 = models[short_name+'_CLIM']
+        ds1 = models[short_name+'_CLIM']
+        ds2 = models[short_name+'_GLOBAL']
         diff, data_files_models = calculate_diff(ds1, ds2)
         _save_data(diff, 'MODELS_', cfg, ancestors=data_files_models)
 
-        obs1 = observations[short_name+'_GLOBAL']
-        obs2 = observations[short_name+'_CLIM']
+        obs1 = observations[short_name+'_CLIM']
+        obs2 = observations[short_name+'_GLOBAL']
         diff_obs, data_files_obs = calculate_diff(obs1, obs2, observations=True)
         _save_data(diff_obs, 'OBS_', cfg, ancestors=data_files_obs)
 
