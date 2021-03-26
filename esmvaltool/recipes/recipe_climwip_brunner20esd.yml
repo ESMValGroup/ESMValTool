@@ -144,14 +144,14 @@ diagnostics:
       climwip:
         script: weighting/climwip/main.py
         obs_data: native6
-#        ancestors: [calculate_local_anomalies/local_anomalies,
-#                    tas_CLIM_i, psl_CLIM_i, tas_STD, psl_STD, tas_TREND]
+        ancestors: [calculate_local_anomalies/local_anomalies,
+                    tas_CLIM_i, psl_CLIM_i, tas_STD, psl_STD, tas_TREND]
         combine_ensemble_members: true
         performance_sigma: 0.43
         performance_contributions:
-#          tas_ANOM: 1
+          tas_ANOM: 1
           tas_STD: 1
-#          psl_ANOM: 1
+          psl_ANOM: 1
           psl_STD: 1
           tas_TREND: 2
         independence_sigma: 0.54
