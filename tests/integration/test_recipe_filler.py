@@ -205,3 +205,31 @@ def test_bad_var(tmp_path, root):
         diag = autofilled_recipe["diagnostics"]["test_diagnostic"]
         var = diag["variables"]["test_var"]
         assert "additional_datasets" not in var
+
+
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) < version.parse("2.3.0"),
+    reason="reactivate for esmvalcore=2.3.0"
+)
+def test_no_short_name(tmp_path, root):
+    """Test a bad variable in the works."""
+    cfg = CONFIG['no_short_name'][0]
+    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
+
+    # this doesn't fail and it shouldn't since it can go on
+    # and look for data for other valid variables
+    with arguments(
+            'recipe_filler',
+            recipe,
+            '-c',
+            user_config_file,
+            '-o',
+            output_recipe,
+    ):
+        run()
+
+    with open(output_recipe, 'r') as file:
+        autofilled_recipe = yaml.safe_load(file)
+        diag = autofilled_recipe["diagnostics"]["test_diagnostic"]
+        var = diag["variables"]["test_var"]
+        assert "additional_datasets" not in var
