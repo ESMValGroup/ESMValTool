@@ -200,7 +200,7 @@ jobs:
             conda install -y -c conda-forge conda-build conda-verify
             conda config --set channel_priority strict
             # Build conda package
-            \time -v conda build package -c conda-forge -c esmvalgroup --debug
+            \time -v conda build package -c conda-forge -c esmvalgroup
           no_output_timeout: 60m
       - store_artifacts:
           path: /logs
