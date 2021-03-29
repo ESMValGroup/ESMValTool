@@ -24,18 +24,23 @@ logger = logging.getLogger(__name__)
 # Need a list of the uncertainity information variable names to load
 variable_list = ['land surface temperature',
                  'uncertainty from locally correlated errors on atmospheric scales',
-                 'uncertainty from locally correlated errors on surface scales',
-                 'uncertainty from uncorrelated errors',
-                 'uncertainty from large-scale systematic errors',
-                 'land surface temperature total uncertainty',
-                 'land cover class']
+                 # 'uncertainty from locally correlated errors on surface scales',
+                 # 'uncertainty from uncorrelated errors',
+                 # 'uncertainty from large-scale systematic errors',
+                 # 'land surface temperature total uncertainty',
+                 # 'land cover class'
+]
 
 
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     # cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
+    cmor_table = cfg['cmor_table']
 
+    print('1111111111111111111111111111')
+    print(cmor_table)
+    print('222222222222222222222222222222')
     # run the cmorization
 
     # The loop of variables like the WP5.3 isnt needed as
@@ -47,7 +52,10 @@ def cmorization(in_dir, out_dir, cfg, _):
         # leave this loop in as might be useful in
         # the future for getting other info
         # like uncertainty information from the original files
-
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        print(var,vals)
+        print(cmor_table.get_variable(vals['mip'], var))
+        print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ")
         glob_attrs['mip'] = vals['mip']
 
         for key in vals.keys():
@@ -77,7 +85,8 @@ def cmorization(in_dir, out_dir, cfg, _):
                                               year,
                                               month
                                               ) # variable moved
-            logger.info("XXXXXXXX")
+            logger.info("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
+            print(day_cube, night_cube)
             monthly_cubes = make_monthly_average(day_cube, night_cube,
                                                 year, month)
 
@@ -120,11 +129,12 @@ def load_cubes(in_dir, file_day, file_night, year, month):
     logger.info('Loading %s/%s%s%s*.nc', in_dir, file_day, year, month)
     day_cube = iris.load('%s/%s%s%02d*.nc' % (in_dir, file_day,
                                                    year, month),
-                              variable_list)
+                         variable_list)
+
     logger.info('Loading %s/%s%s%s*.nc', in_dir, file_night, year, month)
     night_cube = iris.load('%s/%s%s%02d*.nc' % (in_dir, file_night,
                                                      year, month),
-                                variable_list)
+                           variable_list)
 
     return day_cube, night_cube
 
