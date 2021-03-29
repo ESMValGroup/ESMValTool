@@ -141,6 +141,7 @@ def read_model_data(datasets: list) -> tuple:
                            dim='model_ensemble',
                            identifier_fmt='{dataset}_{ensemble}_{exp}')
 
+
 def read_model_data_ancestor(cfg, variable_group) -> tuple:
     """Load model data from ancestor folder."""
     filepath = io.get_ancestor_file(cfg, 'MODELS_' + variable_group + '.nc')
@@ -151,11 +152,13 @@ def read_model_data_ancestor(cfg, variable_group) -> tuple:
 
     return anc_da, filepath
 
+
 def read_observation_data(datasets: list) -> tuple:
     """Load observation data from list of metadata."""
     return read_input_data(datasets,
                            dim='obs_ensemble',
                            identifier_fmt='{dataset}')
+
 
 def read_observation_data_ancestor(cfg, variable_group) -> tuple:
     """Load model data from ancestor folder."""
@@ -165,5 +168,4 @@ def read_observation_data_ancestor(cfg, variable_group) -> tuple:
     anc_da = ancestor_ds['__xarray_dataarray_variable__'].load()
     anc_da = anc_da.rename(variable_group)
 
-    #return diagnostic, input_files
     return anc_da, filepath

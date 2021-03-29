@@ -20,7 +20,6 @@ from core_functions import (
 )
 from io_functions import (
     log_provenance,
-    read_input_data,
     read_metadata,
     read_model_data,
     read_model_data_ancestor,
@@ -227,7 +226,8 @@ def main(cfg):
 
         logger.info('Reading model data for %s', variable_group)
         if variable_group.endswith("_ANOM"):
-            model_data, model_data_files = read_model_data_ancestor(cfg, variable_group)
+            model_data, model_data_files = read_model_data_ancestor(
+                cfg, variable_group)
         else:
             datasets_model = models[variable_group]
             model_data, model_data_files = read_model_data(datasets_model)
@@ -244,7 +244,8 @@ def main(cfg):
 
         logger.info('Reading model data for %s', variable_group)
         if variable_group.endswith("_ANOM"):
-            model_data, model_data_files = read_model_data_ancestor(cfg, variable_group)
+            model_data, model_data_files = read_model_data_ancestor(
+                cfg, variable_group)
         else:
             datasets_model = models[variable_group]
             model_data, model_data_files = read_model_data(datasets_model)
@@ -252,7 +253,8 @@ def main(cfg):
         logger.info('Reading observation data for %s', variable_group)
         datasets_obs = observations[variable_group]
         if variable_group.endswith("_ANOM"):
-            obs_data, obs_data_files = read_observation_data_ancestor(cfg, variable_group)
+            obs_data, obs_data_files = read_observation_data_ancestor(
+                cfg, variable_group)
         else:
             obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
