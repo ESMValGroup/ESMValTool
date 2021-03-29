@@ -1,3 +1,5 @@
+.. _api:
+
 ESMValTool Code API Documentation
 =================================
 
