@@ -27,7 +27,7 @@ from esmvaltool.diag_scripts.weighting.plot_utilities import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def set_antimeridian(dataarray: 'xr.DataArray', to: str) -> 'xr.DataArray':
+def set_antimeridian(dataarray, to: str):
     """Flip the antimeridian (i.e. longitude discontinuity) between Europe
     (i.e., [0, 360)) and the Pacific (i.e., [-180, 180)).
 
@@ -49,7 +49,7 @@ def set_antimeridian(dataarray: 'xr.DataArray', to: str) -> 'xr.DataArray':
     elif to.lower() == 'pacific':
         dataarray = dataarray.assign_coords(lon=((lon + 180) % 360) - 180)
     else:
-        errmsg = "to has to be one of {'europe', 'pacific'} not {}".format(to)
+        errmsg = "to has to be one of ['europe', 'pacific'] not {}".format(to)
         raise ValueError(errmsg)
 
     idx = np.argmin(dataarray['lon'].values)
