@@ -710,6 +710,72 @@ begin
 end
 ;  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ; #####################################################################
+undef("select_region_938")
+function select_region_938(region:string, lsdata:numeric)
+; Arguments
+;    region: a string specifying the region to be selected.
+;
+; Return value
+;    An array with the region boundary as (lon1, lat1, lon2,\
+;    lat2, lon3, lat3, lon4, lat4 ect) based on the borders
+;    given through select_region1
+;    with the name of the region as a string attribute @name.
+;
+; Description
+;    Translates a region specification into lat/lon boundaries and a region
+;    name as an attribute for non SREX regions
+;
+; Modification history
+begin
+
+  funcname = "select_region_938"
+  scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+  verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+  
+  region_array_hlp = select_region1(region)
+  region_array = (/(/region_array_hlp(2),   region_array_hlp(0)/), \
+                   (/region_array_hlp(2),   region_array_hlp(1)/), \
+                   (/region_array_hlp(3),   region_array_hlp(1)/), \
+                   (/region_array_hlp(3),   region_array_hlp(0)/)/)
+
+  lat = lsdata&lat
+  lon = lsdata&lon
+  inout = new((/dimsizes(lsdata)/), "float")
+  in = 0
+  inn = 0
+  do ilat = 0, dimsizes(lat) - 1
+    do ilon = 0, dimsizes(lon) - 1
+      if (dimsizes(region_array(:, 0)).le.2) then
+        if ((lat(ilat).ge.region_array(0, 1)).and.(lat(ilat)\
+            .lt.region_array(1, 1)).and.(lon(ilon).ge.region_array(0, 0))\
+            .and.(lon(ilon).lt.region_array(1, 0))) then
+          inou = "True"
+          if (inou.eq."True") then
+            inout(ilat, ilon) = 1.
+            in = in + 1
+          end if
+          delete(inou)
+          inn = inn + 1
+        end if
+      else
+        inou = gc_inout(lat(ilat), lon(ilon), region_array(:, 1),\
+                        region_array(:, 0))
+
+        if(inou.eq."True") then
+          inout(ilat, ilon) = 1.
+          in = in + 1
+          delete(inou)
+        end if
+       	inn = inn + 1
+      end if
+    end do
+  end do
+
+  return(inout)
+end
+; °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+;  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+; #####################################################################
 undef("select_region_939")
 function select_region_939(region:string, lsdata:numeric)
 ;
@@ -916,7 +982,111 @@ begin
   return(inout)
 
 end
-;  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+;  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+; #####################################################################
+undef("select_region_939_poly")
+function select_region_939_poly(region:string)
+;
+; Arguments
+;    region: a string specifying the region to be selected.
+;
+; Return value
+;    An array with the position for the string in the region boundary as
+;    (lon, lat)
+;
+; Description
+;    Position for the name of the region on a map.
+;
+; Modification history
+begin
+
+  funcname = "select_region_939_poly"
+  scriptname = "diag_scripts/lib/ncl/latlon.ncl"
+  verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+
+  if (region.eq."ALA") then
+    region_array = (/200.000,   68.000/)
+  end if
+  if (region.eq."AMZ") then
+    region_array = (/285.,   0.000/)
+  end if
+  if (region.eq."CAM") then
+    region_array = (/265.,  15./)
+  end if
+  if (region.eq."CAS") then
+    region_array = (/62.000,   40.000/)
+  end if
+  if (region.eq."CEU") then
+    region_array = (/ 15.000,    52.000/)
+  end if
+  if (region.eq."CGI") then
+    region_array = (/265.000,  65.000/)
+  end if
+  if (region.eq."CNA") then
+    region_array = (/255.000,  40.000/)
+  end if
+  if (region.eq."EAF") then
+    region_array = (/30.000,    -5.0/)
+  end if
+  if (region.eq."EAS") then
+    region_array = (/110.000,   30.000/)
+  end if
+  if (region.eq."ENA") then
+    region_array = (/280.000,  30.000/)
+  end if
+  if (region.eq."MED") then
+    region_array = (/355.000,  38.000/)
+  end if
+  if (region.eq."NAS") then
+    region_array = (/50.000,    72.000/)
+  end if
+  if (region.eq."NAU") then
+    region_array = (/120.000,    -20.000/)
+  end if
+  if (region.eq."NEB") then
+    region_array = (/315.000,    -6.000/)
+  end if
+  if (region.eq."NEU") then
+    region_array = (/355.000,   65.000/)
+  end if
+  if (region.eq."SAF") then
+    region_array = (/320.000,    -20.000/)
+  end if
+  if (region.eq."SAH") then
+    region_array = (/350.000,  22.000/)
+  end if
+  if (region.eq."SAS") then
+    region_array = (/70.000,   10.000/)
+  end if
+  if (region.eq."SAU") then
+    region_array = (/120.000,    -42.000/)
+  end if
+  if (region.eq."SSA") then
+    region_array = (/295.0,    -40.000/)
+  end if
+  if (region.eq."SEA") then
+    region_array = (/105.000,     -0.000/)
+  end if
+  if (region.eq."TIB") then
+    region_array = (/85.000,  40.000/)
+  end if
+  if (region.eq."WAF") then
+    region_array = (/350.000,   0.0/)
+  end if
+  if (region.eq."WAS") then
+    region_array = (/45.000,  25.000/)
+  end if
+  if (region.eq."WSA") then
+    region_array = (/280.0,   -30.0/)
+  end if
+  if (region.eq."WNA") then
+    region_array = (/233.000,  35.0/)
+  end if
+  return(region_array)
+
+end
+
+;  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 undef("select_region_940")
 function select_region_940(region:string, lsdata:numeric)
 ; Arguments
@@ -1054,7 +1224,7 @@ begin
   edge_res@gsLineColor = "white"
   gsn_polyline_ndc(wks, edge_x, edge_y, edge_res)
 
-; * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+; * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
   dim_lb = dimsizes(MODEL)
 
