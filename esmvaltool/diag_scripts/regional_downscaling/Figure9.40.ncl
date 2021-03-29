@@ -723,11 +723,14 @@ begin
   pan@gsnMaximize = True
   pan@gsnFrame = False
   pan@gsnPaperOrientation = "portrait"
-  n_p = dimsizes(map) / 3
-  if (mod(dimsizes(map), 3) .ne. 0) then
-    n_p = n_p + 1
-  end if
-  gsn_panel(wks_r, map, (/n_p, 3/), pan)
+  ; n_p = dimsizes(map) / 3
+  ; if (mod(dimsizes(map), 3) .ne. 0) then
+  ;  n_p = n_p + 1
+  ; end if
+  ; gsn_panel(wks_r, map, (/n_p, 3/), pan)
+  do ir = 0, dim_reg - 1
+    draw(map(ir))
+  end do
   frame(wks_r)
 ;  info_output("wrote " + output_dir + output_filename, verbosity, 1)
 ;  info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)

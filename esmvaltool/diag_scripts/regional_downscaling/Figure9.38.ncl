@@ -159,6 +159,7 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_" + var0)
+  wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_regions" + var0)
   if (diag_script_info@fig938_MMM.eq."True")
     wks_MMM = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_MMM" + var0)
   end if
@@ -246,6 +247,34 @@ begin
   plot = new(dim_reg, "graphic")
   plot_MMM = new(dim_reg, "graphic")
   plot_STD = new((/dim_reg, dim_MMM/), "graphic")
+  
+  ; map = new(dimsizes(region_label), "graphic")
+  map_r = new(1, "graphic")
+  mres_r = True
+  mres_r@gsnDraw = False
+  mres_r@gsnFrame = False
+  mres_r@lbLabelBarOn = False
+  mres_r@cnLevelSelectionMode = "ManualLevels"
+  mres_r@cnMinLevelValF = 0.
+  mres_r@cnMaxLevelValF = 200.0
+  mres_r@cnLevelSpacingF = 0.1 * 200.0/tofloat(dim_reg)
+  mres_r@cnInfoLabelOn = False
+  mres_r@cnLineLabelsOn = False
+  mres_r@cnFillOn = True
+  mres_r@cnFillOpacityF = 0.5
+  cmap_r = read_colormap_file("GMT_wysiwygcont")
+  mres_r@cnFillPalette = cmap_r(::-1,:)
+  mres_r@mpFillOn = True
+  txres               = True
+  txres@txFontHeightF = 0.015
+  txres@txFont = 22
+  txres@txJust        = "CenterLeft"
+
+  random_setallseed(36484749, 9494848)
+  unf   = random_uniform(0, 1, (/dim_reg + 1/))
+  ip = dim_pqsort(unf, 1)
+
+  
   do ir = 0, dim_reg - 1
     case1 = region_label(ir)
     if(idx_ref.ne.-1) then
@@ -273,6 +302,26 @@ begin
       ; (b) difference of each model from 'reference'
       ; CASE 1
       A0 = read_data(info0[idx_ref])
+      ; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      ; Get infos for map plot
+      lsdata = A0(0, :, :)
+      cell_fill = (/select_region_938(region_label(ir), lsdata)/)
+      cell_fill!0 = "lat"
+      cell_fill!1 = "lon"
+      cell_fill&lat = lsdata&lat
+      cell_fill&lon = lsdata&lon
+      irc = (ip(ir + 1)) * 200.0/tofloat(dim_reg)
+
+      if (ir.eq.0) then
+        cell_fill2 = where(ismissing(cell_fill), -1., irc)
+        cell_fill2!0 = "lat"
+        cell_fill2!1 = "lon"
+        cell_fill2&lat = lsdata&lat
+        cell_fill2&lon = lsdata&lon
+      else
+        cell_fill2 = where(ismissing(cell_fill), cell_fill2, irc)
+      end if
+      ; *****************************************************************
       Atmp1 = A0
       Atmp = area_operations(Atmp1, latrange(ir, 0), latrange(ir, 1), \
                              lonrange(ir, 0), lonrange(ir, 1), "average",\
@@ -600,18 +649,31 @@ begin
         n_p = n_p + 1
       end if
       gsn_panel(wks_MMM, plot_MMM, (/n_p, 5/), pan1)
-      if(isatt(diag_script_info, "legend_position")) then
-        add_legenda(wks_MMM, names_MMM, colors_MMM, \
-                    dashes_MMM, lin_mar_mod_MMM, thicks_MMM,\
-                    diag_script_info@legend_position)
-      else
-        add_legenda(wks_MMM, names_MMM, colors_MMM,\
-                    dashes_MMM, lin_mar_mod_MMM, thicks_MMM, "0.2")
-      end if
+      ; if(isatt(diag_script_info, "legend_position")) then
+      ;   add_legenda(wks_MMM, names_MMM, colors_MMM, \
+      ;               dashes_MMM, lin_mar_mod_MMM, thicks_MMM,\
+      ;               diag_script_info@legend_position)
+      ; else
+      add_legend(wks_MMM, names_MMM, colors_MMM,\
+                 dashes_MMM, lin_mar_mod_MMM, thicks_MMM, "0.2")
+      ; end if
   end if
   frame(wks_MMM)
   delete(plot_MMM)
   delete(res1)
   delete(pan1)
+  
+  map_r = gsn_csm_contour_map(wks_r, cell_fill2, mres_r)
+
+  do ir = 0, dim_reg - 1
+    txres@txFontColor   = "black"
+    region_array_hlp = select_region1(region_label(ir))
+    dum = gsn_add_text(wks_r, map_r, region_label(ir),\
+                       region_array_hlp(2) + 5.0, region_array_hlp(0) + 15.0,\
+                       txres)
+    delete(region_array_hlp)
+  end do
+  draw(map_r)
+  frame(wks_r)
 
 end

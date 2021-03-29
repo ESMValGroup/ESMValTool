@@ -6,7 +6,7 @@
 ; #############################################################################
 ;
 ; # Description:                                                              #
-; #    * Create seasonal or annual bias box plots at selected regions         # 
+; #    * Create seasonal or annual bias box plots at selected regions         #
 ; #       - Read regions
 ; #        -create mask map using region poligons
 ; #       - for all the models calculate the bias respect @refModel
@@ -224,7 +224,8 @@ begin
   Amask = read_data(info0[idx_ref])
   lsdata = Amask(0, :, :)
   ; *****************************************************************
-  map = new(dimsizes(region_label), "graphic")
+  ; map = new(dimsizes(region_label), "graphic")
+  map_r = new(1, "graphic")
   plot = new(dim_seas, "graphic")
   dum_ref = new(dim_seas, "graphic")
   dum1 = new((/dim_seas, dimsizes(project_MMM)/),\
@@ -239,15 +240,32 @@ begin
              "graphic")
   dum_lines = new((/dim_seas, 30/), "graphic")
   dum_txt = new((/dim_seas, 30/), "graphic")
-  mres = True
-  mres@gsnDraw = False
-  mres@gsnFrame = False
-  mres@cnInfoLabelOn = False
-  mres@lbLabelBarOn = False
-  mres@cnLevelSelectionMode = "ManualLevels"
-  mres@cnMinLevelValF = 0.
-  mres@cnMaxLevelValF = 27.
-  mres@cnLevelSpacingF = 1.
+  mres_r = True
+  mres_r@gsnDraw = False
+  mres_r@gsnFrame = False
+  mres_r@lbLabelBarOn = False
+  mres_r@cnLevelSelectionMode = "ManualLevels"
+  mres_r@cnMinLevelValF = 0.
+  mres_r@cnMaxLevelValF = 200.0
+  mres_r@cnLevelSpacingF = 0.1 * 200.0/tofloat(dim_reg)
+  mres_r@cnInfoLabelOn = False
+  mres_r@cnLineLabelsOn = False
+  mres_r@cnFillOn = True
+  mres_r@cnFillOpacityF = 0.5
+  cmap_r = read_colormap_file("GMT_wysiwygcont")
+  mres_r@cnFillPalette = cmap_r(::-1,:)
+  mres_r@mpFillOn = True
+  gsres                = True
+  gsres@gsFillOpacityF = 0.7
+  txres               = True
+  txres@txFontHeightF = 0.015
+  txres@txFont = 22
+  txres@txJust        = "CenterLeft"
+
+  random_setallseed(36484749, 9494848)
+  unf   = random_uniform(0, 1, (/dim_reg + 1/))
+  ip = dim_pqsort(unf, 1)
+
   do iseas = 0, dim_seas - 1
     do ir = 0, dim_reg - 1
       case1 = region_label(ir)
@@ -256,12 +274,21 @@ begin
       cell_fill!1 = "lon"
       cell_fill&lat = lsdata&lat
       cell_fill&lon = lsdata&lon
-      cell_fill = where(ismissing(cell_fill), -1., 1.)
-      mres@tiMainString = region_label(ir)
+
       if (iseas.eq.0) then
-        mres@tiMainString = region_label(ir)
-        map(ir) = gsn_csm_contour_map(wks_r, cell_fill, mres)
+        irc = (ip(ir + 1)) * 200.0/tofloat(dim_reg)
+
+        if (ir.eq.0) then
+          cell_fill2 = where(ismissing(cell_fill), -1., irc)
+          cell_fill2!0 = "lat"
+          cell_fill2!1 = "lon"
+          cell_fill2&lat = lsdata&lat
+          cell_fill2&lon = lsdata&lon
+        else
+          cell_fill2 = where(ismissing(cell_fill), cell_fill2, irc)
+        end if
       end if
+      cell_fill = where(ismissing(cell_fill), -1., 1.)
       if (diag_script_info@fig939_MMM.eq."True")
         indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
         indic_not_sel = where(indic_not_sela.eq.idx_ref,\
@@ -721,11 +748,16 @@ begin
   pan@gsnMaximize = True
   pan@gsnFrame = False
   pan@gsnPaperOrientation = "portrait"
-  n_p = dimsizes(map) / 3
-  if (mod(dimsizes(map), 3) .ne. 0) then
-    n_p = n_p + 1
-  end if
-  gsn_panel(wks_r, map, (/n_p, 3/), pan)
+  map_r = gsn_csm_contour_map(wks_r, cell_fill2, mres_r)
+
+  do ir = 0, dim_reg - 1
+    txres@txFontColor   = "black"
+    cregion_array = (/select_region_939_poly(region_label(ir))/)
+    dum = gsn_add_text(wks_r, map_r, region_label(ir),\
+                       cregion_array(0), cregion_array(1), txres)
+    delete(cregion_array)
+  end do
+  draw(map_r)
   frame(wks_r)
 ;  info_output("wrote " + output_dir + output_filename, verbosity, 1)
 ;  info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
