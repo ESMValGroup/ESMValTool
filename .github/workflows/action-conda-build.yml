@@ -5,6 +5,7 @@ on:
   push:
     branches:
     - master
+    - conda_build_speedup
   schedule:
     - cron: '0 0 * * *'
 
@@ -21,7 +22,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
-          miniconda-version: "py39_4.9.2"
+          miniconda-version: "latest"
           channels: conda-forge
       - shell: bash -l {0}
         run: mkdir -p condabuild_artifacts_python_${{ matrix.python-version }}
