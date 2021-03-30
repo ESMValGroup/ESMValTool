@@ -194,8 +194,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [**]_, rsds, rsns,   |   3  | n/a             |
-|                              | rsus [**]_, rsdt, rss, uas, vas, tas, tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx)           |      |                 |
+| ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [**]_ , rsds, rsns,  |   3  | n/a             |
+|                              | rsus [**]_ , rsdt, rss, uas, vas, tas, tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx)          |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA5-Land                    | pr                                                                                                   |   3  | n/a             |
 |                                                                                                                                     |      |                 |
@@ -300,4 +300,5 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 
 .. [*] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
+
 .. [**] Derived on the fly from down & net radiation
