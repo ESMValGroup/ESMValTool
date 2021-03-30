@@ -881,6 +881,8 @@ def run():
         new_datasets = []
         if "short_name" not in recipe_dict:
             recipe_dict['short_name'] = variable
+        elif recipe_dict['short_name'] == "*":
+            recipe_dict['short_name'] = variable
 
         # adjust cmip era if needed
         if recipe_dict['project'] != "*":

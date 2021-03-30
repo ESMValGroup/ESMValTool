@@ -58,4 +58,4 @@ The easiest way to get help if you cannot find the answer in the documentation o
 
 ## Contributing
 
-If you would like to contribute a new diagnostic or feature, please have a look at our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html).
+If you would like to contribute a new diagnostic or feature, please have a look at our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/index.html).

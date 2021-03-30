@@ -528,6 +528,8 @@ the `-n N` flag where N is the number of available threads e.g:
     pytest -n 4
 
 
+.. _esmvalcore-development-installation:
+
 Using the development version of the ESMValCore package
 -------------------------------------------------------
 

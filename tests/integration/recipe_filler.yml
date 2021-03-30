@@ -208,3 +208,14 @@ bad_variable:
       exp: historical
     available_files:
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
+no_short_name:
+  - drs: BADC
+    variable:
+      project: CMIP5
+      mip: Amon
+      start_year: 1930
+      end_year: 1940
+      ensemble: r1i1p1
+      exp: historical
+    available_files:
+      - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
