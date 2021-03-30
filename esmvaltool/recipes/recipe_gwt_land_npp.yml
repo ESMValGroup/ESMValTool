@@ -35,7 +35,7 @@ diagnostics:
       # Procedurally generated recipe contents:
       ################################################
 
-      nppfrac_fx:
+      npp_fx:
         mip: fx
         short_name: areacella
         additional_datasets:
