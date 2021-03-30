@@ -9,14 +9,13 @@ documentation:
       - Use ESMValCore extract_shape to cut regions (instead of regionmask)
       - The models CCSM4 and MIROC5 (r1) had to be excluded due to errors in the ESMValCore pre-processor
       - Use ERA5 instead of three older reanalyses as observational data set
+    This recipe is intended as a template - it calculates weights for the Mediterranean (MED) SREX
+    region. Small adaptation are needed to calculate the other regions (see documentation for guidance).
   authors:
     - brunner_lukas
     - lorenz_ruth
-
   maintainer:
     - brunner_lukas
-    - lorenz_ruth
-
   references:
     - brunner2019
 
@@ -162,67 +161,12 @@ preprocessors:
     climate_statistics:
       operator: std_dev
 
-  region_eur: &eur
-    <<: *general
-    extract_region:
-      start_longitude: -10.0
-      end_longitude: 39.0
-      start_latitude: 30.0
-      end_latitude: 76.25
-
-  region_neu: &neu
-    <<: *general
-    extract_shape:
-      shapefile: 'shapefiles/SREX/NEU/NEU.shp'
-      method: contains
-      crop: true
-
-  region_ceu: &ceu
-    <<: *general
-    extract_shape:
-      shapefile: 'shapefiles/SREX/CEU/CEU.shp'
-      method: contains
-      crop: true
-
-  region_med: &med
-    <<: *general
-    extract_shape:
-      shapefile: 'shapefiles/SREX/MED/MED.shp'
-      method: contains
-      crop: true
-
-  # --- optional: comment in **one ** target variable here --------------------
-  # this is only needed if no performance sigma is given
-  # !! need to comment in CLIM_future below !!
-  target: &target
-    short_name: tas
-    # short_name: pr
-
-  # --- comment in **one** region & corresponding sigmas here -----------------
   region: &region
-    <<: *eur
-    # <<: *neu
-    # <<: *ceu
-    # <<: *med
-  sigmas: &sigmas  # from table 1 in Brunner et al. (2019)
-    # EUR
-    performance_sigma: 0.588  # tas
-    # performance_sigma: 0.658  # pr
-    independence_sigma: 0.704
-    # NEU
-    # performance_sigma: 0.614  # tas
-    # performance_sigma: 0.542  # pr
-    # independence_sigma: 0.735
-    # CEU
-    # performance_sigma: 0.607  # tas
-    # performance_sigma: 0.831  # pr
-    # independence_sigma: 0.706
-    # MED
-    # performance_sigma: 0.546  # tas
-    # performance_sigma: 0.667  # pr
-    # independence_sigma: 0.643
-
-  # ---------------------------------------------------------------------------
+    <<: *general
+    extract_shape:
+      shapefile: 'shapefiles/SREX/MED/MED.shp'  # <-----
+      method: contains
+      crop: true
 
   region_mean:
     <<: *region
@@ -283,7 +227,6 @@ diagnostics:
         force_derivation: false
       # only needed if no performance sigma is given
       # CLIM_future:
-      #   <<: *target
       #   short_name: tas
       #   start_year: 2081
       #   end_year: 2100
@@ -292,10 +235,11 @@ diagnostics:
 
     scripts:
       climwip:
-        <<: *sigmas
         script: weighting/climwip/main.py
         obs_data: native6
         combine_ensemble_members: false
+        performance_sigma: 0.546  # <-----
+        independence_sigma: 0.643  # <-----
         performance_contributions:
           tas_CLIM: 1
           pr_CLIM: 1
