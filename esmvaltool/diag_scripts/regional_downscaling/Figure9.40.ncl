@@ -257,7 +257,7 @@ begin
       case1 = region_label(ir)
       region_lab = str_get_field(case1, 1, "_")
       region_ch = str_get_field(case1, 2, "_")
-      cell_fill = (/select_region_940(region_lab, lsdata)/)
+      cell_fill = (/select_region_srex(region_lab, lsdata)/)
       cell_fill!0 = "lat"
       cell_fill!1 = "lon"
       cell_fill&lat = lsdata&lat

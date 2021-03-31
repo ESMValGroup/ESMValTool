@@ -776,216 +776,8 @@ end
 ; °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
 ;  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ; #####################################################################
-undef("select_region_939")
-function select_region_939(region:string, lsdata:numeric)
-;
-; Arguments
-;    region: a string specifying the region to be selected.
-;
-; Return value
-;    An array with the region boundary as
-;    (lon1, lat1, lon2, lat2, lon3, lat3, lon4, lat4 ect)
-;    with the name of the region as a string attribute @name.
-;
-; Description
-;    Translates a region specification into lat/lon boundaries and a region
-;    name as an attribute.
-;
-; Modification history
-begin
-
-  funcname = "select_region_939"
-  scriptname = "diag_scripts/lib/ncl/latlon.ncl"
-  verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
-
-  if (region.eq."ALA") then
-    region_array = (/(/255.000,   60.000/), \
-                     (/191.978,   60.000/), \
-                     (/191.978,   72.554/), \
-                     (/255.000,   72.554/)/)
-  end if
-  if (region.eq."AMZ") then
-    region_array = (/(/293.623,   - 20.000/), \
-                     (/280.271,   - 1.239/), \
-                     (/291.2,    11.439/), \
-                     (/310.00,   11.439/), \
-                     (/310.00,    - 20.00/)/)
-  end if
-  if (region.eq."CAM") then
-    region_array = (/(/291.2,  11.439/), \
-                     (/280.271,     -1.239/), \
-                     (/241.677,    28.566/), \
-                     (/269.685,    28.566/)/)
-  end if
-  if (region.eq."CAS") then
-    region_array = (/(/60.000,   30.000/), \
-                     (/60.000,   50.000/), \
-                     (/75.000,   50.000/), \
-                     (/75.000,   30.000/)/)
-  end if
-  if (region.eq."CEU") then
-    region_array = (/(/ -10.000,    45.000/), \
-                     (/ -10.000,    48.000/), \
-                     (/ 40.000,    61.320/), \
-                     (/ 40.000,    45.000/)/)
-  end if
-  if (region.eq."CGI") then
-    region_array = (/(/350.000,  50.000/), \
-                     (/255.000,  50.000/), \
-                     (/255.000,  85.000/), \
-                     (/350.000,  85.000/)/)
-  end if
-  if (region.eq."CNA") then
-    region_array = (/(/275.000,  50.000/), \
-                     (/275.000,  28.566/), \
-                     (/255.000,  28.566/), \
-                     (/255.000,  50.000/)/)
-  end if
-  if (region.eq."EAF") then
-    region_array = (/(/25.000,    -11.365/), \
-                     (/25.000,   15.000/), \
-                     (/51.990,   15.000/), \
-                     (/51.990,    -11.365/)/)
-  end if
-  if (region.eq."EAS") then
-    region_array = (/(/100.000,   20.000/), \
-                     (/100.000,   50.000/), \
-                     (/145.000,   50.000/), \
-                     (/145.000,   20.000/)/)
-  end if
-  if (region.eq."ENA") then
-    region_array = (/(/300.000,  25.000/), \
-                     (/275.000,  25.000/), \
-                     (/275.000,  50.000/), \
-                     (/300.000,  50.000/)/)
-  end if
-  if (region.eq."MED") then
-    region_array = (/(/350.000,  30.000/), \
-                     (/350.000,  45.000/), \
-                     (/40.000,  45.000/), \
-                     (/40.000,  30.000/)/)
-  end if
-  if (region.eq."NAS") then
-    region_array = (/(/40.000,    50.000/), \
-                     (/40.000,    70.000/), \
-                     (/180.000,   70.000/), \
-                     (/180.000,   50.000/)/)
-  end if
-  if (region.eq."NAU") then
-    region_array = (/(/110.000,    -30.000/), \
-                     (/110.000,    -10.000/), \
-                     (/155.000,    -10.000/), \
-                     (/155.000,    -30.000/)/)
-  end if
-  if (region.eq."NEB") then
-    region_array = (/(/326.000,    -20.000/), \
-                     (/310.000,    -20.000/), \
-                     (/310.000,    0.000/), \
-                     (/326.000,    0.000/)/)
-  end if
-  if (region.eq."NEU") then
-    region_array = (/(/350.000,   48.000/), \
-                     (/350.000,   75.000/), \
-                     (/40.000,   75.000/), \
-                     (/40.000,   61.320/)/)
-  end if
-  if (region.eq."SAF") then
-    region_array = (/(/350.000,    -35.000/), \
-                     (/350.000,    -11.365/), \
-                     (/308.01,     -11.365/), \
-                     (/308.01,     -35.000/)/)
-  end if
-  if (region.eq."SAH") then
-    region_array = (/(/340.000,  15.000/), \
-                     (/340.000,  30.000/), \
-                     (/ 40.000,  30.000/), \
-                     (/ 40.000,  15.000/)/)
-  end if
-  if (region.eq."SAS") then
-    region_array = (/(/60.000,   5.000/), \
-                     (/60.000,   30.000/), \
-                     (/100.000,  30.000/), \
-                     (/100.000,  20.000/), \
-                     (/95.000,   20.000/), \
-                     (/95.000,   5.000/)/)
-  end if
-  if (region.eq."SAU") then
-    region_array = (/(/110.000,    -50.000/), \
-                     (/110.000,    -30.000/), \
-                     (/180.000,    -30.000/), \
-                     (/180.000,    -50.000/)/)
-  end if
-  if (region.eq."SSA") then
-    region_array = (/(/320.624,    -20.000/), \
-                     (/320.624,    -56.704/), \
-                     (/292.652,    -56.704/), \
-                     (/287.859,    -50.000/), \
-                     (/293.623,    -20.000/)/)
-  end if
-  if (region.eq."SEA") then
-    region_array = (/(/95.000,     -10.000/), \
-                     (/95.000,    20.000/), \
-                     (/155.000,   20.000/), \
-                     (/155.000,    -10.000/)/)
-  end if
-  if (region.eq."TIB") then
-    region_array = (/(/75.000,  30.000/), \
-                     (/75.000,  50.000/), \
-                     (/100.000,  50.000/), \
-                     (/100.000,  30.000/)/)
-  end if
-  if (region.eq."WAF") then
-    region_array = (/(/340.000,   -11.365/), \
-                     (/340.000,  15.000/), \
-                     (/25.000,   15.000/), \
-                     (/25.000,    -11.365/)/)
-  end if
-  if (region.eq."WAS") then
-    region_array = (/(/40.000,  15.000/), \
-                     (/40.000,  50.000/), \
-                     (/60.000,  50.000/), \
-                     (/60.000,  15.000/)/)
-  end if
-  if (region.eq."WSA") then
-    region_array = (/(/280.271,   -1.239/), \
-                     (/293.623,   -20.000/), \
-                     (/287.859,   -50.000/), \
-                     (/292.652,   -56.704/), \
-                     (/277.978,   -56.704/), \
-                     (/277.978,  0.530/)/)
-  end if
-
-  if (region.eq."WNA") then
-    region_array = (/(/255.000,  28.566/), \
-                     (/230.000,  28.566/), \
-                     (/230.000,  60.000/), \
-                     (/255.000,  60.000/)/)
-  end if
-  lat = lsdata&lat
-  lon = lsdata&lon
-  inout = new((/dimsizes(lsdata)/), "float")
-  in = 0
-  inn = 0
-  do ilat = 0, dimsizes(lat) - 1
-    do ilon = 0, dimsizes(lon) - 1
-      inou = gc_inout(lat(ilat), lon(ilon), region_array(:, 1),\
-                      region_array(:, 0))
-      if (inou.eq."True")
-        inout(ilat, ilon) = 1.
-        in = in + 1
-      end if
-      inn = inn + 1
-    end do
-  end do
-
-  delete(inou)
-  return(inout)
-
-end
-;  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-; #####################################################################
-undef("select_region_939_poly")
-function select_region_939_poly(region:string)
+undef("select_region_srex_poly")
+function select_region_srex_poly(region:string)
 ;
 ; Arguments
 ;    region: a string specifying the region to be selected.
@@ -1000,95 +792,123 @@ function select_region_939_poly(region:string)
 ; Modification history
 begin
 
-  funcname = "select_region_939_poly"
+  funcname = "select_region_srex_poly"
   scriptname = "diag_scripts/lib/ncl/latlon.ncl"
   verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
 
-  if (region.eq."ALA") then
+  if (region.eq."ALAs") then
     region_array = (/200.000,   68.000/)
   end if
-  if (region.eq."AMZ") then
+  if (region.eq."AMZs") then
     region_array = (/285.,   0.000/)
   end if
-  if (region.eq."CAM") then
+  if (region.eq."CAMs") then
     region_array = (/265.,  15./)
   end if
-  if (region.eq."CAS") then
+  if (region.eq."CASs") then
     region_array = (/62.000,   40.000/)
   end if
-  if (region.eq."CEU") then
+  if (region.eq."CEUs") then
     region_array = (/ 15.000,    52.000/)
   end if
-  if (region.eq."CGI") then
+  if (region.eq."CGIs") then
     region_array = (/265.000,  65.000/)
   end if
-  if (region.eq."CNA") then
+  if (region.eq."CNAs") then
     region_array = (/255.000,  40.000/)
   end if
-  if (region.eq."EAF") then
+  if (region.eq."EAFs") then
     region_array = (/30.000,    -5.0/)
   end if
-  if (region.eq."EAS") then
+  if (region.eq."EASs") then
     region_array = (/110.000,   30.000/)
   end if
-  if (region.eq."ENA") then
+  if (region.eq."ENAs") then
     region_array = (/280.000,  30.000/)
   end if
-  if (region.eq."MED") then
+  if (region.eq."MEDs") then
     region_array = (/355.000,  38.000/)
   end if
-  if (region.eq."NAS") then
+  if (region.eq."NASs") then
     region_array = (/50.000,    72.000/)
   end if
-  if (region.eq."NAU") then
+  if (region.eq."NAUs") then
     region_array = (/120.000,    -20.000/)
   end if
-  if (region.eq."NEB") then
+  if (region.eq."NEBs") then
     region_array = (/315.000,    -6.000/)
   end if
-  if (region.eq."NEU") then
+  if (region.eq."NEUs") then
     region_array = (/355.000,   65.000/)
   end if
-  if (region.eq."SAF") then
+  if (region.eq."SAFs") then
     region_array = (/320.000,    -20.000/)
   end if
-  if (region.eq."SAH") then
+  if (region.eq."SAHs") then
     region_array = (/350.000,  22.000/)
   end if
-  if (region.eq."SAS") then
+  if (region.eq."SASs") then
     region_array = (/70.000,   10.000/)
   end if
-  if (region.eq."SAU") then
+  if (region.eq."SAUs") then
     region_array = (/120.000,    -42.000/)
   end if
-  if (region.eq."SSA") then
+  if (region.eq."SSAs") then
     region_array = (/295.0,    -40.000/)
   end if
-  if (region.eq."SEA") then
+  if (region.eq."SEAs") then
     region_array = (/105.000,     -0.000/)
   end if
-  if (region.eq."TIB") then
+  if (region.eq."TIBs") then
     region_array = (/85.000,  40.000/)
   end if
-  if (region.eq."WAF") then
+  if (region.eq."WAFs") then
     region_array = (/350.000,   0.0/)
   end if
-  if (region.eq."WAS") then
+  if (region.eq."WASs") then
     region_array = (/45.000,  25.000/)
   end if
-  if (region.eq."WSA") then
+  if (region.eq."WSAs") then
     region_array = (/280.0,   -30.0/)
   end if
-  if (region.eq."WNA") then
+  if (region.eq."WNAs") then
     region_array = (/233.000,  35.0/)
   end if
+    if (region.eq."Arctic") then
+    region_array = (/300.000,  75.000/)
+  end if
+  if (region.eq."Antarctic") then
+    region_array = (/300.000,   -75.000/)
+  end if
+  if (region.eq."Caribbean") then
+    region_array = (/290.0,   15.0/)
+  end if
+  if (region.eq."WesternIndianOcean") then
+    region_array = (/60.000,   -20.000/)
+  end if
+  if (region.eq."NorthernIndianOcean") then
+    region_array = (/70.000,  10.000/)
+  end if
+  if (region.eq."NorthernTropicalPacific") then
+    region_array = (/175.000,  10.000/)
+  end if
+  if (region.eq."EquatorialTropicalPacific") then
+    region_array = (/185.000,   0.000/)
+  end if
+  if (region.eq."SouthernTropicalPacific") then
+    region_array = (/195.000,   -10.000/)
+  end if
+  if (region.eq."World") then
+    region_array = (/300.000,   0.000/)
+  end if
+  
   return(region_array)
 
 end
 
 ;  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-undef("select_region_940")
-function select_region_940(region:string, lsdata:numeric)
+undef("select_region_srex")
+function select_region_srex(region:string, lsdata:numeric)
 ; Arguments
 ;    region: a string specifying the region to be selected.
 ;
@@ -1104,9 +924,173 @@ function select_region_940(region:string, lsdata:numeric)
 ; Modification history
 begin
 
-  funcname = "select_region_940"
+  funcname = "select_region_srex"
   scriptname = "diag_scripts/lib/ncl/latlon.ncl"
   verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
+  
+    if (region.eq."ALAs") then
+    region_array = (/(/255.000,   60.000/), \
+                     (/191.978,   60.000/), \
+                     (/191.978,   72.554/), \
+                     (/255.000,   72.554/)/)
+  end if
+  if (region.eq."AMZs") then
+    region_array = (/(/293.623,   - 20.000/), \
+                     (/280.271,   - 1.239/), \
+                     (/291.2,    11.439/), \
+                     (/310.00,   11.439/), \
+                     (/310.00,    - 20.00/)/)
+  end if
+  if (region.eq."CAMs") then
+    region_array = (/(/291.2,  11.439/), \
+                     (/280.271,     -1.239/), \
+                     (/241.677,    28.566/), \
+                     (/269.685,    28.566/)/)
+  end if
+  if (region.eq."CASs") then
+    region_array = (/(/60.000,   30.000/), \
+                     (/60.000,   50.000/), \
+                     (/75.000,   50.000/), \
+                     (/75.000,   30.000/)/)
+  end if
+  if (region.eq."CEUs") then
+    region_array = (/(/ -10.000,    45.000/), \
+                     (/ -10.000,    48.000/), \
+                     (/ 40.000,    61.320/), \
+                     (/ 40.000,    45.000/)/)
+  end if
+  if (region.eq."CGIs") then
+    region_array = (/(/350.000,  50.000/), \
+                     (/255.000,  50.000/), \
+                     (/255.000,  85.000/), \
+                     (/350.000,  85.000/)/)
+  end if
+  if (region.eq."CNAs") then
+    region_array = (/(/275.000,  50.000/), \
+                     (/275.000,  28.566/), \
+                     (/255.000,  28.566/), \
+                     (/255.000,  50.000/)/)
+  end if
+  if (region.eq."EAFs") then
+    region_array = (/(/25.000,    -11.365/), \
+                     (/25.000,   15.000/), \
+                     (/51.990,   15.000/), \
+                     (/51.990,    -11.365/)/)
+  end if
+  if (region.eq."EASs") then
+    region_array = (/(/100.000,   20.000/), \
+                     (/100.000,   50.000/), \
+                     (/145.000,   50.000/), \
+                     (/145.000,   20.000/)/)
+  end if
+  if (region.eq."ENAs") then
+    region_array = (/(/300.000,  25.000/), \
+                     (/275.000,  25.000/), \
+                     (/275.000,  50.000/), \
+                     (/300.000,  50.000/)/)
+  end if
+  if (region.eq."MEDs") then
+    region_array = (/(/350.000,  30.000/), \
+                     (/350.000,  45.000/), \
+                     (/40.000,  45.000/), \
+                     (/40.000,  30.000/)/)
+  end if
+  if (region.eq."NASs") then
+    region_array = (/(/40.000,    50.000/), \
+                     (/40.000,    70.000/), \
+                     (/180.000,   70.000/), \
+                     (/180.000,   50.000/)/)
+  end if
+  if (region.eq."NAUs") then
+    region_array = (/(/110.000,    -30.000/), \
+                     (/110.000,    -10.000/), \
+                     (/155.000,    -10.000/), \
+                     (/155.000,    -30.000/)/)
+  end if
+  if (region.eq."NEBs") then
+    region_array = (/(/326.000,    -20.000/), \
+                     (/310.000,    -20.000/), \
+                     (/310.000,    0.000/), \
+                     (/326.000,    0.000/)/)
+  end if
+  if (region.eq."NEUs") then
+    region_array = (/(/350.000,   48.000/), \
+                     (/350.000,   75.000/), \
+                     (/40.000,   75.000/), \
+                     (/40.000,   61.320/)/)
+  end if
+  if (region.eq."SAFs") then
+    region_array = (/(/350.000,    -35.000/), \
+                     (/350.000,    -11.365/), \
+                     (/308.01,     -11.365/), \
+                     (/308.01,     -35.000/)/)
+  end if
+  if (region.eq."SAHs") then
+    region_array = (/(/340.000,  15.000/), \
+                     (/340.000,  30.000/), \
+                     (/ 40.000,  30.000/), \
+                     (/ 40.000,  15.000/)/)
+  end if
+  if (region.eq."SASs") then
+    region_array = (/(/60.000,   5.000/), \
+                     (/60.000,   30.000/), \
+                     (/100.000,  30.000/), \
+                     (/100.000,  20.000/), \
+                     (/95.000,   20.000/), \
+                     (/95.000,   5.000/)/)
+  end if
+  if (region.eq."SAUs") then
+    region_array = (/(/110.000,    -50.000/), \
+                     (/110.000,    -30.000/), \
+                     (/180.000,    -30.000/), \
+                     (/180.000,    -50.000/)/)
+  end if
+  if (region.eq."SSAs") then
+    region_array = (/(/320.624,    -20.000/), \
+                     (/320.624,    -56.704/), \
+                     (/292.652,    -56.704/), \
+                     (/287.859,    -50.000/), \
+                     (/293.623,    -20.000/)/)
+  end if
+  if (region.eq."SEAs") then
+    region_array = (/(/95.000,     -10.000/), \
+                     (/95.000,    20.000/), \
+                     (/155.000,   20.000/), \
+                     (/155.000,    -10.000/)/)
+  end if
+  if (region.eq."TIBs") then
+    region_array = (/(/75.000,  30.000/), \
+                     (/75.000,  50.000/), \
+                     (/100.000,  50.000/), \
+                     (/100.000,  30.000/)/)
+  end if
+  if (region.eq."WAFs") then
+    region_array = (/(/340.000,   -11.365/), \
+                     (/340.000,  15.000/), \
+                     (/25.000,   15.000/), \
+                     (/25.000,    -11.365/)/)
+  end if
+  if (region.eq."WASs") then
+    region_array = (/(/40.000,  15.000/), \
+                     (/40.000,  50.000/), \
+                     (/60.000,  50.000/), \
+                     (/60.000,  15.000/)/)
+  end if
+  if (region.eq."WSAs") then
+    region_array = (/(/280.271,   -1.239/), \
+                     (/293.623,   -20.000/), \
+                     (/287.859,   -50.000/), \
+                     (/292.652,   -56.704/), \
+                     (/277.978,   -56.704/), \
+                     (/277.978,  0.530/)/)
+  end if
+
+  if (region.eq."WNAs") then
+    region_array = (/(/255.000,  28.566/), \
+                     (/230.000,  28.566/), \
+                     (/230.000,  60.000/), \
+                     (/255.000,  60.000/)/)
+  end if
 
   if (region.eq."Arctic") then
     region_array = (/(/0.000,   67.500/), \

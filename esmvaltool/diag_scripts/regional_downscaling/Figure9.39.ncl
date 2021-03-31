@@ -258,7 +258,7 @@ begin
   gsres                = True
   gsres@gsFillOpacityF = 0.7
   txres               = True
-  txres@txFontHeightF = 0.015
+  txres@txFontHeightF = 0.012
   txres@txFont = 22
   txres@txJust        = "CenterLeft"
 
@@ -269,7 +269,7 @@ begin
   do iseas = 0, dim_seas - 1
     do ir = 0, dim_reg - 1
       case1 = region_label(ir)
-      cell_fill = (/select_region_939(region_label(ir), lsdata)/)
+      cell_fill = (/select_region_srex(region_label(ir), lsdata)/)
       cell_fill!0 = "lat"
       cell_fill!1 = "lon"
       cell_fill&lat = lsdata&lat
@@ -752,7 +752,7 @@ begin
 
   do ir = 0, dim_reg - 1
     txres@txFontColor   = "black"
-    cregion_array = (/select_region_939_poly(region_label(ir))/)
+    cregion_array = (/select_region_srex_poly(region_label(ir))/)
     dum = gsn_add_text(wks_r, map_r, region_label(ir),\
                        cregion_array(0), cregion_array(1), txres)
     delete(cregion_array)

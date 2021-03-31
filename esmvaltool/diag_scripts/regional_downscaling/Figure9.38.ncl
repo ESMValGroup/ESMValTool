@@ -160,6 +160,7 @@ begin
   system("mkdir -p " + work_dir)
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_" + var0)
   wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_regions" + var0)
+  wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_legend_" + var0)
   if (diag_script_info@fig938_MMM.eq."True")
     wks_MMM = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.38_MMM" + var0)
   end if
@@ -636,9 +637,15 @@ begin
   ;   thicks1, diag_script_info@legend_position)
   ;  if(isatt(diag_script_info, "legend_position")) then
   ; else
-  add_legend(wks, models1, colors1, dashes1, lin_mar_mod1, thicks1, "0.2")
+  ; add_legend(wks, models1, colors1, dashes1, lin_mar_mod1, thicks1, "0.2")
   ; end if
   frame(wks)
+  
+   ; ***********add legend****************************
+  add_legenda_page(wks_l, models1, colors1, dashes1, lin_mar_mod1,\
+                   thicks1, "0.9")
+  frame(wks_l)
+  
   if (diag_script_info@fig938_MMM.eq."True")    
       pan1 = True
       pan1@gsnMaximize = True

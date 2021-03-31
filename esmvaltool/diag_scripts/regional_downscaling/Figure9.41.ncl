@@ -116,7 +116,7 @@ begin
   dum_diag1 = new(dimsizes(region_label), "graphic")
   do ir = 0, dim_reg - 1
     case1 = region_label(ir)
-    cell_fill = (/select_region_939(region_label(ir), lsdata)/)
+    cell_fill = (/select_region_srex(region_label(ir), lsdata)/)
     cell_fill!0 = "lat"
     cell_fill!1 = "lon"
     cell_fill&lat = lsdata&lat
