@@ -17,6 +17,8 @@
 ;   explicit_cn_levels: explicit contour levels (array)
 ;   extralegend:        plot legend(s) to extra file(s)
 ;   filename_add:       optionally add this string to plot filesnames
+;   multiobs_uncertainty: calculate uncertainty estimates from multiple
+;                       observational datasets (true, false)
 ;   panel_labels:       label individual panels (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
@@ -31,7 +33,7 @@
 ;   region:             show only selected geographic region given as latmin,
 ;                       latmax, lonmin, lonmax
 ;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON),
-;                                        "annual" = annual mean
+;                                        "annualclim" = annual mean
 ;   treat_var_as_error: treat variable as error when averaging (true, false)
 ;                       true:  avg = sqrt(mean(var*var))
 ;                       false: avg = mean(var)
@@ -51,6 +53,8 @@
 ;   none
 ;
 ; Modification history
+;   20210325-lauer_axel: added option to estimate observational uncertainty
+;                        from multiple observational datasets
 ;   20210318-lauer_axel: added option to speficfy variable if more than one
 ;                        variable is present
 ;   20190220-lauer_axel: added output of provenance (v2.0)
@@ -80,6 +84,7 @@ begin
   set_default_att(diag_script_info, "embrace_setup", False)
   set_default_att(diag_script_info, "extralegend", False)
   set_default_att(diag_script_info, "filename_add", "")
+  set_default_att(diag_script_info, "multiobs_uncertainty", False)
   set_default_att(diag_script_info, "panel_labels", True)
   set_default_att(diag_script_info, "rel_diff", False)
   set_default_att(diag_script_info, "rel_diff_min", -1.0e19)
@@ -117,6 +122,7 @@ begin
   flag_diff = diag_script_info@showdiff
   flag_rel_diff = diag_script_info@rel_diff
   flag_rel_diff_min = diag_script_info@rel_diff_min
+  flag_multiobs_unc = diag_script_info@multiobs_uncertainty
 
   if (.not.flag_diff .and. flag_rel_diff) then
     log_info("flag_rel_diff = True has no effect until flag_diff is also " \
@@ -152,6 +158,51 @@ begin
     season = (/"DJF", "MAM", "JJA", "SON"/)
   end if
 
+  if (flag_multiobs_unc .and. timemean .ne. "annualclim") then
+    log_info("multiobs_uncertainty = True is currently supported for annual" \
+             + " means only (timemean = annualclim). Setting " \
+             + " multiobs_uncertainty to False.")
+    flag_multiobs_unc = False
+  end if
+
+  ; find indices of all OBS and obs4mips datasets
+
+  if (flag_multiobs_unc) then
+    idxtmp = new(dimsizes(projects), integer)
+    do i = 0, dimsizes(projects) - 1
+      if (isStrSubset(str_lower(projects(i)), "obs"))
+        idxtmp(i) = i
+      else
+        idxtmp(i) = -1
+      end if
+    end do
+    idxobs = ind(idxtmp .ge. 0)
+    delete(idxtmp)
+    if (all(ismissing(idxobs))) then
+      log_info("No OBS or obs4mips datasets found. Setting " \
+               + " multiobs_uncertainty to False.")
+      flag_multiobs_unc = False
+    else
+      refname = "REF"
+      ref_ind = dimsizes(names)
+      names := array_append_record(names, (/refname/), 0)
+      log_info("Using the following datasets to calculate multi-" \
+               + "observational average (REF): " \
+               + str_join(names(idxobs), ", "))
+    end if
+  else
+    ref_ind = -1  ; set to invalid value
+    ; if attribute is present, use it so correlations can be calculated
+    if (isvar("refname")) then
+      ; set reference model
+      ref_ind = ind(names .eq. refname)
+      if (ismissing(ref_ind)) then
+        log_info("warning: reference dataset (" + refname + ") not found.")
+        ref_ind = -1
+      end if
+    end if
+  end if
+
   ; create string for caption (netcdf provenance)
 
   allseas = season(0)
@@ -177,18 +228,6 @@ begin
     write_plots = False
   end if
 
-  ref_ind = -1  ; set to invalid value
-
-  ; if attribute is present, use it so correlations can be calculated
-  if (isvar("refname")) then
-    ; set reference model
-    ref_ind = ind(names .eq. refname)
-    if (ismissing(ref_ind)) then
-      log_info("warning: reference dataset (" + refname + ") not found.")
-      ref_ind = -1
-    end if
-  end if
-
   climofiles = metadata_att_as_array(info0, "filename")
 
   outfile = new(numseas, string)
@@ -205,11 +244,9 @@ begin
     end if
 
     ; set reference model
-
-    ref_ind = ind(names .eq. refname)
-    if (ismissing(ref_ind)) then
-      error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
-                + refname + ") is missing")
+    if (ref_ind .lt. 0) then
+      error_msg("f", DIAG_SCRIPT, "", "cannot calculate differences as " \
+                + "reference dataset (" + refname + ") is missing")
     end if
   end if
 
@@ -220,15 +257,88 @@ begin
   ; # get data and average time               #
   ; ###########################################
 
-  maps = new((/dim_MOD, 4/), graphic)
-  maps_d = new((/dim_MOD, 4/), graphic)
+  ; ---------------------------------------------------------
+  ; if requested, calculate multi-observational mean and standard deviation
 
-  ind_all_sorted = ispan(0, dim_MOD - 1, 1)  ; create array
+  if (flag_multiobs_unc) then
+    nobs = dimsizes(idxobs)
+
+    ; step 1: calculate multi-obs mean
+
+    do i = 0, nobs - 1
+      A0 = read_data(info0[idxobs(i)])
+      ; calculate yearly averages
+      mean = time_operations(A0, -1, -1, "average", "annualclim", True)
+      delete(A0)
+      ; if requested, extract geographical region
+      if (isatt(diag_script_info, "region")) then
+        region = diag_script_info@region
+        mean := area_operations(mean, region(0), region(1), region(2), \
+                                region(3), "extract", False)
+      end if
+      if (i .eq. 0) then
+        ref_avg = mean
+      else
+        ref_avg = ref_avg + mean
+      end if
+    end do
+    delete(mean)
+    ref_avg = ref_avg / tofloat(nobs)
+
+    ; step 2: calculate standard deviation of all obs datasets using
+    ;         the multi-obs mean
+
+    sigma2 = new(dimsizes(ref_avg), float)
+
+    do i = 0, nobs - 1
+      A0 = read_data(info0[idxobs(i)])
+      ; calculate yearly averages
+      ymean = time_operations(A0, -1, -1, "average", "yearly", True)
+      delete(A0)
+      ; if requested, extract geographical region
+      if (isatt(diag_script_info, "region")) then
+        region = diag_script_info@region
+        ymean := area_operations(ymean, region(0), region(1), region(2), \
+                                 region(3), "extract", False)
+      end if
+      dims = dimsizes(ymean)
+      nyears = dims(0)
+      delete(dims)
+      sigma2 = 0.0
+      do j = 0, nyears - 1  ; dimension 0 = time
+        sigma2 = sigma2 + (ref_avg - ymean(j, :, :)) ^ 2
+      end do
+      if (nyears .gt. 1) then
+        sigma2 = sigma2 / tofloat(nyears - 1)
+      end if
+      if (i .eq. 0) then
+        ref_std = sigma2
+      else
+        ref_std = ref_std + sigma2
+      end if
+    end do
+    copy_VarMeta(ref_avg, ref_std)
+    delete(sigma2)
+    ref_std = sqrt(ref_std / tofloat(nobs))
+  end if
+
+  ; ---------------------------------------------------------
+
+  nplots = dim_MOD
+  if (flag_multiobs_unc) then
+    nplots = nplots + 1
+  end if
+
+  maps = new((/nplots, 4/), graphic)
+  maps_d = new((/nplots, 4/), graphic)
+
+  ind_all_sorted = ispan(0, nplots, 1)  ; create array
 
   if (ref_ind .ge. 0) then
     ind_wo_ref = ind(names .ne. refname)
     ind_all_sorted(0) = ref_ind
-    ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
+    n = dimsizes(names)
+    ind_all_sorted(1:n - 1) = ind_wo_ref
   end if
 
   corr = new((/numseas/), float)
@@ -243,10 +353,12 @@ begin
   nc_filename_mean = work_dir + "clouds_" + var0 + "_mean.nc"
   nc_filename_mean@existing = "append"
 
-  do ii = 0, dim_MOD - 1
+  res = True
+
+  do ii = 0, nplots - 1
 
     imod = ind_all_sorted(ii)
-    log_info("processing " + names(imod))
+    log_info("processing " + names(imod) + " ***")
 
     if (isvar("data1")) then
       delete(data1)
@@ -256,42 +368,46 @@ begin
       delete(A0)
     end if
 
-    A0 = read_data(info0[imod])
+    if (imod .ne. ref_ind .or. .not.flag_multiobs_unc) then
+      A0 = read_data(info0[imod])
 
-    ; check dimensions
+      ; check dimensions
 
-    dims = getvardims(A0)
-    if (dimsizes(dims) .lt. 2) then
-      error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
-                " dimensions, need 2 or 3")
+      dims = getvardims(A0)
+      if (dimsizes(dims) .lt. 2) then
+        error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
+                  " dimensions, need 2 or 3")
+      end if
+      idx = ind(dims .eq. "lat")
+      if (ismissing(idx)) then
+        error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
+      end if
+      idx = ind(dims .eq. "lon")
+      if (ismissing(idx)) then
+        error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
+      end if
+
+      ; average over time
+
+      ; if variable is an error variable, we have to square it before
+      ; averaging and then calculate the square-root afterwards
+
+      if (treat_var_as_error) then
+        log_info(" ++++++++++++++ Treating variable as error " + \
+                 "variable when averaging ")
+        A0 = A0 * A0
+      end if
+
+      data1 = time_operations(A0, -1, -1, "average", timemean, True)
+
+      if (treat_var_as_error) then
+        data1 = sqrt(data1)
+      end if
+
+      delete(A0)
+    else
+      data1 = ref_avg
     end if
-    idx = ind(dims .eq. "lat")
-    if (ismissing(idx)) then
-      error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
-    end if
-    idx = ind(dims .eq. "lon")
-    if (ismissing(idx)) then
-      error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
-    end if
-
-    ; average over time
-
-    ; if variable is an error variable, we have to square it before
-    ; averaging and then calculate the square-root afterwards
-
-    if (treat_var_as_error) then
-      log_info(" ++++++++++++++ Treating variable as error " + \
-               "variable when averaging ")
-      A0 = A0 * A0
-    end if
-
-    data1 = time_operations(A0, -1, -1, "average", timemean, True)
-
-    if (treat_var_as_error) then
-      data1 = sqrt(data1)
-    end if
-
-    delete(A0)
 
     ; if requested, select geographical region
 
@@ -301,13 +417,13 @@ begin
                                region(3), "extract", False)
       if (region(2).eq.0. .and. region(3).eq.360.) then
       else
-        data1@res_gsnAddCyclic = False
+        res@gsnAddCyclic = False
       end if
-      data1@res_mpMinLatF = region(0)    ; range to zoom in on
-      data1@res_mpMaxLatF = region(1)
-      data1@res_mpMinLonF = region(2)
-      data1@res_mpMaxLonF = region(3)
-      data1@res_mpCenterLonF = 0.5 * (region(2) + region(3))
+      res@mpMinLatF = region(0)    ; range to zoom in on
+      res@mpMaxLatF = region(1)
+      res@mpMinLonF = region(2)
+      res@mpMaxLonF = region(3)
+      res@mpCenterLonF = 0.5 * (region(2) + region(3))
       delete(region)
     end if
 
@@ -321,108 +437,108 @@ begin
     ; # plot ressources                         #
     ; ###########################################
 
-    data1@res_cnFillOn       = True      ; color plot desired
-    data1@res_cnLineLabelsOn = False     ; contour lines
+    res@cnFillOn       = True      ; color plot desired
+    res@cnLineLabelsOn = False     ; contour lines
 
     ; colors
     ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
 
     ; annotation
 
-;    data1@res_tiMainOn             = False
-     data1@res_tiMainString =  names(imod)
+;    res@tiMainOn             = False
+    res@tiMainString = names(imod)
 
-    data1@res_cnLevelSelectionMode = "ExplicitLevels"
-    data1@res_cnLinesOn            = False
+    res@cnLevelSelectionMode = "ExplicitLevels"
+    res@cnLinesOn            = False
 
-    data1@res_mpOutlineOn          = True
-    data1@res_mpFillOn             = False
+    res@mpOutlineOn          = True
+    res@mpFillOn             = False
 
     ; variable specific plotting settings
 
     if (var0.eq."pr") then
-      data1@res_cnLevels = fspan(0.5, 10, 20)
+      res@cnLevels = fspan(0.5, 10, 20)
       ; convert from kg m-2 s-1 to mm day-1
       data1 = data1 * 86400.0
       data1@units = "mm day-1"
     end if
 
     if (var0.eq."lwp") then
-      data1@res_cnLevels            = ispan(10, 200, 10) * 0.001
-;      data1@res_mpOutlineOn         = False
-;      data1@res_mpFillOn            = True
-;      data1@res_mpLandFillColor     = "Black"
+      res@cnLevels            = ispan(10, 200, 10) * 0.001
+;      res@mpOutlineOn         = False
+;      res@mpFillOn            = True
+;      res@mpLandFillColor     = "Black"
       pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
-      data1@res_cnFillColors        = pal
+      res@cnFillColors        = pal
     end if
 
     if (var0.eq."tas") then
-      data1@res_cnLevels            = ispan(-30, 30, 3)
+      res@cnLevels            = ispan(-30, 30, 3)
       pal = read_colormap_file("$diag_scripts/shared/plot/rgb/ipcc-tas.rgb")
-      data1@res_cnFillColors        = pal
+      res@cnFillColors        = pal
       ; convert from K to degC
       data1 = data1 - 273.15
       data1@units = "degC"
     end if
 
     if ((var0.eq."clt") .or. (var0.eq."cltisccp")) then
-      data1@res_cnLevels            = fspan(5, 100, 20)
+      res@cnLevels            = fspan(5, 100, 20)
     end if
 
     if (var0.eq."clivi") then
-      data1@res_cnLevels            = ispan(10, 200, 10) * 0.001
+      res@cnLevels            = ispan(10, 200, 10) * 0.001
     end if
 
     if (var0.eq."clwvi") then
-      data1@res_cnLevels            = ispan(10, 300, 10) * 0.001
+      res@cnLevels            = ispan(10, 300, 10) * 0.001
     end if
 
     if (var0.eq."swcre") then
-      data1@res_cnLevels            = ispan(-100, 0, 10)
+      res@cnLevels            = ispan(-100, 0, 10)
     end if
 
     if (var0.eq."lwcre") then
-      data1@res_cnLevels            = ispan(0, 100, 10)
+      res@cnLevels            = ispan(0, 100, 10)
     end if
 
     if (var0.eq."netcre") then
-      data1@res_cnLevels            = ispan(-70, 70, 10)
+      res@cnLevels            = ispan(-70, 70, 10)
     end if
 
-;    data1@res_lbLabelBarOn         = False
-    data1@res_gsnRightString       = ""
+;    res@lbLabelBarOn         = False
+    res@gsnRightString       = ""
 
-    data1@res_mpFillDrawOrder       = "PostDraw"    ; draw map last
-    data1@res_cnMissingValFillColor = "Gray"
+    res@mpFillDrawOrder       = "PostDraw"    ; draw map last
+    res@cnMissingValFillColor = "Gray"
 
     ; no tickmarks and no labels
 
-    data1@res_tmYLLabelsOn       = False
-    data1@res_tmYLOn             = False
-    data1@res_tmYRLabelsOn       = False
-    data1@res_tmYROn             = False
-    data1@res_tmXBLabelsOn       = False
-    data1@res_tmXBOn             = False
-    data1@res_tmXTLabelsOn       = False
-    data1@res_tmXTOn             = False
-    data1@res_cnInfoLabelOn      = False    ; turn off cn info label
-    data1@res_mpPerimOn          = perim    ; draw line around map
+    res@tmYLLabelsOn       = False
+    res@tmYLOn             = False
+    res@tmYRLabelsOn       = False
+    res@tmYROn             = False
+    res@tmXBLabelsOn       = False
+    res@tmXBOn             = False
+    res@tmXTLabelsOn       = False
+    res@tmXTOn             = False
+    res@cnInfoLabelOn      = False    ; turn off cn info label
+    res@mpPerimOn          = perim    ; draw line around map
 
     ; specified in namelist
 
-    data1@res_mpProjection       = projection
+    res@mpProjection       = projection
 
     ; set explicit contour levels
 
     if (isatt(diag_script_info, "explicit_cn_levels")) then
-      data1@res_cnLevelSelectionMode = "ExplicitLevels"
-      data1@res_cnLevels = diag_script_info@explicit_cn_levels
+      res@cnLevelSelectionMode = "ExplicitLevels"
+      res@cnLevels = diag_script_info@explicit_cn_levels
     end if
 
-    if (.not. isatt(data1, "res_cnLevels")) then
+    if (.not. isatt(res, "cnLevels")) then
       log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
       log_info("info: using default contour levels")
-      data1@res_cnLevels = fspan(min(data1), max(data1), 20)
+      res@cnLevels = fspan(min(data1), max(data1), 20)
     end if
 
     ; ###########################################
@@ -498,17 +614,17 @@ begin
       end if
     end if
 
-;    data1@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
+;    res@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
 ;                                              / tofloat((dim_MOD + 1) / 2)/))
-;    data1@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
+;    res@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
 ;                                              / tofloat((dim_MOD + 1) / 2)/))
 
     ; ###########################################
     ; # create the plot                         #
     ; ###########################################
 
-;    data1@res_gsnDraw        = False  ; do not draw yet
-;    data1@res_gsnFrame       = False  ; don't advance frame
+;    res@gsnDraw        = False  ; do not draw yet
+;    res@gsnFrame       = False  ; don't advance frame
 
     ; function in aux_plotting.ncl
 
@@ -545,50 +661,50 @@ begin
     if (numseas.gt.1) then
       do is = 0, numseas - 1
         if (.not.ismissing(corr(is))) then
-          data1@res_gsnRightString = "corr = " + sprintf("%6.3f", corr(is))
+          res@gsnRightString = "corr = " + sprintf("%6.3f", corr(is))
         else
-          data1@res_gsnRightString = ""
+          res@gsnRightString = ""
         end if
         if (.not.ismissing(gavg(is))) then
-          data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(is))
+          res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg(is))
         else
-          data1@res_gsnLeftString = ""
+          res@gsnLeftString = ""
         end if
 
         if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
-          data1@res_gsnRightString = ""
+          res@gsnRightString = ""
         end if
 
         if (is.eq.0) then
-          maps(imod, is) = contour_map(wks0, data1(is, :, :), var0)
+          maps(imod, is) = gsn_csm_contour_map(wks0, data1(is, :, :), res)
         end if
         if (is.eq.1) then
-          maps(imod, is) = contour_map(wks1, data1(is, :, :), var0)
+          maps(imod, is) = gsn_csm_contour_map(wks1, data1(is, :, :), res)
         end if
         if (is.eq.2) then
-          maps(imod, is) = contour_map(wks2, data1(is, :, :), var0)
+          maps(imod, is) = gsn_csm_contour_map(wks2, data1(is, :, :), res)
         end if
         if (is.eq.3) then
-          maps(imod, is) = contour_map(wks3, data1(is, :, :), var0)
+          maps(imod, is) = gsn_csm_contour_map(wks3, data1(is, :, :), res)
         end if
       end do
     else
       if (.not.ismissing(corr(0))) then
-        data1@res_gsnRightString = "corr = " + sprintf("%6.3f", corr(0))
+        res@gsnRightString = "corr = " + sprintf("%6.3f", corr(0))
       else
-        data1@res_gsnRightString = ""
+        res@gsnRightString = ""
       end if
       if (.not.ismissing(gavg(0))) then
-        data1@res_gsnLeftString = "mean = " + sprintf("%6.3f", gavg(0))
+        res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg(0))
       else
-        data1@res_gsnLeftString = ""
+        res@gsnLeftString = ""
       end if
 
       if (imod.eq.ref_ind) then  ; remove corr. string for reference dataset
-        data1@res_gsnRightString = ""
+        res@gsnRightString = ""
       end if
 
-      maps(imod, 0) = contour_map(wks0, data1, var0)
+      maps(imod, 0) = gsn_csm_contour_map(wks0, data1, res)
     end if
 
     ; mandatory netcdf output
@@ -600,43 +716,60 @@ begin
     ; Create difference plots (if requested)
     ; =======================================================================
 
-    if (flag_diff .and. (imod .ne. ref_ind)) then
+    if (flag_diff) then
 
-      diff = data1
-      if (flag_rel_diff) then
-        diff = (diff - ref_data) / ref_data * 100.0
-        diff = where(ref_data .le. rel_diff_min, diff@_FillValue, diff)
-      else
-        diff = diff - ref_data
-      end if
+      dres = True
 
-      diff@res_gsnLeftString  = ""
-      diff@res_gsnRightString = ""
+      if (imod .ne. ref_ind) then
+        diff = data1
+        if (flag_rel_diff) then
+          diff = (diff - ref_data) / ref_data * 100.0
+          diff = where(ref_data .le. rel_diff_min, diff@_FillValue, diff)
+        else
+          diff = diff - ref_data
+        end if
 
-      diff@res_tiMainString =  names(imod)+ " - " + refname
+        dres@gsnLeftString  = ""
+        dres@gsnRightString = ""
 
-      rmsd = rmsd@_FillValue
-      bias = bias@_FillValue
+        dres@tiMainString =  names(imod) + " - " + refname
 
-      if (numseas.gt.1) then
-        do is = 0, numseas - 1
+        rmsd = rmsd@_FillValue
+        bias = bias@_FillValue
+
+        if (numseas.gt.1) then
+          do is = 0, numseas - 1
+            if (.not. flag_rel_diff) then
+              if (same_grid) then
+                rmsd(is) = calculate_metric(ref_data(is, :, :), \
+                                            data1(is, :, :), "RMSD")
+              end if
+              bias(is) = area_operations(diff(is, :, :), -90., 90., 0., 360., \
+                                         "average", True)
+            end if
+          end do
+        else
           if (.not. flag_rel_diff) then
             if (same_grid) then
-              rmsd(is) = calculate_metric(ref_data(is, :, :), \
-                                          data1(is, :, :), "RMSD")
+              rmsd(0) = calculate_metric(ref_data, data1, "RMSD")
             end if
-            bias(is) = area_operations(diff(is, :, :), -90., 90., 0., 360., \
-                                       "average", True)
+            bias(0) = area_operations(diff, -90., 90., 0., 360., "average", \
+                                      True)
           end if
-        end do
-      else
-        if (.not. flag_rel_diff) then
-          if (same_grid) then
-            rmsd(0) = calculate_metric(ref_data, data1, "RMSD")
-          end if
-          bias(0) = area_operations(diff, -90., 90., 0., 360., "average", \
-                                    True)
         end if
+      else if (flag_multiobs_unc) then
+        diff = ref_std
+        if (.not.isatt(diff, "diag_script")) then
+          diff@diag_script = (/DIAG_SCRIPT/)
+        end if
+        dres@gsnLeftString  = ""
+        dres@gsnRightString = ""
+        dres@tiMainString =  refname + " uncertainty"
+        rmsd = rmsd@_FillValue
+        bias = bias@_FillValue
+      else
+        continue
+      end if
       end if
 
       ; ----------------------------------------------------------------------
@@ -645,25 +778,25 @@ begin
       ; # plot ressources                         #
       ; ###########################################
 
-;      diff@res_gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
-;                                               / tofloat((dim_MOD + 1) / 2)/))
-;      diff@res_gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
-;                                               / tofloat((dim_MOD + 1) / 2)/))
+;      dres@gsnLeftStringFontHeightF  = min((/0.025, 0.015 * 6.0 \
+;                                           / tofloat((dim_MOD + 1) / 2)/))
+;      dres@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
+;                                           / tofloat((dim_MOD + 1) / 2)/))
 
-;      diff@res_tiMainOn       = False
+;      dres@tiMainOn       = False
 
-      diff@res_cnFillOn       = True      ; color plot desired
-      diff@res_cnLineLabelsOn = False     ; contour lines
-      diff@res_cnLinesOn      = False
+      dres@cnFillOn       = True      ; color plot desired
+      dres@cnLineLabelsOn = False     ; contour lines
+      dres@cnLinesOn      = False
 
       ; colors
       ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
 
       ; annotation
 
-      diff@res_cnLevelSelectionMode = "ExplicitLevels"
-      diff@res_mpOutlineOn          = True
-      diff@res_mpFillOn             = False
+      dres@cnLevelSelectionMode = "ExplicitLevels"
+      dres@mpOutlineOn          = True
+      dres@mpFillOn             = False
 
       ; variable specific plotting settings
 
@@ -671,64 +804,61 @@ begin
 
       if (.not.isvar("cnLevels")) then
 
-        if (isatt(diff, "res_cnLevels")) then
-          delete(diff@res_cnLevels)
+        if (isatt(dres, "cnLevels")) then
+          delete(dres@cnLevels)
         end if
-        if (isatt(diff, "res_cnFillColors")) then
-          delete(diff@res_cnFillColors)
+        if (isatt(dres, "cnFillColors")) then
+          delete(dres@cnFillColors)
         end if
         if (isvar("pal")) then
           delete(pal)
         end if
 
         if (var0.eq."pr") then
-          diff@res_cnLevels = ispan(-30, 30, 5) * 0.1
+          dres@cnLevels = ispan(-30, 30, 5) * 0.1
           pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                    + "ipcc-precip-delta.rgb")
-          diff@res_cnFillColors = pal
-          diff@res_lbOrientation = "horizontal"
+          dres@cnFillColors = pal
+          dres@lbOrientation = "horizontal"
         end if
 
         if ((var0.eq."tas") .or. (var0.eq."ts")) then
           pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                    + "ipcc-tas-delta.rgb")
-          diff@res_cnFillPalette = pal
+          dres@cnFillPalette = pal
           if (var0.eq."ts") then
-            diff@res_cnLevels = ispan(-5, 5, 1) * 0.5
+            dres@cnLevels = ispan(-5, 5, 1) * 0.5
           end if
         end if
 
         if (var0.eq."lwp") then
-          diff@res_cnLevels           = ispan(-50, 50, 10) * 0.001
-          diff@res_mpOutlineOn        = False
-          diff@res_mpFillOn           = True
-          diff@res_mpLandFillColor    = "Black"
+          dres@cnLevels           = ispan(-50, 50, 10) * 0.001
           pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
-          diff@res_cnFillColors       = pal
+          dres@cnFillColors       = pal
         end if
 
         if (var0.eq."clt") then
-          diff@res_cnLevels           = fspan(-25, 25, 11)
+          dres@cnLevels           = fspan(-25, 25, 11)
         end if
 
         if (var0.eq."clivi") then
-          diff@res_cnLevels           = ispan(-70, 70, 10) * 0.001
+          dres@cnLevels           = ispan(-70, 70, 10) * 0.001
         end if
 
         if (var0.eq."clwvi") then
-          diff@res_cnLevels           = ispan(-50, 50, 10) * 0.001
+          dres@cnLevels           = ispan(-50, 50, 10) * 0.001
         end if
 
         if (var0.eq."swcre") then
-          diff@res_cnLevels          = ispan(-30, 30, 5)
+          dres@cnLevels          = ispan(-30, 30, 5)
         end if
 
         if (var0.eq."lwcre") then
-          diff@res_cnLevels          = ispan(-30, 30, 5)
+          dres@cnLevels          = ispan(-30, 30, 5)
         end if
 
         if (var0.eq."netcre") then
-          diff@res_cnLevels          = ispan(-30, 30, 5)
+          dres@cnLevels          = ispan(-30, 30, 5)
         end if
 
         ; ******************************************************
@@ -736,86 +866,86 @@ begin
         ; ******************************************************
 
         if (flag_rel_diff) then
-          if (isatt(diff, "res_cnLevels")) then
-            delete(diff@res_cnLevels)
+          if (isatt(dres, "cnLevels")) then
+            delete(dres@cnLevels)
           end if
-          if (isatt(diff, "res_cnFillColors")) then
-            delete(diff@res_cnFillColors)
+          if (isatt(dres, "cnFillColors")) then
+            delete(dres@cnFillColors)
           end if
-          diff@res_cnLevels = fspan(-100, 100, 21)
+          dres@cnLevels = fspan(-100, 100, 21)
           if (isvar("pal")) then
             delete(pal)
           end if
           pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                    + "percent100.rgb")
-          diff@res_cnFillColors = pal
+          dres@cnFillColors = pal
         end if
 
         ; ******************************************************
 
-        if (.not. isatt(diff, "res_cnLevels")) then
+        if (.not. isatt(dres, "cnLevels")) then
           log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
           log_info("info: using default contour levels")
-          diff@res_cnLevels = fspan(min(diff), max(diff), 20)
+          dres@cnLevels = fspan(min(diff), max(diff), 20)
         end if
 
-        cnLevels = diff@res_cnLevels
-        if (isatt(diff, "res_cnFillColors")) then
-          cnFillColors = diff@res_cnFillColors
+        cnLevels = dres@cnLevels
+        if (isatt(dres, "cnFillColors")) then
+          cnFillColors = dres@cnFillColors
         end if
 
       else  ; use previously defined colors and contour intervals
 
-        if (isatt(diff, "res_cnLevels")) then
-          delete(diff@res_cnLevels)
+        if (isatt(dres, "cnLevels")) then
+          delete(dres@cnLevels)
         end if
-        if (isatt(diff, "res_cnFillColors")) then
-          delete(diff@res_cnFillColors)
+        if (isatt(dres, "cnFillColors")) then
+          delete(dres@cnFillColors)
         end if
 
-        diff@res_cnLevels = cnLevels
+        dres@cnLevels = cnLevels
 
         if (isvar("cnFillColors")) then
-          diff@res_cnFillColors = cnFillColors
+          dres@cnFillColors = cnFillColors
         end if
 
       end if  ; if .not.isvar("cnLevels")
 
 ;      if (imod.eq.ref_ind) then
-;        diff@res_lbLabelBarOn = True
+;        dres@lbLabelBarOn = True
 ;      else
-;        diff@res_lbLabelBarOn = False
+;        dres@lbLabelBarOn = False
 ;      end if
 
       ; map attributes
 
-      diff@res_mpFillDrawOrder       = "PostDraw"    ; draw map last
-      diff@res_cnMissingValFillColor = "Gray"
+      dres@mpFillDrawOrder       = "PostDraw"    ; draw map last
+      dres@cnMissingValFillColor = "Gray"
 
       ; no tickmarks and no labels
 
-      diff@res_tmYLLabelsOn       = False
-      diff@res_tmYLOn             = False
-      diff@res_tmYRLabelsOn       = False
-      diff@res_tmYROn             = False
-      diff@res_tmXBLabelsOn       = False
-      diff@res_tmXBOn             = False
-      diff@res_tmXTLabelsOn       = False
-      diff@res_tmXTOn             = False
-      diff@res_cnInfoLabelOn      = False    ; turn off cn info label
+      dres@tmYLLabelsOn       = False
+      dres@tmYLOn             = False
+      dres@tmYRLabelsOn       = False
+      dres@tmYROn             = False
+      dres@tmXBLabelsOn       = False
+      dres@tmXBOn             = False
+      dres@tmXTLabelsOn       = False
+      dres@tmXTOn             = False
+      dres@cnInfoLabelOn      = False    ; turn off cn info label
 
       ; specified in namelist
 
-      diff@res_mpProjection       = projection
+      dres@mpProjection       = projection
 
       ; set explicit contour levels
 
       if (isatt(diag_script_info, "explicit_cn_levels")) then
-        diff@res_cnLevelSelectionMode = "ExplicitLevels"
-        if (isatt(diff, "res_cnLevels")) then
-          delete(diff@res_cnLevels)
+        dres@cnLevelSelectionMode = "ExplicitLevels"
+        if (isatt(dres, "cnLevels")) then
+          delete(dres@cnLevels)
         end if
-        diff@res_cnLevels = diag_script_info@explicit_cn_levels
+        dres@cnLevels = diag_script_info@explicit_cn_levels
       end if
 
       ; ###########################################
@@ -836,50 +966,108 @@ begin
       ; # create the plot                         #
       ; ###########################################
 
-;      diff@res_gsnDraw        = False  ; do not draw yet
-;      diff@res_gsnFrame       = False  ; don't advance frame
+      if (flag_multiobs_unc) then
+        dres@gsnDraw        = False  ; do not draw yet
+        dres@gsnFrame       = False  ; don't advance frame
+      end if
 
       ; ----------------------------------------------------------------------
 
       if (numseas.gt.1) then
         do is = 0, numseas - 1
           if (.not.ismissing(rmsd(is))) then
-            diff@res_gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(is))
+            dres@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(is))
           else
-            diff@res_gsnRightString = ""
+            dres@gsnRightString = ""
           end if
           if (.not.ismissing(bias(is))) then
-            diff@res_gsnLeftString = "bias = " + sprintf("%6.3f", bias(is))
+            dres@gsnLeftString = "bias = " + sprintf("%6.3f", bias(is))
           else
-            diff@res_gsnLeftString = ""
+            dres@gsnLeftString = ""
           end if
 
           if (is.eq.0) then
-            maps_d(imod, is) = contour_map(wks0d, diff(is, :, :), var0)
+            maps_d(imod, is) = gsn_csm_contour_map(wks0d, diff(is, :, :), dres)
           end if
           if (is.eq.1) then
-            maps_d(imod, is) = contour_map(wks1d, diff(is, :, :), var0)
+            maps_d(imod, is) = gsn_csm_contour_map(wks1d, diff(is, :, :), dres)
           end if
           if (is.eq.2) then
-            maps_d(imod, is) = contour_map(wks2d, diff(is, :, :), var0)
+            maps_d(imod, is) = gsn_csm_contour_map(wks2d, diff(is, :, :), dres)
           end if
           if (is.eq.3) then
-            maps_d(imod, is) = contour_map(wks3d, diff(is, :, :), var0)
+            maps_d(imod, is) = gsn_csm_contour_map(wks3d, diff(is, :, :), dres)
           end if
         end do
       else
         if (.not.ismissing(rmsd(0))) then
-          diff@res_gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(0))
+          dres@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd(0))
         else
-          diff@res_gsnRightString = ""
+          dres@gsnRightString = ""
         end if
         if (.not.ismissing(bias(0))) then
-          diff@res_gsnLeftString = "bias = " + sprintf("%6.3f", bias(0))
+          dres@gsnLeftString = "bias = " + sprintf("%6.3f", bias(0))
         else
-          diff@res_gsnLeftString = ""
+          dres@gsnLeftString = ""
         end if
-        maps_d(imod, 0) = contour_map(wks0d, diff, var0)
-      end if
+        maps_d(imod, 0) = gsn_csm_contour_map(wks0d, diff, dres)
+
+        ; obs uncertainty
+
+        if (flag_multiobs_unc) then
+          xmask = where(abs(diff) .gt. ref_std, 0.0, 1.0)
+          copy_VarMeta(diff, xmask)
+
+;          if (ii .eq. 0) then
+;            system("rm debug.nc")
+;            debugfile = addfile("debug.nc", "c")
+;          end if
+;          xm = "xmask" + names(imod)
+;          debugfile->$xm$ = xmask
+;          debugfile->obs_std = ref_std
+;          dn = "diff" + names(imod)
+;          debugfile->$dn$ = diff
+
+          xres = True
+          xres@gsnDraw        = False  ; do not draw yet
+          xres@gsnFrame       = False  ; don't advance frame
+          xres@cnMissingValFillColor = -1
+          xres@cnLevelSelectionMode = "ExplicitLevels"
+          xres@cnLevels = 0.5
+          xres@cnFillColors = (/"black", "transparent"/)
+          xres@cnFillPattern = 17
+          xres@cnFillOn       = True      ; color plot desired
+          xres@cnInfoLabelOn = False
+          xres@cnLinesOn = False
+          xres@cnLineLabelsOn = False
+          xres@lbLabelBarOn = False
+          xres@gsnRightString   = ""
+          xres@gsnLeftString    = ""
+          xres@gsnCenterString  = ""
+          xres@tiYAxisOn = False
+          xres@tmXBBorderOn = False
+          xres@tmXTBorderOn = False
+          xres@tmYLBorderOn = False
+          xres@tmYRBorderOn = False
+          xres@tmXBLabelsOn = False
+          xres@tmYLLabelsOn = False
+          xres@tmXBOn = False
+          xres@tmXTOn = False
+          xres@tmYLOn = False
+          xres@tmYROn = False
+          xres@cnConstFEnableFill = True
+
+          if (imod .ne. ref_ind) then
+            plotmask = gsn_csm_contour(wks0d, xmask, xres)
+            overlay(maps_d(imod, 0), plotmask)
+            delete(plotmask)
+          end if
+          delete(xmask)
+        end if
+      end if  ; if flag_multiobs_unc
+
+      draw(maps_d(imod, 0))
+      frame(wks0d)
 
       ; mandatory netcdf output
 
@@ -898,7 +1086,7 @@ begin
 
     tmp_colors = gsn_retrieve_colormap(wks0)
     cdims = dimsizes(tmp_colors)
-    nboxes = dimsizes(data1@res_cnLevels)
+    nboxes = dimsizes(res@cnLevels)
     clen = cdims(0)
     stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
     fill_colors = ispan(2, clen(0) - 1, stride)
@@ -1087,7 +1275,7 @@ begin
 
       tmp_colors = gsn_retrieve_colormap(wks0d)
       cdims = dimsizes(tmp_colors)
-      nboxes = dimsizes(diff@res_cnLevels)
+      nboxes = dimsizes(dres@cnLevels)
       clen = cdims(0)
       stride = max((/1, ((clen(0)-1) - 2) / nboxes /))
       fill_colors = ispan(2, clen(0) - 1, stride)
@@ -1243,7 +1431,7 @@ begin
     ; optionally save legend(s) to extra file(s)
 
     if (extralegend) then
-      nboxes = dimsizes(data1@res_cnLevels) + 1
+      nboxes = dimsizes(res@cnLevels) + 1
       wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
                        + "_legend")
       pres@lbMonoFillPattern = True
@@ -1255,7 +1443,7 @@ begin
       pres@lbTitleFontHeightF = 0.015
       pres@lbTitleString = data1@long_name + " (" + data1@units + ")"
 
-      labels = tostring(data1@res_cnLevels)
+      labels = tostring(res@cnLevels)
 
       ; remove trailing zeros from strings
 
@@ -1273,10 +1461,10 @@ begin
         end if
       end do
 
-      if (isatt(data1, "res_cnFillColors")) then
-        pres@lbFillColors = data1@res_cnFillColors
-      else if (isatt(data1, "res_cnFillPalette")) then
-        pres@lbFillColors = data1@res_cnFillPalette
+      if (isatt(res, "cnFillColors")) then
+        pres@lbFillColors = res@cnFillColors
+      else if (isatt(res, "cnFillPalette")) then
+        pres@lbFillColors = res@cnFillPalette
       else
         pres@lbFillColors = mean_colors  ; default colors
       end if
@@ -1289,11 +1477,11 @@ begin
       delete(pres@lbFillColors)
 
       if (flag_diff) then
-        nboxes = dimsizes(diff@res_cnLevels) + 1
+        nboxes = dimsizes(dres@cnLevels) + 1
         wksleg = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 \
                          + "_diff_legend")
 
-        labels = tostring(diff@res_cnLevels)
+        labels = tostring(dres@cnLevels)
 
         ; remove trailing zeros from strings
 
@@ -1318,10 +1506,10 @@ begin
                         data1@units + ")"
         end if
 
-        if (isatt(diff, "res_cnFillColors")) then
-          pres@lbFillColors = diff@res_cnFillColors
-        else if (isatt(diff, "res_cnFillPalette")) then
-          pres@lbFillColors = diff@res_cnFillPalette
+        if (isatt(dres, "cnFillColors")) then
+          pres@lbFillColors = dres@cnFillColors
+        else if (isatt(dres, "cnFillPalette")) then
+          pres@lbFillColors = dres@cnFillPalette
         else
           pres@lbFillColors = diff_colors  ; default colors
         end if

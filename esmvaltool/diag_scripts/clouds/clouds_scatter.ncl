@@ -466,30 +466,32 @@ begin
       if (.not.ismissing(y0)) then
         x0 = result_avg&bin(i)
         stdbar(i, ii) = gsn_add_polyline(wks, plots(ii), (/x0, x0/), \
-          (/y0 + result_std(ii, i), y0 - result_std(ii, i)/), polyres)
+                                         (/y0 + result_std(ii, i), y0 - \
+                                         result_std(ii, i)/), polyres)
         polyres@gsMarkerIndex = 16
         polyres@gsMarkerColor = "red"
         centers(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
-          (/y0, y0/), polyres)
+                                            (/y0, y0/), polyres)
         polyres@gsMarkerIndex = 4
         polyres@gsMarkerColor = "black"
         centersout(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
-          (/y0, y0/), polyres)
+                                               (/y0, y0/), polyres)
       end if
       y0 = result_avg(ref_ind, i)
       if (.not.ismissing(y0)) then
         x0 = result_avg&bin(i)
         stdbarR(i, ii) = gsn_add_polyline(wks, plots(ii), (/x0, x0/), \
-          (/y0 + result_std(ref_ind, i), y0 - result_std(ref_ind, i)/), \
-           polyresRef)
+                                          (/y0 + result_std(ref_ind, i), \
+                                          y0 - result_std(ref_ind, i)/), \
+                                          polyresRef)
         polyresRef@gsMarkerIndex = 16
         polyresRef@gsMarkerColor = "white"
         centersR(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
-          (/y0, y0/), polyresRef)
+                                             (/y0, y0/), polyresRef)
         polyresRef@gsMarkerIndex = 4
         polyresRef@gsMarkerColor = "black"
         centersRout(i, ii) = gsn_add_polymarker(wks, plots(ii), (/x0, x0/), \
-          (/y0, y0/), polyresRef)
+                                                (/y0, y0/), polyresRef)
       end if
     end do
 

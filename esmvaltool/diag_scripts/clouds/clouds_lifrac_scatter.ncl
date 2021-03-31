@@ -252,7 +252,7 @@ begin
     if (dimerror) then
       error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
                 + atts_cli@dataset + " (variable cli), " \
-                + atts_clw@dataset + " (variable clw), " \)
+                + atts_clw@dataset + " (variable clw), " \
                 + atts_ta@dataset + " (variable ta) do not match.")
     end if
 
@@ -316,7 +316,7 @@ begin
     resultl@_FillValue = ice1d@_FillValue
 
     do n = 0, nbins - 1
-      resulti(ii, n) = 0.0;resulti@_FillValue
+      resulti(ii, n) = 0.0
       resultl(ii, n) = resultl@_FillValue
       x0 = xmin + n * binsize
       x1 = x0 + binsize
