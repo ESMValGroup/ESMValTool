@@ -64,6 +64,13 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+def cube_interesction(cube):
+    central_longitude = 0. #W #-160.+3.5
+    #central_latitude = 0.
+    cube = regrid_to_1x1(cube)
+    cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+    return cube
+
 def detrended_contourf(cube):
     """
     make the detrended contouf plot
@@ -72,6 +79,7 @@ def detrended_contourf(cube):
     drange = diagtools.get_cube_range_diff([cube, ])
     dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
     ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
+    cube = cube_interesction(cube)
     try:
         qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
         qplot.colorbar.set_ticks(ticks)
@@ -83,26 +91,29 @@ def detrended_contourf(cube):
 def make_lon_cartopy_safe(lon):
     """
     CMOR states longitude should be between 0 and 360.
-    but, Cartopy preferse -180->180. 
-    
+    but, Cartopy preferse -180->180.
+
     """
-    lon[np.where(lon>=180.)] = lon[np.where(lon>=180.)]-360. 
+    lon[np.where(lon>=180.)] = lon[np.where(lon>=180.)]-360.
     return lon
 
 def trended_contourf(cube, cmap='YlOrRd', zrange=[], drawcbar=True):
     """
     make the detrended contouf plot
     """
+    cube = cube_interesction(cube)
+
     lats = cube.coord('latitude').points
     lons = cube.coord('longitude').points
     if lons.ndim ==2:
         ax = plt.axes(projection=ccrs.PlateCarree())
 
-        if lons.max()>180.: 
-            lons = make_lon_cartopy_safe(lons)
-        cube.data = np.ma.masked_where(lons>179.9, cube.data)        
+        # if lons.max()>180.:
+        #     lons = make_lon_cartopy_safe(lons)
+
+        # cube.data = np.ma.masked_where(lons>179.9, cube.data)
         print(cube.data)
-        #assert 0 
+        #assert 0
         #plt.contourf(lons, lats, cube.data, 18, cmap=cmap)
         im = plt.pcolormesh(lons, lats, cube.data, cmap=cmap)
         if drawcbar:
@@ -133,7 +144,7 @@ def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
         lons,lats = np.meshgrid(lons.copy(),lats.copy())
 
     if lons.ndim ==2:
-   
+
         if lons.max()>180.:
             lons = make_lon_cartopy_safe(lons)
         cube.data = np.ma.masked_where(lons>179.9, cube.data)
@@ -164,7 +175,7 @@ def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
         plt.gca().coastlines()
         if np.ma.is_masked(cube.data[0,0]):
             ax.add_feature(cfeature.NaturalEarthFeature('physical', 'land', '110m', edgecolor='face', facecolor='w'))
-        
+
     return ax
 
 
@@ -182,7 +193,7 @@ def split_variable_groups(variable_group, debug=False):
         threshold = ''
     else:
         print('What?',variable_group)
-        assert 0 
+        assert 0
     #if variable == 'tas':
     #    variable = 'Surface Temperature'
     exp = exp.upper()
@@ -203,10 +214,10 @@ def calc_ensemble_mean(cube_list):
         assert 0
     if len(cube_list) ==0:
         print("calc_ensemble_mean: cube_list,",cube_list," has no contents. ")
-        assert 0 
+        assert 0
     if len(cube_list) ==1:
         return cube_list[0]
-    
+
     cube_data = cube_list[0].data
     for c in cube_list[1:]:
         cube_data += c.data
@@ -301,6 +312,8 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
 
     """
     plt.subplot(subplot)
+    cube = cube_interesction(cube)
+
     qplot = qplt.contourf(cube, nspace, linewidth=0,
                           cmap=plt.cm.get_cmap(cmap))
     qplot.colorbar.set_ticks([nspace.min(),
@@ -432,7 +445,7 @@ def make_ensemble_map_plots(
         suffix = '_'.join(['variable_group_ensembles', variable_group, key,'Trend_intact']) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
     path = path.replace('__', '_')
-    
+
     # Making plots
     if detrend:
         success = detrended_contourf(cube, cmap=cmap, zrange=zrange)
@@ -605,7 +618,7 @@ def make_threshold_ensemble_map_plots(
 
 
 
-def make_variable_group_mean_figure(cfg, variable_group_means, variable_group_details, threshold, 
+def make_variable_group_mean_figure(cfg, variable_group_means, variable_group_details, threshold,
         variable='', units=''):
     """
     The idea here is to make a 6 pane figure showing:
@@ -634,10 +647,10 @@ def make_variable_group_mean_figure(cfg, variable_group_means, variable_group_de
     for variable_group, cube in variable_group_means.items():
         historical_group = variable_group[:variable_group.find('_')] +'_historical'
         if variable_group == historical_group:
-            scenario_cubes['historical'] = cube            
+            scenario_cubes['historical'] = cube
             continue
-    
-        if variable_group.find('_'+threshold) ==-1: 
+
+        if variable_group.find('_'+threshold) ==-1:
             continue
         for scen in scenarios.keys():
             if variable_group.find(scen)>-1:
@@ -656,7 +669,7 @@ def make_variable_group_mean_figure(cfg, variable_group_means, variable_group_de
         elif scenario == 'ssp534-over':
             title = 'SSP534 Overshoot'
         else:
-            title = scenario.upper()        
+            title = scenario.upper()
 #        add_map_subplot(scenarios[scenario], cube, linspace1, cmap='viridis',
 #                    title=title)
         ax = plt.subplot(scenarios[scenario], projection=ccrs.PlateCarree())
@@ -799,7 +812,7 @@ def make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_m
     #    'ssp434':     336,
         'ssp585':     224,
     #    'ssp534-over': 338,
-    } 
+    }
     scenario_cubes = {}
 
     for variable_group, cube in variable_group_anomaly_means.items():
@@ -1011,7 +1024,7 @@ def make_gwt_map_four_plots(cfg, ):
         # check to make plots.
         if not do_variable_group_plots:
             continue
-       	if variable_group.split('_')[-1] == 'fx': 
+       	if variable_group.split('_')[-1] == 'fx':
             continue
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + '_historical'
@@ -1098,13 +1111,14 @@ def make_gwt_map_plots(cfg, detrend = True,):
 
     """
     metadatas = diagtools.get_input_files(cfg)
-    do_single_plots=False #True
-    do_single_anomaly_plots = False
+
+    do_single_plots=True
+    do_single_anomaly_plots = True
     do_variable_group_plots=True
     do_variable_group_diff = True
     do_threshold_plots=True
-    do_variable_group_mean_plots=False 
-    do_variable_group_anomaly_mean_plots=False
+    do_variable_group_mean_plots=True
+    do_variable_group_anomaly_mean_plots=True
 
     #print('\n', cfg.keys())
 
@@ -1158,7 +1172,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
             elif variable_group.split('_')[-1] == 'fx':
                 variable, exp = variable_group.split('_')
                 threshold = None
-            else: 
+            else:
                 variable, exp, threshold = split_variable_groups(variable_group)
                 variables.add(variable)
 
@@ -1250,7 +1264,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
     variable_group_anomaly_means={}
     for variable_group in sorted(variable_groups):
         cube_list = []
-        if variable_group not in anomaly_cubes: 
+        if variable_group not in anomaly_cubes:
             continue
         for vari, cube in sorted(anomaly_cubes[variable_group].items()):
             print(variable_group, vari)
@@ -1266,14 +1280,14 @@ def make_gwt_map_plots(cfg, detrend = True,):
     # All variable_group_means in a single figure:
     for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
         for variable in sorted(variables):
-            make_variable_group_mean_figure(cfg, variable_group_means, variable_group_details, threshold, 
+            make_variable_group_mean_figure(cfg, variable_group_means, variable_group_details, threshold,
                 variable=variable, units = units[variable])
 
     # All variable_group_means anomalies in a single figure:
     for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
         for variable in sorted(variables):
             hist_cube = variable_group_means[variable +'_historical']
-            continue 
+            continue
             make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anomaly_means, threshold,
                 variable=variable, units = units[variable])
 
@@ -1306,7 +1320,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
         make_ensemble_map_plots(cfg, variable_group_mean, variable_group, detrend)
 
     # difference bwtween each scenario and diff_against.
-    diff_against = 'ssp126' 
+    diff_against = 'ssp126'
     for temp in ['2.0', '4.0', ]: # ['1.5', '2.0', '3.0', '4.0', '5.0']:
         for variable_group, variable_group_mean in variable_group_means.items():
             # check to make plots.
@@ -1318,13 +1332,13 @@ def make_gwt_map_plots(cfg, detrend = True,):
         ssp126_group = variable_group[:variable_group.find('_')] + '_'+diff_against+'_'+temp
         if variable_group == ssp126_group:
             continue
- 
+
         if ssp126_group not in variable_group_means.keys(): continue
-        print('variable_group diff:', variable_group, ssp126_group, temp) 
+        print('variable_group diff:', variable_group, ssp126_group, temp)
         diff_cube = variable_group_mean - variable_group_means[ssp126_group]
         make_ensemble_map_plots_diff(cfg, diff_cube, variable_group, detrend, temp)
 
-    
+
 
 
     assert 0
