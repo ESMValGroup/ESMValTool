@@ -679,7 +679,7 @@ def make_variable_group_mean_figure(cfg, variable_group_means, variable_group_de
     #cbar_ax.set_visible(False)
     #plt.colorbar(img, cax=cbar_ax)
     norm = colors.Normalize(vmin=zrange[0],vmax=zrange[1])
-    cb1  = colorbar.ColorbarBase(cbar_ax,cmap='viridis',norm=norm,orientation='vertical')
+    cb1  = colorbar.ColorbarBase(cbar_ax,cmap=plt.cm.get_cmap('viridis'),norm=norm,orientation='vertical')
     cb1.ax.set_ylabel(str(units))
 
     # Saving files:
@@ -726,7 +726,9 @@ def make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anoma
         for scen in scenarios.keys():
             if variable_group.find(scen)>-1:
                 scenario_cubes[scen] = cube
-    zrange = diagtools.get_cube_range_diff([c  for s,c in scenario_cubes.items()])
+    print(scenario_cubes)
+    assert 0
+    zrange = diagtools.get_cube_range_diff([c  for s,c in scenario_cubes.items() if len(c)])
 
     scenario_cubes['historical'] = hist_cube
 
@@ -1271,7 +1273,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
     for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
         for variable in sorted(variables):
             hist_cube = variable_group_means[variable +'_historical']
-
+            continue 
             make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anomaly_means, threshold,
                 variable=variable, units = units[variable])
 
@@ -1305,7 +1307,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
 
     # difference bwtween each scenario and diff_against.
     diff_against = 'ssp126' 
-    for temp in ['1.5', '2.0', '3.0', '4.0', '5.0']:
+    for temp in ['2.0', '4.0', ]: # ['1.5', '2.0', '3.0', '4.0', '5.0']:
         for variable_group, variable_group_mean in variable_group_means.items():
             # check to make plots.
             if not do_variable_group_diff:
