@@ -55,6 +55,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
 import numpy as np
+from esmvalcore.preprocessor._regrid import regrid
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -62,6 +63,13 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
+def regrid_to_1x1(cube, scheme = 'linear'):
+    """
+    regrid a cube to a common 1x1 grid.
+    """
+    # regrid to a common grid:
+    return regrid(cube, '1x1', scheme)
 
 
 def cube_interesction(cube):
@@ -261,6 +269,8 @@ def make_map_plots(
     else:
         suffix = '_'.join([metadata['dataset'], key])+image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'single_plots'])+suffix
+
+    if os.path.exists(path): return
 
     # Making plots
     if detrend:
