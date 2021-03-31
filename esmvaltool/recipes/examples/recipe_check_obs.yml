@@ -1117,6 +1117,16 @@ diagnostics:
     scripts: null
 
 
+  ESACCI-WATERVAPOUR:
+    variables:
+      prw:
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS, tier: 3, type: sat,
+         version: L3S-COMBI-TCWV-05deg-fv3.1, start_year: 2003, end_year: 2017}
+    scripts: null
+
+
   GRACE:
     description: GRACE check
     variables:
