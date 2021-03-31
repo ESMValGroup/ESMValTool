@@ -45,7 +45,8 @@ def test_nclcodestyle():
 
 
 @pytest.mark.installation
-@pytest.mark.skipif(sys.platform != 'darwin')
+@pytest.mark.skipif(sys.platform == 'darwin',
+                    reason="ESMValTool R not supported on OSX")
 def test_r_lint(monkeypatch):
     """Test R lint."""
     monkeypatch.setenv("LINTR_COMMENT_BOT", "FALSE")
