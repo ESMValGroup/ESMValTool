@@ -459,7 +459,7 @@ begin
     ; Plot
     ; -------------------------------------------------------------------------
 
-    if (config_user_info@write_plots) then
+    if (diag_script_info@write_plots) then
       filename  = var0 + "-" + calc_type + "_" + future_exp + "_" + \
         p_time(pt) + "-" + (/p_time(pt) + p_step/)
       wks = gsn_open_wks(file_type, plot_dir + filename)

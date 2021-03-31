@@ -6,13 +6,14 @@ Constraining uncertainty in projected gross primary production (GPP) with machin
 Overview
 --------
 
-These recipes reproduce the analysis of Schlund et al. (2020). In this paper, a
-machine learning regression (MLR) approach (using the MLR algorithm `Gradient
-Boosted Regression Trees, GBRT`_) is proposed to constrain uncertainties in
-projected gross primary production (GPP) in the RCP 8.5 scenario using
-observations of process-based diagnostics.
+These recipes reproduce the analysis of `Schlund et al., JGR: Biogeosciences
+(2020)`_. In this paper, a machine learning regression (MLR) approach (using
+the MLR algorithm `Gradient Boosted Regression Trees, GBRT`_) is proposed to
+constrain uncertainties in projected gross primary production (GPP) in the RCP
+8.5 scenario using observations of process-based diagnostics.
 
 .. _`Gradient Boosted Regression Trees, GBRT`: https://scikit-learn.org/stable/modules/ensemble.html#gradient-tree-boosting
+.. _`Schlund et al., JGR: Biogeosciences (2020)`: https://doi.org/10.1029/2019JG005619
 
 
 Available recipes and diagnostics
@@ -71,7 +72,11 @@ Observations and reformat scripts
 References
 ----------
 
-* Schlund et al., JGR: Biogeosciences, accepted (2020). **TBA**
+* Schlund, M., Eyring, V., Camps‐Valls, G., Friedlingstein, P., Gentine, P., &
+  Reichstein, M. (2020). Constraining uncertainty in projected gross primary
+  production with machine learning. Journal of Geophysical Research:
+  Biogeosciences, 125, e2019JG005619,
+  `<https://doi.org/10.1029/2019JG005619>`_.
 
 
 Example plots

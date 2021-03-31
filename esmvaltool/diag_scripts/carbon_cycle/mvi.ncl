@@ -464,7 +464,7 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_plots) then
+  if (diag_script_info@write_plots) then
     ; Set plot output file
     outfile = plot_dir + var0 + "_" + DOMAIN
     wks = gsn_open_wks(file_type, outfile)

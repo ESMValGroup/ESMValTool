@@ -40,4 +40,4 @@ def test_get_slope_vectorized(x_arr, y_arr, output):
     get_slope = np.vectorize(preprocess._get_slope, excluded=['x_arr'],
                              signature='(n),(n)->()')
     out = get_slope(x_arr, y_arr)
-    assert ((out == output) | (np.isnan(output) & np.isnan(output))).all()
+    assert (np.isclose(out, output) | (np.isnan(out) & np.isnan(output))).all()
