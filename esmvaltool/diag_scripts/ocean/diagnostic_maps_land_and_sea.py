@@ -2,7 +2,7 @@
 Maps diagnostics
 ================
 
-Diagnostic to produce images of a map with coastlines from a cube.
+Diagnostic to produce images of a map with land and sea model.
 These plost show latitude vs longitude and the cube value is used as the colour
 scale.
 
@@ -138,6 +138,54 @@ def trended_contourf(cube, cmap='YlOrRd', zrange=[], drawcbar=True):
             print('Unable to plot cube:', cube)
             return False
     return True
+
+
+def single_pane_land_sea_pane(cfg,
+        metadatas,
+        fig,
+        ax,
+        land_cube=None,
+        sea_cube=None,
+        land_cmap = 'viridis',
+        sea_cmap = 'blues',
+        ):
+    """
+    Generic way to plot single cube
+    """
+    land = qplt.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True,
+    landcbar = plt.colorbar(loc='right')
+    sea = qplt.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
+    seacbar = plt.colorbar(loc='left')
+    plt.gca().coastlines()
+
+    return ax
+
+def single_pane_land_sea_plot(
+        cfg,
+        metadatas,
+        land_cube=None,
+        sea_cube=None,
+        pair_name='',
+        unique_keys = []
+        ):
+    """
+    Try to plot both a land cube and a sea cube together.
+    """
+    sea_cube = cube_interesction(sea_cube)
+    land_cube = cube_interesction(land_cube)
+    fig = plt.figure()
+
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Determine image filename:
+    suffix = '_'.join([unique_keys])+image_extention
+    path = diagtools.folder([cfg['plot_dir'], 'single_land_sea_plots'])+ suffix
+
+    #if os.path.exists(path): return
+
+    fig.set_size_inches(9, 6)
+    ax = plt.subplot(111, projection=ccrs.PlateCarree())
 
 
 def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
@@ -971,7 +1019,6 @@ def make_gwt_map_four_plots(cfg, ):
             if variable_group == fx_group:
                 continue
 
-
             print('Plotting:', ensemble, variable_group)
             variable, exp, threshold = split_variable_groups(variable_group)
             variables.add(variable)
@@ -992,6 +1039,11 @@ def make_gwt_map_four_plots(cfg, ):
                 cube_hist =  iris.load_cube( fn_hist)
                 cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
+            if details['mip'] in ['Omon', 'Oyr']:
+                fx_fn = fx_fns['areacello']
+            elif  details['mip'] in ['Lmon', 'Lyr', 'Amon', 'Ayr']:
+                fx_fn = fx_fns['areacella']
+
             cube_anomaly = cube - cube_hist
             detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
 
@@ -1005,38 +1057,58 @@ def make_gwt_map_four_plots(cfg, ):
             except:
                 thresholds[threshold] = [[variable_group, ensemble], ]
 
-    # single plots:
-    for ensemble in sorted(ensembles):
-        for variable_group in sorted(variable_groups):
-            if not do_single_plots:
-                continue
-            if (variable_group, ensemble) not in viable_keys:
-                print("Not in viable keys:", ensemble, variable_group)
-                continue
+    plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'}
+                }
 
-            historical_group = variable_group[:variable_group.find('_')] +'_historical'
-            if variable_group == historical_group:
-                continue
+    # single pane land-sea plots pairs:
+    for var_name, plot_pair in plot_pairs.items():
+        for ensemble in sorted(ensembles):
+            for variable_group in sorted(variable_groups):
+                if not do_single_plots:
+                    continue
+                variable, exp, threshold = split_variable_groups(variable_group)
+                # avoid double plotting.
+                if variable != plot_pair['sea']:
+                    continue
 
-            cube_ssp = ssp_cubes[variable_group][ensemble]
-            cube_hist = hist_cubes[variable_group][ensemble]
-            cube_anomaly = anomaly_cubes[variable_group][ensemble]
-            cube_detrend = detrended_anomaly_cubes[variable_group][ensemble]
+                # if (variable_group, ensemble) not in viable_keys:
+                #     print("Not in viable keys:", ensemble, variable_group)
+                #     continue
+                sea_cube = ssp_cubes[variable_group][ensemble]
+                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
 
-            variable, exp, threshold = split_variable_groups(variable_group)
-            key = ' '.join([standard_names[variable].title(),
-                            exp,
-                            'at', threshold,
-                            '('+ ensemble+')'])
-            make_four_pane_map_plot(
-                cfg,
-                cube_ssp,
-                cube_hist,
-                cube_anomaly,
-                cube_detrend,
-                key,
-                'single_plots',
-            )
+                land_cube = ssp_cubes[land_variable_group][ensemble]
+
+                single_pane_land_sea_plot(
+                    cfg,
+                    metadata,
+                    land_cube=land_cube,
+                    sea_cube=sea_cube,
+                    pair_name=var_name,
+                )
+
+                # historical_group = variable_group[:variable_group.find('_')] +'_historical'
+                # if variable_group == historical_group:
+                #     continue
+                #
+                # cube_ssp = ssp_cubes[variable_group][ensemble]
+                # cube_hist = hist_cubes[variable_group][ensemble]
+                # cube_anomaly = anomaly_cubes[variable_group][ensemble]
+                # cube_detrend = detrended_anomaly_cubes[variable_group][ensemble]
+                #
+                # key = ' '.join([standard_names[variable].title(),
+                #                 exp,
+                #                 'at'   , threshold,
+                #                 '('+ ensemble+')'])
+                # make_four_pane_map_plot(
+                #     cfg,
+                #     cube_ssp,
+                #     cube_hist,
+                #     cube_anomaly,
+                #     cube_detrend,
+                #     key,
+                #     'single_plots',
+                #     )
 
     # Ensemble mean for each variable_group:
     for variable_group in sorted(variable_groups):
@@ -1151,6 +1223,9 @@ def make_gwt_map_plots(cfg, detrend = True,):
     variables = set()
     thresholds = {}
     units = {}
+    fx_fns = {}
+
+
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
         short_names.add(details['short_name'])
@@ -1159,17 +1234,18 @@ def make_gwt_map_plots(cfg, detrend = True,):
         variable_groups.add(details['variable_group'])
         units[details['short_name']] = details['units']
         unique_key = (details['variable_group'], details['ensemble'])
+        mip = details['mip']
 
         if details['mip'] in ['fx', 'Ofx']:
-            fx_fn = fn
-            print('Found FX MIP', fx_fn)
+            fx_fns[details['short_name']] = fn
+            print('Found FX MIP', fn, details['short_name'])
 
         try:
             files_dict[unique_key].append(fn)
         except:
             files_dict[unique_key] = [fn, ]
 
-    if fx_fn=='':
+    if fx_fns is None:
         print('unable to find fx file.')
         assert 0
 
@@ -1335,25 +1411,25 @@ def make_gwt_map_plots(cfg, detrend = True,):
 
         make_ensemble_map_plots(cfg, variable_group_mean, variable_group, detrend)
 
-    # difference bwtween each scenario and diff_against.
-    diff_against='ssp126'
-    for temp in ['2.0', '4.0', ]: # ['1.5', '2.0', '3.0', '4.0', '5.0']:
-        for variable_group, variable_group_mean in variable_group_means.items():
-            # check to make plots.
-            if not do_variable_group_diff:
-                continue
-
-            if variable_group.find('_'+temp) ==-1: continue
-
-        ssp126_group = variable_group[:variable_group.find('_')] + '_'+diff_against+'_'+temp
-        print('diff_group:',ssp126_group, diff_against, temp)
-        if variable_group == ssp126_group:
-            continue
-
-        if ssp126_group not in variable_group_means.keys(): continue
-        print('variable_group diff:', variable_group, ssp126_group, temp)
-        diff_cube = variable_group_mean - variable_group_means[ssp126_group]
-        make_ensemble_map_plots_diff(cfg, diff_cube, variable_group, detrend, temp)
+    # # difference bwtween each scenario and diff_against.
+    # diff_against='ssp126'
+    # for temp in ['2.0', '4.0', ]: # ['1.5', '2.0', '3.0', '4.0', '5.0']:
+    #     for variable_group, variable_group_mean in variable_group_means.items():
+    #         # check to make plots.
+    #         if not do_variable_group_diff:
+    #             continue
+    #
+    #         if variable_group.find('_'+temp) ==-1: continue
+    #
+    #     ssp126_group = variable_group[:variable_group.find('_')] + '_'+diff_against+'_'+temp
+    #     print('diff_group:',ssp126_group, diff_against, temp)
+    #     if variable_group == ssp126_group:
+    #         continue
+    #
+    #     if ssp126_group not in variable_group_means.keys(): continue
+    #     print('variable_group diff:', variable_group, ssp126_group, temp)
+    #     diff_cube = variable_group_mean - variable_group_means[ssp126_group]
+    #     make_ensemble_map_plots_diff(cfg, diff_cube, variable_group, detrend, temp)
 
     # Ensemble mean for each threshold:
     for variable in sorted(variables):
