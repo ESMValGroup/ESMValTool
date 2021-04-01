@@ -470,4 +470,4 @@ diagnostics:
 
     scripts:
       intpp_maps_diagnostic:
-        script: ocean/diagnostic_maps_gwt.py
+        script: ocean/diagnostic_maps_land_and_sea.py

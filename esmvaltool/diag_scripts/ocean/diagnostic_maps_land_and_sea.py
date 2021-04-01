@@ -158,7 +158,7 @@ def single_pane_land_sea_pane(cfg,
     seacbar = plt.colorbar(loc='left')
     plt.gca().coastlines()
 
-    return ax
+    return fig, ax
 
 def single_pane_land_sea_plot(
         cfg,
@@ -186,7 +186,28 @@ def single_pane_land_sea_plot(
 
     fig.set_size_inches(9, 6)
     ax = plt.subplot(111, projection=ccrs.PlateCarree())
+    fig, ax = single_pane_land_sea_pane(cfg,
+            metadatas,
+            fig,
+            ax,
+            land_cube=land_cube,
+            sea_cube=sea_cube,
+            land_cmap = 'viridis',
+            sea_cmap = 'blues',
+            )
 
+    # Add title to plot
+    # if detrend:
+    #     title = ' '.join([metadata['dataset'], key, '- detrended'])
+    # else:
+    #     title = ' '.join([metadata['dataset'], key, '- trend intact'])
+    plt.title(' '.join(unique_keys))
+
+    # Saving files:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+    plt.close()
 
 def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
     """
@@ -1109,6 +1130,8 @@ def make_gwt_map_four_plots(cfg, ):
                 #     key,
                 #     'single_plots',
                 #     )
+    assert 0
+    
 
     # Ensemble mean for each variable_group:
     for variable_group in sorted(variable_groups):
