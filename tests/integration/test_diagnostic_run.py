@@ -96,26 +96,6 @@ Base.Filesystem.cp(config_file, out_file)
 @info "Done"
 """
 
-SCRIPTS_dict = {
-    'diagnostic.py':
-    recipe_py,
-    'diagnostic.ncl':
-    pytest.param(recipe_ncl,
-                 marks=pytest.mark.skipif(
-                     sys.platform == 'darwin',
-                     reason="ESMValTool ncl not supported on OSX")),
-    'diagnostic.R':
-    pytest.param(recipe_R,
-                 marks=pytest.mark.skipif(
-                     sys.platform == 'darwin',
-                     reason="ESMValTool R not supported on OSX")),
-    'diagnostic.jl':
-    pytest.param(recipe_jl,
-                 marks=pytest.mark.skipif(
-                     sys.platform == 'darwin',
-                     reason="ESMValTool Julia not supported on OSX"))
-}
-
 SCRIPTS = [('diagnostic.py', recipe_py),
            pytest.param('diagnostic.ncl',
                         recipe_ncl,
