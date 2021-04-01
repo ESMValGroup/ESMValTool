@@ -35,7 +35,7 @@ diagnostics:
       # Procedurally generated recipe contents:
       ################################################
 
-      gppfrac_fx:
+      gpp_fx:
         mip: fx
         short_name: areacella
         additional_datasets:
@@ -52,7 +52,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
 
-      # gpp_ssp119_1.5:
+      #m gpp_ssp119_1.5:
       #   short_name: gpp
       #   preprocessor: prep_1
       #   additional_datasets:

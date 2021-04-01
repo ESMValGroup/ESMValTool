@@ -174,7 +174,10 @@ def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
         cube.data = np.ma.masked_where(lons>179.9, cube.data)
         im = plt.pcolormesh(lons, lats, cube.data, cmap=cmap)
 
-        if drawcbar:
+        if drawcbar=='vertical':
+            plt.colorbar(orientation='vertical')
+
+        elif drawcbar in [True, 'horizontal']:
             plt.colorbar(orientation='horizontal')
 
         if zrange:
@@ -455,6 +458,7 @@ def make_ensemble_map_plots(
         suffix = '_'.join(['variable_group_ensembles', variable_group, key,'Trend_intact']) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
     path = path.replace('__', '_')
+    if os.path.exists(path): return
 
     # Making plots
     if detrend:
@@ -518,6 +522,7 @@ def make_ensemble_map_plots_diff(
     else:
         suffix = '_'.join(['variable_group_ensembles_diff', variable_group, 'Trend_intact', temp]) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles_diff']) + suffix
+    if os.path.exists(path): return
 
     # Making plots
     if detrend:
@@ -728,14 +733,14 @@ def make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anoma
     path = diagtools.folder([cfg['plot_dir'], 'variable_group_anomalies'])+suffix
 
     scenarios ={
-        'historical': 331,
-        'ssp119':     332,
-        'ssp126':     333,
-        'ssp245':     334,
-        'ssp370':     335,
-        'ssp434':     336,
-        'ssp585':     337,
-        'ssp534-over': 338,}
+        'historical': 321,
+        'ssp119':     322,
+        'ssp126':     323,
+        'ssp245':     324,
+        'ssp370':     325,
+        #'ssp434':     326,
+        'ssp585':     326,}
+        #'ssp534-over': 338,}
     scenario_cubes = {}
 
     for variable_group, cube in variable_group_anomaly_means.items():
@@ -750,13 +755,14 @@ def make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anoma
             if variable_group.find(scen)>-1:
                 scenario_cubes[scen] = cube
     print(scenario_cubes)
-    assert 0
-    zrange = diagtools.get_cube_range_diff([c  for s,c in scenario_cubes.items() if len(c)])
+    if not len(scenario_cubes.keys()): return
+
+    zrange = diagtools.get_cube_range_diff([c  for s,c in scenario_cubes.items()])
 
     scenario_cubes['historical'] = hist_cube
 
     fig = plt.figure()
-    fig.set_size_inches(12, 7)
+    fig.set_size_inches(12, 8)
 
     # Add the sub plots to the figure.
     for scenario, cube in scenario_cubes.items():
@@ -786,7 +792,7 @@ def make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anoma
     fig.subplots_adjust(right=0.85)
     cbar_ax = fig.add_axes([0.88, 0.12, 0.05, 0.7])
     norm = colors.Normalize(vmin=zrange[0],vmax=zrange[1])
-    cb1  = colorbar.ColorbarBase(cbar_ax,cmap='PRGn', norm=norm, orientation='vertical')
+    cb1  = colorbar.ColorbarBase(cbar_ax,cmap=plt.cm.get_cmap('PRGn'), norm=norm, orientation='vertical')
     cb1.ax.set_ylabel(str(units))
 
     # Saving files:
@@ -826,11 +832,15 @@ def make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_m
     scenario_cubes = {}
 
     for variable_group, cube in variable_group_anomaly_means.items():
+        print(variable_group, threshold)
         if variable_group.find('_'+threshold) ==-1:
             continue
         for scen in scenarios.keys():
+            print(scen)
             if variable_group.find(scen)>-1:
                 scenario_cubes[scen] = cube
+    print(scenario_cubes.keys())
+    if 'ssp126' not in scenario_cubes.keys(): return
 
     ssp126_cube = scenario_cubes['ssp126']
     diff_cubes = {}
@@ -872,7 +882,7 @@ def make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_m
     fig.subplots_adjust(right=0.85)
     cbar_ax = fig.add_axes([0.88, 0.12, 0.05, 0.7])
     norm = colors.Normalize(vmin=zrange[0],vmax=zrange[1])
-    cb1  = colorbar.ColorbarBase(cbar_ax,cmap='PRGn', norm=norm, orientation='vertical')
+    cb1  = colorbar.ColorbarBase(cbar_ax,cmap=plt.cm.get_cmap('PRGn'), norm=norm, orientation='vertical')
     cb1.ax.set_ylabel(str(units))
 
     # Saving files:
@@ -1297,7 +1307,6 @@ def make_gwt_map_plots(cfg, detrend = True,):
     for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
         for variable in sorted(variables):
             hist_cube = variable_group_means[variable +'_historical']
-            continue
             make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anomaly_means, threshold,
                 variable=variable, units = units[variable])
 
@@ -1308,8 +1317,6 @@ def make_gwt_map_plots(cfg, detrend = True,):
                 variable=variable, units = units[variable])
 
 
-
-    assert 0
 
     # Plot Ensemble mean for each variable_group, for each sceranrio and threshold,
     # include hist and exclude fx data.
@@ -1330,7 +1337,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
         make_ensemble_map_plots(cfg, variable_group_mean, variable_group, detrend)
 
     # difference bwtween each scenario and diff_against.
-    diff_against = 'ssp126'
+    diff_against='ssp126'
     for temp in ['2.0', '4.0', ]: # ['1.5', '2.0', '3.0', '4.0', '5.0']:
         for variable_group, variable_group_mean in variable_group_means.items():
             # check to make plots.
@@ -1340,6 +1347,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
             if variable_group.find('_'+temp) ==-1: continue
 
         ssp126_group = variable_group[:variable_group.find('_')] + '_'+diff_against+'_'+temp
+        print('diff_group:',ssp126_group, diff_against, temp)
         if variable_group == ssp126_group:
             continue
 
@@ -1347,11 +1355,6 @@ def make_gwt_map_plots(cfg, detrend = True,):
         print('variable_group diff:', variable_group, ssp126_group, temp)
         diff_cube = variable_group_mean - variable_group_means[ssp126_group]
         make_ensemble_map_plots_diff(cfg, diff_cube, variable_group, detrend, temp)
-
-
-
-
-    assert 0
 
     # Ensemble mean for each threshold:
     for variable in sorted(variables):
