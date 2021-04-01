@@ -96,7 +96,7 @@ Base.Filesystem.cp(config_file, out_file)
 @info "Done"
 """
 
-SCRIPTS = {
+SCRIPTS_dict = {
     'diagnostic.py':
     recipe_py,
     'diagnostic.ncl':
@@ -116,9 +116,26 @@ SCRIPTS = {
                      reason="ESMValTool Julia not supported on OSX"))
 }
 
+SCRIPTS = [('diagnostic.py', recipe_py),
+           pytest.param('diagnostic.ncl',
+                        recipe_ncl,
+                        marks=pytest.mark.skipif(
+                            sys.platform == 'darwin',
+                            reason="ESMValTool ncl not supported on OSX")),
+           pytest.param('diagnostic.R',
+                        recipe_R,
+                        marks=pytest.mark.skipif(
+                            sys.platform == 'darwin',
+                            reason="ESMValTool R not supported on OSX")),
+           pytest.param('diagnostic.jl',
+                        recipe_jl,
+                        marks=pytest.mark.skipif(
+                            sys.platform == 'darwin',
+                            reason="ESMValTool Julia not supported on OSX"))]
+
 
 @pytest.mark.installation
-@pytest.mark.parametrize('script_file, script', SCRIPTS.items())
+@pytest.mark.parametrize('script_file, script', SCRIPTS)
 def test_diagnostic_run(tmp_path, script_file, script):
 
     recipe_file = tmp_path / 'recipe_test.yml'
