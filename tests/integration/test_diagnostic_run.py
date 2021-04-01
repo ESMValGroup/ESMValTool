@@ -76,7 +76,7 @@ result = "run_dir: " + config_user_info@run_dir + n +\
 
 system("echo '" + result + "' > " + diag_script_info@setting_name)
 """
-recipe_R = """
+recipe_r = """
 library(yaml)
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0("INFO    Loading settings from ", args[1]))
@@ -103,7 +103,7 @@ SCRIPTS = [('diagnostic.py', recipe_py),
                             sys.platform == 'darwin',
                             reason="ESMValTool ncl not supported on OSX")),
            pytest.param('diagnostic.R',
-                        recipe_R,
+                        recipe_r,
                         marks=pytest.mark.skipif(
                             sys.platform == 'darwin',
                             reason="ESMValTool R not supported on OSX")),
