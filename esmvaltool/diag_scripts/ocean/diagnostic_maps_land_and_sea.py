@@ -63,6 +63,11 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
+
+plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'},
+            }
+
+
 def regrid_to_1x1(cube, scheme = 'linear'):
     """
     regrid a cube to a common 1x1 grid.
@@ -990,7 +995,9 @@ def make_gwt_map_four_plots(cfg, ):
     variables = set()
     mips = set()
     thresholds = {}
-    fx_fn = ''
+    #fx_fn = ''
+    fx_fns = {}
+
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
         short_name = details['short_name']
@@ -1004,8 +1011,9 @@ def make_gwt_map_four_plots(cfg, ):
         mips.add(details['mip'])
 
         if details['mip'] in ['fx', 'Ofx']:
-            fx_fn = fn
-            print('Found FX MIP', fx_fn)
+            #fx_fn = fn
+            fx_fns[details['short_name']] = fn
+            print('Found FX MIP', fn)
         try:
             files_dict[unique_key].append(fn)
         except:
@@ -1015,24 +1023,80 @@ def make_gwt_map_four_plots(cfg, ):
 #        short_name = list(short_names)[0]
 #    else:
 #        assert 0
-    if fx_fn=='':
-        print('unable to find fx file.')
+    if len(fx_fns)=='':
+        print('unable to find fx files:', fx_fns)
         assert 0
     print(files_dict.keys())
 
+    # Make a plot for a single land-sea pair.
+    for ensemble in sorted(ensembles):
+        for variable_group in sorted(variable_groups):
+
+                if not do_single_plots:
+                    continue
+                variable, exp, threshold = split_variable_groups(variable_group)
+                # avoid double plotting.
+                if variable != plot_pair['sea']:
+                    continue
+
+                # if (variable_group, ensemble) not in viable_keys:
+                #     print("Not in viable keys:", ensemble, variable_group)
+                #     continue
+                sea_cube = ssp_cubes[variable_group][ensemble]
+                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+
+                land_cube = ssp_cubes[land_variable_group][ensemble]
+
+                single_pane_land_sea_plot(
+                    cfg,
+                    metadata,
+                    land_cube=land_cube,
+                    sea_cube=sea_cube,
+                    pair_name=var_name,
+                )
+    assert 0
+
     # lets look at  minus the historical
-    hist_cubes = {variable_group:{} for variable_group in variable_groups}
+    # hist_cubes = {variable_group:{} for variable_group in variable_groups}
     ssp_cubes = {variable_group:{} for variable_group in variable_groups}
-    anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
-    detrended_anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
-    viable_keys = {}
+    # anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
+    # detrended_anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
+    # viable_keys = {}
 
     hist_cubes_fns = {}
     # Calculate the anomaly for each ensemble/threshold combination
     for ensemble in sorted(ensembles):
         for variable_group in sorted(variable_groups):
+
+                if not do_single_plots:
+                    continue
+                variable, exp, threshold = split_variable_groups(variable_group)
+                # avoid double plotting.
+                if variable != plot_pair['sea']:
+                    continue
+
+                # if (variable_group, ensemble) not in viable_keys:
+                #     print("Not in viable keys:", ensemble, variable_group)
+                #     continue
+                sea_cube = ssp_cubes[variable_group][ensemble]
+                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+
+                land_cube = ssp_cubes[land_variable_group][ensemble]
+
+                single_pane_land_sea_plot(
+                    cfg,
+                    metadata,
+                    land_cube=land_cube,
+                    sea_cube=sea_cube,
+                    pair_name=var_name,
+                )
+        hist_cubes_fns = {}
+        # Calculate the anomaly for each ensemble/threshold combination
+        for ensemble in sorted(ensembles):
+            for variable_group in sorted(variable_groups):
             # guess historical group name:
             historical_group = variable_group[:variable_group.find('_')] +'_historical'
+
             if variable_group == historical_group:
                 continue
 
@@ -1079,9 +1143,6 @@ def make_gwt_map_four_plots(cfg, ):
             except:
                 thresholds[threshold] = [[variable_group, ensemble], ]
 
-    plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'}
-                }
-
     # single pane land-sea plots pairs:
     for var_name, plot_pair in plot_pairs.items():
         for ensemble in sorted(ensembles):
@@ -1089,6 +1150,7 @@ def make_gwt_map_four_plots(cfg, ):
                 if not do_single_plots:
                     continue
                 variable, exp, threshold = split_variable_groups(variable_group)
+
                 # avoid double plotting.
                 if variable != plot_pair['sea']:
                     continue
@@ -1132,7 +1194,7 @@ def make_gwt_map_four_plots(cfg, ):
                 #     'single_plots',
                 #     )
     assert 0
-    
+
 
     # Ensemble mean for each variable_group:
     for variable_group in sorted(variable_groups):
