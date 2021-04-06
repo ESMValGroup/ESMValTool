@@ -267,9 +267,11 @@ begin
 
     do i = 0, nobs - 1
       A0 = read_data(info0[idxobs(i)])
-      ; calculate yearly averages
+
+      ; calculate time average
       mean = time_operations(A0, -1, -1, "average", "annualclim", True)
       delete(A0)
+
       ; if requested, extract geographical region
       if (isatt(diag_script_info, "region")) then
         region = diag_script_info@region
@@ -277,18 +279,27 @@ begin
                                 region(3), "extract", False)
       end if
       if (i .eq. 0) then
-        ref_avg = mean
-      else
-        ref_avg = ref_avg + mean
+        dims = dimsizes(mean)
+        newdims = new(dimsizes(dims) + 1, integer)
+        newdims(0) = nobs
+        newdims(1:dimsizes(newdims) - 1) = dims
+        ref_tmp = new(newdims, float)
+        delete(dims)
       end if
+      ref_tmp(i, :, :) = mean
     end do
     delete(mean)
-    ref_avg = ref_avg / tofloat(nobs)
+    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ;       when averaging
+    ref_avg = dim_avg_n_Wrap(ref_tmp, 0)
+    delete(ref_tmp)
 
     ; step 2: calculate standard deviation of all obs datasets using
     ;         the multi-obs mean
 
     sigma2 = new(dimsizes(ref_avg), float)
+    sig_tmp = new(newdims, float)
+    delete(newdims)
 
     do i = 0, nobs - 1
       A0 = read_data(info0[idxobs(i)])
@@ -311,16 +322,21 @@ begin
       if (nyears .gt. 1) then
         sigma2 = sigma2 / tofloat(nyears - 1)
       end if
-      if (i .eq. 0) then
-        ref_std = sigma2
-      else
-        ref_std = ref_std + sigma2
-      end if
+      sig_tmp(i, :, :) = sigma2
+      delete(ymean)
     end do
-    copy_VarMeta(ref_avg, ref_std)
     delete(sigma2)
-    ref_std = sqrt(ref_std / tofloat(nobs))
+    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ;       when averaging
+    ref_std = sqrt(dim_avg_n(sig_tmp, 0))
+    delete(sig_tmp)
+    copy_VarCoords(ref_avg, ref_std)
   end if
+
+;  system("rm debug.nc")
+;  debugfile = addfile("debug.nc", "c")
+;  debugfile->avg = ref_avg
+;  debugfile->std = ref_std
 
   ; ---------------------------------------------------------
 
@@ -370,7 +386,6 @@ begin
 
     if (imod .ne. ref_ind .or. .not.flag_multiobs_unc) then
       A0 = read_data(info0[imod])
-
       ; check dimensions
 
       dims = getvardims(A0)
@@ -407,6 +422,7 @@ begin
       delete(A0)
     else
       data1 = ref_avg
+      delete(ref_avg)
     end if
 
     ; if requested, select geographical region
@@ -503,6 +519,10 @@ begin
 
     if (var0.eq."netcre") then
       res@cnLevels            = ispan(-70, 70, 10)
+    end if
+
+    if (var0.eq."prw") then
+      res@cnLevels            = ispan(0, 60, 5)
     end if
 
 ;    res@lbLabelBarOn         = False
@@ -622,9 +642,6 @@ begin
     ; ###########################################
     ; # create the plot                         #
     ; ###########################################
-
-;    res@gsnDraw        = False  ; do not draw yet
-;    res@gsnFrame       = False  ; don't advance frame
 
     ; function in aux_plotting.ncl
 
@@ -832,7 +849,7 @@ begin
         end if
 
         if (var0.eq."lwp") then
-          dres@cnLevels           = ispan(-50, 50, 10) * 0.001
+          dres@cnLevels           = ispan(-45, 45, 5) * 0.001
           pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
           dres@cnFillColors       = pal
         end if
@@ -859,6 +876,10 @@ begin
 
         if (var0.eq."netcre") then
           dres@cnLevels          = ispan(-30, 30, 5)
+        end if
+
+        if (var0.eq."prw") then
+          dres@cnLevels          = ispan(-14, 14, 2)
         end if
 
         ; ******************************************************
@@ -1063,11 +1084,10 @@ begin
             delete(plotmask)
           end if
           delete(xmask)
-        end if
-      end if  ; if flag_multiobs_unc
-
-      draw(maps_d(imod, 0))
-      frame(wks0d)
+          draw(maps_d(imod, 0))
+          frame(wks0d)
+        end if  ; if flag_multiobs_unc
+      end if  ; if numseas .gt. 1
 
       ; mandatory netcdf output
 
