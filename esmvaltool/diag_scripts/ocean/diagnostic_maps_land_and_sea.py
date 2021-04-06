@@ -1037,6 +1037,8 @@ def make_gwt_map_four_plots(cfg, ):
     # Make a plot for a single land-sea pair.
     for ensemble in sorted(ensembles):
         for variable_group in sorted(variable_groups):
+    cube_pairs = {}
+
     for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes:
         for var_name, plot_pair in plot_pairs.items():
             if not do_single_plots:
@@ -1048,10 +1050,15 @@ def make_gwt_map_four_plots(cfg, ):
             if short_name != plot_pair['sea']:
                 continue
             sea_cube = cube
-            land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
+            if threshold:
+                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+            else:
+                land_variable_group = '_'.join([plot_pair['land'], exp])
+
             land_index = (dataset, mip, exp, ensemble, plot_pair['sea'], land_variable_group)
 
             land_cube = all_cubes[(land_index)]
+            cube_pairs[(dataset, mip, exp, ensemble, threshold)] = {'sea': sea_cube, 'land': land_cube}
             single_pane_land_sea_plot(
                 cfg,
                 metadata,
