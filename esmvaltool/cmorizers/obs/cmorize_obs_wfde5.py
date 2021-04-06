@@ -19,11 +19,12 @@ Download and processing instructions
 
 import copy
 import logging
+import re
 from pathlib import Path
 
 import iris
 from cf_units import Unit
-from esmvalcore.preprocessor import daily_statistics, monthly_statistics
+from esmvalcore.preprocessor import monthly_statistics
 
 from . import utilities as utils
 
@@ -43,12 +44,13 @@ def _fix_time_coord(cube, var):
     time.points = time.points + 1 / 48
 
 
-def _extract_variable(var, cfg, filepath, out_dir):
+def _extract_variable(var, cfg, filenames, out_dir):
     """Extract variable."""
     short_name = var['short_name']
     version = cfg['attributes']['version'] + '-' + var['reference']
 
-    cube = iris.load_cube(filepath)
+    cubes = iris.load(filenames)
+    cube = cubes.concatenate_cube()
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
@@ -71,49 +73,18 @@ def _extract_variable(var, cfg, filepath, out_dir):
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
-    # Save daily variable
-    if var['save_hourly']:
-        utils.save_variable(cube,
-                            short_name,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
+    # Calc monthly
+    logger.info("Building monthly means")
+    cube = monthly_statistics(cube)
+    cube.remove_coord('month_number')
+    cube.remove_coord('year')
 
-    if var['add_day']:
-        logger.info("Building daily means")
-
-        # Calc daily
-        cube = daily_statistics(cube)
-
-        # Fix metadata
-        attrs['mip'] = 'day'
-        utils.set_global_atts(cube, attrs)
-
-        # Save variable
-        utils.save_variable(cube,
-                            short_name,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
-
-    if var['add_mon']:
-        logger.info("Building monthly means")
-
-        # Calc monthly
-        cube = monthly_statistics(cube)
-        cube.remove_coord('month_number')
-        cube.remove_coord('year')
-
-        # Fix metadata
-        attrs['mip'] = 'Amon'
-        utils.set_global_atts(cube, attrs)
-
-        # Save variable
-        utils.save_variable(cube,
-                            short_name,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
+    # Save variable
+    utils.save_variable(cube,
+                        short_name,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
@@ -122,7 +93,17 @@ def cmorization(in_dir, out_dir, cfg, _):
     for var in cfg['variables'].values():
         logger.info("CMORizing variable '%s'", var['short_name'])
         file_names = cfg['filename'].format(**var)
+        sorted_filenames = {}
 
-        for file_path in sorted(Path(in_dir).glob(file_names)):
-            logger.info("Loading '%s'", file_path)
-            _extract_variable(var, cfg, str(file_path), out_dir)
+        # Sort files according to year
+        pattern = re.compile('.*_(\d{4})\d{2}_.*\.nc')
+        for filename in sorted(Path(in_dir).glob(file_names)):
+            filename = str(filename)
+            year = int(pattern.match(filename)[1])
+            sorted_filenames.setdefault(year, [])
+            sorted_filenames[year].append(filename)
+
+        # Run CMORization for each year
+        for (year, filenames) in sorted_filenames.items():
+            logger.info("Processing year %i", year)
+            _extract_variable(var, cfg, filenames, out_dir)
