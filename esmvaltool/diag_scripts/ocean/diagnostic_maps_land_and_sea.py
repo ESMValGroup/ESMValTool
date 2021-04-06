@@ -280,14 +280,14 @@ def split_variable_groups(variable_group, debug=True ):
         assert 0
     #if variable == 'tas':
     #    variable = 'Surface Temperature'
-    if exp in [ 'fx', 'Ofx']:
-        pass
-    else:
-        exp = exp.upper()
-        exp = ' '.join([exp[:3], exp[3], exp[4]+'.'+exp[5]])
-    if threshold == '15':
-        threshold = '1.5'
-    if threshold: threshold += u'\N{DEGREE SIGN}'
+    #if exp in [ 'fx', 'Ofx']:
+    #    pass
+    #else:
+    #    exp = exp.upper()
+    #    exp = ' '.join([exp[:3], exp[3], exp[4]+'.'+exp[5]])
+    #if threshold == '15':
+    #    threshold = '1.5'
+    #if threshold: threshold += u'\N{DEGREE SIGN}'
     return variable, exp, threshold
 
 
@@ -1025,9 +1025,9 @@ def make_gwt_map_four_plots(cfg, ):
             files_dict[unique_key] = [fn, ]
 
         cube = iris.load_cube(fn)
+        cube = diagtools.bgc_units(cube, details['short_name'])
 
-        cube = diagtools.bgc_units(cube_hist, details['short_name'])
-        all_cubes[tuple([details[key] for key in key_index])] cube
+        all_cubes[tuple([details[key] for key in key_index])]=  cube
 
     if len(fx_fns)=='':
         print('unable to find fx files:', fx_fns)
@@ -1039,7 +1039,7 @@ def make_gwt_map_four_plots(cfg, ):
         for variable_group in sorted(variable_groups):
     cube_pairs = {}
 
-    for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes:
+    for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
         for var_name, plot_pair in plot_pairs.items():
             if not do_single_plots:
                 continue
