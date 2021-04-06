@@ -129,8 +129,9 @@ begin
       end do
     end do
 
-    ; Set fill value
-;    output = where(output.eq.-999, output@_FillValue, output)
+    ; Set fill value (input data uses NaNf as _FillValue)
+    output@_FillValue = 1.0e20
+    output = where(isnan_ieee(output), output@_FillValue, output)
 
     ; Format coordinates
     output!0 = "time"
