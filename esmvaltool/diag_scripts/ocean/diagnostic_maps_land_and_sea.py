@@ -263,7 +263,7 @@ def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
     return ax
 
 
-def split_variable_groups(variable_group, debug=False):
+def split_variable_groups(variable_group, debug=True ):
     """
     Split variable group into variable and experiment.
     """
@@ -280,8 +280,11 @@ def split_variable_groups(variable_group, debug=False):
         assert 0
     #if variable == 'tas':
     #    variable = 'Surface Temperature'
-    exp = exp.upper()
-    exp = ' '.join([exp[:3], exp[3], exp[4]+'.'+exp[5]])
+    if exp in [ 'fx', 'Ofx']:
+        pass     
+    else:
+        exp = exp.upper()
+        exp = ' '.join([exp[:3], exp[3], exp[4]+'.'+exp[5]])
     if threshold == '15':
         threshold = '1.5'
     if threshold: threshold += u'\N{DEGREE SIGN}'
@@ -1031,8 +1034,10 @@ def make_gwt_map_four_plots(cfg, ):
     # Make a plot for a single land-sea pair.
     for ensemble in sorted(ensembles):
         for variable_group in sorted(variable_groups):
-
+            for var_name, plot_pair in plot_pairs.items():
                 if not do_single_plots:
+                    continue
+                if variable_group.split('_')[-1] == 'fx':
                     continue
                 variable, exp, threshold = split_variable_groups(variable_group)
                 # avoid double plotting.
@@ -1095,11 +1100,11 @@ def make_gwt_map_four_plots(cfg, ):
         for ensemble in sorted(ensembles):
             for variable_group in sorted(variable_groups):
             # guess historical group name:
-            historical_group = variable_group[:variable_group.find('_')] +'_historical'
+                historical_group = variable_group[:variable_group.find('_')] +'_historical'
 
-            if variable_group == historical_group:
-                continue
-
+                if variable_group == historical_group:
+                    continue
+            assert 0
             fx_group = variable_group[:variable_group.find('_')] +'_fx'
             if variable_group == fx_group:
                 continue
@@ -1201,7 +1206,7 @@ def make_gwt_map_four_plots(cfg, ):
         # check to make plots.
         if not do_variable_group_plots:
             continue
-       	if variable_group.split('_')[-1] == 'fx':
+        if variable_group.split('_')[-1] == 'fx':
             continue
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + '_historical'
