@@ -1011,10 +1011,10 @@ def make_gwt_map_four_plots(cfg, ):
         except:
             files_dict[unique_key] = [fn, ]
 
-    if len(short_names) ==1:
-        short_name = list(short_names)[0]
-    else:
-        assert 0
+#    if len(short_names) ==1:
+#        short_name = list(short_names)[0]
+#    else:
+#        assert 0
     if fx_fn=='':
         print('unable to find fx file.')
         assert 0
@@ -1060,6 +1060,7 @@ def make_gwt_map_four_plots(cfg, ):
                 cube_hist =  iris.load_cube( fn_hist)
                 cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
+            print('fx files:', fx_fn, details['mip'])
             if details['mip'] in ['Omon', 'Oyr']:
                 fx_fn = fx_fns['areacello']
             elif  details['mip'] in ['Lmon', 'Lyr', 'Amon', 'Ayr']:
@@ -1483,10 +1484,10 @@ def main(cfg):
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
-    #make_gwt_map_four_plots(cfg)
+    make_gwt_map_four_plots(cfg)
 
-    for detrend in [False,]: # True ]:
-        make_gwt_map_plots(cfg, detrend)
+    #for detrend in [False,]: # True ]:
+    #    make_gwt_map_plots(cfg, detrend)
 
 
     # for index, metadata_filename in enumerate(cfg['input_files']):
