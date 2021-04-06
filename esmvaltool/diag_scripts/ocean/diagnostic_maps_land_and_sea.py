@@ -66,7 +66,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'},
             }
-
+fx_mips = ['Ofx', 'fx', 'Lfx']
 
 def regrid_to_1x1(cube, scheme = 'linear'):
     """
@@ -281,7 +281,7 @@ def split_variable_groups(variable_group, debug=True ):
     #if variable == 'tas':
     #    variable = 'Surface Temperature'
     if exp in [ 'fx', 'Ofx']:
-        pass     
+        pass
     else:
         exp = exp.upper()
         exp = ' '.join([exp[:3], exp[3], exp[4]+'.'+exp[5]])
@@ -1000,6 +1000,8 @@ def make_gwt_map_four_plots(cfg, ):
     thresholds = {}
     #fx_fn = ''
     fx_fns = {}
+    all_cubes = {}
+    key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1013,7 +1015,7 @@ def make_gwt_map_four_plots(cfg, ):
         unique_key = (details['variable_group'], details['ensemble'])
         mips.add(details['mip'])
 
-        if details['mip'] in ['fx', 'Ofx']:
+        if details['mip'] in fx_mips:
             #fx_fn = fn
             fx_fns[details['short_name']] = fn
             print('Found FX MIP', fn)
@@ -1022,10 +1024,11 @@ def make_gwt_map_four_plots(cfg, ):
         except:
             files_dict[unique_key] = [fn, ]
 
-#    if len(short_names) ==1:
-#        short_name = list(short_names)[0]
-#    else:
-#        assert 0
+        cube = iris.load_cube(fn)
+
+        cube = diagtools.bgc_units(cube_hist, details['short_name'])
+        all_cubes[tuple([details[key] for key in key_index])] cube
+
     if len(fx_fns)=='':
         print('unable to find fx files:', fx_fns)
         assert 0
@@ -1034,31 +1037,30 @@ def make_gwt_map_four_plots(cfg, ):
     # Make a plot for a single land-sea pair.
     for ensemble in sorted(ensembles):
         for variable_group in sorted(variable_groups):
-            for var_name, plot_pair in plot_pairs.items():
-                if not do_single_plots:
-                    continue
-                if variable_group.split('_')[-1] == 'fx':
-                    continue
-                variable, exp, threshold = split_variable_groups(variable_group)
-                # avoid double plotting.
-                if variable != plot_pair['sea']:
-                    continue
+    for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes:
+        for var_name, plot_pair in plot_pairs.items():
+            if not do_single_plots:
+                continue
+            if mip in fx_mips:
+                continue
+            variable1, exp1, threshold = split_variable_groups(variable_group)
+            # avoid double plotting.
+            if short_name != plot_pair['sea']:
+                continue
+            sea_cube = cube
+            land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
+            land_index = (dataset, mip, exp, ensemble, plot_pair['sea'], land_variable_group)
 
-                # if (variable_group, ensemble) not in viable_keys:
-                #     print("Not in viable keys:", ensemble, variable_group)
-                #     continue
-                sea_cube = ssp_cubes[variable_group][ensemble]
-                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+            land_cube = all_cubes[(land_index)]
+            single_pane_land_sea_plot(
+                cfg,
+                metadata,
+                land_cube=land_cube,
+                sea_cube=sea_cube,
+                pair_name=var_name,
+                unique_keys = (dataset, mip, exp, ensemble, threshold)
+            )
 
-                land_cube = ssp_cubes[land_variable_group][ensemble]
-
-                single_pane_land_sea_plot(
-                    cfg,
-                    metadata,
-                    land_cube=land_cube,
-                    sea_cube=sea_cube,
-                    pair_name=var_name,
-                )
     assert 0
 
     # lets look at  minus the historical
