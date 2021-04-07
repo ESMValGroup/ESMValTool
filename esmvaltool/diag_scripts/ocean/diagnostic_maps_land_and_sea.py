@@ -43,6 +43,7 @@ import logging
 import os
 import sys
 from itertools import product
+import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 from matplotlib import colors, colorbar
@@ -174,14 +175,14 @@ def single_pane_land_sea_pane(cfg,
     Generic way to plot single cube
     """
     if land_range:
-        land = iris.plot.contourf(land_cube, 18, cmap=land_cmap, vmin=np.min(land_range), vmax=np.max(land_range))
+        land = iris.plot.contourf(land_cube, 10, cmap=land_cmap, vmin=np.min(land_range), vmax=np.max(land_range))
     else:
-        land = iris.plot.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True
+        land = iris.plot.contourf(land_cube, 10, cmap=land_cmap) # linewidth=0, rasterized=True
 
     if sea_range:
-        sea = iris.plot.contourf(sea_cube, 18, cmap=sea_cmap, vmin=np.min(sea_range), vmax=np.max(sea_range))
+        sea = iris.plot.contourf(sea_cube, 10, cmap=sea_cmap, vmin=np.min(sea_range), vmax=np.max(sea_range))
     else:
-        sea = iris.plot.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
+        sea = iris.plot.contourf(sea_cube, 10, cmap=sea_cmap) # linewidth=0, rasterized=True,
     plt.gca().coastlines()
 
     return fig, ax, land, sea
@@ -280,13 +281,15 @@ def multi_pane_land_sea_plot(
     # land_cube = cube_interesction(land_cube)
     axes = {}
 
+    fig = plt.figure()
+    fig.set_size_inches(12, 6)
+
     proj = ccrs.PlateCarree()
     _complex_ = True
     if _complex_:
-        gs = matplotlib.gridspec.GridSpec(2, 5, width_ratios=[1, 10, 10, 10, 1], wspace=0., hspace=0.)
-
         if 'ssp126' in land_cubes.keys():
-            scenarios ={
+            gs = matplotlib.gridspec.GridSpec(2, 5, width_ratios=[1, 10, 10, 10, 1], wspace=0.05, hspace=0.05)
+            axes      ={
                     'historical':  fig.add_subplot(gs[0, 1], projection=proj),
                     'ssp119': fig.add_subplot(gs[0, 2], projection=proj),
                     'ssp126': fig.add_subplot(gs[0, 3], projection=proj),
@@ -296,14 +299,18 @@ def multi_pane_land_sea_plot(
                     }
 
         else:
-            scenarios ={
-                'historical':  fig.add_subplot(gs[:, 1], projection=proj),
-                'ssp370': fig.add_subplot(gs[:, 2], projection=proj),
-                'ssp585':  fig.add_subplot(gs[:, 3], projection=proj),
+            gs = matplotlib.gridspec.GridSpec(2, 4, width_ratios=[1, 15, 15, 1], wspace=0.05, hspace=0.05)
+            axes      ={
+                'historical':  fig.add_subplot(gs[0, 1], projection=proj),
+                'ssp370': fig.add_subplot(gs[1, 1], projection=proj),
+                'ssp585':  fig.add_subplot(gs[1, 2], projection=proj),
                 }
-            cbar_axes_land = fig.add_subplot(gs[:, 0])
-            cbar_axes_sea = fig.add_subplot(gs[:, -1])
+        cbar_axes_land = fig.add_subplot(gs[:, 0])
+        #plt.gca().set_axis_off()
 
+
+        cbar_axes_sea = fig.add_subplot(gs[:, -1])
+        #plt.gca().set_axis_off()
 
     else:
         if 'ssp126' in land_cubes.keys():
@@ -319,19 +326,19 @@ def multi_pane_land_sea_plot(
                 'historical': 131,
                 'ssp370':     132,
                 'ssp585':     133, }
+
         for scenario, sbp in scenarios.items():
             axes[scenario] = plt.subplot(sbp, projection=proj)
-
 
     fig = plt.figure()
     fig.set_size_inches(12, 6)
     land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()])
     sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])
 
-    print(land_cubes,sea_cubes)
-    print(land_range, sea_range)
+    #print(land_cubes,sea_cubes)
+    #print(land_range, sea_range)
     land_label, sea_label = '', ''
-    for scenario, sbp in scenarios.items():
+    for scenario, ax in axes.items():
         # axes[scenario] = plt.subplot(sbp, projection=ccrs.PlateCarree())
         land_cube = land_cubes.get(scenario, None)
         sea_cube = sea_cubes.get(scenario, None)
@@ -339,12 +346,12 @@ def multi_pane_land_sea_plot(
             continue
         sea_cube = cube_interesction(sea_cube)
         land_cube = cube_interesction(land_cube)
-
-        fig, axes[scenario], land, sea = single_pane_land_sea_pane(
+        plt.sca(ax)
+        fig, ax, land, sea = single_pane_land_sea_pane(
                 cfg,
                 metadatas,
                 fig,
-                axes[scenario],
+                ax,
                 land_cube=land_cube,
                 sea_cube=sea_cube,
                 land_cmap = 'Greens', #'viridis',
@@ -352,13 +359,20 @@ def multi_pane_land_sea_plot(
                 land_range= land_range,
                 sea_range=sea_range,
                 )
-        plt.title(scenario)
+
+        ax.set_title(scenario)
         land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
         sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
 
     if _complex_:
-        landcbar = plt.colorbar(land, ax=cbar_axes_land, location='left', label=land_label, shrink=0.55)
-        seacbar = plt.colorbar(sea, ax=cbar_axes_sea, location='right', label=sea_label, shrink=0.55)
+        #cax = pl.axes([0.1, 0.2, 0.8, 0.6]) 
+        landcbar = plt.colorbar(land, cax=cbar_axes_land, shrink=0.9) #:, label=land_label) #, shrink=0.55)
+        cbar_axes_land.yaxis.set_ticks_position('left')
+        # landcbar.set_label(land_label, loc='left')
+        # No: cbar_axes_land.set_ylabel(land_label) 
+        landcbar.set_label(land_label, labelpad=-60, y=0.5)
+        #plt.text(0., 0.5,land_label, verticalalignment='centre', horizontalalignment='centre', transform=ax.transAxes,)
+        seacbar = plt.colorbar(sea, cax=cbar_axes_sea, label=sea_label, shrink=0.9 )
     else:
         landcbar = plt.colorbar(land, ax=list(axes.values()), location='left', label=land_label, shrink=0.55)
         seacbar = plt.colorbar(sea, ax=list(axes.values()), location='right', label=sea_label, shrink=0.55)
