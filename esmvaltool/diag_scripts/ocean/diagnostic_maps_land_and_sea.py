@@ -286,31 +286,58 @@ def multi_pane_land_sea_plot(
 
     proj = ccrs.PlateCarree()
     _complex_ = True
+    # here's what I want:
+    #     somehow get the two into the same units.
+    #     put the two colour scales next to each other, but with the same ticks.
+    # some versions will need the same scale and some will need divergent ones.
+
+    # Make a difference plot:
+    #    the hist is shown in large on the LHS (cbars)
+    #    the diff against hist is smaller on the RHS.
+    #        land diff: 'BrBG'
+    #        sea diff: 'coolwarm'
+
+    both_cbar_on_right = True
     if _complex_:
         if 'ssp126' in land_cubes.keys():
-            gs = matplotlib.gridspec.GridSpec(2, 5, width_ratios=[1, 10, 10, 10, 1], wspace=0.05, hspace=0.05)
-            axes      ={
-                    'historical':  fig.add_subplot(gs[0, 1], projection=proj),
-                    'ssp119': fig.add_subplot(gs[0, 2], projection=proj),
-                    'ssp126': fig.add_subplot(gs[0, 3], projection=proj),
-                    'ssp245': fig.add_subplot(gs[1, 1], projection=proj),
-                    'ssp370': fig.add_subplot(gs[1, 2], projection=proj),
-                    'ssp585':  fig.add_subplot(gs[1, 3], projection=proj),
+            if not both_cbar_on_right: 
+                x = 1
+                width_ratios=[1, 10, 10, 10, 1]      
+            else:
+                x = 0
+                width_ratios=[10, 10, 10, 1, 2, 1]
+
+            gs = matplotlib.gridspec.GridSpec(2, len(width_ratios), width_ratios=width_ratios, wspace=0.05, hspace=0.05)
+            if both_cbar_on_right:
+                axes ={
+                    'historical':  fig.add_subplot(gs[0, x], projection=proj),
+                    'ssp119': fig.add_subplot(gs[0, x+1], projection=proj),
+                    'ssp126': fig.add_subplot(gs[0, x+2], projection=proj),
+                    'ssp245': fig.add_subplot(gs[1, x], projection=proj),
+                    'ssp370': fig.add_subplot(gs[1, x+1], projection=proj),
+                    'ssp585':  fig.add_subplot(gs[1, x+2], projection=proj),
                     }
 
         else:
-            gs = matplotlib.gridspec.GridSpec(2, 4, width_ratios=[1, 15, 15, 1], wspace=0.05, hspace=0.05)
+            if not both_cbar_on_right:
+                x = 1
+                width_ratios=[1, 15, 15, 1]
+            else:
+                x = 0
+                width_ratios=[15, 15, 1, 1.5, 1]
+
+            gs = matplotlib.gridspec.GridSpec(2, len(width_ratios), width_ratios=width_ratios, wspace=0.05, hspace=0.05)
             axes      ={
-                'historical':  fig.add_subplot(gs[0, 1], projection=proj),
-                'ssp370': fig.add_subplot(gs[1, 1], projection=proj),
-                'ssp585':  fig.add_subplot(gs[1, 2], projection=proj),
+                'historical':  fig.add_subplot(gs[0, x], projection=proj),
+                'ssp370': fig.add_subplot(gs[1, x], projection=proj),
+                'ssp585':  fig.add_subplot(gs[1, x+1], projection=proj),
                 }
-        cbar_axes_land = fig.add_subplot(gs[:, 0])
-        #plt.gca().set_axis_off()
-
-
-        cbar_axes_sea = fig.add_subplot(gs[:, -1])
-        #plt.gca().set_axis_off()
+        if both_cbar_on_right:
+            cbar_axes_land = fig.add_subplot(gs[:, -3])
+            cbar_axes_sea = fig.add_subplot(gs[:, -1])
+        else:
+            cbar_axes_land = fig.add_subplot(gs[:, 0])
+            cbar_axes_sea = fig.add_subplot(gs[:, -1])
 
     else:
         if 'ssp126' in land_cubes.keys():
@@ -365,14 +392,16 @@ def multi_pane_land_sea_plot(
         sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
 
     if _complex_:
-        #cax = pl.axes([0.1, 0.2, 0.8, 0.6]) 
-        landcbar = plt.colorbar(land, cax=cbar_axes_land, shrink=0.9) #:, label=land_label) #, shrink=0.55)
-        cbar_axes_land.yaxis.set_ticks_position('left')
-        # landcbar.set_label(land_label, loc='left')
-        # No: cbar_axes_land.set_ylabel(land_label) 
-        landcbar.set_label(land_label, labelpad=-60, y=0.5)
-        #plt.text(0., 0.5,land_label, verticalalignment='centre', horizontalalignment='centre', transform=ax.transAxes,)
-        seacbar = plt.colorbar(sea, cax=cbar_axes_sea, label=sea_label, shrink=0.9 )
+        #cax = pl.axes([0.1, 0.2, 0.8, 0.6])
+        if both_cbar_on_right:
+            landcbar = plt.colorbar(land, cax=cbar_axes_land, label=land_label, shrink=0.9) 
+            seacbar = plt.colorbar(sea, cax=cbar_axes_sea, label=sea_label, shrink=0.9 )
+        else:
+            landcbar = plt.colorbar(land, cax=cbar_axes_land, shrink=0.9) #:, label=land_label) #, shrink=0.55)
+            cbar_axes_land.yaxis.set_ticks_position('left')
+            landcbar.set_label(land_label, labelpad=-60, y=0.5)
+
+            seacbar = plt.colorbar(sea, cax=cbar_axes_sea, label=sea_label, shrink=0.9 )
     else:
         landcbar = plt.colorbar(land, ax=list(axes.values()), location='left', label=land_label, shrink=0.55)
         seacbar = plt.colorbar(sea, ax=list(axes.values()), location='right', label=sea_label, shrink=0.55)
