@@ -65,6 +65,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'},
+             'n_pp':{'land': 'npp', 'sea': 'intpp'},
             }
 fx_mips = ['Ofx', 'fx', 'Lfx']
 
@@ -73,6 +74,7 @@ def longnameify(name):
     if isinstance(name, list):
         return ' '.join([longnameify(n) for n in name])
     if name == 'pp': return 'Primary Production'
+    if name == 'n_pp': return 'Primary Production'
     if name == 'intpp': return 'Integrated Primary Production'
     if name == 'gpp': return 'Gross Primary Production'
     if name == 'npp': return 'Net Primary Production'
@@ -186,7 +188,8 @@ def single_pane_land_sea_plot(
         land_cube=None,
         sea_cube=None,
         plot_pair={},
-        unique_keys = []
+        unique_keys = [],
+        plot_dir = 'single_land_sea_plots',
         ):
     """
     Try to plot both a land cube and a sea cube together.
@@ -200,7 +203,7 @@ def single_pane_land_sea_plot(
 
     # Determine image filename:
     suffix = '_'.join(unique_keys)+image_extention
-    path = diagtools.folder([cfg['plot_dir'], 'single_land_sea_plots'])+ suffix
+    path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
 
     #if os.path.exists(path): return
 
@@ -238,7 +241,7 @@ def single_pane_land_sea_plot(
     plt.title(longnameify(unique_keys))
 
     plt.gca().set_axis_off()
-    plt.subplots_adjust(top = 1, bottom = 0, right = 0.80, left = 0.25, 
+    plt.subplots_adjust(top = 1, bottom = 0, right = 0.80, left = 0.25,
             hspace = 0, wspace = 0)
     plt.margins(0,0)
 
@@ -1030,6 +1033,7 @@ def make_gwt_map_four_plots(cfg, ):
     exps = set()
     variable_groups = set()
     variables = set()
+    datasets = set()
     mips = set()
     thresholds = {}
     #fx_fn = ''
@@ -1044,6 +1048,7 @@ def make_gwt_map_four_plots(cfg, ):
             short_names.add(details['short_name'])
         standard_names[details['short_name']] = details['standard_name']
         ensembles.add(details['ensemble'])
+        datasets.add(details['dataset'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
         unique_key = (details['variable_group'], details['ensemble'])
@@ -1103,7 +1108,7 @@ def make_gwt_map_four_plots(cfg, ):
 #            land_cube = all_cubes.get(land_index, None)
             #if land_cube is None: continue
             cube_pairs[(dataset, mip, exp, ensemble, threshold)] = {'sea': sea_cube, 'land': land_cube}
-            
+
             single_pane_land_sea_plot(
                 cfg,
                 metadatas,
@@ -1112,11 +1117,66 @@ def make_gwt_map_four_plots(cfg, ):
                 plot_pair=plot_pair,
                 unique_keys = [var_name, dataset, exp, ensemble, threshold]
             )
+    ####
+    # Create variable_group_means.
+    #    This is a mean of all ensemble memnbers of a given scenario at a given threshold.
+    variable_group_means = {}
+    for variable_group_i, dataset_i, exp_i, short_name_i in itertools.product(variable_groups, datasets, exps, short_names):
+        var_index = (variable_group_i, dataset_i, exp_i, short_name_i)
+        work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
+        path = work_dir+'_'.join(list(var_index))+'.nc'
 
+        if os.paths.exists(path):
+            variable_group_means[var_index] = iris.load_cube(path)
+            continue
+
+        cube_list = []
+        if variable_group.split('_')[-1] == 'fx':
+            continue
+        for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
+            if variable_group_i != variable_group: continue
+            if dataset_i != dataset: continue
+            if exp_i != exp: continue
+            if short_name_i != short_name:continue
+            cube_list.append(cube)
+
+        if not len(cube_list):
+            continue
+
+        variable_group_mean = calc_ensemble_mean(cube_list)
+        variable_group_means[var_index] = variable_group_mean
+
+        # Save NetCDF
+        iris.save(variable_group_mean, path)
+
+    for var_name, plot_pair in plot_pairs.items():
+        for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
+            if short_name_i != plot_pair['sea']:
+                continue
+            sea_cube = cube
+            variable1, exp1, threshold = split_variable_groups(variable_group_i)
+
+            if len(threshold):
+                land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
+            else:
+                land_variable_group = '_'.join([plot_pair['land'], exp1])
+
+            land_index = (land_variable_group, dataset_i, exp_i, plot_pair['land'])
+            land_cube = variable_group_means[land_index]
+
+            single_pane_land_sea_plot(
+                cfg,
+                metadatas,
+                land_cube=land_cube,
+                sea_cube=sea_cube,
+                plot_pair=plot_pair,
+                unique_keys = [var_name, dataset, exp, threshold],
+                plot_dir ='single_pane_model_means',
+            )
     assert 0
 
     # lets look at  minus the historical
-    # hist_cubes = {variable_group:{} for variable_group in variable_groups}
+    hist_cubes = {variable_group:{} for variable_group in variable_groups}
     ssp_cubes = {variable_group:{} for variable_group in variable_groups}
     # anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
     # detrended_anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
@@ -1201,6 +1261,8 @@ def make_gwt_map_four_plots(cfg, ):
                 thresholds[threshold].append([variable_group, ensemble])
             except:
                 thresholds[threshold] = [[variable_group, ensemble], ]
+
+
 
     # single pane land-sea plots pairs:
     for var_name, plot_pair in plot_pairs.items():
