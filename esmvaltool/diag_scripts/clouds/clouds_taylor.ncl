@@ -38,6 +38,8 @@
 ;                      variable "ts")
 ;                    - False = no additional grid cells masked for
 ;                      variable "ts"
+;   multiobs_uncertainty: calculate uncertainty estimates from multiple
+;                       observational datasets (true, false)
 ;   styleset:        "CMIP5", "DEFAULT"
 ;                    (if not set, CLOUDS_TAYLOR will create a color table and
 ;                    symbols for plotting)
@@ -69,6 +71,8 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20210407-lauer_axel: added option to estimate observational uncertainty
+;                        from multiple observational datasets
 ;   20210318-lauer_axel: added option to speficfy variable if more than one
 ;                        variable is present
 ;   20190221-lauer_axel: added provenance to output (v2.0)
@@ -103,6 +107,7 @@ begin
   set_default_att(diag_script_info, "embracelegend", False)
   set_default_att(diag_script_info, "estimate_obs_uncertainty", False)
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
+  set_default_att(diag_script_info, "multiobs_uncertainty", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
   set_default_att(diag_script_info, "valid_fraction", 0.5)
   set_default_att(diag_script_info, "var", "")
@@ -151,18 +156,28 @@ begin
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
-  ; check if corresponding uncertainty estimates are available;
-  ; uncertainty estimates are identified by "err" in their short_name
+  flag_multiobs_unc = diag_script_info@multiobs_uncertainty
+  if (estimate_obs_uncertainty .and. flag_multiobs_unc) then
+    log_info("estimate_obs_uncertainty is not supported when " + \
+             "multiobs_uncertainty is enabled. Setting " + \
+             "estimate_obs_uncertainty to False")
+    estimate_obs_uncertainty = False
+  end if
 
-  if (numvars.gt.1) then
+  if (.not. flag_multiobs_unc) then
+    ; check if corresponding uncertainty estimates are available;
     ; uncertainty estimates are identified by "err" in their short_name
-    do i = 0, numvars - 1
-      if (isStrSubset(variables(i), var0) .and. \
-          isStrSubset(variables(i), "err")) then
-        errvarind = i
-        break
-      end if
-    end do
+
+    if (numvars.gt.1) then
+      ; uncertainty estimates are identified by "err" in their short_name
+      do i = 0, numvars - 1
+        if (isStrSubset(variables(i), var0) .and. \
+            isStrSubset(variables(i), "err")) then
+          errvarind = i
+          break
+        end if
+      end do
+    end if
   end if
 
   info0 = select_metadata_by_name(input_file_info, var0)
@@ -174,12 +189,14 @@ begin
     refname2 = variable_info[mainvarind]@alternative_dataset
   end if
   names = metadata_att_as_array(info0, "dataset")
+  projects = metadata_att_as_array(info0, "project")
   infiles = metadata_att_as_array(input_file_info, "filename")
 
-  ; check for reference model definition
-
-  if (.not.isvar("refname")) then
-    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
+  if (.not. flag_multiobs_unc) then
+    ; check for reference model definition
+    if (.not.isvar("refname")) then
+      error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
+    end if
   end if
 
   ; print info on variable(s) to log file
@@ -233,12 +250,19 @@ begin
     delete(auxind)
   end if
 
-  ; time averaging: at the moment, only "annualclim" and "seasonalclim"
-  ; are supported
-
   timemean = diag_script_info@timemean
   numseas  = 1          ; default
   season   = (/"annual"/)
+
+  ; time averaging: at the moment, only "annualclim" and "seasonalclim"
+  ; are supported
+
+  if (flag_multiobs_unc .and. timemean .ne. "annualclim") then
+    log_info("multiobs_uncertainty = True is currently supported for annual" \
+             + " means only (timemean = annualclim). Setting " \
+             + " multiobs_uncertainty to False.")
+    flag_multiobs_unc = False
+  end if
 
   if (timemean.eq."seasonalclim") then
     numseas = 4
@@ -274,10 +298,46 @@ begin
 
   ; get reference model
 
-  ref_ind = ind(names .eq. refname)
-  if (ismissing(ref_ind)) then
-    error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
-              + refname + ") is missing")
+  ; find indices of all OBS and obs4mips datasets
+
+  if (flag_multiobs_unc) then
+    idxtmp = new(dimsizes(projects), integer)
+    do i = 0, dimsizes(projects) - 1
+      if (isStrSubset(str_lower(projects(i)), "obs"))
+        idxtmp(i) = i
+      else
+        idxtmp(i) = -1
+      end if
+    end do
+    idxobs = ind(idxtmp .ge. 0)
+    delete(idxtmp)
+    if (all(ismissing(idxobs))) then
+      log_info("No OBS or obs4mips datasets found. Setting " \
+               + " multiobs_uncertainty to False.")
+      flag_multiobs_unc = False
+    else
+      refname = "REF"
+      ref_ind = dimsizes(names)
+      names := array_append_record(names, (/refname/), 0)
+      dim_MOD = dim_MOD + 1
+      log_info("Using the following datasets to calculate multi-" \
+               + "observational average (REF): " \
+               + str_join(names(idxobs), ", "))
+    end if
+  end if
+
+  if (.not. flag_multiobs_unc) then
+    ; if attribute is present, use it so correlations can be calculated
+    if (isvar("refname")) then
+      ; set reference model
+      ref_ind = ind(names .eq. refname)
+      if (ismissing(ref_ind)) then
+        error_msg("f", DIAG_SCRIPT, "", "reference dataset (" + refname + \
+                  ") not found.")
+      end if
+    else
+      error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
+    end if
   end if
 
   ; get multi-model mean index (if present)
@@ -342,6 +402,38 @@ begin
   ;  debugfile = addfile("debug.nc","c")
   ;  debugfile->mask = global_mask
 
+  ; ---------------------------------------------------------
+  ; if requested, calculate multi-observational mean and standard deviation
+
+  if (flag_multiobs_unc) then
+    nobs = dimsizes(idxobs)
+
+    ; step 1: calculate multi-obs mean
+
+    do i = 0, nobs - 1
+      A0 = read_data(info0[idxobs(i)])
+
+      ; calculate time average
+      mean = time_operations(A0, -1, -1, "average", "annualclim", True)
+      delete(A0)
+
+      if (i .eq. 0) then
+        dims = dimsizes(mean)
+        newdims = new(dimsizes(dims) + 1, integer)
+        newdims(0) = nobs
+        newdims(1:dimsizes(newdims) - 1) = dims
+        ref_tmp = new(newdims, float)
+        delete(dims)
+      end if
+      ref_tmp(i, :, :) = mean
+    end do
+    delete(mean)
+    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ;       when averaging
+    ref_avg = dim_avg_n_Wrap(ref_tmp, 0)
+    delete(ref_tmp)
+  end if
+
   ; read data and calculate time average
 
   ierridx = 0
@@ -369,26 +461,33 @@ begin
     info = select_metadata_by_name(input_file_info, variables(ivar))
 
     do imod = modelf, modell
-      data_temp = read_data(info[imod])
 
-      ; The uncertainty estimates are assumed to be given as
-      ; 1-sigma of normally distributed error estimates
-      ; Note: uncertainty estimates must have "err" in their
-      ;       variable name, otherwise variables are assumed
-      ;       to be fields used for calculating derived variables
-      ;       (in this case, fields are not squared before averaging)
-      ; ---> square sigma before averaging over time, then
-      ;      calculate square-root to get average sigma
+      if (imod .ne. ref_ind .or. .not.flag_multiobs_unc) then
+        data_temp = read_data(info[imod])
+        ; The uncertainty estimates are assumed to be given as
+        ; 1-sigma of normally distributed error estimates
+        ; Note: uncertainty estimates must have "err" in their
+        ;       variable name, otherwise variables are assumed
+        ;       to be fields used for calculating derived variables
+        ;       (in this case, fields are not squared before averaging)
+        ; ---> square sigma before averaging over time, then
+        ;      calculate square-root to get average sigma
 
-      if (ivar.eq.errvarind) then
-        data_temp = data_temp * data_temp
-      end if
+        if (ivar.eq.errvarind) then
+          data_temp = data_temp * data_temp
+        end if
 
-      data1 = time_operations(data_temp, -1, -1, "average", \
-                              timemean, True)
+        data1 = time_operations(data_temp, -1, -1, "average", \
+                                timemean, True)
 
-      if (ivar.eq.errvarind) then
-        data1 = sqrt(data1)
+        delete(data_temp)
+
+        if (ivar.eq.errvarind) then
+          data1 = sqrt(data1)
+        end if
+      else
+        data1 = ref_avg
+        delete(ref_avg)
       end if
 
       if (isdefined("global_mask")) then
@@ -413,30 +512,29 @@ begin
             copy_VarCoords(data1, data(imod, :, :, :))
           end if
         end if
-        dim_data = dimsizes(data)
-        rank = dimsizes(dim_data)
-        if (numseas.eq.1) then
-          data(imod, :, :) = data1
-        else
-          data(imod, :, :, :) = data1
-        end if
-        delete(data_temp)
-        delete(data1)
+      dim_data = dimsizes(data)
+      rank = dimsizes(dim_data)
+      if (numseas.eq.1) then
+        data(imod, :, :) = data1
       else
-        if (.not.isdefined("err")) then
-          dim_data = array_append_record((/numvars - 1/), dimsizes(data1), 0)
-          err = new(dim_data, float)
-          err!0 = "var"
-          err&var = variables(ind(variables .ne. var0))
-        end if
-        if (numseas.eq.1) then
-          err(ierridx, :, :) = data1
-        else
-          err(ierridx, :, :, :) = data1
-        end if
+        data(imod, :, :, :) = data1
       end if
+      delete(data1)
+    else
+      if (.not.isdefined("err")) then
+        dim_data = array_append_record((/numvars - 1/), dimsizes(data1), 0)
+        err = new(dim_data, float)
+        err!0 = "var"
+        err&var = variables(ind(variables .ne. var0))
+      end if
+      if (numseas.eq.1) then
+        err(ierridx, :, :) = data1
+      else
+        err(ierridx, :, :, :) = data1
+      end if
+    end if
 
-      ; debug output
+    ; debug output
 
     ; debugfile->$input_file_info@dataset(imod)$ = data1
     end do  ; imod loop

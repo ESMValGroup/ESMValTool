@@ -331,6 +331,7 @@ begin
     ref_std = sqrt(dim_avg_n(sig_tmp, 0))
     delete(sig_tmp)
     copy_VarCoords(ref_avg, ref_std)
+    ref_std@units = ref_avg@units
   end if
 
 ;  system("rm debug.nc")
@@ -576,15 +577,15 @@ begin
     end if
 
     if (isatt(variable_info[varidx], "long_name")) then
-      data1@var_long_name = variable_info[varidx]@long_name
+      data1@long_name = variable_info[varidx]@long_name
     end if
 
     data1@var = var0
 
     if (isatt(variable_info[varidx], "units")) then
-      data1@var_units = variable_info[varidx]@units
+      data1@units = variable_info[varidx]@units
     else
-      data1@var_units = ""
+      data1@units = ""
     end if
 
     if (.not. isvar("ref_data")) then
@@ -638,6 +639,10 @@ begin
 ;                                              / tofloat((dim_MOD + 1) / 2)/))
 ;    res@gsnRightStringFontHeightF = min((/0.025, 0.015 * 6.0 \
 ;                                              / tofloat((dim_MOD + 1) / 2)/))
+
+    res@lbTitleString      = data1@units
+    res@lbTitlePosition    = "Bottom"
+    res@lbTitleFontHeightF = 0.015
 
     ; ###########################################
     ; # create the plot                         #
@@ -742,6 +747,7 @@ begin
         if (flag_rel_diff) then
           diff = (diff - ref_data) / ref_data * 100.0
           diff = where(ref_data .le. rel_diff_min, diff@_FillValue, diff)
+          diff@units = "%"
         else
           diff = diff - ref_data
         end if
@@ -805,6 +811,10 @@ begin
       dres@cnFillOn       = True      ; color plot desired
       dres@cnLineLabelsOn = False     ; contour lines
       dres@cnLinesOn      = False
+
+      dres@lbTitleString      = diff@units
+      dres@lbTitlePosition    = "Bottom"
+      dres@lbTitleFontHeightF = 0.015
 
       ; colors
       ; http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
@@ -975,12 +985,12 @@ begin
       ; add to diff as attributes without prefix
 
       if (isatt(variable_info, "long_name")) then
-        diff@var_long_name = variable_info@long_name
+        diff@long_name = variable_info@long_name
       end if
       if (isatt(variable_info, "units")) then
-        diff@var_units = variable_info@units
+        diff@units = variable_info@units
       else
-        diff@var_units = ""
+        diff@units = ""
       end if
 
       ; ###########################################
@@ -1160,12 +1170,12 @@ begin
                                                 / tofloat((dim_MOD + 1) / 2)/))
     pres@lbAutoManage                     = False
     pres@lbTopMarginF                     = 0.1
-    pres@lbTitleOn                        = True
-    pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
-                                                / tofloat((dim_MOD + 1) / 2)/))
-    pres@lbTitlePosition                  = "Bottom"
-    pres@lbTitleString                    = data1@long_name + " (" \
-      + data1@units + ")"
+;    pres@lbTitleOn                        = True
+;    pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
+;                                                / tofloat((dim_MOD + 1) / 2)/))
+;    pres@lbTitlePosition                  = "Bottom"
+;    pres@lbTitleString                    = data1@long_name + " (" \
+;      + data1@units + ")"
     pres@lbPerimOn                        = False   ; draw line around label
                                                     ; bar area
     pres@gsnPanelCenter                   = False
@@ -1283,8 +1293,8 @@ begin
     ; ========================================================================
 
     if (flag_diff) then
-      pres@lbTitleString = "~F33~D~F21~" + diff@long_name + " (" + \
-                           diff@units + ")"
+;      pres@lbTitleString = "~F33~D~F21~" + diff@long_name + " (" + \
+;                           diff@units + ")"
 
       ; save default color map in case it is needed later for optionally
       ; plotting color bar to a separate file
@@ -1460,8 +1470,8 @@ begin
       pres@vpHeightF = 0.1
       pres@lbLabelFontHeightF = 0.015
       pres@lbLabelAlignment = "InteriorEdges"
-      pres@lbTitleFontHeightF = 0.015
-      pres@lbTitleString = data1@long_name + " (" + data1@units + ")"
+;      pres@lbTitleFontHeightF = 0.015
+;      pres@lbTitleString = data1@long_name + " (" + data1@units + ")"
 
       labels = tostring(res@cnLevels)
 
@@ -1519,12 +1529,12 @@ begin
           end if
         end do
 
-        if (flag_rel_diff) then
-          pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (%)"
-        else
-          pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (" + \
-                        data1@units + ")"
-        end if
+;        if (flag_rel_diff) then
+;          pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (%)"
+;        else
+;          pres@lbTitleString = "~F33~D~F21~" + data1@long_name + " (" + \
+;                        data1@units + ")"
+;        end if
 
         if (isatt(dres, "cnFillColors")) then
           pres@lbFillColors = dres@cnFillColors

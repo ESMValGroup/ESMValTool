@@ -127,8 +127,6 @@ User settings in recipe
 
    * colormap: e.g., WhiteBlueGreenYellowRed, rainbow
    * explicit_cn_levels: use these contour levels for plotting
-   * extrafiles: write plots for individual models to separate files
-     (true, false)
    * projection: map projection, e.g., Mollweide, Mercator
 
    *Required settings (variables)*
