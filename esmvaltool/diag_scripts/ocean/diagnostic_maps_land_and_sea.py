@@ -194,10 +194,6 @@ def single_pane_land_sea_plot(
     """
     Try to plot both a land cube and a sea cube together.
     """
-    sea_cube = cube_interesction(sea_cube)
-    land_cube = cube_interesction(land_cube)
-    fig = plt.figure()
-
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
@@ -205,7 +201,11 @@ def single_pane_land_sea_plot(
     suffix = '_'.join(unique_keys)+image_extention
     path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
 
-    #if os.path.exists(path): return
+    if os.path.exists(path): return
+
+    sea_cube = cube_interesction(sea_cube)
+    land_cube = cube_interesction(land_cube)
+    fig = plt.figure()
 
     fig.set_size_inches(10, 6)
     ax = plt.subplot(111, projection=ccrs.PlateCarree())
@@ -1101,10 +1101,11 @@ def make_gwt_map_four_plots(cfg, ):
 
             try: land_cube = all_cubes[land_index]
             except:
-                for index in all_cubes.keys():
-                   if plot_pair['land'] not in index: continue
-                   print(index)
-                assert 0
+                continue 
+#               for index in all_cubes.keys():
+#                  if plot_pair['land'] not in index: continue
+#                  print(index)
+#               assert 0
 #            land_cube = all_cubes.get(land_index, None)
             #if land_cube is None: continue
             cube_pairs[(dataset, mip, exp, ensemble, threshold)] = {'sea': sea_cube, 'land': land_cube}
@@ -1121,12 +1122,12 @@ def make_gwt_map_four_plots(cfg, ):
     # Create variable_group_means.
     #    This is a mean of all ensemble memnbers of a given scenario at a given threshold.
     variable_group_means = {}
-    for variable_group_i, dataset_i, exp_i, short_name_i in itertools.product(variable_groups, datasets, exps, short_names):
+    for variable_group_i, dataset_i, exp_i, short_name_i in product(variable_groups, datasets, exps, short_names):
         var_index = (variable_group_i, dataset_i, exp_i, short_name_i)
         work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
         path = work_dir+'_'.join(list(var_index))+'.nc'
 
-        if os.paths.exists(path):
+        if os.path.exists(path):
             variable_group_means[var_index] = iris.load_cube(path)
             continue
 
@@ -1153,6 +1154,7 @@ def make_gwt_map_four_plots(cfg, ):
         for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
             if short_name_i != plot_pair['sea']:
                 continue
+            print('single_pane_model_means', var_name, variable_group_i, dataset_i, exp_i, short_name_i)
             sea_cube = cube
             variable1, exp1, threshold = split_variable_groups(variable_group_i)
 
@@ -1162,7 +1164,9 @@ def make_gwt_map_four_plots(cfg, ):
                 land_variable_group = '_'.join([plot_pair['land'], exp1])
 
             land_index = (land_variable_group, dataset_i, exp_i, plot_pair['land'])
-            land_cube = variable_group_means[land_index]
+            land_cube = variable_group_means.get(land_index, None)
+            print(land_index)
+            if land_cube is None: continue 
 
             single_pane_land_sea_plot(
                 cfg,
@@ -1170,7 +1174,7 @@ def make_gwt_map_four_plots(cfg, ):
                 land_cube=land_cube,
                 sea_cube=sea_cube,
                 plot_pair=plot_pair,
-                unique_keys = [var_name, dataset, exp, threshold],
+                unique_keys = [dataset_i, exp_i, threshold, var_name,],
                 plot_dir ='single_pane_model_means',
             )
     assert 0
