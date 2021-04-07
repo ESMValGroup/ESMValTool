@@ -51,7 +51,7 @@ datasets: &model_data
         - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3-Veg, ensemble: r(1:4)i1p1f1, grid: gr}
         - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3-Veg, ensemble: r6i1p1f1, grid: gr}
         - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr}
-#        - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r(3:4)i1p1f1, grid: gr}
+        #- {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r(3:4)i1p1f1, grid: gr}
         - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r6i1p1f1, grid: gr}
         - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r9i1p1f1, grid: gr}
         - {project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r11i1p1f1, grid: gr}
