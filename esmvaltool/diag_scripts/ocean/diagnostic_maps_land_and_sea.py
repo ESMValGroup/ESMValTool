@@ -166,18 +166,22 @@ def single_pane_land_sea_pane(cfg,
         sea_cube=None,
         land_cmap = 'viridis',
         sea_cmap = 'Blues',
+        land_range=[],
+        sea_range=[],
+        #land_
         ):
     """
     Generic way to plot single cube
     """
-    #land = qplt.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True,
-    #sea = qplt.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
+    if land_range:
+        land = iris.plot.contourf(land_cube, 18, cmap=land_cmap, vmin=np.min(land_range), vmax=np.max(land_range))
+    else:
+        land = iris.plot.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True
 
-    land = iris.plot.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True
-    #cb = plt.colorbar(axp,ax=[ax],location='left')
-    #landcbar = plt.colorbar(location='right')
-    sea = iris.plot.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
-    #seacbar = plt.colorbar(location='left')
+    if sea_range:
+        sea = iris.plot.contourf(sea_cube, 18, cmap=sea_cmap, vmin=np.min(sea_range), vmax=np.max(sea_range))
+    else:
+        sea = iris.plot.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
     plt.gca().coastlines()
 
     return fig, ax, land, sea
@@ -218,7 +222,7 @@ def single_pane_land_sea_plot(
             land_cmap = 'Greens', #'viridis',
             sea_cmap = 'Blues', # 'ocean_r'
             )
-    divider = make_axes_locatable(ax)
+    #divider = make_axes_locatable(ax)
     #pad_fraction = 0.5
     #aspect=20.
     #width = axes_size.AxesY(ax, aspect=1./aspect)
@@ -250,6 +254,79 @@ def single_pane_land_sea_plot(
         logger.info('Saving plots to %s', path)
         plt.savefig(path) #, bbox_inches = 'tight',)
     plt.close()
+
+
+def multi_pane_land_sea_plot(
+        cfg,
+        metadatas,
+        land_cubes={}},
+        sea_cubes={},
+        plot_pair={},
+        unique_keys = [],
+        plot_dir ='multi_pane_model_means',
+        ):
+    """
+    Try to plot both a set of land cube and a sea cube together on the pane figure.
+    """
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Determine image filename:
+    suffix = '_'.join(unique_keys)+image_extention
+    path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
+
+    #if os.path.exists(path): return
+    # sea_cube = cube_interesction(sea_cube)
+    # land_cube = cube_interesction(land_cube)
+    scenarios ={
+        'historical': 231,
+        'ssp119':     232,
+        'ssp126':     233,
+        'ssp245':     234,
+        'ssp370':     235,
+        'ssp585':     236, }
+
+    fig = plt.figure()
+    fig.set_size_inches(10, 6)
+    axes = {}
+    land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()])
+    sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])
+
+    land_label, sea_label = '', ''
+    for scenario, sbp in scenarios.items():
+        axes[scenario] = plt.subplot(sbp, projection=ccrs.PlateCarree())
+        land_cube = land_cubes.get(scenario, None)
+        sea_cube = sea_cubes.get(scenario, None)
+        if none in [land_cube, sea_cube]:
+            continue
+
+        fig, axes[scenario], land, sea = single_pane_land_sea_pane(
+                cfg,
+                metadatas,
+                fig,
+                axes[scenario],
+                land_cube=land_cube,
+                sea_cube=sea_cube,
+                land_cmap = 'Greens', #'viridis',
+                sea_cmap = 'Blues', # 'ocean_r'
+                land_range= land_range,
+                sea_range=sea_range,
+                )
+
+        land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
+        sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
+
+    landcbar = plt.colorbar(land, ax=list(axes.values()), location='left', label=land_label) #, shrink=0.55)
+    seacbar = plt.colorbar(sea, ax=list(axes.values()), location='right', label=sea_label) #, shrink=0.55)
+
+    plt.suptitle(longnameify(unique_keys))
+
+    # Saving files:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path) #, bbox_inches = 'tight',)
+    plt.close()
+
 
 def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
     """
@@ -1005,9 +1082,7 @@ def make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_m
     plt.close()
 
 
-
-
-def make_gwt_map_four_plots(cfg, ):
+def make_gwt_map_land_sea_plots(cfg, ):
     """
     Make plots
 
@@ -1035,7 +1110,7 @@ def make_gwt_map_four_plots(cfg, ):
     variables = set()
     datasets = set()
     mips = set()
-    thresholds = {}
+    thresholds = set()
     #fx_fn = ''
     fx_fns = {}
     all_cubes = {}
@@ -1051,6 +1126,9 @@ def make_gwt_map_four_plots(cfg, ):
         datasets.add(details['dataset'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
+        variable1, exp1, threshold = split_variable_groups(details['variable_group'])
+        thresholds.add(threshold)
+
         unique_key = (details['variable_group'], details['ensemble'])
         mips.add(details['mip'])
 
@@ -1101,7 +1179,7 @@ def make_gwt_map_four_plots(cfg, ):
 
             try: land_cube = all_cubes[land_index]
             except:
-                continue 
+                continue
 #               for index in all_cubes.keys():
 #                  if plot_pair['land'] not in index: continue
 #                  print(index)
@@ -1120,7 +1198,7 @@ def make_gwt_map_four_plots(cfg, ):
             )
     ####
     # Create variable_group_means.
-    #    This is a mean of all ensemble memnbers of a given scenario at a given threshold.
+    #    This is a mean of all ensemble memnbers of a given model in a scenario at a given threshold.
     variable_group_means = {}
     for variable_group_i, dataset_i, exp_i, short_name_i in product(variable_groups, datasets, exps, short_names):
         var_index = (variable_group_i, dataset_i, exp_i, short_name_i)
@@ -1150,6 +1228,9 @@ def make_gwt_map_four_plots(cfg, ):
         # Save NetCDF
         iris.save(variable_group_mean, path)
 
+    ####
+    # Create variable_group_means.
+    #    This is a mean of all ensemble memnbers of a given model in a scenario at a given threshold.
     for var_name, plot_pair in plot_pairs.items():
         for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
             if short_name_i != plot_pair['sea']:
@@ -1166,7 +1247,7 @@ def make_gwt_map_four_plots(cfg, ):
             land_index = (land_variable_group, dataset_i, exp_i, plot_pair['land'])
             land_cube = variable_group_means.get(land_index, None)
             print(land_index)
-            if land_cube is None: continue 
+            if land_cube is None: continue
 
             single_pane_land_sea_plot(
                 cfg,
@@ -1177,7 +1258,43 @@ def make_gwt_map_four_plots(cfg, ):
                 unique_keys = [dataset_i, exp_i, threshold, var_name,],
                 plot_dir ='single_pane_model_means',
             )
+
+    for dataset, threshold in product(datasets, thresholds):
+        for var_name, plot_pair in plot_pairs.items():
+            sea_cubes = {}
+            land_cubes = {}
+            for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
+                if short_name_i == plot_pair['sea']:
+                    continue
+                if dataset_i != dataset:
+                    continue
+                variable1, exp1, threshold1 = split_variable_groups(variable_group_i)
+                if threshold1 != threshold:
+                    continue
+
+                if len(threshold):
+                        land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
+                else:
+                        land_variable_group = '_'.join([plot_pair['land'], exp1])
+
+                sea_cubes[exp_i] = cube
+
+                land_cube = variable_group_means[(land_variable_group, dataset_i, exp_i, plot_pair['land'])]
+                land_cubes[exp_i] = land_cube
+            multi_pane_land_sea_plot(
+                cfg,
+                metadatas,
+                land_cubes=land_cubes,
+                sea_cubes=sea_cubes,
+                plot_pair=plot_pair,
+                unique_keys = [dataset, threshold, var_name,],
+                plot_dir ='multi_pane_model_means',
+                )
+
+
     assert 0
+
+
 
     # lets look at  minus the historical
     hist_cubes = {variable_group:{} for variable_group in variable_groups}
@@ -1397,266 +1514,268 @@ def make_gwt_map_four_plots(cfg, ):
             )
 
 
-def make_gwt_map_plots(cfg, detrend = True,):
-    """
-    Make plots
-
-    Parameters
-    ----------
-    cfg: dict
-        the opened global config dictionary, passed by ESMValTool.
-
-    detrend: bool
-        Subtract the mean from the figure.
-    do_single_plots: bool
-        Make individual plots for each dataset.
-
-    """
-    metadatas = diagtools.get_input_files(cfg)
-
-    do_single_plots=True
-    do_single_anomaly_plots = True
-    do_variable_group_plots=True
-    do_variable_group_diff = True
-    do_threshold_plots=True
-    do_variable_group_mean_plots=True
-    do_variable_group_anomaly_mean_plots=True
-
-    #print('\n', cfg.keys())
-
-    files_dict = {}
-    short_names = set()
-    ensembles = set()
-    exps = set()
-    variable_groups = set()
-    # note that variable groups need to have the format: field_scenario_threshold
-    # ie: fgco2_ssp126_1.5, tas_ssp585_5.0
-    variables = set()
-    thresholds = {}
-    units = {}
-    fx_fns = {}
-
-
-    for fn, details in sorted(metadatas.items()):
-        #print(fn, details.keys())
-        short_names.add(details['short_name'])
-        ensembles.add(details['ensemble'])
-        exps.add(details['exp'])
-        variable_groups.add(details['variable_group'])
-        units[details['short_name']] = details['units']
-        unique_key = (details['variable_group'], details['ensemble'])
-        mip = details['mip']
-
-        if details['mip'] in ['fx', 'Ofx']:
-            fx_fns[details['short_name']] = fn
-            print('Found FX MIP', fn, details['short_name'])
-
-        try:
-            files_dict[unique_key].append(fn)
-        except:
-            files_dict[unique_key] = [fn, ]
-
-    if fx_fns is None:
-        print('unable to find fx file.')
-        assert 0
-
-    print(files_dict.keys())
-
-    # lets look at  minus the historical
-    variable_group_cubes = {variable_group:{} for variable_group in variable_groups}
-    variable_group_details = {variable_group:{} for variable_group in variable_groups}
-
-    # Load and set up each ensemble member:
-    for ensemble in sorted(ensembles):
-        for variable_group in sorted(variable_groups):
-            # guess historical group name:
-            historical_group = variable_group[:variable_group.find('_')] +'_historical'
-            if variable_group == historical_group:
-                variable, exp = variable_group.split('_')
-                threshold = None
-
-            elif variable_group.split('_')[-1] == 'fx':
-                variable, exp = variable_group.split('_')
-                threshold = None
-            else:
-                variable, exp, threshold = split_variable_groups(variable_group)
-                variables.add(variable)
-
-            if (variable_group, ensemble) not in files_dict:
-                continue
-            fn = files_dict[(variable_group, ensemble)][0]
-            fn_hist = files_dict[(historical_group, ensemble)][0]
-
-            details = metadatas[fn]
-            cube = iris.load_cube( fn)
-            if variable_group.split('_')[-1] != 'fx':
-                cube = diagtools.bgc_units(cube, details['short_name'])
-
-            print('Loaded Cube:',ensemble,variable_group, [variable, exp, threshold])
-            variable_group_cubes[variable_group][ensemble] = cube
-            variable_group_details[variable_group][ensemble] = details
-
-            key = variable_group.replace('_',' ') + ' '+ensemble
-            if do_single_plots:
-                make_map_plots(cfg, details, cube, key, detrend)
-
-    print(variable_group_cubes.keys())
-
-    # Calculate the anomaly for each ensemble/threshold combination
-    anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
-    for ensemble in sorted(ensembles):
-        for variable_group in sorted(variable_groups):
-            # guess historical group name:
-            historical_group = variable_group[:variable_group.find('_')] +'_historical'
-            if variable_group == historical_group:
-                continue
-
-            print('Plotting anomaly:', ensemble, variable_group)
-
-            if variable_group.split('_')[-1] == 'fx':
-                continue
-
-            variable, exp, threshold = split_variable_groups(variable_group)
-            variables.add(variable)
-
-            if (variable_group, ensemble) not in files_dict:
-                continue
-
-            # get details.
-            details = variable_group_details[variable_group][ensemble]
-
-            # get cube.
-            cube = variable_group_cubes[variable_group][ensemble]
-
-            # get historial cube.
-            cube_hist = variable_group_cubes[historical_group][ensemble]
-            cube_anomaly = cube - cube_hist
-
-            if detrend:
-                cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
-
-            anomaly_cubes[variable_group][ensemble] = cube_anomaly
-            try:
-                thresholds[threshold].append([variable_group, ensemble])
-            except:
-                thresholds[threshold] = [[variable_group, ensemble], ]
-            key = variable_group.replace('_',' ') + ' '+ensemble +' anomaly'
-
-            # Produce a plot of the anomaly.
-            if do_single_anomaly_plots:
-                make_map_plots(cfg, details, cube_anomaly, key, detrend)
-
-    ####
-    # Create variable_group_means.
-    #    This is a mean of all ensemble memnbers of a given scenario at a given threshold.
-    variable_group_means = {}
-    for variable_group in sorted(variable_groups):
-        cube_list = []
-        for vari, cube in sorted(variable_group_cubes[variable_group].items()):
-            print(variable_group, vari)
-            cube_list.append(cube)
-        if not len(cube_list):
-            continue
-        if variable_group.split('_')[-1] == 'fx':
-            continue
-
-        variable_group_mean = calc_ensemble_mean(cube_list)
-        variable_group_means[variable_group] = variable_group_mean
-        if do_variable_group_mean_plots:
-            make_ensemble_map_plots(cfg, variable_group_mean, variable_group, detrend, key='', cmap='viridis')
-
-    ####
-    # Create variable_group_anomaLty_means.
-    variable_group_anomaly_means={}
-    for variable_group in sorted(variable_groups):
-        cube_list = []
-        if variable_group not in anomaly_cubes:
-            continue
-        for vari, cube in sorted(anomaly_cubes[variable_group].items()):
-            print(variable_group, vari)
-            cube_list.append(cube)
-        if not len(cube_list):continue
-        cube = calc_ensemble_mean(cube_list)
-        variable_group_anomaly_means[variable_group] = cube
-
-        if do_variable_group_anomaly_mean_plots:
-            zrange = diagtools.get_cube_range_diff([cube, ])
-            make_ensemble_map_plots(cfg, cube, variable_group, detrend, key='anomaly',cmap='PRGn', zrange=zrange)
-
-    # All variable_group_means in a single figure:
-    for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
-        for variable in sorted(variables):
-            make_variable_group_mean_figure(cfg, variable_group_means, variable_group_details, threshold,
-                variable=variable, units = units[variable])
-
-    # All variable_group_means anomalies in a single figure:
-    for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
-        for variable in sorted(variables):
-            hist_cube = variable_group_means[variable +'_historical']
-            make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anomaly_means, threshold,
-                variable=variable, units = units[variable])
-
-    # 4 Pane figure showing anomaly against ssp126.
-    for threshold in ['1.5', '2.0', ]:#'3.0', '4.0', '5.0']:
-        for variable in sorted(variables):
-            make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_means, threshold,
-                variable=variable, units = units[variable])
-
-
-
-    # Plot Ensemble mean for each variable_group, for each sceranrio and threshold,
-    # include hist and exclude fx data.
-    for variable_group, variable_group_mean in variable_group_means.items():
-        # check to make plots.
-        if not do_variable_group_plots:
-            continue
-
-        # guess historical group name:
-        #historical_group = variable_group[:variable_group.find('_')] + '_historical'
-        #if variable_group == historical_group:
-        #    continue
-
-        fx_group = variable_group[:variable_group.find('_')] +'_fx'
-        if variable_group == fx_group:
-            continue
-
-        make_ensemble_map_plots(cfg, variable_group_mean, variable_group, detrend)
-
-    # # difference bwtween each scenario and diff_against.
-    # diff_against='ssp126'
-    # for temp in ['2.0', '4.0', ]: # ['1.5', '2.0', '3.0', '4.0', '5.0']:
-    #     for variable_group, variable_group_mean in variable_group_means.items():
-    #         # check to make plots.
-    #         if not do_variable_group_diff:
-    #             continue
-    #
-    #         if variable_group.find('_'+temp) ==-1: continue
-    #
-    #     ssp126_group = variable_group[:variable_group.find('_')] + '_'+diff_against+'_'+temp
-    #     print('diff_group:',ssp126_group, diff_against, temp)
-    #     if variable_group == ssp126_group:
-    #         continue
-    #
-    #     if ssp126_group not in variable_group_means.keys(): continue
-    #     print('variable_group diff:', variable_group, ssp126_group, temp)
-    #     diff_cube = variable_group_mean - variable_group_means[ssp126_group]
-    #     make_ensemble_map_plots_diff(cfg, diff_cube, variable_group, detrend, temp)
-
-    # Ensemble mean for each threshold:
-    for variable in sorted(variables):
-        if not do_threshold_plots: continue
-        for threshold, paths in sorted(thresholds.items()):
-            cube_list = []
-            for [variable_group, ensemble] in sorted(paths):
-                var_g, exp, threshold = split_variable_groups(variable_group)
-                if var_g != variable:
-                    continue
-                cube_list.append(anomaly_cubes[variable_group][ensemble])
-
-            if cube_list == []:
-                continue
-            ensemble_mean = calc_ensemble_mean(cube_list)
-            make_threshold_ensemble_map_plots(cfg, ensemble_mean, variable, threshold, detrend, )
+# def make_gwt_map_plots(cfg, detrend = True,):
+#     """
+#     Make plots
+#
+#     Parameters
+#     ----------
+#     cfg: dict
+#         the opened global config dictionary, passed by ESMValTool.
+#
+#     detrend: bool
+#         Subtract the mean from the figure.
+#     do_single_plots: bool
+#         Make individual plots for each dataset.
+#
+#     """
+#     metadatas = diagtools.get_input_files(cfg)
+#
+#     do_single_plots=True
+#     do_single_anomaly_plots = True
+#     do_variable_group_plots=True
+#     do_variable_group_diff = True
+#     do_threshold_plots=True
+#     do_variable_group_mean_plots=True
+#     do_variable_group_anomaly_mean_plots=True
+#
+#     #print('\n', cfg.keys())
+#
+#     files_dict = {}
+#     short_names = set()
+#     ensembles = set()
+#     exps = set()
+#     variable_groups = set()
+#     # note that variable groups need to have the format: field_scenario_threshold
+#     # ie: fgco2_ssp126_1.5, tas_ssp585_5.0
+#     variables = set()
+#     thresholds = {}
+#     units = {}
+#     fx_fns = {}
+#
+#
+#     for fn, details in sorted(metadatas.items()):
+#         #print(fn, details.keys())
+#         short_names.add(details['short_name'])
+#         ensembles.add(details['ensemble'])
+#         exps.add(details['exp'])
+#         variable_groups.add(details['variable_group'])
+#         units[details['short_name']] = details['units']
+#         variable1, exp1, threshold = split_variable_groups(details['variable_group'])
+#         thresholds.add(threshold)
+#         unique_key = (details['variable_group'], details['ensemble'])
+#         mip = details['mip']
+#
+#         if details['mip'] in ['fx', 'Ofx']:
+#             fx_fns[details['short_name']] = fn
+#             print('Found FX MIP', fn, details['short_name'])
+#
+#         try:
+#             files_dict[unique_key].append(fn)
+#         except:
+#             files_dict[unique_key] = [fn, ]
+#
+#     if fx_fns is None:
+#         print('unable to find fx file.')
+#         assert 0
+#
+#     print(files_dict.keys())
+#
+#     # lets look at  minus the historical
+#     variable_group_cubes = {variable_group:{} for variable_group in variable_groups}
+#     variable_group_details = {variable_group:{} for variable_group in variable_groups}
+#
+#     # Load and set up each ensemble member:
+#     for ensemble in sorted(ensembles):
+#         for variable_group in sorted(variable_groups):
+#             # guess historical group name:
+#             historical_group = variable_group[:variable_group.find('_')] +'_historical'
+#             if variable_group == historical_group:
+#                 variable, exp = variable_group.split('_')
+#                 threshold = None
+#
+#             elif variable_group.split('_')[-1] == 'fx':
+#                 variable, exp = variable_group.split('_')
+#                 threshold = None
+#             else:
+#                 variable, exp, threshold = split_variable_groups(variable_group)
+#                 variables.add(variable)
+#
+#             if (variable_group, ensemble) not in files_dict:
+#                 continue
+#             fn = files_dict[(variable_group, ensemble)][0]
+#             fn_hist = files_dict[(historical_group, ensemble)][0]
+#
+#             details = metadatas[fn]
+#             cube = iris.load_cube( fn)
+#             if variable_group.split('_')[-1] != 'fx':
+#                 cube = diagtools.bgc_units(cube, details['short_name'])
+#
+#             print('Loaded Cube:',ensemble,variable_group, [variable, exp, threshold])
+#             variable_group_cubes[variable_group][ensemble] = cube
+#             variable_group_details[variable_group][ensemble] = details
+#
+#             key = variable_group.replace('_',' ') + ' '+ensemble
+#             if do_single_plots:
+#                 make_map_plots(cfg, details, cube, key, detrend)
+#
+#     print(variable_group_cubes.keys())
+#
+#     # Calculate the anomaly for each ensemble/threshold combination
+#     anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
+#     for ensemble in sorted(ensembles):
+#         for variable_group in sorted(variable_groups):
+#             # guess historical group name:
+#             historical_group = variable_group[:variable_group.find('_')] +'_historical'
+#             if variable_group == historical_group:
+#                 continue
+#
+#             print('Plotting anomaly:', ensemble, variable_group)
+#
+#             if variable_group.split('_')[-1] == 'fx':
+#                 continue
+#
+#             variable, exp, threshold = split_variable_groups(variable_group)
+#             variables.add(variable)
+#
+#             if (variable_group, ensemble) not in files_dict:
+#                 continue
+#
+#             # get details.
+#             details = variable_group_details[variable_group][ensemble]
+#
+#             # get cube.
+#             cube = variable_group_cubes[variable_group][ensemble]
+#
+#             # get historial cube.
+#             cube_hist = variable_group_cubes[historical_group][ensemble]
+#             cube_anomaly = cube - cube_hist
+#
+#             if detrend:
+#                 cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
+#
+#             anomaly_cubes[variable_group][ensemble] = cube_anomaly
+#             try:
+#                 thresholds[threshold].append([variable_group, ensemble])
+#             except:
+#                 thresholds[threshold] = [[variable_group, ensemble], ]
+#             key = variable_group.replace('_',' ') + ' '+ensemble +' anomaly'
+#
+#             # Produce a plot of the anomaly.
+#             if do_single_anomaly_plots:
+#                 make_map_plots(cfg, details, cube_anomaly, key, detrend)
+#
+#     ####
+#     # Create variable_group_means.
+#     #    This is a mean of all ensemble memnbers of a given scenario at a given threshold.
+#     variable_group_means = {}
+#     for variable_group in sorted(variable_groups):
+#         cube_list = []
+#         for vari, cube in sorted(variable_group_cubes[variable_group].items()):
+#             print(variable_group, vari)
+#             cube_list.append(cube)
+#         if not len(cube_list):
+#             continue
+#         if variable_group.split('_')[-1] == 'fx':
+#             continue
+#
+#         variable_group_mean = calc_ensemble_mean(cube_list)
+#         variable_group_means[variable_group] = variable_group_mean
+#         if do_variable_group_mean_plots:
+#             make_ensemble_map_plots(cfg, variable_group_mean, variable_group, detrend, key='', cmap='viridis')
+#
+#     ####
+#     # Create variable_group_anomaLty_means.
+#     variable_group_anomaly_means={}
+#     for variable_group in sorted(variable_groups):
+#         cube_list = []
+#         if variable_group not in anomaly_cubes:
+#             continue
+#         for vari, cube in sorted(anomaly_cubes[variable_group].items()):
+#             print(variable_group, vari)
+#             cube_list.append(cube)
+#         if not len(cube_list):continue
+#         cube = calc_ensemble_mean(cube_list)
+#         variable_group_anomaly_means[variable_group] = cube
+#
+#         if do_variable_group_anomaly_mean_plots:
+#             zrange = diagtools.get_cube_range_diff([cube, ])
+#             make_ensemble_map_plots(cfg, cube, variable_group, detrend, key='anomaly',cmap='PRGn', zrange=zrange)
+#
+#     # All variable_group_means in a single figure:
+#     for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
+#         for variable in sorted(variables):
+#             make_variable_group_mean_figure(cfg, variable_group_means, variable_group_details, threshold,
+#                 variable=variable, units = units[variable])
+#
+#     # All variable_group_means anomalies in a single figure:
+#     for threshold in ['1.5', '2.0', '3.0', '4.0', '5.0']:
+#         for variable in sorted(variables):
+#             hist_cube = variable_group_means[variable +'_historical']
+#             make_variable_group_mean_anomaly_figure(cfg, hist_cube, variable_group_anomaly_means, threshold,
+#                 variable=variable, units = units[variable])
+#
+#     # 4 Pane figure showing anomaly against ssp126.
+#     for threshold in ['1.5', '2.0', ]:#'3.0', '4.0', '5.0']:
+#         for variable in sorted(variables):
+#             make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_means, threshold,
+#                 variable=variable, units = units[variable])
+#
+#
+#
+#     # Plot Ensemble mean for each variable_group, for each sceranrio and threshold,
+#     # include hist and exclude fx data.
+#     for variable_group, variable_group_mean in variable_group_means.items():
+#         # check to make plots.
+#         if not do_variable_group_plots:
+#             continue
+#
+#         # guess historical group name:
+#         #historical_group = variable_group[:variable_group.find('_')] + '_historical'
+#         #if variable_group == historical_group:
+#         #    continue
+#
+#         fx_group = variable_group[:variable_group.find('_')] +'_fx'
+#         if variable_group == fx_group:
+#             continue
+#
+#         make_ensemble_map_plots(cfg, variable_group_mean, variable_group, detrend)
+#
+#     # # difference bwtween each scenario and diff_against.
+#     # diff_against='ssp126'
+#     # for temp in ['2.0', '4.0', ]: # ['1.5', '2.0', '3.0', '4.0', '5.0']:
+#     #     for variable_group, variable_group_mean in variable_group_means.items():
+#     #         # check to make plots.
+#     #         if not do_variable_group_diff:
+#     #             continue
+#     #
+#     #         if variable_group.find('_'+temp) ==-1: continue
+#     #
+#     #     ssp126_group = variable_group[:variable_group.find('_')] + '_'+diff_against+'_'+temp
+#     #     print('diff_group:',ssp126_group, diff_against, temp)
+#     #     if variable_group == ssp126_group:
+#     #         continue
+#     #
+#     #     if ssp126_group not in variable_group_means.keys(): continue
+#     #     print('variable_group diff:', variable_group, ssp126_group, temp)
+#     #     diff_cube = variable_group_mean - variable_group_means[ssp126_group]
+#     #     make_ensemble_map_plots_diff(cfg, diff_cube, variable_group, detrend, temp)
+#
+#     # Ensemble mean for each threshold:
+#     for variable in sorted(variables):
+#         if not do_threshold_plots: continue
+#         for threshold, paths in sorted(thresholds.items()):
+#             cube_list = []
+#             for [variable_group, ensemble] in sorted(paths):
+#                 var_g, exp, threshold = split_variable_groups(variable_group)
+#                 if var_g != variable:
+#                     continue
+#                 cube_list.append(anomaly_cubes[variable_group][ensemble])
+#
+#             if cube_list == []:
+#                 continue
+#             ensemble_mean = calc_ensemble_mean(cube_list)
+#             make_threshold_ensemble_map_plots(cfg, ensemble_mean, variable, threshold, detrend, )
 
 
 def main(cfg):
@@ -1671,7 +1790,7 @@ def main(cfg):
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
-    make_gwt_map_four_plots(cfg)
+    make_gwt_map_land_sea_plots(cfg)
 
     #for detrend in [False,]: # True ]:
     #    make_gwt_map_plots(cfg, detrend)
