@@ -8,7 +8,8 @@ from pathlib import Path
 
 from setuptools import Command, setup
 
-from esmvaltool import __version__
+sys.path.insert(0, os.path.dirname(__file__))
+from esmvaltool import __version__  # noqa: E402
 
 PACKAGES = [
     'esmvaltool',
@@ -22,7 +23,7 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'cartopy',
+        'cartopy>=0.18',
         'cdo',
         'cdsapi',
         'cf-units',
@@ -32,27 +33,32 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.0.0,<2.1',
+        'esmvalcore>=2.2.0,<2.3',
         'fiona',
         'GDAL',
         'jinja2',
         'joblib',
-        'matplotlib',
+        'lime',
+        'matplotlib>3.3.1',  # bug in 3.3.1, 3.3.2 and 3 fine
+        'natsort',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numpy',
         'pandas',
-        'pynio',
         'pyproj>=2.1'
         'pyyaml',
+        'rasterio',  # replaces pynio
+        'ruamel.yaml',
+        'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=2.2.1',
+        'scitools-iris>=3.0.1',
         'seaborn',
         'seawater',
         'shapely',
         'xarray>=0.12',
         'xesmf',
+        'xgboost',
         'xlsxwriter',
     ],
     # Test dependencies
@@ -69,7 +75,7 @@ REQUIREMENTS = {
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
-        'autodocsumm!=0.2.0',
+        'autodocsumm>=0.2.2',
         'codespell',
         'docformatter',
         'isort',
@@ -221,7 +227,9 @@ setup(
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
-            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
+            'recipe_filler = '
+            'esmvaltool.utils.recipe_filler:run'
         ],
         'esmvaltool_commands': [
             'colortables = '

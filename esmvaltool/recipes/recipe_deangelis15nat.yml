@@ -8,6 +8,9 @@ documentation:
   authors:
     - weigel_katja
 
+  maintainer:
+    - weigel_katja
+
   references:
     - deangelis15nat
 

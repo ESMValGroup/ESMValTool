@@ -34,48 +34,70 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-#. Preprocessor
+* Preprocessor
 
    * ``area_statistics`` (*operation: mean*): Calculate global mean.
 
-#. Script climate_metrics/ecs.py
+.. _ecs.py:
+
+* Script climate_metrics/ecs.py
 
    * ``calculate_mmm``, *bool*, optional (default: ``True``): Calculate
      multi-model mean ECS.
+   * ``complex_gregory_plot``, *bool*, optional (default: ``False``): Plot
+     complex Gregory plot (also add response for first ``sep_year`` years and
+     last 150 - ``sep_year`` years, default: ``sep_year=20``) if ``True``.
    * ``output_attributes``, *dict*, optional: Write additional attributes to
-     all output netcdf files.
-   * ``read_external_file``, *str*, optional: Read ECS and net climate feedback
-     parameter from external file. Can be given relative to the diagnostic
+     netcdf files.
+   * ``read_external_file``, *str*, optional: Read ECS and feedback parameters
+     from external file. The path can be given relative to this diagnostic
      script or as absolute path.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``savefig_kwargs``, *dict*, optional: Keyword arguments for
+     :func:`matplotlib.pyplot.savefig`.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
+   * ``sep_year``, *int*, optional (default: ``20``): Year to separate
+     regressions of complex Gregory plot. Only effective if
+     ``complex_gregory_plot`` is ``True``.
+   * ``x_lim``, *list of float*, optional (default: ``[1.5, 6.0]``): Plot
+     limits for X axis of Gregory regression plot (T).
+   * ``y_lim``, *list of float*, optional (default: ``[0.5, 3.5]``): Plot
+     limits for Y axis of Gregory regression plot (N).
 
-#. Script climate_metrics/create_barplot.py
+.. _create_barplot.py:
 
-   * ``label_attribute``, *str*, optional: Attribute of the cube which is used
-     as label for the different input files in the barplot.
+* Script climate_metrics/create_barplot.py
+
+   * ``add_mean``, *str*, optional: Add a bar representing the mean for each
+     class.
+   * ``label_attribute``, *str*, optional: Cube attribute which is used as
+     label for different input files.
+   * ``order``, *list of str*, optional: Specify the order of the different
+     classes in the barplot by giving the ``label``, makes most sense when
+     combined with ``label_attribute``.
    * ``patterns``, *list of str*, optional: Patterns to filter list of input
-     files.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+     data.
+   * ``savefig_kwargs``, *dict*, optional: Keyword arguments for
+     :func:`matplotlib.pyplot.savefig`.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
    * ``sort_ascending``, *bool*, optional (default: ``False``): Sort bars in
      ascending order.
    * ``sort_descending``, *bool*, optional (default: ``False``): Sort bars in
      descending order.
+   * ``subplots_kwargs``, *dict*, optional: Keyword arguments for
+     :func:`matplotlib.pyplot.subplots`.
    * ``value_labels``, *bool*, optional (default: ``False``): Label bars with
      value of that bar.
    * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
-#. Script climate_metrics/create_scatterplot.py
+* Script climate_metrics/create_scatterplot.py
 
    * ``dataset_style``, *str*, optional: Name of the style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
    * ``pattern``, *str*, optional: Pattern to filter list of input files.
-   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
-     method (affects all plots), see
-     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``seaborn_settings``, *dict*, optional: Options for :func:`seaborn.set`
+     (affects all plots).
    * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
 

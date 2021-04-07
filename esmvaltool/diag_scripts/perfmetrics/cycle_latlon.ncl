@@ -84,7 +84,7 @@ begin
     end if
 
     ; Write output
-    if (config_user_info@write_netcdf) then
+    if (diag_script_info@write_netcdf) then
       var_all@ncdf = workpath
       ncdf = ncdf_write(var_all, workpath)
     end if

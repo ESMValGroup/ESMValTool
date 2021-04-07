@@ -1,49 +1,75 @@
-<!---
-Please do not delete this text completely, but read the text below and keep items that seem relevant.
-If in doubt, just keep everything and add your own text at the top.
---->
+<!--
+    Thank you for contributing to our project!
 
-Before you start, please read our [contribution guidelines](https://docs.esmvaltool.org/en/latest/community/introduction.html).
+    Please do not delete this text completely, but read the text below and keep
+    items that seem relevant. If in doubt, just keep everything and add your
+    own text at the top, a reviewer will update the checklist for you.
 
-Please discuss your idea with the development team before getting started, to avoid disappointment later. The way to do this is to open a new issue on GitHub. If you are planning to modify an existing functionality, please discuss it with the original author(s) by tagging them in the issue.
+    While the checklist is intended to be filled in by the technical and scientific
+    reviewers, it is the responsibility of the author of the pull request to make
+    sure all items on it are properly implemented.
+-->
 
-* * *
+## Description
 
-**Tasks**
+<!--
+    Please describe your changes here, especially focusing on why this pull request makes
+    ESMValTool better and what problem it solves.
 
--   [ ] [Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do, if you haven't done so already (and add the link at the bottom)
--   [ ] Give this pull request a descriptive title that can be used as a one line summary in a changelog
--   [ ] Make sure your code is composed of functions of no more than 50 lines and uses meaningful names for variables
--   [ ] Circle/CI tests pass. Status can be seen below your pull request. If the tests are failing, click the link to find out why.
--   [ ] Preferably Codacy code quality checks pass, however a few remaining hard to solve Codacy issues are still acceptable. Status can be seen below your pull request. If there is an error, click the link to find out why. If you suspect Codacy may be wrong, please ask by commenting.
--   [ ] Please use `yamllint` to check that your YAML files do not contain mistakes
--   [ ] (Only if really necessary) Add any additional dependencies needed for the diagnostic script to setup.py, esmvaltool/install/R/r_requirements.txt or esmvaltool/install/Julia/Project.toml (depending on the language of your script) and also to package/meta.yaml for conda dependencies (includes Python and others, but not R/Julia)
--   [ ] If new dependencies are introduced, check that the license is compatible with [Apache2.0](https://github.com/ESMValGroup/ESMValTool/blob/master/LICENSE)
+    Before you start, please read our contribution guidelines: https://docs.esmvaltool.org/en/latest/community/
 
-New recipe/diagnostic
-
--   [ ] Add documentation for the recipe to the `doc/sphinx/source/recipes` folder and add a new entry to index.rst
--   [ ] Add provenance information
-
-Modified recipe/diagnostic
-
--   [ ] Update documentation for the recipe to the `doc/sphinx/source/recipes` folder
--   [ ] Update provenance information if needed
--   [ ] Assign the author(s) of the affected recipe(s) as reviewer(s)
-
-New data reformatting script
-
--   [ ] Test the CMORized data using recipes/example/recipe_check_obs.yml, to make sure the CMOR checks pass without errors
--   [ ] Add the new dataset to the table in the [documentation](https://docs.esmvaltool.org/en/latest/input.html#supported-datasets)
--   [ ] Tag @mattiarighi in this pull request, so that the new dataset can be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin
-
-Modified data reformatting script
-
--   [ ] Test the CMORized data using recipes/example/recipe_check_obs.yml, to make sure the CMOR checks pass without errors
--   [ ] Tag @mattiarighi in this pull request, so that the updated dataset can be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin
-
-If you need help with any of the tasks above, please do not hesitate to ask by commenting in the issue or pull request.
+    Please fill in the GitHub issue that is closed by this pull request, e.g. Closes #1903
+-->
+- Closes #issue_number
+- Link to documentation:
 
 * * *
 
-Closes #issue_number
+## Before you get started
+
+<!--
+    Please discuss your idea with the development team before getting started,
+    to avoid disappointment or unnecessary work later. The way to do this is
+    to open a new issue on GitHub.
+-->
+
+- [ ] [☝ Create an issue](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#contributing-code-and-documentation) to discuss what you are going to do
+
+## Checklist
+
+It is the responsibility of the author to make sure the pull request is ready to review. The icons indicate whether the item will be subject to the [🛠 Technical][1] or [🧪 Scientific][2] review.
+
+<!-- The next two lines turn the 🛠 and 🧪 below into hyperlinks -->
+[1]: https://docs.esmvaltool.org/en/latest/community/review.html#technical-review
+[2]: https://docs.esmvaltool.org/en/latest/community/review.html#scientific-review
+
+- [ ] [🛠][1] This pull request has a [descriptive title](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#pull-request-title)
+- [ ] [🛠][1] Code is written according to the [code quality guidelines](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#code-quality)
+- [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#documentation) is available
+- [ ] [🛠][1] [Tests](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#tests) run successfully
+- [ ] [🛠][1] The [list of authors](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#list-of-authors) is up to date
+- [ ] [🛠][1] Any changed dependencies have been [added or removed correctly](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#dependencies)
+- [ ] [🛠][1] All [checks below this pull request](https://docs.esmvaltool.org/en/latest/community/code_documentation.html#pull-request-checks) were successful
+
+### [New or updated recipe/diagnostic](https://docs.esmvaltool.org/en/latest/community/diagnostic.html)
+
+- [ ] [🧪][2] [Recipe runs successfully](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#testing-recipes)
+- [ ] [🧪][2] [Recipe is well documented](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recipe-and-diagnostic-documentation)
+- [ ] [🧪][2] [Figure(s) and data](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#diagnostic-output) look as expected from literature
+- [ ] [🛠][1] [Provenance information](https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance) has been added
+
+### [New or updated data reformatting script](https://docs.esmvaltool.org/en/latest/develop/dataset.html)
+
+- [ ] [🛠][1] [Documentation](https://docs.esmvaltool.org/en/latest/community/dataset.html#dataset-documentation) is available
+- [ ] [🛠][1] The dataset has been [added to the CMOR check recipe](https://docs.esmvaltool.org/en/latest/community/dataset.html#testing)
+- [ ] [🧪][2] Numbers and units of the data look [physically meaningful](https://docs.esmvaltool.org/en/latest/community/dataset.html#scientific-sanity-check)
+
+***
+
+To help with the number of pull requests:
+
+-  🙏 We kindly ask you to [review](https://docs.esmvaltool.org/en/latest/community/review.html#review-of-pull-requests) two other [open pull requests](https://github.com/ESMValGroup/ESMValTool/pulls) in this repository
+
+<!--
+If you need help with any of the items on the checklists above, please do not hesitate to ask by commenting in the issue or pull request.
+-->

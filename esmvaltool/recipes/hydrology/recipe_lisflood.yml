@@ -59,6 +59,10 @@ diagnostics:
     variables:
       pr: &var_daily
         mip: day
+        # if time length increases, regrid processor might fail due to memory error.
+        # two possible fixes are:
+        # running the recipe on a machine with enough memory
+        # providing a cube as a target_grid in the processor
         start_year: 1990
         end_year: 1990
         preprocessor: daily_water

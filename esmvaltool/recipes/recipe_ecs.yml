@@ -23,12 +23,18 @@ preprocessors:
 
 
 CMIP5_RTNT: &cmip5_rtnt
+  # Models with missing data (on all ESGF nodes)
+  # EC-EARTH (no rsut)
   - {dataset: ACCESS1-0,     exp: piControl,   start_year:  300, end_year:  449}
   - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year:  300, end_year:  449}
+  - {dataset: ACCESS1-3,     exp: piControl,   start_year:  250, end_year:  399}
+  - {dataset: ACCESS1-3,     exp: abrupt4xCO2, start_year:  250, end_year:  399}
   - {dataset: bcc-csm1-1,    exp: piControl,   start_year:  160, end_year:  309}
   - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, start_year:  160, end_year:  309}
   - {dataset: bcc-csm1-1-m,  exp: piControl,   start_year:  240, end_year:  389}
   - {dataset: bcc-csm1-1-m,  exp: abrupt4xCO2, start_year:  240, end_year:  389}
+  - {dataset: BNU-ESM,       exp: piControl,   start_year: 1850, end_year: 1999}
+  - {dataset: BNU-ESM,       exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
   - {dataset: CanESM2,       exp: piControl,   start_year: 2321, end_year: 2470}
   - {dataset: CanESM2,       exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
   # Wrong start year for piControl? (branch_time = 2.)
@@ -36,8 +42,13 @@ CMIP5_RTNT: &cmip5_rtnt
   - {dataset: CCSM4,         exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
   - {dataset: CNRM-CM5,      exp: piControl,   start_year: 1850, end_year: 1999}
   - {dataset: CNRM-CM5,      exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+  # Only 140 years available
+  - {dataset: CNRM-CM5-2,    exp: piControl,   start_year: 1850, end_year: 1989}
+  - {dataset: CNRM-CM5-2,    exp: abrupt4xCO2, start_year: 1850, end_year: 1989}
   - {dataset: CSIRO-Mk3-6-0, exp: piControl,   start_year:  104, end_year:  253}
   - {dataset: CSIRO-Mk3-6-0, exp: abrupt4xCO2, start_year:    1, end_year:  150}
+  - {dataset: FGOALS-g2,     exp: piControl,   start_year:  490, end_year:  639}
+  - {dataset: FGOALS-g2,     exp: abrupt4xCO2, start_year:  490, end_year:  639}
   - {dataset: GFDL-CM3,      exp: piControl,   start_year:    1, end_year:  150}
   - {dataset: GFDL-CM3,      exp: abrupt4xCO2, start_year:    1, end_year:  150}
   - {dataset: GFDL-ESM2G,    exp: piControl,   start_year:    1, end_year:  150}
@@ -53,6 +64,9 @@ CMIP5_RTNT: &cmip5_rtnt
   - {dataset: HadGEM2-ES,    exp: abrupt4xCO2, start_year: 1860, end_year: 2009}
   - {dataset: inmcm4,        exp: piControl,   start_year: 2090, end_year: 2239}
   - {dataset: inmcm4,        exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+  # Only 140 years available
+  - {dataset: IPSL-CM5A-MR,  exp: piControl,   start_year: 1850, end_year: 1989}
+  - {dataset: IPSL-CM5A-MR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1989}
   - {dataset: IPSL-CM5B-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
   - {dataset: IPSL-CM5B-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
   - {dataset: MIROC5,        exp: piControl,   start_year: 2100, end_year: 2249}
@@ -61,6 +75,8 @@ CMIP5_RTNT: &cmip5_rtnt
   - {dataset: MIROC-ESM,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
   - {dataset: MPI-ESM-LR,    exp: piControl,   start_year: 1880, end_year: 2029}
   - {dataset: MPI-ESM-LR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM-MR,    exp: piControl,   start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM-MR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
   - {dataset: MPI-ESM-P,     exp: piControl,   start_year: 1866, end_year: 2015}
   - {dataset: MPI-ESM-P,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
   - {dataset: MRI-CGCM3,     exp: piControl,   start_year: 1891, end_year: 2040}
@@ -68,77 +84,102 @@ CMIP5_RTNT: &cmip5_rtnt
   - {dataset: NorESM1-M,     exp: piControl,   start_year:  700, end_year:  849}
   - {dataset: NorESM1-M,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
 
-CMIP5_RTMT: &cmip5_rtmt
-  - {dataset: IPSL-CM5A-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
-  - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-
 CMIP6_RTNT: &cmip6_rtnt
-  # No monthly data (parent_time_units not correct)
-  # - {dataset: AWI-CM-1-1-MR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 2650, end_year: 2799, mip: day}
-  # - {dataset: AWI-CM-1-1-MR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999, mip: day}
+  - {dataset: ACCESS-CM2,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-CM2,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  950, end_year: 1099, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  101, end_year:  250}
+  - {dataset: ACCESS-ESM1-5,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  101, end_year:  250}
+  - {dataset: AWI-CM-1-1-MR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 2650, end_year: 2799}
+  - {dataset: AWI-CM-1-1-MR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-CSM2-MR,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-CSM2-MR,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-ESM1,        exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-ESM1,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: CAMS-CSM1-0,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
   - {dataset: CAMS-CSM1-0,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
+  - {dataset: CanESM5,         exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5350}
+  - {dataset: CanESM5,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: CESM2,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   - {dataset: CESM2,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+  - {dataset: CESM2-FV2,       exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  321, end_year:  470, institute: NCAR}
+  - {dataset: CESM2-FV2,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCAR}
   - {dataset: CESM2-WACCM,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCAR}
   - {dataset: CESM2-WACCM,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCAR}
+  - {dataset: CESM2-WACCM-FV2, exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  301, end_year:  450, institute: NCAR}
+  - {dataset: CESM2-WACCM-FV2, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCAR}
+  - {dataset: CMCC-CM2-SR5,    exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: CMCC-CM2-SR5,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-CM6-1,      exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-CM6-1,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-CM6-1-HR,   exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: CNRM-CM6-1-HR,   exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-ESM2-1,     exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-ESM2-1,     exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: E3SM-1-0,        exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year:  101, end_year:  250}
   - {dataset: E3SM-1-0,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year:    1, end_year:  150}
-  # No abrupt-4xCO2
-  # - {dataset: EC-Earth3,       exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
-  # - {dataset: EC-Earth3,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: EC-Earth3-Veg,   exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: EC-Earth3-Veg,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
-  # Only mixed ensemble members available, parent_time_units messed up
-  # - {dataset: FGOALS-f3-L,     exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  300}
-  # - {dataset: FGOALS-f3-L,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
-  # Wrong start year for piControl (must be 101)
-  - {dataset: GFDL-CM4,        exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  300}
-  - {dataset: GFDL-CM4,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
-  - {dataset: GFDL-ESM4,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  101, end_year:  250}
-  - {dataset: GFDL-ESM4,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
+  # parent_time_units messed up
+  - {dataset: FGOALS-f3-L,     exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year:  600, end_year:  749}
+  - {dataset: FGOALS-f3-L,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: FGOALS-g3,       exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  463, end_year:  612}
+  - {dataset: FGOALS-g3,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:  463, end_year:  612}
   - {dataset: GISS-E2-1-G,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4299}
   - {dataset: GISS-E2-1-G,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: GISS-E2-1-H,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3180, end_year: 3329}
   - {dataset: GISS-E2-1-H,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: HadGEM3-GC31-LL, exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: HadGEM3-GC31-LL, exp: abrupt-4xCO2, ensemble: r1i1p1f3, grid: gn,  start_year: 1850, end_year: 1999}
-  # Wrong start year for piControl (must be 2099), data withdrawn
-  # - {dataset: INM-CM5-0,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year: 2499, end_year: 2648}
-  # - {dataset: INM-CM5-0,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1999}
-  # Not enough years for piControl run, data withdrawn
-  # - {dataset: INM-CM4-8,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year: 1947, end_year: 2096}
-  # - {dataset: INM-CM4-8,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1999}
+  - {dataset: HadGEM3-GC31-MM, exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: HadGEM3-GC31-MM, exp: abrupt-4xCO2, ensemble: r1i1p1f3, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: INM-CM5-0,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year: 2099, end_year: 2248}
+  - {dataset: INM-CM5-0,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1999}
+  - {dataset: INM-CM4-8,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year: 1947, end_year: 2096}
+  - {dataset: INM-CM4-8,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 1999}
   - {dataset: IPSL-CM6A-LR,    exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1870, end_year: 2019}
   - {dataset: IPSL-CM6A-LR,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: KACE-1-0-G,      exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 2300, end_year: 2449}
+  - {dataset: KACE-1-0-G,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: MIROC6,          exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
   - {dataset: MIROC6,          exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
   - {dataset: MIROC-ES2L,      exp: piControl,    ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MIROC-ES2L,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM-1-2-HAM, exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1950, end_year: 2099}
+  - {dataset: MPI-ESM-1-2-HAM, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MPI-ESM1-2-HR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MPI-ESM1-2-HR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-LR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: MPI-ESM1-2-LR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MRI-ESM2-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MRI-ESM2-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   # parent_time_units not correct
   - {dataset: NESM3,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  550, end_year:  699}
   - {dataset: NESM3,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: NorCPM1,         exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  251, end_year:  400, institute: NCC}
+  - {dataset: NorCPM1,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150, institute: NCC}
+  - {dataset: NorESM2-MM,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1201, end_year: 1350}
+  - {dataset: NorESM2-MM,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
   # Issue #286 (manual copying was necessary)
   - {dataset: SAM0-UNICON,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  274, end_year:  423}
   - {dataset: SAM0-UNICON,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  # Wrong start year for piControl (must be 1201)
+  - {dataset: TaiESM1,         exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  201, end_year:  350}
+  - {dataset: TaiESM1,         exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
 
 CMIP6_RTMT: &cmip6_rtmt
-  - {dataset: CanESM5,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5350}
-  - {dataset: CanESM5,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-  - {dataset: UKESM1-0-LL, exp: piControl,    ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2109}
-  - {dataset: UKESM1-0-LL, exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
+  # branch_time_in_child weird
+  - {dataset: MCM-UA-1-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+  - {dataset: MCM-UA-1-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  150}
+
+ECS_SCRIPT: &ecs_script
+  script: climate_metrics/ecs.py
+  calculate_mmm: false
+SCATTERPLOT: &scatterplot_script
+  script: climate_metrics/create_scatterplot.py
+  pattern: 'ecs.nc'
+  seaborn_settings:
+    style: ticks
+  y_range: [0.0, 6.0]
 
 
 diagnostics:
@@ -153,30 +194,18 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         additional_datasets: *cmip5_rtnt
-      tas_rtmt:
-        <<: *variable_settings_cmip5
-        additional_datasets: *cmip5_rtmt
       rtnt:
         <<: *variable_settings_cmip5
         short_name: rtnt
         derive: true
         additional_datasets: *cmip5_rtnt
-      rtmt:
-        <<: *variable_settings_cmip5
-        short_name: rtmt
-        additional_datasets: *cmip5_rtmt
     scripts:
-      ecs: &ecs_script
-        script: climate_metrics/ecs.py
-        calculate_mmm: false
-      scatterplot: &scatterplot_script
-        script: climate_metrics/create_scatterplot.py
+      ecs:
+        <<: *ecs_script
+      scatterplot:
+        <<: *scatterplot_script
         ancestors: ['cmip5/ecs']
         dataset_style: cmip5
-        pattern: 'ecs.nc'
-        seaborn_settings:
-          style: ticks
-        y_range: [0.0, 6.0]
 
   cmip6:
     description: Calculate ECS for all available CMIP6 models.
@@ -213,7 +242,9 @@ diagnostics:
       barplot:
         script: climate_metrics/create_barplot.py
         ancestors: ['*/ecs']
+        add_mean: true
         label_attribute: project
+        order: ['CMIP5', 'CMIP6']
         patterns: ['ecs.nc']
         sort_descending: true
         value_labels: true

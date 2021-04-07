@@ -16,6 +16,9 @@ documentation:
     - righi_mattia
     - eyring_veronika
 
+  maintainer:
+    - hassler_birgit
+
   references:
     - rk2008bams
 
