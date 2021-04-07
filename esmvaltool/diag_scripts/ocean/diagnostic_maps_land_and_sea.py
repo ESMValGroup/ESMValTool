@@ -259,7 +259,7 @@ def single_pane_land_sea_plot(
 def multi_pane_land_sea_plot(
         cfg,
         metadatas,
-        land_cubes={}},
+        land_cubes={},
         sea_cubes={},
         plot_pair={},
         unique_keys = [],
@@ -278,27 +278,57 @@ def multi_pane_land_sea_plot(
     #if os.path.exists(path): return
     # sea_cube = cube_interesction(sea_cube)
     # land_cube = cube_interesction(land_cube)
-    scenarios ={
-        'historical': 231,
-        'ssp119':     232,
-        'ssp126':     233,
-        'ssp245':     234,
-        'ssp370':     235,
-        'ssp585':     236, }
-
-    fig = plt.figure()
-    fig.set_size_inches(10, 6)
     axes = {}
+
+    proj = ccrs.PlateCarree()
+    _complex_ = True
+    if _complex_:
+        gs = matplotlib.gridspec.GridSpec(2, 5, width_ratios=[1, 10, 10, 10, 1], wspace=0., hspace=0.)
+
+        if 'ssp126' in land_cubes.keys():
+            scenarios ={
+                'historical'
+            gs = matplotlib.gridspec.GridSpec(2, 5, width_ratios=[1, 10, 10, 10, 1], wspace=0., hspace=0.)
+
+        else:
+
+            ax0 = fig.add_subplot(gs[0, 0], projection=proj)
+
+
+    else:
+        if 'ssp126' in land_cubes.keys():
+            scenarios ={
+                'historical': 231,
+                'ssp119':     232,
+                'ssp126':     233,
+                'ssp245':     234,
+                'ssp370':     235,
+                'ssp585':     236, }
+        else:
+            scenarios ={
+                'historical': 131,
+                'ssp370':     132,
+                'ssp585':     133, }
+        for scenario, sbp in scenarios.items():
+            axes[scenario] = plt.subplot(sbp, projection=proj)
+        
+ 
+    fig = plt.figure()
+    fig.set_size_inches(12, 6)
     land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()])
     sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])
 
+    print(land_cubes,sea_cubes)
+    print(land_range, sea_range)
     land_label, sea_label = '', ''
     for scenario, sbp in scenarios.items():
-        axes[scenario] = plt.subplot(sbp, projection=ccrs.PlateCarree())
+        # axes[scenario] = plt.subplot(sbp, projection=ccrs.PlateCarree())
         land_cube = land_cubes.get(scenario, None)
         sea_cube = sea_cubes.get(scenario, None)
-        if none in [land_cube, sea_cube]:
+        if None in [land_cube, sea_cube]:
             continue
+        sea_cube = cube_interesction(sea_cube)
+        land_cube = cube_interesction(land_cube)
 
         fig, axes[scenario], land, sea = single_pane_land_sea_pane(
                 cfg,
@@ -312,12 +342,12 @@ def multi_pane_land_sea_plot(
                 land_range= land_range,
                 sea_range=sea_range,
                 )
-
+        plt.title(scenario)
         land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
         sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
 
-    landcbar = plt.colorbar(land, ax=list(axes.values()), location='left', label=land_label) #, shrink=0.55)
-    seacbar = plt.colorbar(sea, ax=list(axes.values()), location='right', label=sea_label) #, shrink=0.55)
+    landcbar = plt.colorbar(land, ax=list(axes.values()), location='left', label=land_label, shrink=0.55)
+    seacbar = plt.colorbar(sea, ax=list(axes.values()), location='right', label=sea_label, shrink=0.55)
 
     plt.suptitle(longnameify(unique_keys))
 
@@ -1260,27 +1290,37 @@ def make_gwt_map_land_sea_plots(cfg, ):
             )
 
     for dataset, threshold in product(datasets, thresholds):
+        if not threshold: continue
         for var_name, plot_pair in plot_pairs.items():
             sea_cubes = {}
             land_cubes = {}
             for (variable_group_i, dataset_i, exp_i, short_name_i), cube in variable_group_means.items():
-                if short_name_i == plot_pair['sea']:
+                if short_name_i != plot_pair['sea']:
                     continue
                 if dataset_i != dataset:
                     continue
                 variable1, exp1, threshold1 = split_variable_groups(variable_group_i)
-                if threshold1 != threshold:
+
+                if exp_i in ['historical', ]: 
+                    pass
+                elif threshold1 != threshold:
                     continue
-
-                if len(threshold):
-                        land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
+                
+                if len(threshold1):
+                    land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
                 else:
-                        land_variable_group = '_'.join([plot_pair['land'], exp1])
+                    land_variable_group = '_'.join([plot_pair['land'], exp1])
 
+                land_index = (land_variable_group, dataset_i, exp_i, plot_pair['land'])
+                print((variable_group_i, dataset_i, exp_i, short_name_i), ':', land_index)
+                land_cube = variable_group_means.get(land_index, None)
+
+                if land_cube is None: continue
                 sea_cubes[exp_i] = cube
-
-                land_cube = variable_group_means[(land_variable_group, dataset_i, exp_i, plot_pair['land'])]
                 land_cubes[exp_i] = land_cube
+
+            if 0 in [len(sea_cubes), len(land_cubes)]: continue
+
             multi_pane_land_sea_plot(
                 cfg,
                 metadatas,
