@@ -44,7 +44,7 @@ import os
 import sys
 from itertools import product
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 from matplotlib import colors, colorbar
 
 import iris
@@ -67,6 +67,17 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'},
             }
 fx_mips = ['Ofx', 'fx', 'Lfx']
+
+
+def longnameify(name):
+    if isinstance(name, list):
+        return ' '.join([longnameify(n) for n in name])
+    if name == 'pp': return 'Primary Production'
+    if name == 'intpp': return 'Integrated Primary Production'
+    if name == 'gpp': return 'Gross Primary Production'
+    if name == 'npp': return 'Net Primary Production'
+    return name
+
 
 def regrid_to_1x1(cube, scheme = 'linear'):
     """
@@ -152,25 +163,29 @@ def single_pane_land_sea_pane(cfg,
         land_cube=None,
         sea_cube=None,
         land_cmap = 'viridis',
-        sea_cmap = 'blues',
+        sea_cmap = 'Blues',
         ):
     """
     Generic way to plot single cube
     """
-    land = qplt.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True,
-    landcbar = plt.colorbar(loc='right')
-    sea = qplt.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
-    seacbar = plt.colorbar(loc='left')
+    #land = qplt.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True,
+    #sea = qplt.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
+
+    land = iris.plot.contourf(land_cube, 18, cmap=land_cmap) # linewidth=0, rasterized=True
+    #cb = plt.colorbar(axp,ax=[ax],location='left')
+    #landcbar = plt.colorbar(location='right')
+    sea = iris.plot.contourf(sea_cube, 18, cmap=sea_cmap) # linewidth=0, rasterized=True,
+    #seacbar = plt.colorbar(location='left')
     plt.gca().coastlines()
 
-    return fig, ax
+    return fig, ax, land, sea
 
 def single_pane_land_sea_plot(
         cfg,
         metadatas,
         land_cube=None,
         sea_cube=None,
-        pair_name='',
+        plot_pair={},
         unique_keys = []
         ):
     """
@@ -184,34 +199,53 @@ def single_pane_land_sea_plot(
     image_extention = diagtools.get_image_format(cfg)
 
     # Determine image filename:
-    suffix = '_'.join([unique_keys])+image_extention
+    suffix = '_'.join(unique_keys)+image_extention
     path = diagtools.folder([cfg['plot_dir'], 'single_land_sea_plots'])+ suffix
 
     #if os.path.exists(path): return
 
-    fig.set_size_inches(9, 6)
+    fig.set_size_inches(10, 6)
     ax = plt.subplot(111, projection=ccrs.PlateCarree())
-    fig, ax = single_pane_land_sea_pane(cfg,
+    fig, ax, land, sea = single_pane_land_sea_pane(cfg,
             metadatas,
             fig,
             ax,
             land_cube=land_cube,
             sea_cube=sea_cube,
-            land_cmap = 'viridis',
-            sea_cmap = 'blues',
+            land_cmap = 'Greens', #'viridis',
+            sea_cmap = 'Blues', # 'ocean_r'
             )
+    divider = make_axes_locatable(ax)
+    #pad_fraction = 0.5
+    #aspect=20.
+    #width = axes_size.AxesY(ax, aspect=1./aspect)
+    #pad = axes_size.Fraction(pad_fraction, width)
+   # cax = divider.append_axes("right", size=width, pad=pad)
+    #caxL = divider.append_axes("left", size=width, pad=pad)
+    #caxR = divider.append_axes("right", size=width, pad=pad)
+
+    land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
+    sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
+
+    landcbar = plt.colorbar(land, ax=[ax, ], location='left', label=land_label, shrink=0.55)
+    seacbar = plt.colorbar(sea, ax=[ax, ], location='right', label=sea_label, shrink=0.55)
 
     # Add title to plot
     # if detrend:
     #     title = ' '.join([metadata['dataset'], key, '- detrended'])
     # else:
     #     title = ' '.join([metadata['dataset'], key, '- trend intact'])
-    plt.title(' '.join(unique_keys))
+    plt.title(longnameify(unique_keys))
+
+    plt.gca().set_axis_off()
+    plt.subplots_adjust(top = 1, bottom = 0, right = 0.80, left = 0.25, 
+            hspace = 0, wspace = 0)
+    plt.margins(0,0)
 
     # Saving files:
     if cfg['write_plots']:
         logger.info('Saving plots to %s', path)
-        plt.savefig(path)
+        plt.savefig(path) #, bbox_inches = 'tight',)
     plt.close()
 
 def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
@@ -1035,37 +1069,48 @@ def make_gwt_map_four_plots(cfg, ):
     print(files_dict.keys())
 
     # Make a plot for a single land-sea pair.
-    for ensemble in sorted(ensembles):
-        for variable_group in sorted(variable_groups):
     cube_pairs = {}
-
     for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
         for var_name, plot_pair in plot_pairs.items():
             if not do_single_plots:
                 continue
             if mip in fx_mips:
                 continue
-            variable1, exp1, threshold = split_variable_groups(variable_group)
             # avoid double plotting.
             if short_name != plot_pair['sea']:
                 continue
+            variable1, exp1, threshold = split_variable_groups(variable_group)
+            print('index:', (dataset, mip, exp, ensemble, short_name, variable_group))
+            print('split_variable_groups', variable1, exp1, threshold)
+
             sea_cube = cube
-            if threshold:
-                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+            if len(threshold):
+                land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
             else:
-                land_variable_group = '_'.join([plot_pair['land'], exp])
+                land_variable_group = '_'.join([plot_pair['land'], exp1])
 
-            land_index = (dataset, mip, exp, ensemble, plot_pair['sea'], land_variable_group)
+            landmip = mip.replace('O', 'L')
+            print('land stuff:', landmip, land_variable_group, plot_pair['land'])
+            land_index = (dataset, landmip, exp, ensemble, plot_pair['land'], land_variable_group)
+            print('land index', land_index)
 
-            land_cube = all_cubes[(land_index)]
+            try: land_cube = all_cubes[land_index]
+            except:
+                for index in all_cubes.keys():
+                   if plot_pair['land'] not in index: continue
+                   print(index)
+                assert 0
+#            land_cube = all_cubes.get(land_index, None)
+            #if land_cube is None: continue
             cube_pairs[(dataset, mip, exp, ensemble, threshold)] = {'sea': sea_cube, 'land': land_cube}
+            
             single_pane_land_sea_plot(
                 cfg,
-                metadata,
+                metadatas,
                 land_cube=land_cube,
                 sea_cube=sea_cube,
-                pair_name=var_name,
-                unique_keys = (dataset, mip, exp, ensemble, threshold)
+                plot_pair=plot_pair,
+                unique_keys = [var_name, dataset, exp, ensemble, threshold]
             )
 
     assert 0
@@ -1182,7 +1227,7 @@ def make_gwt_map_four_plots(cfg, ):
                     metadata,
                     land_cube=land_cube,
                     sea_cube=sea_cube,
-                    pair_name=var_name,
+                    plot_pair=plot_pair,
                 )
 
                 # historical_group = variable_group[:variable_group.find('_')] +'_historical'

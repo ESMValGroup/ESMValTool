@@ -133,7 +133,10 @@ def bgc_units(cube, name):
         new_units = 'mg m-3'
 
     if name in ['intpp', ]:
-        new_units = 'mol m-2 d-1'
+        new_units = 'mmol m-2 d-1'
+
+    if name in ['gpp', 'npp']: # Land fields!
+        new_units = 'g m-2 d-1'
 
     if name in ['fgco2', ]:
         new_units = 'g m-2 d-1'
