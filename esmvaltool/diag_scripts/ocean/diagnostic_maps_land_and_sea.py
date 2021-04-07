@@ -287,12 +287,22 @@ def multi_pane_land_sea_plot(
 
         if 'ssp126' in land_cubes.keys():
             scenarios ={
-                'historical'
-            gs = matplotlib.gridspec.GridSpec(2, 5, width_ratios=[1, 10, 10, 10, 1], wspace=0., hspace=0.)
+                    'historical':  fig.add_subplot(gs[0, 1], projection=proj),
+                    'ssp119': fig.add_subplot(gs[0, 2], projection=proj),
+                    'ssp126': fig.add_subplot(gs[0, 3], projection=proj),
+                    'ssp245': fig.add_subplot(gs[1, 1], projection=proj),
+                    'ssp370': fig.add_subplot(gs[1, 2], projection=proj),
+                    'ssp585':  fig.add_subplot(gs[1, 3], projection=proj),
+                    }
 
         else:
-
-            ax0 = fig.add_subplot(gs[0, 0], projection=proj)
+            scenarios ={
+                'historical':  fig.add_subplot(gs[:, 1], projection=proj),
+                'ssp370': fig.add_subplot(gs[:, 2], projection=proj),
+                'ssp585':  fig.add_subplot(gs[:, 3], projection=proj),
+                }
+            cbar_axes_land = fig.add_subplot(gs[:, 0])
+            cbar_axes_sea = fig.add_subplot(gs[:, -1])
 
 
     else:
@@ -311,8 +321,8 @@ def multi_pane_land_sea_plot(
                 'ssp585':     133, }
         for scenario, sbp in scenarios.items():
             axes[scenario] = plt.subplot(sbp, projection=proj)
-        
- 
+
+
     fig = plt.figure()
     fig.set_size_inches(12, 6)
     land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()])
@@ -346,8 +356,12 @@ def multi_pane_land_sea_plot(
         land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
         sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
 
-    landcbar = plt.colorbar(land, ax=list(axes.values()), location='left', label=land_label, shrink=0.55)
-    seacbar = plt.colorbar(sea, ax=list(axes.values()), location='right', label=sea_label, shrink=0.55)
+    if _complex_:
+        landcbar = plt.colorbar(land, ax=cbar_axes_land, location='left', label=land_label, shrink=0.55)
+        seacbar = plt.colorbar(sea, ax=cbar_axes_sea, location='right', label=sea_label, shrink=0.55)
+    else:
+        landcbar = plt.colorbar(land, ax=list(axes.values()), location='left', label=land_label, shrink=0.55)
+        seacbar = plt.colorbar(sea, ax=list(axes.values()), location='right', label=sea_label, shrink=0.55)
 
     plt.suptitle(longnameify(unique_keys))
 
@@ -1301,11 +1315,11 @@ def make_gwt_map_land_sea_plots(cfg, ):
                     continue
                 variable1, exp1, threshold1 = split_variable_groups(variable_group_i)
 
-                if exp_i in ['historical', ]: 
+                if exp_i in ['historical', ]:
                     pass
                 elif threshold1 != threshold:
                     continue
-                
+
                 if len(threshold1):
                     land_variable_group = '_'.join([plot_pair['land'], exp1, threshold])
                 else:
