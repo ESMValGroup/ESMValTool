@@ -101,12 +101,39 @@ def regrid_to_1x1(cube, scheme = 'linear'):
     return regrid(cube, '1x1', scheme)
 
 
-def cube_interesction(cube):
-    central_longitude = 0. #W #-160.+3.5
-    #central_latitude = 0.
+def cube_interesction(cube,region='Global'):
+    regions = ['Global', 'midatlantic', 'WestEq', 'EastEq']
     cube = regrid_to_1x1(cube)
-    cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+
+    if region == 'Global':
+        central_longitude = 0. #W #-160.+3.5
+        cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+
+    if region=='midatlantic': # Ascension island region.
+        central_longitude = -14.25 #W #-160.+3.5
+        central_latitude = -7.56
+        lat_bnd = 20.
+        lon_bnd = 30.
+        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+            latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+
+    if region=='WestEq':
+        central_longitude = -30. #W #-160.+3.5
+        central_latitude = -13.
+        lat_bnd = 40.
+        lon_bnd = 80.
+        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+            latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+
+    if region=='EastEq':
+        central_longitude = 108. #W #-160.+3.5
+        central_latitude = -5.
+        lat_bnd = 32.
+        lon_bnd = 64.
+        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+            latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
     return cube
+
 
 def detrended_contourf(cube):
     """
@@ -213,8 +240,9 @@ def single_pane_land_sea_plot(
         land_cube=None,
         sea_cube=None,
         plot_pair={},
-        unique_keys = [],
-        plot_dir = 'single_land_sea_plots',
+        unique_keys=[],
+        plot_dir='single_land_sea_plots',
+        region = 'Global',
         ):
     """
     Try to plot both a land cube and a sea cube together.
@@ -224,12 +252,12 @@ def single_pane_land_sea_plot(
 
     # Determine image filename:
     suffix = '_'.join(unique_keys)+image_extention
-    path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
+    path = diagtools.folder([cfg['plot_dir'], plot_dir, region])+ suffix
 
     if os.path.exists(path): return
 
-    sea_cube = cube_interesction(sea_cube)
-    land_cube = cube_interesction(land_cube)
+    sea_cube = cube_interesction(sea_cube, region=region)
+    land_cube = cube_interesction(land_cube, region=region)
     fig = plt.figure()
 
     fig.set_size_inches(10, 6)
@@ -285,6 +313,7 @@ def multi_pane_land_sea_plot(
         plot_pair={},
         unique_keys = [],
         plot_dir ='multi_pane_model_means',
+        region='Global',
         ):
     """
     Try to plot both a set of land cube and a sea cube together on the pane figure.
@@ -298,10 +327,12 @@ def multi_pane_land_sea_plot(
 
     if os.path.exists(path): return
 
-    # sea_cube = cube_interesction(sea_cube)
-    # land_cube = cube_interesction(land_cube)
-    axes = {}
+    for sea_cube in sea_cubes:
+        sea_cube = cube_interesction(sea_cube,region=region)
+    for land_cube in land_cubes:
+        land_cube = cube_interesction(land_cube,region=region)
 
+    axes = {}
     fig = plt.figure()
     fig.set_size_inches(12, 6)
 
@@ -380,6 +411,7 @@ def multi_pane_land_sea_plot(
 
     fig = plt.figure()
     fig.set_size_inches(12, 6)
+
     land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()])
     sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])
 
@@ -392,8 +424,8 @@ def multi_pane_land_sea_plot(
         sea_cube = sea_cubes.get(scenario, None)
         if None in [land_cube, sea_cube]:
             continue
-        sea_cube = cube_interesction(sea_cube)
-        land_cube = cube_interesction(land_cube)
+        # sea_cube = cube_interesction(sea_cube)
+        # land_cube = cube_interesction(land_cube)
         plt.sca(ax)
         fig, ax, land, sea = single_pane_land_sea_pane(
                 cfg,
@@ -444,6 +476,7 @@ def multi_pane_land_sea_plot_histdiff(
         plot_pair={},
         unique_keys = [],
         plot_dir ='multi_pane_model_diffs',
+        region='Global',
         ):
     """
     Try to plot both a set of land cube and a sea cube together on the pane figure.
@@ -461,6 +494,11 @@ def multi_pane_land_sea_plot_histdiff(
     fig.set_size_inches(12, 6)
     proj = ccrs.PlateCarree()
     _complex_ = True
+
+    for sea_cube in sea_cubes:
+        sea_cube = cube_interesction(sea_cube,region=region)
+    for land_cube in land_cubes:
+        land_cube = cube_interesction(land_cube,region=region)
 
     # Make a difference plot:
     #    the hist is shown in large on the LHS (cbars)
@@ -548,8 +586,7 @@ def multi_pane_land_sea_plot_histdiff(
             sea_cube = sea_diff_cubes.get(scenario, None)
         if None in [land_cube, sea_cube]:
             continue
-        sea_cube = cube_interesction(sea_cube)
-        land_cube = cube_interesction(land_cube)
+
         plt.sca(ax)
         if scenario == 'historical':
             fig, ax, hist_land, hist_sea = single_pane_land_sea_pane(
@@ -1379,7 +1416,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
     """
     metadatas = diagtools.get_input_files(cfg)
-    do_single_plots=True
+    do_single_plots=False
     do_variable_group_plots=True
     do_threshold_plots=True
 
@@ -1398,6 +1435,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     fx_fns = {}
     all_cubes = {}
     key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
+    regions = ['Global', 'midatlantic', 'WestEq', 'EastEq']
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1574,247 +1612,251 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
             if 0 in [len(sea_cubes), len(land_cubes)]: continue
 
-            multi_pane_land_sea_plot_histdiff(
-                cfg,
-                metadatas,
-                land_cubes=land_cubes,
-                sea_cubes=sea_cubes,
-                plot_pair=plot_pair,
-                unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
-                # plot_dir ='multi_pane_model_means',
-                )
 
-            multi_pane_land_sea_plot(
-                cfg,
-                metadatas,
-                land_cubes=land_cubes,
-                sea_cubes=sea_cubes,
-                plot_pair=plot_pair,
-                unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
-                plot_dir ='multi_pane_model_means',
-                )
-
-
-    assert 0
-
-
-
-    # lets look at  minus the historical
-    hist_cubes = {variable_group:{} for variable_group in variable_groups}
-    ssp_cubes = {variable_group:{} for variable_group in variable_groups}
-    # anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
-    # detrended_anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
-    # viable_keys = {}
-
-    hist_cubes_fns = {}
-    # Calculate the anomaly for each ensemble/threshold combination
-    for ensemble in sorted(ensembles):
-        for variable_group in sorted(variable_groups):
-
-                if not do_single_plots:
-                    continue
-                variable, exp, threshold = split_variable_groups(variable_group)
-                # avoid double plotting.
-                if variable != plot_pair['sea']:
-                    continue
-
-                # if (variable_group, ensemble) not in viable_keys:
-                #     print("Not in viable keys:", ensemble, variable_group)
-                #     continue
-                sea_cube = ssp_cubes[variable_group][ensemble]
-                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
-
-                land_cube = ssp_cubes[land_variable_group][ensemble]
-
-                single_pane_land_sea_plot(
+            for region in regions:
+                multi_pane_land_sea_plot_histdiff(
                     cfg,
-                    metadata,
-                    land_cube=land_cube,
-                    sea_cube=sea_cube,
-                    pair_name=var_name,
-                )
-        hist_cubes_fns = {}
-        # Calculate the anomaly for each ensemble/threshold combination
-        for ensemble in sorted(ensembles):
-            for variable_group in sorted(variable_groups):
-            # guess historical group name:
-                historical_group = variable_group[:variable_group.find('_')] +'_historical'
-
-                if variable_group == historical_group:
-                    continue
-            assert 0
-            fx_group = variable_group[:variable_group.find('_')] +'_fx'
-            if variable_group == fx_group:
-                continue
-
-            print('Plotting:', ensemble, variable_group)
-            variable, exp, threshold = split_variable_groups(variable_group)
-            variables.add(variable)
-
-            if (variable_group, ensemble) not in files_dict:
-                continue
-            fn = files_dict[(variable_group, ensemble)][0]
-            fn_hist = files_dict[(historical_group, ensemble)][0]
-
-            details = metadatas[fn]
-            cube = iris.load_cube( fn)
-            cube = diagtools.bgc_units(cube, details['short_name'])
-
-            # Check is historial cube is loaded already
-            if fn_hist in hist_cubes_fns:
-                cube_hist = hist_cubes_fns[fn_hist]
-            else:
-                cube_hist =  iris.load_cube( fn_hist)
-                cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
-
-            print('fx files:', fx_fn, details['mip'])
-            if details['mip'] in ['Omon', 'Oyr']:
-                fx_fn = fx_fns['areacello']
-            elif  details['mip'] in ['Lmon', 'Lyr', 'Amon', 'Ayr']:
-                fx_fn = fx_fns['areacella']
-
-            cube_anomaly = cube - cube_hist
-            detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
-
-            ssp_cubes[variable_group][ensemble] = cube
-            hist_cubes[variable_group][ensemble] = cube_hist
-            anomaly_cubes[variable_group][ensemble] = cube_anomaly
-            detrended_anomaly_cubes[variable_group][ensemble] = detrended_cube_anomaly
-            viable_keys[(variable_group, ensemble)] = True
-            try:
-                thresholds[threshold].append([variable_group, ensemble])
-            except:
-                thresholds[threshold] = [[variable_group, ensemble], ]
-
-
-
-    # single pane land-sea plots pairs:
-    for var_name, plot_pair in plot_pairs.items():
-        for ensemble in sorted(ensembles):
-            for variable_group in sorted(variable_groups):
-                if not do_single_plots:
-                    continue
-                variable, exp, threshold = split_variable_groups(variable_group)
-
-                # avoid double plotting.
-                if variable != plot_pair['sea']:
-                    continue
-
-                # if (variable_group, ensemble) not in viable_keys:
-                #     print("Not in viable keys:", ensemble, variable_group)
-                #     continue
-                sea_cube = ssp_cubes[variable_group][ensemble]
-                land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
-
-                land_cube = ssp_cubes[land_variable_group][ensemble]
-
-                single_pane_land_sea_plot(
-                    cfg,
-                    metadata,
-                    land_cube=land_cube,
-                    sea_cube=sea_cube,
+                    metadatas,
+                    land_cubes=land_cubes,
+                    sea_cubes=sea_cubes,
                     plot_pair=plot_pair,
+                    unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
+                    region=region,
+                    # plot_dir ='multi_pane_model_means',
+                    )
+
+                multi_pane_land_sea_plot(
+                    cfg,
+                    metadatas,
+                    land_cubes=land_cubes,
+                    sea_cubes=sea_cubes,
+                    plot_pair=plot_pair,
+                    unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
+                    plot_dir ='multi_pane_model_means',
+                    region=region,
                 )
 
-                # historical_group = variable_group[:variable_group.find('_')] +'_historical'
-                # if variable_group == historical_group:
-                #     continue
-                #
-                # cube_ssp = ssp_cubes[variable_group][ensemble]
-                # cube_hist = hist_cubes[variable_group][ensemble]
-                # cube_anomaly = anomaly_cubes[variable_group][ensemble]
-                # cube_detrend = detrended_anomaly_cubes[variable_group][ensemble]
-                #
-                # key = ' '.join([standard_names[variable].title(),
-                #                 exp,
-                #                 'at'   , threshold,
-                #                 '('+ ensemble+')'])
-                # make_four_pane_map_plot(
-                #     cfg,
-                #     cube_ssp,
-                #     cube_hist,
-                #     cube_anomaly,
-                #     cube_detrend,
-                #     key,
-                #     'single_plots',
-                #     )
+
     assert 0
 
 
-    # Ensemble mean for each variable_group:
-    for variable_group in sorted(variable_groups):
-        # check to make plots.
-        if not do_variable_group_plots:
-            continue
-        if variable_group.split('_')[-1] == 'fx':
-            continue
-        # guess historical group name:
-        historical_group = variable_group[:variable_group.find('_')] + '_historical'
-        if variable_group == historical_group:
-            continue
 
-        # Calculate ensemble means
-        output_cubes = []
-        for cubes in [ssp_cubes, hist_cubes, anomaly_cubes, detrended_anomaly_cubes]:
-            cube_list = []
-            for vari, cube in sorted(cubes[variable_group].items()):
-                print(variable_group, vari)
-                cube_list.append(cube)
-            if cube_list == []:
-                continue
-            ensemble_mean = calc_ensemble_mean(cube_list)
-            output_cubes.append(ensemble_mean)
-
-        variable, exp, threshold = split_variable_groups(variable_group)
-        key = ' '.join([standard_names[variable].title(),
-                        'in', exp,
-                        'at', threshold ,
-                        'ensemble mean'
-                        ])
-
-        if len(output_cubes) != 4:
-            print('Problem with ', variable_group, 'four plots.', historical_group)
-            assert 0
-
-        make_four_pane_map_plot(
-            cfg,
-            output_cubes[0],
-            output_cubes[1],
-            output_cubes[2],
-            output_cubes[3],
-            key,
-            'variable_group_ensembles',
-            )
-
-    # Ensemble mean for each threshold:
-    for threshold, paths in sorted(thresholds.items()):
-        if not do_threshold_plots: continue
-        output_cubes = []
-        for cubes in [ssp_cubes, hist_cubes, anomaly_cubes, detrended_anomaly_cubes]:
-            cube_list = []
-            for (variable_group, ensemble) in viable_keys.keys():
-                var_g, exp, thres = split_variable_groups(variable_group)
-                if thres != threshold:
-                    continue
-                cube_list.append(cubes[variable_group][ensemble])
-            ensemble_mean = calc_ensemble_mean(cube_list)
-            output_cubes.append(ensemble_mean)
-
-        key = ' '.join([short_name, threshold])
-        key = ' '.join([standard_names[variable].title(),
-                        'at', threshold,
-                        'ensemble mean'
-                        ])
-
-        make_four_pane_map_plot(
-            cfg,
-            output_cubes[0],
-            output_cubes[1],
-            output_cubes[2],
-            output_cubes[3],
-            key,
-            'threshold_ensemble',
-            )
+    # # lets look at  minus the historical
+    # hist_cubes = {variable_group:{} for variable_group in variable_groups}
+    # ssp_cubes = {variable_group:{} for variable_group in variable_groups}
+    # # anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
+    # # detrended_anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
+    # # viable_keys = {}
+    #
+    # hist_cubes_fns = {}
+    # # Calculate the anomaly for each ensemble/threshold combination
+    # for ensemble in sorted(ensembles):
+    #     for variable_group in sorted(variable_groups):
+    #
+    #             if not do_single_plots:
+    #                 continue
+    #             variable, exp, threshold = split_variable_groups(variable_group)
+    #             # avoid double plotting.
+    #             if variable != plot_pair['sea']:
+    #                 continue
+    #
+    #             # if (variable_group, ensemble) not in viable_keys:
+    #             #     print("Not in viable keys:", ensemble, variable_group)
+    #             #     continue
+    #             sea_cube = ssp_cubes[variable_group][ensemble]
+    #             land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+    #
+    #             land_cube = ssp_cubes[land_variable_group][ensemble]
+    #
+    #             single_pane_land_sea_plot(
+    #                 cfg,
+    #                 metadata,
+    #                 land_cube=land_cube,
+    #                 sea_cube=sea_cube,
+    #                 pair_name=var_name,
+    #             )
+    #     hist_cubes_fns = {}
+    #     # Calculate the anomaly for each ensemble/threshold combination
+    #     for ensemble in sorted(ensembles):
+    #         for variable_group in sorted(variable_groups):
+    #         # guess historical group name:
+    #             historical_group = variable_group[:variable_group.find('_')] +'_historical'
+    #
+    #             if variable_group == historical_group:
+    #                 continue
+    #         assert 0
+    #         fx_group = variable_group[:variable_group.find('_')] +'_fx'
+    #         if variable_group == fx_group:
+    #             continue
+    #
+    #         print('Plotting:', ensemble, variable_group)
+    #         variable, exp, threshold = split_variable_groups(variable_group)
+    #         variables.add(variable)
+    #
+    #         if (variable_group, ensemble) not in files_dict:
+    #             continue
+    #         fn = files_dict[(variable_group, ensemble)][0]
+    #         fn_hist = files_dict[(historical_group, ensemble)][0]
+    #
+    #         details = metadatas[fn]
+    #         cube = iris.load_cube( fn)
+    #         cube = diagtools.bgc_units(cube, details['short_name'])
+    #
+    #         # Check is historial cube is loaded already
+    #         if fn_hist in hist_cubes_fns:
+    #             cube_hist = hist_cubes_fns[fn_hist]
+    #         else:
+    #             cube_hist =  iris.load_cube( fn_hist)
+    #             cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
+    #
+    #         print('fx files:', fx_fn, details['mip'])
+    #         if details['mip'] in ['Omon', 'Oyr']:
+    #             fx_fn = fx_fns['areacello']
+    #         elif  details['mip'] in ['Lmon', 'Lyr', 'Amon', 'Ayr']:
+    #             fx_fn = fx_fns['areacella']
+    #
+    #         cube_anomaly = cube - cube_hist
+    #         detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
+    #
+    #         ssp_cubes[variable_group][ensemble] = cube
+    #         hist_cubes[variable_group][ensemble] = cube_hist
+    #         anomaly_cubes[variable_group][ensemble] = cube_anomaly
+    #         detrended_anomaly_cubes[variable_group][ensemble] = detrended_cube_anomaly
+    #         viable_keys[(variable_group, ensemble)] = True
+    #         try:
+    #             thresholds[threshold].append([variable_group, ensemble])
+    #         except:
+    #             thresholds[threshold] = [[variable_group, ensemble], ]
+    #
+    #
+    #
+    # # single pane land-sea plots pairs:
+    # for var_name, plot_pair in plot_pairs.items():
+    #     for ensemble in sorted(ensembles):
+    #         for variable_group in sorted(variable_groups):
+    #             if not do_single_plots:
+    #                 continue
+    #             variable, exp, threshold = split_variable_groups(variable_group)
+    #
+    #             # avoid double plotting.
+    #             if variable != plot_pair['sea']:
+    #                 continue
+    #
+    #             # if (variable_group, ensemble) not in viable_keys:
+    #             #     print("Not in viable keys:", ensemble, variable_group)
+    #             #     continue
+    #             sea_cube = ssp_cubes[variable_group][ensemble]
+    #             land_variable_group = '_'.join([plot_pair['land'], exp, threshold])
+    #
+    #             land_cube = ssp_cubes[land_variable_group][ensemble]
+    #
+    #             single_pane_land_sea_plot(
+    #                 cfg,
+    #                 metadata,
+    #                 land_cube=land_cube,
+    #                 sea_cube=sea_cube,
+    #                 plot_pair=plot_pair,
+    #             )
+    #
+    #             # historical_group = variable_group[:variable_group.find('_')] +'_historical'
+    #             # if variable_group == historical_group:
+    #             #     continue
+    #             #
+    #             # cube_ssp = ssp_cubes[variable_group][ensemble]
+    #             # cube_hist = hist_cubes[variable_group][ensemble]
+    #             # cube_anomaly = anomaly_cubes[variable_group][ensemble]
+    #             # cube_detrend = detrended_anomaly_cubes[variable_group][ensemble]
+    #             #
+    #             # key = ' '.join([standard_names[variable].title(),
+    #             #                 exp,
+    #             #                 'at'   , threshold,
+    #             #                 '('+ ensemble+')'])
+    #             # make_four_pane_map_plot(
+    #             #     cfg,
+    #             #     cube_ssp,
+    #             #     cube_hist,
+    #             #     cube_anomaly,
+    #             #     cube_detrend,
+    #             #     key,
+    #             #     'single_plots',
+    #             #     )
+    # assert 0
+    #
+    #
+    # # Ensemble mean for each variable_group:
+    # for variable_group in sorted(variable_groups):
+    #     # check to make plots.
+    #     if not do_variable_group_plots:
+    #         continue
+    #     if variable_group.split('_')[-1] == 'fx':
+    #         continue
+    #     # guess historical group name:
+    #     historical_group = variable_group[:variable_group.find('_')] + '_historical'
+    #     if variable_group == historical_group:
+    #         continue
+    #
+    #     # Calculate ensemble means
+    #     output_cubes = []
+    #     for cubes in [ssp_cubes, hist_cubes, anomaly_cubes, detrended_anomaly_cubes]:
+    #         cube_list = []
+    #         for vari, cube in sorted(cubes[variable_group].items()):
+    #             print(variable_group, vari)
+    #             cube_list.append(cube)
+    #         if cube_list == []:
+    #             continue
+    #         ensemble_mean = calc_ensemble_mean(cube_list)
+    #         output_cubes.append(ensemble_mean)
+    #
+    #     variable, exp, threshold = split_variable_groups(variable_group)
+    #     key = ' '.join([standard_names[variable].title(),
+    #                     'in', exp,
+    #                     'at', threshold ,
+    #                     'ensemble mean'
+    #                     ])
+    #
+    #     if len(output_cubes) != 4:
+    #         print('Problem with ', variable_group, 'four plots.', historical_group)
+    #         assert 0
+    #
+    #     make_four_pane_map_plot(
+    #         cfg,
+    #         output_cubes[0],
+    #         output_cubes[1],
+    #         output_cubes[2],
+    #         output_cubes[3],
+    #         key,
+    #         'variable_group_ensembles',
+    #         )
+    #
+    # # Ensemble mean for each threshold:
+    # for threshold, paths in sorted(thresholds.items()):
+    #     if not do_threshold_plots: continue
+    #     output_cubes = []
+    #     for cubes in [ssp_cubes, hist_cubes, anomaly_cubes, detrended_anomaly_cubes]:
+    #         cube_list = []
+    #         for (variable_group, ensemble) in viable_keys.keys():
+    #             var_g, exp, thres = split_variable_groups(variable_group)
+    #             if thres != threshold:
+    #                 continue
+    #             cube_list.append(cubes[variable_group][ensemble])
+    #         ensemble_mean = calc_ensemble_mean(cube_list)
+    #         output_cubes.append(ensemble_mean)
+    #
+    #     key = ' '.join([short_name, threshold])
+    #     key = ' '.join([standard_names[variable].title(),
+    #                     'at', threshold,
+    #                     'ensemble mean'
+    #                     ])
+    #
+    #     make_four_pane_map_plot(
+    #         cfg,
+    #         output_cubes[0],
+    #         output_cubes[1],
+    #         output_cubes[2],
+    #         output_cubes[3],
+    #         key,
+    #         'threshold_ensemble',
+    #         )
 
 
 # def make_gwt_map_plots(cfg, detrend = True,):
