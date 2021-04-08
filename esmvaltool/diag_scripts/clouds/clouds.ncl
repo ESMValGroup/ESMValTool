@@ -1159,7 +1159,6 @@ begin
 
     pres                      = True    ; needed to override
                                         ; panelling defaults
-;    pres@gsnPanelLabelBar     = True    ; add common colorbar
     if (panel_labels) then
       ; print dataset name on each panel
       pres@gsnPanelFigureStrings = names(plotind)
@@ -1170,12 +1169,6 @@ begin
                                                 / tofloat((dim_MOD + 1) / 2)/))
     pres@lbAutoManage                     = False
     pres@lbTopMarginF                     = 0.1
-;    pres@lbTitleOn                        = True
-;    pres@lbTitleFontHeightF               = min((/0.015, 0.01 * 6.0 \
-;                                                / tofloat((dim_MOD + 1) / 2)/))
-;    pres@lbTitlePosition                  = "Bottom"
-;    pres@lbTitleString                    = data1@long_name + " (" \
-;      + data1@units + ")"
     pres@lbPerimOn                        = False   ; draw line around label
                                                     ; bar area
     pres@gsnPanelCenter                   = False
