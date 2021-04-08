@@ -250,8 +250,7 @@ Output
 
 #. recipe_globwat.yml
 
-   The forcing data, stored with ascii format for each year in a separate folder. In daily outputs, the first two numbers represent the month and the second two numbers represent the day. For example, prc0120wb.asc represents precipitation for the 20th of February. 
-
+   The forcing data, stored in separate files per timestep and variable.
 
 References
 ----------
