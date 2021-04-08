@@ -8,13 +8,14 @@ documentation:
     GlobWat is a Global Hydrological Model provided by FAO
     http://www.fao.org/nr/water/aquamaps/
 
-    By default, PET is calculated by the Langbein method. However, users
-    can choose the De Bruin method by setting the langbein_pet in the recipe
-    to False.
-    More information about the Langbein method can be found at:
-    https://doi.org/10.3133/cir52
+    By default, PET is calculated by the De Bruin method. However, users
+    can choose the Langbein method by setting the langbein_pet in the recipe
+    to True.
+
     More information about the De Bruin method can be found at:
     https://doi.org/10.1175/JHM-D-15-0006.1
+    More information about the Langbein method can be found at:
+    https://doi.org/10.3133/cir52
 
     The target file has been generated from one of the models sample files
     (prc01wb.asc). The file can be found at:
@@ -27,9 +28,15 @@ documentation:
     for their desired region. The data will be processed at the global scale 
     if the preprocessor in the recipe is commented.
 
-  authors: ['abdollahi_banafsheh','alidoost_sarah']
-  projects: ['ewatercycle']
-  references: ['acknow_project']
+  authors:
+    - abdollahi_banafsheh
+    - alidoost_sarah
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
 
 preprocessors:
     rough_cutout:
@@ -63,7 +70,7 @@ diagnostics:
   #     script:
   #       script: hydrology/globwat.py
   #       target_file: 'globwat/globwat_target_grid.nc'
-  #       langbein_pet: True
+  #       langbein_pet: False
   #       regrid_scheme: linear
 
   diagnostic_monthly_GlobWat:
@@ -87,5 +94,5 @@ diagnostics:
         script:
           script: hydrology/globwat.py
           target_file: 'globwat/globwat_target_grid.nc'
-          langbein_pet: True
+          langbein_pet: False
           regrid_scheme: linear
