@@ -276,7 +276,8 @@ def multi_pane_land_sea_plot(
     suffix = '_'.join(unique_keys)+image_extention
     path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
 
-    #if os.path.exists(path): return
+    if os.path.exists(path): return
+    
     # sea_cube = cube_interesction(sea_cube)
     # land_cube = cube_interesction(land_cube)
     axes = {}
@@ -300,9 +301,9 @@ def multi_pane_land_sea_plot(
     both_cbar_on_right = True
     if _complex_:
         if 'ssp126' in land_cubes.keys():
-            if not both_cbar_on_right: 
+            if not both_cbar_on_right:
                 x = 1
-                width_ratios=[1, 10, 10, 10, 1]      
+                width_ratios=[1, 10, 10, 10, 1]
             else:
                 x = 0
                 width_ratios=[10, 10, 10, 1, 2, 1]
@@ -394,7 +395,7 @@ def multi_pane_land_sea_plot(
     if _complex_:
         #cax = pl.axes([0.1, 0.2, 0.8, 0.6])
         if both_cbar_on_right:
-            landcbar = plt.colorbar(land, cax=cbar_axes_land, label=land_label, shrink=0.9) 
+            landcbar = plt.colorbar(land, cax=cbar_axes_land, label=land_label, shrink=0.9)
             seacbar = plt.colorbar(sea, cax=cbar_axes_sea, label=sea_label, shrink=0.9 )
         else:
             landcbar = plt.colorbar(land, cax=cbar_axes_land, shrink=0.9) #:, label=land_label) #, shrink=0.55)
@@ -413,6 +414,168 @@ def multi_pane_land_sea_plot(
         logger.info('Saving plots to %s', path)
         plt.savefig(path) #, bbox_inches = 'tight',)
     plt.close()
+
+
+def multi_pane_land_sea_plot_histdiff(
+        cfg,
+        metadatas,
+        land_cubes={},
+        sea_cubes={},
+        plot_pair={},
+        unique_keys = [],
+        plot_dir ='multi_pane_model_diffs',
+        ):
+    """
+    Try to plot both a set of land cube and a sea cube together on the pane figure.
+    """
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Determine image filename:
+    suffix = '_'.join(unique_keys)+image_extention
+    path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
+    #if os.path.exists(path): return
+
+    axes = {}
+    fig = plt.figure()
+    fig.set_size_inches(12, 6)
+    proj = ccrs.PlateCarree()
+    _complex_ = True
+
+    # Make a difference plot:
+    #    the hist is shown in large on the LHS (cbars)
+    #    the diff against hist is smaller on the RHS.
+    #        land diff: 'BrBG'
+    #        sea diff: 'coolwarm'
+
+    # both_cbar_on_right = True
+    if 'ssp126' in land_cubes.keys():
+        height_ratios=[1, 1, 1]
+        width_ratios=[2, 1, 1]
+
+        gs = matplotlib.gridspec.GridSpec(len(height_ratios), len(width_ratios),
+            height_ratios=height_ratios, width_ratios=width_ratios,
+            wspace=0.05, hspace=0.05)
+
+        gshist_cbars = gs[2,0].subgridspec(1, 3, hspace=0.35) # split for two axes.
+        cbar_axes_land = fig.add_subplot(gshist_cbars[0, 0])
+        cbar_axes_sea = fig.add_subplot(gshist_cbars[0, -1])
+
+        gsdiff_cbars = gs[2,2].subgridspec(1, 3, hspace=0.35) # split for two axes.
+        cbar_axes_land_diff = fig.add_subplot(gsdiff_cbars[0, 0])
+        cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[0, -1])
+
+        axes ={
+            'historical':  fig.add_subplot(gs[0:2, 0], projection=proj),
+            'ssp119': fig.add_subplot(gs[0, 1], projection=proj),
+            'ssp126': fig.add_subplot(gs[0, 2], projection=proj),
+            'ssp245': fig.add_subplot(gs[1, 1], projection=proj),
+            'ssp370': fig.add_subplot(gs[1, 2], projection=proj),
+            'ssp585':  fig.add_subplot(gs[2, 1], projection=proj),
+            }
+
+    else:
+        height_ratios=[1, 1, 1]
+        width_ratios=[2, 1,]
+
+        gs = matplotlib.gridspec.GridSpec(len(height_ratios), len(width_ratios),
+            height_ratios=height_ratios, width_ratios=width_ratios,
+            wspace=0.05, hspace=0.05)
+
+        gshist_cbars = gs[2,0].subgridspec(1, 3, hspace=0.) # split for two axes.
+        cbar_axes_land = fig.add_subplot(gshist_cbars[0, 0])
+        cbar_axes_sea = fig.add_subplot(gshist_cbars[0, -1])
+
+        gsdiff_cbars = gs[2,1].subgridspec(1, 3, hspace=0.) # split for two axes.
+        cbar_axes_land_diff = fig.add_subplot(gsdiff_cbars[0, 0])
+        cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[0, -1])
+
+        axes ={
+            'historical':  fig.add_subplot(gs[0:2, 0], projection=proj),
+            'ssp370': fig.add_subplot(gs[0, 1], projection=proj),
+            'ssp585':  fig.add_subplot(gs[1, 1], projection=proj),
+            }
+
+    fig = plt.figure()
+    fig.set_size_inches(12, 8)
+    land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()]) # same colour scale as before.
+    sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])   # same colour scale as before.
+
+    # Calculagte the differences:
+    land_diff_cubes = {}
+    sea_diff_cubes = {}
+    for scenario, cube in land_cubes.items():
+        if scenario == 'historical': continue
+        land_diff_cubes[scenario] = cube - land_cubes['historical']
+
+    for scenario, cube in sea_cubes.items():
+        if scenario == 'historical': continue
+        sea_diff_cubes[scenario] = cube - sea_cubes['historical']
+
+    land_diff_range = diagtools.get_cube_range_diff([cube for cube in land_cubes.values()])
+    sea_diff_range = diagtools.get_cube_range_diff([cube for cube in sea_cubes.values()])
+
+    #print(land_cubes,sea_cubes)
+    #print(land_range, sea_range)
+    land_label, sea_label = '', ''
+    for scenario, ax in axes.items():
+        # axes[scenario] = plt.subplot(sbp, projection=ccrs.PlateCarree())
+        if scenario == 'historical':
+            land_cube = land_cubes.get(scenario, None)
+            sea_cube = sea_cubes.get(scenario, None)
+        else:
+            land_cube = land_diff_cubes.get(scenario, None)
+            sea_cube = sea_diff_cubes.get(scenario, None)
+        if None in [land_cube, sea_cube]:
+            continue
+        sea_cube = cube_interesction(sea_cube)
+        land_cube = cube_interesction(land_cube)
+        plt.sca(ax)
+        if scenario == 'historical':
+            fig, ax, hist_land, hist_sea = single_pane_land_sea_pane(
+                cfg,
+                metadatas,
+                fig,
+                ax,
+                land_cube=land_cube,
+                sea_cube=sea_cube,
+                land_cmap = 'Greens', #'viridis',
+                sea_cmap = 'Blues', # 'ocean_r'
+                land_range= land_range,
+                sea_range=sea_range,
+                )
+            land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
+            sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
+        else:
+            fig, ax, diff_land, diff_sea = single_pane_land_sea_pane(
+                cfg,
+                metadatas,
+                fig,
+                ax,
+                land_cube=land_cube,
+                sea_cube=sea_cube,
+                land_cmap = 'BrBG', #'Greens', #'viridis',
+                sea_cmap = 'coolwarm', #Blues', # 'ocean_r'
+                land_range= land_diff_range,
+                sea_range=sea_diff_range,
+                )
+        ax.set_title(scenario)
+
+    landcbarhist = plt.colorbar(hist_land, cax=cbar_axes_land, label=land_label, shrink=0.9)
+    seacbarhist = plt.colorbar(hist_sea, cax=cbar_axes_sea, label=sea_label, shrink=0.9 )
+
+    landcbardiff = plt.colorbar(diff_land, cax=cbar_axes_land_diff, label=land_label, shrink=0.9)
+    seacbardiff = plt.colorbar(diff_sea, cax=cbar_axes_sea_diff, label=sea_label, shrink=0.9 )
+
+    plt.suptitle(longnameify(unique_keys))
+
+    # Saving files:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path) #, bbox_inches = 'tight',)
+    plt.close()
+
+
 
 
 def trended_pcolormesh(cube, ax, cmap='viridis', zrange=[], drawcbar=True):
@@ -1377,6 +1540,16 @@ def make_gwt_map_land_sea_plots(cfg, ):
                 land_cubes[exp_i] = land_cube
 
             if 0 in [len(sea_cubes), len(land_cubes)]: continue
+
+            multi_pane_land_sea_plot_histdiff(
+                cfg,
+                metadatas,
+                land_cubes=land_cubes,
+                sea_cubes=sea_cubes,
+                plot_pair=plot_pair,
+                unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
+                # plot_dir ='multi_pane_model_means',
+                )
 
             multi_pane_land_sea_plot(
                 cfg,
