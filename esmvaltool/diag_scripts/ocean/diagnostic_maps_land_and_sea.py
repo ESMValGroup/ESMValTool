@@ -53,7 +53,7 @@ import iris.quickplot as qplt
 import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-
+import math
 import numpy as np
 from esmvalcore.preprocessor._regrid import regrid
 
@@ -158,6 +158,10 @@ def trended_contourf(cube, cmap='YlOrRd', zrange=[], drawcbar=True):
             return False
     return True
 
+def round_sig(x, sig=2):
+    if x ==0.: return x
+    print(x, sig)    
+    return round(x, sig-int(math.floor(math.log10(abs(x))))-1)
 
 def single_pane_land_sea_pane(cfg,
         metadatas,
@@ -167,6 +171,7 @@ def single_pane_land_sea_pane(cfg,
         sea_cube=None,
         land_cmap = 'viridis',
         sea_cmap = 'Blues',
+        nbins=10,
         land_range=[],
         sea_range=[],
         #land_
@@ -174,18 +179,22 @@ def single_pane_land_sea_pane(cfg,
     """
     Generic way to plot single cube
     """
-    if land_range:
-        land = iris.plot.contourf(land_cube, 10, cmap=land_cmap, vmin=np.min(land_range), vmax=np.max(land_range))
-    else:
-        land = iris.plot.contourf(land_cube, 10, cmap=land_cmap) # linewidth=0, rasterized=True
+    if len(land_range):
 
-    if sea_range:
-        sea = iris.plot.contourf(sea_cube, 10, cmap=sea_cmap, vmin=np.min(sea_range), vmax=np.max(sea_range))
+        levels = np.linspace(round_sig(np.min(land_range)), round_sig(np.max(land_range)), nbins)
+        land = iris.plot.contourf(land_cube, levels, cmap=land_cmap) #vmin=np.min(land_range), vmax=np.max(land_range))
     else:
-        sea = iris.plot.contourf(sea_cube, 10, cmap=sea_cmap) # linewidth=0, rasterized=True,
+        land = iris.plot.contourf(land_cube, nbins, cmap=land_cmap) # linewidth=0, rasterized=True
+
+    if len(sea_range):
+        levels = np.linspace(round_sig(np.min(sea_range)), round_sig(np.max(sea_range)), nbins)
+        sea = iris.plot.contourf(sea_cube, levels, cmap=sea_cmap) #, vmin=np.min(sea_range), vmax=np.max(sea_range))
+    else:
+        sea = iris.plot.contourf(sea_cube, nbins, cmap=sea_cmap) # linewidth=0, rasterized=True,
     plt.gca().coastlines()
 
     return fig, ax, land, sea
+
 
 def single_pane_land_sea_plot(
         cfg,
@@ -451,13 +460,13 @@ def multi_pane_land_sea_plot_histdiff(
     # both_cbar_on_right = True
     if 'ssp126' in land_cubes.keys():
         height_ratios=[1, 1, 1]
-        width_ratios=[2, 1, 1]
+        width_ratios=[2.5, 1.5, 1.5]
 
         gs = matplotlib.gridspec.GridSpec(len(height_ratios), len(width_ratios),
             height_ratios=height_ratios, width_ratios=width_ratios,
-            wspace=0.05, hspace=0.05)
+            wspace=0.075, hspace=0.05)
 
-        gshist_cbars = gs[2,0].subgridspec(3,1 hspace=0.35) # split for two axes.
+        gshist_cbars = gs[2,0].subgridspec(3,1, hspace=0.35) #,height_ratios=[1,2,1]) # split for two axes.
         cbar_axes_land = fig.add_subplot(gshist_cbars[0, 0])
         cbar_axes_sea = fig.add_subplot(gshist_cbars[-1, 0])
 
@@ -475,18 +484,18 @@ def multi_pane_land_sea_plot_histdiff(
             }
 
     else:
-        height_ratios=[1, 1, 1]
+        height_ratios=[2, 2, 1]
         width_ratios=[2, 1,]
 
         gs = matplotlib.gridspec.GridSpec(len(height_ratios), len(width_ratios),
             height_ratios=height_ratios, width_ratios=width_ratios,
-            wspace=0.05, hspace=0.05)
+            wspace=0.10, hspace=0.05)
 
-        gshist_cbars = gs[2,0].subgridspec(3,1, hspace=0.) # split for two axes.
+        gshist_cbars = gs[2,0].subgridspec(3,1, hspace=0., height_ratios=[1,2,1])
         cbar_axes_land = fig.add_subplot(gshist_cbars[0, 0])
         cbar_axes_sea = fig.add_subplot(gshist_cbars[-1, 0])
 
-        gsdiff_cbars = gs[2,1].subgridspec(3, 1, hspace=0.) # split for two axes.
+        gsdiff_cbars = gs[2,1].subgridspec(3, 1, hspace=0., height_ratios=[1,2,1]) # split for two axes.
         cbar_axes_land_diff = fig.add_subplot(gsdiff_cbars[0, 0])
         cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[-1, 0])
 
@@ -498,8 +507,8 @@ def multi_pane_land_sea_plot_histdiff(
 
     fig = plt.figure()
     fig.set_size_inches(12, 8)
-    land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()]) # same colour scale as before.
-    sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])   # same colour scale as before.
+    #land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()]) # same colour scale as before.
+    #sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])   # same colour scale as before.
 
     # Calculagte the differences:
     land_diff_cubes = {}
@@ -512,8 +521,8 @@ def multi_pane_land_sea_plot_histdiff(
         if scenario == 'historical': continue
         sea_diff_cubes[scenario] = cube - sea_cubes['historical']
 
-    land_diff_range = diagtools.get_cube_range_diff([cube for cube in land_cubes.values()])
-    sea_diff_range = diagtools.get_cube_range_diff([cube for cube in sea_cubes.values()])
+    land_diff_range = diagtools.get_cube_range_diff([cube for cube in land_diff_cubes.values()])
+    sea_diff_range = diagtools.get_cube_range_diff([cube for cube in sea_diff_cubes.values()])
 
     #print(land_cubes,sea_cubes)
     #print(land_range, sea_range)
@@ -541,12 +550,15 @@ def multi_pane_land_sea_plot_histdiff(
                 sea_cube=sea_cube,
                 land_cmap = 'Greens', #'viridis',
                 sea_cmap = 'Blues', # 'ocean_r'
-                land_range= land_range,
-                sea_range=sea_range,
+                land_range=[land_cube.data.min(), land_cube.data.max()],
+                sea_range=[sea_cube.data.min(),sea_cube.data.max()],
                 )
             land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
             sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
         else:
+            #print(land_range, sea_range)
+            #print(land_diff_range,sea_diff_range)
+            #assert 0
             fig, ax, diff_land, diff_sea = single_pane_land_sea_pane(
                 cfg,
                 metadatas,
@@ -556,6 +568,7 @@ def multi_pane_land_sea_plot_histdiff(
                 sea_cube=sea_cube,
                 land_cmap = 'BrBG', #'Greens', #'viridis',
                 sea_cmap = 'coolwarm', #Blues', # 'ocean_r'
+                nbins=10,
                 land_range= land_diff_range,
                 sea_range=sea_diff_range,
                 )
@@ -566,6 +579,15 @@ def multi_pane_land_sea_plot_histdiff(
 
     landcbardiff = plt.colorbar(diff_land, cax=cbar_axes_land_diff, label=land_label, orientation='horizontal', shrink=0.9)
     seacbardiff = plt.colorbar(diff_sea, cax=cbar_axes_sea_diff, label=sea_label, orientation='horizontal', shrink=0.9 )
+    #landcbardiff.ax.locator_params(axis='x', nbins=5)
+    #seacbardiff.ax.locator_params(axis='x', nbins=5)
+
+    for cbar in [landcbarhist, seacbarhist, landcbardiff, seacbardiff]:
+        ticks = cbar.ax.get_xticks()
+        cbar.ax.set_xticklabels([str(round_sig(x)) for x in ticks])
+
+    landcbardiff.ax.locator_params(axis='x', nbins=5)
+    seacbardiff.ax.locator_params(axis='x', nbins=5)
 
     plt.suptitle(longnameify(unique_keys))
 
