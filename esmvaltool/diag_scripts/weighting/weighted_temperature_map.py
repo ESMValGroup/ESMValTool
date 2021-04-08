@@ -72,7 +72,7 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
     proj = ccrs.PlateCarree(central_longitude=0)
     figure, axes = plt.subplots(subplot_kw={'projection': proj})
 
-    dataarray = set_antimeridian(dataarray, cfg.get('antimeridian', 'europe'))
+    dataarray = set_antimeridian(dataarray, cfg.get('antimeridian', 'pacific'))
 
     dataarray.plot.pcolormesh(
         ax=axes,
