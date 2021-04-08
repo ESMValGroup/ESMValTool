@@ -67,6 +67,8 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'},
              'n_pp':{'land': 'npp', 'sea': 'intpp'},
+             'fco2':{'land': 'npp', 'sea': 'fgco2'},
+             'temp':{'land': 'tsl', 'sea': 'tos'},
             }
 fx_mips = ['Ofx', 'fx', 'Lfx']
 
@@ -79,6 +81,15 @@ def longnameify(name):
     if name == 'intpp': return 'Integrated Primary Production'
     if name == 'gpp': return 'Gross Primary Production'
     if name == 'npp': return 'Net Primary Production'
+
+    if name == 'fco2': return 'CO2 flux'
+    if name == 'fgco2': return 'Air Sea CO2 flux'
+
+    if name == 'temp': return 'Surface Temperature'
+    if name == 'tsl': return 'Land Surface Temperature'
+    if name == 'tos': return 'Sea Surface Temperature'
+
+
     return name
 
 
@@ -160,7 +171,7 @@ def trended_contourf(cube, cmap='YlOrRd', zrange=[], drawcbar=True):
 
 def round_sig(x, sig=2):
     if x ==0.: return x
-    print(x, sig)    
+    print(x, sig)
     return round(x, sig-int(math.floor(math.log10(abs(x))))-1)
 
 def single_pane_land_sea_pane(cfg,
