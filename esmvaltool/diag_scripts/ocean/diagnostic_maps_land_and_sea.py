@@ -277,7 +277,7 @@ def multi_pane_land_sea_plot(
     path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
 
     if os.path.exists(path): return
-    
+
     # sea_cube = cube_interesction(sea_cube)
     # land_cube = cube_interesction(land_cube)
     axes = {}
@@ -457,13 +457,13 @@ def multi_pane_land_sea_plot_histdiff(
             height_ratios=height_ratios, width_ratios=width_ratios,
             wspace=0.05, hspace=0.05)
 
-        gshist_cbars = gs[2,0].subgridspec(1, 3, hspace=0.35) # split for two axes.
+        gshist_cbars = gs[2,0].subgridspec(3,1 hspace=0.35) # split for two axes.
         cbar_axes_land = fig.add_subplot(gshist_cbars[0, 0])
-        cbar_axes_sea = fig.add_subplot(gshist_cbars[0, -1])
+        cbar_axes_sea = fig.add_subplot(gshist_cbars[-1, 0])
 
-        gsdiff_cbars = gs[2,2].subgridspec(1, 3, hspace=0.35) # split for two axes.
+        gsdiff_cbars = gs[2,2].subgridspec(3,1, hspace=0.35) # split for two axes.
         cbar_axes_land_diff = fig.add_subplot(gsdiff_cbars[0, 0])
-        cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[0, -1])
+        cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[-1, 0])
 
         axes ={
             'historical':  fig.add_subplot(gs[0:2, 0], projection=proj),
@@ -482,13 +482,13 @@ def multi_pane_land_sea_plot_histdiff(
             height_ratios=height_ratios, width_ratios=width_ratios,
             wspace=0.05, hspace=0.05)
 
-        gshist_cbars = gs[2,0].subgridspec(1, 3, hspace=0.) # split for two axes.
+        gshist_cbars = gs[2,0].subgridspec(3,1, hspace=0.) # split for two axes.
         cbar_axes_land = fig.add_subplot(gshist_cbars[0, 0])
-        cbar_axes_sea = fig.add_subplot(gshist_cbars[0, -1])
+        cbar_axes_sea = fig.add_subplot(gshist_cbars[-1, 0])
 
-        gsdiff_cbars = gs[2,1].subgridspec(1, 3, hspace=0.) # split for two axes.
+        gsdiff_cbars = gs[2,1].subgridspec(3, 1, hspace=0.) # split for two axes.
         cbar_axes_land_diff = fig.add_subplot(gsdiff_cbars[0, 0])
-        cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[0, -1])
+        cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[-1, 0])
 
         axes ={
             'historical':  fig.add_subplot(gs[0:2, 0], projection=proj),
@@ -561,11 +561,11 @@ def multi_pane_land_sea_plot_histdiff(
                 )
         ax.set_title(scenario)
 
-    landcbarhist = plt.colorbar(hist_land, cax=cbar_axes_land, label=land_label, shrink=0.9)
-    seacbarhist = plt.colorbar(hist_sea, cax=cbar_axes_sea, label=sea_label, shrink=0.9 )
+    landcbarhist = plt.colorbar(hist_land, cax=cbar_axes_land, label=land_label, orientation='horizontal', shrink=0.9)
+    seacbarhist = plt.colorbar(hist_sea, cax=cbar_axes_sea, label=sea_label, orientation='horizontal',shrink=0.9 )
 
-    landcbardiff = plt.colorbar(diff_land, cax=cbar_axes_land_diff, label=land_label, shrink=0.9)
-    seacbardiff = plt.colorbar(diff_sea, cax=cbar_axes_sea_diff, label=sea_label, shrink=0.9 )
+    landcbardiff = plt.colorbar(diff_land, cax=cbar_axes_land_diff, label=land_label, orientation='horizontal', shrink=0.9)
+    seacbardiff = plt.colorbar(diff_sea, cax=cbar_axes_sea_diff, label=sea_label, orientation='horizontal', shrink=0.9 )
 
     plt.suptitle(longnameify(unique_keys))
 
