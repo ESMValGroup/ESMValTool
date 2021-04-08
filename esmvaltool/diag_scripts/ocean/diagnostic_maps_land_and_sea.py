@@ -1384,7 +1384,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
                 land_cubes=land_cubes,
                 sea_cubes=sea_cubes,
                 plot_pair=plot_pair,
-                unique_keys = [dataset, threshold, var_name,],
+                unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
                 plot_dir ='multi_pane_model_means',
                 )
 
