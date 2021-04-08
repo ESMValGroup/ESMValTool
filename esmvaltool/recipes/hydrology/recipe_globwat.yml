@@ -57,10 +57,10 @@ diagnostics:
   #       mip: day
   #       start_year: 1986
   #       end_year: 2016
-  #       # comment preprocessor to process data on a global scale 
+  #       # comment preprocessor to process data on the global scale 
   #       preprocessor: rough_cutout
   #     tas: *daily_var
-  #     # uncomment psl, rsds and rsdt if langbein_pet is False
+  #     # comment psl, rsds and rsdt if langbein_pet is True
   #     psl: *daily_var
   #     rsds: *daily_var
   #     rsdt:
@@ -83,13 +83,13 @@ diagnostics:
           mip: Amon
           start_year: 1986
           end_year: 2016
-          # comment preprocessor to process data on a global scale 
+          # comment preprocessor to process data on the global scale 
           preprocessor: rough_cutout
         tas: *var_monthly
-        # uncomment psl, rsds and rsdt if langbein_pet is False
-        # psl: *var_monthly
-        # rsds: *var_monthly
-        # rsdt: *var_monthly
+        # comment psl, rsds and rsdt if langbein_pet is True
+        psl: *var_monthly
+        rsds: *var_monthly
+        rsdt: *var_monthly
       scripts:
         script:
           script: hydrology/globwat.py
