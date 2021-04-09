@@ -47,37 +47,37 @@ preprocessors:
         end_latitude: 40
 
 diagnostics:
-  # diagnostic_daily_GlobWat:
-  #   description: daily precipitation of ERA5 & ERA-Interim
-  #   additional_datasets:
-  #     - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #     # - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
-  #   variables:
-  #     pr: &daily_var
-  #       mip: day
-  #       start_year: 1986
-  #       end_year: 2016
-  #       # comment preprocessor to process data on the global scale 
-  #       preprocessor: rough_cutout
-  #     tas: *daily_var
-  #     # comment psl, rsds and rsdt if langbein_pet is True
-  #     psl: *daily_var
-  #     rsds: *daily_var
-  #     rsdt:
-  #       <<: *daily_var
-  #       mip: CFday
-  #   scripts:
-  #     script:
-  #       script: hydrology/globwat.py
-  #       target_file: 'globwat/globwat_target_grid.nc'
-  #       langbein_pet: False
-  #       regrid_scheme: linear
+  diagnostic_daily_GlobWat:
+    description: daily precipitation of ERA5 & ERA-Interim
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA5, project: OBS6, type: reanaly, version: '1', tier: 3}
+    variables:
+      pr: &daily_var
+        mip: day
+        start_year: 1986
+        end_year: 2016
+        # comment preprocessor to process data on the global scale
+        preprocessor: rough_cutout
+      tas: *daily_var
+      # comment psl, rsds and rsdt if langbein_pet is True
+      psl: *daily_var
+      rsds: *daily_var
+      rsdt:
+        <<: *daily_var
+        mip: CFday
+    scripts:
+      script:
+        script: hydrology/globwat.py
+        target_file: 'globwat/globwat_target_grid.nc'
+        langbein_pet: False
+        regrid_scheme: linear
 
   diagnostic_monthly_GlobWat:
       description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
       additional_datasets:
         - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
-        # - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
+        - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3}
       variables:
         pr: &var_monthly
           mip: Amon
