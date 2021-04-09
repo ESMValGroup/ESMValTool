@@ -22,56 +22,48 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 # Need a list of the uncertainity information variable names to load
-variable_list = ['land surface temperature',
-                 'uncertainty from locally correlated errors on atmospheric scales',
-                 # 'uncertainty from locally correlated errors on surface scales',
-                 # 'uncertainty from uncorrelated errors',
-                 # 'uncertainty from large-scale systematic errors',
-                 # 'land surface temperature total uncertainty',
-                 # 'land cover class'
-]
-
 
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-    # cmor_table = cfg['cmor_table']
+
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
 
-    print('1111111111111111111111111111')
-    print(cmor_table)
-    print('222222222222222222222222222222')
-    # run the cmorization
 
     # The loop of variables like the WP5.3 isnt needed as
     # variable_list contains the variable list
 
+    variable_list = []
     # # vals has the info from the yml file
     # # var is set up in the yml file
     for var, vals in cfg['variables'].items():
         # leave this loop in as might be useful in
         # the future for getting other info
         # like uncertainty information from the original files
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print(var,vals)
-        print(cmor_table.get_variable(vals['mip'], var))
-        print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ")
+        # print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        # print(var,vals)
+        # print(cmor_table.get_variable(vals['mip'], var))
+        # print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ")
         glob_attrs['mip'] = vals['mip']
 
         for key in vals.keys():
             logger.info("%s %s", key, vals[key])
 
-        variable = vals['raw']
+        variable_list.append(vals['raw'])
         # not currently used, but referenced for future
         # platform = 'MODISA'
 
+    print("8888888888888888888888888888888888888888")
+    print(variable_list)
     # loop over years and months
     # get years from start_year and end_year
     # note 2003 doesn't start until July so not included at this stage
     for year in range(vals['start_year'], vals['end_year'] + 1):
 
         this_years_cubes = iris.cube.CubeList()
-        for month in range(1,13):
+        #for month in range(1,13):
+        for month in range(1,2):
+
             logger.info(month)
             logger.info(in_dir)
             logger.info(vals['file_day'])
@@ -83,22 +75,39 @@ def cmorization(in_dir, out_dir, cfg, _):
                                               vals['file_day'],
                                               vals['file_night'],
                                               year,
-                                              month
-                                              ) # variable moved
-            logger.info("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
-            print(day_cube, night_cube)
-            monthly_cubes = make_monthly_average(day_cube, night_cube,
+                                              month,
+                                              variable_list
+                                              ) 
+            print("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
+            # print(day_cube)
+            # print(night_cube)
+            day_cube_lst    = day_cube.extract('land surface temperature')
+            night_cube_lst = night_cube.extract('land surface temperature')
+
+            monthly_cubes = make_monthly_average(day_cube_lst, night_cube_lst,
                                                 year, month)
+            print(monthly_cubes)
+            output = iris.cube.CubeList()
+            for cube in day_cube:
+                cube.long_name = 'day ' + cube.long_name
+                output.append(cube)
+
+            for cube in night_cube:
+                cube.long_name = 'night ' + cube.long_name
+                output.append(cube)
+
+            output.append(monthly_cubes)
 
             # use CMORizer utils
             ########################## make this a loop over cube list
-            for cube in monthly_cubes:
+            for cube in output:
                 try:
                     cube = utils.fix_coords(cube)
                 except:
                     logger.info('skip fixing')
                     logger.info(cube)
                     pass
+
 
         # Use utils save
         # This seems to save files all with the same name!
@@ -109,7 +118,10 @@ def cmorization(in_dir, out_dir, cfg, _):
         # this_years_cubes.long_name = 'Surface Temperature'
         # this_years_cubes.standard_name = 'surface_temperature'
             logger.info(out_dir)
-            iris.save(monthly_cubes, '%s/test_%s_%02d.nc' % (out_dir,year,month))
+            print('klklklklklklklklklklklklklklk')
+            print(output)
+            for i, cube in enumerate(output):
+                iris.save(cube, '%s/test_%s_%02d_var_%02d.nc' % (out_dir,year,month,i))
 
         # Not sure how to use the util saver with cube lists
         # utils.save_variable(
@@ -120,7 +132,7 @@ def cmorization(in_dir, out_dir, cfg, _):
         # )
 
 # no need to pass variable into any more, use global variable_list
-def load_cubes(in_dir, file_day, file_night, year, month):
+def load_cubes(in_dir, file_day, file_night, year, month, variable_list):
     """
     variable = land surface temperature
     platform = AQUA not used for now
@@ -188,7 +200,7 @@ def make_monthly_average(day_cube, night_cube, year, month):
 
 
     # put all cubes here
-    output = iris.cube.CubeList()
+    #output = iris.cube.CubeList()
 
     
     monthly_lst.attributes = {'information':
@@ -196,17 +208,10 @@ def make_monthly_average(day_cube, night_cube, year, month):
                                }
     monthly_lst.long_name = 'surface temperature'
 
-    output.append(monthly_lst)
+    #output.append(monthly_lst)
 
 
-    for cube in day_cube:
-        cube.long_name = 'day ' + cube.long_name
-        output.append(cube)
 
-    for cube in night_cube:
-        cube.long_name = 'night ' + cube.long_name
-        output.append(cube)
+    #logger.info(output)
 
-    logger.info(output)
-
-    return output
+    return monthly_lst#output

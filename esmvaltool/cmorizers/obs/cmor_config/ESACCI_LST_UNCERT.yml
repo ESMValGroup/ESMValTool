@@ -7,7 +7,7 @@
 
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: ESACCI-LST
+  dataset_id: ESACCI-LST-UNCERT
   version: '1.00'
   tier: 2
   project_id: OBS
@@ -21,7 +21,7 @@ attributes:
 # Variables to cmorize
 # These go into the vals dictionary in the python script
 variables:
-  ts:
+  ts: 
     mip: Amon
     raw: land surface temperature
     raw_units: kelvin
@@ -31,12 +31,38 @@ variables:
     start_year: 2010
     end_year: 2010
 
-  ts_local_atm_errors:    
+  tsLocalAtmErr:    
     mip: Amon
-    raw: land surface temperature ERROR
+    raw: uncertainty from locally correlated errors on atmospheric scales
     raw_units: kelvin
     file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
     file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
-    # plan to make it possible to change MODISA here but only placeholders in the python there for now
+    start_year: 2010
+    end_year: 2010
+
+  tsLocalSfcErr:    
+    mip: Amon
+    raw: uncertainty from locally correlated errors on surface scales
+    raw_units: kelvin
+    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
+    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    start_year: 2010
+    end_year: 2010
+
+  tsLSSysErr:    
+    mip: Amon
+    raw: uncertainty from large-scale systematic errors
+    raw_units: kelvin
+    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
+    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    start_year: 2010
+    end_year: 2010
+
+  tsUnCorErr:    
+    mip: Amon
+    raw: uncertainty from uncorrelated errors
+    raw_units: kelvin
+    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
+    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
     start_year: 2010
     end_year: 2010
