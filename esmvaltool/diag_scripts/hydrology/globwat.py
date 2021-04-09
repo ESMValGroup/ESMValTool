@@ -231,9 +231,9 @@ def make_filename(dataset_name, cfg, cube, extension='asc'):
     time_stamp = get_cube_time_info(cube)
     short_name, mip = get_cube_data_info(cube)
     if cfg['langbein_pet']:
-        pet_method_name = 'langbein_eto_'
+        pet_method_name = 'langbein_'
     else:
-        pet_method_name = 'debruin_eto_'
+        pet_method_name = 'debruin_'
 
     if short_name == 'pet':
         pet_method = pet_method_name
