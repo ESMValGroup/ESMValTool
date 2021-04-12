@@ -66,6 +66,13 @@ You can check that Conda installed correctly by running
 this should show the path to your Conda executable, e.g.
 ``~/miniconda3/bin/conda``.
 
+Julia installation
+------------------
+
+Because Julia cannot be installed from Conda, if you want to use the entire
+ESMValTool (or only the ESMValTool Julia functionality), you will also need to
+pre-install Julia.
+
 Installation instructions for Julia can be found on the
 `Julia installation instructions page <https://julialang.org/downloads/platform/>`_.
 One way to install Julia is by using `Jill.py <https://github.com/johnnychen94/jill.py>`_
@@ -86,7 +93,11 @@ You can check that Julia installed correctly by running
 
 this should show the path to your Julia executable, e.g. ``~/.local/bin/julia``.
 
-Once you have installed the above prerequisites, you can install ESMValTool by running:
+ESMValTool installation
+-----------------------
+
+Once you have installed the above prerequisites, you can install the entire
+ESMValTool package by running:
 
 .. code-block:: bash
 
@@ -124,16 +135,22 @@ message to the console.
 
 .. note::
 
-	  Creating a new Conda environment is often much faster and more reliable than trying to update an existing Conda environment.
+    Creating a new Conda environment is often much faster and more reliable than
+    trying to update an existing Conda environment.
 
 .. note::
 
-          The esmvaltool conda package will require Python>=3.7 so make sure that your conda is new enough to be able to install the required version of Python; we recommend that the conda version should be at least 4.9.
+    The esmvaltool conda package will require Python>=3.7 so make sure that your
+    conda is new enough to be able to install the required version of Python; we
+    recommend that the conda version should be at least 4.9.
+
+.. _`conda subpackages`:
 
 Installation of subpackages
 ---------------------------
 
-The diagnostics bundled in ESMValTool are scripts in four different programming languages: Python, NCL, R, and Julia.
+The diagnostics bundled in ESMValTool are scripts in four different programming
+languages: Python, NCL, R, and Julia.
 
 There are four language specific packages available:
 
@@ -142,22 +159,38 @@ There are four language specific packages available:
 * ``esmvaltool-python``
 * ``esmvaltool-r``
 
-The main ``esmvaltool`` package contains all four subpackages listed above.
+The main ``esmvaltool`` package contains all four subpackages listed above. If
+you only need to run a recipe with diagnostics in some of these languages, it is
+possible to install only the dependencies needed to do just that. The diagnostic
+script(s) used in each recipe, are documented in :ref:`recipes`. The extension
+of the diagnostic script can be used to see in which language a diagnostic
+script is written.
 
-If you only need to run a recipe with diagnostics in some of these languages, it is possible to install only the dependencies needed to do just that.
+**MacOSX note:** only ESMValTool Python diagnostics are supported for MacOSX.
 
-* The diagnostic script(s) used in each recipe, are documented in :ref:`recipes`. The extension of the diagnostic script can be used to see in which language a diagnostic script is written.
-* Some of the CMORization scripts are written in Python, while others are written in  NCL. Therefore, both ``esmvaltool-pyhon`` and ``esmvaltool-ncl`` need to be installed in order to be able to run all CMORization scripts.
+To set up a new Conda environment with the ``esmvaltool-python`` package, run
 
-For example, to only install support for diagnostics written in Python and NCL, run
+.. code-block:: bash
+
+    conda create --name esmvaltool esmvaltool-python -c esmvalgroup -c conda-forge 'python=3.9'
+
+Note that the command above creates a new environment. To install support for
+diagnostics written in Python and NCL into an existing environment, run
 
 .. code-block:: bash
 
     conda install esmvaltool-python esmvaltool-ncl -c esmvalgroup -c conda-forge
 
-Note that it is only necessary to install Julia prior to the conda installation if you are going to install the ``esmvaltool-julia`` package.
+Some of the CMORization scripts are written in Python, while others are written
+in  NCL. Therefore, both ``esmvaltool-python`` and ``esmvaltool-ncl`` need to be
+installed in order to be able to run all CMORization scripts.
 
-Note that the ESMValTool source code is contained in the ``esmvaltool-python`` package, so this package will always be installed as a dependency if you install one or more of the packages for other languages.
+Note that it is only necessary to install Julia prior to the conda installation
+if you are going to install the ``esmvaltool-julia`` package.
+
+Note that the ESMValTool source code is contained in the ``esmvaltool-python``
+package, so this package will always be installed as a dependency if you install
+one or more of the packages for other languages.
 
 There is also a lesson available in the
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
