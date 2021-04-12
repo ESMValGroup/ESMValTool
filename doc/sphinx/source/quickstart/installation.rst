@@ -6,17 +6,23 @@ Installation
 
 ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
 
-The ESMValTool supports five different installation methods:
+The ESMValTool can be installed in multiple ways.
 
-* Installation through the conda package manager (see https://www.anaconda.com/);
+Recommended installation methods:
 
-* Installation with pip and conda (see https://pypi.org);
+* On Linux, please install via the :ref:`conda package manager<install_with_conda>` (see https://anaconda.com);
 
-* Deployment through a Docker container (see https://www.docker.com);
+* For MacOSX, please follow separate instructions for :ref:`installation on MacOSX<install_on_macosx>`.
 
-* Deployment through a Singularity container (see https://sylabs.io/guides/latest/user-guide/);
+Further options for installation are:
 
-* From the source code available at https://github.com/ESMValGroup/ESMValTool.
+* :ref:`Installation with pip and conda<install_with_pip>` (see https://pypi.org);
+
+* :ref:`Deployment through a Docker container<install_with_docker>` (see https://www.docker.com);
+
+* :ref:`Deployment through a Singularity container<install_with_singularity>` (see https://sylabs.io/guides/latest/user-guide/);
+
+* :ref:`From the source code<install_from_source>` available at https://github.com/ESMValGroup/ESMValTool.
 
 The next sections will detail the procedure to install ESMValTool through each
 of these methods.
@@ -27,16 +33,16 @@ available with more explanations and guidance if the installation instructions
 here are too concise.
 See `common installation issues`_ if you run into trouble.
 
+.. _install_with_conda:
 
 Conda installation
 ==================
 
-In order to install the `Conda <https://docs.conda.io>`_ package, you will need
-both Conda and Julia pre-installed, this is because Julia cannot be installed
-from Conda.
+In order to install the `conda <https://docs.conda.io>`_ package, you will need
+conda pre-installed.
 
 For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
-It is recommended that you always use the latest version of Conda, as problems
+It is recommended that you always use the latest version of conda, as problems
 have been reported when trying to use older versions.
 
 First download the installation file for
@@ -101,7 +107,7 @@ ESMValTool package by running:
 
 .. code-block:: bash
 
-    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool 'python=3.9'
+    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool python=3.9
 
 Here ``conda`` is the executable calling the conda package manager to install
 ``esmvaltool`` and the ``-c`` flag specifies the conda software channels in which the
@@ -144,7 +150,7 @@ message to the console.
     conda is new enough to be able to install the required version of Python; we
     recommend that the conda version should be at least 4.9.
 
-.. _`conda subpackages`:
+.. _conda subpackages:
 
 Installation of subpackages
 ---------------------------
@@ -236,6 +242,8 @@ dependencies:
 
     esmvaltool install R
 
+.. _install_with_docker:
+
 Docker installation
 ===================
 
@@ -287,6 +295,7 @@ or script to abbreviate the above command, for example
 would allow using the ``esmvaltool`` command without even noticing that the
 tool is running inside a Docker container.
 
+.. _install_with_singularity:
 
 Singularity installation
 ========================
@@ -611,7 +620,7 @@ may need to manually remove that directory and run
 ```pip install -e '.[develop]'``
 again.
 
-.. _`common installation issues`:
+.. _common installation issues:
 
 Common installation problems and their solutions
 ================================================
