@@ -195,6 +195,39 @@ There is also a lesson available in the
 that describes the installation of the ESMValTool in more detail. It can be found
 `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/02-installation/index.html>`_.
 
+.. _install_on_macosx:
+
+Installation on MacOSX
+======================
+
+The Python diagnostics of the ESMValTool are supported on MacOSX, but Julia, NCL
+and R are not. If any of these are needed, deployment through a :ref:`Docker<install_with_docker>`
+container is advised.
+
+The ``esmvaltool-python`` diagnostics can be installed as follows:
+
+First, ensure conda is pre-installed (see `Conda installation`_ for more details).
+
+Create a new environment with the ``esmvaltool-python`` package:
+
+.. code-block:: bash
+
+    conda create --name esmvaltool_test -c esmvalgroup -c conda-forge esmvaltool-python python=3.9
+
+Activate the new environment:
+
+.. code-block:: bash
+
+    conda activate esmvaltool
+
+Confirm that the ESMValTool is working with:
+
+.. code-block:: bash
+
+    esmvaltool --help
+
+.. _install_with_pip:
+
 Pip installation
 ================
 
