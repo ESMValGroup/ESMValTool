@@ -8,7 +8,7 @@ Overview
 
 Projections of future climate change are often based on ensembles of global climate models such as CMIP6. To condense the information from these models they are often combined into probabilistic estimates such as mean and a related uncertainty range (such as the standard deviation). However, not all models in a given multi-model ensemble are always equally 'fit for purpose' and in such cases it can make sense to weight models based on their ability to simulate observed quantities related to the target. In addition, multi-model ensembles, such as CMIP can contain several models based on a very similar code-base (sharing, for example, multiple components) leading to complex inter-dependencies between the models. Adjusting for this by weighting them according to their independence can help to adjust for this.
 
-This recipe implements the Climate model Weighting by Independence and Performance (ClimWIP) method. It is based on work by Knutti et al. `(2017) <https://doi.org/10.1002/2016GL072012>`_, Lorenz et al. `(2018) <https://doi.org/10.1029/2017JD027992>`_, Brunner et al. `(2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, Merrifield et al. `(2020) <https://doi.org/10.5194/esd-11-807-2020>`_, Brunner et al. `(2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Weights are calculated based on historical model performance in several metrics (which can be defined by the ``performance_contributions`` parameter) as well as by their independence to all the other models in the ensemble based on their output fields in several metrics (which can be defined by the ``independence_contributions`` parameter). These weights can be used in subsequent diagnostics (some of which are implemented as part of this diagnostic).
+This recipe implements the Climate model Weighting by Independence and Performance (ClimWIP) method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_, `Lorenz et al. (2018) <https://doi.org/10.1029/2017JD027992>`_, `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_, `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Weights are calculated based on historical model performance in several metrics (which can be defined by the ``performance_contributions`` parameter) as well as by their independence to all the other models in the ensemble based on their output fields in several metrics (which can be defined by the ``independence_contributions`` parameter). These weights can be used in subsequent diagnostics (some of which are implemented as part of this diagnostic).
 
 **Note**: this recipe is still being developed! A more comprehensive (yet older) implementation can be found on GitHub:  https://github.com/lukasbrunner/ClimWIP
 
@@ -154,11 +154,11 @@ multiple datasets.
 References
 ----------
 
-* Brunner et al. `(2020) <https://doi.org/10.5194/esd-11-995-2020>`_, Earth Syst. Dynam., 11, 995-1012
-* Merrifield et al. `(2020) <https://doi.org/10.5194/esd-11-807-2020>`_, Earth Syst. Dynam., 11, 807-834
-* Brunner et al. `(2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, Environ. Res. Lett., 14, 124010
-* Lorenz et al. `(2018) <https://doi.org/10.1029/2017JD027992>`_, J. Geophys. Res.: Atmos., 9, 4509-4526
-* Knutti et al. `(2017) <https://doi.org/10.1002/2016GL072012>`_, Geophys. Res. Lett., 44, 1909-1918
+* `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_, Earth Syst. Dynam., 11, 995-1012
+* `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_, Earth Syst. Dynam., 11, 807-834
+* `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, Environ. Res. Lett., 14, 124010
+* `Lorenz et al. (2018) <https://doi.org/10.1029/2017JD027992>`_, J. Geophys. Res.: Atmos., 9, 4509-4526
+* `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_, Geophys. Res. Lett., 44, 1909-1918
 
 Example plots
 -------------
