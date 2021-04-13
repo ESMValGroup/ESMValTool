@@ -212,7 +212,7 @@ Create a new environment with the ``esmvaltool-python`` package:
 
 .. code-block:: bash
 
-    conda create --name esmvaltool_test -c esmvalgroup -c conda-forge esmvaltool-python python=3.9
+    conda create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool-python python=3.9
 
 Activate the new environment:
 
