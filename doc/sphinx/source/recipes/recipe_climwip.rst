@@ -6,8 +6,11 @@ ClimWIP: independence & performance weighting
 Overview
 --------
 
-This recipe calculates weights based on combined performance and independence metrics. These weights can be used in subsequent diagnostics.
-Reference implementation based on https://github.com/lukasbrunner/ClimWIP
+Projections of future climate change are often based on ensembles of global climate models such as CMIP6. To condense the information from these models they are often combined into probabilistic estimates such as mean and a related uncertainty range (such as the standard deviation). However, not all models in a given multi-model ensemble are always equally 'fit for purpose' and in such cases it can make sense to weight models based on their ability to simulate observed quantities related to the target. In addition, multi-model ensembles, such as CMIP can contain several models based on a very similar code-base (sharing, for example, multiple components) leading to complex inter-dependencies between the models. Adjusting for this by weighting them according to their independence can help to adjust for this.
+
+This recipe implements the Climate model Weighting by Independence and Performance (ClimWIP) method. It is based on work by Knutti et al. `(2017) <https://doi.org/10.1002/2016GL072012>`_, Lorenz et al. `(2018) <https://doi.org/10.1029/2017JD027992>`_, Brunner et al. `(2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, Merrifield et al. `(2020) <https://doi.org/10.5194/esd-11-807-2020>`_, Brunner et al. `(2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Weights are calculated based on historical model performance in several metrics (which can be defined by the ``performance_contributions`` parameter) as well as by their independence to all the other models in the ensemble based on their output fields in several metrics (which can be defined by the ``independence_contributions`` parameter). These weights can be used in subsequent diagnostics (some of which are implemented as part of this diagnostic).
+
+Note: this recipe is still being developed! A more comprehensive (yet older) implementation can be found on GitHub:  https://github.com/lukasbrunner/ClimWIP
 
 
 Available recipes and diagnostics
@@ -15,10 +18,10 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * ``recipe_climwip_test_basic.yml``
-    * ``recipe_climwip_test_performance_sigma.yml``
-
-(A recipe adding a 'real' case will be added in due time.)
+    * ``recipe_climwip_test_basic.yml``: Basic sample recipe using only a few models
+    * ``recipe_climwip_test_performance_sigma.yml``: Advance sample recipe for testing the perfect model test in particular
+    * ``recipe_climwip_brunner2019_med.yml``: Slightly modified results for one region from Brunner et al. (2019) (to change regions see below)
+    * ``recipe_climwip_brunner2020_med.yml`` (in development)
 
 Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
 
@@ -127,12 +130,18 @@ User settings in recipe
      * tas_reference takes the same fields as tas
 
 
+Updating the Brunner et al. (2019) for new regions
+--------------------------------------------------
+
+TODO
+
 Variables
 ---------
 
 * pr (atmos, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
 * psl (atmos, monthly mean, longitude latitude time)
+* rsus, rsds, rlus, rlds (atmos, monthly mean, longitude latitude time)
 * more variables can be added if available for all datasets.
 
 
