@@ -166,6 +166,7 @@ begin
   end if
 
   ; find indices of all OBS and obs4mips datasets
+  ; (treat ERA5 as special case)
 
   if (flag_multiobs_unc) then
     idxtmp = new(dimsizes(projects), integer)
@@ -174,6 +175,11 @@ begin
         idxtmp(i) = i
       else
         idxtmp(i) = -1
+      end if
+      ; ERA5 might be native6
+      if (isStrSubset(str_lower(names(i)), "era5") .and. \
+          isStrSubset(str_lower(projects(i)), "native")) then
+        idxtmp(i) = i
       end if
     end do
     idxobs = ind(idxtmp .ge. 0)

@@ -30,6 +30,8 @@
 ;   none
 ;
 ; Modification history
+;   20210413-lauer_axel: added multi-obs mean and average over all models
+;                        as individual plots
 ;   20210407-lauer_axel: added option to speficfy variable if more than one
 ;                        variable is present
 ;   20190220-lauer_axel: added provenance to output (v2.0)
@@ -100,12 +102,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (diag_script_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
-
   ; get multi-model mean index (if present)
 
   mm_ind = ind(names .eq. "MultiModelMean")
@@ -125,6 +121,57 @@ begin
     filename_add = "_" + diag_script_info@filename_add
   else
     filename_add = ""
+  end if
+
+  ; find indices of all OBS and obs4mips datasets
+  ; (treat ERA5 as special case)
+
+  idxtmp = new(dimsizes(projects), integer)
+  do i = 0, dimsizes(projects) - 1
+    if (isStrSubset(str_lower(projects(i)), "obs"))
+      idxtmp(i) = 1
+    else
+      idxtmp(i) = 0
+    end if
+    ; ERA5 might be native6
+    if (isStrSubset(str_lower(names(i)), "era5") .and. \
+        isStrSubset(str_lower(projects(i)), "native")) then
+      idxtmp(i) = 1
+    end if
+  end do
+
+  idxobs = ind(idxtmp .eq. 1)
+  delete(idxtmp)
+
+  if (all(ismissing(idxobs))) then
+    flag_multiobs = False
+  else
+    flag_multiobs = True
+    log_info("Using the following datasets to calculate multi-" \
+             + "observational average: " \
+             + str_join(names(idxobs), ", "))
+  end if
+
+  ; find all indices of models w/o MultiModelMean (if present)
+
+  idxtmp = new(dimsizes(projects), integer)
+  idxtmp = 1
+
+  if (mm_ind .ge. 0) then
+    idxtmp(mm_ind) = 0  ; flag multi-model mean (if present)
+  end if
+  idxtmp(idxobs) = 0  ; flag all observations
+
+  idxmod = ind(idxtmp .eq. 1)
+  delete(idxtmp)
+
+  if (all(ismissing(idxmod))) then
+    flag_multimod = False
+  else
+    flag_multimod = True
+    log_info("Using the following datasets to calculate multi-" \
+             + "model average: " \
+             + str_join(names(idxmod), ", "))
   end if
 
 end
@@ -204,6 +251,67 @@ begin
     ; replace "epsilon" values with missing value
     mean = where(abs(mean).lt.1.0e-4, mean@_FillValue, mean)
     data1 = 100.0 * data1 / abs(mean)
+
+    ; create arrays for multi-obs and multi-model averages (if requested)
+
+    if (ii .eq. 0) then
+      if (flag_multiobs) then
+        multiobs = new(dimsizes(data1), float)
+        multiobs = 0.0
+        copy_VarMeta(data1, multiobs)
+      end if
+      if (flag_multimod) then
+        multimod = new(dimsizes(data1), float)
+        multimod = 0.0
+        copy_VarMeta(data1, multimod)
+      end if
+    end if
+
+    ; calculate multi-obs and multi-model averages (if requested)
+
+    if (flag_multiobs) then
+      test = ind(idxobs .eq. imod)
+      if (.not.ismissing(test)) then
+        dims0 = dimsizes(multiobs)
+        dims1 = dimsizes(data1)
+        dimerror = False
+        if (dimsizes(dims0) .eq. dimsizes(dims1)) then
+          if (any(dims0 - dims1 .ne. 0)) then
+            dimerror = True
+          end if
+        else
+          dimerror = True
+        end if
+        if (dimerror) then
+          error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
+                    + "do not match. Use preprocessor to regrid data to " \
+                    + "common grid.")
+        end if
+        multiobs = multiobs + data1 ^ 2
+      end if
+    end if
+
+    if (flag_multimod) then
+      test = ind(idxmod .eq. imod)
+      if (.not.ismissing(test)) then
+        dims0 = dimsizes(multiobs)
+        dims1 = dimsizes(data1)
+        dimerror = False
+        if (dimsizes(dims0) .eq. dimsizes(dims1)) then
+          if (any(dims0 - dims1 .ne. 0)) then
+            dimerror = True
+          end if
+        else
+          dimerror = True
+        end if
+        if (dimerror) then
+          error_msg("f", DIAG_SCRIPT, "", "dimensions of datasets " \
+                    + "do not match. Use preprocessor to regrid data to " \
+                    + "common grid.")
+        end if
+        multimod = multimod + data1 ^ 2
+      end if
+    end if
 
     ; ###########################################
     ; # Style dependent annotation              #
@@ -348,25 +456,42 @@ begin
 
   end do  ; ii-loop (datasets)
 
-  if (write_plots) then
-    pres                            = True    ; needed to override
-                                              ; panelling defaults
-    ; print dataset name on each panel
-    pres@gsnPanelFigureStrings      = annots(ind_all_sorted)
-    pres@gsnPanelFigureStringsFontHeightF = 0.007
-    pres@lbLabelFontHeightF         = 0.01
-    pres@lbAutoManage               = False
-    pres@lbTopMarginF               = 0.1
-    pres@lbPerimOn                  = False     ; draw line around label
-                                                ; bar area
-    pres@gsnPanelCenter             = False
-    pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
-                                                ; the bottom
-    outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
-    log_info(" Wrote " + outfile)
-  else
-    outfile = ""
-  end if  ; if write_plots
+  ; create panel plot
+
+  pres                            = True    ; needed to override
+                                            ; panelling defaults
+  ; print dataset name on each panel
+  pres@gsnPanelFigureStrings      = annots(ind_all_sorted)
+  pres@gsnPanelFigureStringsFontHeightF = 0.007
+  pres@lbLabelFontHeightF         = 0.01
+  pres@lbAutoManage               = False
+  pres@lbTopMarginF               = 0.1
+  pres@lbPerimOn                  = False     ; draw line around label
+                                              ; bar area
+  pres@gsnPanelCenter             = False
+  pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
+                                              ; the bottom
+  outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
+
+  ; plot multi-obs and multi-model average (if requested)
+
+  if (flag_multiobs) then
+    multiobs = sqrt(multiobs / dimsizes(idxobs))
+    gavg = area_operations(multiobs, -90., 90., 0., 360., "average", True)
+    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@tiMainString = "Multi-obs average"
+    map_multiobs = gsn_csm_contour_map(wks, multiobs, res)
+  end if
+
+  if (flag_multimod) then
+    multimod = sqrt(multimod / dimsizes(idxmod))
+    gavg = area_operations(multimod, -90., 90., 0., 360., "average", True)
+    res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
+    res@tiMainString = "Multi-model average"
+    map_multimod = gsn_csm_contour_map(wks, multimod, res)
+  end if
+
+  log_info(" Wrote " + outfile)
 
   ; ------------------------------------------------------------------------
   ; write provenance to common netcdf and plot file

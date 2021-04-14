@@ -72,7 +72,7 @@ begin
     varlist = (/var_x, var_y, "clivi", "lwp"/)
   else if (var_z .eq. "totalcwp") then
     calctcwp = True
-    varlist = (/var_x, "var_y", "clivi", "lwp"/)
+    varlist = (/var_x, var_y, "clivi", "lwp"/)
   else
     varlist = (/var_x, var_y, var_z/)
   end if
@@ -239,7 +239,6 @@ begin
       z2 = where(z2 .lt. 0.0, z2@_FillValue, z2)
       z2 = where(isnan_ieee(z2), z@_FillValue, z2)
       mass = z + z2
-      delete(z)
       delete(z2)
       mass = where(mass .lt. min_mass, mass@_FillValue, mass)
 
@@ -382,6 +381,7 @@ begin
     delete(x1d)
     delete(y1d)
     delete(z1d)
+
   end do  ; ii-loop (models)
 
   delete(r)
@@ -413,16 +413,23 @@ begin
   ; # create the plots                        #
   ; ###########################################
 
-  plots = new(dim_MOD, graphic)
+  plots = new((/dim_MOD, 2/), graphic)
+  baseplots = new(dim_MOD, graphic)
+  xaddplots = new(dim_MOD, graphic)
+  yaddplots = new(dim_MOD, graphic)
   dplots = new(dim_MOD, graphic)
 
   res = True
-  res@cnFillOn           = True               ; color Fill
-  res@cnFillMode         = "RasterFill"       ; Raster Mode
-  res@cnLinesOn          =  False             ; Turn off contour lines
-  res@tiXAxisString      = var_x + " (" + xunits + ")"
-  res@tiYAxisString      = var_y + " (" + yunits + ")"
-  res@lbOrientation      = "Vertical"
+  res@cnFillOn       = True               ; color Fill
+  res@cnFillMode     = "RasterFill"       ; Raster Mode
+  res@cnLinesOn      =  False             ; Turn off contour lines
+  res@tiXAxisString  = var_x + " (" + xunits + ")"
+  res@tiYAxisString  = var_y + " (" + yunits + ")"
+  res@lbOrientation  = "Vertical"
+  res@lbTitleString      = zunits
+  res@lbTitlePosition    = "Right"
+  res@lbTitleFontHeightF = 0.015
+  res@pmLabelBarOrthogonalPosF = 0.35
 
   dres = res
 
@@ -443,9 +450,46 @@ begin
   dwks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_dyn_matrix_bias_" + \
                  var_x + "_" + var_y + "_" + var_z + filename_add)
 
+  res@gsnDraw  = False   ; don't draw yet
+  res@gsnFrame = False   ; don't advance frame yet
+
+  xyres1                 = True         ; xy plot mods desired
+  xyres1@tmXBMinorOn     = False        ; no minor tickmarks
+  xyres1@tmXBLabelStride = 2            ; label stride
+  xyres1@gsnDraw         = False        ; don't draw yet
+  xyres1@gsnFrame        = False        ; don't advance frame yet
+  xyres1@xyLineThicknessF = 2.0
+
+  xyres2 = xyres1
+
+  xyres1@vpHeightF = .20          ; set width of second plot
+  xyres1@trXMinF = xmin
+  xyres1@trXMaxF = xmax
+  xyres1@tiXAxisString = var_x + " (" + xunits + ")"
+  xyres1@tiYAxisString = zunits
+
+  xyres2@vpWidthF = .20          ; set width of second plot
+  xyres2@trYMinF = ymin
+  xyres2@trYMaxF = ymax
+  xyres2@tiXAxisString = zunits
+  xyres2@tiXAxisSide = "Top"
+  xyres2@tmXTLabelsOn = True
+  xyres2@tmXBLabelsOn = False
+
   do ii = 0, dim_MOD - 1
     res@tiMainString =  names(ii)
-    plots(ii) = gsn_csm_contour(wks, result(ii, :, :), res)
+    baseplots(ii) = gsn_csm_contour(wks, result(ii, :, :), res)
+
+    xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, dim_avg_n(result(ii, :, :), 1), xyres1)
+    yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(result(ii, :, :), 0), result&bin_y, xyres2)
+    xyres1@gsnAttachPlotsXAxis = True
+    plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), res, xyres1)
+    delete(xyres1@gsnAttachPlotsXAxis)
+    plots(ii, 1) = gsn_attach_plots(baseplots(ii), yaddplots(ii), res, xyres2)
+
+    draw(baseplots(ii))
+    frame(wks)
+
     if (isdefined("dresplot")) then
       delete(dresplot)
     end if
@@ -458,6 +502,7 @@ begin
       dresplot@tiMainString =  names(ii) + " - REF"
       diff = result(ii, :, :) - result(ref_ind, :, :)
     end if
+    copy_VarCoords(result(ii, :, :), diff)
     dplots(ii) = gsn_csm_contour(dwks, diff, dresplot)
   end do
 
@@ -470,7 +515,7 @@ begin
                                               / tofloat((dim_MOD + 1) / 2)/))
   pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
                                               / tofloat((dim_MOD + 1) / 2)/))
-  outfile = panelling(wks, plots, (dim_MOD + 3) / 4, 4, pres)
+  outfile = panelling(wks, baseplots, (dim_MOD + 3) / 4, 4, pres)
   doutfile = panelling(dwks, dplots, (dim_MOD + 3) / 4, 4, pres)
 
   log_info("Wrote " + outfile)
