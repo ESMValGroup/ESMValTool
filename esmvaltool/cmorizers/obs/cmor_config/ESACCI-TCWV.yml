@@ -8,10 +8,10 @@
 # oder OBS_ESACCI-SST_sat_2.2_Amon_ts_200801-200812.nc
 
 # Input
-filename: 'ESACCI-WATERVAPOUR-L3S-TCWV-meris-cmsaf_hoaps-05deg-{year}{month}-fv3.1.nc'
+filename: 'ESACCI-WATERVAPOUR-L3S-TCWV-*-05deg-{year}{month}-fv3.1.nc'
 attributes:
   dataset_id: ESACCI-TCWV
-  version: 'L3S-meris-cmsaf_hoaps-05deg_fv3.1'
+  version: 'L3S-05deg_fv3.1'
   tier: 3
   modeling_realm: sat
   project_id: OBS
@@ -25,6 +25,6 @@ variables:
     mip: Amon
     raw: tcwv
     # Output automatially added: Amon_<var>_200910-200910.nc
-    file: OBS_ESACCI-WATERVAPOUR-L3S-TCWV-meris-cmsaf_hoaps-05deg
+    file: OBS_ESACCI-WATERVAPOUR-L3S-TCWV-05deg
     start_year: 2003
-    end_year: 2003
+    end_year: 2017
