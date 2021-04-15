@@ -283,7 +283,9 @@ def get_climate_time(metadata):
             cube = iris.load_cube(filename)
             coord_names = [coord.name() for coord in cube.coords()]
             if list(set(coord_names).intersection(clim_coords)):
-                coord_names = [coord.standard_name for coord in cube.aux_coords]
+                coord_names = [
+                    coord.standard_name for coord in cube.aux_coords
+                ]
                 coord_time = cube.aux_coords[coord_names.index('time')]
                 break
 
