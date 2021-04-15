@@ -213,7 +213,11 @@ def main(cfg):
     change = xr.Dataset(changes)
     combined = xr.concat([bias, change], dim='metric')
     combined['metric'] = ['bias', 'change']
-    dataframe = combined.to_dataframe()
+
+    dataframe = combined.rename(
+        tas='temperature (K)',
+        pr='Precipitation (kg/m2/s)',
+        ).to_dataframe()
     dataframe.columns.name = 'variable'
     tidy_df = dataframe.stack('variable').unstack('metric')
 

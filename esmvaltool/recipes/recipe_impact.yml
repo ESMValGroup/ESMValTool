@@ -59,10 +59,10 @@ preprocessors:
     anomalies:
       period: full
       reference: &reference_period
-        start_year: 1981
+        start_year: 1986
         start_month: 1
         start_day: 1
-        end_year: 2010
+        end_year: 2015
         end_month: 12
         end_day: 31
       standardize: false
