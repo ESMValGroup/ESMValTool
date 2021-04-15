@@ -62,7 +62,10 @@ def load_data(metadata: list):
     ancestors = []
 
     for infodict in metadata:
-        alias = infodict['alias']
+        if infodict.get('ensemble') is not None:
+            alias = "{project}_{dataset}_{ensemble}".format(**infodict)
+        else:
+            alias = infodict['alias']
         input_file = infodict['filename']
         short_name = infodict['short_name']
 
@@ -112,8 +115,8 @@ def plot_scatter(tidy_df, ancestors, cfg):
     """Plot bias on one axis and change on the other."""
     grid = sns.relplot(
         data=tidy_df,
-        x="bias",
-        y="change",
+        x="Bias (RMSD of all gridpoints)",
+        y="Mean change (Future - Reference)",
         hue="dataset",
         col="variable",
         facet_kws=dict(sharex=False, sharey=False),
@@ -212,12 +215,14 @@ def main(cfg):
     bias = xr.Dataset(biases)
     change = xr.Dataset(changes)
     combined = xr.concat([bias, change], dim='metric')
-    combined['metric'] = ['Bias (RMSD of all gridpoints)', 'Mean change (Future - Reference)']
+    combined['metric'] = [
+        'Bias (RMSD of all gridpoints)', 'Mean change (Future - Reference)'
+    ]
 
     dataframe = combined.rename(
         tas='Temperature (K)',
         pr='Precipitation (kg/m2/s)',
-        ).to_dataframe()
+    ).to_dataframe()
     dataframe.columns.name = 'variable'
     tidy_df = dataframe.stack('variable').unstack('metric')
 
