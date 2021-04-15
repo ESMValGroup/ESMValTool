@@ -52,6 +52,7 @@ Future projections
 
    recipe_li17natcc
    recipe_schlund20jgr
+   recipe_meehl20sciadv
    recipe_emergent_constraints
    recipe_wenzel14jgr
    recipe_schlund20esd
