@@ -102,6 +102,26 @@ def get_input_files(cfg, index=''):
     return _get_input_data_files(cfg)
 
 
+def xaxis_monthly_label(ax1):
+    """
+    Set X axis monthly ticks/labels for data derived from climate statistics.
+
+    Arguments
+    ----------
+    ax1: matplotlib.pyplot.axes
+        The pyplot axes to add the
+
+    """
+    ref_year = int(np.mean(ax1.xaxis.get_ticklocs()))
+    x_ticks = [x + ref_year for x in np.arange(1 / 24, 1, 1 / 12)]
+    x_label = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',
+        'Nov', 'Dec'
+    ]
+    ax1.xaxis.set_ticks(x_ticks)
+    ax1.xaxis.set_ticklabels(x_label)
+
+
 def bgc_units(cube, name):
     """
     Convert the cubes into some friendlier units.
@@ -132,7 +152,7 @@ def bgc_units(cube, name):
         new_units = 'mg m-3'
 
     if name in ['intpp', ]:
-        new_units = 'mol m-2 d-1'
+        new_units = 'mol m-2 yr-1'
 
     if name in ['fgco2', ]:
         new_units = 'g m-2 d-1'

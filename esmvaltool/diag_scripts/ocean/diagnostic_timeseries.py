@@ -261,6 +261,35 @@ def make_time_series_plots(
         plt.close()
 
 
+def get_climate_time(metadata):
+    """
+    If cube result to be a climate statistic pick up time coord from first one.
+
+    Arguments
+    ----------
+    metadata: dict
+        The metadata dictionairy for a specific model.
+
+    Returns
+    ----------
+    iris.cube.Coord:
+        A cube coordinate for time.
+
+    """
+    coord_time = None
+    clim_coords = ['days_of_year', 'month_number', 'season_number']
+    for filename in sorted(metadata):
+        if metadata[filename]['frequency'] != 'fx':
+            cube = iris.load_cube(filename)
+            coord_names = [coord.name() for coord in cube.coords()]
+            if list(set(coord_names).intersection(clim_coords)):
+                coord_names = [coord.standard_name for coord in cube.aux_coords]
+                coord_time = cube.aux_coords[coord_names.index('time')]
+                break
+
+    return coord_time
+
+
 def multi_model_time_series(
         cfg,
         metadata,
@@ -285,10 +314,13 @@ def multi_model_time_series(
     # Load the data for each layer as a separate cube
     model_cubes = {}
     layers = {}
+    clim_time = get_climate_time(metadata)
     for filename in sorted(metadata):
         if metadata[filename]['frequency'] != 'fx':
             cube = iris.load_cube(filename)
             cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+            if clim_time and metadata[filename]['dataset'] != 'MultiModel':
+                cube.coord('time').points = clim_time.points
 
             cubes = diagtools.make_cube_layer_dict(cube)
             model_cubes[filename] = cubes
@@ -321,17 +353,18 @@ def multi_model_time_series(
                 cube = model_cubes[filename][layer]
 
             if 'MultiModel' in metadata[filename]['dataset']:
+                color = 'k'
                 timeplot(
                     cube,
                     c=color,
                     # label=metadata[filename]['dataset'],
                     ls=':',
-                    lw=2.,
+                    lw=3.,
                 )
                 plot_details[filename] = {
                     'c': color,
                     'ls': ':',
-                    'lw': 2.,
+                    'lw': 3.,
                     'label': metadata[filename]['dataset']
                 }
             else:
@@ -361,6 +394,9 @@ def multi_model_time_series(
         plt.title(title)
         plt.legend(loc='best')
         plt.ylabel(str(model_cubes[filename][layer].units))
+
+        if clim_time:
+            diagtools.xaxis_monthly_label(plt.gca())
 
         # Saving files:
         if cfg['write_plots']:
@@ -397,6 +433,10 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+    plot_single = True
+    if 'plot_single' in cfg.keys():
+        plot_single = cfg['plot_single']
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
@@ -409,17 +449,18 @@ def main(cfg):
             metadatas,
         )
 
-        for filename in sorted(metadatas):
-            if metadatas[filename]['frequency'] != 'fx':
-                logger.info('-----------------')
-                logger.info(
-                    'model filenames:\t%s',
-                    filename,
-                )
+        if plot_single:
+            for filename in sorted(metadatas):
+                if metadatas[filename]['frequency'] != 'fx':
+                    logger.info('-----------------')
+                    logger.info(
+                        'model filenames:\t%s',
+                        filename,
+                    )
 
-                ######
-                # Time series of individual model
-                make_time_series_plots(cfg, metadatas[filename], filename)
+                    ######
+                    # Time series of individual model
+                    make_time_series_plots(cfg, metadatas[filename], filename)
     logger.info('Success')
 
 
