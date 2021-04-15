@@ -215,7 +215,7 @@ def main(cfg):
     combined['metric'] = ['bias', 'change']
 
     dataframe = combined.rename(
-        tas='temperature (K)',
+        tas='Temperature (K)',
         pr='Precipitation (kg/m2/s)',
         ).to_dataframe()
     dataframe.columns.name = 'variable'
