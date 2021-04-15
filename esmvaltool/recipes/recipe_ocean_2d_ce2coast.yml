@@ -1,0 +1,208 @@
+# ESMValTool
+# recipe_ocean_multimap.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate multiple model timeseries and bias against a reference dataset
+    Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
+
+  authors:
+    - lovato_tomas
+  
+  maintainer:
+    - lovato_tomas
+
+  references:
+    - acknow_project
+
+  projects:
+    - ce2coast
+
+
+datasets:
+# working datasets
+# CMIP6
+  - {dataset: NorESM2-LM,    grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: IPSL-CM6A-LR,  grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: MRI-ESM2-0,    grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i2p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: CMCC-ESM2,     grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: UKESM1-0-LL,   grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f2,  start_year: 1950,  end_year: 2014}
+  - {dataset: GFDL-ESM4,     grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+  # --------------------------------------------------
+  # MAP preprocessors
+  # --------------------------------------------------
+  # For surface map
+  prep_surface_map_2D:
+    custom_order: true
+    extract_time:
+      start_year: 2000
+      start_month: 1
+      start_day: 1
+      end_year: 2014
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      # EU Atlantic
+      start_longitude: 324.
+      end_longitude: 357.
+      start_latitude: 30.
+      end_latitude: 57.
+
+  # --------------------------------------------------
+  # Timeseries preprocessors
+  # (area-weighted Average at surface)
+  # --------------------------------------------------
+  prep_Surface_average_timeseries_2D:
+    custom_order: true
+    annual_statistics:
+      operator: mean
+    extract_region:
+      # EU Atlantic
+      start_longitude: 324.
+      end_longitude: 357.
+      start_latitude: 30.
+      end_latitude: 57.
+    area_statistics:
+      operator: mean
+      fx_variables: [areacello]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: ['Eppley-VGPM-MODIS', 'Landschuetzer2016',]
+
+  # --------------------------------------------------
+  # Climatological timeseries
+  # (area-weighted Average at surface)
+  # --------------------------------------------------
+  prep_Surface_average_clim_timeseries_2D:
+    custom_order: true
+    extract_time:
+      start_year: 2000
+      start_month: 1
+      start_day: 1
+      end_year: 2014
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+      period: month
+    extract_region:
+      # EU Atlantic
+      start_longitude: 324.
+      end_longitude: 357.
+      start_latitude: 30.
+      end_latitude: 57.
+    area_statistics:
+      operator: mean
+      fx_variables: [areacello]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: ['Eppley-VGPM-MODIS', 'Landschuetzer2016',]
+
+      # # MED
+      # start_longitude: -12.
+      # end_longitude: 38.
+      # start_latitude: 29.5
+      # end_latitude: 48.
+
+      # # Arctic
+      # start_longitude: 0.
+      # end_longitude: 360.
+      # start_latitude: 60.
+      # end_latitude: 90.
+      
+
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
+diagnostics:
+
+  # --------------------------------------------------
+  # Surface Timeseries
+  # --------------------------------------------------
+  diag_timeseries_surface_average:
+    description: Global volume average time series
+    variables:
+      intpp:
+        preprocessor: prep_Surface_average_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2018,  start_year: 2003,  end_year: 2014,  tier: 2}
+      fgco2:
+        preprocessor: prep_Surface_average_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 1982,  end_year: 2015,  tier: 2}
+    scripts:
+      Global_Surface_Average_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        plot_single: False
+
+  diag_clim_timeseries_surface_average:
+    description: Global volume average time series
+    variables:
+      intpp:
+        preprocessor: prep_Surface_average_clim_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2018,  start_year: 2003,  end_year: 2014,  tier: 2}
+      fgco2:
+        preprocessor: prep_Surface_average_clim_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 1982,  end_year: 2015,  tier: 2}
+    scripts:
+      Global_Surface_Average_clim_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        plot_single: False
+
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  #diag_surface_intpp:
+  #  description: Global Ocean Surface maps vs OBS
+  #  variables:
+  #    intpp:
+  #      preprocessor: prep_surface_map_2D
+  #      mip: Omon
+  #      maps_range: [ 0., 30.]
+  #      diff_range: [-12., 12.]
+  #      layout_rowcol: [2, 3]
+  #      plot_ccrs: PlateCarree
+  #  additional_datasets:
+  #    - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2018,  start_year: 2004,  end_year: 2014,  tier: 2}
+  #  scripts:
+  #    Global_Ocean_multi_vs_obs:
+  #      script: ocean/diagnostic_maps_multimodel.py
+  #      observational_dataset: {dataset: Eppley-VGPM-MODIS, project: OBS}
+
+
+  #diag_surface_fgco2:
+  #  description: Global Ocean Surface maps vs OBS
+  #  variables:
+  #    fgco2:
+  #      preprocessor: prep_surface_map_2D
+  #      mip: Omon
+  #      layout_rowcol: [2, 3]
+  #      plot_ccrs: PlateCarree
+  #      maps_range: [-0.1, 0.1]
+  #      diff_range: [-0.08, 0.08]
+  #  additional_datasets:
+  #    - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2004,  end_year: 2014,  tier: 2}
+  #  scripts:
+  #    Global_Ocean_multi_vs_obs:
+  #      script: ocean/diagnostic_maps_multimodel.py
+  #      observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+
