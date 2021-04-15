@@ -47,7 +47,7 @@ observations: &observations
 
 preprocessors:
 
-  calculate_anomalies_tas:
+  calculate_anomalies:
     custom_order: true
     extract_region: &region
       start_longitude: 0.0
@@ -59,36 +59,20 @@ preprocessors:
     anomalies:
       period: full
       reference: &reference_period
-        start_year: 1986
+        start_year: 1981
         start_month: 1
         start_day: 1
-        end_year: 2015
+        end_year: 2010
         end_month: 12
         end_day: 31
       standardize: false
-    extract_time:  &future_period
+    extract_time:  # Future period
       start_year: 2035
       start_month: 1
       start_day: 1
       end_year: 2065
       end_month: 12
       end_day: 31
-    climate_statistics:
-      operator: mean
-
-  calculate_anomalies_pr:
-    custom_order: true
-    extract_region: &region
-      <<: *region
-    area_statistics:
-      operator: mean
-    anomalies:
-      period: full
-      reference:
-        <<: *reference_period
-      standardize: true  # for PR we want the change in %
-    extract_time:
-        <<: *future_period
     climate_statistics:
       operator: mean
 
@@ -118,12 +102,12 @@ diagnostics:
         short_name: tas
         start_year: 1981
         end_year: 2099
-        preprocessor: calculate_anomalies_tas
+        preprocessor: calculate_anomalies
       pr_change:
         short_name: pr
         start_year: 1981
         end_year: 2099
-        preprocessor: calculate_anomalies_pr
+        preprocessor: calculate_anomalies
       tas_bias:
         short_name: tas
         start_year: 1981

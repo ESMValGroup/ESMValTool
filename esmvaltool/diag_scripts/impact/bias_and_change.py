@@ -101,10 +101,7 @@ def calculate_bias(model_data: 'xr.DataArray',
     else:
         obs_data = obs_data.squeeze()
 
-    if model_data.name == "pr":
-        diff = (model_data - obs_data) / obs_data
-    else:
-        diff = model_data - obs_data
+    diff = model_data - obs_data
     bias = area_weighted_mean(diff**2)**0.5
 
     bias.attrs = model_data.attrs
