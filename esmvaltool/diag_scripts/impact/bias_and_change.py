@@ -212,7 +212,7 @@ def main(cfg):
     bias = xr.Dataset(biases)
     change = xr.Dataset(changes)
     combined = xr.concat([bias, change], dim='metric')
-    combined['metric'] = ['bias', 'change']
+    combined['metric'] = ['Bias (RMSD of all gridpoints)', 'Mean change (Future - Reference)']
 
     dataframe = combined.rename(
         tas='Temperature (K)',
