@@ -54,8 +54,10 @@ def _extract_variable(var, cfg, filenames, out_dir):
     cube = cubes.concatenate_cube()
     if short_name == 'pr':
         # Rainf add Snowf
-        snow_filenames = [fname.replace(var['raw_name'], var['raw_name_snow'])
-                          for fname in filenames]
+        snow_filenames = [
+            fname.replace(var['raw_name'], var['raw_name_snow'])
+            for fname in filenames
+        ]
         scubes = iris.load(snow_filenames)
         scube = scubes.concatenate_cube()
         cube.data += scube.data
