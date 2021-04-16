@@ -13,16 +13,13 @@ documentation:
     to True.
 
     More information about the De Bruin method can be found at:
-    https://doi.org/10.1175/JHM-D-15-0006.1
+    https://doi.org/10.1175/JHM-D-15-0006.1 page 1376, equation 6.
     More information about the Langbein method can be found at:
-    https://doi.org/10.3133/cir52
+    https://doi.org/10.3133/cir52 page 8, figure 1.
 
-    The target file has been generated from one of the models sample files
-    (prc01wb.asc). The file can be found at:
-    http://www.fao.org/geonetwork/srv/en/metadata.show?currTab=simple&id=52366
-
-    Regridding scheme can be choosen from ‘linear’, ‘linear_extrapolate’,
-    ‘nearest’, ‘area_weighted’, and ‘unstructured_nearest’.
+    A target file has been generated from one of the models sample files.
+    The target file can be found at:
+    https://github.com/babdollahi/globwat_target_grid
 
     The rough cutout preprocessor can be used by users to process the data
     for their desired region. The data will be processed at the global scale 
@@ -71,7 +68,7 @@ diagnostics:
         script: hydrology/globwat.py
         target_file: 'globwat/globwat_target_grid.nc'
         langbein_pet: False
-        regrid_scheme: linear
+        regrid_scheme: area_weighted
 
   diagnostic_monthly_GlobWat:
       description: monthly precipitation and potential evaporation of ERA5 & ERA-Interim
@@ -95,4 +92,4 @@ diagnostics:
           script: hydrology/globwat.py
           target_file: 'globwat/globwat_target_grid.nc'
           langbein_pet: False
-          regrid_scheme: linear
+          regrid_scheme: area_weighted
