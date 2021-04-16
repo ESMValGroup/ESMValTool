@@ -105,6 +105,9 @@ def load_target(cfg):
     """Load target grid."""
     filename = Path(cfg['auxiliary_data_dir']) / cfg['target_file']
     cube = iris.load_cube(str(filename))
+    for coord in 'longitude', 'latitude':
+        if not cube.coord(coord).has_bounds():
+            cube.coord(coord).guess_bounds()
     return cube
 
 
