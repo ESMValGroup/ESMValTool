@@ -75,8 +75,6 @@ def get_provenance_record(project, ancestor_files):
 
 def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Plot data."""
-    if not cfg['write_plots']:
-        return None
     x_data = []
     y_data = []
     dataset_names = []
@@ -209,11 +207,10 @@ def main(cfg):
     ancestor_files = [d['filename'] for d in input_data]
     ancestor_files.append(ecs_filepath)
     provenance_record = get_provenance_record(project, ancestor_files)
-    if plot_path is not None:
-        provenance_record.update({
-            'plot_file': plot_path,
-            'plot_types': ['scatter'],
-        })
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['scatter'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 

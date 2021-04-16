@@ -1,9 +1,8 @@
-"""
-Validation Diagnostic.
+"""Validation Diagnostic.
 
-This diagnostic uses two datasets (control and experiment),
-applies operations on their data, and plots one against the other.
-It can optionally use a number of OBS, OBS4MIPS datasets.
+This diagnostic uses two datasets (control and experiment), applies
+operations on their data, and plots one against the other. It can
+optionally use a number of OBS, OBS4MIPS datasets.
 """
 
 import logging
@@ -11,14 +10,18 @@ import os
 
 import iris
 import iris.analysis.maths as imath
+import iris.coord_categorisation
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
-
-from esmvaltool.diag_scripts.shared import (apply_supermeans,
-                                            get_control_exper_obs,
-                                            group_metadata, run_diagnostic)
 from esmvalcore.preprocessor import extract_region, extract_season
+
+from esmvaltool.diag_scripts.shared import (
+    apply_supermeans,
+    get_control_exper_obs,
+    group_metadata,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -51,8 +54,7 @@ def plot_latlon_cubes(cube_1,
                       data_names,
                       obs_name=None,
                       season=None):
-    """
-    Plot lat-lon vars for control, experiment, and obs.
+    """Plot lat-lon vars for control, experiment, and obs.
 
     Also plot Difference plots (control-exper, control-obs)
     cube_1: first cube (dataset: dat1)
@@ -159,6 +161,10 @@ def apply_seasons(data_set_dict):
     logger.info("Loading %s for seasonal extraction", data_file)
     data_cube = iris.load_cube(data_file)
     seasons = ['DJF', 'MAM', 'JJA', 'SON']
+    iris.coord_categorisation.add_season(data_cube, 'time', 'clim_season',
+                                         seasons)
+    iris.coord_categorisation.add_season_year(data_cube, 'time', 'season_year',
+                                              seasons)
     season_cubes = [extract_season(data_cube, season) for season in seasons]
     season_meaned_cubes = [
         season_cube.collapsed('time', iris.analysis.MEAN)

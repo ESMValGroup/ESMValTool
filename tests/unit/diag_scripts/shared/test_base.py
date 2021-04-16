@@ -329,8 +329,6 @@ def create_settings(path):
 
     settings = {
         'log_level': 'debug',
-        'write_netcdf': True,
-        'write_plots': True,
         'work_dir': str(path / 'work_dir'),
         'plot_dir': str(path / 'plot_dir'),
         'run_dir': str(path / 'run_dir'),
