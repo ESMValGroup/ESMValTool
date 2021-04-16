@@ -133,7 +133,43 @@ User settings in recipe
 Updating the Brunner et al. (2019) recipe for new regions
 ---------------------------------------------------------
 
-TODO
+``recipe_climwip_brunner2019_med.yml`` demonstrates a very similar setup to `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ but only for one region (the Mediterranean). To calculated weights for other regions the recipe needs to be updated at two places:
+
+.. code-block:: yaml
+   extract_shape:
+      shapefile: shapefiles/srex.shp
+      decomposed: True
+      method: contains
+      crop: true
+      ids:
+        - 'South Europe/Mediterranean [MED:13]'
+
+The ``ids`` field takes any valid SREX region key (for a full list see ./esmvaltool/diag_scripts/weighting/shapefiles/srex.csv). Not that this needs to be the full string here (not the abbreviation).
+
+.. code-block:: yaml
+   performance_sigma: 0.546
+   independence_sigma: 0.643
+
+The sigma parameters need to be set according to the selected region. The sigma values for the regions used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can be found in table 1 of the paper.
+
+**Warning 1:** if a new region is used the sigma values should be recalculated! This can be done by commenting in the blocks defining the target of the weighting:
+
+.. code-block:: yaml
+   CLIM_future:
+      short_name: tas
+      start_year: 2081
+      end_year: 2100
+      mip: Amon
+      preprocessor: region_mean
+
+as well as
+
+.. code-block:: yaml
+   calibrate_performance_sigma:
+      target: CLIM_future
+
+**Warning 2:** if a new region or target is used the provided metrics to establish the weights might no longer be appropriate. Using unrelated metrics with no correlation and/or physical relation to the target will reduce the skill of the weighting and ultimately render it useless!
+
 
 Variables
 ---------
