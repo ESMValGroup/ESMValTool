@@ -12,7 +12,6 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
-   recipe_climwip
    recipe_clouds
    recipe_crem
    recipe_combined_climate_extreme_index
@@ -49,6 +48,7 @@ Future projections
 .. toctree::
    :maxdepth: 1
 
+   recipe_climwip
    recipe_li17natcc
    recipe_schlund20jgr
    recipe_meehl20sciadv

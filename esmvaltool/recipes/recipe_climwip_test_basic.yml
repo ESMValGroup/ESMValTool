@@ -1,8 +1,13 @@
 # ESMValTool
-# recipe_climwip.yml
+# recipe_climwip_test_basic.yml
 ---
 documentation:
-  description: EUCP ClimWIP
+  description: >
+    Basic sample recipe using only a few models.
+    To use this recipe it is necessary to create a folder `shapefiles`
+    in the `auxiliary_data_dir` (with is specified in the config-user.yml)
+    and copy the shapefiles from into it:
+      mv ./esmvaltool/diag_scripts/weighting/shapefiles/* <auxiliary_data_dir>/shapefiles/
 
   authors:
     - kalverla_peter
@@ -41,11 +46,34 @@ preprocessors:
       scheme: linear
     mask_landsea:
       mask_out: sea
-    extract_region:
-      start_longitude: 0.0
-      end_longitude: 39.0
-      start_latitude: 30.0
-      end_latitude: 76.25
+
+    # -- cut region using corners --
+    # extract_region:
+    #   start_longitude: 0.0
+    #   end_longitude: 39.0
+    #   start_latitude: 30.0
+    #   end_latitude: 76.25
+
+    # -- cut SREX regions --
+    # extract_shape:
+    #   shapefile: shapefiles/srex.shp
+    #   method: contains
+    #   crop: true
+    #   ids:
+    #     - 'North Europe [NEU:11]'
+    #     - 'Central Europe [CEU:12]'
+    #     - 'South Europe/Mediterranean [MED:13]'
+
+    # -- cut AR6 regions --
+    extract_shape:
+      shapefile: shapefiles/ar6.shp
+      method: contains
+      crop: true
+      ids:
+        - 'N.Europe'
+        - 'West&Central-Europe'
+        - 'Mediterranean'
+
 
   climatological_mean:
     <<: *general
