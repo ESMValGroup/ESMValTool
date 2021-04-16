@@ -3,7 +3,7 @@
 Currently, the model reads monthly reference evaporation and then multiplies
 it by kc and then divide it by the number of days in each month and uses it
 as daily actual evaporation in the model. We can change the model code to
-read daily reference evaporation and does the calculation, but we
+read daily reference evaporation and do the calculation, but we
 did not change the model code for this aim yet.
 """
 import logging
