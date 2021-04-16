@@ -7,18 +7,20 @@ Source
     https://doi.org/10.24381/cds.20d54e34
 
 Last access
-    20210118
+    20210416
 
 Download and processing instructions
     Download the following variables from the cds:
         Near-surface air temperature ("CRU")
         Rainfall flux ("CRU" as well as "CRU and GPCC")
+        Snowfall flux ("CRU" as well as "CRU and GPCC")
     unzip the downloaded files
     rename to follow syntax '{raw_name}_WFDE5_{reference}_*_v1.0.nc'
 """
 
 import copy
 import logging
+import re
 from pathlib import Path
 
 import iris
@@ -43,12 +45,20 @@ def _fix_time_coord(cube, var):
     time.points = time.points + 1 / 48
 
 
-def _extract_variable(var, cfg, filepath, out_dir):
+def _extract_variable(var, cfg, filenames, out_dir):
     """Extract variable."""
     short_name = var['short_name']
     version = cfg['attributes']['version'] + '-' + var['reference']
 
-    cube = iris.load_cube(filepath)
+    cubes = iris.load(filenames)
+    cube = cubes.concatenate_cube()
+    if short_name == 'pr':
+        # Rainf add Snowf
+        snow_filenames = [fname.replace(var['raw_name'], var['raw_name_snow'])
+                          for fname in filenames]
+        scubes = iris.load(snow_filenames)
+        scube = scubes.concatenate_cube()
+        cube.data += scube.data
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
@@ -71,30 +81,15 @@ def _extract_variable(var, cfg, filepath, out_dir):
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
-    # Save daily variable
-    if var['save_hourly']:
-        utils.save_variable(cube,
-                            short_name,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
-
-    if var['add_day']:
-        logger.info("Building daily means")
-
-        # Calc daily
-        cube = daily_statistics(cube)
-
-        # Fix metadata
-        attrs['mip'] = 'day'
-        utils.set_global_atts(cube, attrs)
-
-        # Save variable
-        utils.save_variable(cube,
-                            short_name,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
+    logger.info("Building daily means")
+    # Calc daily
+    cube = daily_statistics(cube)
+    # Save variable
+    utils.save_variable(cube,
+                        short_name,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=['time'])
 
     if var['add_mon']:
         logger.info("Building monthly means")
@@ -123,6 +118,16 @@ def cmorization(in_dir, out_dir, cfg, _):
         logger.info("CMORizing variable '%s'", var['short_name'])
         file_names = cfg['filename'].format(**var)
 
-        for file_path in sorted(Path(in_dir).glob(file_names)):
-            logger.info("Loading '%s'", file_path)
-            _extract_variable(var, cfg, str(file_path), out_dir)
+        sorted_filenames = {}
+        # Sort files according to year
+        pattern = re.compile('.*_(\d{4})\d{2}_.*\.nc')
+        for filename in sorted(Path(in_dir).glob(file_names)):
+            filename = str(filename)
+            year = int(pattern.match(filename)[1])
+            sorted_filenames.setdefault(year, [])
+            sorted_filenames[year].append(filename)
+
+        # Run CMORization for each year
+        for (year, filenames) in sorted_filenames.items():
+            logger.info("Processing year %i", year)
+            _extract_variable(var, cfg, filenames, out_dir)
