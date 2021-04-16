@@ -117,6 +117,8 @@ def langbein_pet(tas):
     Langbein curve is a temperature-based method for calculating potential ET.
     In this equation, T is the annual average temperature in degree Celcius,
     and pet is in mm per year.
+    Constants A, B, and C were used to convert degrees Fahrenheit to degrees
+    Celsius and inches to millimeters.
     Reference: https://doi.org/10.3133/cir52
     """
     tas.convert_units('degC')
