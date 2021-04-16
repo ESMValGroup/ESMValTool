@@ -8,9 +8,9 @@ documentation:
     GlobWat is a Global Hydrological Model provided by FAO
     http://www.fao.org/nr/water/aquamaps/
 
-    By default, PET is calculated by the De Bruin method. However, users
-    can choose the Langbein method by setting the langbein_pet in the recipe
-    to True.
+    By default, PET is calculated by the De Bruin method (De Bruin et al. 2016).
+    However, users can choose the Langbein method by setting the langbein_pet
+    (Langbein et al. 1949) in the recipe to True.
 
     More information about the De Bruin method can be found at:
     https://doi.org/10.1175/JHM-D-15-0006.1 page 1376, equation 6.
