@@ -16,6 +16,8 @@ documentation:
     https://doi.org/10.1175/JHM-D-15-0006.1 page 1376, equation 6.
     More information about the Langbein method can be found at:
     https://doi.org/10.3133/cir52 page 8, figure 1.
+    An example of using Langbein method can be found at:
+    https://doi.org/10.1080/02626667.2017.1332416 page 1472, equation 7.
 
     A target file has been generated from one of the models sample files.
     The target file can be found at:
