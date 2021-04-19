@@ -1,13 +1,8 @@
 # ESMValTool
-# recipe_climwip_test_basic.yml
+# recipe_climwip.yml
 ---
 documentation:
-  description: >
-    Basic sample recipe using only a few models.
-    To use this recipe it is necessary to create a folder `shapefiles`
-    in the `auxiliary_data_dir` (with is specified in the config-user.yml)
-    and copy the shapefiles from into it:
-      mv ./esmvaltool/diag_scripts/weighting/shapefiles/* <auxiliary_data_dir>/shapefiles/
+  description: EUCP ClimWIP
 
   authors:
     - kalverla_peter
@@ -49,7 +44,7 @@ preprocessors:
 
     # -- cut region using corners --
     # extract_region:
-    #   start_longitude: 0.0
+    #   start_longitude: -10.0
     #   end_longitude: 39.0
     #   start_latitude: 30.0
     #   end_latitude: 76.25
@@ -162,5 +157,5 @@ diagnostics:
         weights: 'weights.nc'
         # optional arguments
         model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
-        xticks: [0, 10, 20, 30, 40]  # if not given ticks will be set automatically
+        xticks: [-10, 0, 10, 20, 30, 40]  # if not given ticks will be set automatically
         yticks: [30, 40, 50, 60, 70, 80]
