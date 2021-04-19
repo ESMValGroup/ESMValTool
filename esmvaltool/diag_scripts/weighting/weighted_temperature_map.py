@@ -73,6 +73,7 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
     figure, axes = plt.subplots(subplot_kw={'projection': proj})
 
     dataarray = set_antimeridian(dataarray, cfg.get('antimeridian', 'pacific'))
+    dataarray = dataarray.dropna('lon', how='all').dropna('lat', how='all')
 
     dataarray.plot.pcolormesh(
         ax=axes,
