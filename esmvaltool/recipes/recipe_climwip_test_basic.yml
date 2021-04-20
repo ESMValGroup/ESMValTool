@@ -49,6 +49,7 @@ preprocessors:
       mask_out: sea
 
     # -- cut region using corners --
+    # This option cuts rectangular regions by providing the corners
     # extract_region:
     #   start_longitude: -10.0
     #   end_longitude: 39.0
@@ -56,6 +57,7 @@ preprocessors:
     #   end_latitude: 76.25
 
     # -- cut SREX regions --
+    # This option cuts one or more SREX regions
     # extract_shape:
     #   shapefile: shapefiles/srex.shp
     #   method: contains
@@ -66,6 +68,9 @@ preprocessors:
     #     - 'South Europe/Mediterranean [MED:13]'
 
     # -- cut AR6 regions --
+    # This option cuts one or more AR6 regions
+    # Note: the AR6 regions are updated from the SREX regions but there
+    # are some regions that are different and the names have been updated
     extract_shape:
       shapefile: shapefiles/ar6.shp
       method: contains
