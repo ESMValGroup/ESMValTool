@@ -49,9 +49,14 @@ User settings in recipe
 
    *Required settings for script*
 
-   * ``quickplot: plot_type``: which of `Iris' quickplot <https://scitools.org.uk/iris/docs/latest/iris/iris/quickplot.html>`_ functions to use.
+   * ``quickplot: plot_type``: which of the :py:mod:`iris.quickplot` functions to use.
      Arguments that are accepted by these functions can also be specified here, e.g. ``cmap``.
      Preprocessors need to be configured such that the resulting data matches the plot type, e.g. a timeseries or a map.
+
+   *Optional settings for script*
+
+   * ``write_netcdf``: ``true`` (default) or ``false``.
+     This can be used to disable writing the results to netcdf files.
 
 Variables
 ---------

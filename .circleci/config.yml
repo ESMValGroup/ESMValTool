@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  coverage-reporter: codacy/coverage-reporter@11.1.1
+  coverage-reporter: codacy/coverage-reporter@11.9.2
 
 commands:
   check_changes:
@@ -29,12 +29,23 @@ jobs:
       - run:
           # Update environment if needed and run tests
           command: |
-            pip install .[test]
-            esmvaltool install Julia
-            esmvaltool install R
+            . /opt/conda/etc/profile.d/conda.sh
+            mkdir /logs
+            conda --version > /logs/conda_version.txt
+            conda activate esmvaltool
+            python --version > /logs/python_version.txt
+            conda env export > /logs/environment.yml
+            pip install .[test] > /logs/install.txt
+            # Run flake8 check with source code (it doesn't work without it)
+            pytest -n 2 -m flake8
+            # Update/install Julia and R dependencies
+            esmvaltool install Julia > /logs/install_Julia.txt
+            esmvaltool install R > /logs/install_R.txt
             # Remove source to test installed software
             rm -r esmvaltool
-            pytest -n 2
+            pytest -n 2 -m 'not flake8'
+      - store_artifacts:
+          path: /logs
       - store_artifacts:
           path: test-reports/
       - store_test_results:
@@ -42,6 +53,9 @@ jobs:
       - coverage-reporter/send_report:
           coverage-reports: 'test-reports/coverage.xml'
           project-token: $CODACY_PROJECT_TOKEN
+          # Skip if token isn't defined.
+          # Useful to let forks CI pass without passing secrets
+          skip: true
 
   test_installation:
     # Test Python 3 installation
@@ -63,7 +77,8 @@ jobs:
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
+            # conda env update >> /logs/conda.txt 2>&1
+            conda env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install .[test] > /logs/install.txt 2>&1
             esmvaltool install R
@@ -114,7 +129,8 @@ jobs:
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
+            # conda env update >> /logs/conda.txt 2>&1
+            conda env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             esmvaltool install R
@@ -175,18 +191,18 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
+            apt update && apt install time
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            # conda update -y conda > /logs/conda_base.txt 2>&1
-            conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
+            conda create -y -n build conda-build conda-verify
+            conda activate build
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export -n base > /logs/build_environment.yml
+            conda env export > /logs/build_environment.yml
             # Build conda package
-            apt update && apt install time
             \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
-          no_output_timeout: 30m
+          no_output_timeout: 60m
       - store_artifacts:
           path: /logs
 
@@ -197,6 +213,8 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - run:
+          environment:
+            R_INSTALL_N_CPUS: 2
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
@@ -206,11 +224,10 @@ jobs:
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
-            # Create and activate conda environment
-            conda create -y --name esmvaltool
+            # Install ESMValTool in a new conda environment
+            conda create -y --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool 'python=3.9'
+            # Activate the environment
             set +x; conda activate esmvaltool; set -x
-            # Install
-            conda install -y esmvaltool -c conda-forge -c esmvalgroup
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation

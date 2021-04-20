@@ -44,8 +44,7 @@ plot_kwargs_for_groups: dict, optional
 savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 
@@ -275,17 +274,17 @@ def get_constraint(x_data, y_data, x_ref, x_ref_err):
     y_data = y_data.values.squeeze()
     x_ref = x_ref.values.squeeze()
     x_ref_err = x_ref_err.values.squeeze()
-    (y_data_lin, y_pdf) = ec.gaussian_pdf(x_data, y_data, x_ref, x_ref_err**2)
+    (y_data_lin, y_pdf) = ec.target_pdf(x_data, y_data, x_ref, x_ref_err)
     y_mean = np.sum(y_data_lin * y_pdf) / np.sum(y_pdf)
     y_var = np.sum((y_data_lin - y_mean)**2 * y_pdf) / np.sum(y_pdf)
     y_std = np.sqrt(y_var)
-    lines = ec.regression_surface(x_data, y_data)
+    lines = ec.regression_line(x_data, y_data)
     logger.info("Observational constraint on '%s': (%.3f ± %.3f) %s", feature,
                 x_ref, x_ref_err, feature_units)
     logger.info("Constraint on target variable '%s': (%.3f ± %.3f) %s", label,
                 y_mean, y_std, label_units)
-    logger.info("R2 of emergent relationship: %.3f (p = %.4f)", lines['R2'],
-                lines['p'][0])
+    logger.info("R2 of emergent relationship: %.3f (p = %.4f)",
+                lines['rvalue']**2, lines['pvalue'])
     return (y_mean, y_std)
 
 
@@ -346,8 +345,8 @@ def plot_emergent_relationship(cfg, x_data, y_data, x_ref, x_ref_err, y_mean):
     # Plot regression lines
     axes.set_xlim(auto=False)
     axes.set_ylim(auto=False)
-    lines = ec.regression_surface(x_data.values.squeeze(),
-                                  y_data.values.squeeze())
+    lines = ec.regression_line(x_data.values.squeeze(),
+                               y_data.values.squeeze())
     lines['x'] = np.squeeze(lines['x'])
     axes.plot(lines['x'],
               lines['y'],
@@ -376,8 +375,8 @@ def plot_emergent_relationship(cfg, x_data, y_data, x_ref, x_ref_err, y_mean):
     axes.set_ylabel(f"{label} [{label_units}]")
     _process_pyplot_kwargs(cfg, 'plot_emergent_relationship')
     plt.legend(**cfg['legend_kwargs'])
-    text = rf"$R^2$ = {lines['R2']:.2f}, p = {lines['p'][0]:.3f}"
-    if lines['coef'][0] > 0.0:
+    text = rf"$R^2$ = {lines['rvalue']**2:.2f}, p = {lines['pvalue']:.3f}"
+    if lines['rvalue'] > 0.0:
         axes.text(0.6, 0.05, text, transform=axes.transAxes)
     else:
         axes.text(0.6, 0.95, text, transform=axes.transAxes)

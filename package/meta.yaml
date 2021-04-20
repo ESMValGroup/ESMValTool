@@ -5,7 +5,7 @@
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.1.1" %}
+{% set version = "2.2.0" %}
 
 package:
   name: esmvaltool
@@ -26,6 +26,8 @@ build:
 
 requirements:
   run:
+    - python>=3.7
+    - iris>=3.0.1
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
     - {{ pin_subpackage('esmvaltool-python', exact=True) }}
@@ -46,7 +48,7 @@ test:
   imports:
     - esmvaltool
   commands:
-    - pytest -n 2 --ignore=run_test.py
+    - pytest -n 2 --ignore="run_test.py" --ignore="tests/unit/test_docs.py"
     - cmorize_obs --help
     - nclcodestyle --help
     - esmvaltool colortables --help
@@ -63,10 +65,10 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.6
+        - python>=3.7
         - setuptools_scm
       run:
-        - cartopy
+        - cartopy>=0.18
         - cdo>=1.9.7
         - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
         - cdsapi
@@ -77,24 +79,26 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.1.0,<2.2  # in esmvalgroup channel
+        - esmvalcore>=2.2.0,<2.3  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=2.2.1,<3
+        - iris>=3.0.1
         - jinja2
         - joblib
         - lime
-        - matplotlib>=3,<3.3
+        - matplotlib>3.3.1  # bug in 3.3.1
+        - mpich<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
         - natsort
         - nc-time-axis
         - netCDF4
         - numpy
         - pandas
-        - pynio
         - pyproj>=2.1
-        - python>=3.6
+        - python>=3.7
         - python-cdo
         - pyyaml
+        - ruamel.yaml
+        - rasterio  # replaces pynio
         - scikit-image
         - scikit-learn
         - seaborn

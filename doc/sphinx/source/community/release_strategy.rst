@@ -17,7 +17,9 @@ Instead, the regular nature of the release guarantees that every feature can be
 released in a timely manner even if a specific target release is missed.
 
 Because of limited resources, only the latest released versions of ESMValTool and ESMValCore is maintained.
-If your project requires longer maintenance or you have other concerns about the release strategy, please contact the ESMValTool core development team.
+If your project requires longer maintenance or you have other concerns about
+the release strategy, please contact the ESMValTool core development team, see
+:ref:`contact`.
 
 
 Overall Procedure
@@ -40,50 +42,17 @@ Timeline
 7. ESMValTool release
 8. Soon after the release, the core development team meets to coordinate the content of the milestone for the next release
 
+.. _release_schedule:
 
 Release schedule
 ~~~~~~~~~~~~~~~~
 
 With the following release schedule, we strive to have three releases per year and to avoid releases too close to holidays, as well as avoiding weekends.
 
+Upcoming releases
+^^^^^^^^^^^^^^^^^
 
-- 2.0.0 (Release Manager: Bouwe Andela)
-
-+------------+--------------------------+
-| 2020-07-01 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2020-07-20 |ESMValCore release        |
-+------------+--------------------------+
-| 2020-07-22 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2020-08-03 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.1.0 (Release Manager: Valeriu Predoi)
-
-+------------+--------------------------+
-| 2020-10-05 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2020-10-12 |ESMValCore release        |
-+------------+--------------------------+
-| 2020-10-19 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2020-10-26 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.2.0 (Release Manager: tbd)
-
-+------------+--------------------------+
-| 2021-02-01 |ESMValCore feature freeze |
-+------------+--------------------------+
-| 2021-02-07 |ESMValCore release        |
-+------------+--------------------------+
-| 2021-02-14 |ESMValTool feature freeze |
-+------------+--------------------------+
-| 2021-02-21 |ESMValTool release        |
-+------------+--------------------------+
-
-- 2.3.0 (Release Manager: tbd)
+- 2.3.0 (Release Manager: `Klaus Zimmermann`_)
 
 +------------+--------------------------+
 | 2021-06-07 |ESMValCore feature freeze |
@@ -94,6 +63,96 @@ With the following release schedule, we strive to have three releases per year a
 +------------+--------------------------+
 | 2021-06-28 |ESMValTool release        |
 +------------+--------------------------+
+
+- 2.4.0 (Release Manager: TBD)
+
++------------+--------------------------+
+| 2021-10-04 |ESMValCore feature freeze |
++------------+--------------------------+
+| 2021-10-11 |ESMValCore release        |
++------------+--------------------------+
+| 2021-10-18 |ESMValTool feature freeze |
++------------+--------------------------+
+| 2021-10-25 |ESMValTool release        |
++------------+--------------------------+
+
+- 2.5.0 (Release Manager: TBD)
+
++------------+--------------------------+
+| 2022-02-07 |ESMValCore feature freeze |
++------------+--------------------------+
+| 2022-02-14 |ESMValCore release        |
++------------+--------------------------+
+| 2022-02-21 |ESMValTool feature freeze |
++------------+--------------------------+
+| 2022-02-28 |ESMValTool release        |
++------------+--------------------------+
+
+- 2.6.0 (Release Manager: TBD)
+
++------------+--------------------------+
+| 2022-06-06 |ESMValCore feature freeze |
++------------+--------------------------+
+| 2022-06-13 |ESMValCore release        |
++------------+--------------------------+
+| 2022-06-20 |ESMValTool feature freeze |
++------------+--------------------------+
+| 2022-06-27 |ESMValTool release        |
++------------+--------------------------+
+
+Past releases
+^^^^^^^^^^^^^
+
+- 2.2.0 (Release Manager: `Javier Vegas-Regidor`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2021-02-01 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-02-07 | 2021-02-09 | `ESMValCore Release 2.2.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.2.0>`_ | :ref:`esmvalcore:changelog-v2-2-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-02-14 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2021-02-21 | 2021-02-25 | `ESMValTool Release 2.2.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.2.0>`_ |      :ref:`changelog-v2-2-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.1.1 (Bugfix, Release Manager: `Valeriu Predoi`_)
+
++------------+---------------------------------------------------------------------------------------------+-------------------------+
+|    Done    |                                            Event                                            |        Changelog        |
++============+=============================================================================================+=========================+
+| 2020-12-01 | `ESMValTool Release 2.1.1 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.1.1>`_ | :ref:`changelog-v2-1-1` |
++------------+---------------------------------------------------------------------------------------------+-------------------------+
+
+- 2.1.0 (Release Manager: `Valeriu Predoi`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2020-10-05 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-10-12 | 2020-10-12 | `ESMValCore Release 2.1.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.1.0>`_ | :ref:`esmvalcore:changelog-v2-1-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-10-19 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-10-26 | 2020-10-26 | `ESMValTool Release 2.1.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.1.0>`_ |      :ref:`changelog-v2-1-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
+- 2.0.0 (Release Manager: `Bouwe Andela`_)
+
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+|  Planned   |    Done    |                                            Event                                            |             Changelog              |
++============+============+=============================================================================================+====================================+
+| 2020-07-01 |            |                                  ESMValCore Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-07-20 | 2020-07-20 | `ESMValCore Release 2.0.0 <https://github.com/ESMValGroup/ESMValCore/releases/tag/v2.0.0>`_ | :ref:`esmvalcore:changelog-v2-0-0` |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-07-22 |            |                                  ESMValTool Feature Freeze                                  |                                    |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+| 2020-08-03 | 2020-08-03 | `ESMValTool Release 2.0.0 <https://github.com/ESMValGroup/ESMValTool/releases/tag/v2.0.0>`_ |      :ref:`changelog-v2-0-0`       |
++------------+------------+---------------------------------------------------------------------------------------------+------------------------------------+
+
 
 
 Detailed timeline steps
@@ -121,7 +180,7 @@ These are the detailed steps to take to make a release.
 
 4. ESMValCore release
 
-   - Make the release by following the `ESMValCore release instructions`_.
+   - Make the release by following the :ref:`ESMValCore release instructions <esmvalcore:how-to-make-a-release>`.
    - Ask the user engagement team to announce the release to the user mailing list, the development team mailing list, on twitter
 
 
@@ -333,4 +392,7 @@ Changelog
 - 2020-07-23 Update to timeline format by Bouwe Andela and Klaus Zimmermann
 - 2020-06-08 First draft by Klaus Zimmermann and Bouwe Andela
 
-.. _ESMValCore release instructions: https://docs.esmvaltool.org/projects/esmvalcore/en/latest/contributing.html#how-to-make-a-release
+.. _Bouwe Andela: https://github.com/bouweandela
+.. _Javier Vegas-Regidor: https://github.com/jvegasbsc
+.. _Klaus Zimmermann: https://github.com/zklaus
+.. _Valeriu Predoi: https://github.com/valeriupredoi

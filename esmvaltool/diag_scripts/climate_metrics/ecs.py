@@ -5,7 +5,11 @@
 Description
 -----------
 Calculate the equilibrium climate sensitivity (ECS) using the regression method
-proposed by Gregory et al. (2004).
+proposed by Gregory et al. (2004). Further plots related to ECS can be found
+in the script ``climate_metrics/feedback_parameters.py``.
+
+If datasets with different numbers of years are given, assume that all data
+starts with year 1 in the MMM calculation.
 
 Author
 ------
@@ -19,14 +23,25 @@ Configuration options in recipe
 -------------------------------
 calculate_mmm : bool, optional (default: True)
     Calculate multi-model mean ECS.
+complex_gregory_plot : bool, optional (default: False)
+    Plot complex Gregory plot (also add response for first ``sep_year`` years
+    and last 150 - ``sep_year`` years, default: ``sep_year=20``) if ``True``.
 output_attributes : dict, optional
     Write additional attributes to netcdf files.
 read_external_file : str, optional
     Read ECS and feedback parameters from external file. The path can be given
     relative to this diagnostic script or as absolute path.
+savefig_kwargs : dict, optional
+    Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
+sep_year : int, optional (default: 20)
+    Year to separate regressions of complex Gregory plot. Only effective if
+    ``complex_gregory_plot`` is ``True``.
+x_lim : list of float, optional (default: [1.5, 6.0])
+    Plot limits for X axis of Gregory regression plot (T).
+y_lim : list of float, optional (default: [0.5, 3.5])
+    Plot limits for Y axis of Gregory regression plot (N).
 
 """
 
@@ -39,45 +54,34 @@ from pprint import pformat
 import cf_units
 import iris
 import iris.coord_categorisation
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import yaml
 from scipy import stats
 
+from esmvaltool.diag_scripts.climate_metrics.feedback_parameters import (
+    calculate_anomaly,
+)
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, extract_variables, get_diagnostic_filename,
-    get_plot_filename, group_metadata, io, plot, run_diagnostic,
-    select_metadata, variables_available)
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    run_diagnostic,
+    select_metadata,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+COLORS = sns.color_palette()
 EXP_4XCO2 = {
     'CMIP5': 'abrupt4xCO2',
     'CMIP6': 'abrupt-4xCO2',
 }
 RTMT_DATASETS = set()
-
-
-def _calculate_anomaly(data_4x, data_pic):
-    """Calculate anomaly cube for a dataset."""
-    cube_4x = iris.load_cube(data_4x[0]['filename'])
-    iris.coord_categorisation.add_year(cube_4x, 'time')
-    cube_4x = cube_4x.aggregated_by('year', iris.analysis.MEAN)
-
-    cube_pic = iris.load_cube(data_pic[0]['filename'])
-    iris.coord_categorisation.add_year(cube_pic, 'time')
-    cube_pic = cube_pic.aggregated_by('year', iris.analysis.MEAN)
-
-    x_data = cube_pic.coord('year').points
-    y_data = _get_data_time_last(cube_pic)
-    slope = _get_slope(x_data, y_data)
-    intercept = _get_intercept(x_data, y_data)
-    for _ in range(cube_pic.ndim - 1):
-        x_data = np.expand_dims(x_data, -1)
-    new_x_data = np.broadcast_to(x_data, cube_pic.shape)
-    new_data = slope * new_x_data + intercept
-    cube_4x.data -= np.ma.masked_invalid(new_data)
-    return cube_4x
 
 
 def _get_anomaly_data(input_data):
@@ -104,7 +108,9 @@ def _get_anomaly_data(input_data):
                     f"'{dataset_name}'")
 
             # Calculate anomaly, extract correct years and save it
-            cube = _calculate_anomaly(data_4x, data_pic)
+            cube = calculate_anomaly(data_4x, data_pic)
+            cube.attributes['project'] = data_4x[0]['project']
+            cube.attributes['dataset'] = dataset_name
             if cube.ndim != 1:
                 raise ValueError(
                     f"This diagnostic supports only 1D (time), input data, "
@@ -140,11 +146,15 @@ def _get_multi_model_mean(input_data):
     logger.info("Calculating multi-model means")
     project = input_data[0]['project']
     mmm_data = []
+
+    # Iterate over all variables
     for (var, datasets) in group_metadata(input_data, 'short_name').items():
         logger.debug("Calculating multi-model mean for variable '%s'", var)
         ancestors = []
         dataset_names = []
-        mmm = []
+        mmm = {}
+
+        # Read data from every datasets
         for dataset in datasets:
             try:
                 cube = dataset['cube']
@@ -159,8 +169,19 @@ def _get_multi_model_mean(input_data):
                     f"time), got {cube.ndim:d}-dimensional cube")
             ancestors.extend(dataset['ancestors'])
             dataset_names.append(dataset['dataset'])
-            mmm.append(cube.data)
-        mmm = np.ma.array(mmm)
+            mmm[dataset['dataset']] = cube.data
+
+        # Adapt shapes if necessary
+        target_shape = max([d.shape[0] for d in mmm.values()])
+        for (dataset_name, dataset_data) in mmm.items():
+            if dataset_data.shape[0] != target_shape:
+                dataset_data = np.pad(
+                    dataset_data, (0, target_shape - dataset_data.shape[0]),
+                    constant_values=np.nan)
+                mmm[dataset_name] = dataset_data
+
+        # Calculate MMM
+        mmm = np.ma.masked_invalid(list(mmm.values()))
         mmm_cube = cube.copy(data=np.ma.mean(mmm, axis=0))
         attributes = {
             'ancestors': ancestors,
@@ -185,6 +206,75 @@ def _get_slope(x_arr, y_arr):
         return np.nan
     reg = stats.linregress(x_arr, y_arr)
     return reg.slope
+
+
+def _plot_complex_gregroy_plot(cfg, axes, tas_cube, rtnt_cube, reg_all):
+    """Plot complex Gregory plot."""
+    sep = cfg['sep_year']
+
+    # Regressions
+    x_reg = np.linspace(cfg['x_lim'][0] - 1.0, cfg['x_lim'][1] + 1.0, 2)
+    reg_first = stats.linregress(tas_cube.data[:sep], rtnt_cube.data[:sep])
+    reg_last = stats.linregress(tas_cube.data[sep:], rtnt_cube.data[sep:])
+    y_reg_first = reg_first.slope * x_reg + reg_first.intercept
+    y_reg_last = reg_last.slope * x_reg + reg_last.intercept
+    y_reg_all = reg_all.slope * x_reg + reg_all.intercept
+    ecs_first = -reg_first.intercept / (2.0 * reg_first.slope)
+    ecs_last = -reg_last.intercept / (2.0 * reg_last.slope)
+    ecs_all = -reg_all.intercept / (2.0 * reg_all.slope)
+
+    # Plots
+    axes.scatter(tas_cube.data[:sep],
+                 rtnt_cube.data[:sep],
+                 color=COLORS[0],
+                 marker='o',
+                 s=8,
+                 alpha=0.7,
+                 label=f'first {sep:d} years: ECS = {ecs_first:.2f} K')
+    axes.scatter(tas_cube.data[sep:],
+                 rtnt_cube.data[sep:],
+                 color=COLORS[1],
+                 marker='o',
+                 s=8,
+                 alpha=0.7,
+                 label=f'last {tas_cube.shape[0] - sep:d} years: ECS = '
+                 f'{ecs_last:.2f} K')
+    axes.plot(x_reg, y_reg_first, color=COLORS[0], linestyle='-', alpha=0.6)
+    axes.plot(x_reg, y_reg_last, color=COLORS[1], linestyle='-', alpha=0.6)
+    axes.plot(x_reg,
+              y_reg_all,
+              color='k',
+              linestyle='-',
+              alpha=0.9,
+              label=r'all years: ECS = {:.2f} K ($R^2$ = {:.2f})'.format(
+                  ecs_all, reg_all.rvalue**2))
+
+    # Legend
+    return axes.legend(loc='upper right')
+
+
+def _write_ecs_regression(cfg, tas_cube, rtnt_cube, reg_stats, dataset_name):
+    """Write Gregory regression cube."""
+    ecs = -reg_stats.intercept / (2.0 * reg_stats.slope)
+    attrs = {
+        'anomaly': 'relative to piControl run',
+        'regression_r_value': reg_stats.rvalue,
+        'regression_slope': reg_stats.slope,
+        'regression_interception': reg_stats.intercept,
+        'Climate Feedback Parameter': reg_stats.slope,
+        'ECS': ecs,
+    }
+    attrs.update(cfg.get('output_attributes', {}))
+    cubes = iris.cube.CubeList()
+    for cube in [tas_cube, rtnt_cube]:
+        cube.var_name += '_anomaly'
+        cube.long_name += ' Anomaly'
+        cube.attributes = attrs
+        cubes.append(cube)
+    netcdf_path = get_diagnostic_filename('ecs_regression_' + dataset_name,
+                                          cfg)
+    io.iris_save(cubes, netcdf_path)
+    return netcdf_path
 
 
 def check_input_data(cfg):
@@ -281,78 +371,62 @@ def read_external_file(cfg):
     return (ecs, feedback_parameter, filepath)
 
 
-def plot_ecs_regression(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
+def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
     """Plot linear regression used to calculate ECS."""
-    if not cfg['write_plots']:
-        return (None, None)
+    (_, axes) = plt.subplots()
     ecs = -reg_stats.intercept / (2 * reg_stats.slope)
+    project = tas_cube.attributes['project']
 
     # Regression line
-    x_reg = np.linspace(-1.0, 9.0, 2)
+    x_reg = np.linspace(cfg['x_lim'][0] - 1.0, cfg['x_lim'][1] + 1.0, 2)
     y_reg = reg_stats.slope * x_reg + reg_stats.intercept
 
     # Plot data
-    text = r'r = {:.2f}, $\lambda$ = {:.2f}, F = {:.2f}, ECS = {:.2f}'.format(
-        reg_stats.rvalue, -reg_stats.slope, reg_stats.intercept, ecs)
+    if cfg.get('complex_gregory_plot'):
+        legend = _plot_complex_gregroy_plot(cfg, axes, tas_cube, rtnt_cube,
+                                            reg_stats)
+    else:
+        axes.scatter(tas_cube.data,
+                     rtnt_cube.data,
+                     color=COLORS[0],
+                     marker='o',
+                     s=8,
+                     alpha=0.7)
+        legend = None
+        axes.plot(x_reg, y_reg, color='k', linestyle='-', alpha=0.8)
+        axes.text(
+            0.05,
+            0.9,
+            r'R$^2$ = {:.2f}, ECS = {:.2f} K'.format(reg_stats.rvalue**2, ecs),
+            transform=axes.transAxes,
+        )
+    axes.axhline(0.0, color='gray', linestyle=':')
+
+    # Plot appearance
+    axes.set_title(f"Gregory regression for {dataset_name} ({project})")
+    axes.set_xlabel("ΔT [K]")
+    axes.set_ylabel(r"N [W m$^{-2}$]")
+    axes.set_xlim(cfg['x_lim'])
+    axes.set_ylim(cfg['y_lim'])
+
+    # Save plot
     plot_path = get_plot_filename(dataset_name, cfg)
-    plot.scatterplot(
-        [tas_cube.data, x_reg],
-        [rtnt_cube.data, y_reg],
-        plot_path,
-        plot_kwargs=[{
-            'linestyle': 'none',
-            'markeredgecolor': 'b',
-            'markerfacecolor': 'none',
-            'marker': 's',
-        }, {
-            'color': 'k',
-            'linestyle': '-',
-        }],
-        save_kwargs={
-            'bbox_inches': 'tight',
-            'orientation': 'landscape',
-        },
-        axes_functions={
-            'set_title': dataset_name,
-            'set_xlabel': 'tas / ' + tas_cube.units.origin,
-            'set_ylabel': 'rtnt / ' + rtnt_cube.units.origin,
-            'set_xlim': [0.0, 8.0],
-            'set_ylim': [-2.0, 10.0],
-            'text': {
-                'args': [0.05, 0.9, text],
-                'kwargs': {
-                    'transform': 'transAxes'
-                },
-            },
-        },
-    )
+    plt.savefig(plot_path,
+                additional_artists=[legend],
+                **cfg['savefig_kwargs'])
+    logger.info("Wrote %s", plot_path)
+    plt.close()
 
     # Write netcdf file for every plot
-    tas_coord = iris.coords.AuxCoord(
-        tas_cube.data,
-        **extract_variables(cfg, as_iris=True)['tas'])
-    attrs = {
-        'model': dataset_name,
-        'regression_r_value': reg_stats.rvalue,
-        'regression_slope': reg_stats.slope,
-        'regression_interception': reg_stats.intercept,
-        'Climate Feedback Parameter': -reg_stats.slope,
-        'ECS': ecs,
-    }
-    attrs.update(cfg.get('output_attributes', {}))
-    cube = iris.cube.Cube(rtnt_cube.data,
-                          attributes=attrs,
-                          aux_coords_and_dims=[(tas_coord, 0)],
-                          **extract_variables(cfg, as_iris=True)['rtnt'])
-    netcdf_path = get_diagnostic_filename('ecs_regression_' + dataset_name,
-                                          cfg)
-    io.iris_save(cube, netcdf_path)
+    netcdf_path = _write_ecs_regression(cfg, tas_cube, rtnt_cube, reg_stats,
+                                        dataset_name)
 
     # Provenance
     provenance_record = get_provenance_record(
         f"Scatterplot between TOA radiance and global mean surface "
         f"temperature anomaly for 150 years of the abrupt 4x CO2 experiment "
-        f"including linear regression to calculate ECS for {dataset_name}.")
+        f"including linear regression to calculate ECS for {dataset_name} "
+        f"({project}).")
     provenance_record.update({
         'plot_file': plot_path,
         'plot_types': ['scatter'],
@@ -361,7 +435,21 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
     return (netcdf_path, provenance_record)
 
 
-def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
+def set_default_cfg(cfg):
+    """Set default values for cfg."""
+    cfg = deepcopy(cfg)
+    cfg.setdefault('savefig_kwargs', {
+        'dpi': 300,
+        'orientation': 'landscape',
+        'bbox_inches': 'tight',
+    })
+    cfg.setdefault('sep_year', 20)
+    cfg.setdefault('x_lim', [0.0, 12.0])
+    cfg.setdefault('y_lim', [-2.0, 10.0])
+    return cfg
+
+
+def write_data(cfg, ecs_data, feedback_parameter_data, ancestor_files):
     """Write netcdf files."""
     data = [ecs_data, feedback_parameter_data]
     var_attrs = [
@@ -410,6 +498,7 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
 
 def main(cfg):
     """Run the diagnostic."""
+    cfg = set_default_cfg(cfg)
     sns.set(**cfg.get('seaborn_settings', {}))
 
     # Read external file if desired
@@ -429,7 +518,8 @@ def main(cfg):
     for dataset_name in tas_data:
         logger.info("Processing '%s'", dataset_name)
         if dataset_name not in rtnt_data:
-            raise ValueError(f"No 'rtnt' data for '{dataset_name}' available")
+            raise ValueError(
+                f"No 'rtmt' or 'rtnt' data for '{dataset_name}' available")
         tas_cube = tas_data[dataset_name][0]['cube']
         rtnt_cube = rtnt_data[dataset_name][0]['cube']
         ancestor_files = (tas_data[dataset_name][0]['ancestors'] +
@@ -438,16 +528,14 @@ def main(cfg):
         # Perform linear regression
         reg = stats.linregress(tas_cube.data, rtnt_cube.data)
 
-        # Plot ECS regression if desired
-        (path,
-         provenance_record) = plot_ecs_regression(cfg, dataset_name, tas_cube,
-                                                  rtnt_cube, reg)
+        # Plot Gregory plots
+        (path, provenance_record) = plot_gregory_plot(cfg, dataset_name,
+                                                      tas_cube, rtnt_cube, reg)
 
         # Provenance
-        if path is not None:
-            provenance_record['ancestors'] = ancestor_files
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(path, provenance_record)
+        provenance_record['ancestors'] = ancestor_files
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
         # Save data
         if cfg.get('read_external_file') and dataset_name in ecs:
@@ -456,14 +544,14 @@ def main(cfg):
                 "parameter from file '%s' for '%s'", external_file,
                 dataset_name)
         ecs[dataset_name] = -reg.intercept / (2 * reg.slope)
-        feedback_parameter[dataset_name] = -reg.slope
+        feedback_parameter[dataset_name] = reg.slope
         all_ancestors.extend(ancestor_files)
 
     # Write data
     if external_file is not None:
         all_ancestors.append(external_file)
     all_ancestors = list(set(all_ancestors))
-    write_data(ecs, feedback_parameter, all_ancestors, cfg)
+    write_data(cfg, ecs, feedback_parameter, all_ancestors)
 
 
 if __name__ == '__main__':

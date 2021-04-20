@@ -12,9 +12,7 @@ import pandas as pd
 import seaborn as sns
 import yaml
 from scipy import integrate
-from scipy.stats import linregress, multivariate_normal
-from sklearn.feature_selection import f_regression
-from sklearn.linear_model import LinearRegression
+from scipy.stats import linregress
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -25,9 +23,13 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(__name__)
 
-
-COLORS = sns.color_palette()
-COLORS_ALL = ['gray'] + COLORS[1:]
+ALLOWED_VAR_TYPES = [
+    'feature',
+    'label',
+    'prediction_input',
+    'prediction_input_error',
+]
+COLOR_COMBINED_GROUPS = 'gray'
 LEGEND_KWARGS = {
     'loc': 'center left',
     'bbox_to_anchor': [1.05, 0.5],
@@ -36,78 +38,32 @@ LEGEND_KWARGS = {
 PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
 
 
-def _check_feature_array(x_array, single_sample=False):
-    """Check X array."""
-    x_array = np.array(x_array)
-    if x_array.ndim == 0:
-        x_array = x_array.reshape(1, 1)
-    elif x_array.ndim == 1:
-        if single_sample:
-            x_array = x_array.reshape(1, -1)
-        else:
-            x_array = x_array.reshape(-1, 1)
-    elif x_array.ndim > 2:
+def _check_x_y_arrays(x_array, y_array):
+    """Ensure that the X and Y arrays have correct shapes."""
+    x_array = np.ma.array(x_array)
+    y_array = np.ma.array(y_array)
+
+    # Check shapes
+    if x_array.ndim != 1:
         raise ValueError(
-            f"Expected at most 2D array for X, got {x_array.ndim:d}D array")
-    if single_sample:
-        if x_array.shape[0] > 1:
-            raise ValueError(
-                f"Expected single sample for X (i.e. one observation), got "
-                f"{x_array.shape[0]:d}")
-    return x_array
-
-
-def _check_training_arrays(x_array, y_array=None):
-    """Ensure that the training input arrays have correct shapes."""
-    x_array = _check_feature_array(x_array, single_sample=False)
-    if y_array is None:
-        return x_array
-    y_array = np.array(y_array)
+            f"Expected 1D array for X training data, got {x_array.ndim:d}D "
+            f"array")
     if y_array.ndim != 1:
         raise ValueError(
-            f"Expected 1D array for Y, got {y_array.ndim:d}D array")
-    if x_array.shape[0] != y_array.shape[0]:
+            f"Expected 1D array for Y training data, got {y_array.ndim:d}D "
+            f"array")
+    if x_array.shape != y_array.shape:
         raise ValueError(
-            f"Expected X and Y arrays with identical first dimension, got "
-            f"shapes {x_array.shape} and {y_array.shape}")
+            f"Expected identical shapes for X and Y training data, got "
+            f"{x_array.shape} and {y_array.shape}, respectively")
+
+    # Remove masked values
+    mask = np.ma.getmaskarray(x_array)
+    mask |= np.ma.getmaskarray(y_array)
+    x_array = np.array(x_array[~mask])
+    y_array = np.array(y_array[~mask])
+
     return (x_array, y_array)
-
-
-def _check_prediction_arrays(x_new, x_train=None, x_cov=None):
-    """Ensure that the prediction input arrays have correct shapes."""
-    x_new = _check_feature_array(x_new, single_sample=True)
-    if x_train is not None:
-        x_train = _check_feature_array(x_train, single_sample=False)
-        if x_new.shape[1] != x_train.shape[1]:
-            raise ValueError(
-                f"Expected identical number of predictors for training and "
-                f"prediction data, got {x_train.shape[1]:d} and "
-                f"{x_new.shape[1]:d}, respectively")
-    if x_cov is None:
-        return x_new
-    x_cov = np.squeeze(x_cov)
-    if x_cov.ndim == 0:
-        x_cov = x_cov.reshape(1, 1)
-    elif x_cov.ndim != 2:
-        raise ValueError(
-            f"Expected 0D or 2D array for covariance matrix of observations, "
-            f"got {x_cov.ndim:d}D array")
-    if x_cov.shape != (x_new.shape[1], x_new.shape[1]):
-        raise ValueError(
-            f"Expected quadratic array for covariance matrix of observations "
-            f"with shape {(x_new.shape[1], x_new.shape[1])} (number of "
-            f"predictors), got {x_cov.shape}")
-    return (x_new, x_cov)
-
-
-def _get_x_ranges(obs_mean, obs_cov):
-    """Get integration limits (8 sigma interval, includes > 99.99% of area)."""
-    x_ranges = []
-    for (idx, var) in enumerate(np.diag(obs_cov)):
-        std = np.sqrt(var)
-        x_range = [obs_mean[0][idx] - 4.0 * std, obs_mean[0][idx] + 4.0 * std]
-        x_ranges.append(x_range)
-    return x_ranges
 
 
 def _add_column(data_frame, series, column_name):
@@ -132,13 +88,13 @@ def _add_column(data_frame, series, column_name):
 
 def _crop_data_frame(data_frame, ref_data_frame, data_name, ref_data_name):
     """Crop columns of a data_frame so that it matches a given reference."""
-    diff_not_in_data_frame = list(ref_data_frame.columns.difference(
-        data_frame.columns))
+    diff_not_in_data_frame = list(
+        ref_data_frame.columns.difference(data_frame.columns))
     if diff_not_in_data_frame:
         raise ValueError(
             f"No '{data_name}' given for tags {diff_not_in_data_frame}")
-    diff_not_in_ref = list(data_frame.columns.difference(
-        ref_data_frame.columns))
+    diff_not_in_ref = list(
+        data_frame.columns.difference(ref_data_frame.columns))
     if diff_not_in_ref:
         logger.warning(
             "Ignoring '%s' of tags %s: no corresponding '%s' data available",
@@ -223,8 +179,8 @@ def _get_attributes(cubes):
         tag = cube_attrs['tag']
         attributes.setdefault(tag, {})
         if cube_attrs['var_type'] in ('feature', 'label'):
-            attributes[tag] = _combine_dicts(
-                attributes[tag], _metadata_to_dict(cube.metadata))
+            attributes[tag] = _combine_dicts(attributes[tag],
+                                             _metadata_to_dict(cube.metadata))
         elif cube_attrs['var_type'] in ('prediction_input',
                                         'prediction_input_error'):
             attributes[tag] = _combine_dicts(
@@ -251,8 +207,11 @@ def _get_attributes(cubes):
     return attributes
 
 
-def _get_cube_list(input_files, recipe, additional_data=None,
-                   external_file=None, merge_identical_pred_input=True):
+def _get_cube_list(input_files,
+                   recipe,
+                   additional_data=None,
+                   external_file=None,
+                   merge_identical_pred_input=True):
     """Get :class:`iris.cube.CubeList` of input files."""
     cubes = iris.cube.CubeList()
 
@@ -261,8 +220,8 @@ def _get_cube_list(input_files, recipe, additional_data=None,
         logger.info("Loading '%s'", filename)
         cube = _load_cube_with_dataset_coord(filename)
         cube.attributes['filename'] = filename
-        (feature_cube, prediction_cube) = _split_cube(
-            cube, merge_identical_pred_input)
+        (feature_cube,
+         prediction_cube) = _split_cube(cube, merge_identical_pred_input)
         if feature_cube is not None:
             cubes.append(feature_cube)
         if prediction_cube is not None:
@@ -274,13 +233,9 @@ def _get_cube_list(input_files, recipe, additional_data=None,
     # External file
     cubes.extend(_get_external_cube_list(external_file))
 
-    # Check cubes
+    # Check metadata of cubes
     for cube in cubes:
-        for attr in ('var_type', 'tag'):
-            if attr not in cube.attributes:
-                raise AttributeError(
-                    f"Necessary attribute '{attr}' not given in cube "
-                    f"'{cube.attributes['filename']}'")
+        check_metadata(cube.attributes)
 
     return cubes
 
@@ -324,9 +279,9 @@ def _get_data_frame(var_type, cubes, label_all_data, group_by=None):
                     f"Group attribute '{group_by}' not available in input "
                     f"file '{cube_attrs['filename']}'")
             group = cube_attrs.get(group_by, label_all_data)
-            index = pd.MultiIndex.from_product([[group],
-                                                cube.coord('dataset').points],
-                                               names=[group_by, 'dataset'])
+            index = pd.MultiIndex.from_product(
+                [[group], cube.coord('dataset').points],
+                names=[group_by, 'dataset'])
         else:
             index = cube.coord('dataset').points
         series = pd.Series(data=cube.data, index=index)
@@ -408,7 +363,7 @@ def _get_first_cube_with_coord(cubes, accepted_coord_names):
     for cube in cubes:
         for coord_name in accepted_coord_names:
             try:
-                coord = cubes[0].coord(coord_name)
+                coord = cube.coord(coord_name)
                 returned_cube = cube
                 returned_coord = coord
                 break
@@ -418,15 +373,16 @@ def _get_first_cube_with_coord(cubes, accepted_coord_names):
             break
     else:
         raise ValueError(
-            f"No cube of {cubes} does contain coordinate 'dataset' (i.e. one "
-            f"of {accepted_coord_names})")
+            f"No cube of {cubes} contains 'dataset' coordinate (i.e. one of "
+            f"{accepted_coord_names})")
     return (returned_cube, returned_coord)
 
 
 def _load_cube_with_dataset_coord(filename):
     """Load cube with single ``dataset``-like coordinate.
 
-    Files created by NCL cannot be read using a simple :func:`iris.load_cube`.
+    Files created by NCL cannot be read using a simple
+    :func:`iris.load_cube`.
 
     """
     cubes = iris.load(filename)
@@ -435,6 +391,10 @@ def _load_cube_with_dataset_coord(filename):
     # Handle single cube
     if len(cubes) == 1:
         (cube, coord) = _get_first_cube_with_coord(cubes, accepted_coord_names)
+        if cube.ndim != 1:
+            raise ValueError(
+                f"Only 1D cubes supported, got {cube.ndim:d}D cube in file "
+                f"'{filename}'")
         coord.var_name = 'dataset'
         coord.standard_name = None
         coord.long_name = 'dataset'
@@ -460,7 +420,7 @@ def _load_cube_with_dataset_coord(filename):
             f"file '{filename}' available")
 
     # Create new coordinate
-    if data_cube.ndim > 1:
+    if data_cube.ndim != 1:
         raise ValueError(
             f"Only 1D cubes supported, got {data_cube.ndim:d}D cube in file "
             f"'{filename}'")
@@ -474,9 +434,13 @@ def _load_cube_with_dataset_coord(filename):
     return data_cube
 
 
-def _create_scatterplot(x_data, y_data, numbers_as_markers=True, axes=None,
+def _create_scatterplot(x_data,
+                        y_data,
+                        numbers_as_markers=True,
+                        plot_regression_line_mean=False,
+                        axes=None,
                         **kwargs):
-    """Create single scatterplot."""
+    """Create single scatterplot including regression line."""
     if axes is None:
         (_, axes) = plt.subplots()
 
@@ -485,48 +449,99 @@ def _create_scatterplot(x_data, y_data, numbers_as_markers=True, axes=None,
     scatter_kwargs.pop('label', None)
     for (idx, _) in enumerate(x_data):
         if numbers_as_markers:
-            axes.text(x_data[idx], y_data[idx],
-                      x_data.index.get_level_values(-1)[idx], size=7,
+            axes.text(x_data[idx],
+                      y_data[idx],
+                      x_data.index.get_level_values(-1)[idx],
+                      size=7,
                       **scatter_kwargs)
         else:
             axes.scatter(x_data[idx], y_data[idx], **scatter_kwargs)
 
     # Regression line
-    axes = _create_regplot(x_data, y_data, axes=axes, **kwargs)
+    line_kwargs = {**kwargs, 'linestyle': '-'}
+    fill_between_kwargs = {**kwargs, 'alpha': 0.3}
+    fill_between_kwargs.pop('label', None)
+    if plot_regression_line_mean:
+        mean_kwargs = {**kwargs, 'marker': 'o'}
+        mean_kwargs.pop('label', None)
+        mean_kwargs.pop('linestyle', None)
+    else:
+        mean_kwargs = None
+    axes = _create_regplot(x_data,
+                           y_data,
+                           axes=axes,
+                           line_kwargs=line_kwargs,
+                           fill_between_kwargs=fill_between_kwargs,
+                           mean_kwargs=mean_kwargs)
     return axes
 
 
-def _create_pred_input_plot(mean, error, axes, **kwargs):
+def _create_pred_input_plot(x_pred,
+                            x_pred_error,
+                            axes,
+                            vline_kwargs=None,
+                            vspan_kwargs=None):
     """Create plot for prediction input data (vertical lines)."""
-    vspan_kwargs = dict(kwargs)
-    vspan_kwargs['alpha'] = max([kwargs.get('alpha', 1.0) - 0.2, 0.1])
-    vspan_kwargs.pop('label', None)
-    axes.axvline(mean, **kwargs)
-    axes.axvspan(mean - error, mean + error, **vspan_kwargs)
+    if vline_kwargs is None:
+        vline_kwargs = {'color': 'k', 'linestyle': ':', 'label': 'Observation'}
+    if vspan_kwargs is None:
+        vspan_kwargs = {'color': 'k', 'alpha': 0.1}
+    axes.axvline(x_pred, **vline_kwargs)
+    axes.axvspan(x_pred - x_pred_error, x_pred + x_pred_error, **vspan_kwargs)
     return axes
 
 
-def _create_regplot(x_data, y_data, axes=None, **kwargs):
+def _create_pred_output_plot(x_data,
+                             y_data,
+                             x_pred,
+                             x_pred_error,
+                             axes,
+                             hline_kwargs=None):
+    """Create plot for prediction input data (vertical lines)."""
+    if hline_kwargs is None:
+        hline_kwargs = {'color': 'k', 'linestyle': ':'}
+    (_, y_mean, _) = get_constraint(x_data, y_data, x_pred, x_pred_error)
+    axes.axhline(y_mean, **hline_kwargs)
+    return axes
+
+
+def _create_regplot(x_data,
+                    y_data,
+                    axes=None,
+                    line_kwargs=None,
+                    fill_between_kwargs=None,
+                    mean_kwargs=None):
     """Create single regression line plot."""
     if axes is None:
         (_, axes) = plt.subplots()
-
-    # Label for plot
-    kwargs = dict(kwargs)
-    label = kwargs.pop('label')
+    if line_kwargs is None:
+        line_kwargs = {'linestyle': '-', 'label': 'Linear regression'}
+    if fill_between_kwargs is None:
+        fill_between_kwargs = {'alpha': 0.3}
 
     # Create regression line
-    reg = linregress(x_data, y_data)
-    x_range = np.max(x_data) - np.min(x_data)
-    x_reg = np.linspace(np.min(x_data) - x_range, np.max(x_data) + x_range, 2)
-    y_reg = reg.slope * x_reg + reg.intercept
-    if label is not None:
-        label += rf" ($R^2={reg.rvalue**2:.2f})$"
-    else:
-        label = rf"$R^2={reg.rvalue**2:.2f}$"
+    reg = regression_line(x_data, y_data)
 
-    # Plot
-    axes.plot(x_reg, y_reg, linestyle='-', label=label, **kwargs)
+    # Add R2 and p-value to label if possible
+    text = rf"$R^2={reg['rvalue']**2:.2f}, p={reg['pvalue']:.4f}$"
+    if 'label' in line_kwargs:
+        line_kwargs['label'] += rf' ({text})'
+    else:
+        if reg['rvalue'] < 0.0:
+            axes.text(0.62, 0.93, text, transform=axes.transAxes)
+        else:
+            axes.text(0.02, 0.93, text, transform=axes.transAxes)
+
+    # Plots regression
+    axes.plot(reg['x'], reg['y'], **line_kwargs)
+    axes.fill_between(reg['x'], reg['y_minus_err'], reg['y_plus_err'],
+                      **fill_between_kwargs)
+
+    # Plot means if desired
+    if mean_kwargs is not None:
+        x_mean = np.mean(reg['x'])
+        y_mean = np.mean(reg['y'])
+        axes.scatter(x_mean, y_mean, **mean_kwargs)
     return axes
 
 
@@ -577,6 +592,93 @@ def _metadata_list_to_cube_list(metadata_list, source):
     return cubes
 
 
+def _gaussian_pdf(x_val, x_mean, x_std):
+    """Return Gaussian probability density."""
+    norm = np.sqrt(2.0 * np.pi * x_std**2)
+    return np.exp(-(x_val - x_mean)**2 / 2.0 / x_std**2) / norm
+
+
+def _get_target_pdf(x_data,
+                    y_data,
+                    obs_mean,
+                    obs_std,
+                    n_points=1000,
+                    necessary_p_value=None):
+    """Get PDF of target variable including linear regression information."""
+    (x_data, y_data) = _check_x_y_arrays(x_data, y_data)
+    spe = standard_prediction_error(x_data, y_data)
+    reg = linregress(x_data, y_data)
+
+    # Get evenly spaced range of y
+    y_range = 1.5 * (np.max(y_data) - np.min(y_data))
+    y_lin = np.linspace(
+        np.min(y_data) - y_range,
+        np.max(y_data) + y_range, n_points)
+
+    # Use unconstrained value of desired and necessary
+    if necessary_p_value is not None:
+        if reg.pvalue > necessary_p_value:
+            y_pdf = _gaussian_pdf(y_lin, np.mean(y_data), np.std(y_data))
+            return (y_lin, y_pdf, reg)
+
+    # Helper functions for calculation of constrained target variable
+    def obs_pdf(x_new):
+        """Return PDF of observations P(x)."""
+        return _gaussian_pdf(x_new, obs_mean, obs_std)
+
+    def cond_pdf(x_new, y_new):
+        """Return conditional PDF P(y|x)."""
+        y_pred = reg.slope * x_new + reg.intercept
+        y_std = spe(x_new)
+        return _gaussian_pdf(y_new, y_pred, y_std)
+
+    def comb_pdf(x_new, y_new):
+        """Return combined PDF P(y,x)."""
+        return obs_pdf(x_new) * cond_pdf(x_new, y_new)
+
+    # PDF of target variable P(y)
+    x_range = 3 * obs_std
+    y_pdf = [
+        integrate.quad(comb_pdf,
+                       obs_mean - x_range,
+                       obs_mean + x_range,
+                       args=(y, ))[0] for y in y_lin
+    ]
+    return (y_lin, np.array(y_pdf), reg)
+
+
+def check_metadata(metadata, allowed_var_types=None):
+    """Check metadata.
+
+    Parameters
+    ----------
+    metadata : dict
+        Metadata to check.
+    allowed_var_types : list of str, optional
+        Allowed var_types, defaults to ``ALLOWED_VAR_TYPES``.
+
+    Raises
+    ------
+    KeyError
+        Metadata does not contain necessary keys ``'var_type'`` and ``'tag'``.
+    ValueError
+        Got invalid value for key ``'var_type'``.
+
+    """
+    if allowed_var_types is None:
+        allowed_var_types = ALLOWED_VAR_TYPES
+    filename = metadata.get('filename', metadata)
+    for key in ('var_type', 'tag'):
+        if key not in metadata:
+            raise KeyError(
+                f"Necessary key '{key}' not given in metadata of file "
+                f"'{filename}'")
+    if metadata['var_type'] not in allowed_var_types:
+        raise ValueError(
+            f"Expected one of {allowed_var_types} for 'var_type' of file "
+            f"'{filename}', got '{metadata['var_type']}'")
+
+
 def get_input_files(cfg, patterns=None, ignore_patterns=None):
     """Get input files.
 
@@ -585,7 +687,7 @@ def get_input_files(cfg, patterns=None, ignore_patterns=None):
     cfg : dict
         Recipe configuration.
     patterns : list of str, optional
-        Use only files that match these patterns as input files.
+        Use only ancestor files that match these patterns as input files.
     ignore_patterns : list of str, optional
         Ignore input files that match these patterns.
 
@@ -639,8 +741,6 @@ def get_xy_data_without_nans(data_frame, feature, label):
         and a :class:`pandas.DataFrame` for the Y axis (label) without
         missing values.
 
-
-
     """
     idx_slice = pd.IndexSlice[:, [feature, label]]
     data_frame_xy = data_frame.loc[:, idx_slice]
@@ -669,7 +769,8 @@ def get_input_data(cfg):
         corresponding attributes (:obj:`dict`).
 
     """
-    input_files = get_input_files(cfg, patterns=cfg.get('patterns'),
+    input_files = get_input_files(cfg,
+                                  patterns=cfg.get('patterns'),
                                   ignore_patterns=cfg.get('ignore_patterns'))
     logger.debug("Found files:\n%s", pformat(input_files))
 
@@ -708,17 +809,15 @@ def get_input_data(cfg):
         features = features.append(pd.Series(name=row))
 
     # Sort data frames
-    for data_frame in (features, label, pred_input,
-                       pred_input_err):
+    for data_frame in (features, label, pred_input, pred_input_err):
         data_frame.sort_index(axis=0, inplace=True)
         data_frame.sort_index(axis=1, inplace=True)
 
     # Check data
-    (features, label, pred_input, pred_input_err) = _check_data_frames(
-        features, label, pred_input, pred_input_err)
-    training_data = pd.concat([features, label],
-                              axis=1,
-                              keys=['x', 'y'])
+    (features, label, pred_input,
+     pred_input_err) = _check_data_frames(features, label, pred_input,
+                                          pred_input_err)
+    training_data = pd.concat([features, label], axis=1, keys=['x', 'y'])
     training_data['idx'] = np.arange(len(training_data.index)) + 1
     training_data.set_index('idx', append=True, inplace=True)
     training_data.index.names = [group_by, 'dataset', 'idx']
@@ -757,8 +856,10 @@ def combine_groups(groups):
     return new_str
 
 
-def pandas_object_to_cube(pandas_object, index_droplevel=None,
-                          columns_droplevel=None, **kwargs):
+def pandas_object_to_cube(pandas_object,
+                          index_droplevel=None,
+                          columns_droplevel=None,
+                          **kwargs):
     """Convert pandas object to :class:`iris.cube.Cube`.
 
     Parameters
@@ -922,14 +1023,39 @@ def get_provenance_record(attributes, tags, **kwargs):
     return record
 
 
-def get_groups(training_data, add_combined_group=True):
+def get_colors(cfg, groups=None):
+    """Get color palette.
+
+    Parameters
+    ----------
+    cfg : dict
+        Recipe configuration.
+    groups : list, optional
+        Use to check whether color for combining groups has to be added.
+
+    Returns
+    -------
+    list
+        List of colors that can be used for :mod:`matplotlib`.
+
+    """
+    palette = cfg.get('seaborn_settings', {}).get('palette')
+    colors = sns.color_palette(palette=palette)
+    if groups is None:
+        return colors
+    if len(groups) > 1 and cfg.get('combine_groups', False):
+        return [COLOR_COMBINED_GROUPS] + colors
+    return colors
+
+
+def get_groups(training_data, add_combined_group=False):
     """Extract groups from training data.
 
     Parameters
     ----------
     training_data : pandas.DataFrame
         Training data (features, label).
-    add_combined_group : bool, optional (default: True)
+    add_combined_group : bool, optional (default: False)
         Add combined group of all other groups at the beginning of the
         returned :obj:`list`.
 
@@ -969,7 +1095,8 @@ def plot_individual_scatterplots(training_data, pred_input_data, attributes,
     """
     logger.info("Plotting individual scatterplots")
     label = training_data.y.columns[0]
-    groups = get_groups(training_data)
+    groups = get_groups(training_data,
+                        add_combined_group=cfg.get('combine_groups', False))
 
     # Iterate over features
     for feature in training_data.x.columns:
@@ -977,6 +1104,7 @@ def plot_individual_scatterplots(training_data, pred_input_data, attributes,
                                                     label)
 
         # Individual plots
+        colors = get_colors(cfg, groups=groups)
         for (idx, group) in enumerate(groups):
             try:
                 x_sub_data = x_data.loc[group]
@@ -987,21 +1115,39 @@ def plot_individual_scatterplots(training_data, pred_input_data, attributes,
                 y_sub_data = y_data
                 index_droplevel = [0, 2]
             axes = _create_scatterplot(
-                x_sub_data, y_sub_data,
+                x_sub_data,
+                y_sub_data,
                 numbers_as_markers=cfg.get('numbers_as_markers', False),
-                color=COLORS_ALL[idx], label=group)
+                plot_regression_line_mean=cfg.get('plot_regression_line_mean',
+                                                  False),
+                color=colors[idx],
+                label=group)
             axes = _create_pred_input_plot(
                 pred_input_data['mean'][feature].values,
-                pred_input_data['error'][feature].values, axes, alpha=0.4,
-                color=COLORS[0], label='Observation')
-            set_plot_appearance(axes, attributes, plot_title=feature,
-                                plot_xlabel=feature, plot_ylabel=label,
-                                plot_xlim=feature, plot_ylim=label)
-            legend = plt.legend(**LEGEND_KWARGS)
+                pred_input_data['error'][feature].values, axes)
+            axes = _create_pred_output_plot(
+                x_sub_data,
+                y_sub_data,
+                pred_input_data['mean'][feature].values,
+                pred_input_data['error'][feature].values,
+                axes,
+                hline_kwargs={
+                    'color': colors[idx],
+                    'linestyle': ':'
+                },
+            )
+            set_plot_appearance(axes,
+                                attributes,
+                                plot_title=feature,
+                                plot_xlabel=feature,
+                                plot_ylabel=label,
+                                plot_xlim=feature,
+                                plot_ylim=label)
+            plt.legend(**LEGEND_KWARGS)
             filename = (f"scatterplot_{basename}_{feature}_"
                         f"{group.replace(', ', '-')}")
             plot_path = get_plot_filename(filename, cfg)
-            plt.savefig(plot_path, additional_artists=[legend],
+            plt.savefig(plot_path,
                         **cfg.get('savefig_kwargs', {}))
             logger.info("Wrote %s", plot_path)
             plt.close()
@@ -1009,13 +1155,16 @@ def plot_individual_scatterplots(training_data, pred_input_data, attributes,
             # Provenance
             cubes = iris.cube.CubeList([
                 pandas_object_to_cube(
-                    x_sub_data, index_droplevel=index_droplevel,
+                    x_sub_data,
+                    index_droplevel=index_droplevel,
                     var_name=feature,
                     long_name=attributes[feature]['plot_xlabel'],
                     units=attributes[feature]['units']),
                 pandas_object_to_cube(
-                    y_sub_data, index_droplevel=index_droplevel,
-                    var_name=label, long_name=attributes[label]['plot_ylabel'],
+                    y_sub_data,
+                    index_droplevel=index_droplevel,
+                    var_name=label,
+                    long_name=attributes[label]['plot_ylabel'],
                     units=attributes[label]['units']),
             ])
             netcdf_path = get_diagnostic_filename(filename, cfg)
@@ -1023,7 +1172,8 @@ def plot_individual_scatterplots(training_data, pred_input_data, attributes,
             provenance_record = get_provenance_record(
                 attributes, [feature, label],
                 caption=get_caption(attributes, feature, label, group=group),
-                plot_type='scatter', plot_file=plot_path)
+                plot_type='scatter',
+                plot_file=plot_path)
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(netcdf_path, provenance_record)
 
@@ -1051,70 +1201,268 @@ def plot_merged_scatterplots(training_data, pred_input_data, attributes,
     """
     logger.info("Plotting merged scatterplots")
     label = training_data.y.columns[0]
-    groups = get_groups(training_data)
+    groups = get_groups(training_data,
+                        add_combined_group=cfg.get('combine_groups', False))
     numbers_as_markers = cfg.get('numbers_as_markers', False)
+    plot_regression_line_mean = cfg.get('plot_regression_line_mean', False)
+    colors = get_colors(cfg)
 
     # Iterate over features
     for feature in training_data.x.columns:
         (x_data, y_data) = get_xy_data_without_nans(training_data, feature,
                                                     label)
         (_, axes) = plt.subplots()
-        if len(groups) > 1:
-            axes = _create_regplot(x_data, y_data, axes=axes,
-                                   color=COLORS_ALL[0],
-                                   label=groups[0])
+        if len(groups) > 1 and cfg.get('combine_groups', False):
+            axes = _create_regplot(
+                x_data,
+                y_data,
+                axes=axes,
+                line_kwargs={
+                    'color': COLOR_COMBINED_GROUPS,
+                    'label': groups[0],
+                    'linestyle': '-'
+                },
+                fill_between_kwargs={
+                    'color': COLOR_COMBINED_GROUPS,
+                    'alpha': 0.3
+                },
+                mean_kwargs=(None
+                             if not cfg.get('plot_regression_line_mean') else {
+                                 'color': COLOR_COMBINED_GROUPS,
+                                 'marker': 'o'
+                             }),
+            )
+            axes = _create_pred_output_plot(
+                x_data,
+                y_data,
+                pred_input_data['mean'][feature].values,
+                pred_input_data['error'][feature].values,
+                axes,
+                hline_kwargs={
+                    'color': COLOR_COMBINED_GROUPS,
+                    'linestyle': ':'
+                },
+            )
             for (idx, group) in enumerate(groups[1:]):
                 axes = _create_scatterplot(
                     x_data.loc[group],
                     y_data.loc[group],
                     numbers_as_markers=numbers_as_markers,
+                    plot_regression_line_mean=plot_regression_line_mean,
                     axes=axes,
-                    color=COLORS_ALL[idx + 1],
+                    color=colors[idx],
                     label=group,
                 )
+                axes = _create_pred_output_plot(
+                    x_data.loc[group],
+                    y_data.loc[group],
+                    pred_input_data['mean'][feature].values,
+                    pred_input_data['error'][feature].values,
+                    axes,
+                    hline_kwargs={
+                        'color': colors[idx],
+                        'linestyle': ':'
+                    },
+                )
         else:
-            axes = _create_scatterplot(
-                x_data,
-                y_data,
-                numbers_as_markers=numbers_as_markers,
-                axes=axes,
-                color=COLORS_ALL[0],
-                label=groups[0],
-            )
+            for (idx, group) in enumerate(groups):
+                axes = _create_scatterplot(
+                    x_data.loc[group],
+                    y_data.loc[group],
+                    numbers_as_markers=numbers_as_markers,
+                    plot_regression_line_mean=plot_regression_line_mean,
+                    axes=axes,
+                    color=colors[idx],
+                    label=group,
+                )
+                axes = _create_pred_output_plot(
+                    x_data.loc[group],
+                    y_data.loc[group],
+                    pred_input_data['mean'][feature].values,
+                    pred_input_data['error'][feature].values,
+                    axes,
+                    hline_kwargs={
+                        'color': colors[idx],
+                        'linestyle': ':'
+                    },
+                )
         axes = _create_pred_input_plot(
             pred_input_data['mean'][feature].values,
-            pred_input_data['error'][feature].values, axes, alpha=0.4,
-            color=COLORS[0], label='Observation')
-        set_plot_appearance(axes, attributes, plot_title=feature,
-                            plot_xlabel=feature, plot_ylabel=label,
-                            plot_xlim=feature, plot_ylim=label)
-        legend = plt.legend(**LEGEND_KWARGS)
+            pred_input_data['error'][feature].values, axes)
+        set_plot_appearance(axes,
+                            attributes,
+                            plot_title=feature,
+                            plot_xlabel=feature,
+                            plot_ylabel=label,
+                            plot_xlim=feature,
+                            plot_ylim=label)
+        plt.legend(**LEGEND_KWARGS)
         filename = f'scatterplot_merged_{basename}_{feature}'
         plot_path = get_plot_filename(filename, cfg)
-        plt.savefig(plot_path, additional_artists=[legend],
+        plt.savefig(plot_path,
                     **cfg.get('savefig_kwargs', {}))
         logger.info("Wrote %s", plot_path)
         plt.close()
 
         # Provenance
         cubes = iris.cube.CubeList([
-            pandas_object_to_cube(
-                x_data, index_droplevel=[0, 2], var_name=feature,
-                long_name=attributes[feature]['plot_xlabel'],
-                units=attributes[feature]['units']),
-            pandas_object_to_cube(
-                y_data, index_droplevel=[0, 2], var_name=label,
-                long_name=attributes[label]['plot_ylabel'],
-                units=attributes[label]['units']),
+            pandas_object_to_cube(x_data,
+                                  index_droplevel=[0, 2],
+                                  var_name=feature,
+                                  long_name=attributes[feature]['plot_xlabel'],
+                                  units=attributes[feature]['units']),
+            pandas_object_to_cube(y_data,
+                                  index_droplevel=[0, 2],
+                                  var_name=label,
+                                  long_name=attributes[label]['plot_ylabel'],
+                                  units=attributes[label]['units']),
         ])
         netcdf_path = get_diagnostic_filename(filename, cfg)
         io.iris_save(cubes, netcdf_path)
-        provenance_record = get_provenance_record(
-            attributes, [feature, label],
-            caption=get_caption(attributes, feature, label),
-            plot_type='scatter', plot_file=plot_path)
+        provenance_record = get_provenance_record(attributes, [feature, label],
+                                                  caption=get_caption(
+                                                      attributes, feature,
+                                                      label),
+                                                  plot_type='scatter',
+                                                  plot_file=plot_path)
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(netcdf_path, provenance_record)
+
+
+def create_simple_scatterplot(x_data, y_data, obs_mean, obs_std):
+    """Create simple scatterplot of an emergent relationship (without saving).
+
+    Parameters
+    ----------
+    x_data : numpy.ndarray
+        X data of the emergent constraint.
+    y_data : numpy.ndarray
+        Y data of the emergent constraint.
+    obs_mean : float
+        Mean of observational data.
+    obs_std : float
+        Standard deviation of observational data.
+
+    """
+    logger.debug("Plotting simple scatterplot")
+    (fig, axes) = plt.subplots()
+    axes.scatter(x_data, y_data, color='k', marker='o')
+    line_kwargs = {'color': 'C1', 'linestyle': '-'}
+    fill_between_kwargs = {**line_kwargs, 'alpha': 0.3}
+    axes = _create_regplot(x_data, y_data, axes=axes, line_kwargs=line_kwargs,
+                           fill_between_kwargs=fill_between_kwargs)
+    axes = _create_pred_input_plot(obs_mean, obs_std, axes)
+    return (fig, axes)
+
+
+def plot_target_distributions(training_data, pred_input_data, attributes,
+                              basename, cfg):
+    """Plot distributions of target variable for every feature.
+
+    Parameters
+    ----------
+    training_data : pandas.DataFrame
+        Training data (features, label).
+    pred_input_data : pandas.DataFrame
+        Prediction input data (mean and error).
+    attributes : dict
+        Plot attributes for the different features and the label data.
+    basename : str
+        Basename for the name of the file.
+    cfg : dict
+        Recipe configuration.
+
+    """
+    logger.info("Plotting distributions of target variable")
+    label = training_data.y.columns[0]
+    groups = get_groups(training_data,
+                        add_combined_group=cfg['combine_groups'])
+    summary_columns = pd.MultiIndex.from_product(
+        [groups, ['best estimate', 'range', 'min', 'max']])
+    summary = pd.DataFrame(columns=summary_columns)
+
+    # Iterate over features
+    for feature in training_data.x.columns:
+        (x_data, y_data) = get_xy_data_without_nans(training_data, feature,
+                                                    label)
+        colors = get_colors(cfg, groups=groups)
+        summary_for_feature = pd.Series(index=summary_columns, name=feature)
+
+        # Iterate over groups
+        for (idx, group) in enumerate(groups):
+            try:
+                x_sub_data = x_data.loc[group]
+                y_sub_data = y_data.loc[group]
+            except KeyError:
+                x_sub_data = x_data
+                y_sub_data = y_data
+            (y_lin, y_pdf) = target_pdf(
+                x_sub_data,
+                y_sub_data,
+                pred_input_data['mean'][feature].values,
+                pred_input_data['error'][feature].values,
+            )
+
+            # Plots
+            axes = sns.histplot(y_sub_data,
+                                bins=7,
+                                stat='density',
+                                color=colors[idx],
+                                alpha=0.4)
+            axes.plot(y_lin,
+                      y_pdf,
+                      color=colors[idx],
+                      linestyle='-',
+                      label=group)
+
+            # Print results
+            (y_min, y_mean, y_max) = get_constraint(
+                x_sub_data,
+                y_sub_data,
+                pred_input_data['mean'][feature].values,
+                pred_input_data['error'][feature].values,
+                confidence_level=cfg['confidence_level'],
+            )
+            y_error = np.max([y_max - y_mean, y_mean - y_min])
+            reg = linregress(x_sub_data.values, y_sub_data.values)
+            logger.info(
+                "Constrained %s for feature '%s' and group '%s': %.2f ± %.2f "
+                "(%i%% confidence level), R2 = %f, p = %f", label,
+                feature, group, y_mean, y_error,
+                int(100.0 * cfg['confidence_level']), reg.rvalue**2,
+                reg.pvalue)
+
+            # Save results of group
+            summary_for_feature[(group, 'best estimate')] = y_mean
+            summary_for_feature[(group, 'range')] = y_max - y_min
+            summary_for_feature[(group, 'min')] = y_min
+            summary_for_feature[(group, 'max')] = y_max
+
+        # Save results to feature
+        summary = summary.append(summary_for_feature)
+
+        # Plot appearance
+        set_plot_appearance(axes, attributes, plot_title=feature)
+        axes.set_xlabel(attributes[label]['plot_ylabel'])
+        axes.set_ylabel('Probability density')
+        if attributes[label]['plot_ylim'] is not None:
+            axes.set_xlim(attributes[label]['plot_ylim'])
+        axes.set_ylim([0.0, 1.0])
+        plt.legend(loc='best')
+
+        # Save plot
+        plot_path = get_plot_filename(
+            f'target_distribution_{basename}_{feature}', cfg)
+        plt.savefig(plot_path,
+                    **cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+    # Print mean results
+    with pd.option_context(*PANDAS_PRINT_OPTIONS):
+        logger.info("Constrained ranges:\n%s", summary)
+        summary = summary.mean(axis=0)
+        logger.info("Mean of constrained ranges:\n%s", summary)
 
 
 def export_csv(data_frame, attributes, basename, cfg, tags=None):
@@ -1148,7 +1496,8 @@ def export_csv(data_frame, attributes, basename, cfg, tags=None):
     logger.info("Wrote %s", csv_path)
     if tags is None:
         tags = data_frame.columns.get_level_values(-1)
-    provenance_record = get_provenance_record(attributes, tags,
+    provenance_record = get_provenance_record(attributes,
+                                              tags,
                                               caption=basename)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(csv_path, provenance_record)
@@ -1156,124 +1505,105 @@ def export_csv(data_frame, attributes, basename, cfg, tags=None):
 
 
 def standard_prediction_error(x_data, y_data):
-    """Return function to calculate standard prediction error.
+    """Return a function to calculate standard prediction error.
 
-    The standard prediction error of a (multivariate) linear regression is the
-    error when predicting a new value which is not in the original data.
+    The standard prediction error of a linear regression is the error when
+    predicting a data point which was not used to fit the regression line in
+    the first place.
 
     Parameters
     ----------
     x_data : numpy.ndarray
-        Independent observations of predictors.
+        X data used to fit the linear regression.
     y_data : numpy.ndarray
-        Independent observations of the target variable.
+        Y data used to fit the linear regression.
 
     Returns
     -------
     callable
-        Standard prediction error function for new observation of the
-        predictors.
+        Function that takes a :obj:`float` as single argument (representing the
+        X value of a new data point) and returns the standard prediction error
+        for that.
 
     """
-    (x_data, y_data) = _check_training_arrays(x_data, y_data)
-    lin = LinearRegression()
-    lin.fit(x_data, y_data)
+    (x_data, y_data) = _check_x_y_arrays(x_data, y_data)
+    reg = linregress(x_data, y_data)
+    y_pred = reg.slope * x_data + reg.intercept
+    n_data = x_data.shape[0]
+    see = np.sqrt(np.sum(np.square(y_data - y_pred)) / (n_data - 2))
+    x_mean = np.mean(x_data)
+    ssx = np.sum(np.square(x_data - x_mean))
 
-    # Standard error of estimates
-    dof = x_data.shape[0] - x_data.shape[1] - 1
-    y_pred = lin.predict(x_data)
-    see = np.sqrt(np.sum(np.square(y_data - y_pred)) / dof)
+    def spe(x_new):
+        """Return standard prediction error."""
+        return see * np.sqrt(1.0 + 1.0 / n_data + (x_new - x_mean)**2 / ssx)
 
-    # Standard prediction error for 1D input
-    if x_data.shape[1] == 1:
-        x_data = np.squeeze(x_data, axis=1)
-        x_mean = np.mean(x_data)
-        ssx = np.sum(np.square(x_data - x_mean))
-
-        def spe(x_new):
-            """1D standard prediction error."""
-            x_new = _check_prediction_arrays(x_new, x_train=x_data)
-            x_new = np.squeeze(x_new)
-            return see * np.sqrt(1.0 + 1.0 / x_data.shape[0] +
-                                 (x_new - x_mean)**2 / ssx)
-
-    # Standard prediction error for multi-dimensional input
-    else:
-        ones = np.ones((x_data.shape[0], 1), dtype=x_data.dtype)
-        x_design = np.hstack([ones, x_data])
-
-        def spe(x_new):
-            """Return standard prediction error."""
-            x_new = _check_prediction_arrays(x_new, x_train=x_data)
-            one = np.ones((1, 1), dtype=x_new.dtype)
-            x_new = np.hstack([one, x_new])
-            return see * (1.0 +
-                          x_new @ np.linalg.inv(x_design.T @ x_design) @
-                          x_new.T)
-
-    return np.vectorize(spe, signature='(n)->()')
+    return spe
 
 
-def regression_surface(x_data, y_data, n_points=100):
-    """Return points of the regression surface (mean and error).
+def regression_line(x_data, y_data, n_points=1000):
+    """Return x and y coordinates of the regression line (mean and error).
 
     Parameters
     ----------
     x_data : numpy.ndarray
-        Independent observations of predictors.
+        X data used to fit the linear regression.
     y_data : numpy.ndarray
-        Independent observations of the target variable.
-    n_points : int, optional (default: 100)
-        Number of sampled points per predictor.
+        Y data used to fit the linear regression.
+    n_points : int, optional (default: 1000)
+        Number of points for the regression lines.
 
     Returns
     -------
     dict
-        :class:`numpy.ndarray`s for the keys ``'x'``, ``'y'``,
-        ``'y_minus_err'``, ``'y_plus_err'``, ``'rvalue'``, ``'slope'`` and
-        ``'intercept'``.
+        :class:`numpy.ndarray` s for the keys ``'x'``, ``'y'``,
+        ``'y_minus_err'``, ``'y_plus_err'``, ``'slope'``, ``'intercept'``,
+        ``'pvalue'`` and ``'rvalue'``.
 
     """
-    (x_data, y_data) = _check_training_arrays(x_data, y_data)
+    (x_data, y_data) = _check_x_y_arrays(x_data, y_data)
+    spe = np.vectorize(standard_prediction_error(x_data, y_data))
     out = {}
-    lin = LinearRegression()
-    lin.fit(x_data, y_data)
-    spe = standard_prediction_error(x_data, y_data)
-    x_max = np.max(x_data, axis=0)
-    x_min = np.min(x_data, axis=0)
-    x_range = x_max - x_min
-    slices = [
-        slice(x_min[i] - d, x_max[i] + d, complex(0, n_points))
-        for (i, d) in enumerate(x_range)
-    ]
-    x_lin = np.array(np.mgrid[slices])
-    x_lin = x_lin.reshape(-1, np.prod(x_lin.shape[1:], dtype=int)).T
+    reg = linregress(x_data, y_data)
+    x_range = np.max(x_data) - np.min(x_data)
+    x_lin = np.linspace(
+        np.min(x_data) - x_range,
+        np.max(x_data) + x_range, n_points)
     out['x'] = x_lin
-    out['y'] = lin.predict(x_lin)
+    out['y'] = reg.slope * x_lin + reg.intercept
     out['y_minus_err'] = out['y'] - spe(x_lin)
     out['y_plus_err'] = out['y'] + spe(x_lin)
-    out['coef'] = lin.coef_
-    out['intercept'] = lin.intercept_
-    out['R2'] = lin.score(x_data, y_data)
-    (_, out['p']) = f_regression(x_data, y_data)
+    out['slope'] = reg.slope
+    out['intercept'] = reg.intercept
+    out['pvalue'] = reg.pvalue
+    out['rvalue'] = reg.rvalue
     return out
 
 
-def gaussian_pdf(x_data, y_data, obs_mean, obs_cov, n_points=200):
-    """Calculate Gaussian probability densitiy function for target variable.
+def target_pdf(x_data,
+               y_data,
+               obs_mean,
+               obs_std,
+               n_points=1000,
+               necessary_p_value=None):
+    """Calculate probability density function (PDF) for target variable.
 
     Parameters
     ----------
     x_data : numpy.ndarray
-        Independent observations of predictors.
+        X data of the emergent constraint.
     y_data : numpy.ndarray
-        Independent observations of the target variable.
-    obs_mean : numpy.ndarray
+        Y data of the emergent constraint.
+    obs_mean : float
         Mean of observational data.
-    obs_cov : numpy.ndarray
-        Covariance matrix of observational data.
-    n_points : int, optional (default: 200)
-        Number of sampled points for target variable for PDF.
+    obs_std : float
+        Standard deviation of observational data.
+    n_points : int, optional (default: 1000)
+        Number of sampled points for PDF of target variable.
+    necessary_p_value : float, optional
+        If given, return unconstrained PDF (using Gaussian distribution with
+        unconstrained mean and standard deviation) when `p`-value of emergent
+        relationship is greater than the given necessary `p`-value.
 
     Returns
     -------
@@ -1281,38 +1611,13 @@ def gaussian_pdf(x_data, y_data, obs_mean, obs_cov, n_points=200):
         x and y values for the PDF.
 
     """
-    (x_data, y_data) = _check_training_arrays(x_data, y_data)
-    (obs_mean, obs_cov) = _check_prediction_arrays(obs_mean,
-                                                   x_train=x_data,
-                                                   x_cov=obs_cov)
-    lin = LinearRegression()
-    lin.fit(x_data, y_data)
-    spe = standard_prediction_error(x_data, y_data)
-
-    def obs_pdf(x_new):
-        """Return PDF of observations P(x)."""
-        gaussian = multivariate_normal(mean=obs_mean.squeeze(),
-                                       cov=obs_cov.squeeze())
-        return gaussian.pdf(x_new)
-
-    def cond_pdf(x_new, y_new):
-        """Return conditional PDF P(y|x)."""
-        y_pred = lin.predict(x_new.reshape(1, -1))
-        gaussian = multivariate_normal(mean=y_pred, cov=spe(x_new)**2)
-        return gaussian.pdf(y_new)
-
-    def comb_pdf(*args):
-        """Return combined PDF P(y,x)."""
-        x_new = np.array(args[:-1])
-        y_new = args[-1]
-        return obs_pdf(x_new) * cond_pdf(x_new, y_new)
-
-    # Calculate PDF of target variable P(y)
-    x_ranges = _get_x_ranges(obs_mean, obs_cov)
-    y_range = 1.5 * (max(y_data) - min(y_data))
-    y_lin = np.linspace(min(y_data) - y_range, max(y_data) + y_range, n_points)
-    y_pdf = [integrate.nquad(comb_pdf, x_ranges, args=(y, ))[0] for y in y_lin]
-    return (y_lin, np.array(y_pdf))
+    (y_lin, y_pdf, _) = _get_target_pdf(x_data,
+                                        y_data,
+                                        obs_mean,
+                                        obs_std,
+                                        n_points=n_points,
+                                        necessary_p_value=necessary_p_value)
+    return (y_lin, y_pdf)
 
 
 def cdf(data, pdf):
@@ -1336,16 +1641,76 @@ def cdf(data, pdf):
     return np.array(cum_dens)
 
 
-def get_constraint(training_data, pred_input_data, confidence_level):
+def constraint_info_array(x_data,
+                          y_data,
+                          obs_mean,
+                          obs_std,
+                          n_points=1000,
+                          necessary_p_value=None):
+    """Get array with all relevant parameters of emergent constraint.
+
+    Parameters
+    ----------
+    x_data : numpy.ndarray
+        X data of the emergent constraint.
+    y_data : numpy.ndarray
+        Y data of the emergent constraint.
+    obs_mean : float
+        Mean of observational data.
+    obs_std : float
+        Standard deviation of observational data.
+    n_points : int, optional (default: 1000)
+        Number of sampled points for PDF of target variable.
+    necessary_p_value : float, optional
+        If given, replace constrained mean and standard deviation with
+        unconstrained values when `p`-value of emergent relationship is greater
+        than the given necessary `p`-value.
+
+    Returns
+    -------
+    numpy.ndarray
+        Array of shape (8,) with the elements:
+            0. Constrained mean of target variable.
+            1. Constrained standard deviation of target variable.
+            2. Unconstrained mean of target variable.
+            3. Unconstrained standard deviation of target variable.
+            4. Slope of emergent relationship.
+            5. Intercept of emergent relationship.
+            6. Correlation coefficient `r` of emergent relationship.
+            7. `p`-value of emergent relationship.
+
+    """
+    (y_lin, y_pdf, reg) = _get_target_pdf(x_data,
+                                          y_data,
+                                          obs_mean,
+                                          obs_std,
+                                          n_points=n_points,
+                                          necessary_p_value=necessary_p_value)
+    norm = np.sum(y_pdf)
+    y_mean = np.sum(y_lin * y_pdf) / norm
+    y_std = np.sqrt(np.sum((y_lin - y_mean)**2 * y_pdf) / norm)
+    info = [
+        y_mean, y_std,
+        np.ma.mean(y_data),
+        np.ma.std(y_data), reg.slope, reg.intercept, reg.rvalue, reg.pvalue
+    ]
+    return np.array(info)
+
+
+def get_constraint(x_data, y_data, obs_mean, obs_std, confidence_level=0.66):
     """Get constraint on target variable.
 
     Parameters
     ----------
-    training_data : pandas.DataFrame
-        Training data (features, label).
-    pred_input_data : pandas.DataFrame
-        Prediction input data (mean and error).
-    confidence_level : float
+    x_data : numpy.ndarray
+        X data of the emergent constraint.
+    y_data : numpy.ndarray
+        Y data of the emergent constraint.
+    obs_mean : float
+        Mean of observational data.
+    obs_std : float
+        Standard deviation of observational data.
+    confidence_level : float, optional (default: 0.66)
         Confindence level to estimate the range of the target variable.
 
     Returns
@@ -1354,10 +1719,36 @@ def get_constraint(training_data, pred_input_data, confidence_level):
         Lower confidence limit, best estimate and upper confidence limit of
         target variable.
 
-    Raises
-    ------
-    ValueError
-        Input data has not the correct shape.
+    """
+    (x_data, y_data) = _check_x_y_arrays(x_data, y_data)
+    (y_lin, y_pdf) = target_pdf(x_data, y_data, obs_mean, obs_std)
+    y_mean = np.sum(y_lin * y_pdf) / np.sum(y_pdf)
+    y_cdf = cdf(y_lin, y_pdf)
+    y_index_range = np.nonzero((y_cdf >= (1.0 - confidence_level) / 2.0)
+                               & (y_cdf <= (1.0 + confidence_level) / 2.0))
+    y_range = y_lin[y_index_range]
+    return (np.min(y_range), y_mean, np.max(y_range))
+
+
+def get_constraint_from_df(training_data,
+                           pred_input_data,
+                           confidence_level=0.66):
+    """Get constraint on target variable from :class:`pandas.DataFrame`.
+
+    Parameters
+    ----------
+    training_data : pandas.DataFrame
+        Training data (features, label).
+    pred_input_data : pandas.DataFrame
+        Prediction input data (mean and error).
+    confidence_level : float, optional (default: 0.66)
+        Confindence level to estimate the range of the target variable.
+
+    Returns
+    -------
+    tuple of float
+        Lower confidence limit, best estimate and upper confidence limit of
+        target variable.
 
     """
     if len(training_data.columns) != 2:
@@ -1373,21 +1764,13 @@ def get_constraint(training_data, pred_input_data, confidence_level):
     label = training_data.y.columns[0]
     feature = training_data.x.columns[0]
     (x_data, y_data) = get_xy_data_without_nans(training_data, feature, label)
-    (x_data, y_data) = _check_training_arrays(x_data, y_data)
-    pred_input_mean = pred_input_data['mean'][feature].values[0]
-    pred_input_error = pred_input_data['error'][feature].values[0]
-    (pred_input_mean, pred_input_error) = _check_prediction_arrays(
-        pred_input_mean, x_data, pred_input_error)
+    x_pred = pred_input_data['mean'][feature].values[0]
+    x_pred_error = pred_input_data['error'][feature].values[0]
 
     # Calculate constraint
-    logger.info(
-        "Calculating constraint on '%s' using %.2f%% confindence level",
-        label, 100.0 * confidence_level)
-    (y_lin, y_pdf) = gaussian_pdf(x_data, y_data, pred_input_mean,
-                                  pred_input_error**2)
-    y_cdf = cdf(y_lin, y_pdf)
-    y_mean = y_lin[np.argmax(y_pdf)]
-    y_index_range = np.nonzero((y_cdf >= (1.0 - confidence_level) / 2.0) &
-                               (y_cdf <= (1.0 + confidence_level) / 2.0))
-    y_range = y_lin[y_index_range]
-    return (y_range.min(), y_mean, y_range.max())
+    constraint = get_constraint(x_data,
+                                y_data,
+                                x_pred,
+                                x_pred_error,
+                                confidence_level=confidence_level)
+    return constraint

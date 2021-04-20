@@ -43,14 +43,14 @@ following figures from Flato et al. (2013) can currently be reproduced:
       averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
       gray lines), and the multi-model mean (thick red line).
 
-    * Figure 9.6: Centred pattern correlations between models and observations 
-      for the annual mean climatology over the period 1980–1999. Results are 
-      shown for individual CMIP3 (black) and CMIP5 (blue) models as thin 
-      dashes, along with the corresponding ensemble average (thick dash) and 
-      median (open circle). The four variables shown are surface air 
-      temperature (TAS), top of the atmosphere (TOA) outgoing longwave 
-      radiation (RLUT), precipitation (PR) and TOA shortwave cloud radiative 
-      effect (SW CRE). The correlations between the reference and alternate 
+    * Figure 9.6: Centred pattern correlations between models and observations
+      for the annual mean climatology over the period 1980–1999. Results are
+      shown for individual CMIP3 (black) and CMIP5 (blue) models as thin
+      dashes, along with the corresponding ensemble average (thick dash) and
+      median (open circle). The four variables shown are surface air
+      temperature (TAS), top of the atmosphere (TOA) outgoing longwave
+      radiation (RLUT), precipitation (PR) and TOA shortwave cloud radiative
+      effect (SW CRE). The correlations between the reference and alternate
       observations are also shown (solid green circles).
 
     * Figure 9.8: Observed and simulated time series of the anomalies in annual
@@ -109,8 +109,8 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
-    * carbon_cycle/main.ncl: See :ref:`recipes_anav13jclim`.
-    * climate_metrics/ecs.py: See :ref:`recipes_ecs`.
+    * carbon_cycle/main.ncl: See :ref:`here<recipes_anav13jclim>`.
+    * climate_metrics/ecs.py: See :ref:`here<ecs.py>`.
     * clouds/clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias (Fig. 9.2, 9.4)
     * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
@@ -119,7 +119,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/
       temperature (Fig. 9.3)
     * ipcc_ar5/ch09_fig09_6.ncl: calculating pattern correlations of annual mean
       climatologies for one variable (Fig 9.6 preprocessing)
-    * ipcc_ar5/ch09_fig09_6_collect.ncl: collecting pattern correlation for each 
+    * ipcc_ar5/ch09_fig09_6_collect.ncl: collecting pattern correlation for each
       variable and plotting correlation plot (Fig 9.6)
     * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig. 9.8)
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
@@ -134,11 +134,11 @@ User settings in recipe
 
 #. Script carbon_cycle/main.ncl
 
-   See :ref:`recipes_anav13jclim`.
+   See :ref:`here<recipes_anav13jclim>`.
 
 #. Script climate_metrics/ecs.py
 
-   See :ref:`recipes_ecs`.
+   See :ref:`here<ecs.py>`.
 
 #. Script clouds/clouds_bias.ncl
 
@@ -253,7 +253,7 @@ User settings in recipe
    * projection: map projection, e.g., Mollweide, Mercator (default = Robinson)
 
    *Required settings for variables*
- 
+
    * reference_dataset: name of reference observation
 
    *Optional settings for variables*
@@ -263,7 +263,7 @@ User settings in recipe
 #. Script ipcc_ar5/ch09_fig09_6.ncl
 
    *Required settings for variables*
- 
+
    * reference_dataset: name of reference observation
 
    *Optional settings for variables*
@@ -326,8 +326,9 @@ User settings in recipe
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
    * save: :obj:`dict` containing keyword arguments for the function
      :func:`matplotlib.pyplot.savefig`.
-   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
-     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
+   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+
+.. _ch09_fig09_42b.py:
 
 #. Script ipcc_ar5/ch09_fig09_42b.py
 
@@ -337,12 +338,20 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * dataset_style: name of the style file (located in
-     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * dataset_style: Dataset style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`). The entry
+     ``marker`` is ignored when ``marker_file`` is given.
    * log_x: Apply logarithm to X axis (ECS).
    * log_y: Apply logarithm to Y axis (TCR).
-   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
-     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
+   * marker_column: Name of the column to look up markers in ``marker_file``.
+   * marker_file: CSV file with markers (can also be integers). Must have the
+     columns ``dataset`` and ``marker`` (or the column specified by
+     ``marker_column``).  If a relative path is given, assumes that this is a
+     pattern to search for ancestor files.
+   * savefig_kwargs: Keyword arguments for :func:`matplotlib.pyplot.savefig`.
+   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+   * x_lim: Plot limits for X axis (ECS).
+   * y_lim: Plot limits for Y axis (TCR).
 
 #. Script emergent_constraints/snowalbedo.ncl
 
@@ -470,14 +479,14 @@ Example plots
 .. figure::  /recipes/figures/flato13ipcc/fig-9-6.png
    :align:   center
 
-   Figure 9.6: Centred pattern correlations between models and observations 
-   for the annual mean climatology over the period 1980–1999. Results are 
-   shown for individual CMIP3 (black) and CMIP5 (blue) models as thin 
-   dashes, along with the corresponding ensemble average (thick dash) and 
-   median (open circle). The four variables shown are surface air 
-   temperature (TAS), top of the atmosphere (TOA) outgoing longwave 
-   radiation (RLUT), precipitation (PR) and TOA shortwave cloud radiative 
-   effect (SW CRE). The correlations between the reference and alternate 
+   Figure 9.6: Centred pattern correlations between models and observations
+   for the annual mean climatology over the period 1980–1999. Results are
+   shown for individual CMIP3 (black) and CMIP5 (blue) models as thin
+   dashes, along with the corresponding ensemble average (thick dash) and
+   median (open circle). The four variables shown are surface air
+   temperature (TAS), top of the atmosphere (TOA) outgoing longwave
+   radiation (RLUT), precipitation (PR) and TOA shortwave cloud radiative
+   effect (SW CRE). The correlations between the reference and alternate
    observations are also shown (solid green circles).
 
 .. figure::  /recipes/figures/flato13ipcc/fig-9-8.png
