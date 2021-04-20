@@ -2,7 +2,7 @@
 # recipe_climwip.yml
 ---
 documentation:
-  -  description: >
+  description: >
       Basic sample recipe using only a few models.
       To use this recipe it is necessary to create a folder `shapefiles`
       in the `auxiliary_data_dir` (with is specified in the config-user.yml)
