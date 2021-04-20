@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"
-          channels: conda-forge
+          channels: esmvalgroup, conda-forge
       - shell: bash -l {0}
         run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
       - shell: bash -l {0}
