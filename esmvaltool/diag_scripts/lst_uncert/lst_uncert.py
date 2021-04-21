@@ -216,4 +216,5 @@ if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
     # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
+        print(0/0) # THis will let me know is esmvaltool actually gets through to here or not
         _diagnostic(config)
