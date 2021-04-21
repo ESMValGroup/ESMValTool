@@ -93,28 +93,41 @@ def longnameify(name):
     return name
 
 
-def regrid_to_1x1(cube, scheme = 'linear'):
+def regrid_to_1x1(cube, scheme = 'linear', res = '1x1'):
     """
     regrid a cube to a common 1x1 grid.
     """
     # regrid to a common grid:
-    return regrid(cube, '1x1', scheme)
+    return regrid(cube, res, scheme)
+    #return regrid(cube, '1x1', scheme)
 
 
-def cube_interesction(cube,region='Global'):
+def cube_interesction(cube, region='Global'):
     regions = ['Global', 'midatlantic', 'WestEq', 'EastEq']
-    cube = regrid_to_1x1(cube)
+
+    print('cube_interesction: start', region, cube.data.min(), cube.data.max())
+    if  region=='Global':
+        cube = regrid_to_1x1(cube)
+    else:
+        cube = regrid_to_1x1(cube, res='0.5x0.5')
+    print('cube_interesction: post regrid', region, cube.data.min(), cube.data.max())
+
+    cube.data = np.ma.masked_invalid(cube.data)
+
+    print('cube_interesction: post mask', region, cube.data.min(), cube.data.max())
 
     if region == 'Global':
         central_longitude = 0. #W #-160.+3.5
         cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+        print('cube_interesction: post intersection', region, cube.data.min(), cube.data.max())
+        return cube
 
     if region=='midatlantic': # Ascension island region.
         central_longitude = -14.25 #W #-160.+3.5
         central_latitude = -7.56
         lat_bnd = 20.
         lon_bnd = 30.
-        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+        return cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
             latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
 
     if region=='WestEq':
@@ -122,7 +135,7 @@ def cube_interesction(cube,region='Global'):
         central_latitude = -13.
         lat_bnd = 40.
         lon_bnd = 80.
-        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+        return cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
             latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
 
     if region=='EastEq':
@@ -130,9 +143,9 @@ def cube_interesction(cube,region='Global'):
         central_latitude = -5.
         lat_bnd = 32.
         lon_bnd = 64.
-        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+        return cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
             latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
-    return cube
+    assert 0
 
 
 def detrended_contourf(cube):
@@ -196,10 +209,12 @@ def trended_contourf(cube, cmap='YlOrRd', zrange=[], drawcbar=True):
             return False
     return True
 
+
 def round_sig(x, sig=2):
     if x ==0.: return x
     print(x, sig)
     return round(x, sig-int(math.floor(math.log10(abs(x))))-1)
+
 
 def single_pane_land_sea_pane(cfg,
         metadatas,
@@ -218,14 +233,13 @@ def single_pane_land_sea_pane(cfg,
     Generic way to plot single cube
     """
     if len(land_range):
-
-        levels = np.linspace(round_sig(np.min(land_range)), round_sig(np.max(land_range)), nbins)
+        levels = np.linspace(round_sig(np.ma.min(land_range)), round_sig(np.ma.max(land_range)), nbins)
         land = iris.plot.contourf(land_cube, levels, cmap=land_cmap) #vmin=np.min(land_range), vmax=np.max(land_range))
     else:
         land = iris.plot.contourf(land_cube, nbins, cmap=land_cmap) # linewidth=0, rasterized=True
 
     if len(sea_range):
-        levels = np.linspace(round_sig(np.min(sea_range)), round_sig(np.max(sea_range)), nbins)
+        levels = np.linspace(round_sig(np.ma.min(sea_range)), round_sig(np.ma.max(sea_range)), nbins)
         sea = iris.plot.contourf(sea_cube, levels, cmap=sea_cmap) #, vmin=np.min(sea_range), vmax=np.max(sea_range))
     else:
         sea = iris.plot.contourf(sea_cube, nbins, cmap=sea_cmap) # linewidth=0, rasterized=True,
@@ -323,14 +337,18 @@ def multi_pane_land_sea_plot(
 
     # Determine image filename:
     suffix = '_'.join(unique_keys)+image_extention
-    path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
+    path = diagtools.folder([cfg['plot_dir'], plot_dir,region])+ suffix
 
     if os.path.exists(path): return
+    print("multi_pane_land_sea_plot: making", path)
 
-    for sea_cube in sea_cubes:
-        sea_cube = cube_interesction(sea_cube,region=region)
-    for land_cube in land_cubes:
-        land_cube = cube_interesction(land_cube,region=region)
+
+    for scen, sea_cube in sea_cubes.items():
+        sea_cubes[scen] = cube_interesction(sea_cube,region=region)
+    for scen, land_cube in land_cubes.items():
+        print('land - pre', scen, land_cube.data.min(), land_cube.data.max())
+        land_cubes[scen] = cube_interesction(land_cube,region=region)
+        print('land - post', scen, land_cubes[scen].data.min(), land_cubes[scen].data.max())
 
     axes = {}
     fig = plt.figure()
@@ -411,19 +429,26 @@ def multi_pane_land_sea_plot(
 
     fig = plt.figure()
     fig.set_size_inches(12, 6)
+    
+    for scen, land_cube in land_cubes.items():
+        print('land range', scen, land_cube.data.min(), land_cube.data.max())
 
     land_range = diagtools.get_cube_range([cube for cube in land_cubes.values()])
     sea_range = diagtools.get_cube_range([cube for cube in sea_cubes.values()])
 
-    #print(land_cubes,sea_cubes)
-    #print(land_range, sea_range)
+    print(land_cubes,sea_cubes)
+    print(land_range, sea_range)
     land_label, sea_label = '', ''
     for scenario, ax in axes.items():
         # axes[scenario] = plt.subplot(sbp, projection=ccrs.PlateCarree())
+        print(scenario, unique_keys, region,plot_pair)
         land_cube = land_cubes.get(scenario, None)
         sea_cube = sea_cubes.get(scenario, None)
         if None in [land_cube, sea_cube]:
             continue
+        print('sea',sea_cube.data.min(), sea_cube.data.max())
+        print('land', land_cube.data.min(), land_cube.data.max())
+
         # sea_cube = cube_interesction(sea_cube)
         # land_cube = cube_interesction(land_cube)
         plt.sca(ax)
@@ -486,8 +511,9 @@ def multi_pane_land_sea_plot_histdiff(
 
     # Determine image filename:
     suffix = '_'.join(unique_keys)+image_extention
-    path = diagtools.folder([cfg['plot_dir'], plot_dir])+ suffix
-    #if os.path.exists(path): return
+    path = diagtools.folder([cfg['plot_dir'], plot_dir, region])+ suffix
+    if os.path.exists(path): return
+    print("multi_pane_land_sea_plot_histdiff: making", path)
 
     axes = {}
     fig = plt.figure()
@@ -495,10 +521,10 @@ def multi_pane_land_sea_plot_histdiff(
     proj = ccrs.PlateCarree()
     _complex_ = True
 
-    for sea_cube in sea_cubes:
-        sea_cube = cube_interesction(sea_cube,region=region)
-    for land_cube in land_cubes:
-        land_cube = cube_interesction(land_cube,region=region)
+    for scen, sea_cube in sea_cubes.items():
+        sea_cubes[scen] = cube_interesction(sea_cube,region=region)
+    for scen, land_cube in land_cubes.items():
+        land_cubes[scen] = cube_interesction(land_cube,region=region)
 
     # Make a difference plot:
     #    the hist is shown in large on the LHS (cbars)
@@ -565,11 +591,14 @@ def multi_pane_land_sea_plot_histdiff(
     for scenario, cube in land_cubes.items():
         if scenario == 'historical': continue
         land_diff_cubes[scenario] = cube - land_cubes['historical']
+        land_diff_cubes[scenario].data = np.ma.masked_invalid(land_diff_cubes[scenario].data)
+
 
     for scenario, cube in sea_cubes.items():
         if scenario == 'historical': continue
         sea_diff_cubes[scenario] = cube - sea_cubes['historical']
-
+        sea_diff_cubes[scenario].data = np.ma.masked_invalid(sea_diff_cubes[scenario].data)
+    
     land_diff_range = diagtools.get_cube_range_diff([cube for cube in land_diff_cubes.values()])
     sea_diff_range = diagtools.get_cube_range_diff([cube for cube in sea_diff_cubes.values()])
 
@@ -1463,6 +1492,11 @@ def make_gwt_map_land_sea_plots(cfg, ):
             files_dict[unique_key] = [fn, ]
 
         cube = iris.load_cube(fn)
+
+        # just getting the surface?
+        if cube.data.ndim==3:
+            cube = cube[0]
+
         cube = diagtools.bgc_units(cube, details['short_name'])
 
         all_cubes[tuple([details[key] for key in key_index])]=  cube
@@ -1617,19 +1651,17 @@ def make_gwt_map_land_sea_plots(cfg, ):
                 multi_pane_land_sea_plot_histdiff(
                     cfg,
                     metadatas,
-                    land_cubes=land_cubes,
-                    sea_cubes=sea_cubes,
+                    land_cubes=land_cubes.copy(),
+                    sea_cubes=sea_cubes.copy(),
                     plot_pair=plot_pair,
                     unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
                     region=region,
-                    # plot_dir ='multi_pane_model_means',
                     )
-
                 multi_pane_land_sea_plot(
                     cfg,
                     metadatas,
-                    land_cubes=land_cubes,
-                    sea_cubes=sea_cubes,
+                    land_cubes=land_cubes.copy(),
+                    sea_cubes=sea_cubes.copy(),
                     plot_pair=plot_pair,
                     unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
                     plot_dir ='multi_pane_model_means',
