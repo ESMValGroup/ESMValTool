@@ -84,11 +84,11 @@ User settings in recipe
 
   *Required settings for variables*
   This script takes multiple variables as input as long as they're available for all models
-    * ``start_year``: provide the period for which to compute performance and independence.
-    * ``end_year``: provide the period for which to compute performance and independence.
-    * ``mip``: typically Amon
-    * ``preprocessor``: e.g., climatological_mean
-    * ``additional_datasets``: this should be ``*obs_data`` and is only needed for variables used in ``performance_contributions``.
+  * ``start_year``: provide the period for which to compute performance and independence.
+  * ``end_year``: provide the period for which to compute performance and independence.
+  * ``mip``: typically Amon
+  * ``preprocessor``: e.g., climatological_mean
+  * ``additional_datasets``: this should be ``*obs_data`` and is only needed for variables used in ``performance_contributions``.
 
   *Required settings for preprocessor*
   Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time
@@ -107,10 +107,10 @@ User settings in recipe
 
   *Required settings for variables*
   This script only takes temperature (tas) as input
-    * ``start_year``: provide the period for which to plot a temperature change graph.
-    * ``end_year``: provide the period for which to plot a temperature change graph.
-    * ``mip``: typically Amon
-    * ``preprocessor``: temperature_anomalies
+  * ``start_year``: provide the period for which to plot a temperature change graph.
+  * ``end_year``: provide the period for which to plot a temperature change graph.
+  * ``mip``: typically Amon
+  * ``preprocessor``: temperature_anomalies
 
   *Required settings for preprocessor*
   Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the
