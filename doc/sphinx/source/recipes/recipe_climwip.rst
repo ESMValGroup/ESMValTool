@@ -107,7 +107,7 @@ User settings in recipe
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
-  This script takes multiple variables as input as long as they're available for all models
+  * This script takes multiple variables as input as long as they're available for all models
   * ``start_year``: provide the period for which to compute performance and independence.
   * ``end_year``: provide the period for which to compute performance and independence.
   * ``mip``: typically Amon
@@ -115,8 +115,8 @@ User settings in recipe
   * ``additional_datasets``: this should be ``*obs_data`` and is only needed for variables used in ``performance_contributions``.
 
   *Required settings for preprocessor*
-  Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time
-  dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
+    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time
+      dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
 
   *Optional settings for preprocessor*
     * ``extract_region`` or ``extract_shape`` can be used to crop the input data.
@@ -130,15 +130,15 @@ User settings in recipe
     * ``weights``: the filename of the weights: 'weights.nc'
 
   *Required settings for variables*
-  This script only takes temperature (tas) as input
-  * ``start_year``: provide the period for which to plot a temperature change graph.
-  * ``end_year``: provide the period for which to plot a temperature change graph.
-  * ``mip``: typically Amon
-  * ``preprocessor``: temperature_anomalies
+   * This script only takes temperature (tas) as input
+   * ``start_year``: provide the period for which to plot a temperature change graph.
+   * ``end_year``: provide the period for which to plot a temperature change graph.
+   * ``mip``: typically Amon
+   * ``preprocessor``: temperature_anomalies
 
   *Required settings for preprocessor*
-  Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the
-  latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
+    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the
+      latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
 
   *Optional settings for preprocessor*
     * Can be a global mean or focus on a point, region or shape
@@ -225,9 +225,8 @@ should lie around 0.5. In cases where the perfect model test fails (no appropria
 can be found) the test will still produce graphical output before raising a ValueError. The user can than decide
 to manually set the performance sigma to the most appropriate value (based on the output) - **this is
 not recommended** and should only be done with care! The perfect model test failing can be a hint for
-one of the following
-* not enough models in the ensemble for a robust distribution (normally >20 models should be used)
-* the performance metrics used are not relevant for the target
+one of the following: (1) not enough models in the ensemble for a robust distribution (normally >20
+models should be used) or (2) the performance metrics used are not relevant for the target.
 
 An on-the-fly calibaration for the independence sigma is not yet implemented. For most cases we recommend to
 use the same setup as in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_ or
