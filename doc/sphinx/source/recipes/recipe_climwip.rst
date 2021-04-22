@@ -1,6 +1,6 @@
 .. _recipe_climwip:
 
-Climate model weighting by Independence and Performance (ClimWIP)
+Climate model Weighting by Independence and Performance (ClimWIP)
 =================================================================
 
 Overview
@@ -8,9 +8,20 @@ Overview
 
 Projections of future climate change are often based on ensembles of global climate models such as CMIP6. To condense the information from these models they are often combined into probabilistic estimates such as mean and a related uncertainty range (such as the standard deviation). However, not all models in a given multi-model ensemble are always equally 'fit for purpose' and in such cases it can make sense to weight models based on their ability to simulate observed quantities related to the target. In addition, multi-model ensembles, such as CMIP can contain several models based on a very similar code-base (sharing, for example, multiple components) leading to complex inter-dependencies between the models. Adjusting for this by weighting them according to their independence can help to adjust for this.
 
-This recipe implements the Climate model Weighting by Independence and Performance (ClimWIP) method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_, `Lorenz et al. (2018) <https://doi.org/10.1029/2017JD027992>`_, `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_, `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Weights are calculated based on historical model performance in several metrics (which can be defined by the ``performance_contributions`` parameter) as well as by their independence to all the other models in the ensemble based on their output fields in several metrics (which can be defined by the ``independence_contributions`` parameter). These weights can be used in subsequent diagnostics (some of which are implemented as part of this diagnostic).
+This recipe implements the Climate model Weighting by Independence and Performance (ClimWIP) method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_, `Lorenz et al. (2018) <https://doi.org/10.1029/2017JD027992>`_, `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_, `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Weights are calculated based on historical model performance in several metrics (which can be defined by the ``performance_contributions`` parameter) as well as by their independence to all the other models in the ensemble based on their output fields in several metrics (which can be defined by the ``independence_contributions`` parameter). These weights can be used in subsequent evaluation scripts (some of which are implemented as part of this diagnostic).
 
 **Note**: this recipe is still being developed! A more comprehensive (yet older) implementation can be found on GitHub:  https://github.com/lukasbrunner/ClimWIP
+
+
+Using shapefiles for cutting scientific regions
+-----------------------------------------------
+
+To use shapefiles for selecting SREX or AR6 regions by name it is necessary to create a folder `shapefiles` in the `auxiliary_data_dir` (with is specified in the `config-user.yml https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file`_) and extract the shapefiles into it:
+
+.. code-block:: bash
+
+   unzip ./esmvaltool/diag_scripts/weighting/shapefiles/shapefiles.zip -d <auxiliary_data_dir>/shapefiles/
+
 
 
 Available recipes and diagnostics
@@ -21,7 +32,7 @@ Recipes are stored in esmvaltool/recipes/
     * ``recipe_climwip_test_basic.yml``: Basic sample recipe using only a few models
     * ``recipe_climwip_test_performance_sigma.yml``: Advance sample recipe for testing the perfect model test in particular
     * ``recipe_climwip_brunner2019_med.yml``: Slightly modified results for one region from Brunner et al. (2019) (to change regions see below)
-    * ``recipe_climwip_brunner2020_med.yml`` (in development)
+    * ``recipe_climwip_brunner2020.yml`` (in development)
 
 Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
 
@@ -49,12 +60,13 @@ User settings in recipe
         * ``performance_sigma``: float setting the shape parameter for the performance weights calculation (determined offline).
         * ``calibrate_performance_sigma``: dictionary setting the performance sigma calibration. Has to contain at least the
           key-value pair specifying ``target``: ``variable_group``. Optional parameters for adjusting the calibration are not
-          yet implemented. WARNING: It is highly recommended to visually inspect the graphical output of the calibration to
+          yet implemented. **Warning:** It is highly recommended to visually inspect the graphical output of the calibration to
           check if everything worked as intended. In case the calibration fails, the best performance sigma will still be
           indicated in the figure (see example :numref:`fig_climwip_5` below) but not automatically picked - the user can decide
           to use it anyway by setting it in the recipe (not recommenced).
     * ``independence_sigma``: float setting the shape parameter for the independence weights calculation (determined offline).
-      Can be skipped or not set if ``independence_contributions`` is skipped or not set.
+      Can be skipped or not set if ``independence_contributions`` is skipped or not set. A on-the-fly calculation of the
+      independence sigma is not yet implemented
     * ``performance_contributions``: dictionary where the keys represent the variable groups to be included in the performance
       calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
       Can be skipped or not set then weights will be based purely on model independence (this is mutually exclusive with
@@ -64,25 +76,28 @@ User settings in recipe
       Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with
       ``performance_contributions`` being skipped or not set).
     * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing
-      (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble members per model.
+      (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble
+      members per model. If set to false, the model independence weighting will still (partly) account for the (very high)
+      dependence between members of the same model. The success of this will depend on the case and the selected parameters.
+      See `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_ for an in-depth discussion.
     * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
-    * This script takes multiple variables as input as long as they're available for all models
+  This script takes multiple variables as input as long as they're available for all models
     * ``start_year``: provide the period for which to compute performance and independence.
     * ``end_year``: provide the period for which to compute performance and independence.
     * ``mip``: typically Amon
-    * ``preprocessor``: e.g. climwip_summer_mean
-    * ``additional_datasets``: provide a list of model data for performance calculation.
+    * ``preprocessor``: e.g., climatological_mean
+    * ``additional_datasets``: this should be ``*obs_data`` and is only needed for variables used in ``performance_contributions``.
 
   *Required settings for preprocessor*
-    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time
+  Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time
       dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
 
   *Optional settings for preprocessor*
     * ``extract_region`` or ``extract_shape`` can be used to crop the input data.
     * ``extract_season`` can be used to focus on a single season.
-    * different climate statistics can be used to calculate mean or (detrended) std_dev.
+    * different climate statistics can be used to calculate mean, (detrended) std_dev, or trend.
 
 2. Script ``weighted_temperature_graph.py``
 
@@ -91,14 +106,14 @@ User settings in recipe
     * ``weights``: the filename of the weights: 'weights.nc'
 
   *Required settings for variables*
-    * This script only takes temperature (tas) as input
+  This script only takes temperature (tas) as input
     * ``start_year``: provide the period for which to plot a temperature change graph.
     * ``end_year``: provide the period for which to plot a temperature change graph.
     * ``mip``: typically Amon
     * ``preprocessor``: temperature_anomalies
 
   *Required settings for preprocessor*
-    * Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the
+  Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the
       latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
 
   *Optional settings for preprocessor*
@@ -113,7 +128,7 @@ User settings in recipe
      * ``weights``: the filename of the weights: 'weights_combined.nc'
 
    *Optional settings for script*
-     * ``model_aggregation``: how to aggregate the models: mean (default), median, integer between 0 and 100 given a percentile
+     * ``model_aggregation``: how to aggregate the models: mean (default), median, integer between 0 and 100 representing a percentile
      * ``xticks``: positions to draw xticks at
      * ``yticks``: positions to draw yticks at
 
@@ -145,16 +160,16 @@ Updating the Brunner et al. (2019) recipe for new regions
        ids:
          - 'South Europe/Mediterranean [MED:13]'
 
-The ``ids`` field takes any valid SREX region key (for a full list see ./esmvaltool/diag_scripts/weighting/shapefiles/srex.csv). Not that this needs to be the full string here (not the abbreviation).
+The ``ids`` field takes any valid `SREX http://www.ipcc-data.org/guidelines/pages/ar5_regions.html`_ region key or any valid `AR6 https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions`_ region key. Not that this needs to be the full string here (not the abbreviation). For a full list of possible regions have a look at the srex.csv and ar6.csv files under ./esmvaltool/diag_scripts/weighting/shapefiles
+
+The sigma parameters need to be set according to the selected region. The sigma values for the regions used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can be found in table 1 of the paper.
 
 .. code-block:: yaml
 
     performance_sigma: 0.546
     independence_sigma: 0.643
 
-The sigma parameters need to be set according to the selected region. The sigma values for the regions used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can be found in table 1 of the paper.
-
-**Warning:** if a new region is used the sigma values should be recalculated! This can be done by commenting in the blocks defining the target of the weighting:
+**Warning:** if a new region is used the sigma values should be recalculated! This can be done by commenting out the sigma values (line above) and commenting in the blocks defining the target of the weighting:
 
 .. code-block:: yaml
 
@@ -172,7 +187,17 @@ as well as
     calibrate_performance_sigma:
        target: CLIM_future
 
+In this case ClimWIP will attempt to perform an on-the-fly perfect model test to estimate the lowest performance sigma (strongest weighting) which does not lead to overconfident weighting. **Important:** the user should always check the test output for unusual behaviour. For most cases the performance sigma should lie around 0.5. In cases where the perfect model test fails (no appropriate performance sigma can be found) the test will still produce graphical output before failing. The user can than decide to manually set the performance sigma to the most appropriate value (based on the output) - **this is not recommended** and should only be done with care!
+
+A on-the-fly test for the independence sigma is not yet implemented. For most cases we recommend to use the same setup as in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_ or `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_ (global or hemispherical temperature and sea level pressure climatologies as metrics independence sigma values between 0.2 and 0.5). An example recipe for this in currently being implemented.
+
 **Warning:** if a new region or target is used the provided metrics to establish the weights might no longer be appropriate. Using unrelated metrics with no correlation and/or physical relation to the target will reduce the skill of the weighting and ultimately render it useless!
+
+
+An example independence weighting: the Brunner et al. (2020) recipe
+-------------------------------------------------------------------
+
+Implementation ongoing
 
 
 Variables
@@ -181,7 +206,7 @@ Variables
 * pr (atmos, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
 * psl (atmos, monthly mean, longitude latitude time)
-* rsus, rsds, rlus, rlds (atmos, monthly mean, longitude latitude time)
+* rsus, rsds, rlus, rlds, rsns, rlns (atmos, monthly mean, longitude latitude time)
 * more variables can be added if available for all datasets.
 
 
