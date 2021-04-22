@@ -6,17 +6,41 @@ Climate model Weighting by Independence and Performance (ClimWIP)
 Overview
 --------
 
-Projections of future climate change are often based on ensembles of global climate models such as CMIP6. To condense the information from these models they are often combined into probabilistic estimates such as mean and a related uncertainty range (such as the standard deviation). However, not all models in a given multi-model ensemble are always equally 'fit for purpose' and in such cases it can make sense to weight models based on their ability to simulate observed quantities related to the target. In addition, multi-model ensembles, such as CMIP can contain several models based on a very similar code-base (sharing, for example, multiple components) leading to complex inter-dependencies between the models. Adjusting for this by weighting them according to their independence can help to adjust for this.
+Projections of future climate change are often based on ensembles of global climate
+models such as CMIP6. To condense the information from these models they are often
+combined into probabilistic estimates such as mean and a related uncertainty range
+(such as the standard deviation). However, not all models in a given multi-model
+ensemble are always equally 'fit for purpose' and in such cases it can make sense
+to weight models based on their ability to simulate observed quantities related to
+the target. In addition, multi-model ensembles, such as CMIP can contain several
+models based on a very similar code-base (sharing, for example, multiple components)
+leading to complex inter-dependencies between the models. Adjusting for this by
+weighting them according to their independence can help to adjust for this.
 
-This recipe implements the Climate model Weighting by Independence and Performance (ClimWIP) method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_, `Lorenz et al. (2018) <https://doi.org/10.1029/2017JD027992>`_, `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_, `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_, `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Weights are calculated based on historical model performance in several metrics (which can be defined by the ``performance_contributions`` parameter) as well as by their independence to all the other models in the ensemble based on their output fields in several metrics (which can be defined by the ``independence_contributions`` parameter). These weights can be used in subsequent evaluation scripts (some of which are implemented as part of this diagnostic).
+This recipe implements the Climate model Weighting by Independence and Performance
+(ClimWIP) method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_,
+`Lorenz et al. (2018) <https://doi.org/10.1029/2017JD027992>`_,
+`Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_,
+`Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_,
+`Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Weights are
+calculated based on historical model performance in several metrics (which can be
+defined by the ``performance_contributions`` parameter) as well as by their independence
+to all the other models in the ensemble based on their output fields in several metrics
+(which can be defined by the ``independence_contributions`` parameter). These weights
+can be used in subsequent evaluation scripts (some of which are implemented as part of
+this diagnostic).
 
-**Note**: this recipe is still being developed! A more comprehensive (yet older) implementation can be found on GitHub:  https://github.com/lukasbrunner/ClimWIP
+**Note**: this recipe is still being developed! A more comprehensive (yet older)
+implementation can be found on GitHub:  https://github.com/lukasbrunner/ClimWIP
 
 
 Using shapefiles for cutting scientific regions
 -----------------------------------------------
 
-To use shapefiles for selecting SREX or AR6 regions by name it is necessary to create a folder `shapefiles` in the `auxiliary_data_dir` (with is specified in the `config-user.yml https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file`_) and extract the shapefiles into it:
+To use shapefiles for selecting SREX or AR6 regions by name it is necessary to create a
+folder `shapefiles` in the `auxiliary_data_dir` (with is specified in the
+`config-user.yml <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_)
+and extract the shapefiles into it:
 
 .. code-block:: bash
 
@@ -161,8 +185,8 @@ but only for one region (the Mediterranean). To calculated weights for other reg
        ids:
          - 'South Europe/Mediterranean [MED:13]'
 
-The ``ids`` field takes any valid `SREX http://www.ipcc-data.org/guidelines/pages/ar5_regions.html`_ region
-key or any valid `AR6 https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions`_ region key.
+The ``ids`` field takes any valid `SREX <http://www.ipcc-data.org/guidelines/pages/ar5_regions.html>`_ region
+key or any valid `AR6 <https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_ region key.
 Not that this needs to be the full string here (not the abbreviation). For a full list of possible regions
 have a look at the srex.csv and ar6.csv files under ./esmvaltool/diag_scripts/weighting/shapefiles
 
