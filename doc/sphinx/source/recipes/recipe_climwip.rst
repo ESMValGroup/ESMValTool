@@ -17,8 +17,8 @@ models based on a very similar code-base (sharing, for example, multiple compone
 leading to complex inter-dependencies between the models. Adjusting for this by
 weighting them according to their independence can help to adjust for this.
 
-This recipe implements the Climate model Weighting by Independence and Performance
-(ClimWIP) method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_,
+This recipe implements the **Climate model Weighting by Independence and Performance
+(ClimWIP)** method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_,
 `Lorenz et al. (2018) <https://doi.org/10.1029/2017JD027992>`_,
 `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_,
 `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_,
@@ -186,9 +186,10 @@ but only for one region (the Mediterranean). To calculated weights for other reg
          - 'South Europe/Mediterranean [MED:13]'
 
 The ``ids`` field takes any valid `SREX <http://www.ipcc-data.org/guidelines/pages/ar5_regions.html>`_ region
-key or any valid `AR6 <https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_ region key.
-Not that this needs to be the full string here (not the abbreviation). For a full list of possible regions
-have a look at the srex.csv and ar6.csv files under ./esmvaltool/diag_scripts/weighting/shapefiles
+key or any valid `AR6 <https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_ region key
+(depending on the shapefile). Not that this needs to be the full string here (not the abbreviation). For a
+full list of possible regions have a look at the srex.csv and ar6.csv files under
+./esmvaltool/diag_scripts/weighting/shapefiles
 
 The sigma parameters need to be set according to the selected region. The sigma values for the regions
 used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can be found in table 1 of the paper.
@@ -199,7 +200,7 @@ used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can 
     independence_sigma: 0.643
 
 **Warning:** if a new region is used the sigma values should be recalculated! This can be done by commenting
-out the sigma values (line above) and commenting in the blocks defining the target of the weighting:
+out the sigma values (lines above) and commenting in the blocks defining the target of the weighting:
 
 .. code-block:: yaml
 
@@ -221,23 +222,27 @@ In this case ClimWIP will attempt to perform an on-the-fly perfect model test to
 performance sigma (strongest weighting) which does not lead to overconfident weighting. **Important:**
 the user should always check the test output for unusual behaviour. For most cases the performance sigma
 should lie around 0.5. In cases where the perfect model test fails (no appropriate performance sigma
-can be found) the test will still produce graphical output before failing. The user can than decide
+can be found) the test will still produce graphical output before raising a ValueError. The user can than decide
 to manually set the performance sigma to the most appropriate value (based on the output) - **this is
-not recommended** and should only be done with care!
+not recommended** and should only be done with care! The perfect model test failing can be a hint for
+one of the following
+  * not enough models in the ensemble for a robust distribution (normally >20 models should be used)
+  * the performance metrics used are not relevant for the target
 
-A on-the-fly test for the independence sigma is not yet implemented. For most cases we recommend to
+An on-the-fly calibaration for the independence sigma is not yet implemented. For most cases we recommend to
 use the same setup as in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_ or
 `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_ (global or hemispherical
-temperature and sea level pressure climatologies as metrics independence sigma values between 0.2
-and 0.5). An example recipe for this in currently being implemented.
+temperature and sea level pressure climatologies as metrics and independence sigma values between 0.2
+and 0.5).
 
 **Warning:** if a new region or target is used the provided metrics to establish the weights
 might no longer be appropriate. Using unrelated metrics with no correlation and/or physical
-relation to the target will reduce the skill of the weighting and ultimately render it useless!
+relation to the target will reduce the skill of the weighting and ultimately render it useless! In
+such cases the perfect model test might fail. This means the performance metrics should be updated.
 
 
-An example independence weighting: the Brunner et al. (2020) recipe
--------------------------------------------------------------------
+Brunner et al. (2020) recipe and example independence weighting
+---------------------------------------------------------------
 
 Implementation ongoing
 
