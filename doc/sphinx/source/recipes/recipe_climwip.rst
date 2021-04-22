@@ -226,8 +226,8 @@ can be found) the test will still produce graphical output before raising a Valu
 to manually set the performance sigma to the most appropriate value (based on the output) - **this is
 not recommended** and should only be done with care! The perfect model test failing can be a hint for
 one of the following
-  * not enough models in the ensemble for a robust distribution (normally >20 models should be used)
-  * the performance metrics used are not relevant for the target
+* not enough models in the ensemble for a robust distribution (normally >20 models should be used)
+* the performance metrics used are not relevant for the target
 
 An on-the-fly calibaration for the independence sigma is not yet implemented. For most cases we recommend to
 use the same setup as in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_ or
