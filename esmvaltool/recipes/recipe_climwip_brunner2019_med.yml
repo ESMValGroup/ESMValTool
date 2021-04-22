@@ -34,7 +34,7 @@ datasets: &model_data
   - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: r4i1p1}
   - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: r5i1p1}
   # pre-processor can't merge historical and RCP85 - unclear why
-  - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: r6i1p1}
+  # - {dataset: CCSM4, project: CMIP5, exp: [historical, rcp85], ensemble: r6i1p1}
 
   - {dataset: CESM1-BGC, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
 
