@@ -92,7 +92,7 @@ User settings in recipe
 
   *Required settings for preprocessor*
   Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the time
-      dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
+  dimension, i.e. the input for the diagnostic script should be 2d (lat/lon).
 
   *Optional settings for preprocessor*
     * ``extract_region`` or ``extract_shape`` can be used to crop the input data.
@@ -114,7 +114,7 @@ User settings in recipe
 
   *Required settings for preprocessor*
   Different combinations of preprocessor functions can be used, but the end result should always be aggregated over the
-      latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
+  latitude and longitude dimensions, i.e. the input for the diagnostic script should be 1d (time).
 
   *Optional settings for preprocessor*
     * Can be a global mean or focus on a point, region or shape
@@ -148,7 +148,8 @@ User settings in recipe
 Updating the Brunner et al. (2019) recipe for new regions
 ---------------------------------------------------------
 
-``recipe_climwip_brunner2019_med.yml`` demonstrates a very similar setup to `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ but only for one region (the Mediterranean). To calculated weights for other regions the recipe needs to be updated at two places:
+``recipe_climwip_brunner2019_med.yml`` demonstrates a very similar setup to `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_
+but only for one region (the Mediterranean). To calculated weights for other regions the recipe needs to be updated at two places:
 
 .. code-block:: yaml
 
@@ -160,16 +161,21 @@ Updating the Brunner et al. (2019) recipe for new regions
        ids:
          - 'South Europe/Mediterranean [MED:13]'
 
-The ``ids`` field takes any valid `SREX http://www.ipcc-data.org/guidelines/pages/ar5_regions.html`_ region key or any valid `AR6 https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions`_ region key. Not that this needs to be the full string here (not the abbreviation). For a full list of possible regions have a look at the srex.csv and ar6.csv files under ./esmvaltool/diag_scripts/weighting/shapefiles
+The ``ids`` field takes any valid `SREX http://www.ipcc-data.org/guidelines/pages/ar5_regions.html`_ region
+key or any valid `AR6 https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions`_ region key.
+Not that this needs to be the full string here (not the abbreviation). For a full list of possible regions
+have a look at the srex.csv and ar6.csv files under ./esmvaltool/diag_scripts/weighting/shapefiles
 
-The sigma parameters need to be set according to the selected region. The sigma values for the regions used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can be found in table 1 of the paper.
+The sigma parameters need to be set according to the selected region. The sigma values for the regions
+used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can be found in table 1 of the paper.
 
 .. code-block:: yaml
 
     performance_sigma: 0.546
     independence_sigma: 0.643
 
-**Warning:** if a new region is used the sigma values should be recalculated! This can be done by commenting out the sigma values (line above) and commenting in the blocks defining the target of the weighting:
+**Warning:** if a new region is used the sigma values should be recalculated! This can be done by commenting
+out the sigma values (line above) and commenting in the blocks defining the target of the weighting:
 
 .. code-block:: yaml
 
@@ -187,11 +193,23 @@ as well as
     calibrate_performance_sigma:
        target: CLIM_future
 
-In this case ClimWIP will attempt to perform an on-the-fly perfect model test to estimate the lowest performance sigma (strongest weighting) which does not lead to overconfident weighting. **Important:** the user should always check the test output for unusual behaviour. For most cases the performance sigma should lie around 0.5. In cases where the perfect model test fails (no appropriate performance sigma can be found) the test will still produce graphical output before failing. The user can than decide to manually set the performance sigma to the most appropriate value (based on the output) - **this is not recommended** and should only be done with care!
+In this case ClimWIP will attempt to perform an on-the-fly perfect model test to estimate the lowest
+performance sigma (strongest weighting) which does not lead to overconfident weighting. **Important:**
+the user should always check the test output for unusual behaviour. For most cases the performance sigma
+should lie around 0.5. In cases where the perfect model test fails (no appropriate performance sigma
+can be found) the test will still produce graphical output before failing. The user can than decide
+to manually set the performance sigma to the most appropriate value (based on the output) - **this is
+not recommended** and should only be done with care!
 
-A on-the-fly test for the independence sigma is not yet implemented. For most cases we recommend to use the same setup as in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_ or `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_ (global or hemispherical temperature and sea level pressure climatologies as metrics independence sigma values between 0.2 and 0.5). An example recipe for this in currently being implemented.
+A on-the-fly test for the independence sigma is not yet implemented. For most cases we recommend to
+use the same setup as in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_ or
+`Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_ (global or hemispherical
+temperature and sea level pressure climatologies as metrics independence sigma values between 0.2
+and 0.5). An example recipe for this in currently being implemented.
 
-**Warning:** if a new region or target is used the provided metrics to establish the weights might no longer be appropriate. Using unrelated metrics with no correlation and/or physical relation to the target will reduce the skill of the weighting and ultimately render it useless!
+**Warning:** if a new region or target is used the provided metrics to establish the weights
+might no longer be appropriate. Using unrelated metrics with no correlation and/or physical
+relation to the target will reduce the skill of the weighting and ultimately render it useless!
 
 
 An example independence weighting: the Brunner et al. (2020) recipe
