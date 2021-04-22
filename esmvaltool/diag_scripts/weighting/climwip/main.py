@@ -130,7 +130,7 @@ def barplot(metric: 'xr.DataArray', label: str, filename: str):
                           rotation=45,
                           horizontalalignment='right')
     if variable_group == 'weight':
-        chart.set_title(f'Performance weights')
+        chart.set_title('Performance weights')
     else:
         chart.set_title(f'{label} for {variable_group}')
     chart.set_ylabel(ylabel)
