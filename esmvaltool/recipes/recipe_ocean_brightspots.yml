@@ -1,0 +1,48 @@
+# ESMValTool
+# recipe_ocean_example.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the monthly ocean
+    temperature. Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+datasets:
+
+# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
+
+preprocessors:
+  prep_1:
+#    target_grid: 1x1
+#      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+  mm_stats:
+    variables:
+        tos_historical:
+        short_name: tos
+        preprocessor: prep_1
+        additional_datasets:
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 1991, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1990, end_year: 1991, grid: gn}
