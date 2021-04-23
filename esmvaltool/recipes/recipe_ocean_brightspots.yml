@@ -22,7 +22,10 @@ documentation:
 
 #datasets:
 
-# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
+# Test multimodel statistics in 2D + time
+# Add additional time periods
+# Add additional models
+
 
 preprocessors:
   prep_1:
