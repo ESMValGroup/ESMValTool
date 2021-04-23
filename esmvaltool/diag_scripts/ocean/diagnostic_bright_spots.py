@@ -364,8 +364,12 @@ def multi_model_contours(
 
 def map_plot(cfg, metadata, cube, unique_keys = []):
 
-    # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
+
+    path = cfg['plot_dir'] + '_'.join(unique_keys)
+    path+='_map'+image_extention
+
+    if os.path.exists(path):return
 
     fig = plt.figure()
 
@@ -375,11 +379,8 @@ def map_plot(cfg, metadata, cube, unique_keys = []):
     plt.gca().coastlines()
 
     # Add title to plot
-    title = ' '.join([unique_keys])
+    title = ' '.join(unique_keys)
     plt.title(title)
-
-    path = cfg['plot_dir']) + '_'.join(unique_keys)
-    path+='_map'+image_extention
 
     logger.info('Saving plots to %s', path)
     plt.savefig(path)
@@ -389,11 +390,14 @@ def map_plot(cfg, metadata, cube, unique_keys = []):
 
 def make_file_mean(cfg, metadata, fn, operator='mean'):
 
-    unique_keys = [metadata[k] for k in ['dataset', 'short_name',
+    unique_keys = [metadata[k] for k in ['dataset', 'short_name',]]
     unique_keys.append( operator)
 
     work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
     path = work_dir+'_'.join(list(unique_keys))+'.nc'
+    print('make_file_mean, path:', path)
+    if os.path.exists(path):return path
+
 
     cube = iris.load_cube( fn)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
@@ -450,6 +454,7 @@ def main(cfg):
             )
 
             fn = make_file_mean(cfg, metadata, filename, operator='mean')
+            fn = make_file_mean(cfg, metadata, filename, operator='std_dev')
 
             # ######
             # # Contour maps of individual model
