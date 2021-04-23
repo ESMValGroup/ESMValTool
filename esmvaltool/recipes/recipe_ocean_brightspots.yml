@@ -20,18 +20,35 @@ documentation:
     - ukesm
 
 
-datasets:
+#datasets:
 
 # TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
 
 preprocessors:
   prep_1:
-#    target_grid: 1x1
-#      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    regrid_time:
+      frequency: min
     multi_model_statistics:
       span: overlap
       statistics: [mean]
+#    climate_statistics:
+#      operator: 'mean'
 
+# prep_2:
+#   regrid:
+#     target_grid: 1x1
+#     scheme: linear
+#   regrid_time:
+#     frequency: min
+#   multi_model_statistics:
+#     span: overlap
+#     statistics: [mean]
+#   climate_statistics:
+#       operator: std_dev
+#
 
 
 diagnostics:
@@ -40,9 +57,13 @@ diagnostics:
   # --------------------------------------------------
   mm_stats:
     variables:
-        tos_historical:
+      tos_historical:
         short_name: tos
         preprocessor: prep_1
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 1991, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1990, end_year: 1991, grid: gn}
+
+    scripts:
+      maps_plots:
+        script: ocean/diagnostic_bright_spots.py
