@@ -50,6 +50,8 @@ import iris
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
+from esmvalcore.preprocessor._time import climate_statistics
+
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
@@ -360,6 +362,51 @@ def multi_model_contours(
         plt.close()
 
 
+def map_plot(cfg, metadata, cube, unique_keys = []):
+
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    fig = plt.figure()
+
+    # Making plots for each layer
+    qplt.contourf(cube, 11,)
+
+    plt.gca().coastlines()
+
+    # Add title to plot
+    title = ' '.join([unique_keys])
+    plt.title(title)
+
+    path = cfg['plot_dir']) + '_'.join(unique_keys)
+    path+='_map'+image_extention
+
+    logger.info('Saving plots to %s', path)
+    plt.savefig(path)
+
+    plt.close()
+
+
+def make_file_mean(cfg, metadata, fn, operator='mean'):
+
+    unique_keys = [metadata[k] for k in ['dataset', 'short_name',
+    unique_keys.append( operator)
+
+    work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
+    path = work_dir+'_'.join(list(unique_keys))+'.nc'
+
+    cube = iris.load_cube( fn)
+    cube = diagtools.bgc_units(cube, metadata['short_name'])
+
+    cube = climate_statistics(cube, operator=operator)
+    print('Saving output:', path)
+    iris.save(cube, path)
+
+    map_plot(cfg, metadata, cube, unique_keys = unique_keys)
+
+    return path
+
+
 def main(cfg):
     """
     Load the config file, and send it to the plot makers.
@@ -370,26 +417,31 @@ def main(cfg):
         the opened global config dictionary, passed by ESMValTool.
 
     """
-    cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
+    # cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s',
             metadata_filename,
         )
+        print
 
         metadatas = diagtools.get_input_files(cfg, index=index)
-        thresholds = diagtools.load_thresholds(cfg, metadatas)
+        # thresholds = diagtools.load_thresholds(cfg, metadatas)
 
-        if thresholds:
+        # if thresholds:
             #######
             # Multi model contour plots
-            multi_model_contours(
-                cfg,
-                metadatas,
-            )
+            # multi_model_contours(
+            #     cfg,
+            #     metadatas,
+            # )
 
-        for filename in sorted(metadatas.keys()):
+        for filename, metadata in sorted(metadatas.items()):
+            # Is this data is a multi-model dataset?
+            multi_model = metadata['dataset'].find('MultiModel') > -1
+            if not multi_model:
+                continue
 
             logger.info('-----------------')
             logger.info(
@@ -397,14 +449,16 @@ def main(cfg):
                 filename,
             )
 
-            ######
-            # Contour maps of individual model
-            if thresholds:
-                make_map_contour(cfg, metadatas[filename], filename)
+            fn = make_file_mean(cfg, metadata, filename, operator='mean')
 
-            ######
-            # Maps of individual model
-            make_map_plots(cfg, metadatas[filename], filename)
+            # ######
+            # # Contour maps of individual model
+            # if thresholds:
+            #     make_map_contour(cfg, metadatas[filename], filename)
+            #
+            # ######
+            # # Maps of individual model
+            # make_map_plots(cfg, metadatas[filename], filename)
 
     logger.info('Success')
 
