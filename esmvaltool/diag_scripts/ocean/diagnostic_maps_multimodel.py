@@ -138,7 +138,7 @@ def taylor_coeffs(cubes, layer, obsname):
                             corr_coords=['latitude', 'longitude'],
                             common_mask=True)
         corrcoef = corrcoef.data.item()
-        out_dict.update({thename:{'std':stddev, 'corr':corrcoef}})
+        out_dict.update({thename: {'std': stddev, 'corr': corrcoef}})
         srange.append(stddev)
         extend.append(corrcoef)
 
@@ -224,7 +224,7 @@ def add_map_plot(fig, axs, plot_cube, cols):
         cformat = '%.1f'
         if abs(nspace[1]-nspace[0]) < 1:
             cformat = int(np.ceil(-np.log10(abs(nspace[1]-nspace[0]))))
-            cformat = '%.'+ str(cformat) + 'f'
+            cformat = '%.' + str(cformat) + 'f'
         cbar = plt.colorbar(orientation='horizontal',
                             cax=axins, format=cformat)
         cbar.set_ticks(nspace[::2])
@@ -265,7 +265,7 @@ def make_subplots(cubes, layout, obsname, fig, projection):
                         bottom=0.08,
                         left=0.05,
                         right=0.95,
-                        hspace=0.2, # 0.15
+                        hspace=0.2,
                         wspace=0.15)
 
     # Vertically detach OBS plot and center
@@ -419,7 +419,7 @@ def make_plots(cfg, metadata, obsname):
     # plot setting
     layout = metadata[filenames[0]]['layout_rowcol']
     projection = 'Robinson'
-    if 'plot_ccrs' in  metadata[filenames[0]]:
+    if 'plot_ccrs' in metadata[filenames[0]]:
         projection = metadata[filenames[0]]['plot_ccrs']
 
     # load input data
@@ -457,7 +457,6 @@ def make_plots(cfg, metadata, obsname):
         else:
             plot_file = ['multimodel', plot_file, layer_lab, 'maps']
         plot_file = diagtools.folder(cfg['plot_dir']) + '_'.join(plot_file)
-        #path = diagtools.folder(cfg['plot_dir']) + plot_file
 
         # Saving file:
         if cfg['write_plots']:

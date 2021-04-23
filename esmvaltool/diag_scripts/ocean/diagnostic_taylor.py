@@ -106,7 +106,6 @@ class TaylorDiagram():
         # Collect sample points for latter use (e.g. legend)
         self.samplepoints = [val]
 
-
     def add_sample(self, stddev, corrcoef, *args, **kwargs):
         """
         Add sample (*stddev*, *corrcoeff*) to the Taylor
@@ -119,11 +118,9 @@ class TaylorDiagram():
 
         return val
 
-
     def add_grid(self, *args, **kwargs):
         """Add a grid."""
         self._ax.grid(*args, **kwargs)
-
 
     def add_contours(self, levels=5, **kwargs):
         """
