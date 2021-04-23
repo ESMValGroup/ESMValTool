@@ -33,7 +33,7 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
     regrid_time:
-      frequency: min
+      frequency: mon
     multi_model_statistics:
       span: overlap
       statistics: [mean]
