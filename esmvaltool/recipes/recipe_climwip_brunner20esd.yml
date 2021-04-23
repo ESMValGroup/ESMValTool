@@ -231,7 +231,7 @@ diagnostics:
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
 
-  weighted_temperature_map_box:
+  weighted_temperature_map:
     variables:
       tas: &map_settings
         short_name: tas
