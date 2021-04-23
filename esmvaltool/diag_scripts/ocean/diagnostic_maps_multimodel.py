@@ -1,6 +1,6 @@
 """Model vs Observations maps Diagnostic.
 
-Diagnostic to produce comparison maps of model(s) and data (if provided).
+Diagnostic to produce comparison maps and taylor plot of model(s) and OBS.
 If observations are not provided, data maps for each model are drawn.
 
 The image shows on top row observational data and the following subplot(s)
@@ -35,11 +35,117 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from iris.analysis.stats import pearsonr
+
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.ocean import diagnostic_taylor
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def plot_taylor(cubes, layer, obsname, cfg):
+    """
+    Create Taylor plot from model(s) standardized coefficients.
+
+    Parameters
+    ----------
+    cubes: list
+        Input data iris cubes
+    layer: list
+        Data level to be plotted
+    obsname: string
+         Observation data name
+    cfg: dict
+        the opened global config dictionary, passed by ESMValTool.
+    """
+
+    obs_cube = cubes[obsname][layer]
+    model_coeff, srange, extend = taylor_coeffs(cubes, layer, obsname)
+
+    fig = plt.figure()
+    dia = diagnostic_taylor.TaylorDiagram(
+        1., fig=fig, label=obsname, srange=srange, extend=extend
+        )
+
+    # Add models
+    for i, thename in enumerate(model_coeff):
+        dia.add_sample(model_coeff[thename]['std'],
+                       model_coeff[thename]['corr'],
+                       marker='$%d$' % (i+1), ms=8, ls='',
+                       label=thename)
+
+    # Add RMS contours, and label them
+    contours = dia.add_contours(levels=5, colors='0.5')  # 5 levels in grey
+    plt.clabel(contours, inline=1, fontsize=10, fmt='%.0f')
+
+    dia.add_grid()                                  # Add grid
+    dia._ax.axis[:].major_ticks.set_tick_out(True)  # Put ticks outward
+    dia._ax.axis["left"].label.set_text(
+        'Standard deviation [' + str(obs_cube.units) + ']'
+        )
+
+    # Add figure legend and title
+    fig.legend(dia.samplepoints,
+               [p.get_label() for p in dia.samplepoints],
+               numpoints=1, prop=dict(size='small'),
+               loc='upper right', markerscale=0.8)
+    add_lab = str(np.int32(layer)) if layer != '' else ''
+    fig.suptitle(obs_cube.long_name + add_lab, size='large')  # Figure title
+
+    #
+    add_lab = ' @ ' + add_lab + 'm' if add_lab != '' else ''
+    plot_file = diagtools.folder(cfg['plot_dir']) + '_'.join(
+        ['multimodel_vs', obsname, obs_cube.var_name, add_lab, 'taylor'])
+
+    # Saving file:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', plot_file)
+        plt.savefig(plot_file, dpi=200)
+
+    plt.close()
+
+
+def taylor_coeffs(cubes, layer, obsname):
+    """
+    Compute standardized coefficients for taylor plot.
+
+    Parameters
+    ----------
+    cubes: list
+        Input data iris cubes
+    layer: list
+        Data level to be plotted
+    obsname: string
+         Observation data name
+    """
+
+    out_dict = {}
+    obs_cube = cubes[obsname][layer]
+    obs_std = obs_cube.collapsed(['latitude', 'longitude'],
+                                 iris.analysis.STD_DEV)
+
+    srange = []
+    extend = []
+    model_cubes = sorted(set(cubes.keys()).difference([obsname]))
+    for thename in model_cubes:
+        stddev = cubes[thename][layer].collapsed(
+            ['latitude', 'longitude'], iris.analysis.STD_DEV
+                )
+        stddev = stddev.data/obs_std.data
+        corrcoef = pearsonr(obs_cube, cubes[thename][layer],
+                            corr_coords=['latitude', 'longitude'],
+                            common_mask=True)
+        corrcoef = corrcoef.data.item()
+        out_dict.update({thename:{'std':stddev, 'corr':corrcoef}})
+        srange.append(stddev)
+        extend.append(corrcoef)
+
+    srange = [np.floor(np.min(srange)), np.ceil(np.max(srange))]
+    extend = np.min(extend) < 0.
+
+    return out_dict, srange, extend
 
 
 def get_provenance_record(plot_file, attributes, obsname, ancestor_files):
@@ -70,12 +176,14 @@ def get_provenance_record(plot_file, attributes, obsname, ancestor_files):
     return record
 
 
-def add_map_plot(axs, plot_cube, cols):
+def add_map_plot(fig, axs, plot_cube, cols):
     """
     Add a map in the current pyplot suplot.
 
     Parameters
     ----------
+    fig: object
+         The matplotlib.pyplot Figure object
     axs: object
         The matplotlib.pyplot Axes object
     plot_cube: dictionary
@@ -90,33 +198,39 @@ def add_map_plot(axs, plot_cube, cols):
                          endpoint=True)
     iris.plot.contourf(plot_cube['cube'],
                        nspace,
-                       linewidth=0,
                        cmap=plt.cm.get_cmap(plot_cube['cmap']),
                        extend=plot_cube['extend'])
 
     axs.coastlines()
     gls = axs.gridlines(draw_labels=False, color='black', alpha=0.4)
-    gls.ylocator = mticker.FixedLocator(np.linspace(-90., 90., 7))
+    gls.ylocator = mticker.MaxNLocator(7)
     axs.set_title(plot_cube['title'], fontweight="bold", fontsize='large')
 
     if plot_cube['hascbar']:
-        bba = (0., -0.1, 1, 1)
-        if cols > 0:
-            bba = ((0.5 - cols) * 1.1, -0.15, cols, 1)
-        axins = inset_axes(
-            axs,
-            width="95%",
-            height="6%",
-            loc='lower center',
-            bbox_to_anchor=bba,
-            bbox_transform=axs.transAxes,
-            borderpad=0,
-        )
-        cbar = plt.colorbar(orientation='horizontal', cax=axins)
+        if cols == 0:
+            bba = (0., -0.1, 1, 1)
+            axins = inset_axes(
+                axs,
+                width="95%",
+                height="6%",
+                loc='lower center',
+                bbox_to_anchor=bba,
+                bbox_transform=axs.transAxes,
+                borderpad=0,
+            )
+        else:
+            axins = fig.add_axes([0.25, 0.04, 0.5, 0.02])
+
+        cformat = '%.1f'
+        if abs(nspace[1]-nspace[0]) < 1:
+            cformat = int(np.ceil(-np.log10(abs(nspace[1]-nspace[0]))))
+            cformat = '%.'+ str(cformat) + 'f'
+        cbar = plt.colorbar(orientation='horizontal',
+                            cax=axins, format=cformat)
         cbar.set_ticks(nspace[::2])
 
 
-def make_subplots(cubes, layout, obsname, fig):
+def make_subplots(cubes, layout, obsname, fig, projection):
     """
     Realize subplots using cubes input data.
 
@@ -130,14 +244,16 @@ def make_subplots(cubes, layout, obsname, fig):
         Observation data name
     fig: object
          The matplotlib.pyplot Figure object
+    projection: string
+         Name of Cartopy projection
     """
-    proj = ccrs.Robinson(central_longitude=0)
+    proj = getattr(ccrs, projection)(central_longitude=0)
     gsc = gridspec.GridSpec(layout[0], layout[1])
     row = 0
     col = 0
     for thename in cubes:
         axs = plt.subplot(gsc[row, col], projection=proj)
-        add_map_plot(axs, cubes[thename], col)
+        add_map_plot(fig, axs, cubes[thename], col)
         # next row & column indexes
         row = row + 1
         if row == layout[0]:
@@ -149,7 +265,7 @@ def make_subplots(cubes, layout, obsname, fig):
                         bottom=0.08,
                         left=0.05,
                         right=0.95,
-                        hspace=0.15,
+                        hspace=0.2, # 0.15
                         wspace=0.15)
 
     # Vertically detach OBS plot and center
@@ -266,7 +382,6 @@ def select_cubes(cubes, layer, obsname, metadata):
 
     # define contour levels using ranges
     for thename in cubes:
-        mrange = mrange
         if user_range['maps']:
             mrange = user_range['maps']
             plot_cubes[thename]['extend'] = 'both'
@@ -280,7 +395,7 @@ def select_cubes(cubes, layer, obsname, metadata):
     return plot_cubes
 
 
-def make_multiple_plots(cfg, metadata, obsname):
+def make_plots(cfg, metadata, obsname):
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
 
@@ -297,16 +412,18 @@ def make_multiple_plots(cfg, metadata, obsname):
     obsname: str
         the preprocessed observations file.
     """
-    logger.debug('make_multiple_plots')
+    logger.debug('make_plots')
     # ####
     filenames = list(metadata.keys())
-    varname = metadata[filenames[0]]['short_name']
 
     # plot setting
     layout = metadata[filenames[0]]['layout_rowcol']
+    projection = 'Robinson'
+    if 'plot_ccrs' in  metadata[filenames[0]]:
+        projection = metadata[filenames[0]]['plot_ccrs']
 
     # load input data
-    [cubes, layers, obsname] = load_cubes(filenames, obsname, metadata)
+    cubes, layers, obsname = load_cubes(filenames, obsname, metadata)
 
     if obsname != '':
         layout[0] = layout[0] + 1
@@ -329,22 +446,26 @@ def make_multiple_plots(cfg, metadata, obsname):
                                   metadata[filenames[0]])
 
         # create individual subplot
-        make_subplots(plot_cubes, layout, obsname, fig)
+        make_subplots(plot_cubes, layout, obsname, fig, projection)
 
-        # Determine image filename:
+        # Determine image filename
+        plot_file = metadata[filenames[0]]['short_name']
+        layer_lab = str(np.int32(layer)) if layer != '' else ''
         if obsname != '':
-            plot_file = ['multimodel_vs', obsname, varname, str(layer), 'maps']
+            plot_file = ['multimodel_vs', obsname, plot_file,
+                         layer_lab, 'maps']
         else:
-            plot_file = ['multimodel', varname, str(layer), 'maps']
-        plot_file = '_'.join(plot_file)
-        path = diagtools.folder(cfg['plot_dir']) + plot_file
+            plot_file = ['multimodel', plot_file, layer_lab, 'maps']
+        plot_file = diagtools.folder(cfg['plot_dir']) + '_'.join(plot_file)
+        #path = diagtools.folder(cfg['plot_dir']) + plot_file
 
         # Saving file:
         if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path, dpi=200)
+            logger.info('Saving plot to %s', plot_file)
+            plt.savefig(plot_file, dpi=200)
 
         # Provenance
+        plot_file = os.path.basename(plot_file)
         provenance_record = get_provenance_record(plot_file,
                                                   metadata[filenames[-1]],
                                                   obsname, filenames)
@@ -354,6 +475,10 @@ def make_multiple_plots(cfg, metadata, obsname):
             provenance_logger.log(plot_file, provenance_record)
 
         plt.close()
+
+        # create taylor diagram
+        if obsname != '':
+            plot_taylor(cubes, layer, obsname, cfg)
 
 
 def main(cfg):
@@ -392,7 +517,7 @@ def main(cfg):
             if not os.path.isfile(obs_filename):
                 logger.info('OBS file not found %s', obs_filename)
 
-        make_multiple_plots(cfg, metadatas, obs_filename)
+        make_plots(cfg, metadatas, obs_filename)
 
     logger.info('Success')
 
