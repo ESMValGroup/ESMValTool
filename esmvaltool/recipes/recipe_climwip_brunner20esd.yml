@@ -198,15 +198,29 @@ diagnostics:
       tas_TREND:
         <<: *performance_settings
         preprocessor: annual_trend
+      tas_CLIM_reference: &target_settings
+        short_name: tas
+        start_year: 1995
+        end_year: 2014
+        mip: Amon
+        preprocessor: climatological_mean
+      tas_CLIM_future:
+        <<: *target_settings
+        start_year: 2081
+        end_year: 2100
 
     scripts:
       climwip:
         script: weighting/climwip/main.py
         obs_data: native6
         ancestors: [calculate_local_anomalies/local_anomalies,
-                    tas_CLIM_i, psl_CLIM_i, tas_STD, psl_STD, tas_TREND]
+                    tas_CLIM_i, psl_CLIM_i, tas_STD, psl_STD, tas_TREND,
+                    tas_CLIM_reference, tas_CLIM_future]
         combine_ensemble_members: true
         performance_sigma: 0.43
+        # calibrate_performance_sigma:
+        #   target_ref: tas_CLIM_reference
+        #   target: tas_CLIM_future
         performance_contributions:
           tas_ANOM: 1
           tas_STD: 1
@@ -232,21 +246,12 @@ diagnostics:
         weights: 'weights.nc'
 
   weighted_temperature_map:
-    variables:
-      tas: &map_settings
-        short_name: tas
-        start_year: 2081
-        end_year: 2100
-        mip: Amon
-        preprocessor: climatological_mean
-      tas_reference:
-        <<: *map_settings
-        start_year: 1995
-        end_year: 2014
     scripts:
       weighted_temperature_map:
         script: weighting/weighted_temperature_map.py
-        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        ancestors: [calculate_weights_climwip/climwip,
+                    calculate_weights_climwip/tas_CLIM_future,
+                    calculate_weights_climwip/tas_CLIM_reference]
         weights: 'weights.nc'
         # optional arguments
         model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]

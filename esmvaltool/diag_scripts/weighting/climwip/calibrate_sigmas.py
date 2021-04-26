@@ -279,7 +279,9 @@ def visualize_save_calibration(performance_sigma, cfg, success):
     # optional: sharpness
     sharpness = xr.concat([
         confidence_test_values[sigma]['percentile_spread'].expand_dims(
-            {'sigma': [sigma]}) for sigma in sigmas], dim='sigma')
+            {'sigma': [sigma]}) for sigma in sigmas
+    ],
+                          dim='sigma')
     sharpness /= baseline['percentile_spread']
     axes.plot(sigmas,
               sharpness.mean('perfect_model_ensemble'),
@@ -344,6 +346,12 @@ def calibrate_performance_sigma(performance_contributions: list,
 
     target = models[settings['target']]
     target_data, _ = read_model_data(target)
+
+    if settings.get('target_ref') is not None:
+        target_ref = models[settings['target_ref']]
+        target_ref_data, _ = read_model_data(target_ref)
+        target_data -= target_ref_data
+
     target_data = area_weighted_mean(target_data)
 
     if cfg['combine_ensemble_members']:
