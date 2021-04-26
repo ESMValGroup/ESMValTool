@@ -279,9 +279,7 @@ def visualize_save_calibration(performance_sigma, cfg, success):
     # optional: sharpness
     sharpness = xr.concat([
         confidence_test_values[sigma]['percentile_spread'].expand_dims(
-            {'sigma': [sigma]}) for sigma in sigmas
-    ],
-                          dim='sigma')
+            {'sigma': [sigma]}) for sigma in sigmas], dim='sigma')
     sharpness /= baseline['percentile_spread']
     axes.plot(sigmas,
               sharpness.mean('perfect_model_ensemble'),
