@@ -28,6 +28,7 @@ Atmosphere
    recipe_hyint
    recipe_modes_of_variability
    recipe_quantilebias
+   recipe_bock20jgr
    recipe_spei
    recipe_martin18grl
    recipe_autoassess_stratosphere
@@ -50,6 +51,7 @@ Future projections
 
    recipe_li17natcc
    recipe_schlund20jgr
+   recipe_meehl20sciadv
    recipe_emergent_constraints
    recipe_wenzel14jgr
    recipe_schlund20esd
@@ -77,6 +79,7 @@ Land
    recipe_albedolandcover
    recipe_carvalhais14nat
    recipe_hydrology
+   recipe_hydro_forcing
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et

@@ -7,7 +7,7 @@ Running
 ESMValTool is mostly used as a command line tool. Whenever your
 conda environment for ESMValTool is active, you can just run the command
 ``esmvaltool``. See
-`running esmvaltool <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/quickstart/run.html>`_
+:ref:`running esmvaltool <esmvalcore:running>`
 in the ESMValCore documentation for a short introduction.
 
 Running a recipe
@@ -61,7 +61,7 @@ It is also possible to get help on specific commands, e.g.
 
 will display the help message with all options for the ``run`` command.
 
-There is a step-by-step description available in the 
+There is a step-by-step description available in the
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
 on how to run your first recipe. It can be found
 `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
@@ -81,7 +81,7 @@ To see a list of installed recipes run
 Running multiple recipes
 ========================
 
-It is possible to run more tha one recipe in one go: currently this relies on the user
+It is possible to run more than one recipe in one go: currently this relies on the user
 having access to a HPC that has ``rose`` and ``cylc`` installed since the procedure involves
 installing and submitting a Rose suite. the utility that allows you to do this is
 ``esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py``.
