@@ -103,7 +103,7 @@ def regrid_to_1x1(cube, scheme = 'linear', res = '1x1'):
 
 
 def cube_interesction(cube, region='Global'):
-    regions = ['Global', 'midatlantic', 'WestEq', 'EastEq']
+    regions = ['Global', 'midatlantic', 'WestEq', 'EastEq', 'NorthAtlantic', ]
 
     print('cube_interesction: start', region, cube.data.min(), cube.data.max())
     if  region=='Global':
@@ -145,6 +145,15 @@ def cube_interesction(cube, region='Global'):
         lon_bnd = 64.
         return cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
             latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+
+    if region == 'NorthAtlantic':
+        central_longitude = -30. #W #-160.+3.5
+        central_latitude = 50.#N
+        lat_bnd = 35.
+        lon_bnd = 65.
+        return cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+            latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+
     assert 0
 
 
@@ -513,13 +522,13 @@ def multi_pane_land_sea_plot_sspdiff(
 
     # Determine image filename:
     suffix = '_'.join(unique_keys)+image_extention
-    path = diagtools.folder([cfg['plot_dir'], plot_dir, region])+ suffix
-    #if os.path.exists(path): return
+    path = diagtools.folder([cfg['plot_dir'], plot_dir, region, ssp1+'_vs_'+ssp2])+ suffix
+    if os.path.exists(path): return
     print("multi_pane_land_sea_plot_sspdiff: making", path)
 
     axes = {}
     fig = plt.figure()
-    fig.set_size_inches(12, 6)
+    fig.set_size_inches(12, 8)
     proj = ccrs.PlateCarree()
     _complex_ = True
 
@@ -532,18 +541,18 @@ def multi_pane_land_sea_plot_sspdiff(
         land_cubes[scen] = cube_interesction(land_cube,region=region)
 
     # both_cbar_on_right = True
-    height_ratios=[1, 1, 1, 0.5]
-    width_ratios=[1., 2.5]
+    height_ratios=[1, 1, 1, 0.75]
+    width_ratios=[1.25, 2.5]
 
     gs = matplotlib.gridspec.GridSpec(len(height_ratios), len(width_ratios),
         height_ratios=height_ratios, width_ratios=width_ratios,
-        wspace=0.075, hspace=0.05)
+        wspace=0.075, hspace=0.15)
 
     gshist_cbars = gs[3, 0].subgridspec(3,1, hspace=0.35) #,height_ratios=[1,2,1]) # split for two axes.
     cbar_axes_land = fig.add_subplot(gshist_cbars[0, 0])
     cbar_axes_sea = fig.add_subplot(gshist_cbars[-1, 0])
 
-    gsdiff_cbars = gs[3, 1].subgridspec(3,1, hspace=0.35) # split for two axes.
+    gsdiff_cbars = gs[3, 1].subgridspec(3,1, height_ratios=[1, 1.5, 1], hspace=0.35) # split for two axes.
     cbar_axes_land_diff = fig.add_subplot(gsdiff_cbars[0, 0])
     cbar_axes_sea_diff = fig.add_subplot(gsdiff_cbars[-1, 0])
 
@@ -568,8 +577,8 @@ def multi_pane_land_sea_plot_sspdiff(
     sea_diff_cubes['sspdiff'] = sea_cubes[ssp1] - sea_cubes[ssp2]
     sea_diff_cubes['sspdiff'].data = np.ma.masked_invalid(sea_diff_cubes['sspdiff'].data)
 
-    land_range = diagtools.get_cube_range([cube for scen, cube in land_cubes.items() if scen in used_ssps])
-    sea_range = diagtools.get_cube_range([cube for scen, cube in sea_cubes.items() if scen in used_ssps])
+    land_range = np.array(diagtools.get_cube_range([cube for scen, cube in land_cubes.items() if scen in used_ssps]))
+    sea_range = np.array(diagtools.get_cube_range([cube for scen, cube in sea_cubes.items() if scen in used_ssps]))
 
     land_diff_range = diagtools.get_cube_range_diff([cube for cube in land_diff_cubes.values()])
     sea_diff_range = diagtools.get_cube_range_diff([cube for cube in sea_diff_cubes.values()])
@@ -597,11 +606,15 @@ def multi_pane_land_sea_plot_sspdiff(
                 sea_cube=sea_cube,
                 land_cmap = 'Greens', #'viridis',
                 sea_cmap = 'Blues', # 'ocean_r'
-                land_range=[land_range.min(), land_range.max()],
-                sea_range=[sea_range.min(), sea_range.max()],
+                land_range=land_range, #[land_range.min(), land_range.max()],
+                sea_range=sea_range, #[sea_range.min(), sea_range.max()],
                 )
             land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
             sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
+            ax.set_title(scenario)  
+            #ax.set_ylabel(scenario)
+            #ax.text(-0.30, -0.5, longnameify(scenario), fontsize=14, transform=plt.gcf().transFigure, rotation= 'vertical',zorder=100)
+
         else:
             fig, ax, diff_land, diff_sea = single_pane_land_sea_pane(
                 cfg,
@@ -616,7 +629,7 @@ def multi_pane_land_sea_plot_sspdiff(
                 land_range= land_diff_range,
                 sea_range=sea_diff_range,
                 )
-        ax.set_title(scenario)
+            ax.set_title(' '.join([ssp1, '-', ssp2]))
 
     landcbarhist = plt.colorbar(hist_land, cax=cbar_axes_land, label=land_label, orientation='horizontal', shrink=0.9)
     seacbarhist = plt.colorbar(hist_sea, cax=cbar_axes_sea, label=sea_label, orientation='horizontal',shrink=0.9 )
@@ -1613,7 +1626,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     fx_fns = {}
     all_cubes = {}
     key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
-    regions = ['Global', 'midatlantic', 'WestEq', 'EastEq']
+    regions = ['NorthAtlantic', ] #'Global', 'midatlantic', 'WestEq', 'EastEq']
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1797,23 +1810,30 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
 
             for region in regions:
-                if thresholds =='2.0':
-                    ssp1s = ['ssp585', ]
-                    ssp2s = ['ssp119', 'ssp126', 'ssp245', 'ssp370', ]
+                if threshold =='2.0':
+                    #ssp1s = ['ssp585', 'ssp370']
+                    #ssp2s = ['ssp119', 'ssp126', 'ssp245', 'ssp370', ]
+                    ssp1s = ['ssp370', ]
+                    ssp2s = ['ssp126', ]
 
-                for ssp1,ssp2 in itertools.product(ssp1s, ssp2s):
+                if threshold =='4.0':
+                    ssp1s = ['ssp585', ]
+                    ssp2s = ['ssp370', ]
+
+                for ssp1, ssp2 in product(ssp1s, ssp2s):
+                    if ssp1==ssp2:continue
                     multi_pane_land_sea_plot_sspdiff(
                         cfg,
                         metadatas,
                         land_cubes=land_cubes.copy(),
                         sea_cubes=sea_cubes.copy(),
                         plot_pair=plot_pair,
-                        unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming'],
+                        unique_keys = [dataset, var_name,'after',threshold+ u'\N{DEGREE SIGN}', 'warming: ',ssp1,'-', ssp2],
                         region=region,
                         ssp1=ssp1,
                         ssp2=ssp2,
                         )
-                assert 0
+                continue
 
                 multi_pane_land_sea_plot_histdiff(
                     cfg,
