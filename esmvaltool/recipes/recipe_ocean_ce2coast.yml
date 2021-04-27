@@ -1,0 +1,310 @@
+# ESMValTool
+# recipe_ocean_ce2coast.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate multiple model timeseries and bias against a reference dataset over regional domains
+    Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
+
+  authors:
+    - lovato_tomas
+  
+  maintainer:
+    - lovato_tomas
+
+  references:
+    - acknow_project
+
+  projects:
+    - ce2coast
+
+# --------------------------------------------------
+# YAML anchors
+# --------------------------------------------------
+
+# Working datsets
+# --------------------------------------------------
+DATASET_ANCHOR_2D: &datasets_2D
+  - {dataset: NorESM2-LM,    grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: IPSL-CM6A-LR,  grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: MRI-ESM2-0,    grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i2p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: CMCC-ESM2,     grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: UKESM1-0-LL,   grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f2,  start_year: 1950,  end_year: 2014}
+  - {dataset: GFDL-ESM4,     grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+
+DATASET_ANCHOR_3D: &datasets_3D
+  - {dataset: NorESM2-LM,    grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: IPSL-CM6A-LR,  grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: CESM2,         grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: CMCC-ESM2,     grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: UKESM1-0-LL,   grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f2,  start_year: 1950,  end_year: 2014}
+  - {dataset: GFDL-ESM4,     grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+
+# Regional domain selection
+# --------------------------------------------------
+SELECT_REGION: &select_region 
+   - { start_longitude: 324., end_longitude: 357., start_latitude:  30., end_latitude: 57. } # EU Atlantic
+   #- { start_longitude: -12., end_longitude:  38., start_latitude: 29.5, end_latitude: 48. } # Mediterranean
+   #- { start_longitude:   0., end_longitude: 360., start_latitude:  60., end_latitude: 90. } # Arctic
+
+# Climatological time window selection
+# --------------------------------------------------
+SELECT_CLIMA: &select_clima
+   - { start_year: 2000, start_month: 1, start_day: 1, end_year: 2014, end_month: 12, end_day: 31 }
+
+# Select level for 3D variable
+# --------------------------------------------------
+SELECT_LEVEL: &select_level
+   - {levels:  [0.,] , scheme: linear_horizontal_extrapolate_vertical}
+
+# Write options for scripts (to be added)
+# --------------------------------------------------
+WRITE_OPTS: &write_opts
+   - { write_plot: True, write_netcdf: True }
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+
+  # --------------------------------------------------
+  # MAP preprocessors
+  # --------------------------------------------------
+  prep_map_2D:
+    custom_order: true
+    extract_time:
+      <<: *select_clima
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      <<: *select_region
+
+  prep_map_3D:
+    custom_order: true
+    extract_time:
+      <<: *select_clima
+    extract_levels:
+      <<: *select_level
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      <<: *select_region
+
+  # --------------------------------------------------
+  # TIME SERIES preprocessors
+  # (area-weighted average)
+  # --------------------------------------------------
+  prep_timeseries_2D:
+    custom_order: true
+    annual_statistics:
+      operator: mean
+    extract_region:
+      <<: *select_region
+    area_statistics:
+      operator: mean
+      fx_variables: [areacello]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: ['Eppley-VGPM-MODIS', 'Landschuetzer2016',]
+
+  prep_clim_timeseries_2D:
+    custom_order: true
+    extract_time:
+      <<: *select_clima
+    climate_statistics:
+      operator: mean
+      period: month
+    extract_region:
+      <<: *select_region
+    area_statistics:
+      operator: mean
+      fx_variables: [areacello]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: ['Eppley-VGPM-MODIS', 'Landschuetzer2016',]
+
+  prep_timeseries_3D:
+    custom_order: true
+    annual_statistics:
+      operator: mean
+    extract_region:
+      <<: *select_region
+    extract_levels:
+      <<: *select_level
+    area_statistics:
+      operator: mean
+      fx_variables: [areacello]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: ['WOA',]
+
+  prep_clim_timeseries_3D:
+    custom_order: true
+    extract_time:
+      <<: *select_clima
+    extract_levels:
+      <<: *select_level
+    climate_statistics:
+      operator: mean
+      period: month
+    extract_region:
+      <<: *select_region
+    area_statistics:
+      operator: mean
+      fx_variables: [areacello]
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: ['WOA',]
+
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
+diagnostics:
+
+  # --------------------------------------------------
+  # Time Series
+  # --------------------------------------------------
+  timeseries_2D:
+    description: area weighted timeseries
+    additional_datasets: *datasets_2D
+    variables:
+      intpp:
+        preprocessor: prep_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2018,  start_year: 2003,  end_year: 2014,  tier: 2}
+      fgco2:
+        preprocessor: prep_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 1982,  end_year: 2015,  tier: 2}
+    scripts:
+      timeseries:
+        script: ocean/diagnostic_timeseries.py
+        plot_single: False
+
+  timeseries_clim_2D:
+    description: area weighted climatological timeseries
+    additional_datasets: *datasets_2D
+    variables:
+      intpp:
+        preprocessor: prep_clim_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2018,  start_year: 2003,  end_year: 2014,  tier: 2}
+      fgco2:
+        preprocessor: prep_clim_timeseries_2D
+        mip: Omon
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 1982,  end_year: 2015,  tier: 2}
+    scripts:
+     timeseries:
+        script: ocean/diagnostic_timeseries.py
+        plot_single: False
+ 
+  timeseries_3D:
+    description: area weighted timeseries
+    additional_datasets: *datasets_3D
+    variables:
+      no3:
+        preprocessor: prep_timeseries_3D
+        mip: Omon
+      thetao:
+        preprocessor: prep_timeseries_3D
+        mip: Omon
+    scripts:
+      Global_Surface_Average_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        plot_single: False
+
+  timeseries_clim_3D:
+    description: area weighted climatological timeseries
+    additional_datasets: *datasets_3D
+    variables:
+      no3:
+        preprocessor: prep_clim_timeseries_3D
+        mip: Omon
+      thetao:
+        preprocessor: prep_clim_timeseries_3D
+        mip: Omon
+    scripts:
+      Global_Surface_Average_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        plot_single: False
+
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  maps_intpp:
+    description: Ocean surface maps of primary production
+    additional_datasets: *datasets_2D
+    variables:
+      intpp:
+        preprocessor: prep_map_2D
+        mip: Omon
+        maps_range: [ 0., 30.]
+        diff_range: [-12., 12.]
+        layout_rowcol: [2, 3]
+        plot_ccrs: PlateCarree
+        additional_datasets:
+         - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2018,  start_year: 2004,  end_year: 2014,  tier: 2}
+    scripts:
+      model_vs_obs:
+        script: ocean/diagnostic_maps_multimodel.py
+        observational_dataset: {dataset: Eppley-VGPM-MODIS, project: OBS}
+
+  maps_fgco2:
+    description: Ocean surface maps of co2 fluxes
+    additional_datasets: *datasets_2D
+    variables:
+      fgco2:
+        preprocessor: prep_map_2D
+        mip: Omon
+        layout_rowcol: [2, 3]
+        plot_ccrs: PlateCarree
+        maps_range: [-0.1, 0.1]
+        diff_range: [-0.08, 0.08]
+        additional_datasets:
+          - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2004,  end_year: 2014,  tier: 2}
+    scripts:
+      model_vs_obs:
+        script: ocean/diagnostic_maps_multimodel.py
+        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+
+  maps_woa:
+    description: Ocean Surface maps vs OBS
+    additional_datasets: *datasets_3D
+    variables:
+      no3:
+        preprocessor: prep_map_3D
+        mip: Omon
+        maps_range: [ 0., 6.]
+        diff_range: [-6., 6.]
+        layout_rowcol: [2, 3]
+        plot_ccrs: PlateCarree
+        additional_datasets:
+          - {dataset: WOA,  project: OBS6,  type: clim, version: 2018,  start_year: 2000,  end_year: 2000,  tier: 2}
+      thetao:
+        preprocessor: prep_map_3D
+        mip: Omon
+        maps_range: [ 0., 26.]
+        diff_range: [-6., 6.]
+        layout_rowcol: [2, 3]
+        plot_ccrs: PlateCarree
+        additional_datasets:
+          - {dataset: WOA,  project: OBS6,  type: clim, version: 2018,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      model_vs_obs:
+        script: ocean/diagnostic_maps_multimodel.py
+        observational_dataset: {dataset: WOA, project: OBS6}
+
