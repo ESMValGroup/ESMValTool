@@ -65,10 +65,24 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-plot_pairs= {'pp':{'land': 'gpp', 'sea': 'intpp'},
-             'n_pp':{'land': 'npp', 'sea': 'intpp'},
-             'fco2':{'land': 'npp', 'sea': 'fgco2'},
+# vars:
+# pairs:
+        # temp: tos / tsl
+        # cflux: fgco2/ nbp
+        # intpp / gpp
+# random pairs:
+#         talk / rh
+#         mlotst / ra
+#         spco2 / npp
+
+plot_pairs= {
              'temp':{'land': 'tsl', 'sea': 'tos'},
+             'cflux':{'land': 'nbp', 'sea': 'fgco2'},
+             'pp':{'land': 'gpp', 'sea': 'intpp'},
+             'spco2_npp':{'land': 'npp', 'sea': 'spco2'},
+             'rh_talk':{'land': 'rh', 'sea': 'talk'},
+             'ra_mld':{'land': 'ra', 'sea': 'mlotst'},
+        #      'fco2_npp':{'land': 'npp', 'sea': 'fgco2'},
             }
 fx_mips = ['Ofx', 'fx', 'Lfx']
 
@@ -81,6 +95,9 @@ def longnameify(name):
     if name == 'intpp': return 'Integrated Primary Production'
     if name == 'gpp': return 'Gross Primary Production'
     if name == 'npp': return 'Net Primary Production'
+
+
+    if name == 'nbp': return 'Net Biome Productivity'
 
     if name == 'fco2': return 'CO2 flux'
     if name == 'fgco2': return 'Air Sea CO2 flux'
@@ -611,7 +628,7 @@ def multi_pane_land_sea_plot_sspdiff(
                 )
             land_label = ', '.join([longnameify(land_cube.var_name), str(land_cube.units)])
             sea_label = ', '.join([longnameify(sea_cube.var_name), str(sea_cube.units)])
-            ax.set_title(scenario)  
+            ax.set_title(scenario)
             #ax.set_ylabel(scenario)
             #ax.text(-0.30, -0.5, longnameify(scenario), fontsize=14, transform=plt.gcf().transFigure, rotation= 'vertical',zorder=100)
 
@@ -1637,7 +1654,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
         ensembles.add(details['ensemble'])
         datasets.add(details['dataset'])
         exps.add(details['exp'])
-        variable_groups.add(details['variable_group'])
+        variable_groups.add(details['variable_group'])Z
         variable1, exp1, threshold = split_variable_groups(details['variable_group'])
         thresholds.add(threshold)
 
