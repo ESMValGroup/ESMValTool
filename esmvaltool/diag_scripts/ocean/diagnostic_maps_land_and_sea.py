@@ -1643,7 +1643,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     fx_fns = {}
     all_cubes = {}
     key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
-    regions = ['NorthAtlantic', ] #'Global', 'midatlantic', 'WestEq', 'EastEq']
+    regions = ['NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1654,7 +1654,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
         ensembles.add(details['ensemble'])
         datasets.add(details['dataset'])
         exps.add(details['exp'])
-        variable_groups.add(details['variable_group'])Z
+        variable_groups.add(details['variable_group'])
         variable1, exp1, threshold = split_variable_groups(details['variable_group'])
         thresholds.add(threshold)
 
@@ -1827,11 +1827,15 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
 
             for region in regions:
-                if threshold =='2.0':
-                    #ssp1s = ['ssp585', 'ssp370']
-                    #ssp2s = ['ssp119', 'ssp126', 'ssp245', 'ssp370', ]
-                    ssp1s = ['ssp370', ]
-                    ssp2s = ['ssp126', ]
+                #f threshold =='2.0':
+                ssp1s = ['ssp585', 'ssp370']
+                ssp2s = ['ssp119', 'ssp126', 'ssp245', 'ssp370', ]
+                #ssp1s = ['ssp370', ]
+                #ssp2s = ['ssp126', ]
+
+                if threshold =='3.0':    
+                    ssp1s = ['ssp585', 'ssp370' ]
+                    ssp2s = ['ssp370', 'ssp245', ]    
 
                 if threshold =='4.0':
                     ssp1s = ['ssp585', ]
