@@ -99,6 +99,7 @@ load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/taylor_plot.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 
 begin
 
@@ -302,33 +303,19 @@ begin
   ; (treat ERA5 as special case)
 
   if (flag_multiobs_unc) then
-    idxtmp = new(dimsizes(projects), integer)
-    do i = 0, dimsizes(projects) - 1
-      if (isStrSubset(str_lower(projects(i)), "obs"))
-        idxtmp(i) = i
-      else
-        idxtmp(i) = -1
-      end if
-      ; ERA5 might be native6
-      if (isStrSubset(str_lower(names(i)), "era5") .and. \
-          isStrSubset(str_lower(projects(i)), "native")) then
-        idxtmp(i) = i
-      end if
-    end do
-    idxobs = ind(idxtmp .ge. 0)
-    delete(idxtmp)
-    if (all(ismissing(idxobs))) then
+    ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
+
+    idxobs = get_obs(names, projects)
+
+    if (idxobs(0) .eq. -1) then
+      flag_multiobs_unc = False
       log_info("No OBS or obs4mips datasets found. Setting " \
                + " multiobs_uncertainty to False.")
-      flag_multiobs_unc = False
     else
       refname = "REF"
       ref_ind = dimsizes(names)
       names := array_append_record(names, (/refname/), 0)
       dim_MOD = dim_MOD + 1
-      log_info("Using the following datasets to calculate multi-" \
-               + "observational average (REF): " \
-               + str_join(names(idxobs), ", "))
     end if
   end if
 

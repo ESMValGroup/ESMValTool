@@ -65,18 +65,54 @@ begin
   ; note: clwvi is not used since it contains lwp only for some models
   ;       (by error)
 
+  calcicefrac = new(3, logical)
+  calctcwp = new(3, logical)
+
   calcicefrac = False
   calctcwp = False
-  if (var_z .eq. "columnicefrac") then
-    calcicefrac = True
-    varlist = (/var_x, var_y, "clivi", "lwp"/)
-  else if (var_z .eq. "totalcwp") then
-    calctcwp = True
-    varlist = (/var_x, var_y, "clivi", "lwp"/)
-  else
-    varlist = (/var_x, var_y, var_z/)
-  end if
-  end if
+
+  ; if present, replace special variables "columnicefrac" and "totalcwp" in
+  ; list with variables used for variable derivation
+
+  tmplist = (/var_x, var_y, var_z/)
+  checklist = (/"columnicefrac", "totalcwp"/)
+  substlist = (/"clivi", "lwp"/)
+  varstart = new(3, integer)
+  varstart(0) = 0
+
+  do i = 0, dimsizes(tmplist) - 1
+    if (i .eq. 0) then
+      if (any(checklist .eq. tmplist(i))) then
+        varlist = substlist
+        varstart(1) = 2
+      else
+        varlist = tmplist(i)
+        varstart(1) = 1
+      end if
+    else
+      if (any(checklist .eq. tmplist(i))) then
+        varlist := array_append_record(varlist, substlist, 0)
+        if (i .lt. dimsizes(tmplist) - 1) then
+          varstart(i + 1) = varstart(i) + 2
+        end if
+      else
+        varlist := array_append_record(varlist, tmplist(i), 0)
+        if (i .lt. dimsizes(tmplist) - 1) then
+          varstart(i + 1) = varstart(i) + 1
+        end if
+      end if
+    end if
+  end do
+
+  do i = 0, dimsizes(tmplist) - 1
+    if (tmplist(i) .eq. checklist(0)) then
+      calcicefrac(i) = True
+    else if (tmplist(i) .eq. checklist(1)) then
+      calctcwp(i) = True
+    end if
+    end if
+  end do
+
   idx = new(dimsizes(varlist), integer)
 
   nVAR = dimsizes(varlist)
@@ -124,7 +160,7 @@ begin
   ; Set default values for non-required diag_script_info attributes
 
   set_default_att(diag_script_info, "filename_add", "")
-  set_default_att(diag_script_info, "nbins", 20)
+  set_default_att(diag_script_info, "nbins", 100)
 
   if (diag_script_info@filename_add .ne. "") then
     filename_add = "_" + diag_script_info@filename_add
@@ -147,19 +183,19 @@ begin
   ; # get data #
   ; ############
 
-  info_x = select_metadata_by_name(input_file_info, varlist(0))
+  info_x = select_metadata_by_name(input_file_info, varlist(varstart(0)))
   names_x = metadata_att_as_array(info_x, "dataset")
   projects_x = metadata_att_as_array(info_x, "project")
-  info_y = select_metadata_by_name(input_file_info, varlist(1))
+  info_y = select_metadata_by_name(input_file_info, varlist(varstart(1)))
   names_y = metadata_att_as_array(info_y, "dataset")
   projects_y = metadata_att_as_array(info_y, "project")
-  info_z = select_metadata_by_name(input_file_info, varlist(2))
+  info_z = select_metadata_by_name(input_file_info, varlist(varstart(2)))
   names_z = metadata_att_as_array(info_z, "dataset")
   projects_z = metadata_att_as_array(info_z, "project")
 
-  refidx_x = ind(names_x .eq. refname(0))
-  refidx_y = ind(names_y .eq. refname(1))
-  refidx_z = ind(names_z .eq. refname(2))
+  refidx_x = ind(names_x .eq. refname(varstart(0)))
+  refidx_y = ind(names_y .eq. refname(varstart(1)))
+  refidx_z = ind(names_z .eq. refname(varstart(2)))
 
   if (ismissing(refidx_x) .or. ismissing(refidx_y) .or. ismissing(refidx_z)) \
     then
@@ -168,9 +204,25 @@ begin
     refidx_z = -1
   end if
 
+  ref_ind = refidx_x
+  names = names_x
+  projects = projects_x
+
+  if (ref_ind .ge. 0) then
+    ; if reference datasets for var_x, var_y, var_z are from different
+    ; sources
+    uninames = get_unique_values(refname)
+    names(ref_ind) = str_join(uninames, "/")
+    delete(uninames)
+  end if
+
   result = new((/dim_MOD, nbins, nbins/), float)
   bincenter_x = new((/nbins/), float)
   bincenter_y = new((/nbins/), float)
+  bin_x0 = new((/nbins/), float)
+  bin_x1 = new((/nbins/), float)
+  bin_y0 = new((/nbins/), float)
+  bin_y1 = new((/nbins/), float)
 
   xmax = diag_script_info@xmax
   xmin = diag_script_info@xmin
@@ -183,26 +235,29 @@ begin
     x0 = n * binsize_x
     x1 = x0 + binsize_x
     bincenter_x(n) = xmin + 0.5 * (x0 + x1)
+    bin_x0(n) = bincenter_x(n) - 0.5 * binsize_x
+    bin_x1(n) = bincenter_x(n) + 0.5 * binsize_x
     y0 = n * binsize_y
     y1 = y0 + binsize_y
     bincenter_y(n) = ymin + 0.5 * (y0 + y1)
+    bin_y0(n) = bincenter_y(n) - 0.5 * binsize_y
+    bin_y1(n) = bincenter_y(n) + 0.5 * binsize_y
   end do
 
+  atts_x = True
+  atts_y = True
+  atts_z = True
+
   do ii = 0, dim_MOD - 1
-    atts_x = True
-    atts_x@short_name = varlist(0)
-
-    atts_y = True
-    atts_y@short_name = varlist(1)
-
-    atts_z = True
-    atts_z@short_name = varlist(2)
+    atts_x@short_name = varlist(varstart(0))
+    atts_y@short_name = varlist(varstart(1))
+    atts_z@short_name = varlist(varstart(2))
 
     ; reference datasets may have different names
     if (ii .eq. refidx_x) then
-      atts_x@dataset = refname(0)
-      atts_y@dataset = refname(1)
-      atts_z@dataset = refname(2)
+      atts_x@dataset = refname(varstart(0))
+      atts_y@dataset = refname(varstart(1))
+      atts_z@dataset = refname(varstart(2))
     else  ; all other datasets: force same dataset name for var_x, var_y, var_z
       atts_x@dataset = names_x(ii)
       atts_y@dataset = names_x(ii)
@@ -227,44 +282,70 @@ begin
     z = read_data(info[0])
     delete(info)
 
-    if (calcicefrac) then
-      atts_z@short_name = varlist(3)
-      info = select_metadata_by_atts(input_file_info, atts_z)
-      z2 = read_data(info[0])
-      delete(info)
-      min_mass = 1.0e-6
-      ; filter valid values (needed for some models)
-      z = where(z .lt. 0.0, z@_FillValue, z)
-      z = where(isnan_ieee(z), y@_FillValue, z)
-      z2 = where(z2 .lt. 0.0, z2@_FillValue, z2)
-      z2 = where(isnan_ieee(z2), z@_FillValue, z2)
-      mass = z + z2
-      delete(z2)
-      mass = where(mass .lt. min_mass, mass@_FillValue, mass)
+    atts_list = NewList("fifo")
 
-      ; ice fraction = ice / (ice + lwp) * 100%
-      z = 100.0 * z / mass
+    ListAppend(atts_list, atts_x)
+    ListAppend(atts_list, atts_y)
+    ListAppend(atts_list, atts_z)
 
-      z@units = "%"
-      z@long_name = "cloud ice fraction"
-      z@var = "columnicefrac"
-    end if
+    vars_list = NewList("fifo")
 
-    ; calculate total cloud water path as sum of liquid water path (lwp)
-    ; and ice water path (clivi);
-    ; we do not use the CMOR variable clwvi directly as this variable
-    ; erroneously contains only cloud liquid water for some models
+    ListAppend(vars_list, x)
+    ListAppend(vars_list, y)
+    ListAppend(vars_list, z)
 
-    if (calctcwp) then
-      atts_z@short_name = varlist(3)
-      info = select_metadata_by_atts(input_file_info, atts_z)
-      z2 = read_data(info[0])
-      delete(info)
-      z = z + z2
-      delete(z2)
-      z@long_name = "Condensed Water Path"
-      z@var = "totalcwp"
-    end if
+    do i = 0, 2
+      ; read second variable needed to derive icefrac / tcwp
+      if (calcicefrac(i) .or. calctcwp(i)) then
+        atts_list[i]@short_name = varlist(varstart(i) + 1)
+        if (ii .eq. refidx_x) then
+          atts_list[i]@dataset = refname(varstart(i) + 1)
+        end if
+        info = select_metadata_by_atts(input_file_info, atts_list[i])
+        var2 = read_data(info[0])
+        delete(info)
+        var2 = where(isnan_ieee(var2), var2@_FillValue, var2)
+      end if
+
+      ; calculate column ice fraction
+
+      if (calcicefrac(i)) then
+        min_mass = 1.0e-6
+        ; filter invalid values (needed for some models)
+        vars_list[i] = where(vars_list[i] .lt. 0.0, vars_list[i]@_FillValue, \
+                             vars_list[i])
+        vars_list[i] = where(isnan_ieee(vars_list[i]), \
+                             vars_list[i]@_FillValue, vars_list[i])
+        var2 = where(var2 .lt. 0.0, var2@_FillValue, var2)
+        mass = vars_list[i] + var2
+        mass = where(mass .lt. min_mass, mass@_FillValue, mass)
+
+        ; ice fraction = ice / (ice + lwp) * 100%
+        vars_list[i] = 100.0 * vars_list[i] / mass
+        delete(mass)
+
+        vars_list[i]@units = "%"
+        vars_list[i]@long_name = "cloud ice fraction"
+        vars_list[i]@var = "columnicefrac"
+      end if
+
+      ; calculate total cloud water path as sum of liquid water path (lwp)
+      ; and ice water path (clivi);
+      ; we do not use the CMOR variable clwvi directly as this variable
+      ; erroneously contains only cloud liquid water for some models
+
+      if (calctcwp(i)) then
+        vars_list[i] = vars_list[i] + var2
+        vars_list[i]@long_name = "Condensed Water Path"
+        vars_list[i]@var = "totalcwp"
+      end if
+
+      if (isvar("var2")) then
+        delete(var2)
+      end if
+    end do
+
+    delete(atts_list)
 
     ; check dimensions
 
@@ -315,16 +396,8 @@ begin
                 "latitude, longitude)")
     end if
 
-    do i = 0, nVAR - 1
-      var = variables(idx(i))
-      if (var .eq. varlist(0)) then
-        dims = getvardims(x)
-      else if (var .eq. varlist(1)) then
-        dims = getvardims(y)
-      else
-        dims = getvardims(z)
-      end if
-      end if
+    do i = 0, 2
+      dims = getvardims(vars_list[i])
       testidx = ind(dims .eq. "lon")
       if (ismissing(testidx)) then
         error_msg("f", DIAG_SCRIPT, "", var + ": no lon dimension")
@@ -340,27 +413,12 @@ begin
       delete(dims)
     end do
 
+    delete(vars_list)
+
     delete(dims_x)
     delete(dims_y)
     delete(dims_z)
     delete(testidx)
-
-    ref_ind = refidx_x
-    if (ismissing(ref_ind)) then
-      ref_ind = -1
-    end if
-    names = names_x
-    projects = projects_x
-
-    if (refidx_x .ge. 0) then
-      ; if reference datasets for var_x and var_y are from different sources
-      if ((refname(1) .ne. refname(0)) .or. (refname(1) .ne. refname(2))) then
-        names(refidx_x) = names(refidx_x) + "/" + refname(1)
-      end if
-      if ((refname(2) .ne. refname(0)) .and. (refname(2) .ne. refname(1))) then
-        names(refidx_x) = names(refidx_x) + "/" + refname(2)
-      end if
-    end if
 
     ; save attributes long_name and units
     long_name = z@long_name
@@ -375,16 +433,46 @@ begin
     z1d = ndtooned(z)
     delete(z)
 
-    r = bin_avg(x1d, y1d, z1d, bincenter_x, bincenter_y, False)
-    result(ii, :, :) = r(0, :, :)
+    ; This approach to grid the data is significantly slower than
+    ; using "bin_avg" but still fine for moderate grids (e.g. 100x100 grid
+    ; cells). In NCL 6.6.2, the function bin_avg crashes after being
+    ; called several times (segmentation violation, etc.). This is the reason
+    ; for choosing this "manual" approach.
+
+    do n = 0, nbins - 1
+      selidx = ind((x1d .ge. bin_x0(n)) .and. (x1d .lt. bin_x1(n)))
+      if (all(ismissing(selidx))) then
+        delete(selidx)
+        result(ii, :, n) = result@_FillValue
+        continue
+      end if
+      xsel = x1d(selidx)
+      ysel = y1d(selidx)
+      zsel = z1d(selidx)
+      delete(selidx)
+      do m = 0, nbins - 1
+        selidx = ind((ysel .ge. bin_y0(m)) .and. (ysel .lt. bin_y1(m)))
+        if (.not.all(ismissing(selidx))) then
+          result(ii, m, n) = avg(zsel(selidx))
+        else
+          result(ii, m, n) = result@_FillValue
+        end if
+        delete(selidx)
+      end do
+      delete(xsel)
+      delete(ysel)
+      delete(zsel)
+    end do
+
+;    r = bin_avg(x1d, y1d, z1d, bincenter_x, bincenter_y, False)
+;    result(ii, :, :) = r(0, :, :)
 
     delete(x1d)
     delete(y1d)
     delete(z1d)
+;    delete(r)
 
   end do  ; ii-loop (models)
-
-  delete(r)
 
   ; ###########################################
   ; # netCDF output                           #
@@ -398,8 +486,8 @@ begin
   result!2 = "bin_x"
 
   result&model = str_sub_str(names, "/", "-")
-  result&bin_x = bincenter_x
   result&bin_y = bincenter_y
+  result&bin_x = bincenter_x
 
   result@diag_script = (/DIAG_SCRIPT/)
   result@var = var_z
@@ -429,9 +517,10 @@ begin
   res@lbTitleString      = zunits
   res@lbTitlePosition    = "Right"
   res@lbTitleFontHeightF = 0.015
-  res@pmLabelBarOrthogonalPosF = 0.35
 
   dres = res
+
+  res@pmLabelBarOrthogonalPosF = 0.35
 
   if (isatt(diag_script_info, "zmin") .and. isatt(diag_script_info, "zmax")) \
     then
@@ -480,8 +569,10 @@ begin
     res@tiMainString =  names(ii)
     baseplots(ii) = gsn_csm_contour(wks, result(ii, :, :), res)
 
-    xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, dim_avg_n(result(ii, :, :), 1), xyres1)
-    yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(result(ii, :, :), 0), result&bin_y, xyres2)
+    xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, \
+                               dim_avg_n(result(ii, :, :), 0), xyres1)
+    yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(result(ii, :, :), 1), \
+                               result&bin_y, xyres2)
     xyres1@gsnAttachPlotsXAxis = True
     plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), res, xyres1)
     delete(xyres1@gsnAttachPlotsXAxis)
