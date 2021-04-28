@@ -82,6 +82,7 @@ plot_pairs= {
              'spco2_npp':{'land': 'npp', 'sea': 'spco2'},
              'rh_talk':{'land': 'rh', 'sea': 'talk'},
              'ra_mld':{'land': 'ra', 'sea': 'mlotst'},
+             'resp_talk': {'land': 'resp', 'sea': 'talk'},
         #      'fco2_npp':{'land': 'npp', 'sea': 'fgco2'},
             }
 fx_mips = ['Ofx', 'fx', 'Lfx']
@@ -1634,11 +1635,19 @@ def make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_m
 
 
 def calculate_custom_netcdf(custom_var_name, custom_inputs_files, path):
+    """
+    Used to calculate a cube from CMIP6 products.
+    (ie total respiration as thesum of ra + rh)
+    custom_var_name: custom short_name
+    custom_inputs_files: dict {short_name: path} for input datasets
+    path: final path of custom netcdf.
+    """
     if custom_var_name == 'resp':
         ra_cube = load_bgc_cube(custom_inputs_files['ra'], 'ra')
         rh_cube = load_bgc_cube(custom_inputs_files['rh'], 'rh')
         resp_cube = ra_cube+rh_cube
-        return resp_cube
+        iris.save(resp_cube, path)
+        return
 
     print("calculate_custom_netcdf:", custom_var_name, 'not recognised')
     assert 0
@@ -1741,9 +1750,6 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
             calculate_custom_netcdf(custom_var_name, custom_inputs_files, path)
             all_cubes[custom_index] = path
-
-
-
 
     if len(fx_fns)=='':
         print('unable to find fx files:', fx_fns)
