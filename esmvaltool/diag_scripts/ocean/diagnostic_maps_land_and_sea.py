@@ -610,7 +610,7 @@ def multi_pane_land_sea_plot_sspdiff(
     # Calculagte the differences:
     land_diff_cubes = {}
     sea_diff_cubes = {}
-    
+
     land_diff_cubes['sspdiff'] = land_cubes[ssp1] - land_cubes[ssp2]
     land_diff_cubes['sspdiff'].data = np.ma.masked_invalid(land_diff_cubes['sspdiff'].data)
 
@@ -1633,6 +1633,17 @@ def make_variable_group_mean_anomaly_ssp126_figure(cfg, variable_group_anomaly_m
     plt.close()
 
 
+def calculate_custom_netcdf(custom_var_name, custom_inputs_files, path):
+    if custom_var_name == 'resp':
+        ra_cube = load_bgc_cube(custom_inputs_files['ra'], 'ra')
+        rh_cube = load_bgc_cube(custom_inputs_files['rh'], 'rh')
+        resp_cube = ra_cube+rh_cube
+        return resp_cube
+
+    print("calculate_custom_netcdf:", custom_var_name, 'not recognised')
+    assert 0
+
+
 def make_gwt_map_land_sea_plots(cfg, ):
     """
     Make plots
@@ -1693,7 +1704,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
         except:
             files_dict[unique_key] = [fn, ]
 
-        all_cubes[tuple([details[key] for key in key_index])]=  fn
+        all_cubes[tuple([details[key] for key in key_index])] = fn
         continue
         cube = iris.load_cube(fn)
         # just getting the surface?
@@ -1702,6 +1713,35 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
         cube = diagtools.bgc_units(cube, details['short_name'])
         all_cubes[tuple([details[key] for key in key_index])]=  cube
+
+    # add custom cubes to all_cubes here:
+    # iterate over the list of pairs.
+    # determine the path name for the custom netcdf.
+    # if a pair netcdf exists, put the filename in all_cubes
+    # if the pair is a custom dataset, then load the relevant datasets and create it.
+    custom_vars = {'resp': ['ra', 'rh']}
+    work_path = diagtools.folder([cfg['work_dir'], 'custom_vars'])
+
+    for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
+        for custom_var_name, custom_var_keys in custom_vars.items():
+            if short_name not in custom_var_keys:
+                continue
+            custom_var_group = variable_group.replace(short_name, custom_var_name)
+            custom_index = (dataset, mip, exp, ensemble, custom_var_name, custom_var_group)
+            path = work_dir+'_'.join(list(custom_index))+'.nc'
+
+            if os.path.exists(path):
+                all_cubes[custom_index] = path
+                continue
+
+            custom_inputs_files = {}
+            for custom_var_key in custom_var_keys:
+                custom_var_group = variable_group.replace(short_name, custom_var_name)
+                custom_inputs_files[custom_var_key] = all_cubes[(dataset, mip, exp, ensemble, custom_var_key, custom_var_group)]
+
+            calculate_custom_netcdf(custom_var_name, custom_inputs_files, path)
+            all_cubes[custom_index] = path
+
 
 
 
@@ -1776,6 +1816,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
             if dataset_i != dataset: continue
             if exp_i != exp: continue
             if short_name_i != short_name:continue
+
             cube = load_bgc_cube(cube, short_name)
             all_cubes[(dataset, mip, exp, ensemble, short_name, variable_group)] = cube
             cube_list.append(cube)
@@ -1860,9 +1901,9 @@ def make_gwt_map_land_sea_plots(cfg, ):
                 #ssp1s = ['ssp370', ]
                 #ssp2s = ['ssp126', ]
 
-                if threshold =='3.0':    
+                if threshold =='3.0':
                     ssp1s = ['ssp585', ] #'ssp370' ]
-                    ssp2s = ['ssp370', 'ssp245', ]    
+                    ssp2s = ['ssp370', 'ssp245', ]
 
                 if threshold =='4.0':
                     ssp1s = ['ssp585', ]
