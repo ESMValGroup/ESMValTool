@@ -6,16 +6,20 @@ Climate model Weighting by Independence and Performance (ClimWIP)
 Overview
 --------
 
-Projections of future climate change are often based on ensembles of global climate
-models such as CMIP6. To condense the information from these models they are often
-combined into probabilistic estimates such as mean and a related uncertainty range
-(such as the standard deviation). However, not all models in a given multi-model
-ensemble are always equally 'fit for purpose' and in such cases it can make sense
-to weight models based on their ability to simulate observed quantities related to
-the target. In addition, multi-model ensembles, such as CMIP can contain several
-models based on a very similar code-base (sharing, for example, multiple components)
-leading to complex inter-dependencies between the models. Adjusting for this by
-weighting them according to their independence can help to adjust for this.
+Projections of future climate change are often based on multi-model
+ensembles of global climate models such as CMIP6. To condense the
+information from these models they are often combined into
+probabilistic estimates such as mean and a related uncertainty range
+(such as the standard deviation). However, not all models in a given
+multi-model ensemble are always equally ‘fit for purpose’ and it can
+make sense to weight models based on their ability to simulate
+observed quantities related to the target. In addition, multi-model
+ensembles, such as CMIP can contain several models based on a very
+similar code-base (sharing of components, only differences in
+resolution etc.) leading to complex inter-dependencies between the
+models. Adjusting for this by weighting models according to their
+independence helps to adjust for this.
+
 
 This recipe implements the **Climate model Weighting by Independence and Performance
 (ClimWIP)** method. It is based on work by `Knutti et al. (2017) <https://doi.org/10.1002/2016GL072012>`_,
@@ -54,9 +58,9 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/
 
     * ``recipe_climwip_test_basic.yml``: Basic sample recipe using only a few models
-    * ``recipe_climwip_test_performance_sigma.yml``: Advance sample recipe for testing the perfect model test in particular
+    * ``recipe_climwip_test_performance_sigma.yml``: Advanced sample recipe for testing the perfect model test in particular
     * ``recipe_climwip_brunner2019_med.yml``: Slightly modified results for one region from Brunner et al. (2019) (to change regions see below)
-    * ``recipe_climwip_brunner2020.yml`` (in development)
+    * ``recipe_climwip_brunner2020esd.yml`` (in development)
 
 Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
 
@@ -68,8 +72,8 @@ Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
 Plot scripts are stored in esmvaltool/diag_scripts/weighting/
 
     * ``weighted_temperature_graph.py``: Show the difference between weighted and non-weighted temperature anomalies as time series.
-    * ``weighted_temperature_map.py``: Show the difference between weighted and non-weighted temperature anomalies as map.
-    * ``plot_utilities.py``: A collection of functions use by the plot scripts.
+    * ``weighted_temperature_map.py``: Show the difference between weighted and non-weighted temperature anomalies on a map.
+    * ``plot_utilities.py``: A collection of functions used by the plot scripts.
 
 
 User settings in recipe
@@ -97,14 +101,14 @@ User settings in recipe
       ``independence_contributions`` being skipped or not set).
     * ``independence_contributions``: dictionary where the keys represent the variable groups to be included in the independence
       calculation. The values give the relative contribution of each group, with 0 being equivalent to not including the group.
-      Can be skipped or not set then weights will be based purely on model performance (this is mutually exclusive with
+      If skipped or not set weights will be based purely on model performance (this is mutually exclusive with
       ``performance_contributions`` being skipped or not set).
     * ``combine_ensemble_members``: set to true if ensemble members of the same model should be combined during the processing
       (leads to identical weights for all ensemble members of the same model). Recommended if running with many (>10) ensemble
       members per model. If set to false, the model independence weighting will still (partly) account for the (very high)
       dependence between members of the same model. The success of this will depend on the case and the selected parameters.
       See `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_ for an in-depth discussion.
-    * ``obs_data``: list of project names to specify which are the the observational data. The rest is assumed to be model data.
+    * ``obs_data``: list of project names to specify which are the observational data. The rest is assumed to be model data.
 
   *Required settings for variables*
   * This script takes multiple variables as input as long as they're available for all models
@@ -165,7 +169,7 @@ User settings in recipe
 
    *Optional settings for variables*
      * A second variable is optional: temperature reference (tas_reference). If given, maps of temperature change to
-       the reference are drawn, otherwise absolute temperature are drawn.
+       the reference are drawn, otherwise absolute temperatures are drawn.
      * tas_reference takes the same fields as tas
 
 
@@ -173,7 +177,7 @@ Updating the Brunner et al. (2019) recipe for new regions
 ---------------------------------------------------------
 
 ``recipe_climwip_brunner2019_med.yml`` demonstrates a very similar setup to `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_
-but only for one region (the Mediterranean). To calculated weights for other regions the recipe needs to be updated at two places:
+but only for one region (the Mediterranean). To calculated weights for other regions the recipe needs to be updated in two places:
 
 .. code-block:: yaml
 
@@ -187,7 +191,7 @@ but only for one region (the Mediterranean). To calculated weights for other reg
 
 The ``ids`` field takes any valid `SREX <http://www.ipcc-data.org/guidelines/pages/ar5_regions.html>`_ region
 key or any valid `AR6 <https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_ region key
-(depending on the shapefile). Not that this needs to be the full string here (not the abbreviation). For a
+(depending on the shapefile). Note that this needs to be the full string here (not the abbreviation). For a
 full list of possible regions have a look at the srex.csv and ar6.csv files under
 ./esmvaltool/diag_scripts/weighting/shapefiles
 
@@ -222,13 +226,13 @@ In this case ClimWIP will attempt to perform an on-the-fly perfect model test to
 performance sigma (strongest weighting) which does not lead to overconfident weighting. **Important:**
 the user should always check the test output for unusual behaviour. For most cases the performance sigma
 should lie around 0.5. In cases where the perfect model test fails (no appropriate performance sigma
-can be found) the test will still produce graphical output before raising a ValueError. The user can than decide
+can be found) the test will still produce graphical output before raising a ValueError. The user can then decide
 to manually set the performance sigma to the most appropriate value (based on the output) - **this is
 not recommended** and should only be done with care! The perfect model test failing can be a hint for
 one of the following: (1) not enough models in the ensemble for a robust distribution (normally >20
 models should be used) or (2) the performance metrics used are not relevant for the target.
 
-An on-the-fly calibaration for the independence sigma is not yet implemented. For most cases we recommend to
+An on-the-fly calibration for the independence sigma is not yet implemented. For most cases we recommend to
 use the same setup as in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_ or
 `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_ (global or hemispherical
 temperature and sea level pressure climatologies as metrics and independence sigma values between 0.2
