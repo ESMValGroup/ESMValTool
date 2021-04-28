@@ -122,6 +122,14 @@ def regrid_to_1x1(cube, scheme = 'linear', res = '1x1'):
 def cube_interesction(cube, region='Global'):
     regions = ['Global', 'midatlantic', 'WestEq', 'EastEq', 'NorthAtlantic', ]
 
+    # if istype(cube, str):
+    #     print("cube_interesction: loading cube:", cube)
+    #     cube = iris.load_cube(cube)
+    #     # just getting the surface?
+    #     if cube.data.ndim==3:
+    #         cube = cube[0]
+    #     cube = diagtools.bgc_units(cube, details['short_name'])
+
     print('cube_interesction: start', region, cube.data.min(), cube.data.max())
     if  region=='Global':
         cube = regrid_to_1x1(cube)
@@ -274,6 +282,17 @@ def single_pane_land_sea_pane(cfg,
     return fig, ax, land, sea
 
 
+def load_bgc_cube(cube, short_name):
+    if istype(cube, str):
+        print("cube_interesction: loading cube:", cube)
+        cube = iris.load_cube(cube)
+        # just getting the surface?
+    if cube.data.ndim==3:
+        cube = cube[0]
+    cube = diagtools.bgc_units(cube, short_name)
+    return cube
+
+
 def single_pane_land_sea_plot(
         cfg,
         metadatas,
@@ -295,6 +314,9 @@ def single_pane_land_sea_plot(
     path = diagtools.folder([cfg['plot_dir'], plot_dir, region])+ suffix
 
     if os.path.exists(path): return
+
+    land_cube = load_bgc_cube(land_cube, plot_pair['land'])
+    sea_cube = load_bgc_cube(sea_cube, plot_pair['sea'])
 
     sea_cube = cube_interesction(sea_cube, region=region)
     land_cube = cube_interesction(land_cube, region=region)
@@ -946,9 +968,12 @@ def calc_ensemble_mean(cube_list):
         assert 0
     if len(cube_list) ==1:
         return cube_list[0]
+    for cube in cube_list:
+        if istype(cube, str):
 
     cube_data = cube_list[0].data
     for c in cube_list[1:]:
+
         cube_data += c.data
 
     cube_data = cube_data/float(len(cube_list))
@@ -1670,15 +1695,17 @@ def make_gwt_map_land_sea_plots(cfg, ):
         except:
             files_dict[unique_key] = [fn, ]
 
+        all_cubes[tuple([details[key] for key in key_index])]=  fn
+        continue
         cube = iris.load_cube(fn)
-
         # just getting the surface?
         if cube.data.ndim==3:
             cube = cube[0]
 
         cube = diagtools.bgc_units(cube, details['short_name'])
-
         all_cubes[tuple([details[key] for key in key_index])]=  cube
+
+
 
     if len(fx_fns)=='':
         print('unable to find fx files:', fx_fns)
@@ -1751,6 +1778,8 @@ def make_gwt_map_land_sea_plots(cfg, ):
             if dataset_i != dataset: continue
             if exp_i != exp: continue
             if short_name_i != short_name:continue
+            cube = load_bgc_cube(cube, short_name)
+            all_cubes[(dataset, mip, exp, ensemble, short_name, variable_group)] = cube
             cube_list.append(cube)
 
         if not len(cube_list):
