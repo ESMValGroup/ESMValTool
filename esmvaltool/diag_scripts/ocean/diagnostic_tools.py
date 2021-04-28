@@ -135,7 +135,7 @@ def bgc_units(cube, name):
     if name in ['intpp', ]:
         new_units = 'mmol m-2 d-1'
 
-    if name in ['gpp', 'npp']: # Land fields!
+    if name in ['gpp', 'npp', 'nbp', 'ra', 'rh', ]: # Land fields!
         new_units = 'g m-2 d-1'
 
     if name in ['fgco2', ]:

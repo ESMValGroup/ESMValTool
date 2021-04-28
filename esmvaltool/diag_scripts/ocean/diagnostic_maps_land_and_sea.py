@@ -1666,7 +1666,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     fx_fns = {}
     all_cubes = {}
     key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
-    regions = ['Global', ]#'NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
+    regions = ['Global', 'NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
