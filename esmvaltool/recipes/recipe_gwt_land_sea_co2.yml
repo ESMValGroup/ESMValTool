@@ -1410,7 +1410,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     intpp_ssp245_3.0:
+      intpp_ssp245_3.0:
        short_name: intpp
        preprocessor: prep_1
        additional_datasets:
@@ -1440,7 +1440,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r4i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r8i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
 
-     intpp_ssp370_3.0:
+      intpp_ssp370_3.0:
        short_name: intpp
        preprocessor: prep_1
        additional_datasets:
@@ -1514,7 +1514,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r4i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     intpp_ssp585_3.0:
+      intpp_ssp585_3.0:
        short_name: intpp
        preprocessor: prep_1
        additional_datasets:
@@ -1627,7 +1627,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     fgco2_ssp245_3.0:
+      fgco2_ssp245_3.0:
        short_name: fgco2
        preprocessor: prep_1
        additional_datasets:
@@ -1657,7 +1657,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r4i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r8i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
 
-     fgco2_ssp370_3.0:
+      fgco2_ssp370_3.0:
        short_name: fgco2
        preprocessor: prep_1
        additional_datasets:
@@ -1731,7 +1731,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r4i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     fgco2_ssp585_3.0:
+      fgco2_ssp585_3.0:
        short_name: fgco2
        preprocessor: prep_1
        additional_datasets:
@@ -1844,7 +1844,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     spco2_ssp245_3.0:
+      spco2_ssp245_3.0:
        short_name: spco2
        preprocessor: prep_1
        additional_datasets:
@@ -1874,7 +1874,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r4i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r8i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
 
-     spco2_ssp370_3.0:
+      spco2_ssp370_3.0:
        short_name: spco2
        preprocessor: prep_1
        additional_datasets:
@@ -1948,7 +1948,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r4i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     spco2_ssp585_3.0:
+      spco2_ssp585_3.0:
        short_name: spco2
        preprocessor: prep_1
        additional_datasets:
@@ -2061,7 +2061,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     mlotst_ssp245_3.0:
+      mlotst_ssp245_3.0:
        short_name: mlotst
        preprocessor: prep_1
        additional_datasets:
@@ -2091,7 +2091,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r4i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r8i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
 
-     mlotst_ssp370_3.0:
+      mlotst_ssp370_3.0:
        short_name: mlotst
        preprocessor: prep_1
        additional_datasets:
@@ -2165,7 +2165,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r4i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     mlotst_ssp585_3.0:
+      mlotst_ssp585_3.0:
        short_name: mlotst
        preprocessor: prep_1
        additional_datasets:
@@ -2278,7 +2278,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     talk_ssp245_3.0:
+      talk_ssp245_3.0:
        short_name: talk
        preprocessor: prep_1
        additional_datasets:
@@ -2308,7 +2308,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r4i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r8i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
 
-     talk_ssp370_3.0:
+      talk_ssp370_3.0:
        short_name: talk
        preprocessor: prep_1
        additional_datasets:
@@ -2382,7 +2382,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r4i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     talk_ssp585_3.0:
+      talk_ssp585_3.0:
        short_name: talk
        preprocessor: prep_1
        additional_datasets:
@@ -2495,7 +2495,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp245, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     tos_ssp245_3.0:
+      tos_ssp245_3.0:
        short_name: tos
        preprocessor: prep_1
        additional_datasets:
@@ -2525,7 +2525,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r4i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp370, ensemble: r8i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
 
-     tos_ssp370_3.0:
+      tos_ssp370_3.0:
        short_name: tos
        preprocessor: prep_1
        additional_datasets:
@@ -2599,7 +2599,7 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r4i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: ssp585, ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-     tos_ssp585_3.0:
+      tos_ssp585_3.0:
        short_name: tos
        preprocessor: prep_1
        additional_datasets:

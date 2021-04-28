@@ -610,6 +610,7 @@ def multi_pane_land_sea_plot_sspdiff(
     # Calculagte the differences:
     land_diff_cubes = {}
     sea_diff_cubes = {}
+    
     land_diff_cubes['sspdiff'] = land_cubes[ssp1] - land_cubes[ssp2]
     land_diff_cubes['sspdiff'].data = np.ma.masked_invalid(land_diff_cubes['sspdiff'].data)
 
@@ -968,12 +969,9 @@ def calc_ensemble_mean(cube_list):
         assert 0
     if len(cube_list) ==1:
         return cube_list[0]
-    for cube in cube_list:
-        if istype(cube, str):
 
     cube_data = cube_list[0].data
     for c in cube_list[1:]:
-
         cube_data += c.data
 
     cube_data = cube_data/float(len(cube_list))
@@ -1668,7 +1666,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     fx_fns = {}
     all_cubes = {}
     key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
-    regions = ['NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
+    regions = ['Global', ]#'NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1857,13 +1855,13 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
             for region in regions:
                 #f threshold =='2.0':
-                ssp1s = ['ssp585', 'ssp370']
+                ssp1s = ['ssp585', ]# 'ssp370']
                 ssp2s = ['ssp119', 'ssp126', 'ssp245', 'ssp370', ]
                 #ssp1s = ['ssp370', ]
                 #ssp2s = ['ssp126', ]
 
                 if threshold =='3.0':    
-                    ssp1s = ['ssp585', 'ssp370' ]
+                    ssp1s = ['ssp585', ] #'ssp370' ]
                     ssp2s = ['ssp370', 'ssp245', ]    
 
                 if threshold =='4.0':
@@ -1872,6 +1870,11 @@ def make_gwt_map_land_sea_plots(cfg, ):
 
                 for ssp1, ssp2 in product(ssp1s, ssp2s):
                     if ssp1==ssp2:continue
+                    if ssp1 not in land_cubes: continue
+                    if ssp2 not in land_cubes: continue
+                    if ssp1 not in sea_cubes: continue
+                    if ssp2 not in sea_cubes: continue
+
                     multi_pane_land_sea_plot_sspdiff(
                         cfg,
                         metadatas,
@@ -1883,7 +1886,6 @@ def make_gwt_map_land_sea_plots(cfg, ):
                         ssp1=ssp1,
                         ssp2=ssp2,
                         )
-                continue
 
                 multi_pane_land_sea_plot_histdiff(
                     cfg,
