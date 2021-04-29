@@ -406,6 +406,9 @@ def rhgt(data_dict):
     """
     return nppgt(data_dict, short='rh', gt='rhgt')
 
+def nppgt(data_dict): return nppgt(data_dict, short='npp', gt='nppgt')
+def nbpgt(data_dict): return nppgt(data_dict, short='nbp', gt='nbpgt')
+
 
 def frc(data_dict):
     """
@@ -459,7 +462,7 @@ def exchange(data_dict, inverse=False):
 
 def inverse_exchange(data_dict,):
     """
-    reverses calculation of exchange. 
+    reverses calculation of exchange.
     """
     return exchange(data_dict, inverse=True)
 
@@ -565,7 +568,7 @@ def load_timeseries(cfg, short_names):
         'frc': frc,
         'frcgt': frcgt,
         'exchange': exchange,
-        'inverse_exchange': inverse_exchange, 
+        'inverse_exchange': inverse_exchange,
         'tas_norm': tas_norm,
         'nppgt_norm':norm_co2_nppgt,
         'rhgt_norm':norm_co2_rhgt,
@@ -990,7 +993,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
 #            for line in [0, 1.5, 2, 3, 4, 5]:
 #                print(line, x, y, 'y:',y_data)
 #                plt.axhline(line, 'k', ':')
-    
+
 
 
     exp_colours_leg = {'historical':'black',
@@ -1065,10 +1068,10 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    jobtype = 'marine'
+    jobtype = 'bulk'
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
-                       'npp', 'nppgt', 'rh', 'rhgt', 'exchange', 
+                       'npp', 'nppgt', 'rh', 'rhgt', 'exchange',
                        #'inverse_exchange',
                        #'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
                        'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc', 'frc',
@@ -1080,17 +1083,29 @@ def main(cfg):
         short_names_y = ['tas_norm', 'co2', 'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc','frc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt', 'frcgt',]
 
 
+    if jobtype == 'bulk':
+        short_names = ['tas', 'tas_norm', 'co2', 'emissions',
+                       'nbp', 'nbpgt', 'gpp', 'gppgt',
+                       #'inverse_exchange',
+                       #'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
+                       'intpp', 'fgco2', 'intppgt','fgco2gt',
+                       ]
+        short_names_x = ['time', 'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
+        #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
+        short_names_y = short_names.copy()
+
     if jobtype == 'land':
         short_names = ['tas', 'tas_norm', 'co2',
-                       'npp', 'nppgt', 
+                       'npp', 'nppgt',
                        'rhgt', 'exchange',
                        'nppgt_norm','rhgt_norm','exchange_norm',
                        ]
-        short_names_x = ['time', 'co2', 'tas', 'tas_norm', 
+        short_names_x = ['time', 'co2', 'tas', 'tas_norm',
                          'rhgt', 'exchange', 'rhgt','nppgt',]
         short_names_y = ['tas', 'tas_norm', 'co2',
                          'npp', 'nppgt',
-                         'rh', 'rhgt', 
+                         'rh', 'rhgt',
                          'exchange',
                          'nppgt_norm','rhgt_norm','exchange_norm',]
 
