@@ -22,12 +22,12 @@ documentation:
 # YAML anchors
 # --------------------------------------------------
 
-# Working datsets
+# Working datasets
 # --------------------------------------------------
 DATASET_ANCHOR_2D: &datasets_2D
   - {dataset: NorESM2-LM,    grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
   - {dataset: IPSL-CM6A-LR,  grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
-  - {dataset: MRI-ESM2-0,    grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i2p1f1,  start_year: 1950,  end_year: 2014}
+  - {dataset: CESM2,         grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
   - {dataset: CMCC-ESM2,     grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
   - {dataset: UKESM1-0-LL,   grid: gn, project: CMIP6,  exp: historical,  ensemble: r1i1p1f2,  start_year: 1950,  end_year: 2014}
   - {dataset: GFDL-ESM4,     grid: gr, project: CMIP6,  exp: historical,  ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
