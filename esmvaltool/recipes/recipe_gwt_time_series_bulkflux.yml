@@ -25,14 +25,14 @@ preprocessors:
     custom_order: true
     area_statistics:
       operator: mean
-      fx_files: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
+      fx_variables: [{short_name: areacello, mip: Ofx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
     annual_statistics:
       operator: mean
 
   prep_total_sea:
     custom_order: true
     area_statistics:
-      operator: weightless_sum
+      operator: sum
 
 
   prep_timeseries_2d_land:
@@ -43,14 +43,14 @@ preprocessors:
       mask_out: sea  # if land (sea), will mask land (sea and oceans) out
     area_statistics:
       operator: mean
-      fx_files: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
+      fx_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
 
   prep_total_land:
     custom_order: true
     mask_landsea:
       mask_out: sea  # if land (sea), will mask land (sea and oceans) out
     area_statistics:
-      operator: weightless_sum
+      operator: sum
 
 
   prep_timeseries_2d_air:
@@ -59,12 +59,12 @@ preprocessors:
       operator: mean
     area_statistics:
       operator: mean
-      fx_files: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
+      fx_variables: [{short_name: areacella, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, activity: CMIP}]
 
   prep_total_air:
     custom_order: true
     area_statistics:
-      operator: weightless_sum
+      operator: sum
 
 
 
@@ -101,7 +101,7 @@ diagnostics:
         fx_var_preprocess: True
         additional_datasets:
          # /data/sthenno1/scratch/ledm/CMIP6/tas
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 1950, end_year: 2014, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 1990, end_year: 2100, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 1990, end_year: 2100, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 1990, end_year: 2100, grid: gn}
