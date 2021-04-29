@@ -31,8 +31,10 @@ preprocessors:
 
   prep_total_sea:
     custom_order: true
-    area_statistics:
-      operator: sum
+    mask_landsea:
+      mask_out: land  # if land (sea), will mask land (sea and oceans) out
+#    area_statistics:
+#      operator: sum
 
 
   prep_timeseries_2d_land:
@@ -49,8 +51,8 @@ preprocessors:
     custom_order: true
     mask_landsea:
       mask_out: sea  # if land (sea), will mask land (sea and oceans) out
-    area_statistics:
-      operator: sum
+#    area_statistics:
+#      operator: sum
 
 
   prep_timeseries_2d_air:
@@ -63,8 +65,8 @@ preprocessors:
 
   prep_total_air:
     custom_order: true
-    area_statistics:
-      operator: sum
+#    area_statistics:
+#      operator: sum
 
 
 
@@ -101,7 +103,7 @@ diagnostics:
         fx_var_preprocess: True
         additional_datasets:
          # /data/sthenno1/scratch/ledm/CMIP6/tas
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 1950, end_year: 2014, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 2014, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119],     ensemble: r1i1p1f2, start_year: 1990, end_year: 2100, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp126],     ensemble: r1i1p1f2, start_year: 1990, end_year: 2100, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp245],     ensemble: r1i1p1f2, start_year: 1990, end_year: 2100, grid: gn}
