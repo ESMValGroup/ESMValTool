@@ -335,9 +335,16 @@ def marine_gt(data_dict, short, gt):
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name == 'areacello':
             areas.append(cube)
+
     if len(areas) != 1:
         assert 0
     areas = areas[0]
+    if np.sum(areas.data.shape)>1:
+        # assume properly masked! (done in preprocessor)
+        #print(areas.data.shape)
+        areas = areas.collapsed(['longitude', 'latitude'], iris.analysis.SUM) 
+        #print(areas.data)
+        #assert 0
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name != short:
             continue
@@ -371,9 +378,9 @@ def frocgt(data_dict): return marine_gt(data_dict, short='froc', gt='frocgt')
 def frcgt(data_dict): return marine_gt(data_dict, short='frc', gt='frcgt')
 
 
-def nppgt(data_dict, short='npp', gt='nppgt'):
+def land_gt(data_dict, short='npp', gt='nppgt'):
     """
-    Calculate nppgt from the data dictionary.
+    Calculate land_gt from the data dictionary.
     """
     areas = []
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
@@ -383,20 +390,26 @@ def nppgt(data_dict, short='npp', gt='nppgt'):
         print(areas)
         assert 0
     areas = areas[0]
+    if np.sum(areas.data.shape)>1:
+        # assume properly masked! (done in preprocessor)
+        areas = areas.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
-        #rint('nppgt:', short_name, exp, ensemble, [short,gt])
+        #rint('land_gt:', short_name, exp, ensemble, [short,gt])
         if short_name != short:
-        #   print('nppgt:', short_name,'!=', short)
+        #   print('land_gt:', short_name,'!=', short)
             continue
         if (gt, exp, ensemble) in data_dict.keys():
-            print('nppgt:', gt, 'already calculated')
+            print('land_gt:', gt, 'already calculated')
             continue
-        print('nppgt:', short_name, exp, ensemble, [short,gt])
+        print('land_gt:', short_name, exp, ensemble, [short,gt])
         cubegt = cube.copy()
         cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
         cubegt.units = cf_units.Unit('Pg yr^-1') #cube.units * areas.units
-        print('nppgt:', (gt, exp, ensemble), cubegt.data.mean())
+        print('land_gt:', (gt, exp, ensemble), cubegt.data.mean())
         data_dict[(gt, exp, ensemble)] = cubegt
+    if short=='nbp':
+        print(data_dict[(gt, exp, ensemble)])
     return data_dict
 
 
@@ -404,10 +417,12 @@ def rhgt(data_dict):
     """
     Calculate rhgt from the data dictionary.
     """
-    return nppgt(data_dict, short='rh', gt='rhgt')
+    return land_gt(data_dict, short='rh', gt='rhgt')
 
-def nppgt(data_dict): return nppgt(data_dict, short='npp', gt='nppgt')
-def nbpgt(data_dict): return nppgt(data_dict, short='nbp', gt='nbpgt')
+def nppgt(data_dict): return land_gt(data_dict, short='npp', gt='nppgt')
+def gppgt(data_dict): return land_gt(data_dict, short='gpp', gt='gppgt')
+def nbpgt(data_dict): 
+    return land_gt(data_dict, short='nbp', gt='nbpgt')
 
 
 def frc(data_dict):
@@ -536,7 +551,9 @@ def load_timeseries(cfg, short_names):
     """
     transforms = {
         'fgco2gt': ['fgco2', 'areacello'],
+        'gppgt': ['gpp', 'areacella'],
         'nppgt': ['npp', 'areacella'],
+        'nbpgt': ['nbp', 'areacella'],
         'rhgt': ['rh', 'areacella'],
         'epc100gt': ['epc100', 'areacello'],
         'intppgt': ['intpp', 'areacello'],
@@ -557,7 +574,10 @@ def load_timeseries(cfg, short_names):
 
     transforms_functions = {
         'fgco2gt': fgco2gt,
+        'gppgt': gppgt,
         'nppgt': nppgt,
+        'nbpgt': nbpgt,
+
         'rhgt': rhgt,
         'epc100gt': epc100gt,
         'intppgt': intppgt,
@@ -1086,14 +1106,18 @@ def main(cfg):
     if jobtype == 'bulk':
         short_names = ['tas', 'tas_norm', 'co2', 'emissions',
                        'nbp', 'nbpgt', 'gpp', 'gppgt',
-                       #'inverse_exchange',
-                       #'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'intppgt_norm',
                        'intpp', 'fgco2', 'intppgt','fgco2gt',
                        ]
         short_names_x = ['time', 'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
-        #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
-        #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
         short_names_y = short_names.copy()
+
+    if jobtype == 'debug':
+        short_names = [
+                       'nbp', 'nbpgt', 'gpp', 'gppgt',
+                       ]
+        short_names_x = ['time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_y = short_names.copy()
+
 
     if jobtype == 'land':
         short_names = ['tas', 'tas_norm', 'co2',
