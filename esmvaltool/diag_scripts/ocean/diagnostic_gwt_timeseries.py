@@ -342,7 +342,7 @@ def marine_gt(data_dict, short, gt):
     if np.sum(areas.data.shape)>1:
         # assume properly masked! (done in preprocessor)
         #print(areas.data.shape)
-        areas = areas.collapsed(['longitude', 'latitude'], iris.analysis.SUM) 
+        areas = areas.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
         #print(areas.data)
         #assert 0
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
@@ -421,7 +421,7 @@ def rhgt(data_dict):
 
 def nppgt(data_dict): return land_gt(data_dict, short='npp', gt='nppgt')
 def gppgt(data_dict): return land_gt(data_dict, short='gpp', gt='gppgt')
-def nbpgt(data_dict): 
+def nbpgt(data_dict):
     return land_gt(data_dict, short='nbp', gt='nbpgt')
 
 
@@ -623,9 +623,28 @@ def load_timeseries(cfg, short_names):
     if 'co2' in short_names_to_load:
         data_dict = load_co2_forcing(cfg, data_dict)
 
+    #if 'emissions' in short_names_to_load:
+    #    data_dict = load_co2_forcing(cfg, data_dict)
+
     for sn in short_names_to_load:
         if sn in transforms:
             data_dict = transforms_functions[sn](data_dict)
+
+    calculate_mean = True
+    if calculate_mean:
+        short_names, exps = {}, {}
+        for (short_name, exp, ensemble) in  data_dict.keys():
+            short_names[short_name] = True
+            exps[exp] = True
+        for short_name, exp in product(short_names.keys(), exps.keys()):
+            cubes = []
+            for (short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
+                if short_name != short_name_i: continue
+                if exp_i != exp: continue
+                if ensemble_i == 'ensemble_mean': continue
+                cubes.append(cube)
+            data_dict[(short_name, exp, 'ensemble_mean')] = cube_mean(cubes)
+
     return data_dict
 
 
@@ -854,7 +873,11 @@ def get_long_name(name):
     return long_name + longnames.get(name, name)
 
 
-def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='thresholds', draw_line=True, do_moving_average=True):
+def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
+    markers='thresholds',
+    draw_line=True,
+    do_moving_average=True,
+    ensemble_mean = False):
     """
     make a 2D figure.
     x axis and y axis are determined by the short_names provuided in x and y
@@ -903,6 +926,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',markers='t
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
             if short_name not in [x,y]: continue
+            if ensemble_mean and ensemble!= 'ensemble_mean': continue
+            if not ensemble_mean and ensemble == 'ensemble_mean': continue
 
             print('make_ts_figure: found', short_name, exp, ensemble, x,y)
             if x == 'time'and short_name == y:
@@ -1164,8 +1189,10 @@ def main(cfg):
                 if x == y: continue
                 if (x,y) in pairs: continue
                 print('main:', do_ma, x, y)
-                make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
-                               markers='thresholds', do_moving_average=do_ma)
+                for ensemble_mean in [True, False]:
+                    make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                               markers='thresholds', do_moving_average=do_ma,
+                               ensemble_mean=ensemble_mean)
                 pairs.append((x,y))
                 pairs.append((y,x))
 
