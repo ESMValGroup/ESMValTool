@@ -1,7 +1,7 @@
 ---
 # Common global attributes for Cmorizer output
 # ESACCI-WATERVAPOUR-L3S-TCWV-olci-cmsaf_hoaps-05deg-201708-fv3.1.nc
-# ESACCI SST Namen 
+# ESACCI SST Namen
 # Rawobs: 20010416120000-ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_LT-v02.0-fv01.1.nc
 # oder 20190215_regridded_sst.nc
 # OBS: OBS_ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB_Amon_tsStderr_200910-200910.nc
@@ -16,7 +16,7 @@ attributes:
   modeling_realm: sat
   project_id: OBS
   source: "TBD"
-  reference: ["esacci-sst"]
+  reference: [""]
   comment: ""
 
 # Variables to cmorize (here use only filename prefix)
