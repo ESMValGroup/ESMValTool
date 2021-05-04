@@ -91,6 +91,8 @@ User settings in recipe
      value of that bar.
    * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
+.. _create_scatterplot.py:
+
 * Script climate_metrics/create_scatterplot.py
 
    * ``dataset_style``, *str*, optional: Name of the style file (located in
