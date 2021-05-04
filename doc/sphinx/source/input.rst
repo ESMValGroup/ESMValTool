@@ -194,11 +194,10 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5 [*]_                    | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | n/a             |
-|                              | tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx)                                                 |      |                 |
+| ERA5 [#note1]_               | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rlns, rlus [#note2]_, rsds,     |   3  | n/a             |
+|                              | rsns, rsus [#note2]_, rsdt, rss, uas, vas, tas, tasmax, tasmin, tdps, ts, tsn (E1hr/Amon), orog (fx) |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA5-Land                    | pr                                                                                                   |   3  | n/a             |
-|                                                                                                                                     |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
 |                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, ta, tas,      |      |                 |
@@ -299,4 +298,6 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | WOA                          | no3, o2, po4, si (Oyr), so, thetao (Omon)                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 
-.. [*] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
+.. [#note1] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
+
+.. [#note2] Derived on the fly from down & net radiation

@@ -328,6 +328,8 @@ User settings in recipe
      :func:`matplotlib.pyplot.savefig`.
    * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
 
+.. _ch09_fig09_42b.py:
+
 #. Script ipcc_ar5/ch09_fig09_42b.py
 
    *Required settings for script*
@@ -336,11 +338,20 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * dataset_style: name of the style file (located in
-     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * dataset_style: Dataset style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`). The entry
+     ``marker`` is ignored when ``marker_file`` is given.
    * log_x: Apply logarithm to X axis (ECS).
    * log_y: Apply logarithm to Y axis (TCR).
+   * marker_column: Name of the column to look up markers in ``marker_file``.
+   * marker_file: CSV file with markers (can also be integers). Must have the
+     columns ``dataset`` and ``marker`` (or the column specified by
+     ``marker_column``).  If a relative path is given, assumes that this is a
+     pattern to search for ancestor files.
+   * savefig_kwargs: Keyword arguments for :func:`matplotlib.pyplot.savefig`.
    * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+   * x_lim: Plot limits for X axis (ECS).
+   * y_lim: Plot limits for Y axis (TCR).
 
 #. Script emergent_constraints/snowalbedo.ncl
 
