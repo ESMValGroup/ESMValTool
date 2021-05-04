@@ -2,7 +2,6 @@
 name: esmvaltool
 channels:
   - conda-forge
-  - esmvalgroup
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
