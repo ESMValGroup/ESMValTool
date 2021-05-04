@@ -236,7 +236,7 @@ diagnostics:
         showdiff: false
         styleset: CMIP5
         fig939_season: ["DJF","JJA","ANN"]
-        fig939_region_label: ["ALA","CGI","WNA","CNA","ENA","CAM","AMZ","NEB","WSA","SSA","NEU","CEU","MED","SAH","WAF","EAF","SAF","NAS","WAS","CAS","TIB","EAS","SAS","SEA","NAU","SAU"]
+        fig939_region_label: ["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs","NEUs","CEUs","MEDs","SAHs","WAFs","EAFs","SAFs","NASs","WASs","CASs","TIBs","EASs","SASs","SEAs","NAUs","SAUs"]
         fig939_project_MMM: ["CMIP5"]
         fig939_experiment_MMM: ["historical"]
         fig939_mip_MMM: ["Amon"]
@@ -320,5 +320,5 @@ diagnostics:
         # --------
         showdiff: false
         styleset: CMIP5
-        fig941_region_label: ["MED"]
+        fig941_region_label: ["MEDs"]
 
