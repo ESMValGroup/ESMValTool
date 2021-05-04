@@ -14,7 +14,7 @@ attributes:
 # Variables to CMORize
 variables:
   sm_monthly:
-    short_name: sm
+    cmor_name: sm
     mip: Lmon
     raw: swvl1
     file: 'ERA-Interim-Land_swvl1_6hourly_????.nc'

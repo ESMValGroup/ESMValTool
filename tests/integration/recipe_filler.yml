@@ -3,7 +3,7 @@ recipe:
   - diagnostics:
       variables:
         variable: &variable
-          short_name: ta
+          cmor_name: ta
           project: CMIP5
           mip: Amon
           start_year: 1960
@@ -27,7 +27,7 @@ has_additional_datasets:
       - ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
   - drs: default
     variable:
-      short_name: o3
+      cmor_name: o3
       dataset: HadGEM2-ES
       project: CMIP6
       mip: Amon
@@ -40,7 +40,7 @@ has_additional_datasets:
       - o3_Amon_HadGEM2-ES_historical_r1i1p1_gn_198412-200511.nc
   - drs: BADC
     variable:
-      short_name: ta
+      cmor_name: ta
       dataset: [UKESM1-0-LL, HadGEM2-ES]
       project: "*"
       mip: Amon
@@ -56,7 +56,7 @@ has_additional_datasets:
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_198412-200511.nc
   - drs: BADC
     variable:
-      short_name: ta
+      cmor_name: ta
       project: CMIP5
       mip: Amon
       start_year: 1960
@@ -70,7 +70,7 @@ has_additional_datasets:
       - MOHC/HadGEM2-ES/rcp85/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
   - drs: BADC
     variable:
-      short_name: ta
+      cmor_name: ta
       dataset: "*"
       project: CMIP5
       mip: Amon
@@ -185,7 +185,7 @@ no_additional_datasets:
       - rcp85/Amon/ta/HadGEM2-ES/r1i1p1/ta_Amon_HadGEM2-ES_rcp85_r1i1p1_200601-210012.nc
   - drs: BADC
     variable:
-      short_name: ta
+      cmor_name: ta
       project: CMIP5
       mip: Amon
       start_year: 1960
@@ -199,7 +199,7 @@ no_additional_datasets:
 bad_variable:
   - drs: BADC
     variable:
-      short_name: cow
+      cmor_name: cow
       project: CMIP5
       mip: Amon
       start_year: 1930
@@ -208,7 +208,7 @@ bad_variable:
       exp: historical
     available_files:
       - MOHC/HadGEM2-ES/historical/mon/atmos/Amon/r1i1p1/v20110329/ta/ta_Amon_HadGEM2-ES_historical_r1i1p1_193412-195911.nc
-no_short_name:
+no_cmor_name:
   - drs: BADC
     variable:
       project: CMIP5

@@ -157,7 +157,7 @@ def fix_var_metadata(cube, var_info):
         cube.standard_name = None
     else:
         cube.standard_name = var_info.standard_name
-    cube.var_name = var_info.short_name
+    cube.var_name = var_info.cmor_name
     cube.long_name = var_info.long_name
     _set_units(cube, var_info.units)
     return cube

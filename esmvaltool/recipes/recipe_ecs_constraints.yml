@@ -158,7 +158,7 @@ diagnostics:
     description: Equilibrium Climate Sensitivity for CMIP5.
     variables:
       tas_rtnt: &tas_settings_cmip5
-        short_name: tas
+        cmor_name: tas
         preprocessor: spatial_mean
         project: CMIP5
         mip: Amon
@@ -234,12 +234,12 @@ diagnostics:
           - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       rtnt:
         <<: *tas_settings_cmip5
-        short_name: rtnt
+        cmor_name: rtnt
         derive: true
         additional_datasets: *rtnt_datasets_cmip5
       rtmt:
         <<: *tas_settings_cmip5
-        short_name: rtmt
+        cmor_name: rtmt
         additional_datasets: *rtmt_datasets_cmip5
     scripts:
       ecs:
@@ -917,7 +917,7 @@ diagnostics:
     variables:
       trop_clt:
         <<: *var_settings_cmip5
-        short_name: clt
+        cmor_name: clt
         mip: Amon
         preprocessor: tropical_mean
         start_year: 1980
@@ -925,7 +925,7 @@ diagnostics:
         reference_dataset: ''
       southern_midlat_clt:
         <<: *var_settings_cmip5
-        short_name: clt
+        cmor_name: clt
         mip: Amon
         preprocessor: southern_midlatitudes_mean
         start_year: 1980

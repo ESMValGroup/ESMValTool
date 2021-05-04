@@ -316,7 +316,7 @@ def _save_cube(cube, cmor_info, attrs, out_dir):
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(cube,
-                        cmor_info.short_name,
+                        cmor_info.cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])

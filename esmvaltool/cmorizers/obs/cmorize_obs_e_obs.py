@@ -80,14 +80,14 @@ def fix_coords_non_symetric_lon(cube):
     return cube
 
 
-def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
+def _extract_variable(cmor_name, var, res, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # Fix units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    cube.units = var.get('raw_units', short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
+    cube.units = var.get('raw_units', cmor_name)
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
@@ -106,7 +106,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -130,7 +130,7 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
 
             # Save variable
             utils.save_variable(cube,
-                                short_name,
+                                cmor_name,
                                 out_dir,
                                 attrs,
                                 unlimited_dimensions=['time'])
@@ -143,10 +143,10 @@ def cmorization(in_dir, out_dir, cfg, _):
     # Run the cmorization
     ver = cfg['attributes']['version']
     for res in cfg['attributes']['resolution'].values():
-        for (short_name, var) in cfg['variables'].items():
+        for (cmor_name, var) in cfg['variables'].items():
             logger.info("CMORizing variable '%s' on %s°x%s°",
-                        short_name, res, res)
-            raw_var = var.get('raw', short_name)
+                        cmor_name, res, res)
+            raw_var = var.get('raw', cmor_name)
             filepath = raw_filepath.format(raw_name=raw_var, resolution=res,
                                            version=ver)
-            _extract_variable(short_name, var, res, cfg, filepath, out_dir)
+            _extract_variable(cmor_name, var, res, cfg, filepath, out_dir)

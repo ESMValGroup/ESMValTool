@@ -94,7 +94,7 @@ WEIGHTED_SAMPLES: &weighted_samples
 
 VARIABLE_SETTINGS_FEATURE_CO2: &variable_settings_feature_co2
   project: CMIP5
-  short_name: co2s
+  cmor_name: co2s
   mip: Amon
   exp: [esmHistorical, esmrcp85]
   start_year: 1860
@@ -105,7 +105,7 @@ VARIABLE_SETTINGS_FEATURE_CO2: &variable_settings_feature_co2
   additional_datasets: *datasets_co2
 
 VARIABLE_SETTINGS_PREDICTION_INPUT_CO2: &variable_settings_prediction_input_co2
-  short_name: co2s
+  cmor_name: co2s
   mip: Amon
   start_year: 1979
   end_year: 2019
@@ -116,7 +116,7 @@ VARIABLE_SETTINGS_PREDICTION_INPUT_CO2: &variable_settings_prediction_input_co2
 
 VARIABLE_SETTINGS_GPP_FRACTION: &variable_settings_gpp_fraction
   project: CMIP5
-  short_name: gpp
+  cmor_name: gpp
   mip: Lmon
   exp: esmFixClim1
   ensemble: r1i1p1
@@ -125,7 +125,7 @@ VARIABLE_SETTINGS_GPP_FRACTION: &variable_settings_gpp_fraction
 
 VARIABLE_SETTINGS_GPP_FRACTION_REF: &variable_settings_gpp_fraction_ref
   project: CMIP5
-  short_name: gpp
+  cmor_name: gpp
   mip: Lmon
   exp: esmFixClim1
   ensemble: r1i1p1

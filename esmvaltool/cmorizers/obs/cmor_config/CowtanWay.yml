@@ -35,4 +35,4 @@ variables:
   tasa:
     mip: Amon
     raw: temperature_anomaly
-    short_name: tasa
+    cmor_name: tasa

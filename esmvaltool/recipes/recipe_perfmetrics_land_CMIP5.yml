@@ -60,7 +60,7 @@ diagnostics:
       - land
     variables:
       sm:
-        short_name: sm
+        cmor_name: sm
         preprocessor: ppNOLEV1
         reference_dataset: ESACCI-SOILMOISTURE
         mip: Lmon
@@ -137,7 +137,7 @@ diagnostics:
       - land
     variables:
       nbp:
-        short_name: nbp
+        cmor_name: nbp
         preprocessor: ppNOLEV1
         reference_dataset: JMA-TRANSCOM
         mip: Lmon
@@ -185,7 +185,7 @@ diagnostics:
       - land
     variables:
       gpp:
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: ppNOLEV2
         reference_dataset: MTE
         alternative_dataset: FLUXCOM
@@ -239,7 +239,7 @@ diagnostics:
       - land
     variables:
       lai:
-        short_name: lai
+        cmor_name: lai
         preprocessor: ppNOLEV1
         reference_dataset: LAI3g
         mip: Lmon
@@ -295,7 +295,7 @@ diagnostics:
       - ocnBgchem
     variables:
       fgco2:
-        short_name: fgco2
+        cmor_name: fgco2
         preprocessor: ppNOLEV2
         reference_dataset: JMA-TRANSCOM
         alternative_dataset: Landschuetzer2016
@@ -345,7 +345,7 @@ diagnostics:
       - land
     variables:
       et:
-        short_name: et
+        cmor_name: et
         preprocessor: ppNOLEV1
         reference_dataset: LandFlux-EVAL
         mip: Lmon
@@ -416,7 +416,7 @@ diagnostics:
       - atmos
     variables:
       rlus:
-        short_name: rlus
+        cmor_name: rlus
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
@@ -474,7 +474,7 @@ diagnostics:
       - atmos
     variables:
       rlds:
-        short_name: rlds
+        cmor_name: rlds
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
@@ -533,7 +533,7 @@ diagnostics:
       - atmos
     variables:
       rsus:
-        short_name: rsus
+        cmor_name: rsus
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
@@ -591,7 +591,7 @@ diagnostics:
       - atmos
     variables:
       rsds:
-        short_name: rsds
+        cmor_name: rsds
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon

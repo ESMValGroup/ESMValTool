@@ -52,7 +52,7 @@ def _fix_data(cube, var):
 
 def extract_variable(var_info, raw_info, out_dir, attrs, year):
     """Extract to all vars."""
-    var = var_info.short_name
+    var = var_info.cmor_name
     cubes = iris.load(raw_info['file'])
     rawvar = raw_info['name']
 

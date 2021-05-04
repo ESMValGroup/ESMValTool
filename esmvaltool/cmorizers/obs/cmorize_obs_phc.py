@@ -91,7 +91,7 @@ def _fix_data(xr_time, var):
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
-    var = var_info.short_name
+    var = var_info.cmor_name
     xr_file = xr.open_dataset(raw_info['file'])
     xr_time = xr_file.expand_dims('time')
     xr_time = xr_time.assign_coords(time=[1])

@@ -32,7 +32,7 @@ SCATTERPLOT: &scatterplot_script
     style: ticks
   y_range: [0.0, 3.0]
 VAR_SETTING: &variable_settings
-  short_name: tas
+  cmor_name: tas
   preprocessor: spatial_mean
   exp: 1pctCO2
   mip: Amon
@@ -43,8 +43,9 @@ diagnostics:
   cmip5:
     description: Calculate TCR for all available CMIP5 models.
     variables:
-      1pctCO2:
-        <<: *variable_settings
+      1pctCO2: &variable_settings
+        cmor_name: tas
+        preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
         additional_datasets:

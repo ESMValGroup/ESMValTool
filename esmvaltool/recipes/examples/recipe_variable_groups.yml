@@ -37,7 +37,7 @@ diagnostics:
     description: Demonstrate the use of variable groups.
     variables:
       tas_1: &variable_settings
-        short_name: tas
+        cmor_name: tas
         project: CMIP5
         mip: Amon
         exp: historical

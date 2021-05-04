@@ -106,7 +106,7 @@ diagnostics:
       - land
     variables:
       co2s:
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: highlat_co2
         derive: true
         project: CMIP5
@@ -124,7 +124,7 @@ diagnostics:
           - {dataset: MPI-ESM-LR}
           - {dataset: NorESM1-ME}
       co2s_obs:
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: BRW_co2
         project: CMIP5
         mip: Amon
@@ -137,7 +137,7 @@ diagnostics:
           - {dataset: ESRL, project: OBS, type: ground, version: BRW, tier: 2,
              start_year: 1973, end_year: 2014}
       co2s_amp:
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: highlat_amp
         derive: true
         project: CMIP5
@@ -155,7 +155,7 @@ diagnostics:
           - {dataset: MPI-ESM-LR}
           - {dataset: NorESM1-ME}
       co2s_amp_obs:
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: BRW_amp
         project: CMIP5
         mip: Amon

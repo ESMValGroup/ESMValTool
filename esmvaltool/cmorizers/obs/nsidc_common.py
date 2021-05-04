@@ -64,7 +64,7 @@ def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
         np.full(lat_coord.shape, cfg['custom']['grid_cell_size'], np.float32),
         standard_name=var_info.standard_name,
         long_name=var_info.long_name,
-        var_name=var_info.short_name,
+        var_name=var_info.cmor_name,
         units='m2',
     )
     cube.add_aux_coord(lat_coord, (0, 1))
@@ -74,7 +74,7 @@ def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
     fix_var_metadata(cube, var_info)
     set_global_atts(cube, glob_attrs)
     save_variable(
-        cube, var_info.short_name, out_dir, glob_attrs, zlib=True
+        cube, var_info.cmor_name, out_dir, glob_attrs, zlib=True
     )
 
 

@@ -423,10 +423,10 @@ diagnostics:
       tas:
         <<: *var_tas_tsline
       tasUnc1:
-        short_name: tasConf5
+        cmor_name: tasConf5
         mip: Amon
       tasUnc2:
-        short_name: tasConf95
+        cmor_name: tasConf95
         mip: Amon
     additional_datasets:
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
@@ -634,7 +634,7 @@ diagnostics:
     description: Calculate ECS for all available CMIP5 models.
     variables:
       tas_rtnt: &ecs_settings_cmip5
-        short_name: tas
+        cmor_name: tas
         preprocessor: global_mean
         project: CMIP5
         ensemble: r1i1p1
@@ -642,7 +642,7 @@ diagnostics:
         additional_datasets: *cmip5_rtnt
       rtnt:
         <<: *ecs_settings_cmip5
-        short_name: rtnt
+        cmor_name: rtnt
         derive: true
         additional_datasets: *cmip5_rtnt
     scripts:
@@ -654,7 +654,7 @@ diagnostics:
     description: Calculate ECS for all available CMIP6 models.
     variables:
       tas_rtnt: &ecs_settings_cmip6
-        short_name: tas
+        cmor_name: tas
         preprocessor: global_mean
         project: CMIP6
         mip: Amon
@@ -664,12 +664,12 @@ diagnostics:
         additional_datasets: *cmip6_rtmt
       rtnt:
         <<: *ecs_settings_cmip6
-        short_name: rtnt
+        cmor_name: rtnt
         derive: true
         additional_datasets: *cmip6_rtnt
       rtmt:
         <<: *ecs_settings_cmip6
-        short_name: rtmt
+        cmor_name: rtmt
         additional_datasets: *cmip6_rtmt
     scripts:
       ecs:
@@ -700,7 +700,7 @@ diagnostics:
     description: Calculate grid-level CRE feedback parameters for CMIP5 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip5
-        short_name: tas
+        cmor_name: tas
         preprocessor: global_mean
         project: CMIP5
         ensemble: r1i1p1
@@ -708,17 +708,17 @@ diagnostics:
         additional_datasets: *cmip5_rtnt
       netcre_grid_level:
         <<: *fig_10_settings_cmip5
-        short_name: netcre
+        cmor_name: netcre
         preprocessor: regrid
         derive: true
       lwcre_grid_level:
         <<: *fig_10_settings_cmip5
-        short_name: lwcre
+        cmor_name: lwcre
         preprocessor: regrid
         derive: true
       swcre_grid_level:
         <<: *fig_10_settings_cmip5
-        short_name: swcre
+        cmor_name: swcre
         preprocessor: regrid
         derive: true
     scripts:
@@ -737,24 +737,24 @@ diagnostics:
     description: Calculate grid_level CRE feedback parameters for CMIP6 models.
     variables:
       tas_global_rtnt: &fig_10_settings_cmip6
-        short_name: tas
+        cmor_name: tas
         preprocessor: global_mean
         project: CMIP6
         mip: Amon
         additional_datasets: *cmip6_rtnt
       netcre_grid_level:
         <<: *fig_10_settings_cmip6
-        short_name: netcre
+        cmor_name: netcre
         preprocessor: regrid
         derive: true
       lwcre_grid_level:
         <<: *fig_10_settings_cmip6
-        short_name: lwcre
+        cmor_name: lwcre
         preprocessor: regrid
         derive: true
       swcre_grid_level:
         <<: *fig_10_settings_cmip6
-        short_name: swcre
+        cmor_name: swcre
         preprocessor: regrid
         derive: true
     scripts:
