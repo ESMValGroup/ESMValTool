@@ -32,22 +32,22 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _extract_variable(short_name, var, version, filename, cfg, in_dir,
+def _extract_variable(cmor_name, var, version, filename, cfg, in_dir,
                       out_dir):
     """Extract variable."""
     # load data
     filepath = os.path.join(in_dir, filename)
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # load climatology
     filepath_clim = os.path.join(in_dir, cfg['climatology']['filename'])
-    raw_var = var.get('raw_clim', short_name)
+    raw_var = var.get('raw_clim', cmor_name)
     clim_cube = iris.load_cube(filepath_clim,
                                utils.var_name_constraint(raw_var))
 
     # fix units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     for cub in [cube, clim_cube]:
         if cub.units != cmor_info.units:
             cub.convert_units(cmor_info.units)
@@ -89,7 +89,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -98,8 +98,8 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
+    for (cmor_name, var) in cfg['variables'].items():
         for (version, filename) in cfg['filenames'].items():
-            logger.info("CMORizing variable '%s' '%s'", short_name, version)
-            _extract_variable(short_name, var, version, filename, cfg, in_dir,
+            logger.info("CMORizing variable '%s' '%s'", cmor_name, version)
+            _extract_variable(cmor_name, var, version, filename, cfg, in_dir,
                               out_dir)

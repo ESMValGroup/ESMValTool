@@ -32,7 +32,7 @@ SCATTERPLOT: &scatterplot_script
     style: ticks
   y_range: [0.0, 3.0]
 VAR_SETTING: &variable_settings
-  short_name: tas
+  cmor_name: tas
   preprocessor: spatial_mean
   exp: 1pctCO2
   mip: Amon

@@ -126,24 +126,24 @@ diagnostics:
   calculate_weights_climwip:
     variables:
       tas_CLIM: &common_settings
-        short_name: tas
+        cmor_name: tas
         start_year: 1995
         end_year: 2014
         mip: Amon
         preprocessor: climatological_mean
         additional_datasets: *obs_data
       tas_CLIM_future:
-        short_name: tas
+        cmor_name: tas
         start_year: 2081
         end_year: 2100
         mip: Amon
         preprocessor: climatological_mean
       pr_CLIM:
         <<: *common_settings
-        short_name: pr
+        cmor_name: pr
       psl_CLIM:
         <<: *common_settings
-        short_name: psl
+        cmor_name: psl
 
     scripts:
       climwip:
@@ -189,7 +189,7 @@ diagnostics:
 
     variables:
       tas: &map_settings
-        short_name: tas
+        cmor_name: tas
         start_year: 2081
         end_year: 2100
         mip: Amon

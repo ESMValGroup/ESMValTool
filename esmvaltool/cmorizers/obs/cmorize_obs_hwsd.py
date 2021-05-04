@@ -27,13 +27,13 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _extract_variable(short_name, var, cfg, filepath, out_dir):
+def _extract_variable(cmor_name, var, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # Sum over levels
-    if short_name in ('cSoil', ):
+    if cmor_name in ('cSoil', ):
         level_coord = iris.coords.DimCoord([0, 1], long_name='level')
         cube.add_dim_coord(level_coord, 0)
         cube = cube.collapsed('level', iris.analysis.SUM)
@@ -55,7 +55,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     # Fix units
     if 'kg C' in cube.units.origin:
         cube.units = Unit(cube.units.origin.replace('C', ''))
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     cube.convert_units(cmor_info.units)
 
     # Fix metadata
@@ -66,7 +66,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -78,6 +78,6 @@ def cmorization(in_dir, out_dir, cfg, _):
     logger.info("Reading file '%s'", filepath)
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        _extract_variable(short_name, var, cfg, filepath, out_dir)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
+        _extract_variable(cmor_name, var, cfg, filepath, out_dir)

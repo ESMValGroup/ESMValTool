@@ -96,13 +96,13 @@ def _load_cube(input_files):
     return cube
 
 
-def _extract_variable(short_name, var, cfg, input_files, out_dir):
+def _extract_variable(cmor_name, var, cfg, input_files, out_dir):
     """Extract variable."""
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
 
     # Extract data
     cube = _load_cube(input_files)
-    cube.var_name = short_name
+    cube.var_name = cmor_name
 
     # Fix fill values
     cube.data = da.ma.masked_equal(cube.core_data(), -9999.0)
@@ -129,7 +129,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     for year in years:
         cube_slice = cube.extract(iris.Constraint(year=year))
         utils.save_variable(cube_slice,
-                            short_name,
+                            cmor_name,
                             out_dir,
                             attrs,
                             unlimited_dimensions=['time'])
@@ -139,7 +139,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     cube = cube.aggregated_by(['month', 'year'], iris.analysis.MEAN)
     attrs['mip'] = "Amon"
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -150,6 +150,6 @@ def cmorization(in_dir, out_dir, cfg, _):
     input_files = _get_input_files(in_dir, cfg)
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        _extract_variable(short_name, var, cfg, input_files, out_dir)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
+        _extract_variable(cmor_name, var, cfg, input_files, out_dir)

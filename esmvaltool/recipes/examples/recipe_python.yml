@@ -76,13 +76,13 @@ diagnostics:
       - atmos
     variables:
       tas_amsterdam:
-        short_name: tas
+        cmor_name: tas
         mip: Amon
         preprocessor: annual_mean_amsterdam
         start_year: 1850
         end_year: 2000
       tas_global:
-        short_name: tas
+        cmor_name: tas
         mip: Amon
         preprocessor: annual_mean_global
         start_year: 1850

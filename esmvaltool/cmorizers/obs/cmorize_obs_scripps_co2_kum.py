@@ -74,7 +74,7 @@ def _get_cube(row, column_name, fill_value):
     return cube
 
 
-def _extract_variable(short_name, var, cfg, filepath, out_dir):
+def _extract_variable(cmor_name, var, cfg, filepath, out_dir):
     """Extract variable."""
     data_frame = pd.read_csv(filepath, comment='"', header=[0, 1, 2])
     data_frame = data_frame.rename(columns=lambda x: x.strip())
@@ -85,12 +85,12 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
         cube = _get_cube(row, var['column_name'], cfg['fill_value'])
         cubes.append(cube)
     cube = cubes.concatenate_cube()
-    cube.var_name = short_name
+    cube.var_name = cmor_name
 
     # Fix metadata
     utils.convert_timeunits(cube, 1950)
     utils.fix_coords(cube)
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     cube.convert_units(cmor_info.units)
     attrs = cfg['attributes']
     attrs['mip'] = var['mip']
@@ -99,7 +99,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -111,6 +111,6 @@ def cmorization(in_dir, out_dir, cfg, _):
     logger.info("Reading file '%s'", filepath)
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        _extract_variable(short_name, var, cfg, filepath, out_dir)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
+        _extract_variable(cmor_name, var, cfg, filepath, out_dir)

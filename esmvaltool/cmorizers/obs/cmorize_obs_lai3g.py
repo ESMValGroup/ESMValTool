@@ -99,7 +99,7 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, cfg):
         utils.flip_dim_coord(final_cube, 'latitude')
     utils.set_global_atts(final_cube, attrs)
     utils.save_variable(final_cube,
-                        cmor_info.short_name,
+                        cmor_info.cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])

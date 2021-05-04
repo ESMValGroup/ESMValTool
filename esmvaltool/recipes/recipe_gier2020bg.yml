@@ -310,7 +310,7 @@ diagnostics:
           - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
       co2s_obs:
         preprocessor: conv_units
-        short_name: co2s
+        cmor_name: co2s
         project: CMIP5
         mip: Amon
         start_year: 2003
@@ -503,7 +503,7 @@ diagnostics:
           - {dataset: NorESM1-ME}
       co2s_obs:
         preprocessor: conv_units
-        short_name: co2s
+        cmor_name: co2s
         project: CMIP5
         mip: Amon
         start_year: 2003

@@ -99,23 +99,23 @@ diagnostics:
 
     variables:
       tas_change:
-        short_name: tas
+        cmor_name: tas
         start_year: 1981
         end_year: 2099
         preprocessor: calculate_anomalies
       pr_change:
-        short_name: pr
+        cmor_name: pr
         start_year: 1981
         end_year: 2099
         preprocessor: calculate_anomalies
       tas_bias:
-        short_name: tas
+        cmor_name: tas
         start_year: 1981
         end_year: 2010
         preprocessor: prepare_for_bias_calculation
         additional_datasets: *observations
       pr_bias:
-        short_name: pr
+        cmor_name: pr
         start_year: 1981
         end_year: 2010
         preprocessor: prepare_for_bias_calculation

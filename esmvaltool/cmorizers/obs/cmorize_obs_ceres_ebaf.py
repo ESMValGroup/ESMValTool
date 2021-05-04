@@ -37,15 +37,15 @@ def filter_warnings():
         )
 
 
-def _extract_variable(short_name, var, cfg, filepath, out_dir):
+def _extract_variable(cmor_name, var, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     with warnings.catch_warnings():
         filter_warnings()
         cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # Fix units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
@@ -61,7 +61,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     with warnings.catch_warnings():
         filter_warnings()
         utils.save_variable(cube,
-                            short_name,
+                            cmor_name,
                             out_dir,
                             attrs,
                             unlimited_dimensions=['time'])
@@ -72,6 +72,6 @@ def cmorization(in_dir, out_dir, cfg, _):
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        _extract_variable(short_name, var, cfg, raw_filepath, out_dir)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
+        _extract_variable(cmor_name, var, cfg, raw_filepath, out_dir)

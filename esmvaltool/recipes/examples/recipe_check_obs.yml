@@ -483,10 +483,10 @@ diagnostics:
     description: PERSIANN-CDR check
     variables:
       pr_month:
-        short_name: pr
+        cmor_name: pr
         mip: Amon
       pr_day:
-        short_name: pr
+        cmor_name: pr
         mip: day
     additional_datasets:
       - {dataset: PERSIANN-CDR, project: OBS, tier: 2,
@@ -633,10 +633,10 @@ diagnostics:
     description: CDS-SATELLITE-SOIL-MOISTURE check
     variables:
       sm_month:
-        short_name: sm
+        cmor_name: sm
         mip: Lmon
       sm_day:
-        short_name: sm
+        cmor_name: sm
         mip: day
     additional_datasets:
       - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
@@ -918,196 +918,196 @@ diagnostics:
     description: ERA5 check
     variables:
       clt_E1hr:
-        short_name: clt
+        cmor_name: clt
         mip: E1hr
       evspsbl_E1hr:
-        short_name: evspsbl
+        cmor_name: evspsbl
         mip: E1hr
       evspsblpot_E1hr:
-        short_name: evspsblpot
+        cmor_name: evspsblpot
         mip: E1hr
       mrro_E1hr:
-        short_name: mrro
+        cmor_name: mrro
         mip: E1hr
       pr_E1hr:
-        short_name: pr
+        cmor_name: pr
         mip: E1hr
       prsn_E1hr:
-        short_name: prsn
+        cmor_name: prsn
         mip: E1hr
       ps_E1hr:
-        short_name: ps
+        cmor_name: ps
         mip: E1hr
       psl_E1hr:
-        short_name: psl
+        cmor_name: psl
         mip: E1hr
       ptype_E1hr:
-        short_name: ptype
+        cmor_name: ptype
         mip: E1hr
       rls_E1hr:
-        short_name: rls
+        cmor_name: rls
         mip: E1hr
       rlds_E1hr:
-        short_name: rlds
+        cmor_name: rlds
         mip: E1hr
       rsds_E1hr:
-        short_name: rsds
+        cmor_name: rsds
         mip: E1hr
       rsdt_E1hr:
-        short_name: rsdt
+        cmor_name: rsdt
         mip: E1hr
       rss_E1hr:
-        short_name: rss
+        cmor_name: rss
         mip: E1hr
       uas_E1hr:
-        short_name: uas
+        cmor_name: uas
         mip: E1hr
       vas_E1hr:
-        short_name: vas
+        cmor_name: vas
         mip: E1hr
       tas_E1hr:
-        short_name: tas
+        cmor_name: tas
         mip: E1hr
       tasmax_E1hr:
-        short_name: tasmax
+        cmor_name: tasmax
         mip: E1hr
       tasmin_E1hr:
-        short_name: tasmin
+        cmor_name: tasmin
         mip: E1hr
       tdps_E1hr:
-        short_name: tdps
+        cmor_name: tdps
         mip: E1hr
       ts_E1hr:
-        short_name: ts
+        cmor_name: ts
         mip: E1hr
       tsn_E1hr:
-        short_name: tsn
+        cmor_name: tsn
         mip: E1hr
       evspsbl_Eday:
-        short_name: evspsbl
+        cmor_name: evspsbl
         mip: Eday
       evspsblpot_Eday:
-        short_name: evspsblpot
+        cmor_name: evspsblpot
         mip: Eday
       tdps_Eday:
-        short_name: tdps
+        cmor_name: tdps
         mip: Eday
       ts_Eday:
-        short_name: ts
+        cmor_name: ts
         mip: Eday
       tsn_Eday:
-        short_name: tsn
+        cmor_name: tsn
         mip: Eday
       clt_day:
-        short_name: clt
+        cmor_name: clt
         mip: day
       mrro_day:
-        short_name: mrro
+        cmor_name: mrro
         mip: day
       pr_day:
-        short_name: pr
+        cmor_name: pr
         mip: day
       prsn_day:
-        short_name: prsn
+        cmor_name: prsn
         mip: day
       psl_day:
-        short_name: psl
+        cmor_name: psl
         mip: day
       rlds_day:
-        short_name: rlds
+        cmor_name: rlds
         mip: day
       rls_day:
-        short_name: rls
+        cmor_name: rls
         mip: day
       rsds_day:
-        short_name: rsds
+        cmor_name: rsds
         mip: day
       rss_day:
-        short_name: rss
+        cmor_name: rss
         mip: day
       tas_day:
-        short_name: tas
+        cmor_name: tas
         mip: day
       tasmax_day:
-        short_name: tasmax
+        cmor_name: tasmax
         mip: day
       tasmin_day:
-        short_name: tasmin
+        cmor_name: tasmin
         mip: day
       uas_day:
-        short_name: uas
+        cmor_name: uas
         mip: day
       vas_day:
-        short_name: vas
+        cmor_name: vas
         mip: day
       ps_CFday:
-        short_name: ps
+        cmor_name: ps
         mip: CFday
       rsdt_CFday:
-        short_name: rsdt
+        cmor_name: rsdt
         mip: CFday
       clt_Amon:
-        short_name: clt
+        cmor_name: clt
         mip: Amon
       evspsbl_Amon:
-        short_name: evspsbl
+        cmor_name: evspsbl
         mip: Amon
       evspsblpot_Amon:
-        short_name: evspsblpot
+        cmor_name: evspsblpot
         mip: Amon
       mrro_Amon:
-        short_name: mrro
+        cmor_name: mrro
         mip: Amon
       pr_Amon:
-        short_name: pr
+        cmor_name: pr
         mip: Amon
       prsn_Amon:
-        short_name: prsn
+        cmor_name: prsn
         mip: Amon
       ps_Amon:
-        short_name: ps
+        cmor_name: ps
         mip: Amon
       psl_Amon:
-        short_name: psl
+        cmor_name: psl
         mip: Amon
       ptype_Amon:
-        short_name: ptype
+        cmor_name: ptype
         mip: Amon
       rlds_Amon:
-        short_name: rlds
+        cmor_name: rlds
         mip: Amon
       rls_Amon:
-        short_name: rls
+        cmor_name: rls
         mip: Amon
       rsds_Amon:
-        short_name: rsds
+        cmor_name: rsds
         mip: Amon
       rsdt_Amon:
-        short_name: rsdt
+        cmor_name: rsdt
         mip: Amon
       rss_Amon:
-        short_name: rss
+        cmor_name: rss
         mip: Amon
       ta_Amon:
-        short_name: ta
+        cmor_name: ta
         mip: Amon
       tas_Amon:
-        short_name: tas
+        cmor_name: tas
         mip: Amon
       tdps_Amon:
-        short_name: tdps
+        cmor_name: tdps
         mip: Amon
       ts_Amon:
-        short_name: ts
+        cmor_name: ts
         mip: Amon
       tsn_Amon:
-        short_name: tsn
+        cmor_name: tsn
         mip: Amon
       va_Amon:
-        short_name: va
+        cmor_name: va
         mip: Amon
       zg_Amon:
-        short_name: zg
+        cmor_name: zg
         mip: Amon
       orog:
         mip: fx

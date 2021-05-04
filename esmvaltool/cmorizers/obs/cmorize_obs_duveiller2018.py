@@ -83,7 +83,7 @@ def fix_time_coord_duveiller2018(cube):
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
-    var = var_info.short_name
+    var = var_info.cmor_name
     with catch_warnings():
         filterwarnings(
             action='ignore',

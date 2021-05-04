@@ -51,7 +51,7 @@ def _get_filepath(in_dir, basename):
 
 def _extract_variable(cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
-    var = cmor_info.short_name
+    var = cmor_info.cmor_name
     logger.info("Var is %s", var)
     cubes = iris.load(filepath)
     for cube in cubes:

@@ -75,7 +75,7 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(cube,
-                        cmor_info.short_name,
+                        cmor_info.cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])

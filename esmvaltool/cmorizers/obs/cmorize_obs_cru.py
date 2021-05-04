@@ -35,15 +35,15 @@ def _clean(filepath):
         logger.info("Removed cached file %s", filepath)
 
 
-def _extract_variable(short_name, var, cfg, filepath, out_dir):
+def _extract_variable(cmor_name, var, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # Fix units
     if 'raw_units' in var:
         cube.units = var['raw_units']
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
@@ -60,18 +60,18 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
 
 
-def _unzip(short_name, var, raw_filepath, out_dir):
+def _unzip(cmor_name, var, raw_filepath, out_dir):
     """Unzip `*.gz` file."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     zip_path = raw_filepath.format(raw_name=raw_var)
     if not os.path.isfile(zip_path):
-        logger.debug("Skipping '%s', file '%s' not found", short_name,
+        logger.debug("Skipping '%s', file '%s' not found", cmor_name,
                      zip_path)
         return None
     logger.info("Found input file '%s'", zip_path)
@@ -89,10 +89,10 @@ def cmorization(in_dir, out_dir, cfg, _):
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        filepath = _unzip(short_name, var, raw_filepath, out_dir)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
+        filepath = _unzip(cmor_name, var, raw_filepath, out_dir)
         if filepath is None:
             continue
-        _extract_variable(short_name, var, cfg, filepath, out_dir)
+        _extract_variable(cmor_name, var, cfg, filepath, out_dir)
         _clean(filepath)

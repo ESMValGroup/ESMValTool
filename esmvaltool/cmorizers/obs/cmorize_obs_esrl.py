@@ -146,7 +146,7 @@ def _get_time_coord(year, month):
     return time_coord
 
 
-def _extract_variable(short_name, var, cfg, out_dir, station_dic):
+def _extract_variable(cmor_name, var, cfg, out_dir, station_dic):
     """Extract variable."""
     data = pd.read_csv(station_dic['filepath'], sep=' {1,}', comment='#',
                        engine='python', header=None)
@@ -173,12 +173,12 @@ def _extract_variable(short_name, var, cfg, out_dir, station_dic):
         cube = _get_cube(row, data_rows, fill_v, station_dic)
         cubes.append(cube)
     cube = cubes.concatenate_cube()
-    cube.var_name = short_name
+    cube.var_name = cmor_name
 
     # Fix metadata
     utils.convert_timeunits(cube, 1950)
     utils.fix_coords(cube)
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     cube.convert_units(cmor_info.units)
     attrs = cfg['attributes']
     attrs['version'] = station_dic['Code'].upper()
@@ -190,7 +190,7 @@ def _extract_variable(short_name, var, cfg, out_dir, station_dic):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -273,7 +273,7 @@ def cmorization(in_dir, out_dir, cfg, _):
     station_dict = _get_station_dictionary()
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
+    for (cmor_name, var) in cfg['variables'].items():
         # Read station names
         if 'all' in var['stations']:
             stations = station_dict.keys()
@@ -290,11 +290,11 @@ def cmorization(in_dir, out_dir, cfg, _):
             for station in stations:
                 logger.info("Reading file '%s'", filepath[station][0])
                 logger.info("CMORizing variable '%s' for station '%s'",
-                            short_name, station)
+                            cmor_name, station)
                 # Add filepath to station_dict
                 station_dict[station.upper()]['filepath'] = \
                     filepath[station][0]
-                _extract_variable(short_name, var, cfg, out_dir,
+                _extract_variable(cmor_name, var, cfg, out_dir,
                                   station_dict[station.upper()])
         else:
             raise ValueError("Could not find the following station(s): %s. "

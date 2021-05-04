@@ -493,7 +493,7 @@ diagnostics:
     description: Fig 3 and 4 correlating near surface temperature and land+ocean carbon fluxes
     variables:
       fgco2:
-        short_name: fgco2
+        cmor_name: fgco2
         preprocessor: global_ocean
         project: CMIP5
         mip: Omon
@@ -512,7 +512,7 @@ diagnostics:
           - {dataset: NorESM1-ME, start_year: 1960 ,end_year: 2005}
 
       fgco2_obs:
-        short_name: fgco2
+        cmor_name: fgco2
         preprocessor: default
         project: CMIP5
         mip: Omon
@@ -543,7 +543,7 @@ diagnostics:
           #- {dataset: MPI-ESM-LR, start_year: 1960 ,end_year: 2005}
           - {dataset: NorESM1-ME, start_year: 1960 ,end_year: 2005}
       nbp_obs:
-        short_name: nbp
+        cmor_name: nbp
         preprocessor: default
         project: CMIP5
         mip: Lmon
@@ -591,7 +591,7 @@ diagnostics:
     description: Fig 5 correlates gamma hist vs gammaLT and calculates PDF
     variables:
       nbp_1pct:
-        short_name: nbp
+        cmor_name: nbp
         preprocessor: tropical_land
         project: CMIP5
         mip: Lmon
@@ -610,7 +610,7 @@ diagnostics:
           #- {dataset: MPI-ESM-LR, start_year: 1880 ,end_year: 1960}
           - {dataset: NorESM1-ME, start_year: 30 ,end_year: 110}
       nbp_esmFix:
-        short_name: nbp
+        cmor_name: nbp
         preprocessor: tropical_land
         project: CMIP5
         mip: Lmon

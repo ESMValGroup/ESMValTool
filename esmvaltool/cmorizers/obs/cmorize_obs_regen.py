@@ -26,20 +26,20 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _extract_variable(short_name, var, cfg, file_path, out_dir):
+def _extract_variable(cmor_name, var, cfg, file_path, out_dir):
     """Extract variable."""
 
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     cube = iris.load_cube(file_path, utils.var_name_constraint(raw_var))
 
     # Fix units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     if 'raw_units' in var:
         cube.units = var['raw_units']
     cube.convert_units(cmor_info.units)
 
     # Fix calendar type
-    cal_time = var.get('calendar', short_name)
+    cal_time = var.get('calendar', cmor_name)
     origin_time = cube.coord('time').units.origin
     cube.coord('time').units = cf_units.Unit(origin_time, calendar=cal_time)
     utils.convert_timeunits(cube, 1950)
@@ -55,7 +55,7 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -77,7 +77,7 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
 
             # Save variable
             utils.save_variable(cube,
-                                short_name,
+                                cmor_name,
                                 out_dir,
                                 attrs,
                                 unlimited_dimensions=['time'])
@@ -89,8 +89,8 @@ def cmorization(in_dir, out_dir, cfg, _):
     file_names = raw_filename.format(version=cfg['attributes']['version'])
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
         for file_path in sorted(Path(in_dir).glob(file_names)):
             logger.info("Loading '%s'", file_path)
-            _extract_variable(short_name, var, cfg, str(file_path), out_dir)
+            _extract_variable(cmor_name, var, cfg, str(file_path), out_dir)

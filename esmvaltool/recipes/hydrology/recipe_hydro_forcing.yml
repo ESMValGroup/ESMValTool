@@ -87,13 +87,13 @@ diagnostics:
     variables:
       pr_month:
         mip: day
-        short_name: pr
+        cmor_name: pr
         start_year: 2015
         end_year: 2016
         preprocessor: climatology_month
       pr_day:
         mip: day
-        short_name: pr
+        cmor_name: pr
         start_year: 2015
         end_year: 2016
         preprocessor: climatology_day

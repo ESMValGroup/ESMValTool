@@ -67,9 +67,9 @@ def _get_centered_timecoord(cube):
     time.points = [np.mean((t1, t2)) for t1, t2 in time.bounds]
 
 
-def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
+def _extract_variable(cmor_name, var, version, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     with catch_warnings():
         filterwarnings(
             action='ignore',
@@ -80,13 +80,13 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
         cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # Fix units (mm/month) -> 'kg m-2 month-1' -> 'kg m-2 s-1'
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    cube.units = Unit(var.get('raw_units', short_name))
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
+    cube.units = Unit(var.get('raw_units', cmor_name))
     cube.convert_units(cmor_info.units)
 
     # fix calendar type
     cube.coord('time').units = Unit(cube.coord('time').units.origin,
-                                    calendar=var.get('calendar', short_name))
+                                    calendar=var.get('calendar', cmor_name))
     cube.coord('time').convert_units(
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
@@ -121,13 +121,13 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
 
     # build contrainted cube on numgauge < 1
-    constraint_var = var.get('constraint', short_name)
+    constraint_var = var.get('constraint', cmor_name)
     with catch_warnings():
         filterwarnings(
             action='ignore',
@@ -166,18 +166,18 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
     attrs['mip'] = var['mip']
 
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
 
 
-def _unzip(short_name, var, version, raw_filepath, out_dir):
+def _unzip(cmor_name, var, version, raw_filepath, out_dir):
     """Unzip `*.gz` file."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     zip_path = raw_filepath.format(version=version, raw_name=raw_var)
     if not os.path.isfile(zip_path):
-        logger.debug("Skipping '%s', file '%s' not found", short_name,
+        logger.debug("Skipping '%s', file '%s' not found", cmor_name,
                      zip_path)
         return None
     logger.info("Found input file '%s'", zip_path)
@@ -196,10 +196,10 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # Run the cmorization
     for version in cfg['attributes']['version'].values():
-        for (short_name, var) in cfg['variables'].items():
-            logger.info("CMORizing variable '%s'", short_name)
-            filepath = _unzip(short_name, var, version, raw_filepath, out_dir)
+        for (cmor_name, var) in cfg['variables'].items():
+            logger.info("CMORizing variable '%s'", cmor_name)
+            filepath = _unzip(cmor_name, var, version, raw_filepath, out_dir)
             if filepath is None:
                 continue
-            _extract_variable(short_name, var, version, cfg, filepath, out_dir)
+            _extract_variable(cmor_name, var, version, cfg, filepath, out_dir)
             _clean(filepath)

@@ -84,7 +84,7 @@ def reinit_broken_time(cube_anom, cube_clim, climstart, climend):
     return (cube_anom, cube_clim)
 
 
-def calc_abs_temperature(cube_anom, cube_clim, short_name):
+def calc_abs_temperature(cube_anom, cube_clim, cmor_name):
     """
     derive absolute tas values
     """
@@ -98,7 +98,7 @@ def calc_abs_temperature(cube_anom, cube_clim, short_name):
     # declare attributes
     fill_value = cube_clim.data.fill_value
     dtype = cube_anom.dtype
-    var_name = short_name
+    var_name = cmor_name
     units = cube_clim.units
 
     # init data array
@@ -128,7 +128,7 @@ def calc_abs_temperature(cube_anom, cube_clim, short_name):
     return cube_abs
 
 
-def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
+def _extr_var_n_calc_abs_tas(cmor_name, var, cfg, filepath, out_dir):
     """Extract variable."""
     # load tas anomaly, climatology and sftlf
     with catch_warnings():
@@ -148,11 +148,11 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
         cubes = iris.load(filepath)
 
     # tas anomaly
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get('raw', cmor_name)
     cube_anom = cubes.extract(utils.var_name_constraint(raw_var))[0]
 
     # tas climatology
-    raw_var_clim = var.get('rawclim', short_name)
+    raw_var_clim = var.get('rawclim', cmor_name)
     cube_clim = cubes.extract(utils.var_name_constraint(raw_var_clim))[0]
     # information on time for the climatology are only present in the long_name
     climstart, climend = [int(x) for x in re.findall(r"\d{4}",
@@ -163,14 +163,14 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
                                               climstart, climend)
 
     # derive absolute tas values
-    cube_abs = calc_abs_temperature(cube_anom, cube_clim, short_name)
+    cube_abs = calc_abs_temperature(cube_anom, cube_clim, cmor_name)
 
     # fix coordinates
     logger.info("Fixing coordinates")
     attrs = cfg['attributes']
     attrs['mip'] = var['mip']
-    short_names = [short_name, var['short_anom']]
-    for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
+    cmor_names = [cmor_name, var['short_anom']]
+    for s_name, cube in zip(cmor_names, [cube_abs, cube_anom]):
         cmor_info = cfg['cmor_table'].get_variable(var['mip'], s_name)
 
         utils.fix_coords(cube)
@@ -191,7 +191,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
                 'tasa': "Temperature anomaly with respect to the period"
                         " {}-{}".format(climstart, climend)}
 
-    for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
+    for s_name, cube in zip(cmor_names, [cube_abs, cube_anom]):
         attrs['comment'] = comments[s_name]
         utils.set_global_atts(cube, attrs)
         utils.save_variable(cube,
@@ -202,7 +202,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
 
     # sftlf
     # extract sftlf
-    raw_var_sftlf = var.get('rawsftlf', short_name)
+    raw_var_sftlf = var.get('rawsftlf', cmor_name)
     cube_sftlf = cubes.extract(utils.var_name_constraint(raw_var_sftlf))[0]
 
     # fix coordinates
@@ -233,6 +233,6 @@ def cmorization(in_dir, out_dir, cfg, _):
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        _extr_var_n_calc_abs_tas(short_name, var, cfg, raw_filepath, out_dir)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
+        _extr_var_n_calc_abs_tas(cmor_name, var, cfg, raw_filepath, out_dir)

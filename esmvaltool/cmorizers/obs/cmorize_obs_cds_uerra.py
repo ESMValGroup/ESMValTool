@@ -209,12 +209,12 @@ def _stock_cube(spec, lat_offset=True, lon_offset=True):
 
 def _cmorize_dataset(in_file, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input file '%s'",
-                var['short_name'], in_file)
+                var['cmor_name'], in_file)
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
 
     cmor_table = cfg['cmor_table']
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    definition = cmor_table.get_variable(var['mip'], var['cmor_name'])
 
     cube = iris.load_cube(str(in_file),
                           constraint=utils.var_name_constraint(var['raw']))
@@ -240,7 +240,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cube.coord('longitude').guess_bounds()
 
     # Set correct names
-    cube.var_name = definition.short_name
+    cube.var_name = definition.cmor_name
 
     cube.long_name = definition.long_name
 
@@ -309,9 +309,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
                     f"regridding: {cfg['work_dir']}")
         os.mkdir(cfg['work_dir'])
 
-    for short_name, var in cfg['variables'].items():
-        var['short_name'] = short_name
-        logger.info(f"Processing var {short_name}")
+    for cmor_name, var in cfg['variables'].items():
+        var['cmor_name'] = cmor_name
+        logger.info(f"Processing var {cmor_name}")
 
         # Regridding
         logger.info("Start regridding to: %s", cfg['custom']['regrid'])

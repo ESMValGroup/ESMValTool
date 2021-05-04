@@ -57,13 +57,13 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, ctl):
     cube = iris.cube.Cube(raw_data, dim_coords_and_dims=coords)
 
     # Mask appropriate parts
-    if cmor_info.short_name == 'nbp':
+    if cmor_info.cmor_name == 'nbp':
         cube = mask_landsea(cube, 'sea')
-    elif cmor_info.short_name == 'fgco2':
+    elif cmor_info.cmor_name == 'fgco2':
         cube = mask_landsea(cube, 'land')
     else:
         raise NotImplementedError(
-            f"CMORizer for '{cmor_info.short_name}' not implemented yet")
+            f"CMORizer for '{cmor_info.cmor_name}' not implemented yet")
 
     # Fix metadata
     utils.fix_var_metadata(cube, cmor_info)
@@ -71,7 +71,7 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, ctl):
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(cube,
-                        cmor_info.short_name,
+                        cmor_info.cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])

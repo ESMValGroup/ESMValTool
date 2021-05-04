@@ -106,7 +106,7 @@ class OSICmorizer():
             self._try_remove_coord(cube, 'day_of_year')
             self._try_remove_coord(cube, 'month_number')
             self._try_remove_coord(cube, 'day_of_month')
-            save_variable(cube, var_info.short_name, self.out_dir, attrs)
+            save_variable(cube, var_info.cmor_name, self.out_dir, attrs)
         return cube
 
     @staticmethod
@@ -240,7 +240,7 @@ class OSICmorizer():
                 np.float32),
             standard_name=var_info.standard_name,
             long_name=var_info.long_name,
-            var_name=var_info.short_name,
+            var_name=var_info.cmor_name,
             units='m2',
         )
         cube.add_aux_coord(lat_coord, (0, 1))
@@ -252,6 +252,6 @@ class OSICmorizer():
         fix_var_metadata(cube, var_info)
         set_global_atts(cube, self.cfg['attributes'])
         save_variable(
-            cube, var_info.short_name, self.out_dir,
+            cube, var_info.cmor_name, self.out_dir,
             self.cfg['attributes'], zlib=True
         )
