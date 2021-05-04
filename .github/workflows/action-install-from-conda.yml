@@ -5,7 +5,6 @@ on:
   push:
     branches:
     - master
-    - try_mamba
   schedule:
     - cron: '0 4 * * *'
 
