@@ -6,7 +6,7 @@ documentation:
      Solar Capacity Factor
 
   authors:
-    - cionni_irene 
+    - cionni_irene
 
   projects:
     - crescendo
@@ -31,7 +31,7 @@ datasets:
   - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1980, end_year: 2005}
   - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
-    start_year: 1980, end_year: 2005}
+     start_year: 1980, end_year: 2005}
   - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1980, end_year: 2005}
   - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -42,7 +42,7 @@ preprocessors:
   preproc:
     regrid:
       target_grid: reference_dataset
-      scheme: linear 
+      scheme: linear
     extract_region:
       start_longitude: -20
       end_longitude: 60
@@ -70,5 +70,5 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script:  pv_capacityfactor/pv_capacity_factor.R 
+        script: pv_capacityfactor/pv_capacity_factor.R
         maxval_colorbar: 0.15
