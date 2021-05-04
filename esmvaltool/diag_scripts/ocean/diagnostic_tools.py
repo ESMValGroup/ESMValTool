@@ -157,6 +157,50 @@ def bgc_units(cube, name):
     return cube
 
 
+def make_mean_of_cube_list(cube_list):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    """
+    # Fix empty times
+    full_times = {}
+    times = []
+    for cube in cube_list:
+        # make time coords uniform:
+        cube.coord('time').long_name='Time axis'
+        cube.coord('time').attributes={'time_origin': '1950-01-01 00:00:00'}
+        times.append(cube.coord('time').points)
+
+        for time in cube.coord('time').points:
+            print(cube.name, time, cube.coord('time').units)
+            try:
+                full_times[time] += 1
+            except:
+                full_times[time] = 1
+
+    for t, v in sorted(full_times.items()):
+        if v != len(cube_list):
+            print('FAIL', t, v, '!=', len(cube_list),'\nfull times:',  full_times)
+            assert 0
+
+    cube_mean=cube_list[0]
+
+    cube_mean.remove_coord('year')
+    #cube.remove_coord('Year')
+    try: model_name = cube_mean.metadata[4]['source_id']
+    except: model_name = ''
+    print(model_name,  cube_mean.coord('time'))
+
+    for i, cube in enumerate(cube_list[1:]):
+        cube.remove_coord('year')
+        try: model_name = cube_mean.metadata[4]['source_id']
+        except: model_name = ''
+        print(i, model_name, cube.coord('time'))
+        cube_mean+=cube
+    cube_mean = cube_mean/ float(len(cube_list))
+    return cube_mean
+
+
 def match_model_to_key(
         model_type,
         cfg_dict,
@@ -428,8 +472,8 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
         if 'marker' in dets:
             fillstyle = dets.get('fillstyle', 'full')
             plt.plot([], [], dets['marker'],fillstyle=fillstyle, c=colour, label=label)
- 
-        else: 
+
+        else:
             linewidth = dets.get('lw', 1)
             linestyle = dets.get('ls', '-')
             plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)

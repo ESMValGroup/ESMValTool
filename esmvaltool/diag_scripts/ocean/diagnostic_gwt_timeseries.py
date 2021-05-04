@@ -643,7 +643,7 @@ def load_timeseries(cfg, short_names):
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
                 cubes.append(cube)
-            data_dict[(short_name, exp, 'ensemble_mean')] = cube_mean(cubes)
+            data_dict[(short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
 
     return data_dict
 
