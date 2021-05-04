@@ -406,7 +406,8 @@ begin
   ; Diagnostic- and variable-specific units conversions
   regional_mvi@units = "1"
   trend_tmp = regional_trend
-  if (isatt(VAR0, "plot_units")) then
+  if ((isatt(VAR0, "plot_units")) .and. \
+      (regional_mean@units .ne. VAR0@plot_units)) then
     new_units = VAR0@plot_units
     regional_mean = convert_units(regional_mean, new_units)
     if (new_units .eq. "degC") then
@@ -463,7 +464,7 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_plots) then
+  if (diag_script_info@write_plots) then
     ; Set plot output file
     outfile = plot_dir + var0 + "_" + DOMAIN
     wks = gsn_open_wks(file_type, outfile)

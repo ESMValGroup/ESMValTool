@@ -217,7 +217,7 @@ for (mod in 1:nmods) {
   pme_spei[is.infinite(pme_spei)] <- NA
   pme_spei[pme_spei > 10000] <- NA
   # Weight against latitude
-  h <- c(1:length(histnams)) * 0
+  h <- seq_along(histnams) * 0
   for (j in 1:d[2]) {
     h <- h + hist(pme_spei[j, , ],
       breaks = histbrks,
@@ -230,7 +230,7 @@ filehist <- paste0(params$work_dir, "/", "histarr.rsav")
 save(histarr, file = filehist)
 plot_file <- paste0(params$plot_dir, "/", "histplot.png")
 xprov$caption <- "Global latitude-weighted histogram of SPEI index."
-xprov$ancestors <- list(modfile1, modfile2)
+xprov$ancestors <- c(modfile1, modfile2)
 xprov[["plot_file"]] <- plot_file
 provenance[[filehist]] <- xprov
 write_yaml(provenance, provenance_file)

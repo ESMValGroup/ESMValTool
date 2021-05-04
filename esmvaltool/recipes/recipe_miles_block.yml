@@ -1,28 +1,5 @@
-###############################################################################
-## namelist_miles.xml
-##
-## Description
-## Namelist for computing blocking using the MiLES package by P. Davini (ISAC-CNR)
-## MiLES (Mid-Latitude Evaluation System) v0.31
-##
-## Authors
-## Paolo Davini (ISAC-CNR, Italy - p.davini@isac.cnr.it)
-## J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
-## E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
-##
-## Project
-## Copernicus C3S-MAGIC (C3S 34a Lot2)
-##
-## References:
-## https://github.com/oloapinivad/MiLES
-## Davini, P., C. Cagnazzo, S. Gualdi, and A. Navarra, 2012: Bidimensional Diagnostics, Variability, and Trends of Northern Hemisphere Blocking. J. Climate, 25, 6496-6509, doi: 10.1175/JCLI-D-12-00032.1
-## Tibaldi S, Molteni F. 1990. On the operational predictability of blocking. Tellus A 42(3): 343-365, doi:10.1034/j.1600-0870.1990.t01-2-00003.x
-##
-## This namelist is part of the ESMValTool
-################################################################################
-#
-# mask_landocean: false
-# multi_model_statistics: false
+# ESMValTool
+# recipe_miles_block.yml
 ---
 documentation:
   description: |
@@ -58,7 +35,7 @@ preprocessors:
       extract_region:
         start_longitude: 0.
         end_longitude: 360.
-        start_latitude: 1.25
+        start_latitude: -1.25
         end_latitude: 90.
 
 diagnostics:
@@ -70,6 +47,7 @@ diagnostics:
         preprocessor: preproc1
         mip: day
         reference_dataset: "ERA-Interim"
+#       reference_exp: historical
     scripts:
         miles_block:
             script: miles/miles_block.R

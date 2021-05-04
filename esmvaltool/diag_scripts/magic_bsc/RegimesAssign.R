@@ -107,7 +107,7 @@ RegimesAssign <- function(var_ano, ref_maps, lats, # nolint
   assign <-
     Apply(
       data = list(target = var_ano),
-      margins = c((1:length(dim(
+      margins = c((seq_along(dim(
         var_ano
       )))[-c(poslat_ano, poslon_ano)]),
       fun = "anom2regime",

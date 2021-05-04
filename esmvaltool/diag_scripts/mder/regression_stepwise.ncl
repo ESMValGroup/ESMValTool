@@ -999,7 +999,7 @@ begin
   ; Write files
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_netcdf) then
+  if (diag_script_info@write_netcdf) then
 
     ; Ascii
     table_path = work_dir + filename + ".txt"
@@ -1038,7 +1038,7 @@ begin
   ; Plots
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_plots) then
+  if (diag_script_info@write_plots) then
 
     ; Add uMMM and MDER to array
     datasets := new(DIM_MOD + 3, string)

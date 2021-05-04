@@ -1,6 +1,6 @@
 # ESMValTool
 # recipe_ocean_amoc.yml
-
+---
 documentation:
   description: |
     Recipe to produce time series figures of the derived variable, the
@@ -19,26 +19,6 @@ documentation:
 
   projects:
     - ukesm
-
-# datasets:
-#      - {dataset: CanESM2,          project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CCSM4,            project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CESM1-BGC,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CESM1-CAM5,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CESM1-FASTCHEM,   project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CESM1-WACCM,      project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CNRM-CM5-2,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: CNRM-CM5,         project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: FGOALS-g2,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: MIROC5,           project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: MPI-ESM-LR,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: MPI-ESM-MR,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: MPI-ESM-P,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: MRI-CGCM3,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: MRI-ESM1,         project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: NorESM1-ME,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-#      - {dataset: NorESM1-M,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
 
 
 preprocessors:
@@ -81,7 +61,7 @@ diagnostics:
      - {dataset: CESM1-WACCM,      project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
      - {dataset: CNRM-CM5-2,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
      - {dataset: CNRM-CM5,         project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
-     - {dataset: FGOALS-g2,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
+     # - {dataset: FGOALS-g2,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
      - {dataset: MIROC5,           project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
      - {dataset: MPI-ESM-LR,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
      - {dataset: MPI-ESM-MR,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
@@ -140,7 +120,7 @@ diagnostics:
      - {dataset: CESM1-WACCM,      project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: CNRM-CM5-2,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: CNRM-CM5,         project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
-     - {dataset: FGOALS-g2,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
+     # - {dataset: FGOALS-g2,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: MIROC5,           project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: MPI-ESM-LR,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: MPI-ESM-MR,       project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}

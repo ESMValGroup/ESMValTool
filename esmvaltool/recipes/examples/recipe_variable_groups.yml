@@ -1,7 +1,7 @@
+# ESMValTool
 # recipe_variable_groups.yml
 ---
 documentation:
-
   description: |
     Example recipe to demonstrate grouping of variables in the diagnostic
     section.

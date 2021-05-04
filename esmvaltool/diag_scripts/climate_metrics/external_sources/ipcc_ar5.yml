@@ -23,7 +23,7 @@ ecs:
   MRI-CGCM3: 2.6
   NorESM1-M: 2.8
 
-# Climate feedback parameter lambda (IPCC AR5 table 9.5, units: W m-2 K-1)
+# Absolute climate feedback parameter lambda (IPCC AR5 table 9.5, units: W m-2 K-1)
 feedback_parameter:
   ACCESS1-0: 0.8
   bcc-csm1-1-m: 1.2

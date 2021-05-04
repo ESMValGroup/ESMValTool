@@ -1,0 +1,21 @@
+# ECS (IPCC AR4 table 8.2, units: K)
+ecs:
+  cccma_cgcm3_1: 3.4
+  cccma_cgcm3_1_t63: 3.4
+  csiro_mk3_0: 3.1
+  gfdl_cm2_0: 2.9
+  gfdl_cm2_1: 3.4
+  giss_model_e_h: 2.7
+  giss_model_e_r: 2.7
+  iap_fgoals1_0_g: 2.3
+  inmcm3_0: 2.1
+  ipsl_cm4: 4.4
+  miroc3_2_hires: 4.3
+  miroc3_2_medres: 4.0
+  miub_echo_g: 3.2
+  mpi_echam5: 3.4
+  mri_cgcm2_3_2a: 3.2
+  ncar_ccsm3_0: 2.7
+  ncar_pcm1: 2.1
+  ukmo_hadcm3: 3.3
+  ukmo_hadgem1: 4.4

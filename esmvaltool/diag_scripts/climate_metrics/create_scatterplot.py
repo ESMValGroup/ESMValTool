@@ -23,8 +23,7 @@ dataset_style : str, optional
 pattern : str, optional
     Pattern to filter list of input data.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 y_range : list of float, optional
     Range for the y axis in the plot.
 
@@ -37,10 +36,15 @@ import iris
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, io,
-                                            iris_helpers, plot, run_diagnostic)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    io,
+    iris_helpers,
+    plot,
+    run_diagnostic,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -59,8 +63,6 @@ def get_provenance_record(caption, ancestor_files, **kwargs):
 
 def plot_data(cfg, cube):
     """Create scatterplot for cube."""
-    if not cfg['write_plots']:
-        return None
     logger.debug("Plotting scatterplot for cube %s",
                  cube.summary(shorten=True))
     (_, axes) = plt.subplots()
@@ -145,11 +147,10 @@ def main(cfg):
     caption = "{}{} for multiple datasets.".format(
         cube.long_name, '' if project is None else f' for {project}')
     provenance_record = get_provenance_record(caption, [input_file])
-    if plot_path is not None:
-        provenance_record.update({
-            'plot_file': plot_path,
-            'plot_types': ['scatter'],
-        })
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['scatter'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 

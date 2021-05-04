@@ -1,29 +1,5 @@
-###############################################################################
-## namelist_miles.xml
-##
-## Description
-## Namelist to compute Weather Regimes using the MiLES package by P. Davini (ISAC-CNR)
-## MiLES (Mid-Latitude Evaluation System) v0.31
-##
-## Authors
-## Paolo Davini (ISAC-CNR, Italy - p.davini@isac.cnr.it)
-## J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
-## E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
-##
-## Project
-## Copernicus C3S-MAGIC (C3S 34a Lot2)
-##
-## References:
-## https://github.com/oloapinivad/MiLES
-## S. Corti, F. Molteni and T. N. Palmer, 1999
-##   Signature of recent climate change in frequencies of natural
-##   atmospheric circulation regimes". Nature 398, 799-802
-##
-## This namelist is part of the ESMValTool
-################################################################################
-#
-# mask_landocean: false
-# multi_model_statistics: false
+# ESMValTool
+# recipe_miles_regimes.yml
 ---
 documentation:
   description: |
@@ -58,7 +34,7 @@ preprocessors:
       extract_region:
         start_longitude: 0.
         end_longitude: 360.
-        start_latitude: 1.25
+        start_latitude: -1.25
         end_latitude: 90.
 
 diagnostics:
@@ -70,6 +46,7 @@ diagnostics:
         preprocessor: preproc1
         mip: day
         reference_dataset: "ERA-Interim"
+#       reference_exp: historical
     scripts:
         miles_regimes:
             script: miles/miles_regimes.R

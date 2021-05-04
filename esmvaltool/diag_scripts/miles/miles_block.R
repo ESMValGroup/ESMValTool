@@ -93,8 +93,10 @@ provenance <- list()
 models_dataset <- unname(sapply(list0, "[[", "dataset"))
 models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
 models_exp <- unname(sapply(list0, "[[", "exp"))
-reference_model <-
+reference_dataset <-
   unname(sapply(list0, "[[", "reference_dataset"))[1]
+reference_exp <-
+  unname(sapply(list0, "[[", "reference_exp"))[1]
 models_start_year <- unname(sapply(list0, "[[", "start_year"))
 models_end_year <- unname(sapply(list0, "[[", "end_year"))
 models_experiment <- unname(sapply(list0, "[[", "exp"))
@@ -135,7 +137,12 @@ for (model_idx in c(1:(length(models_dataset)))) {
 ## Make the plots
 ##
 if (write_plots) {
-  ref_idx <- which(models_dataset == reference_model)
+  if (!is.null(reference_exp)) {
+    ref_idx <- which((models_dataset == reference_dataset) &&
+                     (models_exp == reference_exp))
+  } else {
+    ref_idx <- which(models_dataset == reference_dataset)
+  }
   if (length(ref_idx) == 0) {
     ref_idx <- length(models_dataset)
   }

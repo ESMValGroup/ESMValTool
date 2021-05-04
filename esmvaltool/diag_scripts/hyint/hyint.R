@@ -41,7 +41,7 @@
 # the user in the hyint_parameters file.
 # R libraries:"tools","PCICt","ncdf4","maps"
 #
-# Optional
+#i Optional
 # Several options can be selected via the configuration file, e.g. provision
 # of an external normalization functions for the indices; a reference
 # climatology for the R95 index; type of plots; etc.
@@ -62,13 +62,9 @@ library(tools)
 library(yaml)
 library(ncdf4)
 
-# get path to script and source subroutines (if needed)
-args <- commandArgs(trailingOnly = FALSE)
-spath <- paste0(dirname(unlist(strsplit(
-  grep("--file", args,
-    value = TRUE
-  ), "="
-))[2]), "/")
+# get path to script and source subroutines
+diag_scripts_dir <- Sys.getenv("diag_scripts")
+spath <- paste0(diag_scripts_dir, "/", "hyint", "/")
 
 source(paste0(spath, "hyint_functions.R"))
 source(paste0(spath, "hyint_metadata.R"))
@@ -91,7 +87,7 @@ for (myname in names(settings)) {
   temp <- get(myname, settings)
   assign(myname, temp)
 }
-metadata <- yaml::read_yaml(settings$input_files)
+metadata <- yaml::read_yaml(settings$input_files[1])
 
 ## check required settings
 if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15))) {
@@ -118,9 +114,10 @@ var0 <- "pr"
 diag_base <- climolist0$diagnostic
 print(paste0(diag_base, ": starting routine"))
 
-if (length(etccdi_dir) != 1) {
-  etcddi_dir <- work_dir
+if (etccdi_preproc & !exists("etccdi_dir")) {
+  etccdi_dir <- settings$input_files[2]
 }
+
 dir.create(plot_dir, recursive = T, showWarnings = F)
 dir.create(work_dir, recursive = T, showWarnings = F)
 
@@ -209,7 +206,9 @@ if (write_netcdf) {
     if (run_diagnostic) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
-        prov_info <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
+        prov_info <- hyint_diagnostic(work_dir, regfile, model_idx,
+          climofiles,
+          seas,
           prov_info,
           rewrite = force_diagnostic
         )
@@ -221,15 +220,13 @@ if (write_netcdf) {
 ## Preprocess ETCCDI input files and merge them with HyInt indices
 if (write_netcdf & etccdi_preproc) {
   for (model_idx in c(1:(length(models_name)))) {
-    gridfile <-
-      getfilename_indices(work_dir, diag_base, model_idx, grid = T)
-    dummy <-
+    prov_info <-
       hyint_etccdi_preproc(work_dir,
         etccdi_dir,
         etccdi_list_import,
-        gridfile,
         model_idx,
         "ALL",
+        prov_info,
         yrmon = "yr"
       )
   }
@@ -276,9 +273,10 @@ if (write_plots) {
 
 # Assign provenance information for timeseries&trends figures
 for (fname in names(prov_info)) {
+  anc_list <- flatten_lists(prov_info[[fname]]$ancestors)
   xprov <-
     list(
-      ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
+      ancestors = anc_list,
       authors = list("arnone_enrico", "vonhardenberg_jost"),
       references = list("giorgi11jc", "giorgi14jgr"),
       projects = list("c3s-magic"),
