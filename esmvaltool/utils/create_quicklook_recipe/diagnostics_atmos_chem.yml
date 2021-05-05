@@ -1,0 +1,53 @@
+glob_timeseries_atmos_chem_{run_id}:
+  description: Timeseries of atmospheric chem.
+  themes:
+    - aerosols
+    - chem
+    - ghg
+  realms:
+    - atmos
+    - aerosol
+    - atmosChem
+  variables:
+    od550aer:
+      mip: AERmon
+      preprocessor: prep_zon
+    co2mass:
+      mip: custom
+    lnox:
+      mip: custom
+    toz10hr:
+      preprocessor: prep_zon
+      mip: custom
+    MP_CFCl3:
+      mip: custom
+    MP_NH3:
+      mip: custom
+    MP_N2O:
+      mip: custom
+    MP_CO:
+      mip: custom
+    MP_CH4:
+      mip: custom
+    MP_SO2:
+      mip: custom
+    MP_OH:
+      mip: custom
+    MP_NO:
+      mip: custom
+    MP_NO2:
+      mip: custom
+    MP_O3:
+      mip: custom
+    MP_SO4mm_tot:
+      mip: custom
+    MP_SS_tot:
+      mip: custom
+    MP_BC_tot:
+      mip: custom
+    MP_DU_tot:
+      mip: custom
+    MP_ClOX:
+      mip: custom
+    MP_NOX:
+      mip: custom

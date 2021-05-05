@@ -1,0 +1,71 @@
+glob_timeseries_atmos_dyn_{run_id}:
+  description: Timeseries of atmospheric dynamics variables.
+  themes:
+    - atmDyn
+    - phys
+  realms:
+    - atmos
+  variables:
+    clivi:
+      mip: Amon
+      preprocessor: prep_zon
+    clt:
+      mip: Amon
+      preprocessor: prep_zon
+    clwvi:
+       mip: Amon
+       preprocessor: prep_zon
+    cod_sw_b01:
+       mip: custom
+       preprocessor: prep_zon
+    evspsbl:
+       mip: Amon
+       preprocessor: prep_zon
+       plot_units: mm day-1
+    hfns:
+      mip: Amon
+      preprocessor: prep_zon
+      derive: true
+    pr:
+      mip: Amon
+      preprocessor: prep_zon
+      plot_units: mm day-1
+    prc:
+      mip: Amon
+      preprocessor: prep_zon
+      plot_units: mm day-1
+    prl:
+      mip: Amon
+      preprocessor: prep_zon
+      plot_units: mm day-1
+    prsn:
+      mip: Amon
+      preprocessor: prep_zon
+      plot_units: kg m-2 day-1
+    prw:
+      mip: Amon
+      preprocessor: prep_zon
+    rlns:
+      mip: Amon
+      preprocessor: prep_zon
+      derive: true
+    rlut:
+      mip: Amon
+      preprocessor: prep_zon
+    rsns:
+      mip: Amon
+      preprocessor: prep_zon
+      derive: true
+    rsnt:
+      mip: Amon
+      preprocessor: prep_zon
+      derive: true
+    rtmt:
+      mip: Amon
+      preprocessor: prep_zon
+    tas:
+      mip: Amon
+      preprocessor: prep_zon
+    ts:
+      mip: Amon
+      preprocessor: prep_zon

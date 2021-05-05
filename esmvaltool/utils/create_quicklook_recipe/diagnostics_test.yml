@@ -1,0 +1,17 @@
+diagnostics:
+
+  glob_timeseries_awhea:
+    description: Timeseries of mean net surface heat flux over open water
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      awhea:
+        preprocessor: prep_zon
+        mip: Omon
+    scripts:
+      glob_timeseries:
+        script: quicklooks/global_timeseries.py
+      zon_timeseries:
+        script: quicklooks/zonal_timeseries.py

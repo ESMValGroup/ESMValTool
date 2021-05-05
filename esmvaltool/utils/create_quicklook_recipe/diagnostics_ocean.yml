@@ -1,0 +1,20 @@
+glob_timeseries_ocean_{run_id}:
+  description: Timeseries of ocean variables.
+  themes:
+    - phys
+  realms:
+    - ocean
+    - seaIce
+  variables:
+    awhea:
+      mip: Omon
+      preprocessor: prep_zon
+    siconca:
+      mip: Amon
+      preprocessor: prep_zon
+    sithick:
+      mip: SImon
+      preprocessor: prep_zon
+    tos:
+      mip: custom
+      preprocessor: prep_zon
