@@ -2,9 +2,9 @@
 ---
 documentation:
   description: |
-    This recipe prepares and formats the input variables to be 
-    read by the BSC cyclone tracker, a modified version of the 
-    GFDL vortex tracker V3.5b by the 
+    This recipe prepares and formats the input variables to be
+    read by the BSC cyclone tracker, a modified version of the
+    GFDL vortex tracker V3.5b by the
     National Oceanic and Atmospheric Administration (NOAA).
 
   authors:
@@ -14,9 +14,15 @@ documentation:
   maintainer:
     - loosveldt-tomas_saskia
 
+  references:
+    - kreussler2021
+
+  projects:
+    - primavera
+
 
 datasets:
-  - {project: PRIMAVERA, mip: 6hrPlevPt, dataset: CNRM-CM6-1, exp: highresSST-present, ensemble: r1i1p1f2, grid: gr, start_year: 2011, end_year: 2011}
+  - {project: CMIP6, mip: 6hrPlevPt, dataset: CNRM-CM6-1, exp: highresSST-present, ensemble: r1i1p1f2, grid: gr, start_year: 2011, end_year: 2011}
 
 preprocessors:
   ppregrid:
@@ -59,36 +65,31 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
 
+
 diagnostics:
   tracker:
     variables:
       psl:
         preprocessor: ppregrid
-        short: psl
       ua:
         preprocessor: ppwind
-        short: ua
       va:
         preprocessor: ppwind
-        short: va
       uas:
         preprocessor: ppregrid
-        short: uas
       vas:
         preprocessor: ppregrid
-        short: vas
       ta:
         preprocessor: ppta
-        short: ta
       zg:
         preprocessor: ppzg
-        short: zg
+        cmor_name: zg7h
     scripts:
       preproccess:
-        westbd: -1000
-        eastbd: -1000
-        northbd: -1000
-        southbd: -1000
+        westbd: 10
+        eastbd: 30
+        northbd: 30
+        southbd: 10
         type: 'tcgen'
         mslpthresh: 0.01
         mslpthresh2: 101000
@@ -97,10 +98,6 @@ diagnostics:
         wcore_depth: 1.0
         verb: 3
         ikeflag: y
-        tracker_exe: /path/to/tracker.exe
+        tracker_exe: '/path/to/tracker.exe'
         script: primavera/cyclone_tracker/cyclone_tracker.py
-
-
-
-
-
+  

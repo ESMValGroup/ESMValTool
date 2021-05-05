@@ -161,9 +161,9 @@ class CycloneTracker:
                                  end_day,
                                  output_file)
             output_file.close()
-#            self.write_provenance(
-#                alias, data, os.path.join(self.cfg[n.WORK_DIR], output)
-#                )
+            self.write_provenance(
+                alias, data, os.path.join(self.cfg[names.WORK_DIR], output)
+                )
 
     def run_custom_time(self, dataset, total, years,
                         months, start_day, end_day, output_file):
@@ -233,14 +233,14 @@ class CycloneTracker:
         path = os.path.join(self.cfg['run_dir'], filename)
         if not os.path.isdir(path):
             os.makedirs(path)
-        os.system('ln -s {0} {1}/fort.11'.format(input_path, path))
+        os.system('ln -sf {0} {1}/fort.11'.format(input_path, path))
         self.write_namelist(path, month, year)
         self.write_fort15(path, time)
         self.write_fort14(path)
         os.chdir(path)
         args = self.tracker_exe + ' < namelist'
         try:
-            subprocess.run([args], check=True)
+            subprocess.run([args], check=True, shell=True)
         except subprocess.CalledProcessError:
             logger.info(
                 "Path to the executable parameter tracker_exe "
@@ -380,8 +380,8 @@ class CycloneTracker:
         record = {
             'caption': caption,
             'domains': ['global'],
-            'authors': ['caron_louis-philippe'],
-            'references': ['primavera'],
+            'authors': ['kreussler_philip', 'caron_louis-philippe'],
+            'references': ['kreussler21'],
             'ancestors': ancestors
             }
         with ProvenanceLogger(self.cfg) as provenance_logger:
