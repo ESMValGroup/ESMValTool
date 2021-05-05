@@ -1,0 +1,311 @@
+# ESMValTool
+# recipe_cmug_perfmetrics_example.yml
+---
+documentation:
+  description: |
+    Example recipe for implementing ECV specific diagnostics for comparison
+    of CMIP5 / CMIP6 models with ESA CCI datasets.
+
+  authors:
+    - lauer_axel
+    - righi_mattia
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - gleckler08jgr
+
+  projects:
+    - cmug
+
+preprocessors:
+  ppNOLEV2:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppNOLEV1thr10:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.10
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset]
+
+  ppNOLEV2thr10:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.10
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppNOLEV1x1:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+
+diagnostics:
+
+  ### The diagnostics are ordered by runtime, to optimize tasks execution #####
+
+  ### sm: SOIL MOISTURE #######################################################
+  sm:
+    description: Soil moisture
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      sm:
+        preprocessor: ppNOLEV1thr10
+        reference_dataset: ESACCI-SOILMOISTURE
+        mip: Lmon
+        derive: true
+        force_derivation: false
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2004
+    additional_datasets:
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: MIROC5}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat,
+         version: L3S-SSMV-COMBINED-v4.2, tier: 2}
+    scripts:
+      grading: &grading_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: cycle_latlon
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: monthlyclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
+        plot_stddev: ref_model
+        # Plot legend in a separate file
+        legend_outside: true
+        # Plot style
+        styleset: CMIP5
+        # Calculate grading
+        calc_grading: true
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
+
+
+  ### clt: TOTAL CLOUD COVER ##################################################
+  clt:
+    description: Total cloud cover
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppNOLEV2
+        reference_dataset: ESACCI-CLOUD
+        alternative_dataset: PATMOS-x
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: MIROC5}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+         version: AVHRR-fv3.0, tier: 2}
+      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
+    scripts:
+      latlon: &latlon_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: latlon
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: annualclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Draw difference plots
+        plot_diff: true
+        # Calculate t-test in difference plots
+        t_test: true
+        # Confidence level for the t-test
+        conf_level: 0.95
+        # Add global average to the plot
+        show_global_avg: true
+        # Contour levels for absolute plot
+        abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        # Contour levels for difference plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      grading:
+        <<: *grading_settings
+
+
+  ### ts: SEA-SURFACE (SKIN) TEMPERATURE ######################################
+  ts:
+    description: Sea-surface (skin) temperature
+    themes:
+      - phys
+    realms:
+      - atmos
+      - ocean
+    variables:
+      ts:
+        preprocessor: ppNOLEV1x1
+        reference_dataset: ESACCI-SST
+        alternative_dataset: HadISST
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: MIROC5}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: ESACCI-SST, project: OBS, type: sat,
+         version: L4-GHRSST-SSTdepth-OSTIA-GLOB, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ###############################
+  od550aer:
+    description: Aerosol optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
+    variables:
+      od550aer:
+        preprocessor: ppNOLEV2thr10
+        reference_dataset: ESACCI-AEROSOL
+        alternative_dataset: MODIS
+        mip: aero
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2003
+        end_year: 2004
+    additional_datasets:
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: MIROC5}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
+      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ###############################
+  od870aer:
+    description: Aerosol optical depth at 870 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
+    variables:
+      od870aer:
+        preprocessor: ppNOLEV1thr10
+        reference_dataset: ESACCI-AEROSOL
+        mip: aero
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2004
+    additional_datasets:
+      - {dataset: MIROC5}
+      - {dataset: MRI-CGCM3}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### abs550aer: ABSORPTION OPTICAL DEPTH AT 550 nm ###########################
+  abs550aer:
+    description: Absorption optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
+    variables:
+      abs550aer:
+        preprocessor: ppNOLEV1thr10
+        reference_dataset: ESACCI-AEROSOL
+        mip: aero
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2004
+    additional_datasets:
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: MIROC5}
+      - {dataset: NorESM1-M}
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### COLLECT METRICS #########################################################
+  collect:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      RMSD:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading*']
+        metric: RMSD
+        label_bounds: [-0.5, 0.5]
+        label_scale: 0.1
+        disp_values: false
+        cm_interval: [2, 241]
+        # Sort dataset in alphabetic order (excluding MMM)
+        sort: true
+        # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
+        diag_order: ['ts-global', 'clt-global',
+                     'od550aer-global', 'od870aer-global', 'abs550aer-global',
+                     'sm-global']
+      taylor:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading']
+        metric: taylor

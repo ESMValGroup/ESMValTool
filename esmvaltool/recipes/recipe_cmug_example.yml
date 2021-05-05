@@ -1,0 +1,62 @@
+# ESMValTool
+# recipe_cmug_example.yml
+---
+documentation:
+  description: |
+    Example recipe for implementing ECV specific diagnostics for comparison
+    of CMIP5 / CMIP6 models with ESA CCI datasets.
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer13jclim
+
+  projects:
+    - cmug
+
+datasets:
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: NorESM1-M, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: CNRM-CM6-1, project: CMIP6, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: MIROC6, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+
+
+diagnostics:
+
+  clouds_clt:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        reference_dataset: ESACCI-CLOUD
+        mip: Amon
+        exp: historical
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+    scripts:
+      clim:
+        script: clouds/clouds.ncl
+        projection: CylindricalEquidistant
+        timemean: annualclim
+        showdiff: true
