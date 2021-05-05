@@ -1,0 +1,21 @@
+# ESMValTool
+# recipe_check_obs.yml
+---
+documentation:
+  description: |
+    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    just to check correct reading of the CMORized data.
+
+  authors:
+    - righi_mattia
+
+diagnostics:
+
+  NOAACires20crv2c:
+    description: NOAACires20crv2c check
+    variables:
+      psl:
+    additional_datasets:
+      - {dataset: NOAACires20crv2c, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v2c, start_year: 1851, end_year: 2014}
+    scripts: null
