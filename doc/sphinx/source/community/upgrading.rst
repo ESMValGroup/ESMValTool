@@ -1,7 +1,7 @@
-.. _porting:
+.. _upgrading:
 
 ************************************************************
-Porting a namelist (recipe) or diagnostic to ESMValTool v2.0
+Upgrading a namelist (recipe) or diagnostic to ESMValTool v2
 ************************************************************
 
 This guide summarizes the main steps to be taken in order to port an ESMValTool namelist (now called **recipe**) and the corresponding diagnostic(s) from v1.0 to v2.0, hereafter also referred as the *"old"* and the *"new version"*, respectively. The new ESMValTool version is being developed in the public git branch ``master``. An identical version of this branch is maintained in the private repository as well and kept synchronized on an hourly basis.
@@ -48,7 +48,7 @@ Note that (in general) this is not necessary for plot scripts and for the librar
 Check and apply renamings
 =========================
 
-The new ESMValTool version includes a completely revised interface, handling the communication between the python workflow and the (NCL) scripts. This required several variables and functions to be renamed or removed. These chagnes are listed in the following table and have to be applied to the diagnostic code before starting with testing.
+The new ESMValTool version includes a completely revised interface, handling the communication between the python workflow and the (NCL) scripts. This required several variables and functions to be renamed or removed. These changes are listed in the following table and have to be applied to the diagnostic code before starting with testing.
 
 .. tabularcolumns:: |p{6cm}|p{6cm}|p{3cm}|
 
@@ -204,7 +204,7 @@ Before submitting a pull request, the code should be cleaned to adhere to the co
 - ``load`` statements for NCL standard libraries should be removed: these are automatically loaded since NCL v6.4.0 (see `NCL documentation <http://www.ncl.ucar.edu/current_release.shtml#PreloadedScripts6.4.0>`_);
 - the description of diagnostic- and variable-specific settings can be moved from the header of the diagnostic script to the recipe, since the settings are now defined there (see above);
 - NCL ``print`` and ``printVarSummary`` statements must be avoided and replaced by the ``log_info`` and ``log_debug`` functions;
-- for error and warning statments, the ``error_msg`` function can be used, which automatically include an exit statement.
+- for error and warning statements, the ``error_msg`` function can be used, which automatically include an exit statement.
 
 Update the documentation
 ========================
