@@ -9,25 +9,27 @@
 ;    https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/
 ;
 ; Last access
-;    20190201
+;    20210428
 ;
 ; Download and processing instructions
 ;    Download the data from:
-;      L3C/AVHRR-PM/
-;    To fill the gap 199409-199501, also download:
-;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;        199409-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;        199410-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;        199411-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;      L3C/AVHRR-AM/AVHRR_NOAA-12/1994/ \
-;        199412-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;      L3C/AVHRR-AM/AVHRR_NOAA-12/1995/ \
-;        199501-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc
-;    Put all files under a single directory (no subdirectories with years).
+;      L3C/AVHRR-AM/ and L3C/AVHRR-PM, e.g.:
+;      wget -r -nH -e robots=off --cut-dirs=9 --no-parent
+;        --reject="index.html*"
+;        https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/
+;          CLD_PRODUCTS/v3.0/L3C/AVHRR-AM/
+;      wget -r -nH -e robots=off --cut-dirs=9 --no-parent
+;        --reject="index.html*"
+;        https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/
+;          CLD_PRODUCTS/v3.0/L3C/AVHRR-PM/
+
+;    All files are expected in a single directory (no subdirectories
+;    with years).
 ;
 ; Modification history
+;    20210428-lauer_axel: AVHRR-AM and AVHRR-PM data are now averaged during
+;                         the overlapping time; TOA radiative fluxes are now
+;                         also processed
 ;    20190201-righi_mattia: adapted to v2.
 ;    20181116-lauer_axel: changed to use CLOUD-CCI v3.0 data (AVHRR-PM), gaps
 ;                         (1994/09 - 1995/01) are filled with AVHRR-AM data
@@ -54,24 +56,37 @@ begin
   YEAR2 = 2016
 
   ; Selected variable (standard name)
-  VAR = (/"clt", "cltStderr", "clivi", "clwvi"/)
+  VAR = (/"clt", "cltStderr", "clivi", "lwp", "rlut", "rlutcs", \
+          "rsut", "rsutcs", "rsdt", "rlus", "rsus", "rsuscs"/)
 
   ; Name in the raw data
-  NAME = (/"cfc", "cfc_unc", "iwp_allsky", "lwp_allsky"/)
+  NAME = (/"cfc", "cfc_unc", "iwp_allsky", "lwp_allsky", "toa_lwup", \
+           "toa_lwup_clr", "toa_swup", "toa_swup_clr", "toa_swdn", \
+           "boa_lwup", "boa_swup", "boa_swup_clr"/)
 
   ; Conversion factor
-  CONV = (/100., 1., 0.001, 0.001/)
+  CONV = (/100., 1., 0.001, 0.001, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0/)
 
   ; MIP
-  MIP = (/"Amon", "Amon", "Amon", "Amon"/)
+  MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", "Amon", "Amon", "Amon", \
+          "Amon", "Amon", "Amon", "Amon"/)
 
   ; Frequency
-  FREQ = (/"mon", "mon", "mon", "mon"/)
+  FREQ = (/"mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", \
+           "mon", "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + \
     (/"/cmip5/Tables/CMIP5_Amon", \
       "/custom/CMOR_cltStderr.dat", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/custom/CMOR_lwp.dat", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon", \
       "/cmip5/Tables/CMIP5_Amon", \
       "/cmip5/Tables/CMIP5_Amon"/)
 
@@ -79,7 +94,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "AVHRR-fv3.0"
+  VERSION = "AVHRR-AMPM-fv3.0"
 
   ; Global attributes
   SOURCE = "https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/" + \
@@ -91,6 +106,8 @@ begin
 end
 
 begin
+
+  firstime = True
 
   do vv = 0, dimsizes(VAR) - 1
 
@@ -109,35 +126,43 @@ begin
 
         ; Read file
         fname = systemfunc("ls " + input_dir_path + syear + smonth + \
-                           "-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-" + \
-                           str_sub_str(VERSION, "AVHRR-", "") + ".nc")
+                           "-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-" + \
+                           str_sub_str(VERSION, "AVHRR-AMPM-", "") + ".nc")
 
         ; No files found
         if (all(ismissing(fname))) then
           continue
         end if
 
-        ; Extract data
-        f = addfile(fname, "r")
-        xx = f->$NAME(vv)$
+        ifiles = dimsizes(fname)
+        log_info(syear + smonth + ": " + tostring(ifiles) + " input file(s)")
 
-        ; Convert units
-        xx = xx * CONV(vv)
+        do i = 0, ifiles - 1
+          ; Extract data
+          f = addfile(fname(i), "r")
+          xx = f->$NAME(vv)$
 
-        ; lwp is not a CMOR variable, derive as clwvi = lwp + iwp
-        if (VAR(vv).eq."clwvi") then
-
-          ; Read 2nd variable containing iwp (variable "iwp_allsky")
-          iwpname = "iwp_allsky"
-          xx2 = f->$iwpname$
+          if (i .eq. 0) then
+            xdims = array_append_record((/ifiles/), dimsizes(xx), 0)
+            xx_all = new(xdims, float)
+            delete(xdims)
+          end if
 
           ; Convert units
-          xx2 = xx2 * 0.001
+          xx_all(i, :, :, :) = xx * CONV(vv)
 
-          ; add iwp to lwp to calculate cmor variable "clwvi"
-          xx = xx + xx2
-          delete(xx2)
-        end if
+          if (firstime) then
+            lat = f->lat
+            lon = f->lon
+            firstime = False
+          end if
+          delete(f)
+        end do  ; loop over all files (am/pm) per date
+
+        delete(fname)
+        delete(xx)
+        xx = dim_avg_n(xx_all, 0)  ; ignore missing values
+        delete(xx_all)
 
         ; Assign to global array
         if (.not.isdefined("output")) then
@@ -147,14 +172,11 @@ begin
           output!0 = "time"
           output&time = time
           output!1 = "lat"
-          output&lat = f->lat
+          output&lat = lat
           output!2 = "lon"
-          output&lon = f->lon
+          output&lon = lon
         end if
         output(ind(toint(yy * 100 + mm).eq.date), :, :) = (/xx/)
-
-        delete(fname)
-        delete(f)
 
       end do
     end do
