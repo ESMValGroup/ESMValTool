@@ -19,26 +19,34 @@ from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def calculate_diff(ds1: 'xr.DataSet', ds2: 'xr.DataSet',
+def calculate_diff(data_clim: list, data_glob: list,
                    observations=False) -> tuple:
     """
     Read data and calculate differences.
 
     Return differences and ancestor files.
     """
+
+    errmsg = '{}_{} not found but needed for anomaly calculation!'
+    if not data_clim:
+        raise ValueError(errmsg.format(data_clim[0]['short_name'], 'CLIM'))
+    if not data_glob:
+        raise ValueError(errmsg.format(data_glob[0]['short_name'], 'GLOBAL'))
+
     if observations:
-        data1, data_files1 = read_observation_data(ds1)
-        data2, data_files2 = read_observation_data(ds2)
+        data_clim_read, data_files_clim = read_observation_data(data_clim)
+        data_glob_read, data_files_glob = read_observation_data(data_glob)
     else:
-        data1, data_files1 = read_model_data(ds1)
-        data2, data_files2 = read_model_data(ds2)
-    data_files1.extend(data_files2)
+        data_clim_read, data_files_clim = read_model_data(data_clim)
+        data_glob_read, data_files_glob = read_model_data(data_glob)
+    data_files_clim.extend(data_files_glob)
 
-    diff = data1 - data2
-    diff.attrs['short_name'] = ds1[0]['short_name']
-    diff.attrs['units'] = ds1[0]['units']
+    diff = data_clim_read - data_glob_read
 
-    return diff, data_files1
+    diff.attrs['short_name'] = data_clim[0]['short_name']
+    diff.attrs['units'] = data_clim[0]['units']
+
+    return diff, data_files_clim
 
 
 def _save_data(data: 'xr.DataArray', name: str, cfg: dict,
@@ -63,15 +71,16 @@ def main(cfg):
     short_names = set(varnames)
 
     for short_name in short_names:
-        ds1 = models[short_name + '_CLIM']
-        ds2 = models[short_name + '_GLOBAL']
-        diff, data_files_models = calculate_diff(ds1, ds2)
+        datasets_mod_clim = models[short_name + '_CLIM']
+        datasets_mod_global = models[short_name + '_GLOBAL']
+        diff, data_files_models = calculate_diff(
+            datasets_mod_clim, datasets_mod_global)
         _save_data(diff, 'MODELS_', cfg, ancestors=data_files_models)
 
-        obs1 = observations[short_name + '_CLIM']
-        obs2 = observations[short_name + '_GLOBAL']
+        obs_clim = observations[short_name + '_CLIM']
+        obs_glob = observations[short_name + '_GLOBAL']
         diff_obs, data_files_obs = calculate_diff(
-            obs1, obs2, observations=True)
+            obs_clim, obs_glob, observations=True)
         _save_data(diff_obs, 'OBS_', cfg, ancestors=data_files_obs)
 
 
