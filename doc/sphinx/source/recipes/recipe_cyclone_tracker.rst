@@ -1,4 +1,4 @@
-.. _recipes_cyclone_tracker:
+.. _recipe_cyclone_tracker:
 
 Cyclone tracker
 ===============
