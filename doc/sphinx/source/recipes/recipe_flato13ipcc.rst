@@ -89,6 +89,17 @@ following figures from Flato et al. (2013) can currently be reproduced:
       calculated as the standard deviation of the annual means over the period
       1986–2005.
 
+    * Figure 9.38: Seasonal cycle over land within defined regions 
+      multi-model mean and comparison to refefence data set can be choosen. 
+
+    * Figure 9.39: Seasonal bias box plot within SREX regions. 
+
+    * Figure 9.40: Seasonal bias box plot within defined polar and 
+      ocean regions.
+
+    * Figure 9.41: Comparison between observations and models for variable 
+      values within defined regions.
+
     * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
       mean surface air temperature, both for the period 1961-1990 and for the
       pre-industrial control runs.
@@ -434,6 +445,18 @@ References
   variations to anthropogenic and natural causes using CMIP5 simulations. Journal
   of Geophysical Research: Atmosphere, 118, 4001-4024, doi:10.1002/jgrd.50239.
 
+* Seneviratne, S. I., Nicholls, N., Easterling, D., Goodess, C. M., Kanae, S., 
+  Kossin, J., Luo, Y., Marengo, J., McInnes, K., Rahimi, M., Reichstein, M., 
+  Sorteberg, A., Vera, C., and Zhang, X., 2012:
+  Changes in climate extremes and their impacts on the naturalphysical 
+  environment. , in: Managing the Risks of Extreme Events and Disasters to 
+  Advance Climate Change Adaptation.  A Special Report of Working Groups I and 
+  II of the Intergovernmental Panel on ClimateChange (IPCC), edited by: 
+  Field, C. B., Barros, V., Stocker, T. F., Qin, D., Dokken, D. J., 
+  Ebi, K. L., Mastrandrea, M. D., Mach, K. J., Plattner, G.-K., Allen, S. K., 
+  Tignor, M., and Midgley, P. M., Cambridge University Press, Cambridge, UK, 
+  and New York, NY, USA, 109-230.
+
 
 Example plots
 -------------
@@ -549,6 +572,42 @@ Example plots
    shown. The error bars for the ESMs and observations represent interannual
    variability in the fluxes, calculated as the standard deviation of the
    annual means over the period 1986–2005.
+   
+.. figure:: /recipes/figures/flato13ipcc/fig-9-39.png
+   :align: center
+   
+   Figure 9.39: Box and whisker plots showing the 5th, 25th, 50th, 75th
+   and 95th percentiles of the seasonal- and annual mean biases for 
+   the surface temperature (tas) between 34 CMIP5 models and ERA-Interim data. 
+   The regions are: Alaska/NW Canada (ALAs), 
+   Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs), 
+   Central North America (CNAs), Eastern North America (ENAs), 
+   Central America/Mexico (CAMs), Amazon (AMZs), NE Brazil (NEBs), 
+   West Coast South America (WSAs), South-Eastern South America (SSAs), 
+   Northern Europe (NEUs), Central Europe (CEUs), 
+   Southern Europe/the Mediterranean (MEDs), Sahara (SAHs), 
+   Western Africa (WAFs), Eastern Africa (EAFs), Southern Africa (SAFs), 
+   Northern Asia (NASs), Western Asia (WASs), Central Asia (CASs), 
+   Tibetan Plateau (TIBs), Eastern Asia (EASs), Southern Asia (SASs), 
+   Southeast Asia (SEAs), Northern Australia (NASs) and 
+   Southern Australia/New Zealand (SAUs). 
+   The positions of these regions is shown in the map, 
+   they differ from the ones in Fig. 12 and 
+   are defined following (Seneviratne et al., 2012)
+
+.. figure:: /recipes/figures/flato13ipcc/fig-9-40.png
+   :align: center
+   
+   Figure 9.40: Box and whisker plots showing the 5th, 25th, 50th, 75th 
+   and 95th percentiles of the seasonal- and annual mean biases for 
+   the precipitation (pr) for oceanic and polar regions between 38 CMIP5 
+   models and CRU data for 1979–2000. 
+
+.. figure:: /recipes/figures/flato13ipcc/fig-9-41b.png
+   :align: center
+   
+   Figure 9.41b: Ranked modelled versus ERA-Interim mean temperature for
+   38 CMIP5 models in the Mediterranean region for 1979–2000.
 
 .. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
    :align: center
