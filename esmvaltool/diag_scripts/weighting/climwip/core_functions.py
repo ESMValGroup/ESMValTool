@@ -41,6 +41,8 @@ def distance_matrix(values: 'np.ndarray',
 
     # pdist does not work with NaN
     not_nan = np.where(np.all(np.isfinite(values), axis=0))[0]
+    if len(not_nan) == 0:
+        raise ValueError('All grid cells are NaN in at least one model!')
     values = values[:, not_nan]
 
     if weights is not None:
