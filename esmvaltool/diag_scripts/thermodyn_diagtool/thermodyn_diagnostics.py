@@ -75,7 +75,7 @@ USAGE
 
 1: Obtain the datasets: the program accepts the following variables as
    input for the computations:
-     Monthly mean resolution or higher:
+     Monthly mean resolution or higher (default usage):
      - TOA shortwave radiation downwards;
      - TOA shortwave radiation upwards;
      - TOA longwave radiation upwards (OLR);
@@ -85,9 +85,18 @@ USAGE
      - Surface longwave radiation upwards;
      - Surface turbulent latent heat fluxes;
      - Surface turbulent sensible heat fluxes;
+     Monthly mean resolution or higher (for 'wat' set to 'true' and/or for
+     'entr' set to 'true' with 'met' set to '2' or '3'):
+     - Precipitation flux;
+     - Snowfall flux;
+     Monthly mean resolution or higher (for 'entr' set to 'true' and 'met' set
+     to '2' or '3'):
+     - Surface air pressure;
      - Surface temperature;
-     - Specific humidity;
-     Daily mean resolution or higher:
+     - Near-surface (or 10m) zonal velocity;
+     - Near-surface (or 10m) meridional velocity;
+     - Specific humidity (on pressure levels);
+     Daily mean resolution or higher (for 'lec' set to 'true'):
      - Near-surface temperature;
      - Near-surface (or 10m) zonal velocity;
      - Near-surface (or 10m) meridional velocity;
@@ -95,6 +104,8 @@ USAGE
      - Horizontal velocity (on pressure levels);
      - Meridional velocity (on pressure levels);
      - Vertical velocity (on pressure levels);
+     Fixed dataset (for 'lec' set to 'true'):
+     - Land-sea mask (binary or percentage);
    Data on lonlat grid are accepted, with CMOR-compliant coordinate system.
    The pre-processing modules of ESMValTool scheme will take care of
    converting known grids and recognized datasets to CMOR standards. For a
@@ -121,6 +132,12 @@ USAGE
        - met: if set to 1, the program will compute the MEP with the indirect
               method, if set to 2 with the direct method, if set to 3, both
               methods will be computed and compared with each other;
+   In the 'variables' subsection of the 'diagnostics' section, you have to
+   comment the fields that are not needed depending on the options set in
+   the 'scripts' section. Energy budget and transport computations are
+   performed by default, and required fields have to be provided in any
+   case.
+
 4: Run the tool by typing:
          esmvaltool run esmvaltool/recipes/recipe_thermodyn_diagtool.yml
 
@@ -189,6 +206,8 @@ The output directory contains the following NetCDF files:
         hemispheric evolutions;
         <model-name>_latent_transp.png: the meridional section of annual mean
         meridional latent heat transport;
+        <model-name>_lec_timeser.png: the time series of annual mean LEC
+        intensity;
         <model-name>_scatpeak.png: the scatter plots of atmospheric vs. oceanic
         peak magnitude in both hemispheres;
         <model-name>_sevap_climap.png: the annual mean field of material
@@ -233,7 +252,10 @@ for immediate model intercomparison.
 20170629-koldunov_nikolay: atmospheric budgets diagnostics written
 20180524-lembo_valerio: first complete working thermodynamics diagnostics
 20190325-lembo_valerio: complete updated version for ESMValTool v2.0b
-
+20191030-lembo_valerio: updated ingestion of input fields and several minor
+                        fixings
+20191113-lembo_valerio: updated documentation
+20210211-lembo_valerio: updated documentation
 #############################################################################
 """
 
@@ -255,42 +277,15 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
-                              flags, aux_file):
-    logger.info('Computing water mass and latent energy budgets\n')
-    aux_list = mkthe.init_mkthe_wat(model, wdir, input_data, flags)
-    wm_gmean, wm_file = computations.wmbudg(model, wdir, aux_file, input_data,
-                                            aux_list)
-    wm_time_mean = np.nanmean(wm_gmean[0])
-    wm_time_std = np.nanstd(wm_gmean[0])
-    logger.info('Water mass budget: %s\n', wm_time_mean)
-    latent_time_mean = np.nanmean(wm_gmean[1])
-    latent_time_std = np.nanstd(wm_gmean[1])
-    logger.info('Latent energy budget: %s\n', latent_time_mean)
-    logger.info('Done\n')
-    logger.info('Plotting the water mass and latent energy budgets\n')
-    plot_script.balances(cfg, wdir_up, pdir, [wm_file[0], wm_file[1]],
-                         ['wmb', 'latent'], model)
-    logger.info('Done\n')
-    for filen in aux_list:
-        os.remove(filen)
-    return (wm_file, wm_time_mean, wm_time_std, latent_time_mean,
-            latent_time_std)
-
-
-def compute_land_ocean(model, wdir, file, sftlf_fx, name):
-    ocean_mean, land_mean = computations.landoc_budg(model, wdir, file,
-                                                     sftlf_fx, name)
-    logger.info('%s budget over oceans: %s\n', name, ocean_mean)
-    logger.info('%s budget over land: %s\n', name, land_mean)
-    return (ocean_mean, land_mean)
-
-
 def main(cfg):
     """Execute the program.
 
-    Argument cfg, containing directory paths, preprocessed input dataset
-    filenames and user-defined options, is passed by ESMValTool preprocessor.
+    Arguments:
+    ---------
+    cfg: metadata containing directory paths, preprocessed input dataset
+         filenames and user-defined options, passed by ESMValTool preprocessor.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     provlog = ProvenanceLogger(cfg)
     lorenz = lorenz_cycle
@@ -398,16 +393,19 @@ def main(cfg):
         logger.info('Done\n')
         # Water mass budget
         if wat == 'True':
-            (wm_file,
-             wmb_all[i_m, 0],
-             wmb_all[i_m, 1],
-             latent_all[i_m, 0],
+            (wm_file, wmb_all[i_m, 0], wmb_all[i_m, 1], latent_all[i_m, 0],
              latent_all[i_m, 1]) = compute_water_mass_budget(
                  cfg, wdir_up, pdir, model, wdir, input_data, flags, aux_file)
         if lsm == 'True':
-            sftlf_fx = e.select_metadata(input_data,
-                                         short_name='sftlf',
-                                         dataset=model)[0]['filename']
+            sftlf_files = e.select_metadata(input_data, short_name='sftlf',
+                                            dataset=model)
+            if model in ['HadGEM3-GC31-LL', 'CNRM-ESM2-1']:
+                sftlf_files = e.select_metadata(sftlf_files,
+                                                variable_group='sftlf_piC')
+            else:
+                sftlf_files = e.select_metadata(sftlf_files,
+                                                variable_group='sftlf_other')
+            sftlf_fx = sftlf_files[0]['filename']
             logger.info('Computing energy budgets over land and oceans\n')
             toab_oc_all[i_m], toab_la_all[i_m] = compute_land_ocean(
                 model, wdir, eb_file[0], sftlf_fx, 'toab')
@@ -428,6 +426,7 @@ def main(cfg):
                         'Cycle (year by year)\n')
             _, _ = mkthe.init_mkthe_lec(model, wdir, input_data)
             lect = lorenz.preproc_lec(model, wdir, pdir, input_data)
+            plotsmod.lec_plot(model, pdir, lect)
             lec_all[i_m, 0] = np.nanmean(lect)
             lec_all[i_m, 1] = np.nanstd(lect)
             logger.info(
@@ -501,6 +500,79 @@ def main(cfg):
     eb_list = [toab_all, atmb_all, surb_all]
     plotsmod.plot_mm_ebscatter(pdir_up, eb_list)
     logger.info("The diagnostic has finished. Now closing...\n")
+
+
+def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
+                              flags, aux_file):
+    """Initialise computations of the water mass and latent heat budget.
+
+    This function calls the functions for the retrieveal of water mass and
+    latent energy budgets.
+
+    Arguments:
+    ---------
+    cfg: a lot of metadata to handle input files;
+    wdir_up: the work directory;
+    pdir: the directory for the plots;
+    model: the name of the model;
+    wdir: the work directory of the specific model;
+    input_data: the names of the variables found in the input directory;
+    flags: a list with user options;
+    aux_file: the name of an auxiliary file;
+
+    Returns
+    -------
+    Time mean and standard deviations of the water mass and latent
+    heat budgets.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
+    """
+    logger.info('Computing water mass and latent energy budgets\n')
+    aux_list = mkthe.init_mkthe_wat(model, wdir, input_data, flags)
+    wm_gmean, wm_file = computations.wmbudg(model, wdir, aux_file, input_data,
+                                            aux_list)
+    wm_time_mean = np.nanmean(wm_gmean[0])
+    wm_time_std = np.nanstd(wm_gmean[0])
+    logger.info('Water mass budget: %s\n', wm_time_mean)
+    latent_time_mean = np.nanmean(wm_gmean[1])
+    latent_time_std = np.nanstd(wm_gmean[1])
+    logger.info('Latent energy budget: %s\n', latent_time_mean)
+    logger.info('Done\n')
+    logger.info('Plotting the water mass and latent energy budgets\n')
+    plot_script.balances(cfg, wdir_up, pdir, [wm_file[0], wm_file[1]],
+                         ['wmb', 'latent'], model)
+    logger.info('Done\n')
+    for filen in aux_list:
+        os.remove(filen)
+    return (wm_file, wm_time_mean, wm_time_std, latent_time_mean,
+            latent_time_std)
+
+
+def compute_land_ocean(model, wdir, filein, sftlf_fx, name):
+    """Initialise computations of the budgets over land and ocean.
+
+    This function calls the function for the average of budgets over land and
+    ocean.
+
+    Arguments:
+    ---------
+    model: the name of the model;
+    wdir: the work directory of the specific model;
+    filein: a file containing the budget to be averaged over land and ocean;
+    sftlf_fx: a file containing the model-specific land-sea mask;
+    name: the name of the budget to be averaged;
+
+    Returns
+    -------
+    Time means of the budgets over land and ocean.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
+    """
+    ocean_mean, land_mean = computations.landoc_budg(model, wdir, filein,
+                                                     sftlf_fx, name)
+    logger.info('%s budget over oceans: %s\n', name, ocean_mean)
+    logger.info('%s budget over land: %s\n', name, land_mean)
+    return (ocean_mean, land_mean)
 
 
 if __name__ == '__main__':

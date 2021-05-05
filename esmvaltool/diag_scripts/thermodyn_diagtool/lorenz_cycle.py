@@ -1,5 +1,7 @@
 """PROGRAM FOR LEC COMPUTATION.
 
+Program for computing and plotting the Lorenz Energy Cycle.
+
 The module contains the following functions:
     - lorenz: it is the main program, calling functions that compute the
               reservoirs and conversion terms, storing them separately in
@@ -77,14 +79,15 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     coefficients (time,level,wave,lon) and compute the LEC.
 
     Arguments:
-        - outpath: ath where otput fields are stored (as NetCDF fields);
-        - model: name of the model that is analysed;
-        - year: year that is considered;
-        - filenc: name of the file containing the input fields;
-        - plotfile: name of the file that will contain the flux diagram;
-        - logfile: name of the file containing the table as a .txt file.
+    ----------
+        outpath: ath where output fields are stored (as NetCDF fields);
+        model: name of the model that is analysed;
+        year: year that is considered;
+        filenc: name of the file containing the input fields;
+        plotfile: name of the file that will contain the flux diagram;
+        logfile: name of the file containing the table as a .txt file.
     """
-    ta_c, ua_c, va_c, wap_c, dims, lev, lat, log = init(logfile, filenc)
+    ta_c, ua_c, va_c, wap_c, dims, lev, lat = init(logfile, filenc)
     nlev = int(dims[0])
     ntime = int(dims[1])
     nlat = int(dims[2])
@@ -138,7 +141,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
     table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', logfile, flag=0)
     ape_tgmn = averages_comp(ape, g_w, d_s, dims)
-    table(ape_tgmn, ntp, 'TOT. POT. EN.   ', logfile, flag=0)
+    table(ape_tgmn, ntp, 'TOT. POT. EN.     ', logfile, flag=0)
     a2k_tgmn = averages_comp(a2k, g_w, d_s, dims)
     table(a2k_tgmn, ntp, 'KE -> APE (trans) ', logfile, flag=1)
     ae2az_tgmn = averages_comp(ae2az, g_w, d_s, dims)
@@ -165,7 +168,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     ke2kz_st = mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat,
                       ntp, nlev)
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
-    table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', logfile, flag=1)
+    # table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', logfile, flag=1)
     list_diag = [
         ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn, ae2az_stgmn,
         a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn, ke2kz_tgmn, ke2kz_stgmn
@@ -181,7 +184,6 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     output(ae2az, d_s, filenc, 'ae2az', nc_f)
     nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
     output(ke2kz, d_s, filenc, 'ke2kz', nc_f)
-    log.close()
     return lec_strength
 
 
@@ -189,8 +191,9 @@ def averages(x_c, g_w):
     """Compute time, zonal and global mean averages of initial fields.
 
     Arguments:
-    - x_c: the input field as (lev, lat, wave);
-    - g_w: the Gaussian weights for meridional averaging;
+    ----------
+    x_c: the input field as (lev, lat, wave);
+    g_w: the Gaussian weights for meridional averaging;
     """
     xc_ztmn = np.squeeze(np.real(x_c[:, :, 0]))
     xc_gmn = np.nansum(xc_ztmn * g_w[np.newaxis, :], axis=1) / np.nansum(g_w)
@@ -201,10 +204,11 @@ def averages_comp(fld, g_w, d_s, dims):
     """Compute the global mean averages of reservoirs and conversion terms.
 
     Arguments:
-    - fld: the component of the LEC (time, lev, lat, wave);
-    - g_w: the Gaussian weights for meridional averaging;
-    - d_s: the Delta sigma of the sigma levels;
-    - dims: a list containing the dimensions length0;
+    ----------
+    fld: the component of the LEC (time, lev, lat, wave);
+    g_w: the Gaussian weights for meridional averaging;
+    d_s: the Delta sigma of the sigma levels;
+    dims: a list containing the dimensions length0;
     """
     fld_tmn = np.nanmean(fld, axis=1)
     fld_tgmn = globall_cg(fld_tmn, g_w, d_s, dims)
@@ -249,9 +253,10 @@ def diagram(filen, listf, dims):
     diagrams design.
 
     Arguments:
-    - filen: the filename of the diagram flux;
-    - listf: a list containing the fluxes and storages;
-    - dims: the dimensions of the variables;
+    ----------
+    filen: the filename of the diagram flux;
+    listf: a list containing the fluxes and storages;
+    dims: the dimensions of the variables;
     """
     ntp = int(dims[3])
     apet = listf[0]
@@ -328,7 +333,8 @@ def gauaw(n_y):
     """Compute the Gaussian coefficients for the Gaussian grid conversion.
 
     Arguments:
-    - n_y: the latitude dimension;
+    ----------
+    n_y: the latitude dimension;
     """
     c_c = (1 - (2 / math.pi)**2) / 4
     eps = 0.00000000000001
@@ -367,10 +373,11 @@ def globall_cg(d3v, g_w, d_s, dims):
     """Compute the global and hemispheric averages.
 
     Arguments:
-    - d3v: the 3D dataset to be averaged;
-    - g_w: the gaussian weights;
-    - d_s: the vertical levels;
-    - dims: a list containing the sizes of the dimensions;
+    ----------
+    d3v: the 3D dataset to be averaged;
+    g_w: the gaussian weights;
+    d_s: the vertical levels;
+    dims: a list containing the sizes of the dimensions;
     """
     nlev = int(dims[0])
     nlat = int(dims[2])
@@ -405,8 +412,9 @@ def init(logfile, filep):
     as odd. Convert them to complex fields for Python.
 
     Arguments:
-        - filenc: name of the file containing the input fields;
-        - logfile: name of the file containing the table as a .txt file.
+    ----------
+    filenc: name of the file containing the input fields;
+    logfile: name of the file containing the table as a .txt file.
     """
     with open(logfile, 'w') as log:
         log.write('########################################################\n')
@@ -414,6 +422,7 @@ def init(logfile, filep):
         log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
         log.write('#                                                      #\n')
         log.write('########################################################\n')
+        log.close()
     with Dataset(filep) as dataset0:
         t_a = dataset0.variables['ta'][:, :, :, :]
         u_a = dataset0.variables['ua'][:, :, :, :]
@@ -447,7 +456,7 @@ def init(logfile, filep):
     ua_c = ua_r + 1j * ua_i
     va_c = va_r + 1j * va_i
     wap_c = wap_r + 1j * wap_i
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' \n')
         log.write(' \n')
         log.write('INPUT DATA:\n')
@@ -468,15 +477,17 @@ def init(logfile, filep):
         log.write('  \n')
         log.write('                            I GLOBAL I NORTH I SOUTH I\n')
         log.write('------------------------------------------------------\n')
-    return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log
+        log.close()
+    return ta_c, ua_c, va_c, wap_c, dims, lev, lat
 
 
 def makek(u_t, v_t):
     """Compute the kinetic energy reservoirs from u and v.
 
     Arguments:
-    - u_t: a 3D zonal velocity field;
-    - v_t: a 3D meridional velocity field;
+    ----------
+    u_t: a 3D zonal velocity field;
+    v_t: a 3D meridional velocity field;
     """
     ck1 = u_t * np.conj(u_t)
     ck2 = v_t * np.conj(v_t)
@@ -490,9 +501,10 @@ def makea(t_t, t_g, gam):
     """Compute the kinetic energy reservoirs from t.
 
     Arguments:
-    - t_t_ a 3D temperature field;
-    - t_g: a temperature vertical profile;
-    - gam: a vertical profile of the stability parameter;
+    ----------
+    t_t_ a 3D temperature field;
+    t_g: a temperature vertical profile;
+    gam: a vertical profile of the stability parameter;
     """
     ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))
     ape[:, :, 0] = (gam[:, np.newaxis] * 0.5 * np.real(
@@ -505,17 +517,18 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     """Compute the KE to APE energy conversions from t and w.
 
     Arguments:
-    - wap: a 3D vertical velocity field;
-    - t_t: a 3D temperature field;
-    - w_g: a vertical velocity vertical profile;
-    - t_g: a temperature vertical profile;
-    - p_l: the pressure levels;
+    ----------
+    wap: a 3D vertical velocity field;
+    t_t: a 3D temperature field;
+    w_g: a vertical velocity vertical profile;
+    t_g: a temperature vertical profile;
+    p_l: the pressure levels;
     """
-    a2k = -(R / p_l[:, np.newaxis, np.newaxis] *
-            (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = -(R / p_l[:, np.newaxis] *
-                     (t_t[:, :, 0] - t_g[:, np.newaxis]) *
-                     (wap[:, :, 0] - w_g[:, np.newaxis]))
+    a2k = -np.real(R / p_l[:, np.newaxis, np.newaxis] *
+                   (t_t * np.conj(wap) + np.conj(t_t) * wap))
+    a2k[:, :, 0] = -np.real(R / p_l[:, np.newaxis] *
+                            (t_t[:, :, 0] - t_g[:, np.newaxis]) *
+                            (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k
 
 
@@ -523,33 +536,35 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
     """Compute the zonal mean - eddy APE conversions from t and v.
 
     Arguments:
-    - v_t: a 3D meridional velocity field;
-    - wap: a 3D vertical velocity field;
-    - t_t: a 3D temperature field;
-    - ttt: a climatological mean 3D temperature field;
-    - p_l: the pressure levels;
-    - lat: the latudinal dimension;
-    - gam: a vertical profile of the stability parameter;
-    - nlat: the number of latitudes;
-    - nlev: the number of levels;
+    ----------
+    v_t: a 3D meridional velocity field;
+    wap: a 3D vertical velocity field;
+    t_t: a 3D temperature field;
+    ttt: a climatological mean 3D temperature field;
+    p_l: the pressure levels;
+    lat: the latudinal dimension;
+    gam: a vertical profile of the stability parameter;
+    nlat: the number of latitudes;
+    nlev: the number of levels;
     """
     dtdp = np.zeros([nlev, nlat])
     dtdy = np.zeros([nlev, nlat])
+    ttt = np.real(ttt)
     for l_l in np.arange(nlev):
         if l_l == 0:
-            t_1 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
-            t_2 = np.real(ttt[l_l + 1, :, 0]) - ttg[l_l + 1]
+            t_1 = ttt[l_l, :, 0] - ttg[l_l]
+            t_2 = ttt[l_l + 1, :, 0] - ttg[l_l + 1]
             dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
         elif l_l == nlev - 1:
-            t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
-            t_2 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
+            t_1 = ttt[l_l - 1, :, 0] - ttg[l_l - 1]
+            t_2 = ttt[l_l, :, 0] - ttg[l_l]
             dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
         else:
-            t_1 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
-            t_2 = np.real(ttt[l_l + 1, :, 0]) - ttg[l_l + 1]
+            t_1 = ttt[l_l, :, 0] - ttg[l_l]
+            t_2 = ttt[l_l + 1, :, 0] - ttg[l_l + 1]
             dtdp1 = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
             t_2 = t_1
-            t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
+            t_1 = ttt[l_l - 1, :, 0] - ttg[l_l - 1]
             dtdp2 = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
             dtdp[l_l, :] = ((dtdp1 * (p_l[l_l] - p_l[l_l - 1]) + dtdp2 *
                              (p_l[l_l + 1] - p_l[l_l])) /
@@ -558,16 +573,16 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
                                        (ttt[l_l, :, 0] - ttg[l_l]))
     for i_l in np.arange(nlat):
         if i_l == 0:
-            t_1 = np.real(ttt[:, i_l, 0])
-            t_2 = np.real(ttt[:, i_l + 1, 0])
+            t_1 = ttt[:, i_l, 0]
+            t_2 = ttt[:, i_l + 1, 0]
             dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l])
         elif i_l == nlat - 1:
-            t_1 = np.real(ttt[:, i_l - 1, 0])
-            t_2 = np.real(ttt[:, i_l, 0])
+            t_1 = ttt[:, i_l - 1, 0]
+            t_2 = ttt[:, i_l, 0]
             dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l] - lat[i_l - 1])
         else:
-            t_1 = np.real(ttt[:, i_l - 1, 0])
-            t_2 = np.real(ttt[:, i_l + 1, 0])
+            t_1 = ttt[:, i_l - 1, 0]
+            t_2 = ttt[:, i_l + 1, 0]
             dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l - 1])
     dtdy = dtdy / AA
     c_1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
@@ -582,16 +597,17 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     """Compute the zonal mean - eddy KE conversions from u and v.
 
     Arguments:
-    - u_t: a 3D zonal velocity field;
-    - v_t: a 3D meridional velocity field;
-    - wap: a 3D vertical velocity field;
-    - utt: a climatological mean 3D zonal velocity field;
-    - vtt: a climatological mean 3D meridional velocity field;
-    - p_l: the pressure levels;
-    - lat: the latitude dimension;
-    - nlat: the number of latitudes;
-    - ntp: the number of wavenumbers;
-    - nlev: the number of vertical levels;
+    ----------
+    u_t: a 3D zonal velocity field;
+    v_t: a 3D meridional velocity field;
+    wap: a 3D vertical velocity field;
+    utt: a climatological mean 3D zonal velocity field;
+    vtt: a climatological mean 3D meridional velocity field;
+    p_l: the pressure levels;
+    lat: the latitude dimension;
+    nlat: the number of latitudes;
+    ntp: the number of wavenumbers;
+    nlev: the number of vertical levels;
     """
     dudp = np.zeros([nlev, nlat])
     dvdp = np.zeros([nlev, nlat])
@@ -635,12 +651,12 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
             dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0])) /
                             (lat[i_l] - lat[i_l - 1]))
         else:
-            dudy[:, i_l] = (
-                (np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0])) /
-                (lat[i_l + 1] - lat[i_l - 1]))
-            dvdy[:, i_l] = (
-                (np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0])) /
-                (lat[i_l + 1] - lat[i_l - 1]))
+            dudy[:,
+                 i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0])) /
+                         (lat[i_l + 1] - lat[i_l - 1]))
+            dvdy[:,
+                 i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0])) /
+                         (lat[i_l + 1] - lat[i_l - 1]))
     dudy = dudy / AA
     dvdy = dvdy / AA
     c_1 = np.zeros([nlev, nlat, ntp - 1])
@@ -649,11 +665,11 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     c_4 = np.zeros([nlev, nlat, ntp - 1])
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     c_6 = np.zeros([nlev, nlat, ntp - 1])
-    u_u = u_t * np.conj(u_t) + u_t * np.conj(u_t)
-    u_v = u_t * np.conj(v_t) + v_t * np.conj(u_t)
-    v_v = v_t * np.conj(v_t) + v_t * np.conj(v_t)
-    u_w = u_t * np.conj(wap) + wap * np.conj(u_t)
-    v_w = v_t * np.conj(wap) + wap * np.conj(v_t)
+    u_u = np.real(u_t * np.conj(u_t) + u_t * np.conj(u_t))
+    u_v = np.real(u_t * np.conj(v_t) + v_t * np.conj(u_t))
+    v_v = np.real(v_t * np.conj(v_t) + v_t * np.conj(v_t))
+    u_w = np.real(u_t * np.conj(wap) + wap * np.conj(u_t))
+    v_w = np.real(v_t * np.conj(wap) + wap * np.conj(v_t))
     for i_l in np.arange(nlat):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
@@ -675,17 +691,18 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     """Compute the stat.-trans. eddy APE conversions from u, v, wap and t.
 
     Arguments:
-    - u_t: a 3D zonal velocity field;
-    - v_t: a 3D meridional velocity field;
-    - wap: a 3D vertical velocity field;
-    - t_t: a 3D temperature field;
-    - ttt: a climatological mean 3D temperature field;
-    - g_w: the gaussian weights;
-    - p_l: the pressure levels;
-    - lat: the latitude dimension;
-    - nlat: the number of latitudes;
-    - ntp: the number of wavenumbers;
-    - nlev: the number of vertical levels;
+    ----------
+    u_t: a 3D zonal velocity field;
+    v_t: a 3D meridional velocity field;
+    wap: a 3D vertical velocity field;
+    t_t: a 3D temperature field;
+    ttt: a climatological mean 3D temperature field;
+    g_w: the gaussian weights;
+    p_l: the pressure levels;
+    lat: the latitude dimension;
+    nlat: the number of latitudes;
+    ntp: the number of wavenumbers;
+    nlev: the number of vertical levels;
     """
     t_r = np.fft.ifft(t_t, axis=2)
     u_r = np.fft.ifft(u_t, axis=2)
@@ -706,25 +723,25 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     for i_l in range(nlat):
         if i_l == 0:
-            c_2[:, i_l, :] = (
+            c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l])) *
                 np.conj(ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
-            c_3[:, i_l, :] = (
+            c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l])) *
                 (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
         elif i_l == nlat - 1:
-            c_2[:, i_l, :] = (
+            c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :] / (AA * (lat[i_l] - lat[i_l - 1])) *
                 np.conj(ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (
+            c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l] - lat[i_l - 1])) *
                 (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
         else:
-            c_2[:, i_l, :] = (t_v[:, i_l, :] /
-                              (AA * (lat[i_l + 1] - lat[i_l - 1])) *
-                              np.conj(ttt[:, i_l + 1, np.newaxis] -
-                                      ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (
+            c_2[:, i_l, :] = np.real(t_v[:, i_l, :] /
+                                     (AA * (lat[i_l + 1] - lat[i_l - 1])) *
+                                     np.conj(ttt[:, i_l + 1, np.newaxis] -
+                                             ttt[:, i_l - 1, np.newaxis]))
+            c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :]) / (AA *
                                            (lat[i_l + 1] - lat[i_l - 1])) *
                 (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
@@ -760,18 +777,21 @@ def mkktks(u_t, v_t, utt, vtt, lat, nlat, ntp, nlev):
     """Compute the stat.-trans. eddy KE conversions from u, v and t.
 
     Arguments:
-    - u_t: a 3D zonal velocity field;
-    - v_t: a 3D meridional velocity field;
-    - utt: a climatological mean 3D zonal velocity field;
-    - vtt: a climatological mean 3D meridional velocity field;
-    - lat: the latitude dimension;
-    - nlat: the number of latitudes;
-    - ntp: the number of wavenumbers;
-    - nlev: the number of vertical levels;
+    ----------
+    u_t: a 3D zonal velocity field;
+    v_t: a 3D meridional velocity field;
+    utt: a climatological mean 3D zonal velocity field;
+    vtt: a climatological mean 3D meridional velocity field;
+    lat: the latitude dimension;
+    nlat: the number of latitudes;
+    ntp: the number of wavenumbers;
+    nlev: the number of vertical levels;
     """
     dut = np.zeros([nlev, nlat, ntp - 1])
     dvt = np.zeros([nlev, nlat, ntp - 1])
     dlat = np.zeros([nlat])
+    utt = np.real(utt)
+    vtt = np.real(vtt)
     u_r = np.fft.irfft(u_t, axis=2)
     v_r = np.fft.irfft(v_t, axis=2)
     uur = u_r * u_r
@@ -814,11 +834,12 @@ def output(fld, d_s, filenc, name, nc_f):
     """Compute vertical integrals and print (time,lat,ntp) to NC output.
 
     Arguments:
-    - fld: the annual mean fields (lev, lat, wave);
-    - d_s: Delta sigma;
-    - filenc: the input file containing the Fourier coefficients of t,u,v,w;
-    - name: the variable name;
-    - nc_f: the name of the output file (with path)
+    ----------
+    fld: the annual mean fields (lev, lat, wave);
+    d_s: Delta sigma;
+    filenc: the input file containing the Fourier coefficients of t,u,v,w;
+    name: the variable name;
+    nc_f: the name of the output file (with path)
     """
     fld_tmn = np.nanmean(fld, axis=1)
     fld_aux = fld_tmn * d_s[:, np.newaxis, np.newaxis]
@@ -833,14 +854,15 @@ def pr_output(varo, varname, filep, nc_f):
     Save fields to NetCDF, retrieving information from an existing
     NetCDF file. Metadata are transferred from the existing file to the
     new one.
-    Arguments:
-    - varo: the field to be stored;
-    - varname: the name of the variables to be saved;
-    - filep: the existing dataset, containing the metadata;
-    - nc_f: the name of the output file;
 
-    PROGRAMMER(S)
-        Chris Slocum (2014), modified by Valerio Lembo (2018).
+    Arguments:
+    ----------
+    varo: the field to be stored;
+    varname: the name of the variables to be saved;
+    filep: the existing dataset, containing the metadata;
+    nc_f: the name of the output file;
+
+    @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     fourc = fourier_coefficients
     with Dataset(nc_f, 'w', format='NETCDF4') as w_nc_fid:
@@ -874,12 +896,13 @@ def preproc_lec(model, wdir, pdir, input_data):
     of the LEC is provided.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - pdir: a new directory is created as a sub-directory of the plot directory
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    pdir: a new directory is created as a sub-directory of the plot directory
       to store tables of conversion/reservoir terms and the flux diagram for
       year;
-    - filelist: a list of file names containing the input fields;
+    filelist: a list of file names containing the input fields;
     """
     cdo = Cdo()
     fourc = fourier_coefficients
@@ -887,14 +910,22 @@ def preproc_lec(model, wdir, pdir, input_data):
                                 dataset=model)[0]['filename']
     tas_file = e.select_metadata(input_data, short_name='tas',
                                  dataset=model)[0]['filename']
-    ua_file = e.select_metadata(input_data, short_name='ua',
-                                dataset=model)[0]['filename']
+    ua_files = e.select_metadata(input_data, short_name='ua', dataset=model)
+    print(ua_files)
+    if len(ua_files) > 1:
+        ua_files = e.select_metadata(ua_files, variable_group='ua_1')
+    ua_file = ua_files[0]['filename']
+    print(ua_file)
     uas_file = e.select_metadata(input_data, short_name='uas',
                                  dataset=model)[0]['filename']
-    va_file = e.select_metadata(input_data, short_name='va',
-                                dataset=model)[0]['filename']
-    vas_file = e.select_metadata(input_data, short_name='vas',
-                                 dataset=model)[0]['filename']
+    va_files = e.select_metadata(input_data, short_name='va', dataset=model)
+    if len(va_files) > 1:
+        va_files = e.select_metadata(va_files, variable_group='va_1')
+    va_file = va_files[0]['filename']
+    vas_files = e.select_metadata(input_data, short_name='vas', dataset=model)
+    if len(vas_files) > 1:
+        vas_files = e.select_metadata(vas_files, variable_group='vas_1')
+    vas_file = vas_files[0]['filename']
     wap_file = e.select_metadata(input_data, short_name='wap',
                                  dataset=model)[0]['filename']
     ldir = os.path.join(pdir, 'LEC_results')
@@ -908,12 +939,12 @@ def preproc_lec(model, wdir, pdir, input_data):
                    options='-b F32',
                    output=maskorog)
     cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
-                   '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                   '-setmisstoc,0 -mul -selvar,uas {} -selvar,ua {}').format(
                        ua_file, uas_file, maskorog),
             options='-b F32',
             output=ua_file_mask)
     cdo.add(input=('-setmisstoc,0 -selvar,va {} '
-                   '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                   '-setmisstoc,0 -mul -selvar,vas {} -selvar,ua {}').format(
                        va_file, vas_file, maskorog),
             options='-b F32',
             output=va_file_mask)
@@ -972,10 +1003,11 @@ def removeif(filename):
 def stabil(ta_gmn, p_l, nlev):
     """Compute the stability parameter from temp. and pressure levels.
 
-    Arguments
-    - ta_gmn: a temperature vertical profile;
-    - p_l: the vertical levels;
-    - nlev: the number of vertical levels;
+    Arguments:
+    ----------
+    ta_gmn: a temperature vertical profile;
+    p_l: the vertical levels;
+    nlev: the number of vertical levels;
     """
     cpdr = CP / R
     t_g = ta_gmn
@@ -999,11 +1031,12 @@ def table(varin, ntp, name, logfile, flag):
     """Write global and hem. storage terms to .txt table.
 
     Arguments:
-    - varin: the variable to be printed out;
-    - ntp: the number of wavenumbers;
-    - name: the name of the variable to be printed out;
-    - logfile: the filename of the .txt where the variable is printed out;
-    - flag: a flag for NH, SH, global;
+    ----------
+    varin: the variable to be printed out;
+    ntp: the number of wavenumbers;
+    name: the name of the variable to be printed out;
+    logfile: the filename of the .txt where the variable is printed out;
+    flag: a flag for NH, SH, global;
     """
     if flag is True:
         fac = 1e5
@@ -1018,13 +1051,14 @@ def table(varin, ntp, name, logfile, flag):
 
 
 def varatts(w_nc_var, varname, tres, vres):
-    """Add attibutes to the variables, depending on name and time res.
+    """Add attributes to the variables, depending on name and time res.
 
     Arguments:
-    - w_nc_var: a variable object;
-    - varname: the name of the variable, among ta, ua, va and wap;
-    - tres: the time resolution (daily or annual);
-    - vres: the vertical resolution (pressure levels or vert. integr.).
+    ---------
+    w_nc_var: a variable object;
+    varname: the name of the variable, among ta, ua, va and wap;
+    tres: the time resolution (daily or annual);
+    vres: the vertical resolution (pressure levels or vert. integr.).
 
     @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
@@ -1071,13 +1105,14 @@ def varatts(w_nc_var, varname, tres, vres):
 
 
 def weights(lev, nlev, lat):
-    """Compute weigths for vertical integration and meridional averages.
+    """Compute weights for vertical integration and meridional averages.
 
     Arguments:
-    - lev: the pressure levels;
-    - nlev: the number of pressure levels;
-    - lat: the latitudes in degrees;
-    - nlat: the number of latitudinal gridsteps;
+    ---------
+    lev: the pressure levels;
+    nlev: the number of pressure levels;
+    lat: the latitudes in degrees;
+    nlat: the number of latitudinal gridsteps;
     """
     # Compute sigma level and dsigma
     sig = lev / PS
@@ -1098,14 +1133,15 @@ def write_to_tab(logfile, name, vared, varzon):
     """Specify the formats for table entries.
 
     Arguments:
-    - log: the logfile where the entries must be written;
-    - name: the name of the variable;
-    - vared: a list of arrays containing the overall eddy components, the LW,
+    ----------
+    log: the logfile where the entries must be written;
+    name: the name of the variable;
+    vared: a list of arrays containing the overall eddy components, the LW,
       the SW and the KW components;
-    - varzon: an array containing the zonal mean component;
+    varzon: an array containing the zonal mean component;
     """
     vartot = varzon + vared[0]
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
             name, vartot[0], vartot[1], vartot[2]))
         log.write('--------------------------------------\n')
@@ -1124,3 +1160,4 @@ def write_to_tab(logfile, name, vared, varzon):
         log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
             name, vared[3][0], vared[3][1], vared[3][2]))
         log.write('--------------------------------------\n')
+        log.close()
