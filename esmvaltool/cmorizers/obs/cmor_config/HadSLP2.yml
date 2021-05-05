@@ -1,0 +1,20 @@
+---
+# Filename
+filename: 'hadslp2.slp.mnmean.real.185001-201912.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: HadSLP2
+  version: 'May2020'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://hadobs.metoffice.com/hadslp2'
+  reference: 'hadslp2'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  psl:
+    mip: Amon
+    raw: slp
