@@ -70,7 +70,9 @@ Variables
 References
 ----------
 
-* Massonnet, F., Vancoppenolle, M., Goosse, H., Docquier, D., Fichefet, T. and Blanchard-Wrigglesworth, E., 2018.
-  Arctic sea-ice change tied to its mean state through thermodynamic processes. Nature Climate Change, 8: 599-603.
+* Kreussler, P., Caron, L-P., Wild, S., Loosveldt Tomas, S., Chauvin, F., Moine, M-P., Roberts, M.J., 
+  Ruprich‐Robert, Y., Seddon, J., Valcke, S., Vannière, B., Vidale, P.L., 2020.
+  Tropical Cyclone Integrated Kinetic Energy in an Ensemble of HighResMIP Simulations. 
+  Geophysical Research Letter, 48, 5.
 
 
