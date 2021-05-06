@@ -59,7 +59,7 @@ def _create_sample_cube(time_step):
                                   units='m',
                                   attributes={'positive': 'down'})
     lons = iris.coords.DimCoord([1.5, 2.5],
-                              standard_name='longitude',
+                                standard_name='longitude',
                                 bounds=[[1., 2.], [2., 3.]],
                                 units='bad',
                                 coord_system=coord_sys)
