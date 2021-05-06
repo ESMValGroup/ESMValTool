@@ -165,8 +165,11 @@ def make_mean_of_cube_list(cube_list):
     # Fix empty times
     full_times = {}
     times = []
+    if len(cube_list)==1: 
+        return cube_list[0]
     for cube in cube_list:
         # make time coords uniform:
+        print(cube)
         cube.coord('time').long_name='Time axis'
         cube.coord('time').attributes={'time_origin': '1950-01-01 00:00:00'}
         times.append(cube.coord('time').points)
@@ -197,7 +200,13 @@ def make_mean_of_cube_list(cube_list):
         except: model_name = ''
         print(i, model_name, cube.coord('time'))
         cube_mean+=cube
-    cube_mean = cube_mean/ float(len(cube_list))
+
+    cube_mean.data = cube_mean.data/ float(len(cube_list))
+
+    if cube_mean.data.max()> np.max([c.data.max() for c in cube_list]):
+        print('something is not working here:',  cube_mean.data.max(), '>', [c.data.max() for c in cube_list])
+        assert 0
+
     return cube_mean
 
 

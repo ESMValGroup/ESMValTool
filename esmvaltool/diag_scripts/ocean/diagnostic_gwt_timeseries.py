@@ -642,8 +642,16 @@ def load_timeseries(cfg, short_names):
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
+                if short_name in ['co2', 'emissions']:
+                     continue 
                 cubes.append(cube)
-            data_dict[(short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
+            
+            if not len(cubes):
+                continue
+            elif len(cubes) == 1:
+                data_dict[(short_name, exp, 'ensemble_mean')] = cubes[0]
+            else:
+                data_dict[(short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
 
     return data_dict
 
@@ -714,6 +722,7 @@ def load_co2_forcing(cfg, data_dict):
     ssp585_datas = []
     ssp585_times = []
 
+    # load the co2 from the file.
     for fn in files:
         open_fn = open(fn, 'r')
         key = os.path.basename(fn).replace('_co2.dat', '')
@@ -735,9 +744,10 @@ def load_co2_forcing(cfg, data_dict):
         for ens in ['r1', 'r2',  'r3', 'r4', 'r8']:
             data_dict[('co2', key, ens+'i1p1f2' )] = {'time': times, 'co2':data}
             print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens+'i1p1f2'), 'mean:', np.array(data).mean())
+        data_dict[('co2', key, 'ensemble_mean' )] = {'time': times, 'co2':data}
         open_fn.close()
 
-    # Check for historical-ssp scenarios.
+    # Check for historical-ssp scenarios pairs.
     tmp_dict = {}
     for (short_name, exp, ensemble), ssp_cube in data_dict.items():
         if short_name in ['co2', 'areacella', 'areacello',]:
@@ -765,7 +775,6 @@ def load_co2_forcing(cfg, data_dict):
             new_times.extend(data_dict[('co2', ssp_only, ensemble)]['time'])
             new_datas.extend(data_dict[('co2', ssp_only, ensemble)]['co2'])
             print(exp, len(new_times), len(new_datas))
-
         else:
             if min_time > np.array(hist_times).max():
                 print(short_name, exp, ensemble, 'no overlap', ('ssp:', min_time, '>', 'hist max:', np.array(hist_times).max()))
@@ -786,7 +795,14 @@ def load_co2_forcing(cfg, data_dict):
             assert 0
         print('co2', exp, ensemble, len(new_times), len(new_datas))
         tmp_dict[('co2', exp, ensemble )] ={'time': new_times, 'co2':new_datas}
+
     data_dict.update(tmp_dict)
+    # make sure the ensemble mean is set for all co2.
+    for (short_name, exp, ensemble), ssp_cube in data_dict.items():
+        if short_name not in ['co2', ]: continue
+        tmp_dict[(short_name, exp, 'ensemble_mean')] = ssp_cube
+    data_dict.update(tmp_dict)
+
 
     # Save the co2 image:
     path = diagtools.folder(cfg['plot_dir'])
@@ -835,10 +851,13 @@ def get_threshold_point(cube, year):
     """
     get the location of the year provided.
     """
-    time_units = cube.coord('time').units
-    date = datetime.datetime(int(year), 6, 1)
-    t_1 = time_units.date2num(date)
-    arg_min = np.argmin( np.abs(cube.coord('time').points - t_1))
+    if isinstance(cube, dict):
+        arg_min = np.argmin(np.array(cube['time']) - year)   
+    else:
+        time_units = cube.coord('time').units
+        date = datetime.datetime(int(year), 6, 1)
+        t_1 = time_units.date2num(date)
+        arg_min = np.argmin( np.abs(cube.coord('time').points - t_1))
     #print('get_threshold_point',t_1, date, arg_min)
     return arg_min
 
@@ -894,6 +913,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
          exps[exp] = True
          ensembles[ensemble] = True
+         print(short_name, exp, ensemble)
 
     exp_colours = {'historical':'black',
                    'ssp119':'green',
@@ -911,26 +931,45 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                    'historical-ssp585': 'red',
                    'historical-ssp585-ssp534-over':'orange'}
 
-    marker_styles = {1.5: 'o', 2.:'*', 3.:'^', 4.:'s', 5.:'X'}
+    marker_styles = {1.5: 'o', 2.:'*', 3.:'D', 4.:'s', 5.:'X'}
 
+    if ensemble_mean: ensembles = ['ensemble_mean', ]
     exps = sorted(exps.keys())
     exps.reverse()
-
+    print(exps, ensembles)
+    print(data_dict.keys())
     fig = plt.figure()
     x_label,y_label = [], []
+    print('\n\n\n\n\nStaring plot:',
+        'x:', x,
+        'y:', y,
+        'markers:', markers,
+        'draw_line:', draw_line,
+        'do_moving_average:', do_moving_average,
+        'ensemble_mean:', ensemble_mean)
+    #print(data_dict.keys())
+    number_of_lines=0
+    #for exp_1, ensemble_1 in product(exps, ensembles):
+        #print('\nproduct loop', exp_1, ensemble_1)
+        #txt =  
+        ##print('co2:', data_dict.get(('co2', exp_1, ensemble_1), 'Not Found'))
+        #print('tas:', data_dict.get(('tas', exp_1, ensemble_1), 'Not Found'))
+
     for exp_1, ensemble_1 in product(exps, ensembles):
-#        print('\nproduct loop', exp_1, ensemble_1)
+
         x_data, y_data = [], []
+        x_times, y_times = [], []
         for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
-            #print('plotting', short_name, exp, ensemble, ' from', x,y)
+            if short_name not in [x,y]: continue
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
-            if short_name not in [x,y]: continue
-            if ensemble_mean and ensemble!= 'ensemble_mean': continue
-            if not ensemble_mean and ensemble == 'ensemble_mean': continue
+            print('Everything matches', (short_name, exp, ensemble),'vs', [x,y], (exp_1, ensemble_1))
+#           print(exp_1, ensemble_1, short_name, exp, ensemble, ensemble_mean)
+#            if ensemble_mean and ensemble!= 'ensemble_mean': continue
+#            if not ensemble_mean and ensemble == 'ensemble_mean': continue
 
             print('make_ts_figure: found', short_name, exp, ensemble, x,y)
-            if x == 'time'and short_name == y:
+            if x == 'time' and short_name == y:
                 x_label = 'Year'
                 if isinstance(cube, iris.cube.Cube):
                     x_data = diagtools.cube_time_to_float(cube)
@@ -941,50 +980,37 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     x_times = x_data.copy()
                     print('setting x time to ',short_name, exp, ensemble)
             elif x == short_name == 'co2':
-                x_data = cube['co2']
-                x_times = cube['time']
+                x_data = cube['co2'].copy()
+                x_times = cube['time'].copy()
                 print('setting x time to ',short_name, exp, ensemble)
                 x_label = ' '.join(['Atmospheric co2, ppm'])
             elif short_name == x:
-                x_data = cube.data
+                x_data = np.array(cube.data.copy())
                 x_times = diagtools.cube_time_to_float(cube)
-                print('setting x time to ',short_name, exp, ensemble)
+                print('setting x axis to ',short_name, exp, ensemble, np.min(x_data), np.max(x_data))
                 x_label = ' '.join([x, str(cube.units)])
 
             if y == 'time':
                 print('what kind of crazy person plots time on y axis?')
                 assert 0
-#                if isinstance(cube, dict):
-#                    x_data = cube['time']
-#                else:
-#                    y_data = diagtools.cube_time_to_float(cube)
-#                    y_times = y_data.copy()
-#                y_label = 'Year'
             elif y == short_name == 'co2':
-                y_data = cube['co2']
-                y_times = cube['time']
+                y_data = cube['co2'].copy()
+                y_times = cube['time'].copy()
                 print('setting y time to ',short_name, exp, ensemble)
-
                 y_label = ' '.join(['Atmospheric co2, ppm'])
             elif short_name == y:
-                y_data = cube.data
+                y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
-                print('setting y time to ',short_name, exp, ensemble)
+                print('setting y time to ',short_name, exp, ensemble, y_data)
                 y_label = ' '.join([y, str(cube.units)])
-
-#           if x == 'time' and short_name == y:
-#               x_label = 'Year'
-#               if isinstance(cube, iris.cube.Cube):
-#                   x_data = diagtools.cube_time_to_float(cube)
-#                   x_times = x_data.copy()
-#               else:
-#                   x_data = cube['time']
-#                   x_times = x_data.copy()
 
             print('make_ts_figure: loaded x data', short_name, exp, ensemble, x, np.mean(x_data))
             print('make_ts_figure: loaded y data', short_name, exp, ensemble, y, np.mean(y_data))
+            #break
 
-        if 0 in [len(x_data), len(y_data)]:
+        if 0 in [len(x_data), len(y_data), len(x_times), len(y_times)]:
+            print('no data found', x,y, exp_1, ensemble_1, 'x:', len(x_data), 'y:',len(y_data))
+            #assert 0
             continue
 
         if len(x_data) != len(x_times) or len(y_data) != len(y_times):
@@ -995,27 +1021,35 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         if draw_line:
             x_times = np.ma.array(x_times)
             y_times = np.ma.array(y_times)
+            number_of_lines+=1
+            if ensemble_mean:
+                lw=1.3  
+            else: 
+                lw=0.5
             if exp_1 == 'historical':
                 plt.plot(np.ma.masked_where(x_times > 2005, x_data),
                          np.ma.masked_where(y_times > 2005, y_data),
-                         lw=0.5,
+                         lw=lw, 
                          color=exp_colours[exp_1])
             else:
                 #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
                 plt.plot(np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data),
                          np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data),
-                         lw=0.5,
+                         lw=lw, 
                          color=exp_colours['historical'])
 
                 plt.plot(np.ma.masked_where(x_times < 2015, x_data),
                          np.ma.masked_where(y_times < 2015, y_data),
-                         lw=0.5,
+                         lw=lw, 
                          color=exp_colours[exp_1])
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
             except:
                threshold_times = {}
+            ms = 8 
+            if ensemble_mean:
+                ms = 8  
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
@@ -1025,8 +1059,16 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 plt.plot(x_data[y_point],
                          y_data[y_point],
                          marker_styles[threshold],
+                         markersize = ms,
                          fillstyle='none',
                          color=exp_colours[exp_1])
+                plt.plot(x_data[y_point],
+                         y_data[y_point],
+                         'o',
+                         markersize = 2,
+                         #fillstyle='none',
+                         color=exp_colours[exp_1])
+
 
 
 #        if x == short_name == 'tas_norm':
@@ -1039,7 +1081,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 #                print(line, x, y, 'y:',y_data)
 #                plt.axhline(line, 'k', ':')
 
-
+    if not number_of_lines:
+        print('No lines plotted')
+        plt.close()
+        return
+        #assert 0
 
     exp_colours_leg = {'historical':'black',
                    'ssp119':'green',
@@ -1081,7 +1127,12 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
     path = diagtools.folder(cfg['plot_dir'])
 
-    path += '_'.join([x,y,markers,]) + image_extention
+    if ensemble_mean:
+        ensemble_mean_txt = 'ensemble_mean'
+    else:
+        ensemble_mean_txt = 'all'
+
+    path += '_'.join([x, y, markers, ensemble_mean_txt]) + image_extention
     if do_moving_average:
         path = path.replace(image_extention, '_21ma'+image_extention)
     print('saving figure:', path)
@@ -1113,7 +1164,9 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
+    #jobtype = 'debug' 
     jobtype = 'bulk'
+
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
                        'npp', 'nppgt', 'rh', 'rhgt', 'exchange',
@@ -1133,15 +1186,15 @@ def main(cfg):
                        'nbp', 'nbpgt', 'gpp', 'gppgt',
                        'intpp', 'fgco2', 'intppgt','fgco2gt',
                        ]
-        short_names_x = ['time', 'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_x = ['time', 'co2', 'tas', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
         short_names_y = short_names.copy()
 
     if jobtype == 'debug':
         short_names = [
-                       'nbp', 'nbpgt', 'gpp', 'gppgt',
+                       'emissions','tas',  #'nbpgt', 'gpp', 'gppgt',
                        ]
-        short_names_x = ['time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
-        short_names_y = short_names.copy()
+        short_names_x = ['emissions', 'tas', ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_y = ['emissions', 'tas', ]#short_names.copy()
 
 
     if jobtype == 'land':
@@ -1187,14 +1240,17 @@ def main(cfg):
         for x in short_names_x:
             for y in short_names_y:
                 if x == y: continue
-                if (x,y) in pairs: continue
+                if (x, y) in pairs: continue
                 print('main:', do_ma, x, y)
-                for ensemble_mean in [True, False]:
-                    make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
-                               markers='thresholds', do_moving_average=do_ma,
-                               ensemble_mean=ensemble_mean)
-                pairs.append((x,y))
-                pairs.append((y,x))
+                make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                               markers='thresholds', do_moving_average=False,
+                               ensemble_mean=True)
+                if jobtype == 'debug': continue
+                make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                               markers='thresholds', do_moving_average=True, 
+                               ensemble_mean=False)
+                pairs.append((x, y))
+                #pairs.append((y, x))
 
     logger.info('Success')
 
