@@ -162,8 +162,7 @@ class CycloneTracker:
                                  output_file)
             output_file.close()
             self.write_provenance(
-                alias, data, os.path.join(self.cfg[names.WORK_DIR], output)
-                )
+                alias, data, os.path.join(self.cfg[names.WORK_DIR], output))
 
     def run_custom_time(self, dataset, total, years,
                         months, start_day, end_day, output_file):
@@ -251,7 +250,8 @@ class CycloneTracker:
             sys.exit()
         shutil.copyfileobj(open('fort.66', 'rb'), output)
 
-    def write_fort15(self, path, time):
+    @staticmethod
+    def write_fort15(path, time):
         """
         Writes the fort.15 file.
 
@@ -268,7 +268,8 @@ class CycloneTracker:
                                                      int(value * 60)))
         fort15_file.close()
 
-    def write_fort14(self, path):
+    @staticmethod
+    def write_fort14(path):
         """
         Writes the fort.14 file.
 
@@ -382,8 +383,7 @@ class CycloneTracker:
             'domains': ['global'],
             'authors': ['kreussler_philip', 'caron_louis-philippe'],
             'references': ['kreussler2021', 'acknow_project'],
-            'ancestors': ancestors
-            }
+            'ancestors': ancestors}
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(output_file, record)
 
