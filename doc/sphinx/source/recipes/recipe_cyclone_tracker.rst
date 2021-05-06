@@ -75,4 +75,7 @@ References
   Tropical Cyclone Integrated Kinetic Energy in an Ensemble of HighResMIP Simulations. 
   Geophysical Research Letter, 48, 5.
 
+* Bao, S. D. Stark, L. Bernardet (2013) USERS’ GUIDE for the Community release of the GFDL Vortex Tracker. Version 3.5b. 
+  The Developmental Testbed Center.
+
 
