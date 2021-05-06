@@ -603,6 +603,7 @@ Example plots
    
 .. figure:: /recipes/figures/flato13ipcc/fig-9-38.png
    :align: center
+   
    Figure 9.38: Mean seasonal cycle for the surface temperature (tas) 
    as multi model mean of 38 CMIP 5 models and ERA-Interim data averaged 
    for 1980-1999 over land in different regions: 
@@ -616,6 +617,7 @@ Example plots
    
 .. figure:: /recipes/figures/flato13ipcc/fig-9-38_regions.png
    :align: center
+   
    Figure 9.38reg: Positions of the regions used in Figure 9.38.
    
 .. figure:: /recipes/figures/flato13ipcc/fig-9-39.png
@@ -642,6 +644,7 @@ Example plots
    
 .. figure:: /recipes/figures/flato13ipcc/fig-9-39_regions.png
    :align: center
+   
    Figure 9.39reg: Positions of the regions used in Figure 9.39.
    
 
