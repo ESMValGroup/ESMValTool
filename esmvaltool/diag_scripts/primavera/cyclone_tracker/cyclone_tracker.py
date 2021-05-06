@@ -34,6 +34,7 @@ class CycloneTracker:
                 Dictionary containing configuration settings.
         """
         self.cfg = config
+        """Configuration settings."""
         self.atcffreq = None
         """Frequency of the output [x100 hr]."""
         self.westbd = self.cfg['westbd']
@@ -376,8 +377,7 @@ class CycloneTracker:
                    "{start} and {end} according to {dataset}").format(
                        start=data[alias][0]['start_year'],
                        end=data[alias][0]['end_year'],
-                       dataset=data[alias][0]['dataset']
-                   )
+                       dataset=data[alias][0]['dataset'])
         record = {
             'caption': caption,
             'domains': ['global'],
