@@ -61,12 +61,12 @@ def _create_sample_cube(time_step):
     lons = iris.coords.DimCoord([1.5, 2.5],
                                 standard_name='longitude',
                                 bounds=[[1., 2.], [2., 3.]],
-                                units='bad',
+                                units='K',
                                 coord_system=coord_sys)
     lats = iris.coords.DimCoord([1.5, 2.5],
                                 standard_name='latitude',
                                 bounds=[[1., 2.], [2., 3.]],
-                                units='bad',
+                                units='K',
                                 coord_system=coord_sys)
     coords_spec = [(time, 0), (zcoord, 1), (lats, 2), (lons, 3)]
     cube = iris.cube.Cube(cube_data, dim_coords_and_dims=coords_spec)
