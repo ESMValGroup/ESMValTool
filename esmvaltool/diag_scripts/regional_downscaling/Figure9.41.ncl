@@ -5,13 +5,13 @@
 ; #############################################################################
 ; #    * Creates plot ranked monthly data of observations vs models.          #
 ; #  3 pages are created:
-; #  1st page Centred (data are adjusted to get a zero mean in model data with 
+; #  1st page Centred (data are adjusted to get a zero mean in model data with
 ; #         respect to the diagonal)
 ; #  2nd page  Uncentred (data not adjusted)
 ; #  3th page  Full models legend
 ; #
 ; # Required variable_info attributes (variable specific):
-; #     *Reference Dataset 
+; #     *Reference Dataset
 ; #      variable_info[0]@reference_dataset
 ; # Required diag_script_info attributes (diagnostics specific):
 ; #     *Region Label
@@ -30,8 +30,6 @@ load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/regional_downscaling/regional_function.ncl"
-
-
 
 begin
   enter_msg(DIAG_SCRIPT, "")
@@ -140,8 +138,19 @@ begin
     A = Atmp
     delete(Atmp)
     qsort(A)  ; rank the observation in ascending order
+
+    ; -----------------------------------------------------------
+    ; netcdf output file
+
+    nc_filename = work_dir + "fig941_" + var0 + "_" + \
+                             region_label(ir) + "_obs.nc"
+    A@var = var0
+    A@diag_script = "fig941"
+    nc_outfile = ncdf_write(A, nc_filename)
+
     D = new((/dim_MOD, dimsizes(time)/), "double")
     C = new((/dim_MOD, dimsizes(time)/), "double")
+
     jmod = 0
     do imod = 0, dim_MOD - 1
       if (imod .ne. idx_ref) then
@@ -179,6 +188,20 @@ begin
       D = D - 273.15
       A = A - 273.15
     end if
+
+    ; -----------------------------------------------------------
+    ; netcdf output file
+    nc_filename = work_dir + "fig941_" + var0 + "_" \
+                           + region_label(ir) + "_models.nc"
+    D!0 = "models"
+    D!1 = "time"
+    D&models =  models1
+    D&time = A&time
+    D@var = var0
+    D@diag_script = "fig941"
+    D@existing = "overwrite"
+    nc_outfile = ncdf_write(D, nc_filename)
+
     ; -----------------------------------------------------------
     ; plots of time(x) vs. latitude(y)
     min1 = min(C)
@@ -212,6 +235,7 @@ begin
     delete(A)
     delete(D)
   end do
+
   ; Panel plots
   pan = True
   pan@gsnMaximize = True
@@ -221,9 +245,10 @@ begin
   if (mod(dimsizes(plot), 3) .ne. 0) then
     n_p = n_p + 1
   end if
-  pan@txString = "Centered " +LONG_NAME + " bias vs. " + \
+  pan@txString = "Centered " + LONG_NAME + " bias vs. " + \
                  names(idx_ref)
   gsn_panel(wks, plot1, (/3, n_p/), pan)
+
   ; ***********add legend****************************
   frame(wks)
   pan@txString = "Uncentered " + LONG_NAME + " bias vs. " + \
@@ -233,4 +258,22 @@ begin
   add_legenda_page(wks_l, models1, colors1, dashes1, lin_mar_mod1,\
                    thicks1, "0.9")
   frame(wks_l)
+
+  ; -------------------------------------------------------------
+  ; Add provenance
+  ; -------------------------------------------------------------
+
+  caption = "Modelled versus observed monthly mean temperature for " + \
+            "the Mediterranean region"
+
+  log_provenance(nc_filename, \
+                 wks@fullname, \
+                 caption, \
+                 (/"corr"/), \
+                 (/"reg"/), \
+                 "line", \
+                 (/"cionni_irene"/), \
+                 (/"flato13ipcc"/), \
+                 metadata_att_as_array(info0, "filename"))
+
 end
