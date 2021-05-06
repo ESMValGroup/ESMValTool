@@ -17,6 +17,7 @@ Atmosphere
    recipe_crem
    recipe_combined_climate_extreme_index
    recipe_consecdrydays
+   recipe_cyclone_tracker
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_eady_growth_rate
