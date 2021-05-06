@@ -136,6 +136,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
     * seaice/seaice_tsline.ncl: Time series of sea ice extent (Fig. 9.24a/b)
     * seaice/seaice_trends.ncl: Trend distributions of sea ice extent (Fig 9.24c/d)
+    * regional_downscaling/Figure9.38.ncl (Fig 9.38a)
+    * regional_downscaling/Figure9.39.ncl (Fig 9.39a/c/e)
+    * regional_downscaling/Figure9.40.ncl (Fig 9.40b/d/f)
+    * regional_downscaling/Figure9.41.ncl (Fig 9.41b)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
     * ipcc_ar5/ch09_fig09_42b.py: TCR vs. ECS (Fig. 9.42b)
     * emergent_constraints/snowalbedo.ncl: snow-albedo effect (Fig. 9.45a)
@@ -320,6 +324,30 @@ User settings in recipe
    * multi_model_mean: plot multi-model mean and standard deviation (default: False)
    * EMs_in_lg: create a legend label for individual ensemble members (default: False)
    * fill_pole_hole: fill polar hole (typically in satellite data) with sic = 1 (default: False)
+
+#. Script regional_downscaling/Figure9.38.ncl
+
+   *Required settings (scripts)*
+   
+   *Optional settings (scripts)*
+
+#. Script regional_downscaling/Figure9.39.ncl
+
+   *Required settings (scripts)*
+   
+   *Optional settings (scripts)*
+
+#. Script regional_downscaling/Figure9.40.ncl
+
+   *Required settings (scripts)*
+   
+   *Optional settings (scripts)*
+
+#. Script regional_downscaling/Figure9.41.ncl
+
+   *Required settings (scripts)*
+   
+   *Optional settings (scripts)*
 
 #. Script ipcc_ar5/ch09_fig09_42a.py
 
@@ -573,6 +601,23 @@ Example plots
    variability in the fluxes, calculated as the standard deviation of the
    annual means over the period 1986–2005.
    
+.. figure:: /recipes/figures/flato13ipcc/fig-9-38.png
+   :align: center
+   Figure 9.38: Mean seasonal cycle for the surface temperature (tas) 
+   as multi model mean of 38 CMIP 5 models and ERA-Interim data averaged 
+   for 1980-1999 over land in different regions: 
+   Western North America (WNA), Eastern North America (ENA), 
+   Central America (CAM), Tropical South America (TSA), 
+   Southern South America (SSA), Europe and Mediterranean (EUM), 
+   North Africa (NAF), Central Africa (CAF), South Africa (SAF), 
+   North Asia (NAS), Central Asia (CAS), East Asia (EAS), 
+   South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
+   
+   
+.. figure:: /recipes/figures/flato13ipcc/fig-9-38_regions.png
+   :align: center
+   Figure 9.38reg: Positions of the regions used in Figure 9.38.
+   
 .. figure:: /recipes/figures/flato13ipcc/fig-9-39.png
    :align: center
    
@@ -591,9 +636,14 @@ Example plots
    Tibetan Plateau (TIBs), Eastern Asia (EASs), Southern Asia (SASs), 
    Southeast Asia (SEAs), Northern Australia (NASs) and 
    Southern Australia/New Zealand (SAUs). 
-   The positions of these regions is shown in the map, 
-   they differ from the ones in Fig. 12 and 
-   are defined following (Seneviratne et al., 2012)
+   The positions of these regions is defined following 
+   (Seneviratne et al., 2012) and differs from the ones in Fig. 9.38.
+   
+   
+.. figure:: /recipes/figures/flato13ipcc/fig-9-39_regions.png
+   :align: center
+   Figure 9.39reg: Positions of the regions used in Figure 9.39.
+   
 
 .. figure:: /recipes/figures/flato13ipcc/fig-9-40.png
    :align: center
