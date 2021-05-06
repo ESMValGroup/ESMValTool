@@ -34,7 +34,8 @@
 ;    7) Untar all .tar files into a single directory.
 ;
 ; Modification history
-;    20210323-laue_axel: written.
+;    20210506-lauer_axel: output of lwp instead of clwvi
+;    20210323-lauer_axel: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -56,7 +57,7 @@ begin
   YEAR2 = 2018
 
   ; Selected variable (standard name)
-  VAR = (/"clt", "clivi", "clwvi"/)
+  VAR = (/"clt", "clivi", "lwp"/)
 
   ; Name in the raw data
   NAME = (/"cfc", "iwp_allsky", "lwp_allsky"/)
@@ -79,7 +80,7 @@ begin
   CMOR_TABLE = getenv("cmor_tables") + \
     (/"/cmip5/Tables/CMIP5_Amon", \
       "/cmip5/Tables/CMIP5_Amon", \
-      "/cmip5/Tables/CMIP5_Amon"/)
+      "/custom/CMOR_lwp.dat"/)
 
   ; Type
   TYPE = "sat"
@@ -126,6 +127,8 @@ begin
 
         ; No files found
         if (ismissing(fname)) then
+          log_info("Warning: no input data found for variable " + VAR(vv) + \
+                   " (" + syear + smonth + ")")
           continue
         end if
 
@@ -144,38 +147,6 @@ begin
         end if
         xx = tofloat(val) * scalefac + offset
         delete(val)
-
-        ; lwp is not a CMOR variable, derive as clwvi = lwp + iwp
-        if (VAR(vv).eq."clwvi") then
-          ; Read 2nd variable containing iwp (variable "iwp_allsky")
-          ii = ind(NAME .eq. "iwp_allsky")
-          fname2 = systemfunc("ls " + input_dir_path + FNBASE(ii) + \
-                              syear + smonth + "01*.nc")
-          ; No files found
-          if (ismissing(fname)) then
-            continue
-          end if
-          ; Extract data
-          f2 = addfile(fname2, "r")
-          iwpname = NAME(ii)
-          xx2 = f2->$iwpname$
-          if (isatt(xx2, "scale_factor")) then
-            scalefac = tofloat(xx2@scale_factor)
-          else
-            scalefac = 1.0
-          end if
-          if (isatt(xx2, "add_offset")) then
-            offset = tofloat(xx2@add_offset)
-          else
-            offset = 0.0
-          end if
-          iwp = tofloat(xx2) * scalefac + offset
-          delete(xx2)
-          ; add iwp to lwp to calculate cmor variable "clwvi"
-          xx = xx + iwp
-          delete(iwp)
-          delete(fname2)
-        end if
 
         ; Assign to global array
         if (.not.isdefined("output")) then
