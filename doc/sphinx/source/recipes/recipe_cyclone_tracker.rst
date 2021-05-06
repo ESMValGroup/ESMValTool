@@ -71,9 +71,9 @@ References
 ----------
 
 * Kreussler, P., Caron, L-P., Wild, S., Loosveldt Tomas, S., Chauvin, F., Moine, M-P., Roberts, M.J., 
-  Ruprich‐Robert, Y., Seddon, J., Valcke, S., Vannière, B., Vidale, P.L., 2020.
+  Ruprich‐Robert, Y., Seddon, J., Valcke, S., Vannière, B., Vidale, P.L., 2021.
   Tropical Cyclone Integrated Kinetic Energy in an Ensemble of HighResMIP Simulations. 
-  Geophysical Research Letter, 48, 5.
+  Geophysical Research Letters, 48, 5.
 
 * Bao, S. D. Stark, L. Bernardet (2013) USERS’ GUIDE for the Community release of the GFDL Vortex Tracker. Version 3.5b. 
   The Developmental Testbed Center.

@@ -381,7 +381,7 @@ class CycloneTracker:
             'caption': caption,
             'domains': ['global'],
             'authors': ['kreussler_philip', 'caron_louis-philippe'],
-            'references': ['kreussler21'],
+            'references': ['kreussler2021', 'acknow_project'],
             'ancestors': ancestors
             }
         with ProvenanceLogger(self.cfg) as provenance_logger:
