@@ -251,7 +251,7 @@ begin
   boxWidths = new((/numbox/), float)
   if (numbox.ne.dimsizes(x)) then
     print("boxplot: Fatal: X must be one - dimensional and both X and Y" + \
-              "have the same rightmost dimension")
+          "have the same rightmost dimension")
     exit
   end if
   if (any(ismissing(x))) then
@@ -275,8 +275,8 @@ begin
       if (dimsizes(boxOpts@boxWidth).ne.1.and.dimsizes(boxOpts@boxWidth)\
                                     .ne.numbox) then
         print("boxplot: Number of input box widths must either equal 1 or" +\
-               "the number of boxes (" + numbox + "). Using first specified" +\
-                "box width only.")
+              "the number of boxes (" + numbox + "). Using first specified" +\
+              "box width only.")
         boxWidths(:) = boxOpts@boxWidth(0)
       else
         boxWidths = boxOpts@boxWidth
@@ -302,7 +302,7 @@ begin
       if (fsatts(ty).eq."tmXBLabels") then  ; XBLabels
         if (dimsizes(plotres@tmXBLabels).ne.numbox) then
           print("boxplot: Fatal:Number of XB Labels does not match number" + \
-                 "of boxes, exiting")
+                "of boxes, exiting")
           exit
         else
           labarr(1:numbox) = plotres@$fsatts(ty)$
@@ -384,8 +384,8 @@ begin
       if (dimsizes(boxcolor).eq.1.or.dimsizes(boxcolor).ne.numbox) then
         if (dimsizes(boxcolor).ne.numbox) then
           print("boxplot: warning: Number of input colors must either " + \
-                 "equal 1 or the number of boxes (" + numbox + ")." + \
-                 "Using first specified color only.")
+                "equal 1 or the number of boxes (" + numbox + ")." + \
+                "Using first specified color only.")
         end if
         polyres@gsLineColor = boxcolor(0)
         cflag = 1
@@ -489,7 +489,7 @@ begin
   boxWidths = new((/numbox/), float)
   if (numbox.ne.dimsizes(x)) then
     print("boxplot: Fatal: X must be one -dimensional and both X and Y " + \
-           "must have the same rightmost dimension")
+          "must have the same rightmost dimension")
     exit
   end if
   if (any(ismissing(x))) then
@@ -514,9 +514,9 @@ begin
     if (isatt(boxOpts, "boxWidth")) then
       if (dimsizes(boxOpts@boxWidth).ne.1.and.(dimsizes(boxOpts@boxWidth).ne.\
                                                numbox)) then
-        print("boxplot: Number of input box widths must either equal 1" + \
-        "or the number of boxes (" + numbox + "). Using first specified" + \
-        "box width only.")
+        print("boxplot: Number of input box widths must either equal 1 " + \
+              "or the number of boxes (" + numbox + "). Using first " + \
+              "specified box width only.")
         boxWidths(:) = boxOpts@boxWidth(0)
       else
         boxWidths = boxOpts@boxWidth
@@ -527,7 +527,6 @@ begin
   else
     boxWidths(:) = dx * .4
   end if
-
 
   labarr = new(numbox + 2, "string")
   labarr(0) = ""
@@ -615,8 +614,8 @@ begin
       if (dimsizes(boxcolor).eq.1.or.dimsizes(boxcolor).ne.numbox) then
         if (dimsizes(boxcolor).ne.numbox) then
           print("boxplot: warning: Number of input colors must either" + \
-                 "equal 1 or the number of boxes (" + numbox + ")." + \
-                 "Using first specified color only.")
+                "equal 1 or the number of boxes (" + numbox + ")." + \
+                "Using first specified color only.")
         end if
         polyres@gsLineColor = boxcolor(0)
         cflag = 1
@@ -731,7 +730,7 @@ begin
   funcname = "select_region_938"
   scriptname = "diag_scripts/lib/ncl/latlon.ncl"
   verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
-  
+
   region_array_hlp = select_region1(region)
   region_array = (/(/region_array_hlp(2),   region_array_hlp(0)/), \
                    (/region_array_hlp(2),   region_array_hlp(1)/), \
@@ -766,7 +765,7 @@ begin
           in = in + 1
           delete(inou)
         end if
-       	inn = inn + 1
+        inn = inn + 1
       end if
     end do
   end do
@@ -901,7 +900,7 @@ begin
   if (region.eq."World") then
     region_array = (/300.000,   0.000/)
   end if
-  
+
   return(region_array)
 
 end
@@ -927,7 +926,7 @@ begin
   funcname = "select_region_srex"
   scriptname = "diag_scripts/lib/ncl/latlon.ncl"
   verbosity = stringtointeger(getenv("ESMValTool_verbosity"))
-  
+
     if (region.eq."ALAs") then
     region_array = (/(/255.000,   60.000/), \
                      (/191.978,   60.000/), \
@@ -1160,7 +1159,7 @@ begin
           in = in + 1
           delete(inou)
         end if
-       	inn = inn + 1
+        inn = inn + 1
       end if
     end do
   end do
@@ -1202,8 +1201,8 @@ begin
   ; edge_x = (/ 0.12, 0.92, 0.92, 0.12, 0.12/)
 
   edge_x = (/ 0.22, 0.76, 0.76, 0.22, 0.22/)
-  edge_y = (/ space_lines + bot_line, space_lines + bot_line,\
-             bot_line, bot_line, space_lines + bot_line/)
+  edge_y = (/space_lines + bot_line, space_lines + bot_line,\
+            bot_line, bot_line, space_lines + bot_line/)
   edge_res = True             ; Indicate you want to set some resources.
   edge_res@gsLineColor = "white"
   gsn_polyline_ndc(wks, edge_x, edge_y, edge_res)
@@ -1222,7 +1221,7 @@ begin
   do i = 0, 2
     xl(0, :) = fspan((edge_x(0) + 0.02), (edge_x(0) + 0.07), 4)
     xl(1, :) = fspan(((edge_x(2) + edge_x(0))/2 - 0.09),\
-                     ((edge_x(2) + edge_x(0))/2 -0.04), 4)
+                     ((edge_x(2) + edge_x(0))/2 - 0.04), 4)
     xl(2, :) = fspan((edge_x(2) - 0.20), (edge_x(2) - 0.15), 4)
   end do
 
@@ -1238,9 +1237,9 @@ begin
   yl = new(dim_lines, "float")
 
   do i = 0, dim_lines - 1
-    yl(dim_lines - 1 - i) = edge_y(3) + (((edge_y(0)  - \
-                          (edge_y(3)))/dim_lines) * \
-                          (i + 1)) - (lin_sp)
+    yl(dim_lines - 1 - i) = edge_y(3) + (((edge_y(0) - \
+                                         (edge_y(3)))/dim_lines) * \
+                                         (i + 1)) - (lin_sp)
   end do
 
   nt = 0
