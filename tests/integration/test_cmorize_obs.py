@@ -43,7 +43,7 @@ def write_config_user_file(dirname):
 def _create_sample_cube(time_step):
     """Create a quick CMOR-compliant sample cube."""
     coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
-    cube_data = np.ones((len(time_step), 3, 2, 2))
+    cube_data = np.ones((time_step.size, 3, 2, 2))
     cube_data[1, 1, 1, 1] = 22.
     time = iris.coords.DimCoord([
         time_step,
