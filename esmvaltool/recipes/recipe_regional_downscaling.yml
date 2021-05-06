@@ -105,6 +105,7 @@ datasets:
     start_year: 1986, end_year: 2005}
 
 preprocessors:
+
   annual_cycle:
     regrid:
       target_grid: reference_dataset 
@@ -112,12 +113,13 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
-    #mask_landseaice:
-    #  mask_out: ice
     mask_landsea: 
       mask_out: sea
+      fx_variables:
+        sftlf:
     mask_fillvalues:
       threshold_fraction: 0.95
+
   annual_cycle_mmm:
     regrid:
       target_grid: reference_dataset 
@@ -125,10 +127,10 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
-    #mask_landseaice:
-    #  mask_out: ice
     mask_landsea: 
       mask_out: sea
+      fx_variables:
+        sftlf:
     mask_fillvalues:
       threshold_fraction: 0.95
     multi_model_statistics:
@@ -143,12 +145,13 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
-    #mask_landseaice:
-    #  mask_out: ice
     mask_landsea:
       mask_out: sea
+      fx_variables:
+        sftlf:
     mask_fillvalues:
       threshold_fraction: 0.95
+
   clima_nomask:
     regrid:
       target_grid: reference_dataset
@@ -158,6 +161,7 @@ preprocessors:
       period: month
     mask_fillvalues:
       threshold_fraction: 0.95
+
   regr:
     regrid:
       target_grid: reference_dataset
@@ -205,6 +209,7 @@ diagnostics:
 #       @legend_position        : legend position in ncd coordinates     
 #        @fig938_YMin        : minimum Y Axis
 #        @fig938_YMax        : maximum Y Axis
+
   # ==========================================================================
   # Chapter 9  - Figure939 
   # ==========================================================================
@@ -243,6 +248,7 @@ diagnostics:
         fig939_colors_MMM: ["red"]
         fig939_refModel: ERA-Interim
         fig939_MMM: True
+
   # ==========================================================================
   # Chapter 9  - Figure940 
   # ==========================================================================
