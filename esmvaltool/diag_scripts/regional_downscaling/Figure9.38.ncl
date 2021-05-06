@@ -717,7 +717,7 @@ begin
   ; Add provenance
   ; -------------------------------------------------------------
 
-  caption = "Mean seasonal cycle for the surface temperature over " + \
+  caption = "Mean seasonal cycle for " + var0 + " over " + \
             "land in different regions"
 
   log_provenance(nc_filename, \

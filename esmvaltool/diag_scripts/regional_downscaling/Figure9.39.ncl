@@ -253,7 +253,7 @@ begin
   mres_r@cnFillOn = True
   mres_r@cnFillOpacityF = 0.5
   cmap_r = read_colormap_file("GMT_wysiwygcont")
-  mres_r@cnFillPalette = cmap_r(::-1,:)
+  mres_r@cnFillPalette = cmap_r(::-1, :)
   mres_r@mpFillOn = True
   gsres                = True
   gsres@gsFillOpacityF = 0.7
@@ -685,7 +685,9 @@ begin
     delete(res@ind_blue)
     delete(res@ind_red)
   end do
+
   ; ******************single region  output file**************************
+
   print(work_dir)
   nc_filename_MMM = work_dir + "fig939_" + var0 + "_MMM.nc"
   MMM@var = var0
@@ -699,6 +701,7 @@ begin
   MMM&region = region_label
   MMM&stat = (/"x5", "x25", "x50", "x75", "x95", "stddev"/)
   nc_outfile = ncdf_write(MMM, nc_filename_MMM)
+
   pan = True
   pan@gsnMaximize = True
   pan@gsnFrame = False
@@ -762,5 +765,21 @@ begin
 ;  info_output("wrote " + output_dir + output_filename, verbosity, 1)
 ;  info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 
+  ; -------------------------------------------------------------
+  ; Add provenance
+  ; -------------------------------------------------------------
+
+  caption = "Seasonal- and annual mean biases of " + var0 + " over " + \
+            "land in different regions"
+
+  log_provenance(nc_filename_MMM, \
+                 wks@fullname, \
+                 caption, \
+                 (/"diff", "mean", "perc"/), \
+                 (/"reg"/), \
+                 "box", \
+                 (/"cionni_irene"/), \
+                 (/"flato13ipcc"/), \
+                 metadata_att_as_array(info0, "filename"))
 
 end
