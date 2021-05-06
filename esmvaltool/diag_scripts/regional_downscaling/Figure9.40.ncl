@@ -5,8 +5,8 @@
 ; # CRESCENDO project
 ; #############################################################################
 ;
-; # Description:                                                              #
-; #    * Create seasonal or annual bias box plots at selected regions         # 
+; # Description:
+; #    * Create seasonal or annual bias box plots at selected regions
 ; #       - Read regions
 ; #        -create mask map using region poligons
 ; #       - for all the models calculate the bias respect @refModel
@@ -21,10 +21,13 @@
 ; # Required variable_info attributes (variable specific):
 ; #    * @refModel: reference model name
 ; #    * @fig_940_season : seasons i.e. (/"DJF","JJA","ANN"/)
-; #    * @fig_940_region_label :(/(/"Arctic_land","Arctic_sea","Antarctic_land",\
-; #                           "Antarctic_sea","Caribbean","WesternIndianOcean",\
+; #    * @fig_940_region_label :(/(/"Arctic_land","Arctic_sea",\
+; #                           "Antarctic_land",\
+; #                           "Antarctic_sea","Caribbean",\
+; #                           "WesternIndianOcean",\
 ; #                           "NorthernIndianOcean","NorthernTropicalPacific",\
-; #                           "EquatorialTropicalPacific","SouthernTropicalPacific",\
+; #                           "EquatorialTropicalPacific",\
+; #                           "SouthernTropicalPacific",\
 ; #                           "World_land","World_sea","World"/)
 ; #        these region are defined in Seneviratne et al., 2012: Appendix 3.A
 ; #        – Notes and technical details on Chapter 3 figures.
@@ -221,13 +224,15 @@ begin
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.40_" + var0)
   wks_r = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.40_regions" + var0)
   wks_l = get_wks("dummy_for_wks", DIAG_SCRIPT, "Figure9.40_legend" + var0)
+
   ; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Amask = read_data(info0[idx_ref])
   lsdata = Amask(0, :, :)
-  a    = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc","r")
+  a    = addfile("$NCARG_ROOT/lib/ncarg/data/cdf/landsea.nc", "r")
   lsdata1 = a->LSMASK
-   lsm  = landsea_mask(lsdata1,lsdata&lat,lsdata&lon)
+  lsm  = landsea_mask(lsdata1, lsdata&lat, lsdata&lon)
   ; *****************************************************************
+
   map = new(dimsizes(region_label), "graphic")
   plot = new(dim_seas, "graphic")
   dum_ref = new(dim_seas, "graphic")
@@ -263,13 +268,13 @@ begin
       cell_fill&lat = lsdata&lat
       cell_fill&lon = lsdata&lon
       if(region_ch.eq."land") then
-        cell_fill = mask(cell_fill,lsm.eq.0,False) ; 0 = Ocean
-        cell_fill = mask(cell_fill,lsm.eq.2,False) ; 2 = Lake
-        ; cell_fill = mask(cell_fill,lsdata.eq.4,False); 4 = Ice Shelf
+        cell_fill = mask(cell_fill, lsm.eq.0, False)  ; 0 = Ocean
+        cell_fill = mask(cell_fill, lsm.eq.2, False)  ; 2 = Lake
+        ; cell_fill = mask(cell_fill,lsdata.eq.4,False)  ; 4 = Ice Shelf
       end if
       if(region_ch.eq."sea") then
-        cell_fill = mask(cell_fill,lsm.eq.1,False); 1 = Land
-        cell_fill = mask(cell_fill,lsm.eq.3,False) ; 3 = Small Island
+        cell_fill = mask(cell_fill, lsm.eq.1, False)  ; 1 = Land
+        cell_fill = mask(cell_fill, lsm.eq.3, False)  ; 3 = Small Island
       end if
       cell_fill = where(ismissing(cell_fill), -1., 1.)
       mres@tiMainString = region_label(ir)
@@ -661,7 +666,9 @@ begin
     delete(res@ind_blue)
     delete(res@ind_red)
   end do
+
   ; ******************single region  output file**************************
+
   nc_filename_MMM = work_dir + "fig940_" + var0 + "_MMM.nc"
   MMM@var = var0
   MMM@diag_script = "fig940"
@@ -674,6 +681,7 @@ begin
   MMM&region = region_label
   MMM&stat = (/"x5", "x25", "x50", "x75", "x95", "stddev"/)
   nc_outfile = ncdf_write(MMM, nc_filename_MMM)
+
   pan = True
   pan@gsnMaximize = True
   pan@gsnFrame = False
@@ -735,5 +743,21 @@ begin
 ;  info_output("wrote " + output_dir + output_filename, verbosity, 1)
 ;  info_output(">>>>>>>> Leaving " + diag_script, verbosity, 4)
 
+  ; -------------------------------------------------------------
+  ; Add provenance
+  ; -------------------------------------------------------------
+
+  caption = "Seasonal- and annual mean biases of " + var0 + " over " + \
+            "land in different regions"
+
+  log_provenance(nc_filename_MMM, \
+                 wks@fullname, \
+                 caption, \
+                 (/"diff", "mean", "perc"/), \
+                 (/"reg"/), \
+                 "box", \
+                 (/"cionni_irene"/), \
+                 (/"flato13ipcc"/), \
+                 metadata_att_as_array(info0, "filename"))
 
 end
