@@ -248,7 +248,7 @@ begin
   plot = new(dim_reg, "graphic")
   plot_MMM = new(dim_reg, "graphic")
   plot_STD = new((/dim_reg, dim_MMM/), "graphic")
-  
+
   ; map = new(dimsizes(region_label), "graphic")
   map_r = new(1, "graphic")
   mres_r = True
@@ -264,7 +264,7 @@ begin
   mres_r@cnFillOn = True
   mres_r@cnFillOpacityF = 0.5
   cmap_r = read_colormap_file("GMT_wysiwygcont")
-  mres_r@cnFillPalette = cmap_r(::-1,:)
+  mres_r@cnFillPalette = cmap_r(::-1, :)
   mres_r@mpFillOn = True
   txres               = True
   txres@txFontHeightF = 0.015
@@ -275,7 +275,6 @@ begin
   unf   = random_uniform(0, 1, (/dim_reg + 1/))
   ip = dim_pqsort(unf, 1)
 
-  
   do ir = 0, dim_reg - 1
     case1 = region_label(ir)
     if(idx_ref.ne.-1) then
@@ -390,17 +389,17 @@ begin
       end do  ; imod
       delete(A)
     else
-        if (diag_script_info@fig938_MMM.eq."True")
-          indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
-          indic_not_sel = where(indic_not_sela.eq.idx_ref,\
-                                indic_not_sela@_FillValue, indic_not_sela)
-          if(.not.(any(ismissing(indic_not_sel)))) then
-            indic_not_sel1 = indic_not_sel(ind(.not.ismissing(indic_not_sel)))
-            delete(indic_not_sel)
-            indic_not_sel = indic_not_sel1
-            delete(indic_not_sel1)
-          end if
+      if (diag_script_info@fig938_MMM.eq."True")
+        indic_s = where(indic_s.eq.idx_ref, indic_s@_FillValue, indic_s)
+        indic_not_sel = where(indic_not_sela.eq.idx_ref,\
+                              indic_not_sela@_FillValue, indic_not_sela)
+        if(.not.(any(ismissing(indic_not_sel)))) then
+          indic_not_sel1 = indic_not_sel(ind(.not.ismissing(indic_not_sel)))
+          delete(indic_not_sel)
+          indic_not_sel = indic_not_sel1
+          delete(indic_not_sel1)
         end if
+      end if
       lin_mar_mod1 = lin_mar_mod
       C = new((/dim_MOD, 13/), "double")
       do imod = 0, dim_MOD - 1
@@ -458,9 +457,11 @@ begin
     res@gsnRightStringFontHeightF = 0.04
     res@tfPolyDrawOrder = "Draw"
     plot(ir) = gsn_csm_xy(wks, months, C, res)
+
     ; ******************single region  output file**************************
-    nc_filename = work_dir + "fig938_" + var0 + "_" + case1 + ".nc"
-    C@var = var0
+
+    nc_filename = work_dir + "fig938_" + var0 + ".nc"
+    C@var = var0 + "_" + case1
     C@diag_script = "fig938"
     C!0 = "line"
     C!1 = "month"
@@ -468,8 +469,17 @@ begin
                "O", "N", "D", "J"/)
     C&line = models1
     C&month = month_n
+
+    if (ir .eq. 0) then
+      C@existing = "overwrite"
+    else
+      C@existing = "append"
+    end if
+
     nc_outfile = ncdf_write(C, nc_filename)
+
     ; ******************single region  output file**************************
+
     if (diag_script_info@fig938_MMM.eq."True")
       if(.not.all(ismissing(indic_not_sel))) then
         dim_extr = dimsizes(indic_not_sel)
@@ -588,9 +598,11 @@ begin
       plot_STD(ir, iin) = gsn_add_polygon(wks_MMM, plot_MMM(ir), xp,\
                                           yp(:, iin), gsres)
     end do
+
     ; ******************single region  output file**************************
-    nc_filename_MMM = work_dir + "fig938_" + var0 + "_" + case1 + "_MMM.nc"
-    MMM@var = var0
+
+    nc_filename_MMM = work_dir + "fig938_" + var0 + "_MMM.nc"
+    MMM@var = var0 + "_" + case1
     MMM@diag_script = "fig938"
     month_n = (/"J", "F", "M", "A", "M", "J", "J", "A", "S", \
                      "O", "N", "D", "J"/)
@@ -598,10 +610,19 @@ begin
     MMM!1 = "month"
     MMM&line = names_MMM
     MMM&month = month_n
-    ; ******************single region  output file**************************
+
+    if (ir .eq. 0) then
+      MMM@existing = "overwrite"
+    else
+      MMM@existing = "append"
+    end if
+
     nc_outfile = ncdf_write(MMM, nc_filename_MMM)
-    nc_filename_STD = work_dir + "fig938_" + var0 + "_" + case1 + "_STD.nc"
-    STD@var = var0
+
+    ; ******************single region  output file**************************
+
+    nc_filename_STD = work_dir + "fig938_" + var0 + "_STD.nc"
+    STD@var = var0 + "_" + case1
     STD@diag_script = "fig938"
     month_n = (/"J", "F", "M", "A", "M", "J", "J", "A", "S", \
                      "O", "N", "D", "J"/)
@@ -609,7 +630,15 @@ begin
     STD!1 = "month"
     STD&line = names_MMM
     STD&month = month_n
+
+    if (ir .eq. 0) then
+      STD@existing = "overwrite"
+    else
+      STD@existing = "append"
+    end if
+
     nc_outfile = ncdf_write(STD, nc_filename_STD)
+
     ; ******************single region  output file**************************
 
     delete(min1)
@@ -620,8 +649,9 @@ begin
     delete(xp)
     delete(yp)
     delete(indic_not_sel)
-    ; ******************single region  output file**************************
+
   end do  ; region
+
   ; Panel plots
   pan = True
   pan@gsnMaximize = True
@@ -632,7 +662,7 @@ begin
     n_p = n_p + 1
   end if
   gsn_panel(wks, plot, (/n_p, 5/), pan)
-  ;frame(wks)
+  ; frame(wks)
   ;  add_legend(wks, models1, colors1, dashes1,lin_mar_mod1,\
   ;   thicks1, diag_script_info@legend_position)
   ;  if(isatt(diag_script_info, "legend_position")) then
@@ -640,36 +670,36 @@ begin
   ; add_legend(wks, models1, colors1, dashes1, lin_mar_mod1, thicks1, "0.2")
   ; end if
   frame(wks)
-  
-   ; ***********add legend****************************
+
+  ; ***********add legend****************************
   add_legenda_page(wks_l, models1, colors1, dashes1, lin_mar_mod1,\
                    thicks1, "0.9")
   frame(wks_l)
-  
-  if (diag_script_info@fig938_MMM.eq."True")    
-      pan1 = True
-      pan1@gsnMaximize = True
-      pan1@gsnFrame = False
-      pan1@gsnPaperOrientation = "portrait"
-      n_p = dimsizes(plot_MMM) / 5
-      if (mod(dimsizes(plot_MMM), 5) .ne. 0) then
-        n_p = n_p + 1
-      end if
-      gsn_panel(wks_MMM, plot_MMM, (/n_p, 5/), pan1)
-      ; if(isatt(diag_script_info, "legend_position")) then
-      ;   add_legenda(wks_MMM, names_MMM, colors_MMM, \
-      ;               dashes_MMM, lin_mar_mod_MMM, thicks_MMM,\
-      ;               diag_script_info@legend_position)
-      ; else
-      add_legend(wks_MMM, names_MMM, colors_MMM,\
-                 dashes_MMM, lin_mar_mod_MMM, thicks_MMM, "0.2")
-      ; end if
+
+  if (diag_script_info@fig938_MMM.eq."True")
+    pan1 = True
+    pan1@gsnMaximize = True
+    pan1@gsnFrame = False
+    pan1@gsnPaperOrientation = "portrait"
+    n_p = dimsizes(plot_MMM) / 5
+    if (mod(dimsizes(plot_MMM), 5) .ne. 0) then
+      n_p = n_p + 1
+    end if
+    gsn_panel(wks_MMM, plot_MMM, (/n_p, 5/), pan1)
+    ; if(isatt(diag_script_info, "legend_position")) then
+    ;   add_legenda(wks_MMM, names_MMM, colors_MMM, \
+    ;               dashes_MMM, lin_mar_mod_MMM, thicks_MMM,\
+    ;               diag_script_info@legend_position)
+    ; else
+    add_legend(wks_MMM, names_MMM, colors_MMM,\
+               dashes_MMM, lin_mar_mod_MMM, thicks_MMM, "0.2")
+    ; end if
   end if
   frame(wks_MMM)
   delete(plot_MMM)
   delete(res1)
   delete(pan1)
-  
+
   map_r = gsn_csm_contour_map(wks_r, cell_fill2, mres_r)
 
   do ir = 0, dim_reg - 1
@@ -682,5 +712,37 @@ begin
   end do
   draw(map_r)
   frame(wks_r)
+
+  ; -------------------------------------------------------------
+  ; Add provenance
+  ; -------------------------------------------------------------
+
+  caption = "Mean seasonal cycle for the surface temperature over " + \
+            "land in different regions"
+
+  log_provenance(nc_filename, \
+                 wks@fullname, \
+                 caption, \
+                 (/"clim"/), \
+                 (/"reg"/), \
+                 "seas", \
+                 (/"cionni_irene"/), \
+                 (/"flato13ipcc"/), \
+                 metadata_att_as_array(info0, "filename"))
+
+  if (diag_script_info@fig938_MMM .eq. "True")
+
+    log_provenance(nc_filename_MMM, \
+                   wks_MMM@fullname, \
+                   caption, \
+                   (/"clim"/), \
+                   (/"reg"/), \
+                   "seas", \
+                   (/"cionni_irene"/), \
+                   (/"flato13ipcc"/), \
+                   metadata_att_as_array(info0, "filename"))
+
+  end if
+
 
 end
