@@ -89,10 +89,13 @@ following figures from Flato et al. (2013) can currently be reproduced:
       calculated as the standard deviation of the annual means over the period
       1986–2005.
 
-    * Figure 9.38: Seasonal cycle over land within defined regions 
-      multi-model mean and comparison to refefence data set can be choosen. 
+    * Figure 9.38: Seasonal cycle for the surface temperature over land within 
+      defined regions multi-model mean and comparison to refefence data set 
+      can be choosen. 
 
-    * Figure 9.39: Seasonal bias box plot within SREX regions. 
+    * Figure 9.39: Seasonal bias box plot within 
+      SREX (IPCC Special Report on Managing the Risks of Extreme Events and 
+      Disasters to Advance Climate Change Adaptation) regions. 
 
     * Figure 9.40: Seasonal bias box plot within defined polar and 
       ocean regions.
@@ -328,6 +331,19 @@ User settings in recipe
 #. Script regional_downscaling/Figure9.38.ncl
 
    *Required settings (scripts)*
+    
+    * projection: CylindricalEquidistant
+    * showdiff: true/false
+    * styleset: CMIP5/CMIP6
+    * fig938_region_label: Labels for regions, which should be included 
+      (["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF","CAF", "SAF", "NAS", 
+        "CAS", "EAS", "SAS", "SEA", "AUS"])
+    * fig938_project_MMM: ["CMIP5"]
+    * fig938_experiment_MMM: ["historical"]
+    * fig938_mip_MMM: ["Amon"]
+    * fig938_colors_MMM: Color for multi-model mean (e.g. ["red"])
+    * fig938_refModel: Reference data set for differences (e.g. ERA-Interim)
+    * fig938_MMM: Plot multi-model mean (true/false)
    
    *Optional settings (scripts)*
 
@@ -443,7 +459,7 @@ Observations and reformat scripts
 instructions.*
 
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
-* ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+* ERA-Interim (tas, ta, ua, va, zg, hus, pr - esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
 * GCP (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_gcp.py)
 * GPCP-SG (pr - obs4mips)
 * JMA-TRANSCOM (fgco2, nbp - esmvaltool/cmorizers/obs/cmorize_obs_jma_transcom.py)
