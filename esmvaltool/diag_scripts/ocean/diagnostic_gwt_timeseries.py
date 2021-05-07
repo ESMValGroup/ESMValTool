@@ -623,8 +623,10 @@ def load_timeseries(cfg, short_names):
     if 'co2' in short_names_to_load:
         data_dict = load_co2_forcing(cfg, data_dict)
 
-    #if 'emissions' in short_names_to_load:
-    #    data_dict = load_co2_forcing(cfg, data_dict)
+    if 'emissions' in short_names_to_load:
+        data_dict = load_emissions_forcing(cfg, data_dict)
+        print(data_dict.keys())
+        assert 0
 
     for sn in short_names_to_load:
         if sn in transforms:
@@ -643,9 +645,9 @@ def load_timeseries(cfg, short_names):
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
                 if short_name in ['co2', 'emissions']:
-                     continue 
+                     continue
                 cubes.append(cube)
-            
+
             if not len(cubes):
                 continue
             elif len(cubes) == 1:
@@ -847,12 +849,40 @@ def load_co2_forcing(cfg, data_dict):
     return data_dict
 
 
+def load_emissions_forcing(cfg, data_dict):
+    """
+    Load annual CO2 data from the auxiliary datasets.
+
+    Unlike the rest of data_dcit, it's isn't loaded as a cube, but rather as a
+    dict.
+    """
+    fold = cfg['auxiliary_data_dir']+'/emissions/'
+    files = glob.glob(fold+'*.txt')
+    print(files)
+    hist_datas = []
+    hist_times = []
+    ssp585_datas = []
+    ssp585_times = []
+
+    # load the co2 from the file.
+    for fn in files:
+        times = []
+        data = []
+        for line in open_fn.readlines()[2:]:
+            line = line.split(' ')
+            for x in range(len(line)):
+                if '' in line: line.remove('')
+                if '\n' in line: line.remove('\n')
+                times.append(float(line[0]))
+                data.append(float(line[1]))
+    assert 0
+
 def get_threshold_point(cube, year):
     """
     get the location of the year provided.
     """
     if isinstance(cube, dict):
-        arg_min = np.argmin(np.array(cube['time']) - year)   
+        arg_min = np.argmin(np.array(cube['time']) - year)
     else:
         time_units = cube.coord('time').units
         date = datetime.datetime(int(year), 6, 1)
@@ -951,7 +981,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     number_of_lines=0
     #for exp_1, ensemble_1 in product(exps, ensembles):
         #print('\nproduct loop', exp_1, ensemble_1)
-        #txt =  
+        #txt =
         ##print('co2:', data_dict.get(('co2', exp_1, ensemble_1), 'Not Found'))
         #print('tas:', data_dict.get(('tas', exp_1, ensemble_1), 'Not Found'))
 
@@ -1023,33 +1053,33 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             y_times = np.ma.array(y_times)
             number_of_lines+=1
             if ensemble_mean:
-                lw=1.3  
-            else: 
+                lw=1.3
+            else:
                 lw=0.5
             if exp_1 == 'historical':
                 plt.plot(np.ma.masked_where(x_times > 2005, x_data),
                          np.ma.masked_where(y_times > 2005, y_data),
-                         lw=lw, 
+                         lw=lw,
                          color=exp_colours[exp_1])
             else:
                 #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
                 plt.plot(np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data),
                          np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data),
-                         lw=lw, 
+                         lw=lw,
                          color=exp_colours['historical'])
 
                 plt.plot(np.ma.masked_where(x_times < 2015, x_data),
                          np.ma.masked_where(y_times < 2015, y_data),
-                         lw=lw, 
+                         lw=lw,
                          color=exp_colours[exp_1])
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
             except:
                threshold_times = {}
-            ms = 8 
+            ms = 8
             if ensemble_mean:
-                ms = 8  
+                ms = 8
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
@@ -1164,7 +1194,7 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    #jobtype = 'debug' 
+    #jobtype = 'debug'
     jobtype = 'bulk'
 
     if jobtype == 'marine':
@@ -1247,7 +1277,7 @@ def main(cfg):
                                ensemble_mean=True)
                 if jobtype == 'debug': continue
                 make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
-                               markers='thresholds', do_moving_average=True, 
+                               markers='thresholds', do_moving_average=True,
                                ensemble_mean=False)
                 pairs.append((x, y))
                 #pairs.append((y, x))
