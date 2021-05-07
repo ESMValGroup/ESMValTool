@@ -172,7 +172,7 @@ html_short_title = "ESMValTool {0}".format(release)
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'figures/ESMValTool-logo.png'
+html_logo = 'figures/ESMValTool-logo-2.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -264,7 +264,7 @@ latex_elements = {
      \fi}
      \begin{titlepage}
      \begin{center}
-     \includegraphics[width=\textwidth]{../../source/figures/ESMValTool-logo.pdf}\par
+     \includegraphics[width=\textwidth]{../../source/figures/ESMValTool-logo-2.pdf}\par
      \vspace{2cm}
      {\Huge \bf \sffamily User's and Developer's Guide \par}
      \vspace{1cm}
