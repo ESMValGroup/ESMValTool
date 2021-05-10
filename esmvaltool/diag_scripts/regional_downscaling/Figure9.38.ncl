@@ -28,7 +28,7 @@
 ; #     * @fig938_experiment_MMM: experiments to average
 ; #     * @fig938_mip_MMM: mip to average
 ; #
-; #        @fig938_mip_MMM must be the same i.e.
+; #        @fig938_mip_MMM must have the same number of elements i.e.
 ; #        @fig938_project_MMM=(/"CMIP5", "CMIP3"/)
 ; #        @fig938_experiment_MMM=(/"historical", "historical"/)
 ; #        @fig938_mip_MMM=(/"Amon", "Amon"/)
@@ -37,7 +37,6 @@
 ; #
 ; #        @fig938_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
 ; #        @fig938_colors_MMM  : colors (/"red","blue"/)
-; #        @legend_position        : legend position in ncd coordinates
 ; #        @fig938_YMin        : minimum Y Axis
 ; #        @fig938_YMax        : maximum Y Axis
 ; #
@@ -97,7 +96,7 @@ begin
 
   ; Set default values for optional diag_script_info attributes
 
-  set_default_att(diag_script_info, "fig938_region_label", "ANN")
+  set_default_att(diag_script_info, "fig938_region_label", "WNA")
   set_default_att(diag_script_info, "styleset", "CMIP5")
   set_default_att(diag_script_info, "fig938_MMM", "True")
   set_default_att(diag_script_info, "fig938_project_MMM", "CMIP5")
@@ -105,10 +104,7 @@ begin
   set_default_att(diag_script_info, "fig938_mip_MMM", "Amon")
   set_default_att(diag_script_info, "fig938_names_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig938_colors_MMM", "red")
-  set_default_att(diag_script_info, "legend_position", "0.2")
   set_default_att(diag_script_info, "refModel", "ERA-Interim")
-  ; set_default_att(diag_script_info, "Figure_938_YMin", "0")
-  ; set_default_att(diag_script_info, "Figure_938_YMax", "0")
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
   thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
@@ -662,13 +658,6 @@ begin
     n_p = n_p + 1
   end if
   gsn_panel(wks, plot, (/n_p, 5/), pan)
-  ; frame(wks)
-  ;  add_legend(wks, models1, colors1, dashes1,lin_mar_mod1,\
-  ;   thicks1, diag_script_info@legend_position)
-  ;  if(isatt(diag_script_info, "legend_position")) then
-  ; else
-  ; add_legend(wks, models1, colors1, dashes1, lin_mar_mod1, thicks1, "0.2")
-  ; end if
   frame(wks)
 
   ; ***********add legend****************************
@@ -686,11 +675,6 @@ begin
       n_p = n_p + 1
     end if
     gsn_panel(wks_MMM, plot_MMM, (/n_p, 5/), pan1)
-    ; if(isatt(diag_script_info, "legend_position")) then
-    ;   add_legenda(wks_MMM, names_MMM, colors_MMM, \
-    ;               dashes_MMM, lin_mar_mod_MMM, thicks_MMM,\
-    ;               diag_script_info@legend_position)
-    ; else
     add_legend(wks_MMM, names_MMM, colors_MMM,\
                dashes_MMM, lin_mar_mod_MMM, thicks_MMM, "0.2")
     ; end if
