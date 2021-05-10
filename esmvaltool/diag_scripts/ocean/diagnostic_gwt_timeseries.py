@@ -625,8 +625,6 @@ def load_timeseries(cfg, short_names):
 
     if 'emissions' in short_names_to_load:
         data_dict = load_emissions_forcing(cfg, data_dict)
-        print(data_dict.keys())
-        assert 0
 
     for sn in short_names_to_load:
         if sn in transforms:
@@ -735,7 +733,8 @@ def load_co2_forcing(cfg, data_dict):
             for x in range(len(line)):
                 if '' in line: line.remove('')
                 if '\n' in line: line.remove('\n')
-            times.append(float(line[0]))
+            t = float(line[0]) + 0.5
+            times.append(t)
             data.append(float(line[1]))
         if key == 'historical':
             hist_datas = np.array(data).copy()
@@ -858,31 +857,46 @@ def load_emissions_forcing(cfg, data_dict):
     """
     fold = cfg['auxiliary_data_dir']+'/emissions/'
     files = glob.glob(fold+'*.txt')
-    print(files)
-    hist_datas = []
-    hist_times = []
-    ssp585_datas = []
-    ssp585_times = []
+    #print(files)
+    #hist_datas = []
+    #hist_times = []
+    #ssp585_datas = []
+    #ssp585_times = []
+    exps = {}
+    ensembles = {'ensemble_mean': True}
+    for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
+        exps[exp] = True
+        ensembles[ensemble] = True
 
     # load the co2 from the file.
     for fn in files:
         times = []
         data = []
+        open_fn = open(fn, 'r')
+        scenario = os.path.basename(fn)
+        scenario = scenario.replace('UKESM1_', '')
+        scenario = scenario.replace('.txt', '')
+        scenario = scenario.replace('historical_', 'historical-')
+  
         for line in open_fn.readlines()[2:]:
-            line = line.split(' ')
-            for x in range(len(line)):
-                if '' in line: line.remove('')
-                if '\n' in line: line.remove('\n')
-                times.append(float(line[0]))
-                data.append(float(line[1]))
-    assert 0
+            line = [x.replace('\n', '') for x in line.split(' ')]
+            t = float(line[0]) + 0.5
+            #if t > 2100.: continue 
+            times.append(t)
+            data.append(float(line[2]))
+            print (fn, line)
+        for t,d in zip(times,data): print(scenario, t,d)
+        for ensemble in ensembles:
+            data_dict[('emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
+    return data_dict
 
 def get_threshold_point(cube, year):
     """
     get the location of the year provided.
     """
     if isinstance(cube, dict):
-        arg_min = np.argmin(np.array(cube['time']) - year)
+        arg_min = np.argmin(np.abs(np.array(cube['time']) - year))
+        #print(arg_min, year, np.array(cube['time']))
     else:
         time_units = cube.coord('time').units
         date = datetime.datetime(int(year), 6, 1)
@@ -900,6 +914,7 @@ def get_long_name(name):
         'tas' : 'Temperature',
         'tas_norm' : 'Temperature',
         'co2' : 'Atmospheric CO2',
+        'emissions' : 'Anthropogenic emissions',
         'rh': 'Heterotrophic respiration',
         'intpp' : 'Marine Primary Production',
         'intdic' : 'Dissolved Inorganic Carbon',
@@ -1009,11 +1024,21 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     x_data = cube['time']
                     x_times = x_data.copy()
                     print('setting x time to ',short_name, exp, ensemble)
+            elif x == short_name and x in ['co2', 'emissions']:
+                x_data = cube[x].copy()
+                x_times = cube['time'].copy()
+                print('setting x time to ',short_name, exp, ensemble)
+                if x == 'co2':
+                    x_label = ' '.join(['Atmospheric co2, ppm'])
+                if x == 'emissions':
+                    x_label = ' '.join(['Anthropogenic emissions, Pg/yr']) 
+
             elif x == short_name == 'co2':
                 x_data = cube['co2'].copy()
                 x_times = cube['time'].copy()
                 print('setting x time to ',short_name, exp, ensemble)
                 x_label = ' '.join(['Atmospheric co2, ppm'])
+
             elif short_name == x:
                 x_data = np.array(cube.data.copy())
                 x_times = diagtools.cube_time_to_float(cube)
@@ -1023,11 +1048,14 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if y == 'time':
                 print('what kind of crazy person plots time on y axis?')
                 assert 0
-            elif y == short_name == 'co2':
-                y_data = cube['co2'].copy()
+            elif y == short_name and y in ['co2', 'emissions']:
+                y_data = cube[y].copy()
                 y_times = cube['time'].copy()
                 print('setting y time to ',short_name, exp, ensemble)
-                y_label = ' '.join(['Atmospheric co2, ppm'])
+                if y == 'co2':
+                    y_label = ' '.join(['Atmospheric co2, ppm'])
+                if y == 'emissions':
+                    y_label = ' '.join(['Anthropogenic emissions, Pg/yr'])
             elif short_name == y:
                 y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
@@ -1063,13 +1091,24 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          color=exp_colours[exp_1])
             else:
                 #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
-                plt.plot(np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data),
-                         np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data),
+                tdatcx = np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_times).compressed()
+                tdatcy = np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_times).compressed()
+                print(tdatcx, tdatcy)
+
+                plt.plot(np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data).compressed(),
+                         np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data).compressed(),
                          lw=lw,
                          color=exp_colours['historical'])
 
-                plt.plot(np.ma.masked_where(x_times < 2015, x_data),
-                         np.ma.masked_where(y_times < 2015, y_data),
+                xdatc = np.ma.masked_where(x_times < 2015, x_data).compressed()
+                ydatc = np.ma.masked_where(y_times < 2015, y_data).compressed()
+                xtdatc = np.ma.masked_where(x_times < 2015, x_times).compressed()
+                ytdatc = np.ma.masked_where(y_times < 2015, y_times).compressed()
+
+                print(xdatc, ydatc, xtdatc, ytdatc)
+ 
+                plt.plot(np.ma.masked_where(x_times < 2015, x_data).compressed(),
+                         np.ma.masked_where(y_times < 2015, y_data).compressed(),
                          lw=lw,
                          color=exp_colours[exp_1])
 
@@ -1083,23 +1122,24 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             for threshold, time in threshold_times.items():
                 if not time:
                     continue
-                y_point = get_threshold_point(cube, time.year)
-                print(exp_1, ensemble_1,x,y, threshold, time, y_point, len(x_data),len(y_data), )
+                x_point = get_threshold_point({'time':x_times}, time.year)
+                #_point = get_threshold_point(cube, time.year)
+                y_point = get_threshold_point({'time':y_times}, time.year)
 
-                plt.plot(x_data[y_point],
+                print('thresholds:', exp_1, ensemble_1,x,y, threshold, time, x_point, y_point, len(x_data),len(y_data))
+                #assert 0
+                plt.plot(x_data[x_point],
                          y_data[y_point],
                          marker_styles[threshold],
                          markersize = ms,
                          fillstyle='none',
                          color=exp_colours[exp_1])
-                plt.plot(x_data[y_point],
+                plt.plot(x_data[x_point],
                          y_data[y_point],
                          'o',
                          markersize = 2,
                          #fillstyle='none',
                          color=exp_colours[exp_1])
-
-
 
 #        if x == short_name == 'tas_norm':
 #            for line in [0, 1.5, 2, 3, 4, 5]:
@@ -1223,7 +1263,7 @@ def main(cfg):
         short_names = [
                        'emissions','tas',  #'nbpgt', 'gpp', 'gppgt',
                        ]
-        short_names_x = ['emissions', 'tas', ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_x = ['time','emissions', ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
         short_names_y = ['emissions', 'tas', ]#short_names.copy()
 
 
@@ -1263,7 +1303,7 @@ def main(cfg):
         thresholds_dict = load_thresholds(cfg, data_dict)
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
-            if do_ma and short_name != 'co2':
+            if do_ma and short_name not in ['co2', 'emissions']:
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
