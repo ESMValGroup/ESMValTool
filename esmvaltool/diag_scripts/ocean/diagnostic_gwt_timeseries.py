@@ -327,7 +327,7 @@ def print_exceedance_dates(cfg, exceedance_dates, window = 10, short_name = 'tas
     out.close()
 
 
-def marine_gt(data_dict, short, gt):
+def marine_gt(data_dict, short, gt, cumul=False):
     """
     Calculate global from the data dictionary.
     """
@@ -364,11 +364,16 @@ def marine_gt(data_dict, short, gt):
         else:
             print('Units not Recognised:', cube.units)
             assert 0
+        if cumul:
+            #print(cubegt.data, np.ma.masked_invalid(cubegt.data), np.cumsum(np.ma.masked_invalid(cubegt.data)))
+            #assert 0
+            cubegt.data = np.cumsum(np.ma.masked_invalid(cubegt.data))
         data_dict[(gt, exp, ensemble)] = cubegt
     return data_dict
 
 
 def fgco2gt(data_dict): return marine_gt(data_dict, short='fgco2', gt='fgco2gt')
+def fgco2gt_cumul(data_dict):return marine_gt(data_dict, short='fgco2', gt='fgco2gt', cumul=True) 
 def intppgt(data_dict): return marine_gt(data_dict, short='intpp', gt='intppgt')
 def epc100gt(data_dict): return marine_gt(data_dict, short='epc100', gt='epc100gt')
 def intdicgt(data_dict): return marine_gt(data_dict, short='intdic', gt='intdicgt')
@@ -570,10 +575,13 @@ def load_timeseries(cfg, short_names):
         'rhgt_norm': ['rhgt', ],
         'exchange_norm': ['exchange', ],
         'fgco2gt_norm': ['fgco2gt', ],
+        'fgco2gt_cumul': ['fgco2', 'areacello' ],
+
         }
 
     transforms_functions = {
         'fgco2gt': fgco2gt,
+        'fgco2gt_cumul': fgco2gt_cumul,
         'gppgt': gppgt,
         'nppgt': nppgt,
         'nbpgt': nbpgt,
@@ -623,7 +631,7 @@ def load_timeseries(cfg, short_names):
     if 'co2' in short_names_to_load:
         data_dict = load_co2_forcing(cfg, data_dict)
 
-    if 'emissions' in short_names_to_load:
+    if set(['emissions', 'cumul_emissions']) & set(short_names_to_load):
         data_dict = load_emissions_forcing(cfg, data_dict)
 
     for sn in short_names_to_load:
@@ -642,7 +650,7 @@ def load_timeseries(cfg, short_names):
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
-                if short_name in ['co2', 'emissions']:
+                if short_name in ['co2', 'emissions', 'cumul_emissions']:
                      continue
                 cubes.append(cube)
 
@@ -872,6 +880,7 @@ def load_emissions_forcing(cfg, data_dict):
     for fn in files:
         times = []
         data = []
+        
         open_fn = open(fn, 'r')
         scenario = os.path.basename(fn)
         scenario = scenario.replace('UKESM1_', '')
@@ -884,10 +893,15 @@ def load_emissions_forcing(cfg, data_dict):
             #if t > 2100.: continue 
             times.append(t)
             data.append(float(line[2]))
-            print (fn, line)
-        for t,d in zip(times,data): print(scenario, t,d)
+            # print (fn, line)
+        # for t,d in zip(times,data): print(scenario, t,d)
         for ensemble in ensembles:
             data_dict[('emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
+            data_dict[('cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':np.cumsum(data)}
+
+    # calculate the cumulative emissions.
+    tmp_dict = {}
+    
     return data_dict
 
 def get_threshold_point(cube, year):
@@ -915,6 +929,7 @@ def get_long_name(name):
         'tas_norm' : 'Temperature',
         'co2' : 'Atmospheric CO2',
         'emissions' : 'Anthropogenic emissions',
+        'cumul_emissions': 'Cumulative Anthropogenic emissions',
         'rh': 'Heterotrophic respiration',
         'intpp' : 'Marine Primary Production',
         'intdic' : 'Dissolved Inorganic Carbon',
@@ -1024,7 +1039,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     x_data = cube['time']
                     x_times = x_data.copy()
                     print('setting x time to ',short_name, exp, ensemble)
-            elif x == short_name and x in ['co2', 'emissions']:
+            elif x == short_name and x in ['co2', 'emissions', 'cumul_emissions']:
                 x_data = cube[x].copy()
                 x_times = cube['time'].copy()
                 print('setting x time to ',short_name, exp, ensemble)
@@ -1032,7 +1047,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     x_label = ' '.join(['Atmospheric co2, ppm'])
                 if x == 'emissions':
                     x_label = ' '.join(['Anthropogenic emissions, Pg/yr']) 
-
+                if x == 'cumul_emissions':
+                    x_label = ' '.join(['Cumulative Anthropogenic emissions, Pg'])
             elif x == short_name == 'co2':
                 x_data = cube['co2'].copy()
                 x_times = cube['time'].copy()
@@ -1048,7 +1064,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if y == 'time':
                 print('what kind of crazy person plots time on y axis?')
                 assert 0
-            elif y == short_name and y in ['co2', 'emissions']:
+            elif y == short_name and y in ['co2', 'emissions', 'cumul_emissions']:
                 y_data = cube[y].copy()
                 y_times = cube['time'].copy()
                 print('setting y time to ',short_name, exp, ensemble)
@@ -1056,6 +1072,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     y_label = ' '.join(['Atmospheric co2, ppm'])
                 if y == 'emissions':
                     y_label = ' '.join(['Anthropogenic emissions, Pg/yr'])
+                if y == 'cumul_emissions':
+                    y_label = ' '.join(['Cumulative Anthropogenic emissions, Pg'])
             elif short_name == y:
                 y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
@@ -1234,8 +1252,8 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    #jobtype = 'debug'
-    jobtype = 'bulk'
+    jobtype = 'debug'
+    #jobtype = 'bulk'
 
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
@@ -1252,19 +1270,20 @@ def main(cfg):
 
 
     if jobtype == 'bulk':
-        short_names = ['tas', 'tas_norm', 'co2', 'emissions',
+        short_names = ['tas', 'tas_norm', 'co2', 'emissions', 'cumul_emissions'
                        'nbp', 'nbpgt', 'gpp', 'gppgt',
                        'intpp', 'fgco2', 'intppgt','fgco2gt',
                        ]
-        short_names_x = ['time', 'co2', 'tas', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
         short_names_y = short_names.copy()
 
     if jobtype == 'debug':
         short_names = [
-                       'emissions','tas',  #'nbpgt', 'gpp', 'gppgt',
+                       'emissions','tas','cumul_emissions'  #'nbpgt', 'gpp', 'gppgt',
+                       'fgco2gt', 'fgco2gt_cumul',  
                        ]
-        short_names_x = ['time','emissions', ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
-        short_names_y = ['emissions', 'tas', ]#short_names.copy()
+        short_names_x = ['time','emissions','cumul_emissions' ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_y = ['fgco2gt_cumul', ]
 
 
     if jobtype == 'land':
@@ -1303,7 +1322,7 @@ def main(cfg):
         thresholds_dict = load_thresholds(cfg, data_dict)
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
-            if do_ma and short_name not in ['co2', 'emissions']:
+            if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions']:
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
@@ -1316,6 +1335,7 @@ def main(cfg):
                                markers='thresholds', do_moving_average=False,
                                ensemble_mean=True)
                 if jobtype == 'debug': continue
+                continue
                 make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
                                markers='thresholds', do_moving_average=True,
                                ensemble_mean=False)
