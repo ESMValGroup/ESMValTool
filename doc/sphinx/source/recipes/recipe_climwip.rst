@@ -41,16 +41,15 @@ implementation can be found on GitHub:  https://github.com/lukasbrunner/ClimWIP
 Using shapefiles for cutting scientific regions
 -----------------------------------------------
 
-To use shapefiles for selecting SREX or AR6 regions by name it is necessary to create a
-folder `shapefiles` in the `auxiliary_data_dir` (with is specified in the
-`config-user.yml <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_)
-and extract the shapefiles into it:
+To use shapefiles for selecting SREX or AR6 regions by name it is necessary to download them, e.g.,
+from the sources below and reference the file using the `shapefile` parameter. This can either be a
+absolute or a relative path. In the example recipes they are stored in  a subfolder `shapefiles`
+in the `auxiliary_data_dir` (with is specified in the
+`config-user.yml <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_).
 
-.. code-block:: bash
+SREX regions (AR5 reference regions): http://www.ipcc-data.org/guidelines/pages/ar5_regions.html
 
-   unzip ./esmvaltool/diag_scripts/weighting/shapefiles/shapefiles.zip -d <auxiliary_data_dir>/shapefiles/
-
-
+AR6 reference regions: https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions
 
 Available recipes and diagnostics
 ---------------------------------
@@ -191,9 +190,7 @@ but only for one region (the Mediterranean). To calculated weights for other reg
 
 The ``ids`` field takes any valid `SREX <http://www.ipcc-data.org/guidelines/pages/ar5_regions.html>`_ region
 key or any valid `AR6 <https://github.com/SantanderMetGroup/ATLAS/tree/v1.6/reference-regions>`_ region key
-(depending on the shapefile). Note that this needs to be the full string here (not the abbreviation). For a
-full list of possible regions have a look at the srex.csv and ar6.csv files under
-./esmvaltool/diag_scripts/weighting/shapefiles
+(depending on the shapefile). Note that this needs to be the full string here (not the abbreviation).
 
 The sigma parameters need to be set according to the selected region. The sigma values for the regions
 used in `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ can be found in table 1 of the paper.
