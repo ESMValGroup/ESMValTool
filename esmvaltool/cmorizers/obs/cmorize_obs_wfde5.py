@@ -122,7 +122,7 @@ def cmorization(in_dir, out_dir, cfg, _):
 
         sorted_filenames = {}
         # Sort files according to year
-        pattern = re.compile('.*_(\d{4})\d{2}_.*\.nc')
+        pattern = re.compile('.*_(\d{4})\d{2}_.*\.nc')  # noqa
         for filename in sorted(Path(in_dir).glob(file_names)):
             filename = str(filename)
             year = int(pattern.match(filename)[1])
