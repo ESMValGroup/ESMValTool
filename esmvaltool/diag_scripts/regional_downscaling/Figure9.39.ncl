@@ -137,7 +137,7 @@ begin
   region_label = tostring(diag_script_info@fig939_region_label)
   dim_reg = dimsizes(region_label)
   dim_seas = dimsizes(season)
-  
+
   flag_mod = where(projects.ne."OBS" .and.projects.ne."OBS6"\
                    .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
