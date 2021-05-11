@@ -19,9 +19,10 @@
 ; #         the first error is larger than the second
 ; #
 ; # Required variable_info attributes (variable specific):
-; #    * @refModel: reference model name
-; #    * @fig_939_season : seasons i.e. (/"DJF","JJA","ANN"/)
-; #    * @fig_939_region_label :
+; #
+; #    * @fig939_refModel: reference model name
+; #    * @fig939_season : seasons i.e. (/"DJF","JJA","ANN"/)
+; #    * @fig939_region_label :
 ; #      (/"ALA","CGI","WNA","CNA","ENA","CAM","AMZ","NEB","WSA","SSA","NEU",
 ; #       "CEU","MED","SAH","WAF","EAF","SAF","NAS","WAS","CAS","TIB","EAS",
 ; #       "SAS","SEA","NAU","SAU"/)
@@ -29,25 +30,28 @@
 ; #        – Notes and technical details on Chapter 3 figures.
 ; #       In: Managing the Risks of Extreme Events and Disasters to Advance
 ; #          Climate Change Adaptation(IPCC). <www.ipcc.ch>.
-; #      *@fig_939_MMM  True
-; #      *@fig_939_project_MMM: projects to average
-; #      *@fig_939_experiment_MMM: experiments to average
-; #      *@fig_939_mip_MMM: mip to average
-; #      *Dimensions of @fig_939_project_MMM, @fig_939_experiment_MMM and
-; #        @fig_939_mip_MMM must be the same i.e.
-; #        @fig_939_project_MMM=(/"CMIP5", "CMIP3"/)
-; #        @fig_939_experiment_MMM=(/"historical", "historical"/)
-; #        @fig_939_mip_MMM=(/"Amon", "Amon"/)
+; #      *@fig939_MMM  True
+; #      *@fig939_project_MMM: projects to average
+; #      *@fig939_experiment_MMM: experiments to average
+; #      *@fig939_mip_MMM: mip to average
+; #      *Dimensions of @fig939_project_MMM, @fig939_experiment_MMM and
+; #        @fig939_mip_MMM must have the number of elements i.e.
+; #        @fig939_project_MMM=(/"CMIP5", "CMIP3"/)
+; #        @fig939_experiment_MMM=(/"historical", "historical"/)
+; #        @fig939_mip_MMM=(/"Amon", "Amon"/)
+; #
 ; # Optional diag_script_info attributes
+; #
+; #      *@fig939_names_MMM   :names in legend  i.e. (/"CMIP5","CMIP3"/)
 ; #      *@Vertical lines divide groups of region
-; #        @Figure_939_vert_line_pos
+; #        @fig939_vert_line_pos
 ; #          i.e. (/6,10,13,17,24,26/)
 ; #      *@labels of vertical lines
-; #       @Figure_939_vert_line_label
+; #       @fig939_vert_line_label
 ; # .e.(/"North America","South America","Europe","Africa","Asia","Australia"/)
-; #       @Figure_939_mode    : True= cumulative mode
-; #        @Figure_939_YMin        : minimum Y Axis
-; #        @Figure_939_YMax        : maximum Y Axis
+; #       @fig939_mode    : True= cumulative mode
+; #       @fig939_YMin        : minimum Y Axis
+; #       @fig939_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
 ; #      Regions border are poligons defined in function select_region_939
@@ -106,7 +110,7 @@ begin
 
   ; Set default values for optional diag_script_info attributes
 
-  set_default_att(diag_script_info, "fig939_region_label", "ALA")
+  set_default_att(diag_script_info, "fig939_region_label", "ALAs")
   set_default_att(diag_script_info, "styleset", "CMIP5")
   set_default_att(diag_script_info, "fig939_MMM", "True")
   set_default_att(diag_script_info, "fig939_project_MMM", "CMIP5")
@@ -114,11 +118,8 @@ begin
   set_default_att(diag_script_info, "fig939_mip_MMM", "Amon")
   set_default_att(diag_script_info, "fig939_names_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig939_colors_MMM", "red")
-  set_default_att(diag_script_info, "legend_position", "0.2")
   set_default_att(diag_script_info, "fig939_season", "DJF")
   set_default_att(diag_script_info, "refModel", "CRU")
-  ; set_default_att(diag_script_info, "fig939_YMin", "0")
-  ; set_default_att(diag_script_info, "fig939_YMax", "0")
 
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
@@ -136,13 +137,7 @@ begin
   region_label = tostring(diag_script_info@fig939_region_label)
   dim_reg = dimsizes(region_label)
   dim_seas = dimsizes(season)
-;  latrange = new((/dimsizes(region_label), 2/), "double")
-;  lonrange = new((/dimsizes(region_label), 2/), "double")
-;  do ir = 0, dimsizes(region_label) - 1
-;    region = select_region1(region_label(ir))
-;    latrange(ir, :) = region(0:1)
-;    lonrange(ir, :) = region(2:3)
-;  end do
+  
   flag_mod = where(projects.ne."OBS" .and.projects.ne."OBS6"\
                    .and. projects.ne."obs4mips", 1, 0)
   index_mod = ind(flag_mod.gt.0)
@@ -433,7 +428,10 @@ begin
               time1@calendar = "Gregorian"
               delete(B0&time)
               B0&time = time1
-
+              print("season")
+              print(season)
+              print("iseas")
+              print(iseas)
               Btmp1 = time_operations(B0, -1, -1, "average",\
                                       season(iseas), True)
             end if

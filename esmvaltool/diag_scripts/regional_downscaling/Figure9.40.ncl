@@ -19,9 +19,10 @@
 ; #         the first error is larger than the second
 ; #
 ; # Required variable_info attributes (variable specific):
+; #
 ; #    * @refModel: reference model name
-; #    * @fig_940_season : seasons i.e. (/"DJF","JJA","ANN"/)
-; #    * @fig_940_region_label :(/(/"Arctic_land","Arctic_sea",\
+; #    * @fig940_season : seasons i.e. (/"DJF","JJA","ANN"/)
+; #    * @fig940_region_label :(/(/"Arctic_land","Arctic_sea",\
 ; #                           "Antarctic_land",\
 ; #                           "Antarctic_sea","Caribbean",\
 ; #                           "WesternIndianOcean",\
@@ -33,25 +34,27 @@
 ; #        – Notes and technical details on Chapter 3 figures.
 ; #       In: Managing the Risks of Extreme Events and Disasters to Advance
 ; #          Climate Change Adaptation(IPCC). <www.ipcc.ch>.
-; #      *@fig_940_MMM  True
-; #      *@fig_940_project_MMM: projects to average
-; #      *@fig_940_experiment_MMM: experiments to average
-; #      *@fig_940_mip_MMM: mip to average
-; #      *Dimensions of @fig_940_project_MMM, @fig_940_experiment_MMM and
-; #        @fig_940_mip_MMM must be the same i.e.
-; #        @fig_940_project_MMM=(/"CMIP5", "CMIP3"/)
-; #        @fig_940_experiment_MMM=(/"historical", "historical"/)
-; #        @fig_940_mip_MMM=(/"Amon", "Amon"/)
+; #      *@fig940_MMM  True
+; #      *@fig940_project_MMM: projects to average
+; #      *@fig940_experiment_MMM: experiments to average
+; #      *@fig940_mip_MMM: mip to average
+; #      *Dimensions of @fig940_project_MMM, @fig940_experiment_MMM and
+; #        @fig940_mip_MMM must be the same i.e.
+; #        @fig940_project_MMM=(/"CMIP5", "CMIP3"/)
+; #        @fig940_experiment_MMM=(/"historical", "historical"/)
+; #        @fig940_mip_MMM=(/"Amon", "Amon"/)
+; #
 ; # Optional diag_script_info attributes
+; #
 ; #      *@Vertical lines divide groups of region
-; #        @Figure_940_vert_line_pos
+; #        @fig940_vert_line_pos
 ; #          i.e. (/6,10,13,17,24,26/)
 ; #      *@labels of vertical lines
-; #       @Figure_940_vert_line_label
+; #       @fig940_vert_line_label
 ; # .e.(/"North America","South America","Europe","Africa","Asia","Australia"/)
-; #       @Figure_940_mode    : True= cumulative mode
-; #        @Figure_940_YMin        : minimum Y Axis
-; #        @Figure_940_YMax        : maximum Y Axis
+; #       @fig940_mode    : True= cumulative mode
+; #       @fig940_YMin        : minimum Y Axis
+; #       @fig940_YMax        : maximum Y Axis
 ; # Caveats:
 ; #      This script requires NCL version 6.40
 ; #      Regions border are poligons defined in function select_region_940
@@ -110,7 +113,7 @@ begin
 
   ; Set default values for optional diag_script_info attributes
 
-  set_default_att(diag_script_info, "fig940_region_label", "ALA")
+  set_default_att(diag_script_info, "fig940_region_label", "Arctic_land")
   set_default_att(diag_script_info, "styleset", "CMIP5")
   set_default_att(diag_script_info, "fig940_MMM", "True")
   set_default_att(diag_script_info, "fig940_project_MMM", "CMIP5")
@@ -118,11 +121,8 @@ begin
   set_default_att(diag_script_info, "fig940_mip_MMM", "Amon")
   set_default_att(diag_script_info, "fig940_names_MMM", "CMIP5")
   set_default_att(diag_script_info, "fig940_colors_MMM", "red")
-  set_default_att(diag_script_info, "legend_position", "0.2")
   set_default_att(diag_script_info, "fig940_season", "DJF")
   set_default_att(diag_script_info, "refModel", "CRU")
-  ; set_default_att(diag_script_info, "Figure_938_YMin", "0")
-  ; set_default_att(diag_script_info, "Figure_938_YMax", "0")
 
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")

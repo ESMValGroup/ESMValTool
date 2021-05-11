@@ -16,7 +16,7 @@
 ; #       - plot the individual models annual cycle
 ; #       - plot the MMMs annual cycle and standard deviations
 ; #
-; # Required diag_script_info attributes (diagnostics specific):
+; # Required variable_info attributes (variable specific):
 ; #
 ; #     * @fig938_region_label:
 ; #       (/"WNA","ENA","CAM","TSA","SSA","EUM","NAF","CAF","SAF",

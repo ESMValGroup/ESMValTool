@@ -68,9 +68,8 @@ begin
 
   ; Set default values for optional diag_script_info attributes
 
-  set_default_att(diag_script_info, "fig941_region_label", "MED")
+  set_default_att(diag_script_info, "fig941_region_label", "MEDs")
   set_default_att(diag_script_info, "styleset", "CMIP5")
-  set_default_att(diag_script_info, "legend_position", "0.2")
   colors = project_style(info0, diag_script_info, "colors")
   dashes = project_style(info0, diag_script_info, "dashes")
   thicks = tofloat(project_style(info0, diag_script_info, "thicks"))
