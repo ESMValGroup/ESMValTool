@@ -364,11 +364,11 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
         else:
             print('Units not Recognised:', cube.units)
             assert 0
-        if cumul:
-            #print(cubegt.data, np.ma.masked_invalid(cubegt.data), np.cumsum(np.ma.masked_invalid(cubegt.data)))
-            #assert 0
-            cubegt.data = np.cumsum(np.ma.masked_invalid(cubegt.data))
-            cubegt.units = cf_units.Unit('Pg yr^-1')
+    #    if cumul:
+   #         #print(cubegt.data, np.ma.masked_invalid(cubegt.data), np.cumsum(np.ma.masked_invalid(cubegt.data)))
+  #          #assert 0
+ #           cubegt.data = np.cumsum(np.ma.masked_invalid(cubegt.data))
+#            cubegt.units = cf_units.Unit('Pg yr^-1')
         data_dict[(gt, exp, ensemble)] = cubegt
     return data_dict
 
@@ -378,25 +378,25 @@ def calculate_cumulative(data_dict, short_name, cumul_name):
     Calculate the cumulative sum of the annual data.
     """
     hist_datas = {}
-    for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
+    for (short, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name != short:
             continue
         if exp not in ['historical', ]:
             continue
         hist_cumul_cube = cube.copy()
-        times = cube_time_to_float(hist_cumul_cube)
+        times = diagtools.cube_time_to_float(hist_cumul_cube)
         hist_cumul_cube.data = np.cumsum(np.ma.masked_invalid(hist_cumul_cube.data))
         data_dict[(cumul_name, exp, ensemble)] = hist_cumul_cube
         hist_datas[ensemble] = {'time': times, 'data': hist_cumul_cube.data}
 
     #calculate the cumulative value, and add the historical point to it.
-    for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
+    for (short, exp, ensemble), cube in sorted(data_dict.items()):
         if short_name != short:
             continue
         if exp in ['historical', ]:
             continue
         cumul_cube = cube.copy()
-        times = cube_time_to_float(cumul_cube)
+        times = diagtools.cube_time_to_float(cumul_cube)
         hist_point = get_threshold_point(hist_datas[ensemble], np.min(times))
         hist_cumul = hist_datas[ensemble]['data'][hist_point]
         cumul_cube.data = cumul_cube.data
@@ -616,7 +616,7 @@ def load_timeseries(cfg, short_names):
         'exchange_norm': ['exchange', ],
         'fgco2gt_norm': ['fgco2gt', ],
         'fgco2gt_cumul': ['fgco2', 'areacello' ],
-        'nbpgt_cumul' : ['nbp', 'areacello' ]
+        'nbpgt_cumul' : ['nbp', 'areacella' ],
         }
 
     transforms_functions = {
@@ -933,7 +933,7 @@ def load_emissions_forcing(cfg, data_dict):
             t = float(line[0]) + 0.5
             #if t > 2100.: continue
             times.append(t)
-            data.append(float(line[2]))
+            data.append(float(line[3]))
             # print (fn, line)
         # for t,d in zip(times,data): print(scenario, t,d)
         for ensemble in ensembles:
@@ -981,6 +981,9 @@ def get_long_name(name):
         'frc':  'Carbon Flux at sea floor',
         'fric':  'Inorganic Carbon Flux at sea floor',
         'froc':  'Organic Carbon Flux at sea floor',
+        'nbp': 'Net Biome Production',
+        'nbpgt_cumul': 'Cumulative Global Total Net Biome Production',
+        'fgco2gt_cumul': 'Cumulative Global Total Air sea Flux of CO2',
     }
     long_name = ''
     if name.find('gt_norm') > -1:
@@ -1293,8 +1296,8 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    jobtype = 'debug'
-    #jobtype = 'bulk'
+    #jobtype = 'debug'
+    jobtype = 'bulk'
 
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
@@ -1314,8 +1317,10 @@ def main(cfg):
         short_names = ['tas', 'tas_norm', 'co2', 'emissions', 'cumul_emissions'
                        'nbp', 'nbpgt', 'gpp', 'gppgt',
                        'intpp', 'fgco2', 'intppgt','fgco2gt',
+                       'fgco2gt_cumul',
+                       'nbpgt_cumul'
                        ]
-        short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt', 'fgco2gt_cumul','nbpgt_cumul']
         short_names_y = short_names.copy()
 
     if jobtype == 'debug':
