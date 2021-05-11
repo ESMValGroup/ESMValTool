@@ -327,7 +327,7 @@ def print_exceedance_dates(cfg, exceedance_dates, window = 10, short_name = 'tas
     out.close()
 
 
-def marine_gt(data_dict, short, gt, cumul=False):
+def marine_gt(data_dict, short, gt): #, cumul=False):
     """
     Calculate global from the data dictionary.
     """
@@ -368,12 +368,45 @@ def marine_gt(data_dict, short, gt, cumul=False):
             #print(cubegt.data, np.ma.masked_invalid(cubegt.data), np.cumsum(np.ma.masked_invalid(cubegt.data)))
             #assert 0
             cubegt.data = np.cumsum(np.ma.masked_invalid(cubegt.data))
+            cubegt.units = cf_units.Unit('Pg yr^-1')
         data_dict[(gt, exp, ensemble)] = cubegt
     return data_dict
 
 
+def calculate_cumulative(data_dict, short_name, cumul_name):
+    """
+    Calculate the cumulative sum of the annual data.
+    """
+    hist_datas = {}
+    for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
+        if short_name != short:
+            continue
+        if exp not in ['historical', ]:
+            continue
+        hist_cumul_cube = cube.copy()
+        times = cube_time_to_float(hist_cumul_cube)
+        hist_cumul_cube.data = np.cumsum(np.ma.masked_invalid(hist_cumul_cube.data))
+        data_dict[(cumul_name, exp, ensemble)] = hist_cumul_cube
+        hist_datas[ensemble] = {'time': times, 'data': hist_cumul_cube.data}
+
+    #calculate the cumulative value, and add the historical point to it.
+    for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
+        if short_name != short:
+            continue
+        if exp in ['historical', ]:
+            continue
+        cumul_cube = cube.copy()
+        times = cube_time_to_float(cumul_cube)
+        hist_point = get_threshold_point(hist_datas[ensemble], np.min(times))
+        hist_cumul = hist_datas[ensemble]['data'][hist_point]
+        cumul_cube.data = cumul_cube.data
+        cumul_cube.data = np.cumsum(np.ma.masked_invalid(cumul_cube.data)) + hist_cumul
+        data_dict[(cumul_name, exp, ensemble)] = cumul_cube
+
+    return data_dict
+
+
 def fgco2gt(data_dict): return marine_gt(data_dict, short='fgco2', gt='fgco2gt')
-def fgco2gt_cumul(data_dict):return marine_gt(data_dict, short='fgco2', gt='fgco2gt', cumul=True) 
 def intppgt(data_dict): return marine_gt(data_dict, short='intpp', gt='intppgt')
 def epc100gt(data_dict): return marine_gt(data_dict, short='epc100', gt='epc100gt')
 def intdicgt(data_dict): return marine_gt(data_dict, short='intdic', gt='intdicgt')
@@ -381,7 +414,9 @@ def intpocgt(data_dict): return marine_gt(data_dict, short='intpoc', gt='intpocg
 def fricgt(data_dict): return marine_gt(data_dict, short='fric', gt='fricgt')
 def frocgt(data_dict): return marine_gt(data_dict, short='froc', gt='frocgt')
 def frcgt(data_dict): return marine_gt(data_dict, short='frc', gt='frcgt')
-
+def fgco2gt_cumul(data_dict):
+    data_dict = marine_gt(data_dict, short='fgco2', gt='fgco2gt')
+    return calculate_cumulative(data_dict, short_name='fgco2gt', cumul_name='fgco2gt_cumul')
 
 def land_gt(data_dict, short='npp', gt='nppgt'):
     """
@@ -428,6 +463,11 @@ def nppgt(data_dict): return land_gt(data_dict, short='npp', gt='nppgt')
 def gppgt(data_dict): return land_gt(data_dict, short='gpp', gt='gppgt')
 def nbpgt(data_dict):
     return land_gt(data_dict, short='nbp', gt='nbpgt')
+
+def nbpgt_cumul(data_dict):
+    data_dict = land_gt(data_dict, short='nbp', gt='nbpgt')
+    return calculate_cumulative(data_dict, short_name='nbpgt', cumul_name='nbpgt_cumul')
+
 
 
 def frc(data_dict):
@@ -576,7 +616,7 @@ def load_timeseries(cfg, short_names):
         'exchange_norm': ['exchange', ],
         'fgco2gt_norm': ['fgco2gt', ],
         'fgco2gt_cumul': ['fgco2', 'areacello' ],
-
+        'nbpgt_cumul' : ['nbp', 'areacello' ]
         }
 
     transforms_functions = {
@@ -585,6 +625,7 @@ def load_timeseries(cfg, short_names):
         'gppgt': gppgt,
         'nppgt': nppgt,
         'nbpgt': nbpgt,
+        'nbpgt_cumul': nbpgt_cumul,
 
         'rhgt': rhgt,
         'epc100gt': epc100gt,
@@ -880,17 +921,17 @@ def load_emissions_forcing(cfg, data_dict):
     for fn in files:
         times = []
         data = []
-        
+
         open_fn = open(fn, 'r')
         scenario = os.path.basename(fn)
         scenario = scenario.replace('UKESM1_', '')
         scenario = scenario.replace('.txt', '')
         scenario = scenario.replace('historical_', 'historical-')
-  
+
         for line in open_fn.readlines()[2:]:
             line = [x.replace('\n', '') for x in line.split(' ')]
             t = float(line[0]) + 0.5
-            #if t > 2100.: continue 
+            #if t > 2100.: continue
             times.append(t)
             data.append(float(line[2]))
             # print (fn, line)
@@ -901,7 +942,7 @@ def load_emissions_forcing(cfg, data_dict):
 
     # calculate the cumulative emissions.
     tmp_dict = {}
-    
+
     return data_dict
 
 def get_threshold_point(cube, year):
@@ -1046,7 +1087,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 if x == 'co2':
                     x_label = ' '.join(['Atmospheric co2, ppm'])
                 if x == 'emissions':
-                    x_label = ' '.join(['Anthropogenic emissions, Pg/yr']) 
+                    x_label = ' '.join(['Anthropogenic emissions, Pg/yr'])
                 if x == 'cumul_emissions':
                     x_label = ' '.join(['Cumulative Anthropogenic emissions, Pg'])
             elif x == short_name == 'co2':
@@ -1124,7 +1165,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 ytdatc = np.ma.masked_where(y_times < 2015, y_times).compressed()
 
                 print(xdatc, ydatc, xtdatc, ytdatc)
- 
+
                 plt.plot(np.ma.masked_where(x_times < 2015, x_data).compressed(),
                          np.ma.masked_where(y_times < 2015, y_data).compressed(),
                          lw=lw,
@@ -1280,10 +1321,11 @@ def main(cfg):
     if jobtype == 'debug':
         short_names = [
                        'emissions','tas','cumul_emissions'  #'nbpgt', 'gpp', 'gppgt',
-                       'fgco2gt', 'fgco2gt_cumul',  
+                       'fgco2','fgco2gt', 'fgco2gt_cumul',
+                       'bgc', 'bgcgt', 'nbpgt_cumul'
                        ]
-        short_names_x = ['time','emissions','cumul_emissions' ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
-        short_names_y = ['fgco2gt_cumul', ]
+        short_names_x = ['time','emissions', 'cumul_emissions' ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_y = ['fgco2gt_cumul', 'nbpgt_cumul']
 
 
     if jobtype == 'land':
