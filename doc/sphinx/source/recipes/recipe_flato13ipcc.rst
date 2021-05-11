@@ -408,6 +408,7 @@ User settings in recipe
 #. Script regional_downscaling/Figure9.41.ncl
 
    *Required settings (scripts)*
+   
    * styleset: for plot_type cycle (e.g. CMIP5, CMIP6), default "CMIP5"
    * fig941_region_label: Labels for regions, which should be included 
      (["ALAs","CGIs","WNAs","CNAs","ENAs","CAMs","AMZs","NEBs","WSAs","SSAs",
