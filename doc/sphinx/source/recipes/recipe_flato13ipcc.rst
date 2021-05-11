@@ -332,21 +332,24 @@ User settings in recipe
 
    *Required settings (scripts)*
     
-    * projection: CylindricalEquidistant
-    * showdiff: true/false
-    * styleset: CMIP5/CMIP6
-    * fig938_region_label: Labels for regions, which should be included 
-      (["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF","CAF", "SAF", "NAS", 
-        "CAS", "EAS", "SAS", "SEA", "AUS"])
-    * fig938_project_MMM: ["CMIP5"]
-    * fig938_experiment_MMM: ["historical"]
-    * fig938_mip_MMM: ["Amon"]
-    * fig938_colors_MMM: Color for multi-model mean (e.g. ["red"])
-    * fig938_refModel: Reference data set for differences (e.g. ERA-Interim)
-    * fig938_MMM: Plot multi-model mean (true/false)
-   
+   none
+    
    *Optional settings (scripts)*
-
+   
+   * styleset:  for plot_type cycle only (e.g. CMIP5, CMIP6), default "CMIP5"
+   * fig938_region_label: Labels for regions, which should be included 
+     (["WNA", "ENA", "CAM", "TSA", "SSA", "EUM", "NAF","CAF", "SAF", "NAS", 
+     "CAS", "EAS", "SAS", "SEA", "AUS"]), default "WNA"
+   * fig938_project_MMM: projects to average, default "CMIP5"
+   * fig938_experiment_MMM: experiments to average, default "historical"
+   * fig938_mip_MMM: mip to average, default "Amon"
+   * fig938_refModel: Reference data set for differences default "ERA-Interim"
+   * fig938_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"])
+   * fig938_colors_MMM: Color for multi-model mean (e.g. ["red"])
+   * fig938_MMM: Plot multi-model mean (true/false)
+   * fig938_YMin: minimum Y Axis
+   * fig938_YMax: maximum Y Axis
+ 
 #. Script regional_downscaling/Figure9.39.ncl
 
    *Required settings (scripts)*
