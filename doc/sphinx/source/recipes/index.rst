@@ -25,6 +25,7 @@ Atmosphere
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
+   recipe_impact
    recipe_modes_of_variability
    recipe_quantilebias
    recipe_bock20jgr
