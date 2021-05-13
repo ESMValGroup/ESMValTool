@@ -373,7 +373,7 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
     return data_dict
 
 
-def calculate_cumulative(data_dict, short_name, cumul_name):
+def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
     """
     Calculate the cumulative sum of the annual data.
     """
@@ -401,6 +401,8 @@ def calculate_cumulative(data_dict, short_name, cumul_name):
         hist_cumul = hist_datas[ensemble]['data'][hist_point]
         cumul_cube.data = cumul_cube.data
         cumul_cube.data = np.cumsum(np.ma.masked_invalid(cumul_cube.data)) + hist_cumul
+        if new_units:
+            cumul_cube.units = cf_units.Unit(new_units)
         data_dict[(cumul_name, exp, ensemble)] = cumul_cube
 
     return data_dict
@@ -416,7 +418,7 @@ def frocgt(data_dict): return marine_gt(data_dict, short='froc', gt='frocgt')
 def frcgt(data_dict): return marine_gt(data_dict, short='frc', gt='frcgt')
 def fgco2gt_cumul(data_dict):
     data_dict = marine_gt(data_dict, short='fgco2', gt='fgco2gt')
-    return calculate_cumulative(data_dict, short_name='fgco2gt', cumul_name='fgco2gt_cumul')
+    return calculate_cumulative(data_dict, short_name='fgco2gt', cumul_name='fgco2gt_cumul', new_units = 'Pg')
 
 def land_gt(data_dict, short='npp', gt='nppgt'):
     """
@@ -466,7 +468,7 @@ def nbpgt(data_dict):
 
 def nbpgt_cumul(data_dict):
     data_dict = land_gt(data_dict, short='nbp', gt='nbpgt')
-    return calculate_cumulative(data_dict, short_name='nbpgt', cumul_name='nbpgt_cumul')
+    return calculate_cumulative(data_dict, short_name='nbpgt', cumul_name='nbpgt_cumul', new_units='Pg')
 
 
 
@@ -1103,7 +1105,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 x_data = np.array(cube.data.copy())
                 x_times = diagtools.cube_time_to_float(cube)
                 print('setting x axis to ',short_name, exp, ensemble, np.min(x_data), np.max(x_data))
-                x_label = ' '.join([x, str(cube.units)])
+                x_label = ' '.join([get_long_name(x), str(cube.units)])
 
             if y == 'time':
                 print('what kind of crazy person plots time on y axis?')
@@ -1122,7 +1124,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
                 print('setting y time to ',short_name, exp, ensemble, y_data)
-                y_label = ' '.join([y, str(cube.units)])
+                y_label = ' '.join([get_long_name(y), str(cube.units)])
 
             print('make_ts_figure: loaded x data', short_name, exp, ensemble, x, np.mean(x_data))
             print('make_ts_figure: loaded y data', short_name, exp, ensemble, y, np.mean(y_data))
