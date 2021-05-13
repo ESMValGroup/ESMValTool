@@ -1002,7 +1002,9 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     markers='thresholds',
     draw_line=True,
     do_moving_average=True,
-    ensemble_mean = False):
+    ensemble_mean = False,
+    fig=None,
+    ax=None,):
     """
     make a 2D figure.
     x axis and y axis are determined by the short_names provuided in x and y
@@ -1044,7 +1046,14 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     exps.reverse()
     print(exps, ensembles)
     print(data_dict.keys())
-    fig = plt.figure()
+
+    if fig == None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        make_figure_here = True
+    else:
+        make_figure_here = False
+
     x_label,y_label = [], []
     print('\n\n\n\n\nStaring plot:',
         'x:', x,
@@ -1270,8 +1279,114 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     if do_moving_average:
         path = path.replace(image_extention, '_21ma'+image_extention)
     print('saving figure:', path)
+    if make_figure_here:
+        plt.savefig(path)
+        plt.close()
+    else:
+        return fig, ax
+
+
+def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None, ax=None):
+    """
+    Make a bar chart (of my favourite pies)
+    """
+    emissions = []
+    nbpgts = []
+    fgco2gts = []
+    experiments = []
+    emissions_diff = []
+    for (t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
+        if t_short != 'tas': continue
+        if t_ens != 'ensemble_mean': continue
+
+        cumul_emissions = data_dict[('cumul_emissions', t_exp, t_ens)] #dict
+        nbpgt_cumul = data_dict[('nbpgt_cumul', t_exp, t_ens)] # cube
+        fgco2gt_cumul = data_dict[('fgco2gt_cumul', t_exp, t_ens)] # cube
+
+        for thresh, time in threshold_times.items():
+            if not time:
+                continue
+            if threshold != thresh: continue
+            print(threshold, time)
+
+            e_xpoint = get_threshold_point(cumul_emissions, time.year)
+            n_xpoint = get_threshold_point(nbpgt_cumul, time.year)
+            f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
+
+            emissions.append(cumul_emissions['data'][e_xpoint])
+            nbpgts.append( nbpgt_cumul.data[n_xpoint])
+            fgco2gts(fgco2gt_cumul.data[f_xpoint])
+            experiments.append(t_exp)
+
+    if fig == None:
+        fig, ax = plt.subplots()
+        make_figure_here = True
+    else:
+        make_figure_here = False
+
+    emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, nbpgts )]
+    ax.barh(experiments, nbpgts, 0.5,  label='Land', color='green')
+    ax.barh(experiments, fgco2gts, 0.5, bottom=nbpgts, label='Ocean', color='blue')
+    ax.barh(experiments, emissions_diff, 0.5, bottom=nbpgts, label='Atmos', color='grey')
+
+    ax.set_ylabel('Sceanios')
+    ax.set_title('Carbon Allocation at '+str(threshold)+r'$\degrees$'+' warming')
+    ax.legend()
+
+    if make_figure_here:
+        image_extention = diagtools.get_image_format(cfg)
+        path = diagtools.folder(cfg['plot_dir'], 'barcharts')
+        path += 'barchart_'+threshold + image_extention
+        plt.savefig(path)
+        plt.close()
+    else:
+        return fig, ax
+
+
+
+def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict):
+
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None, ax=None)
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', fig=None, ax=None)
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', fig=None, ax=None)
+
+
+
+    fig = plt.figure()
+
+    gs = matplotlib.gridspec.GridSpec(2, 3,figure=fig, width_ratios=[2,1], wspace=0.05, hspace=0.05)
+    ax_ts =  fig.add_subplot(gs[:, 0])
+    ax_4 =  fig.add_subplot(gs[0, 1])
+    ax_3 =  fig.add_subplot(gs[0, 1])
+    ax_2 =  fig.add_subplot(gs[0, 1])
+
+    # Get a big line graph on LHS.
+    fig, ax = make_ts_figure(cfg, data_dict, thresholds_dict,
+        x='cumul_emissions', y='tas_norm',
+        markers='thresholds',
+        draw_line=True,
+        do_moving_average=False,
+        ensemble_mean = True,
+        fig=fig,
+        ax_ts=None,)
+
+    # make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=fig, ax=ax_2)
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', fig=fig, ax=ax_3)
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', fig=fig, ax=ax_4)
+
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder(cfg['plot_dir'], 'emissions_figures')
+    path += 'emssions_figure' + image_extention
     plt.savefig(path)
     plt.close()
+
+    # 4 degree threshold data.
+    # for each scenario at 4 degrees, we want:
+    # total emissions at time_4
+    # nbp and
+
 
 
 def main(cfg):
@@ -1381,9 +1496,9 @@ def main(cfg):
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
 
-
-        make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict)
-        continue
+        if jobtype == 'cumulative_plot':
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict)
+            continue
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
             if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions']:
