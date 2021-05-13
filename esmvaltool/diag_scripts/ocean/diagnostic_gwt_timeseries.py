@@ -53,6 +53,8 @@ import os
 import datetime
 import iris
 import matplotlib.pyplot as plt
+logging.getLogger('matplotlib.font_manager').disabled = True
+from matplotlib import gridspec 
 import numpy as np
 from itertools import product
 import cf_units
@@ -1294,12 +1296,15 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None,
     nbpgts = []
     fgco2gts = []
     experiments = []
-    emissions_diff = []
+    
     for (t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
         if t_short != 'tas': continue
         if t_ens != 'ensemble_mean': continue
 
-        cumul_emissions = data_dict[('cumul_emissions', t_exp, t_ens)] #dict
+        print("make_bar_chart", t_short, t_exp, t_ens)
+        cumul_emissions = data_dict.get(('cumul_emissions', t_exp, t_ens), None) #dict
+        if cumul_emissions is None:  # Because not all sceanrios have emissions data.
+           continue
         nbpgt_cumul = data_dict[('nbpgt_cumul', t_exp, t_ens)] # cube
         fgco2gt_cumul = data_dict[('fgco2gt_cumul', t_exp, t_ens)] # cube
 
@@ -1318,6 +1323,11 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None,
             fgco2gts(fgco2gt_cumul.data[f_xpoint])
             experiments.append(t_exp)
 
+    if not len(experiments):
+        print(emissions, nbpgts, fgco2gts, experiments)
+        print(thresholds_dict.keys())
+        print('looking for:', threshold)
+        assert 0
     if fig == None:
         fig, ax = plt.subplots()
         make_figure_here = True
@@ -1325,9 +1335,10 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None,
         make_figure_here = False
 
     emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, nbpgts )]
+    emissions_bottoms = [f + b for f,b in zip(fgco2gts, nbpgts )]
     ax.barh(experiments, nbpgts, 0.5,  label='Land', color='green')
-    ax.barh(experiments, fgco2gts, 0.5, bottom=nbpgts, label='Ocean', color='blue')
-    ax.barh(experiments, emissions_diff, 0.5, bottom=nbpgts, label='Atmos', color='grey')
+    ax.barh(experiments, fgco2gts, 0.5, bottoms=nbpgts, label='Ocean', color='blue')
+    ax.barh(experiments, emissions_diff, 0.5, bottoms=emissions_bottoms, label='Atmos', color='grey')
 
     ax.set_ylabel('Sceanios')
     ax.set_title('Carbon Allocation at '+str(threshold)+r'$\degrees$'+' warming')
@@ -1335,7 +1346,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None,
 
     if make_figure_here:
         image_extention = diagtools.get_image_format(cfg)
-        path = diagtools.folder(cfg['plot_dir'], 'barcharts')
+        path = diagtools.folder([cfg['plot_dir'], 'barcharts'])
         path += 'barchart_'+threshold + image_extention
         plt.savefig(path)
         plt.close()
@@ -1346,16 +1357,18 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None,
 
 def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict):
 
+    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', fig=None, ax=None)                                                                                                                     
+    assert 0 
     make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
     make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', fig=None, ax=None)
     make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', fig=None, ax=None)
     make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', fig=None, ax=None)
 
-
+    assert 0
 
     fig = plt.figure()
 
-    gs = matplotlib.gridspec.GridSpec(2, 3,figure=fig, width_ratios=[2,1], wspace=0.05, hspace=0.05)
+    gs = gridspec.GridSpec(2, 3,figure=fig, width_ratios=[2,1], wspace=0.05, hspace=0.05)
     ax_ts =  fig.add_subplot(gs[:, 0])
     ax_4 =  fig.add_subplot(gs[0, 1])
     ax_3 =  fig.add_subplot(gs[0, 1])
@@ -1416,7 +1429,7 @@ def main(cfg):
     #jobtype = 'debug'
     #jobtype = 'bulk'
 
-    jobtye = 'cumulative_plot'
+    jobtype = 'cumulative_plot'
 
     if jobtype == 'cumulative_plot':
         short_names = ['tas', 'tas_norm',
