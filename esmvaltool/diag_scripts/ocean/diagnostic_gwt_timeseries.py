@@ -59,6 +59,7 @@ import numpy as np
 from itertools import product
 import cf_units
 import glob
+import shelve
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -598,6 +599,14 @@ def load_timeseries(cfg, short_names):
     data_dict[(short_name, exp, ensemble) ] = cube
     assume only one model
     """
+    data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
+    if exists.os.path(data_dict_shelve):
+        print('loading:', data_dict_shelve )
+        sh = shelve.open(data_dict_shelve)
+        data_dict = sh['data_dict']
+        sh.close()
+        return data_dict
+
     transforms = {
         'fgco2gt': ['fgco2', 'areacello'],
         'gppgt': ['gpp', 'areacella'],
@@ -706,6 +715,10 @@ def load_timeseries(cfg, short_names):
             else:
                 data_dict[(short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
 
+    print('saving::', data_dict_shelve )
+    sh = shelve.open(data_dict_shelve)
+    sh['data_dict'] = data_dict
+    sh.close()
     return data_dict
 
 
@@ -716,6 +729,14 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
     Dict is :
     data_dict[(short_name, exp, ensemble) ] = {threshold: year}
     """
+    thresholds_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'thresholds.shelve'
+    if os.path.exists(thresholds_shelve):
+        print('opening:', thresholds_shelve)
+        sh = shelve.open(thresholds_shelve)
+        thresholds_dict = sh['thresholds_dict']
+        sh.close()
+        return thresholds_dict
+
     thresholds_dict = {}
     baselines = {}
     for (short_name, exp, ensemble), cube in sorted(data_dict.items()):
@@ -736,6 +757,11 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
         for threshold in thresholds:
             time = get_threshold_exceedance_date(cube2, threshold)
             thresholds_dict[(short_name, exp, ensemble)][threshold] = time
+
+    print('Saving:', thresholds_shelve)
+    sh = shelve.open(thresholds_shelve)
+    sh['thresholds_dict'] = thresholds_dict
+    sh.close()
     return thresholds_dict
 
 
