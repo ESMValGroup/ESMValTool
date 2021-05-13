@@ -1297,7 +1297,18 @@ def main(cfg):
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
     #jobtype = 'debug'
-    jobtype = 'bulk'
+    #jobtype = 'bulk'
+
+    jobtye = 'cumulative_plot'
+
+    if jobtype == 'cumulative_plot':
+        short_names = ['tas', 'tas_norm',
+                       'co2', 'emissions', 'cumul_emissions'
+                       'nbp', 'nbpgt', 'nbpgt_cumul',
+                       #'gpp', 'gppgt',
+                       #'intpp',  'intppgt',
+                       'fgco2','fgco2gt', 'fgco2gt_cumul',
+                       ]
 
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
@@ -1368,11 +1379,16 @@ def main(cfg):
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
 
+
+        make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict)
+        continue
+
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
             if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions']:
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
+
         for x in short_names_x:
             for y in short_names_y:
                 if x == y: continue
