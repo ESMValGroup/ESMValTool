@@ -222,7 +222,7 @@ def get_nonice_mask(run):
 
     Need to read the soil moisture data from the supermeans
     """
-    # TODO: currently set to mrsofc: soil_moisture_content_at_field_capacity
+    # TODO: currently set to mrsos: mass_content_of_water_in_soil_layer
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
 
@@ -232,13 +232,12 @@ def get_nonice_mask(run):
     #                      supermean_data_dir)
     # replaced with new time-invariant variable
     name_constraint = iris.Constraint(
-        name='soil_moisture_content_at_field_capacity')
+        name='mass_content_of_water_in_soil_layer')
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
 
-    # TODO: mrsofc does not have depth
-    # cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
+    cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
 
     # make it into a mask of ones - extract first layer
     # use masked_values for floating point fuzzy equals
