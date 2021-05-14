@@ -236,8 +236,11 @@ def get_nonice_mask(run):
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
+    # mrsos data comes a time-lat-lon, collapse on time
+    cube = cube.collapsed('time', iris.analysis.MEAN)
 
-    cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
+    # UKESM1: depth: 0.05000000074505806 m, bound=(0.0, 0.10000000149011612) m
+    # cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
 
     # make it into a mask of ones - extract first layer
     # use masked_values for floating point fuzzy equals
