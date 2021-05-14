@@ -1,0 +1,61 @@
+# ESMValTool
+# recipe_autoassess_landsurface_permafrost.yml
+---
+documentation:
+  description: |
+    Recipe that runs the Autoassess Land-surface assessment area diagnostic.
+    Land surface area and ice masks are time independent.
+    
+  authors:
+    - predoi_valeriu
+
+  maintainer:
+    - predoi_valeriu
+
+datasets:
+  #- {dataset: HadGEM3-GC31-LL,  project: CMIP6, exp: piControl, ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002, grid: gn}
+  - {dataset: UKESM1-0-LL,  project: CMIP6, exp: piControl, ensemble: r1i1p1f2,  start_year: 1992,  end_year: 2002, grid: gn}
+
+preprocessors:
+  pp_aa_area:
+    regrid:  # NOT USED
+      target_grid: 0.15x0.15
+      scheme: linear
+
+diagnostics:
+  aa_landsurf_permafrost:
+    description: Autoassess test diag for Land-Surface Permafrost.
+    variables:
+      tas:
+        mip: Amon
+      tsl:
+        mip: Lmon
+      sftlf:
+        mip: fx
+      mrsos:
+        mip: Lmon
+    scripts:
+      autoassess_landsurf_permafrost: &autoassess_landsurf_permafrost_settings
+        script: autoassess/autoassess_area_base.py
+        title: "Autoassess Land-Surface Permafrost Diagnostic"
+        area: land_surface_permafrost
+        control_model: UKESM1-0-LL  # HadGEM3-GC31-LL
+        exp_model: UKESM1-0-LL
+        obs_models: []
+        start: 1997/12/01
+        end: 2002/12/01
+        climfiles_root: '/gws/nopw/j04/esmeval/autoassess_specific_files/files'  # on JASMIN
+
+  plot_standard:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      plot_landsurf_permafrost: &plot_landsurf_permafrost_settings
+        <<: *autoassess_landsurf_permafrost_settings
+        control_model: UKESM1-0-LL  # HadGEM3-GC31-LL
+        exp_model: UKESM1-0-LL
+        script: autoassess/plot_autoassess_metrics.py
+        ancestors: ['*/autoassess_landsurf_permafrost']
+        title: "Plot Land-Surface Permafrost Metrics"
+        plot_name: "Permafrost_Metrics"
+        diag_tag: aa_landsurf_permafrost
+        diag_name: autoassess_landsurf_permafrost
