@@ -119,6 +119,8 @@ begin
 
     ; Read data
     A0 = read_data(info[imod])
+printVarSummary(A0)
+printVarSummary(pctco)
     A0&time = pctco&year(10:)
 
     ; calculate annual mean for VAR:
@@ -208,7 +210,7 @@ print(betaGPP(imod))
   ; creat plots
 
   ;set specific markers and fill patterns
-  ncyc = (/"ACCESS-ESM1-5", "CESM2", "MIROC-ES2L", "MPI-ESM1-2-LR", "NorESM2-LM", "UKESM1-0-LL"/)
+  ncyc = (/"ACCESS-ESM1-5", "CESM2", "MIROC-ES2L", "MPI-ESM1-2-LR", "NorESM2-LM", "UKESM1-0-LL", "NorESM1-ME", "CESM1-BGC"/)
   bpattern = new(dim_MOD, integer)
 
   do imod  = 0, dim_MOD-1
@@ -287,6 +289,9 @@ print(betaGPP(imod))
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString = ""
   data_arr@res_gsnXYBarChartPatterns2 = bpattern
+  data_arr@res_vpWidthF = 0.7
+  data_arr@res_vpHeightF = 0.25
+  data_arr@res_txFontHeightF = 0.08
 
   plot = barchart(wks, data_arr, var, info)
   draw(plot)

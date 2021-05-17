@@ -109,15 +109,15 @@ begin
   ; setup data holders for plots
   nyMax = max(metadata_att_as_array(info0, "end_year"))
   nyMin = max(metadata_att_as_array(info0, "start_year"))
-  nMax = nyMax - nyMin + 10
+  nMax = nyMax - nyMin + 11
 
-  pctco = new((/nMax+10/), double)
+  pctco = new((/nMax/), double)
   pctco(0) = 285
-  do tt = 1, nMax+10-1
+  do tt = 1, nMax-1
     pctco(tt) = pctco(tt-1) + 0.01 * pctco(tt-1)
   end do
   pctco!0 = "year"
-  pctco&year = ispan(nyMin-10, nyMax, 1)
+  pctco&year = ispan(nyMin - 10, nyMax, 1)
   ; --------------------------------------------------------------
   ; define arrey
   nfit = fspan(0, 50, 50)
@@ -245,7 +245,7 @@ begin
   ; PLOT - Panel A
   XStg    = "CO~B~2~N~ at BRW [ppmv]"
   YStg    = "GPP [GtC/yr], 60N-90N"
-  data_arr = (/pctco({year|nyMin:nyMax}), aY0data(0, :)/)
+  data_arr = (/pctco, aY0data(0, :)/)
   data_arr!0 = "datasets"
   data_arr&datasets = (/XStg, YStg/)
   data_arr@res_tiMainString    = ""
@@ -283,10 +283,10 @@ begin
     txres@gsMarkerColor = colors(imod)
     txres@gsMarkerSizeF = MarkerSizeF(imod)
     txres@gsMarkerIndex = 4 ;circl
-    add_markers(wks, plot, txres, pctco({year|xMin_year:xMax_year}), aY0data(imod, :))
+    add_markers(wks, plot, txres, pctco, aY0data(imod, :))
 
     lineres@gsLineColor = colors(imod)
-    plot@$marker1$ = gsn_add_polyline(wks, plot, pctco({year|xMin_year:xMax_year}), Yfitda(imod, :), lineres)
+    plot@$marker1$ = gsn_add_polyline(wks, plot, pctco, Yfitda(imod, :), lineres)
 
     txres@gsMarkerIndex = 5 ;asterisks
     linehist@gsLineColor = colors(imod)

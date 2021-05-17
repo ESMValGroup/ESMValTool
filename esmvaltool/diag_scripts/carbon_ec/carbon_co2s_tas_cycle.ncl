@@ -51,19 +51,15 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   tmp = metadata_att_as_array(input_file_info, "variable_group")
-  co2s_ann = ind(tmp.eq."co2s")
-  co2s_amp = ind(tmp.eq."co2s_amp")
-  co2s_ann_obs = ind(tmp.eq."co2s_obs")
-  co2s_amp_obs = ind(tmp.eq."co2s_amp_obs")
+  co2s = ind(tmp.eq."co2s")
+  tas  = ind(tmp.eq."tas")
   delete(tmp)
 
   ; Load var_info
   var = variable_info[0]@short_name
   info = select_metadata_by_name(input_file_info, var)
-  info0 = info[co2s_ann]
-  ListPush(info0, info[co2s_ann_obs])
-  info1 = info[co2s_amp]
-  ListPush(info1, info[co2s_amp_obs])
+  info0 = info[co2s]
+  info1 = info[tas]
 
   datasetnames = metadata_att_as_array(info0, "dataset")
   dim_MOD = ListCount(info0)
@@ -71,9 +67,6 @@ begin
   reference_dataset = variable_info[0]@reference_dataset
   iref = ind(reference_dataset .eq. datasetnames)
   idat = ind(reference_dataset .ne. datasetnames)
-  if (datasetnames(iref) .eq. "ESRL") then
-    esrl = True
-  end if
 
   log_info("+++++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var + ")")
@@ -123,13 +116,15 @@ begin
   nyMin = min(metadata_att_as_array(info0, "start_year"))
   nMax = nyMax - nyMin + 1
 
-  Ydata  = new((/dim_MOD, nMax/), float)
-  Yfitd = new((/dim_MOD, nMax/), float)
-  Xdata = new((/dim_MOD, nMax/), float)
-  rcc   = new((/dim_MOD, 2/), float)
-  stdrc = new((/dim_MOD, 2/), float)
-  Xdata!1 = "year"
-  Xdata&year = ispan(nyMin+1, nyMax + 1, 1)
+  Y0data  = new((/8, dim_MOD, nMax/), float)
+  ;Yfitd = new((/dim_MOD, nMax/), float)
+  X0data = new((/6, dim_MOD, nMax/), float)
+  Y1data  = new((/8, dim_MOD, nMax/), float)
+  X1data = new((/6, dim_MOD, nMax/), float)
+  ;rcc   = new((/dim_MOD, 2/), float)
+  ;stdrc = new((/dim_MOD, 2/), float)
+  ;Xdata!1 = "year"
+  ;Xdata&year = ispan(nyMin+1, nyMax + 1, 1)
 
   ; ##############################################################
   ; loop for models
@@ -139,130 +134,57 @@ begin
     A0 = read_data(info0[imod])
     A1 = read_data(info1[imod])
 
-    ; Save input data with one year leap
-    Xdata(imod, :dimsizes(A0)-2) = tofloat(A0(1:))
-    Ydata(imod, :dimsizes(A1)-1) = tofloat(A1)
+    tmpa0 = time_operations(A0,-1,-1,"average","yearly",True)
+    tmpa1 = time_operations(A1,-1,-1,"average","yearly",True)
+    X0data(5, imod, :dimsizes(tmpa0)-1) = tmpa0
+    X1data(5, imod, :dimsizes(tmpa1)-1) = tmpa1
+
+    ; calculate aspects of the seasonal cycle
+    var0_sycle = seas_cycle(A0&time , A0, "all")
+    var1_sycle = seas_cycle(A1&time , A1, "all")
+
+    ;save data in array
+    xi = dimsizes(var0_sycle@Xamp)-1
+
+    X0data(0, imod, :xi) = var0_sycle@Xamp
+    X0data(1, imod, :xi) = var0_sycle@Xmax
+    X0data(2, imod, :xi) = var0_sycle@Xmin
+    X0data(3, imod, :xi) = var0_sycle@Xday
+    X0data(4, imod, :xi) = var0_sycle@Xann
+
+    Y0data(0, imod, :xi) = var0_sycle@amplitude
+    Y0data(1, imod, :xi) = var0_sycle@maximum
+    Y0data(2, imod, :xi) = var0_sycle@minimum
+    Y0data(3, imod, :xi) = var0_sycle@phase
+    Y0data(4, imod, :xi) = var0_sycle@integral
+    Y0data(5, imod, :xi) = var0_sycle@intd
+    Y0data(6, imod, :xi) = var0_sycle@growth
+    Y0data(7, imod, :xi) = var0_sycle@ampint
+
+    X1data(0, imod, :xi) = var1_sycle@Xamp
+    X1data(1, imod, :xi) = var1_sycle@Xmax
+    X1data(2, imod, :xi) = var1_sycle@Xmin
+    X1data(3, imod, :xi) = var1_sycle@Xday
+    X1data(4, imod, :xi) = var1_sycle@Xann
+
+    Y1data(0, imod, :xi) = var1_sycle@amplitude
+    Y1data(1, imod, :xi) = var1_sycle@maximum
+    Y1data(2, imod, :xi) = var1_sycle@minimum
+    Y1data(3, imod, :xi) = var1_sycle@phase
+    Y1data(4, imod, :xi) = var1_sycle@integral
+    Y1data(5, imod, :xi) = var1_sycle@intd
+    Y1data(6, imod, :xi) = var1_sycle@growth
+    Y1data(7, imod, :xi) = var1_sycle@ampint
 
     ; Regression between [CO2] Amplitude (x) and [CO2] ann mean (Y)
-    rc = regline_stats(Xdata(imod, :), Ydata(imod, :))
-    rcc(imod, 1) = rc
-    rcc(imod, 0) = rc@b(0)
-    stdrc(imod, :) = rc@stderr
-    Yfitd(imod, :dimsizes(rc@Yest)-1) = rc@Yest
-    delete([/rc,  A1, A0/])
+    ;rc = regline_stats(Xdata(imod, :), Ydata(imod, :))
+    ;rcc(imod, 1) = rc
+    ;rcc(imod, 0) = rc@b(0)
+    ;tdrc(imod, :) = rc@stderr
+    ;Yfitd(imod, :dimsizes(rc@Yest)-1) = rc@Yest
+    delete([/A1, A0, var1_sycle, var0_sycle, xi/])
   end do     ; model loop
 
-  ; read file with beta values
-  beta = ncdf_read(temp_dir, "beta")
-
-  ; Save in array w/o OBS
-  betaGPP = new((/2, dim_MOD-1/), float)
-  rcGPP   = new((/(dim_MOD-1)*2/), float)
-  beta_calc = beta@beta_calc
-
-  betaGPP(:, :) = beta
-  rcGPP(1::2) = betaGPP@rcgpp
-
-  rcGPP!0 = "models"
-  tmpm = new((/(dim_MOD-1)*2/), string)
-  tmpm(::2) = datasetnames(idat)
-  tmpm(1::2) = datasetnames(idat)
-  rcGPP&models = tmpm
-
-  delete(beta)
-  delete(tmpm)
-
-  ; Calculate constraint on BETA_GPP and
-  nfit = fspan(0, 50, 50)
-
-  ; amplitude trends
-  minx = min(rcc(idat, 1))-1.1*(max(rcc(idat, 1)) - min(rcc(idat, 1))) 
-  maxx = max(rcc(idat, 1))+1.1*(max(rcc(idat, 1)) + max(rcc(idat, 1))) 
-
-  rc = regline_stats(rcc(idat, 1), betaGPP(0, :))
-  arc_bco2  = rc@r
-  prc_bco2  = rc@F_pval
-  xfit_bco2 = minx + (maxx - minx) * nfit/dimsizes(nfit)
-  yfit_bco2 = rc * xfit_bco2 + rc@yintercept
-  beta_mco2 = rc * rcc(iref, 1) + rc@yintercept
-  beta_eco2 = sqrt(stdrc(iref, 1) ^ 2 + rc@rstd ^ 2)
-
-  ; Calculate prior distribution
-  PDF = Cond_PDF(xfit_bco2, yfit_bco2, rcc(idat, 1), \
-                 betaGPP(0, :), rc@MSE, \
-                 (/rcc(iref, 1), stdrc(iref, 1)/))
-
-  if (stdrc(iref, 1).ne.0) then
-    co2_Py  = PDF@Py
-  else
-    co2_Py  = 0.
-  end if
-  co2_Py_pr = PDF@Py_pr
-  co2_y     = PDF@y
-
-  ;this is for adding CMIP5 results to plots
-  ;esrl = False
-  ;if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
-  ;    if (beta_calc .eq. "increment")then
-  ;      CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM"/)    
-  ;      CMIP5aX = (/0.020, 0.023, 0.027, 0.051, 0.067, 0.020/)
-  ;      CMIP5aY = (/0.219, 0.154, 1.32, 1.51, 1.54, 0.159/)
-  ;    else
-  ;      CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM","UKESM1-0-LL"/)    
-  ;      CMIP5aX = (/0.020, 0.023, 0.027, 0.051, 0.067, 0.020, 0.108/)
-  ;      CMIP5aY = (/1.18, 1.22, 1.25, 1.38, 1.48, 1.25, 1.62/)
-  ;    end if
-  ;  else
-  ;    if (beta_calc .eq. "increment")then
-  ;      CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM"/)    
-  ;      CMIP5aX = (/0.01, 0.00, 0.02, 0.019, 0.031, -0.001/)
-  ;      CMIP5aY = (/6.04, 3.92, 14.91, 7.66, 18.75, 3.46/)
-  ;    else
-  ;      CMIP5names = (/"CanESM5","CESM2","GFDL-ESM4","MIROC-ES2L","MPI-ESM1-2-LR","NorESM2-LM","UKESM1-0-LL"/)    
-  ;      CMIP5aX = (/0.01, 0.00, 0.019, 0.019, 0.031, -0.001, 0.038/)
-  ;      CMIP5aY = (/1.33, 1.26, 1.44, 1.34, 1.56, 1.21, 1.59/)
-  ;    end if
-
-  ;  CMIP5c = regline_stats(CMIP5aX, CMIP5aY)
-  ;  CMIP5arc_bco2  = rc@r
-  ;  CMIP5prc_bco2  = rc@F_pval
-  ;  CMIP5xfit_bco2 = minx + (maxx - minx) * nfit/dimsizes(nfit)
-  ;  CMIP5yfit_bco2 = CMIP5rc * CMIP5xfit_bco2 + CMIP5rc@yintercept;;
-
-    ; Calculate prior distribution
-  ;  CMIP5PDF = Cond_PDF(CMIP5xfit_bco2, CMIP5yfit_bco2, CMIP5aX, \
-  ;                      CMIP5aY, CMIP5rc@MSE, \
-  ;                      (/rcc(iref, 1), stdrc(iref, 1)/));
-
-  ;  CMIP5co2_Py    = CMIP5PDF@Py
-  ;  CMIP5co2_Py_pr = CMIP5PDF@Py_pr
-  ;  CMIP5co2_y     = CMIP5PDF@y
-  ;end if
-
-  ; this is for plotting the regression line with confidence intervalls
-  yfit_bco2_std = new((/2, dimsizes(yfit_bco2)/), typeof(yfit_bco2))
-  yfit_bco2_std(0, :) = yfit_bco2 + PDF@sigma
-  yfit_bco2_std(1, :) = yfit_bco2 - PDF@sigma
-
-  yBETA = new((/2, dim_MOD+1/), float)
-  yBETA(0, 0)  = avg(betaGPP(0, :))
-  yBETA(0, 1)  = beta_mco2
-  yBETA(0, 2:) = betaGPP(0, :)
-  yBETA(1, 0)  = stddev(betaGPP(0, :))
-  yBETA(1, 1)  = beta_eco2
-  yBETA(1, 2:) = betaGPP(1, :)
-print(datasetnames)
-print(yBETA)
-  xCO2 =  new((/2, dim_MOD+1/), float)
-  xCO2(0, 1)  = rcc(iref, 1)
-  xCO2(0, 2:) = rcc(idat, 1)
-  xCO2(1, 1)  = stdrc(iref, 1)
-  xCO2(1, 2:) = stdrc(idat, 1)
-print(xCO2)
-  delete(rc)
-  delete(PDF)
-  delete(minx)
-  delete(maxx)
 
   ; Plot section
   ; -----------------------------------------------------------
@@ -273,16 +195,13 @@ print(xCO2)
   marker_sizes  = 0.02
 
   ;set specific markers and fill patterns
-  ncyc = (/"ACCESS-ESM1-5", "CESM2", "MIROC-ES2L", "MPI-ESM1-2-LR", "NorESM2-LM", "UKESM1-0-LL", "NorESM1-ME", "CESM1-BGC"/)
+  ncyc = (/"ACCESS-ESM1-5", "CESM2", "MIROC-ES2L", "MPI-ESM1-2-LR", "NorESM2-LM", "UKESM1-0-LL"/)
   bpattern = new(dim_MOD, integer)
-  markers = new(dim_MOD, integer)
 
   do imod  = 0, dim_MOD-1
     if (any(datasetnames(imod) .eq. ncyc)) then
-      markers(imod) = 5 
       bpattern(imod) = 16
     else
-      markers(imod) = 4 
       bpattern(imod) = 0
     end if
   end do
@@ -313,7 +232,7 @@ print(xCO2)
   plot = scatterplot(wks, data_arr, var, False, False, input_file_info)
 
   txres = True
-  txres@gsMarkerSizeF      = 15.
+  txres@gsMarkerSizeF      = 10.
   txres@gsMarkerThicknessF = 3
 
   ; Add markers
@@ -357,9 +276,6 @@ print(xCO2)
   data_arr@res_tiMainFontHeightF = 0.025
   data_arr@res_gsnCenterString = ""
   data_arr@res_gsnXYBarChartPatterns2 = bpattern
-  data_arr@res_vpWidthF = 0.7
-  data_arr@res_vpHeightF = 0.25
-  data_arr@res_txFontHeightF = 0.08
 
   plot = barchart(wks, data_arr, var, info0)
   draw(plot)
@@ -411,7 +327,7 @@ print(xCO2)
     data_arr@res_trXMinF         = -0.005
     data_arr@res_trXMaxF         = max(xCO2(0,2:))+ 0.25*max(xCO2(0,2:)) ;0.06
   end if 
-  data_arr@res_trYMinF           = min(yBETA(0, 2:)) - 0.25 * min(yBETA(0, 2:)) ;0.9 ;
+  data_arr@res_trYMinF           = 0.9 ;min(yBETA(0, 2:)) - 0.25 * min(yBETA(0, 2:))
   data_arr@res_trYMaxF           = max(yBETA(0, 2:)) + 0.25 * max(yBETA(0, 2:))
   data_arr@res_vpWidthF          = 0.5
   data_arr@res_vpHeightF         = 0.4
@@ -451,36 +367,37 @@ print(xCO2)
   fit_line = gsn_add_polyline(wks, plot, xfit_bco2, yfit_bco2, lres)
 
   ; add CMIP5 regression line
-  ;if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
-  ;  CMIP5lres = True
-  ;  CMIP5lres@gsLineColor       = "lightskyblue4"
-  ;  CMIP5lres@gsLineThicknessF  = 2
-  ;  CMIP5fit_line = gsn_add_polyline(wks, plot, CMIP5xfit_bco2, CMIP5yfit_bco2, CMIP5lres);
+  if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
+    CMIP5lres = True
+    CMIP5lres@gsLineColor       = "lightskyblue4"
+    CMIP5lres@gsLineThicknessF  = 2
+    CMIP5fit_line = gsn_add_polyline(wks, plot, CMIP5xfit_bco2, CMIP5yfit_bco2, CMIP5lres)
 
-;    ; add colored markers CMIP5
-;    XCMIP5 = new(dimsizes(datasetnames), typeof(CMIP5aX))
-;    XCMIP5@_FillValue = default_fillvalue(typeof(CMIP5aX)) 
-;    YCMIP5 = new(dimsizes(datasetnames), typeof(CMIP5aY))
-;    do imod = 0, dimsizes(datasetnames) -1
-;      do i = 0,  dimsizes(CMIP5names) -1 
-;        if (datasetnames(imod) .eq. CMIP5names(i)) then
-;          XCMIP5(imod) = CMIP5aX(i)
-;          YCMIP5(imod) = CMIP5aY(i)
-;        end if
-;;      end do
-;    end do
+    ; add colored markers CMIP5
+    XCMIP5 = new(dimsizes(datasetnames), typeof(CMIP5aX))
+    XCMIP5@_FillValue = default_fillvalue(typeof(CMIP5aX)) 
+    YCMIP5 = new(dimsizes(datasetnames), typeof(CMIP5aY))
+    do imod = 0, dimsizes(datasetnames) -1
+      do i = 0,  dimsizes(CMIP5names) -1 
+        if (datasetnames(imod) .eq. CMIP5names(i)) then
+          XCMIP5(imod) = CMIP5aX(i)
+          YCMIP5(imod) = CMIP5aY(i)
+        end if
+      end do
+    end do
 
-;    cmres = True
-;    cmres@gsMarkerSizeF = 10.
-;    cmres@gsMarkerThicknessF = 3.
-;    do imod = 2, dimsizes(datasetnames) - 1
-;      cmres@gsMarkerColor = xcolors(imod)
-;      cmres@gsMarkerIndex = xmarkers(imod)
-;      add_markers(wks, plot, cmres, XCMIP5(imod), YCMIP5(imod))
-;    end do
-;  end if
+    cmres = True
+    cmres@gsMarkerSizeF = 10.
+    cmres@gsMarkerThicknessF = 3.
+    do imod = 2, dimsizes(datasetnames) - 1
+      cmres@gsMarkerColor = xcolors(imod)
+      cmres@gsMarkerIndex = xmarkers(imod)
+      add_markers(wks, plot, cmres, XCMIP5(imod), YCMIP5(imod))
+    end do
+  end if
 
   ; add colored markers CMIP6
+  MarkerSizeF = where(datasetnames.eq."CESM1-BGC", 18., 15.)
 
   mres = True
   mres@gsMarkerSizeF = 10.
@@ -489,6 +406,7 @@ print(xCO2)
 
   do imod = 2, dimsizes(datasetnames) - 1
     mres@gsMarkerColor = xcolors(imod) 
+    mres@gsMarkerSizeF = MarkerSizeF(imod)
     if (any(datasetnames(imod) .eq. ncyc)) then
       mres@gsMarkerIndex = 5
     else
@@ -535,22 +453,22 @@ print(xCO2)
     pres@trYMinF        = 0
       xy_line(wks, co2_Py_pr, co2_y, 0., pres, input_file_info)
   else
-    ;if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
-    ;  pres@xyLineColors   = (/"red", "red", "lightskyblue4", "lightskyblue4"/)
-    ;  pres@xyDashPatterns = (/2, 0, 2, 0/)
-    ;  pres@xyLineThicknessF = 4
-    ;  pres@trYMinF        = 0
-    ;  xy_line(wks, (/co2_Py_pr, co2_Py, CMIP5co2_Py_pr, CMIP5co2_Py/), \
-    ;               (/co2_y, co2_y, CMIP5co2_y, CMIP5co2_y/), \
-    ;                0., pres, input_file_info)
-    ;else 
-      pres@xyLineColors   = (/"black", "red"/)
-      pres@xyDashPatterns = (/2, 0/)
+    if (.not. (diag_script_info@styleset .eq. "CMIP5")) then
+      pres@xyLineColors   = (/"red", "red", "lightskyblue4", "lightskyblue4"/)
+      pres@xyDashPatterns = (/2, 0, 2, 0/)
+      pres@xyLineThicknessF = 4
+      pres@trYMinF        = 0
+      xy_line(wks, (/co2_Py_pr, co2_Py, CMIP5co2_Py_pr, CMIP5co2_Py/), \
+                   (/co2_y, co2_y, CMIP5co2_y, CMIP5co2_y/), \
+                    0., pres, input_file_info)
+    else 
+      pres@xyLineColors   = (/"red", "red", "lightskyblue4", "lightskyblue4"/)
+      pres@xyDashPatterns = (/2, 0, 2, 0/)
       pres@xyLineThicknessF = 4
       pres@trYMinF        = 0
       xy_line(wks, (/co2_Py_pr, co2_Py/), (/co2_y, co2_y/), \
               0., pres, input_file_info)
-    ;end if
+    end if
   end if
 
   obsres = True

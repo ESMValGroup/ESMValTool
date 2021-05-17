@@ -7,6 +7,7 @@
 ;  Contents:
 ;     function cumulate_carbon: cummulates the variable over time
 ;     function Cond_PDF: calculates the normal and conditional PDF
+;     function seas_cycle: analyses the sasonal cycle of a periodic timeseries
 ;
 ; #############################################################################
 
@@ -175,4 +176,222 @@ begin
 
   return(PDF)
 
+end
+
+;########################################################################
+undef("seas_cycle")
+function seas_cycle(\;Xann[*]:numeric, \ ; x-values annual
+                   Xdata[*]:numeric, \ ; x-values monthly
+                   Ydata[*]:numeric, \ ; y-values 
+                     opt[1]:string)
+;;
+;; Author: Sabrina Wenzel (DLR, Germany)
+;;
+;; Description:
+;;  * analyses the sasonal cycle of an de-trendet periodic timeseries eg CO2
+;;    - calculates the relative seasonal amplitude of the timeseries
+;;    - finds the zero crossing point (phase) in Days Of Year (DOY)
+;;    - integrates over growing season (negative values of cycle)
+;;
+;; Return value (SEAS_CYC):
+;;    SEAS_CYC@Xamp = X values of relative amplitude
+;;    SEAS_CYC@Yamp = Y values of relative amplitude
+;;    SEAS_CYC@Xday = X values of phase (zero crossing)
+;;    SEAS_CYC@Yday = Y values of phase (zero crossing)
+;;    SEAS_CYC@Yintg = Y values of integral for growing season
+;;    SEAS_CYC@Yintd = Y values of integral for dormant season
+;;
+;; Arguments:
+;;  Xdata = 1-D array of x-values monthly
+;;  Ydata = 1-D array of y-values 
+;;  opt   = possible options: 
+;;         'amplitude' only calculates the relative amplitude of the cycle
+;;         'integral'  only calculates the integral over growing season
+;;         'phase'     only calculates the phase of the cycle
+;;         'all'       calculates all
+;;                                                                      
+;; Modification history:
+;;    * 20140218 written by S. Wenzel (sabrina.wenzel@dlr.de)
+;;
+local y, aa, n, ttt, ttx, txx, ymin, ymax, y2, aY2, aX2, aY1, aX1, \
+      alpha, tmpxh, y1
+begin
+
+  ;;Return variable as logical
+  SEAS_CYC = True
+
+  ;;define arrays for output
+  tmp  = ispan(toint(min(Xdata(:))),toint(max(Xdata(:))),1) * 1. 
+  nyr  = dimsizes(tmp) 
+  Xann = tmp
+  delete(tmp)
+  ;Xamp = new(nyr,float)
+  Yamp = new(nyr,float)
+  ;Xampi = new(nyr,float)
+  Yampi = new(nyr,float)
+  Xmaxday = new(nyr,float)
+  Ymax = new(nyr,float)
+  ;Xmin = new(nyr,float)
+  Ymin = new(nyr,float)
+  Xday = new(nyr,float)
+  Yday = new(nyr,float)
+  Yintg = new(nyr,float)
+  Yintd = new(nyr,float) 
+  Ygrow = new(nyr,float) 
+  Xmon = tofloat(Ydata&time) ;units must be in 'days since JJJJ-MM-DD hh:mm:ss'
+  Ydata&time = Xdata
+
+  ;;analyze each year seperatly:
+  do y = 0,nyr-1 ;0,dimsizes(aYdetr(imod,:))-1
+    n = 0
+    ttt = ind(toint(Ydata&time).eq.toint(Xann(y))) 
+    aa  = Ydata(ttt) 
+    n   = dimsizes(aa)
+
+    if (num(ismissing(aa)).le.5) then ;.not.all(ismissing(aa)).or.
+      if (max(aa).ne.min(aa)) then
+
+       ;;growth rate:
+        if (opt .eq. "growth")then    
+          if (n(0) .eq. 12 .and. min(ttt) .ge. 12) then
+            tmi = min(ttt)
+            Ygrow(y-1) = avg(Ydata(imod,tmi-2:tmi+1))-avg(Ydata(imod,tmi-14:tmi-11))
+          end if
+        end if ;opt 'growth'
+
+        if (opt .eq. "ampint" .or. opt .eq. "all")then
+            tmp = dim_cumsum(aa,0)/12
+            delete(aa)
+            aa = tmp
+            delete(tmp)
+          if (n(0) .eq. 12) then
+            Yampi(y) = max(aa)-min(aa)  ;rel amplitude eq max + min of seas cycl
+          end if
+        end if  ;opt 'ampint'
+
+        ;;relativ seasonal amplitude:
+        if (opt .eq. "amplitude" .or. opt .eq. "all")then
+          if (n(0) .eq. 12) then
+            Yamp(y) = max(aa)-min(aa)  ;rel amplitude eq max + min of seas cycl
+          end if
+        end if  ;opt 'amplitude'
+
+        ;;relativ seasonal amplitude:
+        if (opt .eq. "maximum" .or. opt .eq. "all")then
+          if (n(0) .gt. 9.) then
+            Ymax(y) = max(aa)               ;max of seas cycl
+            ttx = maxind(aa)
+            Xmaxday = Xmon(ttx)-Xmon(y*12)
+            delete(ttx)
+          end if
+        end if  ;opt 'maximum'
+
+        ;;relativ seasonal amplitude:
+        if (opt .eq. "minimum" .or. opt .eq. "all")then
+          if (n(0) .gt. 9.) then
+            Ymin(y) = min(aa(:9))               ;max of seas cycl
+          end if
+        end if  ;opt 'minimum'
+
+        ;;linearly interpolate in values to get zero crossing point:
+        if (opt .eq. "phase" .or. opt .eq. "all")then
+          if (n(0).gt.9. .and. y.ne.0) then
+            indmin = maxind(aa(:8))               ;find min and max in
+            indmax = minind(aa(:8))               ;the seasonal cycle
+
+            if (indmax.gt.indmin) then
+                ymin = indmin
+                ymax = indmax
+                p = -1
+
+                y2  = ind(aa(ymin:ymax).lt.0.0)    ;only consider values lt 0.0
+                aY2 = aa(min(y2+ymin))             ;find the closest neg. value  to 0.0
+                ttx = min(y2+ymin)
+                txx = y*12+ttx
+                aX2 = Xmon(txx)-Xmon(y*12)
+                
+                if (.not.ismissing(aa(ttx-1))) then
+                    aY1 = aa(ttx-1)                  ;at ttx-1 is closest pos. value to 0.0
+                    aX1 = Xmon(txx-1)-Xmon(y*12)
+                    if (aX2.ne.aX1) then
+                        alpha = (aY2-aY1)/(aX2-aX1)    ;interpolate between ponts
+                        tmpxh = aX1 - aY1/alpha        ;before and after zero crossing
+                        Yday(y) = tmpxh
+                        delete(tmpxh)
+                        delete(alpha)
+                    end if
+                    delete(aY1)
+                    delete(aX1)
+                end if
+                delete([/ttx,txx,aX2,aY2,ymax,ymin,y2,indmin,indmax/])
+
+            else
+                ymin = indmax
+                ymax = indmin
+
+                y2  = ind(aa(ymin:ymax).lt.0.0)    ;only consider values lt 0.0
+                aY2 = aa(max(y2+ymin))             ;find the closest neg. value  to 0.0
+                ttx = max(y2+ymin)
+                txx = y*12+ttx
+                aX2 = Xmon(txx)-Xmon(y*12)
+                
+                if (.not.ismissing(aa(ttx-1))) then
+                    aY1 = aa(ttx-1)                  ;at ttx-1 is closest pos. value to 0.0
+                    aX1 = Xmon(txx-1)-Xmon(y*12)
+                    
+                    if (aX2.ne.aX1) then
+                        alpha = (aY2-aY1)/(aX2-aX1)    ;interpolate between ponts
+                        tmpxh = aX1 - aY1/alpha        ;before and after zero crossing
+                        Yday(y) = tmpxh
+                        delete(tmpxh)
+                        delete(alpha)
+                    end if
+                    delete(aY1)
+                    delete(aX1)
+                end if
+              delete([/ttx,txx,aX2,aY2,ymax,ymin,y2,indmin,indmax/])
+
+           end if
+          end if
+        end if  ;opt 'phase'
+
+      end if
+    end if
+
+    ;;integrate over growing saison:
+    if (opt .eq. "integral" .or. opt .eq. "all")then
+      if (n(0) .gt. 9.) then
+        y1 = ind(aa(1:n-1).lt.0.0)                  ;only consider values lt 0.0 for integral
+        if (.not.all(ismissing(y1))) then
+          Yintg(y) = sum(aa);(y1))
+        end if
+        delete(y1)
+        y1 = ind(aa(1:n-1).gt.0.0)                  ;only consider values gt 0.0 for integral
+        if (.not.all(ismissing(y1))) then
+          Yintd(y) = sum(aa(y1))
+        end if
+        delete(y1)
+      end if
+    end if
+    delete(n)
+    delete(aa) 
+    delete(ttt)
+
+  end do ;annual loop 
+
+  SEAS_CYC@Xamp      = Xann
+  SEAS_CYC@amplitude = Yamp
+  SEAS_CYC@Xmax      = Xmaxday
+  SEAS_CYC@maximum   = Ymax
+  SEAS_CYC@Xmin      = Xann
+  SEAS_CYC@minimum   = Ymin
+  SEAS_CYC@Xday      = Xann
+  SEAS_CYC@phase     = Yday
+  SEAS_CYC@integral  = Yintg
+  SEAS_CYC@intd      = Yintd
+  SEAS_CYC@growth    = Ygrow
+  SEAS_CYC@ampint    = Yampi
+  SEAS_CYC@Xann      = Xann
+
+  return(SEAS_CYC)
 end
