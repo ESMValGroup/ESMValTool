@@ -179,7 +179,7 @@ def cmorization(in_dir, out_dir, cfg, _):
                 #print(cube)
                 var_name = cube.attributes['var']
                 iris.save(cube,
-                          '%s/OBS_ESACCI-LST-UNCERTS_sat_1.00_Amon_%s_%s.nc' % 
+                          '%s/OBS_ESACCI_LST_UNCERTS_sat_1.00_Amon_%s_%s.nc' % 
                           (out_dir, var_name, '%s%02d'%(year,month))
                           )
 
