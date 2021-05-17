@@ -108,8 +108,9 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     # set all non-masked values to 1 for area calculation
     # (may be a better way of doing this but I'm not sure what it is)
     pf_periods = pf_periods / pf_periods
-    # mask for land area also
-    pf_periods = pf_periods * mask
+    # mask for land area also; using `sftlf` which has percents data
+    # divide by 100 to account for absolute fraction and not percents
+    pf_periods = pf_periods * mask / 100.
 
     # calculate the area of permafrost
     # Generate area-weights array. This method requires bounds on lat/lon
@@ -222,7 +223,7 @@ def get_nonice_mask(run):
 
     Need to read the soil moisture data from the supermeans
     """
-    # TODO: currently set to mrsos: mass_content_of_water_in_soil_layer
+    # currently set to mrsol(Emon): mass_content_of_water_in_soil_layer
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
 
@@ -230,17 +231,20 @@ def get_nonice_mask(run):
     # TODO: original code
     # cube = get_supermean('moisture_content_of_soil_layer', 'ann',
     #                      supermean_data_dir)
-    # replaced with new time-invariant variable
+    # use mrsol
+    # mrsol has 3 soil layers
+    # could use mrsos(Lmon) too but that has 1 single layer
+    # and that is below 1m and layer extraction below would fail
     name_constraint = iris.Constraint(
         name='mass_content_of_water_in_soil_layer')
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
-    # mrsos data comes a time-lat-lon, collapse on time
+    # mrsol data comes a time-lat-lon, collapse on time
     cube = cube.collapsed('time', iris.analysis.MEAN)
 
-    # UKESM1: depth: 0.05000000074505806 m, bound=(0.0, 0.10000000149011612) m
-    # cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
+    # extract layer
+    cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
 
     # make it into a mask of ones - extract first layer
     # use masked_values for floating point fuzzy equals
