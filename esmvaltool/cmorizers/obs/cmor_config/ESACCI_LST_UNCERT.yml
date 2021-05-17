@@ -21,48 +21,82 @@ attributes:
 # Variables to cmorize
 # These go into the vals dictionary in the python script
 variables:
-  ts: 
+  tsDay: 
     mip: Amon
     raw: land surface temperature
     raw_units: kelvin
-    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
-    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
-    # plan to make it possible to change MODISA here but only placeholders in the python there for now
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
     start_year: 2010
     end_year: 2010
 
-  tsLocalAtmErr:    
+  tsNight: 
+    mip: Amon
+    raw: land surface temperature
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    start_year: 2010
+    end_year: 2010
+
+  tsLocalAtmErrDay:    
     mip: Amon
     raw: uncertainty from locally correlated errors on atmospheric scales
     raw_units: kelvin
-    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
-    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
     start_year: 2010
     end_year: 2010
 
-  tsLocalSfcErr:    
+  tsLocalAtmErrNight:    
+    mip: Amon
+    raw: uncertainty from locally correlated errors on atmospheric scales
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    start_year: 2010
+    end_year: 2010
+
+  tsLocalSfcErrDay:    
     mip: Amon
     raw: uncertainty from locally correlated errors on surface scales
     raw_units: kelvin
-    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
-    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
     start_year: 2010
     end_year: 2010
 
-  tsLSSysErr:    
+  tsLocalSfcErrNight:    
+    mip: Amon
+    raw: uncertainty from locally correlated errors on surface scales
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    start_year: 2010
+    end_year: 2010
+
+  tsLSSysErrDay:    
     mip: Amon
     raw: uncertainty from large-scale systematic errors
     raw_units: kelvin
-    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
-    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
     start_year: 2010
     end_year: 2010
 
-  tsUnCorErr:    
+  tsLSSysErrNight:    
+    mip: Amon
+    raw: uncertainty from large-scale systematic errors
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    start_year: 2010
+    end_year: 2010
+
+  tsUnCorErrDay:    
     mip: Amon
     raw: uncertainty from uncorrelated errors
     raw_units: kelvin
-    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
-    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
+    start_year: 2010
+    end_year: 2010
+
+  tsUnCorErrNight:    
+    mip: Amon
+    raw: uncertainty from uncorrelated errors
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
     start_year: 2010
     end_year: 2010

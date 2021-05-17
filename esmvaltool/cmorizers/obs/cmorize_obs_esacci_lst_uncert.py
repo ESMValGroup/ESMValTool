@@ -37,7 +37,7 @@ def cmorization(in_dir, out_dir, cfg, _):
     variable_keys = []
     # vals has the info from the yml file
     # var is set up in the yml file
-    
+
     for var, vals in cfg['variables'].items():
     
         glob_attrs['mip'] = vals['mip']
@@ -51,25 +51,26 @@ def cmorization(in_dir, out_dir, cfg, _):
     # loop over years and months
     # get years from start_year and end_year
     for year in range(vals['start_year'], vals['end_year'] + 1):
-        
+        print('****************************')
+        print(variable_list)
         this_years_cubes = iris.cube.CubeList()
-        for month in range(1,13):
+        for month in range(1,2):
             logger.info(year)
             logger.info(month)
+            print(vals['file'])
+            cubes = load_cubes(in_dir,
+                              vals['file'],
+                              '',
+                              year,
+                              month,
+                              variable_list
+            ) 
+            print(cubes)
+            #day_cube_lst   = day_cube.extract('land surface temperature')
+            #night_cube_lst = night_cube.extract('land surface temperature')
 
-            day_cube, night_cube = load_cubes(in_dir,
-                                              vals['file_day'],
-                                              vals['file_night'],
-                                              year,
-                                              month,
-                                              variable_list
-                                              ) 
-
-            day_cube_lst   = day_cube.extract('land surface temperature')
-            night_cube_lst = night_cube.extract('land surface temperature')
-
-            monthly_cubes = make_monthly_average(day_cube_lst, night_cube_lst,
-                                                year, month)
+            #monthly_cubes = make_monthly_average(day_cube_lst, night_cube_lst,
+            #                                    year, month)
 
             output = iris.cube.CubeList()
             # cube list should be in same order as the variable_keys list
@@ -78,42 +79,43 @@ def cmorization(in_dir, out_dir, cfg, _):
             time_point = Unit.date2num(datetime.datetime(year,month,1),
                                        'hours since 1970-01-01 00:00:00',
                                        Unit.CALENDAR_STANDARD)
-            day_point = time_point + 12
-            night_point = time_point
-            all_point = time_point + 18
+            #day_point = time_point + 12
+            #night_point = time_point
+            #all_point = time_point + 18
           
-            day_time_coord = iris.coords.DimCoord(day_point, 
-                                                  standard_name='time',
-                                                  long_name='time', 
-                                                  var_name='time', 
-                                                  units='hours since 1970-01-01',
-                                                  bounds=None,#bounds, 
-                                                  attributes=None, 
-                                                  coord_system=None, 
-                                                  circular=False
-            )
+            
+            time_coord = iris.coords.DimCoord(time_point, 
+                                              standard_name='time',
+                                              long_name='time', 
+                                              var_name='time', 
+                                              units='hours since 1970-01-01',
+                                              bounds=None,#bounds, 
+                                              attributes=None, 
+                                              coord_system=None, 
+                                              circular=False
+                                          )
 
-            night_time_coord = iris.coords.DimCoord(night_point, 
-                                                    standard_name='time',
-                                                    long_name='time', 
-                                                    var_name='time', 
-                                                    units='hours since 1970-01-01',
-                                                    bounds=None,#bounds, 
-                                                    attributes=None, 
-                                                    coord_system=None, 
-                                                    circular=False
-            )
+            # night_time_coord = iris.coords.DimCoord(night_point, 
+            #                                         standard_name='time',
+            #                                         long_name='time', 
+            #                                         var_name='time', 
+            #                                         units='hours since 1970-01-01',
+            #                                         bounds=None,#bounds, 
+            #                                         attributes=None, 
+            #                                         coord_system=None, 
+            #                                         circular=False
+            # )
 
-            all_time_coord = iris.coords.DimCoord(all_point, 
-                                                  standard_name='time',
-                                                  long_name='time', 
-                                                  var_name='time', 
-                                                  units='hours since 1970-01-01',
-                                                  bounds=None,#bounds, 
-                                                  attributes=None, 
-                                                  coord_system=None, 
-                                                  circular=False
-            )
+            # all_time_coord = iris.coords.DimCoord(all_point, 
+            #                                       standard_name='time',
+            #                                       long_name='time', 
+            #                                       var_name='time', 
+            #                                       units='hours since 1970-01-01',
+            #                                       bounds=None,#bounds, 
+            #                                       attributes=None, 
+            #                                       coord_system=None, 
+            #                                       circular=False
+            # )
             
             # DAY TIME VALUES given a 1200 time
             # NIGHT TIME VALUES given a 0000 time
@@ -122,13 +124,13 @@ def cmorization(in_dir, out_dir, cfg, _):
             # note the cmor util coord fixer adds a bounf
             # these bounds need removing when using partial datetime objects
             # to extact the day/night individual elements
-            monthly_cubes.remove_coord('time')
-            monthly_cubes.add_aux_coord(all_time_coord)
-            monthly_cubes = iris.util.new_axis(monthly_cubes, 'time')
-            output.append(monthly_cubes)
-  
-            for i,cube in enumerate(day_cube):
-                if cube.long_name == 'land surface temperature': continue
+            #monthly_cubes.remove_coord('time')
+            #monthly_cubes.add_aux_coord(all_time_coord)
+            #monthly_cubes = iris.util.new_axis(monthly_cubes, 'time')
+            #output.append(monthly_cubes)
+            
+            for i,cube in enumerate(cubes):
+                #if cube.long_name == 'land surface temperature': continue
                 cube.attributes = {}
                 cube.attributes['var'] = variable_keys[i]
                 
@@ -137,24 +139,24 @@ def cmorization(in_dir, out_dir, cfg, _):
                 except:
                     logger.info('Coord fix issue %s' % cube.long_name)
 
-                cube.add_dim_coord(day_time_coord, 0)
+                cube.add_dim_coord(time_coord, 0)
                     
                 output.append(cube)
 
-            for i,cube in enumerate(night_cube):
-                if cube.long_name == 'land surface temperature': continue
+            # for i,cube in enumerate(night_cube):
+            #     if cube.long_name == 'land surface temperature': continue
 
-                cube.attributes = {}
-                cube.attributes['var'] = variable_keys[i]
+            #     cube.attributes = {}
+            #     cube.attributes['var'] = variable_keys[i]
                 
-                try:
-                    cube.remove_coord('time')
-                except:
-                    logger.info('Coord fix issue %s' % cube.long_name)
+            #     try:
+            #         cube.remove_coord('time')
+            #     except:
+            #         logger.info('Coord fix issue %s' % cube.long_name)
 
-                cube.add_dim_coord(night_time_coord, 0)
+            #     cube.add_dim_coord(night_time_coord, 0)
                     
-                output.append(cube)
+            #     output.append(cube)
 
             output = output.merge()
             output = output.concatenate()
@@ -169,11 +171,12 @@ def cmorization(in_dir, out_dir, cfg, _):
                     logger.info('skip fixing')
                     logger.info(cube.long_name)
                     pass
-
+            print('Get here $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
         # Use utils save
         # This seems to save files all with the same name!
             logger.info(out_dir)
             for cube in output:
+                #print(cube)
                 var_name = cube.attributes['var']
                 iris.save(cube,
                           '%s/OBS_ESACCI-LST-UNCERTS_sat_1.00_Amon_%s_%s.nc' % 
@@ -189,23 +192,23 @@ def cmorization(in_dir, out_dir, cfg, _):
         # )
 
 # no need to pass variable into any more, use global variable_list
-def load_cubes(in_dir, file_day, file_night, year, month, variable_list):
+def load_cubes(in_dir, file, file_night, year, month, variable_list):
     """
     variable = land surface temperature
     platform = AQUA not used for now
                but in place for future expansion to all ESC CCI LST plaforms
     """
-    logger.info('Loading %s/%s%s%s*.nc', in_dir, file_day, year, month)
-    day_cube = iris.load('%s/%s%s%02d*.nc' % (in_dir, file_day,
+    logger.info('Loading %s/%s%s%s*.nc', in_dir, file, year, month)
+    cube = iris.load('%s/%s%s%02d*.nc' % (in_dir, file,
                                                    year, month),
                          variable_list)
 
-    logger.info('Loading %s/%s%s%s*.nc', in_dir, file_night, year, month)
-    night_cube = iris.load('%s/%s%s%02d*.nc' % (in_dir, file_night,
-                                                     year, month),
-                           variable_list)
+    # logger.info('Loading %s/%s%s%s*.nc', in_dir, file_night, year, month)
+    # night_cube = iris.load('%s/%s%s%02d*.nc' % (in_dir, file_night,
+    #                                                  year, month),
+    #                        variable_list)
 
-    return day_cube, night_cube
+    return cube#, night_cube
 
 
 def make_monthly_average(day_cube, night_cube, year, month):
