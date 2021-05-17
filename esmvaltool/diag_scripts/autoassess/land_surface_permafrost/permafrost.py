@@ -272,7 +272,8 @@ def koven_temp_offsets(soiltemp, airtemp):
     # the soil temperatures are for the middle of the layer not the bottom of
     # the layer
     linear = iris.analysis.Linear()
-    soiltemp_surf = soiltemp.interpolate([('depth', 0.0)], linear)
+    nearest = iris.analysis.Nearest()
+    soiltemp_surf = soiltemp.interpolate([('depth', 0.0)], nearest)
     soiltemp_1m = soiltemp.interpolate([('depth', 1.0)], linear)
 
     # extract points for eachsite
@@ -284,10 +285,11 @@ def koven_temp_offsets(soiltemp, airtemp):
 
     # assign metrics
     metrics = {}
-    metrics['offset 1m minus surface'] = np.median(soiltemp_1m_1d -
-                                                   soiltemp_surf_1d)
-    metrics['offset surface minus air'] = np.median(soiltemp_surf_1d -
-                                                    airtemp_1d)
+    off_surf = soiltemp_1m_1d - soiltemp_surf_1d
+    off_air = soiltemp_surf_1d - airtemp_1d
+    metrics['offset 1m minus surface'] = np.ma.median(off_surf)
+    metrics['offset surface minus air'] = np.ma.median(off_air)
+
     return metrics
 
 
