@@ -56,6 +56,7 @@ import matplotlib.pyplot as plt
 logging.getLogger('matplotlib.font_manager').disabled = True
 
 import numpy as np
+import geopy
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -64,25 +65,54 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def calculate_crossssection_mean(cube):
+    #
+    # calculate AEU
+    #
+    cube.data = np.ma.masked_invalid(cube.data)
+    cube.data = np.ma.masked_where(cube.data.mask + (cube.data > 1.E10) + (cube.data <= 0.), cube.data)
+    cube =  cube.collapsed(['time', 'longitude', ], iris.analysis.mean)
+    cross_section = calc_cross_section(cube)
 
+    cube.data = cube.data * cross_section
+    return cube
+
+
+def calc_cross_section(cube):
+    """
+    Calculate the cross sectional area
+    """
+    lats = cube.coords('latitude')
+    depth = cube.coords('depth')
+    thicknesses = np.abs(depth.bounds[:,1] - depth.bounds[:,0])
+
+    cross_section = np.zeroes((len(depth.points), len(lats.points))
+    for l, la in enumerate(lats.points):
+        # from@ https://stackoverflow.com/a/43211266/3082690
+        coords_1 = (lats.bounds[l,0], -23.)
+        coords_2 = (lats.bounds[l,1], -23.)
+        distance = geopy.distance.distance(coords_1, coords_2).m
+        cross_section[:, l] = thicknesses * distance
+    cross_section = np.ma.array(cross_section)
+    print('calc_cross_section', cross_section.shape, 'cs range:', (cross_section.min(), cross_section.max()) )
+    return cross_section
 
 def calculate_aeu(cube):
-    #  times = diagtools.cube_time_to_float(cube)
-    # calculate it with:
-    #     mask where u < 0. below zero.
-    #     calculate area:
-    #         calculate distance between two points (no 100% accurate)
-    #         calculate depth from bounds
-    #     sum(u * area)
+    #
+    # calculate AEU
+    #
+    # TODO: Add additional sensitivity tests.
+    cross_section = calc_cross_section(cube)
+
     cube.data = np.ma.masked_invalid(cube.data)
-    cube.data = np.ma.masked_where(cube.data.mask + (cube.data > 1E10) + (cube.data <= 0.), cube.data)
+    cube.data = np.ma.masked_where(cube.data.mask + (cube.data > 1.E10) + (cube.data <= 0.), cube.data)
+    times = cube.coords('time')
+    data = cube.data.copy()
 
-    z = cube.coords('depth')
-    thicknesses = np.abs(z.bounds[:,1] - .bounds[:,0])
-    lat = cube.coords('latitude')
-    print(lat)
+    for t,time in enumerate(times.points):
+        data[t] = data[t]*cross_section
 
-    cube.data = cube.data
+    cube.data = data
     cube =  cube.collapsed(['latitude', 'longitude', 'depth'], iris.analysis.SUM)
     return cube
 
@@ -228,12 +258,10 @@ def make_time_series_plots(
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
-   
+
     # Making plots for each layer
     #for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
-    cube.data = np.ma.masked_invalid(cube.data)
-    cube.data = np.ma.masked_where(cube.data.mask + (cube.data > 1E10), cube.data)
-    cube =  cube.collapsed(['latitude', 'longitude', 'depth'], iris.analysis.MAX)
+    cube = calculate_aeu(cube)
     timeplot(cube, label=metadata['dataset'])
 
     title = ' '.join([metadata['dataset'], metadata['long_name'], 'MAX'])
@@ -246,6 +274,77 @@ def make_time_series_plots(
             cfg,
             metadata,
             suffix='timeseries'  + image_extention,
+        )
+
+    # Saving files:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+
+    plt.close()
+
+
+
+def make_transects_plots(
+        cfg,
+        metadata,
+        filename,
+):
+    """
+    Make a simple plot of the transect for an indivudual model.
+
+    This tool loads the cube from the file, checks that the units are
+    sensible BGC units, checks for layers, adjusts the titles accordingly,
+    determines the ultimate file name and format, then saves the image.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
+
+    """
+    # Load cube and set up units
+    cube = iris.load_cube(filename)
+    cube = diagtools.bgc_units(cube, metadata['short_name'])
+
+    # Is this data is a multi-model dataset?
+    multi_model = metadata['dataset'].find('MultiModel') > -1
+
+    cube = diagtools.make_depth_safe(cube)
+    #cubes = diagtools.make_cube_region_dict(cube)
+    cube = calculate_crossssection_mean(cube)
+
+    # Determine y log scale.
+    #set_y_logscale = determine_set_y_logscale(cfg, metadata)
+
+    # Make a dict of cubes for each layer.
+    qplt.contourf(cube, 15, linewidth=0, rasterized=True)
+
+#    if set_y_logscale:
+#        plt.axes().set_yscale('log')
+
+#        if region:
+#            region_title = region
+#        else:
+#            region_title = determine_transect_str(cube, region)
+
+    # Add title to plot
+    title = ' '.join(
+        [metadata['dataset'], metadata['long_name'], ])
+    titlify(title)
+
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Determine image filename:
+        path = diagtools.get_image_path(
+            cfg,
+            metadata,
+            suffix=region + 'transect' + image_extention,
         )
 
     # Saving files:
@@ -415,6 +514,7 @@ def main(cfg):
                 ######
                 # Time series of individual model
                 make_time_series_plots(cfg, metadatas[filename], filename)
+                make_transects_plots(cfg, metadatas[filename], filename)
     logger.info('Success')
 
 
