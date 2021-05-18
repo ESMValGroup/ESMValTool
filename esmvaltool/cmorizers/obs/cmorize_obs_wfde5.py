@@ -60,7 +60,7 @@ def _extract_variable(var, cfg, filenames, out_dir):
         ]
         scubes = iris.load(snow_filenames)
         scube = scubes.concatenate_cube()
-        cube.data += scube.data
+        cube.data = scube.core_data() + cube.core_data()
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
