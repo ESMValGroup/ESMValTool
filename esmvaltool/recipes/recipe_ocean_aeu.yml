@@ -30,9 +30,13 @@ preprocessors:
     extract_volume:
       z_min: 0.
       z_max: 500.
-    extract_trajectory:
-      latitudes: [-23., -23. ]
-      longitudes: [-5.,  5.]
+    annual_statistics:
+      operator: mean
+    extract_trajectory: # note that preprocessor confuses lat/lons.
+      latitudes: [-5., 5.] 
+      longitudes: [-23.,  -23.]
+#      latitudes: [-23., -23. ]
+#      longitudes: [-5.,  5.]
       number_points: 25
 #    extract_transect:
 ##     longitude: -23. 
@@ -47,7 +51,8 @@ diagnostics:
         short_name: uo
         preprocessor: prep_transect
         additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2004, end_year: 2009, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 1950, end_year: 2014, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp585, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
 
     scripts:
       AMOC_timeseries:

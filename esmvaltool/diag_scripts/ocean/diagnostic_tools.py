@@ -192,6 +192,43 @@ def match_model_to_key(
             return input_file
     logger.warning("Unable to match model: %s", model_type)
     return ''
+def make_depth_safe(cube):
+    """
+    Make the depth coordinate safe.
+
+    If the depth coordinate has a value of zero or above, we replace the
+    zero with the average point of the first depth layer.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube to make the depth coordinate safe
+
+    Returns
+    ----------
+    iris.cube.Cube:
+        Output cube with a safe depth coordinate
+
+    """
+    depth = cube.coord('depth')
+
+    # it's fine
+    if depth.points.min() * depth.points.max() > 0.:
+        return cube
+
+    if depth.attributes['positive'] != 'down':
+        raise Exception('The depth field is not set up correctly')
+
+    depth_points = []
+    bad_points = depth.points <= 0.
+    for itr, point in enumerate(depth.points):
+        if bad_points[itr]:
+            depth_points.append(depth.bounds[itr, :].mean())
+        else:
+            depth_points.append(point)
+
+    cube.coord('depth').points = depth_points
+    return cube
 
 
 def cube_time_to_float(cube):
