@@ -13,7 +13,7 @@ Download and processing instructions
    All handled by the script (download only if local data are missing)
 
 Modification history
-   20210311-lovato_tomas: consolidate WOA18 and use OBS6
+   20210311-lovato_tomas: consolidate WOA18, raw data download, use OBS6
    20200911-bock_lisa: extend to WOA18
    20190328-lovato_tomas: cmorizer revision
    20190131-predoi_valeriu: adapted to v2.
@@ -101,24 +101,24 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     set_global_atts(cube, attrs)
     save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
-    # compute derived vars
+    # derive ocean surface
     if 'srf_var' in raw_info:
         var_info = cmor_table.get_variable(raw_info['mip'],
                                            raw_info['srf_var'])
         logger.info("Extract surface OBS for %s", raw_info['srf_var'])
         level_constraint = iris.Constraint(cube.var_name, depth=0)
-        cube = cube.extract(level_constraint)
+        cube_os = cube.extract(level_constraint)
         fix_var_metadata(cube, var_info)
-        save_variable(cube,
+        save_variable(cube_os,
                       raw_info['srf_var'],
                       out_dir,
                       attrs,
                       unlimited_dimensions=['time'])
 
-    if raw_info['compute_Oyr']:
-        attrs['mip'] = 'Oyr'
-        cube = annual_statistics(cube, 'mean')
-        save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
+    # derive annual mean (Oyr)
+    attrs['mip'] = 'Oyr'
+    cube = annual_statistics(cube, 'mean')
+    save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
@@ -134,7 +134,6 @@ def cmorization(in_dir, out_dir, cfg, _):
         raw_info.update({
             'var': var,
             'reference_year': cfg['custom']['reference_year'],
-            'compute_Oyr': cfg['custom']['compute_Oyr']
         })
         glob_attrs['mip'] = vals['mip']
         extract_variable(in_files, out_dir, glob_attrs, raw_info, cmor_table)

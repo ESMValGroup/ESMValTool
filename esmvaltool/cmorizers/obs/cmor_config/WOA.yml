@@ -54,4 +54,3 @@ variables:
 custom:
   reference_year: 2000
   resolution: '1.00'
-  compute_Oyr: True
