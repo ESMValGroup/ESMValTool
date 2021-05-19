@@ -35,7 +35,7 @@ def land_sm_top(run):
     # first soil layer depth
     dz1 = 0.1
 
-    #   Work through each season
+    # Work through each season
     metrics = dict()
     for season in seasons:
         fname = 'ecv_soil_moisture_{}.nc'.format(season)
@@ -49,7 +49,8 @@ def land_sm_top(run):
 
         # m01s08i223
         # standard_name: mrsos
-        smcl_run = get_supermean('moisture_content_of_soil_layer', season,
+        smcl_run = get_supermean('mass_content_of_water_in_soil_layer',
+                                 season,
                                  supermean_data_dir)
 
         # m01s08i229i
@@ -115,16 +116,20 @@ def land_sm_top(run):
 
         # Interpolate to the grid of the climatology and form the difference
         vol_sm1_run = regrid(vol_sm1_run, ecv_clim, 'linear')
+
+        # mask invalids
+        vol_sm1_run.data = np.ma.masked_invalid(vol_sm1_run.data)
+        ecv_clim.data = np.ma.masked_invalid(ecv_clim.data)
+
         # diff the cubes
         dff = vol_sm1_run - ecv_clim
 
-        # Remove NaNs from data before aggregating statistics
-        dff.data = np.ma.masked_invalid(dff.data)
-
-        # save output
+        # save output and populate metric
         iris.save(dff, os.path.join(run['dump_output'],
                                     'soilmoist_diff_{}.nc'.format(season)))
         name = 'soilmoisture MedAbsErr {}'.format(season)
-        metrics[name] = float(np.ma.median(np.ma.abs(dff.data)))
+        dffs = dff.data
+        dffs = np.ma.abs(dffs)
+        metrics[name] = float(np.ma.median(dffs))
 
     return metrics
