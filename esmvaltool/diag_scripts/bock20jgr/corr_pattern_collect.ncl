@@ -233,18 +233,18 @@ begin
 
   nr_projects = dimsizes(projects)
   if (nr_projects .eq. 2) then
-    x_val = new(n_var,float)
+    x_val = new(n_var, float)
     do i = 0, n_var-1
       x_val(i) = 1 + i * 3
     end do
   elseif (nr_projects .eq. 3) then
-    x_val = new(n_var,float)
+    x_val = new(n_var, float)
     do i = 0, n_var-1
       x_val(i) = 1.5 + i * 4
     end do
   else
     x_val = ispan(1, n_var*nr_projects, nr_projects)
-  end if 
+  end if
 
   ; Mean and Median of Ensemble - without alt obs
   obs_ind = get1Dindex(data_all&models, alt_obs)
@@ -293,7 +293,7 @@ begin
 
   ; Project Colors - TODO: let them be specified in cfg
   fcolors = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
-            + "ipcc-ar6_line_03.rgb")
+                               + "ipcc-ar6_line_03.rgb")
 
   res = True
   res@gsnDraw          = False
@@ -338,7 +338,7 @@ begin
   ; Resources for obs data markers
   res_circ = True
   res_circ@gsMarkerIndex = 16
-  res_circ@gsMarkerColor = (/178,178,178,255/) / 255.
+  res_circ@gsMarkerColor = (/178, 178, 178, 255/) / 255.
   res_circ@gsMarkerSizeF = 2 * marker_size
   res_circ@gsMarkerOpacityF = 0.4
 
@@ -371,7 +371,8 @@ begin
   end if
   do iproj = 0, nr_projects - 1
     do ivar = 0, n_var - 1
-      x_val_proj(iproj, ivar) = ivar*(1 + nr_projects) - 0.5 + d_proj*(iproj+1.)
+      x_val_proj(iproj, ivar) = ivar*(1 + nr_projects) - 0.5 \
+                                + d_proj*(iproj+1.)
     end do
   end do
   ; Start with blank plot! gs and xy marker sizes are different..
@@ -379,7 +380,7 @@ begin
 
   if (diag_script_info@plot_median) then
     do iproj = 0, nr_projects - 1
-      res_circm@gsMarkerColor = fcolors(iproj,:)
+      res_circm@gsMarkerColor = fcolors(iproj, :)
       plot@$unique_string("dum_median")$ = gsn_add_polymarker( \
         wks, plot, x_val_proj(iproj, :), median(iproj, :), res_circm)
     end do
@@ -396,8 +397,8 @@ begin
         ; Plot lines for mean
         xx_mean = (/proj_center-l_length*3., proj_center+l_length*3./)
         yy_mean = (/means(iproj, ivar), means(iproj, ivar)/)
-        res_mlines@gsLineColor = fcolors(iproj,:)
-        res_lines@gsLineColor = fcolors(iproj,:)
+        res_mlines@gsLineColor = fcolors(iproj, :)
+        res_lines@gsLineColor = fcolors(iproj, :)
         plot@$unique_string("dum")$ = gsn_add_polyline( \
           wks, plot, xx_mean, yy_mean, res_mlines)
         do imod = 0, dimsizes(data_all(:, 0)) - 1
@@ -428,21 +429,23 @@ begin
   end do
 
   y_min_label = res@trYMinF + 0.1*yspan
-  lb_stride = yspan/res@vpHeightF * font_height * 2. 
+  lb_stride = yspan/res@vpHeightF * font_height * 2.
   plabel = projects
   ; Draw Legend
   do iproj = 0, dimsizes(projects)-1
-    res_text@txFontColor = fcolors(iproj,:)
+    res_text@txFontColor = fcolors(iproj, :)
     ; CMIP5 label has to be reduced to CMIP5 sometimes
     if str_match_ind_ic(plabel, "CMIP5").eq.iproj then
       plabel(iproj) = "CMIP5"
     end if
     plot@$unique_string("dum_l")$ = gsn_add_text(wks, plot, plabel(iproj),\
                                                  x_val(0)-0.5, y_min_label + \
-                                                 lb_stride*(iproj+1.2), res_text)
+                                                 lb_stride*(iproj+1.2), \
+                                                 res_text)
   end do
   res_text@txFontColor = res_circ@gsMarkerColor
-  plot@$unique_string("dum_l")$ = gsn_add_text(wks, plot, "alternative Observations", \
+  plot@$unique_string("dum_l")$ = gsn_add_text(wks, plot, \
+                                               "alternative Observations", \
                                                x_val(0)-0.5, y_min_label, \
                                                res_text)
 
