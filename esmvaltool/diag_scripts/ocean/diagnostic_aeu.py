@@ -66,7 +66,7 @@ import geopy.distance
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvalcore.preprocessor._volume import extract_volume
-from esmvalcore.preprocessor._area import extract_region 
+from esmvalcore.preprocessor._area import extract_region
 
 
 # This part sends debug statements to stdout
@@ -104,7 +104,7 @@ def calc_cross_section(cube):
     print(lats, depth)
     for l, la in enumerate(lats.points):
         # from@ https://stackoverflow.com/a/43211266/3082690
-          
+
         coords_1 = (lats.bounds[l,0], -23.)
         coords_2 = (lats.bounds[l,1], -23.)
         distance = geopy.distance.distance(coords_1, coords_2).m
@@ -418,13 +418,13 @@ def make_transects_plots(
     fig = plt.figure()
     ax = fig.add_subplot(111
 )
-    plt.contourf(cube.coord('latitude').points, 
-                 -1.* np.abs(cube.coord('depth').points), 
+    plt.contourf(cube.coord('latitude').points,
+                 -1.* np.abs(cube.coord('depth').points),
                  cube.data,
                  15, linewidth=0, rasterized=True)
     plt.colorbar(label=str(cube.units))
 
-    # tight 
+    # tight
     ax.add_patch(
         patches.Rectangle(
             xy=(-1.2, -300.), # lower left
@@ -449,7 +449,7 @@ def make_transects_plots(
 
     plt.xlabel('Latitude')
     plt.ylabel('Depth, m')
- 
+
 #    if set_y_logscale:
 #        plt.axes().set_yscale('log')
 
@@ -484,6 +484,8 @@ def make_transects_plots(
 def multi_model_time_series(
         cfg,
         metadata,
+        cut='loose',
+        ma=None,
 ):
     """
     Make a time series plot showing several preprocesssed datasets.
@@ -504,106 +506,68 @@ def multi_model_time_series(
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
-    layers = {}
     for filename in sorted(metadata):
         if metadata[filename]['frequency'] != 'fx':
             cube = iris.load_cube(filename)
             cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+            cube = calculate_aeu(cube,cut=cut)
+            if ma:
+                cube = moving_average(cube, ma)
 
-            cubes = diagtools.make_cube_layer_dict(cube)
             model_cubes[filename] = cubes
-            for layer in cubes:
-                layers[layer] = True
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer
-    for layer in layers:
+    title = ''
+    plot_details = {}
+    cmap = plt.cm.get_cmap('viridis')
 
-        title = ''
-        z_units = ''
-        plot_details = {}
-        cmap = plt.cm.get_cmap('viridis')
+    # Plot each file in the group
+    for index, filename in enumerate(sorted(metadata)):
+        if len(metadata) > 1:
+            color = cmap(index / (len(metadata) - 1.))
+        else:
+            color = 'blue'
 
-        # Plot each file in the group
-        for index, filename in enumerate(sorted(metadata)):
-            if len(metadata) > 1:
-                color = cmap(index / (len(metadata) - 1.))
-            else:
-                color = 'blue'
+        cube = model_cubes[filename]
 
-            # Take a moving average, if needed.
-            if 'moving_average' in cfg:
-                cube = moving_average(model_cubes[filename][layer],
-                                      cfg['moving_average'])
-            else:
-                cube = model_cubes[filename][layer]
-
-            if 'MultiModel' in metadata[filename]['dataset']:
-                timeplot(
-                    cube,
-                    c=color,
-                    # label=metadata[filename]['dataset'],
-                    ls=':',
-                    lw=2.,
-                )
-                plot_details[filename] = {
-                    'c': color,
-                    'ls': ':',
-                    'lw': 2.,
-                    'label': metadata[filename]['dataset']
-                }
-            else:
-                timeplot(
-                    cube,
-                    c=color,
-                    # label=metadata[filename]['dataset'])
-                    ls='-',
-                    lw=2.,
-                )
-                plot_details[filename] = {
-                    'c': color,
-                    'ls': '-',
-                    'lw': 2.,
-                    'label': metadata[filename]['dataset']
-                }
-
-            title = metadata[filename]['long_name']
-            if layer != '':
-                if model_cubes[filename][layer].coords('depth'):
-                    z_units = model_cubes[filename][layer].coord('depth').units
-                else:
-                    z_units = ''
-        # Add title, legend to plots
-        if layer:
-            title = ' '.join([title, '(', str(layer), str(z_units), ')'])
-        plt.title(title)
-        plt.legend(loc='best')
-        plt.ylabel(str(model_cubes[filename][layer].units))
-
-        # Saving files:
-        if cfg['write_plots']:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata[filename],
-                prefix='MultipleModels_',
-                suffix='_'.join(['timeseries',
-                                 str(layer) + image_extention]),
-                metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
-                ],
+        timeplot(
+            cube,
+            c=color,
+            ls='-',
+            lw=2.,
             )
+        plot_details[filename] = {
+            'c': color,
+            'ls': '-',
+            'lw': 2.,
+            'label': metadata[filename]['dataset']
+        }
 
-        # Resize and add legend outside thew axes.
-        plt.gcf().set_size_inches(9., 6.)
-        diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15)
+    # Resize and add legend outside thew axes.
+    plt.gcf().set_size_inches(9., 6.)
+    diagtools.add_legend_outside_right(
+        plot_details, plt.gca(), column_width=0.15)
+
+    # Saving files:
+    if cfg['write_plots']:
+        path = diagtools.get_image_path(
+            cfg,
+            metadata[filename],
+            prefix='MultipleModels_',
+            suffix='_'.join(['timeseries',
+                             str(layer) + image_extention]),
+            metadata_id_list=[
+                'field', 'short_name', 'preprocessor', 'diagnostic',
+                'start_year', 'end_year'
+            ],
+        )
 
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
-        plt.close()
+    plt.close()
 
 
 def main(cfg):
@@ -627,10 +591,14 @@ def main(cfg):
 
         #######
         # Multi model time series
-        #multi_model_time_series(
-        #    cfg,
-        #    metadatas,
-        #)
+        for cut in cuts:
+            for ma in [None, '10 years', '1 years']:
+                multi_model_time_series(
+                    cfg,
+                    metadatas,
+                    cut=cut,
+                    ma=ma,
+                )
 
         for filename in sorted(metadatas):
             if metadatas[filename]['frequency'] != 'fx':
@@ -643,7 +611,7 @@ def main(cfg):
                 ######
                 # Time series of individual model
                 make_time_series_sensitivity(cfg, metadatas[filename], filename)
-                for cut in cuts: 
+                for cut in cuts:
                     for ma in [None, '10 years', '1 years']:
                         make_time_series_plots(cfg, metadatas[filename], filename, cut=cut, ma=ma)
                 make_transects_plots(cfg, metadatas[filename], filename)
