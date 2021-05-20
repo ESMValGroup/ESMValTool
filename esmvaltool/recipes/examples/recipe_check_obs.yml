@@ -544,19 +544,13 @@ diagnostics:
     description: WOA check
     variables:
       so:
-        mip: Omon
       thetao:
-        mip: Omon
       no3:
-        mip: Omon
       o2:
-        mip: Omon
       po4:
-        mip: Omon
       si:
-        mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: OBS6, tier: 2,
+      - {dataset: WOA, project: OBS6, tier: 2, mip: Omon,
          type: clim, version: 2018, start_year: 2000, end_year: 2000}
     scripts: null
 

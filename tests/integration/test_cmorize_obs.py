@@ -112,7 +112,7 @@ def check_log_file(log_file, no_data=False):
 
 def check_output_exists(output_path):
     """Check if cmorizer outputted."""
-    # eg Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200002.nc
+    # eg Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc
     output_files = os.listdir(output_path)
     assert len(output_files) == 18
     assert 'OBS6_WOA_clim' in output_files[0]
