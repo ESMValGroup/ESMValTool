@@ -185,8 +185,8 @@ def main(cfg):
     model_data, model_data_files = read_model_data(models)
 
     # if a historical period is given calculate the change
-    if 'tas_CLIM_reference' in read_metadata(cfg).keys():
-        models_hist = read_metadata(cfg)['tas_CLIM_reference']
+    if 'tas_CLIM_reference' in metadata:
+        models_hist = metadata['tas_CLIM_reference']
         model_data_hist, model_data_files_hist = read_model_data(models_hist)
         model_data_files += model_data_files_hist
         model_data = model_data - model_data_hist
