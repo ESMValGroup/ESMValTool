@@ -131,17 +131,18 @@ def main(cfg):
     model_data, model_data_files = read_model_data(models)
 
     settings = cfg['settings']
-    if isinstance(settings.get('central_estimate', 50), (int, float)):
+    central_estimate_var = settings.get('central_estimate', 50)
+    if isinstance(central_estimate_var, (int, float)):
         central_estimate = calculate_percentiles(
             model_data,
-            np.array([settings.get('central_estimate', 50)]),
+            np.array([central_estimate_var]),
         )
         central_estimate_weighted = calculate_percentiles(
             model_data,
-            np.array([settings.get('central_estimate', 50)]),
+            np.array([central_estimate_var]),
             weights=weights,
         )
-    elif settings['central_estimate'] == 'mean':
+    elif central_estimate_var == 'mean':
         central_estimate = model_data.mean('model_ensemble')
         central_estimate_weighted = model_data.weighted(weights).mean(
             'model_ensemble')
