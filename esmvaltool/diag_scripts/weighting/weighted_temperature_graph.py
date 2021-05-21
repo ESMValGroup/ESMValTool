@@ -116,8 +116,6 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
                                             extension='nc')
     temperature.to_netcdf(filename_data)
 
-    caption = 'Temperature anomaly relative to {}-{}'.format(
-        cfg['settings']['start_year'], cfg['settings']['end_year'])
     log_provenance(caption, filename_plot, cfg, ancestors)
     log_provenance(caption, filename_data, cfg, ancestors)
 
