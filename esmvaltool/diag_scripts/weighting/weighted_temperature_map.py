@@ -63,7 +63,6 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
     """Visualize weighted temperature."""
     metadata = read_metadata(cfg)
     metadata_future = metadata['tas_CLIM_future']
-    
     start_year = metadata_future[0]['start_year']
     end_year = metadata_future[0]['end_year']
 
@@ -72,7 +71,6 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
         metadata_reference = metadata['tas_CLIM_reference']
         start_year_ref = metadata_reference[0]['start_year']
         end_year_ref = metadata_reference[0]['end_year']
-        
         period = f'change: {period} minus {start_year_ref}-{end_year_ref}'
     metric = cfg['model_aggregation']
     if isinstance(metric, int):
