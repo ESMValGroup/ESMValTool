@@ -100,8 +100,10 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
     by_label = dict(zip(labels, handles))  # dict removes dupes
     axes.legend(by_label.values(), by_label.keys())
 
-    plt.title('Temperature anomaly relative to {}-{}'.format(
-        cfg['settings']['start_year'], cfg['settings']['end_year']))
+    start_year = cfg['settings']['start_year']
+    end_year = cfg['settings']['end_year']
+    caption = f'Temperature anomaly relative to {start_year}-{end_year}'
+    plt.title(caption)
     plt.xlabel('Year')
     plt.ylabel(r'Temperature anomaly $\degree$C')
 
