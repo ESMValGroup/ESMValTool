@@ -72,7 +72,7 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
                 uncertainty_range.data[:, 0],
                 uncertainty_range.data[:, 1],
                 color=color_non_weighted,
-                label='Non-weighted {} range'.format(range_string))
+                label=f'Non-weighted {range_string} range')
 
     plot_line(central_estimate_weighted.time,
               central_estimate_weighted,
