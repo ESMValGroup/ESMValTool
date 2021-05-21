@@ -147,7 +147,7 @@ def read_model_data_ancestor(cfg, variable_group) -> tuple:
     filepath = io.get_ancestor_file(cfg, 'MODELS_' + variable_group + '.nc')
     ancestor_ds = xr.open_dataset(filepath)
 
-    anc_da = ancestor_ds['__xarray_dataarray_variable__'].load()
+    anc_da = ancestor_ds[variable_group].load()
     anc_da = anc_da.rename(variable_group)
 
     return anc_da, filepath
@@ -165,7 +165,7 @@ def read_observation_data_ancestor(cfg, variable_group) -> tuple:
     filepath = io.get_ancestor_file(cfg, 'OBS_' + variable_group + '.nc')
     ancestor_ds = xr.open_dataset(filepath)
 
-    anc_da = ancestor_ds['__xarray_dataarray_variable__'].load()
+    anc_da = ancestor_ds[variable_group].load()
     anc_da = anc_da.rename(variable_group)
 
     return anc_da, filepath

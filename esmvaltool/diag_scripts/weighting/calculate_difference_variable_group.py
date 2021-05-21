@@ -52,11 +52,12 @@ def calculate_diff(data_clim: list, data_glob: list,
 def _save_data(data: 'xr.DataArray', name: str, cfg: dict,
                ancestors: list):
     """Save data to netcdf for further use."""
+    varn_new = f'{data.short_name}_ANOM'
     filename_data = get_diagnostic_filename(
-        '%s%s_ANOM' % (name, data.short_name), cfg, extension='nc')
-    data.to_netcdf(filename_data)
+        '%s%s' % (name, varn_new), cfg, extension='nc')
+    data.to_dataset(name=varn_new).to_netcdf(filename_data)
 
-    caption = '%s%s_ANOM' % (name, data.short_name)
+    caption = '%s%s' % (name, varn_new)
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
