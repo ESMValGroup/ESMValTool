@@ -61,8 +61,13 @@ def set_antimeridian(dataarray, to: str):
 def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
             **colormesh_args):
     """Visualize weighted temperature."""
-    period = '{start_year}-{end_year}'.format(
-        **read_metadata(cfg)['tas_CLIM_future'][0])
+    metadata = read_metadata(cfg)
+    metadata_future = metadata['tas_CLIM_future']
+    
+    start_year = metadata_future[0]['start_year']
+    end_year = metadata_future[0]['end_year']
+
+    period = f'{start_year}-{end_year}'
     if 'tas_CLIM_reference' in read_metadata(cfg).keys():
         meta = read_metadata(cfg)['tas_CLIM_reference']
         period = 'change: {} minus {start_year}-{end_year}'.format(
