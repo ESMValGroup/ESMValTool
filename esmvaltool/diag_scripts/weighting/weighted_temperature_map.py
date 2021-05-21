@@ -180,7 +180,8 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models = read_metadata(cfg)['tas_CLIM_future']
+    metadata = read_metadata(cfg)
+    models = metadata['tas_CLIM_future']
     model_data, model_data_files = read_model_data(models)
 
     # if a historical period is given calculate the change
