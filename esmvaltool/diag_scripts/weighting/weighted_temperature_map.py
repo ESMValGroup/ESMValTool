@@ -68,10 +68,12 @@ def mapplot(dataarray, cfg, title_pattern, filename_part, ancestors,
     end_year = metadata_future[0]['end_year']
 
     period = f'{start_year}-{end_year}'
-    if 'tas_CLIM_reference' in read_metadata(cfg).keys():
-        meta = read_metadata(cfg)['tas_CLIM_reference']
-        period = 'change: {} minus {start_year}-{end_year}'.format(
-            period, **meta[0])
+    if 'tas_CLIM_reference' in metadata:
+        metadata_reference = metadata['tas_CLIM_reference']
+        start_year_ref = metadata_reference[0]['start_year']
+        end_year_ref = metadata_reference[0]['end_year']
+        
+        period = f'change: {period} minus {start_year_ref}-{end_year_ref}'
     metric = cfg['model_aggregation']
     if isinstance(metric, int):
         metric = f'{metric}perc'
