@@ -49,16 +49,16 @@ def land_sm_top(run):
 
         # m01s08i223
         # CMOR name: mrsos (soil moisture in top model layer kg/m2)
-        smcl_run = get_supermean('mass_content_of_water_in_soil_layer',
-                                 season,
-                                 supermean_data_dir)
+        mrsos = get_supermean('mass_content_of_water_in_soil_layer',
+                              season,
+                              supermean_data_dir)
 
         # Set all sea points to missing data np.nan
-        smcl_run.data[smcl_run.data < 0] = np.nan
+        mrsos.data[mrsos.data < 0] = np.nan
 
         # set soil moisture to missing data on ice points (i.e. no soil)
-        ice_pts = smcl_run.data == 0
-        smcl_run.data[ice_pts] = np.nan
+        ice_pts = mrsos.data == 0
+        mrsos.data[ice_pts] = np.nan
 
         # Calculate the volumetric soil moisture in m3/m3
         # volumetric soil moisture = volume of water / volume of soil layer 
@@ -66,7 +66,7 @@ def land_sm_top(run):
         # = (soil moisture content (kg m-2) / water density (kg m-3) )  /
         #      soil layer thickness (m)
         # = mosrs / (rhow * dz1)
-        vol_sm1_run = smcl_run / (rhow * dz1)
+        vol_sm1_run = mrsos / (rhow * dz1)
         vol_sm1_run.units = "m3 m-3"
         vol_sm1_run.long_name = "Top layer Soil Moisture"
 
