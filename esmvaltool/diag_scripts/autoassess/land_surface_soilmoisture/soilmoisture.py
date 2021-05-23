@@ -33,7 +33,7 @@ def land_sm_top(run):
     rhow = 1000.
     rhoi = 917.
     # first soil layer depth
-    dz1 = 0.1
+    dz1 = 0.1   #!!!!!! TODO: get from metadata
 
     # Work through each season
     metrics = dict()
@@ -48,58 +48,24 @@ def land_sm_top(run):
                 ecv_clim.units = 'm3 m-3'
 
         # m01s08i223
-        # standard_name: mrsos
+        # standard_name: mrsos (soil moisture in top model layer kg/m2)
         smcl_run = get_supermean('mass_content_of_water_in_soil_layer',
                                  season,
                                  supermean_data_dir)
 
-        # m01s08i229i
-        # standard_name: ???
-        # TODO: uncomment when implemented
-        # sthu_run = get_supermean(
-        #     'mass_fraction_of_unfrozen_water_in_soil_moisture', season,
-        #     supermean_data_dir)
-
-        # m01s08i230
-        # standard_name: ??? soil_frozen_water_content - mrfso
-        # TODO: uncomment when implemented
-        # sthf_run = get_supermean(
-        #     'mass_fraction_of_frozen_water_in_soil_moisture', season,
-        #     supermean_data_dir)
-
-        # TODO: remove after correct implementation
-        sthu_run = smcl_run
-        sthf_run = smcl_run
-
-        # extract top soil layer
-        cubes = [smcl_run, sthu_run, sthf_run]
-        for i, cube in enumerate(cubes):
-            if cube.coord('depth').attributes['positive'] != 'down':
-                logger.warning('Cube %s depth attribute is not down', cube)
-            top_level = min(cube.coord('depth').points)
-            topsoil = iris.Constraint(depth=top_level)
-            cubes[i] = cube.extract(topsoil)
-        smcl_run, sthu_run, sthf_run = cubes
-
         # Set all sea points to missing data np.nan
         smcl_run.data[smcl_run.data < 0] = np.nan
-        sthu_run.data[sthu_run.data < 0] = np.nan
-        sthf_run.data[sthf_run.data < 0] = np.nan
 
         # set soil moisture to missing data on ice points (i.e. no soil)
-        sthu_plus_sthf = (dz1 * rhow * sthu_run) + (dz1 * rhoi * sthf_run)
-        ice_pts = sthu_plus_sthf.data == 0
-        sthu_plus_sthf.data[ice_pts] = np.nan
+        ice_pts = smcl_run.data == 0
+        smcl_run.data[ice_pts] = np.nan
 
         # Calculate the volumetric soil moisture in m3/m3
-        theta_s_run = smcl_run / sthu_plus_sthf
-        vol_sm1_run = theta_s_run * sthu_run
+        vol_sm1_run = smcl_run   #!!!!!!! TODO: needs conversion factors
         vol_sm1_run.units = "m3 m-3"
         vol_sm1_run.long_name = "Top layer Soil Moisture"
 
         # update the coordinate system ECV data with a WGS84 coord system
-        # TODO: ask Heather why this is needed
-        # TODO: who is Heather?
         # unify coord systems for regridder
         vol_sm1_run.coord('longitude').coord_system = \
             iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
