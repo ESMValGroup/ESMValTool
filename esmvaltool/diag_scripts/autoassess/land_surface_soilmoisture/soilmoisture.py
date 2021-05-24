@@ -53,12 +53,8 @@ def land_sm_top(run):
                               season,
                               supermean_data_dir)
 
-        # Set all sea points to missing data np.nan
-        mrsos.data[mrsos.data < 0] = np.nan
-
-        # set soil moisture to missing data on ice points (i.e. no soil)
-        ice_pts = mrsos.data == 0
-        mrsos.data[ice_pts] = np.nan
+        # Set soil moisture to missing data on ice points (i.e. no soil)
+        np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
 
         # Calculate the volumetric soil moisture in m3/m3
         # volumetric soil moisture = volume of water / volume of soil layer 
