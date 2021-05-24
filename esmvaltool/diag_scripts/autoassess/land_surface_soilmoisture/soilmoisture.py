@@ -15,13 +15,16 @@ def land_sm_top(run):
     """
     Calculate median absolute errors for soil mosture against CCI data.
 
-    Arguments:
-        run - dictionary containing model run metadata
-              (see auto_assess/model_run.py for description)
+    Parameters
+    ----------
+    run: dict
+        dictionary containing model run metadata
+        (see auto_assess/model_run.py for description)
 
-    Returns:
-        metrics - dictionary of metrics names and values
-
+    Returns
+    -------
+    dict
+    metrics, a dictionary of metrics names and values
     """
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
@@ -53,11 +56,11 @@ def land_sm_top(run):
         np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
 
         # first soil layer depth
-        dz1 = mrsos.coord('depth').bounds[0,1] - \
-                mrsos.coord('depth').bounds[0,0]
+        dz1 = mrsos.coord('depth').bounds[0, 1] - \
+            mrsos.coord('depth').bounds[0, 0]
 
         # Calculate the volumetric soil moisture in m3/m3
-        # volumetric soil moisture = volume of water / volume of soil layer 
+        # volumetric soil moisture = volume of water / volume of soil layer
         # = depth equivalent of water / thickness of soil layer
         # = (soil moisture content (kg m-2) / water density (kg m-3) )  /
         #      soil layer thickness (m)
