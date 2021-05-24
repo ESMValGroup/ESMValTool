@@ -28,12 +28,8 @@ def land_sm_top(run):
 
     seasons = ['djf', 'mam', 'jja', 'son']
 
-    # Constants
-    # density of water and ice
+    # Constant: density of water
     rhow = 1000.
-    rhoi = 917.
-    # first soil layer depth
-    dz1 = 0.1   #!!!!!! TODO: get from metadata
 
     # Work through each season
     metrics = dict()
@@ -55,6 +51,10 @@ def land_sm_top(run):
 
         # Set soil moisture to missing data on ice points (i.e. no soil)
         np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
+
+        # first soil layer depth
+        dz1 = mrsos.coord('depth').bounds[0,1] - \
+                mrsos.coord('depth').bounds[0,0]
 
         # Calculate the volumetric soil moisture in m3/m3
         # volumetric soil moisture = volume of water / volume of soil layer 
