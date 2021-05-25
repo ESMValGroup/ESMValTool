@@ -6,6 +6,12 @@ library(abind)
 library(parallel)
 library(ClimProjDiags) # nolint
 
+# function to flatten nested lists
+flatten_lists <- function(x) {
+  if (!inherits(x, "list")) return(list(x))
+  else return(unlist(c(lapply(x, flatten_lists)), recursive = FALSE))
+}
+
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 plot_dir <- params$plot_dir
@@ -415,7 +421,7 @@ for (j in 1:4) { # nolint
         # Set provenance for output files
         xprov <-
           list(
-            ancestors = list(projection_filenames, reference_filenames),
+            ancestors = flatten_lists(list(projection_filenames, reference_filenames)),
             authors = list(
               "hunter_alasdair",
               "manubens_nicolau",
@@ -496,8 +502,9 @@ file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data)
 nc_close(file)
 
+
 xprov <- list(
-  ancestors = list(fullpath_filenames),
+  ancestors = fullpath_filenames,
   authors = list(
     "hunter_alasdair",
     "manubens_nicolau",

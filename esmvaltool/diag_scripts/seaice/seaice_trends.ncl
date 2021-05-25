@@ -78,7 +78,7 @@ begin
   end if
 
   ; Create output plot directory
-  if (config_user_info@write_plots) then
+  if (diag_script_info@write_plots) then
     plot_dir = config_user_info@plot_dir
     system("mkdir -p " + plot_dir)
   end if

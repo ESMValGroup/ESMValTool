@@ -1,3 +1,4 @@
+# ESMValTool
 # recipe_deangelis15nat.yml
 ---
 documentation:
@@ -5,6 +6,9 @@ documentation:
     Recipe for reproducing the plots in DeAngelis et al., 2015 Nature
 
   authors:
+    - weigel_katja
+
+  maintainer:
     - weigel_katja
 
   references:

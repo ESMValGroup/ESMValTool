@@ -230,7 +230,9 @@ begin
       m2 = where(yy.eq.year2, month2, 12)
       do mm = m1, m2
         date(tt, 1) = mm
-        do dd = day1, days_in_month(yy, mm)
+        d1 = where(yy.eq.year1 .and. mm.eq.m1, day1, 1)
+        d2 = where(yy.eq.year2 .and. mm.eq.m2, day2, days_in_month(yy, mm))
+        do dd = d1, d2
           date(tt, 2) = dd
           tt = tt + 1
         end do

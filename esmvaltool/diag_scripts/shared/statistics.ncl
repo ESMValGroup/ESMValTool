@@ -150,6 +150,7 @@ function time_operations(field:numeric,
 ; References
 ;
 ; Modification history
+;    20201214-lauer_axel:   bugfix time weights
 ;    20190503-righi_mattia: removed obsolete option "mymm" (used only in
 ;                           reformat_obs, now outdated).
 ;    20140703-gottschaldt_klaus-dirk: added option "mymm".
@@ -197,6 +198,19 @@ begin
   date := cd_calendar(field&time, 0)
   year := date(:, 0)
   month := date(:, 1)
+  cal = field&time@calendar
+
+  ; check that calendar is supported by 'days_in_month'
+
+  valid_cal = (/"standard", "gregorian", "julian", "360_day", "360",  \
+                "365_day", "365", "366_day", "366", "noleap", "no_leap",  \
+                "allleap", "all_leap", "none"/)
+
+  if (ismissing(ind(valid_cal .eq. cal))) then
+    log_info("Warning: unsupported calendar in function " + funcname +  \
+             " (" + scriptname + "): " + cal + ". Using 'standard' instead.")
+    cal = "standard"
+  end if
 
   ; Determine indexes for the requested time range
   if (y1.eq.-1) then
@@ -244,7 +258,9 @@ begin
 
   ; Define weights as days-per-month
   if (l_wgt) then
-    weights = days_in_month(toint(year), toint(month))
+    iyear = toint(year)
+    iyear@calendar = cal
+    weights = days_in_month(iyear, toint(month))
   else
     weights = tofloat(subfield&time)
     weights = 1.

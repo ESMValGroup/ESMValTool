@@ -61,8 +61,43 @@ def convert_timeunits(cube, start_year):
     return cube
 
 
-def fix_coords(cube):
-    """Fix the time units and values to CMOR standards."""
+def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
+               overwrite_lat_bounds=True, overwrite_lev_bounds=True,
+               overwrite_airpres_bounds=True):
+    """
+    Fix coordinates to CMOR standards.
+
+    Fixes coordinates eg time to have correct units, bounds etc;
+    longitude to be CMOR-compliant 0-360deg; fixes some attributes
+    and bounds - the user can avert bounds fixing by using supplied
+    arguments; if bounds are None they will be fixed regardless.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube with coordinates to be fixed.
+
+    overwrite_time_bounds: bool (optional)
+        set to False not to overwrite time bounds.
+
+    overwrite_lon_bounds: bool (optional)
+        set to False not to overwrite longitude bounds.
+
+    overwrite_lat_bounds: bool (optional)
+        set to False not to overwrite latitude bounds.
+
+    overwrite_lev_bounds: bool (optional)
+        set to False not to overwrite depth bounds.
+
+    overwrite_airpres_bounds: bool (optional)
+        set to False not to overwrite air pressure bounds.
+
+    Returns
+    -------
+    cube: iris.cube.Cube
+        data cube with fixed coordinates.
+
+    """
     # first fix any completely missing coord var names
     _fix_dim_coordnames(cube)
     # fix individual coords
@@ -72,7 +107,8 @@ def fix_coords(cube):
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            _fix_bounds(cube, cube.coord('time'))
+            if overwrite_time_bounds or not cube.coord('time').has_bounds():
+                _fix_bounds(cube, cube.coord('time'))
 
         # fix longitude
         if cube_coord.var_name == 'lon':
@@ -82,7 +118,8 @@ def fix_coords(cube):
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
                         cube_coord.points + 180.
-                    _fix_bounds(cube, cube_coord)
+                    if overwrite_lon_bounds or not cube_coord.has_bounds():
+                        _fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
@@ -91,17 +128,21 @@ def fix_coords(cube):
         # fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
-            _fix_bounds(cube, cube.coord('latitude'))
+            if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
+                _fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
-            _fix_bounds(cube, cube.coord('depth'))
+            if overwrite_lev_bounds or not cube.coord('depth').has_bounds():
+                _fix_bounds(cube, cube.coord('depth'))
 
         # fix air_pressure
         if cube_coord.var_name == 'air_pressure':
             logger.info("Fixing air pressure...")
-            _fix_bounds(cube, cube.coord('air_pressure'))
+            if overwrite_airpres_bounds \
+                    or not cube.coord('air_pressure').has_bounds():
+                _fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
     cube.coord('latitude').coord_system = None
@@ -155,7 +196,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        if len(time.points) == 1:
+        if len(time.points) == 1 and "mon" not in cube.attributes.get('mip'):
             year = str(time.cell(0).point.year)
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
@@ -183,23 +224,33 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
 
-def extract_doi_value(tag):
-    """Extract doi from a bibtex entry."""
-    reference_doi = 'doi not found'
+def extract_doi_value(tags):
+    """Extract doi(s) from a bibtex entry."""
+    reference_doi = []
     pattern = r'doi\ = {(.*?)\},'
 
-    bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
-    if bibtex_file.is_file():
-        reference_entry = bibtex_file.read_text()
-        if re.search("doi", reference_entry):
-            reference_doi = (
-                f'doi:{re.search(pattern, reference_entry).group(1)}'
+    if not isinstance(tags, list):
+        tags = [tags]
+
+    for tag in tags:
+        bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
+        if bibtex_file.is_file():
+            reference_entry = bibtex_file.read_text()
+            if re.search("doi", reference_entry):
+                reference_doi.append(
+                    f'doi:{re.search(pattern, reference_entry).group(1)}'
+                )
+            else:
+                reference_doi.append('doi not found')
+                logger.warning(
+                    'The reference file %s does not have a doi.', bibtex_file
+                )
+        else:
+            reference_doi.append('doi not found')
+            logger.warning(
+                'The reference file %s does not exist.', bibtex_file
             )
-    else:
-        logger.warning(
-            'The reference file %s does not exist.', bibtex_file
-        )
-    return reference_doi
+    return ', '.join(reference_doi)
 
 
 def set_global_atts(cube, attrs):
