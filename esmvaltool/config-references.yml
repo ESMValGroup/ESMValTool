@@ -638,6 +638,10 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     orcid:
+  crocker_thomas:
+    name: Crocker, Thomas
+    institute: MetOffice, UK
+    orcid: https://orcid.org/0000-0001-7761-5546
 
 # Note: the reference section has been replaced by the folder esmvaltool/references that contains bibtex files.
 # How to add a bibtex file to esmvaltool/references:
