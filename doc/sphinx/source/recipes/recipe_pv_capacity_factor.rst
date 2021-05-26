@@ -38,8 +38,7 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * season: String to include shortcut for Season in plot title and 
-   name (e.g. "djf"). It will be converted to upper case. 
+   * season: String to include shortcut for Season in plot title and name (e.g. "djf"). It will be converted to upper case. 
    
    *Optional settings for script*
    
