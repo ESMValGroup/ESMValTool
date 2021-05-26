@@ -40,7 +40,7 @@ def _parse_cmap(plotkwargs):
     if symmetric:
         print("Deleting middle level")
         # Remove zero from levels
-        levels = np.delete(levels, len(levels) / 2)
+        levels = np.delete(levels, int(len(levels) / 2))
 
     color_list = list(color_list)
 
