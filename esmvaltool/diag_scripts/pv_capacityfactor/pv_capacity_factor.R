@@ -48,9 +48,8 @@ start_years <- lapply(input_files_per_var, function(x) x$start_year)
 start_years <- unname(start_years)
 end_years <- lapply(input_files_per_var, function(x) x$end_year)
 end_years <- unname(end_years)
-seasons <- params$seasons
+seasons <- toupper(params$season)
 #power_curves <- params$power_curves
-print(seasons)
 
 var0 <- unlist(var0)
 for (i in seq(1, length(model_names), 1)) {

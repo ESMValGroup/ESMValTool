@@ -48,7 +48,7 @@ preprocessors:
       end_longitude: 60
       start_latitude: 30
       end_latitude: 80
-    extract_season:
+    extract_season: &season
       season: djf
     multi_model_statistics:
       span: overlap
@@ -70,5 +70,6 @@ diagnostics:
         mip: day
     scripts:
       main:
+        <<: *season
         script: pv_capacityfactor/pv_capacity_factor.R
         maxval_colorbar: 0.15
