@@ -66,13 +66,13 @@ begin
 
   if (isatt(diag_script_info, "n_samples")) .and. (isatt(diag_script_info, "sampled_model")) then
     n_samples= toint(diag_script_info@n_samples)
-    to_plot = new((/n_MOD+n_samples,t_len/),float)
+    to_plot = new((/n_MOD+n_samples, t_len/), float)
     to_plot!0 = "metric"
-    to_plot&metric = new(n_MOD+n_samples,string,"std")
+    to_plot&metric = new(n_MOD+n_samples, string, "std")
   else
-    to_plot = new((/n_MOD,t_len/),float)
+    to_plot = new((/n_MOD, t_len/), float)
     to_plot!0 = "metric"
-    to_plot&metric = new(n_MOD,string,"std")
+    to_plot&metric = new(n_MOD, string, "std")
   end if
   ;get runave_window
   if (isatt(diag_script_info, "runave_window")) then
@@ -90,7 +90,7 @@ begin
     idx_scen = ind((dataset_names .eq. current_mod) .and.(dataset_exps .eq. diag_script_info@scenarios(0)))
     dim_ENS =  dimsizes(idx_scen)
     n_ENS = 10
-    collect_n_ENS = new((/n_ENS,t_len/),double)
+    collect_n_ENS = new((/n_ENS, t_len/), double)
     ; find ssp runs from same model
     do iens = 0, n_ENS -1 ; loop over ensembles
       ; LOAD AND AVERAGE SSP data
@@ -159,15 +159,15 @@ begin
       end if
       ensemble = dataset_ensembles(idx_scen(iens))
       model= current_mod
-      data_glob = array_append_record(data1_glob,data0_glob,0)
+      data_glob = array_append_record(data1_glob, data0_glob, 0)
       print(work_dir + "/" + var0 + "_timeseries_"+ model +"_"+ ensemble +".txt")
-      asciiwrite( work_dir + "/" + var0 + "_timeseries_"+ model +"_"+ ensemble +".txt",data_glob)
+      asciiwrite( work_dir + "/" + var0 + "_timeseries_"+ model +"_"+ ensemble +".txt", data_glob)
 
       ; store for all ens
       if var0 .eq. "pr" then
-        collect_n_ENS(iens,:) = runave_n(data_glob,runave_window,0,0) *86400.0 ;convert to mm/day
+        collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0) *86400.0 ;convert to mm/day
       else
-        collect_n_ENS(iens,:) = runave_n(data_glob,runave_window,0,0)
+        collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0)
       end if
       delete(data_glob)
       delete(A0)
@@ -177,7 +177,7 @@ begin
       delete(data1)
       delete(data1_glob)
     end do
-    to_plot(imod,:) = tofloat(dim_stddev_n(collect_n_ENS,0))
+    to_plot(imod, :) = tofloat(dim_stddev_n(collect_n_ENS, 0))
     delete(idx_scen)
     delete(collect_n_ENS)
   end do
@@ -192,9 +192,9 @@ begin
     random_setallseed(1234567890, 236484749)
     do i_samp = 0, n_samples-1 ; loop through samples
       print("Drawing sample #"+i_samp)
-      collect_n_ENS = new((/n_ENS,t_len/),double)
+      collect_n_ENS = new((/n_ENS, t_len/), double)
       ; randomly sample across ensemble for sampled_model
-      rand_idx_50 = generate_sample_indices(dim_ENS,0)
+      rand_idx_50 = generate_sample_indices(dim_ENS, 0)
       rand_idx= idx_samp_mod(rand_idx_50(0:9))
       print("current sample indices " + rand_idx)
       do iens = 0, n_ENS -1 ; loop over ensembles
@@ -265,13 +265,13 @@ begin
         end if
         ensemble = dataset_ensembles(rand_idx(iens))
         model= current_mod
-        data_glob = array_append_record(data1_glob,data0_glob,0)
+        data_glob = array_append_record(data1_glob, data0_glob, 0)
 
         ; store for all ens
         if var0 .eq. "pr" then
-          collect_n_ENS(iens,:) = runave_n(data_glob,runave_window,0,0) *86400.0 ;convert to mm/day
+          collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0) *86400.0 ;convert to mm/day
         else
-          collect_n_ENS(iens,:) = runave_n(data_glob,runave_window,0,0)
+          collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0)
         end if
         delete(data_glob)
         delete(A0)
@@ -281,7 +281,7 @@ begin
         delete(data1)
         delete(data1_glob)
       end do
-      to_plot(n_MOD+i_samp,:) = tofloat(dim_stddev_n(collect_n_ENS,0))
+      to_plot(n_MOD+i_samp, :) = tofloat(dim_stddev_n(collect_n_ENS, 0))
       delete(collect_n_ENS)
     end do
   end if

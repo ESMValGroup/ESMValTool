@@ -130,7 +130,7 @@ begin
   res@xyLineThicknesses = 2.7
   res@xyLineOpacityF = 0.8
   ; create labels
-  labels= new(n_MOD+1,string)
+  labels= new(n_MOD+1, string)
   ; create plot
   plot  = gsn_csm_xy(wks, to_plot&year, to_plot(0, :), res)
   labels(0) = MOD_list(0)
@@ -139,7 +139,7 @@ begin
   ;display samplings on plot
   if(isatt(diag_script_info, "sampled_model")) then
     labels(n_MOD) = diag_script_info@sampled_model+" random"
-    do j=n_MOD,dims_data-1
+    do j=n_MOD, dims_data-1
       res@xyLineThicknesses = 1.8
       res@xyLineColor      = colors_main(5)
       res@xyLineOpacityF = 0.2
@@ -160,13 +160,13 @@ begin
 
 
   ;display trend if asked
-  half_runave_window = round(todouble(runave_window)/2.,3)-1
+  half_runave_window = round(todouble(runave_window)/2., 3)-1
   if (isatt(diag_script_info, "trend") .and. diag_script_info@trend) then
     polyres= True
     polyres@gsLineThicknessF=res@xyLineThicknesses
     dum = new(n_MOD, graphic)
     do n = 0, n_MOD-1
-        rc = regline(to_plot&year,to_plot(n,:))
+        rc = regline(to_plot&year, to_plot(n, :))
         ic = rc@yintercept
         y_start = rc*toint(syears(0))+ic
         y_end= rc*toint(eyears(1))+ic

@@ -155,9 +155,9 @@ begin
     res@gsnXYFillOpacities = (/0.1, 0.1, 0.1/)
     res@xyLineColor     = -1
     if (j .eq. 1) then
-        spread_plot = gsn_csm_xy(wks, to_plot&year,to_plot((j * 3) + 1 : (j * 3) + 2, :),res)
+        spread_plot = gsn_csm_xy(wks, to_plot&year, to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     else
-        spread_plot = gsn_csm_xy(wks, to_plot&year,\
+        spread_plot = gsn_csm_xy(wks, to_plot&year, \
                              to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     end if
     overlay(plot, spread_plot)

@@ -152,7 +152,7 @@ begin
     res@gsnXYFillColors = colors_spread(j)
     res@gsnXYFillOpacities = (/0.2, 0.2, 0.2/)
     res@xyLineColor     = -1
-    spread_plot = gsn_csm_xy(wks, to_plot&year,\
+    spread_plot = gsn_csm_xy(wks, to_plot&year, \
                              to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     overlay(plot, spread_plot)
     delete(res@gsnXYFillColors)
@@ -221,7 +221,7 @@ begin
         txres@txFontColor = colors_main(nscen)
         label = tostring(runs(nscen, nper))
         ;xloc = (toint(eyears(nper)) - toint(syears(nper))) / 2
-        text(i) = gsn_add_text(wks, plot, label,xloc, \
+        text(i) = gsn_add_text(wks, plot, label, xloc, \
                                yloc - nscen * ydiff, txres)
         i = i + 1
       end do

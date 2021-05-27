@@ -66,11 +66,11 @@ begin
   ncdf_dir = diag_script_info@input_files(1)
   load_file = ncdf_dir + "/" + variable_info[0]@diagnostic + ".nc"
   to_plot = ncdf_read(load_file, var0)
-  mean_ = tostring(to_plot(0,:,:))
-  five_perc_ = tostring(to_plot(1,:,:))
-  ninetyfive_perc_ = tostring(to_plot(2,:,:))
-  num_crossing_models = tostring(to_plot(3,:,:))
-  num_models = tostring(to_plot(4,:,:))
+  mean_ = tostring(to_plot(0, :, :))
+  five_perc_ = tostring(to_plot(1, :, :))
+  ninetyfive_perc_ = tostring(to_plot(2, :, :))
+  num_crossing_models = tostring(to_plot(3, :, :))
+  num_models = tostring(to_plot(4, :, :))
   warming_levels = diag_script_info@warming_levels
   n_WAR= dimsizes(warming_levels)
   n_SCEN= dimsizes(diag_script_info@scenarios)
@@ -86,19 +86,19 @@ begin
   res@gsLineThicknessF = 2.
   res2@gsLineThicknessF = 2.
   res3@gsLineThicknessF = 2.
-  ncr  = (/n_WAR,n_SCEN/)
-  ncr2  = (/n_WAR+1,1/)
-  ncr3= (/1,n_SCEN/)
+  ncr  = (/n_WAR, n_SCEN/)
+  ncr2  = (/n_WAR+1, 1/)
+  ncr3= (/1, n_SCEN/)
   mean_@_FillValue = "NA"
   five_perc_@_FillValue = "NA"
   ninetyfive_perc_@_FillValue = "NA"
-  text= new((/n_WAR+1,n_SCEN/),string)
-  text2= new((/n_WAR+1,1/),string)
+  text= new((/n_WAR+1, n_SCEN/), string)
+  text2= new((/n_WAR+1, 1/), string)
   text3 = labels
   do i = 0 , dimsizes(warming_levels)-1
-    text2(i+1,0) = sprintf("%2.1f",warming_levels(i))+"~S~o~N~C warming level"
+    text2(i+1, 0) = sprintf("%2.1f", warming_levels(i))+"~S~o~N~C warming level"
     do j = 0, n_SCEN -1
-        text(i,j) = mean_(i,j)+"~C~["+ninetyfive_perc_(i,j)+","+five_perc_(i,j)+"]"+"~C~("+num_crossing_models(i,j)+"/"+num_models(i,j)+")"
+        text(i, j) = mean_(i, j)+"~C~["+ninetyfive_perc_(i, j)+", "+five_perc_(i, j)+"]"+"~C~("+num_crossing_models(i, j)+"/"+num_models(i, j)+")"
 
     end do
   end do
@@ -113,16 +113,16 @@ begin
   res2@gsFillColor = "gray"
   res3@gsFillColor = "gray"
 
-  x = (/0.30,0.95/)
-  y = (/0.25,0.75-0.5/6/)
-  x2 = (/0.05,0.30/)
-  y2 = (/0.25,0.75/)
-  x3 = (/0.30,0.95/)
-  y3 = (/0.75-0.5/6,0.75/)
+  x = (/0.30, 0.95/)
+  y = (/0.25, 0.75-0.5/6/)
+  x2 = (/0.05, 0.30/)
+  y2 = (/0.25, 0.75/)
+  x3 = (/0.30, 0.95/)
+  y3 = (/0.75-0.5/6, 0.75/)
   ;Title
-  x4 = (/0.05,0.95/)
-  y4 = (/0.77,0.79/)
-  ncr4 = (/1,1/)
+  x4 = (/0.05, 0.95/)
+  y4 = (/0.77, 0.79/)
+  ncr4 = (/1, 1/)
   res4@gsLineColor   = "transparent"
   res4@txFontHeightF = 0.02
   if (isatt(diag_script_info, "title")) then
@@ -131,10 +131,10 @@ begin
     text4 = "Table of warming level crossings"
   end if
 
-  gsn_table(wks,ncr,x,y,text,res)
-  gsn_table(wks,ncr2,x2,y2,text2,res2)
-  gsn_table(wks,ncr3,x3,y3,text3,res3)
-  gsn_table(wks,ncr4,x4,y4,text4,res4)
+  gsn_table(wks, ncr, x, y, text, res)
+  gsn_table(wks, ncr2, x2, y2, text2, res2)
+  gsn_table(wks, ncr3, x3, y3, text3, res3)
+  gsn_table(wks, ncr4, x4, y4, text4, res4)
   draw(wks)
   frame(wks)
   log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)

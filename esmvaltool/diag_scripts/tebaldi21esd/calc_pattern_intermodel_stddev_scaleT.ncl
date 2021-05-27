@@ -225,14 +225,14 @@ begin
             dim_mod = dimsizes(idx_mod)
 
             if (dim_mod .lt. 2) then
-              var_diff_scal = new((/dim_mod,nlat, nlon/), typeof(data1), Fill)
+              var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), Fill)
               if (percent .eq. 1) then
-                var_diff_scal(0,:, :) = ((100 * (proj( :, :) - base( :, :))) / \
-                                         where(base( :, :) .ne. 0.,\
+                var_diff_scal(0, :, :) = ((100 * (proj( :, :) - base( :, :))) / \
+                                         where(base( :, :) .ne. 0., \
                                         base( :, :), base@_FillValue)) / \
                                         (temp_proj(0) - temp_base(0))
               else
-                var_diff_scal(0,:, :) = (proj( :, :) - \
+                var_diff_scal(0, :, :) = (proj( :, :) - \
                 base(:, :)) / \
                 (temp_proj(0) - temp_base(0))
               end if
@@ -249,7 +249,7 @@ begin
                 if (percent .eq. 1) then
                     var_diff_scal(imod, :, :) = \
                     ((100 * (proj(imod, :, :) - base(imod, :, :))) / \
-                    where(base(imod, :, :) .ne. 0.,\
+                    where(base(imod, :, :) .ne. 0., \
                     base(imod, :, :), base@_FillValue)) / \
                     (temp_proj(imod) - temp_base(imod))
                 else
@@ -262,7 +262,7 @@ begin
                 tmp = var_diff_scal_avg_mod
                 delete(var_diff_scal_avg_mod)
                 avg_same_mod = new((/1, nlat, nlon/), typeof(data1), Fill)
-                avg_same_mod(0, :, :) = dim_avg_n_Wrap(var_diff_scal,0)
+                avg_same_mod(0, :, :) = dim_avg_n_Wrap(var_diff_scal, 0)
                 var_diff_scal_avg_mod = array_append_record(tmp, avg_same_mod, 0)
                 delete(avg_same_mod)
                 delete(tmp)
@@ -272,7 +272,7 @@ begin
       end do
       temp = var_diff_scal_avg_mod
       delete(var_diff_scal_avg_mod)
-      var_diff_scal_avg_mod = temp(1:,:,:)
+      var_diff_scal_avg_mod = temp(1:, :, :)
       var_diff_scal_avg_mod!0 = "models"
       var_diff_scal_avg_mod!1 = "lat"
       var_diff_scal_avg_mod!2 = "lon"

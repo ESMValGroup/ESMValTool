@@ -244,10 +244,10 @@ begin
         data26_rel(i26, :) = 100*(data26_rel(i26, :)/ref_data2(imod))
       end if
 
-      app_arr26= array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data26_rel(i26,:),0)
-      tmp_arr26= runave_n(app_arr26,runave_window,0,0)
+      app_arr26= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data26_rel(i26, :), 0)
+      tmp_arr26= runave_n(app_arr26, runave_window, 0, 0)
       dim_tmp26= dimsizes(tmp_arr26)
-      data26_rel(i26,:)= tmp_arr26(half_window:dim_tmp26-1)
+      data26_rel(i26, :)= tmp_arr26(half_window:dim_tmp26-1)
       delete(app_arr26)
       delete(tmp_arr26)
 
@@ -288,10 +288,10 @@ begin
           data45_rel(i45, :) = 100*(data45_rel(i45, :)/ref_data2(imod))
         end if
 
-        app_arr45= array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data45_rel(i45,:),0)
-        tmp_arr45= runave_n(app_arr45,runave_window,0,0)
+        app_arr45= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data45_rel(i45, :), 0)
+        tmp_arr45= runave_n(app_arr45, runave_window, 0, 0)
         dim_tmp45= dimsizes(tmp_arr45)
-        data45_rel(i45,:)= tmp_arr45(half_window:dim_tmp45-1)
+        data45_rel(i45, :)= tmp_arr45(half_window:dim_tmp45-1)
         delete(app_arr45)
         delete(tmp_arr45)
 
@@ -334,24 +334,24 @@ begin
         end if
 
         if (dim_scen .eq. 3) then
-          app_arr60= array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data60_rel(i60,:),0)
-          tmp_arr60= runave_n(app_arr60,runave_window,0,0)
-          app_arr2= array_append_record(data2_rel(imod,:),data60_rel(i60,0:4),0)
-          tmp_arr2= runave_n(app_arr2,runave_window,0,0)
+          app_arr60= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data60_rel(i60, :), 0)
+          tmp_arr60= runave_n(app_arr60, runave_window, 0, 0)
+          app_arr2= array_append_record(data2_rel(imod, :), data60_rel(i60, 0:4), 0)
+          tmp_arr2= runave_n(app_arr2, runave_window, 0, 0)
           dim_tmp60= dimsizes(tmp_arr60)
           dim_tmp2= dimsizes(tmp_arr2)
-          data60_rel(i60,:)= tmp_arr60(half_window:dim_tmp60-1)
-          data2_rel(imod,:) = tmp_arr2(0:dim_tmp2-6)
+          data60_rel(i60, :)= tmp_arr60(half_window:dim_tmp60-1)
+          data2_rel(imod, :) = tmp_arr2(0:dim_tmp2-6)
           need_runave_data2rel= False
           delete(app_arr60)
           delete(tmp_arr60)
           delete(app_arr2)
           delete(tmp_arr2)
         else
-          app_arr60= array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data60_rel(i60,:),0)
-          tmp_arr60= runave_n(app_arr60,runave_window,0,0)
+          app_arr60= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data60_rel(i60, :), 0)
+          tmp_arr60= runave_n(app_arr60, runave_window, 0, 0)
           dim_tmp60= dimsizes(tmp_arr60)
-          data60_rel(i60,:)= tmp_arr60(half_window:dim_tmp60-1)
+          data60_rel(i60, :)= tmp_arr60(half_window:dim_tmp60-1)
           delete(app_arr60)
           delete(tmp_arr60)
         end if
@@ -393,10 +393,10 @@ begin
           data85_rel(i85, :) = 100*(data85_rel(i85, :)/ref_data2(imod))
         end if
 
-        app_arr85= array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data85_rel(i85,:),0)
-        tmp_arr85= runave_n(app_arr85,runave_window,0,0)
+        app_arr85= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data85_rel(i85, :), 0)
+        tmp_arr85= runave_n(app_arr85, runave_window, 0, 0)
         dim_tmp85= dimsizes(tmp_arr85)
-        data85_rel(i85,:)= tmp_arr85(half_window:dim_tmp85-1)
+        data85_rel(i85, :)= tmp_arr85(half_window:dim_tmp85-1)
         delete(app_arr85)
         delete(tmp_arr85)
 
@@ -439,14 +439,14 @@ begin
           data100_rel(i100, :) = 100*(data100_rel(i100, :)/ref_data2(imod))
         end if
 
-        app_arr100= array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data100_rel(i100,:),0)
-        tmp_arr100= runave_n(app_arr100,runave_window,0,0)
-        app_arr2= array_append_record(data2_rel(imod,:),data100_rel(i100,0:4),0)
-        tmp_arr2= runave_n(app_arr2,runave_window,0,0)
+        app_arr100= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data100_rel(i100, :), 0)
+        tmp_arr100= runave_n(app_arr100, runave_window, 0, 0)
+        app_arr2= array_append_record(data2_rel(imod, :), data100_rel(i100, 0:4), 0)
+        tmp_arr2= runave_n(app_arr2, runave_window, 0, 0)
         dim_tmp100= dimsizes(tmp_arr100)
         dim_tmp2= dimsizes(tmp_arr2)
-        data100_rel(i100,:)= tmp_arr100(half_window:dim_tmp100-1)
-        data2_rel(imod,:) = tmp_arr2(0:dim_tmp2-6)
+        data100_rel(i100, :)= tmp_arr100(half_window:dim_tmp100-1)
+        data2_rel(imod, :) = tmp_arr2(0:dim_tmp2-6)
         need_runave_data2rel= False
         delete(app_arr100)
         delete(tmp_arr100)
@@ -466,7 +466,7 @@ begin
       delete(item_100)
     end if
     if need_runave_data2rel then
-      data2_rel(imod,:) = runave_n(data2_rel(imod,:),runave_window,0,0)
+      data2_rel(imod, :) = runave_n(data2_rel(imod, :), runave_window, 0, 0)
     end if
   end do  ; imod
 
@@ -562,21 +562,21 @@ begin
   dim_1=dimsizes(data26_rel)
   if (dim_scen .gt. 1) then
     dim_2=dimsizes(data45_rel)
-    runs(2,1) = dim_2(0)
+    runs(2, 1) = dim_2(0)
   end if
   if (dim_scen .gt. 2) then
     dim_3=dimsizes(data60_rel)
-    runs(3,1) = dim_3(0)
+    runs(3, 1) = dim_3(0)
   end if
   if (dim_scen .gt. 3) then 
     dim_4=dimsizes(data85_rel)
-    runs(4,1) = dim_4(0)
+    runs(4, 1) = dim_4(0)
   end if
   if (dim_scen .gt. 4) then
     dim_5=dimsizes(data100_rel)
-    runs(5,1) = dim_5(0)
+    runs(5, 1) = dim_5(0)
   end if
-  runs(1,1) = dim_1(0)
+  runs(1, 1) = dim_1(0)
 
   to_plot = new((/3 * dims_data(0), dims_data(1)/), float)
 
@@ -637,7 +637,7 @@ begin
                        "std", "mean", "+" + str_spread + "std", "-" + \
                        str_spread + "std", "mean", "+" + \
                        str_spread + "std", "-" + str_spread + \
-                       "std","mean", "+" + str_spread + "std", "-" + \
+                       "std", "mean", "+" + str_spread + "std", "-" + \
                        str_spread + "std", "mean", "+" + str_spread + "std", "-" + \
                        str_spread + "std"/)
   end if

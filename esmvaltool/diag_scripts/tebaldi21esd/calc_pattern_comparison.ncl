@@ -221,7 +221,7 @@ begin
           if (percent .eq. 1) then
             var_diff_scal(imod, :, :) = \
               ((100 * (proj(imod, :, :) - base(imod, :, :))) / \
-               where(base(imod, :, :) .ne. 0.,\
+               where(base(imod, :, :) .ne. 0., \
                base(imod, :, :), base@_FillValue))
           else
             var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
@@ -230,9 +230,9 @@ begin
         end do
         delete([/base, proj, temp_proj, temp_base/])
         if ssp .eq. 0 then
-          var_diff_scal_1 = dim_avg_n_Wrap(var_diff_scal,0)
+          var_diff_scal_1 = dim_avg_n_Wrap(var_diff_scal, 0)
         else
-          var_diff_scal_2 = dim_avg_n_Wrap(var_diff_scal,0)
+          var_diff_scal_2 = dim_avg_n_Wrap(var_diff_scal, 0)
         end if
         delete([/idx_hist, idx_ssp, var_diff_scal/])
       end do

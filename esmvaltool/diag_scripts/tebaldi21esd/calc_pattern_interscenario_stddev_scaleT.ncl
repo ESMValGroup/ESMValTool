@@ -231,7 +231,7 @@ begin
               if (percent .eq. 1) then
                 var_diff_scal(imod, :, :) = \
                   ((100 * (proj(imod, :, :) - base(imod, :, :))) / \
-                   where(base(imod, :, :) .ne. 0.,\
+                   where(base(imod, :, :) .ne. 0., \
                    base(imod, :, :), base@_FillValue)) / \
                   (temp_proj(imod) - temp_base(imod))
               else
@@ -244,7 +244,7 @@ begin
             tmp = var_diff_scal_avg_scen
             delete(var_diff_scal_avg_scen)
             avg_same_scen = new((/1, nlat, nlon/), typeof(data1), Fill)
-            avg_same_scen(0, :, :) = dim_avg_n_Wrap(var_diff_scal,0)
+            avg_same_scen(0, :, :) = dim_avg_n_Wrap(var_diff_scal, 0)
             var_diff_scal_avg_scen = array_append_record(tmp, avg_same_scen, 0)
             delete(avg_same_scen)
             delete(tmp)
@@ -253,7 +253,7 @@ begin
       end do
       temp = var_diff_scal_avg_scen
       delete(var_diff_scal_avg_scen)
-      var_diff_scal_avg_scen = temp(1:,:,:)
+      var_diff_scal_avg_scen = temp(1:, :, :)
       var_diff_scal_avg_scen!0 = "models"
       var_diff_scal_avg_scen!1 = "lat"
       var_diff_scal_avg_scen!2 = "lon"

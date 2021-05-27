@@ -247,11 +247,11 @@ begin
           data460_rel(i460, :) = 100*(data460_rel(i460, :)/ref_data2(imod))
         end if
 
-        app_arr460 = array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data460_rel(i460,:),0)
-        tmp_arr460 = runave_n(app_arr460,runave_window,0,0)
-        app_arr434 = array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data434_rel(i434-1,:),0)
-        tmp_arr434 = runave_n(app_arr434,runave_window,0,0)
-        data434_rel(i434-1,:) = tmp_arr434(half_window:dim_data3g+4)
+        app_arr460 = array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data460_rel(i460, :), 0)
+        tmp_arr460 = runave_n(app_arr460, runave_window, 0, 0)
+        app_arr434 = array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data434_rel(i434-1, :), 0)
+        tmp_arr434 = runave_n(app_arr434, runave_window, 0, 0)
+        data434_rel(i434-1, :) = tmp_arr434(half_window:dim_data3g+4)
         data460_rel(i460, :) = tmp_arr460(half_window:dim_data3g+4)
         delete(tmp_arr434)
         delete(tmp_arr460)
@@ -344,9 +344,9 @@ begin
   dim_1=dimsizes(data434_rel)
   if (dim_scen .gt. 1) then
     dim_2=dimsizes(data460_rel)
-    runs(2,1) = dim_2(0)
+    runs(2, 1) = dim_2(0)
   end if
-  runs(1,1) = dim_1(0)
+  runs(1, 1) = dim_1(0)
 
   dims_data = dimsizes(mean_val)
   to_plot = new((/3 * dims_data(0), dims_data(1)/), float)

@@ -166,7 +166,7 @@ begin
         log_info("Read natural variability for stippling for each model")
         file_path= systemfunc("ls "+input_dir + "/" + "IAV_piControl_" + info_items[imod]@dataset + "_*_"+ \
                                  var0 + "_" + diag_script_info@time_avg +".nc")
-        iav_file = addfile(file_path(0),"r")
+        iav_file = addfile(file_path(0), "r")
         ;iav_file = addfile(input_dir + "/" + "IAV_piControl_" + \
         ;                   info_items[imod]@dataset + "_" +  \
         ;                   ;info_items[imod]@ensemble + "_" + \
@@ -320,19 +320,19 @@ begin
                                  var_neg_signif, to_plot@_FillValue)
         signif_and_sign = where(var_pos_signif_tmp .ge. 0.9 .or. \
                                 var_neg_signif_tmp .ge. 0.9, 1., 0.)
-        signif_and_sign = where(ismissing(signif_and_sign), 0.,\
+        signif_and_sign = where(ismissing(signif_and_sign), 0., \
                                 signif_and_sign)
         if (dim_seas .ne. 1) then
           sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
                                  abs(2. * natvar_mmm(seas, :, :)), 1., 0.)
           to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
-                                              abs(natvar_mmm(seas, :, :)),\
+                                              abs(natvar_mmm(seas, :, :)), \
                                               1., 0.)
         else
           sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
                                  abs(2. * natvar_mmm), 1., 0.)
           to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
-                                              abs(natvar_mmm),\
+                                              abs(natvar_mmm), \
                                               1., 0.)
         end if
         to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \

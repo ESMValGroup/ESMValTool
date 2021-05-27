@@ -248,13 +248,13 @@ begin
           data585_rel(i585, :) = 100*(data585_rel(i585, :)/ref_data2(imod))
         end if
         ; perform running average and extend ssp534 with ssp585 before 2040
-        app_arr585 = array_append_record(data2_rel(imod,dim_data2g-half_window:dim_data2g-1),data585_rel(i585,:),0)
-        tmp_arr585 = runave_n(app_arr585,runave_window,0,0)
+        app_arr585 = array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data585_rel(i585, :), 0)
+        tmp_arr585 = runave_n(app_arr585, runave_window, 0, 0)
         id_junction= nyearsp2-nyearsp1
-        app_arr534 = array_append_record(data585_rel(i585,id_junction-half_window:id_junction-1),data534_rel(i534-1,:),0)
-        tmp_arr534 = runave_n(app_arr534,runave_window,0,0)
+        app_arr534 = array_append_record(data585_rel(i585, id_junction-half_window:id_junction-1), data534_rel(i534-1, :), 0)
+        tmp_arr534 = runave_n(app_arr534, runave_window, 0, 0)
         dim_tmp534= dimsizes(tmp_arr534)
-        data534_rel(i534-1,:) = tmp_arr534(half_window:dim_tmp534-1)
+        data534_rel(i534-1, :) = tmp_arr534(half_window:dim_tmp534-1)
         data585_rel(i585, :) = tmp_arr585(half_window:dim_data3g+4)
         delete(tmp_arr534)
         delete(tmp_arr585)
@@ -290,8 +290,8 @@ begin
 
   data534_avg = dim_avg_n_Wrap(data534_rel, 0)
   data534_std = dim_stddev_n_Wrap(data534_rel, 0)
-  mean_val(1,p1:) = data534_avg
-  std_val(1,p1:) = data534_std
+  mean_val(1, p1:) = data534_avg
+  std_val(1, p1:) = data534_std
   if (dim_scen .gt. 1) then
     data585_avg = dim_avg_n_Wrap(data585_rel, 0)
     data585_std = dim_stddev_n_Wrap(data585_rel, 0)
@@ -346,8 +346,8 @@ begin
   ;FIX MODEL_NR
   dim_1=dimsizes(data534_rel)
   dim_2=dimsizes(data585_rel)
-  runs(1,1) = dim_1(0)
-  runs(2,1) = dim_2(0)
+  runs(1, 1) = dim_1(0)
+  runs(2, 1) = dim_2(0)
 
   dims_data = dimsizes(mean_val)
   to_plot = new((/3 * dims_data(0), dims_data(1)/), float)
@@ -376,7 +376,7 @@ begin
   to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
                      str_spread + "std", "mean", "+" + \
                      str_spread + "std", "-" + str_spread + \
-                     "std", "mean", "+" + str_spread + "std","-" + str_spread + "std"/)
+                     "std", "mean", "+" + str_spread + "std", "-" + str_spread + "std"/)
   to_plot!1 = "year"
   to_plot&year = ispan(toint(syears(2)), toint(eyears(nperiods - 1)), 1)
 

@@ -148,7 +148,7 @@ begin
     res@gsnXYFillColors = colors_spread(i)
     res@gsnXYFillOpacities = (/0.2, 0.2, 0.2/)
     res@xyLineColor     = -1
-    spread_plot = gsn_csm_xy(wks, to_plot&year,\
+    spread_plot = gsn_csm_xy(wks, to_plot&year, \
                              to_plot((i * 3) + 1 : (i * 3) + 2, :), res)
     overlay(plot, spread_plot)
     delete(res@gsnXYFillColors)
@@ -167,7 +167,7 @@ begin
 
   ; Attach a legend
   lgres                    = True
-  lgres@lgLineColors       = colors_main  ; (/9,8/)
+  lgres@lgLineColors       = colors_main  ; (/9, 8/)
   lgres@lgItemType         = "Lines"        ; show lines only (default)
   lgres@lgLabelFontHeightF = .08            ; legend label font thickness
   lgres@vpWidthF           = 0.2           ; width of legend (NDC)
@@ -212,15 +212,15 @@ begin
     txres@txFontColor = colors_main(0)
     label = tostring(runs(0, 0))
     ;xloc = (toint(eyears(nper)) - toint(syears(nper))) / 2
-    text(0) = gsn_add_text(wks, plot, label,xloc, \
+    text(0) = gsn_add_text(wks, plot, label, xloc, \
                                yloc - 0 * ydiff, txres)
     label = tostring(runs(2, 1))
     txres@txFontColor = colors_main(1)
     label = tostring(runs(0, 0))
-    text(1) = gsn_add_text(wks, plot, label,xloc, yloc - 1 * ydiff, txres)
+    text(1) = gsn_add_text(wks, plot, label, xloc, yloc - 1 * ydiff, txres)
     label = tostring(runs(2, 2))
     txres@txFontColor = colors_main(2)
-    text(2) = gsn_add_text(wks, plot, label,xloc, yloc - 2 * ydiff, txres)
+    text(2) = gsn_add_text(wks, plot, label, xloc, yloc - 2 * ydiff, txres)
   end if
 
   draw(wks)

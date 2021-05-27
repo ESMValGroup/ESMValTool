@@ -75,15 +75,15 @@ begin
 
   dims_data = (dimsizes(to_plot&metric) - 1) / 3
 
-  ;Constrained projections lower bound,mean and upper bound
-  constrained_projections_2100= new((/dims_data,4/),float)
+  ;Constrained projections lower bound, mean and upper bound
+  constrained_projections_2100= new((/dims_data, 4/), float)
 
   lower_bound= diag_script_info@lower_constrained_projections
   upper_bound= diag_script_info@upper_constrained_projections
   mean_bound= diag_script_info@mean_constrained_projections
 
   do nscen = 0, dims_data-1
-    constrained_projections_2100(nscen,:) = (/ 2100, lower_bound(nscen), mean_bound(nscen),upper_bound(nscen) /)
+    constrained_projections_2100(nscen, :) = (/ 2100, lower_bound(nscen), mean_bound(nscen), upper_bound(nscen) /)
   end do
 
   ; ###########################################
@@ -181,9 +181,9 @@ begin
     res@gsnXYFillOpacities = (/0.1, 0.1, 0.1/)
     res@xyLineColor     = -1
     if (j .eq. 1) then
-        spread_plot = gsn_csm_xy2(wks, to_plot&year,to_plot((j * 3) + 1 : (j * 3) + 2, :),to_plot((j * 3) + 1 : (j * 3) + 2, :)*0,res,res2)
+        spread_plot = gsn_csm_xy2(wks, to_plot&year, to_plot((j * 3) + 1 : (j * 3) + 2, :), to_plot((j * 3) + 1 : (j * 3) + 2, :)*0, res, res2)
     else
-        spread_plot = gsn_csm_xy(wks, to_plot&year,\
+        spread_plot = gsn_csm_xy(wks, to_plot&year, \
                              to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     end if
     overlay(plot, spread_plot)
@@ -210,11 +210,11 @@ begin
 
   do idx=0, dims_data-1
     polyres2@gsLineColor      = colors_main(idx+1)
-    dumm(idx*4) = gsn_add_polyline(wks,plot,(/toint(eyears(nperiods - 1)-10), \
-                            toint(eyears(nperiods - 1))-10/),(/constrained_projections_2100(idx,1),constrained_projections_2100(idx,3)/),polyres2)
-    dumm(idx*4+1) = gsn_add_polyline(wks,plot,(/toint(eyears(nperiods - 1)), toint(eyears(nperiods - 1)-19)/),(/constrained_projections_2100(idx,2),constrained_projections_2100(idx,2)/),polyres2)
-    dumm(idx*4+2) = gsn_add_polyline(wks,plot,(/toint(eyears(nperiods - 1)), toint(eyears(nperiods - 1)-19)/),(/constrained_projections_2100(idx,3),constrained_projections_2100(idx,3)/),polyres2)
-    dumm(idx*4+3) = gsn_add_polyline(wks,plot,(/toint(eyears(nperiods - 1)), toint(eyears(nperiods - 1)-19)/),(/constrained_projections_2100(idx,1),constrained_projections_2100(idx,1)/),polyres2)
+    dumm(idx*4) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)-10), \
+                            toint(eyears(nperiods - 1))-10/), (/constrained_projections_2100(idx, 1), constrained_projections_2100(idx, 3)/), polyres2)
+    dumm(idx*4+1) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)), toint(eyears(nperiods - 1)-19)/), (/constrained_projections_2100(idx, 2), constrained_projections_2100(idx, 2)/), polyres2)
+    dumm(idx*4+2) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)), toint(eyears(nperiods - 1)-19)/), (/constrained_projections_2100(idx, 3), constrained_projections_2100(idx, 3)/), polyres2)
+    dumm(idx*4+3) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)), toint(eyears(nperiods - 1)-19)/), (/constrained_projections_2100(idx, 1), constrained_projections_2100(idx, 1)/), polyres2)
   end do
 
  ; Attach a legend
@@ -268,7 +268,7 @@ begin
         txres@txFontColor = colors_main(nscen)
         label = tostring(runs(nscen, nper))
         ;xloc = (toint(eyears(nper)) - toint(syears(nper))) / 2
-        text(i) = gsn_add_text(wks, plot, label,xloc, \
+        text(i) = gsn_add_text(wks, plot, label, xloc, \
                                yloc - nscen * ydiff, txres)
         i = i + 1
       end do

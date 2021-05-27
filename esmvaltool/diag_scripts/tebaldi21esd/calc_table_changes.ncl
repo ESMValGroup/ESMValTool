@@ -26,9 +26,9 @@ begin
   dataset_ensembles = metadata_att_as_array(info_items, "ensemble")
   n_MOD = count_unique_values(dataset_names)
   MOD_list= get_unique_values(dataset_names)
-  labels = new((/n_MOD/),string)
+  labels = new((/n_MOD/), string)
   ; Check required diag_script_info attributes
-  exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears","begin_ref_year","end_ref_year"/))
+  exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears", "begin_ref_year", "end_ref_year"/))
   syears = diag_script_info@syears
   eyears = diag_script_info@eyears
 end
@@ -69,19 +69,19 @@ begin
   dim_MOD_hist = ListCount(item_hist)
 
   n_PER = dimsizes(syears) ;number of periods
-  period_list = (/tostring(syears(0))+"-"+tostring(eyears(0)),tostring(syears(1))+"-"+tostring(eyears(1))/)
+  period_list = (/tostring(syears(0))+"-"+tostring(eyears(0)), tostring(syears(1))+"-"+tostring(eyears(1))/)
   scenario_list = diag_script_info@scenarios
   n_SCEN= dimsizes(diag_script_info@scenarios)
   spread = diag_script_info@spread
-  mean_table = new((/n_PER,n_SCEN/),float);store change over the given period and scenario
-  five_perc_table = new((/n_PER,n_SCEN/),float);store five percent quantile of changes
-  ninetyfive_perc_table = new((/n_PER,n_SCEN/),float); store ninety five percent quantile of change
-  number_models_table =  new((/n_PER,n_SCEN/),float); store total number of models for the given scenario
+  mean_table = new((/n_PER, n_SCEN/), float);store change over the given period and scenario
+  five_perc_table = new((/n_PER, n_SCEN/), float);store five percent quantile of changes
+  ninetyfive_perc_table = new((/n_PER, n_SCEN/), float); store ninety five percent quantile of change
+  number_models_table =  new((/n_PER, n_SCEN/), float); store total number of models for the given scenario
   do issp = 0, n_SCEN-1
     idx_scen = ind((dataset_exps .eq. diag_script_info@scenarios(issp)))
     n_MOD = dimsizes(idx_scen)
     do iper = 0, n_PER-1
-      changes_for_all_models = new((/n_MOD/),float)
+      changes_for_all_models = new((/n_MOD/), float)
       do imod=0, n_MOD-1
         ; LOAD HISTORICAL EXP and GET historical baseline
         idx_histo= ind((dataset_exps .eq. reference_run_name) .and. (dataset_names .eq. dataset_names(idx_scen(imod))).and. (dataset_ensembles .eq. dataset_ensembles(idx_scen(imod))))
@@ -123,7 +123,7 @@ begin
           data0_glob = coswgt_areaave(data0)
         end if
         ind_start_per = ind(data0_glob&year .eq. syears(iper))
-        ind_end_per = ind(data0_glob&year .eq. min((/eyears(iper),data0_glob&year(dimsizes(data0_glob&year)-1)/)))
+        ind_end_per = ind(data0_glob&year .eq. min((/eyears(iper), data0_glob&year(dimsizes(data0_glob&year)-1)/)))
         scen_period_val = dim_avg(data0_glob(ind_start_per : ind_end_per))
         if var0 .eq. "pr" then
             changes_current_mod = 100* (scen_period_val - histo_ref)/histo_ref
@@ -138,21 +138,21 @@ begin
         delete(histo_ref)
         delete(idx_histo)
       end do
-      mean_table(iper,issp)= avg(changes_for_all_models)
-      five_perc_table(iper,issp) = avg(changes_for_all_models)- spread* stddev(changes_for_all_models)
-      ninetyfive_perc_table(iper,issp) = avg(changes_for_all_models)+ spread* stddev(changes_for_all_models)
-      number_models_table(iper,issp) = n_MOD
+      mean_table(iper, issp)= avg(changes_for_all_models)
+      five_perc_table(iper, issp) = avg(changes_for_all_models)- spread* stddev(changes_for_all_models)
+      ninetyfive_perc_table(iper, issp) = avg(changes_for_all_models)+ spread* stddev(changes_for_all_models)
+      number_models_table(iper, issp) = n_MOD
       delete(changes_for_all_models)
     end do
     delete(idx_scen)
   end do
-  to_plot = new((/4,n_PER,n_SCEN/),float)
-  to_plot(0,:,:) = mean_table
-  to_plot(1,:,:) = five_perc_table
-  to_plot(2,:,:) = ninetyfive_perc_table
-  to_plot(3,:,:) = tofloat(number_models_table)
+  to_plot = new((/4, n_PER, n_SCEN/), float)
+  to_plot(0, :, :) = mean_table
+  to_plot(1, :, :) = five_perc_table
+  to_plot(2, :, :) = ninetyfive_perc_table
+  to_plot(3, :, :) = tofloat(number_models_table)
   to_plot!0 = "panel"
-  to_plot&panel = (/"mean","five_perc","ninetyfive_perc","num_model"/)
+  to_plot&panel = (/"mean", "five_perc", "ninetyfive_perc", "num_model"/)
   to_plot!1 = "periods"
   to_plot&periods = period_list
   to_plot!2 = "ssp"

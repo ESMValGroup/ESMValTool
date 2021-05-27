@@ -86,8 +86,8 @@ begin
   end if
   gsn_define_colormap(wks, colormap)
 
-  colors_main = (/1,10,11/)
-  colors_spread = (/2,10,11/)
+  colors_main = (/1, 10, 11/)
+  colors_spread = (/2, 10, 11/)
 
   res                   = True
 
@@ -152,7 +152,7 @@ begin
     res@gsnXYFillColors = colors_spread(j)
     res@gsnXYFillOpacities = (/0.2, 0.2, 0.2/)
     res@xyLineColor     = -1
-    spread_plot = gsn_csm_xy(wks, to_plot&year,\
+    spread_plot = gsn_csm_xy(wks, to_plot&year, \
                              to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     overlay(plot, spread_plot)
     delete(res@gsnXYFillColors)

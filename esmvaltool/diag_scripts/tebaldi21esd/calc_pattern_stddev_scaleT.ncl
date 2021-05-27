@@ -227,7 +227,7 @@ begin
           if (percent .eq. 1) then
             var_diff_scal(imod, :, :) = \
               ((100 * (proj(imod, :, :) - base(imod, :, :))) / \
-               where(base(imod, :, :) .ne. 0.,\
+               where(base(imod, :, :) .ne. 0., \
                base(imod, :, :), base@_FillValue)) / \
               (temp_proj(imod) - temp_base(imod))
           else
