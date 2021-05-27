@@ -914,8 +914,8 @@ diagnostics:
     scripts: null
 
 
-  ERA5:
-    description: ERA5 check
+  ERA5_OBS6:
+    description: ERA5 OBS6 (daily) check
     variables:
       clt_E1hr:
         short_name: clt
@@ -1113,6 +1113,146 @@ diagnostics:
         mip: fx
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly,
+         version: 1, start_year: 1990, end_year: 1990}
+    scripts: null
+
+
+  ERA5_native6:
+    description: ERA5 native6 (hourly and monthly) check
+    variables:
+      clt_E1hr:
+        short_name: clt
+        mip: E1hr
+      evspsbl_E1hr:
+        short_name: evspsbl
+        mip: E1hr
+      evspsblpot_E1hr:
+        short_name: evspsblpot
+        mip: E1hr
+      mrro_E1hr:
+        short_name: mrro
+        mip: E1hr
+      pr_E1hr:
+        short_name: pr
+        mip: E1hr
+      prsn_E1hr:
+        short_name: prsn
+        mip: E1hr
+      ps_E1hr:
+        short_name: ps
+        mip: E1hr
+      psl_E1hr:
+        short_name: psl
+        mip: E1hr
+      ptype_E1hr:
+        short_name: ptype
+        mip: E1hr
+      rls_E1hr:
+        short_name: rls
+        mip: E1hr
+      rlds_E1hr:
+        short_name: rlds
+        mip: E1hr
+      rsds_E1hr:
+        short_name: rsds
+        mip: E1hr
+      rsdt_E1hr:
+        short_name: rsdt
+        mip: E1hr
+      rss_E1hr:
+        short_name: rss
+        mip: E1hr
+      uas_E1hr:
+        short_name: uas
+        mip: E1hr
+      vas_E1hr:
+        short_name: vas
+        mip: E1hr
+      tas_E1hr:
+        short_name: tas
+        mip: E1hr
+      tasmax_E1hr:
+        short_name: tasmax
+        mip: E1hr
+      tasmin_E1hr:
+        short_name: tasmin
+        mip: E1hr
+      tdps_E1hr:
+        short_name: tdps
+        mip: E1hr
+      ts_E1hr:
+        short_name: ts
+        mip: E1hr
+      tsn_E1hr:
+        short_name: tsn
+        mip: E1hr
+      clt_Amon:
+        short_name: clt
+        mip: Amon
+      evspsbl_Amon:
+        short_name: evspsbl
+        mip: Amon
+      evspsblpot_Amon:
+        short_name: evspsblpot
+        mip: Amon
+      mrro_Amon:
+        short_name: mrro
+        mip: Amon
+      pr_Amon:
+        short_name: pr
+        mip: Amon
+      prsn_Amon:
+        short_name: prsn
+        mip: Amon
+      ps_Amon:
+        short_name: ps
+        mip: Amon
+      psl_Amon:
+        short_name: psl
+        mip: Amon
+      ptype_Amon:
+        short_name: ptype
+        mip: Amon
+      rlds_Amon:
+        short_name: rlds
+        mip: Amon
+      rls_Amon:
+        short_name: rls
+        mip: Amon
+      rsds_Amon:
+        short_name: rsds
+        mip: Amon
+      rsdt_Amon:
+        short_name: rsdt
+        mip: Amon
+      rss_Amon:
+        short_name: rss
+        mip: Amon
+      ta_Amon:
+        short_name: ta
+        mip: Amon
+      tas_Amon:
+        short_name: tas
+        mip: Amon
+      tdps_Amon:
+        short_name: tdps
+        mip: Amon
+      ts_Amon:
+        short_name: ts
+        mip: Amon
+      tsn_Amon:
+        short_name: tsn
+        mip: Amon
+      va_Amon:
+        short_name: va
+        mip: Amon
+      zg_Amon:
+        short_name: zg
+        mip: Amon
+      orog:
+        mip: fx
+    additional_datasets:
+      - {dataset: ERA5, project: native6, tier: 3, type: reanaly,
          version: 1, start_year: 1990, end_year: 1990}
     scripts: null
 
