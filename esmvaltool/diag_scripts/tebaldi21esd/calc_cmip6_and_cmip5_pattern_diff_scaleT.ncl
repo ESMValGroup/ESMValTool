@@ -49,7 +49,7 @@ begin
   end if
 
   ; Check required diag_script_info attributes
-  req_atts = (/"scenarios_cmip5","scenarios_cmip6", "periods", "time_avg"/)
+  req_atts = (/"scenarios_cmip5", "scenarios_cmip6", "periods", "time_avg"/)
   exit_if_missing_atts(diag_script_info, req_atts)
 
 end
@@ -184,7 +184,8 @@ begin
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
       do rcp = 0, dim_scen - 1  ; loop over rcps
-        idx_rcp = ind((dataset_exps .eq. diag_script_info@scenarios_cmip6(rcp)) \
+        idx_rcp = ind((dataset_exps .eq. \ 
+                      diag_script_info@scenarios_cmip6(rcp)) \
                       .and. (dataset_startyears .eq. \
                       diag_script_info@periods(per)))
         proj = data1(idx_rcp, seas, :, :)
@@ -220,7 +221,7 @@ begin
           if (percent .eq. 1) then
             var_diff_scal(imod, :, :) = \
               ((100 * (proj(imod, :, :) - base(imod, :, :))) / \
-               where(base(imod, :, :) .ne. 0.,\
+               where(base(imod, :, :) .ne. 0., \
                base(imod, :, :), base@_FillValue)) / \
               (temp_proj(imod) - temp_base(imod))
           else
@@ -281,7 +282,8 @@ begin
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
       do rcp = 0, dim_scen_cmip5 - 1  ; loop over rcps
-        idx_rcp = ind((dataset_exps .eq. diag_script_info@scenarios_cmip5(rcp)) \
+        idx_rcp = ind((dataset_exps .eq. \ 
+                      diag_script_info@scenarios_cmip5(rcp)) \
                       .and. (dataset_startyears .eq. \
                       diag_script_info@periods(per)))
         proj = data1(idx_rcp, seas, :, :)
@@ -317,7 +319,7 @@ begin
           if (percent .eq. 1) then
             var_diff_scal(imod, :, :) = \
               ((100 * (proj(imod, :, :) - base(imod, :, :))) / \
-               where(base(imod, :, :) .ne. 0.,\
+               where(base(imod, :, :) .ne. 0., \
                base(imod, :, :), base@_FillValue)) / \
               (temp_proj(imod) - temp_base(imod))
           else
@@ -346,21 +348,11 @@ begin
       ; average over rcps
       log_debug("Average over models and rcps")
       to_plot_cmip5(i, :, :) = dim_avg_n_Wrap(var_diff_scal_all_mod, 0)
-      to_plot(i,:,:) = to_plot(i,:,:) - to_plot_cmip5(i, :, :)
+      to_plot(i, :, :) = to_plot(i, :, :) - to_plot_cmip5(i, :, :)
       i = i + 1
       delete([/var_diff_scal_all_mod/])
     end do  ; per
   end do  ; seas
-
-
-
-
-
-
-
-
-
-
   ; ###########################################
   ; # Other Metadata: diag_script, var        #
   ; ###########################################
