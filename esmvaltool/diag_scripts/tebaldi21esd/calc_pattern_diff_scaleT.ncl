@@ -1,5 +1,6 @@
 ; #############################################################################
-; Computes the pattern maps of multi-model change between historical and scenarios  scaled by global T change
+; Computes the pattern maps of multi-model change between historical and 
+; scenarios  scaled by global T change
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
 ;

@@ -164,14 +164,10 @@ begin
         ; # Read natural variability for stippling for each model #
         ; #########################################################
         log_info("Read natural variability for stippling for each model")
-        file_path= systemfunc("ls "+input_dir + "/" + "IAV_piControl_" + info_items[imod]@dataset + "_*_"+ \
-                                 var0 + "_" + diag_script_info@time_avg +".nc")
+        file_path= systemfunc("ls "+ input_dir + "/" + "IAV_piControl_" + \
+                              info_items[imod]@dataset + "_*_" + \
+                              var0 + "_" + diag_script_info@time_avg +".nc")
         iav_file = addfile(file_path(0), "r")
-        ;iav_file = addfile(input_dir + "/" + "IAV_piControl_" + \
-        ;                   info_items[imod]@dataset + "_" +  \
-        ;                   ;info_items[imod]@ensemble + "_" + \
-        ;                   "*_" + var0 + "_" + diag_script_info@time_avg + \
-        ;                   ".nc", "r")
         if ((dim_seas .eq. 1) .and. \
             (diag_script_info@time_avg .eq. "annualclim")) then
           iav(imod, 0, :, :) = iav_file->iav

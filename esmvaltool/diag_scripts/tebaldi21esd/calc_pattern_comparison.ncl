@@ -3,7 +3,8 @@
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
 ; Description
-;    Output the pattern differences between the  multi-model mean patterns of two scenarios
+; Output the pattern differences between the  multi-model mean patterns 
+; of two scenarios
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -32,8 +33,6 @@ begin
     var1 = var0
     info_items2 = info_items
   end if
-
-
   ; Save some dataset attributes as arrays for index-based selection below
   dataset_names = metadata_att_as_array(info_items, "dataset")
   dataset_exps = metadata_att_as_array(info_items, "exp")

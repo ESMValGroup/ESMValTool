@@ -1,13 +1,14 @@
 ; #############################################################################
-; Interscenario Stddev of the considered variable change scaled by global T change map
+; Interscenario Stddev of the considered variable change 
+; scaled by global T change map
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
 ;
 ; Description
-;    Pattern scaling. Interscenario Stddev (Weighted Stddev across Scenario) 
-;    change scaled by global T
-;    change per model multi-model mean with significance in different
-;    periods (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
+; Pattern scaling. Interscenario Stddev (Weighted Stddev across Scenario)
+; change scaled by global T
+; change per model multi-model mean with significance in different
+; periods (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
 ; #############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -194,9 +195,9 @@ begin
 
         else
             idx_mod = ind((dataset_exps .eq. dataset_exps(mod_id)) \
-                      .and. (dataset_startyears .eq. \
-                      diag_script_info@periods(per)) \
-                      .and. (dataset_exps .ne. reference_run_name))
+                           .and. (dataset_startyears .eq. \
+                           diag_script_info@periods(per)) \
+                           .and. (dataset_exps .ne. reference_run_name))
             curr_ind = ind(idx_mod .eq. mod_id)
             proj = data1(idx_mod, seas, :, :)
             temp_proj = temp_avg(idx_mod)
@@ -204,9 +205,11 @@ begin
             proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
             ; find historical runs from same models as in current mod
             do jj = 0, dimsizes(idx_mod) - 1
-                tmp_idx = ind(dataset_names .eq. dataset_names(idx_mod(jj)) .and. \
-                        dataset_exps .eq. reference_run_name .and. \
-                        dataset_ensembles .eq. dataset_ensembles(idx_mod(jj)))
+                tmp_idx = ind(dataset_names .eq. \
+                              dataset_names(idx_mod(jj)) .and. \
+                              dataset_exps .eq. reference_run_name .and. \
+                              dataset_ensembles .eq. \
+                              dataset_ensembles(idx_mod(jj)))
                 if (isdefined("idx_hist")) then
                     idx_hist := array_append_record(idx_hist, tmp_idx, 0)
                 else
@@ -224,7 +227,8 @@ begin
 
             if (dim_mod .lt. 2) then
               error_msg("f", DIAG_SCRIPT, "", \
-                        "Only one model found, multi-model needs at least two.")
+                        "Only one model found," + \
+                        "multi-model needs at least two.")
             end if
             var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), Fill)
             do imod = 0, dim_mod - 1

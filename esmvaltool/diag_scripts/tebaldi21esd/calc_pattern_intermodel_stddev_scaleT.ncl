@@ -4,11 +4,10 @@
 ; #############################################################################
 ;
 ; Description
-;    Pattern scaling. Intermodel Stddev (Weighted Stddev across models after averaging 
-;    across scenarios for each model) of considered variable change scaled by global T
-;    change per model in different
-;    periods (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
-;
+; Pattern scaling. Intermodel Stddev (Weighted Stddev across models
+; after averaging across scenarios for each model) of considered variable
+; change scaled by global T change per model in different periods
+; (e.g. 2081-2100 and 2181-2200 with respect to 1986-2005)
 ; #############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -195,9 +194,9 @@ begin
 
         else
             idx_mod = ind((dataset_names .eq. dataset_names(mod_id)) \
-                      .and. (dataset_startyears .eq. \
-                      diag_script_info@periods(per)) \
-                      .and. (dataset_exps .ne. reference_run_name))
+                           .and. (dataset_startyears .eq. \
+                           diag_script_info@periods(per)) \
+                           .and. (dataset_exps .ne. reference_run_name))
             curr_ind = ind(idx_mod .eq. mod_id)
             proj = data1(idx_mod, seas, :, :)
             temp_proj = temp_avg(idx_mod)
@@ -205,9 +204,10 @@ begin
             proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
             ; find historical runs from same models as in current mod
             do jj = 0, dimsizes(idx_mod) - 1
-                tmp_idx = ind(dataset_names .eq. dataset_names(idx_mod(jj)) .and. \
-                        dataset_exps .eq. reference_run_name .and. \
-                        dataset_ensembles .eq. dataset_ensembles(idx_mod(jj)))
+                tmp_idx = ind(dataset_names .eq. dataset_names(idx_mod(jj)) \
+                              .and. dataset_exps .eq. reference_run_name .and. \
+                              dataset_ensembles .eq. \
+                              dataset_ensembles(idx_mod(jj)))
                 if (isdefined("idx_hist")) then
                     idx_hist := array_append_record(idx_hist, tmp_idx, 0)
                 else
@@ -227,14 +227,13 @@ begin
             if (dim_mod .lt. 2) then
               var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), Fill)
               if (percent .eq. 1) then
-                var_diff_scal(0, :, :) = ((100 * (proj( :, :) - base( :, :))) / \
-                                         where(base( :, :) .ne. 0., \
-                                        base( :, :), base@_FillValue)) / \
-                                        (temp_proj(0) - temp_base(0))
+                var_diff_scal(0, :, :) = ((100 * (proj(:, :) - base(:, :))) / \
+                                           where(base(:, :) .ne. 0., \
+                                           base(:, :), base@_FillValue)) / \
+                                           (temp_proj(0) - temp_base(0))
               else
-                var_diff_scal(0, :, :) = (proj( :, :) - \
-                base(:, :)) / \
-                (temp_proj(0) - temp_base(0))
+                var_diff_scal(0, :, :) = (proj(:, :) - base(:, :)) / \
+                                         (temp_proj(0) - temp_base(0))
               end if
               delete([/base, proj, temp_proj, temp_base/])
               tmp = var_diff_scal_avg_mod
@@ -254,8 +253,9 @@ begin
                     (temp_proj(imod) - temp_base(imod))
                 else
                     var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
-                                             base(imod, :, :)) / \
-                                            (temp_proj(imod) - temp_base(imod))
+                                                 base(imod, :, :)) / \
+                                                (temp_proj(imod) - \
+                                                 temp_base(imod))
                 end if
                 end do
                 delete([/base, proj, temp_proj, temp_base/])
@@ -323,7 +323,6 @@ begin
   end if
   tmp_unit = to_plot@units
   to_plot@units = tmp_unit + " per degC"
-
 
   ; ###########################################
   ; # Output to netCDF                        #

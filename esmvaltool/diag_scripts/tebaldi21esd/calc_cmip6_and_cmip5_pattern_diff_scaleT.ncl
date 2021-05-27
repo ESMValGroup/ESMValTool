@@ -184,7 +184,7 @@ begin
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
       do rcp = 0, dim_scen - 1  ; loop over rcps
-        idx_rcp = ind((dataset_exps .eq. \ 
+        idx_rcp = ind((dataset_exps .eq. \
                       diag_script_info@scenarios_cmip6(rcp)) \
                       .and. (dataset_startyears .eq. \
                       diag_script_info@periods(per)))
@@ -282,7 +282,7 @@ begin
   do seas = 0, dim_seas - 1  ; loop over seasons
     do per = 0, dim_per - 1  ; loop over periods
       do rcp = 0, dim_scen_cmip5 - 1  ; loop over rcps
-        idx_rcp = ind((dataset_exps .eq. \ 
+        idx_rcp = ind((dataset_exps .eq. \
                       diag_script_info@scenarios_cmip5(rcp)) \
                       .and. (dataset_startyears .eq. \
                       diag_script_info@periods(per)))
