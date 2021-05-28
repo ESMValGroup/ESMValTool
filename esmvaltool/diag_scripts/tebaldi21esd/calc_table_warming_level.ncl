@@ -146,17 +146,16 @@ begin
       mean_ts_scenario = dim_avg_n(all_models_smoothed_ts, 0)
       std_ts_scenario = dim_stddev_n(all_models_smoothed_ts, 0)
       five_perc_ts_scenario = mean_ts_scenario - 1.645 * std_ts_scenario
-      ninety_five_perc_ts_scenario = mean_ts_scenario + 1.645 * std_ts_scenario
-      year_crossing_mean = toint(min(ind(mean_ts_scenario .ge. \
-                                 warming_levels(iwar)))) + \
-                           diag_script_info@syears(1)
-      year_crossing_five_perc = toint(min(ind(five_perc_ts_scenario .ge. \
-                                      warming_levels(iwar)))) + \
-                                diag_script_info@syears(1)
-      year_crossing_ninety_five_perc = toint(min(ind(\
-                                             ninety_five_perc_ts_scenario \
-                                             .ge. warming_levels(iwar)))) + \
-                                       diag_script_info@syears(1)
+      nin_fiv_perc_ts_scenario = mean_ts_scenario + 1.645 * std_ts_scenario
+      year_crossing_mean = \
+        toint(min(ind(mean_ts_scenario .ge. warming_levels(iwar)))) + \
+        diag_script_info@syears(1)
+      year_crossing_five_perc = \
+        toint(min(ind(five_perc_ts_scenario .ge. warming_levels(iwar)))) + \
+        diag_script_info@syears(1)
+      year_crossing_ninety_five_perc = \
+        toint(min(ind(nin_fiv_perc_ts_scenario .ge. warming_levels(iwar)))) + \
+        diag_script_info@syears(1)
       mean_table(iwar, issp) = year_crossing_mean
       five_perc_table(iwar, issp) = year_crossing_five_perc
       ninetyfive_perc_table(iwar, issp) = year_crossing_ninety_five_perc

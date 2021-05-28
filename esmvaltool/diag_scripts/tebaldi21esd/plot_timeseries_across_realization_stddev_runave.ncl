@@ -169,7 +169,7 @@ begin
         rc = regline(to_plot&year, to_plot(n, :))
         ic = rc@yintercept
         y_start = rc*toint(syears(0)) + ic
-        y_end= rc * toint(eyears(1)) + ic
+        y_end = rc * toint(eyears(1)) + ic
         polyres@gsLineColor      = colors_main(n)
         dum(n) = gsn_add_polyline(wks, plot, (/toint(syears(0)), \
                                   toint(eyears(1))/), (/y_start, y_end/), \

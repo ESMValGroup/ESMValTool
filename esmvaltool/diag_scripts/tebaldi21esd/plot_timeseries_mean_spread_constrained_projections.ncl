@@ -212,30 +212,30 @@ begin
 
   do idx = 0, dims_data - 1
     polyres2@gsLineColor      = colors_main(idx+1)
-    dumm(idx*4) = gsn_add_polyline(wks, plot, \
-                                   (/toint(eyears(nperiods - 1)-10), \
-                                   toint(eyears(nperiods - 1))-10/), \
-                                   (/constrained_projections_2100(idx, 1), \
-                                   constrained_projections_2100(idx, 3)/), \
-                                   polyres2)
-    dumm(idx*4+1) = gsn_add_polyline(wks, plot, \
-                                     (/toint(eyears(nperiods - 1)), \
-                                     toint(eyears(nperiods - 1)-19)/), \
-                                     (/constrained_projections_2100(idx, 2), \
-                                     constrained_projections_2100(idx, 2)/), \
-                                     polyres2)
-    dumm(idx*4+2) = gsn_add_polyline(wks, plot, \
-                                     (/toint(eyears(nperiods - 1)), \
-                                     toint(eyears(nperiods - 1)-19)/), \
-                                     (/constrained_projections_2100(idx, 3), \
-                                     constrained_projections_2100(idx, 3)/), \
-                                     polyres2)
-    dumm(idx*4+3) = gsn_add_polyline(wks, plot, \
-                                     (/toint(eyears(nperiods - 1)), \
-                                     toint(eyears(nperiods - 1)-19)/), \
-                                     (/constrained_projections_2100(idx, 1), \
-                                     constrained_projections_2100(idx, 1)/), \
-                                     polyres2)
+    dumm(idx*4) = \
+      gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)-10), \
+                       toint(eyears(nperiods - 1))-10/), \
+                       (/constrained_projections_2100(idx, 1), \
+                       constrained_projections_2100(idx, 3)/), \
+                       polyres2)
+    dumm(idx*4+1) = \
+      gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)), \
+                       toint(eyears(nperiods - 1)-19)/), \
+                       (/constrained_projections_2100(idx, 2), \
+                       constrained_projections_2100(idx, 2)/), \
+                       polyres2)
+    dumm(idx*4+2) = \
+      gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)), \
+                       toint(eyears(nperiods - 1)-19)/), \
+                       (/constrained_projections_2100(idx, 3), \
+                       constrained_projections_2100(idx, 3)/), \
+                       polyres2)
+    dumm(idx*4+3) = \
+      gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)), \
+                       toint(eyears(nperiods - 1)-19)/), \
+                       (/constrained_projections_2100(idx, 1), \
+                       constrained_projections_2100(idx, 1)/), \
+                       polyres2)
   end do
 
   ; Attach a legend
