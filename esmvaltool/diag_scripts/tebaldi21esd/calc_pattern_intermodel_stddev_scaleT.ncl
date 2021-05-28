@@ -253,12 +253,12 @@ begin
                                                  0., base(imod, :, :), \
                                                  base@_FillValue)) / \
                                                  (temp_proj(imod) - \
-                                                 temp_base(imod))
+                                                  temp_base(imod))
                   else
                   var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
-                                              base(imod, :, :)) / \
+                                               base(imod, :, :)) / \
                                               (temp_proj(imod) - \
-                                              temp_base(imod))
+                                               temp_base(imod))
                   end if
                 end do
                 delete([/base, proj, temp_proj, temp_base/])

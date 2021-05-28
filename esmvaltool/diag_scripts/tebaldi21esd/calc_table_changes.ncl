@@ -146,10 +146,10 @@ begin
       end do
       mean_table(iper, issp) = avg(changes_for_all_models)
       five_perc_table(iper, issp) = avg(changes_for_all_models) - \
-                                    spread * stddev(changes_for_all_models)
+                                   spread * stddev(changes_for_all_models)
       ninetyfive_perc_table(iper, issp) = avg(changes_for_all_models) + \
-                                          spread * \
-                                          stddev(changes_for_all_models)
+                                         spread * \
+                                         stddev(changes_for_all_models)
       number_models_table(iper, issp) = n_MOD
       delete(changes_for_all_models)
     end do

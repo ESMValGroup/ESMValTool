@@ -248,12 +248,13 @@ begin
         end if
 
         app_arr460 = array_append_record(data2_rel(imod, dim_data2g - \
-                                                   half_window:dim_data2g - 1)\
-                                         , data460_rel(i460, :), 0)
+                                                   half_window:\
+                                                   dim_data2g - 1), \
+                                        data460_rel(i460, :), 0)
         tmp_arr460 = runave_n(app_arr460, runave_window, 0, 0)
         app_arr434 = array_append_record(data2_rel(imod, dim_data2g - \
-                                                   half_window:dim_data2g-1)\
-                                         , data434_rel(i434-1, :), 0)
+                                                   half_window:dim_data2g-1), \
+                                         data434_rel(i434-1, :), 0)
         tmp_arr434 = runave_n(app_arr434, runave_window, 0, 0)
         data434_rel(i434-1, :) = tmp_arr434(half_window:dim_data3g+4)
         data460_rel(i460, :) = tmp_arr460(half_window:dim_data3g+4)

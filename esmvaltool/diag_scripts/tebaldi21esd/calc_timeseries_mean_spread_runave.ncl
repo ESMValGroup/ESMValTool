@@ -341,8 +341,8 @@ begin
         if (dim_scen .eq. 3) then
           app_arr60 = array_append_record(data2_rel(imod, dim_data2g - \
                                                     half_window:\
-                                                    dim_data2g - 1)\
-                                          , data60_rel(i60, :), 0)
+                                                    dim_data2g - 1), \
+                                          data60_rel(i60, :), 0)
           tmp_arr60 = runave_n(app_arr60, runave_window, 0, 0)
           app_arr2 = array_append_record(data2_rel(imod, :), \
                                          data60_rel(i60, 0:4), 0)
@@ -453,8 +453,8 @@ begin
         end if
 
         app_arr100 = array_append_record(data2_rel(imod, dim_data2g - \
-                                         half_window:dim_data2g - 1)\
-                                         , data100_rel(i100, :), 0)
+                                         half_window:dim_data2g - 1), \
+                                         data100_rel(i100, :), 0)
         tmp_arr100 = runave_n(app_arr100, runave_window, 0, 0)
         app_arr2 = array_append_record(data2_rel(imod, :), \
                                        data100_rel(i100, 0:4), 0)

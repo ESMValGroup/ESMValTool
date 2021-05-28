@@ -226,7 +226,7 @@ begin
     label = tostring(runs(0, 0))
     xloc = 1938
     yloc = trYMaxF - (trYMaxF+trYMinF) / 6.85
-    ydiff = (trYMaxF - trYMinF) / 15.7 
+    ydiff = (trYMaxF - trYMinF) / 15.7
     if yloc .le. 0 then
       ydiff = - ydiff
     end if

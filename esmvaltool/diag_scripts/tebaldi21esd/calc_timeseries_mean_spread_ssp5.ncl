@@ -202,7 +202,7 @@ begin
                     " years)")
         else
           data534_rel(i534, 0 : dim_data3g - 1) = (data3_glob - \
-                                                  ref_data2(imod))
+                                                   ref_data2(imod))
           data534_rel(i534, dim_data3g :) =  data3_glob@_FillValue
         end if
       else
@@ -240,7 +240,7 @@ begin
                       " years)")
           else
             data585_rel(i585, 0:dim_data3g - 1) = (data3_glob - \
-                                                  ref_data2(imod))
+                                                   ref_data2(imod))
             data585_rel(i585, dim_data3g:) =  data3_glob@_FillValue
           end if
         else

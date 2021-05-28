@@ -85,8 +85,8 @@ begin
 
   do nscen = 0, dims_data - 1
     constrained_projections_2100(nscen, :) = (/2100, lower_bound(nscen), \
-                                               mean_bound(nscen), \
-                                               upper_bound(nscen) /)
+                                              mean_bound(nscen), \
+                                              upper_bound(nscen) /)
   end do
 
   ; ###########################################
@@ -138,10 +138,9 @@ begin
   res@tmXBLabels = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 50)
   res@tmXBMinorValues  = ispan(toint(syears(0)), \
                                toint(eyears(nperiods - 1)), 10)
-
   res@xyLineThicknesses = 3.5
   res@xyLineColor  = colors_main(0)
-  res@tmYROn= False
+  res@tmYROn = False
   res@tmYRBorderOn = False
   ; create second axis
   diff_avg = diag_script_info@baseline_offset
@@ -213,26 +212,30 @@ begin
 
   do idx = 0, dims_data - 1
     polyres2@gsLineColor      = colors_main(idx+1)
-    dumm(idx*4) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1)-10)\
-                                   , toint(eyears(nperiods - 1))-10/)\
-                                   , (/constrained_projections_2100(idx, 1)\
-                                   , constrained_projections_2100(idx, 3)/)\
-                                   , polyres2)
-    dumm(idx*4+1) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1))\
-                                     , toint(eyears(nperiods - 1)-19)/)\
-                                     , (/constrained_projections_2100(idx, 2)\
-                                     , constrained_projections_2100(idx, 2)/)\
-                                     , polyres2)
-    dumm(idx*4+2) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1))\
-                                     , toint(eyears(nperiods - 1)-19)/)\
-                                     , (/constrained_projections_2100(idx, 3)\
-                                     , constrained_projections_2100(idx, 3)/)\
-                                     , polyres2)
-    dumm(idx*4+3) = gsn_add_polyline(wks, plot, (/toint(eyears(nperiods - 1))\
-                                     , toint(eyears(nperiods - 1)-19)/)\
-                                     , (/constrained_projections_2100(idx, 1)\
-                                     , constrained_projections_2100(idx, 1)/)\
-                                     , polyres2)
+    dumm(idx*4) = gsn_add_polyline(wks, plot, \
+                                   (/toint(eyears(nperiods - 1)-10), \
+                                   toint(eyears(nperiods - 1))-10/), \
+                                   (/constrained_projections_2100(idx, 1), \
+                                   constrained_projections_2100(idx, 3)/), \
+                                   polyres2)
+    dumm(idx*4+1) = gsn_add_polyline(wks, plot, \
+                                     (/toint(eyears(nperiods - 1)), \
+                                     toint(eyears(nperiods - 1)-19)/), \
+                                     (/constrained_projections_2100(idx, 2), \
+                                     constrained_projections_2100(idx, 2)/), \
+                                     polyres2)
+    dumm(idx*4+2) = gsn_add_polyline(wks, plot, \
+                                     (/toint(eyears(nperiods - 1)), \
+                                     toint(eyears(nperiods - 1)-19)/), \
+                                     (/constrained_projections_2100(idx, 3), \
+                                     constrained_projections_2100(idx, 3)/), \
+                                     polyres2)
+    dumm(idx*4+3) = gsn_add_polyline(wks, plot, \
+                                     (/toint(eyears(nperiods - 1)), \
+                                     toint(eyears(nperiods - 1)-19)/), \
+                                     (/constrained_projections_2100(idx, 1), \
+                                     constrained_projections_2100(idx, 1)/), \
+                                     polyres2)
   end do
 
   ; Attach a legend
