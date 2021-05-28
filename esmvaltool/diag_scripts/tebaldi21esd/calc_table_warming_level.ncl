@@ -24,7 +24,7 @@ begin
   dataset_exps = metadata_att_as_array(info_items, "exp")
   dataset_ensembles = metadata_att_as_array(info_items, "ensemble")
   n_MOD = count_unique_values(dataset_names)
-  MOD_list= get_unique_values(dataset_names)
+  MOD_list = get_unique_values(dataset_names)
   labels = new((/n_MOD/), string)
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears"/))
@@ -69,28 +69,31 @@ begin
   dim_MOD_hist = ListCount(item_hist)
   warming_levels = diag_script_info@warming_levels
   scenario_list = diag_script_info@scenarios
-  n_SCEN= dimsizes(diag_script_info@scenarios)
-  n_WAR= dimsizes(diag_script_info@warming_levels)
-  t_len = toint(eyears(1))-toint(syears(1))+1
-  mean_table = new((/n_WAR, n_SCEN/), integer);store mean crossing year
-  five_perc_table = new((/n_WAR, n_SCEN/), integer);store five percent quantile of crossing year
-  ninetyfive_perc_table = new((/n_WAR, n_SCEN/), integer); store ninety five percent quantile of crossing year
-  number_models_crossing_table = new((/n_WAR, n_SCEN/), integer); store number of models which crossed warming level
-  number_models_table =  new((/n_WAR, n_SCEN/), integer); store total number of models for the given scenario
+  n_SCEN = dimsizes(diag_script_info@scenarios)
+  n_WAR = dimsizes(diag_script_info@warming_levels)
+  t_len = toint(eyears(1))-toint(syears(1)) + 1
+  mean_table = new((/n_WAR, n_SCEN/), integer)
+  five_perc_table = new((/n_WAR, n_SCEN/), integer)
+  ninetyfive_perc_table = new((/n_WAR, n_SCEN/), integer)
+  number_models_crossing_table = new((/n_WAR, n_SCEN/), integer)
+  number_models_table =  new((/n_WAR, n_SCEN/), integer)
   do issp = 0, n_SCEN-1
     idx_scen = ind((dataset_exps .eq. diag_script_info@scenarios(issp)))
     n_MOD = dimsizes(idx_scen)
     do iwar = 0, n_WAR-1
       years_for_all_models = new((/n_MOD/), integer)
       all_models_smoothed_ts = new((/n_MOD, t_len/), float)
-      do imod=0, n_MOD-1
+      do imod = 0, n_MOD - 1
         ; LOAD HISTORICAL EXP and GET historical baseline
-        idx_histo= ind((dataset_exps .eq. reference_run_name) .and. (dataset_names .eq. dataset_names(idx_scen(imod))))
+        idx_histo= ind((dataset_exps .eq. reference_run_name) .and. \
+                       (dataset_names .eq. dataset_names(idx_scen(imod))))
         Ahisto = read_data(info_items[idx_histo(0)])
         datahisto = time_operations(Ahisto, -1, -1, "average", "yearly", True)
         delete(Ahisto)
         datahisto_glob = coswgt_areaave(datahisto)
-        ind_start = ind(datahisto&year .eq. max((/diag_script_info@begin_ref_year, datahisto&year(0)/)))
+        ind_start = ind(datahisto&year .eq. \
+                        max((/diag_script_info@begin_ref_year, \
+                        datahisto&year(0)/)))
         ind_end = ind(datahisto&year .eq. diag_script_info@end_ref_year)
         histo_ref = dim_avg(datahisto_glob(ind_start : ind_end))
         delete([/datahisto, datahisto_glob/])
@@ -99,7 +102,7 @@ begin
         dims = getvardims(A0)
         if (dimsizes(dims) .lt. 2) then
           error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
-                  "need 2 or 3")
+                    "need 2 or 3")
         end if
         idx = ind(dims .eq. "lat")
         if (ismissing(idx)) then
@@ -129,7 +132,7 @@ begin
         t_len_mod = dimsizes(running_avg)
         all_models_smoothed_ts(imod, 0:t_len_mod-1)= running_avg
         idx_warming_level = ind(running_avg .ge. warming_levels(iwar))
-        year_warming_level = toint(min(idx_warming_level)+diag_script_info@syears(1))
+        year_warming_level = toint(min(idx_warming_level) + diag_script_info@syears(1))
         years_for_all_models(imod) = year_warming_level
         delete(idx_warming_level)
         delete(A0)
@@ -141,24 +144,29 @@ begin
       end do
       mean_ts_scenario = dim_avg_n(all_models_smoothed_ts, 0)
       std_ts_scenario = dim_stddev_n(all_models_smoothed_ts, 0)
-      five_perc_ts_scenario = mean_ts_scenario - 1.645* std_ts_scenario
-      ninety_five_perc_ts_scenario = mean_ts_scenario + 1.645* std_ts_scenario 
-      year_crossing_mean = toint(min(ind(mean_ts_scenario .ge. warming_levels(iwar))))+ diag_script_info@syears(1)
-      year_crossing_five_perc = toint(min(ind(five_perc_ts_scenario .ge. warming_levels(iwar))))+ diag_script_info@syears(1)
-      year_crossing_ninety_five_perc = toint(min(ind(ninety_five_perc_ts_scenario .ge. warming_levels(iwar))))+ diag_script_info@syears(1)
-      mean_table(iwar, issp)= year_crossing_mean
+      five_perc_ts_scenario = mean_ts_scenario - 1.645 * std_ts_scenario
+      ninety_five_perc_ts_scenario = mean_ts_scenario + 1.645 * std_ts_scenario 
+      year_crossing_mean = toint(min(ind(mean_ts_scenario .ge. \
+                                 warming_levels(iwar)))) + \
+                                 diag_script_info@syears(1)
+      year_crossing_five_perc = toint(min(ind(five_perc_ts_scenario .ge. \
+                                      warming_levels(iwar)))) + \
+                                      diag_script_info@syears(1)
+      year_crossing_ninety_five_perc = toint(min(ind(\
+                                             ninety_five_perc_ts_scenario \
+                                             .ge. warming_levels(iwar)))) + \
+                                             diag_script_info@syears(1)
+      mean_table(iwar, issp) = year_crossing_mean
       five_perc_table(iwar, issp) = year_crossing_five_perc
       ninetyfive_perc_table(iwar, issp) = year_crossing_ninety_five_perc
-      number_models_crossing_table(iwar, issp) = num(.not.ismissing(years_for_all_models))
+      number_models_crossing_table(iwar, issp) = num(.not.ismissing( \
+                                                     years_for_all_models))
       number_models_table(iwar, issp) = n_MOD
       delete(all_models_smoothed_ts)
       delete(years_for_all_models)
     end do
     delete(idx_scen)
   end do
- ; write_table("mean_table.txt", "w", mean_table, "%s")
- ; write_table("five_perc_table.txt", "w", five_perc_table, "%s")
- ; write_table("ninetyfive_perc_table.txt", "w", ninetyfive_perc_table, "%s")
   to_plot = new((/5, n_WAR, n_SCEN/), integer)
   to_plot(0, :, :) = mean_table
   to_plot(1, :, :) = five_perc_table
@@ -166,7 +174,8 @@ begin
   to_plot(3, :, :) = number_models_crossing_table
   to_plot(4, :, :) = number_models_table
   to_plot!0 = "panel"
-  to_plot&panel = (/"mean", "five_perc", "ninetyfive_perc", "num_model_crossing", "num_model"/)
+  to_plot&panel = (/"mean", "five_perc", "ninetyfive_perc", \
+                    "num_model_crossing", "num_model"/)
   to_plot!1 = "warming"
   to_plot&warming = warming_levels
   to_plot!2 = "ssp"
@@ -191,4 +200,3 @@ begin
 
   leave_msg(DIAG_SCRIPT, "")
 end
-
