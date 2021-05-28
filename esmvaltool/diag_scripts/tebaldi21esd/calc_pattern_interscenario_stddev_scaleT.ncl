@@ -1,5 +1,5 @@
 ; #############################################################################
-; Interscenario Stddev of the considered variable change 
+; Interscenario Stddev of the considered variable change
 ; scaled by global T change map
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
@@ -195,9 +195,9 @@ begin
 
         else
             idx_mod = ind((dataset_exps .eq. dataset_exps(mod_id)) \
-                           .and. (dataset_startyears .eq. \
-                           diag_script_info@periods(per)) \
-                           .and. (dataset_exps .ne. reference_run_name))
+                          .and. (dataset_startyears .eq. \
+                          diag_script_info@periods(per)) \
+                          .and. (dataset_exps .ne. reference_run_name))
             curr_ind = ind(idx_mod .eq. mod_id)
             proj = data1(idx_mod, seas, :, :)
             temp_proj = temp_avg(idx_mod)

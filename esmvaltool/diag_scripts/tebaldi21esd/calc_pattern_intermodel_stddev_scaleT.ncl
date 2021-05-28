@@ -194,9 +194,9 @@ begin
 
         else
             idx_mod = ind((dataset_names .eq. dataset_names(mod_id)) \
-                           .and. (dataset_startyears .eq. \
-                           diag_script_info@periods(per)) \
-                           .and. (dataset_exps .ne. reference_run_name))
+                          .and. (dataset_startyears .eq. \
+                          diag_script_info@periods(per)) \
+                          .and. (dataset_exps .ne. reference_run_name))
             curr_ind = ind(idx_mod .eq. mod_id)
             proj = data1(idx_mod, seas, :, :)
             temp_proj = temp_avg(idx_mod)
@@ -204,10 +204,10 @@ begin
             proj = where(abs(proj) .gt. 1.e-14, proj, proj@_FillValue)
             ; find historical runs from same models as in current mod
             do jj = 0, dimsizes(idx_mod) - 1
-                tmp_idx = ind(dataset_names .eq. dataset_names(idx_mod(jj)) \
-                              .and. dataset_exps .eq. reference_run_name .and. \
-                              dataset_ensembles .eq. \
-                              dataset_ensembles(idx_mod(jj)))
+                tmp_idx = ind((dataset_names .eq. dataset_names(idx_mod(jj))) \
+                              .and. (dataset_exps .eq. reference_run_name) \
+                              .and. (dataset_ensembles .eq. \
+                              dataset_ensembles(idx_mod(jj))))
                 if (isdefined("idx_hist")) then
                     idx_hist := array_append_record(idx_hist, tmp_idx, 0)
                 else
@@ -228,9 +228,9 @@ begin
               var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), Fill)
               if (percent .eq. 1) then
                 var_diff_scal(0, :, :) = ((100 * (proj(:, :) - base(:, :))) / \
-                                           where(base(:, :) .ne. 0., \
-                                           base(:, :), base@_FillValue)) / \
-                                           (temp_proj(0) - temp_base(0))
+                                          where(base(:, :) .ne. 0., \
+                                          base(:, :), base@_FillValue)) / \
+                                          (temp_proj(0) - temp_base(0))
               else
                 var_diff_scal(0, :, :) = (proj(:, :) - base(:, :)) / \
                                          (temp_proj(0) - temp_base(0))
@@ -238,24 +238,28 @@ begin
               delete([/base, proj, temp_proj, temp_base/])
               tmp = var_diff_scal_avg_mod
               delete(var_diff_scal_avg_mod)
-              var_diff_scal_avg_mod = array_append_record(tmp, var_diff_scal, 0)
+              var_diff_scal_avg_mod = array_append_record(tmp, var_diff_scal, \
+                                                          0)
               delete(tmp)
               delete([/idx_hist, idx_mod, var_diff_scal/])
  
             else 
-                var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), Fill)
+                var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), \
+                                    Fill)
                 do imod = 0, dim_mod - 1
                 if (percent .eq. 1) then
-                    var_diff_scal(imod, :, :) = \
-                    ((100 * (proj(imod, :, :) - base(imod, :, :))) / \
-                    where(base(imod, :, :) .ne. 0., \
-                    base(imod, :, :), base@_FillValue)) / \
-                    (temp_proj(imod) - temp_base(imod))
+                    var_diff_scal(imod, :, :) = ((100 * (proj(imod, :, :) - \
+                                                 base(imod, :, :))) / \
+                                                 where(base(imod, :, :) .ne. \
+                                                 0., base(imod, :, :), \
+                                                 base@_FillValue)) / \
+                                                 (temp_proj(imod) - \
+                                                 temp_base(imod))
                 else
                     var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
-                                                 base(imod, :, :)) / \
+                                                base(imod, :, :)) / \
                                                 (temp_proj(imod) - \
-                                                 temp_base(imod))
+                                                temp_base(imod))
                 end if
                 end do
                 delete([/base, proj, temp_proj, temp_base/])
@@ -263,7 +267,8 @@ begin
                 delete(var_diff_scal_avg_mod)
                 avg_same_mod = new((/1, nlat, nlon/), typeof(data1), Fill)
                 avg_same_mod(0, :, :) = dim_avg_n_Wrap(var_diff_scal, 0)
-                var_diff_scal_avg_mod = array_append_record(tmp, avg_same_mod, 0)
+                var_diff_scal_avg_mod = array_append_record(tmp, \
+                                                            avg_same_mod, 0)
                 delete(avg_same_mod)
                 delete(tmp)
                 delete([/idx_hist, idx_mod, var_diff_scal/])

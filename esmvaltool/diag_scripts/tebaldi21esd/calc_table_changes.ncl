@@ -70,9 +70,9 @@ begin
   dim_MOD_hist = ListCount(item_hist)
   n_PER = dimsizes(syears)
   period_list = (/tostring(syears(0)) + "-" + tostring(eyears(0)), \
-                  tostring(syears(1)) + "-" + tostring(eyears(1))/)
+                tostring(syears(1)) + "-" + tostring(eyears(1))/)
   scenario_list = diag_script_info@scenarios
-  n_SCEN= dimsizes(diag_script_info@scenarios)
+  n_SCEN = dimsizes(diag_script_info@scenarios)
   spread = diag_script_info@spread
   mean_table = new((/n_PER, n_SCEN/), float)
   five_perc_table = new((/n_PER, n_SCEN/), float)
@@ -86,7 +86,7 @@ begin
       do imod = 0, n_MOD - 1
         ; LOAD HISTORICAL EXP and GET historical baseline
         idx_histo = ind((dataset_exps .eq. reference_run_name) .and. \
-                       (dataset_names .eq. dataset_names(idx_scen(imod))) \
+                        (dataset_names .eq. dataset_names(idx_scen(imod))) \
                         .and. (dataset_ensembles .eq. \
                         dataset_ensembles(idx_scen(imod))))
         Ahisto = read_data(info_items[idx_histo(0)])
@@ -146,10 +146,10 @@ begin
       end do
       mean_table(iper, issp) = avg(changes_for_all_models)
       five_perc_table(iper, issp) = avg(changes_for_all_models) - \
-                                    spread * stddev(changes_for_all_models)
+                                   spread * stddev(changes_for_all_models)
       ninetyfive_perc_table(iper, issp) = avg(changes_for_all_models) + \
-                                          spread * \
-                                          stddev(changes_for_all_models)
+                                        spread * \
+                                        stddev(changes_for_all_models)
       number_models_table(iper, issp) = n_MOD
       delete(changes_for_all_models)
     end do

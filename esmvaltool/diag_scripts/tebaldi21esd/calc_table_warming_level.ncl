@@ -85,7 +85,7 @@ begin
       all_models_smoothed_ts = new((/n_MOD, t_len/), float)
       do imod = 0, n_MOD - 1
         ; LOAD HISTORICAL EXP and GET historical baseline
-        idx_histo= ind((dataset_exps .eq. reference_run_name) .and. \
+        idx_histo = ind((dataset_exps .eq. reference_run_name) .and. \
                        (dataset_names .eq. dataset_names(idx_scen(imod))))
         Ahisto = read_data(info_items[idx_histo(0)])
         datahisto = time_operations(Ahisto, -1, -1, "average", "yearly", True)
@@ -93,7 +93,7 @@ begin
         datahisto_glob = coswgt_areaave(datahisto)
         ind_start = ind(datahisto&year .eq. \
                         max((/diag_script_info@begin_ref_year, \
-                        datahisto&year(0)/)))
+                            datahisto&year(0)/)))
         ind_end = ind(datahisto&year .eq. diag_script_info@end_ref_year)
         histo_ref = dim_avg(datahisto_glob(ind_start : ind_end))
         delete([/datahisto, datahisto_glob/])
@@ -130,9 +130,10 @@ begin
         end if
         running_avg = runave_n(data0_glob, 11, 0, 0) - histo_ref + offset
         t_len_mod = dimsizes(running_avg)
-        all_models_smoothed_ts(imod, 0:t_len_mod-1)= running_avg
+        all_models_smoothed_ts(imod, 0:t_len_mod-1) = running_avg
         idx_warming_level = ind(running_avg .ge. warming_levels(iwar))
-        year_warming_level = toint(min(idx_warming_level) + diag_script_info@syears(1))
+        year_warming_level = toint(min(idx_warming_level) + \
+                                   diag_script_info@syears(1))
         years_for_all_models(imod) = year_warming_level
         delete(idx_warming_level)
         delete(A0)
@@ -145,17 +146,17 @@ begin
       mean_ts_scenario = dim_avg_n(all_models_smoothed_ts, 0)
       std_ts_scenario = dim_stddev_n(all_models_smoothed_ts, 0)
       five_perc_ts_scenario = mean_ts_scenario - 1.645 * std_ts_scenario
-      ninety_five_perc_ts_scenario = mean_ts_scenario + 1.645 * std_ts_scenario 
+      ninety_five_perc_ts_scenario = mean_ts_scenario + 1.645 * std_ts_scenario
       year_crossing_mean = toint(min(ind(mean_ts_scenario .ge. \
-                                 warming_levels(iwar)))) + \
-                                 diag_script_info@syears(1)
+                                          warming_levels(iwar)))) + \
+                           diag_script_info@syears(1)
       year_crossing_five_perc = toint(min(ind(five_perc_ts_scenario .ge. \
-                                      warming_levels(iwar)))) + \
-                                      diag_script_info@syears(1)
+                                              warming_levels(iwar)))) + \
+                                diag_script_info@syears(1)
       year_crossing_ninety_five_perc = toint(min(ind(\
-                                             ninety_five_perc_ts_scenario \
-                                             .ge. warming_levels(iwar)))) + \
-                                             diag_script_info@syears(1)
+                                                     ninety_five_perc_ts_scenario \
+                                                     .ge. warming_levels(iwar)))) + \
+                                       diag_script_info@syears(1)
       mean_table(iwar, issp) = year_crossing_mean
       five_perc_table(iwar, issp) = year_crossing_five_perc
       ninetyfive_perc_table(iwar, issp) = year_crossing_ninety_five_perc

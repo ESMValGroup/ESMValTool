@@ -3,7 +3,7 @@
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
 ; Description
-; Output the pattern differences between the  multi-model mean patterns 
+; Output the pattern differences between the  multi-model mean patterns
 ; of two scenarios
 
 load "$diag_scripts/../interface_scripts/interface.ncl"

@@ -1,5 +1,5 @@
 ; #############################################################################
-;  Compute across realization Std. dev. for large ensemble experiment (SSP3-7.0)
+;  Compute across realization Std. dev. for large ensemble experiment(SSP3-7.0)
 ;  Author: Kevin Debeire (DLR, Germany)
 ; #############################################################################
 
@@ -24,7 +24,7 @@ begin
   dataset_exps = metadata_att_as_array(info_items, "exp")
   dataset_ensembles = metadata_att_as_array(info_items, "ensemble")
   n_MOD = count_unique_values(dataset_names)
-  MOD_list= get_unique_values(dataset_names)
+  MOD_list = get_unique_values(dataset_names)
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears"/))
   syears = diag_script_info@syears
@@ -64,8 +64,9 @@ begin
 
   t_len = toint(eyears(1))-toint(syears(0))+1
 
-  if (isatt(diag_script_info, "n_samples")) .and. (isatt(diag_script_info, "sampled_model")) then
-    n_samples= toint(diag_script_info@n_samples)
+  if (isatt(diag_script_info, "n_samples")) .and. \
+     (isatt(diag_script_info, "sampled_model")) then
+    n_samples = toint(diag_script_info@n_samples)
     to_plot = new((/n_MOD+n_samples, t_len/), float)
     to_plot!0 = "metric"
     to_plot&metric = new(n_MOD+n_samples, string, "std")
@@ -74,20 +75,21 @@ begin
     to_plot!0 = "metric"
     to_plot&metric = new(n_MOD, string, "std")
   end if
-  ;get runave_window
+  ; Get runave_window
   if (isatt(diag_script_info, "runave_window")) then
-    runave_window= diag_script_info@runave_window
+    runave_window = diag_script_info@runave_window
   else
-    runave_window= 1
+    runave_window = 1
   end if
   to_plot!1 = "year"
   to_plot&year = ispan(toint(syears(0)), toint(eyears(1)), 1)
 
-  do imod = 0, n_MOD -1; loop over models
+  do imod = 0, n_MOD - 1
     current_mod = MOD_list(imod)
     log_debug("processing " + info_items[imod]@dataset)
     ; find ssp runs from same model
-    idx_scen = ind((dataset_names .eq. current_mod) .and.(dataset_exps .eq. diag_script_info@scenarios(0)))
+    idx_scen = ind((dataset_names .eq. current_mod) .and. \
+                   (dataset_exps .eq. diag_script_info@scenarios(0)))
     dim_ENS =  dimsizes(idx_scen)
     n_ENS = 10
     collect_n_ENS = new((/n_ENS, t_len/), double)
@@ -109,9 +111,7 @@ begin
       if (ismissing(idx)) then
         error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
       end if
-      
       ; Average over time (function in ./diag_scripts/shared/statistics.ncl)
-      ;data0 = A0
       data0 = time_operations(A0, -1, -1, "average", "yearly", True)
       dim_file = dimsizes(data0)  ; file size of scenario file
       ; Average over globe/region
@@ -127,7 +127,10 @@ begin
       end if
 
       ; LOAD AND AVERAGE HISTORICAL data
-      idx_hist= ind((dataset_names .eq. current_mod) .and.(dataset_exps .eq. reference_run_name) .and. (dataset_ensembles .eq. dataset_ensembles(idx_scen(iens))))
+      idx_hist = ind((dataset_names .eq. current_mod) .and. \
+                     (dataset_exps .eq. reference_run_name) .and. \
+                     (dataset_ensembles .eq. \
+                      dataset_ensembles(idx_scen(iens))))
       A1 = read_data(info_items[idx_hist])
       dims1 = getvardims(A1)
       if (dimsizes(dims1) .lt. 2) then
@@ -143,7 +146,6 @@ begin
         error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
       end if
       ; Average over time (function in ./diag_scripts/shared/statistics.ncl)
-      ;data1 = A1
       data1 = time_operations(A1, -1, -1, "average", "yearly", True)
       dim_file1 = dimsizes(data1)  ; file size of scenario file
       ; Average over globe/region
@@ -158,14 +160,14 @@ begin
         data1_glob = coswgt_areaave(data1)
       end if
       ensemble = dataset_ensembles(idx_scen(iens))
-      model= current_mod
+      model = current_mod
       data_glob = array_append_record(data1_glob, data0_glob, 0)
-      print(work_dir + "/" + var0 + "_timeseries_"+ model +"_"+ ensemble +".txt")
-      asciiwrite( work_dir + "/" + var0 + "_timeseries_"+ model +"_"+ ensemble +".txt", data_glob)
-
+      asciiwrite(work_dir + "/" + var0 + "_timeseries_" + model + "_" + \
+                 ensemble + ".txt", data_glob)
       ; store for all ens
       if var0 .eq. "pr" then
-        collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0) *86400.0 ;convert to mm/day
+        collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0) \
+                                 * 86400.0
       else
         collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0)
       end if
@@ -181,23 +183,25 @@ begin
     delete(idx_scen)
     delete(collect_n_ENS)
   end do
-  ;;;;;;; SAMPLING across ensemble of SAMPLED MODEL
-  if (isatt(diag_script_info, "sampled_model") .and. isatt(diag_script_info, "n_samples")) then
-    sampled_model= diag_script_info@sampled_model
-    n_samples= diag_script_info@n_samples
-    idx_samp_mod = ind((dataset_names .eq. sampled_model) .and.(dataset_exps .eq. diag_script_info@scenarios(0)))
+  ; SAMPLING across ensemble of SAMPLED MODEL
+  if (isatt(diag_script_info, "sampled_model") .and. \
+      isatt(diag_script_info, "n_samples")) then
+    sampled_model = diag_script_info@sampled_model
+    n_samples = diag_script_info@n_samples
+    idx_samp_mod = ind((dataset_names .eq. sampled_model) .and. \
+                       (dataset_exps .eq. diag_script_info@scenarios(0)))
 
     dim_ENS =  dimsizes(idx_samp_mod)
     n_ENS = 10
     random_setallseed(1234567890, 236484749)
-    do i_samp = 0, n_samples-1 ; loop through samples
-      print("Drawing sample #"+i_samp)
+    do i_samp = 0, n_samples - 1
+      print("Drawing sample #" + i_samp)
       collect_n_ENS = new((/n_ENS, t_len/), double)
       ; randomly sample across ensemble for sampled_model
       rand_idx_50 = generate_sample_indices(dim_ENS, 0)
-      rand_idx= idx_samp_mod(rand_idx_50(0:9))
+      rand_idx = idx_samp_mod(rand_idx_50(0:9))
       print("current sample indices " + rand_idx)
-      do iens = 0, n_ENS -1 ; loop over ensembles
+      do iens = 0, n_ENS - 1
         A0 = read_data(info_items[rand_idx(iens)])
         ; Check dimensions
         dims = getvardims(A0)
@@ -213,11 +217,8 @@ begin
         if (ismissing(idx)) then
           error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
         end if
-        
         ; Average over time (function in ./diag_scripts/shared/statistics.ncl)
-        ;data0 = A0
         data0 = time_operations(A0, -1, -1, "average", "yearly", True)
-        
         dim_file = dimsizes(data0)  ; file size of scenario file
         ; Average over globe/region
         ; (function in ./diag_scripts/shared/latlon.ncl)
@@ -232,7 +233,10 @@ begin
         end if
 
         ; LOAD AND AVERAGE HISTORICAL data
-        idx_hist= ind((dataset_names .eq. sampled_model) .and.(dataset_exps .eq. reference_run_name) .and. (dataset_ensembles .eq. dataset_ensembles(rand_idx(iens))))
+        idx_hist = ind((dataset_names .eq. sampled_model) .and. \
+                       (dataset_exps .eq. reference_run_name) .and. \
+                       (dataset_ensembles .eq. \
+                        dataset_ensembles(rand_idx(iens))))
         A1 = read_data(info_items[idx_hist])
         dims1 = getvardims(A1)
         if (dimsizes(dims1) .lt. 2) then
@@ -247,11 +251,10 @@ begin
         if (ismissing(idx1)) then
           error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
         end if
-        
         ; Average over time (function in ./diag_scripts/shared/statistics.ncl)
         data1 = time_operations(A1, -1, -1, "average", "yearly", True)
         ;data1 = A1
-        dim_file1 = dimsizes(data1)  ; file size of scenario file
+        dim_file1 = dimsizes(data1)
         ; Average over globe/region
         ; (function in ./diag_scripts/shared/latlon.ncl)
         if (isatt(diag_script_info, "ts_minlat")) then
@@ -264,12 +267,13 @@ begin
           data1_glob = coswgt_areaave(data1)
         end if
         ensemble = dataset_ensembles(rand_idx(iens))
-        model= current_mod
+        model = current_mod
         data_glob = array_append_record(data1_glob, data0_glob, 0)
 
         ; store for all ens
         if var0 .eq. "pr" then
-          collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0) *86400.0 ;convert to mm/day
+          collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0) \
+                                   * 86400.0
         else
           collect_n_ENS(iens, :) = runave_n(data_glob, runave_window, 0, 0)
         end if
@@ -285,7 +289,6 @@ begin
       delete(collect_n_ENS)
     end do
   end if
-
 
   ; ###########################################
   ; # Other Metadata: diag_script, var        #

@@ -1,5 +1,6 @@
 ; #############################################################################
-;  Computes global running-average timeseries (mean and spread) for historical and up to 5 scenarios
+;  Computes global running-average timeseries (mean and spread) for historical
+;  and up to 5 scenarios
 ;  Author: Kevin Debeire
 ; #############################################################################
 
@@ -162,7 +163,7 @@ begin
     item_ssp100 = select_metadata_by_atts(info_items, atts5)
     dim_MOD_100 = ListCount(item_ssp100)
     data100_rel = new((/dim_MOD_100, nyearsp1/), float, \
-    data1_glob@_FillValue)
+                      data1_glob@_FillValue)
     i100 = 0
   end if
   if (dim_scen .gt. 5) then
@@ -173,10 +174,10 @@ begin
   ; set runave_window parameter
   if (isatt(diag_script_info, "runave_window")) then
     runave_window = diag_script_info@runave_window
-    half_window= toint(floor(runave_window/2.))
+    half_window = toint(floor(runave_window/2.))
   else
     runave_window = 11
-    half_window= toint(floor(runave_window/2.))
+    half_window = toint(floor(runave_window/2.))
   end if
 
   ; set percent parameter
@@ -187,7 +188,7 @@ begin
   end if
 
   do imod = 0, dim_MOD_hist - 1
-    need_runave_data2rel= True
+    need_runave_data2rel = True
     if (imod .eq. 0) then
       data2 = data1
       delete(A0)
@@ -244,10 +245,12 @@ begin
         data26_rel(i26, :) = 100*(data26_rel(i26, :)/ref_data2(imod))
       end if
 
-      app_arr26= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data26_rel(i26, :), 0)
-      tmp_arr26= runave_n(app_arr26, runave_window, 0, 0)
-      dim_tmp26= dimsizes(tmp_arr26)
-      data26_rel(i26, :)= tmp_arr26(half_window:dim_tmp26-1)
+      app_arr26 = array_append_record(data2_rel(imod, dim_data2g-half_window:\
+                                                dim_data2g-1), \
+                                      data26_rel(i26, :), 0)
+      tmp_arr26 = runave_n(app_arr26, runave_window, 0, 0)
+      dim_tmp26 = dimsizes(tmp_arr26)
+      data26_rel(i26, :) = tmp_arr26(half_window:dim_tmp26 - 1)
       delete(app_arr26)
       delete(tmp_arr26)
 
@@ -285,13 +288,15 @@ begin
           data45_rel(i45, :) = data3_glob - ref_data2(imod)
         end if
         if percent .eq. 1 then
-          data45_rel(i45, :) = 100*(data45_rel(i45, :)/ref_data2(imod))
+          data45_rel(i45, :) = 100 * (data45_rel(i45, :) / ref_data2(imod))
         end if
 
-        app_arr45= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data45_rel(i45, :), 0)
-        tmp_arr45= runave_n(app_arr45, runave_window, 0, 0)
-        dim_tmp45= dimsizes(tmp_arr45)
-        data45_rel(i45, :)= tmp_arr45(half_window:dim_tmp45-1)
+        app_arr45 = array_append_record(data2_rel(imod, dim_data2g-half_window\
+                                                  :dim_data2g-1), \
+                                        data45_rel(i45, :), 0)
+        tmp_arr45 = runave_n(app_arr45, runave_window, 0, 0)
+        dim_tmp45 = dimsizes(tmp_arr45)
+        data45_rel(i45, :) = tmp_arr45(half_window:dim_tmp45 - 1)
         delete(app_arr45)
         delete(tmp_arr45)
 
@@ -330,28 +335,33 @@ begin
           data60_rel(i60, :) = data3_glob - ref_data2(imod)
         end if
         if percent .eq. 1 then
-          data60_rel(i60, :) = 100*(data60_rel(i60, :)/ref_data2(imod))
+          data60_rel(i60, :) = 100 *(data60_rel(i60, :) / ref_data2(imod))
         end if
 
         if (dim_scen .eq. 3) then
-          app_arr60= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data60_rel(i60, :), 0)
-          tmp_arr60= runave_n(app_arr60, runave_window, 0, 0)
-          app_arr2= array_append_record(data2_rel(imod, :), data60_rel(i60, 0:4), 0)
-          tmp_arr2= runave_n(app_arr2, runave_window, 0, 0)
-          dim_tmp60= dimsizes(tmp_arr60)
-          dim_tmp2= dimsizes(tmp_arr2)
-          data60_rel(i60, :)= tmp_arr60(half_window:dim_tmp60-1)
-          data2_rel(imod, :) = tmp_arr2(0:dim_tmp2-6)
-          need_runave_data2rel= False
+          app_arr60 = array_append_record(data2_rel(imod, dim_data2g-\
+                                                    half_window:dim_data2g-1)\
+                                                    , data60_rel(i60, :), 0)
+          tmp_arr60 = runave_n(app_arr60, runave_window, 0, 0)
+          app_arr2 = array_append_record(data2_rel(imod, :), \
+                                         data60_rel(i60, 0:4), 0)
+          tmp_arr2 = runave_n(app_arr2, runave_window, 0, 0)
+          dim_tmp60 = dimsizes(tmp_arr60)
+          dim_tmp2 = dimsizes(tmp_arr2)
+          data60_rel(i60, :) = tmp_arr60(half_window:dim_tmp60 - 1)
+          data2_rel(imod, :) = tmp_arr2(0:dim_tmp2 - 6)
+          need_runave_data2rel = False
           delete(app_arr60)
           delete(tmp_arr60)
           delete(app_arr2)
           delete(tmp_arr2)
         else
-          app_arr60= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data60_rel(i60, :), 0)
-          tmp_arr60= runave_n(app_arr60, runave_window, 0, 0)
-          dim_tmp60= dimsizes(tmp_arr60)
-          data60_rel(i60, :)= tmp_arr60(half_window:dim_tmp60-1)
+          app_arr60 = array_append_record(data2_rel(imod, dim_data2g-\
+                                          half_window:dim_data2g-1), \
+                                          data60_rel(i60, :), 0)
+          tmp_arr60 = runave_n(app_arr60, runave_window, 0, 0)
+          dim_tmp60 = dimsizes(tmp_arr60)
+          data60_rel(i60, :) = tmp_arr60(half_window:dim_tmp60 - 1)
           delete(app_arr60)
           delete(tmp_arr60)
         end if
@@ -390,13 +400,15 @@ begin
           data85_rel(i85, :) = data3_glob - ref_data2(imod)
         end if
         if percent .eq. 1 then
-          data85_rel(i85, :) = 100*(data85_rel(i85, :)/ref_data2(imod))
+          data85_rel(i85, :) = 100 * (data85_rel(i85, :) / ref_data2(imod))
         end if
 
-        app_arr85= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data85_rel(i85, :), 0)
-        tmp_arr85= runave_n(app_arr85, runave_window, 0, 0)
-        dim_tmp85= dimsizes(tmp_arr85)
-        data85_rel(i85, :)= tmp_arr85(half_window:dim_tmp85-1)
+        app_arr85 = array_append_record(data2_rel(imod, dim_data2g-half_window\
+                                                  :dim_data2g-1), \
+                                        data85_rel(i85, :), 0)
+        tmp_arr85 = runave_n(app_arr85, runave_window, 0, 0)
+        dim_tmp85 = dimsizes(tmp_arr85)
+        data85_rel(i85, :) = tmp_arr85(half_window:dim_tmp85 - 1)
         delete(app_arr85)
         delete(tmp_arr85)
 
@@ -436,18 +448,21 @@ begin
           data100_rel(i100, :) = data3_glob - ref_data2(imod)
         end if
         if percent .eq. 1 then
-          data100_rel(i100, :) = 100*(data100_rel(i100, :)/ref_data2(imod))
+          data100_rel(i100, :) = 100 * (data100_rel(i100, :) / ref_data2(imod))
         end if
 
-        app_arr100= array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data100_rel(i100, :), 0)
-        tmp_arr100= runave_n(app_arr100, runave_window, 0, 0)
-        app_arr2= array_append_record(data2_rel(imod, :), data100_rel(i100, 0:4), 0)
-        tmp_arr2= runave_n(app_arr2, runave_window, 0, 0)
-        dim_tmp100= dimsizes(tmp_arr100)
-        dim_tmp2= dimsizes(tmp_arr2)
-        data100_rel(i100, :)= tmp_arr100(half_window:dim_tmp100-1)
+        app_arr100 = array_append_record(data2_rel(imod, dim_data2g - \
+                                                   half_window:dim_data2g - 1)\
+                                         , data100_rel(i100, :), 0)
+        tmp_arr100 = runave_n(app_arr100, runave_window, 0, 0)
+        app_arr2 = array_append_record(data2_rel(imod, :), \
+                                       data100_rel(i100, 0:4), 0)
+        tmp_arr2 = runave_n(app_arr2, runave_window, 0, 0)
+        dim_tmp100 = dimsizes(tmp_arr100)
+        dim_tmp2 = dimsizes(tmp_arr2)
+        data100_rel(i100, :) = tmp_arr100(half_window:dim_tmp100 - 1)
         data2_rel(imod, :) = tmp_arr2(0:dim_tmp2-6)
-        need_runave_data2rel= False
+        need_runave_data2rel = False
         delete(app_arr100)
         delete(tmp_arr100)
         delete(app_arr2)
@@ -558,22 +573,22 @@ begin
     end do
   end do
   dims_data = dimsizes(mean_val)
-  ;FIX MODEL_NR
-  dim_1=dimsizes(data26_rel)
+  ; FIX MODEL_NR
+  dim_1 = dimsizes(data26_rel)
   if (dim_scen .gt. 1) then
-    dim_2=dimsizes(data45_rel)
+    dim_2 = dimsizes(data45_rel)
     runs(2, 1) = dim_2(0)
   end if
   if (dim_scen .gt. 2) then
-    dim_3=dimsizes(data60_rel)
+    dim_3 = dimsizes(data60_rel)
     runs(3, 1) = dim_3(0)
   end if
-  if (dim_scen .gt. 3) then 
-    dim_4=dimsizes(data85_rel)
+  if (dim_scen .gt. 3) then
+    dim_4 = dimsizes(data85_rel)
     runs(4, 1) = dim_4(0)
   end if
   if (dim_scen .gt. 4) then
-    dim_5=dimsizes(data100_rel)
+    dim_5 = dimsizes(data100_rel)
     runs(5, 1) = dim_5(0)
   end if
   runs(1, 1) = dim_1(0)
@@ -589,9 +604,6 @@ begin
     ;  if variable sw or lw TOA flux: change direction
     if (var0 .eq. "rlut" .or. var0 .eq. "rsut") then
       to_plot(j * 3, :) = - mean_val(j, :)
-    ; if variable is pr change unit to mm/day
-    ;else if var0 .eq. "pr" then
-    ;  to_plot(j * 3, :) = mean_val(j, :)*86400
     else
       to_plot(j * 3, :) = mean_val(j, :)
     end if
