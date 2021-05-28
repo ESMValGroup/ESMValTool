@@ -79,6 +79,7 @@ MRI-ESM1              | 173, 255,  47        |   1  |   1   |   7  |   0
 NorESM1-M             | 241,  58, 167        |   0  |   1   |   4  |   0
 NorESM1-ME            | 241,  58, 167        |   1  |   1   |   7  |   0
 MultiModelMean        | 255,   0,   0        |   0  |   3   |  12  |   1
+ICON                  | 255,   0,   0        |   0  |   3   |  12  |   1
 MultiModelMedian      |   0,   0, 255        |   0  |   3   |  12  |   1
 multi-model mean      | 255,   0,   0        |   0  |   3   |  12  |   1
 NSIDC                 |   0,   0,   0        |   0  |   3   |  16  |   1

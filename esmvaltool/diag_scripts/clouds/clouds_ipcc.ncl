@@ -198,7 +198,7 @@ begin
 
   ; get multi-model mean index
 
-  mm_ind = ind(names .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "ICON")
 
   if (ismissing(mm_ind)) then
     error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
@@ -314,6 +314,10 @@ begin
 
   ; calculate zonal means (main variable)
 
+  start_year = info0[mm_ind]@start_year
+  end_year = info0[mm_ind]@end_year
+  time_str = " (" + start_year + "-" + end_year + ")"
+
   do imod = 0, dim_MOD0 - 1
     ; note: 1) masking is handled by the backend
     ;       2) multi-model mean is calculated by the backend
@@ -412,21 +416,21 @@ begin
   modelsonly_ind = ind(model_ind.ge.0)
   delete(model_ind)
 
-  n = dimsizes(modelsonly_ind) - 1
+  ; n = dimsizes(modelsonly_ind) - 1
 
-  ; first entries in "zonalmean" = individual models
+  ; ; first entries in "zonalmean" = individual models
 
-  if (numseas.gt.1) then
-    zonalmean(0:n, :, :) = zm(modelsonly_ind, :, :)
-  else
-    zonalmean(0:n, :) = zm(modelsonly_ind, :)
-  end if
+  ; if (numseas.gt.1) then
+  ;   zonalmean(0:n, :, :) = zm(modelsonly_ind, :, :)
+  ; else
+  ;   zonalmean(0:n, :) = zm(modelsonly_ind, :)
+  ; end if
 
-  zonalmean&model(0:n) = zm&model(modelsonly_ind)
+  ; zonalmean&model(0:n) = zm&model(modelsonly_ind)
 
   ; observation(s)
 
-  n = n + 1
+  n = 0
   zonalmean&model(n) = zm&model(ref_ind)
 
   if (numseas.gt.1) then
@@ -616,40 +620,45 @@ begin
     linecolor           = new(dim_MOD0, string)
     linedash            = new(dim_MOD0, integer)
 
-    n = dimsizes(modelsonly_ind) - 1
+    n = 0
 
     ; settings for all models that have been used to calculate the
     ; multi-model mean (= first entries in "zonalmean")
 
-    linethickness(0:n)   = 1.0
-    linecolor(0:n)       = "(/0.5, 0.5, 0.5/)"
+    ; linethickness(0:n)   = 1.0
+    ; linecolor(0:n)       = "(/0.5, 0.5, 0.5/)"
     linedash             = 0
 
     ; for all other models, styleset defined in config file is
     ; used (if defined), otherwise use default values
 
-    if (isatt(diag_script_info, "styleset")) then
-      colortab     = project_style(info0, diag_script_info, "colors")
-      dashtab      = project_style(info0, diag_script_info, "dashes")
-      thicknesstab = project_style(info0, diag_script_info, "thicks")
-      do i = n + 1, dim_MOD0 - 1
-        if (isdefined("idx")) then
-          delete(idx)
-        end if
-        idx = ind(names .eq. zonalmean&model(i))
-        if (all(ismissing(idx))) then
-        else
-          linecolor(i) = colortab(idx(0))
-          linethickness(i) = thicknesstab(idx(0))
-          linedash(i) = dashtab(idx(0))
-        end if
-      end do
-    else
-      linethickness(n+1:dim_MOD0-1) = 4.0      ; reference dataset(s)
-      linethickness(mm_ind)         = 4.0      ; multi-model mean
-      linecolor(n+1:dim_MOD0-1)     = "Black"  ; reference data set
-      linecolor(mm_ind)             = "Red"    ; multi-model mean
-    end if
+    linethickness(0)              = 4.0      ; reference dataset(s)
+    linethickness(mm_ind)         = 4.0      ; multi-model mean
+    linecolor(0)                  = "Black"  ; reference data set
+    linecolor(mm_ind)             = "Red"    ; multi-model mean
+
+    ; if (isatt(diag_script_info, "styleset")) then
+    ;   colortab     = project_style(info0, diag_script_info, "colors")
+    ;   dashtab      = project_style(info0, diag_script_info, "dashes")
+    ;   thicknesstab = project_style(info0, diag_script_info, "thicks")
+    ;   do i = n + 1, dim_MOD0 - 1
+    ;     if (isdefined("idx")) then
+    ;       delete(idx)
+    ;     end if
+    ;     idx = ind(names .eq. zonalmean&model(i))
+    ;     if (all(ismissing(idx))) then
+    ;     else
+    ;       linecolor(i) = colortab(idx(0))
+    ;       linethickness(i) = thicknesstab(idx(0))
+    ;       linedash(i) = dashtab(idx(0))
+    ;     end if
+    ;   end do
+    ; else
+    ;   linethickness(n+1:dim_MOD0-1) = 4.0      ; reference dataset(s)
+    ;   linethickness(mm_ind)         = 4.0      ; multi-model mean
+    ;   linecolor(n+1:dim_MOD0-1)     = "Black"  ; reference data set
+    ;   linecolor(mm_ind)             = "Red"    ; multi-model mean
+    ; end if
 
     res                   = True
     res@xyDashPattern     = linedash
@@ -707,7 +716,7 @@ begin
       pres                = True
       pres@gsnPanelCenter = False
       pres@gsnPanelXF     = (/0.075, 0.625/)  ; hor. pos. of sub-plots
-      pres@txString       = season(is)
+      pres@txString       = var0  + " ICON vs. " + refname + time_str
 
       outfile = panelling(wks, plots(:, is), 1, 2, pres)
       log_info("Wrote " + wks@fullname)

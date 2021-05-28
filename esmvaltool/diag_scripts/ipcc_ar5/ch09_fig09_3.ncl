@@ -86,7 +86,7 @@ begin
 
   ; get multi-model mean index
 
-  mm_ind = ind(names .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "ICON")
 
   if (ismissing(mm_ind)) then
     error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
@@ -104,6 +104,10 @@ begin
   ;       2) multi-model mean is calculated by the backend
 
   ; read data and calculate seasonal means
+
+  start_year = info0[mm_ind]@start_year
+  end_year = info0[mm_ind]@end_year
+  time_str = " (" + start_year + "-" + end_year + ")"
 
   A0 = read_data(info0[mm_ind])
   mmdata_djf = time_operations(A0, -1, -1, "average", "DJF", True)
@@ -184,7 +188,7 @@ begin
 
     seas_mm@res_tiMainFontHeightF    = 0.016
 
-    seas_mm@res_tiMainString = "Multi Model Mean Bias"
+    seas_mm@res_tiMainString = "Bias ICON vs. " + refname + time_str
 
     if (isatt(seas_mm, "res_cnLevels")) then
       delete(seas_mm@res_cnLevels)
@@ -230,11 +234,10 @@ begin
       bias_abs_seas@res_cnLevels = fspan(-8, 8, 17)
     end if
 
-    seas_mm@res_tiMainString = "Multi Model Mean"
-    abs_seas@res_tiMainString = "Multi Model Mean of Absolute Seasonality"
-    bias_seas@res_tiMainString = "Multi Model Mean Bias in Seasonality"
-    bias_abs_seas@res_tiMainString = "Multi Model Mean Bias in Absolute " \
-                                     + "Seasonality"
+    seas_mm@res_tiMainString = "ICON" + time_str
+    abs_seas@res_tiMainString = "ICON Absolute Seasonality" + time_str
+    bias_seas@res_tiMainString = "ICON Bias in Seasonality" + time_str
+    bias_abs_seas@res_tiMainString = "ICON Bias in Absolute Seasonality" + time_str
 
     ; panelling resources
 
