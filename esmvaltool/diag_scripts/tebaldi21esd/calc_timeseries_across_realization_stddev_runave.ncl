@@ -94,7 +94,7 @@ begin
     n_ENS = 10
     collect_n_ENS = new((/n_ENS, t_len/), double)
     ; find ssp runs from same model
-    do iens = 0, n_ENS -1 ; loop over ensembles
+    do iens = 0, n_ENS - 1   ; loop over ensembles
       ; LOAD AND AVERAGE SSP data
       A0 = read_data(info_items[idx_scen(iens)])
       ; Check dimensions
@@ -253,7 +253,6 @@ begin
         end if
         ; Average over time (function in ./diag_scripts/shared/statistics.ncl)
         data1 = time_operations(A1, -1, -1, "average", "yearly", True)
-        ;data1 = A1
         dim_file1 = dimsizes(data1)
         ; Average over globe/region
         ; (function in ./diag_scripts/shared/latlon.ncl)

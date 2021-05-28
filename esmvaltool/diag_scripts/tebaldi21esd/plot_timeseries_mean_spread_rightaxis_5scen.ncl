@@ -95,11 +95,11 @@ begin
   res@vpWidthF = 0.70
   res@vpXF     = 0.15                   ; start plot at x ndc coord
 
-  caption= ""
+  caption = ""
   if (isatt(diag_script_info, "title")) then
-    caption= diag_script_info@title
+    caption = diag_script_info@title
     res@tiMainString = diag_script_info@title
-    res@tiMainFontHeightF= 0.04
+    res@tiMainFontHeightF = 0.04
   end if
   if(isatt(diag_script_info, "yaxis")) then
     res@tiYAxisString = diag_script_info@yaxis
@@ -124,30 +124,20 @@ begin
 
   res@xyLineThicknesses = 3.5
   res@xyLineColor      = colors_main(0)
-  res@tmYROn= False
-  res@tmYRBorderOn= False
+  res@tmYROn = False
+  res@tmYRBorderOn = False
   ; create second axis
   diff_avg = diag_script_info@rightaxis_offset
   res2 = True
-  ;res2@gsnDraw = False
-  ;res2@gsnFrame = False
-  ;res2@txFont   = 25
-
-  ;res2@xyDashPatterns     = 0
-  ;res2@tmXBMode = "Explicit"
-  ;res2@tmXBValues = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 50)
-  ;res2@tmXBLabels = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 50)
-  ;res2@tmXBMinorValues  = ispan(toint(syears(0)), \
-  ;                             toint(eyears(nperiods - 1)), 10)
   res2@xyLineThicknesses = 0.001
-  res2@xyLineColor      = -1
- 
-  res2@tiYAxisString= "Relative to 1850-1900 (~S~o~N~ C)"
+  res2@xyLineColor = -1
+
+  res2@tiYAxisString = "Relative to 1850-1900 (~S~o~N~ C)"
   if(isatt(diag_script_info, "ymin")) then
-    res2@trYMinF = diff_avg+res@trYMinF ;-1.35
+    res2@trYMinF = diff_avg+res@trYMinF
   end if
   if(isatt(diag_script_info, "ymax")) then
-    res2@trYMaxF = res@trYMaxF+diff_avg ;9.65
+    res2@trYMaxF = res@trYMaxF+diff_avg
   end if
 
   ; create plot
@@ -175,10 +165,12 @@ begin
     res@gsnXYFillOpacities = (/0.1, 0.1, 0.1/)
     res@xyLineColor     = -1
     if (j .eq. 1) then
-        spread_plot = gsn_csm_xy2(wks, to_plot&year, to_plot((j * 3) + 1 : (j * 3) + 2, :), to_plot((j * 3) + 1 : (j * 3) + 2, :)*0, res, res2)
+        spread_plot = gsn_csm_xy2(wks, to_plot&year, to_plot((j * 3) + 1 \
+                                  : (j * 3) + 2, :), to_plot((j * 3) + 1 \
+                                  : (j * 3) + 2, :)*0, res, res2)
     else
         spread_plot = gsn_csm_xy(wks, to_plot&year, \
-                             to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
+                                 to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     end if
     overlay(plot, spread_plot)
     delete(res@gsnXYFillColors)
@@ -233,8 +225,8 @@ begin
     txres@txFontHeightF = fheight * 0.8
     label = tostring(runs(0, 0))
     xloc = 1938
-    yloc = trYMaxF - (trYMaxF+trYMinF)/6.85
-    ydiff = (trYMaxF - trYMinF) / 15.7 ;0.63
+    yloc = trYMaxF - (trYMaxF+trYMinF) / 6.85
+    ydiff = (trYMaxF - trYMinF) / 15.7 
     if yloc .le. 0 then
       ydiff = - ydiff
     end if

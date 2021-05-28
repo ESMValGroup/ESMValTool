@@ -242,12 +242,11 @@ begin
                                                           0)
               delete(tmp)
               delete([/idx_hist, idx_mod, var_diff_scal/])
- 
-            else 
+            else
                 var_diff_scal = new((/dim_mod, nlat, nlon/), typeof(data1), \
                                     Fill)
                 do imod = 0, dim_mod - 1
-                if (percent .eq. 1) then
+                  if (percent .eq. 1) then
                     var_diff_scal(imod, :, :) = ((100 * (proj(imod, :, :) - \
                                                  base(imod, :, :))) / \
                                                  where(base(imod, :, :) .ne. \
@@ -255,12 +254,12 @@ begin
                                                  base@_FillValue)) / \
                                                  (temp_proj(imod) - \
                                                  temp_base(imod))
-                else
-                    var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
-                                                base(imod, :, :)) / \
-                                                (temp_proj(imod) - \
-                                                temp_base(imod))
-                end if
+                  else
+                  var_diff_scal(imod, :, :) = (proj(imod, :, :) - \
+                                              base(imod, :, :)) / \
+                                              (temp_proj(imod) - \
+                                              temp_base(imod))
+                  end if
                 end do
                 delete([/base, proj, temp_proj, temp_base/])
                 tmp = var_diff_scal_avg_mod

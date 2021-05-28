@@ -68,7 +68,7 @@ begin
   syears = diag_script_info@syears
   eyears = diag_script_info@eyears
   nperiods = dimsizes(syears)
-  dim_plot= dimsizes(to_plot)
+  dim_plot = dimsizes(to_plot)
   dims_data = (dim_plot(0)) / 3
   ; ###########################################
   ; *********** PLOTTING ************
@@ -95,11 +95,11 @@ begin
   res@vpWidthF = 0.8
   res@vpXF     = 0.15                   ; start plot at x ndc coord
 
-  caption= ""
+  caption = ""
   if (isatt(diag_script_info, "title")) then
-    caption= diag_script_info@title
+    caption = diag_script_info@title
     res@tiMainString = diag_script_info@title
-    res@tiMainFontHeightF= 0.04
+    res@tiMainFontHeightF = 0.04
   end if
   if(isatt(diag_script_info, "yaxis")) then
     res@tiYAxisString = diag_script_info@yaxis
@@ -125,13 +125,10 @@ begin
   res@xyLineThicknesses = 3.5
   res@xyLineColor      = colors_main(0)
 
-
   ; create plot
   plot  = gsn_csm_xy(wks, to_plot&year, to_plot(0, :), res)
   res@gsnXYFillColors = colors_spread(0)
   res@xyLineColor     = -1
-  ;spread_plot  = gsn_csm_xy(wks, to_plot&year, to_plot(1 : 2, :), res)
-  ;overlay(plot, spread_plot)
 
   delete(res@gsnXYFillColors)
 
@@ -176,7 +173,7 @@ begin
   lgres@lgDashIndex        = 0
   lgres@lgLineThicknessF        = 5
   lgres@lgPerimOn = False
-  lgres@lgItemOrder = (/2 , 1, 0/)
+  lgres@lgItemOrder = (/2, 1, 0/)
   if (isatt(diag_script_info, "label")) then
     labels = "  " + diag_script_info@label
     legend = gsn_create_legend(wks, 3, labels, lgres)
@@ -211,9 +208,8 @@ begin
     end if
     txres@txFontColor = colors_main(0)
     label = tostring(runs(0, 0))
-    ;xloc = (toint(eyears(nper)) - toint(syears(nper))) / 2
     text(0) = gsn_add_text(wks, plot, label, xloc, \
-                               yloc - 0 * ydiff, txres)
+                           yloc - 0 * ydiff, txres)
     label = tostring(runs(2, 1))
     txres@txFontColor = colors_main(1)
     label = tostring(runs(0, 0))

@@ -1,6 +1,7 @@
 ; #############################################################################
-;  Plots the table of changes between historical and scenario for different periods
-;  Author: Debeire Kevin (DLR, Germany)
+; Plots the table of changes between historical and scenario
+; for different periods
+; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
@@ -24,9 +25,10 @@ begin
   dataset_exps = metadata_att_as_array(info_items, "exp")
   dataset_ensembles = metadata_att_as_array(info_items, "ensemble")
   n_MOD = count_unique_values(dataset_names)
-  MOD_list= get_unique_values(dataset_names)
+  MOD_list = get_unique_values(dataset_names)
   ; Check required diag_script_info attributes
-  exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", "eyears", "label"/))
+  exit_if_missing_atts(diag_script_info, (/"scenarios", "syears", \
+                       "eyears", "label"/))
   labels = diag_script_info@label
   syears = diag_script_info@syears
   eyears = diag_script_info@eyears
@@ -45,7 +47,6 @@ begin
   system("mkdir -p " + work_dir)
 end
 begin
-;Plot the table with means and 5-95 confidence intervals of changes
   ; Output netcdf directory
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
@@ -71,7 +72,7 @@ begin
   num_models = tostring(toint(to_plot(3, :, :)))
   period_list = to_plot&periods
   n_PER = dimsizes(period_list)
-  n_SCEN= dimsizes(diag_script_info@scenarios)
+  n_SCEN = dimsizes(diag_script_info@scenarios)
   ; ###########################################
   ; *********** PLOTTING ************
   ; Create plot variables
@@ -84,20 +85,21 @@ begin
   res@gsLineThicknessF = 2.
   res2@gsLineThicknessF = 2.
   res3@gsLineThicknessF = 2.
-  ncr  = (/n_PER, n_SCEN/)
-  ncr2  = (/n_PER+1, 1/)
-  ncr3= (/1, n_SCEN/)
+  ncr = (/n_PER, n_SCEN/)
+  ncr2 = (/n_PER+1, 1/)
+  ncr3 = (/1, n_SCEN/)
   mean_@_FillValue = "NA"
   five_perc_@_FillValue = "NA"
   ninetyfive_perc_@_FillValue = "NA"
-  text= new((/n_SCEN+1, n_SCEN/), string)
-  text2= new((/n_SCEN+1, 1/), string)
+  text = new((/n_SCEN+1, n_SCEN/), string)
+  text2 = new((/n_SCEN+1, 1/), string)
   text3 = labels
-  do i = 0 , n_PER-1
+  do i = 0, n_PER-1
     text2(i+1, 0) = period_list(i)
-    do j = 0, n_SCEN -1
-        text(i, j) = mean_(i, j)+"~C~["+five_perc_(i, j)+", "+ninetyfive_perc_(i, j)+"]"+"~C~("+num_models(i, j)+")"
-
+    do j = 0, n_SCEN - 1
+        text(i, j) = mean_(i, j) + "~C~["+five_perc_(i, j) + ", " + \
+                     ninetyfive_perc_(i, j) + "]" + \
+                     "~C~("+num_models(i, j) + ")"
     end do
   end do
   res2@txJust = "CenterCenter"
@@ -105,8 +107,8 @@ begin
   res3@txJust = "CenterCenter"
 
   res@txFontHeightF  = 0.013
-  res2@txFontHeightF= 0.02
-  res3@txFontHeightF= 0.02
+  res2@txFontHeightF = 0.02
+  res3@txFontHeightF = 0.02
 
   res2@gsFillColor = "gray"
   res3@gsFillColor = "gray"
@@ -117,7 +119,7 @@ begin
   y2 = (/0.45, 0.75/)
   x3 = (/0.30, 0.95/)
   y3 = (/0.65, 0.75/)
-  ;Title
+  ; Title
   x4 = (/0.05, 0.95/)
   y4 = (/0.77, 0.79/)
   ncr4 = (/1, 1/)
@@ -137,16 +139,16 @@ begin
   frame(wks)
   log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
 
-  ;Collect meta-data
+  ; Collect meta-data
   netcdf_dir = diag_script_info@input_files(1)
   datapath = netcdf_dir + "/" + variable_info[0]@diagnostic + ".nc"
   nc_file = datapath
   plot_file = outfile
-  caption = "Table of global annual mean"+ \
+  caption = "Table of global annual mean" + \
     variable_info[0]@long_name + " anomalies (relative to " + \
     diag_script_info@begin_ref_year + "-" + diag_script_info@end_ref_year + \
     ") from  concentration driven experiments. " + \
-    "Projections are shown for each SSP. "
+    "Projections are shown for each SSP."
   statistics = ("mean")
   domains = ("global")
   plot_types = ("portrait")

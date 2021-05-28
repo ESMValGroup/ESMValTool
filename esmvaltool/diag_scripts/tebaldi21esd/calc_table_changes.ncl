@@ -70,7 +70,7 @@ begin
   dim_MOD_hist = ListCount(item_hist)
   n_PER = dimsizes(syears)
   period_list = (/tostring(syears(0)) + "-" + tostring(eyears(0)), \
-                tostring(syears(1)) + "-" + tostring(eyears(1))/)
+                 tostring(syears(1)) + "-" + tostring(eyears(1))/)
   scenario_list = diag_script_info@scenarios
   n_SCEN = dimsizes(diag_script_info@scenarios)
   spread = diag_script_info@spread
@@ -146,10 +146,10 @@ begin
       end do
       mean_table(iper, issp) = avg(changes_for_all_models)
       five_perc_table(iper, issp) = avg(changes_for_all_models) - \
-                                   spread * stddev(changes_for_all_models)
+                                    spread * stddev(changes_for_all_models)
       ninetyfive_perc_table(iper, issp) = avg(changes_for_all_models) + \
-                                        spread * \
-                                        stddev(changes_for_all_models)
+                                          spread * \
+                                          stddev(changes_for_all_models)
       number_models_table(iper, issp) = n_MOD
       delete(changes_for_all_models)
     end do

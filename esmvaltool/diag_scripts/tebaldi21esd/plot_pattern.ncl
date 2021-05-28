@@ -1,5 +1,6 @@
 ; #############################################################################
-; Plots the multi-model mean change map with significance and hatching if specified
+; Plots the multi-model mean change map with significance and
+; hatching if specified
 ; Author: Debeire Kevin (DLR, Germany)
 ; #############################################################################
 ; Passes on a number of variables from Python to NCL
@@ -339,11 +340,10 @@ begin
   pres@lbLabelAutoStride = True
 
   pres@txFontHeightF = 0.02
-  caption= ""
+  caption = ""
   if (isatt(diag_script_info, "title")) then
     pres@txString  = diag_script_info@title
-    caption= diag_script_info@title
-    ;pres@txPosYF = 0.86
+    caption = diag_script_info@title
   end if
   pres@pmLabelBarParallelPosF = 0.06
   pres@pmLabelBarWidthF = .6

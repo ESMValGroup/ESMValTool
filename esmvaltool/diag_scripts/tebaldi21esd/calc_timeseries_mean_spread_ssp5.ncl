@@ -126,7 +126,7 @@ begin
   dim_MOD_534 = ListCount(item_ssp534)
   ; indicate array for scenarios
   data534_rel = new((/dim_MOD_534, nyearsp1/), float, \
-                   data1_glob@_FillValue)
+                    data1_glob@_FillValue)
   i534 = 0
 
   if (dim_scen .gt. 1) then
@@ -135,17 +135,17 @@ begin
     item_ssp585 = select_metadata_by_atts(info_items, atts2)
     dim_MOD_585 = ListCount(item_ssp585)
     data585_rel = new((/dim_MOD_585, nyearsp2/), float, \
-                     data1_glob@_FillValue)
+                      data1_glob@_FillValue)
     i585 = 0
   end if
 
   ; set runave_window parameter
   if (isatt(diag_script_info, "runave_window")) then
     runave_window = diag_script_info@runave_window
-    half_window= toint(floor(runave_window/2.))
+    half_window = toint(floor(runave_window/2.))
   else
     runave_window = 11
-    half_window= toint(floor(runave_window/2.))
+    half_window = toint(floor(runave_window/2.))
   end if
 
   ; set percent parameter
@@ -178,8 +178,8 @@ begin
     else
       data2_rel(imod, :) = data2_glob - ref_data2(imod)
     end if
-    if  percent .eq. 1 then
-      data2_rel(imod, :) = 100*(data2_rel(imod, :)/ref_data2(imod))
+    if (percent .eq. 1) then
+      data2_rel(imod, :) = 100 * (data2_rel(imod, :) / ref_data2(imod))
     end if
     ; clean up
     delete([/data2, data2_glob/])
@@ -201,13 +201,14 @@ begin
                     "longer than period given in recipe (" + nyearsp1 + \
                     " years)")
         else
-          data534_rel(i534, 0 : dim_data3g - 1) = (data3_glob - ref_data2(imod))
+          data534_rel(i534, 0 : dim_data3g - 1) = (data3_glob - \
+                                                  ref_data2(imod))
           data534_rel(i534, dim_data3g :) =  data3_glob@_FillValue
         end if
       else
         data534_rel(i534, :) = (data3_glob - ref_data2(imod))
       end if
-      if  percent .eq. 1 then
+      if (percent .eq. 1) then
         data534_rel(i534, :) = 100*(data534_rel(i534, :)/ref_data2(imod))
       end if
 
@@ -238,22 +239,28 @@ begin
                       "longer than period given in recipe (" + nyearsp2 + \
                       " years)")
           else
-            data585_rel(i585, 0:dim_data3g - 1) = (data3_glob - ref_data2(imod))
+            data585_rel(i585, 0:dim_data3g - 1) = (data3_glob - \
+                                                  ref_data2(imod))
             data585_rel(i585, dim_data3g:) =  data3_glob@_FillValue
           end if
         else
           data585_rel(i585, :) = (data3_glob - ref_data2(imod))
         end if
-        if  percent .eq. 1 then
+        if (percent .eq. 1) then
           data585_rel(i585, :) = 100*(data585_rel(i585, :)/ref_data2(imod))
         end if
         ; perform running average and extend ssp534 with ssp585 before 2040
-        app_arr585 = array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data585_rel(i585, :), 0)
+        app_arr585 = array_append_record(data2_rel(imod, dim_data2g - \
+                                                   half_window:dim_data2g-1), \
+                                         data585_rel(i585, :), 0)
         tmp_arr585 = runave_n(app_arr585, runave_window, 0, 0)
-        id_junction= nyearsp2-nyearsp1
-        app_arr534 = array_append_record(data585_rel(i585, id_junction-half_window:id_junction-1), data534_rel(i534-1, :), 0)
+        id_junction = nyearsp2-nyearsp1
+        app_arr534 = array_append_record(data585_rel(i585, id_junction - \
+                                                     half_window:\
+                                                     id_junction-1), \
+                                         data534_rel(i534-1, :), 0)
         tmp_arr534 = runave_n(app_arr534, runave_window, 0, 0)
-        dim_tmp534= dimsizes(tmp_arr534)
+        dim_tmp534 = dimsizes(tmp_arr534)
         data534_rel(i534-1, :) = tmp_arr534(half_window:dim_tmp534-1)
         data585_rel(i585, :) = tmp_arr585(half_window:dim_data3g+4)
         delete(tmp_arr534)
@@ -343,9 +350,9 @@ begin
       end if
     end do
   end do
-  ;FIX MODEL_NR
-  dim_1=dimsizes(data534_rel)
-  dim_2=dimsizes(data585_rel)
+  ; FIX MODEL_NR
+  dim_1 = dimsizes(data534_rel)
+  dim_2 = dimsizes(data585_rel)
   runs(1, 1) = dim_1(0)
   runs(2, 1) = dim_2(0)
 
@@ -360,13 +367,9 @@ begin
     ;  if variable sw or lw TOA flux: change direction
     if (var0 .eq. "rlut" .or. var0 .eq. "rsut") then
       to_plot(j * 3, :) = - mean_val(j, :)
-    ; if variable is pr change unit to mm/day
-    ;else if var0 .eq. "pr" then
-    ;  to_plot(j * 3, :) = mean_val(j, :)*86400
     else
       to_plot(j * 3, :) = mean_val(j, :)
     end if
-    ;end if
     to_plot((j * 3) + 1, :) = to_plot(j * 3, :) + spread * std_val(j, :)
     to_plot((j * 3) + 2, :) = to_plot(j * 3, :) - spread * std_val(j, :)
   end do
@@ -376,7 +379,8 @@ begin
   to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
                      str_spread + "std", "mean", "+" + \
                      str_spread + "std", "-" + str_spread + \
-                     "std", "mean", "+" + str_spread + "std", "-" + str_spread + "std"/)
+                     "std", "mean", "+" + str_spread + "std", "-" + \
+                     str_spread + "std"/)
   to_plot!1 = "year"
   to_plot&year = ispan(toint(syears(2)), toint(eyears(nperiods - 1)), 1)
 
@@ -393,13 +397,13 @@ begin
     to_plot@diag_script = (/DIAG_SCRIPT/)
   end if
   to_plot@var = var0  ; Overwrite existing entry
-  if(isatt(variable_info[0], "long_name")) then
+  if (isatt(variable_info[0], "long_name")) then
     to_plot@var_long_name = variable_info[0]@long_name
   end if
   if(isatt(variable_info[0], "units")) then
     to_plot@units     = variable_info[0]@units
   end if
-  if  percent .eq. 1 then
+  if (percent .eq. 1) then
     to_plot@units     = "%"
   end if
 

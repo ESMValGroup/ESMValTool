@@ -329,19 +329,20 @@ begin
                       " years)")
           else
             data60_rel(i60, 0 : dim_data3g - 1) = data3_glob - ref_data2(imod)
-            data60_rel(i60, dim_data3g :) =  data3_glob@_FillValue
+            data60_rel(i60, dim_data3g:) =  data3_glob@_FillValue
           end if
         else
           data60_rel(i60, :) = data3_glob - ref_data2(imod)
         end if
         if percent .eq. 1 then
-          data60_rel(i60, :) = 100 *(data60_rel(i60, :) / ref_data2(imod))
+          data60_rel(i60, :) = 100 * (data60_rel(i60, :) / ref_data2(imod))
         end if
 
         if (dim_scen .eq. 3) then
-          app_arr60 = array_append_record(data2_rel(imod, dim_data2g-\
-                                                    half_window:dim_data2g-1)\
-                                                    , data60_rel(i60, :), 0)
+          app_arr60 = array_append_record(data2_rel(imod, dim_data2g - \
+                                                    half_window:\
+                                                    dim_data2g - 1)\
+                                          , data60_rel(i60, :), 0)
           tmp_arr60 = runave_n(app_arr60, runave_window, 0, 0)
           app_arr2 = array_append_record(data2_rel(imod, :), \
                                          data60_rel(i60, 0:4), 0)
@@ -356,7 +357,7 @@ begin
           delete(app_arr2)
           delete(tmp_arr2)
         else
-          app_arr60 = array_append_record(data2_rel(imod, dim_data2g-\
+          app_arr60 = array_append_record(data2_rel(imod, dim_data2g - \
                                           half_window:dim_data2g-1), \
                                           data60_rel(i60, :), 0)
           tmp_arr60 = runave_n(app_arr60, runave_window, 0, 0)
@@ -452,7 +453,7 @@ begin
         end if
 
         app_arr100 = array_append_record(data2_rel(imod, dim_data2g - \
-                                                   half_window:dim_data2g - 1)\
+                                         half_window:dim_data2g - 1)\
                                          , data100_rel(i100, :), 0)
         tmp_arr100 = runave_n(app_arr100, runave_window, 0, 0)
         app_arr2 = array_append_record(data2_rel(imod, :), \
@@ -607,7 +608,6 @@ begin
     else
       to_plot(j * 3, :) = mean_val(j, :)
     end if
-    ;end if
     to_plot((j * 3) + 1, :) = to_plot(j * 3, :) + spread * std_val(j, :)
     to_plot((j * 3) + 2, :) = to_plot(j * 3, :) - spread * std_val(j, :)
   end do
@@ -650,8 +650,8 @@ begin
                        str_spread + "std", "mean", "+" + \
                        str_spread + "std", "-" + str_spread + \
                        "std", "mean", "+" + str_spread + "std", "-" + \
-                       str_spread + "std", "mean", "+" + str_spread + "std", "-" + \
-                       str_spread + "std"/)
+                       str_spread + "std", "mean", "+" + str_spread + \
+                       "std", "-" + str_spread + "std"/)
   end if
   to_plot!1 = "year"
   to_plot&year = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 1)

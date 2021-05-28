@@ -100,9 +100,9 @@ begin
   res@vpWidthF = 0.70
   res@vpXF     = 0.15                   ; start plot at x ndc coord
 
-  caption= ""
+  caption = ""
   if (isatt(diag_script_info, "title")) then
-    caption= diag_script_info@title
+    caption = diag_script_info@title
     res@tiMainString = diag_script_info@title
     res@tiMainFontHeightF = 0.04
   end if
@@ -127,9 +127,9 @@ begin
                                toint(eyears(nperiods - 1)), 10)
 
   res@xyLineThicknesses = 3.5
-  res@xyLineColor      = colors_main(0)
-  res@tmYROn= True
-  res@tmYRBorderOn= False
+  res@xyLineColor = colors_main(0)
+  res@tmYROn = True
+  res@tmYRBorderOn = False
   ; create plot
   plot  = gsn_csm_xy(wks, to_plot&year, to_plot(0, :), res)
 
@@ -155,10 +155,11 @@ begin
     res@gsnXYFillOpacities = (/0.1, 0.1, 0.1/)
     res@xyLineColor     = -1
     if (j .eq. 1) then
-        spread_plot = gsn_csm_xy(wks, to_plot&year, to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
+        spread_plot = gsn_csm_xy(wks, to_plot&year, \
+                                 to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     else
         spread_plot = gsn_csm_xy(wks, to_plot&year, \
-                             to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
+                                 to_plot((j * 3) + 1 : (j * 3) + 2, :), res)
     end if
     overlay(plot, spread_plot)
     delete(res@gsnXYFillColors)
@@ -225,7 +226,6 @@ begin
       do nper = 1, nperiods - 1
         txres@txFontColor = colors_main(nscen)
         label = tostring(runs(nscen, nper))
-        ; xloc = (toint(eyears(nper)) - toint(syears(nper))) / 2
         text(i) = gsn_add_text(wks, plot, label, xloc, \
                                yloc - nscen * ydiff, txres)
         i = i + 1

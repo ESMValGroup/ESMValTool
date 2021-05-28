@@ -125,7 +125,7 @@ begin
   dim_MOD_434 = ListCount(item_ssp434)
   ; indicate array for scenarios
   data434_rel = new((/dim_MOD_434, nyearsp1/), float, \
-                   data1_glob@_FillValue)
+                    data1_glob@_FillValue)
   i434 = 0
 
   if (dim_scen .gt. 1) then
@@ -134,17 +134,17 @@ begin
     item_ssp460 = select_metadata_by_atts(info_items, atts2)
     dim_MOD_460 = ListCount(item_ssp460)
     data460_rel = new((/dim_MOD_460, nyearsp1/), float, \
-                     data1_glob@_FillValue)
+                      data1_glob@_FillValue)
     i460 = 0
   end if
 
   ; set runave_window parameter
   if (isatt(diag_script_info, "runave_window")) then
     runave_window = diag_script_info@runave_window
-    half_window= toint(floor(runave_window/2.))
+    half_window = toint(floor(runave_window/2.))
   else
     runave_window = 11
-    half_window= toint(floor(runave_window/2.))
+    half_window = toint(floor(runave_window/2.))
   end if
 
   ; set percent parameter
@@ -247,9 +247,13 @@ begin
           data460_rel(i460, :) = 100*(data460_rel(i460, :)/ref_data2(imod))
         end if
 
-        app_arr460 = array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data460_rel(i460, :), 0)
+        app_arr460 = array_append_record(data2_rel(imod, dim_data2g - \
+                                                   half_window:dim_data2g - 1)\
+                                         , data460_rel(i460, :), 0)
         tmp_arr460 = runave_n(app_arr460, runave_window, 0, 0)
-        app_arr434 = array_append_record(data2_rel(imod, dim_data2g-half_window:dim_data2g-1), data434_rel(i434-1, :), 0)
+        app_arr434 = array_append_record(data2_rel(imod, dim_data2g - \
+                                                   half_window:dim_data2g-1)\
+                                         , data434_rel(i434-1, :), 0)
         tmp_arr434 = runave_n(app_arr434, runave_window, 0, 0)
         data434_rel(i434-1, :) = tmp_arr434(half_window:dim_data3g+4)
         data460_rel(i460, :) = tmp_arr460(half_window:dim_data3g+4)
@@ -340,10 +344,10 @@ begin
       end if
     end do
   end do
-  ;FIX MODEL_NR
-  dim_1=dimsizes(data434_rel)
+  ; FIX MODEL_NR
+  dim_1 = dimsizes(data434_rel)
   if (dim_scen .gt. 1) then
-    dim_2=dimsizes(data460_rel)
+    dim_2 = dimsizes(data460_rel)
     runs(2, 1) = dim_2(0)
   end if
   runs(1, 1) = dim_1(0)

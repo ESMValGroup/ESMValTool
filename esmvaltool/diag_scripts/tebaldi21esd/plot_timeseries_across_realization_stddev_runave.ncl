@@ -17,7 +17,7 @@ begin
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
   dataset_names = metadata_att_as_array(info_items, "dataset")
-  MOD_list= get_unique_values(dataset_names)
+  MOD_list = get_unique_values(dataset_names)
   n_MOD = dimsizes(MOD_list)
   ; Check required diag_script_info attributes
   req_atts = (/"syears", "eyears"/)
@@ -59,7 +59,7 @@ begin
   if(isatt(diag_script_info, "runave_window")) then
     runave_window = diag_script_info@runave_window
   else
-    runave_window= 1
+    runave_window = 1
   end if
   ; ###########################################
   ; # Get data                                #
@@ -78,7 +78,7 @@ begin
   ; *********** PLOTTING ************
   ; Create plot variables
   outfile = var0 + "_ts_line_" + syears(0) + "_" + eyears(nperiods - 1)
-  wks_type= file_type
+  wks_type = file_type
   wks_type@wkPaperSize = "A4"
   wks = gsn_open_wks(wks_type, plot_dir + outfile)
   if(isatt(diag_script_info, "colormap")) then
@@ -91,8 +91,8 @@ begin
   colors_main = (/ 2, 3, 4, 5, 6, 7/)
 
   res                   = True
-  res@gsnMaximize= True
-  res@gsnPaperOrientation= "portrait"
+  res@gsnMaximize = True
+  res@gsnPaperOrientation = "portrait"
   res@gsnDraw = False
   res@gsnFrame = False
   res@txFont   = 25
@@ -100,10 +100,11 @@ begin
   res@vpWidthF = 0.80
   res@vpXF     = 0.16                   ; start plot at x ndc coord
 
-  caption = "Time series of annual ensembles across-realization standard deviation"
+  caption = "Time series of annual ensembles across-realization" + \
+            " standard deviation"
   if (isatt(diag_script_info, "title")) then
     res@tiMainString = diag_script_info@title
-    caption= diag_script_info@title
+    caption = diag_script_info@title
   end if
   if(isatt(diag_script_info, "yaxis")) then
     res@tiYAxisString = diag_script_info@yaxis
@@ -130,16 +131,16 @@ begin
   res@xyLineThicknesses = 2.7
   res@xyLineOpacityF = 0.8
   ; create labels
-  labels= new(n_MOD+1, string)
+  labels = new(n_MOD+1, string)
   ; create plot
   plot  = gsn_csm_xy(wks, to_plot&year, to_plot(0, :), res)
   labels(0) = MOD_list(0)
   delete(res@tiMainString)
 
-  ;display samplings on plot
+  ; display samplings on plot
   if(isatt(diag_script_info, "sampled_model")) then
     labels(n_MOD) = diag_script_info@sampled_model+" random"
-    do j=n_MOD, dims_data-1
+    do j = n_MOD, dims_data-1
       res@xyLineThicknesses = 1.8
       res@xyLineColor      = colors_main(5)
       res@xyLineOpacityF = 0.2
@@ -158,25 +159,25 @@ begin
     overlay(plot, plot1)
   end do
 
-
-  ;display trend if asked
+  ; display trend if asked
   half_runave_window = round(todouble(runave_window)/2., 3)-1
   if (isatt(diag_script_info, "trend") .and. diag_script_info@trend) then
-    polyres= True
-    polyres@gsLineThicknessF=res@xyLineThicknesses
+    polyres = True
+    polyres@gsLineThicknessF = res@xyLineThicknesses
     dum = new(n_MOD, graphic)
     do n = 0, n_MOD-1
         rc = regline(to_plot&year, to_plot(n, :))
         ic = rc@yintercept
-        y_start = rc*toint(syears(0))+ic
-        y_end= rc*toint(eyears(1))+ic
+        y_start = rc*toint(syears(0)) + ic
+        y_end= rc*toint(eyears(1)) + ic
         polyres@gsLineColor      = colors_main(n)
         dum(n) = gsn_add_polyline(wks, plot, (/toint(syears(0)), \
-        toint(eyears(1))/), (/y_start, y_end/), polyres)
+                                  toint(eyears(1))/), (/y_start, y_end/), \
+                                  polyres)
     end do
   end if
 
-  ;delete(res@xyLineColor)
+  ; delete(res@xyLineColor)
   ; Attach a legend
   lgres                    = True
   lgres@lgLineColors       = colors_main
@@ -188,12 +189,12 @@ begin
   lgres@lgDashIndex        = 0
   lgres@lgLineThicknessF        = res@xyLineThicknesses
   lgres@lgPerimOn = False
-  lgres@lgItemOrder = (/ 5 , 4, 3, 2, 1, 0/)
+  lgres@lgItemOrder = (/5 , 4, 3, 2, 1, 0/)
   legend = gsn_create_legend(wks, n_MOD+1, labels, lgres)
-  amres                  = True
-  amres@amJust           = "TopRight"
-  amres@amParallelPosF= 0.46
-  amres@amOrthogonalPosF= -0.52
+  amres = True
+  amres@amJust = "TopRight"
+  amres@amParallelPosF = 0.46
+  amres@amOrthogonalPosF = -0.52
   annoid = gsn_add_annotation(plot, legend, amres)  ; add legend to plot
   draw(wks)
   frame(wks)

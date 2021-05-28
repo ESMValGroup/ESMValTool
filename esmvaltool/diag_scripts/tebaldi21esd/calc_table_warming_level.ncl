@@ -86,7 +86,7 @@ begin
       do imod = 0, n_MOD - 1
         ; LOAD HISTORICAL EXP and GET historical baseline
         idx_histo = ind((dataset_exps .eq. reference_run_name) .and. \
-                       (dataset_names .eq. dataset_names(idx_scen(imod))))
+                        (dataset_names .eq. dataset_names(idx_scen(imod))))
         Ahisto = read_data(info_items[idx_histo(0)])
         datahisto = time_operations(Ahisto, -1, -1, "average", "yearly", True)
         delete(Ahisto)
@@ -148,14 +148,14 @@ begin
       five_perc_ts_scenario = mean_ts_scenario - 1.645 * std_ts_scenario
       ninety_five_perc_ts_scenario = mean_ts_scenario + 1.645 * std_ts_scenario
       year_crossing_mean = toint(min(ind(mean_ts_scenario .ge. \
-                                          warming_levels(iwar)))) + \
-                           diag_script_info@syears(1)
+                                 warming_levels(iwar)))) + \
+                                 diag_script_info@syears(1)
       year_crossing_five_perc = toint(min(ind(five_perc_ts_scenario .ge. \
-                                              warming_levels(iwar)))) + \
-                                diag_script_info@syears(1)
+                                      warming_levels(iwar)))) + \
+                                      diag_script_info@syears(1)
       year_crossing_ninety_five_perc = toint(min(ind(\
-                                                     ninety_five_perc_ts_scenario \
-                                                     .ge. warming_levels(iwar)))) + \
+                                             ninety_five_perc_ts_scenario \
+                                             .ge. warming_levels(iwar)))) + \
                                        diag_script_info@syears(1)
       mean_table(iwar, issp) = year_crossing_mean
       five_perc_table(iwar, issp) = year_crossing_five_perc

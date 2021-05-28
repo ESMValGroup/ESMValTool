@@ -98,11 +98,11 @@ begin
   res@vpWidthF = 0.8
   res@vpXF     = 0.15                   ; start plot at x ndc coord
 
-  caption= ""
+  caption = ""
   if (isatt(diag_script_info, "title")) then
-    caption= diag_script_info@title
+    caption = diag_script_info@title
     res@tiMainString = diag_script_info@title
-    res@tiMainFontHeightF= 0.04
+    res@tiMainFontHeightF = 0.04
   end if
   if(isatt(diag_script_info, "yaxis")) then
     res@tiYAxisString = diag_script_info@yaxis
@@ -198,7 +198,7 @@ begin
     annoid = gsn_add_annotation(plot, legend, amres)  ; add legend to plot
   end if
 
-  ;Display the number of models used in the legend
+  ; Display the number of models used in the legend
   if(isatt(diag_script_info, "model_nr")) then
     getvalues plot
       "tmYLLabelFontHeightF"   : fheight
@@ -214,9 +214,9 @@ begin
     if var0 .eq. "pr" then
       yloc = trYMaxF - (trYMaxF-trYMinF)/8
     end if
-    print (trYMaxF)
-    print (trYMinF)
-    ydiff = (trYMaxF - trYMinF) / 8.00 ;0.63
+    print(trYMaxF)
+    print(trYMinF)
+    ydiff = (trYMaxF - trYMinF) / 8.00
     if yloc .le. 0 then
       ydiff = - ydiff
     end if

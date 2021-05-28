@@ -98,7 +98,7 @@ begin
   res@vpHeightF = 0.5                    ; change aspect ratio of plot
   res@vpWidthF = 0.8
   res@vpXF     = 0.15                   ; start plot at x ndc coord
-  caption= ""
+  caption = ""
   if (isatt(diag_script_info, "title")) then
     res@tiMainString = diag_script_info@title
     caption = diag_script_info@title
@@ -220,7 +220,6 @@ begin
       do nper = 1, nperiods - 1
         txres@txFontColor = colors_main(nscen)
         label = tostring(runs(nscen, nper))
-        ;xloc = (toint(eyears(nper)) - toint(syears(nper))) / 2
         text(i) = gsn_add_text(wks, plot, label, xloc, \
                                yloc - nscen * ydiff, txres)
         i = i + 1
