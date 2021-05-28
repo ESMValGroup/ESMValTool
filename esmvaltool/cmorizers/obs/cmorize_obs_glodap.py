@@ -20,10 +20,9 @@ Modification history
 import logging
 import os
 from warnings import catch_warnings, filterwarnings
-import requests
 import tarfile
+import requests
 import iris
-import numpy as np
 from cf_units import Unit
 
 from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
@@ -36,7 +35,10 @@ def _fix_data(cube, var):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
     with constant_metadata(cube):
-        if var in ['dissic', 'talk', ]:
+        if var in [
+                'dissic',
+                'talk',
+        ]:
             cube /= 1000.  # Convert from umol/kg to mol/m^3
     return cube
 
@@ -57,7 +59,8 @@ def collect_files(in_dir, var, cfg):
         tar_file = os.path.basename(cfg['attributes']['source'])
         tar_file = os.path.join(in_dir, tar_file)
         if not os.path.isfile(tar_file):
-            logger.info('Input file %s is missing. Start download ... ', tar_file)
+            logger.info('Input file %s is missing. Start download ... ',
+                        tar_file)
             url_file = requests.get(cfg['attributes']['source'])
             open(tar_file, 'wb').write(url_file.content)
 
@@ -66,7 +69,7 @@ def collect_files(in_dir, var, cfg):
         tar_base = os.path.basename(cfg['attributes']['source'])[:-7]
         member = tar_file.getmember(os.path.join(tar_base, fname))
         member.name = fname
-        tar_file.extract(member, path = in_dir)
+        tar_file.extract(member, path=in_dir)
         tar_file.close()
 
     return in_file
@@ -89,12 +92,15 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
         depth = iris.load_cube(in_files, 'Depth')
 
     # add depth coord
-    cube.add_dim_coord(iris.coords.DimCoord(depth.data,standard_name='depth',units='m'),0)
+    cube.add_dim_coord(
+        iris.coords.DimCoord(depth.data, standard_name='depth', units='m'), 0)
     # add time coord
     year = raw_info['reference_year']
-    time = Unit('months since ' + str(year) + '-01-01 00:00:00', calendar='gregorian')
+    time = Unit('months since ' + str(year) + '-01-01 00:00:00',
+                calendar='gregorian')
     cube = iris.util.new_axis(cube)
-    cube.add_dim_coord(iris.coords.DimCoord(6.,standard_name='time',units=time),0)
+    cube.add_dim_coord(
+        iris.coords.DimCoord(6., standard_name='time', units=time), 0)
 
     fix_var_metadata(cube, var_info)
     fix_coords(cube)
