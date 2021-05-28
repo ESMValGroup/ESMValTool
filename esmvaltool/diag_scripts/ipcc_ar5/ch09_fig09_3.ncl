@@ -234,10 +234,10 @@ begin
       bias_abs_seas@res_cnLevels = fspan(-8, 8, 17)
     end if
 
-    seas_mm@res_tiMainString = "ICON" + time_str
-    abs_seas@res_tiMainString = "ICON Absolute Seasonality" + time_str
-    bias_seas@res_tiMainString = "ICON Bias in Seasonality" + time_str
-    bias_abs_seas@res_tiMainString = "ICON Bias in Absolute Seasonality" + time_str
+    seas_mm@res_tiMainString = "Seasonality ICON" + time_str
+    abs_seas@res_tiMainString = "Absolute Seasonality ICON" + time_str
+    bias_seas@res_tiMainString = "Bias in Seasonality ICON vs. " + refname + time_str
+    bias_abs_seas@res_tiMainString = "Bias in Absolute Seasonality ICON vs. " + refname + time_str
 
     ; panelling resources
 
