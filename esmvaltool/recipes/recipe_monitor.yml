@@ -174,8 +174,10 @@ diagnostics:
         preprocessor: timeseries_regular
         grid: gr
     scripts:
-      plot:
-        script: &script_path monitor/monitor.py
+      plot: &plot_default
+        script: monitor/monitor.py
+        # plot_folder: ~/plots/{expid}/{modeling_realm}/{real_name}
+        # cartopy_data_dir: /esarchive/scratch/Earth/jvegas/cartopy
         plots:
           timeseries: {}
           annual_cycle: {}
@@ -209,7 +211,7 @@ diagnostics:
         grid: gn
     scripts:
       plot:
-        script: *script_path
+        <<: *plot_default
         plots:
           timeseries: {}
 
@@ -230,7 +232,7 @@ diagnostics:
         plot_name: Mixed layer depth average below 40ºS
     scripts:
       plot:
-        script: *script_path
+        <<: *plot_default
         plots:
           annual_cycle: {}
 
@@ -317,7 +319,7 @@ diagnostics:
         grid: gn
     scripts:
       plot:
-        script: *script_path
+        <<: *plot_default
         plots:
           clim: {}
 
@@ -342,7 +344,7 @@ diagnostics:
         preprocessor: climatology
     scripts:
       plot:
-        script: *script_path
+        <<: *plot_default
         plots:
           clim:
             maps: [arctic, antarctic]
@@ -366,6 +368,7 @@ diagnostics:
         pc_name: SAM index as first PC in JJA
     scripts:
       eof:
+        <<: *plot_default
         script: monitor/compute_eofs.py
 
   polar_monthly_climatology:
@@ -381,7 +384,7 @@ diagnostics:
         preprocessor: climatology
     scripts:
       plot:
-        script: *script_path
+        <<: *plot_default
         plots:
           monclim:
             maps: [arctic, antarctic]
@@ -400,7 +403,7 @@ diagnostics:
         grid: gn
     scripts:
       plot:
-        script: *script_path
+        <<: *plot_default
         plots:
           clim:
             maps: [north, ]
@@ -415,7 +418,7 @@ diagnostics:
         grid: gn
     scripts:
       plot:
-        script: *script_path
+        <<: *plot_default
         plots:
           clim:
             maps: [south, ]

@@ -7,6 +7,7 @@ import yaml
 from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
 
+from esmvalcore._data_finder import _replace_tags
 import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(__name__)
@@ -15,11 +16,22 @@ logger = logging.getLogger(__name__)
 class MonitorBase(object):
     def __init__(self, config):
         self.cfg = config
-        self.plots_path = '/esarchive/exp/ecearth'
+        self.plot_folder = config.get(
+            'plot_folder',
+            '~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}'
+        )
+        self.plot_filename = config.get(
+            'plot_filename',
+            '{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'
+        )
         self.plots = config.get('plots', {})
         default_config = os.path.join(os.path.dirname(__file__),
                                       "monitor_config.yml")
-        cartopy.config['data_dir'] = '/esarchive/scratch/Earth/jvegas/cartopy'
+        cartopy_data_dir = config.get(
+            'cartopy_data_dir',
+        )
+        if cartopy_data_dir:
+            cartopy.config['data_dir'] = cartopy_data_dir
         with open(config.get('config_file', default_config)) as config_file:
             self.config = yaml.safe_load(config_file)
 
@@ -91,19 +103,24 @@ class MonitorBase(object):
                             self.get_plot_name(plot_type, var_info, file_type))
 
     def get_plot_folder(self, var_info):
-        folder = os.path.join(self.plots_path, var_info['expid'], 'plots',
-                              var_info['modeling_realm'][0],
-                              self._real_name(var_info['variable_group']))
+        info = {
+            'real_name': self._real_name(var_info['variable_group']),
+            **var_info
+        }
+        folder = os.path.expandvars(os.path.expanduser(
+            _replace_tags(self.plot_folder, info)[0]
+        ))
         if not os.path.isdir(folder):
             os.makedirs(folder, exist_ok=True)
         return folder
 
     def get_plot_name(self, plot_type, var_info, file_type='svg'):
-        file_name = '_'.join([
-            plot_type,
-            self._real_name(var_info['variable_group']), var_info[n.DATASET],
-            var_info['mip'], var_info[n.EXP], var_info[n.ENSEMBLE]
-        ])
+        info = {
+            "plot_type": plot_type,
+            'real_name': self._real_name(var_info['variable_group']),
+            **var_info
+        }
+        file_name = _replace_tags(self.plot_filename, info)[0]
         if file_type:
             file_name += '.' + file_type
         return file_name

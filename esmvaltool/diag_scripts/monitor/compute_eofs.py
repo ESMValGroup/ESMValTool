@@ -21,7 +21,6 @@ class Eofs(MonitorBase):
         for module in ['matplotlib', 'fiona']:
             module_logger = logging.getLogger(module)
             module_logger.setLevel(logging.WARNING)
-        os.makedirs(self.plots_path, exist_ok=True)
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
             variables = group_metadata(data[alias], 'variable_group')
