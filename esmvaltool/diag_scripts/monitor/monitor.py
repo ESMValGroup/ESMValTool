@@ -1,6 +1,5 @@
 import calendar
 import logging
-import os
 
 import iris
 import iris.coord_categorisation
