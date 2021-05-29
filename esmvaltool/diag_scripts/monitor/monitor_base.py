@@ -8,7 +8,6 @@ from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
 
 from esmvalcore._data_finder import _replace_tags
-import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(__name__)
 
