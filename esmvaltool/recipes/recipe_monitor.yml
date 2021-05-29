@@ -15,7 +15,7 @@ preprocessors:
     area_statistics:
       operator: mean
       fx_variables:
-        areacella: areacella
+        areacella:
 
   climatology:
     climate_statistics:
@@ -76,7 +76,7 @@ preprocessors:
     area_statistics:
       operator: mean
       fx_variables:
-        areacello: areacello
+        areacello:
 
   nino3:
     extract_region:
@@ -89,43 +89,8 @@ preprocessors:
     area_statistics:
       operator: mean
       fx_variables:
-        areacello: areacello
+        areacello:
 
-  maxmoc26N:
-    custom_order: true
-    extract_named_regions:
-      regions: atlantic_arctic_ocean
-    extract:
-      definition:
-        grid_latitude: 26.
-      scheme: nearest
-    extract_volume:
-      z_min: 500
-      z_max: 2000
-    annual_statistics:
-      operator: mean
-    depth_integration:
-      operator: max
-    convert_units:
-      units: 1e9 kg s-1
-
-  maxmoc45N:
-    custom_order: true
-    extract_named_regions:
-      regions: atlantic_arctic_ocean
-    extract:
-      definition:
-        grid_latitude: 45.
-      scheme: nearest
-    extract_volume:
-      z_min: 500
-      z_max: 2000
-    annual_statistics:
-      operator: mean
-    depth_integration:
-      operator: max
-    convert_units:
-      units: 1e9 kg s-1
 
   mlotstnorth:
     extract_region:
@@ -138,7 +103,7 @@ preprocessors:
     area_statistics:
       operator: mean
       fx_variables:
-        areacello: areacello
+        areacello:
 
   mlotstsouth:
     extract_region:
@@ -151,7 +116,7 @@ preprocessors:
     area_statistics:
       operator: mean
       fx_variables:
-        areacello: areacello
+        areacello:
 
   clim_aso:
     extract_season:
@@ -185,18 +150,6 @@ diagnostics:
   plot_timeseries:
     description: "Plot time series"
     variables:
-      maxmoc26N:
-        plot_name: 'AMOC maximum at 26º N'
-        short_name: msftyz
-        mip: Omon
-        preprocessor: maxmoc26N
-        grid: gn
-      maxmoc45N:
-        plot_name: 'AMOC maximum at 45º N'
-        short_name: msftyz
-        mip: Omon
-        preprocessor: maxmoc45N
-        grid: gn
       nino3:
         plot_name: 'Niño 3 index'
         short_name: tos

@@ -10,7 +10,7 @@ from esmvalcore.preprocessor import climate_statistics
 from iris.coords import AuxCoord
 from mapgenerator.plotting.plotmap import PlotMap
 from mapgenerator.plotting.timeseries import PlotSeries
-from .monitor_base import MonitorBase
+from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n

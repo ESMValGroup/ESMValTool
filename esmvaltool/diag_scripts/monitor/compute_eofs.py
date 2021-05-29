@@ -4,7 +4,7 @@ import iris
 import matplotlib.pyplot as plt
 from eofs.iris import Eof
 from mapgenerator.plotting.plotmap import PlotMap
-from .monitor_base import MonitorBase
+from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 
 import esmvaltool.diag_scripts.shared
 from esmvaltool.diag_scripts.shared import group_metadata
