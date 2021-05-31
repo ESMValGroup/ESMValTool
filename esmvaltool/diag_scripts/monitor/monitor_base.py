@@ -1,3 +1,4 @@
+from esmvaltool.diag_scripts.examples.diagnostic import get_provenance_record
 import logging
 import os
 
@@ -8,6 +9,7 @@ from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
 
 from esmvalcore._data_finder import _replace_tags
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(__name__)
 
@@ -81,9 +83,23 @@ class MonitorBase(object):
             plt.gca().set_prop_cycle(None)
             self.plot_cube(cube.rolling_window('time', MEAN, 120), filename,
                            **kwargs)
+        self.record_plot_provenance(
+            self.get_plot_path(f'timeseries{type}', var_info, 'svg'),
+            var_info,
+            'timeseries',
+            period='type',
+        )
 
-    @staticmethod
-    def plot_cube(cube, filename, linestyle='-', labels=True, **kwargs):
+    def record_plot_provenance(self, filename, var_info, plot_type, **kwargs):
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            prov = self.get_provenance_record(
+                ancestor_files=[var_info['filename']],
+                plot_type=plot_type,
+                **kwargs,
+            )
+            provenance_logger.log(filename, prov)
+
+    def plot_cube(self, cube, filename, linestyle='-', labels=True, **kwargs):
         plotter = PlotSeries()
         plotter.filefmt = 'svg'
         plotter.img_template = filename
@@ -96,6 +112,20 @@ class MonitorBase(object):
                                            **kwargs)
                     return
         plotter.plot_cube(cube, linestyle=linestyle, **kwargs)
+
+    def get_provenance_record(self, ancestor_files, **kwargs):
+        """Create a provenance record describing the diagnostic data and plot."""
+        record = {
+            'authors': [
+                'vegas-regidor_javier',
+            ],
+            'references': [
+                'acknow_project',
+            ],
+            'ancestors': ancestor_files,
+            **kwargs
+        }
+        return record
 
     def get_plot_path(self, plot_type, var_info, file_type='svg'):
         return os.path.join(self.get_plot_folder(var_info),

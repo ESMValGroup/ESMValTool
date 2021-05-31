@@ -109,6 +109,11 @@ class Monitor(MonitorBase):
                 plotter.multiplot_cube(cube, 'month', region_coord, **options)
                 return
         plotter.plot_cube(cube, 'month', **options)
+        self.record_plot_provenance(
+            self.get_plot_path(f'annualcycle', var_info, 'svg'),
+            var_info,
+            'Annual cycle',
+        )
 
     def plot_monthly_climatology(self, cube, var_info):
         if 'monclim' not in self.plots:
@@ -155,12 +160,18 @@ class Monitor(MonitorBase):
             plt.suptitle('{0.long_name} ({0.units})'.format(cube),
                          fontsize=plot_map.fontsize + 6.,
                          y=1.02)
+            filename = self.get_plot_path(f'monclim{map_name}', var_info, file_type='png')
             plt.savefig(
-                self.get_plot_path(f'monclim{map_name}',
-                                   var_info,
-                                   file_type='png'),
+                filename,
                 bbox_inches='tight',
                 pad_inches=.2,
+            )
+            plt.close(plt.gcf())
+            self.record_plot_provenance(
+                filename,
+                var_info,
+                'Monthly climatology',
+                region=map_name,
             )
 
     def plot_seasonal_climatology(self, cube, var_info):
@@ -212,10 +223,18 @@ class Monitor(MonitorBase):
                 'Seasonal climatology\n{0.long_name} ({0.units})'.format(cube),
                 fontsize=plot_map.fontsize * 2)
             plt.subplots_adjust(bottom=.05, hspace=.3, left=.1, right=1)
+            filename = self.get_plot_path(f'seasonclim{map_name}', var_info, 'png')
             plt.savefig(
-                self.get_plot_path(f'seasonclim{map_name}', var_info, 'png'),
+                filename,
                 bbox_inches='tight',
                 pad_inches=.2,
+            )
+            plt.close(plt.gcf())
+            self.record_plot_provenance(
+                filename,
+                var_info,
+                'Seasonal climatology',
+                region=map_name,
             )
 
     def plot_climatology(self, cube, var_info):
@@ -241,11 +260,18 @@ class Monitor(MonitorBase):
             plt.suptitle('Climatology',
                          y=map_options.get('suptitle_pos', 0.9),
                          fontsize=plot_map.fontsize + 4)
-            plt.savefig(self.get_plot_path(f'clim{map_name}', var_info, 'png'),
+            filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')
+            plt.savefig(filename,
                         bbox_inches='tight',
                         pad_inches=.2,
                         dpi=plot_map.dpi)
             plt.close(plt.gcf())
+            self.record_plot_provenance(
+                filename,
+                var_info,
+                'Climatology',
+                region=map_name,
+            )
 
     def plot_vertical_profile(self, cube, var_info):
         if 'vertical_profile' not in self.plots:
@@ -266,11 +292,16 @@ class Monitor(MonitorBase):
             sharex=True,
             sharey=True,
             suptitle='Monthly climatology vertical profiles')
+        self.record_plot_provenance(
+            filename,
+            var_info,
+            'Vertical profile',
+        )
 
     def plot_zonal(self, cube, var_info):
         if 'zonal' not in self.plots:
             return
-        filename = self.get_plot_path('zonal', var_info, None)
+        filename = self.get_plot_path('zonal', var_info, "png")
         for basin_slice in cube.slices_over('region'):
             logger.info(basin_slice)
             plt.pcolormesh(
@@ -283,6 +314,12 @@ class Monitor(MonitorBase):
         plt.subplots_adjust(bottom=.05, hspace=.3, left=.1, right=1)
 
         plt.savefig(filename, bbox_inches='tight', pad_inches=.2)
+        self.record_plot_provenance(
+            filename,
+            var_info,
+            'Zonal section',
+        )
+
 
 
 def main():
