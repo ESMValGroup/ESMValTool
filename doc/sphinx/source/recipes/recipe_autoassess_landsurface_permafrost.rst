@@ -11,8 +11,7 @@ Prior and current contributors
 ------------------------------
 Met Office:
 
-+ Prior to May 2016:
-* Since May 2016: Alistair Sellar and Paul Earnshaw
+* Prior to April 2018: Eleanor Burke, Paul Earnshaw
 
 ESMValTool:
 
@@ -22,6 +21,8 @@ ESMValTool:
 Developers
 ----------
 Met Office:
+
+* Eleanor Burke
 
 
 ESMValTool:
@@ -39,12 +40,19 @@ the same models and data stretches.
 Metrics and Diagnostics
 -----------------------
 
-Performance metrics:
+Performance metrics (with observation-based estimates in brackets):
+
+* permafrost area (17.46 million square km)
+* fractional area of permafrost northwards of zero degree isotherm (0.47)
+* soil temperature at 1m minus soil temperature at surface (-0.53 degrees C)
+* soil temperature at surface minus air temperature (6.15 degrees C)
+* annual amplitude at 1m / annual amplitude at the surface (0.40 unitless)
+* annual amplitude at the surface / annual air temperature (0.57 unitless)
 
 
 Diagnostics:
 
-* 
+* Maps of permafrost extent and zero degC isotherm
 
 
 Model Data
@@ -56,11 +64,11 @@ Variable/Field name           realm              frequency      Comment
 Near-Surface Air Temperature (tas)            Atmosphere         monthly mean
 Temperature of Soil (tsl)      Land         monthly mean
 Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)       mask         fixed
-Total Water Content of Soil Layer (mrsol) Emon    monthly mean          CMIP5: ??
+Total Water Content of Soil Layer (mrsol) Emon    monthly mean          CMIP5: mrlsl
 ===========================   ================== ============== ==============================================
 
 The recipe takes as input a control model and experimental model, comparisons being made
-with these two CMIP models; additionally it can take observational datas input.
+with these two CMIP models.
 
 Inputs and usage
 ----------------
@@ -113,9 +121,25 @@ over to the diagnostic/metric is listed below.
 
 References
 ----------
-* Andrews, A. E., and Coauthors, 2001: Mean ages of stratospheric air derived from in situ observations of CO2, CH4, and N2O. J. Geophys. Res.,   106 (D23), 32295-32314.
-* Dee, D. P., and Coauthors, 2011: The ERA-Interim reanalysis: configuration and performance of the data assimilation system. Q. J. R. Meteorol.  Soc, 137, 553-597, doi:10.1002/qj.828.
-* Engel, A., and Coauthors, 2009: Age of stratospheric air unchanged within uncertainties over the past 30 years. Nat. Geosci., 2, 28-31, doi:10  .1038/NGEO388.
+* Observed permafrost extent is from http://nsidc.org/data/ggd318.html: Brown, J.,
+O. Ferrians, J. A. Heginbottom, and E. Melnikov. 2002. Circum-Arctic Map of
+Permafrost and Ground-Ice Conditions, Version 2. Boulder, Colorado USA. NSIDC:
+National Snow and Ice Data Center.  When calculating the global area of
+permafrost the grid cells are weighted by the proportion of permafrost within
+them.
+
+* Annual mean air temperature is from: Legates, D. R., and C. J. Willmott, 1990:
+Mean seasonal and spatial variability in global surface air temperature. Theor.
+Appl. Climatol., 41, 11-21.  The annual mean is calculated from the seasonal
+mean data available at the Met Office.
+
+* The soil temperature metrics are calcuated following: Charles D. Koven, William
+J. Riley, and Alex Stern, 2013: Analysis of Permafrost Thermal Dynamics and
+Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26. 
+(Table 3) http://dx.doi.org/10.1175/JCLI-D-12-00228.1 The
+locations used for Table 3 were extracted from the model and the modelled
+metrics calculated.
+
 
 Observations Data sets
 ----------------------
@@ -128,22 +152,32 @@ Below is a set of metrics for  UKESM1-0-LL (historical data); the table
 shows a comparison made between running ESMValTool on CMIP6 CMORized
 netCDF data freely available on ESGF nodes and the run made using native
 Autoassess performed at the Met Office using the pp output of the model.
+Comparison period was 1997/12/01 to 2002/12/01.
 
 ===============================================     ================     ====================
 Metric name                                         UKESM1-0-LL;         UKESM1-0-LL;
                                                     CMIP6: AERmonZ;      pp files;
-                                                    historical, ESGF     historical, u-bc179
+                                                    piControl, ESGF      piControl, u-aw310
 ===============================================     ================     ====================
-metrics here
+attenuation 1m over surface                         0.496                0.496
+attenuation surface over air                        0.492                0.493
+fraction area permafrost over zerodeg               0.290                0.289
+offset 1m minus surface                             0.947                0.947
+offset surface minus air                            7.67                 7.71
+permafrost area                                     13.5                 13.7
 ===============================================     ================     ====================
 
-Some notes on the comparison runs here (location of runs, ideally, path to results too)
 
-Add figures here:
-.. figure:: /recipes/figures/autoassess_stratosphere/metrics.png
+.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_north_america_UKESM1-0-LL.png
    :scale: 50 %
-   :alt: metrics.png
+   :alt: pf_extent_north_america_UKESM1-0-LL.png
 
-   Standard metrics plot comparing standard metrics from UKESM1-0-LL and HadGEM3-GC31.
+   Permafrost extent and zero degC isotherm, showing North America
+
+.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_asia_UKESM1-0-LL.png
+   :scale: 50 %
+   :alt: pf_extent_asia_UKESM1-0-LL.png
+
+   Permafrost extent and zero degC isotherm, showing Asia and Europe
 
 
