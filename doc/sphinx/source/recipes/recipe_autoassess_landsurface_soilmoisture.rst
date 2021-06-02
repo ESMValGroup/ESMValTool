@@ -1,7 +1,7 @@
 .. _recipe_autoassess_landsurface_soilmoisture.rst:
 
 Land-surface Soil Moisture - Autoassess diagnostics
-================================================
+===================================================
 
 Overview
 --------
@@ -147,4 +147,3 @@ soil moisture median absolute error mam             0.0665               0.0671
 soil moisture median absolute error jja             0.0571               0.0564
 soil moisture median absolute error son             0.0656               0.0661
 ===============================================     ================     ====================
-

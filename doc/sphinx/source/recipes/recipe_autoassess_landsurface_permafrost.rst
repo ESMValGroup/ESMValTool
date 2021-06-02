@@ -122,23 +122,23 @@ over to the diagnostic/metric is listed below.
 References
 ----------
 * Observed permafrost extent is from http://nsidc.org/data/ggd318.html: Brown, J.,
-O. Ferrians, J. A. Heginbottom, and E. Melnikov. 2002. Circum-Arctic Map of
-Permafrost and Ground-Ice Conditions, Version 2. Boulder, Colorado USA. NSIDC:
-National Snow and Ice Data Center.  When calculating the global area of
-permafrost the grid cells are weighted by the proportion of permafrost within
-them.
+  O. Ferrians, J. A. Heginbottom, and E. Melnikov. 2002. Circum-Arctic Map of
+  Permafrost and Ground-Ice Conditions, Version 2. Boulder, Colorado USA. NSIDC:
+  National Snow and Ice Data Center.  When calculating the global area of
+  permafrost the grid cells are weighted by the proportion of permafrost within
+  them.
 
 * Annual mean air temperature is from: Legates, D. R., and C. J. Willmott, 1990:
-Mean seasonal and spatial variability in global surface air temperature. Theor.
-Appl. Climatol., 41, 11-21.  The annual mean is calculated from the seasonal
-mean data available at the Met Office.
+  Mean seasonal and spatial variability in global surface air temperature. Theor.
+  Appl. Climatol., 41, 11-21.  The annual mean is calculated from the seasonal
+  mean data available at the Met Office.
 
 * The soil temperature metrics are calcuated following: Charles D. Koven, William
-J. Riley, and Alex Stern, 2013: Analysis of Permafrost Thermal Dynamics and
-Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26. 
-(Table 3) http://dx.doi.org/10.1175/JCLI-D-12-00228.1 The
-locations used for Table 3 were extracted from the model and the modelled
-metrics calculated.
+  J. Riley, and Alex Stern, 2013: Analysis of Permafrost Thermal Dynamics and
+  Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26. 
+  (Table 3) http://dx.doi.org/10.1175/JCLI-D-12-00228.1 The
+  locations used for Table 3 were extracted from the model and the modelled
+  metrics calculated.
 
 
 Observations Data sets
@@ -179,4 +179,3 @@ permafrost area                                     13.5                 13.7
    :alt: pf_extent_asia_UKESM1-0-LL.png
 
    Permafrost extent and zero degC isotherm, showing Asia and Europe
-

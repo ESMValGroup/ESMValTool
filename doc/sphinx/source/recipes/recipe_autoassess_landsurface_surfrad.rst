@@ -1,7 +1,7 @@
 .. _recipe_autoassess_landsurface_surfrad.rst:
 
 Land-surface Surface Radiation - Autoassess diagnostics
-================================================
+=======================================================
 
 Overview
 --------
@@ -157,4 +157,3 @@ Net LW median absolute error jja                    5.37                 5.70
 Net SW median absolute error son                    5.60                 5.50
 Net LW median absolute error son                    4.77                 4.69
 ===============================================     ================     ====================
-
