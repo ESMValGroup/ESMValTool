@@ -32,9 +32,8 @@ diagnostics:
         mip: Lmon
       sftlf:
         mip: fx
-      # mrsol has 3 soil layers; could use mrsos(Lmon) too but that has 1 single layer
-      mrsol:
-        mip: Emon
+      mrsos:
+        mip: Lmon
     scripts:
       autoassess_landsurf_permafrost: &autoassess_landsurf_permafrost_settings
         script: autoassess/autoassess_area_base.py

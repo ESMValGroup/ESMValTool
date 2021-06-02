@@ -63,7 +63,7 @@ Variable/Field name                                                       realm 
 ========================================================================= ================== ============== ==============================================
 Near-Surface Air Temperature (tas)                                        Atmosphere         monthly mean
 Temperature of Soil (tsl)                                                 Land               monthly mean
-Total Water Content of Soil Layer (mrsol)                                 Land               monthly mean   CMIP5: mrlsl
+Moisture in Upper Portion of Soil Column (mrsos)                          Land               monthly mean
 Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)    mask               fixed
 ========================================================================= ================== ============== ==============================================
 

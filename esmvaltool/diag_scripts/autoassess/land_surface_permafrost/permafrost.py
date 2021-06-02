@@ -221,30 +221,21 @@ def get_nonice_mask(run):
     """
     Get the land points without ice.
 
-    Need to read the soil moisture data from the supermeans
+    Derive ice mask from points that have zero liquid water content.
+
     """
-    # currently set to mrsol(Emon): mass_content_of_water_in_soil_layer
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
 
     # m01s08i223
-    # TODO: original code
-    # cube = get_supermean('moisture_content_of_soil_layer', 'ann',
-    #                      supermean_data_dir)
-    # use mrsol
-    # mrsol has 3 soil layers
-    # could use mrsos(Lmon) too but that has 1 single layer
-    # and that is below 1m and layer extraction below would fail
+    # use mrsos (moisture in surface soil layer), Lmon
     name_constraint = iris.Constraint(
-        name='mass_content_of_water_in_soil_layer')
+            name='mass_content_of_water_in_soil_layer')
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
     # mrsol data comes a time-lat-lon, collapse on time
     cube = cube.collapsed('time', iris.analysis.MEAN)
-
-    # extract layer
-    cube = cube.extract(iris.Constraint(depth=2.0))  # layer from 1m to 3m
 
     # make it into a mask of ones - extract first layer
     # use masked_values for floating point fuzzy equals
