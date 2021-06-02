@@ -1,6 +1,6 @@
-.. _recipe_autoassess_landsurface_permafrost.rst:
+.. _recipe_autoassess_landsurface_surfrad.rst:
 
-Land-surface Permafrost - Autoassess diagnostics
+Land-surface Surface Radiation - Autoassess diagnostics
 ================================================
 
 Overview
@@ -11,7 +11,7 @@ Prior and current contributors
 ------------------------------
 Met Office:
 
-* Prior to April 2018: Eleanor Burke, Paul Earnshaw
+* Prior to April 2018: John Edwards, Paul Earnshaw
 
 ESMValTool:
 
@@ -22,7 +22,7 @@ Developers
 ----------
 Met Office:
 
-* Eleanor Burke
+* John Edwards
 
 
 ESMValTool:
@@ -40,19 +40,20 @@ the same models and data stretches.
 Metrics and Diagnostics
 -----------------------
 
-Performance metrics (with observation-based estimates in brackets):
+Performance metrics:
 
-* permafrost area (17.46 million square km)
-* fractional area of permafrost northwards of zero degree isotherm (0.47)
-* soil temperature at 1m minus soil temperature at surface (-0.53 degrees C)
-* soil temperature at surface minus air temperature (6.15 degrees C)
-* annual amplitude at 1m / annual amplitude at the surface (0.40 unitless)
-* annual amplitude at the surface / annual air temperature (0.57 unitless)
+* median absolute error (model minus observations) net surface shortwave (SW) radiation
+* median absolute error (model minus observations) net surface longwave (LW) radiation
+
+Metrics are calculated using model and observation multi-year climatologies (seasonal means) 
+for meteorological seasons:
+* December-January-February (djf)
+* March-April-May (mam)
+* June-July-August (jja)
+* September-October-November (son)
+* Annual mean (ann)
 
 
-Diagnostics:
-
-* Maps of permafrost extent and zero degC isotherm
 
 
 Model Data
@@ -61,10 +62,9 @@ Model Data
 ===========================   ================== ============== ==============================================
 Variable/Field name           realm              frequency      Comment
 ===========================   ================== ============== ==============================================
-Near-Surface Air Temperature (tas)            Atmosphere         monthly mean
-Temperature of Soil (tsl)      Land         monthly mean
+Surf SW net all sky (rsns)    Amon               monthly mean
+Surf LW net all sky (rlns)    Amon               monthly mean
 Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)       mask         fixed
-Total Water Content of Soil Layer (mrsol) Emon    monthly mean          CMIP5: mrlsl
 ===========================   ================== ============== ==============================================
 
 The recipe takes as input a control model and experimental model, comparisons being made
@@ -72,7 +72,7 @@ with these two CMIP models.
 
 Inputs and usage
 ----------------
-The ``landsurface_permafrost`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
+The ``landsurface_soilmoisture`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
 and, as any other ``autoassess`` metric, it uses the ``autoassess_area_base.py`` as general purpose
 wrapper. This wrapper accepts a number of input arguments that are read through from the recipe.
 
@@ -108,43 +108,30 @@ over to the diagnostic/metric is listed below.
 .. code-block:: yaml
 
     scripts:
-      plot_landsurf_permafrost: &plot_landsurf_permafrost_settings
-        <<: *autoassess_landsurf_permafrost_settings
-        control_model: MPI-ESM-LR
-        exp_model: MPI-ESM-MR
-        script: autoassess/plot_autoassess_metrics.py
-        ancestors: ['*/autoassess_landsurf_permafrost']
-        title: "Plot Land-Surface Permafrost Metrics"
-        plot_name: "Permafrost_Metrics"
-        diag_tag: aa_landsurf_permafrost
-        diag_name: autoassess_landsurf_permafrost
+      autoassess_landsurf_surfrad: &autoassess_landsurf_surfrad_settings
+        script: autoassess/autoassess_area_base.py
+        title: "Autoassess Land-Surface Diagnostic Surfrad Metric"
+        area: land_surface_surfrad
+        control_model: UKESM1-0-LL
+        exp_model: UKESM1-0-LL
+        obs_models: [CERES-EBAF]
+        obs_type: obs4mips
+        start: 1997/12/01
+        end: 2002/12/01
+
 
 References
 ----------
-* Observed permafrost extent is from http://nsidc.org/data/ggd318.html: Brown, J.,
-O. Ferrians, J. A. Heginbottom, and E. Melnikov. 2002. Circum-Arctic Map of
-Permafrost and Ground-Ice Conditions, Version 2. Boulder, Colorado USA. NSIDC:
-National Snow and Ice Data Center.  When calculating the global area of
-permafrost the grid cells are weighted by the proportion of permafrost within
-them.
+Loeb, N. G., D. R. Doelling, H. Wang, W. Su, C. Nguyen, J. G. Corbett, L. Liang, C. Mitrescu, F. G. Rose, and S. Kato, 2018: Clouds and the Earth¿s Radiant Energy System (CERES) Energy Balanced and Filled (EBAF) Top-of-Atmosphere (TOA) Edition-4.0 Data Product. J. Climate, 31, 895-918, doi: 10.1175/JCLI-D-17-0208.1.
 
-* Annual mean air temperature is from: Legates, D. R., and C. J. Willmott, 1990:
-Mean seasonal and spatial variability in global surface air temperature. Theor.
-Appl. Climatol., 41, 11-21.  The annual mean is calculated from the seasonal
-mean data available at the Met Office.
-
-* The soil temperature metrics are calcuated following: Charles D. Koven, William
-J. Riley, and Alex Stern, 2013: Analysis of Permafrost Thermal Dynamics and
-Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26. 
-(Table 3) http://dx.doi.org/10.1175/JCLI-D-12-00228.1 The
-locations used for Table 3 were extracted from the model and the modelled
-metrics calculated.
+Kato, S., F. G. Rose, D. A. Rutan, T. E. Thorsen, N. G. Loeb, D. R. Doelling, X. Huang, W. L. Smith, W. Su, and S.-H. Ham, 2018: Surface irradiances of Edition 4.0 Clouds and the Earth¿s Radiant Energy System (CERES) Energy Balanced and Filled (EBAF) data product, J. Climate, 31, 4501-4527, doi: 10.1175/JCLI-D-17-0523.1
 
 
 Observations Data sets
 ----------------------
 
-None used in this diagnostic.
+2000-2009 climatologies (seasonal means) from CERES-EBAF Ed2.6r.
+
 
 Sample Plots and metrics
 ------------------------
@@ -159,24 +146,15 @@ Metric name                                         UKESM1-0-LL;         UKESM1-
                                                     CMIP6: AERmonZ;      pp files;
                                                     piControl, ESGF      piControl, u-aw310
 ===============================================     ================     ====================
-attenuation 1m over surface                         0.496                0.496
-attenuation surface over air                        0.492                0.493
-fraction area permafrost over zerodeg               0.290                0.289
-offset 1m minus surface                             0.947                0.947
-offset surface minus air                            7.67                 7.71
-permafrost area                                     13.5                 13.7
+Net SW median absolute error ann                    4.88                 4.93
+Net LW median absolute error ann                    3.98                 3.81
+Net SW median absolute error djf                    6.51                 6.69
+Net LW median absolute error djf                    5.27                 5.23
+Net SW median absolute error mam                    4.31                 4.68
+Net LW median absolute error mam                    4.51                 4.46
+Net SW median absolute error jja                    6.47                 6.11
+Net LW median absolute error jja                    5.37                 5.70
+Net SW median absolute error son                    5.60                 5.50
+Net LW median absolute error son                    4.77                 4.69
 ===============================================     ================     ====================
-
-
-.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_north_america_UKESM1-0-LL.png
-   :scale: 50 %
-   :alt: pf_extent_north_america_UKESM1-0-LL.png
-
-   Permafrost extent and zero degC isotherm, showing North America
-
-.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_asia_UKESM1-0-LL.png
-   :scale: 50 %
-   :alt: pf_extent_asia_UKESM1-0-LL.png
-
-   Permafrost extent and zero degC isotherm, showing Asia and Europe
 
