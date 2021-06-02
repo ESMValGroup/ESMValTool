@@ -58,14 +58,14 @@ Diagnostics:
 Model Data
 ----------
 
-===========================   ================== ============== ==============================================
-Variable/Field name           realm              frequency      Comment
-===========================   ================== ============== ==============================================
-Near-Surface Air Temperature (tas)            Atmosphere         monthly mean
-Temperature of Soil (tsl)      Land         monthly mean
-Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)       mask         fixed
-Total Water Content of Soil Layer (mrsol) Emon    monthly mean          CMIP5: mrlsl
-===========================   ================== ============== ==============================================
+========================================================================= ================== ============== ==============================================
+Variable/Field name                                                       realm              frequency      Comment
+========================================================================= ================== ============== ==============================================
+Near-Surface Air Temperature (tas)                                        Atmosphere         monthly mean
+Temperature of Soil (tsl)                                                 Land               monthly mean
+Total Water Content of Soil Layer (mrsol)                                 Land               monthly mean   CMIP5: mrlsl
+Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)    mask               fixed
+========================================================================= ================== ============== ==============================================
 
 The recipe takes as input a control model and experimental model, comparisons being made
 with these two CMIP models.

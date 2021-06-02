@@ -59,13 +59,13 @@ for meteorological seasons:
 Model Data
 ----------
 
-===========================   ================== ============== ==============================================
-Variable/Field name           realm              frequency      Comment
-===========================   ================== ============== ==============================================
-Surf SW net all sky (rsns)    Amon               monthly mean
-Surf LW net all sky (rlns)    Amon               monthly mean
-Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)       mask         fixed
-===========================   ================== ============== ==============================================
+========================================================================= ================== ============== ==============================================
+Variable/Field name                                                       realm              frequency      Comment
+========================================================================= ================== ============== ==============================================
+Surf SW net all sky (rsns)                                                Atmosphere         monthly mean
+Surf LW net all sky (rlns)                                                Atmosphere         monthly mean
+Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)    mask               fixed
+========================================================================= ================== ============== ==============================================
 
 The recipe takes as input a control model and experimental model, comparisons being made
 with these two CMIP models.
