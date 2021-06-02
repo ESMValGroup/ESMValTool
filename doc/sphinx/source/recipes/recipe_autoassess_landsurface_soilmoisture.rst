@@ -51,6 +51,9 @@ for meteorological seasons:
 * June-July-August (jja)
 * September-October-November (son)
 
+Diagnostics:
+
+* Metrics plot comparing control and experiment
 
 
 
@@ -147,3 +150,9 @@ soil moisture median absolute error mam             0.0665               0.0671
 soil moisture median absolute error jja             0.0571               0.0564
 soil moisture median absolute error son             0.0656               0.0661
 ===============================================     ================     ====================
+
+.. figure:: /recipes/figures/autoassess_landsurface/Soilmoisture_Metrics.png
+   :scale: 50 %
+   :alt: Soilmoisture_Metrics.png
+
+   Normalised metrics plot comparing a control and experiment simulation

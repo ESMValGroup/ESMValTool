@@ -53,6 +53,7 @@ Performance metrics (with observation-based estimates in brackets):
 Diagnostics:
 
 * Maps of permafrost extent and zero degC isotherm
+* Metrics plot comparing control and experiment
 
 
 Model Data
@@ -179,3 +180,9 @@ permafrost area                                     13.5                 13.7
    :alt: pf_extent_asia_UKESM1-0-LL.png
 
    Permafrost extent and zero degC isotherm, showing Asia and Europe
+
+.. figure:: /recipes/figures/autoassess_landsurface/Permafrost_Metrics.png
+   :scale: 50 %
+   :alt: Permafrost_Metrics.png
+
+   Normalised metrics plot comparing a control and experiment simulation

@@ -54,6 +54,9 @@ for meteorological seasons:
 * Annual mean (ann)
 
 
+Diagnostics:
+
+* Metrics plot comparing control and experiment
 
 
 Model Data
@@ -130,7 +133,7 @@ Kato, S., F. G. Rose, D. A. Rutan, T. E. Thorsen, N. G. Loeb, D. R. Doelling, X.
 Observations Data sets
 ----------------------
 
-2000-2009 climatologies (seasonal means) from CERES-EBAF Ed2.6r.
+2000-2009 climatologies (seasonal means) from CERES-EBAF Ed2.7.
 
 
 Sample Plots and metrics
@@ -157,3 +160,9 @@ Net LW median absolute error jja                    5.37                 5.70
 Net SW median absolute error son                    5.60                 5.50
 Net LW median absolute error son                    4.77                 4.69
 ===============================================     ================     ====================
+
+.. figure:: /recipes/figures/autoassess_landsurface/Surfrad_Metrics.png
+   :scale: 50 %
+   :alt: Surfrad_Metrics.png
+
+   Normalised metrics plot comparing a control and experiment simulation
