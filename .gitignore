@@ -45,6 +45,7 @@ __pycache__/
 
 #Create by VSCode
 .vscode
+*.code-workspace
 
 #pytest
 .cache
