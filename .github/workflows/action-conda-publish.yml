@@ -6,7 +6,7 @@ on:
   # use this to test before actual release and publish
   push:
     branches:
-      - master
+      - main
 
 jobs:
 

@@ -237,11 +237,11 @@ By far the easiest way to install these dependencies is to use conda_.
 For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
 
 After installing conda, download
-`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml>`_:
+`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/environment.yml>`_:
 
 .. code-block:: bash
 
-    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml
+    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/environment.yml
 
 and install these dependencies into a new conda environment with the command
 
@@ -291,7 +291,7 @@ You can get the latest release with
 
    docker pull esmvalgroup/esmvaltool:stable
 
-If you want to use the current master branch, use
+If you want to use the current main branch, use
 
 .. code-block:: bash
 
