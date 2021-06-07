@@ -48,7 +48,7 @@ Variables
 
 References
 ----------
-* Moreno-Chamarro, E., Caron, L-P., Ortega, P., Loosveldt Tomas, S., and Roberts, M. J., Can we trust CMIP5/6 future projections of European winter precipitation?. Environmental Research Letters, 
+* Moreno-Chamarro, E., Caron, L-P., Ortega, P., Loosveldt Tomas, S., and Roberts, M. J., Can we trust CMIP5/6 future projections of European winter precipitation?. Environ. Res. Lett. 16 054063
 * Brian J Hoskins and Paul J Valdes. On the existence of storm-tracks. Journal of the atmospheric sciences, 47(15):1854–1864, 1990.
 
 Example plots
