@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for ESACCI-TCWV data.
+"""ESMValTool CMORizer for ESACCI-WATERVAPOUR data.
 
 Tier
    Tier 3: currently still restricted because preliminary.
@@ -7,12 +7,15 @@ Source
    Marc Schröder, ftp.brockmann-consult.de
 
 Last access
-   20212903
+   20210329
 
 Download and processing instructions
-   TBD
+   FTP server: ftp.brockmann-consult.de, access currently restrictet
+               data/tcwv/dataset3_1/CDR-*/...
+   All files need to be in one directory, not in yearly subdirectories.
 
 Modification history
+   20210607-weigel_katja: Fix for monthly time bounds.
    20210408-weigel_katja: written.
 
 """
@@ -69,8 +72,11 @@ def cmorization(in_dir, out_dir, cfg, _):
                             raw_info['file'])
                 cube = extract_variable(var_info, raw_info, glob_attrs, year)
                 monthly_cubes.append(cube)
-            # yearly_cube = concatenate(monthly_cubes)
-            save_variable(concatenate(monthly_cubes),
+            yearly_cube = concatenate(monthly_cubes)
+            # Fix monthly time bounds
+            fix_coords(yearly_cube, overwrite_lon_bounds=False,
+                       overwrite_lat_bounds=False)
+            save_variable(yearly_cube,
                           var,
                           out_dir,
                           glob_attrs,
