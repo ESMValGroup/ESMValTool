@@ -38,15 +38,15 @@ jobs:
       - name: Create conda lock file for linux-64
         shell: bash -l {0}
         run: conda-lock lock --platform linux-64 -f environment.yml --mamba
-      - name: Create conda lock file for osx-64
-        shell: bash -l {0}
-        run: conda-lock lock --platform osx-64 -f environment.yml --mamba
+      #- name: Create conda lock file for osx-64
+      #  shell: bash -l {0}
+      #  run: conda-lock lock --platform osx-64 -f environment.yml --mamba
   verify:
     name: verify / python-${{ matrix.python-version }} / ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-latest', 'macos-latest']
+        os: ['ubuntu-latest']  # 'macos-latest' has issues with the conda lock file creation
         python-version: ["3.7", "3.8", "3.9"]
     runs-on: ${{ matrix.os }}
     needs: create-lock-file
