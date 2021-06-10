@@ -65,32 +65,36 @@ def plot_taylor(cubes, layer, obsname, cfg):
     model_coeff, srange, extend = taylor_coeffs(cubes, layer, obsname)
 
     fig = plt.figure()
-    dia = diagnostic_taylor.TaylorDiagram(
-        1., fig=fig, label=obsname, srange=srange, extend=extend
-        )
+    dia = diagnostic_taylor.TaylorDiagram(1.,
+                                          fig=fig,
+                                          label=obsname,
+                                          srange=srange,
+                                          extend=extend)
 
     # Add models
     for i, thename in enumerate(model_coeff):
         dia.add_sample(model_coeff[thename]['std'],
                        model_coeff[thename]['corr'],
-                       marker='$%d$' % (i+1), ms=8, ls='',
+                       marker='$%d$' % (i + 1),
+                       ms=8,
+                       ls='',
                        label=thename)
 
     # Add RMS contours, and label them
     contours = dia.add_contours(levels=5, colors='0.5')  # 5 levels in grey
     plt.clabel(contours, inline=1, fontsize=10, fmt='%.0f')
 
-    dia.add_grid()                                  # Add grid
+    dia.add_grid()  # Add grid
     dia._ax.axis[:].major_ticks.set_tick_out(True)  # Put ticks outward
-    dia._ax.axis["left"].label.set_text(
-        'Standard deviation [' + str(obs_cube.units) + ']'
-        )
+    dia._ax.axis["left"].label.set_text('Standard deviation [' +
+                                        str(obs_cube.units) + ']')
 
     # Add figure legend and title
-    fig.legend(dia.samplepoints,
-               [p.get_label() for p in dia.samplepoints],
-               numpoints=1, prop=dict(size='small'),
-               loc='upper right', markerscale=0.8)
+    fig.legend(dia.samplepoints, [p.get_label() for p in dia.samplepoints],
+               numpoints=1,
+               prop=dict(size='small'),
+               loc='upper right',
+               markerscale=0.8)
     add_lab = str(np.int32(layer)) if layer != '' else ''
     fig.suptitle(obs_cube.long_name + add_lab, size='large')  # Figure title
 
@@ -103,6 +107,17 @@ def plot_taylor(cubes, layer, obsname, cfg):
     if cfg['write_plots']:
         logger.info('Saving plots to %s', plot_file)
         plt.savefig(plot_file, dpi=200)
+        logger.info('Saving plots data to %s', plot_file + '.csv')
+        dia = open(plot_file + '.csv', 'w')
+        dia.write('id,model,std_norm, corr, rmsd\n')
+        for i, thename in enumerate(model_coeff):
+            dia.write(','.join([
+                str(i + 1), thename,
+                str(model_coeff[thename]['std']),
+                str(model_coeff[thename]['corr']),
+                str(model_coeff[thename]['rmsd']) + '\n'
+            ]))
+        dia.close()
 
     plt.close()
 
@@ -130,15 +145,23 @@ def taylor_coeffs(cubes, layer, obsname):
     extend = []
     model_cubes = sorted(set(cubes.keys()).difference([obsname]))
     for thename in model_cubes:
-        stddev = cubes[thename][layer].collapsed(
-            ['latitude', 'longitude'], iris.analysis.STD_DEV
-                )
-        stddev = stddev.data/obs_std.data
-        corrcoef = pearsonr(obs_cube, cubes[thename][layer],
+        stddev = cubes[thename][layer].collapsed(['latitude', 'longitude'],
+                                                 iris.analysis.STD_DEV)
+        stddev = stddev.data / obs_std.data
+        corrcoef = pearsonr(obs_cube,
+                            cubes[thename][layer],
                             corr_coords=['latitude', 'longitude'],
                             common_mask=True)
         corrcoef = corrcoef.data.item()
-        out_dict.update({thename: {'std': stddev, 'corr': corrcoef}})
+        rmsd = np.sqrt(
+            np.power(stddev.data, 2) + np.power(obs_std.data, 2) - 2 *
+            (stddev.data * obs_std.data * corrcoef))
+        out_dict.update(
+            {thename: {
+                'std': stddev,
+                'corr': corrcoef,
+                'rmsd': rmsd
+            }})
         srange.append(stddev)
         extend.append(corrcoef)
 
@@ -222,11 +245,12 @@ def add_map_plot(fig, axs, plot_cube, cols):
             axins = fig.add_axes([0.25, 0.04, 0.5, 0.02])
 
         cformat = '%.1f'
-        if abs(nspace[1]-nspace[0]) < 1:
-            cformat = int(np.ceil(-np.log10(abs(nspace[1]-nspace[0]))))
+        if abs(nspace[1] - nspace[0]) < 1:
+            cformat = int(np.ceil(-np.log10(abs(nspace[1] - nspace[0]))))
             cformat = '%.' + str(cformat) + 'f'
         cbar = plt.colorbar(orientation='horizontal',
-                            cax=axins, format=cformat)
+                            cax=axins,
+                            format=cformat)
         cbar.set_ticks(nspace[::2])
 
 
@@ -452,8 +476,9 @@ def make_plots(cfg, metadata, obsname):
         plot_file = metadata[filenames[0]]['short_name']
         layer_lab = str(np.int32(layer)) if layer != '' else ''
         if obsname != '':
-            plot_file = ['multimodel_vs', obsname, plot_file,
-                         layer_lab, 'maps']
+            plot_file = [
+                'multimodel_vs', obsname, plot_file, layer_lab, 'maps'
+            ]
         else:
             plot_file = ['multimodel', plot_file, layer_lab, 'maps']
         plot_file = diagtools.folder(cfg['plot_dir']) + '_'.join(plot_file)
