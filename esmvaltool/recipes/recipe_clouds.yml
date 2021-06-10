@@ -25,6 +25,23 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
+    mask_multimodel:
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim500:
+    convert_units:
+      units: "Pa min-1"
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
     multi_model_statistics:
       span: overlap
       statistics: [mean]
@@ -37,6 +54,8 @@ preprocessors:
       units: "Pa min-1"
     mask_landsea:
       mask_out: land
+      fx_variables:
+        sftlf:
     extract_levels:
       levels: 50000
       scheme: linear
@@ -53,6 +72,45 @@ preprocessors:
   clim_ocean:
     mask_landsea:
       mask_out: land
+      fx_variables:
+        sftlf:
+    mask_multimodel:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim500_land:
+    convert_units:
+      units: "Pa min-1"
+    mask_landsea:
+      mask_out: ocean
+      fx_variables:
+        sftlf:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim_land:
+    mask_landsea:
+      mask_out: ocean
+      fx_variables:
+        sftlf:
+    mask_multimodel:
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -1451,7 +1509,7 @@ diagnostics:
       - atmos
     variables:
       clt:
-        preprocessor: clim_ocean
+        preprocessor: clim
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1461,7 +1519,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
       ts:
-        preprocessor: clim_ocean
+        preprocessor: clim
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1471,7 +1529,7 @@ diagnostics:
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
       wap:
-        preprocessor: clim500_ocean
+        preprocessor: clim500
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1481,7 +1539,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
       clivi:
-        preprocessor: clim_ocean
+        preprocessor: clim
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1491,7 +1549,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
       lwp:
-        preprocessor: clim_ocean
+        preprocessor: clim
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1501,30 +1559,30 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-      swcre:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2001
-        end_year: 2010
-        derive: true
-        reference_dataset: CERES-EBAF
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
-      lwcre:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2001
-        end_year: 2010
-        derive: true
-        reference_dataset: CERES-EBAF
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+#      swcre:
+#        preprocessor: clim
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+#      lwcre:
+#        preprocessor: clim
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2001
+#        end_year: 2010
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
       prw:
-        preprocessor: clim_ocean
+        preprocessor: clim
         mip: Amon
         project: CMIP6
         exp: historical
@@ -1566,76 +1624,76 @@ diagnostics:
       - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
       - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
     scripts:
-      dynclt:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: ts
-        var_y: wap
-        var_z: clt
-        xmin: 275
-        xmax: 305
-        ymin: -10
-        ymax: 10
-        zmin: 0
-        zmax: 100
-        zdmin: -45
-        zdmax: 45
-        filename_add: cmip6
-      dynclivi:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: ts
-        var_y: wap
-        var_z: clivi
-        xmin: 275
-        xmax: 305
-        ymin: -10
-        ymax: 10
-        zmin: 0.0
-        zmax: 0.5
-        zdmin: -0.09
-        zdmax: 0.09
-        filename_add: cmip6
-      dynlwp:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: ts
-        var_y: wap
-        var_z: lwp
-        xmin: 275
-        xmax: 305
-        ymin: -10
-        ymax: 10
-        zmin: 0.0
-        zmax: 0.5
-        zdmin: -0.09
-        zdmax: 0.09
-        filename_add: cmip6
-      dynswcre:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: ts
-        var_y: wap
-        var_z: swcre
-        xmin: 275
-        xmax: 305
-        ymin: -10
-        ymax: 10
-        zmin: -152
-        zmax: -8
-        zdmin: -45
-        zdmax: 45
-        filename_add: cmip6
-      dynlwcre:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: ts
-        var_y: wap
-        var_z: lwcre
-        xmin: 275
-        xmax: 305
-        ymin: -10
-        ymax: 10
-        zmin: 6
-        zmax: 114
-        zdmin: -45
-        zdmax: 45
-        filename_add: cmip6
+#      dynclt:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: ts
+#        var_y: wap
+#        var_z: clt
+#        xmin: 275
+#        xmax: 305
+#        ymin: -10
+#        ymax: 10
+#        zmin: 0
+#        zmax: 100
+#        zdmin: -45
+#        zdmax: 45
+#        filename_add: cmip6
+#      dynclivi:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: ts
+#        var_y: wap
+#        var_z: clivi
+#        xmin: 275
+#        xmax: 305
+#        ymin: -10
+#        ymax: 10
+#        zmin: 0.0
+#        zmax: 0.5
+#        zdmin: -0.09
+#        zdmax: 0.09
+#        filename_add: cmip6
+#      dynlwp:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: ts
+#        var_y: wap
+#        var_z: lwp
+#        xmin: 275
+#        xmax: 305
+#        ymin: -10
+#        ymax: 10
+#        zmin: 0.0
+#        zmax: 0.5
+#        zdmin: -0.09
+#        zdmax: 0.09
+#        filename_add: cmip6
+#      dynswcre:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: ts
+#        var_y: wap
+#        var_z: swcre
+#        xmin: 275
+#        xmax: 305
+#        ymin: -10
+#        ymax: 10
+#        zmin: -152
+#        zmax: -8
+#        zdmin: -45
+#        zdmax: 45
+#        filename_add: cmip6
+#      dynlwcre:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: ts
+#        var_y: wap
+#        var_z: lwcre
+#        xmin: 275
+#        xmax: 305
+#        ymin: -10
+#        ymax: 10
+#        zmin: 6
+#        zmax: 114
+#        zdmin: -45
+#        zdmax: 45
+#        filename_add: cmip6
       dynprw:
         script: clouds/clouds_dyn_matrix.ncl
         var_x: ts
@@ -1650,61 +1708,75 @@ diagnostics:
         zdmin: -9
         zdmax: 9
         filename_add: cmip6
-      dynicefrac:
+#      dynicefrac:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: ts
+#        var_y: wap
+#        var_z: columnicefrac
+#        xmin: 275
+#        xmax: 305
+#        ymin: -10
+#        ymax: 10
+#        zmin: 5
+#        zmax: 95
+#        zdmin: -45
+#        zdmax: 45
+#        filename_add: cmip6
+#      dyntcwp:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: ts
+#        var_y: wap
+#        var_z: totalcwp
+#        xmin: 275
+#        xmax: 305
+#        ymin: -10
+#        ymax: 10
+#        zmin: 0.0
+#        zmax: 0.5
+#        zdmin: -0.09
+#        zdmax: 0.09
+#        filename_add: cmip6
+#      dyncldradsw:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: totalcwp
+#        var_y: clt
+#        var_z: swcre
+#        xmin: 0.0
+#        xmax: 0.5
+#        ymin: 0
+#        ymax: 100
+#        zmin: -152
+#        zmax: -8
+#        zdmin: -45
+#        zdmax: 45
+#        filename_add: cmip6
+#      dyncldradlw:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: totalcwp
+#        var_y: clt
+#        var_z: lwcre
+#        xmin: 0.0
+#        xmax: 0.5
+#        ymin: 0
+#        ymax: 100
+#        zmin: 6
+#        zmax: 114
+#        zdmin: -45
+#        zdmax: 45
+#        filename_add: cmip6
+      dyntcwp2:
         script: clouds/clouds_dyn_matrix.ncl
-        var_x: ts
-        var_y: wap
-        var_z: columnicefrac
-        xmin: 275
-        xmax: 305
-        ymin: -10
-        ymax: 10
-        zmin: 5
-        zmax: 95
-        zdmin: -45
-        zdmax: 45
-        filename_add: cmip6
-      dyntcwp:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: ts
-        var_y: wap
-        var_z: totalcwp
-        xmin: 275
-        xmax: 305
-        ymin: -10
-        ymax: 10
-        zmin: 0.0
-        zmax: 0.5
-        zdmin: -0.09
-        zdmax: 0.09
-        filename_add: cmip6
-      dyncldradsw:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: totalcwp
-        var_y: clt
-        var_z: swcre
-        xmin: 0.0
-        xmax: 0.5
-        ymin: 0
-        ymax: 100
-        zmin: -152
-        zmax: -8
-        zdmin: -45
-        zdmax: 45
-        filename_add: cmip6
-      dyncldradlw:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: totalcwp
-        var_y: clt
-        var_z: lwcre
-        xmin: 0.0
-        xmax: 0.5
-        ymin: 0
-        ymax: 100
-        zmin: 6
-        zmax: 114
-        zdmin: -45
-        zdmax: 45
+        var_x: clt
+        var_y: totalcwp
+        var_z: prw
+        xmin: 0
+        xmax: 100
+        ymin: 0.0
+        ymax: 0.2
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
         filename_add: cmip6
 
 # ============================================================================

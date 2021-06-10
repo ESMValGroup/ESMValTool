@@ -33,7 +33,9 @@
 ;   none
 ;
 ; Modification history
-;   20210408-lauer_axel: written.
+;   20210607-lauer_axel: added multi-model-average (= average over all models)
+;                        as an individual plot
+;   20210408-lauer_axel: written
 ;
 ; ############################################################################
 
@@ -42,6 +44,7 @@ load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 
 begin
 
@@ -214,6 +217,16 @@ begin
     uninames = get_unique_values(refname)
     names(ref_ind) = str_join(uninames, "/")
     delete(uninames)
+  end if
+
+  ; find all indices of models w/o MultiModelMean/MultiModelMedian (if present)
+
+  idxmod = get_mod(names_x, projects_x)
+
+  if (idxmod(0) .eq. -1) then
+    flag_multimod = False
+  else
+    flag_multimod = True
   end if
 
   result = new((/dim_MOD, nbins, nbins/), float)
@@ -501,11 +514,16 @@ begin
   ; # create the plots                        #
   ; ###########################################
 
-  plots = new((/dim_MOD, 2/), graphic)
-  baseplots = new(dim_MOD, graphic)
-  xaddplots = new(dim_MOD, graphic)
-  yaddplots = new(dim_MOD, graphic)
-  dplots = new(dim_MOD, graphic)
+  nplots = dim_MOD
+  if (flag_multimod) then
+    nplots = nplots + 1
+  end if
+
+  plots = new((/nplots, 2/), graphic)
+  baseplots = new(nplots, graphic)
+  xaddplots = new(nplots, graphic)
+  yaddplots = new(nplots, graphic)
+  dplots = new(nplots, graphic)
 
   res = True
   res@cnFillOn       = True               ; color Fill
@@ -565,13 +583,22 @@ begin
   xyres2@tmXTLabelsOn = True
   xyres2@tmXBLabelsOn = False
 
-  do ii = 0, dim_MOD - 1
-    res@tiMainString =  names(ii)
-    baseplots(ii) = gsn_csm_contour(wks, result(ii, :, :), res)
+  do ii = 0, nplots - 1
+    if (ii .lt. dim_MOD) then
+      plotdata = result(ii, :, :)
+      plotname = names(ii)
+    else
+      plotdata = dim_avg_n_Wrap(result(idxmod, :, :), 0)
+      plotname = "Multi-model average"
+    end if
+
+    res@tiMainString = plotname
+
+    baseplots(ii) = gsn_csm_contour(wks, plotdata, res)
 
     xaddplots(ii) = gsn_csm_xy(wks, result&bin_x, \
-                               dim_avg_n(result(ii, :, :), 0), xyres1)
-    yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(result(ii, :, :), 1), \
+                               dim_avg_n(plotdata, 0), xyres1)
+    yaddplots(ii) = gsn_csm_xy(wks, dim_avg_n(plotdata, 1), \
                                result&bin_y, xyres2)
     xyres1@gsnAttachPlotsXAxis = True
     plots(ii, 0) = gsn_attach_plots(baseplots(ii), xaddplots(ii), res, xyres1)
@@ -587,14 +614,16 @@ begin
     if (ii .eq. ref_ind) then
       dresplot = res
       dresplot@tiMainString =  "REF"
-      diff = result(ii, :, :)
+      diff = plotdata
     else
       dresplot = dres
-      dresplot@tiMainString =  names(ii) + " - REF"
-      diff = result(ii, :, :) - result(ref_ind, :, :)
+      dresplot@tiMainString =  plotname + " - REF"
+      diff = plotdata - result(ref_ind, :, :)
     end if
-    copy_VarCoords(result(ii, :, :), diff)
+    copy_VarCoords(plotdata, diff)
     dplots(ii) = gsn_csm_contour(dwks, diff, dresplot)
+
+    delete(plotdata)
   end do
 
   pres                      = True    ; needed to override
