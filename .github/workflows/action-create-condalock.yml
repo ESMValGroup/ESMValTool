@@ -1,0 +1,86 @@
+name: Conda lock file creation
+
+on:
+  push:
+    branches:
+    - main
+    - condalock
+  schedule:
+    - cron: '0 4 */10 * *'
+
+jobs:
+  create-lock-file:
+    name: Create conda lock file for latest Python
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.9"
+          miniconda-version: "latest"
+          channels: conda-forge
+      - name: Show conda config
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
+      - name: Python info
+        shell: bash -l {0}
+        run: |
+          which python
+          python --version
+      - name: Install conda-lock
+        shell: bash -l {0}
+        run: conda install -y conda-lock
+      - name: Create conda lock file for linux-64
+        shell: bash -l {0}
+        run: conda-lock lock --platform linux-64 -f environment.yml --mamba
+      - name: Create conda lock file for osx-64
+        shell: bash -l {0}
+        run: conda-lock lock --platform osx-64 -f environment.yml --mamba
+  verify:
+    name: verify / python-${{ matrix.python-version }} / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'macos-latest']
+        python-version: ["3.7", "3.8", "3.9"]
+    runs-on: ${{ matrix.os }}
+    needs: create-lock-file
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: esmvaltool-fromlock
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: conda-forge
+      - shell: bash -l {0}
+        run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
+      - shell: bash -l {0}
+        run: conda --version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - shell: bash -l {0}
+        run: which python
+      - shell: bash -l {0}
+        run: python -V 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - shell: bash -l {0}
+        run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
+      - shell: bash -l {0}
+        run: conda install pip
+      - shell: bash -l {0}
+        run: which python
+      - shell: bash -l {0}
+        run: pip --version
+      - shell: bash -l {0}
+        run: pip install -e .[develop]
+      - shell: bash -l {0}
+        run: esmvaltool --help
+      - shell: bash -l {0}
+        run: esmvaltool version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - shell: bash -l {0}
+        run: pytest -n 2 -m "not installation and not sequential"
+      - shell: bash -l {0}
+        run: pytest -n 0 -m "sequential"
