@@ -157,7 +157,7 @@ def calculate_aeu(cube, cut='loose'):
     return cube
 
 
-def timeplot(cube, **kwargs):
+def timeplot(cube, add_fit=True, **kwargs,):
     """
     Create a time series plot from the cube.
 
@@ -184,6 +184,8 @@ def timeplot(cube, **kwargs):
 
     times = diagtools.cube_time_to_float(cube)
     plt.plot(times, cubedata, **kwargs)
+    if add_fit:
+        add_linear_reg(times, cubedata, **kwargs)
 
 
 def moving_average(cube, window):
@@ -287,12 +289,15 @@ def make_time_series_sensitivity(
 
     # Making plots for each layer
     #for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
     cuts = ['loose', 'medium', 'tight']
     for cut in cuts:
         ncube = calculate_aeu(cube.copy(), cut=cut)
         timeplot(ncube, label=' '.join([metadata['dataset'], cut]))
 
-    plt.axhline(14, c='k', label='Obs mean, Brandt et al (2021)')
+    ax = add_obs(ax)
 
     plt.legend()
     title = ' '.join([metadata['dataset'], 'AEU'] )
@@ -416,8 +421,8 @@ def make_transects_plots(
     # Make a dict of cubes for each layer.
     # qplt.contourf(cube, 15, linewidth=0, rasterized=True)
     fig = plt.figure()
-    ax = fig.add_subplot(111
-)
+    ax = fig.add_subplot(111)
+
     plt.contourf(cube.coord('latitude').points,
                  -1.* np.abs(cube.coord('depth').points),
                  cube.data,
@@ -480,6 +485,31 @@ def make_transects_plots(
 
     plt.close()
 
+def add_obs(ax, obstype = ['trend', 'box']):
+    """
+    Added Brandt et al 2021 data.
+    see supplmentatry figure 3.
+      https://static-content.springer.com/esm/art%3A10.1038%2Fs41561-021-00716-1/MediaObjects/41561_2021_716_MOESM1_ESM.pdf
+      https://www.nature.com/articles/s41561-021-00716-1#
+    """
+    if 'mean' in obstype:
+        plt.axhline(14, xmin=2006., xmax=2019., c='k', label='Brandt et al. (2021)')
+    if 'trend' in obstype: 
+        plt.plot([2006., 2019.6], [12.3, 18.6], 'k--', label='Brandt et al. (2021)')
+    if 'box' in obstype:
+        plt.fill_between([2006., 2019.6], [12.3, 12.3], y2=[18.6, 18.6], color='k', alpha=0.2, )
+
+    return ax
+
+
+def add_linear_reg(x,y, **kwargs):
+    coef = np.polyfit(x,y,1)
+    poly1d_fn = np.poly1d(coef)
+    kwargs['lw'] = 2.
+    kwargs['ls'] = '--'
+    kwargs['zorder'] = 10
+    plt.plot(x, poly1d_fn(x),  **kwargs)
+
 
 def multi_model_time_series(
         cfg,
@@ -514,7 +544,7 @@ def multi_model_time_series(
             if ma:
                 cube = moving_average(cube, ma)
 
-            model_cubes[filename] = cubes
+            model_cubes[filename] = cube
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -523,6 +553,8 @@ def multi_model_time_series(
     title = ''
     plot_details = {}
     cmap = plt.cm.get_cmap('viridis')
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
 
     # Plot each file in the group
     for index, filename in enumerate(sorted(metadata)):
@@ -537,14 +569,20 @@ def multi_model_time_series(
             cube,
             c=color,
             ls='-',
-            lw=2.,
+            lw=1.,
             )
         plot_details[filename] = {
             'c': color,
             'ls': '-',
             'lw': 2.,
-            'label': metadata[filename]['dataset']
+            'label': metadata[filename]['exp']
         }
+
+    plt.title(' '.join((['Atlantic Equatorial Undercurrent,','(', cut, str(ma), ')'])))
+    plt.xlabel('Year')
+    plt.ylabel('AEU, Sv')
+
+    ax = add_obs(ax)
 
     # Resize and add legend outside thew axes.
     plt.gcf().set_size_inches(9., 6.)
@@ -553,18 +591,16 @@ def multi_model_time_series(
 
     # Saving files:
     if cfg['write_plots']:
-        path = diagtools.get_image_path(
-            cfg,
-            metadata[filename],
-            prefix='MultipleModels_',
-            suffix='_'.join(['timeseries',
-                             str(layer) + image_extention]),
-            metadata_id_list=[
-                'field', 'short_name', 'preprocessor', 'diagnostic',
+        metadata_id_list=[
+                'short_name', 'short_name', 'preprocessor', 'diagnostic',
                 'start_year', 'end_year'
-            ],
-        )
+            ]
 
+        path = diagtools.folder([cfg['plot_dir'], 'multimodel'])+'MultipleModels'
+        strings = [str(metadata[filename][k]) for k in metadata_id_list]
+        strings.extend(['timeseries', str(ma), cut])
+        path = path + '_'.join(strings)+ image_extention
+         
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
     plt.close()
@@ -599,6 +635,7 @@ def main(cfg):
                     cut=cut,
                     ma=ma,
                 )
+        continue
 
         for filename in sorted(metadatas):
             if metadatas[filename]['frequency'] != 'fx':

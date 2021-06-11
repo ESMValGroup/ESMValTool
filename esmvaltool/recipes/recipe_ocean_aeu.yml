@@ -22,11 +22,11 @@ documentation:
 preprocessors:
   prep_transect:
     custom_order: true
-    extract_region:
-      start_longitude: -25.
-      end_longitude: -20.
-      start_latitude: -5.
-      end_latitude: 5.
+#    extract_region:
+#      start_longitude: -25.
+#      end_longitude: -20.
+#      start_latitude: -5.
+#      end_latitude: 5.
     extract_volume:
       z_min: 0.
       z_max: 500.
@@ -51,8 +51,13 @@ diagnostics:
         short_name: uo
         preprocessor: prep_transect
         additional_datasets:
-          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 1950, end_year: 2014, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2014, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp119, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp126, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp245, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp370, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
           - {dataset: UKESM1-0-LL, project: CMIP6, exp: ssp585, mip: Omon, ensemble: r1i1p1f2, grid: gn, start_year: 2015, end_year: 2100, }
+
 
     scripts:
       AMOC_timeseries:
