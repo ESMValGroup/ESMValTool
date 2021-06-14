@@ -27,6 +27,7 @@ Atmosphere
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
+   recipe_impact
    recipe_modes_of_variability
    recipe_quantilebias
    recipe_bock20jgr
@@ -52,6 +53,7 @@ Future projections
 
    recipe_li17natcc
    recipe_schlund20jgr
+   recipe_meehl20sciadv
    recipe_emergent_constraints
    recipe_wenzel14jgr
    recipe_schlund20esd
