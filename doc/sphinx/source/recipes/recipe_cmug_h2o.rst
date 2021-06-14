@@ -96,12 +96,10 @@ deangelisf3f4.py:
 * *prw*
    HOAPS, planed for ESACCI-WV data, type CDR-2
 
-
 diag_tropopause.py:
+
 * *hus*
    ERA-Interim, ESACCI water vapour paned
-
-
 
 diag_tropopause_zonalmean.py:
 * *hus*
