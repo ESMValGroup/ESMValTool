@@ -9,6 +9,11 @@ documentation:
   authors:
     - predoi_valeriu
 
+  references:
+    - brown02nsidc
+    - legates90tac
+    - koven13jclim
+
   maintainer:
     - predoi_valeriu
 

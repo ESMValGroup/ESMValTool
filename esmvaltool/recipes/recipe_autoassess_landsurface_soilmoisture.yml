@@ -13,6 +13,11 @@ documentation:
   authors:
     - predoi_valeriu
 
+  references:
+    - esacci-soilmoisture
+    - dorigo17rse
+    - gruber19essd
+
   maintainer:
     - predoi_valeriu
 

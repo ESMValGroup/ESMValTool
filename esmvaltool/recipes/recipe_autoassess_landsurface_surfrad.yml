@@ -13,6 +13,10 @@ documentation:
   authors:
     - predoi_valeriu
 
+  references:
+    - loeb19jclim
+    - kato18ebaf
+
   maintainer:
     - predoi_valeriu
 
