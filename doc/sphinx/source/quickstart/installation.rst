@@ -660,7 +660,7 @@ again.
 Pre-installed versions on HPC clusters
 ======================================
 
-The ESMValTool is also avaialble on the HPC clusters CEDA-JASMIN and DKRZ-MISTRAL and there will be no need
+The ESMValTool is also available on the HPC clusters CEDA-JASMIN and DKRZ-MISTRAL and there will be no need
 to install it yourself if you are just running diagnostics:
 
  - CEDA-JASMIN: `esmvaltool` is available on the scientific compute nodes (`sciX.jasmin.ac.uk` where
