@@ -200,7 +200,7 @@ that describes the installation of the ESMValTool in more detail. It can be foun
 Installation on MacOSX
 ======================
 
-The Python diagnostics of the ESMValTool are supported on MacOSX, but Julia, NCL
+The Python diagnostics of the ESMValTool are supported on MacOSX, but Julia, NCL,
 and R are not. If any of these are needed, deployment through a :ref:`Docker<install_with_docker>`
 container is advised.
 
@@ -501,7 +501,7 @@ code (called ``ESMValTool`` if you did not choose a different name)
 
     cd ESMValTool
 
-and run
+and run (on Linux only!)
 
 .. code-block:: bash
 
@@ -598,7 +598,7 @@ If everything was installed properly, ESMValTool should have printed a
 help message to the console.
 
 **MacOSX note:** some recipes may depend on the OpenMP library, which does not
-install via conda on MacOSX. Instead run:
+install via conda on MacOSX. Instead run
 
 .. code-block:: bash
 
