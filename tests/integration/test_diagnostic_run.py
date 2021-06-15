@@ -49,7 +49,7 @@ def check(result_file):
     assert not missing
 
 
-recipe_py = """
+RECIPE_PY = """
 import yaml
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
 """
-recipe_ncl = """
+RECIPE_NCL = """
 begin
     print("INFO    Loading settings from " + getenv("settings"))
     loadscript("$settings")
@@ -76,7 +76,7 @@ result = "run_dir: " + config_user_info@run_dir + n +\
 
 system("echo '" + result + "' > " + diag_script_info@setting_name)
 """
-recipe_r = """
+RECIPE_R = """
 library(yaml)
 args <- commandArgs(trailingOnly = TRUE)
 print(paste0("INFO    Loading settings from ", args[1]))
@@ -85,7 +85,7 @@ settings <- yaml::read_yaml(args[1])
 print(paste0("INFO    Writing settings to ", settings$setting_name))
 yaml::write_yaml(settings, settings$setting_name)
 """
-recipe_jl = """
+RECIPE_JL = """
 import YAML
 @info "Starting diagnostic script with" ARGS
 config_file = ARGS[1]
@@ -96,19 +96,19 @@ Base.Filesystem.cp(config_file, out_file)
 @info "Done"
 """
 
-SCRIPTS = [('diagnostic.py', recipe_py),
+SCRIPTS = [('diagnostic.py', RECIPE_PY),
            pytest.param('diagnostic.ncl',
-                        recipe_ncl,
+                        RECIPE_NCL,
                         marks=pytest.mark.skipif(
                             sys.platform == 'darwin',
                             reason="ESMValTool ncl not supported on OSX")),
            pytest.param('diagnostic.R',
-                        recipe_r,
+                        RECIPE_R,
                         marks=pytest.mark.skipif(
                             sys.platform == 'darwin',
                             reason="ESMValTool R not supported on OSX")),
            pytest.param('diagnostic.jl',
-                        recipe_jl,
+                        RECIPE_JL,
                         marks=pytest.mark.skipif(
                             sys.platform == 'darwin',
                             reason="ESMValTool Julia not supported on OSX"))]
