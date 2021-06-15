@@ -6,41 +6,11 @@ Land-surface Permafrost - Autoassess diagnostics
 Overview
 --------
 
-
-Prior and current contributors
-------------------------------
-Met Office:
-
-* Prior to April 2018: Eleanor Burke, Paul Earnshaw
-
-ESMValTool:
-
-* Since April 2018: Porting into ESMValTool by Alistair Sellar and Valeriu Predoi
-
-
-Developers
-----------
-Met Office:
-
-* Eleanor Burke
-
-
-ESMValTool:
-
-* Since April 2018: Alistair Sellar and Valeriu Predoi
-
-Review of current port in ESMValTool
-------------------------------------
-The code and results review of the port from native Autoassess to ESMValTool
-was conducted by Alistair Sellar (`<alistair.sellar@matoffice.gov.uk>`_) and
-Valeriu Predoi (`<valeriu.predoi@ncas.ac.uk>`_) in May 2021. Review consisted in
-comparing results from runs using ESMValTool's port and native Autoassess using
-the same models and data stretches.
-
-Metrics and Diagnostics
------------------------
-
-Performance metrics (with observation-based estimates in brackets):
+Permafrost thaw is an important impact of climate change, and is the source of
+a potentially strong Earth system feedback through the release of soil carbon
+into the atmosphere. This recipe provides metrics that evaluate the
+climatological performance of models in simulating soil temperatures that
+control permafrost. Performance metrics (with observation-based estimates in brackets):
 
 * permafrost area (17.46 million square km)
 * fractional area of permafrost northwards of zero degree isotherm (0.47)
@@ -50,29 +20,143 @@ Performance metrics (with observation-based estimates in brackets):
 * annual amplitude at the surface / annual air temperature (0.57 unitless)
 
 
-Diagnostics:
+Plots:
 
 * Maps of permafrost extent and zero degC isotherm
-* Metrics plot comparing control and experiment
-
-
-Model Data
-----------
-
-========================================================================= ================== ============== ==============================================
-Variable/Field name                                                       realm              frequency      Comment
-========================================================================= ================== ============== ==============================================
-Near-Surface Air Temperature (tas)                                        Atmosphere         monthly mean
-Temperature of Soil (tsl)                                                 Land               monthly mean
-Moisture in Upper Portion of Soil Column (mrsos)                          Land               monthly mean
-Percentage of the Grid Cell Occupied by Land (Including Lakes) (sftlf)    mask               fixed
-========================================================================= ================== ============== ==============================================
+* Normalised assessment metrics plot comparing control and experiment
 
 The recipe takes as input a control model and experimental model, comparisons being made
-with these two CMIP models.
+with these two models.
 
-Inputs and usage
-----------------
+
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/
+
+    * recipe_autoassess_landsurface_permafrost.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/autoassess/
+
+    * autoassess_area_base.py: wrapper for autoassess scripts
+    * land_surface_permafrost/permafrost.py: script to calculate permafrost
+      metrics
+    * plot_autoassess_metrics.py: plot normalised assessment metrics
+
+
+User settings in recipe
+-----------------------
+
+#. Script autoassess_area_base.py
+
+   *Required settings for script*
+
+   * area: must equal land_surface_permafrost to select this diagnostic
+   * control_model: name of model to be used as control
+   * exp_model: name of model to be used as experiment
+   * start: date (YYYY/MM/DD) at which period begins (see note on time gating)
+   * end: date (YYYY/MM/DD) at which period ends (see note on time gating)
+   * climfiles_root: path to observation climatologies
+
+   *Optional settings for script*
+
+   * title: arbitrary string with name of diagnostic
+   * obs_models: unused for this recipe
+
+   *Required settings for variables*
+
+   none
+
+   *Optional settings for variables*
+
+   none
+
+
+#. Script plot_autoassess_metrics.py
+
+   *Required settings for script*
+
+   * area: must equal land_surface_permafrost to select this diagnostic
+   * control_model: name of model to be used as control in metrics plot
+   * exp_model: name of model to be used as experiment in metrics plot
+   * title: string to use as plot title
+
+   *Optional settings for script*
+
+   none
+
+   *Required settings for variables*
+
+   none
+
+   *Optional settings for variables*
+
+   none
+
+
+
+Variables
+---------
+
+* tas (atmos, monthly mean, longitude latitude time)
+* tsl (land, monthly mean, longitude latitude time)
+* mrsos (land, monthly mean, longitude latitude time)
+* sftlf (mask, fixed, longitude latitude)
+
+
+Observations and reformat scripts
+---------------------------------
+
+None
+
+
+References
+----------
+
+* Observed permafrost extent is from http://nsidc.org/data/ggd318.html: Brown, J.,
+  O. Ferrians, J. A. Heginbottom, and E. Melnikov. 2002. Circum-Arctic Map of
+  Permafrost and Ground-Ice Conditions, Version 2. Boulder, Colorado USA. NSIDC:
+  National Snow and Ice Data Center.  When calculating the global area of
+  permafrost the grid cells are weighted by the proportion of permafrost within
+  them.
+
+* Annual mean air temperature is from: Legates, D. R., and C. J. Willmott, 1990:
+  Mean seasonal and spatial variability in global surface air temperature. Theor.
+  Appl. Climatol., 41, 11-21.  The annual mean is calculated from the seasonal
+  mean data available at the Met Office.
+
+* The soil temperature metrics are calcuated following: Charles D. Koven, William
+  J. Riley, and Alex Stern, 2013: Analysis of Permafrost Thermal Dynamics and
+  Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26. 
+  (Table 3) http://dx.doi.org/10.1175/JCLI-D-12-00228.1 The
+  locations used for Table 3 were extracted from the model and the modelled
+  metrics calculated.
+
+
+Example plots
+-------------
+
+.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_north_america_UKESM1-0-LL.png
+   :scale: 50 %
+   :alt: pf_extent_north_america_UKESM1-0-LL.png
+
+   Permafrost extent and zero degC isotherm, showing North America
+
+.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_asia_UKESM1-0-LL.png
+   :scale: 50 %
+   :alt: pf_extent_asia_UKESM1-0-LL.png
+
+   Permafrost extent and zero degC isotherm, showing Asia and Europe
+
+.. figure:: /recipes/figures/autoassess_landsurface/Permafrost_Metrics.png
+   :scale: 50 %
+   :alt: Permafrost_Metrics.png
+
+   Normalised metrics plot comparing a control and experiment simulation
+
+
+Additional notes on usage
+-------------------------
 The ``landsurface_permafrost`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
 and, as any other ``autoassess`` metric, it uses the ``autoassess_area_base.py`` as general purpose
 wrapper. This wrapper accepts a number of input arguments that are read through from the recipe.
@@ -105,7 +189,6 @@ are almost the same as for the other Autoassess metrics.
 An example of standard inputs as read by ``autoassess_area_base.py`` and passed
 over to the diagnostic/metric is listed below.
 
-
 .. code-block:: yaml
 
     scripts:
@@ -119,70 +202,3 @@ over to the diagnostic/metric is listed below.
         plot_name: "Permafrost_Metrics"
         diag_tag: aa_landsurf_permafrost
         diag_name: autoassess_landsurf_permafrost
-
-References
-----------
-* Observed permafrost extent is from http://nsidc.org/data/ggd318.html: Brown, J.,
-  O. Ferrians, J. A. Heginbottom, and E. Melnikov. 2002. Circum-Arctic Map of
-  Permafrost and Ground-Ice Conditions, Version 2. Boulder, Colorado USA. NSIDC:
-  National Snow and Ice Data Center.  When calculating the global area of
-  permafrost the grid cells are weighted by the proportion of permafrost within
-  them.
-
-* Annual mean air temperature is from: Legates, D. R., and C. J. Willmott, 1990:
-  Mean seasonal and spatial variability in global surface air temperature. Theor.
-  Appl. Climatol., 41, 11-21.  The annual mean is calculated from the seasonal
-  mean data available at the Met Office.
-
-* The soil temperature metrics are calcuated following: Charles D. Koven, William
-  J. Riley, and Alex Stern, 2013: Analysis of Permafrost Thermal Dynamics and
-  Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26. 
-  (Table 3) http://dx.doi.org/10.1175/JCLI-D-12-00228.1 The
-  locations used for Table 3 were extracted from the model and the modelled
-  metrics calculated.
-
-
-Observations Data sets
-----------------------
-
-None used in this diagnostic.
-
-Sample Plots and metrics
-------------------------
-Below is a set of metrics for  UKESM1-0-LL (historical data); the table
-shows a comparison made between running ESMValTool on CMIP6 CMORized
-netCDF data freely available on ESGF nodes and the run made using native
-Autoassess performed at the Met Office using the pp output of the model.
-Comparison period was 1997/12/01 to 2002/12/01.
-
-===============================================     ================     ====================
-Metric name                                         UKESM1-0-LL;         UKESM1-0-LL;
-                                                    CMIP6: AERmonZ;      pp files;
-                                                    piControl, ESGF      piControl, u-aw310
-===============================================     ================     ====================
-attenuation 1m over surface                         0.496                0.496
-attenuation surface over air                        0.492                0.493
-fraction area permafrost over zerodeg               0.290                0.289
-offset 1m minus surface                             0.947                0.947
-offset surface minus air                            7.67                 7.71
-permafrost area                                     13.5                 13.7
-===============================================     ================     ====================
-
-
-.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_north_america_UKESM1-0-LL.png
-   :scale: 50 %
-   :alt: pf_extent_north_america_UKESM1-0-LL.png
-
-   Permafrost extent and zero degC isotherm, showing North America
-
-.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_asia_UKESM1-0-LL.png
-   :scale: 50 %
-   :alt: pf_extent_asia_UKESM1-0-LL.png
-
-   Permafrost extent and zero degC isotherm, showing Asia and Europe
-
-.. figure:: /recipes/figures/autoassess_landsurface/Permafrost_Metrics.png
-   :scale: 50 %
-   :alt: Permafrost_Metrics.png
-
-   Normalised metrics plot comparing a control and experiment simulation

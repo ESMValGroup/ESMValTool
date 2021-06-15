@@ -6,39 +6,10 @@ Land-surface Soil Moisture - Autoassess diagnostics
 Overview
 --------
 
-
-Prior and current contributors
-------------------------------
-Met Office:
-
-* Prior to April 2018: Heather Rumbold, Paul Earnshaw
-
-ESMValTool:
-
-* Since April 2018: Porting into ESMValTool by Alistair Sellar and Valeriu Predoi
-
-
-Developers
-----------
-Met Office:
-
-* Heather Rumbold
-
-
-ESMValTool:
-
-* Since April 2018: Alistair Sellar and Valeriu Predoi
-
-Review of current port in ESMValTool
-------------------------------------
-The code and results review of the port from native Autoassess to ESMValTool
-was conducted by Alistair Sellar (`<alistair.sellar@matoffice.gov.uk>`_) and
-Valeriu Predoi (`<valeriu.predoi@ncas.ac.uk>`_) in May 2021. Review consisted in
-comparing results from runs using ESMValTool's port and native Autoassess using
-the same models and data stretches.
-
-Metrics and Diagnostics
------------------------
+Soil moisture is a critical component of the land system, controling surface
+energy fluxes in many areas of the world. This recipe provides metrics that
+evaluate the skill of models' spatial and seasonal distribution of soil
+moisture against the ESA CCI soil moisture ECV.
 
 Performance metrics:
 
@@ -51,26 +22,110 @@ for meteorological seasons:
 * June-July-August (jja)
 * September-October-November (son)
 
-Diagnostics:
+Plots:
 
-* Metrics plot comparing control and experiment
-
-
-
-Model Data
-----------
-
-=========================================== ================== ============== ==============================================
-Variable/Field name                         realm              frequency      Comment
-=========================================== ================== ============== ==============================================
-Total Water Content of Soil Layer (mrsos)   Land               monthly mean
-=========================================== ================== ============== ==============================================
+* Normalised assessment metrics plot comparing control and experiment
 
 The recipe takes as input a control model and experimental model, comparisons being made
-with these two CMIP models.
+with these two models.
 
-Inputs and usage
-----------------
+Available recipes and diagnostics
+---------------------------------
+
+Recipes are stored in esmvaltool/recipes/
+
+    * recipe_autoassess_landsurface_soilmoisture.yml
+
+Diagnostics are stored in esmvaltool/diag_scripts/autoassess/
+
+    * autoassess_area_base.py: wrapper for autoassess scripts
+    * land_surface_soilmoisture/soilmoisture.py: script to calculate soil moisture
+      metrics
+    * plot_autoassess_metrics.py: plot normalised assessment metrics
+
+
+User settings in recipe
+-----------------------
+
+#. Script autoassess_area_base.py
+
+   *Required settings for script*
+
+   * area: must equal land_surface_soilmoisture to select this diagnostic
+   * control_model: name of model to be used as control
+   * exp_model: name of model to be used as experiment
+   * start: date (YYYY/MM/DD) at which period begins (see note on time gating)
+   * end: date (YYYY/MM/DD) at which period ends (see note on time gating)
+   * climfiles_root: path to observation climatologies
+
+   *Optional settings for script*
+
+   * title: arbitrary string with name of diagnostic
+   * obs_models: unused for this recipe
+
+   *Required settings for variables*
+
+   none
+
+   *Optional settings for variables*
+
+   none
+
+
+#. Script plot_autoassess_metrics.py
+
+   *Required settings for script*
+
+   * area: must equal land_surface_soilmoisture to select this diagnostic
+   * control_model: name of model to be used as control in metrics plot
+   * exp_model: name of model to be used as experiment in metrics plot
+   * title: string to use as plot title
+
+   *Optional settings for script*
+
+   none
+
+   *Required settings for variables*
+
+   none
+
+   *Optional settings for variables*
+
+   none
+
+
+Variables
+---------
+
+* mrsos (land, monthly mean, longitude latitude time)
+
+
+Observations and reformat scripts
+---------------------------------
+
+1999-2008 climatologies (seasonal means) from ESA ECV Soil Moisture Dataset v1.
+Produced by the ESA CCI soil moisture project: https://www.esa-soilmoisture-cci.org/node/93
+
+
+References
+----------
+* Dorigo, W.A., Wagner, W., Albergel, C., Albrecht, F.,  Balsamo, G., Brocca, L., Chung, D., Ertl, M., Forkel, M., Gruber, A., Haas, E., Hamer, D. P. Hirschi, M., Ikonen, J., De Jeu, R. Kidd, R.  Lahoz, W., Liu, Y.Y., Miralles, D., Lecomte, P. (2017).  ESA CCI Soil Moisture for improved Earth system understanding: State-of-the art and future directions. In Remote Sensing of Environment, 2017,  ISSN 0034-4257, https://doi.org/10.1016/j.rse.2017.07.001.
+
+* Gruber, A., Scanlon, T., van der Schalie, R., Wagner, W., Dorigo, W. (2019). Evolution of the ESA CCI Soil Moisture Climate Data Records and their underlying merging methodology. Earth System Science Data 11, 717-739, https://doi.org/10.5194/essd-11-717-2019
+
+
+Example plots
+-------------
+
+.. figure:: /recipes/figures/autoassess_landsurface/Soilmoisture_Metrics.png
+   :scale: 50 %
+   :alt: Soilmoisture_Metrics.png
+
+   Normalised metrics plot comparing a control and experiment simulation
+
+
+Additional notes on usage
+-------------------------
 The ``landsurface_soilmoisture`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
 and, as any other ``autoassess`` metric, it uses the ``autoassess_area_base.py`` as general purpose
 wrapper. This wrapper accepts a number of input arguments that are read through from the recipe.
@@ -117,42 +172,3 @@ over to the diagnostic/metric is listed below.
         start: 1997/12/01
         end: 2002/12/01
         climfiles_root: '/gws/nopw/j04/esmeval/autoassess_specific_files/files'  # on JASMIN
-
-References
-----------
-* Dorigo, W.A., Wagner, W., Albergel, C., Albrecht, F.,  Balsamo, G., Brocca, L., Chung, D., Ertl, M., Forkel, M., Gruber, A., Haas, E., Hamer, D. P. Hirschi, M., Ikonen, J., De Jeu, R. Kidd, R.  Lahoz, W., Liu, Y.Y., Miralles, D., Lecomte, P. (2017).  ESA CCI Soil Moisture for improved Earth system understanding: State-of-the art and future directions. In Remote Sensing of Environment, 2017,  ISSN 0034-4257, https://doi.org/10.1016/j.rse.2017.07.001.
-
-* Gruber, A., Scanlon, T., van der Schalie, R., Wagner, W., Dorigo, W. (2019). Evolution of the ESA CCI Soil Moisture Climate Data Records and their underlying merging methodology. Earth System Science Data 11, 717-739, https://doi.org/10.5194/essd-11-717-2019
-
-
-Observations Data sets
-----------------------
-
-1999-2008 climatologies (seasonal means) from ESA ECV Soil Moisture Dataset v1.
-Produced by the ESA CCI soil moisture project: https://www.esa-soilmoisture-cci.org/node/93
-
-
-Sample Plots and metrics
-------------------------
-Below is a set of metrics for  UKESM1-0-LL (historical data); the table
-shows a comparison made between running ESMValTool on CMIP6 CMORized
-netCDF data freely available on ESGF nodes and the run made using native
-Autoassess performed at the Met Office using the pp output of the model.
-Comparison period was 1997/12/01 to 2002/12/01.
-
-===============================================     ================     ====================
-Metric name                                         UKESM1-0-LL;         UKESM1-0-LL;
-                                                    CMIP6: AERmonZ;      pp files;
-                                                    piControl, ESGF      piControl, u-aw310
-===============================================     ================     ====================
-soil moisture median absolute error djf             0.0708               0.0708
-soil moisture median absolute error mam             0.0665               0.0671
-soil moisture median absolute error jja             0.0571               0.0564
-soil moisture median absolute error son             0.0656               0.0661
-===============================================     ================     ====================
-
-.. figure:: /recipes/figures/autoassess_landsurface/Soilmoisture_Metrics.png
-   :scale: 50 %
-   :alt: Soilmoisture_Metrics.png
-
-   Normalised metrics plot comparing a control and experiment simulation
