@@ -26,6 +26,18 @@ from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
+ipcc_colours={
+    'historical':'blue',
+    'ssp126': 'green',
+    'ssp245': 'gold',
+    'ssp370': 'orange',
+    'ssp585': 'red',}
+CMIP5_blue = '#2551cc'
+CMIP6_red = '#cc2323' # (204, 35, 35)
+histnat_green= '#004F00' # 0,79,0
+historical_beige = '#c47900' #
+
+
 
 def get_obs_projects():
     """
@@ -143,6 +155,9 @@ def bgc_units(cube, name):
     if name in ['mfo', 'amoc', 'msftmyz']:
         # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
         new_units = 'Tg s-1'
+
+    if name in ['zos', 'zostoga']:
+        new_units = 'mm'
 
     if new_units != '':
         logger.info(' '.join(
