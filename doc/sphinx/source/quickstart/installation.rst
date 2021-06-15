@@ -226,6 +226,16 @@ Confirm that the ESMValTool is working with:
 
     esmvaltool --help
 
+Note that some recipes may depend on the OpenMP library, which does not
+install via conda on MacOSX. To install this library, run:
+
+.. code-block:: bash
+
+    brew install libomp
+
+to install the library with Homebrew. In case you do not have Homebrew, follow
+installation instructions `here <https://brew.sh/>`__.
+
 .. _install_with_pip:
 
 Pip installation
