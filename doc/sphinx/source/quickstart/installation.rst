@@ -433,6 +433,14 @@ and run
 This command installs many of the required dependencies from conda, including
 the ESMValCore package and Python, R, and NCL interpreters.
 
+**MacOSX note:** ESMValTool functionalities in Julia, NCL, and R are not
+supported on MacOSX, due to conflicts in the conda environment. To install a
+conda environment on MacOSX, use the dedicated environment file:
+
+.. code-block:: bash
+
+    conda env create --name esmvaltool --file environment_osx.yml
+
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should
 then activate the environment using the command:
@@ -511,6 +519,16 @@ To do this, run the tool with:
 
 If everything was installed properly, ESMValTool should have printed a
 help message to the console.
+
+**MacOSX note:** some recipes may depend on the OpenMP library, which does not
+install via conda on MacOSX. Instead run:
+
+.. code-block:: bash
+
+    brew install libomp
+
+to install the library with Homebrew. In case you do not have Homebrew, follow
+installation instructions `here <https://brew.sh/>`__.
 
 For a more complete installation verification, run the automated tests and
 confirm that no errors are reported:
