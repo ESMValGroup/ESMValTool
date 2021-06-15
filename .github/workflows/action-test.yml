@@ -1,13 +1,12 @@
 name: Test
 
-# runs on a push on master and at the end of every day
+# runs on a push on main and at the end of every day
 on:
   push:
     branches:
-    - master
-  pull_request:
-    branches:
-    - master
+    - main
+    - reinstate_GAtest_OSX
+
   schedule:
     - cron: '0 0 * * *'
 

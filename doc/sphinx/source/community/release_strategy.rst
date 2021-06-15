@@ -175,7 +175,7 @@ These are the detailed steps to take to make a release.
 3. Some additional testing of ESMValCore
 
    - Run all the recipes (optionally with a reduced amount of data) to check that they still work
-   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the master branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
+   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
 4. ESMValCore release
@@ -193,7 +193,7 @@ These are the detailed steps to take to make a release.
 6. Some additional testing of ESMValTool
 
    - Run all the recipes to check that they still work and ask authors to review the plots
-   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the master branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
+   - If a bug is discovered that needs to be fixed before the release, a pull request can be made to the main branch to fix the bug. The person making the pull request can then ask the release manager to cherry-pick that commit into the release branch.
 
 
 7. ESMValTool release
@@ -222,7 +222,7 @@ Procedure
 ~~~~~~~~~
 
 1. One or more issues are resolved that are deemed (by the core development team) to warrant a bugfix release.
-2. A release branch is created from the last release tag and the commit that fixes the bug/commits that fix the bugs are cherry-picked into it from the master branch.
+2. A release branch is created from the last release tag and the commit that fixes the bug/commits that fix the bugs are cherry-picked into it from the main branch.
 3. Some additional testing of the release branch takes place.
 4. The release takes place.
 
@@ -245,7 +245,7 @@ The person in charge of making the release, both technically and organizationall
 
 Release branch
 ~~~~~~~~~~~~~~
-The release branch can be used to do some additional testing before the release, while normal development work continues in the master branch. It will be branched off from the master branch after the feature freeze and will be used to make the release on the release date. The only way to still get something included in the release after the feature freeze is to ask the release manager to cherry-pick a commit from the master branch into this branch.
+The release branch can be used to do some additional testing before the release, while normal development work continues in the main branch. It will be branched off from the main branch after the feature freeze and will be used to make the release on the release date. The only way to still get something included in the release after the feature freeze is to ask the release manager to cherry-pick a commit from the main branch into this branch.
 
 
 .. _How to make a release:
@@ -264,7 +264,7 @@ To make a new release of the package, follow these steps:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Check the ``nightly``
-`build on CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/master>`__
+`build on CircleCI <https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main>`__
 and the
 `GitHub Actions run <https://github.com/ESMValGroup/ESMValTool/actions>`__.
 All tests should pass before making a release (branch).
@@ -276,7 +276,7 @@ The version number is stored in ``esmvaltool/__init__.py``,
 ``package/meta.yaml``, ``CITATION.cff``. Make sure to update all files.
 Also update the release date in ``CITATION.cff``.
 See https://semver.org for more information on choosing a version number.
-Make a pull request and get it merged into ``master``.
+Make a pull request and get it merged into ``main``.
 
 3. Add release notes
 ~~~~~~~~~~~~~~~~~~~~
@@ -287,11 +287,11 @@ previous release.
 Review the results, and if anything needs changing, change it on GitHub and
 re-run the script until the changelog looks acceptable.
 Copy the result to the file ``doc/sphinx/source/changelog.rst``.
-Make a pull request and get it merged into ``master``.
+Make a pull request and get it merged into ``main``.
 
 4. Create a release branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Create a branch off the ``master`` branch and push it to GitHub.
+Create a branch off the ``main`` branch and push it to GitHub.
 Ask someone with administrative permissions to set up branch protection rules
 for it so only you and the person helping you with the release can push to it.
 Announce the name of the branch in an issue and ask the members of the
@@ -301,7 +301,7 @@ to run their favourite recipe using this branch.
 5. Cherry pick bugfixes into the release branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If a bug is found and fixed (i.e. pull request merged into the
-``master`` branch) during the period of testing, use the command
+``main`` branch) during the period of testing, use the command
 ``git cherry-pick COMMIT_HASH``, where ``COMMIT_HASH`` is the commit hash of the
 commit that needs to be cherry-picked, to include the commit for this bugfix
 into the release branch.
@@ -309,7 +309,7 @@ Cherry-pick any new contributions in the order they were merged, to avoid
 conflicts.
 When the testing period is over, make a pull request to update
 the release notes with the latest changes (do not forget to include the pull
-request itself into the changelog), get it merged into ``master`` and
+request itself into the changelog), get it merged into ``main`` and
 cherry-pick it into the release branch.
 
 6. Make the release on GitHub
@@ -319,7 +319,7 @@ Do a final check that all tests on CircleCI and GitHub Actions completed
 successfully.
 Then click the
 `releases tab <https://github.com/ESMValGroup/ESMValTool/releases>`__
-and create the new release from the release branch (i.e. not from ``master``).
+and create the new release from the release branch (i.e. not from ``main``).
 The release tag always starts with the letter ``v`` followed by the version
 number, e.g. ``v2.1.0``.
 
