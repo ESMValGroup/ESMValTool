@@ -159,7 +159,7 @@ are almost the same as for the other Autoassess metrics.
    implementation to fully replicate the native Autoassess functionality
    and a minor user inconvenience since they need to set an extra set of
    ``start`` and ``end`` arguments in the diagnostic; this will be phased
-   when all the native Autoassess metrics hanve been ported to ESMValTool
+   when all the native Autoassess metrics have been ported to ESMValTool
    review has completed.
 
 
