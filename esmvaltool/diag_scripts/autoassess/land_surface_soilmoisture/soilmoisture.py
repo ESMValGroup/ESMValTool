@@ -5,10 +5,32 @@ import logging
 import numpy as np
 import iris
 from esmvalcore.preprocessor import regrid
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
-
 logger = logging.getLogger(__name__)
+
+
+def get_provenance_record(plot_file, caption, run):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'map',
+        'authors': [
+            'sellar_alistair',
+        ],
+        'references': [
+            'esacci-soilmoisture',
+            'dorigo17rse',
+            'gruber19essd',
+        ],
+        'plot_file': plot_file,
+        'ancestors': run,
+    }
+
+    return record
 
 
 def land_sm_top(run):
@@ -101,5 +123,14 @@ def land_sm_top(run):
         dffs = dff.data
         dffs = np.ma.abs(dffs)
         metrics[name] = float(np.ma.median(dffs))
+
+    # record provenance
+    plot_file = "Autoassess soilmoisture metrics"
+    caption = 'Autoassess soilmoisture MedAbsErr for {}'.format(str(seasons))
+    provenance_record = get_provenance_record(plot_file, caption, run)
+    cfg = {}
+    cfg['run_dir'] = run['out_dir']
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
 
     return metrics
