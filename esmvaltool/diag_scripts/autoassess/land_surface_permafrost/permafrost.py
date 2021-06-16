@@ -12,8 +12,30 @@ import iris.quickplot as qplt
 import iris.util as ut
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
-# from esmvaltool.diag_scripts.shared._supermeans import get_supermean
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 from . import permafrost_koven_sites
+
+
+def get_provenance_record(plot_file, caption, run):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'map',
+        'authors': [
+            'sellar_alistair',
+        ],
+        'references': [
+            'brown02nsidc',
+            'legates90tac',
+            'koven13jclim',
+        ],
+        'plot_file': plot_file,
+        'ancestors': run,
+    }
+
+    return record
 
 
 # main permafrost subroutine
@@ -162,6 +184,18 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     plt.title('Permafrost extent & zero degree isotherm ({})'.format(
         run['runid']))
     plt.savefig('pf_extent_asia_' + run['runid'] + '.png')
+
+    # record provenance
+    plot_file = 'pf_extent_asia_' + run['runid']
+    caption = 'Permafrost extent & zero degree isotherm ({})'.format(
+        run['runid'])
+    provenance_record = get_provenance_record(plot_file,
+                                              caption,
+                                              run)
+    cfg = {}
+    cfg['run_dir'] = run['out_dir']
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
 
     # defining metrics for return up to top level
     metrics = {
