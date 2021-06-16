@@ -60,11 +60,10 @@ def change_data_type(cube):
 
 
 def _convert_units(cube):
-    """Convert unit of cube.
+    """Convert unit of cube, used only for water variables.
 
     From kg m-2 s-1 to kg m-2 month-1 or kg m-2 day-1.
     Note that the unit kg m-2 s-1 is equivalent to mm s-1.
-    Also note that this unit conversion is applicable for water variables. 
     """
     mip = cube.attributes['mip']
 
