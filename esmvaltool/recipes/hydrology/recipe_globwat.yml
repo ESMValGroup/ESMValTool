@@ -73,7 +73,7 @@ diagnostics:
       script:
         script: hydrology/globwat.py
         target_grid_file: 'globwat/globwat_target_grid.nc'
-        langbein_pet: False
+        evaporation_method: debruin # options: debruin or langbein
         regrid_scheme: area_weighted
 
   diagnostic_monthly_GlobWat:
@@ -97,5 +97,5 @@ diagnostics:
         script:
           script: hydrology/globwat.py
           target_grid_file: 'globwat/globwat_target_grid.nc'
-          langbein_pet: False
+          evaporation_method: debruin # options: debruin or langbein
           regrid_scheme: area_weighted

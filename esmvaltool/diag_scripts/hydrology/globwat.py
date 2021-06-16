@@ -231,7 +231,7 @@ def make_filename(dataset_name, cfg, cube, extension='asc'):
     """
     time_stamp = get_cube_time_info(cube)
     short_name, mip = get_cube_data_info(cube)
-    if cfg['langbein_pet']:
+    if cfg['evaporation_method'] == 'langbein':
         pet_method_name = 'langbein_'
     else:
         pet_method_name = 'debruin_'
@@ -284,7 +284,7 @@ def main(cfg):
         if dataset_name == 'ERA5':
             _shift_era5_time_coordinate(all_vars['tas'])
 
-        if cfg['langbein_pet']:
+        if cfg['evaporation_method'] == 'langbein':
             logger.info("Calculation PET uisng arora method")
             all_vars.update(pet=langbein_pet(all_vars['tas']))
         else:
