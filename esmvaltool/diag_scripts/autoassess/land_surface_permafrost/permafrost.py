@@ -45,11 +45,13 @@ def land_permafrost_top(run):
 
     Code development Eleanor Burke.
 
-    Arguments:
+    Parameters
+    ----------
         run - dictionary containing model run metadata
               (see auto_assess/model_run.py for description)
 
-    Returns:
+    Returns
+    -------
         metrics - dictionary of metrics names and values
         also produces image files in the current working directory
 
@@ -264,7 +266,8 @@ def get_nonice_mask(run):
     # m01s08i223
     # use mrsos (moisture in surface soil layer), Lmon
     name_constraint = iris.Constraint(
-            name='mass_content_of_water_in_soil_layer')
+        name='mass_content_of_water_in_soil_layer'
+    )
     cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
