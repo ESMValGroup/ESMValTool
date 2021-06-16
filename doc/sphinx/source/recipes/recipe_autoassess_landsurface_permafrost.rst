@@ -136,15 +136,15 @@ References
 Example plots
 -------------
 
-.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_north_america_UKESM1-0-LL.png
+.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_north_america_ACCESS-CM2.png
    :scale: 50 %
-   :alt: pf_extent_north_america_UKESM1-0-LL.png
+   :alt: pf_extent_north_america_ACCESS-CM2.png
 
    Permafrost extent and zero degC isotherm, showing North America
 
-.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_asia_UKESM1-0-LL.png
+.. figure:: /recipes/figures/autoassess_landsurface/pf_extent_asia_ACCESS-CM2.png
    :scale: 50 %
-   :alt: pf_extent_asia_UKESM1-0-LL.png
+   :alt: pf_extent_asia_ACCESS-CM2.png
 
    Permafrost extent and zero degC isotherm, showing Asia and Europe
 
