@@ -45,8 +45,8 @@ def land_sm_top(run):
 
     Returns
     -------
-    dict
-    metrics, a dictionary of metrics names and values
+    metrics: dict
+        a dictionary of metrics names and values
     """
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
