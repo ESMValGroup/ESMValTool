@@ -90,7 +90,7 @@ a symbolic link to it so it gets picked up at every re-run iteration:
    ln -sfT $(ls -1d ~/esmvaltool_output/recipe_example_* | tail -1) ~/esmvaltool_output/recipe_example_latest
 
 
-.. uncomment when feature plopped in master
+.. uncomment when feature plopped in main
 .. # Running a dry run
 .. =================
 

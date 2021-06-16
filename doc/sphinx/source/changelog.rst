@@ -49,7 +49,7 @@ Documentation
 -  Adding tutorial links to documentation (`#1927 <https://github.com/ESMValGroup/ESMValTool/pull/1927>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Added bibtex file for schlund20jgr (`#1928 <https://github.com/ESMValGroup/ESMValTool/pull/1928>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Documentation contact added the actual email for the mailing list (`#1938 <https://github.com/ESMValGroup/ESMValTool/pull/1938>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Make CircleCI badge specific to master branch (`#1831 <https://github.com/ESMValGroup/ESMValTool/pull/1831>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  Make CircleCI badge specific to main branch (`#1831 <https://github.com/ESMValGroup/ESMValTool/pull/1831>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Documentation on how to move code from a private repository to a public repository (`#1920 <https://github.com/ESMValGroup/ESMValTool/pull/1920>`__) `Birgit Hassler <https://github.com/hb326>`__
 -  Refine pull request review guidelines (`#1924 <https://github.com/ESMValGroup/ESMValTool/pull/1924>`__) `Stef Smeets <https://github.com/stefsmeets>`__
 -  Update release schedule (`#1948 <https://github.com/ESMValGroup/ESMValTool/pull/1948>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
@@ -104,7 +104,7 @@ Automatic testing
 -  Fix conda installation test on CircleCI (`#1952 <https://github.com/ESMValGroup/ESMValTool/pull/1952>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Github Actions: change time for cron job that installs from conda (`#1969 <https://github.com/ESMValGroup/ESMValTool/pull/1969>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  CI upload relevant artifacts for test job (`#1999 <https://github.com/ESMValGroup/ESMValTool/pull/1999>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
--  Github Actions test that runs with the latest ESMValCore master (`#1989 <https://github.com/ESMValGroup/ESMValTool/pull/1989>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Github Actions test that runs with the latest ESMValCore main (`#1989 <https://github.com/ESMValGroup/ESMValTool/pull/1989>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Introduce python 39 in Github Actions tests (`#2029 <https://github.com/ESMValGroup/ESMValTool/pull/2029>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Remove test for conda package installation on Python 3.6 (`#2033 <https://github.com/ESMValGroup/ESMValTool/pull/2033>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update codacy coverage reporter to fix coverage (`#2039 <https://github.com/ESMValGroup/ESMValTool/pull/2039>`__) `Bouwe Andela <https://github.com/bouweandela>`__

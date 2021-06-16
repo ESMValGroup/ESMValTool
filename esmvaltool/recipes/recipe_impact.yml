@@ -1,0 +1,126 @@
+# ESMValTool
+# recipe_impact.yml
+---
+documentation:
+  description: >
+    This recipe provides quick insight into the spread and performance of multiple models.
+
+    Many impact researchers do not have the time and finances to use a large
+    ensemble of climate model runs for their impact analysis. To get an idea of
+    the range of impacts of climate change it also suffices to use a small
+    number of climate model runs. In case a system is only sensitive to annual
+    temperature, one can select a run with a high change and one with a low
+    change of annual temperature, preferably both with a low bias.
+
+  authors:
+    - kalverla_peter
+  maintainer:
+    - kalverla_peter
+  project:
+    - isenes3
+
+datasets:
+  # CMIP5
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: ACCESS1-0, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: BNU-ESM, ensemble: r1i1p1, tag: model}
+  # CMIP6
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FIO-ESM-2-0, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: NESM3, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn, tag: model}
+
+
+observations: &observations
+  - {mip: Amon, dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, tag: observations}
+
+preprocessors:
+
+  calculate_anomalies:
+    custom_order: true
+    extract_region: &region
+      start_longitude: 0.0
+      end_longitude: 39.0
+      start_latitude: 30.0
+      end_latitude: 76.25
+    area_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &reference_period
+        start_year: 1986
+        start_month: 1
+        start_day: 1
+        end_year: 2015
+        end_month: 12
+        end_day: 31
+      standardize: false
+    extract_time:  # Future period
+      start_year: 2035
+      start_month: 1
+      start_day: 1
+      end_year: 2065
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+
+  prepare_for_bias_calculation:
+    regrid:
+      scheme: linear
+      target_grid: 2.5x2.5
+    extract_region:
+      <<: *region
+    extract_time:
+      <<: *reference_period
+
+diagnostics:
+  bias_and_change:
+    description: >
+      Provide quick insights into the behaviour of each model by plotting the
+      bias with respect to observations and change with respect to the reference
+      period.
+
+    themes:
+      - phys
+    realms:
+      - atmos
+
+    variables:
+      tas_change:
+        short_name: tas
+        start_year: 1981
+        end_year: 2099
+        preprocessor: calculate_anomalies
+      pr_change:
+        short_name: pr
+        start_year: 1981
+        end_year: 2099
+        preprocessor: calculate_anomalies
+      tas_bias:
+        short_name: tas
+        start_year: 1981
+        end_year: 2010
+        preprocessor: prepare_for_bias_calculation
+        additional_datasets: *observations
+      pr_bias:
+        short_name: pr
+        start_year: 1981
+        end_year: 2010
+        preprocessor: prepare_for_bias_calculation
+        additional_datasets: *observations
+
+    scripts:
+      visualize:
+        script: impact/bias_and_change.py

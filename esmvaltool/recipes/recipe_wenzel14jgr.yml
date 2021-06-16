@@ -63,8 +63,9 @@ preprocessors:
         'GCP', 'HadGEM2-ES', 'CanESM2', 'IPSL-CM5A-LR', 'GFDL-ESM2M', 'MPI-ESM-LR', 'CESM1-BGC', 'NorESM1-ME',
         ]
     area_statistics:
-          operator: sum
-          fx_variables: [areacello]
+      operator: sum
+      fx_variables: 
+        areacello:
 
   tropical:
     extract_region:
