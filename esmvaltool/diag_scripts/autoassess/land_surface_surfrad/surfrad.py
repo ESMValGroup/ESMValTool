@@ -7,19 +7,44 @@ import numpy as np
 import iris
 
 from esmvalcore.preprocessor import regrid
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 
+def get_provenance_record(plot_file, caption, run):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'map',
+        'authors': [
+            'sellar_alistair',
+        ],
+        'references': [
+            'loeb19jclim',
+            'kato18ebaf',
+        ],
+        'plot_file': plot_file,
+        'ancestors': run,
+    }
+
+    return record
+
+
 def land_surf_rad(run):
-    """
-    Compute median absolute errors against CERES-EBAF data.
+    """Compute median absolute errors against CERES-EBAF data.
 
-    Arguments:
-        run - dictionary containing model run metadata
-              (see auto_assess/model_run.py for description)
+    Parameters
+    ----------
+    run: dict
+        dictionary containing model run metadata
+        (see auto_assess/model_run.py for description)
 
-    Returns:
-        metrics - dictionary of metrics names and values.
+    Returns
+    -------
+    metrics: dict
+        dictionary of metrics names and values.
     """
     supermean_data_dir = os.path.join(run['data_root'], run['runid'],
                                       run['_area'] + '_supermeans')
@@ -81,5 +106,14 @@ def land_surf_rad(run):
 
             name = "{} MedAbsErr {}".format(fld, season)
             metrics[name] = float(np.ma.median(np.abs(dff.data)))
+
+    # record provenance
+    plot_file = "Autoassess Surface Radiation metrics"
+    caption = '{} MedAbsErr for {}'.format(str(rad_fld), str(rad_seasons))
+    provenance_record = get_provenance_record(plot_file, caption, run)
+    cfg = {}
+    cfg['run_dir'] = run['out_dir']
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
 
     return metrics
