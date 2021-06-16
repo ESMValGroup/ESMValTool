@@ -110,7 +110,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-2000-2009 climatologies (seasonal means) from CERES-EBAF Ed2.7.
+2001-2012 climatologies (seasonal means) from CERES-EBAF Ed2.7.
 
 
 References
