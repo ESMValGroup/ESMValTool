@@ -421,6 +421,246 @@ def multi_model_time_series(
         plt.close()
 
 
+
+
+
+
+def multi_model_time_series(
+        cfg,
+        metadata,
+        moving_average_str='',
+        colour_scheme = 'viridis',
+        fig = None,
+        ax = None,
+        save = False
+):
+    """
+    Make a time series plot showing several preprocesssed datasets.
+
+    This tool loads several cubes from the files, checks that the units are
+    sensible BGC units, checks for layers, adjusts the titles accordingly,
+    determines the ultimate file name and format, then saves the image.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+
+    """
+
+    ####
+    # Load the data for each layer as a separate cube
+    model_cubes = {}
+    for filename in sorted(metadata):
+        if metadata[filename]['frequency'] != 'fx':
+            cube = iris.load_cube(filename)
+            cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+
+            model_cubes[filename] = cube
+
+
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    if fig is None or ax is None::
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        save=True
+
+    # Make a plot for each layer
+
+    title = ''
+    z_units = ''
+    plot_details = {}
+    if colour_scheme in ['viridis', 'jet']:
+        cmap = plt.cm.get_cmap(colour_scheme)
+
+    # Plot each file in the group
+    for index, filename in enumerate(sorted(metadata)):
+        scenario = metadata[filename]['exp']
+        dataset = metadata[filename]['dataset']
+        if colour_scheme in ['viridis', 'jet']:
+            if len(metadata) > 1:
+                color = cmap(index / (len(metadata) - 1.))
+            else:
+                color = 'blue'
+            label = dataset
+        if colour_scheme in 'IPCC':
+            color = ipcc_colours[scenario]
+            label =  scenario
+        # Take a moving average, if needed.
+        if moving_average_str:
+                cube = moving_average(model_cubes[filename][layer],
+                                      moving_average_str)
+        else:
+                cube = model_cubes[filename][layer]
+
+        if 'MultiModel' in metadata[filename]['dataset']:
+                timeplot(
+                    cube,
+                    c=color,
+                    # label=metadata[filename]['dataset'],
+                    ls=':',
+                    lw=2.,
+                )
+                plot_details[filename] = {
+                    'c': color,
+                    'ls': ':',
+                    'lw': 2.,
+                    'label': label,
+                }
+        else:
+                timeplot(
+                    cube,
+                    c=color,
+                    # label=metadata[filename]['dataset'])
+                    ls='-',
+                    lw=2.,
+                )
+                plot_details[filename] = {
+                    'c': color,
+                    'ls': '-',
+                    'lw': 2.,
+                    'label': label,
+                }
+
+        title = metadata[filename]['long_name']
+        if model_cubes[filename][layer].coords('depth'):
+            z_units = model_cubes[filename][layer].coord('depth').units
+        else:
+            z_units = ''
+        # Add title, legend to plots
+    plt.title(title)
+    plt.legend(loc='best')
+    plt.ylabel(str(model_cubes[filename][layer].units))
+
+    # Saving files:
+    if save:
+        path = diagtools.get_image_path(
+            cfg,
+            metadata[filename],
+            prefix='MultipleModels_',
+            suffix='_'.join(['mpas_timeseries', moving_average_str,
+                          str(layer) + image_extention]),
+            metadata_id_list=[
+                'field', 'short_name', 'preprocessor', 'diagnostic',
+            ],
+        )
+
+        # Resize and add legend outside thew axes.
+        fig.set_size_inches(9., 6.)
+        diagtools.add_legend_outside_right(
+            plot_details, plt.gca(), column_width=0.15)
+
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+        plt.close()
+    else:
+        return fig, ax
+
+def multi_model_clim_figure(
+        cfg,
+        metadatas,
+        short_name,
+        figure_style = 'plot_all_years',
+        hist_time_range = [1990., 2000.],
+        ssp_time_range = [2040., 2050.],
+        fig = None,
+        ax = None,
+        save=False
+    ):
+    """
+    produce a monthly climatology figure.
+    """
+    if fig is None or ax is None::
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        save=True
+
+    labels = []
+    for filename, metadata in metadatas.items():
+        if short_name != metadata['short_name']:
+            continue
+        scenario = metadata['exp']
+        cube = iris.load_cube(filename)
+        cube = diagtools.bgc_units(cube, metadata['short_name'])
+
+        if not cube.coords('year'):
+            iris.coord_categorisation.add_year(cube, 'time')
+
+        if not cube.coords('month_number'):
+            iris.coord_categorisation.add_month_number(cube, 'time', name='month_number')
+
+        if scenario == 'historical':
+            cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
+        else:
+            cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
+
+        months =  cube.coord('month_number').points
+        years = cube.coord('year').points
+
+        years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
+        data = cube.data
+        label = scenario
+        if figure_style == 'plot_all_years':
+            for year in years_range:
+                t = np.ma.masked_where(years!= year, months)
+                d =  np.ma.masked_where(years!= year, data)
+                if int(year)%10==0: lw = 1
+                else: lw = 0.4
+                if label not in labels:
+                    plt.plot(t, d, color = ipcc_colours[scenario], lw = lw,label=label )
+                    labels.append(label)
+                else:
+                    plt.plot(t, d, color = ipcc_colours[scenario], lw = lw )
+
+        if figure_style == 'mean_and_range':
+            cube_mean = cube.copy().aggregated_by(['month_number', ], iris.analysis.MEAN)
+            cube_min = cube.copy().aggregated_by(['month_number', ], iris.analysis.MIN)
+            cube_max = cube.copy().aggregated_by(['month_number', ], iris.analysis.MAX)
+
+            if label not in labels:
+                plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2., label=label)
+                labels.append(label)
+            else:
+                plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2.)
+
+            plt. fill_between(cube_mean .coord('month_number').points,
+                    cube_min.data,
+                    cube_max.data,
+                    alpha = 0.2,
+                    color=ipcc_colours[scenario])
+
+    plt.legend()
+
+    time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
+                         '-'.join([str(t) for t in ssp_time_range])])
+
+    plt.suptitle(' '.join([long_name_dict[short_name], 'in Ascension'
+                           ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
+                           'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
+
+    units = cube.units
+    ax.set_xlabel('Months')
+    ax.set_ylabel(' '.join([short_name+',', str(units)]))
+
+    if save:
+        # save and close.
+        path = diagtools.folder(cfg['plot_dir']+'/clim')
+        path += '_'.join(['multi_model_clim', short_name, figure_style, time_str])
+        path += diagtools.get_image_format(cfg)
+
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+        plt.close()
+    else:
+        return fig, ax
+
+
+
+
 def multi_model_clim_figure(
         cfg,
         metadatas,
@@ -512,37 +752,34 @@ def multi_model_clim_figure(
     plt.close()
 
 
-def do_gridspec():
-    fig = None
 
+
+def do_gridspec():
+    #fig = None
     fig = plt.figure()
-    gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=2) 
+    gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=2)
     gs0 =gs[0,0].subgridspec(ncols=4, nrows=2, ) #ght_ratios=[2, 1], hspace=0.)
-    
     subplots = {}
     subplots['timeseries'] = fig.add_subplot(gs0[0:2,0:2])
-   
     subplots['climatology'] = fig.add_subplot(gs0[0, 2])
     subplots['clim_diff'] = fig.add_subplot(gs0[0, 3])
-
     subplots['profile'] = fig.add_subplot(gs0[1, 2])
     subplots['prof_diff'] = fig.add_subplot(gs0[1, 3])
-
-
-   # maps:
+    #
+    # maps:
     gs1 =gs[1,0].subgridspec(ncols=3, nrows=2, )
-
     subplots['map_hist'] = fig.add_subplot(gs1[0,0])
     subplots['map_obs'] = fig.add_subplot(gs1[1,0])
-
     subplots['map_ssp125'] = fig.add_subplot(gs1[0,1])
     subplots['map_ssp245'] = fig.add_subplot(gs1[1,1])
     subplots['map_ssp379'] = fig.add_subplot(gs1[0,2])
     subplots['map_ssp585'] = fig.add_subplot(gs1[1,2])
-
-    plt.savefig('tmp.png')
+    pyplot.show()
+    #plt.savefig('tmp.png')
 
     return subplots
+
+
 
 
 def main(cfg):
@@ -562,6 +799,11 @@ def main(cfg):
     # top right: climatology
     # middle: profile:
     # right: maps
+
+    # Strategy is to get all the individual plots made.
+    # individual plots of the ensemble mean
+    # Then stitch them together into a big single plot.
+    
 
     do_gridspec()
     assert 0
