@@ -17,8 +17,9 @@ def get_provenance_record(plot_file, caption, run):
         'caption': caption,
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_type': 'map',
+        'plot_type': 'metrics',
         'authors': [
+            'rumbold_heather',
             'sellar_alistair',
         ],
         'references': [
