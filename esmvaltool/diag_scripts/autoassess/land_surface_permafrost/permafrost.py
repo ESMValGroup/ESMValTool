@@ -22,7 +22,7 @@ def get_provenance_record(plot_file, caption, run):
         'caption': caption,
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_types': ['map','metrics'],
+        'plot_types': ['map', 'metrics'],
         'authors': [
             'burke_eleanor',
             'sellar_alistair',
