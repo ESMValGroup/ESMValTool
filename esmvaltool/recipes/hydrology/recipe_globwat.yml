@@ -19,9 +19,8 @@ documentation:
     An example of using Langbein method can be found at:
     https://doi.org/10.1080/02626667.2017.1332416 page 1472, equation 7.
 
-    A target_grid_file has been generated from one of the models sample files.
-    The target_grid_file can be found at:
-    https://github.com/babdollahi/globwat_target_grid
+    A target_grid_file has been generated from one of the models sample files,
+    see the recipe documentation.
 
     The area selection preprocessor can be used by users to process the data
     for their desired region. The data will be processed at the global scale 
