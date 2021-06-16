@@ -5,6 +5,9 @@ documentation:
   description: |
     Recipe that runs the Autoassess Land-surface assessment area diagnostic.
     Land surface area and ice masks are time independent.
+    Climatological files are stored externally to avoid overloading the
+    ESMValTool source. See /gws/nopw/j04/esmeval/autoassess_specific_files
+    (on JASMIN).
     
   authors:
     - predoi_valeriu
