@@ -47,12 +47,14 @@ def land_permafrost_top(run):
 
     Parameters
     ----------
-        run - dictionary containing model run metadata
-              (see auto_assess/model_run.py for description)
+    run: dict
+        dictionary containing model run metadata
+        (see auto_assess/model_run.py for description)
 
     Returns
     -------
-        metrics - dictionary of metrics names and values
+    metrics: dict
+        dictionary of metrics names and values
         also produces image files in the current working directory
 
     """
