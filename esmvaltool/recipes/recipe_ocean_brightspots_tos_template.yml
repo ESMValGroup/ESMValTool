@@ -83,16 +83,6 @@ diagnostics:
         start_year: 2040
         end_year: 2050
 
-      tos_ssp126:
-        short_name: tos
-        preprocessor: prep_1
-        project: CMIP6
-        mip: Omon
-        exp: ssp126
-        grid: gn
-        start_year: 2040
-        end_year: 2050
-
       tos_ssp245:
         short_name: tos
         preprocessor: prep_1
