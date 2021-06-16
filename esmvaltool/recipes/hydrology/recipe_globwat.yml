@@ -28,12 +28,15 @@ documentation:
   
   maintainer:
     - abdollahi_banafsheh
-    
+
   projects:
     - ewatercycle
 
   references:
     - acknow_project
+    - debruin16ams
+    - hoogeveen15hess
+    - langbein1949usgs
 
 preprocessors:
     area_selection:
