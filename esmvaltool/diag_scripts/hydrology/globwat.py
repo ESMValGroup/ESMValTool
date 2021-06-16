@@ -1,11 +1,4 @@
-"""Globwat diagnostic.
-
-Currently, the model reads monthly reference evaporation and then multiplies
-it by kc and then divide it by the number of days in each month and uses it
-as daily actual evaporation in the model. We can change the model code to
-read daily reference evaporation and do the calculation, but we
-did not change the model code for this aim yet.
-"""
+"""Globwat diagnostic."""
 import logging
 from pathlib import Path
 
@@ -41,6 +34,7 @@ def create_provenance_record():
         ],
         'references': [
             'acknow_project',
+            ''
         ],
         'ancestors': [],
     }
@@ -70,6 +64,7 @@ def _convert_units(cube):
 
     From kg m-2 s-1 to kg m-2 month-1 or kg m-2 day-1.
     Note that the unit kg m-2 s-1 is equivalent to mm s-1.
+    Also note that this unit conversion is applicable for water variables. 
     """
     mip = cube.attributes['mip']
 
@@ -103,7 +98,7 @@ def get_input_cubes(metadata):
 
 def load_target(cfg):
     """Load target grid."""
-    filename = Path(cfg['auxiliary_data_dir']) / cfg['target_file']
+    filename = Path(cfg['auxiliary_data_dir']) / cfg['target_grid_file']
     cube = iris.load_cube(str(filename))
     for coord in 'longitude', 'latitude':
         if not cube.coord(coord).has_bounds():
@@ -190,8 +185,8 @@ def _swap_western_hemisphere(cube):
     return west.combine_first(east)
 
 
-def _flip_vertically(array):
-    """Flip vertically for writing as ascii.
+def _flip_latitudes(array):
+    """Flip latitudes for writing as ascii.
 
     Latitudes order should be in range 90, -90.
     """
@@ -207,7 +202,7 @@ def save_to_ascii(cube, file_name):
     """
     # Re-index data
     array = _swap_western_hemisphere(cube)
-    array = _flip_vertically(array)
+    array = _flip_latitudes(array)
 
     # Set nodata values
     array = array.fillna(-9999)

@@ -19,13 +19,17 @@ documentation:
     An example of using Langbein method can be found at:
     https://doi.org/10.1080/02626667.2017.1332416 page 1472, equation 7.
 
-    A target file has been generated from one of the models sample files.
-    The target file can be found at:
+    A target_grid_file has been generated from one of the models sample files.
+    The target_grid_file can be found at:
     https://github.com/babdollahi/globwat_target_grid
 
-    The rough cutout preprocessor can be used by users to process the data
+    The area selection preprocessor can be used by users to process the data
     for their desired region. The data will be processed at the global scale 
     if the preprocessor in the recipe is commented.
+
+    The area-weighted regridding scheme considred as a defult regridding
+    scheme to ensures that the total volume of water is consistent before and
+    after regridding.
 
   authors:
     - abdollahi_banafsheh
@@ -38,7 +42,7 @@ documentation:
     - acknow_project
 
 preprocessors:
-    rough_cutout:
+    area_selection:
       extract_region:
         start_longitude: 40
         end_longitude: 65
@@ -57,7 +61,7 @@ diagnostics:
         start_year: 1986
         end_year: 2016
         # comment preprocessor to process data on the global scale
-        preprocessor: rough_cutout
+        preprocessor: area_selection
       tas: *daily_var
       # comment psl, rsds and rsdt if langbein_pet is True
       psl: *daily_var
@@ -68,7 +72,7 @@ diagnostics:
     scripts:
       script:
         script: hydrology/globwat.py
-        target_file: 'globwat/globwat_target_grid.nc'
+        target_grid_file: 'globwat/globwat_target_grid.nc'
         langbein_pet: False
         regrid_scheme: area_weighted
 
@@ -83,7 +87,7 @@ diagnostics:
           start_year: 1986
           end_year: 2016
           # comment preprocessor to process data on the global scale 
-          preprocessor: rough_cutout
+          preprocessor: area_selection
         tas: *var_monthly
         # comment psl, rsds and rsdt if langbein_pet is True
         psl: *var_monthly
@@ -92,6 +96,6 @@ diagnostics:
       scripts:
         script:
           script: hydrology/globwat.py
-          target_file: 'globwat/globwat_target_grid.nc'
+          target_grid_file: 'globwat/globwat_target_grid.nc'
           langbein_pet: False
           regrid_scheme: area_weighted

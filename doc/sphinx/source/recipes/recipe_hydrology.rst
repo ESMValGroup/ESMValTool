@@ -157,7 +157,7 @@ All hydrological recipes require a shapefile as an input to produce forcing data
 
    * start_year: 2004
    * end_year: 2004
-   * target_file: Generated from a GlobWat input file sample
+   * target_grid_file: grid of globwat input files
 
    *Optional preprocessor settings:*
 
