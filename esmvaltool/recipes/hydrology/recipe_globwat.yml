@@ -22,14 +22,6 @@ documentation:
     A target_grid_file has been generated from one of the models sample files,
     see the recipe documentation.
 
-    The area selection preprocessor can be used by users to process the data
-    for their desired region. The data will be processed at the global scale 
-    if the preprocessor in the recipe is commented.
-
-    The area-weighted regridding scheme considred as a defult regridding
-    scheme to ensures that the total volume of water is consistent before and
-    after regridding.
-
   authors:
     - abdollahi_banafsheh
     - alidoost_sarah

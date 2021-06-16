@@ -158,14 +158,12 @@ All hydrological recipes require a shapefile as an input to produce forcing data
    * start_year: 2004
    * end_year: 2004
    * target_grid_file: grid of globwat input files.
-   A target file has been generated from one of the GlobWat models sample files (prc01wb.asc) for regridding ERA5 and ERA-Interim datasets. The ASCII file can be found at: http://www.fao.org/geonetwork/srv/en/metadata.show?currTab=simple&id=52366
-   You can use the GDAL translator to convert the file from ASCII format to NetCDF format by entering the following command into the terminal:
-   gdal translate -of netCDF ASCII prc01wb.asc globwat_target_grid.nc
+   A target file has been generated from one of the GlobWat models sample files (prc01wb.asc) for regridding ERA5 and ERA-Interim datasets. The ASCII file can be found at: http://www.fao.org/geonetwork/srv/en/metadata.show?currTab=simple&id=52366. You can use the GDAL translator to convert the file from ASCII format to NetCDF format by entering the following command into the terminal: gdal translate -of netCDF ASCII prc01wb.asc globwat_target_grid.nc
 
    *Optional preprocessor settings:*
 
-   * extract_region: A region bounding box to extract the data for a specific region
-   * regrid_scheme: Can be chosen among regridding schemes (default is linear)
+   * area_selection: A region bounding box to extract the data for a specific region. The area selection preprocessor can be used by users to process the data for their desired region. The data will be processed at the global scale if the preprocessor in the recipe is commented.
+   * regrid_scheme: The area-weighted regridding scheme considred as a defult regridding scheme to ensures that the total volume of water is consistent before and after regridding.
    * langbein_pet: Can be set to True to use langbein function for calculating evspsblpot (default is de bruin method)
 
 
