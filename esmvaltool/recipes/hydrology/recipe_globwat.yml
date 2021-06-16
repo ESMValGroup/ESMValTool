@@ -25,7 +25,10 @@ documentation:
   authors:
     - abdollahi_banafsheh
     - alidoost_sarah
-
+  
+  maintainer:
+    - abdollahi_banafsheh
+    
   projects:
     - ewatercycle
 
