@@ -43,8 +43,9 @@ REQUIREMENTS = {
         'natsort',
         'nc-time-axis>=1.3.1',  # needed by iris.plot
         'netCDF4',
-        'numpy',
+        'numpy>=1.20.2',
         'pandas',
+        'pillow>=8.2.0',
         'pyproj>=2.1'
         'pyyaml',
         'rasterio',  # replaces pynio
@@ -81,7 +82,7 @@ REQUIREMENTS = {
         'docformatter',
         'isort',
         'pre-commit',
-        'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
+        'prospector[with_pyroma]>=1.3.0',
         'sphinx>2',
         'sphinx_rtd_theme',
         'vprof',
