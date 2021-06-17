@@ -33,7 +33,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        'esmvalcore>=2.2.0,<2.3',
+        'esmvalcore>=2.3.0,<2.4',
         'fiona',
         'GDAL',
         'jinja2',
@@ -41,7 +41,7 @@ REQUIREMENTS = {
         'lime',
         'matplotlib>3.3.1',  # bug in 3.3.1, 3.3.2 and 3 fine
         'natsort',
-        'nc-time-axis',  # needed by iris.plot
+        'nc-time-axis>=1.3.1',  # needed by iris.plot
         'netCDF4',
         'numpy',
         'pandas',
@@ -64,13 +64,14 @@ REQUIREMENTS = {
     # Test dependencies
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
+        'flake8>=3.9.1',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
-        'pytest-env',
+        'pytest-env>=0.6.0',
         'pytest-flake8>=1.0.6',
-        'pytest-html!=2.1.0',
-        'pytest-metadata>=1.5.1',
-        'pytest-xdist',
+        'pytest-html>=3.1.0',
+        'pytest-metadata>=1.10.0',
+        'pytest-xdist>=2.2.0',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
