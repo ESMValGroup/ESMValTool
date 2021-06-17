@@ -54,6 +54,7 @@ import logging
 import os
 
 import iris
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -92,7 +93,7 @@ def timeplot(cube, **kwargs):
 
     Note that this function simple does the plotting, it does not save the
     image or do any of the complex work. This function also takes and of the
-    key word arguments accepted by the matplotlib.pyplot.plot function.
+    key word arguments accepted by the matplotlib.plt.plot function.
     These arguments are typically, color, linewidth, linestyle, etc...
 
     If there's only one datapoint in the cube, it is plotted as a
@@ -464,12 +465,10 @@ def multi_model_time_series(
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
-    if fig is None or ax is None::
+    if fig is None or ax is None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         save=True
-
-    # Make a plot for each layer
 
     title = ''
     z_units = ''
@@ -574,7 +573,7 @@ def multi_model_clim_figure(
     """
     produce a monthly climatology figure.
     """
-    if fig is None or ax is None::
+    if fig is None or ax is None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         save=True
@@ -774,13 +773,16 @@ def do_gridspec():
     subplots['map_ssp245'] = fig.add_subplot(gs1[1,1])
     subplots['map_ssp379'] = fig.add_subplot(gs1[0,2])
     subplots['map_ssp585'] = fig.add_subplot(gs1[1,2])
-    pyplot.show()
-    #plt.savefig('tmp.png')
+    #plt.show()
+    plt.savefig('tmp.png')
 
-    return subplots
+    return fig, subplots
 
 
-
+def add_dict_list(dic, key, item):
+   try: dic[key].append(item)
+   except: dic[key]= [item, ]
+   return dic
 
 def main(cfg):
     """
@@ -803,9 +805,31 @@ def main(cfg):
     # Strategy is to get all the individual plots made.
     # individual plots of the ensemble mean
     # Then stitch them together into a big single plot.
+    metadatas = diagtools.get_input_files(cfg, )
     
+    time_series_fns = {}
+    profile_fns = {}
+    maps_fns = {}
+ 
+    for fn, metadata in metadatas.items():
+        print(os.path.basename(fn),':',metadata['variable_group'])
+        variable_group = metadata['variable_group']
+        if variable_group.find('_ts_')>-1: 
+            time_series_fns = add_dict_list(time_series_fns, variable_group, fn)
+        if variable_group.find('_profile_')>-1:
+            profile_fns = add_dict_list(profile_fns, variable_group, fn)
+        if variable_group.find('_map_')>-1:
+            maps_fns = add_dict_list(maps_fns, variable_group, fn)
+    print(time_series_fns)
+    print(profile_fns)
+    print(maps_fns)
 
-    do_gridspec()
+
+
+    assert 0
+
+    fig, subplots = do_gridspec()
+
     assert 0
     #moving_average_str = cfg.get('moving_average', None)
     short_names = {}
