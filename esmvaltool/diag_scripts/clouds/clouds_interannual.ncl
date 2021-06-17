@@ -323,7 +323,7 @@ begin
 
     ; variable specific plotting settings
 
-    if (any((/"clt"/).eq.var0)) then
+    if (any((/"clt", "prw"/).eq.var0)) then
       res@cnLevels            = ispan(5, 50, 5)
     else
       res@cnLevels            = ispan(5, 100, 5)
