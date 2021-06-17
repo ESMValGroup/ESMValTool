@@ -25,6 +25,8 @@ from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+logging.getLogger('matplotlib.font_manager').disabled = True
+
 
 ipcc_colours={
     'historical':'blue',
@@ -772,7 +774,8 @@ def make_mean_of_cube_list(cube_list):
     #try: iris.coord_categorisation.add_month(cube_mean, 'time')
     #except: pass
 
-    cube_mean.remove_coord('year')
+    try: cube_mean.remove_coord('year')
+    except: pass
     #cube.remove_coord('Year')
     try: model_name = cube_mean.metadata[4]['source_id']
     except: model_name = ''
@@ -783,7 +786,8 @@ def make_mean_of_cube_list(cube_list):
         #except: pass
         #try: iris.coord_categorisation.add_month(cube, 'time')
         #except: pass
-        cube.remove_coord('year')
+        try: cube.remove_coord('year')
+        except: pass 
         #cube.remove_coord('Year')
         try: model_name = cube_mean.metadata[4]['source_id']
         except: model_name = ''

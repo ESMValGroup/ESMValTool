@@ -200,101 +200,13 @@ def moving_average(cube, window):
     return cube
 
 
-def make_time_series_plots(
-        cfg,
-        metadata,
-        filename,
-        moving_average_str='',
-):
-    """
-    Make a simple time series plot for an indivudual model 1D cube.
-
-    This tool loads the cube from the file, checks that the units are
-    sensible BGC units, checks for layers, adjusts the titles accordingly,
-    determines the ultimate file name and format, then saves the image.
-
-    Parameters
-    ----------
-    cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-    metadata: dict
-        The metadata dictionairy for a specific model.
-    filename: str
-        The preprocessed model file.
-
-    """
-    # Load cube and set up units
-    cube = iris.load_cube(filename)
-    cube = diagtools.bgc_units(cube, metadata['short_name'])
-
-    # Is this data is a multi-model dataset?
-    multi_model = metadata['dataset'].find('MultiModel') > -1
-
-    # Make a dict of cubes for each layer.
-    cubes = diagtools.make_cube_layer_dict(cube)
-
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
-    # Making plots for each layer
-    for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
-        layer = str(layer)
-        if moving_average_str:
-            cube_layer = moving_average(cube_layer, moving_average_str)
-
-        if multi_model:
-            timeplot(cube_layer, label=metadata['dataset'], ls=':')
-        else:
-            timeplot(cube_layer, label=metadata['dataset'])
-
-        # Add title, legend to plots
-        title = ' '.join([metadata['dataset'], metadata['long_name']])
-        if layer != '':
-            if cube_layer.coords('depth'):
-                z_units = cube_layer.coord('depth').units
-            else:
-                z_units = ''
-            title = ' '.join([title, '(', layer, str(z_units), ')'])
-        plt.title(title)
-        plt.legend(loc='best')
-        plt.ylabel(str(cube_layer.units))
-
-        # Determine image filename:
-        if multi_model:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata,
-                prefix='MultiModel',
-                suffix='_'.join(['timeseries',
-                                 str(layer) + image_extention]),
-                metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
-                ],
-            )
-
-        else:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata,
-                suffix='timeseries_' + str(layer_index)+str(moving_average_str) + image_extention,
-            )
-
-        # Saving files:
-        if cfg['write_plots']:
-
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
-
-        plt.close()
-
 
 def multi_model_time_series(
         cfg,
-        metadata,
-        ts_dict = {}
+        metadatas,
+        ts_dict = {},
         moving_average_str='',
-        colour_scheme = 'viridis',
+        colour_scheme = 'IPCC',
         fig = None,
         ax = None,
         save = False
@@ -326,29 +238,40 @@ def multi_model_time_series(
     #metadata_list = []'short_name'
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
-            if metadatas[filename]['mip'] in ['Ofx', 'fx']: continue
+            print(variable_group, fn)
+            #assert 0 
+            if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+            print('loading', fn)
 
-            cube = iris.load_cube(filename)
-            cube = diagtools.bgc_units(cube, metadatas[filename]['short_name'])
+            cube = iris.load_cube(fn)
+            cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
+
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
-            model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, filename)
+            model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
 
         # load means:
         work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
-        path = work_dir+'_'.join([variable_group, 'mean')+'.nc'
+        path = work_dir+'_'.join([variable_group, 'mean'])+'.nc'
 
         if os.path.exists(path):
+            print('loading mean file:',variable_group, path)
+
             cube = iris.load_cube(path)
             mean_cubes[variable_group] = cube
         else:
             mean_cubes[variable_group] = diagtools.make_mean_of_cube_list(model_cubes[variable_group])
-        metadatas[path] = metadatas[filenames[0]].copy()
+            print('saving mean file:',variable_group, path)
+            iris.save(cube, path)
+
+        metadatas[path] = metadatas[fn].copy()
         mean_cubes_paths[variable_group] = path
 
     if fig is None or ax is None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         save = True
+    else:
+        plt.sca(ax)
 
     title = ''
     z_units = ''
@@ -359,7 +282,7 @@ def multi_model_time_series(
     # Plot individual model in the group
     for variable_group, cubes in model_cubes.items():
         for i, cube in enumerate(cubes):
-            path = mean_cubes_paths[variable_group][i]
+            path = model_cubes_paths[variable_group][i]
             metadata = metadatas[path]
             scenario = metadata['exp']
             dataset = metadata['dataset']
@@ -413,7 +336,7 @@ def multi_model_time_series(
             ls='-',
             lw=2.,
         )
-        plot_details[filename] = {
+        plot_details[path] = {
             'c': color,
             'ls': '-',
             'lw': 2.,
@@ -423,21 +346,14 @@ def multi_model_time_series(
 #   # Add title, legend to plots
     plt.title(title)
     plt.legend(loc='best')
-    plt.ylabel(str(model_cubes[filename][layer].units))
+    #plt.ylabel(str(model_cubes[filename][layer].units))
 
     # Saving files:
     if save:
-        path = diagtools.get_image_path(
-            cfg,
-            metadata[filename],
-            prefix='MultipleModels_',
-            suffix='_'.join(['mpas_timeseries', moving_average_str,
-                          str(layer) + image_extention]),
-            metadata_id_list=[
-                'field', 'short_name', 'preprocessor', 'diagnostic',
-            ],
-        )
-
+        path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
+        path += '_'.join(['multi_model_ts',] )
+        path += diagtools.get_image_format(cfg)
+ 
         # Resize and add legend outside thew axes.
         fig.set_size_inches(9., 6.)
         diagtools.add_legend_outside_right(
@@ -558,6 +474,8 @@ def multi_model_clim_figure(
 def do_gridspec():
     #fig = None
     fig = plt.figure()
+    fig.set_size_inches(12., 9.) #, 6.)
+
     gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=2)
     gs0 =gs[0,0].subgridspec(ncols=4, nrows=2, ) #ght_ratios=[2, 1], hspace=0.)
     subplots = {}
@@ -614,7 +532,7 @@ def main(cfg):
     maps_fns = {}
 
     for fn, metadata in metadatas.items():
-        print(os.path.basename(fn),':',metadata['variable_group'])
+        #print(os.path.basename(fn),':',metadata['variable_group'])
         variable_group = metadata['variable_group']
         if variable_group.find('_ts_')>-1:
             time_series_fns = add_dict_list(time_series_fns, variable_group, fn)
@@ -625,7 +543,9 @@ def main(cfg):
     # Individual plots - standalone
     multi_model_time_series(
             cfg,
-            time_series_fns,
+            metadatas,
+            ts_dict = time_series_fns,
+
             #moving_average_str='',
             #colour_scheme = 'viridis',
             #fig = fig,
@@ -639,7 +559,8 @@ def main(cfg):
     fig, subplots = do_gridspec()
     fig, subplots['timeseries'] = multi_model_time_series(
             cfg,
-            time_series_fns,
+            metadatas,
+            ts_dict = time_series_fns,
             #moving_average_str='',
             #colour_scheme = 'viridis',
             fig = fig,
@@ -648,7 +569,7 @@ def main(cfg):
 
     # save and close.
     path = diagtools.folder(cfg['plot_dir']+'/whole_plot')
-    #path += '_'.join(['multi_model_clim', short_name, figure_style, time_str])
+    path += '_'.join(['multi_model_whole_plot'])
     path += diagtools.get_image_format(cfg)
 
     logger.info('Saving plots to %s', path)
@@ -695,6 +616,7 @@ def main(cfg):
             multi_model_time_series(
                 cfg,
                 metadatas,
+
                 moving_average_str=moving_average_str,
                 colour_scheme = 'IPCC',
             )
@@ -707,9 +629,6 @@ def main(cfg):
                         filename,
                     )
 
-                    ######
-                    # Time series of individual model
-                    make_time_series_plots(cfg, metadatas[filename], filename, moving_average_str=moving_average_str)
     logger.info('Success')
 
 
