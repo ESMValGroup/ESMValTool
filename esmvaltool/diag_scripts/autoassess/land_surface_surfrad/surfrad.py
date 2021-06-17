@@ -114,7 +114,10 @@ def land_surf_rad(run):
     provenance_record = get_provenance_record(plot_file, caption, run)
     cfg = {}
     cfg['run_dir'] = run['out_dir']
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(plot_file, provenance_record)
+    # avoid rewriting provenance when running the plot diag
+    if not os.path.isfile(os.path.join(cfg['run_dir'],
+                                       'diagnostic_provenance.yml')):
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_file, provenance_record)
 
     return metrics
