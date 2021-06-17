@@ -231,11 +231,6 @@ def multi_model_time_series(
     model_cubes = {}
     model_cubes_paths = {}
 
-    #mean_cubes = {}
-    #mean_cubes_paths = {}
-
-    details = []
-    #metadata_list = []'short_name'
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             print(variable_group, fn)
@@ -248,22 +243,6 @@ def multi_model_time_series(
 
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
-
-        # load means:
-        #work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
-        #path = work_dir+'_'.join([variable_group, 'mean'])+'.nc'
-
-        #if os.path.exists(path):
-        #    print('loading mean file:',variable_group, path)
-        #    cube = iris.load_cube(path)
-        #    mean_cubes[variable_group] = cube
-        #else:
-        #    mean_cubes[variable_group] = diagtools.make_mean_of_cube_list(model_cubes[variable_group])
-        #    print('saving mean file:',variable_group, path)
-        #    iris.save(cube, path)
-        #
-        #metadatas[path] = metadatas[fn].copy()
-        #mean_cubes_paths[variable_group] = path
 
     if fig is None or ax is None:
         fig = plt.figure()
@@ -279,7 +258,7 @@ def multi_model_time_series(
         cmap = plt.cm.get_cmap(colour_scheme)
 
     # Plot individual model in the group
-    plotting = ['all_models', 'range', 'means', 'medians', '5-95']
+    plotting = [ 'means',  '5-95'] #'medians', 'all_models', 'range',
     for variable_group, cubes in model_cubes.items():
         data_values = {}
         for i, cube in enumerate(cubes):
@@ -333,7 +312,6 @@ def multi_model_time_series(
                 'label': label,
             }
 
-
         if 'range' in plotting:
             times = sorted(data_values.keys())
             mins = [np.min(data_values[t]) for t in times]
@@ -346,41 +324,6 @@ def multi_model_time_series(
             maxs = [np.percentile(data_values[t], 95.) for t in times]
             plt.fill_between(times, mins, maxs, color= ipcc_colours[scenario], alpha=0.5)
 
-    # Plot each mean file in the group
-    #for variable_group, cube in mean_cubes.items():
-    #    path = mean_cubes_paths[variable_group]
-    #    metadata = metadatas[path]
-    #    scenario = metadata['exp']
-    #    dataset = metadata['dataset']
-#
-#        if colour_scheme in ['viridis', 'jet']:
-#            if len(metadata) > 1:
-#                color = cmap(index / (len(metadata) - 1.))
-#            else:
-#                color = 'blue'
-#            label = dataset
-#        if colour_scheme in 'IPCC':
-#            color = ipcc_colours[scenario]
-#            label =  scenario
-#        # Take a moving average, if needed.
-#        if moving_average_str:
-#                cube = moving_average(cube,
-#                                      moving_average_str)
-#
-#        timeplot(
-#            cube,
-#            c=color,
-#            # label=metadata[filename]['dataset'])
-#            ls='-',
-#            lw=2.,
-#        )
-#        plot_details[path] = {
-#            'c': color,
-#            'ls': '-',
-#            'lw': 2.,
-#            'label': label,
-#        }
-
 #   # Add title, legend to plots
     plt.title(title)
     plt.legend(loc='best')
@@ -389,7 +332,8 @@ def multi_model_time_series(
     # Saving files:
     if save:
         path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
-        path += '_'.join(['multi_model_ts',] )
+        path += '_'.join(['multi_model_ts', ] )
+        path += '_'.join(plotting)
         path += diagtools.get_image_format(cfg)
 
         # Resize and add legend outside thew axes.
@@ -408,6 +352,7 @@ def multi_model_time_series(
 def multi_model_clim_figure(
         cfg,
         metadatas,
+        ts_dict = {},
         short_name,
         figure_style = 'plot_all_years',
         hist_time_range = [1990., 2000.],
@@ -424,59 +369,96 @@ def multi_model_clim_figure(
         ax = fig.add_subplot(111)
         save=True
 
-    labels = []
-    for filename, metadata in metadatas.items():
-        if short_name != metadata['short_name']:
-            continue
-        scenario = metadata['exp']
-        cube = iris.load_cube(filename)
-        cube = diagtools.bgc_units(cube, metadata['short_name'])
+    ####
+    # Load the data for each layer as a separate cube
+    model_cubes = {}
+    model_cubes_paths = {}
 
-        if not cube.coords('year'):
-            iris.coord_categorisation.add_year(cube, 'time')
+    for variable_group, filenames  in ts_dict.items():
+        for fn in sorted(filenames):
+            print(variable_group, fn)
+            #assert 0
+            if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+            scenario = metadatas[fn]['exp']
 
-        if not cube.coords('month_number'):
-            iris.coord_categorisation.add_month_number(cube, 'time', name='month_number')
+            print('loading', fn)
 
-        if scenario == 'historical':
-            cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
-        else:
-            cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
+            cube = iris.load_cube(fn)
+            cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
 
-        months =  cube.coord('month_number').points
-        years = cube.coord('year').points
+            if not cube.coords('year'):
+                iris.coord_categorisation.add_year(cube, 'time')
 
-        years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
-        data = cube.data
-        label = scenario
-        if figure_style == 'plot_all_years':
-            for year in years_range:
-                t = np.ma.masked_where(years!= year, months)
-                d =  np.ma.masked_where(years!= year, data)
-                if int(year)%10==0: lw = 1
-                else: lw = 0.4
-                if label not in labels:
-                    plt.plot(t, d, color = ipcc_colours[scenario], lw = lw,label=label )
-                    labels.append(label)
-                else:
-                    plt.plot(t, d, color = ipcc_colours[scenario], lw = lw )
+            if not cube.coords('month_number'):
+                iris.coord_categorisation.add_month_number(cube, 'time', name='month_number')
 
-        if figure_style == 'mean_and_range':
-            cube_mean = cube.copy().aggregated_by(['month_number', ], iris.analysis.MEAN)
-            cube_min = cube.copy().aggregated_by(['month_number', ], iris.analysis.MIN)
-            cube_max = cube.copy().aggregated_by(['month_number', ], iris.analysis.MAX)
-
-            if label not in labels:
-                plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2., label=label)
-                labels.append(label)
+            if scenario == 'historical':
+                cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
             else:
-                plt.plot(cube_mean.coord('month_number').points, cube_mean.data, color = ipcc_colours[scenario], lw = 2.)
+                cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
 
-            plt. fill_between(cube_mean .coord('month_number').points,
-                    cube_min.data,
-                    cube_max.data,
-                    alpha = 0.2,
-                    color=ipcc_colours[scenario])
+            # Only interested in the mean over the time range provided.
+            cube = cube.aggregated_by(['month_number', ], iris.analysis.MEAN)
+            #cube_min = cube.copy().aggregated_by(['month_number', ], iris.analysis.MIN)
+            #cube_max = cube.copy().aggregated_by(['month_number', ], iris.analysis.MAX)
+
+            model_cubes = add_dict_list(model_cubes, variable_group, cube)
+            model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
+
+
+    #labels = []
+    plotting = [ 'means',  '5-95', 'all_models'] #'medians', , 'range',
+    for variable_group, cubes in model_cubes.items():
+        data_values = {}
+        scenario = ''
+        for i, cube in enumerate(cubes):
+            fn = model_cubes_paths[variable_group][i]
+            if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
+            scenario = metadatas[fn]['exp']
+
+            months =  cube.coord('month_number').points
+            for t, d in zip(months, cube.data):
+                data_values = add_dict_list(data_values, t, d)
+                #years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
+            if 'all_models' in plotting:
+                plt.plot(months, cube.data, ls='-', c=color, lw=2.)
+
+        if colour_scheme in 'IPCC':
+            color = ipcc_colours[scenario]
+            label =  scenario
+
+        times = sorted(data_values.keys())
+        if 'means' in plotting:
+            mean = [np.mean(data_values[t]) for t in times]
+            plt.plot(times, mean, ls='-', c=color, lw=2.)
+            plot_details[path] = {
+                'c': color,
+                'ls': '-',
+                'lw': 2.,
+                'label': label,
+            }
+
+        if 'medians' in plotting:
+            mean = [np.median(data_values[t]) for t in times]
+            plt.plot(times, mean, ls='-', c=color, lw=2.)
+            plot_details[path] = {
+                'c': color,
+                'ls': '-',
+                'lw': 2.,
+                'label': label,
+            }
+
+        if 'range' in plotting:
+            times = sorted(data_values.keys())
+            mins = [np.min(data_values[t]) for t in times]
+            maxs = [np.max(data_values[t]) for t in times]
+            plt.fill_between(times, mins, maxs, color=color, alpha=0.5)
+
+        if '5-95' in plotting:
+            times = sorted(data_values.keys())
+            mins = [np.percentile(data_values[t], 5.) for t in times]
+            maxs = [np.percentile(data_values[t], 95.) for t in times]
+            plt.fill_between(times, mins, maxs, color=color, alpha=0.5)
 
     plt.legend()
 
@@ -493,8 +475,9 @@ def multi_model_clim_figure(
 
     if save:
         # save and close.
-        path = diagtools.folder(cfg['plot_dir']+'/clim')
-        path += '_'.join(['multi_model_clim', short_name, figure_style, time_str])
+        path = diagtools.folder(cfg['plot_dir']+'/multi_model_clim')
+        path += '_'.join(['multi_model_clim', time_str])
+        path += '_'.join(plotting)
         path += diagtools.get_image_format(cfg)
 
         logger.info('Saving plots to %s', path)
@@ -579,6 +562,14 @@ def main(cfg):
         if variable_group.find('_map_')>-1:
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
     # Individual plots - standalone
+    multi_model_clim_figure(
+        cfg,
+        metadatas,
+        time_series_fns,
+        hist_time_range = [1990., 2015.],
+        ssp_time_range = [2015., 2050.],
+    )
+
     multi_model_time_series(
             cfg,
             metadatas,
@@ -619,26 +610,26 @@ def main(cfg):
 
     assert 0
     #moving_average_str = cfg.get('moving_average', None)
-    short_names = {}
-    metadatas = diagtools.get_input_files(cfg, )
-    for fn, metadata in metadatas.items():
-        short_names[metadata['short_name']] = True
-
-    for short_name in short_names.keys():
-        hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
-        ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
-        for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
-
-            for figure_style in ['plot_all_years', 'mean_and_range']:
-
-                multi_model_clim_figure(
-                    cfg,
-                    metadatas,
-                    short_name,
-                    figure_style=figure_style,
-                    hist_time_range=hist_time_range,
-                    ssp_time_range=ssp_time_range,
-                )
+    # short_names = {}
+    # metadatas = diagtools.get_input_files(cfg, )
+    # for fn, metadata in metadatas.items():
+    #     short_names[metadata['short_name']] = True
+    #
+    # for short_name in short_names.keys():
+    #     hist_time_ranges = [[1850, 2015], [1850, 1900], [1950, 2000], [1990, 2000], [1990, 2000]]
+    #     ssp_time_ranges  = [[2015, 2100], [2050, 2100], [2050, 2100], [2040, 2050], [2090, 2100]]
+    #     for hist_time_range, ssp_time_range in zip(hist_time_ranges, ssp_time_ranges):
+    #
+    #         for figure_style in ['plot_all_years', 'mean_and_range']:
+    #
+    #             multi_model_clim_figure(
+    #                 cfg,
+    #                 metadatas,
+    #                 short_name,
+    #                 figure_style=figure_style,
+    #                 hist_time_range=hist_time_range,
+    #                 ssp_time_range=ssp_time_range,
+    #             )
     return
 
     moving_average_strs = ['', 'annual', '5 years', '10 years', '20 years']
