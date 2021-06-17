@@ -239,7 +239,7 @@ def multi_model_time_series(
     for variable_group, filenames  in ts_dict.items():
         for fn in sorted(filenames):
             print(variable_group, fn)
-            #assert 0 
+            #assert 0
             if metadatas[fn]['mip'] in ['Ofx', 'fx']: continue
             print('loading', fn)
 
@@ -255,7 +255,6 @@ def multi_model_time_series(
 
         if os.path.exists(path):
             print('loading mean file:',variable_group, path)
-
             cube = iris.load_cube(path)
             mean_cubes[variable_group] = cube
         else:
@@ -280,13 +279,17 @@ def multi_model_time_series(
         cmap = plt.cm.get_cmap(colour_scheme)
 
     # Plot individual model in the group
+    plotting = ['all_models', 'range']
     for variable_group, cubes in model_cubes.items():
+        data_values = {}
         for i, cube in enumerate(cubes):
             path = model_cubes_paths[variable_group][i]
             metadata = metadatas[path]
             scenario = metadata['exp']
             dataset = metadata['dataset']
-
+            times = cube_time_to_float(cube)
+            for t, d in zip(times, cube.data):
+                data_values = add_dict_list(data_values, t, d)
             if colour_scheme in ['viridis', 'jet']:
                 if len(metadata) > 1:
                     color = cmap(index / (len(metadata) - 1.))
@@ -301,13 +304,18 @@ def multi_model_time_series(
                     cube = moving_average(cube,
                           moving_average_str)
 
-            timeplot(
-                cube,
-                c=color,
-                ls='-',
-                lw=0.6,
-            )
-
+            if 'all_models' in plotting:
+                timeplot(
+                    cube,
+                    c=color,
+                    ls='-',
+                    lw=0.6,
+                )
+        if 'range' in plotting:
+            times = sorted(data_values.keys())
+            mins = [np.min(data_values[t]) for t in times]
+            maxs = [np.max(data_values[t]) for t in times]
+            plt.fill_between(times, mins, maxs, c= ipcc_colours[scenario], alpha=0.5)
     # Plot each mean file in the group
     for variable_group, cube in mean_cubes.items():
         path = mean_cubes_paths[variable_group]
@@ -353,7 +361,7 @@ def multi_model_time_series(
         path = diagtools.folder(cfg['plot_dir']+'/individual_panes')
         path += '_'.join(['multi_model_ts',] )
         path += diagtools.get_image_format(cfg)
- 
+
         # Resize and add legend outside thew axes.
         fig.set_size_inches(9., 6.)
         diagtools.add_legend_outside_right(
@@ -545,17 +553,16 @@ def main(cfg):
             cfg,
             metadatas,
             ts_dict = time_series_fns,
-
             #moving_average_str='',
             #colour_scheme = 'viridis',
             #fig = fig,
             #ax =  subplots['timeseries'],
     )
-    
+
     #print(time_series_fns)
     #print(profile_fns)
     #print(maps_fns)
-
+    returns
     fig, subplots = do_gridspec()
     fig, subplots['timeseries'] = multi_model_time_series(
             cfg,

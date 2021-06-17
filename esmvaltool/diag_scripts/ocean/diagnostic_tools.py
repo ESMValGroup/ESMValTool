@@ -741,7 +741,7 @@ def get_array_range(arrays):
 
 
 
-def make_mean_of_cube_list(cube_list):
+def make_mean_of_cube_list(cube_list, operation='mean'):
     """
     Takes the mean of a list of cubes (not an iris.cube.CubeList).
     Assumes all the cubes are the same shape.
@@ -787,7 +787,7 @@ def make_mean_of_cube_list(cube_list):
         #try: iris.coord_categorisation.add_month(cube, 'time')
         #except: pass
         try: cube.remove_coord('year')
-        except: pass 
+        except: pass
         #cube.remove_coord('Year')
         try: model_name = cube_mean.metadata[4]['source_id']
         except: model_name = ''
