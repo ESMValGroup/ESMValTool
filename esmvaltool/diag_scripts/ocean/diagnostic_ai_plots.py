@@ -353,7 +353,6 @@ def multi_model_clim_figure(
         cfg,
         metadatas,
         ts_dict = {},
-        short_name,
         figure_style = 'plot_all_years',
         hist_time_range = [1990., 2000.],
         ssp_time_range = [2040., 2050.],
@@ -407,7 +406,7 @@ def multi_model_clim_figure(
 
 
     #labels = []
-    plotting = [ 'means',  '5-95', 'all_models'] #'medians', , 'range',
+    plotting = [ 'means',  '5-95', ] #'all_models'] #'medians', , 'range',
     for variable_group, cubes in model_cubes.items():
         data_values = {}
         scenario = ''
@@ -420,34 +419,21 @@ def multi_model_clim_figure(
             for t, d in zip(months, cube.data):
                 data_values = add_dict_list(data_values, t, d)
                 #years_range = sorted({yr:True for yr in cube.coord('year').points}.keys())
-            if 'all_models' in plotting:
-                plt.plot(months, cube.data, ls='-', c=color, lw=2.)
-
-        if colour_scheme in 'IPCC':
             color = ipcc_colours[scenario]
             label =  scenario
+
+            if 'all_models' in plotting:
+                plt.plot(months, cube.data, ls='-', c=color, lw=0.6)
 
         times = sorted(data_values.keys())
         if 'means' in plotting:
             mean = [np.mean(data_values[t]) for t in times]
             plt.plot(times, mean, ls='-', c=color, lw=2.)
-            plot_details[path] = {
-                'c': color,
-                'ls': '-',
-                'lw': 2.,
-                'label': label,
-            }
 
         if 'medians' in plotting:
             mean = [np.median(data_values[t]) for t in times]
             plt.plot(times, mean, ls='-', c=color, lw=2.)
-            plot_details[path] = {
-                'c': color,
-                'ls': '-',
-                'lw': 2.,
-                'label': label,
-            }
-
+#
         if 'range' in plotting:
             times = sorted(data_values.keys())
             mins = [np.min(data_values[t]) for t in times]
@@ -465,13 +451,13 @@ def multi_model_clim_figure(
     time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
                          '-'.join([str(t) for t in ssp_time_range])])
 
-    plt.suptitle(' '.join([long_name_dict[short_name], 'in Ascension'
-                           ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
-                           'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
+    #plt.suptitle(' '.join([long_name_dict[short_name], 'in Ascension'
+    #                       ' Island MPA \n Historical', '-'.join([str(t) for t in hist_time_range]),
+    #                       'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ]))
 
     units = cube.units
     ax.set_xlabel('Months')
-    ax.set_ylabel(' '.join([short_name+',', str(units)]))
+    #ax.set_ylabel(' '.join([short_name+',', str(units)]))
 
     if save:
         # save and close.
@@ -583,7 +569,6 @@ def main(cfg):
     #print(time_series_fns)
     #print(profile_fns)
     #print(maps_fns)
-    return
     fig, subplots = do_gridspec()
     fig, subplots['timeseries'] = multi_model_time_series(
             cfg,
@@ -595,6 +580,17 @@ def main(cfg):
             ax =  subplots['timeseries'],
     )
 
+    fig, subplots['climatology'] =  multi_model_clim_figure(
+        cfg,
+        metadatas,
+        time_series_fns,
+        hist_time_range = [1990., 2015.],
+        ssp_time_range = [2015., 2050.],
+        fig = fig,
+        ax =  subplots['climatology'],
+    )
+
+
     # save and close.
     path = diagtools.folder(cfg['plot_dir']+'/whole_plot')
     path += '_'.join(['multi_model_whole_plot'])
@@ -604,8 +600,7 @@ def main(cfg):
     plt.savefig(path)
     plt.close()
 
-
-    assert 0
+    return 
 
 
     assert 0
