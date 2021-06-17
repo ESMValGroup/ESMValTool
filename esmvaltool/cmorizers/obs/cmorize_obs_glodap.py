@@ -93,7 +93,10 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
 
     # add depth coord
     cube.add_dim_coord(
-        iris.coords.DimCoord(depth.data, standard_name='depth', units='m'), 0)
+        iris.coords.DimCoord(depth.data,
+                             var_name='depth',
+                             units='m',
+                             attributes={'positive': 'down'}), 0)
     # add time coord
     year = raw_info['reference_year']
     time = Unit('months since ' + str(year) + '-01-01 00:00:00',
