@@ -370,6 +370,7 @@ def multi_model_clim_figure(
         fig = plt.figure()
         ax = fig.add_subplot(111)
         save=True
+    plt.sca(ax)
 
     ####
     # Load the data for each layer as a separate cube
@@ -500,8 +501,8 @@ def extract_depth_range(data, depths, drange='surface', threshold=-1000.):
 
 def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = ''):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
-        data = extract_depth_range(data, depths, drange=drange)
-        ax.plot(data, depths,
+        data2 = extract_depth_range(data, depths, drange=drange)
+        ax.plot(data2, depths,
             lw=lw,
             ls=ls,
             c=c,
@@ -511,10 +512,9 @@ def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = ''):
 
 def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.5, label = ''):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
-        data_min = extract_depth_range(data_min, depths, drange=drange)
-        data_max = extract_depth_range(data_max, depths, drange=drange)
-
-        ax.fill_betweenx(depths, data_min, data_max,
+        data_min2 = extract_depth_range(data_min, depths, drange=drange)
+        data_max2 = extract_depth_range(data_max, depths, drange=drange)
+        ax.fill_betweenx(depths, data_min2, data_max2,
             color=color,
             alpha = alpha,
             label= label)
@@ -561,12 +561,19 @@ def make_multi_model_profiles_plots(
         fig = plt.figure()
         gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=1) # master
         gs0 =gs[0,0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
+        ax0=fig.add_subplot(gs0[0,0]) # surface
+        ax1=fig.add_subplot(gs0[1,0]) # depths
+    else:
+        # ax is actually a grudsoec,
+        gs0 = ax.subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
+        ax0=fig.add_subplot(gs0[0,0]) # surface
+        ax1=fig.add_subplot(gs0[1,0]) # depths
 
     #gs0 = gs[0].subgridspec(2, 1, hspace=0.35) # scatters
     #gs1 = gs[1].subgridspec(3, 1, hspace=0.06 ) # maps
-        #scatters
-    ax0=fig.add_subplot(gs0[0,0]) # surface
-    ax1=fig.add_subplot(gs0[1,0]) # depths
+
+    #ax0=fig.add_subplot(gs0[0,0]) # surface
+    #ax1=fig.add_subplot(gs0[1,0]) # depths
 
     model_cubes = {}
     model_cubes_paths = {}
@@ -587,15 +594,16 @@ def make_multi_model_profiles_plots(
             # ensure everyone uses the same levels:
             cube = extract_levels(cube,
                 scheme='linear',
-                levels =  [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 200.0, 300.0, 400.0, 500.0,
-                           600.0, 700.0, 800.0, 900.0, 999.0, 1001., 1500.0, 2000.0, 2500.0, 3000.0, 3500.0,
-                           4000.0, 4500.0, 5000.0]
+                levels =  [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 150., 200.0, 250., 300.0, 350., 400.0, 450., 500.0,
+                           600.0, 650., 700.0, 750., 800.0, 850., 900.0, 950., 999.0, 
+                           1001., 1250., 1500.0, 1750., 2000.0, 2250., 2500.0, 2750., 3000.0, 3250., 3500.0, 3750.,
+                           4000.0, 4250., 4500.0, 4750., 5000.0]
                 )
 
             model_cubes = add_dict_list(model_cubes, variable_group, cube)
             model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
 
-    plotting = [ 'means',  '5-95', 'all_models'] #'medians', , 'range',
+    plotting = [ 'means',  '5-95', ] #'all_models'] #'medians', , 'range',
 
     for variable_group, cubes in model_cubes.items():
         data_values = {}
@@ -783,7 +791,7 @@ def do_gridspec():
     subplots['timeseries'] = fig.add_subplot(gs0[0:2,0:2])
     subplots['climatology'] = fig.add_subplot(gs0[0, 2:4])
     #subplots['clim_diff'] = fig.add_subplot(gs0[0, 3])
-    subplots['profile'] = fig.add_subplot(gs0[1, 2:4])
+    subplots['profile'] = gs0[1, 2:4]
     #subplots['prof_diff'] = fig.add_subplot(gs0[1, 3])
     #
     # maps:
@@ -841,9 +849,11 @@ def main(cfg):
             profile_fns = add_dict_list(profile_fns, variable_group, fn)
         if variable_group.find('_map_')>-1:
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
-    # Individual plots - standalone
 
-    make_multi_model_profiles_plots(
+    # Individual plots - standalone
+    do_standalone = False
+    if do_standalone:
+        make_multi_model_profiles_plots(
             cfg,
             metadatas,
             profile_fns = profile_fns,
@@ -857,11 +867,8 @@ def main(cfg):
             ax = None,
             save = False,
             draw_legend=True
-    )
-    assert 0
+        )
 
-    do_standalone = False
-    if do_standalone:
         multi_model_clim_figure(
             cfg,
             metadatas,
@@ -902,6 +909,19 @@ def main(cfg):
         ssp_time_range = [2015., 2050.],
         fig = fig,
         ax =  subplots['climatology'],
+    )
+    fig, subplots['profile'] = make_multi_model_profiles_plots(
+            cfg,
+            metadatas,
+            profile_fns = profile_fns,
+            #short_name,
+            #obs_metadata={},
+            #obs_filename='',
+            hist_time_range = [1990., 2015.],
+            ssp_time_range = [2015., 2050.],
+            #figure_style = 'difference',
+            fig = fig,
+            ax = subplots['profile']
     )
 
 
