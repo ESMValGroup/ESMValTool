@@ -26,6 +26,7 @@ import os
 import iris
 
 from esmvalcore.preprocessor import concatenate
+from esmvalcore.cmor.check import _get_time_bounds
 from esmvaltool.cmorizers.obs.utilities import (convert_timeunits, fix_coords,
                                                 fix_var_metadata,
                                                 save_variable, set_global_atts)
@@ -74,8 +75,7 @@ def cmorization(in_dir, out_dir, cfg, _):
                 monthly_cubes.append(cube)
             yearly_cube = concatenate(monthly_cubes)
             # Fix monthly time bounds
-            fix_coords(yearly_cube, overwrite_lon_bounds=False,
-                       overwrite_lat_bounds=False)
+            yearly_cube.coord('time').bounds = _get_time_bounds(yearly_cube.coord('time'), 'mon')
             save_variable(yearly_cube,
                           var,
                           out_dir,
