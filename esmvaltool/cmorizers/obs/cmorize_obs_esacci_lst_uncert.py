@@ -54,7 +54,7 @@ def cmorization(in_dir, out_dir, cfg, _):
         print('****************************')
         print(variable_list)
         this_years_cubes = iris.cube.CubeList()
-        for month in range(1,2):
+        for month in range(1,13):
             logger.info(year)
             logger.info(month)
             print(vals['file'])
@@ -95,39 +95,6 @@ def cmorization(in_dir, out_dir, cfg, _):
                                               circular=False
                                           )
 
-            # night_time_coord = iris.coords.DimCoord(night_point, 
-            #                                         standard_name='time',
-            #                                         long_name='time', 
-            #                                         var_name='time', 
-            #                                         units='hours since 1970-01-01',
-            #                                         bounds=None,#bounds, 
-            #                                         attributes=None, 
-            #                                         coord_system=None, 
-            #                                         circular=False
-            # )
-
-            # all_time_coord = iris.coords.DimCoord(all_point, 
-            #                                       standard_name='time',
-            #                                       long_name='time', 
-            #                                       var_name='time', 
-            #                                       units='hours since 1970-01-01',
-            #                                       bounds=None,#bounds, 
-            #                                       attributes=None, 
-            #                                       coord_system=None, 
-            #                                       circular=False
-            # )
-            
-            # DAY TIME VALUES given a 1200 time
-            # NIGHT TIME VALUES given a 0000 time
-            # ALL TIME VALUES given a 1800 time
-            # all on the 1st of the month
-            # note the cmor util coord fixer adds a bounf
-            # these bounds need removing when using partial datetime objects
-            # to extact the day/night individual elements
-            #monthly_cubes.remove_coord('time')
-            #monthly_cubes.add_aux_coord(all_time_coord)
-            #monthly_cubes = iris.util.new_axis(monthly_cubes, 'time')
-            #output.append(monthly_cubes)
             
             for i,cube in enumerate(cubes):
                 #if cube.long_name == 'land surface temperature': continue
@@ -142,21 +109,6 @@ def cmorization(in_dir, out_dir, cfg, _):
                 cube.add_dim_coord(time_coord, 0)
                     
                 output.append(cube)
-
-            # for i,cube in enumerate(night_cube):
-            #     if cube.long_name == 'land surface temperature': continue
-
-            #     cube.attributes = {}
-            #     cube.attributes['var'] = variable_keys[i]
-                
-            #     try:
-            #         cube.remove_coord('time')
-            #     except:
-            #         logger.info('Coord fix issue %s' % cube.long_name)
-
-            #     cube.add_dim_coord(night_time_coord, 0)
-                    
-            #     output.append(cube)
 
             output = output.merge()
             output = output.concatenate()
@@ -178,6 +130,13 @@ def cmorization(in_dir, out_dir, cfg, _):
             for cube in output:
                 #print(cube)
                 var_name = cube.attributes['var']
+                print('************************ %s' % cube.long_name)
+                print(cube)
+                if var_name == 'tsLSSysErrDay' or var_name == 'tsLSSysErrNight':
+                    print('BOOO')
+                else:
+                    print('HELLOE!')
+                    cube.coords()[2].standard_name = 'longitude'
                 iris.save(cube,
                           '%s/OBS_ESACCI_LST_UNCERTS_sat_1.00_Amon_%s_%s.nc' % 
                           (out_dir, var_name, '%s%02d'%(year,month))
