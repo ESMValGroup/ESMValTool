@@ -196,7 +196,7 @@ jobs:
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda config --set channel_priority true
-            conda update --all
+            conda -y update --all
             conda create -y -n build conda-build conda-verify
             conda activate build
             # Log versions
