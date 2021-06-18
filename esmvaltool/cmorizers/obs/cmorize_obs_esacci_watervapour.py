@@ -43,7 +43,7 @@ def extract_variable(var_info, raw_info, attrs, year):
         if cube.var_name == rawvar:
             fix_var_metadata(cube, var_info)
             convert_timeunits(cube, year)
-            fix_coords(cube)
+            fix_coords(cube, overwrite_time_bounds=False)
             set_global_atts(cube, attrs)
             # Remove disfunctional ancillary data without sandard name
             for ancillary_variable_, dim in cube._ancillary_variables_and_dims:
@@ -71,11 +71,12 @@ def cmorization(in_dir, out_dir, cfg, _):
                 raw_info['file'] = inpfile.format(year=year, month=month)
                 logger.info("CMORizing var %s from file type %s", var,
                             raw_info['file'])
-                cube = extract_variable(var_info, raw_info, glob_attrs, year)
-                monthly_cubes.append(cube)
+                monthly_cubes.append(extract_variable(var_info, raw_info,
+                                                      glob_attrs, year))
             yearly_cube = concatenate(monthly_cubes)
             # Fix monthly time bounds
-            yearly_cube.coord('time').bounds = _get_time_bounds(yearly_cube.coord('time'), 'mon')
+            time = yearly_cube.coord('time')
+            time.bounds = _get_time_bounds(time, 'mon')
             save_variable(yearly_cube,
                           var,
                           out_dir,
