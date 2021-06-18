@@ -59,7 +59,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvalcore.preprocessor._time import extract_time
-from esmvalcore.preprocessor._volume import extract_levels
+from esmvalcore.preprocessor._regrid import extract_levels
 
 
 
@@ -481,7 +481,7 @@ def multi_model_clim_figure(
 
 ###################################
 
-def extract_depth_range(data, depths, drange='surface', threshold=1000.):
+def extract_depth_range(data, depths, drange='surface', threshold=-1000.):
     """
     Extract either the top 1000m or everything below there.
 
@@ -489,15 +489,16 @@ def extract_depth_range(data, depths, drange='surface', threshold=1000.):
 
     Assuming everything is 1D at this stage!
     """
+    depths = np.array(depths)
     if drange == 'surface':
-        data = np.ma.masked_where(depths >= threshold, data)
-    elif drange == 'depths':
         data = np.ma.masked_where(depths < threshold, data)
+    elif drange == 'depths':
+        data = np.ma.masked_where(depths > threshold, data)
 
     return data
 
 
-def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = label):
+def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = ''):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
         data = extract_depth_range(data, depths, drange=drange)
         ax.plot(data, depths,
@@ -507,14 +508,15 @@ def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = label):
             label= label)
     return ax0, ax1
 
-def plot_z_area(depths, data_min, data_max, ax0, ax1, ls='-', c='blue', lw=2., label = label):
+
+def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.5, label = ''):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
         data_min = extract_depth_range(data_min, depths, drange=drange)
         data_max = extract_depth_range(data_max, depths, drange=drange)
 
         ax.fill_betweenx(depths, data_min, data_max,
-            color=c,
-            alpha = 0.5,
+            color=color,
+            alpha = alpha,
             label= label)
     return ax0, ax1
 
@@ -522,7 +524,7 @@ def plot_z_area(depths, data_min, data_max, ax0, ax1, ls='-', c='blue', lw=2., l
 def make_multi_model_profiles_plots(
         cfg,
         metadatas,
-        profile_fns = {}
+        profile_fns = {},
         #short_name,
         obs_metadata={},
         obs_filename='',
@@ -559,8 +561,6 @@ def make_multi_model_profiles_plots(
         fig = plt.figure()
         gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=1) # master
         gs0 =gs[0,0].subgridspec(ncols=1, nrows=2, height_ratios=[2, 1], hspace=0.)
-    else:
-        single_pane = False
 
     #gs0 = gs[0].subgridspec(2, 1, hspace=0.35) # scatters
     #gs1 = gs[1].subgridspec(3, 1, hspace=0.06 ) # maps
@@ -573,7 +573,7 @@ def make_multi_model_profiles_plots(
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
             cube = iris.load_cube(fn)
-            cube = diagtools.bgc_units(cube, metadata['short_name'])
+            cube = diagtools.bgc_units(cube, metadatas[fn]['short_name'])
 
             scenario = metadatas[fn]['exp']
             if scenario == 'historical':
@@ -607,7 +607,7 @@ def make_multi_model_profiles_plots(
             scenario = metadata['exp']
             color = ipcc_colours[scenario]
 
-            depths = cube.coord('depth').points
+            depths = -1.* cube.coord('depth').points
             for z, d in zip(depths, cube.data):
                 data_values = add_dict_list(data_values, z, d)
 
@@ -626,15 +626,12 @@ def make_multi_model_profiles_plots(
         if 'range' in plotting:
             mins = [np.min(data_values[z]) for z in depths]
             maxs = [np.max(data_values[z]) for z in depths]
-            ax0, ax1 =  plot_z_area(depths, mins, maxs, color= ipcc_colours[scenario], alpha=0.5)
+            ax0, ax1 =  plot_z_area(depths, mins, maxs,ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
 
         if '5-95' in plotting:
             mins = [np.percentile(data_values[z], 5.) for z in depths]
             maxs = [np.percentile(data_values[z], 95.) for z in depths]
-            ax0, ax1 =  plot_z_area(depths, mins, maxs, color= ipcc_colours[scenario], alpha=0.5)
-
-
-
+            ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
 
     # for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
     #     if metric != 'mean': continue
@@ -728,34 +725,34 @@ def make_multi_model_profiles_plots(
     ax0.axhline(-999., ls='--', lw=1.5, c='black')
     ax1.axhline(-1001., ls='--', lw=1.5, c='black')
 
-    if single_pane:
-        # Add title to plot
-        title = ' '.join([
-            # short_name,
-            # figure_style,
-            time_str
-            ])
-        # ax0.set_title(title)
-    else:
+#    if single_pane:
+#        # Add title to plot
+#        title = ' '.join([
+#            # short_name,
+#            # figure_style,
+#            time_str
+#            ])
+#        # ax0.set_title(title)
+#    else:
         #ax0.yaxis.set_ticks_position('both')
         #ax1.yaxis.set_ticks_position('both')
-        if figure_style == 'difference':
-           ax0.yaxis.set_ticks_position('right')
-           ax1.yaxis.set_ticks_position('right')
-           ax0.yaxis.set_ticklabels([])
-           ax1.yaxis.set_ticklabels([])
-           ax0.set_title('Difference against historical')
+#        if figure_style == 'difference':
+#           ax0.yaxis.set_ticks_position('right')
+#           ax1.yaxis.set_ticks_position('right')
+#           ax0.yaxis.set_ticklabels([])
+#           ax1.yaxis.set_ticklabels([])
+#           ax0.set_title('Difference against historical')
 
-        else:
-             ax0.set_title('Mean and Range')
+ #       else:
+  #           ax0.set_title('Mean and Range')
 
 
     # Add Legend outside right.
-    if draw_legend:
-        ax1.legend(loc='lower left')
+    #if draw_legend:
+    #    ax1.legend(loc='lower left')
     #diagtools.add_legend_outside_right(plot_details, plt.gca())
 
-    if not single_pane:
+    if not save:
         return fig, ax
     # Saving files:
 
@@ -846,7 +843,7 @@ def main(cfg):
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
     # Individual plots - standalone
 
-    def make_multi_model_profiles_plots(
+    make_multi_model_profiles_plots(
             cfg,
             metadatas,
             profile_fns = profile_fns,
@@ -860,7 +857,8 @@ def main(cfg):
             ax = None,
             save = False,
             draw_legend=True
-        )
+    )
+    assert 0
 
     do_standalone = False
     if do_standalone:
