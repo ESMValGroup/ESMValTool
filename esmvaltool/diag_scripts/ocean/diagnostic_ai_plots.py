@@ -595,7 +595,7 @@ def make_multi_model_profiles_plots(
             cube = extract_levels(cube,
                 scheme='linear',
                 levels =  [0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 150., 200.0, 250., 300.0, 350., 400.0, 450., 500.0,
-                           600.0, 650., 700.0, 750., 800.0, 850., 900.0, 950., 999.0, 
+                           600.0, 650., 700.0, 750., 800.0, 850., 900.0, 950., 999.0,
                            1001., 1250., 1500.0, 1750., 2000.0, 2250., 2500.0, 2750., 3000.0, 3250., 3500.0, 3750.,
                            4000.0, 4250., 4500.0, 4750., 5000.0]
                 )
@@ -778,7 +778,264 @@ def make_multi_model_profiles_plots(
     plt.close()
 
 #####################################
+# Map sections:
 
+def multi_model_map_figure(
+        cfg,
+        metadatas,
+        maps_fns = {}
+        figure_style = 'hist_and_ssp',
+        hist_time_range = [1990., 2000.],
+        ssp_time_range = [2040., 2050.],
+        region='midatlantic',
+        obs_metadata={},
+        obs_filename='',
+        fig = None,
+        ax = None,
+        save = False,
+    ):
+    """
+    produce a monthly climatology figure.
+    """
+    central_longitude = -14.25 #W #-160.+3.5
+    central_latitude = -7.56
+    if region == 'global':
+        central_longitude = -14.25 #W #-160.+3.5
+        proj = ccrs.Robinson(central_longitude=central_longitude)
+
+    if region == 'midatlantic':
+        proj=cartopy.crs.PlateCarree()
+
+    if fig is None or ax is None:
+        fig = plt.figure()
+        fig.set_size_inches(10,6)
+        ax = matplotlib.gridspec.GridSpec(ncols=1, nrows=1)
+
+        save = True
+
+    seq_cmap = 'viridis'
+    div_cmap ='BrBG'
+    # if figure_style=='four_ssp':
+    #     subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
+    #     subplot_style = {221: 'mean', 222: 'mean', 223: 'mean', 224: 'mean'}
+    #     cmaps =  {221: seq_cmap, 222:seq_cmap, 223: seq_cmap, 224: seq_cmap}
+    # el
+    if figure_style=='five_means':
+        subplots_nums = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
+        subplot_style = {231: 'hist', 232:'mean', 233: 'mean', 235: 'mean', 236: 'mean'}
+        cmaps = {231: seq_cmap, 232:seq_cmap, 233: seq_cmap, 235: seq_cmap, 236: seq_cmap}
+        fig.set_size_inches(11,5)
+
+    # elif figure_style=='four_ssp_diff':
+    #     subplots = {221: 'ssp126', 222:'ssp245', 223:'ssp370', 224: 'ssp585'}
+    #     subplot_style = {221: 'diff', 222: 'diff', 223: 'diff', 224: 'diff'}
+    #     cmaps =  {221: div_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
+    elif figure_style=='hist_and_ssp':
+        subplots_nums = {231: 'historical', 232: 'ssp126', 233: 'ssp245', 235: 'ssp370', 236: 'ssp585'}
+        subplot_style = {231: 'hist', 232:'diff', 233: 'diff', 235: 'diff', 236: 'diff'}
+        cmaps = {231: seq_cmap, 232:div_cmap, 233: div_cmap, 235: div_cmap, 236: div_cmap}
+        fig.set_size_inches(11,5)
+    # elif figure_style in ['ssp126', 'ssp245', 'ssp370', 'ssp585']:
+    #     subplots = {221: 'historical', 222:figure_style, 223:figure_style, 224: figure_style}
+    #     subplot_style = {221:'hist',222: 'diff', 223: 'min_diff', 224: 'max_diff'}
+    #     cmaps =  {221: seq_cmap, 222:div_cmap, 223: div_cmap, 224: div_cmap}
+    else:
+        assert 0
+
+    gs1 =ax.subgridspec(ncols=3, nrows=2, )
+    subplots['historical'] = fig.add_subplot(gs1[0,0])
+    if obs_filename:
+        subplots['obs'] = fig.add_subplot(gs1[1,0])
+    subplots['ssp126'] = fig.add_subplot(gs1[0,1])
+    subplots['ssp245'] = fig.add_subplot(gs1[1,1])
+    subplots['ssp370'] = fig.add_subplot(gs1[0,2])
+    subplots['ssp585'] = fig.add_subplot(gs1[1,2])
+
+    model_cubes = {}
+    model_cubes_paths = {}
+    mean_model_cubes = {}
+    exps = {}
+
+    # Load and do basic map manipulation data
+    for variable_group, filenames in maps_fns.items():
+        for i, fn in enumerate(filenames):
+
+            work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_means'])
+            path = work_dir+'_'.join(variable_group)+'.nc'
+            print('make_file_mean, path:', path)
+            model_cubes_paths = add_dict_list(model_cubes_paths, variable_group, fn)
+            scenario = metadatas[fn]['exp']
+            exps[scenario] = variable_group
+
+            if os.path.exists(path):
+                mean_model_cubes[variable_group] = iris.load_cube(path)
+                continue
+
+            cube = iris.load_cube( fn)
+            cube = diagtools.bgc_units(cube, metadata['short_name'])
+
+            cube = climate_statistics(cube, operator=operator)
+            print('Saving output:', path)
+            iris.save(cube, path)
+
+            cube = iris.load_cube(filename)
+            cube = diagtools.bgc_units(cube, metadata['short_name'])
+            if not cube.coords('year'):
+                iris.coord_categorisation.add_year(cube, 'time')
+
+            raw_times = diagtools.cube_time_to_float(cube)
+
+            times_float = diagtools.cube_time_to_float(cube)
+            #dataset = metadatas[fn]['dataset']
+            #ensemble = metadatas[fn]['ensemble']
+
+            if 'time' in [c.name for c in cube.coords()]:
+                if scenario == 'historical':
+                    cube = extract_time(cube, hist_time_range[0], 1, 1, hist_time_range[1], 12, 31)
+                else:
+                    cube = extract_time(cube, ssp_time_range[0], 1, 1, ssp_time_range[1], 12, 31)
+
+                cube = cube.collapsed('time', iris.analysis.MEAN)
+
+            cube = regrid_intersect(cube, region=region)
+            model_cubes = add_dict_list(model_cubes, variable_group, cube)
+
+        mean_model_cubes[variable_group] = make_mean_of_cube_list_notime(model_cubes[variable_group])
+
+
+        # else:
+        #     if scenario == 'historical' and filename.find('-'.join([str(h) for h in hist_time_range]))>-1:
+        #         cube = regrid_intersect(cube, region=region)
+        #         cubes[(dataset, scenario, ensemble, 'mean')] = cube
+        #         style_range['hist'].extend([cube.data.min(), cube.data.max()])
+        #     elif filename.find('-'.join([str(h) for h in ssp_time_range]))>-1:
+        #         cube = regrid_intersect(cube, region=region)
+        #         cubes[(dataset, scenario, ensemble, 'mean')] = cube
+        #     style_range['mean'].extend([cube.data.min(), cube.data.max()])
+
+    # if len(cubes.keys()) == 0:
+    #     return
+
+    # calculate diffs, and range.
+    diff_range = []
+    #initial_metrics = [index for index in cubes.keys()]
+    nspaces = {}
+    hist_variable_group = exps['historical']
+    hist_cube = mean_model_cubes[hist_variable_group]
+    diff_cubes = {}
+
+    # Calculate the diff range.
+    style_range = {'hist':[], 'mean':[], 'diff':[], 'min_diff':[], 'max_diff':[]}
+
+    for variable_group, cube in mean_model_cubes.items():
+        if variable_group == hist_variable_group:
+             continue
+
+        if metric == 'mean':
+            cube = cube - hist_cube
+            diff_cubes[variable_group] = cube
+
+            style_range['diff'].extend([cube.data.min(), cube.data.max()])
+
+    for style, srange in style_range.items():
+        if not len(srange): continue
+        style_range[style] = [np.array(srange).min(), np.array(srange).max()]
+
+        if style in ['diff', 'min_diff', 'max_diff']:
+            new_max = np.abs(style_range[style]).max()
+            nspaces[style] = np.linspace(-new_max, new_max, 21)
+        else:
+            nspaces[style] = np.linspace(style_range[style][0], style_range[style][1], 11)
+
+    for sbp, exp in subplots_nums.items():
+        ax0 = subplots[exp]
+        plt.sca(ax0)
+        sbp_style = subplot_style[sbp]
+        if figure_style=='hist_and_ssp':
+            if exp in ['historical', 'hist']:
+                cube = hist_cube
+            else:
+                variable_group = exps[exp]
+                cube = diff_cubes[variable_group]
+
+        #print(figure_style, sbp, exp, sbp_style, style_range[sbp_style])
+        qplot = iris.plot.contourf(
+            cube,
+            nspaces[sbp_style],
+            linewidth=0,
+            cmap=cmaps[sbp],
+            extend='neither',
+            zmin=style_range[sbp_style][0],
+            zmax=style_range[sbp_style][1],
+            )
+
+        if region == 'midatlantic':
+            lat_bnd = 20.
+            lon_bnd = 30.
+            ax.set_extent([central_longitude-lon_bnd,
+                           central_longitude+lon_bnd,
+                           central_latitude-lat_bnd,
+                           central_latitude+lat_bnd, ])
+
+        # Compute the required radius in projection native coordinates:
+        r_ortho = compute_radius(proj, 3., proj=proj, lat = central_latitude, lon=central_longitude,)
+        ax.add_patch(mpatches.Circle(xy=[central_longitude, central_latitude], radius=r_ortho, color='black', alpha=0.3, transform=proj, zorder=30))
+        plt.colorbar()
+
+        try:
+            plt.gca().coastlines()
+        except AttributeError:
+            logger.warning('Not able to add coastlines')
+
+        # Add title to plot
+        # long_names = {
+        #    'diff':'difference',
+        #    'hist':'mean',
+        # }
+
+        # title = ' '.join([exp, long_names.get(sbp_style, sbp_style,)])
+        # plt.title(title)
+
+    # suptitle = ' '.join([dataset, ensemble, long_name_dict[short_name],
+    #                      '\n Historical', '-'.join([str(t) for t in hist_time_range]),
+    #                      'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ])
+    #
+    # plt.suptitle(suptitle)
+
+    # save and close.
+    time_str = '_'.join(['-'.join([str(t) for t in hist_time_range]), 'vs',
+                         '-'.join([str(t) for t in ssp_time_range])])
+
+    if save:
+        path = diagtools.folder(cfg['plot_dir']+'/Maps')
+        path += '_'.join(['maps', figure_style, region, time_str])
+        path += diagtools.get_image_format(cfg)
+
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+        plt.close()
+    else:
+        return fig, ax
+
+
+def regrid_intersect(cube, region='global'):
+    central_longitude = -14.25 #W #-160.+3.5
+    central_latitude = -7.56
+    cube = regrid_to_1x1(cube)
+    if region=='global':
+        cube = cube.intersection(longitude=(central_longitude-180., central_longitude+180.))
+    if region=='midatlantic':
+        lat_bnd = 20.
+        lon_bnd = 30.
+        cube = cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+                                 latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+    return cube
+
+
+
+
+
+#####################################
 
 def do_gridspec():
     #fig = None
@@ -795,13 +1052,14 @@ def do_gridspec():
     #subplots['prof_diff'] = fig.add_subplot(gs0[1, 3])
     #
     # maps:
-    gs1 =gs[1,0].subgridspec(ncols=3, nrows=2, )
-    subplots['map_hist'] = fig.add_subplot(gs1[0,0])
-    subplots['map_obs'] = fig.add_subplot(gs1[1,0])
-    subplots['map_ssp125'] = fig.add_subplot(gs1[0,1])
-    subplots['map_ssp245'] = fig.add_subplot(gs1[1,1])
-    subplots['map_ssp379'] = fig.add_subplot(gs1[0,2])
-    subplots['map_ssp585'] = fig.add_subplot(gs1[1,2])
+    subplots['maps'] = gs[1,0]
+    # gs1 =gs[1,0].subgridspec(ncols=3, nrows=2, )
+    # subplots['map_hist'] = fig.add_subplot(gs1[0,0])
+    # subplots['map_obs'] = fig.add_subplot(gs1[1,0])
+    # subplots['map_ssp125'] = fig.add_subplot(gs1[0,1])
+    # subplots['map_ssp245'] = fig.add_subplot(gs1[1,1])
+    # subplots['map_ssp379'] = fig.add_subplot(gs1[0,2])
+    # subplots['map_ssp585'] = fig.add_subplot(gs1[1,2])
     #plt.show()
     #plt.savefig('tmp.png')
 
@@ -851,6 +1109,17 @@ def main(cfg):
             maps_fns = add_dict_list(maps_fns, variable_group, fn)
 
     # Individual plots - standalone
+
+    multi_model_map_figure(
+            cfg,
+            metadatas,
+            maps_fns = maps_fns
+            figure_style = 'hist_and_ssp',
+            hist_time_range = [1990., 2015.],
+            ssp_time_range = [2015., 2050.],
+            region='midatlantic',)
+
+    
     do_standalone = False
     if do_standalone:
         make_multi_model_profiles_plots(
@@ -891,6 +1160,19 @@ def main(cfg):
     #print(profile_fns)
     #print(maps_fns)
     fig, subplots = do_gridspec()
+
+    fig, subplots['maps'] = multi_model_map_figure(
+            cfg,
+            metadatas,
+            maps_fns = maps_fns
+            figure_style = 'hist_and_ssp',
+            hist_time_range = [1990., 2015.],
+            ssp_time_range = [2015., 2050.],
+            region='midatlantic',
+            fig = fig,
+            ax =  subplots['maps'],
+            )
+
     fig, subplots['timeseries'] = multi_model_time_series(
             cfg,
             metadatas,
