@@ -7,10 +7,10 @@ documentation:
 
   authors:
     - cionni_irene
-    
+
   maintainer:
     - weigel_katja
-    
+
   references:
     - bett2016renene
     - weigel2021gmd
@@ -57,11 +57,12 @@ preprocessors:
       end_latitude: 80
     extract_season: &season
       season: djf
-    # Multi_model_statistics turned of due to an issue with the Core v2.3.0
-    # multi_model_statistics:
-    #   span: overlap
-    #   statistics: [mean]
-    #   exclude: [reference_dataset]
+
+# Multi_model_statistics turned of due to an issue with the Core v2.3.0
+#     multi_model_statistics:
+#       span: overlap
+#       statistics: [mean]
+#       exclude: [reference_dataset]
 
 
 diagnostics:
