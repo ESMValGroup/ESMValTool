@@ -162,7 +162,7 @@ All hydrological recipes require a shapefile as an input to produce forcing data
    *Optional preprocessor settings:*
 
    * area_selection: A region bounding box to extract the data for a specific region. The area selection preprocessor can be used by users to process the data for their desired region. The data will be processed at the global scale if the preprocessor in the recipe is commented.
-   * regrid_scheme: The area-weighted regridding scheme considred as a defult regridding scheme to ensures that the total volume of water is consistent before and after regridding.
+   * regrid_scheme: The area-weighted regridding scheme is used as a default regridding scheme to ensure that the total volume of water is consistent before and after regridding.
    * langbein_pet: Can be set to True to use langbein function for calculating evspsblpot (default is de bruin method)
 
 
