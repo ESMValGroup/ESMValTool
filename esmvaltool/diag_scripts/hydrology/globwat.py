@@ -150,24 +150,6 @@ def get_cube_data_info(cube):
     return short_name, mip
 
 
-def _reindex_data(cube, target):
-    """Reindex data to a global coordinates set.
-
-    Globwat works with global extent.
-    """
-    array = xr.DataArray.from_iris(cube).to_dataset()
-    target_ds = xr.DataArray.from_iris(target).to_dataset()
-    reindex_ds = array.reindex(
-        {"lat": target_ds["lat"], "lon": target_ds["lon"]},
-        method="nearest",
-        tolerance=1e-2,
-    )
-    new_cube = reindex_ds.to_array().to_iris()
-    new_cube.var_name = cube.var_name
-    new_cube.attributes = cube.attributes
-    return new_cube
-
-
 def _swap_western_hemisphere(cube):
     """Set longitude values in range -180, 180.
 
@@ -312,9 +294,6 @@ def main(cfg):
 
             # Re-grid data according to the target cube
             cube = rechunk_and_regrid(cube, target_cube, cfg['regrid_scheme'])
-
-            # Reindex data to a global coordinates set
-            cube = _reindex_data(cube, target_cube)
 
             # Save data as an ascii file per each time step
             for sub_cube in cube.slices_over('time'):
