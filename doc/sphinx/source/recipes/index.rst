@@ -33,6 +33,9 @@ Atmosphere
    recipe_spei
    recipe_martin18grl
    recipe_autoassess_stratosphere
+   recipe_autoassess_landsurface_permafrost
+   recipe_autoassess_landsurface_surfrad
+   recipe_autoassess_landsurface_soilmoisture
    recipe_zmnam
    recipe_thermodyn_diagtool
    recipe_validation
