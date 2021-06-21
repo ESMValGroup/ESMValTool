@@ -1,4 +1,28 @@
-#This script modify the wind capacity factor script wrote in bsc_magic
+# #############################################################################
+# diagnostic.R
+# Authors:       Irene Cionni (ENEA, Italy)
+# #############################################################################
+# Description
+# This script modifies the wind capacity factor script wrote in bsc_magic
+#
+# Required
+# season: String to include shortcut for season in plot title
+#         and name (e.g. "djf"). It will be converted to upper case. 
+#         This season should be the one set in the preprocessor, since it is 
+#         only used as a string and does not affect the data in the diagnostic. 
+#         In the default recipe this is solved through a node anchor.
+#
+# Optional
+# maxval_colorbar: Optional upper limit for the colorbar.
+#
+# Caveats
+#
+# Modification history
+#    20210401-cionni_irene: written for v2.0
+#    20210401-weigel_katja: changed to allow multiple models 
+#    20210621-weigel_katja: formattiong updates 
+#
+# ############################################################################
 library(abind)
 library(climdex.pcic)
 library(ggplot2)
@@ -214,13 +238,15 @@ for (i in seq(1, length(model_names), 1)) {
   }
 
   PlotEquiMap(Mean1Dim(seas_data_cf_all,1),lon,lat,
-    filled.continents=F,
-    brks=seq(
+    filled.continents = F,
+    brks = seq(
       from = 0, to = maxval_colorbar,
-      length.out = 11),
-      color_fun = clim.palette("yellowred"),
-      toptitle = title,
-      height=6, fileout = filepng)
+      length.out = 11
+      ),
+    color_fun = clim.palette("yellowred"),
+    toptitle = title,
+    height = 6,
+    fileout = filepng)
   filencdf <- paste0(
     work_dir, "/", "capacity_factor_", model_names[i], "_",
     start_year, "-", end_year, ".nc"

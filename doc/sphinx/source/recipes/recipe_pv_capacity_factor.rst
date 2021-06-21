@@ -25,7 +25,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/pv_capacityfactor/
 
-* pv_capacity_factor.R: prepare data and plots results.
+* pv_capacity_factor.R: prepares data and plots results.
 * PV_CF.R: calculates the daily capacity factor.
 
 
@@ -38,11 +38,14 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * season: String to include shortcut for Season in plot title and name (e.g. "djf"). It will be converted to upper case. 
+   * season: String to include shortcut for season in plot title and name (e.g. "djf").
+     It will be converted to upper case. This season should be the one set in the preprocessor,
+     since it is only used as a string and does not affect the data in the diagnostic.
+     In the default recipe this is solved through a node anchor.
    
    *Optional settings for script*
    
-   * maxval_colorbar: Optional uppler limit for the color bar.
+   * maxval_colorbar: Optional upper limit for the colorbar.
 
 Variables
 ---------
