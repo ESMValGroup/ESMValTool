@@ -1,0 +1,277 @@
+# ESMValTool
+# recipe_icon_evaluation.yml
+---
+documentation:
+  description: Evaluate ICON AMIP simulation
+
+  authors:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+    - gleckler08jgr
+
+
+DATASETS: &datasets
+  - dataset: ICON
+    project: ICON
+    model_version: icon-2.6.1
+    model_component: atm
+    exp: amip
+    grid: R2B5
+    ensemble: r1v1i1p1l1f1
+    var_type: atm_2d_ml
+
+YEARS: &years
+  start_year: 1995
+  end_year: 2014
+
+YEARS_CERES: &years_ceres
+  start_year: 2003
+  end_year: 2011
+
+
+preprocessors:
+
+  regrid_icon:
+    regrid: &regrid_icon
+      target_grid: 2x2
+      scheme: unstructured_nearest
+
+  regrid_nonicon:
+    regrid: &regrid_nonicon
+      target_grid: 2x2
+      scheme: linear
+
+  clim_ref_9-3_icon:
+    regrid: *regrid_icon
+    convert_units:
+      units: degC
+
+  clim_ref_9-3_nonicon:
+    regrid: *regrid_nonicon
+    convert_units:
+      units: degC
+
+
+diagnostics:
+
+  fig09-2:
+    description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas_nonicon:
+        <<: *years
+        short_name: tas
+        preprocessor: regrid_nonicon
+        reference_dataset: ERA-Interim
+        mip: Amon
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      tas_icon:
+        <<: *years
+        short_name: tas
+        preprocessor: regrid_icon
+        reference_dataset: ERA-Interim
+        mip: Amon
+        additional_datasets: *datasets
+    scripts:
+      fig09-2: &fig-9-2_and_9-4_settings
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: false
+
+  fig09-3:
+    description: Calculate seasonality of multi-model mean for tas
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas_nonicon:
+        <<: *years
+        short_name: tas
+        preprocessor: clim_ref_9-3_nonicon
+        reference_dataset: ERA-Interim
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        mip: Amon
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      tas_icon:
+        <<: *years
+        short_name: tas
+        preprocessor: clim_ref_9-3_icon
+        reference_dataset: ERA-Interim
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        mip: Amon
+        additional_datasets: *datasets
+    scripts:
+      fig09-3:
+        script: ipcc_ar5/ch09_fig09_3.ncl
+
+  fig09-4:
+    description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr_nonicon:
+        <<: *years
+        end_year: 2009
+        short_name: pr
+        preprocessor: regrid_nonicon
+        reference_dataset: GPCP-SG
+        mip: Amon
+        additional_datasets:
+          - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
+      pr_icon:
+        <<: *years
+        end_year: 2009
+        short_name: pr
+        preprocessor: regrid_icon
+        reference_dataset: GPCP-SG
+        mip: Amon
+        additional_datasets: *datasets
+    scripts:
+      fig09-4:
+        <<: *fig-9-2_and_9-4_settings
+        plot_abs_diff: true
+        plot_rel_diff: true
+
+  fig09-5a:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      swcre_nonicon:
+        <<: *years_ceres
+        short_name: swcre
+        preprocessor: regrid_nonicon
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      swcre_icon:
+        <<: *years_ceres
+        short_name: swcre
+        preprocessor: regrid_icon
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        force_derivation: true
+        additional_datasets: *datasets
+    scripts:
+      fig09-5a: &fig-9-5_settings
+        script: clouds/clouds_ipcc.ncl
+        projection: Robinson
+        colormap: WhiteBlueGreenYellowRed
+        timemean: annualclim
+
+  fig09-5b:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwcre_nonicon:
+        <<: *years_ceres
+        short_name: lwcre
+        preprocessor: regrid_nonicon
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      lwcre_icon:
+        <<: *years_ceres
+        short_name: lwcre
+        preprocessor: regrid_icon
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        force_derivation: true
+        additional_datasets: *datasets
+    scripts:
+      fig09-5b:
+        <<: *fig-9-5_settings
+
+  fig09-5c:
+    description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      netcre_nonicon:
+        <<: *years_ceres
+        short_name: netcre
+        preprocessor: regrid_nonicon
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+      netcre_icon:
+        <<: *years_ceres
+        short_name: netcre
+        preprocessor: regrid_icon
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        force_derivation: true
+        additional_datasets: *datasets
+    scripts:
+      fig09-5c:
+        <<: *fig-9-5_settings
+
+  fig09-8:
+    description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas_nonicon:
+        <<: *years
+        start_year: 1980
+        short_name: tas
+        preprocessor: regrid_nonicon
+        reference_dataset: HadCRUT4
+        mip: Amon
+        additional_datasets:
+          - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2}
+      tas_icon:
+        <<: *years
+        start_year: 1980
+        short_name: tas
+        preprocessor: regrid_icon
+        reference_dataset: HadCRUT4
+        mip: Amon
+        additional_datasets: *datasets
+    scripts:
+      fig09-8:
+        script: ipcc_ar5/tsline.ncl
+        time_avg: "yearly"
+        ts_anomaly: "anom"
+        ref_start: 1980
+        ref_end: 1989
+        ref_mask: true
+        plot_units: "degC"
+        y_min: -0.8
+        y_max: 0.8
+        volcanoes: true
+        styleset: CMIP5       # Plot style
