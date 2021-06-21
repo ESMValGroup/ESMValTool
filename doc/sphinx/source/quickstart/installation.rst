@@ -22,7 +22,9 @@ Further options for installation are:
 
 * :ref:`Deployment through a Singularity container<install_with_singularity>` (see https://sylabs.io/guides/latest/user-guide/);
 
-* :ref:`From the source code<install_from_source>` available at https://github.com/ESMValGroup/ESMValTool.
+* :ref:`From the source code<install_from_source>` available at https://github.com/ESMValGroup/ESMValTool;
+
+* :ref:`From pre-installed versions on HPC clusters<install_on_hpc>`.
 
 The next sections will detail the procedure to install ESMValTool through each
 of these methods.
@@ -237,11 +239,11 @@ By far the easiest way to install these dependencies is to use conda_.
 For a minimal conda installation (recommended) go to https://conda.io/miniconda.html.
 
 After installing conda, download
-`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml>`_:
+`the file with the list of dependencies <https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/environment.yml>`_:
 
 .. code-block:: bash
 
-    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/master/environment.yml
+    wget https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/environment.yml
 
 and install these dependencies into a new conda environment with the command
 
@@ -291,7 +293,7 @@ You can get the latest release with
 
    docker pull esmvalgroup/esmvaltool:stable
 
-If you want to use the current master branch, use
+If you want to use the current main branch, use
 
 .. code-block:: bash
 
@@ -652,6 +654,21 @@ e.g. ``~/conda/envs/esmvaltool/lib/python3.8/site-packages/esmvalcore``, you
 may need to manually remove that directory and run
 ```pip install -e '.[develop]'``
 again.
+
+.. _install_on_hpc:
+
+Pre-installed versions on HPC clusters
+======================================
+
+The ESMValTool is also available on the HPC clusters CEDA-JASMIN and DKRZ-MISTRAL and there will be no need
+to install it yourself if you are just running diagnostics:
+
+ - CEDA-JASMIN: `esmvaltool` is available on the scientific compute nodes (`sciX.jasmin.ac.uk` where
+   `X = 1, 2, 3, 4, 5`) after login and module loading via `module load esmvaltool`; see the helper page at
+   `CEDA <https://help.jasmin.ac.uk/article/4955-community-software-esmvaltool>`__ ;
+ - DKRZ-Mistral: `esmvaltool` is available on login nodes (`mistral.dkrz.de`) and pre- and post-processing
+   nodes (`mistralpp.dkrz.de`) after login and module loading via `module load esmvaltool`; the command
+   `module help esmvaltool` provides some information about the module.
 
 .. _common installation issues:
 
