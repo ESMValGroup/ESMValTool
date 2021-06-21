@@ -1,3 +1,4 @@
+"""Diagnostic to plot preprocessor output"""
 import calendar
 import logging
 
@@ -19,11 +20,13 @@ logger = logging.getLogger(__name__)
 
 
 class Monitor(MonitorBase):
+    """"""
     def __init__(self, config):
         super().__init__(config)
         self.plots = config.get('plots', {})
 
     def compute(self):
+        """Main plotting method"""
         for module in ['matplotlib', 'fiona']:
             module_logger = logging.getLogger(module)
             module_logger.setLevel(logging.WARNING)
@@ -68,6 +71,21 @@ class Monitor(MonitorBase):
             return
 
     def timeseries(self, cube, var_info):
+        """
+        Plot timeseries according to configuration
+
+        The key 'timeseries' must be passed to the 'plots' option in the
+        configuration.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+            Data to plot. Must be 1D with time or 2D with an extra 'shape_id'
+            or 'region' coordinate. In that case, the plot will be a multiple
+            one with one figure for each region
+        var_info: dict
+            Variable's metadata from ESMValTool
+        """
         if 'timeseries' not in self.plots:
             return
         if not cube.coords('year'):
@@ -88,6 +106,26 @@ class Monitor(MonitorBase):
                                  suptitle='Last 50 years')
 
     def plot_annual_cycle(self, cube, var_info):
+        """
+        Plot the annual cycle according to configuration
+
+        The key 'annual_cycle' must be passed to the 'plots' option in the
+        configuration.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+            Data to plot. Must be 1D with time or 2D with an extra 'shape_id'
+            or 'region' coordinate. In that case, the plot will be a multiple
+            one with one figure for each region
+        var_info: dict
+            Variable's metadata from ESMValTool
+
+        Warning
+        -------
+        The monthly climatology is done inside the function so the users can
+        plot both the timeseries and the annual cycle in one go
+        """
         if 'annual_cycle' not in self.plots:
             return
         cube = climate_statistics(cube, period='month')
@@ -116,6 +154,24 @@ class Monitor(MonitorBase):
         )
 
     def plot_monthly_climatology(self, cube, var_info):
+        """
+        Plot the monthly climatology as a multipanel plot
+
+        The key 'monclim' must be passed to the 'plots' option in the
+        configuration.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+            Data to plot. Must be 3D with latitude, longitude and month_number
+        var_info: dict
+            Variable's metadata from ESMValTool
+
+        Warning
+        -------
+        The monthly climatology is done inside the function so the users can
+        plot both the timeseries and the annual cycle in one go
+        """
         if 'monclim' not in self.plots:
             return
 
