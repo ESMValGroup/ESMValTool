@@ -34,7 +34,9 @@ def create_provenance_record():
         ],
         'references': [
             'acknow_project',
-            ''
+            'debruin16ams',
+            'hoogeveen15hess',
+            'langbein1949usgs',
         ],
         'ancestors': [],
     }
