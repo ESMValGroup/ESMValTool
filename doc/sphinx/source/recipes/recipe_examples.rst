@@ -15,7 +15,7 @@ It also produces a map of global temperature in January 2020.
 The recipe examples/recipe_extract_shape.yml produces a map of the mean
 temperature in the Elbe catchment over the years 2000 to 2002.
 Some example shapefiles for use with this recipe are available
-`here <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/diag_scripts/shapeselect/testdata>`__,
+`here <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/diag_scripts/shapeselect/testdata>`__,
 make sure to download all files with the same name but different extensions.
 
 For detailed instructions on obtaining input data, please refer to
