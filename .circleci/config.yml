@@ -195,9 +195,7 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            # did not help with high memory needed, but it's usually useful 
-            # conda config --set channel_priority true
-            # conda update -y --all
+            conda activate base
             conda install -y -c conda-forge mamba conda-build conda-verify
             # Log versions
             dpkg -l > /logs/versions.txt
