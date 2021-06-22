@@ -198,7 +198,7 @@ jobs:
             # did not help with high memory needed, but it's usually useful 
             # conda config --set channel_priority true
             # conda update -y --all
-            conda install -y -c conda-forge mamba
+            conda install -y -c conda-forge mamba conda-build conda-verify
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/build_environment.yml
