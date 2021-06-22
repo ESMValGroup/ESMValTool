@@ -122,7 +122,7 @@ are almost the same as for the other Atoassess metrics.
    implementation to fully replicate the native Autoassess functionality
    and a minor user inconvenience since they need to set an extra set of
    ``start`` and ``end`` arguments in the diagnostic; this will be phased
-   when all the native Autoassess metrics hanve been ported to ESMValTool
+   when all the native Autoassess metrics have been ported to ESMValTool
    review has completed.
 
 .. note::
@@ -202,7 +202,7 @@ on ``.pp`` data from UKESM1 ``u-bc179`` suite and are listed here to confirm the
 compliance between the ported Autoassess metric in ESMValTool and the original native metric.
 
 Another reference run comparing UKESM1-0-LL to the physical model HadGEM3-GC31-LL can be found
-`here <https://github.com/NCAS-CMS/NCAS-Useful-Documentation/tree/master/autoassess_review_results/stratosphere_AERmonZ/plots/aa_strato/autoassess_strato_test_1/HadGEM3-GC31-LL_vs_UKESM1-0-LL/stratosphere>`_ .
+`here <https://github.com/NCAS-CMS/NCAS-Useful-Documentation/tree/main/autoassess_review_results/stratosphere_AERmonZ/plots/aa_strato/autoassess_strato_test_1/HadGEM3-GC31-LL_vs_UKESM1-0-LL/stratosphere>`_ .
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/metrics.png

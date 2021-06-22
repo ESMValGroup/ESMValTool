@@ -116,11 +116,18 @@ def barplot(metric: 'xr.DataArray', label: str, filename: str):
     ylabel = f'{label} {variable_group} ({units})'
 
     figure, axes = plt.subplots(figsize=(15, 10))
-    chart = sns.barplot(x='model_ensemble', y=name, data=metric_df, ax=axes)
+    chart = sns.barplot(x='model_ensemble',
+                        y=name,
+                        data=metric_df,
+                        ax=axes,
+                        color="blue")
     chart.set_xticklabels(chart.get_xticklabels(),
                           rotation=45,
                           horizontalalignment='right')
-    chart.set_title(f'{label} for {variable_group}')
+    if variable_group == 'weight':
+        chart.set_title('Performance weights')
+    else:
+        chart.set_title(f'{label} for {variable_group}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
 

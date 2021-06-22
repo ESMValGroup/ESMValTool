@@ -6,7 +6,7 @@ Utilities
 This section provides information on tools that are useful when developing
 ESMValTool.
 Tools that are specific to ESMValTool live in the
-`esmvaltool/utils <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/utils>`_
+`esmvaltool/utils <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/utils>`_
 directory, while others can be installed using the usual package managers.
 
 .. _pre-commit:
@@ -75,7 +75,7 @@ or uninstall the pre-commit hook
 
 
 Note that the configuration of pre-commit lives in
-`.pre-commit-config.yaml <https://github.com/ESMValGroup/ESMValTool/blob/master/.pre-commit-config.yaml>`_.
+`.pre-commit-config.yaml <https://github.com/ESMValGroup/ESMValTool/blob/main/.pre-commit-config.yaml>`_.
 
 .. _nclcodestyle:
 
@@ -132,7 +132,7 @@ To use it, run
 draft_release_notes.py
 ======================
 
-`draft_release_notes.py <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/utils/draft_release_notes.py>`__
+`draft_release_notes.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/draft_release_notes.py>`__
 is a script for drafting release notes based on the titles and labels of
 the GitHub pull requests that have been merged since the previous release.
 
@@ -165,7 +165,7 @@ Converting Version 1 Namelists to Version 2 Recipes
 ===================================================
 
 The
-`xml2yml <https://github.com/ESMValGroup/ESMValTool/tree/master/esmvaltool/utils/xml2yml>`_
+`xml2yml <https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/utils/xml2yml>`_
 converter can turn the old xml namelists into new-style yml
 recipes. It is implemented as a xslt stylesheet that needs a processor
 that is xslt 2.0 capable. With this, you simply process your old
