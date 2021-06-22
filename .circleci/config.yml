@@ -78,7 +78,8 @@ jobs:
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
             # conda env update >> /logs/conda.txt 2>&1
-            conda env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
+            conda install -y -c conda-forge mamba
+            mamba env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install .[test] > /logs/install.txt 2>&1
             esmvaltool install R
@@ -130,7 +131,8 @@ jobs:
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
             # conda env update >> /logs/conda.txt 2>&1
-            conda env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
+            conda install -y -c conda-forge mamba
+            mamba env create -n esmvaltool -f environment.yml >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
             esmvaltool install R
