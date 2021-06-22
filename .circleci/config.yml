@@ -202,6 +202,11 @@ jobs:
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/build_environment.yml
+            # create build env and set conda chan prio
+            conda config --set channel_priority true
+            conda update -y --all
+            mamba create -y -n build
+            conda activate build
             # Build conda package
             \time -v mamba build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
           no_output_timeout: 60m
