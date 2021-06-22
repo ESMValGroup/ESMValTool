@@ -58,8 +58,8 @@ Recipes are stored in esmvaltool/recipes/
 
     * ``recipe_climwip_test_basic.yml``: Basic sample recipe using only a few models
     * ``recipe_climwip_test_performance_sigma.yml``: Advanced sample recipe for testing the perfect model test in particular
-    * ``recipe_climwip_brunner2019_med.yml``: Slightly modified results for one region from Brunner et al. (2019) (to change regions see below)
-    * ``recipe_climwip_brunner2020esd.yml`` (in development)
+    * ``recipe_climwip_brunner2019_med.yml``: Slightly modified results for one region from `Brunner et al. (2019) <https://doi.org/10.1088/1748-9326/ab492f>`_ (to change regions see below)
+    * ``recipe_climwip_brunner2020esd.yml``: Slightly modified results for `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_
 
 Diagnostics are stored in esmvaltool/diag_scripts/weighting/climwip/
 
@@ -244,7 +244,22 @@ such cases the perfect model test might fail. This means the performance metrics
 Brunner et al. (2020) recipe and example independence weighting
 ---------------------------------------------------------------
 
-Implementation ongoing
+``recipe_climwip_brunner2020esd.yml`` implements the weighting used in `Brunner et al. (2020) <https://doi.org/10.5194/esd-11-995-2020>`_. Compared to the paper there are minor differences due to two models which had to be excluded due to errors in the ESMValTool pre-processor: CAMS-CSM1-0 and MPI-ESM1-2-HR (r2) as well as the use of only one observational dataset (ERA5).
+
+The recipe uses an additional step between pre-processor and weight calculation to calculate anomalies relative to the global mean (e.g., tas_ANOM = tas_CLIM - global_mean(tas_CLIM)). This means we do not use the absolute temperatures of a model as performance criterion but rather the horizontal temperature distribution (see `Brunner et al. 2020 <https://doi.org/10.5194/esd-11-995-2020>`_ for a discussion).
+
+This recipe also implements a independence weighting for CMIP6. In contrast to model performance (which should be case specific) model independence can largely be seen as only dependent on the multi-model ensemble in use but not the target variable or region. This means that the configuration used should be valid for similar subsets of CMIP6 as used in this recipe:
+
+
+.. code-block:: yaml
+
+   combine_ensemble_members: true
+   independence_sigma: 0.54
+   independence_contributions:
+       tas_CLIM_i: 1
+       psl_CLIM_i: 1
+
+Note that this approach weights ensemble members of the same model with a 1/N independence scaling as well as different models with a output-based independence weighting. Different approaches to handle ensemble members are discussed in `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_. Note that, unlike for performance, the climatologies are used for independence (i.e., the global mean is **not** removed). **Warning:** Using only the independence weighting without any performance weighting might not always lead to meaningful results! The independence weighting is based on model output, which means that if a model is different from all other models as well as the observations it will get a very high independence weight (and also total weight in absence of any performance weighting). This might not reflect the actual independence. It is therefore recommended to use weights based on both independence and performance for most cases.
 
 
 Variables
