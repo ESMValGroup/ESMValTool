@@ -26,7 +26,7 @@ build:
 
 requirements:
   run:
-    - python>=3.8
+    - python>=3.7
     - iris>=3.0.2
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
@@ -65,7 +65,7 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.8
+        - python>=3.7
         - setuptools_scm
       run:
         - cartopy>=0.18
@@ -79,7 +79,7 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.3.0,<2.4  # in esmvalgroup channel
+        - esmvalcore=2.3.0=pyhd8ed1ab_0
         - fiona
         - gdal
         - iris>=3.0.1
@@ -94,7 +94,7 @@ outputs:
         - numpy
         - pandas
         - pyproj>=2.1
-        - python>=3.8
+        - python>=3.7
         - python-cdo
         - pyyaml
         - ruamel.yaml
