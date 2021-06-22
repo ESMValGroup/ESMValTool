@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          activate-environment: build
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"
           channels: conda-forge
@@ -42,10 +43,6 @@ jobs:
         run: conda config --set channel_priority true
       - shell: bash -l {0}
         run: conda update -y --all
-      - shell: bash -l {0}
-        run: mamba create -y -n build
-      - shell: bash -l {0}
-        run: conda activate build
       - shell: bash -l {0}
         run: mamba build package -c conda-forge -c esmvalgroup 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/conda_build.txt
       - name: Upload artifacts
