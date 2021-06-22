@@ -248,7 +248,7 @@ Brunner et al. (2020) recipe and example independence weighting
 
 The recipe uses an additional step between pre-processor and weight calculation to calculate anomalies relative to the global mean (e.g., tas_ANOM = tas_CLIM - global_mean(tas_CLIM)). This means we do not use the absolute temperatures of a model as performance criterion but rather the horizontal temperature distribution (see `Brunner et al. 2020 <https://doi.org/10.5194/esd-11-995-2020>`_ for a discussion).
 
-This recipe also implements a independence weighting for CMIP6. In contrast to model performance (which should be case specific) model independence can largely be seen as only dependent on the multi-model ensemble in use but not the target variable or region. This means that the configuration used should be valid for similar subsets of CMIP6 as used in this recipe:
+This recipe also implements a somewhat general independence weighting for CMIP6. In contrast to model performance (which should be case specific) model independence can largely be seen as only dependet on the multi-model ensemble in use but not the target variable or region. This means that the configuration used should be valid for similar subsets of CMIP6 as used in this recipe:
 
 
 .. code-block:: yaml
@@ -259,7 +259,7 @@ This recipe also implements a independence weighting for CMIP6. In contrast to m
        tas_CLIM_i: 1
        psl_CLIM_i: 1
 
-Note that this approach weights ensemble members of the same model with a 1/N independence scaling as well as different models with a output-based independence weighting. Different approaches to handle ensemble members are discussed in `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_. Note that, unlike for performance, the climatologies are used for independence (i.e., the global mean is **not** removed). **Warning:** Using only the independence weighting without any performance weighting might not always lead to meaningful results! The independence weighting is based on model output, which means that if a model is different from all other models as well as the observations it will get a very high independence weight (and also total weight in absence of any performance weighting). This might not reflect the actual independence. It is therefore recommended to use weights based on both independence and performance for most cases.
+Note that this approach weights ensemble members of the same model with a 1/N independence scaling (combine_ensemble_members: true) as well as different models with an output-based independence weighting. Different approaches to handle ensemble members are discussed in `Merrifield et al. (2020) <https://doi.org/10.5194/esd-11-807-2020>`_. Note that, unlike for performance, climatologies are used for independence (i.e., the global mean is **not** removed for independence). **Warning:** Using only the independence weighting without any performance weighting might not always lead to meaningful results! The independence weighting is based on model output, which means that if a model is very different from all other models as well as the observations it will get a very high independence weight (and also total weight in absence of any performance weighting). This might not reflect the actual independence. It is therefore recommended to use weights based on both independence and performance for most cases.
 
 
 Variables
