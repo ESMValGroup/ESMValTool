@@ -5,7 +5,7 @@ on:
   push:
     branches:
     - main
-    # - use_mamba
+    - use_mamba
   schedule:
     - cron: '0 0 * * *'
 
