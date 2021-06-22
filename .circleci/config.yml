@@ -198,13 +198,12 @@ jobs:
             # did not help with high memory needed, but it's usually useful 
             # conda config --set channel_priority true
             # conda update -y --all
-            conda create -y -n build conda-build conda-verify
-            conda activate build
+            conda install -y -c conda-forge mamba
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/build_environment.yml
             # Build conda package
-            \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
+            \time -v mamba build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
           no_output_timeout: 60m
       - store_artifacts:
           path: /logs
