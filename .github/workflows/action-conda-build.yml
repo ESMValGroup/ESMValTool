@@ -5,6 +5,7 @@ on:
   push:
     branches:
     - main
+    - use_mamba
   schedule:
     - cron: '0 0 * * *'
 
@@ -36,9 +37,9 @@ jobs:
       #- shell: bash -l {0}
       #  run: ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
       - shell: bash -l {0}
-        run: conda install -y conda-build conda-verify 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/install_conda_buildtools.txt
+        run: conda install -y -c conda-forge mamba 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/install_conda_buildtools.txt
       - shell: bash -l {0}
-        run: conda build package -c conda-forge -c esmvalgroup 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/conda_build.txt
+        run: mamba build package -c conda-forge -c esmvalgroup 2>&1 | tee condabuild_artifacts_python_${{ matrix.python-version }}/conda_build.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
         uses: actions/upload-artifact@v2
