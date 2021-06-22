@@ -54,7 +54,7 @@ import datetime
 import iris
 import matplotlib.pyplot as plt
 logging.getLogger('matplotlib.font_manager').disabled = True
-from matplotlib import gridspec 
+from matplotlib import gridspec
 import numpy as np
 from itertools import product
 import cf_units
@@ -423,6 +423,7 @@ def fgco2gt_cumul(data_dict):
     data_dict = marine_gt(data_dict, short='fgco2', gt='fgco2gt')
     return calculate_cumulative(data_dict, short_name='fgco2gt', cumul_name='fgco2gt_cumul', new_units = 'Pg')
 
+
 def land_gt(data_dict, short='npp', gt='nppgt'):
     """
     Calculate land_gt from the data dictionary.
@@ -472,7 +473,6 @@ def nbpgt(data_dict):
 def nbpgt_cumul(data_dict):
     data_dict = land_gt(data_dict, short='nbp', gt='nbpgt')
     return calculate_cumulative(data_dict, short_name='nbpgt', cumul_name='nbpgt_cumul', new_units='Pg')
-
 
 
 def frc(data_dict):
@@ -684,6 +684,9 @@ def load_timeseries(cfg, short_names):
 
     if 'co2' in short_names_to_load:
         data_dict = load_co2_forcing(cfg, data_dict)
+
+    if 'luegt' in short_names_to_load:
+        data_dict = load_luegt(cfg, data_dict)
 
     if set(['emissions', 'cumul_emissions']) & set(short_names_to_load):
         data_dict = load_emissions_forcing(cfg, data_dict)
@@ -975,6 +978,48 @@ def load_emissions_forcing(cfg, data_dict):
 
     return data_dict
 
+
+def load_luegt(cfg, data_dict):
+    # load from file
+    tmp_data_dict = {}
+    short = 'luegt'
+    # open files
+    # for each column, create a dict
+    # add year: value to the column.
+    # edit file header so that it closely matches other data.
+    # set one for each dataset
+
+    exps = {}
+    ensembles = {}
+    for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
+        exps[exp] = True
+        ensembles[ensemble] = True
+    print(exps, ensembles)
+    # This data was added to the esmvaltool/diagnostics/ocean/aux_data directory.
+    aux_fn = cfg['auxiliary_data_dir']+'/land_usage/landusage_ssp.txt'
+    data = {}
+    years = []
+    header = {}
+    with open(aux_fn) as csvDataFile:
+        csvReader = csv.reader(csvDataFile, delimiter=';')
+        for row_number, row in enumerate(csvReader):
+            if row_number == 0:
+                for d, da in enumerate(row):
+                    header[d] = da
+            years.append(float(row[0]))
+            for d, da in enumerate(row):
+                if d == 0: continue
+                data[header[d]].append(da)
+
+    for exp, ensemble in product(exps.keys(), ensembles.keys()):
+        tmp_data_dict[(short, exp, ensemble)] = {'times': years, short: data[exp]}
+
+    data_dict.update(tmp_data_dict)
+    return data_dict
+
+
+
+
 def get_threshold_point(cube, year):
     """
     get the location of the year provided.
@@ -989,7 +1034,7 @@ def get_threshold_point(cube, year):
         time_units = cube.coord('time').units
         date = datetime.datetime(int(year), 6, 1)
         t_1 = time_units.date2num(date)
-        years = np.array(diagtools.cube_time_to_float(cube)) 
+        years = np.array(diagtools.cube_time_to_float(cube))
         if np.min(np.abs(years - year)) > 5.:
              print('Problem with thresholds:', np.min(years), '-', np.max(years), year)
              assert 0
@@ -1008,6 +1053,7 @@ def get_long_name(name):
         'co2' : 'Atmospheric CO2',
         'emissions' : 'Anthropogenic emissions',
         'cumul_emissions': 'Cumulative Anthropogenic emissions',
+        'luegt': 'Land Use Emissions',
         'rh': 'Heterotrophic respiration',
         'intpp' : 'Marine Primary Production',
         'intdic' : 'Dissolved Inorganic Carbon',
@@ -1021,6 +1067,7 @@ def get_long_name(name):
         'nbp': 'Net Biome Production',
         'nbpgt_cumul': 'Cumulative Global Total Net Biome Production',
         'fgco2gt_cumul': 'Cumulative Global Total Air sea Flux of CO2',
+
     }
     long_name = ''
     if name.find('gt_norm') > -1:
@@ -1130,7 +1177,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     x_data = cube['time']
                     x_times = x_data.copy()
                     print('setting x time to ',short_name, exp, ensemble)
-            elif x == short_name and x in ['co2', 'emissions', 'cumul_emissions']:
+            elif x == short_name and x in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
                 x_data = cube[x].copy()
                 x_times = cube['time'].copy()
                 print('setting x time to ',short_name, exp, ensemble)
@@ -1140,6 +1187,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     x_label = ' '.join(['Anthropogenic emissions, Pg/yr'])
                 if x == 'cumul_emissions':
                     x_label = ' '.join(['Cumulative Anthropogenic emissions, Pg'])
+                if x == 'luegt':
+                    x_label = ' '.join(['Lamd use emissions, Pg'])
             elif x == short_name == 'co2':
                 x_data = cube['co2'].copy()
                 x_times = cube['time'].copy()
@@ -1155,7 +1204,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if y == 'time':
                 print('what kind of crazy person plots time on y axis?')
                 assert 0
-            elif y == short_name and y in ['co2', 'emissions', 'cumul_emissions']:
+            elif y == short_name and y in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
                 y_data = cube[y].copy()
                 y_times = cube['time'].copy()
                 print('setting y time to ',short_name, exp, ensemble)
@@ -1165,6 +1214,8 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     y_label = ' '.join(['Anthropogenic emissions, Pg/yr'])
                 if y == 'cumul_emissions':
                     y_label = ' '.join(['Cumulative Anthropogenic emissions, Pg'])
+                if y == 'luegt':
+                    y_label = ' '.join(['Lamd use emissions, Pg'])
             elif short_name == y:
                 y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
@@ -1322,7 +1373,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         return fig, ax
 
 
-def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', 
+def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     year0 = None,
     do_legend=True,
     fig=None, ax=None):
@@ -1333,7 +1384,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     nbpgts = []
     fgco2gts = []
     experiments = []
-    
+
     for (t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
         if t_short != 'tas': continue
         if t_ens != 'ensemble_mean': continue
@@ -1347,7 +1398,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
 
         for thresh, time in threshold_times.items():
             print("make_bar_chart", t_short, t_exp, t_ens, thresh, threshold, time)
-            if float(threshold) != float(thresh): 
+            if float(threshold) != float(thresh):
                 print(threshold, '!=', thresh)
                 continue
             if not time:
@@ -1359,11 +1410,11 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             e_xpoint = get_threshold_point(cumul_emissions, time.year)
             n_xpoint = get_threshold_point(nbpgt_cumul, time.year)
             f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
-         
-            if year0: 
+
+            if year0:
                 e_baseline = get_threshold_point(cumul_emissions, year0)
-                n_baseline = get_threshold_point(nbpgt_cumul, year0)                                
-                f_baseline = get_threshold_point(fgco2gt_cumul, year0)    
+                n_baseline = get_threshold_point(nbpgt_cumul, year0)
+                f_baseline = get_threshold_point(fgco2gt_cumul, year0)
 
                 emissions.append(cumul_emissions['cumul_emissions'][e_xpoint] - cumul_emissions['cumul_emissions'][e_baseline])
                 nbpgts.append(nbpgt_cumul.data[n_xpoint] - nbpgt_cumul.data[n_baseline])
@@ -1373,7 +1424,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
                 nbpgts.append(nbpgt_cumul.data[n_xpoint])
                 fgco2gts.append(fgco2gt_cumul.data[f_xpoint])
 
-            t_exp = t_exp.replace('historical-', '').upper() 
+            t_exp = t_exp.replace('historical-', '').upper()
             experiments.append(t_exp)
 
     if not len(experiments):
@@ -1393,35 +1444,35 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, nbpgts )]
     emissions_bottoms = [f + b for f,b in zip(fgco2gts, nbpgts )]
     for i, exp  in enumerate(experiments):
-        print(i, exp, emissions[i], '=', nbpgts[i], '+', fgco2gts[i]) 
+        print(i, exp, emissions[i], '=', nbpgts[i], '+', fgco2gts[i])
 
     horizontal = True
     if horizontal:
         ax.barh(experiments, nbpgts, label='Land', color='mediumseagreen')
         ax.barh(experiments, fgco2gts, left = nbpgts,  label='Ocean', color='dodgerblue')
-        ax.barh(experiments, emissions_diff, left = emissions_bottoms,  label='Atmos', color='silver')       
-        ax.set_ylabel('Scenarios')                                                                      
+        ax.barh(experiments, emissions_diff, left = emissions_bottoms,  label='Atmos', color='silver')
+        ax.set_ylabel('Scenarios')
     else:
         ax.barh(experiments, nbpgts, label='Land', color='green')
         ax.barh(experiments, fgco2gts, bottom = nbpgts,  label='Ocean', color='dodgerblue')
         ax.barh(experiments, emissions_diff, bottom = emissions_bottoms,  label='Atmos', color='grey')
-        ax.set_xlabel('Scenarios')                                                                      
+        ax.set_xlabel('Scenarios')
     add_pc_text = True
     if add_pc_text:
         def pc(a,b): return str("{0:.1f}%".format(100.*a/b))
         for e, exp in enumerate(experiments):
             print(e, exp, nbpgts[e], fgco2gts[e], emissions_diff[e])
             t = emissions[e]
-            ax.text(5, e, pc(nbpgts[e], t), 
+            ax.text(5, e, pc(nbpgts[e], t),
                     color='darkgreen', fontsize=8 , # fontweight='bold',
                     verticalalignment='center',)
 
-            ax.text(nbpgts[e]+fgco2gts[e]/2., e, pc(fgco2gts[e], t), 
+            ax.text(nbpgts[e]+fgco2gts[e]/2., e, pc(fgco2gts[e], t),
                     color='darkblue', fontsize=8 , # fontweight='bold',
                     verticalalignment='center',horizontalalignment='center')
 
-            ax.text(emissions_bottoms[e]+emissions_diff[e]/2., e, pc(emissions_diff[e],t ),  
-                    color='black', fontsize=8 , # fontweight='bold', 
+            ax.text(emissions_bottoms[e]+emissions_diff[e]/2., e, pc(emissions_diff[e],t ),
+                    color='black', fontsize=8 , # fontweight='bold',
                     verticalalignment='center',horizontalalignment='center')
 
     ax.set_title('Carbon Allocation at '+str(threshold)+r'$\degree$'+' warming')
@@ -1516,8 +1567,8 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    #jobtype = 'debug'
-    jobtype = 'bulk'
+    jobtype = 'debug'
+    #jobtype = 'bulk'
 
     #jobtype = 'cumulative_plot'
 
@@ -1556,16 +1607,16 @@ def main(cfg):
 
     if jobtype == 'debug':
         short_names = [
-                       'emissions','tas','cumul_emissions'  
-                       'nbpgt', 
-                       #  'gpp', 'gppgt',
-                       #'fgco2','fgco2gt', 'fgco2gt_cumul',
-                       #'bgc', 'bgcgt', 
-                       'luegt', #  land-use emissions gt
+                       'emissions','tas','cumul_emissions'
+                       'nbpgt',
                        'nbpgt_cumul',
+                       'gpp', 'gppgt',
+                       #'fgco2','fgco2gt', 'fgco2gt_cumul',
+                       #'bgc', 'bgcgt',
+                       'luegt', #  land-use emissions gt
                        'tls', #true land sink = nbp + land-use emissions
                        ]
-        short_names_x = ['time','emissions', 'cumul_emissions' ] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_x = ['time', 'emissions', 'cumul_emissions', 'gppgt'] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
         short_names_y = short_names #['fgco2gt_cumul', 'nbpgt_cumul']
 
 
