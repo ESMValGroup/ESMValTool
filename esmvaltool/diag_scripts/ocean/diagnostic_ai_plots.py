@@ -281,7 +281,12 @@ def multi_model_time_series(
             metadata = metadatas[path]
             scenario = metadata['exp']
             dataset = metadata['dataset']
+            # Take a moving average, if needed.
+            if moving_average_str:
+                    cube = moving_average(cube,
+                          moving_average_str)
             times = diagtools.cube_time_to_float(cube)
+
             for t, d in zip(times, cube.data):
                 data_values = add_dict_list(data_values, t, d)
             if colour_scheme in ['viridis', 'jet']:
@@ -293,10 +298,6 @@ def multi_model_time_series(
             if colour_scheme in 'IPCC':
                 color = ipcc_colours[scenario]
                 label =  scenario
-            # Take a moving average, if needed.
-            if moving_average_str:
-                    cube = moving_average(cube,
-                          moving_average_str)
 
             if 'all_models' in plotting:
                 timeplot(
@@ -343,11 +344,11 @@ def multi_model_time_series(
     y_lims = ax.get_ylim()
 
     if hist_time_range:
-        plt.fill_betweenx(y_lims, hist_time_range[0], np.mihist_time_range[1], color= 'navy', alpha=0.25)
+        plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'navy', alpha=0.25, label = 'historical period')
 
     if ssp_time_range:
-        plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.25)
-
+        plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.25, label = 'SSP period')
+    plt.legend(loc='best')
 
 #   # Add title, legend to plots
     plt.title(title)
@@ -758,7 +759,7 @@ def make_multi_model_profiles_plots(
     ax0.axhline(-999., ls='--', lw=1.5, c='black')
     ax1.axhline(-1001., ls='--', lw=1.5, c='black')
 
-    #ax0.set_ylabel('Profile')
+    ax0.set_title('Profile')
 #    if single_pane:
 #        # Add title to plot
 #        title = ' '.join([
@@ -803,9 +804,9 @@ def make_multi_model_profiles_plots(
     plt.savefig(path)
     plt.close()
 
+
 #####################################
 # Map sections:
-
 def multi_model_map_figure(
         cfg,
         metadatas,
@@ -1016,7 +1017,7 @@ def multi_model_map_figure(
 
         title = ' '.join([exp,]) # long_names.get(sbp_style, sbp_style,)])
         if region == 'midatlantic':
-            plt.text(0.9, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color=ipcc_colours[exp],fontweight='bold')
+            plt.text(0.95, 0.9, title,  ha='right', va='center', transform=ax0.transAxes,color=ipcc_colours[exp],fontweight='bold')
         else:
             plt.title(title)
 
@@ -1089,6 +1090,7 @@ def add_legend(ax):
     plt.sca(ax)
 
     for exp in sorted(ipcc_colours):
+        if exp=='hist': continue
         plt.plot([], [], c=ipcc_colours[exp], lw=2.5, ls='-', label=exp)
 
     plt.plot([], [], c='k', lw=2.5, ls='-', label='Observations')
@@ -1114,7 +1116,7 @@ def do_gridspec(cfg, ):
 
     gs = matplotlib.gridspec.GridSpec(ncols=1, nrows=2, ) #hspace=0.5, 
     gs0 =gs[0,0].subgridspec(ncols=5, nrows=2, 
-        width_ratios=[2, 2, 1., 1., 0.5], 
+        width_ratios=[2, 2, 1., 1., 0.25], 
         height_ratios=[3, 4], 
         hspace=0.5, wspace=0.5)
 
@@ -1123,7 +1125,7 @@ def do_gridspec(cfg, ):
     subplots['climatology'] = fig.add_subplot(gs0[0, 2:4])
     #subplots['clim_diff'] = fig.add_subplot(gs0[0, 3])
     subplots['profile'] = gs0[1, 2:4]
-    add_profile_label = True
+    add_profile_label = False
     if add_profile_label:
         fig.add_subplot(subplots['profile'], frameon=False)
         # hide tick and tick label of the big axes
@@ -1154,6 +1156,7 @@ def add_dict_list(dic, key, item):
    try: dic[key].append(item)
    except: dic[key]= [item, ]
    return dic
+
 
 def main(cfg):
     """
@@ -1232,10 +1235,9 @@ def main(cfg):
                 cfg,
                 metadatas,
                 ts_dict = time_series_fns,
-                #moving_average_str='',
-                #colour_scheme = 'viridis',
-                #fig = fig,
-                #ax =  subplots['timeseries'],
+                moving_average_str='1 year',
+                hist_time_range = [2000., 2010.],
+                ssp_time_range = [2040., 2050.],
         )
 
     #print(time_series_fns)
@@ -1243,8 +1245,8 @@ def main(cfg):
     #print(maps_fns)
     fig, subplots = do_gridspec(cfg, )
 
-    hist_time_range = [1990., 2015.]
-    ssp_time_range = [2015., 2050.]
+    hist_time_range = [2000., 2010.] #[1990., 2015.]
+    ssp_time_range = [2040., 2050.]
 
     fig, subplots['maps'] = multi_model_map_figure(
             cfg,
@@ -1262,7 +1264,7 @@ def main(cfg):
             cfg,
             metadatas,
             ts_dict = time_series_fns,
-            #moving_average_str='',
+            moving_average_str='1 year',
             #colour_scheme = 'viridis',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
@@ -1293,11 +1295,11 @@ def main(cfg):
             ax = subplots['profile']
     )
     if 'tos_ts_hist' in time_series_fns.keys():
-        suptitle = 'Temperature, '+r'$\degree$' 'Celsius'
+        suptitle = 'Temperature, '+r'$\degree$' 'C'
 
     suptitle += ' '.join([
-                        '\n Historical', '-'.join([str(t) for t in hist_time_range]),
-                        'vs SSP', '-'.join([str(t) for t in ssp_time_range]) ])
+                        '\n Historical', '-'.join([str(int(t)) for t in hist_time_range]),
+                        'vs SSP', '-'.join([str(int(t)) for t in ssp_time_range]) ])
     plt.suptitle(suptitle)
 
     # save and close.
