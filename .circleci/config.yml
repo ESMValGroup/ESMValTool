@@ -208,8 +208,6 @@ jobs:
             conda update -y --all
             conda create -y -n build
             conda activate build
-            conda install -y conda=4.9.2
-            conda install -y python=3.9.2
             # Build conda package
             \time -v conda build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
           no_output_timeout: 60m
