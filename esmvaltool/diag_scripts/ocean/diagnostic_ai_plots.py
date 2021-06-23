@@ -344,11 +344,13 @@ def multi_model_time_series(
     y_lims = ax.get_ylim()
 
     if hist_time_range:
-        plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'navy', alpha=0.25, label = 'historical period')
+        plt.fill_betweenx(y_lims, hist_time_range[0], hist_time_range[1], color= 'k', alpha=0.25, label = 'Historical period')
 
     if ssp_time_range:
         plt.fill_betweenx(y_lims, ssp_time_range[0], ssp_time_range[1], color= 'purple', alpha=0.25, label = 'SSP period')
-    plt.legend(loc='best')
+        legd = plt.legend(loc='best')
+        legd.draw_frame(False)
+        legd.get_frame().set_alpha(0.)
 
 #   # Add title, legend to plots
     plt.title(title)
@@ -1100,7 +1102,7 @@ def add_legend(ax):
         loc='center left',
         ncol=1, 
         prop={'size': 10},
-        bbox_to_anchor=(0.15, 0.5))
+        bbox_to_anchor=(0., 0.5))
     legd.draw_frame(False)
     legd.get_frame().set_alpha(0.)
     plt.axis('off')
@@ -1235,7 +1237,7 @@ def main(cfg):
                 cfg,
                 metadatas,
                 ts_dict = time_series_fns,
-                moving_average_str='1 year',
+                moving_average_str='2 year',
                 hist_time_range = [2000., 2010.],
                 ssp_time_range = [2040., 2050.],
         )
@@ -1264,7 +1266,7 @@ def main(cfg):
             cfg,
             metadatas,
             ts_dict = time_series_fns,
-            moving_average_str='1 year',
+            moving_average_str='2 year',
             #colour_scheme = 'viridis',
             hist_time_range = hist_time_range,
             ssp_time_range = ssp_time_range,
@@ -1298,8 +1300,8 @@ def main(cfg):
         suptitle = 'Temperature, '+r'$\degree$' 'C'
 
     suptitle += ' '.join([
-                        '\n Historical', '-'.join([str(int(t)) for t in hist_time_range]),
-                        'vs SSP', '-'.join([str(int(t)) for t in ssp_time_range]) ])
+                        '\n Historical', '('+ '-'.join([str(int(t)) for t in hist_time_range]) +')',
+                        'vs SSP', '('+'-'.join([str(int(t)) for t in ssp_time_range])+')' ])
     plt.suptitle(suptitle)
 
     # save and close.
