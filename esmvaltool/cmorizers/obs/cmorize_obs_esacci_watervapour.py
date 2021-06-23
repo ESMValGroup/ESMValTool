@@ -10,7 +10,7 @@ Last access
    20210329
 
 Download and processing instructions
-   FTP server: ftp.brockmann-consult.de, access currently restrictet
+   FTP server: ftp.brockmann-consult.de, access currently restricted
                data/tcwv/dataset3_1/CDR-*/...
    All files need to be in one directory, not in yearly subdirectories.
 

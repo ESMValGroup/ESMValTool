@@ -16,7 +16,7 @@ attributes:
   tier: 3
   modeling_realm: sat
   project_id: OBS
-  source: "ftp.brockmann-consult.de, access currently restrictet"
+  source: "ftp.brockmann-consult.de, access currently restricted"
   reference: ["esacci-watervapour"]
   comment: "Preliminary data."
 
