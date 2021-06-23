@@ -14,7 +14,11 @@ from core_functions import (
     compute_overall_mean,
     weighted_quantile,
 )
-from io_functions import read_metadata, read_model_data
+from io_functions import (
+    read_metadata,
+    read_model_data,
+    read_model_data_ancestor,
+)
 from scipy.optimize import brute
 
 from esmvaltool.diag_scripts.shared import (
@@ -308,11 +312,11 @@ def visualize_save_calibration(performance_sigma, cfg, success):
     confidence.to_netcdf(filename_data)
 
 
-def calibrate_performance_sigma(
-        performance_contributions: list,
-        overall_independence: Union['xr.DataArray', None],
-        independence_sigma: Union[float, None],
-        cfg: dict) -> float:
+def calibrate_performance_sigma(performance_contributions: list,
+                                overall_independence: Union['xr.DataArray',
+                                                            None],
+                                independence_sigma: Union[float, None],
+                                cfg: dict) -> float:
     """Calibrate the performance sigma using a perfect model approach."""
     settings = cfg['calibrate_performance_sigma']
     models, _ = read_metadata(cfg)
@@ -321,8 +325,12 @@ def calibrate_performance_sigma(
     for variable_group in performance_contributions:
 
         logger.info('Reading model data for %s', variable_group)
-        datasets_model = models[variable_group]
-        model_data, _ = read_model_data(datasets_model)
+        if variable_group.endswith("_ANOM"):
+            model_data, model_data_files = read_model_data_ancestor(
+                cfg, variable_group)
+        else:
+            datasets_model = models[variable_group]
+            model_data, _ = read_model_data(datasets_model)
 
         logger.info('Calculating performance for %s', variable_group)
         performance_matrix = calculate_model_distances(
@@ -336,6 +344,12 @@ def calibrate_performance_sigma(
 
     target = models[settings['target']]
     target_data, _ = read_model_data(target)
+
+    if settings.get('target_ref') is not None:
+        target_ref = models[settings['target_ref']]
+        target_ref_data, _ = read_model_data(target_ref)
+        target_data -= target_ref_data
+
     target_data = area_weighted_mean(target_data)
 
     if cfg['combine_ensemble_members']:

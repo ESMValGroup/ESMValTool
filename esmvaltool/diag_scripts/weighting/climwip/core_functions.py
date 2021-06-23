@@ -199,7 +199,7 @@ def calculate_weights_data(
     weights : ndarray, shape (N,)
     """
     numerator = 1
-    not_nan = True
+    not_nan = None
     denominator = 1
 
     if performance is not None:
@@ -207,6 +207,8 @@ def calculate_weights_data(
         # nans in the performance vector indicate models to be excluded
         not_nan = np.isfinite(performance)
     if independence is not None:
+        if not_nan is None:
+            not_nan = np.isfinite(independence[0])
         # don't consider nan models for independence of other models!
         exp = np.exp(-((independence[:, not_nan] / independence_sigma)**2))
         # Note diagonal = exp(0) = 1, thus this is equal to 1 + sum(i!=j)
@@ -214,7 +216,6 @@ def calculate_weights_data(
 
     weights = numerator / denominator
     weights /= weights.sum(where=not_nan)
-
     return weights
 
 
