@@ -197,6 +197,7 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
+            conda update -y -n base conda
             conda activate base
             conda install -y -c conda-forge mamba conda-build conda-verify
             # Log versions
@@ -207,6 +208,7 @@ jobs:
             conda update -y --all
             mamba create -y -n build
             conda activate build
+            conda install -y python=3.9.2
             # Build conda package
             \time -v mamba build package -c conda-forge -c esmvalgroup > /logs/build_log.txt
           no_output_timeout: 60m
