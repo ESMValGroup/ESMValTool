@@ -71,13 +71,13 @@ outputs:
         - cartopy>=0.18
         - cdo>=1.9.8
         - eccodes>=2.19.1
-        - cdsapi
+        - cdsapi>=0.5.1
         - cf-units>=2.1.5
         - cftime>=1.2.1,<1.3
-        - cmocean
+        - cmocean>=2.0
         - dask>=2.12
         - ecmwf-api-client  # in esmvalgroup channel
-        - eofs
+        - eofs>=1.4
         - esmpy>=8.0.1
         - esmvalcore>=2.3.0,<2.4
         - fiona>=1.8.18
@@ -88,7 +88,6 @@ outputs:
         - joblib
         - lime
         - matplotlib>3.3.1,<3.4  # bug in 3.3.1, issue with nc-time-axis for >=3.4
-        - mpich>=3.3.2,<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
         - natsort
         - nc-time-axis>=1.2.0,<1.3.1
         - netCDF4>=1.5.6
@@ -96,7 +95,7 @@ outputs:
         - pandas
         - pyproj>=2.1
         - python>=3.9.2  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps
-        - python-cdo
+        - python-cdo>=1.5.4
         - pyyaml>=5.4.1
         - qt>=5.12.9
         - requests>=2.25.1
