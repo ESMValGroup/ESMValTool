@@ -202,7 +202,7 @@ that describes the installation of the ESMValTool in more detail. It can be foun
 Installation on MacOSX
 ======================
 
-The Python diagnostics of the ESMValTool are supported on MacOSX, but Julia, NCL
+The Python diagnostics of the ESMValTool are supported on MacOSX, but Julia, NCL,
 and R are not. If any of these are needed, deployment through a :ref:`Docker<install_with_docker>`
 container is advised.
 
@@ -227,6 +227,16 @@ Confirm that the ESMValTool is working with:
 .. code-block:: bash
 
     esmvaltool --help
+
+Note that some recipes may depend on the OpenMP library, which does not
+install via conda on MacOSX. To install this library, run:
+
+.. code-block:: bash
+
+    brew install libomp
+
+to install the library with Homebrew. In case you do not have Homebrew, follow
+installation instructions `here <https://brew.sh/>`__.
 
 .. _install_with_pip:
 
@@ -493,7 +503,7 @@ code (called ``ESMValTool`` if you did not choose a different name)
 
     cd ESMValTool
 
-and run
+and run (on Linux only!)
 
 .. code-block:: bash
 
@@ -501,6 +511,14 @@ and run
 
 This command installs many of the required dependencies from conda, including
 the ESMValCore package and Python, R, and NCL interpreters.
+
+**MacOSX note:** ESMValTool functionalities in Julia, NCL, and R are not
+supported on MacOSX, due to conflicts in the conda environment. To install a
+conda environment on MacOSX, use the dedicated environment file:
+
+.. code-block:: bash
+
+    conda env create --name esmvaltool --file environment_osx.yml
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should
@@ -580,6 +598,16 @@ To do this, run the tool with:
 
 If everything was installed properly, ESMValTool should have printed a
 help message to the console.
+
+**MacOSX note:** some recipes may depend on the OpenMP library, which does not
+install via conda on MacOSX. Instead run
+
+.. code-block:: bash
+
+    brew install libomp
+
+to install the library with Homebrew. In case you do not have Homebrew, follow
+installation instructions `here <https://brew.sh/>`__.
 
 For a more complete installation verification, run the automated tests and
 confirm that no errors are reported:
