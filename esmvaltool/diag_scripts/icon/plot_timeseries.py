@@ -1,4 +1,4 @@
-"""Python example diagnostic."""
+"""Plot time series."""
 import logging
 from copy import deepcopy
 from pathlib import Path
@@ -54,7 +54,7 @@ def load_and_preprocess(dataset):
 
 
 def main(cfg):
-    """Compute the time average for each input dataset."""
+    """Run diagnostic."""
     cfg = deepcopy(cfg)
     cfg.setdefault('title_key', 'dataset')
     logger.info("Using key '%s' to create titles for datasets",

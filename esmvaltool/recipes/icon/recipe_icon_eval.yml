@@ -12,7 +12,7 @@ documentation:
 
 
 YEARS: &years
-  start_year: 1980
+  start_year: 2014
   end_year: 2014
 
 ICON_BASE: &icon_base
@@ -55,20 +55,39 @@ SCRIPT_MAP_REGRID: &scrip_map_regrid
   suptitle: 'ICON {long_name} ({start_year}-{end_year})'
   title_key: tag
 
+SCRIPT_ZONAL_MEAN_OBS: &script_zonal_mean_obs
+  script: icon/plot_zonal_mean.py
+  reference:
+    dataset: ERA5
+
 
 preprocessors:
 
   regrid_icon:
-    regrid:
+    regrid: &regrid_icon
       target_grid: 1x1
       scheme: unstructured_nearest
       lon_offset: false
 
   regrid_nonicon:
-    regrid:
+    regrid: &regrid_nonicon
       target_grid: 1x1
       scheme: linear
       lon_offset: false
+
+  regrid_3d_icon:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    regrid: *regrid_icon
+
+  regrid_3d_nonicon:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    regrid: *regrid_nonicon
 
 
 diagnostics:
@@ -227,6 +246,55 @@ diagnostics:
         plot_kwargs_bias:
           levels: [-0.15, -0.12, -0.09, -0.06, -0.03, 0.0, 0.03, 0.06, 0.09, 0.12, 0.15]
           extend: both
+
+  ta_obs:
+    variables:
+      icon:
+        short_name: ta
+        mip: Amon
+        preprocessor: regrid_3d_icon
+        additional_datasets:
+          - {<<: *icon_base, model_version: icon-2.6.1, var_type: atm_3d_ml}
+      nonicon:
+        short_name: ta
+        mip: Amon
+        preprocessor: regrid_3d_nonicon
+        additional_datasets:
+          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+    scripts:
+      zonal_mean:
+        <<: *script_zonal_mean_obs
+        plot_kwargs_abs:
+          levels: [-90., -75., -60., -45., -30., -15., 0., 15., 30.]
+        plot_kwargs_bias:
+          levels: [-8., -6., -4., -2., 0., 2., 4., 6., 8.]
+          extend: both
+
+  hus_obs:
+    variables:
+      icon:
+        short_name: hus
+        mip: Amon
+        preprocessor: regrid_3d_icon
+        additional_datasets:
+          - {<<: *icon_base, model_version: icon-2.6.1, var_type: atm_3d_ml}
+      nonicon:
+        short_name: hus
+        mip: Amon
+        preprocessor: regrid_3d_nonicon
+        additional_datasets:
+          - {<<: *years, dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+    scripts:
+      zonal_mean:
+        <<: *script_zonal_mean_obs
+        axes_kwargs:
+          set_ylim: [[1000.0, 400.0]]
+        plot_kwargs_abs:
+          levels: [0., 2.5, 5., 7.5, 10., 12.5, 15., 17.5]
+        plot_kwargs_bias:
+          levels: [-1.2, -0.8, -0.4, 0., 0.4, 0.8, 1.2]
+          extend: both
+        show_y_minorticks: true
 
   tas_regrid:
     variables:

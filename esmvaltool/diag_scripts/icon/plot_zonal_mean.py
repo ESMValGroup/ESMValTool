@@ -1,4 +1,4 @@
-"""Plot maps."""
+"""Plot zonal means."""
 import logging
 from copy import deepcopy
 from pathlib import Path
@@ -8,11 +8,11 @@ import cartopy.crs as ccrs
 import iris
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter, NullFormatter
 
 from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
     group_metadata,
-    plot,
     run_diagnostic,
     select_metadata,
 )
@@ -45,12 +45,21 @@ def load_and_preprocess(dataset):
     # Temporal mean
     cube = cube.collapsed('time', iris.analysis.MEAN)
 
+    # Zonal mean
+    cube = cube.collapsed('longitude', iris.analysis.MEAN)
+
+    # Fix pressure level coordinate (necessary for plotting)
+    if cube.coords('air_pressure'):
+        cube.coord('air_pressure').attributes['positive'] = 'down'
+        cube.coord('air_pressure').convert_units('hPa')
+    elif cube.coords('altitude'):
+        cube.coord('altitude').attributes['positive'] = 'up'
+
     # Convert units of some variables
-    if cube.var_name == 'tas':
+    if cube.var_name == 'ta':
         cube.convert_units('celsius')
-    if cube.var_name == 'pr':
-        cube.units = 'mm s-1'
-        cube.convert_units('mm day-1')
+    elif cube.var_name == 'hus':
+        cube.convert_units('g kg-1')
     return cube
 
 
@@ -61,30 +70,32 @@ def plot_dataset_with_ref(cfg, dataset, ref_dataset, ref_cube):
     cube = load_and_preprocess(dataset)
 
     # Create single figure with multiple axes
-    (fig, axes_list) = plt.subplots(
-        2, 2, subplot_kw={'projection': ccrs.Robinson(central_longitude=10)})
+    (fig, axes_list) = plt.subplots(2, 2, sharex=True, sharey=True)
 
     # Plot absolute values of dataset and reference dataset
     plot_kwargs = cfg.get('plot_kwargs_abs', {})
-    map_plot = iris.plot.contourf(cube, axes=axes_list[0][0], **plot_kwargs)
+    if 'levels' not in plot_kwargs:
+        logger.warning("Levels for absolute plots not specified - colorbar is "
+                       "only accurate for top left plot")
+    zonal_mean_plot = iris.plot.contourf(cube, axes=axes_list[0][0],
+                                         **plot_kwargs)
     iris.plot.contourf(ref_cube, axes=axes_list[0][1], **plot_kwargs)
-    colorbar = plt.colorbar(map_plot, ax=list(axes_list[0]),
-                            orientation='horizontal', aspect=50)
+    colorbar = plt.colorbar(zonal_mean_plot, ax=list(axes_list[0]),
+                            orientation='vertical')
     fontsize = 8
-    colorbar.set_label(f"{cube.var_name} [{cube.units}]", labelpad=0.0,
-                       fontsize=fontsize)
+    colorbar.set_label(f"{cube.var_name} [{cube.units}]", fontsize=fontsize)
     colorbar.ax.tick_params(labelsize=fontsize)
 
     # Plot bias
     bias_cube = cube - ref_cube
     plot_kwargs = dict(norm=colors.CenteredNorm(), cmap='bwr')
     plot_kwargs.update(cfg.get('plot_kwargs_bias', {}))
-    map_plot = iris.plot.contourf(bias_cube, axes=axes_list[1][0],
-                                  **plot_kwargs)
-    colorbar = plt.colorbar(map_plot, ax=axes_list[1][0],
-                            orientation='horizontal', aspect=30)
+    zonal_mean_plot = iris.plot.contourf(bias_cube, axes=axes_list[1][0],
+                                         **plot_kwargs)
+    colorbar = plt.colorbar(zonal_mean_plot, ax=axes_list[1][0],
+                            orientation='vertical')
     colorbar.set_label(rf"$\Delta${cube.var_name} [{cube.units}]",
-                       labelpad=0.0, fontsize=fontsize)
+                       fontsize=fontsize)
     colorbar.ax.tick_params(labelsize=fontsize)
 
     # Plot appearance
@@ -95,10 +106,22 @@ def plot_dataset_with_ref(cfg, dataset, ref_dataset, ref_cube):
     axes_list[1][0].set_title(
         f"{dataset[cfg['title_key']]} - {ref_dataset[cfg['title_key']]}",
         **title_kwargs)
+    z_coord = cube.coord(axis='Z')
+    axes_list[0][0].set_ylabel(f'{z_coord.long_name} [{z_coord.units}]',
+                               fontsize=fontsize)
+    axes_list[1][0].set_ylabel(f'{z_coord.long_name} [{z_coord.units}]',
+                               fontsize=fontsize)
+    axes_list[1][0].set_xlabel('latitude [°N]', fontsize=fontsize)
     for axes in list(axes_list.ravel()):
-        axes.gridlines(color='lightgrey', alpha=0.5)
-        axes.coastlines()
-        axes.set_global()
+        for (method, args) in cfg.get('axes_kwargs', {}).items():
+            getattr(axes, method)(*args)
+        axes.set_yscale('log')
+        axes.get_yaxis().set_major_formatter(FormatStrFormatter('%.1f'))
+        if cfg.get('show_y_minorticks'):
+            axes.get_yaxis().set_minor_formatter(FormatStrFormatter('%.1f'))
+        else:
+            axes.get_yaxis().set_minor_formatter(NullFormatter())
+        axes.tick_params(axis='both', which='both', labelsize=fontsize)
     axes_list[1][1].set_visible(False)
 
     # Return figure and basename for plot
@@ -111,9 +134,23 @@ def plot_dataset_without_ref(cfg, dataset):
     """Plot single dataset without using a reference dataset."""
     logger.info("Plotting %s", dataset[cfg['title_key']])
     cube = load_and_preprocess(dataset)
-    plot_kwargs = dict(levels=10, cbar_label=f"{cube.var_name} [{cube.units}]")
-    plot.global_contourf(cube, **plot_kwargs)
+    plot_kwargs = dict(levels=10)
+    # cbar_label=f"{cube.var_name} [{cube.units}]")
+    zonal_mean_plot = iris.plot.contourf(cube, **plot_kwargs)
+
+    # Colorbar
+    plt.colorbar(zonal_mean_plot, orientation='vertical',
+                 label=f"{cube.var_name} [{cube.units}]")
+
+    # Plot appearance
+    plt.semilogy()
+    plt.gca().get_yaxis().set_major_formatter(FormatStrFormatter('%.1f'))
     plt.title(dataset[cfg['title_key']])
+    plt.xlabel('latitude [°N]')
+    z_coord = cube.coord(axis='Z')
+    plt.ylabel(f'{z_coord.long_name} [{z_coord.units}]')
+
+    # Return figure and basename for plot
     basename = dataset[cfg['title_key']].replace(' ', '_')
     return (plt.gcf(), basename)
 
