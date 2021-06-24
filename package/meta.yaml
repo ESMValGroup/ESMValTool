@@ -26,7 +26,7 @@ build:
 
 requirements:
   run:
-    - python>=3.9.2
+    - python>=3.7  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps 
     - iris>=3.0.2
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
@@ -65,42 +65,46 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.9.2
+        - python>=3.7  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps
         - setuptools_scm
       run:
         - cartopy>=0.18
-        - cdo>=1.9.7
-        - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
+        - cdo>=1.9.8
+        - eccodes>=2.19.1
         - cdsapi
-        - cf-units
-        - cftime<1.3
+        - cf-units>=2.1.5
+        - cftime>=1.2.1,<1.3
         - cmocean
         - dask>=2.12
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
-        - esmpy
+        - esmpy>=8.0.1
         - esmvalcore>=2.3.0,<2.4
-        - fiona
-        - gdal
+        - fiona>=1.8.18
+        - gdal>=3.1.4
+        - hdf5>=1.10.6
         - iris>=3.0.1
-        - jinja2
+        - jinja2>=3.0.1
         - joblib
         - lime
         - matplotlib>3.3.1,<3.4  # bug in 3.3.1, issue with nc-time-axis for >=3.4
-        - mpich<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
+        - mpich>=3.3.2,<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
         - natsort
-        - nc-time-axis<1.3.1
-        - netCDF4
-        - numpy
+        - nc-time-axis>=1.2.0,<1.3.1
+        - netCDF4>=1.5.6
+        - numpy>=1.21
         - pandas
         - pyproj>=2.1
-        - python>=3.9.2
+        - python>=3.7  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps
         - python-cdo
-        - pyyaml
-        - ruamel.yaml
+        - pyyaml>=5.4.1
+        - qt>=5.12.9
+        - requests>=2.25.1
+        - ruamel.yaml>=0.17.9
         - rasterio  # replaces pynio
         - scikit-image
-        - scikit-learn
+        - scikit-learn>=0.24.2
+        - scipy>=1.5.3
         - seaborn
         - seawater
         - shapely
@@ -122,11 +126,11 @@ outputs:
       noarch: generic
     requirements:
       run:
-        - cdo>=1.9.7
+        - cdo>=1.9.8
         - esmvaltool-python
         - imagemagick
-        - ncl>=6.6
-        - nco
+        - ncl>=6.6.2
+        - nco>=4.9.8
 
   - name: esmvaltool-r
     build:
@@ -137,8 +141,8 @@ outputs:
         - cdo>=1.9.7
         - compilers
         - esmvaltool-python
-        - nco
-        - r-base>=3.5
+        - nco>=4.9.8
+        - r-base>=4.0.2
 
 about:
   home: https://www.esmvaltool.org
