@@ -45,7 +45,6 @@ preprocessors:
   #   #   exclude: [ESACCI_LST_UNCERT]
   
   uncert_preprocessor:
-
     extract_region:
       start_longitude: 35
       end_longitude: 45
@@ -63,15 +62,23 @@ diagnostics:
     realms:
       - atmos
     variables:
-      tsLocalSfcErrDay:
-        preprocessor: uncert_preprocessor
-        additional_datasets:
-          - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
-      # tsUnCorErrNight:
+      # tsLocalSfcErrDay:
+      #   preprocessor: uncert_preprocessor
+      #   additional_datasets:
+      #     - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+      # tsLocalSfcErrNight:
       #   preprocessor: uncert_preprocessor
       #   additional_datasets:
       #     - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
 
+      tsLocalAtmErrDay:
+        preprocessor: uncert_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
+      tsLocalAtmErrNight:
+        preprocessor: uncert_preprocessor
+        additional_datasets:
+          - {dataset: ESACCI_LST_UNCERTS, project: OBS, mip: Amon, type: sat, tier: 2, start_year: 2010, end_year: 2010, version: '1.00'}
 
 
       # ts:

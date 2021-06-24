@@ -146,7 +146,10 @@ def _diagnostic(config):
     -------
     figures made by make_plots.
     """
-    # this loading function is based on the hydrology diagnostic
+    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+    print(config)
+
+# this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
 
     loaded_data = {}
@@ -154,7 +157,9 @@ def _diagnostic(config):
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-        ancestor_list.append(ancestors['ts'][0])
+        
+        print(cubes)
+        #ancestor_list.append(ancestors['ts'][0])
 
     # loaded data is a nested dictionary
     # KEY1 model ESACCI-LST or something else
@@ -167,6 +172,10 @@ def _diagnostic(config):
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
+    print(loaded_data)
+
+    print(0/0)
+    ### There will be some cube manipulation todo
     loaded_data['MultiModelMean']['ts'].remove_coord('time')
     loaded_data['MultiModelMean']['ts'].add_dim_coord(
         loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
@@ -174,6 +183,14 @@ def _diagnostic(config):
     loaded_data['MultiModelStd']['ts'].add_dim_coord(
         loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
 
+
+    #### Calc CCI LST uncertainty
+
+    #### MAke sure we have a mean/std of model LST
+
+
+    
+    ###### MAKE DIFF CCI - MODEL
     # Make a cube of the LST difference, and with +/- std of model variation
     lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data[
         'MultiModelMean']['ts']
@@ -184,6 +201,12 @@ def _diagnostic(config):
         loaded_data['MultiModelMean']['ts'] -
         loaded_data['MultiModelStd']['ts'])
 
+
+    # MAKE LST +/- uncert CCI
+
+
+    ### PLOT is CCI LST with bars of uncertainty
+    ####     with shaded MODEL MEAN +/- std
     # Plotting
     _make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config)
 
@@ -216,5 +239,5 @@ if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
     # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
-        print(0/0) # THis will let me know is esmvaltool actually gets through to here or not
+        #print(0/0) # THis will let me know is esmvaltool actually gets through to here or not
         _diagnostic(config)
