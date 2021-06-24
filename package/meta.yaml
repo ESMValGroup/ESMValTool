@@ -26,7 +26,7 @@ build:
 
 requirements:
   run:
-    - python=3.8  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps 
+    - python>=3.9.2  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps 
     - iris>=3.0.2
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
@@ -65,7 +65,7 @@ outputs:
     requirements:
       build:
         - git
-        - python=3.8  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps
+        - python>=3.9.2  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps
         - setuptools_scm
       run:
         - cartopy>=0.18
@@ -95,7 +95,7 @@ outputs:
         - numpy>=1.21
         - pandas
         - pyproj>=2.1
-        - python=3.8  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps
+        - python>=3.9.2  # 24-6-2021: >=3.9.2 is the only pin that allows conda build w/o additional pinning of deps
         - python-cdo
         - pyyaml>=5.4.1
         - qt>=5.12.9
