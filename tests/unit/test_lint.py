@@ -1,9 +1,11 @@
 """Lint tests."""
 import os
-import pytest
 import subprocess
+import sys
 import textwrap
 from pathlib import Path
+
+import pytest
 
 import esmvaltool
 from esmvaltool.utils.nclcodestyle import nclcodestyle
@@ -16,8 +18,8 @@ def test_nclcodestyle():
         package_root,
     ]
 
-    print("Formatting check of NCL code in directories: {}\n".format(
-        ', '.join(str(p) for p in check_paths)))
+    print("Formatting check of NCL code in directories: {}\n".format(', '.join(
+        str(p) for p in check_paths)))
 
     exclude_paths = [
         package_root / 'diag_scripts' / 'cvdp' / 'cvdp',
@@ -43,6 +45,8 @@ def test_nclcodestyle():
 
 
 @pytest.mark.installation
+@pytest.mark.skipif(sys.platform == 'darwin',
+                    reason="ESMValTool R not supported on OSX")
 def test_r_lint(monkeypatch):
     """Test R lint."""
     monkeypatch.setenv("LINTR_COMMENT_BOT", "FALSE")
