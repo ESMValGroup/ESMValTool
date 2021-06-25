@@ -540,6 +540,28 @@ diagnostics:
     scripts: null
 
 
+  WFDE5:
+    description: WFDE5 check
+    variables:
+      tas:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+      pr:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.1-CRU+GPCC, start_year: 1979, end_year: 2016}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.1-CRU+GPCC, start_year: 1979, end_year: 2016}
+    scripts: null
+
+
   WOA:
     description: WOA check
     variables:
@@ -1114,6 +1136,17 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly,
          version: 1, start_year: 1990, end_year: 1990}
+    scripts: null
+
+
+  ESACCI-WATERVAPOUR:
+    description: ESACCI-WV check
+    variables:
+      prw:
+    additional_datasets:
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: CDR2-L3S-05deg_fv3.1,
+         start_year: 2003, end_year: 2017}
     scripts: null
 
 
