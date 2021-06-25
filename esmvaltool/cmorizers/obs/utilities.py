@@ -21,12 +21,37 @@ REFERENCES_PATH = Path(esmvaltool_file).absolute().parent / 'references'
 
 
 def add_height2m(cube):
-    """Add scalar coordinate 'height' with value of 2m."""
+    """Add scalar coordinate 'height' with value of 2m.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to get the 2m height coordinate.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns the cube with new 2m height coordinate.
+    """
     add_scalar_height_coord(cube, height=2.)
 
 
 def add_scalar_height_coord(cube, height=2.):
-    """Add scalar coordinate 'height' with value of `height`m."""
+    """Add scalar coordinate 'height' with value of `height`m.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to have the height coordinate added to.
+
+    height: float
+        value for height in meters
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns the iris cube with new height (value: height) coordinate.
+    """
     logger.debug("Adding height coordinate (%sm)", height)
     height_coord = iris.coords.AuxCoord(
         height,
@@ -40,14 +65,48 @@ def add_scalar_height_coord(cube, height=2.):
 
 @contextmanager
 def constant_metadata(cube):
-    """Do cube math without modifying units etc."""
+    """Do cube math without modifying units, attributes etc.
+
+    Context manager that should be used when operating on a data cube
+    that keeps its metadata constant (units, variable names, attributes etc.).
+    Use as with any other context managers: `with constant_metadata(cube):`
+
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to be operated on, keeping its
+        metadata constant.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns the iris cube that was operated on.
+    """
     metadata = cube.metadata
     yield metadata
     cube.metadata = metadata
 
 
 def convert_timeunits(cube, start_year):
-    """Convert time axis from malformed Year 0."""
+    """Convert time axis from malformed Year 0.
+
+    Changes time coordinate with CMOR-like units of
+    e.g. `months since START_YEAR-01-01`.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to have its time coordinate changed.
+
+    start_year: int
+        integer start year as origin of time coordinate
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns the original iris cube with time coordinate reformatted.
+    """
     # TODO any more weird cases?
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
         real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
@@ -152,7 +211,26 @@ def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
 
 
 def fix_var_metadata(cube, var_info):
-    """Fix var metadata from CMOR table."""
+    """Fix var metadata from CMOR table.
+
+    Sets var_name, long_name, standard_name and units
+    in accordance with CMOR standards from specific CMOR table.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to have its metadata changed.
+
+    var_info: class
+        CMOR table object holding the information to be changed in the cube.
+        Attributes like standard_name, var_name, long_name are used to
+        set the new metadata in the input cube.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Returns the masked iris cube.
+    """
     if var_info.standard_name == '':
         cube.standard_name = None
     else:
@@ -188,7 +266,28 @@ def read_cmor_config(dataset):
 
 
 def save_variable(cube, var, outdir, attrs, **kwargs):
-    """Saver function."""
+    """Saver function.
+
+    Saves iris cubes (data variables) in CMOR-standard named files.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube to be saved.
+
+    var: str
+        Variable short_name e.g. ts or tas.
+
+    outdir: str
+        root directory where the file will be saved.
+
+    attrs: dict
+        dictionary holding cube metadata attributes like
+        project_id, version etc.
+
+    **kwargs: kwargs
+        Keyword arguments to be passed to `iris.save`
+    """
     _fix_dtype(cube)
     # CMOR standard
     try:
