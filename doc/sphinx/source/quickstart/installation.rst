@@ -503,14 +503,20 @@ code (called ``ESMValTool`` if you did not choose a different name)
 
     cd ESMValTool
 
-and run (on Linux only!)
+and (when on Linux) create a new environment called ``esmvaltool``
+containing just Python with the command
 
 .. code-block:: bash
 
-    conda env create --name esmvaltool --file environment.yml
+    conda create --name esmvaltool 'python=3.9'
 
-This command installs many of the required dependencies from conda, including
-the ESMValCore package and Python, R, and NCL interpreters.
+if needed, older versions of Python can also be selected.
+Next, install many of the required dependencies, including the ESMValCore package
+and Python, R, and NCL interpreters, into this environment by running
+
+.. code-block:: bash
+
+    conda env update --name esmvaltool --file environment.yml
 
 **MacOSX note:** ESMValTool functionalities in Julia, NCL, and R are not
 supported on MacOSX, due to conflicts in the conda environment. To install a
