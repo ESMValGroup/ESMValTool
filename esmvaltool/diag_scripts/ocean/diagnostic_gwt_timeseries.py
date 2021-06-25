@@ -631,6 +631,7 @@ def load_timeseries(cfg, short_names):
         'fgco2gt_norm': ['fgco2gt', ],
         'fgco2gt_cumul': ['fgco2', 'areacello' ],
         'nbpgt_cumul' : ['nbp', 'areacella' ],
+        'tls': ['nbp', 'nbpgt', 'luegt']
         }
 
     transforms_functions = {
@@ -660,6 +661,7 @@ def load_timeseries(cfg, short_names):
         }
 
     short_names_to_load = short_names.copy()
+
     for sn in short_names:
         if sn in transforms:
             short_names_to_load.extend(transforms[sn])
@@ -686,8 +688,11 @@ def load_timeseries(cfg, short_names):
     if 'co2' in short_names_to_load:
         data_dict = load_co2_forcing(cfg, data_dict)
 
-    if 'luegt' in short_names_to_load:
+    if 'luegt' in short_names_to_load or 'tls' in short_names_to_load:
         data_dict = load_luegt(cfg, data_dict)
+        if 'tls' in short_names_to_load:
+            data_dict = calc_tls(cfg, data_dict)
+
     #print(short_names_to_load)
 
     if set(['emissions', 'cumul_emissions']) & set(short_names_to_load):
@@ -980,8 +985,48 @@ def load_emissions_forcing(cfg, data_dict):
 
     return data_dict
 
+def calc_tls(cfg, data_dict):
+    """
+    Load Total Land Sink by adding Land Use Emissions from file and nbp
+    Net biome production.
+    """
+    exps = {'ssp119':True, 'ssp126':True, 'ssp245':True, 'ssp370':True, 'ssp585':True, 'historical':True}
+    ensembles = {'ensemble_mean':True}
+    for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
+        exps[exp] = True
+        ensembles[ensemble] = True
+    print(exps, ensembles)
+    tmp_data_dict = {}
+    short = 'tls'
+    for (short, exp, ensemble), cube in data_dict.items():
+        if short not in ['nbpgt', ]: # 'nbpgt_cumul']:
+             continue
+        times = diagtools.cube_time_to_float(cube)
+        data = cube.data.copy()
+        nbp_dict = {int(t):d for zip(times, data)}
+        luegt_dict = data_dict[('luegt', exp, ensemble)]
+        for t, d in zip(luegt_dict['time'], luegt_dict['luegt']):
+            if t not in nbp_dict: assert 0
+            nbp_dict[int(t)] += d
+
+        new_times = np.array(sorted(nbp_dict.keys()))
+        new_data = np.array([nbp_dict(t) for t in new_times])
+
+        tmp_data_dict[('tls', exp, ensemble)] = {'time':new_times+0.5, 'tls': new_data }
+
+    print(tmp_data_dict.keys())
+    assert 0
+    data_dict.update(tmp_data_dict)
+    return data_dict
+
+
+
+
 
 def load_luegt(cfg, data_dict):
+    """
+    Load Land Use Emissions from file.
+    """
     # load from file
     tmp_data_dict = {}
     short = 'luegt'
@@ -1007,19 +1052,19 @@ def load_luegt(cfg, data_dict):
     with open(aux_fn) as csvDataFile:
         csvReader = csv.reader(csvDataFile, delimiter=';')
         for row_number, row in enumerate(csvReader):
-            print('load_luegt: ', row_number, row)         
+            print('load_luegt: ', row_number, row)
             if row_number == 0:
                 for d, da in enumerate(row):
                     print('load_luegt: header: ', d, da)
                     da = da.replace(' ', '')
                     header[d] = da
-                    data[da] = []  
+                    data[da] = []
                 print('load_luegt: header:', header)
                 continue
 
             years.append(float(row[0])+0.5)
             for d, da in enumerate(row):
-            
+
                 #if d == 0: continue
                 if da == ' ': continue
                 data[header[d]].append(float(da))
@@ -1031,14 +1076,14 @@ def load_luegt(cfg, data_dict):
             da =  data.get(exp.replace('historical-',''), [])
         if not da:
             da =  data.get('-'.join(['historical',exp]), [])
-        if not da: 
+        if not da:
             print('problem', exp, 'and', exp.replace('historical-',''), 'not int', data.keys())
             #assert 0
             continue
         if len(da) != len(years):
             print("data and time don't match:", len(da),  len(years))
             y2 = years[:len(da)]
-        else: 
+        else:
             y2 = years
         tmp_data_dict[(short, exp, ensemble)] = {'time': y2, short: da}
 
@@ -1300,7 +1345,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 datcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_data).compressed()
                 datcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_data).compressed()
                 print('2004-2015:', (x,y),exp_1, tdatcx, tdatcy, datcx, datcy)
-                if len(tdatcx) == len(tdatcy): 
+                if len(tdatcx) == len(tdatcy):
                     plt.plot(
                         datcx, # np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data).compressed(),
                         datcy, # np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data).compressed(),
@@ -1655,7 +1700,7 @@ def main(cfg):
                        'fgco2gt_cumul',
                        'nbpgt_cumul'
                        'luegt', #  land-use emissions gt
-
+                       'tls', #true land sink = nbp + land-use emissions
                        ]
         short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt', 'fgco2gt_cumul','nbpgt_cumul']
         short_names_y = short_names.copy()
@@ -1663,14 +1708,14 @@ def main(cfg):
     if jobtype == 'debug':
         short_names = [
                        'emissions', 'cumul_emissions',
-                       'tas', 
+                       'tas',
                        'nbpgt',
                        'nbpgt_cumul',
                        'gpp', 'gppgt',
                        #'fgco2','fgco2gt', 'fgco2gt_cumul',
                        #'bgc', 'bgcgt',
                        'luegt', #  land-use emissions gt
-#                       'tls', #true land sink = nbp + land-use emissions
+                       'tls', #true land sink = nbp + land-use emissions
                        ]
         short_names_x = ['time', 'emissions', ]#'cumul_emissions', 'gppgt'] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
         short_names_y = short_names #['fgco2gt_cumul', 'nbpgt_cumul']
