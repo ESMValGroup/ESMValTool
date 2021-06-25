@@ -760,7 +760,7 @@ diagnostics:
         mip: Amon
       clivi:
         mip: Amon
-      clwvi:
+      lwp:
         mip: Amon
     additional_datasets:
       - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
