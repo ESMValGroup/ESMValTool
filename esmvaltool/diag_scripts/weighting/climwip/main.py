@@ -5,24 +5,26 @@ https://iopscience.iop.org/article/10.1088/1748-9326/ab492f
 """
 import logging
 import os
-from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import xarray as xr
+from calibrate_sigmas import calibrate_performance_sigma
 from core_functions import (
     area_weighted_mean,
-    calculate_independence,
+    calculate_model_distances,
     calculate_weights,
     combine_ensemble_members,
     compute_overall_mean,
 )
 from io_functions import (
     log_provenance,
-    read_input_data,
     read_metadata,
     read_model_data,
+    read_model_data_ancestor,
+    read_observation_data,
+    read_observation_data_ancestor,
 )
 
 from esmvaltool.diag_scripts.shared import (
@@ -32,13 +34,6 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-def read_observation_data(datasets: list) -> tuple:
-    """Load observation data from list of metadata."""
-    return read_input_data(datasets,
-                           dim='obs_ensemble',
-                           identifier_fmt='{dataset}')
 
 
 def aggregate_obs_data(data_array: 'xr.DataArray',
@@ -121,11 +116,18 @@ def barplot(metric: 'xr.DataArray', label: str, filename: str):
     ylabel = f'{label} {variable_group} ({units})'
 
     figure, axes = plt.subplots(figsize=(15, 10))
-    chart = sns.barplot(x='model_ensemble', y=name, data=metric_df, ax=axes)
+    chart = sns.barplot(x='model_ensemble',
+                        y=name,
+                        data=metric_df,
+                        ax=axes,
+                        color="blue")
     chart.set_xticklabels(chart.get_xticklabels(),
                           rotation=45,
                           horizontalalignment='right')
-    chart.set_title(f'{label} for {variable_group}')
+    if variable_group == 'weight':
+        chart.set_title('Performance weights')
+    else:
+        chart.set_title(f'{label} for {variable_group}')
     chart.set_ylabel(ylabel)
     chart.set_xlabel('')
 
@@ -189,8 +191,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
     log_provenance(caption, filename_data, cfg, ancestors)
 
 
-def parse_contributions_sigma(metric: str,
-                              cfg: dict) -> (list, Union[float, None]):
+def parse_contributions_sigma(metric: str, cfg: dict) -> dict:
     """Return contributions > 0 and sigma for a given metric."""
     if cfg.get(f'{metric}_contributions') is None:  # not set or set to None
         contributions = {}
@@ -201,9 +202,6 @@ def parse_contributions_sigma(metric: str,
             if value > 0
         }
     sigma = cfg.get(f'{metric}_sigma')
-    if contributions and sigma is None:
-        errmsg = f'{metric}_sigma must be set if {metric}_contributions is set'
-        raise IOError(errmsg)
     return contributions, sigma
 
 
@@ -234,11 +232,15 @@ def main(cfg):
     for variable_group in independence_contributions:
 
         logger.info('Reading model data for %s', variable_group)
-        datasets_model = models[variable_group]
-        model_data, model_data_files = read_model_data(datasets_model)
+        if variable_group.endswith("_ANOM"):
+            model_data, model_data_files = read_model_data_ancestor(
+                cfg, variable_group)
+        else:
+            datasets_model = models[variable_group]
+            model_data, model_data_files = read_model_data(datasets_model)
 
         logger.info('Calculating independence for %s', variable_group)
-        independence = calculate_independence(model_data)
+        independence = calculate_model_distances(model_data)
         visualize_and_save_independence(independence, cfg, model_data_files)
         logger.debug(independence.values)
         independences[variable_group] = independence
@@ -248,12 +250,20 @@ def main(cfg):
     for variable_group in performance_contributions:
 
         logger.info('Reading model data for %s', variable_group)
-        datasets_model = models[variable_group]
-        model_data, model_data_files = read_model_data(datasets_model)
+        if variable_group.endswith("_ANOM"):
+            model_data, model_data_files = read_model_data_ancestor(
+                cfg, variable_group)
+        else:
+            datasets_model = models[variable_group]
+            model_data, model_data_files = read_model_data(datasets_model)
 
         logger.info('Reading observation data for %s', variable_group)
         datasets_obs = observations[variable_group]
-        obs_data, obs_data_files = read_observation_data(datasets_obs)
+        if variable_group.endswith("_ANOM"):
+            obs_data, obs_data_files = read_observation_data_ancestor(
+                cfg, variable_group)
+        else:
+            obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
         logger.info('Calculating performance for %s', variable_group)
@@ -275,6 +285,9 @@ def main(cfg):
             independence, independence_contributions)
         visualize_and_save_independence(overall_independence, cfg,
                                         model_ancestors)
+        if independence_sigma is None:
+            raise NotImplementedError('`independence_sigma` must be set if '
+                                      '`independence_contributions` is set')
     else:
         overall_independence = None
 
@@ -285,12 +298,17 @@ def main(cfg):
                                                    performance_contributions)
         visualize_and_save_performance(overall_performance, cfg,
                                        model_ancestors + obs_ancestors)
+        if performance_sigma is None:
+            performance_sigma = calibrate_performance_sigma(
+                performance_contributions, overall_independence,
+                independence_sigma, cfg)
     else:
         overall_performance = None
 
     if cfg['combine_ensemble_members']:
         overall_independence, groups_independence = combine_ensemble_members(
-            overall_independence)
+            overall_independence,
+            ['model_ensemble', 'model_ensemble_reference'])
         overall_performance, groups_performance = combine_ensemble_members(
             overall_performance)
         # one of them could be empty if metric is not calculated

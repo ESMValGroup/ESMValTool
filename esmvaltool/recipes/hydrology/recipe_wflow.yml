@@ -4,17 +4,17 @@
 documentation:
   description: |
     Pre-processes climate data for the WFlow hydrological model.
-    
+
   authors:
     - kalverla_peter
     - camphuijsen_jaro
     - alidoost_sarah
     - aerts_jerom
     - andela_bouwe
-    
+
   projects:
     - ewatercycle
-  
+
   references:
     - acknow_project
 
@@ -40,7 +40,7 @@ diagnostics:
         mip: day
         preprocessor: rough_cutout
         start_year: 1990
-        end_year: 1990
+        end_year: 2001
       pr: *daily_var
       # evspsblpot:  # doesn't exist for ERA-Interim.
       # Reconstruct evspsblpot using:
@@ -53,5 +53,5 @@ diagnostics:
       script:
         script: hydrology/wflow.py
         basin: Meuse
-        dem_file: 'wflow/wflow_dem_Meuse.nc'
+        dem_file: 'wflow_parameterset/meuse/staticmaps/wflow_dem.map'
         regrid: area_weighted

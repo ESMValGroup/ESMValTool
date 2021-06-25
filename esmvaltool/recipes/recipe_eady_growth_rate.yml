@@ -15,6 +15,9 @@ documentation:
 
   maintainer:
     - loosveldt-tomas_saskia
+  
+  references:
+    - morenochamarro2021
 
   projects:
     - primavera

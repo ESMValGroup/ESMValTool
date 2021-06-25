@@ -33,21 +33,21 @@
 
 AWI-CM-1-1-MR:
   avgstd: 0
-  color: '#d99694'
+  color: '#7f7f7f'
   dash: '-'
   facecolor: none
   mark: ^
   thick: 1
 BCC-CSM2-MR:
   avgstd: 0
-  color: '#984b07'
+  color: '#c00000'
   dash: '-'
   facecolor: none
   mark: o
   thick: 1
 BCC-ESM1:
   avgstd: 0
-  color: '#984b07'
+  color: '#c00000'
   dash: '-'
   facecolor: none
   mark: s
@@ -72,6 +72,13 @@ CNRM-CM6-1:
   dash: '-'
   facecolor: none
   mark: o
+  thick: 1
+CNRM-CM6-1-HR:
+  avgstd: 0
+  color: '#9bbb59'
+  dash: '-.'
+  facecolor: none
+  mark: ^
   thick: 1
 CNRM-ESM2-1:
   avgstd: 0
@@ -103,17 +110,17 @@ E3SM-1-0:
   thick: 1
 EC-Earth3-Veg:
   avgstd: 0
-  color: '#d99694'
+  color: '#7f7f7f'
   dash: ':'
   facecolor: none
   mark: s
   thick: 1
-GFDL-AM4:
+FGOALS-f3-L:
   avgstd: 0
-  color: '#295d91'
+  color: '#948a54'
   dash: ':'
   facecolor: none
-  mark: ^
+  mark: o
   thick: 1
 GFDL-CM4:
   avgstd: 0
@@ -143,6 +150,13 @@ GISS-E2-1-H:
   facecolor: none
   mark: o
   thick: 1
+GISS-E2-2-G:
+  avgstd: 0
+  color: '#b3a2c7'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
 HadGEM3-GC31-LL:
   avgstd: 0
   color: '#4f6228'
@@ -152,10 +166,17 @@ HadGEM3-GC31-LL:
   thick: 1
 INM-CM5-0:
   avgstd: 0
-  color: '#a1452c'
+  color: '#984807'
   dash: '-'
   facecolor: none
-  mark: o
+  mark: ^
+  thick: 1
+INM-CM4-8:
+  avgstd: 0
+  color: '#984807'
+  dash: --
+  facecolor: none
+  mark: s
   thick: 1
 IPSL-CM6A-LR:
   avgstd: 0
@@ -178,6 +199,13 @@ IPSL-CM6B-LR:
   facecolor: none
   mark: ^
   thick: 1
+MCM-UA-1-0:
+  avgstd: 0
+  color: '#ffc000'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
 MIROC6:
   avgstd: 0
   color: '#7031a0'
@@ -199,6 +227,13 @@ MPI-ESM1-2-HR:
   facecolor: none
   mark: o
   thick: 1
+MPI-ESM1-2-LR:
+  avgstd: 0
+  color: '#00b0f0'
+  dash: '-'
+  facecolor: none
+  mark: s
+  thick: 1
 MRI-ESM2-0:
   avgstd: 0
   color: '#c3d69b'
@@ -212,6 +247,20 @@ NESM3:
   dash: --
   facecolor: none
   mark: ^
+  thick: 1
+NorCPM1:
+  avgstd: 0
+  color: '#d99694'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
+NorESM2-LM:
+  avgstd: 0
+  color: '#d99694'
+  dash: --
+  facecolor: none
+  mark: o
   thick: 1
 SAM0-UNICON:
   avgstd: 0

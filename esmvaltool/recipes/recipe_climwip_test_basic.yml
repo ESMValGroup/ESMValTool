@@ -22,6 +22,9 @@ documentation:
     - lorenz2018
     - knutti2017
 
+  projects:
+    - eucp
+
 datasets: &model_data  # a minimal selection to demonstrate functionality
   - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
   - {dataset: ACCESS1-3, project: CMIP5, exp: [historical, rcp85], ensemble: r1i1p1}
@@ -39,7 +42,7 @@ preprocessors:
     mask_landsea:
       mask_out: sea
     extract_region:
-      start_longitude: 0.0
+      start_longitude: -10.0
       end_longitude: 39.0
       start_latitude: 30.0
       end_latitude: 76.25
@@ -131,5 +134,5 @@ diagnostics:
         weights: 'weights.nc'
         # optional arguments
         model_aggregation: mean  # [ mean (default) | median | integer in (0, 100) ]
-        xticks: [0, 10, 20, 30, 40]  # if not given ticks will be set automatically
+        xticks: [-10, 0, 10, 20, 30, 40]  # if not given ticks will be set automatically
         yticks: [30, 40, 50, 60, 70, 80]
