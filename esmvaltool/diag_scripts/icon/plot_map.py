@@ -42,8 +42,9 @@ def load_and_preprocess(dataset):
     logger.info("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    # Temporal mean
-    cube = cube.collapsed('time', iris.analysis.MEAN)
+    # Tmporal mean
+    if cube.coords('time', dim_coords=True):
+        cube = cube.collapsed('time', iris.analysis.MEAN)
 
     # Convert units of some variables
     if cube.var_name == 'tas':

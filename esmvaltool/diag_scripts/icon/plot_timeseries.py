@@ -40,9 +40,11 @@ def load_and_preprocess(dataset):
     cube = iris.load_cube(filename)
 
     # Global mean
-    area_weights = iris.analysis.cartography.area_weights(cube)
-    cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN,
-                          weights=area_weights)
+    if all([cube.coords('latitude', dim_coords=True),
+            cube.coords('longitude', dim_coords=True)]):
+        area_weights = iris.analysis.cartography.area_weights(cube)
+        cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN,
+                              weights=area_weights)
 
     # Convert units of some variables
     if cube.var_name == 'tas':

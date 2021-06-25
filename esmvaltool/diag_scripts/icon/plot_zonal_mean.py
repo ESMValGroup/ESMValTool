@@ -4,7 +4,6 @@ from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
 
-import cartopy.crs as ccrs
 import iris
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
@@ -43,10 +42,12 @@ def load_and_preprocess(dataset):
     cube = iris.load_cube(filename)
 
     # Temporal mean
-    cube = cube.collapsed('time', iris.analysis.MEAN)
+    if cube.coords('time', dim_coords=True):
+        cube = cube.collapsed('time', iris.analysis.MEAN)
 
     # Zonal mean
-    cube = cube.collapsed('longitude', iris.analysis.MEAN)
+    if cube.coords('longitude', dim_coords=True):
+        cube = cube.collapsed('longitude', iris.analysis.MEAN)
 
     # Fix pressure level coordinate (necessary for plotting)
     if cube.coords('air_pressure'):

@@ -12,7 +12,7 @@ documentation:
 
 
 YEARS: &years
-  start_year: 2000
+  start_year: 2010
   end_year: 2014
 
 ICON_BASE: &icon_base
@@ -76,6 +76,9 @@ preprocessors:
       lon_offset: false
 
   regrid_3d_icon:
+    custom_order: true
+    climate_statistics:
+      operator: mean
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
@@ -83,6 +86,9 @@ preprocessors:
     regrid: *regrid_icon
 
   regrid_3d_nonicon:
+    custom_order: true
+    climate_statistics:
+      operator: mean
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
