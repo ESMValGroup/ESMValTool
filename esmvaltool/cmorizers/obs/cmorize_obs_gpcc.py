@@ -110,7 +110,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
         cube.attributes['geospatial_lon_min'] = 0.
         cube.attributes['geospatial_lon_max'] = 360.
         nlon = len(cube_coord.points)
-        utils._roll_cube_data(cube, nlon // 2, -1)
+        utils.roll_cube_data(cube, nlon // 2, -1)
 
     # Fix metadata
     attrs = cfg['attributes']
@@ -154,7 +154,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
         constr_cube.attributes['geospatial_lon_min'] = 0.
         constr_cube.attributes['geospatial_lon_max'] = 360.
         nlon = len(cube_coord.points)
-        utils._roll_cube_data(constr_cube, nlon // 2, -1)
+        utils.roll_cube_data(constr_cube, nlon // 2, -1)
 
     cube.data = np.ma.masked_where(constr_cube.data < 1., cube.data)
 

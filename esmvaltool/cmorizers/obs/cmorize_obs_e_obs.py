@@ -56,7 +56,7 @@ def fix_coords_non_symetric_lon(cube):
                     utils._fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
-                    utils._roll_cube_data(cube, len(lons_above_0), -1)
+                    utils.roll_cube_data(cube, len(lons_above_0), -1)
 
         # fix latitude
         if cube_coord.var_name == 'lat':

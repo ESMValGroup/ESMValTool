@@ -76,7 +76,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
         cube.attributes['geospatial_lon_min'] = 0.
         cube.attributes['geospatial_lon_max'] = 360.
         nlon = len(cube_coord.points)
-        utils._roll_cube_data(cube, nlon // 2, -1)
+        utils.roll_cube_data(cube, nlon // 2, -1)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
 
