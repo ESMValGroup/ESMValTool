@@ -30,7 +30,7 @@ def fix_coords_non_symetric_lon(cube):
     """Fix the time units and values to CMOR standards."""
 
     # first fix any completely missing coord var names
-    utils._fix_dim_coordnames(cube)
+    utils.fix_dim_coordnames(cube)
     # fix individual coords
     for cube_coord in cube.coords():
         # fix time
@@ -38,7 +38,7 @@ def fix_coords_non_symetric_lon(cube):
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            utils._fix_bounds(cube, cube.coord('time'))
+            utils.fix_bounds(cube, cube.coord('time'))
 
         # fix longitude
         if cube_coord.var_name == 'lon':
@@ -53,7 +53,7 @@ def fix_coords_non_symetric_lon(cube):
                     lons = np.hstack((lons_above_0, lons_below_0))
                     cube_coord.points = lons
 
-                    utils._fix_bounds(cube, cube_coord)
+                    utils.fix_bounds(cube, cube_coord)
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     utils.roll_cube_data(cube, len(lons_above_0), -1)
@@ -61,17 +61,17 @@ def fix_coords_non_symetric_lon(cube):
         # fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
-            utils._fix_bounds(cube, cube.coord('latitude'))
+            utils.fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
-            utils._fix_bounds(cube, cube.coord('depth'))
+            utils.fix_bounds(cube, cube.coord('depth'))
 
         # fix air_pressure
         if cube_coord.var_name == 'air_pressure':
             logger.info("Fixing air pressure...")
-            utils._fix_bounds(cube, cube.coord('air_pressure'))
+            utils.fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
     cube.coord('latitude').coord_system = None

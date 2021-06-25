@@ -96,9 +96,9 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
 
     # fix flipped latitude
     utils.flip_dim_coord(cube, 'latitude')
-    utils._fix_dim_coordnames(cube)
+    utils.fix_dim_coordnames(cube)
     cube_coord = cube.coord('latitude')
-    utils._fix_bounds(cube, cube_coord)
+    utils.fix_bounds(cube, cube_coord)
 
     # fix longitude
     cube_coord = cube.coord('longitude')
@@ -106,7 +106,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
             cube_coord.points[-1] < 181.:
         cube_coord.points = \
             cube_coord.points + 180.
-        utils._fix_bounds(cube, cube_coord)
+        utils.fix_bounds(cube, cube_coord)
         cube.attributes['geospatial_lon_min'] = 0.
         cube.attributes['geospatial_lon_max'] = 360.
         nlon = len(cube_coord.points)
@@ -140,9 +140,9 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
 
     # fix flipped latitude
     utils.flip_dim_coord(constr_cube, 'latitude')
-    utils._fix_dim_coordnames(constr_cube)
+    utils.fix_dim_coordnames(constr_cube)
     cube_coord = constr_cube.coord('latitude')
-    utils._fix_bounds(constr_cube, cube_coord)
+    utils.fix_bounds(constr_cube, cube_coord)
 
     # fix longitude
     cube_coord = constr_cube.coord('longitude')
@@ -150,7 +150,7 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
             cube_coord.points[-1] < 181.:
         cube_coord.points = \
             cube_coord.points + 180.
-        utils._fix_bounds(constr_cube, cube_coord)
+        utils.fix_bounds(constr_cube, cube_coord)
         constr_cube.attributes['geospatial_lon_min'] = 0.
         constr_cube.attributes['geospatial_lon_max'] = 360.
         nlon = len(cube_coord.points)
