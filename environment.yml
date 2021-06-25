@@ -2,7 +2,6 @@
 name: esmvaltool
 channels:
   - conda-forge
-  - esmvalgroup
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
@@ -17,7 +16,6 @@ dependencies:
   - cdo>=1.9.7
   - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
   - imagemagick
-  - mpich<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
   - nco
   - ruamel.yaml
   - scikit-learn  # may hit hw-specific issue if from pypi https://github.com/scikit-learn/scikit-learn/issues/14485
