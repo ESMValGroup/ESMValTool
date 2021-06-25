@@ -60,6 +60,7 @@ from itertools import product
 import cf_units
 import glob
 import shelve
+import csv
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -600,12 +601,12 @@ def load_timeseries(cfg, short_names):
     assume only one model
     """
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
-    if glob.glob(data_dict_shelve+'*'):
-        print('loading:', data_dict_shelve )
-        sh = shelve.open(data_dict_shelve)
-        data_dict = sh['data_dict']
-        sh.close()
-        return data_dict
+#    if glob.glob(data_dict_shelve+'*'):
+#        print('loading:', data_dict_shelve )
+#        sh = shelve.open(data_dict_shelve)
+#        data_dict = sh['data_dict']
+#        sh.close()
+#        return data_dict
 
     transforms = {
         'fgco2gt': ['fgco2', 'areacello'],
@@ -687,6 +688,7 @@ def load_timeseries(cfg, short_names):
 
     if 'luegt' in short_names_to_load:
         data_dict = load_luegt(cfg, data_dict)
+    #print(short_names_to_load)
 
     if set(['emissions', 'cumul_emissions']) & set(short_names_to_load):
         data_dict = load_emissions_forcing(cfg, data_dict)
@@ -707,7 +709,7 @@ def load_timeseries(cfg, short_names):
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
-                if short_name in ['co2', 'emissions', 'cumul_emissions']:
+                if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
                      continue
                 cubes.append(cube)
 
@@ -989,32 +991,61 @@ def load_luegt(cfg, data_dict):
     # edit file header so that it closely matches other data.
     # set one for each dataset
 
-    exps = {}
-    ensembles = {}
+    exps = {'ssp119':True, 'ssp126':True, 'ssp245':True, 'ssp370':True, 'ssp585':True, 'historical':True}
+    ensembles = {'ensemble_mean':True}
     for (short_name, exp, ensemble)  in sorted(data_dict.keys()):
         exps[exp] = True
         ensembles[ensemble] = True
     print(exps, ensembles)
+    # assert 0
     # This data was added to the esmvaltool/diagnostics/ocean/aux_data directory.
     aux_fn = cfg['auxiliary_data_dir']+'/land_usage/landusage_ssp.txt'
     data = {}
     years = []
     header = {}
+    print('load_luegt', ensembles, exps)
     with open(aux_fn) as csvDataFile:
         csvReader = csv.reader(csvDataFile, delimiter=';')
         for row_number, row in enumerate(csvReader):
+            print('load_luegt: ', row_number, row)         
             if row_number == 0:
                 for d, da in enumerate(row):
+                    print('load_luegt: header: ', d, da)
+                    da = da.replace(' ', '')
                     header[d] = da
-            years.append(float(row[0]))
+                    data[da] = []  
+                print('load_luegt: header:', header)
+                continue
+
+            years.append(float(row[0])+0.5)
             for d, da in enumerate(row):
-                if d == 0: continue
-                data[header[d]].append(da)
+            
+                #if d == 0: continue
+                if da == ' ': continue
+                data[header[d]].append(float(da))
 
     for exp, ensemble in product(exps.keys(), ensembles.keys()):
-        tmp_data_dict[(short, exp, ensemble)] = {'times': years, short: data[exp]}
+        print(exp, ensemble)
+        da =  data.get(exp, [])
+        if not da:
+            da =  data.get(exp.replace('historical-',''), [])
+        if not da:
+            da =  data.get('-'.join(['historical',exp]), [])
+        if not da: 
+            print('problem', exp, 'and', exp.replace('historical-',''), 'not int', data.keys())
+            #assert 0
+            continue
+        if len(da) != len(years):
+            print("data and time don't match:", len(da),  len(years))
+            y2 = years[:len(da)]
+        else: 
+            y2 = years
+        tmp_data_dict[(short, exp, ensemble)] = {'time': y2, short: da}
 
+    #print(tmp_data_dict.keys())
+    #assert 0
     data_dict.update(tmp_data_dict)
+    #assert 0
     return data_dict
 
 
@@ -1227,7 +1258,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             #break
 
         if 0 in [len(x_data), len(y_data), len(x_times), len(y_times)]:
-            print('no data found', x,y, exp_1, ensemble_1, 'x:', len(x_data), 'y:',len(y_data))
+            print('no data found', x,'vs',y, (exp_1, ensemble_1), 'x:', len(x_data), 'y:',len(y_data))
             #assert 0
             continue
 
@@ -1245,32 +1276,54 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             else:
                 lw=0.5
             if exp_1 == 'historical':
-                plt.plot(np.ma.masked_where(x_times > 2005, x_data),
-                         np.ma.masked_where(y_times > 2005, y_data),
+                histx_t = np.ma.masked_where(x_times > 2005., x_times)
+                histy_t = np.ma.masked_where(y_times > 2005., y_times)
+                histx_d = np.ma.masked_where(histx_t.mask, x_data).compressed()
+                histy_d = np.ma.masked_where(histy_t.mask, y_data).compressed()
+
+                print('historical', histx_t, histy_t, histx_d, histy_d)
+
+                #plt.plot(np.ma.masked_where(x_times > 2005., x_data),
+                #         np.ma.masked_where(y_times > 2005., y_data),
+                #         lw=lw,
+                #         color=exp_colours[exp_1])
+
+                plt.plot(histx_d, #np.ma.masked_where(x_times > 2005., x_data),
+                         histy_d, #np.ma.masked_where(y_times > 2005., y_data),
                          lw=lw,
                          color=exp_colours[exp_1])
+
             else:
                 #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
-                tdatcx = np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_times).compressed()
-                tdatcy = np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_times).compressed()
-                print(tdatcx, tdatcy)
+                tdatcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_times).compressed()
+                tdatcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_times).compressed()
+                datcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_data).compressed()
+                datcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_data).compressed()
+                print('2004-2015:', (x,y),exp_1, tdatcx, tdatcy, datcx, datcy)
+                if len(tdatcx) == len(tdatcy): 
+                    plt.plot(
+                        datcx, # np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data).compressed(),
+                        datcy, # np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data).compressed(),
+                        lw=lw,
+                        color=exp_colours['historical'])
 
-                plt.plot(np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data).compressed(),
-                         np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data).compressed(),
-                         lw=lw,
-                         color=exp_colours['historical'])
+                xdatc = np.ma.masked_where((x_times < 2015.) + (x_times > 2100.), x_data).compressed()
+                ydatc = np.ma.masked_where((y_times < 2015.) + (y_times > 2100. ), y_data).compressed()
+                xtdatc = np.ma.masked_where((x_times < 2015.) + (x_times > 2100.), x_times).compressed()
+                ytdatc = np.ma.masked_where((y_times < 2015.) + (y_times > 2100. ), y_times).compressed()
 
-                xdatc = np.ma.masked_where(x_times < 2015, x_data).compressed()
-                ydatc = np.ma.masked_where(y_times < 2015, y_data).compressed()
-                xtdatc = np.ma.masked_where(x_times < 2015, x_times).compressed()
-                ytdatc = np.ma.masked_where(y_times < 2015, y_times).compressed()
-
-                print(xdatc, ydatc, xtdatc, ytdatc)
-
-                plt.plot(np.ma.masked_where(x_times < 2015, x_data).compressed(),
-                         np.ma.masked_where(y_times < 2015, y_data).compressed(),
+                print('< 2015', exp_1, xdatc, ydatc, xtdatc, ytdatc)
+                if len(xtdatc) == len(ytdatc):
+                    plt.plot(xdatc, # np.ma.masked_where(x_times < 2015., x_data).compressed(),
+                         ydatc, # np.ma.masked_where(y_times < 2015., y_data).compressed(),
                          lw=lw,
                          color=exp_colours[exp_1])
+
+#                plt.plot(np.ma.masked_where(x_times < 2015., x_data).compressed(),
+#                         np.ma.masked_where(y_times < 2015., y_data).compressed(),
+#                         lw=lw,
+#                         color=exp_colours[exp_1])
+
 
         if markers == 'thresholds':
             try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
@@ -1567,8 +1620,8 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    jobtype = 'debug'
-    #jobtype = 'bulk'
+    #jobtype = 'debug'
+    jobtype = 'bulk'
 
     #jobtype = 'cumulative_plot'
 
@@ -1601,22 +1654,25 @@ def main(cfg):
                        'intpp', 'fgco2', 'intppgt','fgco2gt',
                        'fgco2gt_cumul',
                        'nbpgt_cumul'
+                       'luegt', #  land-use emissions gt
+
                        ]
         short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt', 'fgco2gt_cumul','nbpgt_cumul']
         short_names_y = short_names.copy()
 
     if jobtype == 'debug':
         short_names = [
-                       'emissions','tas','cumul_emissions'
+                       'emissions', 'cumul_emissions',
+                       'tas', 
                        'nbpgt',
                        'nbpgt_cumul',
                        'gpp', 'gppgt',
                        #'fgco2','fgco2gt', 'fgco2gt_cumul',
                        #'bgc', 'bgcgt',
                        'luegt', #  land-use emissions gt
-                       'tls', #true land sink = nbp + land-use emissions
+#                       'tls', #true land sink = nbp + land-use emissions
                        ]
-        short_names_x = ['time', 'emissions', 'cumul_emissions', 'gppgt'] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
+        short_names_x = ['time', 'emissions', ]#'cumul_emissions', 'gppgt'] #'time', ]#'co2', 'emissions', 'tas_norm', 'fgco2gt', 'nbpgt']
         short_names_y = short_names #['fgco2gt_cumul', 'nbpgt_cumul']
 
 
@@ -1660,7 +1716,7 @@ def main(cfg):
             #continue
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
-            if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions']:
+            if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
