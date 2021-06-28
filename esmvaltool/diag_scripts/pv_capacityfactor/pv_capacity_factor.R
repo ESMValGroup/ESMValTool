@@ -7,9 +7,9 @@
 #
 # Required
 # season: String to include shortcut for season in plot title
-#         and name (e.g. "djf"). It will be converted to upper case. 
-#         This season should be the one set in the preprocessor, since it is 
-#         only used as a string and does not affect the data in the diagnostic. 
+#         and name (e.g. "djf"). It will be converted to upper case.
+#         This season should be the one set in the preprocessor, since it is
+#         only used as a string and does not affect the data in the diagnostic.
 #         In the default recipe this is solved through a node anchor.
 #
 # Optional
@@ -19,8 +19,8 @@
 #
 # Modification history
 #    20210401-cionni_irene: written for v2.0
-#    20210401-weigel_katja: changed to allow multiple models 
-#    20210621-weigel_katja: formattiong updates 
+#    20210401-weigel_katja: changed to allow multiple models
+#    20210621-weigel_katja: formattiong updates
 #
 # ############################################################################
 library(abind)
@@ -166,20 +166,15 @@ for (i in seq(1, length(model_names), 1)) {
   dim(data1) <- dims1
   # Convert to 100 m wind:
 
-
  data1 <- aperm(data1, c(3, 4, 2, 1))
   names(dim(data1)) <- c("year", "day", "lat", "lon")
-
-
-
-
 
  #####################################
   # CF modelC
   ####################################
 
   seas_data <- Mean1Dim(data, 2)
-  data_cf1 <- rsds2CF(data1,data)
+  data_cf1 <- rsds2CF(data1, data)
   dim(data_cf1) <- dim(data)
   #---------------------------
   # Aggregate daily data to seasonal means
@@ -212,7 +207,7 @@ for (i in seq(1, length(model_names), 1)) {
   #---------------------------
   filepng <- paste0(
     plot_dir, "/", "capacity_factor_", model_names[i], "_",
-    start_year, "-", end_year, "_",seasons,".png"
+    start_year, "-", end_year, "_", seasons, ".png"
   )
   title <- paste0(
     seasons, " CF from ", model_names[i],
@@ -220,16 +215,7 @@ for (i in seq(1, length(model_names), 1)) {
   )
 
   PW_names <- "PV_CF"
-  #PlotLayout(PlotEquiMap, # nolint
-  #  c(1, 1), Mean1Dim(seas_data_cf_all,1), lon, lat,
-  #  colNA = "white",
-  #  brks = seq(
-  #    from = 0, to = max(seas_data_cf_all, na.rm = TRUE),
-  #    length.out = 10
-  #  ), color_fun = clim.palette("yellowred"),
-  #  filled.continents = FALSE, toptitle = title,
-  #  titles = PW_names, fileout = filepng
-  #)
+
   # Optional uppler limit for the color bar set in recipe
   if (length(params$maxval_colorbar) == 1){
     maxval_colorbar <- params$maxval_colorbar
@@ -237,7 +223,7 @@ for (i in seq(1, length(model_names), 1)) {
     maxval_colorbar <- max(seas_data_cf_all, na.rm = TRUE)
   }
 
-  PlotEquiMap(Mean1Dim(seas_data_cf_all,1),lon,lat,
+  PlotEquiMap(Mean1Dim(seas_data_cf_all, 1), lon, lat,
     filled.continents = F,
     brks = seq(
       from = 0, to = maxval_colorbar,
