@@ -1,36 +1,40 @@
-from esmvaltool.diag_scripts.examples.diagnostic import get_provenance_record
+"""Base class for monitoring diagnostics."""
+
 import logging
 import os
 
 import cartopy
 import matplotlib.pyplot as plt
 import yaml
-from iris.analysis import MEAN
-from mapgenerator.plotting.timeseries import PlotSeries
-
 from esmvalcore._data_finder import _replace_tags
+from iris.analysis import MEAN
+
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
+from mapgenerator.plotting.timeseries import PlotSeries
 
 logger = logging.getLogger(__name__)
 
 
-class MonitorBase(object):
+class MonitorBase():
+    """
+    Base class for monitoring diagnostic.
+
+    It contains the common methods for path creation, provenance recording,
+    option parsing and to create some common plots.
+    """
+
     def __init__(self, config):
         self.cfg = config
         self.plot_folder = config.get(
             'plot_folder',
-            '~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}'
-        )
+            '~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}')
         self.plot_filename = config.get(
             'plot_filename',
-            '{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'
-        )
+            '{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}')
         self.plots = config.get('plots', {})
         default_config = os.path.join(os.path.dirname(__file__),
                                       "monitor_config.yml")
-        cartopy_data_dir = config.get(
-            'cartopy_data_dir',
-        )
+        cartopy_data_dir = config.get('cartopy_data_dir', )
         if cartopy_data_dir:
             cartopy.config['data_dir'] = cartopy_data_dir
         with open(config.get('config_file', default_config)) as config_file:
@@ -57,12 +61,21 @@ class MonitorBase(object):
         logger.debug(variable_options)
         return variable_options
 
-    def plot_timeseries(self, cube, var_info, type='', **kwargs):
+    def plot_timeseries(self, cube, var_info, period='', **kwargs):
+        """
+        Plot timeseries from a cube.
+
+        It also automatically smoothes it for long timeseries of monthly data:
+        - Between 10 and 70 years long, it also plots the 12-month rolling
+          average along the raw series
+        - For more than ten years, it plots the 12-month and 10-years rolling
+          averages and not the raw series
+        """"
         if 'xlimits' not in kwargs:
             kwargs['xlimits'] = 'auto'
         length = cube.coord("year").points.max() - cube.coord(
             "year").points.min()
-        filename = self.get_plot_path(f'timeseries{type}', var_info, None)
+        filename = self.get_plot_path(f'timeseries{period}', var_info, None)
         if length < 10 or length * 11 > cube.coord("year").shape[0]:
             self.plot_cube(cube, filename, **kwargs)
         elif length < 70:
@@ -84,13 +97,14 @@ class MonitorBase(object):
             self.plot_cube(cube.rolling_window('time', MEAN, 120), filename,
                            **kwargs)
         self.record_plot_provenance(
-            self.get_plot_path(f'timeseries{type}', var_info, 'svg'),
+            self.get_plot_path(f'timeseries{period}', var_info, 'svg'),
             var_info,
             'timeseries',
-            period='type',
+            period='period',
         )
 
     def record_plot_provenance(self, filename, var_info, plot_type, **kwargs):
+        """Write provenance info for a given file."""
         with ProvenanceLogger(self.cfg) as provenance_logger:
             prov = self.get_provenance_record(
                 ancestor_files=[var_info['filename']],
@@ -99,7 +113,13 @@ class MonitorBase(object):
             )
             provenance_logger.log(filename, prov)
 
-    def plot_cube(self, cube, filename, linestyle='-', labels=True, **kwargs):
+    def plot_cube(self, cube, filename, linestyle='-', **kwargs):
+        """
+        Plot a timeseries from a cube.
+
+        Supports multiplot layouts for cubes with extra dimensions `shape_id`
+        or `region`
+        """
         plotter = PlotSeries()
         plotter.filefmt = 'svg'
         plotter.img_template = filename
@@ -128,22 +148,53 @@ class MonitorBase(object):
         return record
 
     def get_plot_path(self, plot_type, var_info, file_type='svg'):
+        """
+        Get plot full path from variable info.
+
+        Parameters:
+        -----------
+        plot_type: str
+            Name of the plot
+        var_info: dict
+            Variable information from ESMValTool
+        file_type: str, optional
+            File extension to use
+        """
         return os.path.join(self.get_plot_folder(var_info),
                             self.get_plot_name(plot_type, var_info, file_type))
 
     def get_plot_folder(self, var_info):
+        """
+        Get plot storage folder from variable info.
+
+        Parameters:
+        -----------
+        var_info: dict
+            Variable information from ESMValTool
+        """
         info = {
             'real_name': self._real_name(var_info['variable_group']),
             **var_info
         }
-        folder = os.path.expandvars(os.path.expanduser(
-            _replace_tags(self.plot_folder, info)[0]
-        ))
+        folder = os.path.expandvars(
+            os.path.expanduser(_replace_tags(self.plot_folder, info)[0]))
         if not os.path.isdir(folder):
             os.makedirs(folder, exist_ok=True)
         return folder
 
     def get_plot_name(self, plot_type, var_info, file_type='svg'):
+        """
+        Get plot filename from variable info.
+
+        Parameters:
+        -----------
+        plot_type: str
+            Name of the plot
+        var_info: dict
+            Variable information from ESMValTool
+        file_type: str, optional
+            File extension to use
+        """
         info = {
             "plot_type": plot_type,
             'real_name': self._real_name(var_info['variable_group']),

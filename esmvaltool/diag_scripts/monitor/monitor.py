@@ -1,4 +1,5 @@
-"""Diagnostic to plot preprocessor output"""
+"""Diagnostic to plot preprocessor output."""
+
 import calendar
 import logging
 
@@ -8,25 +9,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 from esmvalcore.preprocessor import climate_statistics
 from iris.coords import AuxCoord
-from mapgenerator.plotting.plotmap import PlotMap
-from mapgenerator.plotting.timeseries import PlotSeries
-from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import group_metadata
+from mapgenerator.plotting.plotmap import PlotMap
+from mapgenerator.plotting.timeseries import PlotSeries
 
 logger = logging.getLogger(__name__)
 
 
 class Monitor(MonitorBase):
-    """"""
+    """Diagnostic to plot preprocessor output."""
+
     def __init__(self, config):
         super().__init__(config)
         self.plots = config.get('plots', {})
 
     def compute(self):
-        """Main plotting method"""
+        """Main plotting method."""
         for module in ['matplotlib', 'fiona']:
             module_logger = logging.getLogger(module)
             module_logger.setLevel(logging.WARNING)
@@ -46,8 +48,6 @@ class Monitor(MonitorBase):
                 self.plot_monthly_climatology(cube, var_info)
                 self.plot_seasonal_climatology(cube, var_info)
                 self.plot_climatology(cube, var_info)
-                self.plot_vertical_profile(cube, var_info)
-                self.plot_zonal(cube, var_info)
 
     @staticmethod
     def _add_month_name(cube):
@@ -72,7 +72,7 @@ class Monitor(MonitorBase):
 
     def timeseries(self, cube, var_info):
         """
-        Plot timeseries according to configuration
+        Plot timeseries according to configuration.
 
         The key 'timeseries' must be passed to the 'plots' option in the
         configuration.
@@ -96,18 +96,18 @@ class Monitor(MonitorBase):
                 iris.Constraint(
                     year=lambda cell: cell <= (var_info[n.START_YEAR] + 50))),
                                  var_info,
-                                 type='start',
+                                 period='start',
                                  suptitle='First 50 years')
             self.plot_timeseries(cube.extract(
                 iris.Constraint(
                     year=lambda cell: cell >= (var_info[n.END_YEAR] - 50))),
                                  var_info,
-                                 type='end',
+                                 period='end',
                                  suptitle='Last 50 years')
 
     def plot_annual_cycle(self, cube, var_info):
         """
-        Plot the annual cycle according to configuration
+        Plot the annual cycle according to configuration.
 
         The key 'annual_cycle' must be passed to the 'plots' option in the
         configuration.
@@ -148,14 +148,14 @@ class Monitor(MonitorBase):
                 return
         plotter.plot_cube(cube, 'month', **options)
         self.record_plot_provenance(
-            self.get_plot_path(f'annualcycle', var_info, 'svg'),
+            self.get_plot_path('annualcycle', var_info, 'svg'),
             var_info,
             'Annual cycle',
         )
 
     def plot_monthly_climatology(self, cube, var_info):
         """
-        Plot the monthly climatology as a multipanel plot
+        Plot the monthly climatology as a multipanel plot.
 
         The key 'monclim' must be passed to the 'plots' option in the
         configuration.
@@ -167,10 +167,6 @@ class Monitor(MonitorBase):
         var_info: dict
             Variable's metadata from ESMValTool
 
-        Warning
-        -------
-        The monthly climatology is done inside the function so the users can
-        plot both the timeseries and the annual cycle in one go
         """
         if 'monclim' not in self.plots:
             return
@@ -193,30 +189,15 @@ class Monitor(MonitorBase):
                        dpi=120)
 
             for cube_slice in cube.slices_over('month_number'):
-                month = cube_slice.coord('month_number').points[0]
-                month_name = cube_slice.coord('month_name').points[0]
-                if months:
-                    index = months.index(month) + 1
-                else:
-                    if month == 12:
-                        index = 1
-                    else:
-                        index = month + 1
-                plot_map.plot_cube(
-                    cube_slice,
-                    save=False,
-                    subplot=(rows, columns, index),
-                    keep_aspect=True,
-                    title=month_name.decode(),
-                    **{
-                        **map_options,
-                        **variable_options
-                    },
-                )
+                self._plot_monthly_cube(plot_map, months, columns, rows,
+                                        map_options, variable_options,
+                                        cube_slice)
             plt.suptitle('{0.long_name} ({0.units})'.format(cube),
                          fontsize=plot_map.fontsize + 6.,
                          y=1.02)
-            filename = self.get_plot_path(f'monclim{map_name}', var_info, file_type='png')
+            filename = self.get_plot_path(f'monclim{map_name}',
+                                          var_info,
+                                          file_type='png')
             plt.savefig(
                 filename,
                 bbox_inches='tight',
@@ -230,7 +211,48 @@ class Monitor(MonitorBase):
                 region=map_name,
             )
 
+    def _plot_monthly_cube(self, plot_map, months, columns, rows, map_options,
+                           variable_options, cube_slice):
+        month = cube_slice.coord('month_number').points[0]
+        month_name = cube_slice.coord('month_name').points[0]
+        if months:
+            index = months.index(month) + 1
+        else:
+            if month == 12:
+                index = 1
+            else:
+                index = month + 1
+        plot_map.plot_cube(
+            cube_slice,
+            save=False,
+            subplot=(rows, columns, index),
+            keep_aspect=True,
+            title=month_name.decode(),
+            **{
+                **map_options,
+                **variable_options
+            },
+        )
+
     def plot_seasonal_climatology(self, cube, var_info):
+        """
+        Plot the seasonal climatology as a multipanel plot.
+
+        The key 'seasonclim' must be passed to the 'plots' option in the
+        configuration.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+            Data to plot. Must be 3D with latitude, longitude and month_number
+        var_info: dict
+            Variable's metadata from ESMValTool
+
+        Warning
+        -------
+        The seasonal climatology is done inside the function so the users can
+        plot both the monthly, seasonal and yearly climatologies in one go
+        """
         if 'seasonclim' not in self.plots:
             return
 
@@ -279,7 +301,8 @@ class Monitor(MonitorBase):
                 'Seasonal climatology\n{0.long_name} ({0.units})'.format(cube),
                 fontsize=plot_map.fontsize * 2)
             plt.subplots_adjust(bottom=.05, hspace=.3, left=.1, right=1)
-            filename = self.get_plot_path(f'seasonclim{map_name}', var_info, 'png')
+            filename = self.get_plot_path(f'seasonclim{map_name}', var_info,
+                                          'png')
             plt.savefig(
                 filename,
                 bbox_inches='tight',
@@ -294,6 +317,24 @@ class Monitor(MonitorBase):
             )
 
     def plot_climatology(self, cube, var_info):
+        """
+        Plot the climatology as a multipanel plot.
+
+        The key 'clim' must be passed to the 'plots' option in the
+        configuration.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+            Data to plot. Must be 3D with latitude, longitude and month_number
+        var_info: dict
+            Variable's metadata from ESMValTool
+
+        Warning
+        -------
+        The climatology is done inside the function so the users can
+        plot both the monthly, seasonal and yearly climatologies in one go
+        """
         if 'clim' not in self.plots:
             return
 
@@ -331,56 +372,9 @@ class Monitor(MonitorBase):
                 region=map_name,
             )
 
-    def plot_vertical_profile(self, cube, var_info):
-        if 'vertical_profile' not in self.plots:
-            return
-        self._add_month_name(cube)
-        plotter = PlotSeries(scaley="log")
-        plotter.filefmt = 'svg'
-        filename = self.get_plot_path('vertprofile', var_info, None)
-        plotter.img_template = filename
-        plotter.plot_size = (4., 8.)
-        plotter.multiplot_cube(
-            cube,
-            'depth',
-            'month_name',
-            ncols=3,
-            invert=True,
-            inverty=True,
-            sharex=True,
-            sharey=True,
-            suptitle='Monthly climatology vertical profiles')
-        self.record_plot_provenance(
-            filename,
-            var_info,
-            'Vertical profile',
-        )
-
-    def plot_zonal(self, cube, var_info):
-        if 'zonal' not in self.plots:
-            return
-        filename = self.get_plot_path('zonal', var_info, "png")
-        for basin_slice in cube.slices_over('region'):
-            logger.info(basin_slice)
-            plt.pcolormesh(
-                basin_slice.coord('grid_latitude').points,
-                basin_slice.coord('depth').points,
-                basin_slice.data,
-            )
-            plt.title('{0.long_name} ({0.units})'.format(cube), fontsize=14)
-            plt.suptitle('Zonal profile climatology', fontsize=14)
-        plt.subplots_adjust(bottom=.05, hspace=.3, left=.1, right=1)
-
-        plt.savefig(filename, bbox_inches='tight', pad_inches=.2)
-        self.record_plot_provenance(
-            filename,
-            var_info,
-            'Zonal section',
-        )
-
-
 
 def main():
+    """Execute diagnostic."""
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         Monitor(config).compute()
 

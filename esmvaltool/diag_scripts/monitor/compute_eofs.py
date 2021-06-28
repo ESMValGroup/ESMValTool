@@ -1,22 +1,33 @@
+"""
+Diagnostic to compute and plot the first EOF of an arbitrary input.
+
+It is part of the monitoring recipe.
+"""
 import logging
 
 import iris
 import matplotlib.pyplot as plt
 from eofs.iris import Eof
-from mapgenerator.plotting.plotmap import PlotMap
-from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 
 import esmvaltool.diag_scripts.shared
+from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import group_metadata
+from mapgenerator.plotting.plotmap import PlotMap
 
 logger = logging.getLogger(__name__)
 
 
 class Eofs(MonitorBase):
-    def __init__(self, config):
-        super().__init__(config)
+    """
+    Diagnostic to compute EOFs and plot them.
+
+    It is also an example on how to derive the monitor class to use its
+    plotting capabilities in diagnostics that can not be done using only the
+    preprocessor.
+    """
 
     def compute(self):
+        """Compute the diagnostic."""
         for module in ['matplotlib', 'fiona']:
             module_logger = logging.getLogger(module)
             module_logger.setLevel(logging.WARNING)
@@ -48,6 +59,7 @@ class Eofs(MonitorBase):
 
 
 def main():
+    """Main method."""
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         Eofs(config).compute()
 
