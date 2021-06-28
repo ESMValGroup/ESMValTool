@@ -59,8 +59,9 @@ def collect_files(in_dir, var, cfg):
         tar_file = os.path.basename(cfg['attributes']['source'])
         tar_file = os.path.join(in_dir, tar_file)
         if not os.path.isfile(tar_file):
-            logger.info('Input file %s is missing. Start download ... ',
-                        tar_file)
+            logger.info(
+                'Input file %s is missing (Requested space ~200Mb). Start download ... ',
+                tar_file)
             url_file = requests.get(cfg['attributes']['source'])
             open(tar_file, 'wb').write(url_file.content)
 
