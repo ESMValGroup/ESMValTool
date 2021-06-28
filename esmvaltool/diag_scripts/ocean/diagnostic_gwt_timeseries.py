@@ -601,12 +601,15 @@ def load_timeseries(cfg, short_names):
     assume only one model
     """
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
-#    if glob.glob(data_dict_shelve+'*'):
-#        print('loading:', data_dict_shelve )
-#        sh = shelve.open(data_dict_shelve)
-#        data_dict = sh['data_dict']
-#        sh.close()
-#        return data_dict
+    if glob.glob(data_dict_shelve+'*'):
+        print('loading:', data_dict_shelve )
+        #assert 0
+        sh = shelve.open(data_dict_shelve)
+        data_dict = sh['data_dict']
+        sh.close()
+        return data_dict
+    else:
+        data_dict = {}
 
     transforms = {
         'fgco2gt': ['fgco2', 'areacello'],
@@ -631,7 +634,7 @@ def load_timeseries(cfg, short_names):
         'fgco2gt_norm': ['fgco2gt', ],
         'fgco2gt_cumul': ['fgco2', 'areacello' ],
         'nbpgt_cumul' : ['nbp', 'areacella' ],
-        'tls': ['nbp', 'nbpgt', 'luegt']
+        # 'tls': ['nbp', 'nbpgt', 'luegt']
         }
 
     transforms_functions = {
@@ -666,7 +669,6 @@ def load_timeseries(cfg, short_names):
         if sn in transforms:
             short_names_to_load.extend(transforms[sn])
 
-    data_dict = {}
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('load_timeseries:\t%s', metadata_filename)
 
@@ -678,7 +680,8 @@ def load_timeseries(cfg, short_names):
 
             if short_name not in short_names_to_load:
                 continue
-
+            if data_dict.get((short_name, exp, ensemble), False):
+                continue
             cube = iris.load_cube(fn)
             #cube = diagtools.bgc_units(cube, short_name)
 
@@ -690,9 +693,10 @@ def load_timeseries(cfg, short_names):
 
     if 'luegt' in short_names_to_load or 'tls' in short_names_to_load:
         data_dict = load_luegt(cfg, data_dict)
-        if 'tls' in short_names_to_load:
-            data_dict = calc_tls(cfg, data_dict)
-
+        #if 'tls' in short_names_to_load:
+        #    data_dict = calc_tls(cfg, data_dict)
+        #    print(data_dict.keys())
+        #    assert 0
     #print(short_names_to_load)
 
     if set(['emissions', 'cumul_emissions']) & set(short_names_to_load):
@@ -714,7 +718,7 @@ def load_timeseries(cfg, short_names):
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
-                if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
+                if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls']:
                      continue
                 cubes.append(cube)
 
@@ -724,6 +728,10 @@ def load_timeseries(cfg, short_names):
                 data_dict[(short_name, exp, 'ensemble_mean')] = cubes[0]
             else:
                 data_dict[(short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
+
+    if 'tls' in short_names_to_load:
+        data_dict = calc_tls(cfg, data_dict)
+        print(data_dict.keys())
 
     print('saving::', data_dict_shelve )
     sh = shelve.open(data_dict_shelve)
@@ -987,7 +995,7 @@ def load_emissions_forcing(cfg, data_dict):
 
 def calc_tls(cfg, data_dict):
     """
-    Load Total Land Sink by adding Land Use Emissions from file and nbp
+    Load True  Land Sink by adding Land Use Emissions from file and nbp
     Net biome production.
     """
     exps = {'ssp119':True, 'ssp126':True, 'ssp245':True, 'ssp370':True, 'ssp585':True, 'historical':True}
@@ -999,23 +1007,28 @@ def calc_tls(cfg, data_dict):
     tmp_data_dict = {}
     short = 'tls'
     for (short, exp, ensemble), cube in data_dict.items():
+        print('calc_tls:',(short, exp, ensemble))
         if short not in ['nbpgt', ]: # 'nbpgt_cumul']:
              continue
         times = diagtools.cube_time_to_float(cube)
         data = cube.data.copy()
-        nbp_dict = {int(t):d for zip(times, data)}
-        luegt_dict = data_dict[('luegt', exp, ensemble)]
+        nbp_dict = {int(t):d for t,d in zip(times, data)}
+        luegt_dict = data_dict.get(('luegt', exp, ensemble), False)
+        if not luegt_dict: continue
         for t, d in zip(luegt_dict['time'], luegt_dict['luegt']):
-            if t not in nbp_dict: assert 0
+            #rint(t,d, nbp_dict.get(t, nbp_dict.get(int(t), False)))
+            if not nbp_dict.get(t, nbp_dict.get(int(t), False)):
+                print('error:', (short, exp, ensemble), t, 'not in', nbp_dict.keys()) 
+                continue 
             nbp_dict[int(t)] += d
 
         new_times = np.array(sorted(nbp_dict.keys()))
-        new_data = np.array([nbp_dict(t) for t in new_times])
+        new_data = np.array([nbp_dict[t] for t in new_times])
 
         tmp_data_dict[('tls', exp, ensemble)] = {'time':new_times+0.5, 'tls': new_data }
 
-    print(tmp_data_dict.keys())
-    assert 0
+    print(tmp_data_dict.keys(), tmp_data_dict)
+    if not len(tmp_data_dict): assert 0
     data_dict.update(tmp_data_dict)
     return data_dict
 
@@ -1130,6 +1143,7 @@ def get_long_name(name):
         'emissions' : 'Anthropogenic emissions',
         'cumul_emissions': 'Cumulative Anthropogenic emissions',
         'luegt': 'Land Use Emissions',
+        'tls': 'True Land Sink',
         'rh': 'Heterotrophic respiration',
         'intpp' : 'Marine Primary Production',
         'intdic' : 'Dissolved Inorganic Carbon',
@@ -1229,6 +1243,13 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         ##print('co2:', data_dict.get(('co2', exp_1, ensemble_1), 'Not Found'))
         #print('tas:', data_dict.get(('tas', exp_1, ensemble_1), 'Not Found'))
 
+    label_dicts = {
+        'co2': ' '.join(['Atmospheric co2, ppm']),
+        'emissions': ' '.join(['Anthropogenic emissions, Pg/yr']),
+        'cumul_emissions': ' '.join(['Cumulative Anthropogenic emissions, Pg']),
+        'luegt': ' '.join(['Land use emissions, Pg']),
+        'tls': ' '.join(['True Land Sink, Pg']),
+    }
     for exp_1, ensemble_1 in product(exps, ensembles):
 
         x_data, y_data = [], []
@@ -1253,23 +1274,11 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                     x_data = cube['time']
                     x_times = x_data.copy()
                     print('setting x time to ',short_name, exp, ensemble)
-            elif x == short_name and x in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
+            elif x == short_name and x in label_dicts.keys():
                 x_data = cube[x].copy()
                 x_times = cube['time'].copy()
                 print('setting x time to ',short_name, exp, ensemble)
-                if x == 'co2':
-                    x_label = ' '.join(['Atmospheric co2, ppm'])
-                if x == 'emissions':
-                    x_label = ' '.join(['Anthropogenic emissions, Pg/yr'])
-                if x == 'cumul_emissions':
-                    x_label = ' '.join(['Cumulative Anthropogenic emissions, Pg'])
-                if x == 'luegt':
-                    x_label = ' '.join(['Lamd use emissions, Pg'])
-            elif x == short_name == 'co2':
-                x_data = cube['co2'].copy()
-                x_times = cube['time'].copy()
-                print('setting x time to ',short_name, exp, ensemble)
-                x_label = ' '.join(['Atmospheric co2, ppm'])
+                x_label = label_dicts[x]
 
             elif short_name == x:
                 x_data = np.array(cube.data.copy())
@@ -1280,19 +1289,14 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             if y == 'time':
                 print('what kind of crazy person plots time on y axis?')
                 assert 0
-            elif y == short_name and y in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
+            elif y == short_name and y in label_dicts.keys():
+                #['co2', 'emissions', 'cumul_emissions', 'luegt']:
                 y_data = cube[y].copy()
                 y_times = cube['time'].copy()
+                y_label = label_dicts[y]
                 print('setting y time to ',short_name, exp, ensemble)
-                if y == 'co2':
-                    y_label = ' '.join(['Atmospheric co2, ppm'])
-                if y == 'emissions':
-                    y_label = ' '.join(['Anthropogenic emissions, Pg/yr'])
-                if y == 'cumul_emissions':
-                    y_label = ' '.join(['Cumulative Anthropogenic emissions, Pg'])
-                if y == 'luegt':
-                    y_label = ' '.join(['Lamd use emissions, Pg'])
             elif short_name == y:
+                print(short_name, 'is a cube for y ts plot..')
                 y_data = cube.data.copy()
                 y_times = diagtools.cube_time_to_float(cube)
                 print('setting y time to ',short_name, exp, ensemble, y_data)
@@ -1665,8 +1669,8 @@ def main(cfg):
 
     #jobtype = 'land'
     short_names, short_names_x, short_names_y = [], [], []
-    #jobtype = 'debug'
-    jobtype = 'bulk'
+    jobtype = 'debug'
+    #jobtype = 'bulk'
 
     #jobtype = 'cumulative_plot'
 
@@ -1709,8 +1713,7 @@ def main(cfg):
         short_names = [
                        'emissions', 'cumul_emissions',
                        'tas',
-                       'nbpgt',
-                       'nbpgt_cumul',
+                       'nbp', 'nbpgt', 'nbpgt_cumul',
                        'gpp', 'gppgt',
                        #'fgco2','fgco2gt', 'fgco2gt_cumul',
                        #'bgc', 'bgcgt',
@@ -1761,7 +1764,7 @@ def main(cfg):
             #continue
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
-            if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt']:
+            if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls']:
                 data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
