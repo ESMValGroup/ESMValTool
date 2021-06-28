@@ -22,7 +22,6 @@ class MonitorBase():
     It contains the common methods for path creation, provenance recording,
     option parsing and to create some common plots.
     """
-
     def __init__(self, config):
         self.cfg = config
         self.plot_folder = config.get(

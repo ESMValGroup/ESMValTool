@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 class Monitor(MonitorBase):
     """Diagnostic to plot preprocessor output."""
-
     def __init__(self, config):
         super().__init__(config)
         self.plots = config.get('plots', {})
@@ -63,13 +62,10 @@ class Monitor(MonitorBase):
                 cube.coord_dims(month_number))
             points = np.empty(month_number.shape, dtype='|S3')
             for m in range(1, 13):
-                points[month_number.points ==
-                       m] = str(calendar.month_name[m].upper())
+                points[month_number.points == m] = str(
+                    calendar.month_name[m].upper())
             cube.add_aux_coord(
-                AuxCoord(
-                    points=points,
-                    var_name='month', long_name='month'
-                ),
+                AuxCoord(points=points, var_name='month', long_name='month'),
                 cube.coord_dims(month_number))
             return
 
@@ -365,9 +361,10 @@ class Monitor(MonitorBase):
                                    **map_options,
                                    **variable_options
                                })
-            plt.suptitle(f'Climatology ({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})',
-                         y=map_options.get('suptitle_pos', 0.9),
-                         fontsize=plot_map.fontsize + 4)
+            plt.suptitle(
+                f'Climatology ({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})',
+                y=map_options.get('suptitle_pos', 0.9),
+                fontsize=plot_map.fontsize + 4)
             filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')
             plt.savefig(filename,
                         bbox_inches='tight',
