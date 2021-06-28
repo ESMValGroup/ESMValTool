@@ -7,15 +7,16 @@ import iris
 import iris.coord_categorisation
 import matplotlib.pyplot as plt
 import numpy as np
-from esmvalcore.preprocessor import climate_statistics
 from iris.coords import AuxCoord
+from mapgenerator.plotting.plotmap import PlotMap
+from mapgenerator.plotting.timeseries import PlotSeries
 
+from esmvalcore.preprocessor import climate_statistics
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import group_metadata
-from mapgenerator.plotting.plotmap import PlotMap
-from mapgenerator.plotting.timeseries import PlotSeries
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,17 +54,17 @@ class Monitor(MonitorBase):
         if cube.coords('month_number'):
             month_number = cube.coord('month_number')
             points = np.empty(month_number.shape, dtype='|S12')
-            for m in range(1, 13):
-                points[month_number.points == m] = calendar.month_name[m]
+            for i in range(1, 13):
+                points[month_number.points == i] = calendar.month_name[i]
             cube.add_aux_coord(
                 AuxCoord(points=points,
                          var_name='month_name',
                          long_name='month_name'),
                 cube.coord_dims(month_number))
             points = np.empty(month_number.shape, dtype='|S3')
-            for m in range(1, 13):
-                points[month_number.points == m] = str(
-                    calendar.month_name[m].upper())
+            for i in range(1, 13):
+                points[month_number.points == i] = str(
+                    calendar.month_name[i].upper())
             cube.add_aux_coord(
                 AuxCoord(points=points, var_name='month', long_name='month'),
                 cube.coord_dims(month_number))
@@ -215,7 +216,8 @@ class Monitor(MonitorBase):
         cube.remove_coord('month')
         cube.remove_coord('month_name')
 
-    def _plot_monthly_cube(self, plot_map, months, columns, rows, map_options,
+    @staticmethod
+    def _plot_monthly_cube(plot_map, months, columns, rows, map_options,
                            variable_options, cube_slice):
         month = cube_slice.coord('month_number').points[0]
         month_name = cube_slice.coord('month_name').points[0]
@@ -362,7 +364,8 @@ class Monitor(MonitorBase):
                                    **variable_options
                                })
             plt.suptitle(
-                f'Climatology ({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})',
+                f'Climatology ({var_info[n.START_YEAR]}'
+                f'-{var_info[n.END_YEAR]})',
                 y=map_options.get('suptitle_pos', 0.9),
                 fontsize=plot_map.fontsize + 4)
             filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')

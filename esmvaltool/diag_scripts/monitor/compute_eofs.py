@@ -6,13 +6,13 @@ It is part of the monitoring recipe.
 import logging
 
 import iris
-import matplotlib.pyplot as plt
 from eofs.iris import Eof
+import matplotlib.pyplot as plt
+from mapgenerator.plotting.plotmap import PlotMap
 
 import esmvaltool.diag_scripts.shared
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import group_metadata
-from mapgenerator.plotting.plotmap import PlotMap
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +52,10 @@ class Eofs(MonitorBase):
                             dpi=plot_map.dpi)
                 plt.close(plt.gcf())
                 filename = self.get_plot_path('pc', var_info)
-                pc = solver.pcs(npcs=1, pcscaling=1)[:, 0]
-                pc.long_name = var_info.get('pc_name', pc.long_name)
-                pc.standard_name = None
-                self.plot_cube(pc, filename)
+                pcomp = solver.pcs(npcs=1, pcscaling=1)[:, 0]
+                pcomp.long_name = var_info.get('pc_name', pcomp.long_name)
+                pcomp.standard_name = None
+                self.plot_cube(pcomp, filename)
 
 
 def main():

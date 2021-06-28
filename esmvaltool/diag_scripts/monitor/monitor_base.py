@@ -2,15 +2,15 @@
 
 import logging
 import os
+import yaml
 
 import cartopy
 import matplotlib.pyplot as plt
-import yaml
-from esmvalcore._data_finder import _replace_tags
 from iris.analysis import MEAN
-
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
 from mapgenerator.plotting.timeseries import PlotSeries
+
+from esmvalcore._data_finder import _replace_tags
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +112,8 @@ class MonitorBase():
             )
             provenance_logger.log(filename, prov)
 
-    def plot_cube(self, cube, filename, linestyle='-', **kwargs):
+    @staticmethod
+    def plot_cube(cube, filename, linestyle='-', **kwargs):
         """
         Plot a timeseries from a cube.
 
@@ -132,8 +133,9 @@ class MonitorBase():
                     return
         plotter.plot_cube(cube, linestyle=linestyle, **kwargs)
 
-    def get_provenance_record(self, ancestor_files, **kwargs):
-        """Create a provenance record describing the diagnostic data and plot."""
+    @staticmethod
+    def get_provenance_record(ancestor_files, **kwargs):
+        """Create provenance record for the diagnostic data and plots."""
         record = {
             'authors': [
                 'vegas-regidor_javier',
