@@ -20,9 +20,11 @@ from core_functions import (
 )
 from io_functions import (
     log_provenance,
-    read_input_data,
     read_metadata,
     read_model_data,
+    read_model_data_ancestor,
+    read_observation_data,
+    read_observation_data_ancestor,
 )
 
 from esmvaltool.diag_scripts.shared import (
@@ -32,13 +34,6 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-def read_observation_data(datasets: list) -> tuple:
-    """Load observation data from list of metadata."""
-    return read_input_data(datasets,
-                           dim='obs_ensemble',
-                           identifier_fmt='{dataset}')
 
 
 def aggregate_obs_data(data_array: 'xr.DataArray',
@@ -237,8 +232,12 @@ def main(cfg):
     for variable_group in independence_contributions:
 
         logger.info('Reading model data for %s', variable_group)
-        datasets_model = models[variable_group]
-        model_data, model_data_files = read_model_data(datasets_model)
+        if variable_group.endswith("_ANOM"):
+            model_data, model_data_files = read_model_data_ancestor(
+                cfg, variable_group)
+        else:
+            datasets_model = models[variable_group]
+            model_data, model_data_files = read_model_data(datasets_model)
 
         logger.info('Calculating independence for %s', variable_group)
         independence = calculate_model_distances(model_data)
@@ -251,12 +250,20 @@ def main(cfg):
     for variable_group in performance_contributions:
 
         logger.info('Reading model data for %s', variable_group)
-        datasets_model = models[variable_group]
-        model_data, model_data_files = read_model_data(datasets_model)
+        if variable_group.endswith("_ANOM"):
+            model_data, model_data_files = read_model_data_ancestor(
+                cfg, variable_group)
+        else:
+            datasets_model = models[variable_group]
+            model_data, model_data_files = read_model_data(datasets_model)
 
         logger.info('Reading observation data for %s', variable_group)
         datasets_obs = observations[variable_group]
-        obs_data, obs_data_files = read_observation_data(datasets_obs)
+        if variable_group.endswith("_ANOM"):
+            obs_data, obs_data_files = read_observation_data_ancestor(
+                cfg, variable_group)
+        else:
+            obs_data, obs_data_files = read_observation_data(datasets_obs)
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
         logger.info('Calculating performance for %s', variable_group)
