@@ -6,7 +6,7 @@ filename: '{raw_name}_WFDE5_{reference}_*_v1.1.nc'
 attributes:
   dataset_id: WFDE5
   version: 'v1.1'
-  tier: 3
+  tier: 2
   modeling_realm: ground
   project_id: OBS
   source: 'https://doi.org/10.24381/cds.20d54e34'
