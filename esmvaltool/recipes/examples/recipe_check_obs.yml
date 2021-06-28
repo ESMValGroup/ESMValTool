@@ -775,6 +775,21 @@ diagnostics:
     scripts: null
 
 
+  CLARA-AVHRR:
+    description: CLARA-AVHRR check
+    variables:
+      clt:
+        mip: Amon
+      clivi:
+        mip: Amon
+      lwp:
+        mip: Amon
+    additional_datasets:
+      - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
+         type: sat, version: V002_01, start_year: 1982, end_year: 2018}
+    scripts: null
+
+
   ERA-Interim:
     description: ERA-Interim check
     variables:
