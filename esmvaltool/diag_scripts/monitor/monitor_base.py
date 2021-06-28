@@ -70,7 +70,7 @@ class MonitorBase():
           average along the raw series
         - For more than ten years, it plots the 12-month and 10-years rolling
           averages and not the raw series
-        """"
+        """
         if 'xlimits' not in kwargs:
             kwargs['xlimits'] = 'auto'
         length = cube.coord("year").points.max() - cube.coord(

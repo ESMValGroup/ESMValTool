@@ -64,9 +64,12 @@ class Monitor(MonitorBase):
             points = np.empty(month_number.shape, dtype='|S3')
             for m in range(1, 13):
                 points[month_number.points ==
-                       m] = calendar.month_name[m].upper()
+                       m] = str(calendar.month_name[m].upper())
             cube.add_aux_coord(
-                AuxCoord(points=points, var_name='month', long_name='month'),
+                AuxCoord(
+                    points=points,
+                    var_name='month', long_name='month'
+                ),
                 cube.coord_dims(month_number))
             return
 
@@ -192,9 +195,12 @@ class Monitor(MonitorBase):
                 self._plot_monthly_cube(plot_map, months, columns, rows,
                                         map_options, variable_options,
                                         cube_slice)
-            plt.suptitle('{0.long_name} ({0.units})'.format(cube),
-                         fontsize=plot_map.fontsize + 6.,
-                         y=1.02)
+            plt.suptitle(
+                'Monthly climatology '
+                f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})'
+                f'\n{cube.long_name} ({cube.units})',
+                fontsize=plot_map.fontsize + 6.,
+                y=1.02)
             filename = self.get_plot_path(f'monclim{map_name}',
                                           var_info,
                                           file_type='png')
@@ -210,6 +216,8 @@ class Monitor(MonitorBase):
                 'Monthly climatology',
                 region=map_name,
             )
+        cube.remove_coord('month')
+        cube.remove_coord('month_name')
 
     def _plot_monthly_cube(self, plot_map, months, columns, rows, map_options,
                            variable_options, cube_slice):
@@ -298,7 +306,9 @@ class Monitor(MonitorBase):
                 )
             plt.tight_layout()
             plt.suptitle(
-                'Seasonal climatology\n{0.long_name} ({0.units})'.format(cube),
+                'Seasonal climatology  '
+                f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})\n'
+                f'{cube.long_name} ({cube.units})',
                 fontsize=plot_map.fontsize * 2)
             plt.subplots_adjust(bottom=.05, hspace=.3, left=.1, right=1)
             filename = self.get_plot_path(f'seasonclim{map_name}', var_info,
@@ -315,6 +325,7 @@ class Monitor(MonitorBase):
                 'Seasonal climatology',
                 region=map_name,
             )
+        cube.remove_coord('season')
 
     def plot_climatology(self, cube, var_info):
         """
@@ -354,9 +365,7 @@ class Monitor(MonitorBase):
                                    **map_options,
                                    **variable_options
                                })
-            start = cube.coord('time').bounds.min()
-            end = cube.coord('time').bounds.max()
-            plt.suptitle(f'Climatology ({start} - {end})',
+            plt.suptitle(f'Climatology ({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})',
                          y=map_options.get('suptitle_pos', 0.9),
                          fontsize=plot_map.fontsize + 4)
             filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')
