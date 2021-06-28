@@ -41,7 +41,7 @@ class Eofs(MonitorBase):
                             dpi=plot_map.dpi)
                 plt.close(plt.gcf())
                 filename = self.get_plot_path('pc', var_info)
-                pc = solver.pcs(npcs=1)[:, 0]
+                pc = solver.pcs(npcs=1, pcscaling=1)[:, 0]
                 pc.long_name = var_info.get('pc_name', pc.long_name)
                 pc.standard_name = None
                 self.plot_cube(pc, filename)

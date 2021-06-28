@@ -313,7 +313,9 @@ class Monitor(MonitorBase):
                                    **map_options,
                                    **variable_options
                                })
-            plt.suptitle('Climatology',
+            start = cube.coord('time').bounds.min()
+            end = cube.coord('time').bounds.max()
+            plt.suptitle(f'Climatology ({start} - {end})',
                          y=map_options.get('suptitle_pos', 0.9),
                          fontsize=plot_map.fontsize + 4)
             filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')
