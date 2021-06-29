@@ -1,0 +1,18 @@
+# ESMValTool
+# recipe_radiation_budget.yml
+---
+documentation:
+  description:
+    The radiation budget defines which factors have more uncertainties compared
+    with observations and statistics from other models to figure out where the
+    imbalance of fluxes (between the atmosphere and surface of the model)
+    comes from, because it is linked with the hydrological cycle and climate
+    change.
+  authors:
+    - lillis_jon
+
+diagnostics:
+  radiation_budget:
+    scripts:
+      radiation_budget:
+        script: radiation_budget/radiation_budget.py
