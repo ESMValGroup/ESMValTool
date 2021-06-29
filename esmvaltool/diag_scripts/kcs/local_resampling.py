@@ -364,13 +364,14 @@ def _recombine(segments, combinations):
                                coords={'segment': range(n_segments)})
 
         # Recombine the segments using the indexer
-        resample = segments.sel(ensemble_member=indexer).mean('segment')
+        resample = segments.sel(ensemble_member=indexer).mean('segment', keep_attrs=True)
         new_climates.append(resample)
     return xr.concat(new_climates, dim='sample')
 
 
-def _get_climatology(cfg, scenario_name, table):
-    """Determine the change in <variable> PDF of each scenario."""
+def _get_climatology(cfg, scenario_name, table, prov=None):
+    """Determine the change in <variable> PDF of each scenario.
+    Save the resampled climates of each scenario to nc files."""
     dataset, _ = _get_data_target_model(cfg)
 
     future = cfg['scenarios'][scenario_name]['resampling_period']
@@ -379,6 +380,29 @@ def _get_climatology(cfg, scenario_name, table):
 
     resampled_control = _recombine(segments_control, table['control'])
     resampled_future = _recombine(segments_future, table['future'])
+    # Store the resampled climates
+    filename = get_diagnostic_filename(f'resampled_control_{scenario_name}',
+                                        cfg,
+                                        extension='nc')
+    resampled_control.to_netcdf(filename)
+    LOGGER.info("Created control resamples for scenario %s: \n %s", scenario_name,
+                table)
+    LOGGER.info('Output stored as %s', filename)
+    # # Write provenance information
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, prov)
+    
+        # Store the resampled climates
+    filename = get_diagnostic_filename(f'resampled_future_{scenario_name}',
+                                        cfg,
+                                        extension='nc')
+    resampled_future.to_netcdf(filename)
+    LOGGER.info("Created future resamples for scenario %s: \n %s", scenario_name,
+                table)
+    LOGGER.info('Output stored as %s', filename)
+        # Write provenance information
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(filename, prov)
 
     quantiles = [.05, .1, .25, .5, .75, .90, .95]
     qcontrol = resampled_control.groupby('time.season').quantile(
@@ -391,7 +415,7 @@ def _get_climatology(cfg, scenario_name, table):
     return xr.merge([qchange_tas, qchange_pr])
 
 
-def make_plots(cfg, scenario_tables):
+def make_plots(cfg, scenario_tables, prov=None):
     """Reproduce figure 5 from the paper."""
     # Note that quantile is applied twice! Once to get the pdf's of seasonal
     # tas/pr and once to get the multimodel pdf of the quantile changes
@@ -455,8 +479,8 @@ def main(cfg):
 
     # Step 4: plot the results
     if cfg['write_plots']:
-        make_plots(cfg, scenarios)
-
+        make_plots(cfg, scenarios, prov=provenance)
+    #resampled climates will only be saved if write_plots == True
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
