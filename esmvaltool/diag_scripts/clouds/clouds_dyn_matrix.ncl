@@ -70,23 +70,29 @@ begin
 
   calcicefrac = new(3, logical)
   calctcwp = new(3, logical)
+  calcswclt = new(3, logical)
+  calclwclt = new(3, logical)
 
   calcicefrac = False
   calctcwp = False
+  calcswclt = False
+  calclwclt = False
 
   ; if present, replace special variables "columnicefrac" and "totalcwp" in
   ; list with variables used for variable derivation
 
   tmplist = (/var_x, var_y, var_z/)
-  checklist = (/"columnicefrac", "totalcwp"/)
-  substlist = (/"clivi", "lwp"/)
+  checklist = (/"columnicefrac", "totalcwp", "swcreclt", "lwcreclt"/)
+  substlist = (/(/"clivi", "lwp"/), (/"clivi", "lwp"/), (/"swcre", "clt"/), \
+                (/"lwcre", "clt"/)/)
   varstart = new(3, integer)
   varstart(0) = 0
 
   do i = 0, dimsizes(tmplist) - 1
     if (i .eq. 0) then
       if (any(checklist .eq. tmplist(i))) then
-        varlist = substlist
+        j = ind(checklist .eq. tmplist(i))
+        varlist = substlist(j, :)
         varstart(1) = 2
       else
         varlist = tmplist(i)
@@ -94,7 +100,8 @@ begin
       end if
     else
       if (any(checklist .eq. tmplist(i))) then
-        varlist := array_append_record(varlist, substlist, 0)
+        j = ind(checklist .eq. tmplist(i))
+        varlist := array_append_record(varlist, substlist(j, :), 0)
         if (i .lt. dimsizes(tmplist) - 1) then
           varstart(i + 1) = varstart(i) + 2
         end if
@@ -112,6 +119,12 @@ begin
       calcicefrac(i) = True
     else if (tmplist(i) .eq. checklist(1)) then
       calctcwp(i) = True
+    else if (tmplist(i) .eq. checklist(2)) then
+      calcswclt(i) = True
+    else if (tmplist(i) .eq. checklist(3)) then
+      calclwclt(i) = True
+    end if
+    end if
     end if
     end if
   end do
@@ -308,8 +321,9 @@ begin
     ListAppend(vars_list, z)
 
     do i = 0, 2
-      ; read second variable needed to derive icefrac / tcwp
-      if (calcicefrac(i) .or. calctcwp(i)) then
+      ; read second variable needed to derive icefrac/tcwp/swcreclt/lwcreclt
+      if (calcicefrac(i) .or. calctcwp(i) .or. calcswclt(i) .or. \
+          calclwclt(i)) then
         atts_list[i]@short_name = varlist(varstart(i) + 1)
         if (ii .eq. refidx_x) then
           atts_list[i]@dataset = refname(varstart(i) + 1)
@@ -351,6 +365,24 @@ begin
         vars_list[i] = vars_list[i] + var2
         vars_list[i]@long_name = "Condensed Water Path"
         vars_list[i]@var = "totalcwp"
+      end if
+
+      ; calculate swcre divided by cloud fraction
+
+      if (calcswclt(i)) then
+        var2 = where(var2 .le. 1.0e-6, var2@_FillValue, var2)
+        vars_list[i] = vars_list[i] / var2 * 100.0
+        vars_list[i]@long_name = "Shortwave cloud radiative effect / cloud cover"
+        vars_list[i]@var = "swcreclt"
+      end if
+
+      ; calculate swcre divided by cloud fraction
+
+      if (calclwclt(i)) then
+        var2 = where(var2 .le. 1.0e-6, var2@_FillValue, var2)
+        vars_list[i] = vars_list[i] / var2 * 100.0
+        vars_list[i]@long_name = "Longwave cloud radiative effect / cloud cover"
+        vars_list[i]@var = "lwcreclt"
       end if
 
       if (isvar("var2")) then
