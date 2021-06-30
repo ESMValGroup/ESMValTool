@@ -1605,7 +1605,67 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
 
 
 
-def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt', 
+
+
+def make_cumulative_timeseries(cfg, data_dict,
+      thresholds_dict,
+      ssp='historical-ssp126',
+      ensemble = 'ensemble_mean',
+      plot_type = 'simple_ts',
+      fig = None, gs = None, ax= None,
+):
+    """
+    Make a plot showing the time series of carbon allocation.
+    """
+    if None in [fig, ax]:
+        fig = plt.figure()
+        fig.set_size_inches(12, 6)
+        gs = gridspec.GridSpec(1, 1,figure=fig )# width_ratios=[1,1], wspace=0.5, hspace=0.5)
+        ax =  fig.add_subplot(gs[0, 0])
+        save = True
+    else:
+
+        save False
+    plt.sca(ax)
+
+    # load data.
+    data = {}
+    colours = {'cumul_emissions' = 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
+    if ensemble == 'ensemble_mean':
+        data['cumul_emissions'] = data_dict[('cumul_emissions', ssp, ensemble)]
+        data['fgco2gt_cumul'] = data_dict[(''fgco2gt_cumul'', ssp, ensemble)]
+        data['nbpgt_cumul'] = data_dict[('nbpgt_cumul', ssp, ensemble)]
+        data['tls'] = data_dict[('tls', ssp, ensemble)] # cube
+
+        # make it all look the same.
+        data['fgco2gt_cumul'] = {'time': diagtools.cube_time_to_float(data['fgco2gt_cumul']),
+                         'fgco2gt_cumul': ['fgco2gt_cumul'].data}
+        data['nbpgt_cumul'] = {'time': diagtools.cube_time_to_float(data['nbpgt_cumul']),
+                       'nbpgt_cumul': ['nbpgt_cumul'].data}
+
+    # plot simple time series:
+    if plot_type == 'simple_ts':
+        for key, dat in data.items():
+            plt.plot(dat['time'],
+                dat['key'],
+                lw=2,
+                color=colours[key],
+                label = key)
+        plt.legend()
+
+    # save plot.
+    if save:
+        image_extention = diagtools.get_image_format(cfg)
+        path = diagtools.folder([cfg['plot_dir'], 'allocation_timeseries'])
+        path += '_'.join(['allocation_timeseries', plot_type, ssp]) + image_extention
+        print('saving figure:', path)
+        plt.savefig(path)
+        plt.close()
+    else: return fig, ax
+
+
+
+def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt',
     LHS_panes = [{'x':'cumul_emissions', 'y':'tas_norm'}, ],
 ):
     """
@@ -1628,7 +1688,7 @@ def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 
         ax_ts =  fig.add_subplot(gs[:, 0])
 
         fig, ax = make_ts_figure(cfg, data_dict, thresholds_dict,
-            x=LHS_panes[0]['x'], 
+            x=LHS_panes[0]['x'],
             y=LHS_panes[0]['y'],
             markers='thresholds',
             draw_line=True,
@@ -1805,6 +1865,11 @@ def main(cfg):
         if jobtype == 'cumulative_plot':
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
+            make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp126',)
+            make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
+            make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='ssp126',)
+            assert 0
+
 
             LHS_panes = [
                 {'x':'time', 'y':'cumul_emissions'},
@@ -1817,7 +1882,9 @@ def main(cfg):
             ]
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
 
-            continue  
+
+
+            continue
             #continue
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
