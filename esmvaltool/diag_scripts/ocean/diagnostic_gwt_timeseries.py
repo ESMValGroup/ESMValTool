@@ -1606,6 +1606,21 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
 
 
 
+def zip_time(dict, key):
+    """
+    zip data_dict style dict into a time:value style dict.
+    """
+    out_dict = {t:d for t,d in zip(dict['time'], dict[key])}
+    return out_dict
+
+def unzip_time(dict):
+    """
+    zip data_dict style dict into a time:value style dict.
+    """
+    times = sorted(list(dict.keys()))
+    data = [dict[t] for t in times]
+    return times, data
+
 
 def make_cumulative_timeseries(cfg, data_dict,
       thresholds_dict,
@@ -1627,28 +1642,41 @@ def make_cumulative_timeseries(cfg, data_dict,
         save = False
     plt.sca(ax)
 
-    # load data.
-    data = {}
+   # load data.
+    cube_keys = ['fgco2gt_cumul', 'nbpgt_cumul']
     colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
-    if ensemble == 'ensemble_mean':
+    ensemble == 'ensemble_mean':
+        ensembles = ['ensemble_mean',]
+        
+    data = {k:{} for k in colours.keys()}
+    for ssp_it, ensemble, key in product(['historial', ssp], ensembles, colours.keys()):
+        tmp_data = data_dict[(key, ssp, ensemble)]
+        if key in cube_keys:
+            tmp_data[key] = {'time': diagtools.cube_time_to_float(tmp_data[key]),
+                                 key: tmp_data[key].data}
 
-        data['cumul_emissions'] = data_dict[('cumul_emissions', ssp, ensemble)]
-        data['fgco2gt_cumul'] = data_dict[('fgco2gt_cumul', ssp, ensemble)]
-       #print('fgco2gt_cumul',type(data['fgco2gt_cumul']),'\n\n:', data['fgco2gt_cumul'])
-        data['nbpgt_cumul'] = data_dict[('nbpgt_cumul', ssp, ensemble)]
-        data['tls'] = data_dict[('tls', ssp, ensemble)] # cube
+        tmp_data = zip_time(tmp_data, key)
+        data[key] = data[key] | tmp_data # combine two dicts (python 3.9 and later)
 
-        # make it all look the same.
-        data['fgco2gt_cumul'] = {'time': diagtools.cube_time_to_float(data['fgco2gt_cumul']),
-                         'fgco2gt_cumul': data['fgco2gt_cumul'].data}
-        data['nbpgt_cumul'] = {'time': diagtools.cube_time_to_float(data['nbpgt_cumul']),
-                       'nbpgt_cumul': data['nbpgt_cumul'].data}
+       #  data['cumul_emissions'] = data_dict[('cumul_emissions', ssp, ensemble)]
+       #  data['fgco2gt_cumul'] = data_dict[('fgco2gt_cumul', ssp, ensemble)]
+       # #print('fgco2gt_cumul',type(data['fgco2gt_cumul']),'\n\n:', data['fgco2gt_cumul'])
+       #  data['nbpgt_cumul'] = data_dict[('nbpgt_cumul', ssp, ensemble)]
+       #  data['tls'] = data_dict[('tls', ssp, ensemble)] # cube
+       #
+       #  # make it all look the same.
+       #  data['fgco2gt_cumul'] = {'time': diagtools.cube_time_to_float(data['fgco2gt_cumul']),
+       #                   'fgco2gt_cumul': data['fgco2gt_cumul'].data}
+       #  data['nbpgt_cumul'] = {'time': diagtools.cube_time_to_float(data['nbpgt_cumul']),
+       #                 'nbpgt_cumul': data['nbpgt_cumul'].data}
+
 
     # plot simple time series:
     if plot_type == 'simple_ts':
         for key, dat in data.items():
-            plt.plot(dat['time'],
-                dat[key],
+            times, dat_list = unzip_time(dat)
+            plt.plot(times,
+                dat_list,
                 lw=2,
                 color=colours[key],
                 label = key)
@@ -1866,11 +1894,10 @@ def main(cfg):
         if jobtype == 'cumulative_plot':
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
-            make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp126',)
+            make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='ssp126',)
             assert 0
-
 
             LHS_panes = [
                 {'x':'time', 'y':'cumul_emissions'},
