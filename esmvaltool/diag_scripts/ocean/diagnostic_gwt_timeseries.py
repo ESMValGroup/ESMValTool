@@ -1624,30 +1624,31 @@ def make_cumulative_timeseries(cfg, data_dict,
         ax =  fig.add_subplot(gs[0, 0])
         save = True
     else:
-
-        save False
+        save = False
     plt.sca(ax)
 
     # load data.
     data = {}
-    colours = {'cumul_emissions' = 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
+    colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
     if ensemble == 'ensemble_mean':
+
         data['cumul_emissions'] = data_dict[('cumul_emissions', ssp, ensemble)]
-        data['fgco2gt_cumul'] = data_dict[(''fgco2gt_cumul'', ssp, ensemble)]
+        data['fgco2gt_cumul'] = data_dict[('fgco2gt_cumul', ssp, ensemble)]
+       #print('fgco2gt_cumul',type(data['fgco2gt_cumul']),'\n\n:', data['fgco2gt_cumul'])
         data['nbpgt_cumul'] = data_dict[('nbpgt_cumul', ssp, ensemble)]
         data['tls'] = data_dict[('tls', ssp, ensemble)] # cube
 
         # make it all look the same.
         data['fgco2gt_cumul'] = {'time': diagtools.cube_time_to_float(data['fgco2gt_cumul']),
-                         'fgco2gt_cumul': ['fgco2gt_cumul'].data}
+                         'fgco2gt_cumul': data['fgco2gt_cumul'].data}
         data['nbpgt_cumul'] = {'time': diagtools.cube_time_to_float(data['nbpgt_cumul']),
-                       'nbpgt_cumul': ['nbpgt_cumul'].data}
+                       'nbpgt_cumul': data['nbpgt_cumul'].data}
 
     # plot simple time series:
     if plot_type == 'simple_ts':
         for key, dat in data.items():
             plt.plot(dat['time'],
-                dat['key'],
+                dat[key],
                 lw=2,
                 color=colours[key],
                 label = key)
@@ -1867,7 +1868,7 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp126',)
             make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
-            make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='ssp126',)
+            #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='ssp126',)
             assert 0
 
 
