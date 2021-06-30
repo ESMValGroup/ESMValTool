@@ -1008,7 +1008,7 @@ def calc_tls(cfg, data_dict):
     short = 'tls'
     for (short, exp, ensemble), cube in data_dict.items():
         print('calc_tls:',(short, exp, ensemble))
-        if short not in ['nbpgt', ]: # 'nbpgt_cumul']:
+        if short not in ['nbpgt_cumul', ]: # 'nbpgt_cumul']:
              continue
         times = diagtools.cube_time_to_float(cube)
         data = cube.data.copy()
@@ -1176,7 +1176,9 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     do_moving_average=True,
     ensemble_mean = False,
     fig=None,
-    ax=None,):
+    ax=None,
+    #short_time_range = False,
+    ):
     """
     make a 2D figure.
     x axis and y axis are determined by the short_names provuided in x and y
@@ -1524,7 +1526,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
 
                 emissions.append(cumul_emissions['cumul_emissions'][e_xpoint] - cumul_emissions['cumul_emissions'][e_baseline])
                 if isinstance(landc_cumul, dict):
-                    landcs.append(landc_cumul[land_carbon][n_xpoint] - landc_cumul[land_carbon]a[n_baseline])
+                    landcs.append(landc_cumul[land_carbon][n_xpoint] - landc_cumul[land_carbon][n_baseline])
                     fgco2gts.append(fgco2gt_cumul.data[f_xpoint] - landc_cumul[land_carbon][f_baseline])
                 else:
                     landcs.append(landc_cumul.data[n_xpoint] - landc_cumul.data[n_baseline])
@@ -1594,7 +1596,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
 
     if make_figure_here:
         image_extention = diagtools.get_image_format(cfg)
-        path = diagtools.folder([cfg['plot_dir'], 'barcharts'])
+        path = diagtools.folder([cfg['plot_dir'], 'barcharts', land_carbon])
         path += 'barchart_'+threshold + image_extention
         plt.savefig(path)
         plt.close()
@@ -1603,7 +1605,9 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
 
 
 
-def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt',):
+def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt', 
+    LHS_panes = [{'x':'cumul_emissions', 'y':'tas_norm'}, ],
+):
     """
     Make a specific kind of figure.
     land_carbon can be nbpgt or tls
@@ -1618,20 +1622,39 @@ def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 
     fig.set_size_inches(12, 6)
 
     gs = gridspec.GridSpec(3, 2,figure=fig, width_ratios=[1,1], wspace=0.5, hspace=0.5)
-    ax_ts =  fig.add_subplot(gs[:, 0])
+
+    # Get a big line graph on LHS.
+    if len(LHS_panes) ==1:
+        ax_ts =  fig.add_subplot(gs[:, 0])
+
+        fig, ax = make_ts_figure(cfg, data_dict, thresholds_dict,
+            x=LHS_panes[0]['x'], 
+            y=LHS_panes[0]['y'],
+            markers='thresholds',
+            draw_line=True,
+            do_moving_average=False,
+            ensemble_mean = True,
+            fig=fig,
+            ax = ax_ts,)
+
+    if len(LHS_panes) ==3:
+        for i, LHS_pane in enumerate(LHS_panes):
+            ax_ts =  fig.add_subplot(gs[i, 0])
+            fig, ax = make_ts_figure(cfg, data_dict, thresholds_dict,
+                x=LHS_pane['x'],
+                y=LHS_pane['y'],
+                markers='thresholds',
+                draw_line=True,
+                do_moving_average=False,
+                ensemble_mean = True,
+                fig=fig,
+                ax = ax_ts,)
+            if LHS_pane['x'] == 'time':
+                ax_ts.set_xlim([2000., 2100.])
+
     ax_4 =  fig.add_subplot(gs[0, 1])
     ax_3 =  fig.add_subplot(gs[1, 1])
     ax_2 =  fig.add_subplot(gs[2, 1])
-
-    # Get a big line graph on LHS.
-    fig, ax = make_ts_figure(cfg, data_dict, thresholds_dict,
-        x='cumul_emissions', y='tas_norm',
-        markers='thresholds',
-        draw_line=True,
-        do_moving_average=False,
-        ensemble_mean = True,
-        fig=fig,
-        ax = ax_ts,)
 
     # make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
     make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = land_carbon,fig=fig, ax=ax_2, do_legend=True)
@@ -1648,7 +1671,7 @@ def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 
 
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'emissions_figures'])
-    path += '_'.join(['emssions_figure', land_carbon]) + image_extention
+    path += '_'.join(['emssions_figure', land_carbon, str(len(LHS_panes))]) + image_extention
     plt.savefig(path)
     plt.close()
 
@@ -1699,6 +1722,10 @@ def main(cfg):
                        'tls', #true land sink = nbp + land-use emissions
                        ]
 
+        short_names_x = short_names.copy()
+        short_names_x.append('time')
+        short_names_y = short_names.copy()
+
     if jobtype == 'marine':
         short_names = ['tas', 'tas_norm', 'co2',
                        'npp', 'nppgt', 'rh', 'rhgt', 'exchange',
@@ -1722,7 +1749,7 @@ def main(cfg):
                        'luegt', #  land-use emissions gt
                        'tls', #true land sink = nbp + land-use emissions
                        ]
-        short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt', 'fgco2gt_cumul','nbpgt_cumul']
+        short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt', 'fgco2gt_cumul','nbpgt_cumul', 'tls', 'luegt']
         short_names_y = short_names.copy()
 
     if jobtype == 'debug':
@@ -1776,9 +1803,21 @@ def main(cfg):
         thresholds_dict = load_thresholds(cfg, data_dict)
 
         if jobtype == 'cumulative_plot':
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
+            #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
+            #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
 
+            LHS_panes = [
+                {'x':'time', 'y':'cumul_emissions'},
+                {'x':'time', 'y':'tls'},
+                {'x':'time', 'y':'fgco2gt_cumul'},
+
+                #{'x':'time', 'y':'tas_norm'},
+                #{'x':'time', 'y':'cumul_emissions'},
+                #{'x':'cumul_emissions', 'y':'tas_norm'},
+            ]
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
+
+            continue  
             #continue
 
         for (short_name, exp, ensemble),cube  in sorted(data_dict.items()):
