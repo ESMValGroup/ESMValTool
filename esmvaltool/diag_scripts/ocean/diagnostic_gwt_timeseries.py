@@ -610,7 +610,7 @@ def load_timeseries(cfg, short_names):
     assume only one model
     """
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
-    load_from_shelve=True 
+    load_from_shelve=True
     if load_from_shelve and glob.glob(data_dict_shelve+'*'):
         print('loading:', data_dict_shelve )
         #assert 0
@@ -1054,19 +1054,33 @@ def calc_tls(cfg, data_dict):
 def calc_atmos_carbon(cfg, data_dict):
     """
     Load remaining atmospheric carbon.
-    emissions_cumul - nbpgt_cumul - fgco2gt_cumul 
+    cumul_emissions - nbpgt_cumul - fgco2gt_cumul
     """
     tmp_data_dict = {}
     new_short = 'atmos_carbon'
-    for (short, exp, ensemble), cube in data_dict.items():
+    for (short, exp, ensemble), tmp_data in data_dict.items():
         print('calc_atmos_carbon:',(short, exp, ensemble))
-        if short not in ['emissions_cumul', ]:
-             continue
-    assert 0     
+        if short not in ['cumul_emissions', ]:
+            continue
+        # tmp_data = {time:times, 'cumul_emissions': dat}
+        tmp_data = zip_time(tmp_data, short)
+
+        # subtrack nbp & ocean carbon flux.
+        for cube_key in  ['fgco2gt_cumul', 'nbpgt_cumul']:
+            tmp_cube_data = data_dict[(cube_key, exp, ensemble)]
+            tmp_cube_data = {'time': diagtools.cube_time_to_float(tmp_cube_data),
+                             key: tmp_cube_data.data}
+            tmp_cube_data = zip_time(tmp_cube_data, cube_key)
+            for t,d in tmp_cube_data.items():
+                tmp_data[t] = tmp_data[t] - d
+
+        tmp_times, tmp_dat = unzip_time(tmp_data)
 
 
+        tmp_data_dict[(new_short, exp, ensemble)] = {'time': tmp_times, new_short: tmp_dat}
 
-
+    data_dict.update(tmp_data_dict)
+    return data_dict
 
 
 def load_luegt(cfg, data_dict):
@@ -1683,7 +1697,7 @@ def make_cumulative_timeseries(cfg, data_dict,
         ensembles = ['ensemble_mean',]
     if ssp[:3] == 'ssp':
          exps = ['historical', ssp, '-'.join(['historical', ssp])]
-        
+
     data = {k:{} for k in colours.keys()}
     for ssp_it, ensemble, key in product(exps, ensembles, colours.keys()):
         print('load data', (key, ssp_it, ensemble))
@@ -1706,7 +1720,7 @@ def make_cumulative_timeseries(cfg, data_dict,
         tmp_dat = tmp_dat - key_dat
 
     data['atmos'] = zip_time({'time':tmp_times, 'atmos':tmp_dat}, 'atmos')
-    colours['atmos'] = 'purple' 
+    colours['atmos'] = 'purple'
 
     thresholds = {}
     for ssp_it, ensemble in product(exps, ensembles, ):
@@ -1742,7 +1756,6 @@ def make_cumulative_timeseries(cfg, data_dict,
         plt.axhline(y=0., c='k', ls='--')
         if do_leg: plt.legend()
 
-
     # plot simple time series:
     if plot_type == 'area':
         colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
@@ -1766,7 +1779,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             lw=2,
             color=colours['fgco2gt_cumul'])
 
-        # land: 
+        # land:
         plt.plot(
             lat,
             -1.*(lad + ond),
@@ -1796,7 +1809,6 @@ def make_cumulative_timeseries(cfg, data_dict,
         plt.axhline(y=0., c='k', ls='--')
         if do_leg: plt.legend()
 
-
     # plot simple time series:
     if plot_type in ['pc', 'triple'] :
         colours = {'cumul_emissions': 'grey', 'fgco2gt_cumul':'blue', 'nbpgt_cumul':'orange', 'tls':'green'}
@@ -1825,7 +1837,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             water_land_line,
             color=colours['fgco2gt_cumul'])
 
-        # land: 
+        # land:
         plt.plot([],[],
             lw=6,
             color=colours['tls'],
@@ -1849,7 +1861,7 @@ def make_cumulative_timeseries(cfg, data_dict,
             lw=2,
             color=colours['cumul_emissions'])
 
-        plt.axhline(y=0., c='k', ls='--')  
+        plt.axhline(y=0., c='k', ls='--')
         ax.set_ylabel('Percentage')
         #x.set_xlim([2010., 2100])
         ax.set_ylim([0., 100.])
@@ -1861,9 +1873,9 @@ def make_cumulative_timeseries(cfg, data_dict,
         print('adding threshold lineL', thres, dt)
         if dt is None: continue
         plt.axvline(x=float(dt.year)+0.5, c='k', ls=':' )
-        x = float(dt.year) +0.02 *(np.max(ax.get_xlim()) - np.min(ax.get_xlim())) 
+        x = float(dt.year) +0.02 *(np.max(ax.get_xlim()) - np.min(ax.get_xlim()))
         y = np.max(ax.get_ylim())- 0.11 * (np.max(ax.get_ylim()) - np.min(ax.get_ylim()))
-        
+
         plt.text(x, y, 'GWT: ' +str(thres), ha='right', va='top', rotation=90) #fontsize=8, fontweight='bold',rotation=90)
 
     plt.title(ssp_title_dict.get(ssp, None))
@@ -1914,7 +1926,7 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
     print('saving figure:', path)
     plt.savefig(path)
     plt.close()
-    
+
 
 
 
@@ -2033,6 +2045,7 @@ def main(cfg):
                        'fgco2','fgco2gt', 'fgco2gt_cumul',
                        'luegt', #  land-use emissions gt
                        'tls', #true land sink = nbp + land-use emissions
+                       'atmos_carbon', # remant antrho carbon in atmosphere                       
                        ]
 
         short_names_x = short_names.copy()
@@ -2061,6 +2074,7 @@ def main(cfg):
                        'nbpgt_cumul'
                        'luegt', #  land-use emissions gt
                        'tls', #true land sink = nbp + land-use emissions
+                       'atmos_carbon', # remant antrho carbon in atmosphere
                        ]
         short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt', 'fgco2gt_cumul','nbpgt_cumul', 'tls', 'luegt']
         short_names_y = short_names.copy()
@@ -2127,7 +2141,7 @@ def main(cfg):
                 if pt == 'pair':
                    make_cumulative_timeseries_pair(cfg, data_dict,
                        thresholds_dict,
-                       ssp=exp, 
+                       ssp=exp,
                        ensemble = 'ensemble_mean')
                    continue
                 make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
