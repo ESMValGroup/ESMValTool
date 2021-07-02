@@ -1,7 +1,7 @@
 #!jinja2
 
 #Include the list of ESMValTool recipes to run
-%include test-recipes.rc
+%include example-recipes.rc
 
 #[meta]
 #	title = "Run all ESMValTool recipes"
