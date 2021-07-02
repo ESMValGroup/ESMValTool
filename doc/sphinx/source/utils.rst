@@ -119,26 +119,26 @@ Run all recipes
 ===============
 
 A cylc suite for running all recipes is available in
-`esmvaltool/utils/testing/regression <>`__
+`esmvaltool/utils/testing/regression <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/testing/regression>`__
 
 To prepare for using this tool:
 
-.# Log in to Mistral or another system that uses slurm
-.# Make sure the required CMIP and observational datasets are available and configured in config-user.yml
-.# Make sure the required auxiliary data is available (see recipe documentation)
-.# Install ESMValTool
-.# Update config-user.yml so it points to the right data locations
+#. Log in to Mistral or another system that uses slurm
+#. Make sure the required CMIP and observational datasets are available and configured in config-user.yml
+#. Make sure the required auxiliary data is available (see recipe documentation)
+#. Install ESMValTool
+#. Update config-user.yml so it points to the right data locations
 
 Next, get started with `cylc <https://cylc.github.io/cylc-doc/stable/html/tutorial.html>`_:
 
-.# Run ``module load cylc``
-.# Register the suite with cylc ``cylc register run-esmvaltool-recipes ~/ESMValTool/esmvaltool/utils/testing/regression``
-.# Edit the suite if needed, this allows e.g. choosing which recipes will be run
-.# Validate the suite ``cylc validate run-esmvaltool-recipes --verbose``, this will e.g. list the recipes in the suite
-.# Run all recipes ``cylc run run-esmvaltool-recipes``
-.# View progress ``cylc cat-log run-esmvaltool-recipes``, use e.g. ``cylc log run-all-esmvaltool-recipes examples-recipe_python_yml.1 --stdout`` to see the log of an individual esmvaltool run. Once the suite has finished running, you will see the message "WARNING - suite stalled" in the log. 
-.# Stop the cylc run once everything is done ``cylc stop run-esmvaltool-recipes``.
-
+#. Run ``module load cylc``
+#. Register the suite with cylc ``cylc register run-esmvaltool-recipes ~/ESMValTool/esmvaltool/utils/testing/regression``
+#. Edit the suite if needed, this allows e.g. choosing which recipes will be run
+#. Validate the suite ``cylc validate run-esmvaltool-recipes --verbose``, this will e.g. list the recipes in the suite
+#. Run all recipes ``cylc run run-esmvaltool-recipes``
+#. View progress ``cylc log run-esmvaltool-recipes``, use e.g. ``cylc log run-all-esmvaltool-recipes examples-recipe_python_yml.1 --stdout`` to see the log of an individual esmvaltool run. Once the suite has finished running, you will see the message "WARNING - suite stalled" in the log.
+#. Stop the cylc run once everything is done ``cylc stop run-esmvaltool-recipes``.
+#. Create the index.html overview page by running ``python esmvaltool/utils/testing/regression/summarize.py ~/esmvaltool_output/``
 
 Test recipe settings
 --------------------
