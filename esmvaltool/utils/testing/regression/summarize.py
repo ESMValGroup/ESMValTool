@@ -1,7 +1,7 @@
 """Write an index.html file in a directory containing recipe runs."""
 import argparse
+import datetime
 import textwrap
-from datetime import datetime
 from pathlib import Path
 
 
@@ -45,7 +45,7 @@ def get_runtime_from_debug(recipe_dir):
     end_date = None
     for line in lines[::-1]:
         try:
-            end_date = datetime.strptime(line[:19], fmt)
+            end_date = datetime.datetime.strptime(line[:19], fmt)
         except ValueError:
             pass
         else:
@@ -53,8 +53,9 @@ def get_runtime_from_debug(recipe_dir):
     if end_date is None:
         return None
 
-    start_date = datetime.strptime(lines[0][:19], fmt)
-    runtime = (end_date - start_date).total_seconds() / 60.
+    start_date = datetime.datetime.strptime(lines[0][:19], fmt)
+    runtime = end_date - start_date
+    runtime = datetime.timedelta(seconds=round(runtime.total_seconds()))
     return runtime
 
 
@@ -64,15 +65,15 @@ def get_resource_usage(recipe_dir):
 
     if not resource_usage or not resource_usage['Real time (s)']:
         runtime = get_runtime_from_debug(recipe_dir)
-        runtime = "" if runtime is None else f"{runtime:.1f}"
+        runtime = "" if runtime is None else f"{runtime}"
         return [runtime, '', '']
 
     runtime = resource_usage['Real time (s)'][-1]
     avg_cpu = resource_usage['CPU time (s)'][-1] / runtime * 100.
-    runtime /= 60.  # minutes
+    runtime = datetime.timedelta(seconds=round(runtime))
     memory = max(resource_usage['Memory (GB)'])
 
-    return [f"{runtime:.1f}", f"{memory:.1f}", f"{avg_cpu:.1f}"]
+    return [f"{runtime}", f"{memory:.1f}", f"{avg_cpu:.1f}"]
 
 
 def link(url, text):
@@ -103,8 +104,8 @@ def generate_summary(output_dir):
         "status",
         "recipe output",
         "run date",
-        "runtime (minutes)",
-        "max memory (GB)",
+        "run duration",
+        "estimated max memory (GB)",
         "average cpu",
     ]
     lines.append(tr(th(txt) for txt in column_titles))
@@ -117,7 +118,8 @@ def generate_summary(output_dir):
         entry = []
         entry.append('success' if success else 'failed')
         name = recipe_dir.name[:-16]
-        date = str(datetime.strptime(recipe_dir.name[-15:], "%Y%m%d_%H%M%S"))
+        date = str(
+            datetime.datetime.strptime(recipe_dir.name[-15:], "%Y%m%d_%H%M%S"))
         entry.append(link(recipe_dir.name, name))
         entry.append(date)
         entry.extend(resource_usage)
