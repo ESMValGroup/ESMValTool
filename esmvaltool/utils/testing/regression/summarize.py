@@ -113,15 +113,20 @@ def generate_summary(output_dir):
     for recipe_dir in sorted(Path(output_dir).glob('recipe_*')):
         log = recipe_dir / 'run' / 'main_log.txt'
         success = log.read_text().endswith('Run was successful\n')
+        if success:
+            status = 'success'
+        else:
+            debug_log = f"{recipe_dir.name}/run/main_log_debug.txt"
+            status = "failed (" + link(debug_log, 'debug') + ")"
+        name = recipe_dir.name[:-16]
+        date = datetime.datetime.strptime(recipe_dir.name[-15:],
+                                          "%Y%m%d_%H%M%S")
         resource_usage = get_resource_usage(recipe_dir)
 
         entry = []
-        entry.append('success' if success else 'failed')
-        name = recipe_dir.name[:-16]
-        date = str(
-            datetime.datetime.strptime(recipe_dir.name[-15:], "%Y%m%d_%H%M%S"))
+        entry.append(status)
         entry.append(link(recipe_dir.name, name))
-        entry.append(date)
+        entry.append(str(date))
         entry.extend(resource_usage)
 
         entry_txt = tr(td(txt) for txt in entry)
