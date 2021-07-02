@@ -10,6 +10,7 @@ documentation:
 
   references:
     - acknow_project
+    - hersbach20rmets
 
   projects:
     - ewatercycle
