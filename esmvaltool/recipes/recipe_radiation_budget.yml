@@ -11,8 +11,38 @@ documentation:
   authors:
     - lillis_jon
 
+datasets:
+  # yamllint disable-line rule:line-length
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
+  # yamllint disable-line rule:line-length
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r5i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
+
 diagnostics:
   radiation_budget:
+    description: Radiation budget for HadGEM3 vs UKESM1.
+    variables:
+      rss:
+        mip: Emon
+      rsdt:
+        mip: Amon
+      rsut:
+        mip: Amon
+      rsutcs:
+        mip: Amon
+      rsds:
+        mip: Amon
+      rls:
+        mip: Emon
+      rlut:
+        mip: Amon
+      rlutcs:
+        mip: Amon
+      rlds:
+        mip: Amon
+      hfss:
+        mip: Amon
+      hfls:
+        mip: Amon
     scripts:
       radiation_budget:
         script: radiation_budget/radiation_budget.py
