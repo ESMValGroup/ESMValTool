@@ -104,7 +104,7 @@ def generate_summary(output_dir):
         "status",
         "recipe output",
         "run date",
-        "run duration",
+        "estimated run duration",
         "estimated max memory (GB)",
         "average cpu",
     ]
