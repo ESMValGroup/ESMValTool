@@ -134,7 +134,7 @@ To use this functionality, users need to provide a path for the ``native6`` proj
 
 Currently, the native6 project only supports ERA5 and ERA5-Land data in the format defined in the `config-developer file <https://github.com/ESMValGroup/ESMValCore/blob/a9312a7d5be4fa3aac55c0b2ef089c6b4e1a61a9/esmvalcore/config-developer.yml#L191-L201>`_. ERA5 data can be downloaded using `era5cli <https://era5cli.readthedocs.io>`_ To support other datasets as well, we need to make it possible to have a dataset specific DRS. This is still on the horizon.
 
-While it is not strictly necessary, it may still be useful in some cases to create a local pool of cmorized observations. This can be achieved by using a cmorizer *recipe*. For an example, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that operates on the data. In this example, the diagnostic renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, that can be used through the OBS6 project. As such, this example recipe does exactly the same as the cmorizer scripts described above: create a local pool of cmorized data. The advantage, in this case, is that the daily aggregation is performed only once, which can save a lot of time and compute if it is used often.
+While it is not strictly necessary, it may still be useful in some cases to create a local pool of cmorized observations. This can be achieved by using a cmorizer *recipe*. For an example, see `recipe_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cmorizers/recipe_era5.yml>`_. This recipe reads native, hourly ERA5 data, performs a daily aggregation preprocessor, and then calls a diagnostic that operates on the data. In this example, the diagnostic renames the data to the standard OBS6 format. The output are thus daily, cmorized ERA5 data, that can be used through the OBS6 project. As such, this example recipe does exactly the same as the cmorizer scripts described above: create a local pool of cmorized data. The advantage, in this case, is that the daily aggregation is performed only once, which can save a lot of time and compute if it is used often.
 
 The example cmorizer recipe can be run like any other ESMValTool recipe:
 
@@ -182,6 +182,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | CERES-SYN1deg                | rlds, rldscs, rlus, rluscs, rlut, rlutcs, rsds, rsdscs, rsus, rsuscs, rsut, rsutcs (3hr)             |   3  | NCL             |
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CLARA-AVHRR                  | clt, clivi, lwp (Amon)                                                                               |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CowtanWay                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CRU                          | tas, pr (Amon)                                                                                       |   2  | Python          |
@@ -208,7 +210,7 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ESACCI-CLOUD                 | clivi, clt, cltStderr, clwvi (Amon)                                                                  |   2  | NCL             |
+| ESACCI-CLOUD                 | clivi, clt, cltStderr, lwp, rlut, rlutcs, rsut, rsutcs, rsdt, rlus, rsus, rsuscs (Amon)              |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-FIRE                  | burntArea (Lmon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -221,6 +223,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | ESACCI-SOILMOISTURE          | dos, dosStderr, sm, smStderr (Lmon)                                                                  |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SST                   | ts, tsStderr (Amon)                                                                                  |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-WATERVAPOUR           | prw (Amon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESRL                         | co2s (Amon)                                                                                          |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -294,6 +298,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | Scripps-CO2-KUM              | co2s (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | UWisc                        | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| WFDE5                        | tas, pr (Amon, day)                                                                                  |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | WOA                          | no3, o2, po4, si (Oyr), so, thetao (Omon)                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
