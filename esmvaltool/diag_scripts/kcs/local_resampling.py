@@ -8,10 +8,13 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    run_diagnostic,
+    select_metadata,
+)
 
 LOGGER = logging.getLogger(Path(__file__).name)
 
@@ -364,14 +367,17 @@ def _recombine(segments, combinations):
                                coords={'segment': range(n_segments)})
 
         # Recombine the segments using the indexer
-        resample = segments.sel(ensemble_member=indexer).mean('segment', keep_attrs=True)
+        resample = segments.sel(ensemble_member=indexer).mean('segment',
+                                                              keep_attrs=True)
         new_climates.append(resample)
     return xr.concat(new_climates, dim='sample')
 
 
 def _get_climatology(cfg, scenario_name, table, prov=None):
     """Determine the change in <variable> PDF of each scenario.
-    Save the resampled climates of each scenario to nc files."""
+
+    Save the resampled climates of each scenario to nc files.
+    """
     dataset, _ = _get_data_target_model(cfg)
 
     future = cfg['scenarios'][scenario_name]['resampling_period']
@@ -380,27 +386,27 @@ def _get_climatology(cfg, scenario_name, table, prov=None):
 
     resampled_control = _recombine(segments_control, table['control'])
     resampled_future = _recombine(segments_future, table['future'])
-    # Store the resampled climates
+    # Store the resampled contol climates
     filename = get_diagnostic_filename(f'resampled_control_{scenario_name}',
-                                        cfg,
-                                        extension='nc')
+                                       cfg,
+                                       extension='nc')
     resampled_control.to_netcdf(filename)
-    LOGGER.info("Created control resamples for scenario %s: \n %s", scenario_name,
-                table)
+    LOGGER.info("Created control resamples for scenario %s: \n %s",
+                scenario_name, table)
     LOGGER.info('Output stored as %s', filename)
     # # Write provenance information
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, prov)
-    
-        # Store the resampled climates
+
+        # Store the resampled future climates
     filename = get_diagnostic_filename(f'resampled_future_{scenario_name}',
-                                        cfg,
-                                        extension='nc')
+                                       cfg,
+                                       extension='nc')
     resampled_future.to_netcdf(filename)
-    LOGGER.info("Created future resamples for scenario %s: \n %s", scenario_name,
-                table)
+    LOGGER.info("Created future resamples for scenario %s: \n %s",
+                scenario_name, table)
     LOGGER.info('Output stored as %s', filename)
-        # Write provenance information
+    # # Write provenance information
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, prov)
 
@@ -423,7 +429,7 @@ def make_plots(cfg, scenario_tables, prov=None):
 
     climates = {}
     for name, info in cfg['scenarios'].items():
-        climatology = _get_climatology(cfg, name, table=scenario_tables[name])
+        climatology = _get_climatology(cfg, name, table=scenario_tables[name], prov=prov)
         climates[name] = climatology
 
     for year in [2050, 2085]:
@@ -480,7 +486,8 @@ def main(cfg):
     # Step 4: plot the results
     if cfg['write_plots']:
         make_plots(cfg, scenarios, prov=provenance)
-    #resampled climates will only be saved if write_plots == True
+    # resampled climates will only be saved if write_plots == True
+
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
