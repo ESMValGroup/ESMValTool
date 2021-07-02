@@ -12,12 +12,14 @@ def write_summary(lines):
         <title>ESMValTool recipes</title>
       </head>
       <body>
+        <table style="width:100%">
     """)
     footer = textwrap.dedent("""
+        </table>
       </body>
     </html>
     """)
-    lines = ["    " + line for line in lines]
+    lines = ["      " + line for line in lines]
     text = header + "\n".join(lines) + footer
     Path('index.html').write_text(text)
 
@@ -26,19 +28,34 @@ def link(url, text):
     return '<a href="' + url + '">' + text + '</a>'
 
 
+def td(txt):
+    return "<td>" + txt + "</td>"
+
+
+def th(txt):
+    return "<th>" + txt + "</th>"
+
+
+def tr(entries):
+    return "<tr>" + "  ".join(entries) + "</tr>"
+
+
 def generate_summary(output_dir):
 
     lines = []
 
-    for output_dir in sorted(Path(output_dir).glob('recipe_*')):
-        log = output_dir / 'run' / 'main_log.txt'
+    table_header = ["status", "recipe"]
+    lines.append(tr(th(txt) for txt in table_header))
+
+    for recipe_dir in sorted(Path(output_dir).glob('recipe_*')):
+        log = recipe_dir / 'run' / 'main_log.txt'
         success = log.read_text().endswith('Run was successful\n')
 
         entry = []
         entry.append('success' if success else 'failed')
-        entry.append(link(output_dir.name, output_dir.name))
-        entry_txt = "\t".join(entry)
+        entry.append(link(recipe_dir.name, recipe_dir.name))
 
+        entry_txt = tr(td(txt) for txt in entry)
         lines.append(entry_txt)
 
     return lines
