@@ -39,7 +39,6 @@ REQUIREMENTS = {
         'jinja2',
         'joblib',
         'lime',
-        'mpich<3.4',  # issues with 3.4.1 and 3.4.2 that install external_0 build
         'matplotlib>3.3.1,<3.4',  # bug in 3.3.1, issue with nc-time-axis for >3.3.4
         'natsort',
         'nc-time-axis<1.3.1',  # needed by iris.plot, issues with matplotlib 3.4 and 1.3.1
