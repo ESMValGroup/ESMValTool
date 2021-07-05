@@ -100,7 +100,7 @@ class PIOMAS():
                 cube = self._create_areacello(coords, var_info)
                 set_global_atts(cube, self.cfg['attributes'])
                 save_variable(
-                    cube, var_info.short_name, self.out_dir,
+                    cube, var_info.cmor_name, self.out_dir,
                     self.cfg['attributes'],
                 )
             else:
@@ -119,7 +119,7 @@ class PIOMAS():
             )
             set_global_atts(cube, self.cfg['attributes'])
             save_variable(
-                cube, var_info.short_name, self.out_dir, self.cfg['attributes']
+                cube, var_info.cmor_name, self.out_dir, self.cfg['attributes']
             )
 
     @staticmethod
@@ -151,7 +151,7 @@ class PIOMAS():
         cube = iris.cube.Cube(
             data,
             standard_name=var_info.standard_name,
-            var_name=var_info.short_name,
+            var_name=var_info.cmor_name,
             units=raw_units,
         )
         cube.add_dim_coord(time_coord, 0)
@@ -163,7 +163,7 @@ class PIOMAS():
         cube = iris.cube.Cube(
             self.areacello,
             standard_name=var_info.standard_name,
-            var_name=var_info.short_name,
+            var_name=var_info.cmor_name,
             units='m2',
         )
         cube.add_aux_coord(coords.lon, (0, 1))

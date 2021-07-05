@@ -85,7 +85,7 @@ VARIABLE_SETTINGS_PREDICTION_INPUT: &variable_settings_prediction_input
 
 VARIABLE_SETTINGS_GPP_2100: &variable_settings_gpp_2100
   project: CMIP5
-  short_name: gpp
+  cmor_name: gpp
   mip: Lmon
   exp: esmrcp85
   ensemble: r1i1p1
@@ -266,7 +266,7 @@ diagnostics:
     variables:
       cov_ref:
         <<: *variable_settings_prediction_input
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1982
@@ -288,7 +288,7 @@ diagnostics:
     variables:
       features:
         <<: *variable_settings_features
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: preproc_extract_KUM
         mip: Amon
         exp: [esmHistorical, esmrcp85]
@@ -299,7 +299,7 @@ diagnostics:
         additional_datasets: *datasets_co2
       prediction_input:
         <<: *variable_settings_prediction_input
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: preproc_extract_KUM
         mip: Amon
         start_year: 1979
@@ -322,7 +322,7 @@ diagnostics:
     variables:
       features:
         <<: *variable_settings_features
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: preproc_extract_KUM_annual_amplitude
         mip: Amon
         exp: [esmHistorical, esmrcp85]
@@ -332,7 +332,7 @@ diagnostics:
         additional_datasets: *datasets_co2
       features_ref:
         <<: *variable_settings_features
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: preproc_extract_KUM_annual_mean
         mip: Amon
         exp: [esmHistorical, esmrcp85]
@@ -343,7 +343,7 @@ diagnostics:
         additional_datasets: *datasets_co2
       prediction_input:
         <<: *variable_settings_prediction_input
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: preproc_extract_KUM_annual_amplitude
         mip: Amon
         start_year: 1979
@@ -352,7 +352,7 @@ diagnostics:
           - {dataset: Scripps-CO2-KUM, project: OBS6, type: ground, version: 15-Nov-2019, tier: 2}
       prediction_input_ref:
         <<: *variable_settings_prediction_input
-        short_name: co2s
+        cmor_name: co2s
         preprocessor: preproc_extract_KUM_annual_mean
         mip: Amon
         start_year: 1979
@@ -394,7 +394,7 @@ diagnostics:
     variables:
       ref:
         project: CMIP5
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_total_mean_flux_var
         mip: Lmon
         exp: esmHistorical
@@ -405,7 +405,7 @@ diagnostics:
         additional_datasets: *datasets
       label:
         project: CMIP5
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_total_mean_flux_var
         mip: Lmon
         exp: esmrcp85
@@ -488,7 +488,7 @@ diagnostics:
     variables:
       ref:
         <<: *variable_settings_prediction_input
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
@@ -498,7 +498,7 @@ diagnostics:
           - {dataset: MTE, project: OBS, type: reanaly, version: May12, tier: 3}
       mean:
         <<: *variable_settings_prediction_input
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
@@ -508,7 +508,7 @@ diagnostics:
           - {dataset: MTE, project: OBS, type: reanaly, version: May12, tier: 3}
       error:
         <<: *variable_settings_prediction_input
-        short_name: gppStderr
+        cmor_name: gppStderr
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
@@ -532,7 +532,7 @@ diagnostics:
     variables:
       ref:
         <<: *variable_settings_prediction_input
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
@@ -542,7 +542,7 @@ diagnostics:
           - {dataset: MTE, project: OBS, type: reanaly, version: May12, tier: 3}
       mean:
         <<: *variable_settings_features
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
@@ -617,14 +617,14 @@ diagnostics:
     variables:
       features:
         <<: *variable_settings_features
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
         end_year: 2000
       prediction_input:
         <<: *variable_settings_prediction_input
-        short_name: gpp
+        cmor_name: gpp
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
@@ -633,7 +633,7 @@ diagnostics:
           - {dataset: MTE, project: OBS, type: reanaly, version: May12, tier: 3}
       prediction_input_error:
         <<: *variable_settings_prediction_input
-        short_name: gppStderr
+        cmor_name: gppStderr
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1991
@@ -660,14 +660,14 @@ diagnostics:
     variables:
       features:
         <<: *variable_settings_features
-        short_name: lai
+        cmor_name: lai
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1982
         end_year: 2005
       prediction_input:
         <<: *variable_settings_prediction_input
-        short_name: lai
+        cmor_name: lai
         preprocessor: preproc_map_flux_var
         mip: Lmon
         start_year: 1982
@@ -691,14 +691,14 @@ diagnostics:
     variables:
       features:
         <<: *variable_settings_features
-        short_name: pr
+        cmor_name: pr
         preprocessor: preproc_map
         mip: Amon
         start_year: 1901
         end_year: 2005
       prediction_input:
         <<: *variable_settings_prediction_input
-        short_name: pr
+        cmor_name: pr
         preprocessor: preproc_map
         mip: Amon
         start_year: 1901
@@ -723,14 +723,14 @@ diagnostics:
     variables:
       features:
         <<: *variable_settings_features
-        short_name: rsds
+        cmor_name: rsds
         preprocessor: preproc_map
         mip: Amon
         start_year: 1979
         end_year: 2005
       prediction_input:
         <<: *variable_settings_prediction_input
-        short_name: rsds
+        cmor_name: rsds
         preprocessor: preproc_map
         mip: Amon
         start_year: 1979
@@ -754,14 +754,14 @@ diagnostics:
     variables:
       features:
         <<: *variable_settings_features
-        short_name: tas
+        cmor_name: tas
         preprocessor: preproc_map
         mip: Amon
         start_year: 1901
         end_year: 2005
       prediction_input:
         <<: *variable_settings_prediction_input
-        short_name: tas
+        cmor_name: tas
         preprocessor: preproc_map
         mip: Amon
         start_year: 1901

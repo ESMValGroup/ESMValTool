@@ -62,13 +62,13 @@ diagnostics:
         end_year: 2016
         preprocessor: preproc_tas
       pr_climatology:
-        short_name: pr
+        cmor_name: pr
         mip: day
         start_year: 1990
         end_year: 2002
         preprocessor: preproc_pr_clim
       tas_climatology:
-        short_name: tas
+        cmor_name: tas
         mip: day
         start_year: 1990
         end_year: 2002

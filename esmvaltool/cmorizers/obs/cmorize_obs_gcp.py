@@ -54,7 +54,7 @@ def _get_coords(data_table):
     return [(time_dim, 0), (lat_dim, 1), (lon_dim, 2)]
 
 
-def _extract_variable(short_name, var, cfg, data_table, out_dir):
+def _extract_variable(cmor_name, var, cfg, data_table, out_dir):
     """Extract variable."""
     header = data_table.iloc[18]
     data_table = data_table[19:]
@@ -64,14 +64,14 @@ def _extract_variable(short_name, var, cfg, data_table, out_dir):
     coords = _get_coords(data_table)
 
     # Data
-    if short_name == 'fgco2':
+    if cmor_name == 'fgco2':
         new_data = data_table['ocean sink'].values
-    elif short_name == 'nbp':
+    elif cmor_name == 'nbp':
         new_data = (data_table['land sink'].values -
                     data_table['land-use change emissions'].values)
     else:
         raise NotImplementedError(
-            f"Derivation of '{short_name}' not possible yet")
+            f"Derivation of '{cmor_name}' not possible yet")
     for _ in range(2):
         new_data = np.expand_dims(new_data, -1)
     new_units = Unit('Gt yr-1')
@@ -83,7 +83,7 @@ def _extract_variable(short_name, var, cfg, data_table, out_dir):
                           units=new_units)
 
     # Fix units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], cmor_name)
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
@@ -95,7 +95,7 @@ def _extract_variable(short_name, var, cfg, data_table, out_dir):
 
     # Save variable
     utils.save_variable(cube,
-                        short_name,
+                        cmor_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
@@ -110,6 +110,6 @@ def cmorization(in_dir, out_dir, cfg, _):
                                index_col=0)
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", short_name)
-        _extract_variable(short_name, var, cfg, data_table, out_dir)
+    for (cmor_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", cmor_name)
+        _extract_variable(cmor_name, var, cfg, data_table, out_dir)

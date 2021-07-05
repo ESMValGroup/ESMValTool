@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
-    var = cmor_info.short_name
+    var = cmor_info.cmor_name
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
     _fix_time_coord(cube)
     utils.fix_var_metadata(cube, cmor_info)

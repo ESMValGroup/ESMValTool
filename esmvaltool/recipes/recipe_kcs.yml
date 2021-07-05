@@ -76,11 +76,11 @@ diagnostics:
       - Select the 30-year period from the target model (all ensemble members) where they match the Delta T for each scenario.
     variables:
       tas_cmip:
-        short_name: tas
+        cmor_name: tas
         preprocessor: preprocessor_global
         additional_datasets: *cmip5
       tas_target:
-        short_name: tas
+        cmor_name: tas
         preprocessor: preprocessor_global
         additional_datasets: *target
     scripts:
@@ -97,19 +97,19 @@ diagnostics:
       - Determine the final best
     variables:
       pr_target:
-        short_name: pr
+        cmor_name: pr
         preprocessor: preprocessor_local
         additional_datasets: *target
       tas_target:
-        short_name: tas
+        cmor_name: tas
         preprocessor: preprocessor_local
         additional_datasets: *target
       pr_cmip:
-        short_name: pr
+        cmor_name: pr
         preprocessor: preprocessor_local
         additional_datasets: *cmip5
       tas_cmip:
-        short_name: tas
+        cmor_name: tas
         preprocessor: preprocessor_local
         additional_datasets: *cmip5
     scripts:

@@ -97,18 +97,18 @@ def _fix_coordinates(cube, definition):
 
 def _extract_variable(in_files, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input files '%s'",
-                var['short_name'], ', '.join(in_files))
+                var['cmor_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    definition = cmor_table.get_variable(var['mip'], var['cmor_name'])
 
     cube = _load_cube(in_files, var)
 
     utils.set_global_atts(cube, attributes)
 
     # Set correct names
-    cube.var_name = definition.short_name
+    cube.var_name = definition.cmor_name
     # cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
@@ -146,9 +146,9 @@ def cmorization(in_dir, out_dir, cfg, _):
     cfg.pop('cmor_table')
 
     for year in range(1980, 2019):
-        for short_name, var in cfg['variables'].items():
-            if 'short_name' not in var:
-                var['short_name'] = short_name
+        for cmor_name, var in cfg['variables'].items():
+            if 'cmor_name' not in var:
+                var['cmor_name'] = cmor_name
             # Now get list of files
             filepattern = os.path.join(in_dir, var['file'].format(year=year))
             in_files = glob.glob(filepattern)
