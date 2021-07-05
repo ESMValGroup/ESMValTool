@@ -423,6 +423,7 @@ def _get_climatology(cfg, scenario_name, table, prov=None):
 
 
 def get_climatologies(cfg, scenario_tables, prov=None):
+    """Determine the changes in <variable> PDF of all scenarios."""
     climates = {}
     for name in cfg['scenarios'].keys():
         climatology = _get_climatology(cfg, name, table=scenario_tables[name], prov=prov)
