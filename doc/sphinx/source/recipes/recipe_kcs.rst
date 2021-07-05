@@ -148,6 +148,9 @@ The diagnostic ``local_resampling`` procudes a number of output files:
      Combination 7          6         3         2         1         6         1         2         1         0         2         1         3
 
 
+* ``resampled_control_<scenario>.nc``: containing the monthly means for the control period according to the final combinations.
+* ``resampled_future_<scenario>.nc``: containing the monthly means for the future period according to the final combinations.
+
 * Provenance information: bibtex, xml, and/or text files containing citation information are stored alongside the final result and the final figure.
   The final combinations only derive from the target model data, whereas the figure also uses CMIP data.
 * A figure used to validate the final result, reproducing figures 5 and 6 from Lenderink et al.:

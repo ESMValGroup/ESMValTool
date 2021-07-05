@@ -28,6 +28,7 @@ def _create_provenance_record(ancestor_files):
             'kalverla_peter',
             'alidoost_sarah',
             'rol_evert',
+            'daniels_emma',
         ],
         'ancestors': ancestor_files,
     }
@@ -421,16 +422,19 @@ def _get_climatology(cfg, scenario_name, table, prov=None):
     return xr.merge([qchange_tas, qchange_pr])
 
 
-def make_plots(cfg, scenario_tables, prov=None):
+def get_climatologies(cfg, scenario_tables, prov=None):
+    climates = {}
+    for name in cfg['scenarios'].keys():
+        climatology = _get_climatology(cfg, name, table=scenario_tables[name], prov=prov)
+        climates[name] = climatology
+    return climates
+
+
+def make_plots(cfg, climates):
     """Reproduce figure 5 from the paper."""
     # Note that quantile is applied twice! Once to get the pdf's of seasonal
     # tas/pr and once to get the multimodel pdf of the quantile changes
     metadata = cfg['input_data'].values()
-
-    climates = {}
-    for name, info in cfg['scenarios'].items():
-        climatology = _get_climatology(cfg, name, table=scenario_tables[name], prov=prov)
-        climates[name] = climatology
 
     for year in [2050, 2085]:
         fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
@@ -481,12 +485,14 @@ def main(cfg):
     subsets = get_percentile_subsets(cfg, segment_season_means, top1000s)
 
     # Step 3: select final set of eight samples
-    scenarios = select_final_subset(cfg, subsets, prov=provenance)
+    scenario_tables = select_final_subset(cfg, subsets, prov=provenance)
 
-    # Step 4: plot the results
+    # Step 4: create the resampled climates
+    climates = get_climatologies(cfg, scenario_tables, prov=provenance)
+
+    # Step 5: plot the results
     if cfg['write_plots']:
-        make_plots(cfg, scenarios, prov=provenance)
-    # resampled climates will only be saved if write_plots == True
+        make_plots(cfg, climates)
 
 
 if __name__ == '__main__':
