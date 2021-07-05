@@ -165,7 +165,7 @@ def taylor_coeffs(cubes, layer, obsname):
         srange.append(stddev)
         extend.append(corrcoef)
 
-    srange = [np.floor(np.min(srange)), np.ceil(np.max(srange))]
+    srange = [0., np.ceil(np.max(srange))]
     extend = np.min(extend) < 0.
 
     return out_dict, srange, extend
