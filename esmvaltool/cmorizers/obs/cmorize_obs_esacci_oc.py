@@ -21,9 +21,9 @@ Modification history
 
 """
 
-import glob
 import logging
 import os
+import urllib
 
 import iris
 import xarray as xr
@@ -47,15 +47,46 @@ def _add_depth_coord(cube):
     """Add depth auxiliary coordinate for CMIP5 standard."""
     if not cube.coords('depth'):
         depth = 1.
-        depth_coord = iris.coords.AuxCoord(
-            depth,
-            standard_name='depth',
-            long_name='depth',
-            var_name='depth',
-            units='m',
-            attributes={'positive': 'down'})
+        depth_coord = iris.coords.AuxCoord(depth,
+                                           standard_name='depth',
+                                           long_name='depth',
+                                           var_name='depth',
+                                           units='m',
+                                           attributes={'positive': 'down'})
         cube.add_aux_coord(depth_coord)
         cube.coordinates = 'depth'
+
+
+def collect_files(in_dir, var, cfg):
+    """Compose input file list and download if missing."""
+    file_list = []
+    var_dict = cfg['variables'][var]
+    in_dir = os.path.join(in_dir, var_dict['raw'])
+    year_start = cfg['custom']['year_start']
+    year_end = cfg['custom']['year_end']
+
+    # create list of monthly data
+    for year in range(year_start, year_end + 1):
+        for mon in range(1, 13):
+            fname = var_dict['file'] + "-{:04d}".format(
+                year) + "{:02d}".format(
+                    mon) + '-' + cfg['attributes']['version'] + '.nc'
+            in_file = os.path.join(in_dir, fname)
+
+            # download if missing
+            if not os.path.isfile(in_file):
+                if not os.path.isdir(in_dir):
+                    os.makedirs(in_dir)
+                logger.info(
+                    'Input file %s is missing. Start FTP download (~200Mb)...',
+                    fname)
+                url = os.path.join(cfg['attributes']['source'],
+                                   var_dict['raw'], str(year), fname)
+                urllib.request.urlretrieve(url, filename=in_file)
+
+            file_list.append(in_file)
+
+    return file_list
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
@@ -81,13 +112,12 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             )
 
 
-def merge_data(in_dir, out_dir, raw_info, bins):
+def merge_data(datafile, out_dir, raw_info, bins):
     """Merge all data into a single (regridded) file."""
     var = raw_info['name']
     do_bin = (bins != 0) and (bins % 2 == 0)
-    datafile = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
-    for x in datafile:
-        ds = xr.open_dataset(x)
+    for xval in datafile:
+        ds = xr.open_dataset(xval)
         da = ds[var].sel(lat=slice(None, None, -1))
         # remove inconsistent attributes
         for thekeys in [
@@ -99,13 +129,13 @@ def merge_data(in_dir, out_dir, raw_info, bins):
             da = da.coarsen(lat=bins, boundary='exact').mean()
             da = da.coarsen(lon=bins, boundary='exact').mean()
 
-        if x == datafile[0]:
+        if xval == datafile[0]:
             newda = da
             thekeys = [
                 'creator_name', 'creator_url', 'license', 'sensor',
                 'processing_level'
             ]
-            dsmeta = dict((y, ds.attrs[y]) for y in thekeys)
+            dsmeta = dict((yval, ds.attrs[yval]) for yval in thekeys)
             if do_bin:
                 dsmeta['BINNING'] = ' '.join([
                     'Data binned using ', "{}".format(bins), 'by',
@@ -119,8 +149,8 @@ def merge_data(in_dir, out_dir, raw_info, bins):
 
     # create dataset
     ds = newda.to_dataset(name=var)
-    for x, y in dsmeta.items():
-        ds.attrs[x] = y
+    for xval, yval in dsmeta.items():
+        ds.attrs[xval] = yval
     ds['lon'].attrs = {'standard_name': 'longitude'}
     ds['lat'].attrs = {'standard_name': 'latitude'}
 
@@ -160,8 +190,10 @@ def cmorization(in_dir, out_dir, cfg, _):
         glob_attrs['mip'] = vals['mip']
         raw_info = {'name': vals['raw'], 'file': vals['file']}
 
+        in_files = collect_files(in_dir, var, cfg)
+
         # merge yearly data and apply binning
-        inpfile, addinfo = merge_data(in_dir, out_dir, raw_info,
+        inpfile, addinfo = merge_data(in_files, out_dir, raw_info,
                                       cfg['custom']['bin_size'])
 
         logger.info("CMORizing var %s from file %s", var, inpfile)
