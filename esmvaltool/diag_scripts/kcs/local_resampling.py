@@ -403,13 +403,13 @@ def make_plots(cfg, scenario_tables):
         climatology = _get_climatology(cfg, name, table=scenario_tables[name])
         climates[name] = climatology
 
-    years = np.unique([scenario['scenario_year'] 
+    years = np.unique([scenario['scenario_year']
                        for scenario in cfg['scenarios'].values()])
     for year in years:
         fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
 
         for row, variable in zip(subplots, ['pr', 'tas']):
-            cmip, prov = _cmip_envelope(metadata, variable, year, 
+            cmip, prov = _cmip_envelope(metadata, variable, year,
                                         cfg['control_period'])
 
             for axes, season in zip(row, ['DJF', 'JJA']):
