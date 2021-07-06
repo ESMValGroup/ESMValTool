@@ -188,11 +188,11 @@ preprocessors:
       operator: mean
     anomalies:
       period: full
-      reference:
-        start_year: 1981
+      reference: &ref_period
+        start_year: 1995
         start_month: 1
         start_day: 1
-        end_year: 2010
+        end_year: 2014
         end_month: 12
         end_day: 31
       standardize: false
@@ -273,6 +273,11 @@ diagnostics:
         script: weighting/weighted_temperature_graph.py
         ancestors: [calculate_weights_climwip/climwip, tas]
         weights: 'weights.nc'
+        settings:
+          <<: *ref_period
+          central_estimate: mean
+          lower_bound: 16.7
+          upper_bound: 83.3
 
   weighted_temperature_map:
     variables:
