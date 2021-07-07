@@ -113,7 +113,7 @@ def plot_taylor(cubes, layer, obsname, cfg):
         plt.savefig(plot_file, dpi=200)
         logger.info('Saving plots data to %s', plot_file + '.csv')
         dia = open(plot_file + '.csv', 'w')
-        dia.write('id, model, std, corr, rmsd\n')
+        dia.write('id, model, norm_std, corr, rmsd\n')
         for i, thename in enumerate(model_coeff):
             dia.write(','.join([
                 str(i + 1), thename,
@@ -150,12 +150,11 @@ def taylor_coeffs(cubes, layer, obsname):
     extend = []
     model_cubes = sorted(set(cubes.keys()).difference([obsname]))
     for thename in model_cubes:
-        cube = cubes[thename][layer] + obs_cube
-        stddev = cube.collapsed(['latitude', 'longitude'],
-                                iris.analysis.STD_DEV)
+        stddev = cubes[thename][layer].collapsed(['latitude', 'longitude'],
+                                                 iris.analysis.STD_DEV)
         stddev = stddev.data.item()
         corrcoef = pearsonr(obs_cube,
-                            cube,
+                            cubes[thename][layer],
                             corr_coords=['latitude', 'longitude'],
                             common_mask=True)
         corrcoef = corrcoef.data.item()
@@ -242,10 +241,14 @@ def add_map_plot(fig, axs, plot_cube, cols):
 
     if plot_cube['hascbar']:
         if cols == 0:
+            ratio = axs.get_xlim() + axs.get_ylim()
+            ratio = (ratio[3] - ratio[2]) / (ratio[1] - ratio[0])
+            width = "200%" if ratio > 1 else "100%"
+
             bba = (0., -0.1, 1, 1)
             axins = inset_axes(
                 axs,
-                width="95%",
+                width=width,
                 height="6%",
                 loc='lower center',
                 bbox_to_anchor=bba,
