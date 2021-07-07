@@ -70,7 +70,6 @@ def plot_taylor(cubes, layer, obsname, cfg):
                                           label=obsname,
                                           srange=srange,
                                           extend=extend)
-
     # Add models
     for i, thename in enumerate(model_coeff):
         dia.add_sample(model_coeff[thename]['std'],
@@ -86,14 +85,19 @@ def plot_taylor(cubes, layer, obsname, cfg):
 
     dia.add_grid()  # Add grid
     dia._ax.axis[:].major_ticks.set_tick_out(True)  # Put ticks outward
-    dia._ax.axis["left"].label.set_text('Standard deviation [' +
+    dia._ax.axis["left"].label.set_text('Normalized standard deviation [' +
                                         str(obs_cube.units) + ']')
+    bbx = dia._ax.get_position()
+    bbx.x0 = bbx.x0 * 0.4
+    if extend:
+       bbx.x1 = bbx.x1 * 0.8
+    dia._ax.set_position(bbx)
 
     # Add figure legend and title
     fig.legend(dia.samplepoints, [p.get_label() for p in dia.samplepoints],
                numpoints=1,
                prop=dict(size='small'),
-               loc='upper right',
+               loc='center right',
                markerscale=0.8)
     add_lab = str(np.int32(layer)) if layer != '' else ''
     fig.suptitle(obs_cube.long_name + add_lab, size='large')  # Figure title
@@ -109,7 +113,7 @@ def plot_taylor(cubes, layer, obsname, cfg):
         plt.savefig(plot_file, dpi=200)
         logger.info('Saving plots data to %s', plot_file + '.csv')
         dia = open(plot_file + '.csv', 'w')
-        dia.write('id,model,std_norm, corr, rmsd\n')
+        dia.write('id, model, std, corr, rmsd\n')
         for i, thename in enumerate(model_coeff):
             dia.write(','.join([
                 str(i + 1), thename,
@@ -140,22 +144,29 @@ def taylor_coeffs(cubes, layer, obsname):
     obs_cube = cubes[obsname][layer]
     obs_std = obs_cube.collapsed(['latitude', 'longitude'],
                                  iris.analysis.STD_DEV)
+    obs_std = obs_std.data.item()
 
     srange = []
     extend = []
     model_cubes = sorted(set(cubes.keys()).difference([obsname]))
     for thename in model_cubes:
-        stddev = cubes[thename][layer].collapsed(['latitude', 'longitude'],
+        cube = cubes[thename][layer] + obs_cube
+        stddev = cube.collapsed(['latitude', 'longitude'],
                                                  iris.analysis.STD_DEV)
-        stddev = stddev.data / obs_std.data
+        stddev = stddev.data.item()
         corrcoef = pearsonr(obs_cube,
-                            cubes[thename][layer],
+                            cube,
                             corr_coords=['latitude', 'longitude'],
                             common_mask=True)
         corrcoef = corrcoef.data.item()
+
         rmsd = np.sqrt(
-            np.power(stddev.data, 2) + np.power(obs_std.data, 2) - 2 *
-            (stddev.data * obs_std.data * corrcoef))
+            np.power(stddev, 2) + np.power(obs_std, 2) - 2 *
+            (stddev * obs_std * corrcoef))
+
+        # normalize std by obs
+        stddev = stddev / obs_std
+
         out_dict.update(
             {thename: {
                 'std': stddev,
