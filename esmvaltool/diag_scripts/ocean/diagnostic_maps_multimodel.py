@@ -90,7 +90,7 @@ def plot_taylor(cubes, layer, obsname, cfg):
     bbx = dia._ax.get_position()
     bbx.x0 = bbx.x0 * 0.4
     if extend:
-       bbx.x1 = bbx.x1 * 0.8
+        bbx.x1 = bbx.x1 * 0.8
     dia._ax.set_position(bbx)
 
     # Add figure legend and title
@@ -152,7 +152,7 @@ def taylor_coeffs(cubes, layer, obsname):
     for thename in model_cubes:
         cube = cubes[thename][layer] + obs_cube
         stddev = cube.collapsed(['latitude', 'longitude'],
-                                                 iris.analysis.STD_DEV)
+                                iris.analysis.STD_DEV)
         stddev = stddev.data.item()
         corrcoef = pearsonr(obs_cube,
                             cube,
