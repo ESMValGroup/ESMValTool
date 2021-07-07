@@ -276,13 +276,13 @@ diagnostics:
 
   weighted_temperature_map:
     variables:
-      tas:
+      tas_CLIM_future:
         short_name: tas
         start_year: 2081
         end_year: 2100
         mip: Amon
         preprocessor: region_mean
-      tas_reference:
+      tas_CLIM_reference:
         short_name: tas
         start_year: 1995
         end_year: 2014
@@ -291,7 +291,7 @@ diagnostics:
     scripts:
       weighted_temperature_map:
         script: weighting/weighted_temperature_map.py
-        ancestors: [calculate_weights_climwip/climwip, tas, tas_reference]
+        ancestors: [calculate_weights_climwip/climwip, tas_CLIM_future, tas_CLIM_reference]
         weights: 'weights.nc'
         # optional arguments
         antimeridian: pacific
