@@ -58,12 +58,6 @@ preprocessors:
     extract_season: &season
       season: djf
 
-# Multi_model_statistics turned of due to an issue with the Core v2.3.0
-#     multi_model_statistics:
-#       span: overlap
-#       statistics: [mean]
-#       exclude: [reference_dataset]
-
 
 diagnostics:
   capacity_factor:
