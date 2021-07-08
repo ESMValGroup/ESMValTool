@@ -79,11 +79,13 @@ plot_pairs= {
              'temp':{'land': 'tsl', 'sea': 'tos'},
              'cflux':{'land': 'nbp', 'sea': 'fgco2'},
              'pp':{'land': 'gpp', 'sea': 'intpp'},
-             'spco2_npp':{'land': 'npp', 'sea': 'spco2'},
-             'rh_talk':{'land': 'rh', 'sea': 'talk'},
-             'ra_mld':{'land': 'ra', 'sea': 'mlotst'},
-             'resp_talk': {'land': 'resp', 'sea': 'talk'},
-        #      'fco2_npp':{'land': 'npp', 'sea': 'fgco2'},
+#             'spco2_npp':{'land': 'npp', 'sea': 'spco2'},
+#             'rh_talk':{'land': 'rh', 'sea': 'talk'},
+              'ra_mld':{'land': 'ra', 'sea': 'mlotst'},
+#              'ra_mld':{'land': 'ra', 'sea': 'mlotst'}, # this should be precipitation on land
+
+#             'resp_talk': {'land': 'resp', 'sea': 'talk'},
+#        #      'fco2_npp':{'land': 'npp', 'sea': 'fgco2'},
             }
 fx_mips = ['Ofx', 'fx', 'Lfx']
 
@@ -121,7 +123,7 @@ def regrid_to_1x1(cube, scheme = 'linear', res = '1x1'):
 
 
 def cube_interesction(cube, region='Global'):
-    regions = ['Global', 'midatlantic', 'WestEq', 'EastEq', 'NorthAtlantic', ]
+    regions = ['Global', 'midatlantic', 'WestEq', 'EastEq', 'NorthAtlantic', 'SouthernIndian', ]
 
     # if istype(cube, str):
     #     print("cube_interesction: loading cube:", cube)
@@ -179,6 +181,15 @@ def cube_interesction(cube, region='Global'):
         lon_bnd = 65.
         return cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
             latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+
+    if region=='SouthernIndian':
+        central_longitude = 90. #W #-160.+3.5
+        central_latitude = -35.#S
+        lat_bnd = 45.
+        lon_bnd = 65.
+        return cube.intersection(longitude=(central_longitude-lon_bnd, central_longitude+lon_bnd),
+            latitude=(central_latitude-lat_bnd, central_latitude+lat_bnd), )
+
 
     assert 0
 
@@ -1668,8 +1679,8 @@ def make_gwt_map_land_sea_plots(cfg, ):
     """
     metadatas = diagtools.get_input_files(cfg)
     do_single_plots=False
-    do_variable_group_plots=True
-    do_threshold_plots=True
+    #do_variable_group_plots=True
+    #do_threshold_plots=True
 
     #
     files_dict = {}
@@ -1686,7 +1697,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     fx_fns = {}
     all_cubes = {}
     key_index = ['dataset', 'mip', 'exp', 'ensemble', 'short_name', 'variable_group']
-    regions = ['Global', 'NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
+    regions = ['SouthernIndian', 'Global', 'NorthAtlantic', 'Global', 'midatlantic', 'WestEq', 'EastEq']
 
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
@@ -1732,6 +1743,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
     work_path = diagtools.folder([cfg['work_dir'], 'custom_vars'])
 
     for (dataset, mip, exp, ensemble, short_name, variable_group), cube in all_cubes.items():
+        continue
         for custom_var_name, custom_var_keys in custom_vars.items():
             if short_name not in custom_var_keys:
                 continue
@@ -1903,7 +1915,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
             for region in regions:
                 #f threshold =='2.0':
                 ssp1s = ['ssp585', ]# 'ssp370']
-                ssp2s = ['ssp119', 'ssp126', 'ssp245', 'ssp370', ]
+                ssp2s = ['ssp119',] # 'ssp126', 'ssp245', 'ssp370', ]
                 #ssp1s = ['ssp370', ]
                 #ssp2s = ['ssp126', ]
 
@@ -1954,7 +1966,7 @@ def make_gwt_map_land_sea_plots(cfg, ):
                     region=region,
                 )
 
-
+    return
     assert 0
 
 
