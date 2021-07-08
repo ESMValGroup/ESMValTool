@@ -81,16 +81,17 @@ def plot_taylor(cubes, layer, obsname, cfg):
 
     # Add RMS contours, and label them
     contours = dia.add_contours(levels=5, colors='0.5')  # 5 levels in grey
-    plt.clabel(contours, inline=1, fontsize=10, fmt='%.0f')
+    plt.clabel(contours, inline=1, fontsize=8, fmt='%.1f')
 
     dia.add_grid()  # Add grid
     dia._ax.axis[:].major_ticks.set_tick_out(True)  # Put ticks outward
     dia._ax.axis["left"].label.set_text('Normalized standard deviation [' +
                                         str(obs_cube.units) + ']')
+
     bbx = dia._ax.get_position()
-    bbx.x0 = bbx.x0 * 0.4
+    bbx.x0 = bbx.x0 * 0.2
     if extend:
-        bbx.x1 = bbx.x1 * 0.8
+        bbx.x1 = bbx.x1 * 0.75
     dia._ax.set_position(bbx)
 
     # Add figure legend and title
