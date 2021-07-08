@@ -1165,7 +1165,7 @@ def get_threshold_point(cube, year):
     if isinstance(cube, dict):
         if np.min(np.abs(np.array(cube['time']) - year)) > 5.:
              print('Problem with thresholds:', np.min(cube['time']), '-', np.max(cube['time']), year)
-             assert 0
+             return None
         arg_min = np.argmin(np.abs(np.array(cube['time']) - year))
         #print(arg_min, year, np.array(cube['time']))
     else:
@@ -1175,7 +1175,7 @@ def get_threshold_point(cube, year):
         years = np.array(diagtools.cube_time_to_float(cube))
         if np.min(np.abs(years - year)) > 5.:
              print('Problem with thresholds:', np.min(years), '-', np.max(years), year)
-             assert 0
+             return None
         arg_min = np.argmin( np.abs(cube.coord('time').points - t_1))
     #print('get_threshold_point',t_1, date, arg_min)
     return arg_min
@@ -1531,11 +1531,13 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     year0 = None,
     do_legend=True,
     land_carbon = 'nbpgt',
+    atmos='atmos_carbon',
     fig=None, ax=None):
     """
     Make a bar chart (of my favourite pies)
     """
     emissions = []
+    remnant = []
     landcs = []
     fgco2gts = []
     experiments = []
@@ -1544,45 +1546,79 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         if t_short != 'tas': continue
         if t_ens != 'ensemble_mean': continue
 
-        #print("make_bar_chart", t_short, t_exp, t_ens)
+        print("make_bar_chart", t_short, t_exp, t_ens)
         cumul_emissions = data_dict.get(('cumul_emissions', t_exp, t_ens), None) #dict
+        atmos_carbon = data_dict.get((atmos,  t_exp, t_ens), None) #dict
         if cumul_emissions is None:  # Because not all sceanrios have emissions data.
            continue
+
+        if atmos_carbon is None:  # Because not all sceanrios have emissions data.
+           continue
+
         if land_carbon == 'nbpgt':
             landc_cumul = data_dict[('nbpgt_cumul', t_exp, t_ens)] # cube
         elif land_carbon == 'tls':
             landc_cumul = data_dict[('tls', t_exp, t_ens)] # dict
         fgco2gt_cumul = data_dict[('fgco2gt_cumul', t_exp, t_ens)] # cube
+        fl_threshold = float(threshold)
+        if fl_threshold > 1850.:
+          
+            e_xpoint = get_threshold_point(cumul_emissions, fl_threshold)
+            a_xpoint = get_threshold_point(atmos_carbon, fl_threshold)
+            n_xpoint = get_threshold_point(landc_cumul, fl_threshold)
+            f_xpoint = get_threshold_point(fgco2gt_cumul, fl_threshold)
+            if None in [a_xpoint, n_xpoint, f_xpoint]: continue
+
+            emissions.append(cumul_emissions['cumul_emissions'][e_xpoint])
+            remnant.append(atmos_carbon['atmos_carbon'][a_xpoint])
+            if isinstance(landc_cumul, dict):
+                landcs.append(landc_cumul[land_carbon][n_xpoint])
+            else:
+                landcs.append(landc_cumul.data[n_xpoint])
+            fgco2gts.append(fgco2gt_cumul.data[f_xpoint])
+
+            t_exp = t_exp.replace('historical-', '').upper()
+            experiments.append(t_exp)
+            continue 
 
         for thresh, time in threshold_times.items():
-            print("make_bar_chart", t_short, t_exp, t_ens, thresh, threshold, time)
+            #print("make_bar_chart", t_short, t_exp, t_ens, thresh, threshold, time)
             if float(threshold) != float(thresh):
-                print(threshold, '!=', thresh)
+                #print(threshold, '!=', thresh)
                 continue
             if not time:
                 print('time', 'isn t there' , time)
                 continue
             #if threshold != thresh: continue
-            print(threshold, time)
+            #print("make_bar_chart",threshold, time)
 
             e_xpoint = get_threshold_point(cumul_emissions, time.year)
+            a_xpoint = get_threshold_point(atmos_carbon, time.year)
+
             n_xpoint = get_threshold_point(landc_cumul, time.year)
             f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
 
+            print("make_bar_chart",thresh, time, 'atmos', e_xpoint, 'land:', n_xpoint, 'ocean', f_xpoint)
             if year0:
-                e_baseline = get_threshold_point(cumul_emissions, year0)
-                n_baseline = get_threshold_point(landc_cumul, year0)
-                f_baseline = get_threshold_point(fgco2gt_cumul, year0)
+                assert 0
+                #e_baseline = get_threshold_point(cumul_emissions, year0)
+                #n_baseline = get_threshold_point(landc_cumul, year0)
+                #f_baseline = get_threshold_point(fgco2gt_cumul, year0)
 
-                emissions.append(cumul_emissions['cumul_emissions'][e_xpoint] - cumul_emissions['cumul_emissions'][e_baseline])
-                if isinstance(landc_cumul, dict):
-                    landcs.append(landc_cumul[land_carbon][n_xpoint] - landc_cumul[land_carbon][n_baseline])
-                    fgco2gts.append(fgco2gt_cumul.data[f_xpoint] - landc_cumul[land_carbon][f_baseline])
-                else:
-                    landcs.append(landc_cumul.data[n_xpoint] - landc_cumul.data[n_baseline])
-                    fgco2gts.append(fgco2gt_cumul.data[f_xpoint] - landc_cumul.data[f_baseline])
+               # emissions.append(cumul_emissions['cumul_emissions'][e_xpoint] - cumul_emissions['cumul_emissions'][e_baseline])
+               # if isinstance(landc_cumul, dict):
+               #     landcs.append(landc_cumul[land_carbon][n_xpoint] - landc_cumul[land_carbon][n_baseline])
+               #     fgco2gts.append(fgco2gt_cumul.data[f_xpoint] - landc_cumul[land_carbon][f_baseline])
+               # else:
+               #     landcs.append(landc_cumul.data[n_xpoint] - landc_cumul.data[n_baseline])
+               #     fgco2gts.append(fgco2gt_cumul.data[f_xpoint] - landc_cumul.data[f_baseline])
             else:
+                print("make_bar_chart",thresh, time,'cumul_emissions', cumul_emissions['cumul_emissions'][e_xpoint], cumul_emissions['time'][e_xpoint])
+                print("make_bar_chart",thresh, time,'land:          ', landc_cumul[land_carbon][n_xpoint], landc_cumul['time'][n_xpoint])
+                print("make_bar_chart",thresh, time,'ocean:         ', fgco2gt_cumul.data[f_xpoint], fgco2gt_cumul.coord('time').points[f_xpoint])
+
                 emissions.append(cumul_emissions['cumul_emissions'][e_xpoint])
+                remnant.append(atmos_carbon['atmos_carbon'][a_xpoint])
                 if isinstance(landc_cumul, dict):
                     landcs.append(landc_cumul[land_carbon][n_xpoint])
                 else:
@@ -1593,9 +1629,9 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             experiments.append(t_exp)
 
     if not len(experiments):
-        print(emissions, landcs, fgco2gts, experiments)
-        print(thresholds_dict.keys())
-        print('looking for:', threshold)
+        print("make_bar_chart",emissions, landcs, fgco2gts, remnant,  experiments)
+        print("make_bar_chart",thresholds_dict.keys())
+        print("make_bar_chart",'looking for:', threshold)
         assert 0
 
     if fig == None:
@@ -1605,12 +1641,18 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         make_figure_here = False
 
     #experiments = [exp.replace('historical-', '').upper() for exp in experiments]
-
-    emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, landcs )]
+    if atmos=='atmos_carbon':
+        emissions_diff = remnant 
+    else:
+        emissions_diff = [e - f - b for e,f,b in zip(emissions, fgco2gts, landcs )]
     emissions_bottoms = [f + b for f,b in zip(fgco2gts, landcs )]
-    for i, exp  in enumerate(experiments):
-        print(i, exp, emissions[i], '=', landcs[i], '+', fgco2gts[i])
 
+    totals = [a + f + b for a,f,b in zip(remnant, fgco2gts, landcs )]
+
+    for i, exp  in enumerate(experiments):
+        print("Final values:",threshold, i, exp, totals[i], '=',emissions_diff[i],('or', remnant[i]), '+', landcs[i], '+', fgco2gts[i], '(a, l, o)')
+
+    # Add bars:
     horizontal = True
     if horizontal:
         ax.barh(experiments, landcs, label='Land', color='mediumseagreen')
@@ -1622,15 +1664,18 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
         ax.barh(experiments, fgco2gts, bottom = landcs,  label='Ocean', color='dodgerblue')
         ax.barh(experiments, emissions_diff, bottom = emissions_bottoms,  label='Atmos', color='grey')
         ax.set_xlabel('Scenarios')
+
+    # Add percentages:
     add_pc_text = True
     if add_pc_text:
         def pc(a,b): return str("{0:.1f}%".format(100.*a/b))
         for e, exp in enumerate(experiments):
             print(e, exp, landcs[e], fgco2gts[e], emissions_diff[e])
-            t = emissions[e]
-            ax.text(5, e, pc(landcs[e], t),
-                    color='darkgreen', fontsize=8 , # fontweight='bold',
-                    verticalalignment='center',)
+            t = totals[e]
+            ax.text(landcs[e]/2, e, pc(landcs[e], t),
+                    color='#002200', #'darkgreen', 
+                    fontsize=8 , # fontweight='bold',
+                    verticalalignment='center',horizontalalignment='center')
 
             ax.text(landcs[e]+fgco2gts[e]/2., e, pc(fgco2gts[e], t),
                     color='darkblue', fontsize=8 , # fontweight='bold',
@@ -1640,14 +1685,18 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
                     color='black', fontsize=8 , # fontweight='bold',
                     verticalalignment='center',horizontalalignment='center')
 
-    ax.set_title('Carbon Allocation at '+str(threshold)+r'$\degree$'+' warming')
+    if float(threshold) > 1850.:
+        ax.set_title('Carbon Allocation at '+str(threshold))
+    else:   
+        ax.set_title('Carbon Allocation at '+str(threshold)+r'$\degree$'+' warming')
+    
     if do_legend:
         ax.legend()
 
     if make_figure_here:
         image_extention = diagtools.get_image_format(cfg)
-        path = diagtools.folder([cfg['plot_dir'], 'barcharts', land_carbon])
-        path += 'barchart_'+threshold + image_extention
+        path = diagtools.folder([cfg['plot_dir'], 'barcharts' ])
+        path += '_'.join(['barchart'+str(threshold), land_carbon, atmos]) + image_extention
         plt.savefig(path)
         plt.close()
     else:
@@ -1960,21 +2009,23 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
 
 def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt',
     LHS_panes = [{'x':'cumul_emissions', 'y':'tas_norm'}, ],
+    thresholds = ['4.0', '3.0', '2.0'],
 ):
     """
     Make a specific kind of figure.
     land_carbon can be nbpgt or tls
     """
     #standalone
-    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', land_carbon = land_carbon, fig=None, ax=None)
-    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = land_carbon, fig=None, ax=None)
-    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', land_carbon = land_carbon, fig=None, ax=None)
-    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', land_carbon = land_carbon, fig=None, ax=None)
+    #for threshold in thresholds:
+    #    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = threshold, land_carbon = land_carbon, fig=None, ax=None)
 
     fig = plt.figure()
-    fig.set_size_inches(12, 6)
-
-    gs = gridspec.GridSpec(3, 2,figure=fig, width_ratios=[1,1], wspace=0.5, hspace=0.5)
+    if len(LHS_panes) ==0:
+        fig.set_size_inches(7 , 6)
+        gs = gridspec.GridSpec(3, 1, figure=fig, hspace=0.5)
+    else:
+        fig.set_size_inches(12, 6)
+        gs = gridspec.GridSpec(3, 2,figure=fig, width_ratios=[1,1], wspace=0.5, hspace=0.5)
 
     # Get a big line graph on LHS.
     if len(LHS_panes) ==1:
@@ -2005,14 +2056,20 @@ def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 
             if LHS_pane['x'] == 'time':
                 ax_ts.set_xlim([2000., 2100.])
 
-    ax_4 =  fig.add_subplot(gs[0, 1])
-    ax_3 =  fig.add_subplot(gs[1, 1])
-    ax_2 =  fig.add_subplot(gs[2, 1])
+    if len(LHS_panes) ==0:
+        ax_4 =  fig.add_subplot(gs[0, 0])
+        ax_3 =  fig.add_subplot(gs[1, 0])
+        ax_2 =  fig.add_subplot(gs[2, 0])
+    else:
+        ax_4 =  fig.add_subplot(gs[0, 1])
+        ax_3 =  fig.add_subplot(gs[1, 1])
+        ax_2 =  fig.add_subplot(gs[2, 1])
 
+    axes = [ax_4, ax_3, ax_2]
     # make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '1.5', fig=None, ax=None)
-    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0', land_carbon = land_carbon,fig=fig, ax=ax_2, do_legend=True)
-    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '3.0', land_carbon = land_carbon,fig=fig, ax=ax_3, do_legend=False)
-    make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '4.0', land_carbon = land_carbon,fig=fig, ax=ax_4, do_legend=False)
+    for ax, threshold in zip(axes, thresholds):
+        make_bar_chart(cfg, data_dict, thresholds_dict, threshold = threshold, land_carbon = land_carbon,fig=fig, ax=ax, do_legend=False)
+
     ranges = []
     for ax in [ax_4, ax_3, ax_2]:
         plt.sca(ax)
@@ -2024,10 +2081,9 @@ def make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 
 
     image_extention = diagtools.get_image_format(cfg)
     path = diagtools.folder([cfg['plot_dir'], 'emissions_figures'])
-    path += '_'.join(['emssions_figure', land_carbon, str(len(LHS_panes))]) + image_extention
+    path += '_'.join(['emssions_figure', land_carbon, str(len(LHS_panes)), '_'.join(thresholds)]) + image_extention
     plt.savefig(path)
     plt.close()
-
     # 4 degree threshold data.
     # for each scenario at 4 degrees, we want:
     # total emissions at time_4
@@ -2163,6 +2219,10 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
+
+            assert 0
             plot_types = ['pair', 'pc', 'simple_ts', 'area', ]
             ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
             for pt, exp in product(plot_types, ssps):
@@ -2174,7 +2234,9 @@ def main(cfg):
                        ensemble = 'ensemble_mean')
                    continue
                 make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp=exp, plot_type = pt)
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
             assert 0
+
             LHS_panes = [
                 {'x':'time', 'y':'cumul_emissions'},
                 {'x':'time', 'y':'tls'},
