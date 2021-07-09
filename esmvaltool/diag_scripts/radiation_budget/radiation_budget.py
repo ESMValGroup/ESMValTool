@@ -21,7 +21,7 @@ def load_cubes(filenames):
     logger = logging.getLogger(__name__)
     cubes = iris.load(filenames)
     for cube in cubes:
-        logger.info(cube)
+        logger.info(f"{cube.standard_name}, {cube.units}, {cube.data}")
     return cubes
 
 

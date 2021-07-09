@@ -22,6 +22,8 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: full
+    area_statistics:
+      operator: mean
 
 diagnostics:
   radiation_budget:
