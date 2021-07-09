@@ -13,8 +13,12 @@ def zmnam_preproc(ifile,hemisphere):
     cdo = cd.Cdo()
 
     # Select hemisphere depending on recipe parameter
-    # lats 20,90 or -20,-90
-    rfile = ...  
+    if hemisphere == 'NH':
+        print('Northern hemisphere index')
+        rfile = cdo.sellonlatbox('0,360,20,90', input=ifile)
+    if hemisphere == 'SH':
+        print('Southern hemisphere index')
+        rfile = cdo.sellonlatbox('0,360,-90,-20', input=ifile)
 
     # Delete leap day, if any.
     full_da_nl = cdo.delete('month=2,day=29', input=rfile)

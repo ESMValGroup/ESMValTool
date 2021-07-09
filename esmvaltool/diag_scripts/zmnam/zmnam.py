@@ -51,7 +51,7 @@ def get_provenance_record(vatt, ancestor_files):
 
 def main(cfg):
     """
-    Run the zonal mean AM diagnostic.
+    Run the zonal mean annular mode diagnostic.
 
     Calling in order:
     - preprocessing
@@ -66,6 +66,8 @@ def main(cfg):
     out_dir = cfg['work_dir']
     write_plots = cfg['write_plots']
     fig_fmt = cfg['output_file_type']
+
+    hemisphere = cfg['hemisphere']
 
     # Go to work_dir for running
     os.chdir(out_dir)
@@ -83,7 +85,7 @@ def main(cfg):
 
         # Call diagnostics functions
         print("prepro")
-        (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile)
+        (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile, hemisphere)
         print("calc")
         outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
         provenance_record = get_provenance_record(props,

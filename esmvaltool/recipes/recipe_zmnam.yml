@@ -3,7 +3,7 @@
 ---
 documentation:
   description: |
-    Recipe for zonal mean Annular Mode.
+    Recipe for zonal mean annular mode.
     The diagnostics compute the index and the spatial
     pattern to assess the simulation of the
     strat-trop coupling in the extratropical regions
@@ -24,7 +24,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
+  - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 1985}#2008
 
 preprocessors:
   preproc:
@@ -37,7 +37,7 @@ preprocessors:
 
 diagnostics:
   zmnam:
-    description: Zonal mean Annular Mode
+    description: Zonal mean annular mode
     variables:
       zg:
         preprocessor: preproc
