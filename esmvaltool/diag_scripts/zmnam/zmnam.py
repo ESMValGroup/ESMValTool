@@ -1,5 +1,5 @@
 """
-Zonal-mean Annular Mode main routine.
+Zonal mean annular mode main routine.
 
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
 Copernicus C3S 34a lot 2 (MAGIC)
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 def get_provenance_record(vatt, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Compute Zonal-mean Annular Mode between "
+    caption = ("Compute zonal mean annular mode between "
                "{start_year} and {end_year} ".format(**vatt))
     record = {
         'caption': caption,
@@ -51,7 +51,7 @@ def get_provenance_record(vatt, ancestor_files):
 
 def main(cfg):
     """
-    Run the zonal-mean AM diagnostic.
+    Run the zonal mean AM diagnostic.
 
     Calling in order:
     - preprocessing
