@@ -96,7 +96,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         plt.title(
             str(int(lev[i_lev])) + ' Pa  ' + src_props[1] + ' ' + src_props[2])
         plt.xlabel('Time')
-        plt.ylabel('Zonal mean NAM')
+        plt.ylabel('Zonal mean AM')
 
         if write_plots:
             fname = (figfolder + '_'.join(src_props) + '_' +
@@ -129,7 +129,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         plt.xlim(min_var, max_var)
         plt.title('Daily PDF ' + str(int(lev[i_lev])) + ' Pa  ' +
                   src_props[1] + ' ' + src_props[2])
-        plt.xlabel('Zonal mean NAM')
+        plt.xlabel('Zonal mean AM')
         plt.ylabel('Normalized probability')
         plt.tight_layout()
 
@@ -160,7 +160,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         # Fixed contour levels. May be improved somehow.
         regr_levs = -1000 + np.arange(201) * 10
 
-        # Create the projections
+        # Create the projections, selecting hemisphere based on latitudes TODO
         ortho = ccrs.Orthographic(central_longitude=0, central_latitude=90)
         ccrs.Geodetic()
 
