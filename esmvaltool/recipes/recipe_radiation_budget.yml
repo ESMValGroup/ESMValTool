@@ -17,32 +17,49 @@ datasets:
   # yamllint disable-line rule:line-length
   - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r5i1p1f3, grid: gn, start_year: 1993, end_year: 2002}
 
+preprocessors:
+  single_value:
+    climate_statistics:
+      operator: mean
+      period: full
+
 diagnostics:
   radiation_budget:
     description: Radiation budget for HadGEM3 vs UKESM1.
     variables:
       rss:
         mip: Emon
+        preprocessor: single_value
       rsdt:
         mip: Amon
+        preprocessor: single_value
       rsut:
         mip: Amon
+        preprocessor: single_value
       rsutcs:
         mip: Amon
+        preprocessor: single_value
       rsds:
         mip: Amon
+        preprocessor: single_value
       rls:
         mip: Emon
+        preprocessor: single_value
       rlut:
         mip: Amon
+        preprocessor: single_value
       rlutcs:
         mip: Amon
+        preprocessor: single_value
       rlds:
         mip: Amon
+        preprocessor: single_value
       hfss:
         mip: Amon
+        preprocessor: single_value
       hfls:
         mip: Amon
+        preprocessor: single_value
     scripts:
       radiation_budget:
         script: radiation_budget/radiation_budget.py
