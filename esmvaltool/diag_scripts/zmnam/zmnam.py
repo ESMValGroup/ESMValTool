@@ -1,5 +1,5 @@
 """
-Zonal-mean Northern Annular Mode main routine.
+Zonal-mean Annular Mode main routine.
 
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
 Copernicus C3S 34a lot 2 (MAGIC)
@@ -9,6 +9,7 @@ Evaluation of stratosphere-troposphere coupling
 based on EOF/PC analysis of the geopotential height field.
 
 Modification history
+20210702-serva_federico: Update to include choice of hemisphere.
 20180512-serva_federico: Added output netCDFs, more use of preprocessor.
 20180510-serva_federico: Routines written.
 
@@ -28,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 def get_provenance_record(vatt, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Compute Zonal-mean Northern Annular Modes between "
+    caption = ("Compute Zonal-mean Annular Mode between "
                "{start_year} and {end_year} ".format(**vatt))
     record = {
         'caption': caption,
@@ -50,7 +51,7 @@ def get_provenance_record(vatt, ancestor_files):
 
 def main(cfg):
     """
-    Run the zonal-mean NAM diagnostic.
+    Run the zonal-mean AM diagnostic.
 
     Calling in order:
     - preprocessing
@@ -78,6 +79,7 @@ def main(cfg):
             props['ensemble'],
             str(props['start_year']) + '-' + str(props['end_year'], )
         ]
+        # get hemisphere from recipe, see hydrology example
 
         # Call diagnostics functions
         print("prepro")
