@@ -148,12 +148,18 @@ def zmnam_calc(da_fname, outdir, src_props):
         lead_pc = (pc[:, max_eigenval] - lead_pc_mean) / lead_pc_std
         lead_eof = eigenvec[:, max_eigenval]
 
+        # Constrain meridional EOF structure
         max_lat = max(range(len(lat)), key=lambda x: lat[x])
         min_lat = min(range(len(lat)), key=lambda x: lat[x])
 
-        if lead_eof[max_lat] > lead_eof[min_lat]:
+        if np.min(lat) > 0. and (lead_eof[max_lat] > lead_eof[min_lat]):
             lead_pc *= -1
             lead_eof *= -1
+
+        if np.min(lat) < 0. and (lead_eof[min_lat] > lead_eof[max_lat]):
+            lead_pc *= -1
+            lead_eof *= -1
+
 
         lead_pc_mo = np.zeros(len(date[mid_mon]), dtype='d')
         time_mo = np.zeros(len(date[mid_mon]), dtype='d')
