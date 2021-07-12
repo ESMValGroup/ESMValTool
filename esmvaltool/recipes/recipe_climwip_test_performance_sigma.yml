@@ -182,6 +182,11 @@ diagnostics:
     description: >
       Plot map of weighted multi-model mean and difference between weighted
       and unweighted multi-model mean.
+    themes:
+      - phys
+    realms:
+      - atmos
+
     scripts:
       weighted_temperature_map:
         script: weighting/weighted_temperature_map.py
