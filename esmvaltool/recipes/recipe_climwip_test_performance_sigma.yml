@@ -32,7 +32,6 @@ datasets: &model_data  # a selection of model to demonstrate functionality of th
   - {project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r(1:2)i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r(1:2)i1p1f1, grid: gn}
-  - {project: CMIP6, exp: [historical, ssp585], dataset: CESM2, ensemble: r(1:2)i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: CIESM, ensemble: r1i1p1f1, grid: gr}
   - {project: CMIP6, exp: [historical, ssp585], dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
@@ -56,7 +55,6 @@ datasets: &model_data  # a selection of model to demonstrate functionality of th
   - {project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r(1:2)i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-LR, ensemble: r(1:2)i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
-  - {project: CMIP6, exp: [historical, ssp585], dataset: MRI-ESM2-0, ensemble: r1i2p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: NESM3, ensemble: r(1:2)i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
   - {project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn}
