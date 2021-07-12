@@ -160,7 +160,6 @@ def zmnam_calc(da_fname, outdir, src_props):
             lead_pc *= -1
             lead_eof *= -1
 
-
         lead_pc_mo = np.zeros(len(date[mid_mon]), dtype='d')
         time_mo = np.zeros(len(date[mid_mon]), dtype='d')
 

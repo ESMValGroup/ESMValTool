@@ -8,7 +8,7 @@ Copernicus C3S 34a lot 2 (MAGIC)
 import cdo as cd
 
 
-def zmnam_preproc(ifile,hemisphere):
+def zmnam_preproc(ifile, hemisphere):
     """Preprocessing of the input dataset files."""
     cdo = cd.Cdo()
 

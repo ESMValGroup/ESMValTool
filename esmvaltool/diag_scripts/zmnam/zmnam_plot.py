@@ -161,10 +161,12 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         regr_levs = -1000 + np.arange(201) * 10
 
         # Create the projections, selecting hemisphere based on latitudes
-        if min(lat) > 0.: # NH
-            ortho = ccrs.Orthographic(central_longitude=0, central_latitude=90)
-        if min(lat) < 0.: # SH
-            ortho = ccrs.Orthographic(central_longitude=0, central_latitude=-90)
+        if min(lat) > 0.:  # NH
+            ortho = ccrs.Orthographic(central_longitude=0,
+                                      central_latitude=90)
+        if min(lat) < 0.:  # SH
+            ortho = ccrs.Orthographic(central_longitude=0,
+                                      central_latitude=-90)
         ccrs.Geodetic()
 
         # Create the geoaxes for an orthographic projection
