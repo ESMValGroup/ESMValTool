@@ -24,7 +24,7 @@ The LEC is computed from 3D fields of daily mean velocity and temperature fields
 pressure levels. The analysis is carried on in spectral fields, converting lonlat grids in Fourier coefficients.
 The components of the LEC are computed as in Ulbrich and Speth, 1991. In order to account for possible gaps
 in pressure levels, the daily fields of 2D near-surface temperature and horizontal velocities are needed. These are
-required to perform a vertical interpolation, susbtituting data in pressure levels where surface pressure is
+required to perform a vertical interpolation, substituting data in pressure levels where surface pressure is
 lower than the respective level and fields are not stored as an output of the analysed model.
 
 The material entropy production is computed by using the indirect or the direct method (or both). The former 
