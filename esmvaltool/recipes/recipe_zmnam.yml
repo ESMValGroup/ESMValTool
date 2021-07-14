@@ -24,7 +24,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 1988}
+  - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
 
 preprocessors:
   preproc:
@@ -46,3 +46,5 @@ diagnostics:
         script: zmnam/zmnam.py
         title: "Zonal mean AM diagnostics"
         hemisphere: "NH" # NH or SH
+        write_plots: true
+        write_netcdf: true
