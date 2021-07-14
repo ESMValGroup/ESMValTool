@@ -47,4 +47,4 @@ diagnostics:
         title: "Zonal mean AM diagnostics"
         hemisphere: "NH" # NH or SH
         write_plots: true
-        write_netcdf: true
+        write_netcdf: true # currently not used
