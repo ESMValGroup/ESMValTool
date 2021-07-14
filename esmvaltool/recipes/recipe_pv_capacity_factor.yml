@@ -61,7 +61,7 @@ preprocessors:
 
 diagnostics:
   capacity_factor:
-    description: Calculate the wind power capacity factor.
+    description: Calculate the photovoltaic capacity factor.
     variables:
       tas:
         reference_dataset: ERA-Interim

@@ -3,7 +3,8 @@
 # Authors:       Irene Cionni (ENEA, Italy)
 # #############################################################################
 # Description
-# This script modifies the wind capacity factor script wrote in bsc_magic
+# This script modifies the wind capacity factor diagnostic wrote for the
+# MAGIC project from BSC, see also esmvaltool/diag_scripts/magic_bsc/.
 #
 # Required
 # season: String to include shortcut for season in plot title
@@ -76,7 +77,7 @@ seasons <- toupper(params$season)
 #power_curves <- params$power_curves
 
 var0 <- unlist(var0)
-for (i in seq(1, length(model_names), 1)) {
+for (i in seq(1, length(model_names))) {
   start_year <- c(unlist(start_years[i]))
   end_year <- c(unlist(end_years[i]))
   no_of_years <- length(seq(start_year, end_year, 1))
@@ -119,7 +120,6 @@ for (i in seq(1, length(model_names), 1)) {
   dims <- append(dims[-time_dim], c(no_of_years, dims[time_dim] /
     no_of_years), after = 2)
   dim(data) <- dims
-  # Convert to 100 m wind:
   data <- aperm(data, c(3, 4, 2, 1))
   names(dim(data)) <- c("year", "day", "lat", "lon")
 ########var1#########################################
@@ -164,8 +164,6 @@ for (i in seq(1, length(model_names), 1)) {
   dims1 <- append(dims1[-time_dim], c(no_of_years, dims1[time_dim] /
     no_of_years), after = 2)
   dim(data1) <- dims1
-  # Convert to 100 m wind:
-
  data1 <- aperm(data1, c(3, 4, 2, 1))
   names(dim(data1)) <- c("year", "day", "lat", "lon")
 
@@ -174,7 +172,7 @@ for (i in seq(1, length(model_names), 1)) {
   ####################################
 
   seas_data <- Mean1Dim(data, 2)
-  data_cf1 <- rsds2CF(data1, data)
+  data_cf1 <- rsds2cf(data1, data)
   dim(data_cf1) <- dim(data)
   #---------------------------
   # Aggregate daily data to seasonal means
@@ -216,7 +214,7 @@ for (i in seq(1, length(model_names), 1)) {
 
   PW_names <- "PV_CF"
 
-  # Optional uppler limit for the color bar set in recipe
+  # Optional upper limit for the color bar set in recipe
   if (length(params$maxval_colorbar) == 1){
     maxval_colorbar <- params$maxval_colorbar
   }else{

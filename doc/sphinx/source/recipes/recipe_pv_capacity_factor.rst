@@ -6,7 +6,8 @@ Capacity factor for solar photovoltaic (PV) systems
 Overview
 --------
 
-This diagnostic computes the PV factor, a measure of the fraction of the 
+This diagnostic computes the photovoltaic (PV) capacity factor, 
+a measure of the fraction of the 
 maximum possible energy produced per PV grid cell. It uses the daily incoming 
 surface solar radiation and the surface temperature with a method described
 in `Bett and Thornton (2016)`_. The user can select temporal
@@ -21,12 +22,12 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_pv_capacity_factor.yml
+    * recipe_pv_capacity_factor.yml
 
 Diagnostics are stored in diag_scripts/pv_capacityfactor/
 
-* pv_capacity_factor.R: prepares data and plots results.
-* PV_CF.R: calculates the daily capacity factor.
+    * pv_capacity_factor.R: prepares data and plots results.
+    * PV_CF.R: calculates the daily capacity factor.
 
 
 User settings
