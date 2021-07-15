@@ -1,13 +1,25 @@
 ---
 # Common global attributes for Cmorizer output
 attributes:
+
   dataset_id: WOA
-  version: '2018'
   tier: 2
   modeling_realm: clim
-  project_id: OBS6
-  source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
-  reference: 'woa'
+
+  # WOA13
+  project_id: OBS
+  short_name: woa13
+  version: '2013v2'
+  source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2/'
+  reference: 'woa' #change to woa13 in references?
+
+  # WOA18
+  #project_id: OBS6
+  #short_name: woa18
+  #version: '2018'
+  #source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
+  #reference: 'woa' #change to woa18 in references?
+
   comment: ''
 
 # Variables to cmorize (here use only filename prefix)
@@ -17,38 +29,34 @@ variables:
     mip: Omon
     raw_var: t_an
     name: temperature
-    file: woa18_decav81B0_t
+    file: decav81B0_t
     srf_var: tos
   so:
     mip: Omon
     raw_var: s_an
     name: salinity
-    file: woa18_decav81B0_s
+    file: decav81B0_s
     srf_var: sos
   o2:
-    mip: Omon
+    mip: Oyr
     raw_var: o_an
     name: oxygen
-    file: woa18_all_o
-    srf_var: o2os
+    file: all_o
   no3:
-    mip: Omon
+    mip: Oyr
     raw_var: n_an
     name: nitrate
-    file: woa18_all_n
-    srf_var: no3os
+    file: all_n
   po4:
-    mip: Omon
+    mip: Oyr
     raw_var: p_an
     name: phosphate
-    file: woa18_all_p
-    srf_var: po4os
+    file: all_p
   si:
-    mip: Omon
+    mip: Oyr
     raw_var: i_an
     name: silicate
-    file: woa18_all_i
-    srf_var: sios
+    file: all_i
 
 # Custom dictionary for this cmorizer
 custom:

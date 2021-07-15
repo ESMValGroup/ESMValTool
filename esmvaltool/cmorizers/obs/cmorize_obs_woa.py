@@ -26,10 +26,7 @@ import os
 from warnings import catch_warnings, filterwarnings
 import requests
 import iris
-import numpy as np
 from cf_units import Unit
-
-from esmvalcore.preprocessor import annual_statistics
 
 from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
                         save_variable, set_global_atts)
@@ -37,12 +34,25 @@ from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
 logger = logging.getLogger(__name__)
 
 
-def _fix_data(cube, var):
+def _fix_data(cube, var, version):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
-    with constant_metadata(cube):
-        if var in ['o2', 'po4', 'si', 'no3']:
-            cube /= 1000.  # Convert from umol/kg to mol/m^3
+
+    if version == '2018':
+        with constant_metadata(cube):
+            if var in ['o2', 'po4', 'si', 'no3']:
+                cube /= 1000.  # Convert from umol/kg to mol/m^3
+
+    if version == '2013v2':
+        with constant_metadata(cube):
+            mll_to_mol = ['po4', 'si', 'no3']
+            if var in mll_to_mol:
+                cube /= 1000.  # Convert from ml/l to mol/m^3
+            elif var == 'thetao':
+                cube += 273.15  # Convert to Kelvin
+            elif var == 'o2':
+                cube *= 44.661 / 1000.  # Convert from ml/l to mol/m^3
+
     return cube
 
 
@@ -51,23 +61,23 @@ def collect_files(in_dir, var, cfg):
     file_list = []
     var_dict = cfg['variables'][var]
     in_dir = os.path.join(in_dir, var_dict['name'])
-    # create list of monthly data
-    for mon in range(1, 13):
-        fname = var_dict['file'] + "{:02d}".format(mon) + '_01.nc'
-        in_file = os.path.join(in_dir, fname)
 
-        # download if missing
-        if not os.path.isfile(in_file):
-            if not os.path.isdir(in_dir):
-                os.makedirs(in_dir)
-            logger.info('Input file %s is missing. Start download ... ', fname)
-            url = os.path.join(cfg['attributes']['source'], var_dict['name'],
-                               'netcdf', var_dict['file'].split('_')[1],
-                               cfg['custom']['resolution'], fname)
-            url_file = requests.get(url)
-            open(in_file, 'wb').write(url_file.content)
+    fname = cfg['attributes']['short_name'].lower(
+    ) + '_' + var_dict['file'] + '00_01.nc'
+    in_file = os.path.join(in_dir, fname)
 
-        file_list.append(in_file)
+    # download if missing
+    if not os.path.isfile(in_file):
+        if not os.path.isdir(in_dir):
+            os.makedirs(in_dir)
+        logger.info('Input file %s is missing. Start download ... ', fname)
+        url = os.path.join(cfg['attributes']['source'], var_dict['name'],
+                           'netcdf', var_dict['file'].split('_')[0],
+                           cfg['custom']['resolution'], fname)
+        url_file = requests.get(url)
+        open(in_file, 'wb').write(url_file.content)
+
+    file_list.append(in_file)
 
     return file_list
 
@@ -90,14 +100,15 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
 
     # set reference time
     year = raw_info['reference_year']
-    cube.coord('time').points = np.arange(0.5, 12.5)
+    cube.coord('time').climatological = False
+    cube.coord('time').points = 6.5
     cube.coord('time').units = Unit('months since ' + str(year) +
                                     '-01-01 00:00:00',
                                     calendar='gregorian')
 
     fix_var_metadata(cube, var_info)
     fix_coords(cube)
-    _fix_data(cube, var)
+    _fix_data(cube, var, attrs['version'])
     set_global_atts(cube, attrs)
     save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
@@ -114,11 +125,6 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
                       out_dir,
                       attrs,
                       unlimited_dimensions=['time'])
-
-    # derive annual mean (Oyr)
-    attrs['mip'] = 'Oyr'
-    cube = annual_statistics(cube, 'mean')
-    save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
