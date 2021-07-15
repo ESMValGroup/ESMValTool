@@ -98,11 +98,43 @@ This will create a new
 `conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
 and install ESMValTool into it with a single command.
 
+
 .. code-block:: bash
 
     conda activate esmvaltool
 
 Of course it is also possible to choose a different name than ``esmvaltool`` for the environment.
+
+`mamba <https://github.com/mamba-org/mamba>`_ is a fast alternative to ``conda`` and an installation using ``mamba`` is possible as well, and may prove to be faster. To use ``mamba``, you will have to install it first, in the ``(base)`` environment:
+
+
+.. code-block:: bash
+
+    conda install -c conda-forge mamba
+
+
+then repeat the same steps as above but using ``mamba`` instead of ``conda``:
+
+
+.. code-block:: bash
+
+    mamba create --name esmvaltool
+    mamba activate esmvaltool
+    mamba install -c conda-forge -c esmvalgroup esmvaltool
+
+
+or in one single command:
+
+
+.. code-block:: bash
+
+    mamba create --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool
+
+
+then activate the environment as above. Generally speaking, since ``mamba`` is optimized for speed
+and carries over the same functionality as ``conda``, it can safely replace
+calls to ``conda`` environment creation/solving when these become too slow. We have
+carried tests and found ``mamba`` functionally viable for installation purposes.
 
 The next step is to check that the installation works properly.
 To do this, run the tool with:
@@ -242,6 +274,15 @@ and install these dependencies into a new conda environment with the command
 .. code-block:: bash
 
     conda env create --name esmvaltool --file environment.yml
+
+In case this proves to be slow, you can safely replace the call to ``conda env create`` with
+``mamba env create``, after installing mamba first:
+
+.. code-block:: bash
+
+    conda install -c conda-forge mamba
+    mamba env create --name esmvaltool --file environment.yml
+
 
 Finally, activate the newly created environment
 
@@ -507,6 +548,14 @@ conda environment on MacOSX, use the dedicated environment file:
 .. code-block:: bash
 
     conda env create --name esmvaltool --file environment_osx.yml
+
+In case this proves to be slow, you can safely replace the call to ``conda env create`` with
+``mamba env create``, after installing mamba first:
+
+.. code-block:: bash
+
+    conda install -c conda-forge mamba
+    mamba env create --name esmvaltool --file environment.yml
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option ``--name SOME_ENVIRONMENT_NAME`` to define a custom name. You should
