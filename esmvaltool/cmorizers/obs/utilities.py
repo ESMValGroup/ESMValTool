@@ -393,7 +393,7 @@ def _roll_cube_data(cube, shift, axis):
 
 def _set_units(cube, units):
     """Set units in compliance with cf_unit."""
-    special = {'psu': 1.e-3, 'Sv': '1e6 m3 s-1'}
+    special = {'psu': 1, 'Sv': '1e6 m3 s-1'}
     if units in list(special.keys()):
         cube.units = special[units]
     else:
