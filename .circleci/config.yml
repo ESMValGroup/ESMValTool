@@ -228,9 +228,12 @@ jobs:
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             # conda update -y conda > /logs/conda.txt 2>&1
             # Install ESMValTool in a new conda environment
-            conda create -y --name esmvaltool -c esmvalgroup -c conda-forge esmvaltool 'python=3.9'
+            conda install -y -c conda-forge mamba
+            conda create -y --name esmvaltool
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
+            # install the package
+            mamba install -c conda-forge -c esmvalgroup esmvaltool
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation
@@ -273,6 +276,7 @@ workflows:
       - develop
       - documentation
       - conda_build
+      - conda_install
   nightly:
     triggers:
       - schedule:
