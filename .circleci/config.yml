@@ -276,7 +276,6 @@ workflows:
       - develop
       - documentation
       - conda_build
-      - conda_install
   nightly:
     triggers:
       - schedule:
