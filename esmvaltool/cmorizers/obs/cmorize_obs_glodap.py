@@ -103,7 +103,10 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
                 calendar='gregorian')
     cube = iris.util.new_axis(cube)
     cube.add_dim_coord(
-        iris.coords.DimCoord(6., standard_name='time', units=time), 0)
+        iris.coords.DimCoord(6.,
+                             standard_name='time',
+                             units=time,
+                             bounds=[0., 12.]), 0)
 
     fix_var_metadata(cube, var_info)
     fix_coords(cube)
