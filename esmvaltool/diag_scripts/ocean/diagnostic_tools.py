@@ -145,7 +145,7 @@ def bgc_units(cube, name):
     if name in ['tos', 'thetao']:
         new_units = 'celsius'
 
-    if name in ['no3', 'o2', 'po4', 'si' ]:
+    if name in ['no3', 'o2', 'po4', 'si', 'dissic', 'talk' ]:
         new_units = 'mmol m-3'
 
     if name in ['chl', ]:

@@ -100,11 +100,11 @@ def plot_taylor(cubes, layer, obsname, cfg):
                prop=dict(size='small'),
                loc='center right',
                markerscale=0.8)
-    add_lab = str(np.int32(layer)) if layer != '' else ''
-    fig.suptitle(obs_cube.long_name + add_lab, size='large')  # Figure title
+    add_lab =  str(np.int32(layer)) if layer != '' else ''
+    fig.suptitle(obs_cube.long_name + ' ' + add_lab, size='large')  # Figure title
 
     #
-    add_lab = add_lab if add_lab != '' else ''
+    #add_lab = add_lab if add_lab != '' else ''
     plot_file = diagtools.folder(cfg['plot_dir']) + '_'.join(
         ['multimodel_vs', obsname, obs_cube.var_name, add_lab, 'taylor'])
 
@@ -263,6 +263,8 @@ def add_map_plot(fig, axs, plot_cube, cols):
         if abs(nspace[1] - nspace[0]) < 1:
             cformat = int(np.ceil(-np.log10(abs(nspace[1] - nspace[0]))))
             cformat = '%.' + str(cformat) + 'f'
+        elif max(nspace) > 100.:
+            cformat = '%.0f'
         cbar = plt.colorbar(orientation='horizontal',
                             cax=axins,
                             format=cformat)
@@ -429,6 +431,8 @@ def select_cubes(cubes, layer, obsname, metadata):
             if user_range['diff']:
                 mrange = user_range['diff']
                 plot_cubes[thename]['extend'] = 'both'
+            if mrange[0] >= 0.:
+                plot_cubes[thename]['cmap'] = 'plasma'
         plot_cubes[thename]['range'] = mrange
 
     return plot_cubes
