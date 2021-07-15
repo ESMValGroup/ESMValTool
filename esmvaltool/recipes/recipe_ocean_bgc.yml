@@ -58,20 +58,20 @@ preprocessors:
     custom_order: true
     volume_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: ['WOA']
+    #multi_model_statistics:
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: ['WOA']
 
   # Global area-weighted Average from 2D field
   prep_global_Surface_average_timeseries_2D:
     custom_order: true
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: ['WOA']
+    #multi_model_statistics:
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: ['WOA']
 
   # Global area -weighted surface Average from 3D field
   prep_global_Surface_average_timeseries_3D:
@@ -81,10 +81,10 @@ preprocessors:
       scheme: linear_horizontal_extrapolate_vertical
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: ['WOA']
+    #multi_model_statistics:
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: ['WOA']
 
   prep_timeseries_scalar: # Load file as is.
     custom_order: true
