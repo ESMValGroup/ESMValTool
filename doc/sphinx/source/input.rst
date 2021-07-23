@@ -123,7 +123,7 @@ At the moment, cmorize_obs supports Python and NCL scripts.
 
 Cmorization as a fix
 --------------------
-As of early 2020, ESMValTool also provides support for some data in their native
+ESMValCore also provides support for some datasets in their native
 format. In this case, the steps needed to reformat the data are executed as
 datasets fixes during the execution of an ESMValTool recipe, as one of the first
 preprocessor steps, see :ref:`fixing data <esmvalcore:fixing_data>`.
