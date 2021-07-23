@@ -146,28 +146,7 @@ recipe, they can refer to the native6 project. For example:
 
 More examples can be found in the diagnostics ``ERA5_native6`` in the
 recipe `examples/recipe_check_obs.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.
-
-It may be useful in some cases to create ERA5 daily cmorized data. This can be
-achieved by using a cmorizer *recipe*,
-see `recipe_daily_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cmorizers/recipe_daily_era5.yml>`_.
-This recipe reads native, hourly ERA5 data, performs a daily aggregation
-preprocessor, and then calls a diagnostic that operates on the data. In this
-example, the diagnostic renames the data to the standard OBS6 format. The output
-are thus daily, cmorized ERA5 data, that can be used through the OBS6 project.
-As such, this example recipe creates a local pool of cmorized data. The advantage, in this
-case, is that the daily aggregation is performed only once, which can save a lot
-of time and compute if it is used often.
-
-The example cmorizer recipe can be run like any other ESMValTool recipe:
-
-.. code-block:: bash
-
-    esmvaltool run cmorizers/recipe_daily_era5.yml
-
-Note that the ``recipe_daily_era5.yml`` adds the next day of the new year to
-the input data. This is because one of the fixes needed for the ERA5 data is to
-shift (some of) the data half an hour back in time, resulting in a missing
-record on the last day of the year. ERA5 data can be downloaded using `era5cli <https://era5cli.readthedocs.io>`_.
+ERA5 data can be downloaded using `era5cli <https://era5cli.readthedocs.io>`_.
 
 .. _supported_datasets:
 
