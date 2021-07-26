@@ -131,7 +131,7 @@ Compared to the workflow described above, this has the
 advantage that the user does not need to store a duplicate (cmorized) copy of
 the data. Instead, the cmorization is performed 'on the fly' when running a
 recipe. The native6 project supports data in the format defined in the
-`config-developer file <https://github.com/ESMValGroup/ESMValCore/blob/a9312a7d5be4fa3aac55c0b2ef089c6b4e1a61a9/esmvalcore/config-developer.yml#L191-L201>`_.
+`config-developer file <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/quickstart/configure.html#developer-configuration-file>`_.
 Some of ERA5, ERA5-Land and MSWEP data are currently supported,
 see :ref:`supported datasets <supported_datasets>`.
 
