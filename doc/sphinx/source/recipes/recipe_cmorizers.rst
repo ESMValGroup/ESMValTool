@@ -29,7 +29,7 @@ The example cmorizer recipe can be run like any other ESMValTool recipe:
 
 Note that the ``recipe_daily_era5.yml`` adds the next day of the new year to
 the input data. This is because one of the fixes needed for the ERA5 data is to
-shift (some of) the data half an hour back in time, resulting in a missing
+shift the time axis of non-instantaneous variables half an hour back in time, resulting in a missing
 record on the last day of the year. ERA5 data can be downloaded using `era5cli <https://era5cli.readthedocs.io>`_.
 
 Available recipes and diagnostics
