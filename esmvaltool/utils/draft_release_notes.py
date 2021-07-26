@@ -41,7 +41,7 @@ GITHUB_REPO = {
 }
 
 PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2021, 2, 9, 00),
+    'esmvalcore': datetime.datetime(2021, 6, 14, 00),
     'esmvaltool': datetime.datetime(2021, 2, 25, 00),
 }
 LABELS = {
