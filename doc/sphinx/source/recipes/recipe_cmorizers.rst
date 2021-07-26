@@ -15,7 +15,7 @@ achieved by using a cmorizer *recipe*,
 see `recipe_daily_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cmorizers/recipe_daily_era5.yml>`_.
 This recipe reads native, hourly ERA5 data, performs a daily aggregation
 preprocessor, and then calls a diagnostic that operates on the data. In this
-example, the diagnostic renames the data to the standard OBS6 format. The output
+example, the diagnostic renames the files to the standard OBS6 file names. The output
 are thus daily, cmorized ERA5 data, that can be used through the OBS6 project.
 As such, this example recipe creates a local pool of cmorized data. The advantage, in this
 case, is that the daily aggregation is performed only once, which can save a lot
