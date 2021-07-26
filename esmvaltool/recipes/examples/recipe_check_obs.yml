@@ -163,10 +163,18 @@ diagnostics:
       clivi:
       clt:
       cltStderr:
-      clwvi:
+      lwp:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+      rsdt:
+      rlus:
+      rsus:
+      rsuscs:
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: AVHRR-fv3.0, start_year: 1982, end_year: 2016}
+         type: sat, version: AVHRR-AMPM-fv3.0, start_year: 1982, end_year: 2016}
     scripts: null
 
 
@@ -540,6 +548,28 @@ diagnostics:
     scripts: null
 
 
+  WFDE5:
+    description: WFDE5 check
+    variables:
+      tas:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+      pr:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+            type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+            type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+    scripts: null
+
+
   WOA:
     description: WOA check
     variables:
@@ -750,6 +780,21 @@ diagnostics:
     additional_datasets:
       - {dataset: CERES-SYN1deg, project: OBS, tier: 3,
          type: sat, version: Ed3A, start_year: 2001, end_year: 2016}
+    scripts: null
+
+
+  CLARA-AVHRR:
+    description: CLARA-AVHRR check
+    variables:
+      clt:
+        mip: Amon
+      clivi:
+        mip: Amon
+      lwp:
+        mip: Amon
+    additional_datasets:
+      - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
+         type: sat, version: V002_01, start_year: 1982, end_year: 2018}
     scripts: null
 
 
@@ -1125,6 +1170,17 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA5, project: native6, tier: 3, type: reanaly,
          version: 1, start_year: 1990, end_year: 1990}
+    scripts: null
+
+
+  ESACCI-WATERVAPOUR:
+    description: ESACCI-WV check
+    variables:
+      prw:
+    additional_datasets:
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: CDR2-L3S-05deg_fv3.1,
+         start_year: 2003, end_year: 2017}
     scripts: null
 
 

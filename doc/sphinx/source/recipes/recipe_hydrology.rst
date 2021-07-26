@@ -38,6 +38,9 @@ HYPE
 The hydrological catchment model HYPE simulates water flow and substances on their way from precipitation through soil, river and lakes to the river outlet.
 HYPE is developed at the Swedish Meteorological and Hydrological Institute. The recipe pre-processes ERA-Interim and ERA5 data for use in HYPE.
 
+GlobWat
+*******
+GlobWat is a soil water balance model that has been provided by the Food and Agriculture Organization (FAO) to assess water use in irrigated agriculture (http://www.fao.org/nr/water/aquamaps). The recipe pre-processes ERA-Interim and ERA5 reanalyses data for use in the GlobWat model. GlobWat requires potential evapotranspiration (evspsblpot) as input. The variable evspsblpot is not available in ERA-Interim. Thus, we use debruin function (De Bruin et al. 2016) or the langbein method (Langbein et al. 1949) to obtain evspsblpot using both ERA-Interim and ERA5. The Langbein function needs a variable tas and the debruin function besides that needs the variables psl, rsds, and rsdt as input. In order to calculate monthly/daily pet with Langbein method we assumed that tas is constant over time and the average value is equal to the annual average.
 
 
 Available recipes and diagnostics
@@ -50,6 +53,7 @@ Recipes are stored in esmvaltool/recipes/hydrology
     * recipe_wflow.yml
     * recipe_lisflood.yml
     * recipe_hype.yml
+    * recipe_globwat.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/hydrology
 
@@ -58,6 +62,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/hydrology
     * wflow.py
     * lisflood.py
     * hype.py
+    * globwat.py 
 
 
 User settings in recipe
@@ -146,6 +151,20 @@ All hydrological recipes require a shapefile as an input to produce forcing data
    * method: contains
    * decomposed: true
 
+#. recipe_globwat.yml
+
+   *Required preprocessor settings:*
+
+   * start_year: 2004
+   * end_year: 2004
+   * target_grid_file: grid of globwat input files. A target file has been generated from one of the GlobWat models sample files (prc01wb.asc) for regridding ERA5 and ERA-Interim datasets. The ASCII file can be found at: http://www.fao.org/geonetwork/srv/en/metadata.show?currTab=simple&id=52366. You can use the GDAL translator to convert the file from ASCII format to NetCDF format by entering the following command into the terminal: gdal translate -of netCDF ASCII prc01wb.asc globwat_target_grid.nc
+
+   *Optional preprocessor settings:*
+
+   * area_selection: A region bounding box to extract the data for a specific region. The area selection preprocessor can be used by users to process the data for their desired region. The data will be processed at the global scale if the preprocessor in the recipe is commented.
+   * regrid_scheme: The area-weighted regridding scheme is used as a default regridding scheme to ensure that the total volume of water is consistent before and after regridding.
+   * langbein_pet: Can be set to True to use langbein function for calculating evspsblpot (default is de bruin method)
+
 
 Variables
 ---------
@@ -197,6 +216,13 @@ Variables
    * tasmax (atmos, daily or hourly, longitude, latitude, time)
    * pr (atmos, daily or hourly, longitude, latitude, time)
 
+#. recipe_globwat.yml
+
+   * pr (atmos, daily or monthly, longitude, latitude, time)
+   * tas (atmos, daily or monthly, longitude, latitude, time)
+   * psl (atmos, daily or monthly, longitude, latitude, time)
+   * rsds (atmos, daily or monthly, longitude, latitude, time)
+   * rsdt (atmos, daily or monthly , longitude, latitude, time)
 
 Observations and reformat scripts
 ---------------------------------
@@ -222,6 +248,10 @@ Output
 
    The forcing data, stored in separate files per variable.
 
+#. recipe_globwat.yml
+
+   The forcing data, stored in separate files per timestep and variable.
+
 References
 ----------
 
@@ -230,3 +260,5 @@ References
 * Arheimer, B., Lindström, G., Pers, C., Rosberg, J. och J. Strömqvist, 2008. Development and test of a new Swedish water quality model for small-scale and large-scale applications. XXV Nordic Hydrological Conference, Reykjavik, August 11-13, 2008. NHP Report No. 50, pp. 483-492.
 * Lindström, G., Pers, C.P., Rosberg, R., Strömqvist, J., Arheimer, B. 2010. Development and test of the HYPE (Hydrological Predictions for the Environment) model – A water quality model for different spatial scales. Hydrology Research 41.3-4:295-319.
 * van der Knijff, J. M., Younis, J. and de Roo, A. P. J.: LISFLOOD: A GIS-based distributed model for river basin scale water balance and flood simulation, Int. J. Geogr. Inf. Sci., 24(2), 189–212, 2010.
+* Hoogeveen, J., Faurès, J. M., Peiser, L., Burke, J., de Giesen, N. V.: GlobWat--a global water balance model to assess water use in irrigated agriculture, Hydrology & Earth System Sciences Discussions, 2015 Jan 1;12(1), Doi:10.5194/hess-19-3829-2015.
+* Langbein, W.B., 1949. Annual runoff in the United States. US Geol. Surv.(https://pubs.usgs.gov/circ/1949/0052/report.pdf)
