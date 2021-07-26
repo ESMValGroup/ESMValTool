@@ -1,6 +1,6 @@
 .. _recipe_cmorizers:
 
-Cmorizers recipes
+CMORizer recipes
 =================
 
 Overview
