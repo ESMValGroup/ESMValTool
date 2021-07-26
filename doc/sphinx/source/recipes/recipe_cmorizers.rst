@@ -8,8 +8,9 @@ Overview
 
 These are cmorizer recipes calling cmorizer diagnostic scripts.
 
-ESMValCore supports ERA5 hourly and montly datasets in their native
-format, see :ref:`Cmorization as a fix <esmvaltool:cmorization_as_fix>`.
+ESMValCore supports ERA5 hourly and monthly datasets in their native
+format, see :ref:`Cmorization as a fix <esmvaltool:cmorization_as_fix>`
+and `ERA5 data documentation <https://confluence.ecmwf.int/display/CKB/ERA5%3A+data+documentation>`_.
 It may be useful in some cases to create ERA5 daily cmorized data. This can be
 achieved by using a cmorizer *recipe*,
 see `recipe_daily_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cmorizers/recipe_daily_era5.yml>`_.
