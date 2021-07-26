@@ -6,23 +6,23 @@ CMORizer recipes
 Overview
 --------
 
-These are cmorizer recipes calling cmorizer diagnostic scripts.
+These are CMORizer recipes calling CMORizer diagnostic scripts.
 
 ESMValCore supports ERA5 hourly and monthly datasets in their native
-format, see :ref:`Cmorization as a fix <esmvaltool:cmorization_as_fix>`
+format, see :ref:`CMORization as a fix <esmvaltool:cmorization_as_fix>`
 and `ERA5 data documentation <https://confluence.ecmwf.int/display/CKB/ERA5%3A+data+documentation>`_.
-It may be useful in some cases to create ERA5 daily cmorized data. This can be
-achieved by using a cmorizer *recipe*,
+It may be useful in some cases to create ERA5 daily CMORized data. This can be
+achieved by using a CMORizer *recipe*,
 see `recipe_daily_era5.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/cmorizers/recipe_daily_era5.yml>`_.
 This recipe reads native, hourly ERA5 data, performs a daily aggregation
 preprocessor, and then calls a diagnostic that operates on the data. In this
 example, the diagnostic renames the files to the standard OBS6 file names. The output
-are thus daily, cmorized ERA5 data, that can be used through the OBS6 project.
-As such, this example recipe creates a local pool of cmorized data. The advantage, in this
+are thus daily, CMORized ERA5 data, that can be used through the OBS6 project.
+As such, this example recipe creates a local pool of CMORized data. The advantage, in this
 case, is that the daily aggregation is performed only once, which can save a lot
 of time and compute if it is used often.
 
-The example cmorizer recipe can be run like any other ESMValTool recipe:
+The example CMORizer recipe can be run like any other ESMValTool recipe:
 
 .. code-block:: bash
 
