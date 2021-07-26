@@ -129,8 +129,10 @@ corresponding to the data tier: Tier2 for freely-available datasets (other
 than obs4mips and ana4mips) and Tier3 for restricted datasets (i.e., dataset
 which requires a registration to be retrieved or provided upon request to
 the respective contact or PI).
-The CMORization follows the CMIP5 or CMIP6 CMOR tables for the OBS and OBS6
-projects respectively.
+The CMORization follows the
+`CMIP5 CMOR tables <https://github.com/PCMDI/cmip5-cmor-tables>`_ or
+`CMIP6 CMOR tables <https://github.com/PCMDI/cmip6-cmor-tables>`_ for the
+OBS and OBS6 projects respectively.
 The resulting output is saved in the output_dir, again following the Tier
 structure.
 The output file names follow the definition given in
