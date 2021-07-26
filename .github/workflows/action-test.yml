@@ -5,6 +5,7 @@ on:
   push:
     branches:
     - main
+    - pin_iris_smaller_304
 
   schedule:
     - cron: '0 0 * * *'
