@@ -92,3 +92,8 @@ Variables
    * tsn
    * uas
    * vas
+
+References
+----------
+
+* Hersbach, H., et al., Quarterly Journal of the Royal Meteorological Society, 730, 1999-2049, doi:10.1002/qj.3803, 2020.
