@@ -42,6 +42,8 @@ Documentation
 -  Add functional Autoassess diagnostics: land surface metrics: permafrost, soil moisture, surface radiation (`#2170 <https://github.com/ESMValGroup/ESMValTool/pull/2170>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Add citation info in `recipe_eady_growth_rate.yml` (`#2188 <https://github.com/ESMValGroup/ESMValTool/pull/2188>`__) `sloosvel <https://github.com/sloosvel>`__
 -  Update version number to 2.3.0 (`#2213 <https://github.com/ESMValGroup/ESMValTool/pull/2213>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Update release schedule for 2.3.0 (`#2247 <https://github.com/ESMValGroup/ESMValTool/pull/2247>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Changelog update to v2.3.0 (`#2214 <https://github.com/ESMValGroup/ESMValTool/pull/2214>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 
 Diagnostics
 ~~~~~~~~~~~
