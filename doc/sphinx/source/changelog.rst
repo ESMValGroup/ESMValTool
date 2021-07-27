@@ -13,7 +13,6 @@ This release includes
 Bug fixes
 ~~~~~~~~~
 
--  Fix extract_seasons in validation recipe  (`#2054 <https://github.com/ESMValGroup/ESMValTool/pull/2054>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
 -  Indent block to pick up and raise exception if cmorizer data not found (TierX dir is not there) (`#1877 <https://github.com/ESMValGroup/ESMValTool/pull/1877>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Skip recipe filler tests until we have a new release since GA tests are failing (`#2089 <https://github.com/ESMValGroup/ESMValTool/pull/2089>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Fixed broken link to contributions in README (`#2102 <https://github.com/ESMValGroup/ESMValTool/pull/2102>`__) `Manuel Schlund <https://github.com/schlunma>`__
@@ -31,8 +30,6 @@ Bug fixes
 Documentation
 ~~~~~~~~~~~~~
 
--  Update changelog and changelog tool for v2.2.0 (`#2043 <https://github.com/ESMValGroup/ESMValTool/pull/2043>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
--  Final update to the changelog for v2.2.0  (`#2056 <https://github.com/ESMValGroup/ESMValTool/pull/2056>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
 -  Improving the README.md file with a more appealing look and bit more info (`#2065 <https://github.com/ESMValGroup/ESMValTool/pull/2065>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Update plot title martin18grl (`#2080 <https://github.com/ESMValGroup/ESMValTool/pull/2080>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Update contribution guidelines (`#2031 <https://github.com/ESMValGroup/ESMValTool/pull/2031>`__) `Bouwe Andela <https://github.com/bouweandela>`__
@@ -89,7 +86,6 @@ Installation
 Improvements
 ~~~~~~~~~~~~
 
--  Set version to 2.2.0 (`#2042 <https://github.com/ESMValGroup/ESMValTool/pull/2042>`__) `Javier Vegas-Regidor <https://github.com/jvegasbsc>`__
 -  Add EUCP and IS-ENES3 projects to config-references (`#2066 <https://github.com/ESMValGroup/ESMValTool/pull/2066>`__) `Peter Kalverla <https://github.com/Peter9192>`__
 -  Fix flake8 tests on CircleCI (`#2070 <https://github.com/ESMValGroup/ESMValTool/pull/2070>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 -  Added recipe filler. (`#1707 <https://github.com/ESMValGroup/ESMValTool/pull/1707>`__) `Lee de Mora <https://github.com/ledm>`__
