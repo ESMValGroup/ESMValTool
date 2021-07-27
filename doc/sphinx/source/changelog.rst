@@ -22,6 +22,11 @@ Bug fixes
 -  Update for outdated link to reference Déandreis et al. (2014). (`#2076 <https://github.com/ESMValGroup/ESMValTool/pull/2076>`__) `katjaweigel <https://github.com/katjaweigel>`__
 -  Fixed recipes for ESMValCore 2.3.0 (`#2203 <https://github.com/ESMValGroup/ESMValTool/pull/2203>`__) `Manuel Schlund <https://github.com/schlunma>`__
 -  Fix the WFDE5 cmorizer (`#2211 <https://github.com/ESMValGroup/ESMValTool/pull/2211>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix broken CMORizer log message if no Tier directory exists (`#2207 <https://github.com/ESMValGroup/ESMValTool/pull/2207>`__) `jmrgonza <https://github.com/jmrgonza>`__
+-  Fix bug in ClimWIP basic test recipe when plotting (`#2225 <https://github.com/ESMValGroup/ESMValTool/pull/2225>`__) `Lukas Brunner <https://github.com/lukasbrunner>`__
+-  Fix bug in ClimWIP advanced test recipe when plotting (`#2227 <https://github.com/ESMValGroup/ESMValTool/pull/2227>`__) `Lukas Brunner <https://github.com/lukasbrunner>`__
+-  Adjust time range for the `WDFE5` dataset in the `recipe_check_obs.yml` (`#2232 <https://github.com/ESMValGroup/ESMValTool/pull/2232>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
+-  Fix plot and provenance of recipe_consecdrydays (`#2244 <https://github.com/ESMValGroup/ESMValTool/pull/2244>`__) `Bouwe Andela <https://github.com/bouweandela>`__
 
 Documentation
 ~~~~~~~~~~~~~
@@ -39,6 +44,7 @@ Documentation
 -  Instructions to use pre-installed versions on HPC clusters (`#2197 <https://github.com/ESMValGroup/ESMValTool/pull/2197>`__) `Rémi Kazeroni <https://github.com/remi-kazeroni>`__
 -  Add functional Autoassess diagnostics: land surface metrics: permafrost, soil moisture, surface radiation (`#2170 <https://github.com/ESMValGroup/ESMValTool/pull/2170>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Add citation info in `recipe_eady_growth_rate.yml` (`#2188 <https://github.com/ESMValGroup/ESMValTool/pull/2188>`__) `sloosvel <https://github.com/sloosvel>`__
+-  Update version number to 2.3.0 (`#2213 <https://github.com/ESMValGroup/ESMValTool/pull/2213>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
 
 Diagnostics
 ~~~~~~~~~~~
@@ -49,6 +55,9 @@ Diagnostics
 -  Add GlobWat recipe and diagnostic  (`#1808 <https://github.com/ESMValGroup/ESMValTool/pull/1808>`__) `Banafsheh Abdollahi <https://github.com/babdollahi>`__
 -  Add ClimWIP recipe to reproduce Brunner et al. 2019 (`#2109 <https://github.com/ESMValGroup/ESMValTool/pull/2109>`__) `Lukas Brunner <https://github.com/lukasbrunner>`__
 -  Update Climwip recipe to reproduce brunner2020esd (`#1859 <https://github.com/ESMValGroup/ESMValTool/pull/1859>`__) `Ruth Lorenz <https://github.com/ruthlorenz>`__
+-  Update recipe_thermodyn_diagtool.yml: code improvements and more user options (`#1391 <https://github.com/ESMValGroup/ESMValTool/pull/1391>`__) `ValerioLembo <https://github.com/ValerioLembo>`__
+-  Remove model AWI-CM-1-1-MR from recipe_impact.yml (`#2238 <https://github.com/ESMValGroup/ESMValTool/pull/2238>`__) `Bouwe Andela <https://github.com/bouweandela>`__
+-  PV capacity factor for ESMValTool GMD paper  (`#2153 <https://github.com/ESMValGroup/ESMValTool/pull/2153>`__) `katjaweigel <https://github.com/katjaweigel>`__
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,6 +75,9 @@ Automatic testing
 -  Move private _(global)_stock_cube from esmvacore.preprocessor._regrid to cmorizer (`#2087 <https://github.com/ESMValGroup/ESMValTool/pull/2087>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Try mamba install esmvaltool (`#2125 <https://github.com/ESMValGroup/ESMValTool/pull/2125>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 -  Reinstate OSX Github Action tests (`#2110 <https://github.com/ESMValGroup/ESMValTool/pull/2110>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Pin mpich to avoid default install of 3.4.1 and 3.4.2 with external_0 builds (`#2220 <https://github.com/ESMValGroup/ESMValTool/pull/2220>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
+-  Include test sources in distribution (`#2234 <https://github.com/ESMValGroup/ESMValTool/pull/2234>`__) `Klaus Zimmermann <https://github.com/zklaus>`__
+-  Pin `iris<3.0.4` to ensure we still (sort of) support Python 3.6 (`#2246 <https://github.com/ESMValGroup/ESMValTool/pull/2246>`__) `Valeriu Predoi <https://github.com/valeriupredoi>`__
 
 Installation
 ~~~~~~~~~~~~
