@@ -83,10 +83,9 @@ diagnostics:
         mip: fx
         exp: piControl
         grid: gn
-        esnemble: *
-        start_year: 1850
-        end_year: 1850
-
+        ensemble: '*'
+        start_year: "*"
+        end_year: "*"
 
       area_air:
         short_name: areacella
@@ -95,9 +94,9 @@ diagnostics:
         mip: fx
         exp: piControl
         grid: gn
-        esnemble: *
-        start_year: 1850
-        end_year: 1850
+        ensemble: "*"
+        start_year: "*"
+        end_year: "*"
 
       area_sea:
         short_name: areacello
@@ -106,9 +105,9 @@ diagnostics:
         mip: Ofx
         exp: piControl
         grid: gn
-        esnemble: *
-        start_year: 1850
-        end_year: 1850
+        ensemble: "*"
+        start_year: "*" 
+        end_year: "*" 
 
 
       ########################
@@ -123,7 +122,7 @@ diagnostics:
         start_year: 1850
         end_year: 2014
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
       timeseries_tas_ssp119:
         short_name: tas
@@ -135,7 +134,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
       timeseries_tas_ssp126:
         short_name: tas
@@ -147,7 +146,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
       timeseries_tas_ssp245:
         short_name: tas
@@ -159,7 +158,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
       timeseries_tas_ssp370:
         short_name: tas
@@ -171,7 +170,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
       timeseries_tas_ssp585:
         short_name: tas
@@ -183,7 +182,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
 
       ########################
@@ -198,7 +197,7 @@ diagnostics:
         start_year: 1850
         end_year: 2014
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_fgco2_ssp119:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -209,7 +208,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
       timeseries_fgco2_ssp126:
         short_name: fgco2
@@ -221,7 +220,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_fgco2_ssp245:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -232,7 +231,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_fgco2_ssp370:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -243,7 +242,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_fgco2_ssp585:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -254,7 +253,7 @@ diagnostics:
         start_year: 1990
         end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
           #
 
@@ -271,7 +270,7 @@ diagnostics:
         start_year: 1850
         end_year: 2014
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_nbp_119:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -279,10 +278,10 @@ diagnostics:
         project: CMIP6
         mip: Lmon
         exp: [historical, ssp119]
-        start_year: 1850
-        end_year: 2014
+        start_year: 1990
+        end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_nbp_126:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -290,10 +289,10 @@ diagnostics:
         project: CMIP6
         mip: Lmon
         exp: [historical, ssp126]
-        start_year: 1850
-        end_year: 2014
+        start_year: 1990
+        end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_nbp_245:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -301,10 +300,10 @@ diagnostics:
         project: CMIP6
         mip: Lmon
         exp: [historical, ssp245]
-        start_year: 1850
-        end_year: 2014
+        start_year: 1990
+        end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_nbp_370:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -312,10 +311,10 @@ diagnostics:
         project: CMIP6
         mip: Lmon
         exp: [historical, ssp370]
-        start_year: 1850
-        end_year: 2014
+        start_year: 1990
+        end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
       timeseries_nbp_585:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -323,10 +322,10 @@ diagnostics:
         project: CMIP6
         mip: Lmon
         exp: [historical, ssp585]
-        start_year: 1850
-        end_year: 2014
+        start_year: 1990
+        end_year: 2100
         grid: gn
-        esnemble: *
+        ensemble: "*"
 
     scripts:
       diagnostic_timeseries:
