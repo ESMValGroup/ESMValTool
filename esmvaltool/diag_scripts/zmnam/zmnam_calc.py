@@ -181,7 +181,8 @@ def zmnam_calc(da_fname, outdir, src_props):
     # Save output files
 
     # (1) daily PCs
-    fname = outdir + '_'.join(src_props) + '_pc_da.nc'
+    fname = outdir + '_'.join(src_props) + '_pc_da_' +
+            index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (1)'
@@ -224,7 +225,8 @@ def zmnam_calc(da_fname, outdir, src_props):
         pcs_da_var[:] = pcs_da[:, :]
 
     # (2) monthly PCs
-    fname = outdir + '_'.join(src_props) + '_pc_mo.nc'
+    fname = outdir + '_'.join(src_props) + '_pc_mo_' + 
+            index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (2)'
@@ -264,8 +266,9 @@ def zmnam_calc(da_fname, outdir, src_props):
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
         pcs_mo_var[:] = pcs_mo[:, :]
 
-    # (3) EOFs and explained varianceo
-    fname = outdir + '_'.join(src_props) + '_eofs.nc'
+    # (3) EOFs and explained variances
+    fname = outdir + '_'.join(src_props) + '_eofs_' + 
+            index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (3)'
