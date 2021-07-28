@@ -45,6 +45,5 @@ diagnostics:
       main:
         script: zmnam/zmnam.py
         title: "Zonal mean AM diagnostics"
-        hemisphere: "NH" # NH or SH
+        hemisphere: ["NH", "SH"]
         write_plots: true
-        write_netcdf: true # currently not used
