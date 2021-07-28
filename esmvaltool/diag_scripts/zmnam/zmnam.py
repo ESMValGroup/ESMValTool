@@ -95,7 +95,7 @@ def main(cfg):
                 print("plot_files")
                 plot_files = zmnam_plot(file_mo_an, out_dir + '/',
                                         plot_dir + '/', ifile_props,
-                                        fig_fmt, write_plots)
+                                        fig_fmt, write_plots, hemisphere)
             else:
                 plot_files = []
             for file in outfiles + plot_files:
