@@ -69,7 +69,6 @@ def main(cfg):
 
     hemispheres = cfg['hemisphere']
 
-
     # Go to work_dir for running
     os.chdir(out_dir)
 
@@ -83,7 +82,7 @@ def main(cfg):
             str(props['start_year']) + '-' + str(props['end_year'], )
         ]
 
-        for hemisphere in hemispheres: 
+        for hemisphere in hemispheres:
 
             # Call diagnostics functions
             print("prepro")
@@ -94,8 +93,8 @@ def main(cfg):
                                                       ancestor_files=[ifile])
             if write_plots:
                 print("plot_files")
-                plot_files = zmnam_plot(file_mo_an, out_dir + '/', 
-                                        plot_dir + '/', ifile_props, 
+                plot_files = zmnam_plot(file_mo_an, out_dir + '/',
+                                        plot_dir + '/', ifile_props,
                                         fig_fmt, write_plots)
             else:
                 plot_files = []
