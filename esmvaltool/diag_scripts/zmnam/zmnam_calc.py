@@ -160,7 +160,7 @@ def zmnam_calc(da_fname, outdir, src_props):
         if np.min(lat) < 0. and (lead_eof[min_lat] > lead_eof[max_lat]):
             lead_pc *= -1
             lead_eof *= -1
-            index_name = 'SAM' 
+            index_name = 'SAM'
 
         lead_pc_mo = np.zeros(len(date[mid_mon]), dtype='d')
         time_mo = np.zeros(len(date[mid_mon]), dtype='d')
@@ -182,7 +182,7 @@ def zmnam_calc(da_fname, outdir, src_props):
 
     # (1) daily PCs
     fname = outdir + '_'.join(src_props) + '_pc_da_' +
-            index_name + '.nc'
+    index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (1)'
@@ -225,8 +225,8 @@ def zmnam_calc(da_fname, outdir, src_props):
         pcs_da_var[:] = pcs_da[:, :]
 
     # (2) monthly PCs
-    fname = outdir + '_'.join(src_props) + '_pc_mo_' + 
-            index_name + '.nc'
+    fname = outdir + '_'.join(src_props) + '_pc_mo_' +
+    index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (2)'
@@ -267,8 +267,8 @@ def zmnam_calc(da_fname, outdir, src_props):
         pcs_mo_var[:] = pcs_mo[:, :]
 
     # (3) EOFs and explained variances
-    fname = outdir + '_'.join(src_props) + '_eofs_' + 
-            index_name + '.nc'
+    fname = outdir + '_'.join(src_props) + '_eofs_' +
+    index_name + '.nc'
     outfiles.append(fname)
     with netCDF4.Dataset(fname, mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (3)'
