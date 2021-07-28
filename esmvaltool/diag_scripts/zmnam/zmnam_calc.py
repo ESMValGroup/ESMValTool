@@ -155,10 +155,12 @@ def zmnam_calc(da_fname, outdir, src_props):
         if np.min(lat) > 0. and (lead_eof[max_lat] > lead_eof[min_lat]):
             lead_pc *= -1
             lead_eof *= -1
+            index_name = 'NAM'
 
         if np.min(lat) < 0. and (lead_eof[min_lat] > lead_eof[max_lat]):
             lead_pc *= -1
             lead_eof *= -1
+            index_name = 'SAM' 
 
         lead_pc_mo = np.zeros(len(date[mid_mon]), dtype='d')
         time_mo = np.zeros(len(date[mid_mon]), dtype='d')
@@ -215,6 +217,7 @@ def zmnam_calc(da_fname, outdir, src_props):
             'plev',
         ))
         pcs_da_var.setncattr('long_name', 'Daily zonal mean annular mode PC')
+        pcs_da_var.setncattr('index_type', index_name)
         pcs_da_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
@@ -255,6 +258,7 @@ def zmnam_calc(da_fname, outdir, src_props):
             'plev',
         ))
         pcs_mo_var.setncattr('long_name', 'Monthly zonal mean annular mode PC')
+        pcs_mo_var.setncattr('index_type', index_name)
         pcs_mo_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
@@ -304,6 +308,7 @@ def zmnam_calc(da_fname, outdir, src_props):
         #
         eofs_var = file_out.createVariable('EOF', 'd', ('plev', 'lat'))
         eofs_var.setncattr('long_name', 'Zonal mean annular mode EOF')
+        eofs_var.setncattr('index_type', index_name)
         eofs_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
@@ -312,6 +317,7 @@ def zmnam_calc(da_fname, outdir, src_props):
         eigs_var = file_out.createVariable('eigenvalues', 'd', ('plev'))
         eigs_var.setncattr('long_name',
                            'Zonal mean annular mode EOF explained variance')
+        eigs_var.setncattr('index_type', index_name)
         eigs_var.setncattr(
             'comment',
             'Reference: Baldwin and Thompson (2009), doi:10.1002/qj.479')
