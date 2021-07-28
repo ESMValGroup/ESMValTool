@@ -85,8 +85,10 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
     regr_arr = np.zeros((len(lev), len(lat), len(lon)), dtype='f')
 
     # Set label depending on hemisphere selection
-    if np.min(lat) < 0. : index_name = 'SAM'
-    if np.min(lat) > 0. : index_name = 'NAM'
+    if np.min(lat) < 0.: 
+        index_name = 'SAM'
+    if np.min(lat) > 0.: 
+        index_name = 'NAM'
 
     for i_lev in np.arange(len(lev)):
 
@@ -104,7 +106,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
 
         if write_plots:
             fname = (figfolder + '_'.join(src_props) + '_' +
-                     str(int(lev[i_lev])) + 'Pa_mo_ts_' + index_name + 
+                     str(int(lev[i_lev])) + 'Pa_mo_ts_' + index_name +
                      '.' + fig_fmt)
             plt.savefig(fname, format=fig_fmt)
             plot_files.append(fname)
@@ -261,7 +263,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
         regr_arr[i_lev, :, :] = slope
 
     # Save 3D regression results in output netCDF
-    with netCDF4.Dataset(datafolder + '_'.join(src_props) + '_regr_map_' + 
+    with netCDF4.Dataset(datafolder + '_'.join(src_props) + '_regr_map_' +
                          index_name + '.nc', mode='w') as file_out:
         file_out.title = 'Zonal mean annular mode (4)'
         file_out.contact = 'F. Serva (federico.serva@artov.ismar.cnr.it); \
