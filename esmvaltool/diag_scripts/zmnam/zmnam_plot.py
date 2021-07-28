@@ -25,13 +25,13 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
 
     plot_files = []
     # Open daily and monthly PCs
-    file_name = '_'.join(src_props) + '_pc_da_'+ index_name + '.nc'
+    file_name = '_'.join(src_props) + '_pc_da_' + index_name + '.nc'
     # print(datafolder + file_name)
     with netCDF4.Dataset(datafolder + file_name, "r") as in_file:
         lev = np.array(in_file.variables['plev'][:], dtype='d')
         pc_da = np.array(in_file.variables['PC_da'][:], dtype='d')
 
-    file_name = '_'.join(src_props) + '_pc_mo_'+ index_name + '.nc'
+    file_name = '_'.join(src_props) + '_pc_mo_' + index_name + '.nc'
     # print(datafolder + file_name)
     with netCDF4.Dataset(datafolder + file_name, "r") as in_file:
         time_mo = np.array(in_file.variables['time'][:], dtype='d')
