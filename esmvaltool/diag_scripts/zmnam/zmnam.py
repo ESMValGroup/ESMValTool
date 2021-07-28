@@ -9,7 +9,7 @@ Evaluation of stratosphere-troposphere coupling
 based on EOF/PC analysis of the geopotential height field.
 
 Modification history
-20210702-serva_federico: Update to include choice of hemisphere.
+202107-serva_federico: Update to include hemisphere selection.
 20180512-serva_federico: Added output netCDFs, more use of preprocessor.
 20180510-serva_federico: Routines written.
 
@@ -67,7 +67,8 @@ def main(cfg):
     write_plots = cfg['write_plots']
     fig_fmt = cfg['output_file_type']
 
-    hemisphere = cfg['hemisphere']
+    hemispheres = cfg['hemisphere']
+
 
     # Go to work_dir for running
     os.chdir(out_dir)
@@ -81,24 +82,26 @@ def main(cfg):
             props['ensemble'],
             str(props['start_year']) + '-' + str(props['end_year'], )
         ]
-        # get hemisphere from recipe, see hydrology example
 
-        # Call diagnostics functions
-        print("prepro")
-        (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile, hemisphere)
-        print("calc")
-        outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
-        provenance_record = get_provenance_record(props,
-                                                  ancestor_files=[ifile])
-        if write_plots:
-            print("plot_files")
-            plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir + '/',
-                                    ifile_props, fig_fmt, write_plots)
-        else:
-            plot_files = []
-        for file in outfiles + plot_files:
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(file, provenance_record)
+        for hemisphere in hemispheres: 
+
+            # Call diagnostics functions
+            print("prepro")
+            (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile, hemisphere)
+            print("calc")
+            outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
+            provenance_record = get_provenance_record(props,
+                                                      ancestor_files=[ifile])
+            if write_plots:
+                print("plot_files")
+                plot_files = zmnam_plot(file_mo_an, out_dir + '/', 
+                                        plot_dir + '/', ifile_props, 
+                                        fig_fmt, write_plots)
+            else:
+                plot_files = []
+            for file in outfiles + plot_files:
+                with ProvenanceLogger(cfg) as provenance_logger:
+                    provenance_logger.log(file, provenance_record)
 
 
 # Run the diagnostics
