@@ -15,17 +15,23 @@ from cartopy.util import add_cyclic_point
 
 
 def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
-               write_plots):
+               write_plots, hemisphere):
     """Plotting of timeseries and maps for zmnam diagnostics."""
+
+    if hemisphere == 'NH':
+        index_name = 'NAM'
+    if hemisphere == 'SH':
+        index_name = 'SAM'
+
     plot_files = []
     # Open daily and monthly PCs
-    file_name = '_'.join(src_props) + '_pc_da.nc'
+    file_name = '_'.join(src_props) + '_pc_da_'+ index_name + '.nc'
     # print(datafolder + file_name)
     with netCDF4.Dataset(datafolder + file_name, "r") as in_file:
         lev = np.array(in_file.variables['plev'][:], dtype='d')
         pc_da = np.array(in_file.variables['PC_da'][:], dtype='d')
 
-    file_name = '_'.join(src_props) + '_pc_mo.nc'
+    file_name = '_'.join(src_props) + '_pc_mo_'+ index_name + '.nc'
     # print(datafolder + file_name)
     with netCDF4.Dataset(datafolder + file_name, "r") as in_file:
         time_mo = np.array(in_file.variables['time'][:], dtype='d')
@@ -83,12 +89,6 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props, fig_fmt,
 
     # Prepare array for outputting regression maps (lev/lat/lon)
     regr_arr = np.zeros((len(lev), len(lat), len(lon)), dtype='f')
-
-    # Set label depending on hemisphere selection
-    if np.min(lat) < 0.: 
-        index_name = 'SAM'
-    if np.min(lat) > 0.: 
-        index_name = 'NAM'
 
     for i_lev in np.arange(len(lev)):
 
