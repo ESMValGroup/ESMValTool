@@ -62,7 +62,9 @@ preprocessors:
     custom_order: true
 
 
-
+# comments:
+# CMCC-ESM2: ValueError: Use of shapefiles with irregular grids not yet implemented, land-sea mask not applied.
+# CESM2-WACCM, exp: ssp370, ensemble: r2i1p1f1, r3i1p1f1: missing years form 2050.
 
 diagnostics:
   # --------------------------------------------------
@@ -79,7 +81,7 @@ diagnostics:
         additional_datasets:
             - {project: CMIP6, mip: fx, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: CCCma, dataset: CanESM5, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: fx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+            # - {project: CMIP6, mip: fx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: MOHC, dataset: UKESM1-0-LL, exp: piControl, ensemble: r1i1p1f2, start_year: 0, end_year: 1}
@@ -102,7 +104,7 @@ diagnostics:
         additional_datasets:
             - {project: CMIP6, mip: fx, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: CCCma, dataset: CanESM5, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: fx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+            # - {project: CMIP6, mip: fx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: fx, grid: gn, institute: MOHC, dataset: UKESM1-0-LL, exp: piControl, ensemble: r1i1p1f2, start_year: 0, end_year: 1}
@@ -123,8 +125,8 @@ diagnostics:
         additional_datasets:
             - {project: CMIP6, mip: Ofx, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: CCCma, dataset: CanESM5, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: Ofx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
-            - {project: CMIP6, mip: Ofx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+            # - {project: CMIP6, mip: Ofx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
+            # - {project: CMIP6, mip: Ofx, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: piControl, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
             - {project: CMIP6, mip: Ofx, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: historical, ensemble: r1i1p1f1, start_year: 0, end_year: 1}
@@ -173,7 +175,7 @@ diagnostics:
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r8i1p2f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r9i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r9i1p2f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Amon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Amon, grid: gn, institute: MOHC, dataset: UKESM1-0-LL, exp: historical, ensemble: r10i1p1f2, start_year: 1850, end_year: 2014}
@@ -324,7 +326,7 @@ diagnostics:
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r8i1p2f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r9i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r9i1p2f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Amon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Amon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp126, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Amon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp245, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
@@ -492,7 +494,7 @@ diagnostics:
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r8i1p2f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r9i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r9i1p2f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Omon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Omon, grid: gn, institute: MOHC, dataset: UKESM1-0-LL, exp: historical, ensemble: r10i1p1f2, start_year: 1850, end_year: 2014}
@@ -643,7 +645,7 @@ diagnostics:
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r8i1p2f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r9i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r9i1p2f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Omon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Omon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp126, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Omon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp245, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
@@ -807,7 +809,7 @@ diagnostics:
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r8i1p2f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r9i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: historical, ensemble: r9i1p2f1, start_year: 1850, end_year: 2014}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
+            # - {project: CMIP6, mip: Lmon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: HAMMOZ-Consortium, dataset: MPI-ESM-1-2-HAM, exp: historical, ensemble: r1i1p1f1, start_year: 1850, end_year: 2014}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: MOHC, dataset: UKESM1-0-LL, exp: historical, ensemble: r10i1p1f2, start_year: 1850, end_year: 2014}
@@ -958,7 +960,7 @@ diagnostics:
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r8i1p2f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r9i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CCCma, dataset: CanESM5, exp: ssp585, ensemble: r9i1p2f1, start_year: 2015, end_year: 2100}
-            - {project: CMIP6, mip: Lmon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
+            # - {project: CMIP6, mip: Lmon, grid: gn, institute: CMCC, dataset: CMCC-ESM2, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp126, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp245, ensemble: r1i1p1f1, start_year: 2015, end_year: 2100}
             - {project: CMIP6, mip: Lmon, grid: gn, institute: CSIRO, dataset: ACCESS-ESM1-5, exp: ssp245, ensemble: r2i1p1f1, start_year: 2015, end_year: 2100}
