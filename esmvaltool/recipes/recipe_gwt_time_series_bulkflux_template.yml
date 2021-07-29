@@ -198,6 +198,7 @@ diagnostics:
         end_year: 2014
         grid: gn
         ensemble: "*"
+
       timeseries_fgco2_ssp119:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -221,6 +222,7 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
+
       timeseries_fgco2_ssp245:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -232,6 +234,7 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
+
       timeseries_fgco2_ssp370:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -243,6 +246,7 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
+
       timeseries_fgco2_ssp585:
         short_name: fgco2
         preprocessor: prep_timeseries_2d_sea
@@ -254,9 +258,6 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
-
-          #
-
 
       ########################
       # Land
@@ -271,6 +272,7 @@ diagnostics:
         end_year: 2014
         grid: gn
         ensemble: "*"
+
       timeseries_nbp_119:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -282,6 +284,7 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
+
       timeseries_nbp_126:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -293,6 +296,7 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
+
       timeseries_nbp_245:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -304,6 +308,7 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
+
       timeseries_nbp_370:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
@@ -315,6 +320,7 @@ diagnostics:
         end_year: 2100
         grid: gn
         ensemble: "*"
+
       timeseries_nbp_585:
         short_name: nbp
         preprocessor: prep_timeseries_2d_land
