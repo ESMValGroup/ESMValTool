@@ -131,7 +131,7 @@ class MonitorBase():
                     plotter.multiplot_cube(cube, 'time', region_coord,
                                            **kwargs)
                     return
-        plotter.plot_cube(cube, linestyle=linestyle, **kwargs)
+        plotter.plot_cube(cube, 'time', linestyle=linestyle, **kwargs)
 
     @staticmethod
     def get_provenance_record(ancestor_files, **kwargs):

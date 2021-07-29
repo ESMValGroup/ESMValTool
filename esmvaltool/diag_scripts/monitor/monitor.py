@@ -196,8 +196,14 @@ class Monitor(MonitorBase):
                 'Monthly climatology '
                 f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})'
                 f'\n{cube.long_name} ({cube.units})',
-                fontsize=plot_map.fontsize + 6.,
-                y=1.02)
+                fontsize=plot_map.fontsize + 4.,
+                y=1.025 - rows * 0.025,
+            )
+            plt.subplots_adjust(
+                top=0.85, bottom=.05,
+                left=0, right=1,
+                hspace=.20, wspace=.15,
+            )
             filename = self.get_plot_path(f'monclim{map_name}',
                                           var_info,
                                           file_type='png')
@@ -296,19 +302,25 @@ class Monitor(MonitorBase):
                     save=False,
                     subplot=(2, 2, index),
                     keep_aspect=True,
-                    title=f"Season {season}",
+                    title=season,
                     **{
                         **map_options,
-                        **variable_options
+                        **variable_options,
                     },
+
                 )
             plt.tight_layout()
             plt.suptitle(
                 'Seasonal climatology  '
                 f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})\n'
                 f'{cube.long_name} ({cube.units})',
-                fontsize=plot_map.fontsize * 2)
-            plt.subplots_adjust(bottom=.05, hspace=.3, left=.1, right=1)
+                fontsize=plot_map.fontsize + 4,
+                )
+            plt.subplots_adjust(
+                top=0.85, bottom=.05,
+                left=0, right=1,
+                hspace=.20, wspace=.15,
+            )
             filename = self.get_plot_path(f'seasonclim{map_name}', var_info,
                                           'png')
             plt.savefig(
@@ -366,7 +378,7 @@ class Monitor(MonitorBase):
             plt.suptitle(
                 f'Climatology ({var_info[n.START_YEAR]}'
                 f'-{var_info[n.END_YEAR]})',
-                y=map_options.get('suptitle_pos', 0.9),
+                y=map_options.get('suptitle_pos', 0.95),
                 fontsize=plot_map.fontsize + 4)
             filename = self.get_plot_path(f'clim{map_name}', var_info, 'png')
             plt.savefig(filename,

@@ -55,6 +55,10 @@ variables:
     colors: RdYlBu_r
     N: 20
     bad: [0.9, 0.9, 0.9]
+  # tas:
+  #   <<: *default
+  #   extend: both
+  #   bounds: 220-315,5
   pr:
     <<: *default
     colors: gist_earth_r
