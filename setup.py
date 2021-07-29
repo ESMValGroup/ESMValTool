@@ -53,7 +53,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn',
         'scipy',
-        'scitools-iris>=3.0.1',
+        'scitools-iris>=3.0.2,<3.0.4',  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
         'seaborn',
         'seawater',
         'shapely',

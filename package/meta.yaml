@@ -5,7 +5,7 @@
 # conda build package -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.2.0" %}
+{% set version = "2.3.0" %}
 
 package:
   name: esmvaltool
@@ -27,7 +27,7 @@ build:
 requirements:
   run:
     - python>=3.7
-    - iris>=3.0.2
+    - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
     - {{ pin_subpackage('esmvaltool-python', exact=True) }}
@@ -82,12 +82,12 @@ outputs:
         - esmvalcore>=2.3.0,<2.4  # in esmvalgroup channel
         - fiona
         - gdal
-        - iris>=3.0.1
+        - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
         - jinja2
         - joblib
         - lime
         - matplotlib>3.3.1,<3.4  # bug in 3.3.1, issue with nc-time-axis for >=3.4
-        - mpich<3.4  # avoid 3.4.1 external_2 from conda-forge like the plague
+        - mpich<3.4  # issues with 3.4.1 and 3.4.2 that install external_0 build
         - natsort
         - nc-time-axis<1.3.1
         - netCDF4

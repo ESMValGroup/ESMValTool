@@ -6,9 +6,11 @@ from copy import deepcopy
 import iris
 import numpy as np
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, run_diagnostic)
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic,
+    save_data,
+    save_figure,
+)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -25,15 +27,10 @@ def save_results(cfg, cube, basename, ancestor_files):
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
-    if cfg['write_plots'] and cfg.get('quickplot'):
-        plot_file = get_plot_filename(basename, cfg)
-        quickplot(cube, plot_file, **cfg['quickplot'])
-        provenance['plot_file'] = plot_file
-    if cfg['write_netcdf']:
-        netcdf_file = get_diagnostic_filename(basename, cfg)
-        iris.save(cube, target=netcdf_file)
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(netcdf_file, provenance)
+    save_data(basename, provenance, cfg, cube)
+    if cfg.get('quickplot'):
+        quickplot(cube, **cfg['quickplot'])
+        save_figure(basename, provenance, cfg)
 
 
 def main(cfg):
