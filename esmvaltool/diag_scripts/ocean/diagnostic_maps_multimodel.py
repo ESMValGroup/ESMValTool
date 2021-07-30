@@ -72,12 +72,13 @@ def plot_taylor(cubes, layer, obsname, cfg):
                                           extend=extend)
     # Add models
     for i, thename in enumerate(model_coeff):
-        dia.add_sample(model_coeff[thename]['std'],
-                       model_coeff[thename]['corr'],
-                       marker='$%d$' % (i + 1),
-                       ms=8,
-                       ls='',
-                       label=thename)
+        if thename !='OBS':
+            dia.add_sample(model_coeff[thename]['std'],
+                           model_coeff[thename]['corr'],
+                           marker='$%d$' % (i),
+                           ms=8,
+                           ls='',
+                           label=thename)
 
     # Add RMS contours, and label them
     contours = dia.add_contours(levels=5, colors='0.5')  # 5 levels in grey
@@ -146,6 +147,17 @@ def taylor_coeffs(cubes, layer, obsname):
     obs_std = obs_cube.collapsed(['latitude', 'longitude'],
                                  iris.analysis.STD_DEV)
     obs_std = obs_std.data.item()
+    obs_mean = obs_cube.collapsed(['latitude', 'longitude'],
+                                 iris.analysis.MEAN)
+    obs_mean = obs_mean.data.item()
+    obs_range = obs_cube.collapsed(['latitude', 'longitude'], iris.analysis.MAX) - \
+                obs_cube.collapsed(['latitude', 'longitude'], iris.analysis.MIN)
+    obs_range = obs_range.data.item()
+    out_dict.update({'OBS':{
+                'std': obs_std,
+                'corr': obs_mean,
+                'rmsd': obs_range,
+                   }})
 
     srange = []
     extend = []
