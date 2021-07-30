@@ -26,7 +26,7 @@ build:
 
 requirements:
   run:
-    - python>=3.8
+    - python>=3.7
     - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
     - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
     - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
@@ -65,37 +65,38 @@ outputs:
     requirements:
       build:
         - git
-        - python>=3.8
+        - python>=3.7
         - setuptools_scm
       run:
         - cartopy>=0.18
         - cdo>=1.9.7
         - eccodes!=2.19.0  # cdo dependency; something messed up with libeccodes.so
-        - cdsapi
-        - cf-units
-        - cftime
-        - cmocean
+        - cdsapii>=0.5.1
+        - cf-units>=2.1
+        - cftime>=1.2.1
+        - cmocean>=2.0
+        - cython
         - dask>=2.12
         - ecmwf-api-client  # in esmvalgroup channel
-        - eofs
-        - esmpy
-        - esmvalcore>=2.3.0,<2.4  # in esmvalgroup channel
-        - fiona
-        - gdal
+        - eofs>=1.4
+        - esmpy>=8.0.1
+        - esmvalcore>=2.3.1,<2.4  # in esmvalgroup channel
+        - fiona>=1.8.18
+        - gdal>=3.1.4
         - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
-        - jinja2
-        - joblib
+        - jinja2>=2.11
+        - joblib>=1.0
         - lime
         - matplotlib>3.3.1,<3.4  # bug in 3.3.1, issue with nc-time-axis for >=3.4
         - mpich<3.4  # issues with 3.4.1 and 3.4.2 that install external_0 build
-        - natsort
+        - natsort>=7.1
         - nc-time-axis<1.3.1
         - netCDF4
         - numpy
         - pandas
         - pyproj>=2.1
-        - python>=3.8
-        - python-cdo
+        - python>=3.7
+        - python-cdo>=1.5.4
         - pyyaml
         - ruamel.yaml
         - rasterio  # replaces pynio
