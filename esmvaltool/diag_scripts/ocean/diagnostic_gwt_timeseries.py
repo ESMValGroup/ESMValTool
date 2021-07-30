@@ -760,15 +760,14 @@ def load_timeseries(cfg, short_names):
         if sn in transforms:
             data_dict = transforms_functions[sn](data_dict)
 
-    calculate_mean = True
-    if calculate_mean:
-        assert 0
+    calculate_model_mean = True
+    if calculate_model_mean:
         short_names, exps, datasets = {}, {}, {}
         for (dataset, short_name, exp, ensemble) in  data_dict.keys():
             short_names[short_name] = True
             exps[exp] = True
             datasets[dataset] = True
-        for short_name, exp in product(short_names.keys(), exps.keys()):
+        for short_name, exp, dataset in product(short_names.keys(), exps.keys(), datasets.keys()):
             cubes = []
             for (dataset_i,short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
                 if dataset != dataset_i: continue
@@ -777,6 +776,7 @@ def load_timeseries(cfg, short_names):
                 if ensemble_i == 'ensemble_mean': continue
                 if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
                      continue
+                print("calculate_model_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
                 cubes.append(cube)
 
             if not len(cubes):
@@ -785,6 +785,34 @@ def load_timeseries(cfg, short_names):
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = cubes[0]
             else:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
+
+    calculate_cmip6_mean = True
+    if calculate_cmip6_mean:
+        # Calculate the mean of multiple datasets ensemble_means
+        short_names, exps, datasets = {}, {}, {}
+        for (dataset, short_name, exp, ensemble) in  data_dict.keys():
+            short_names[short_name] = True
+            exps[exp] = True
+            datasets[dataset] = True
+
+        for short_name, exp in product(short_names.keys(), exps.keys()):
+            cubes = []
+            for (dataset_i,short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
+                if dataset_i == 'CMIP6': continue
+                if short_name != short_name_i: continue
+                if exp_i != exp: continue
+                if ensemble_i != 'ensemble_mean': continue
+                if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
+                     continue
+                cubes.append(cube)
+                print("calculate_cmip6_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
+
+            if not len(cubes):
+                continue
+            elif len(cubes) == 1:
+                data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = cubes[0]
+            else:
+                data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
 
     if 'tls' in short_names_to_load:
         data_dict = calc_tls(cfg, data_dict)
