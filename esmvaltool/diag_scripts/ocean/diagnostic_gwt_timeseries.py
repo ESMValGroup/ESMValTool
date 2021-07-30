@@ -345,6 +345,7 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
     Calculate global from the data dictionary.
     """
     areas = []
+    test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacello':
             areas.append(cube)
@@ -402,7 +403,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
         hist_cumul_cube = cube.copy()
         times = diagtools.cube_time_to_float(hist_cumul_cube)
         hist_cumul_cube.data = np.cumsum(np.ma.masked_invalid(hist_cumul_cube.data))
-        tmp_dict[(cumul_name, exp, ensemble)] = hist_cumul_cube
+        tmp_dict[(dataset, cumul_name, exp, ensemble)] = hist_cumul_cube
         hist_datas[ensemble] = {'time': times, 'data': hist_cumul_cube.data}
 
     #calculate the cumulative value, and add the historical point to it.
@@ -452,12 +453,19 @@ def fgco2gt_cumul(data_dict):
     data_dict = marine_gt(data_dict, short='fgco2', gt='fgco2gt')
     return calculate_cumulative(data_dict, short_name='fgco2gt', cumul_name='fgco2gt_cumul', new_units = 'Pg')
 
+def test_data_dict( data_dict):
+    for index, cube in data_dict.items():
+        if len(index) != 4: 
+            print('test_data_dict', index, 'fail')
+            assert 0
+
 
 def land_gt(data_dict, short='npp', gt='nppgt'):
     """
     Calculate land_gt from the data dictionary.
     """
     areas = []
+    test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacella':
             areas.append(cube)
@@ -477,17 +485,16 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
         if (dataset, gt, exp, ensemble) in data_dict.keys() or (gt, exp, ensemble) in tmp_dict:
             print('land_gt:', gt, 'already calculated')
             continue
-        print('land_gt:', short_name, exp, ensemble, [short,gt])
+        print('land_gt:', dataset, short_name, exp, ensemble, [short,gt])
         cubegt = cube.copy()
         cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
         cubegt.units = cf_units.Unit('Pg yr^-1') #cube.units * areas.units
-        print('land_gt:', (gt, exp, ensemble), cubegt.data.mean())
-        tmp_dict[(gt, exp, ensemble)] = cubegt
+        print('land_gt:', (dataset, gt, exp, ensemble), cubegt.data.mean())
+        tmp_dict[(dataset, gt, exp, ensemble)] = cubegt
 
     data_dict.update(tmp_dict)
-
-    if short=='nbp':
-        print(data_dict[(dataset, gt, exp, ensemble)])
+    #if short=='nbp':
+    #    print(data_dict[(dataset, gt, exp, ensemble)])
     return data_dict
 
 
@@ -729,6 +736,7 @@ def load_timeseries(cfg, short_names):
         for fn in sorted(metadatas):
             short_name = metadatas[fn]['short_name']
             exp = metadatas[fn]['exp']
+            dataset = metadatas[fn]['dataset']
             ensemble = metadatas[fn]['ensemble']
             if isinstance(ensemble ,list): ensemble = tuple(ensemble)
             print(dataset, short_name, exp, ensemble)
@@ -933,7 +941,7 @@ def load_co2_forcing(cfg, data_dict):
             ssp_only = 'ssp534-over'
         new_times = []
         new_datas = []
-        print((short_name, exp,(ssp_only), ensemble))
+        print((dataset, short_name, exp,(ssp_only), ensemble))
         ssp_times = cube_to_years(ssp_cube)
         min_time = np.array(ssp_times).min()
         if exp == 'historical-ssp585-ssp534-over':
@@ -966,7 +974,7 @@ def load_co2_forcing(cfg, data_dict):
             print('New times do not match old times:', len(new_times), '!=', len(ssp_times),'\nnew:',new_times, '\nssp:',ssp_times)
             assert 0
         print('co2', exp, ensemble, len(new_times), len(new_datas))
-        tmp_dict[('co2', exp, ensemble )] ={'time': new_times, 'co2':new_datas}
+        tmp_dict[(dataset, 'co2', exp, ensemble )] ={'time': new_times, 'co2':new_datas}
 
     data_dict.update(tmp_dict)
     # make sure the ensemble mean is set for all co2.
@@ -1074,7 +1082,7 @@ def load_emissions_forcing(cfg, data_dict):
             # no need to double up.
             continue
 
-        for dataset, ensemble in product(datasets,ensembles}:
+        for dataset, ensemble in product(datasets,ensembles):
             data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
             #if scenario.find('ssp119')> -1:
             #    print('load_emissions_forcing:', scenario, len(times), len(data))
@@ -1181,7 +1189,7 @@ def load_luegt(cfg, data_dict):
 
     exps = {'ssp119':True, 'ssp126':True, 'ssp245':True, 'ssp370':True, 'ssp585':True, 'historical':True}
     ensembles = {'ensemble_mean':True}
-    dataset = {}
+    datasets = {}
     for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
         ensembles[ensemble] = True
@@ -1829,7 +1837,7 @@ def unzip_time(dict):
 def make_cumulative_timeseries(cfg, data_dict,
       thresholds_dict,
       ssp='historical-ssp126',
-      dataset = 'CMIP6'
+      dataset = 'CMIP6',
       ensemble = 'ensemble_mean',
       plot_type = 'simple_ts',
       do_leg= True,
