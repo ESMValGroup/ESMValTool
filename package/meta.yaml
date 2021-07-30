@@ -28,10 +28,14 @@ requirements:
   run:
     - python>=3.7
     - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
-    - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
-    - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
-    - {{ pin_subpackage('esmvaltool-python', exact=True) }}
-    - {{ pin_subpackage('esmvaltool-r', exact=True) }}
+    - esmvaltool-julia>=2.2.0
+    - esmvaltool-ncl>=2.2.0
+    - esmvaltool-python>=2.2.0
+    - esmvaltool-r>=2.2.0
+    # - {{ pin_subpackage('esmvaltool-julia', exact=False) }}
+    # - {{ pin_subpackage('esmvaltool-ncl', exact=False) }}
+    # - {{ pin_subpackage('esmvaltool-python', exact=False) }}
+    # - {{ pin_subpackage('esmvaltool-r', exact=False) }}
 
 test:
   source_files:
