@@ -119,7 +119,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
         logger.info("Extract surface OBS for %s", raw_info['srf_var'])
         level_constraint = iris.Constraint(cube.var_name, depth=0)
         cube_os = cube.extract(level_constraint)
-        fix_var_metadata(cube, var_info)
+        fix_var_metadata(cube_os, var_info)
         save_variable(cube_os,
                       raw_info['srf_var'],
                       out_dir,
