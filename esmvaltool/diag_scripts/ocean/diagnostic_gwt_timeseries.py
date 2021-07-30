@@ -345,7 +345,7 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
     Calculate global from the data dictionary.
     """
     areas = []
-    for (short_name, exp, ensemble), cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacello':
             areas.append(cube)
 
@@ -359,10 +359,10 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
         #print(areas.data)
         #assert 0
     tmp_dict = {}
-    for (short_name, exp, ensemble), cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name != short:
             continue
-        if (gt, exp, ensemble) in data_dict.items():
+        if (dataset, gt, exp, ensemble) in data_dict.items():
             continue
         cubegt = cube.copy()
         # print(short, gt, cube.units)
@@ -383,7 +383,7 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
   #          #assert 0
  #           cubegt.data = np.cumsum(np.ma.masked_invalid(cubegt.data))
 #            cubegt.units = cf_units.Unit('Pg yr^-1')
-        tmp_dict[(gt, exp, ensemble)] = cubegt
+        tmp_dict[(dataset, gt, exp, ensemble)] = cubegt
     data_dict.update(tmp_dict)
     return data_dict
 
@@ -394,7 +394,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
     """
     hist_datas = {}
     tmp_dict={}
-    for (short, exp, ensemble), cube in data_dict.items():
+    for (dataset, short, exp, ensemble), cube in data_dict.items():
         if short_name != short:
             continue
         if exp not in ['historical', ]:
@@ -406,7 +406,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
         hist_datas[ensemble] = {'time': times, 'data': hist_cumul_cube.data}
 
     #calculate the cumulative value, and add the historical point to it.
-    for (short, exp, ensemble), cube in data_dict.items():
+    for (dataset, short, exp, ensemble), cube in data_dict.items():
         if short_name != short:
             continue
         if exp in ['historical', ]:
@@ -435,7 +435,7 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
         cumul_cube.data = np.cumsum(np.ma.masked_invalid(cumul_cube.data)) + hist_cumul
         if new_units:
             cumul_cube.units = cf_units.Unit(new_units)
-        tmp_dict[(cumul_name, exp, ensemble)] = cumul_cube
+        tmp_dict[(dataset, cumul_name, exp, ensemble)] = cumul_cube
     data_dict.update(tmp_dict)
     return data_dict
 
@@ -458,7 +458,7 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
     Calculate land_gt from the data dictionary.
     """
     areas = []
-    for (short_name, exp, ensemble), cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacella':
             areas.append(cube)
     if len(areas) != 1:
@@ -469,12 +469,12 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
         # assume properly masked! (done in preprocessor)
         areas = areas.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
     tmp_dict={}
-    for (short_name, exp, ensemble), cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         #rint('land_gt:', short_name, exp, ensemble, [short,gt])
         if short_name != short:
         #   print('land_gt:', short_name,'!=', short)
             continue
-        if (gt, exp, ensemble) in data_dict.keys() or (gt, exp, ensemble) in tmp_dict:
+        if (dataset, gt, exp, ensemble) in data_dict.keys() or (gt, exp, ensemble) in tmp_dict:
             print('land_gt:', gt, 'already calculated')
             continue
         print('land_gt:', short_name, exp, ensemble, [short,gt])
@@ -487,7 +487,7 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
     data_dict.update(tmp_dict)
 
     if short=='nbp':
-        print(data_dict[(gt, exp, ensemble)])
+        print(data_dict[(dataset, gt, exp, ensemble)])
     return data_dict
 
 
@@ -514,17 +514,19 @@ def frc(data_dict):
     #data_dict = fric(data_dict)
     exps = {}
     ensembles = {}
-    for (short_name, exp, ensemble)  in data_dict.keys():
+    datasets = {}
+    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
         ensembles[ensemble] = True
+        datasets[dataset] = True
 
-    for exp, ensemble in product(exps, ensembles):
-        if ('fric', exp, ensemble) not in data_dict: continue
-        if ('froc', exp, ensemble) not in data_dict: continue
-        cube = data_dict[('fric', exp, ensemble)].copy()
-        cube2 = data_dict[('froc', exp, ensemble)]
+    for dataset, exp, ensemble in product(datasets, exps, ensembles):
+        if (dataset, 'fric', exp, ensemble) not in data_dict: continue
+        if (dataset, 'froc', exp, ensemble) not in data_dict: continue
+        cube = data_dict[(dataset, 'fric', exp, ensemble)].copy()
+        cube2 = data_dict[(dataset, 'froc', exp, ensemble)]
         cube.data = cube.data + cube2.data
-        data_dict[('frc', exp, ensemble)] = cube
+        data_dict[(dataset, 'frc', exp, ensemble)] = cube
     return data_dict
 
 
@@ -537,23 +539,25 @@ def exchange(data_dict, inverse=False):
 
     exps = {}
     ensembles = {}
-    for (short_name, exp, ensemble)  in data_dict.keys():
+    datasets = {}
+    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
         ensembles[ensemble] = True
+        datasets[dataset] = True
 
-    for exp, ensemble in product(exps, ensembles):
-        if ('nppgt', exp, ensemble) not in data_dict: continue
+    for dataset, exp, ensemble in product(exps, ensembles, datasets):
+        if (dataset,'nppgt', exp, ensemble) not in data_dict: continue
         if inverse == False:
-            cube = data_dict[('nppgt', exp, ensemble)].copy()
-            cube2 = data_dict[('rhgt', exp, ensemble)]
+            cube = data_dict[(dataset,'nppgt', exp, ensemble)].copy()
+            cube2 = data_dict[(dataset,'rhgt', exp, ensemble)]
             cube.data = cube.data - cube2.data
-            data_dict[('exchange', exp, ensemble)] = cube
+            data_dict[(dataset,'exchange', exp, ensemble)] = cube
 
         if inverse == True:
-            cube = data_dict[('rhgt', exp, ensemble)].copy()
-            cube2 = data_dict[('nppgt', exp, ensemble)]
+            cube = data_dict[(dataset,'rhgt', exp, ensemble)].copy()
+            cube2 = data_dict[(dataset,'nppgt', exp, ensemble)]
             cube.data = cube.data - cube2.data
-            data_dict[('inverse_exchange', exp, ensemble)] = cube
+            data_dict[(dataset,'inverse_exchange', exp, ensemble)] = cube
     return data_dict
 
 
@@ -571,34 +575,36 @@ def tas_norm(data_dict):
     exps = {}
     ensembles = {}
     baselines={}
-    for (short_name, exp, ensemble), cube  in data_dict.items():
+    datasets = {}
+    for (dataset, short_name, exp, ensemble), cube  in data_dict.items():
         exps[exp] = True
         ensembles[ensemble] = True
+        datasets[dataset] = True
         if short_name != 'tas': continue
         if exp != 'historical': continue
-        baselines[(short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
+        baselines[(dataset, short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
 
 
-    for exp, ensemble in product(exps, ensembles):
-        if not ('tas', exp, ensemble) in data_dict.keys(): continue
-        cube = data_dict[('tas', exp, ensemble)].copy()
+    for exp, ensemble, dataset in product(exps, ensembles, datasets):
+        if not (dataset, 'tas', exp, ensemble) in data_dict.keys(): continue
+        cube = data_dict[(dataset, 'tas', exp, ensemble)].copy()
         if isinstance(ensemble, str):
-            cube.data = cube.data - baselines[('tas', ensemble)]
+            cube.data = cube.data - baselines[(dataset, 'tas', ensemble)]
         else:
-            print('looking for ', ensemble)
+            print('looking for ', dataset, ensemble)
             print(baselines.keys())
-            dat = baselines.get(('tas', ensemble), [])
+            dat = baselines.get((dataset, 'tas', ensemble), [])
             for ens in ensemble:
                 if dat: continue
                 if len(dat): continue
-                print('loading', ens, dat, baselines.get(('tas', ensemble), []),  baselines.get(('tas', ens), []))
-                dat =  baselines.get(('tas', ens), [])
+                print('loading', ens, dat, baselines.get((dataset, 'tas', ensemble), []),  baselines.get((dataset, 'tas', ens), []))
+                dat =  baselines.get((dataset, 'tas', ens), [])
             if not dat:
-                print('unable to find', ('tas', ensemble))
+                print('unable to find', (dataset, 'tas', ensemble))
                 assert 0
             print(dat)
             cube.data = cube.data - dat
-        data_dict[('tas_norm', exp, ensemble)] = cube
+        data_dict[(dataset, 'tas_norm', exp, ensemble)] = cube
     return data_dict
 
 
@@ -612,23 +618,23 @@ def norm_co2(data_dict, short='nppgt'):
           data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2'][:50])
     baseline = np.mean(data_dict[('co2', 'historical', 'r1i1p1f2' )]['co2'][:50])
     new_data_dict = {}
-    for (short_name, exp, ensemble), cube  in data_dict.items():
+    for (dataset, short_name, exp, ensemble), cube  in data_dict.items():
         if short_name != short: continue
         #if exp != 'historical': continue
-        cube = data_dict[(short, exp, ensemble)].copy()
-        print('norm_co2:', short_name, exp, ensemble, 'baseline:',baseline)
+        cube = data_dict[(dataset, short, exp, ensemble)].copy()
+        print('norm_co2:',dataset, short_name, exp, ensemble, 'baseline:',baseline)
         out = []
-        co2_data= data_dict[('co2', exp, ensemble )]['co2']
+        co2_data= data_dict[(dataset, 'co2', exp, ensemble )]['co2']
         if len(cube.data) != len(co2_data):
             times = cube.coord('time').units.num2date(cube.coord('time').points)
-            print('times do not match', (short_name, exp, ensemble), len(cube.data), '!=', len(co2_data))
-            for t1, t2 in zip(times, data_dict[('co2', exp, ensemble )]['time']):
+            print('times do not match', (dataset, short_name, exp, ensemble), len(cube.data), '!=', len(co2_data))
+            for t1, t2 in zip(times, data_dict[(dataset, 'co2', exp, ensemble )]['time']):
                 print(short_name, exp, ensemble, short_name+':', t1, 'co2:', t2)
             assert 0
-        for d,co2 in zip(cube.data, data_dict[('co2', exp, ensemble)]['co2']):
+        for d,co2 in zip(cube.data, data_dict[(dataset, 'co2', exp, ensemble)]['co2']):
             out.append(d*baseline/co2)
         cube.data = np.ma.array(out)
-        new_data_dict[(short+'_norm', exp, ensemble)] = cube
+        new_data_dict[(dataset, short+'_norm', exp, ensemble)] = cube
     data_dict.update(new_data_dict)
     return data_dict
 
@@ -644,7 +650,7 @@ def load_timeseries(cfg, short_names):
     Load times series as a dict.
 
     Dict is :
-    data_dict[(short_name, exp, ensemble) ] = cube
+    data_dict[(dataset, short_name, exp, ensemble) ] = cube
     assume only one model
     """
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
@@ -692,7 +698,6 @@ def load_timeseries(cfg, short_names):
         'nppgt': nppgt,
         'nbpgt': nbpgt,
         'nbpgt_cumul': nbpgt_cumul,
-
         'rhgt': rhgt,
         'epc100gt': epc100gt,
         'intppgt': intppgt,
@@ -726,16 +731,16 @@ def load_timeseries(cfg, short_names):
             exp = metadatas[fn]['exp']
             ensemble = metadatas[fn]['ensemble']
             if isinstance(ensemble ,list): ensemble = tuple(ensemble)
-            print(short_name, exp, ensemble)
+            print(dataset, short_name, exp, ensemble)
             if short_name not in short_names_to_load:
                 continue
-            if data_dict.get((short_name, exp, ensemble), False):
+            if data_dict.get((dataset, short_name, exp, ensemble), False):
                 continue
             cube = iris.load_cube(fn)
             #cube = diagtools.bgc_units(cube, short_name)
 
-            print('load_timeseries:\t%s successfull loaded data:', (short_name, exp, ensemble), 'mean:', cube.data.mean())
-            data_dict[(short_name, exp, ensemble)] = cube
+            print('load_timeseries:\t%s successfull loaded data:', (dataset, short_name, exp, ensemble), 'mean:', cube.data.mean())
+            data_dict[(dataset, short_name, exp, ensemble)] = cube
 
     if 'co2' in short_names_to_load:
         data_dict = load_co2_forcing(cfg, data_dict)
@@ -757,13 +762,16 @@ def load_timeseries(cfg, short_names):
 
     calculate_mean = True
     if calculate_mean:
-        short_names, exps = {}, {}
-        for (short_name, exp, ensemble) in  data_dict.keys():
+        assert 0
+        short_names, exps, datasets = {}, {}, {}
+        for (dataset, short_name, exp, ensemble) in  data_dict.keys():
             short_names[short_name] = True
             exps[exp] = True
+            datasets[dataset] = True
         for short_name, exp in product(short_names.keys(), exps.keys()):
             cubes = []
-            for (short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
+            for (dataset_i,short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
+                if dataset != dataset_i: continue
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
@@ -774,9 +782,9 @@ def load_timeseries(cfg, short_names):
             if not len(cubes):
                 continue
             elif len(cubes) == 1:
-                data_dict[(short_name, exp, 'ensemble_mean')] = cubes[0]
+                data_dict[(dataset, short_name, exp, 'ensemble_mean')] = cubes[0]
             else:
-                data_dict[(short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
+                data_dict[(dataset, short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
 
     if 'tls' in short_names_to_load:
         data_dict = calc_tls(cfg, data_dict)
@@ -799,7 +807,7 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
     Load thresholds  as a dict.
 
     Dict is :
-    data_dict[(short_name, exp, ensemble) ] = {threshold: year}
+    data_dict[(dataset, short_name, exp, ensemble) ] = {threshold: year}
     """
     thresholds_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'thresholds.shelve'
     if glob.glob(thresholds_shelve+'*'):
@@ -811,28 +819,28 @@ def load_thresholds(cfg, data_dict, short_names = ['tas', ], thresholds = [1.5, 
 
     thresholds_dict = {}
     baselines = {}
-    for (short_name, exp, ensemble), cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name not in short_names:
              continue
         if exp != 'historical': continue
-        baselines[(short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
+        baselines[(dataset, short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
 
-    for (short_name, exp, ensemble), cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name not in short_names:
              continue
-        baseline = baselines.get(('tas', ensemble), False)
+        baseline = baselines.get((dataset, 'tas', ensemble), False)
         for ens in ensemble:
             if baseline: continue
-            baseline =  baselines.get(('tas', ens), False)
+            baseline =  baselines.get((dataset, 'tas', ens), False)
 
         cube2 = moving_average(cube.copy(), '21 years')
         cube2.data = cube2.data - baseline
 
-        thresholds_dict[(short_name, exp, ensemble)] = {}
+        thresholds_dict[(dataset, short_name, exp, ensemble)] = {}
 
         for threshold in thresholds:
             time = get_threshold_exceedance_date(cube2, threshold)
-            thresholds_dict[(short_name, exp, ensemble)][threshold] = time
+            thresholds_dict[(dataset, short_name, exp, ensemble)][threshold] = time
 
     print('Saving:', thresholds_shelve)
     sh = shelve.open(thresholds_shelve)
@@ -877,11 +885,12 @@ def load_co2_forcing(cfg, data_dict):
     ssp585_datas = []
     ssp585_times = []
     exps={}
+    datasets = {}
     ensembles = {'ensemble_mean': True}
-    for (short_name, exp, ensemble)  in data_dict.keys():
+    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
         ensembles[ensemble] = True
-
+        datasets[dataset] = True
     # load the co2 from the file.
     for fn in files:
         open_fn = open(fn, 'r')
@@ -902,20 +911,20 @@ def load_co2_forcing(cfg, data_dict):
         if key == 'ssp585':
             ssp585_datas = np.array(data).copy()
             ssp585_times = np.array(times).copy()
-        for ens in ensembles.keys(): # in range(20):
+        for ens, dataset  in product(ensembles.keys(), datasets.keys()): # in range(20):
             #ns='r'+str(e)
             #for ens in ['r1', 'r2',  'r3', 'r4', 'r8']:
-            data_dict[('co2', key, ens)] = {'time': times, 'co2':data}
+            data_dict[(dataset, 'co2', key, ens)] = {'time': times, 'co2':data}
             print('load_co2_forcing:\t%s successfull loaded data:', ('co2', key, ens), 'mean:', np.array(data).mean())
-        data_dict[('co2', key, 'ensemble_mean' )] = {'time': times, 'co2':data}
+        data_dict[(dataset, 'co2', key, 'ensemble_mean' )] = {'time': times, 'co2':data}
         open_fn.close()
 
     # Check for historical-ssp scenarios pairs.
     tmp_dict = {}
-    for (short_name, exp, ensemble), ssp_cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), ssp_cube in data_dict.items():
         if short_name in ['co2', 'areacella', 'areacello',]:
             continue
-        if ('co2', 'historical-'+exp, 'historical-ssp585-'+exp, ensemble ) in tmp_dict.keys():
+        if (dataset, 'co2', 'historical-'+exp, 'historical-ssp585-'+exp, ensemble ) in tmp_dict.keys():
             continue
         if exp == 'historical':
             continue
@@ -935,22 +944,22 @@ def load_co2_forcing(cfg, data_dict):
             new_times.extend(np.ma.masked_where(ssp585_times >= 2040., ssp585_times).compressed())
             new_datas.extend(np.ma.masked_where(ssp585_times >= 2040., ssp585_datas).compressed())
             print(exp, len(new_times), len(new_datas))
-            new_times.extend(data_dict[('co2', ssp_only, ensemble)]['time'])
-            new_datas.extend(data_dict[('co2', ssp_only, ensemble)]['co2'])
+            new_times.extend(data_dict[(dataset, 'co2', ssp_only, ensemble)]['time'])
+            new_datas.extend(data_dict[(dataset, 'co2', ssp_only, ensemble)]['co2'])
             print(exp, len(new_times), len(new_datas))
         else:
             if min_time > np.array(hist_times).max():
                 print(short_name, exp, ensemble, 'no overlap', ('ssp:', min_time, '>', 'hist max:', np.array(hist_times).max()))
                 # no overlap
-                new_times = data_dict[('co2', ssp_only, ensemble)]['time']
-                new_datas = data_dict[('co2', ssp_only, ensemble)]['co2']
+                new_times = data_dict[(dataset, 'co2', ssp_only, ensemble)]['time']
+                new_datas = data_dict[(dataset, 'co2', ssp_only, ensemble)]['co2']
             else:
                 # Some overlap
                 print(short_name, exp, ensemble,'some overlap', (min_time, '<=', np.array(hist_times).max()))
                 new_times = list(np.ma.masked_where(hist_times<min_time, hist_times).compressed())
                 new_datas = list(np.ma.masked_where(hist_times<min_time, hist_datas).compressed())
-                new_times.extend(data_dict[('co2', ssp_only, ensemble)]['time'])
-                new_datas.extend(data_dict[('co2', ssp_only, ensemble)]['co2'])
+                new_times.extend(data_dict[(dataset, 'co2', ssp_only, ensemble)]['time'])
+                new_datas.extend(data_dict[(dataset, 'co2', ssp_only, ensemble)]['co2'])
 
 
         if len(new_times) != len(ssp_times):
@@ -961,9 +970,9 @@ def load_co2_forcing(cfg, data_dict):
 
     data_dict.update(tmp_dict)
     # make sure the ensemble mean is set for all co2.
-    for (short_name, exp, ensemble), ssp_cube in data_dict.items():
+    for (dataset, short_name, exp, ensemble), ssp_cube in data_dict.items():
         if short_name not in ['co2', ]: continue
-        tmp_dict[(short_name, exp, 'ensemble_mean')] = ssp_cube
+        tmp_dict[(dataset, short_name, exp, 'ensemble_mean')] = ssp_cube
     data_dict.update(tmp_dict)
 
 
@@ -981,7 +990,7 @@ def load_co2_forcing(cfg, data_dict):
                        'ssp585': 'red',
                        'ssp534-over':'orange'}
         for key in exp_colours.keys():
-            for (a,b,c), dat in data_dict.items():
+            for (z,a,b,c), dat in data_dict.items():
                 if a != 'co2': continue
                 if b != key: continue
                 plt.plot(dat['time'],
@@ -1005,7 +1014,7 @@ def load_co2_forcing(cfg, data_dict):
                        'historical-ssp585': 'red',
                        'historical-ssp585-ssp534-over':'orange'}
         for key in exp_colours.keys():
-            for (a,b,c), dat in data_dict.items():
+            for (z,a,b,c), dat in data_dict.items():
                 if a != 'co2': continue
                 if b != key: continue
                 plt.plot(dat['time'],
@@ -1035,9 +1044,12 @@ def load_emissions_forcing(cfg, data_dict):
     #ssp585_times = []
     exps = {}
     ensembles = {'ensemble_mean': True}
-    for (short_name, exp, ensemble)  in data_dict.keys():
+    datasets = {}
+
+    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
         ensembles[ensemble] = True
+        datasets[dataset] = True
 
     # load the co2 from the file.
     for fn in files:
@@ -1062,13 +1074,13 @@ def load_emissions_forcing(cfg, data_dict):
             # no need to double up.
             continue
 
-        for ensemble in ensembles:
-            data_dict[('emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
+        for dataset, ensemble in product(datasets,ensembles}:
+            data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
             #if scenario.find('ssp119')> -1:
             #    print('load_emissions_forcing:', scenario, len(times), len(data))
-            data_dict[('cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':np.cumsum(data)}
-
+            data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':np.cumsum(data)}
     return data_dict
+
 
 def calc_tls(cfg, data_dict):
     """
@@ -1077,32 +1089,34 @@ def calc_tls(cfg, data_dict):
     """
     exps = {'ssp119':True, 'ssp126':True, 'ssp245':True, 'ssp370':True, 'ssp585':True, 'historical':True}
     ensembles = {'ensemble_mean':True}
-    for (short_name, exp, ensemble)  in data_dict.keys():
+    datasets = {}
+    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
         ensembles[ensemble] = True
-    print(exps, ensembles)
+        datasets[dataset] = True
+    print(exps, ensembles,datasets)
     tmp_data_dict = {}
     short = 'tls'
-    for (short, exp, ensemble), cube in data_dict.items():
-        print('calc_tls:',(short, exp, ensemble))
+    for (dataset, short, exp, ensemble), cube in data_dict.items():
+        print('calc_tls:',(dataset, short, exp, ensemble))
         if short not in ['nbpgt_cumul', ]: # 'nbpgt_cumul']:
              continue
         times = diagtools.cube_time_to_float(cube)
         data = cube.data.copy()
         nbp_dict = {int(t):d for t,d in zip(times, data)}
-        luegt_dict = data_dict.get(('luegt', exp, ensemble), False)
+        luegt_dict = data_dict.get((dataset, 'luegt', exp, ensemble), False)
         if not luegt_dict: continue
         for t, d in zip(luegt_dict['time'], luegt_dict['luegt']):
             #rint(t,d, nbp_dict.get(t, nbp_dict.get(int(t), False)))
             if not nbp_dict.get(t, nbp_dict.get(int(t), False)):
-                print('error:', (short, exp, ensemble), t, 'not in', nbp_dict.keys())
+                print('error:', (dataset, short, exp, ensemble), t, 'not in', nbp_dict.keys())
                 continue
             nbp_dict[int(t)] += d
 
         new_times = np.array(sorted(nbp_dict.keys()))
         new_data = np.array([nbp_dict[t] for t in new_times])
 
-        tmp_data_dict[('tls', exp, ensemble)] = {'time':new_times+0.5, 'tls': new_data }
+        tmp_data_dict[(dataset, 'tls', exp, ensemble)] = {'time':new_times+0.5, 'tls': new_data }
 
     print(tmp_data_dict.keys(), tmp_data_dict)
     if not len(tmp_data_dict): assert 0
@@ -1117,8 +1131,8 @@ def calc_atmos_carbon(cfg, data_dict):
     """
     tmp_data_dict = {}
     new_short = 'atmos_carbon'
-    for (short, exp, ensemble), tmp_data in data_dict.items():
-        print('calc_atmos_carbon:',(short, exp, ensemble))
+    for (dataset, short, exp, ensemble), tmp_data in data_dict.items():
+        print('calc_atmos_carbon:',(dataset, short, exp, ensemble))
         if short not in ['cumul_emissions', ]:
             continue
         # tmp_data = {time:times, 'cumul_emissions': dat}
@@ -1127,11 +1141,11 @@ def calc_atmos_carbon(cfg, data_dict):
 
         # subtrack nbp & ocean carbon flux.
         for cube_key in  ['fgco2gt_cumul', 'nbpgt_cumul']:
-            tmp_cube_data = data_dict.get((cube_key, exp, ensemble), False)
+            tmp_cube_data = data_dict.get((dataset, cube_key, exp, ensemble), False)
             if not tmp_cube_data:
                 for ens in ensemble:
                     if tmp_cube_data: continue
-                    tmp_cube_data = data_dict.get((cube_key, exp, ens), False)
+                    tmp_cube_data = data_dict.get((dataset, cube_key, exp, ens), False)
                 if not tmp_cube_data:
                      print('Fail to find:', (cube_key, exp, ensemble))
                      # print(data_dict.keys())
@@ -1146,7 +1160,7 @@ def calc_atmos_carbon(cfg, data_dict):
         tmp_times, tmp_dat = unzip_time(tmp_data)
         tmp_times = tmp_times+0.5
 
-        tmp_data_dict[(new_short, exp, ensemble)] = {'time': tmp_times, new_short: tmp_dat}
+        tmp_data_dict[(dataset, new_short, exp, ensemble)] = {'time': tmp_times, new_short: tmp_dat}
 
     data_dict.update(tmp_data_dict)
     return data_dict
@@ -1167,10 +1181,12 @@ def load_luegt(cfg, data_dict):
 
     exps = {'ssp119':True, 'ssp126':True, 'ssp245':True, 'ssp370':True, 'ssp585':True, 'historical':True}
     ensembles = {'ensemble_mean':True}
-    for (short_name, exp, ensemble)  in data_dict.keys():
+    dataset = {}
+    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
         ensembles[ensemble] = True
-    print(exps, ensembles)
+        datasets[dataset] = True
+    print(exps, ensembles, datasets)
     # assert 0
     # This data was added to the esmvaltool/diagnostics/ocean/aux_data directory.
     aux_fn = cfg['auxiliary_data_dir']+'/land_usage/landusage_ssp.txt'
@@ -1198,7 +1214,7 @@ def load_luegt(cfg, data_dict):
                 if da == ' ': continue
                 data[header[d]].append(float(da))
 
-    for exp, ensemble in product(exps.keys(), ensembles.keys()):
+    for exp, ensemble,datase in product(exps.keys(), ensembles.keys(),datasets.keys()):
         print(exp, ensemble)
         da =  data.get(exp, [])
         if not da:
@@ -1214,15 +1230,13 @@ def load_luegt(cfg, data_dict):
             y2 = years[:len(da)]
         else:
             y2 = years
-        tmp_data_dict[(short, exp, ensemble)] = {'time': y2, short: da}
+        tmp_data_dict[(dataset, short, exp, ensemble)] = {'time': y2, short: da}
 
     #print(tmp_data_dict.keys())
     #assert 0
     data_dict.update(tmp_data_dict)
     #assert 0
     return data_dict
-
-
 
 
 def get_threshold_point(cube, year):
@@ -1285,12 +1299,14 @@ def get_long_name(name):
 
     return long_name + longnames.get(name, name)
 
+
 def load_ensemble(data_dict, short_name, exp, ensemble):
-    dat = data_dict.get((short_name, exp, ensemble), False)
+    dat = data_dict.get(('CMIP6', short_name, exp, ensemble), False)
     for ens in ensemble:
         if dat: continue
-        dat = data_dict.get((short_name, exp, ens), False)
+        dat = data_dict.get(('CMIP6', short_name, exp, ens), False)
     return dat
+
 
 def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     markers='thresholds',
@@ -1314,10 +1330,12 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     """
     exps = {}
     ensembles = {}
-    for (short_name, exp, ensemble)  in data_dict.keys():
+    datasets = {}
+    for (dataset, short_name, exp, ensemble)  in data_dict.keys():
          exps[exp] = True
          ensembles[ensemble] = True
-         print(short_name, exp, ensemble)
+         datasets[dataset] = True
+         print(dataset, short_name, exp, ensemble)
 
     exp_colours = {'historical':'black',
                    'ssp119':'green',
@@ -1375,20 +1393,21 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
         'tls': ' '.join(['True Land Sink, Pg']),
         'atmos_carbon': 'Remnant Anthropogenic CO2, Pg',
     }
-    for exp_1, ensemble_1 in product(exps, ensembles):
+    for exp_1, ensemble_1,dataset_1 in product(exps, ensembles,datasets):
 
         x_data, y_data = [], []
         x_times, y_times = [], []
-        for (short_name, exp, ensemble), cube in data_dict.items():
+        for (dataset, short_name, exp, ensemble), cube in data_dict.items():
             if short_name not in [x,y]: continue
             if exp != exp_1: continue
             if ensemble != ensemble_1: continue
-            print('Everything matches', (short_name, exp, ensemble),'vs', [x,y], (exp_1, ensemble_1))
+            if dataset != dataset_1: continue
+            print('Everything matches', (dataset, short_name, exp, ensemble),'vs', [x,y], (exp_1, ensemble_1))
 #           print(exp_1, ensemble_1, short_name, exp, ensemble, ensemble_mean)
 #            if ensemble_mean and ensemble!= 'ensemble_mean': continue
 #            if not ensemble_mean and ensemble == 'ensemble_mean': continue
 
-            print('make_ts_figure: found', short_name, exp, ensemble, x,y)
+            print('make_ts_figure: found', dataset, short_name, exp, ensemble, x,y)
             if x == 'time' and short_name == y:
                 x_label = 'Year'
                 if isinstance(cube, iris.cube.Cube):
@@ -1500,7 +1519,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
 
 
         if markers == 'thresholds':
-            try: threshold_times = thresholds_dict[('tas', exp_1, ensemble_1)]
+            try: threshold_times = thresholds_dict[(dataset_1, 'tas', exp_1, ensemble_1)]
             except:
                threshold_times = {}
             ms = 8
@@ -1513,7 +1532,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                 #_point = get_threshold_point(cube, time.year)
                 y_point = get_threshold_point({'time':y_times}, time.year)
 
-                print('thresholds:', exp_1, ensemble_1,x,y, threshold, time, x_point, y_point, len(x_data),len(y_data))
+                print('thresholds:', dataset_1, exp_1, ensemble_1,x,y, threshold, time, x_point, y_point, len(x_data),len(y_data))
                 #assert 0
                 plt.plot(x_data[x_point],
                          y_data[y_point],
@@ -1616,13 +1635,14 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     fgco2gts = []
     experiments = []
 
-    for (t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
+    for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
+        if t_dataset != 'CMIP6': continue
         if t_short != 'tas': continue
         if t_ens != 'ensemble_mean': continue
 
         print("make_bar_chart", t_short, t_exp, t_ens)
-        cumul_emissions = data_dict.get(('cumul_emissions', t_exp, t_ens), None) #dict
-        atmos_carbon = data_dict.get((atmos,  t_exp, t_ens), None) #dict
+        cumul_emissions = data_dict.get((t_dataset, 'cumul_emissions', t_exp, t_ens), None) #dict
+        atmos_carbon = data_dict.get((t_dataset, atmos,  t_exp, t_ens), None) #dict
         if cumul_emissions is None:  # Because not all sceanrios have emissions data.
            continue
 
@@ -1630,10 +1650,10 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
            continue
 
         if land_carbon == 'nbpgt':
-            landc_cumul = data_dict[('nbpgt_cumul', t_exp, t_ens)] # cube
+            landc_cumul = data_dict[(t_dataset, 'nbpgt_cumul', t_exp, t_ens)] # cube
         elif land_carbon == 'tls':
-            landc_cumul = data_dict[('tls', t_exp, t_ens)] # dict
-        fgco2gt_cumul = data_dict[('fgco2gt_cumul', t_exp, t_ens)] # cube
+            landc_cumul = data_dict[(t_dataset, 'tls', t_exp, t_ens)] # dict
+        fgco2gt_cumul = data_dict[(t_dataset, 'fgco2gt_cumul', t_exp, t_ens)] # cube
         fl_threshold = float(threshold)
         if fl_threshold > 1850.:
 
@@ -1809,6 +1829,7 @@ def unzip_time(dict):
 def make_cumulative_timeseries(cfg, data_dict,
       thresholds_dict,
       ssp='historical-ssp126',
+      dataset = 'CMIP6'
       ensemble = 'ensemble_mean',
       plot_type = 'simple_ts',
       do_leg= True,
@@ -1839,6 +1860,10 @@ def make_cumulative_timeseries(cfg, data_dict,
     if ensemble == 'ensemble_mean':
         ensembles = ['ensemble_mean',]
 
+    if dataset == 'CMIP6':
+        datasets = ['CMIP6', ]
+    else: assert 0
+
     if plot_type == 'distribution':
         assert 0
 
@@ -1847,11 +1872,11 @@ def make_cumulative_timeseries(cfg, data_dict,
     elif ssp == 'historical': exps = ['historical', ]
 
     data = {k:{} for k in colours.keys()}
-    for ssp_it, ensemble, key in product(exps, ensembles, colours.keys()):
-        print('load data', (key, ssp_it, ensemble))
-        tmp_data = data_dict.get((key, ssp_it, ensemble), False)
+    for ssp_it, ensemble, key, dataset in product(exps, ensembles, colours.keys(),datasets):
+        print('load data', (datasetkey, ssp_it, ensemble))
+        tmp_data = data_dict.get((dataset, key, ssp_it, ensemble), False)
         if not tmp_data: continue
-        print('load data: found:', (key, ssp_it, ensemble))
+        print('load data: found:', (dataset, key, ssp_it, ensemble))
         if key in cube_keys:
             tmp_data = {'time': diagtools.cube_time_to_float(tmp_data),
                              key: tmp_data.data}
@@ -1871,8 +1896,8 @@ def make_cumulative_timeseries(cfg, data_dict,
     #colours['atmos'] = 'purple'
 
     thresholds = {}
-    for ssp_it, ensemble in product(exps, ensembles, ):
-        dicts = thresholds_dict.get(('tas', ssp_it, ensemble), False)
+    for ssp_it, ensembledataset,  in product(exps, ensembles, datasets):
+        dicts = thresholds_dict.get((dataset, 'tas', ssp_it, ensemble), False)
         if not dicts:continue
         thresholds= thresholds|dicts
 
@@ -2063,7 +2088,6 @@ def make_cumulative_timeseries(cfg, data_dict,
     else: return fig, ax
 
 
-
 def make_cumulative_timeseries_pair(cfg, data_dict,
       thresholds_dict,
       ssp='ssp126',
@@ -2080,6 +2104,7 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
         thresholds_dict,
         ssp=ssp,
         ensemble = ensemble,
+        dataset = 'CMIP6',
         plot_type = 'area_over_zero',
         fig = fig, ax= ax1,
     )
@@ -2087,6 +2112,7 @@ def make_cumulative_timeseries_pair(cfg, data_dict,
         thresholds_dict,
         ssp=ssp,
         ensemble = ensemble,
+        dataset = 'CMIP6',
         plot_type = 'pc',
         fig = fig, ax= ax2,
         do_leg=False,
@@ -2352,9 +2378,9 @@ def main(cfg):
             ]
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
 
-        for (short_name, exp, ensemble),cube  in data_dict.items():
+        for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
             if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
-                data_dict[(short_name, exp, ensemble)] = moving_average(cube, '21 years')
+                data_dict[(dataset, short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
         print(short_names)
 
