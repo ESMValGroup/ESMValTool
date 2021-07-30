@@ -71,7 +71,7 @@ diagnostics:
   # Time series diagnostics
   # --------------------------------------------------
   time_series:
-    # variables:
+    variables:
     #   area_land:
     #     short_name: areacella
     #     preprocessor: prep_total_land
