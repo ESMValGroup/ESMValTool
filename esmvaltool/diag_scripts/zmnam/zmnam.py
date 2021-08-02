@@ -27,9 +27,9 @@ from zmnam_preproc import zmnam_preproc
 logger = logging.getLogger(__name__)
 
 
-def get_provenance_record(vatt, ancestor_files):
+def get_provenance_record(caption, vatt, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Compute zonal mean annular mode between "
+    caption = (caption + " between "
                "{start_year} and {end_year} ".format(**vatt))
     record = {
         'caption': caption,
@@ -89,8 +89,7 @@ def main(cfg):
             (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile, hemisphere)
             print("calc")
             outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
-            provenance_record = get_provenance_record(props,
-                                                      ancestor_files=[ifile])
+
             if write_plots:
                 print("plot_files")
                 plot_files = zmnam_plot(file_mo_an, out_dir + '/',
@@ -99,6 +98,22 @@ def main(cfg):
             else:
                 plot_files = []
             for file in outfiles + plot_files:
+
+                if 'pc_da' in file: 
+                    caption = 'Daily principal component timeseries'
+                elif 'pc_mo' in file or 'mo_ts' in file:
+                    caption = 'Monthly principal component timeseries'
+                elif 'mo_reg' in file:
+                    caption = 'Monthly regression maps'
+                elif 'da_pdf' in file:
+                    caption = 'Daily probability distribution function'
+                elif 'eofs' in file:
+                    caption = 'Empirical orthogonal functions'
+                else: # please add additional diagnostic description
+                    caption = 'Not specified diagnostic'
+
+                provenance_record = get_provenance_record(caption, props,
+                                                          ancestor_files=[ifile])
                 with ProvenanceLogger(cfg) as provenance_logger:
                     provenance_logger.log(file, provenance_record)
 
