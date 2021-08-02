@@ -99,7 +99,7 @@ def main(cfg):
                 plot_files = []
             for file in outfiles + plot_files:
 
-                if 'pc_da' in file: 
+                if 'pc_da' in file:
                     caption = 'Daily principal component timeseries'
                 elif 'pc_mo' in file or 'mo_ts' in file:
                     caption = 'Monthly principal component timeseries'
@@ -109,11 +109,12 @@ def main(cfg):
                     caption = 'Daily probability distribution function'
                 elif 'eofs' in file:
                     caption = 'Empirical orthogonal functions'
-                else: # please add additional diagnostic description
+                else:  # please add additional diagnostic description
                     caption = 'Not specified diagnostic'
 
                 provenance_record = get_provenance_record(caption, props,
-                                                          ancestor_files=[ifile])
+                                                          ancestor_files=
+                                                          [ifile])
                 with ProvenanceLogger(cfg) as provenance_logger:
                     provenance_logger.log(file, provenance_record)
 
