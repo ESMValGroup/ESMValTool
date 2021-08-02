@@ -163,8 +163,8 @@ This recipe includes the following fields:
 included it as HadGEM2-ES doesn't include a phosphate field.
 
 This recipe uses the World Ocean Atlas data, which can be downloaded from:
-https://www.nodc.noaa.gov/OC5/woa13/woa13data.html
-(last access 10/25/2018)
+https://www.ncei.noaa.gov/products/world-ocean-atlas
+(last access 02/08/2021)
 
 Instructions: Select the "All fields data links (1° grid)" netCDF file,
 which contain all fields.

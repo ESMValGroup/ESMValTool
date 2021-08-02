@@ -7,18 +7,18 @@ attributes:
   modeling_realm: clim
 
   # WOA13
-  project_id: OBS
-  short_name: woa13
-  version: '2013v2'
-  source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2/'
-  reference: 'woa' #change to woa13 in references?
+  #project_id: OBS
+  #short_name: woa13
+  #version: '2013v2'
+  #source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2/'
+  #reference: 'woa2013v2'
 
   # WOA18
-  #project_id: OBS6
-  #short_name: woa18
-  #version: '2018'
-  #source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
-  #reference: 'woa' #change to woa18 in references?
+  project_id: OBS6
+  short_name: woa18
+  version: '2018'
+  source: 'https://www.ncei.noaa.gov/data/oceans/woa/WOA18/DATA/'
+  reference: 'woa2018'
 
   comment: ''
 

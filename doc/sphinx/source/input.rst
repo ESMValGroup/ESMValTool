@@ -295,8 +295,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | UWisc                        | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| WOA                          | thetao, so, no3, o2, po4, si (Omon, Oyr)                                                             |   2  | Python          |
-|                              | tos, sos, no3os, o2os, po4os, sios (Omon)                                                            |      |                 |
+| WOA                          | thetao, so, tos, sos (Omon)                                                                          |   2  | Python          |
+|                              | no3, o2, po4, si (Oyr)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 
 .. [#note1] ERA5 cmorization is built into ESMValTool through the native6 project, so there is no separate cmorizer script.
