@@ -64,10 +64,64 @@ import csv
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
-
+from esmvalcore.preprocessor._time import regrid_time
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+# List of ensemble members to skip.
+data_dict_skips = { 
+    'CanESM5':['r11i1p2f1', 'r12i1p1f1', 'r12i1p2f1'], # hist data doesn't exist
+    'ACCESS-ESM1-5': ['r2i1p1f1', 'r3i1p1f1'], #  # hist data doesn't exist
+    'CESM2-WACCM':['r2i1p1f1', 'r3i1p1f1'], # no hist data.
+    'CESM2-WACCM-FV2': ['r1i1p1f1', 'r2i1p1f1', 'r3i1p1f1'], # no SSP data at all.
+    'MPI-ESM1-2-LR': ['r2i1p1f1', 'r3i1p1f1'], # no hist data.
+    }
+
+# For models (like UKESM), where the hist and ssp have different ensemble ids:
+data_dict_linked_ens = {# model: {ssp:hist'
+    'UKESM1-0-LL': {'r5i1p1f2':'r5i1p1f3','r6i1p1f2':'r6i1p1f3','r7i1p1f2':'r7i1p1f3',}
+    }
+
+
+
+def make_mean_of_cube_list(cube_list):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    Assumes annual 1D data.
+    """
+    # Fix empty times
+    full_times = {}
+    times = []
+    if len(cube_list)==1:
+        return cube_list[0]
+
+    for cube in cube_list:
+        try: iris.coord_categorisation.add_year(cube, 'time', name='year')
+        except: pass
+        years = cube.coord('year')
+
+        for year in cube.coord('year').points:
+            try:
+                full_times[year] += 1
+            except:
+                full_times[year] = 1
+
+    cube_mean=cube_list[0]
+
+    for i, cube in enumerate(cube_list[1:]):
+        cube_mean+=cube
+
+    cube_mean.data = cube_mean.data/ float(len(cube_list))
+
+    if cube_mean.data.max()> np.max([c.data.max() for c in cube_list]):
+        print('something is not working here:',  cube_mean.data.max(), '>', [c.data.max() for c in cube_list])
+        assert 0
+
+    return cube_mean
+
 
 
 def timeplot(cube, **kwargs):
@@ -344,37 +398,45 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
     """
     Calculate global from the data dictionary.
     """
-    areas = []
+    areas = {}
     test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacello':
-            areas.append(cube)
+            areas[dataset] =  cube
 
-    if len(areas) != 1:
-        assert 0
-    areas = areas[0]
-    if np.sum(areas.data.shape)>1:
-        # assume properly masked! (done in preprocessor)
-        #print(areas.data.shape)
-        areas = areas.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
-        #print(areas.data)
-        #assert 0
     tmp_dict = {}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name != short:
             continue
         if (dataset, gt, exp, ensemble) in data_dict.items():
             continue
+
+        area = areas.get(dataset, None)
+        if not area:
+            print(dataset, 'area not found', sorted(areas.keys()))
+            assert 0
+        #if not isinstance(area, (type(np.array([0])), float, list, )):
+        # assume properly masked! (done in preprocessor)
+        # print(dataset, 'areacella cube:', area)
+        area = area.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+        #areas[dataset] = area.data[0]
+
         cubegt = cube.copy()
-        # print(short, gt, cube.units)
+
+        time_units = cubegt.coord('time').units
+        if time_units.calendar == '360_day':
+            sec_peryear = 360*24*60*60.
+        else:
+            sec_peryear = 365*24*60*60.
+
         if cube.units == cf_units.Unit('kg m-2 s-1'):
-            cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
+            cubegt.data = cube.data * area.data * 1.E-12 * sec_peryear
             cubegt.units = cf_units.Unit('Pg yr^-1')
         elif cube.units == cf_units.Unit('kg m-2'):
-            cubegt.data = cube.data * areas.data * 1.E-12
+            cubegt.data = cube.data * area.data * 1.E-12
             cubegt.units = cf_units.Unit('Pg')
         elif cube.units == cf_units.Unit('mol m-2 s-1'):
-            cubegt.data = cube.data * areas.data * 12.0107* 1.E-15 * (360*24*60*60)
+            cubegt.data = cube.data * area.data * 12.0107* 1.E-15 * sec_peryear
             cubegt.units = cf_units.Unit('Pg yr^-1')
         else:
             print('Units not Recognised:', cube.units)
@@ -400,11 +462,21 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
             continue
         if exp not in ['historical', ]:
             continue
+        print('calculate_cumulative', (dataset, short, exp, ensemble), cube) 
         hist_cumul_cube = cube.copy()
         times = diagtools.cube_time_to_float(hist_cumul_cube)
+        print(hist_cumul_cube.data)
+        print(np.cumsum(np.ma.masked_invalid(hist_cumul_cube.data)))
+
         hist_cumul_cube.data = np.cumsum(np.ma.masked_invalid(hist_cumul_cube.data))
         tmp_dict[(dataset, cumul_name, exp, ensemble)] = hist_cumul_cube
-        hist_datas[ensemble] = {'time': times, 'data': hist_cumul_cube.data}
+        hist_datas[(dataset, ensemble)] = {'time': times, 'data': hist_cumul_cube.data}
+
+
+    # For models (like UKESM), where the hist and ssp have different ensemble ids:
+    for mod, ens in data_dict_linked_ens.items():
+        for ens_ssp, ens_hist in ens.items():
+             hist_datas[(mod, ens_ssp)] = hist_datas[(mod, ens_hist)]           
 
     #calculate the cumulative value, and add the historical point to it.
     for (dataset, short, exp, ensemble), cube in data_dict.items():
@@ -412,21 +484,24 @@ def calculate_cumulative(data_dict, short_name, cumul_name, new_units=''):
             continue
         if exp in ['historical', ]:
             continue
+        print('calculate_cumulative', (dataset, short, exp, ensemble), cube )
         cumul_cube = cube.copy()
         times = diagtools.cube_time_to_float(cumul_cube)
         if isinstance(ensemble, str):
-            hist_dat = hist_datas.get(ensemble, False)
+            hist_dat = hist_datas.get((dataset,ensemble), False)
         else:
             print('looking for ', ensemble)
-            hist_dat = hist_datas.get(ensemble, False)
+            hist_dat = hist_datas.get((dataset,ensemble), False)
             for ens in ensemble:
                 if hist_dat: continue
                 #if len(hist_dat): continue
-                hist_dat = hist_datas.get(ens, False)
+                hist_dat = hist_datas.get((dataset, ens), False)
             if not hist_dat:
                 print('unable to find', ('tas', ensemble))
                 assert 0
-
+        if hist_dat is False:
+            print('Unable to find hist_dat:', (dataset, short, exp, ensemble), cube)
+            assert 0
         hist_point = get_threshold_point(hist_dat, np.min(times))
         hist_cumul = hist_dat['data'][hist_point]
 
@@ -464,20 +539,23 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
     """
     Calculate land_gt from the data dictionary.
     """
-    areas = []
+    areas = {}
     test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacella':
-            areas.append(cube)
-    if len(areas) != 1:
-        print(areas)
-        assert 0
-    areas = areas[0]
-    if np.sum(areas.data.shape)>1:
-        # assume properly masked! (done in preprocessor)
-        areas = areas.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+            areas[dataset] = cube
+
     tmp_dict={}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
+        area = areas.get(dataset, None)
+        if not area:
+            print(dataset, 'area not found', sorted(areas.keys()))
+            assert 0
+        # assume properly masked! (done in preprocessor)
+        #print(dataset, 'areacella cube:', area)
+        area = area.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+        #print(area.data) 
+
         #rint('land_gt:', short_name, exp, ensemble, [short,gt])
         if short_name != short:
         #   print('land_gt:', short_name,'!=', short)
@@ -485,11 +563,20 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
         if (dataset, gt, exp, ensemble) in data_dict.keys() or (gt, exp, ensemble) in tmp_dict:
             print('land_gt:', gt, 'already calculated')
             continue
-        print('land_gt:', dataset, short_name, exp, ensemble, [short,gt])
+        #print('land_gt:', dataset, short_name, exp, ensemble, [short,gt])
         cubegt = cube.copy()
-        cubegt.data = cube.data * areas.data * 1.E-12 * (360*24*60*60)
-        cubegt.units = cf_units.Unit('Pg yr^-1') #cube.units * areas.units
-        print('land_gt:', (dataset, gt, exp, ensemble), cubegt.data.mean())
+
+        time_units = cubegt.coord('time').units
+        if time_units.calendar == '360_day':
+            sec_peryear = 360*24*60*60.
+        else:
+            sec_peryear = 365*24*60*60.
+
+        cubegt.data = cube.data * area.data * 1.E-12 * sec_peryear
+    
+        cubegt.units = cf_units.Unit('Pg yr^-1')
+ 
+        #print('land_gt:', (dataset, gt, exp, ensemble), cubegt.data.mean())
         tmp_dict[(dataset, gt, exp, ensemble)] = cubegt
 
     data_dict.update(tmp_dict)
@@ -590,13 +677,22 @@ def tas_norm(data_dict):
         if short_name != 'tas': continue
         if exp != 'historical': continue
         baselines[(dataset, short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
-
+        print('baseline tas:',(dataset, short_name, ensemble), baselines[(dataset, short_name, ensemble)])
 
     for exp, ensemble, dataset in product(exps, ensembles, datasets):
         if not (dataset, 'tas', exp, ensemble) in data_dict.keys(): continue
         cube = data_dict[(dataset, 'tas', exp, ensemble)].copy()
         if isinstance(ensemble, str):
-            cube.data = cube.data - baselines[(dataset, 'tas', ensemble)]
+            bline = baselines.get((dataset, 'tas', ensemble), None)
+            if not bline:
+                print('baseline not found', dataset, 'tas', ensemble)
+                for blindex, bl in baselines.items():
+                    if blindex[0] != dataset: continue
+                    if blindex[1] != 'tas': continue
+                    print('looking for:', (dataset, 'tas', ensemble), 'candidate:', blindex, bl)
+                continue
+                assert 0 
+            cube.data = cube.data - bline
         else:
             print('looking for ', dataset, ensemble)
             print(baselines.keys())
@@ -740,6 +836,12 @@ def load_timeseries(cfg, short_names):
             ensemble = metadatas[fn]['ensemble']
             if isinstance(ensemble ,list): ensemble = tuple(ensemble)
             print(dataset, short_name, exp, ensemble)
+
+       
+            if dataset in data_dict_skips.keys():
+                if ensemble in data_dict_skips[dataset]: 
+                    continue
+
             if short_name not in short_names_to_load:
                 continue
             if data_dict.get((dataset, short_name, exp, ensemble), False):
@@ -772,10 +874,13 @@ def load_timeseries(cfg, short_names):
     if calculate_model_mean:
         short_names, exps, datasets = {}, {}, {}
         for (dataset, short_name, exp, ensemble) in  data_dict.keys():
+            if short_name in ['areacello', 'areacella']:continue
             short_names[short_name] = True
             exps[exp] = True
             datasets[dataset] = True
         for short_name, exp, dataset in product(short_names.keys(), exps.keys(), datasets.keys()):
+            if short_name in ['areacello', 'areacella']:continue
+            print('calculate_model_mean',  short_name, exp, dataset)
             cubes = []
             for (dataset_i,short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
                 if dataset != dataset_i: continue
@@ -785,6 +890,7 @@ def load_timeseries(cfg, short_names):
                 if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
                      continue
                 print("calculate_model_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
+                cube = regrid_time(cube, 'yr')
                 cubes.append(cube)
 
             if not len(cubes):
@@ -792,19 +898,22 @@ def load_timeseries(cfg, short_names):
             elif len(cubes) == 1:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = cubes[0]
             else:
-                data_dict[(dataset, short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
+                data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
 
     calculate_cmip6_mean = True
     if calculate_cmip6_mean:
         # Calculate the mean of multiple datasets ensemble_means
         short_names, exps, datasets = {}, {}, {}
         for (dataset, short_name, exp, ensemble) in  data_dict.keys():
+            if short_name in ['areacello', 'areacella']:continue
             short_names[short_name] = True
             exps[exp] = True
             datasets[dataset] = True
 
         for short_name, exp in product(short_names.keys(), exps.keys()):
             cubes = []
+            if short_name in ['areacello', 'areacella']:continue
+            print("calculate_cmip6_mean: including:", short_name, exp)
             for (dataset_i,short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
                 if dataset_i == 'CMIP6': continue
                 if short_name != short_name_i: continue
@@ -812,15 +921,17 @@ def load_timeseries(cfg, short_names):
                 if ensemble_i != 'ensemble_mean': continue
                 if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
                      continue
+                cube = regrid_time(cube, 'yr')
                 cubes.append(cube)
                 print("calculate_cmip6_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
 
+            print('calculate_cmip6_mean:', short_name, exp, len(cubes)) 
             if not len(cubes):
                 continue
             elif len(cubes) == 1:
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = cubes[0]
             else:
-                data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = diagtools.make_mean_of_cube_list(cubes)
+                data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
 
     if 'tls' in short_names_to_load:
         data_dict = calc_tls(cfg, data_dict)
@@ -1286,7 +1397,11 @@ def get_threshold_point(cube, year):
         arg_min = np.argmin(np.abs(np.array(cube['time']) - year))
         #print(arg_min, year, np.array(cube['time']))
     else:
-        time_units = cube.coord('time').units
+        try: 
+            time_units = cube.coord('time').units
+        except: 
+            print('get_threshold_point:', cube, year)
+            assert 0
         date = datetime.datetime(int(year), 6, 1)
         t_1 = time_units.date2num(date)
         years = np.array(diagtools.cube_time_to_float(cube))
@@ -1672,6 +1787,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     experiments = []
 
     for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
+        print((t_dataset, t_short, t_exp, t_ens), threshold_times)
         if t_dataset != 'CMIP6': continue
         if t_short != 'tas': continue
         if t_ens != 'ensemble_mean': continue
@@ -1689,6 +1805,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             landc_cumul = data_dict[(t_dataset, 'nbpgt_cumul', t_exp, t_ens)] # cube
         elif land_carbon == 'tls':
             landc_cumul = data_dict[(t_dataset, 'tls', t_exp, t_ens)] # dict
+
         fgco2gt_cumul = data_dict[(t_dataset, 'fgco2gt_cumul', t_exp, t_ens)] # cube
         fl_threshold = float(threshold)
         if fl_threshold > 1850.:
@@ -1710,17 +1827,17 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             t_exp = t_exp.replace('historical-', '').upper()
             experiments.append(t_exp)
             continue
-
+        print('threshold_times: vworking here right now', threshold_times)
         for thresh, time in threshold_times.items():
-            #print("make_bar_chart", t_short, t_exp, t_ens, thresh, threshold, time)
+            print("make_bar_chart", t_short, t_exp, t_ens, thresh, threshold, time)
             if float(threshold) != float(thresh):
-                #print(threshold, '!=', thresh)
+                print(threshold, '!=', thresh)
                 continue
             if not time:
                 print('time', 'isn t there' , time)
                 continue
             #if threshold != thresh: continue
-            #print("make_bar_chart",threshold, time)
+            print("make_bar_chart",threshold, time)
 
             e_xpoint = get_threshold_point(cumul_emissions, time.year)
             a_xpoint = get_threshold_point(atmos_carbon, time.year)

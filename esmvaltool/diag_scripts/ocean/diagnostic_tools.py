@@ -169,13 +169,13 @@ def make_mean_of_cube_list(cube_list):
         return cube_list[0]
     for cube in cube_list:
         # make time coords uniform:
-        print(cube)
+        #print(cube)
         cube.coord('time').long_name='Time axis'
         cube.coord('time').attributes={'time_origin': '1950-01-01 00:00:00'}
         times.append(cube.coord('time').points)
 
         for time in cube.coord('time').points:
-            print(cube.name, time, cube.coord('time').units)
+            #print('make_mean_of_cube_list',cube.name, time, cube.coord('time').units)
             try:
                 full_times[time] += 1
             except:
