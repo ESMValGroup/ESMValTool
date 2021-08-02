@@ -112,11 +112,10 @@ def main(cfg):
                 else:  # please add additional diagnostic description
                     caption = 'Not specified diagnostic'
 
-                provenance_record = get_provenance_record(caption, props,
-                                                          ancestor_files=
-                                                          [ifile])
+                prov_record = get_provenance_record(caption, props,
+                                                    ancestor_files=[ifile])
                 with ProvenanceLogger(cfg) as provenance_logger:
-                    provenance_logger.log(file, provenance_record)
+                    provenance_logger.log(file, prov_record)
 
 
 # Run the diagnostics
