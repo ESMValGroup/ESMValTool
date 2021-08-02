@@ -15,8 +15,10 @@ Recipes are stored in `recipes/``
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
-  - monitor.py: Plots preprocessor output directly from the preprocessor.
-  - compute_eofs.py: A sample on how to use the monitor structure to show other metrics.
+  - monitor.py:
+    Plots preprocessor output directly from the preprocessor.
+  - compute_eofs.py:
+    A sample on how to use the monitor structure to show other metrics.
     Computes and plots the map of the first EOF and the associated PC timeseries.
 
 User settings
@@ -27,33 +29,45 @@ User setting files are stored in recipes/ and in a dedicted yaml config file
 recipe_monitor.yml
 ------------------
 
-  * plots: a dictionary containing the plots to make, with its own options.
-  * cartopy_data_dir: Path to cartopy data dir. Defaults to None.
+  * plots:
+    a dictionary containing the plots to make, with its own options.
+  * cartopy_data_dir:
+    Path to cartopy data dir. Defaults to None.
     See https://scitools.org.uk/cartopy/docs/latest/cartopy.html
-  * plot_folder: Path to the folder to store the figures. It is defined as the
+  * plot_folder:
+    Path to the folder to store the figures. It is defined as the
     input paths in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to `~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}`
-  * plot_filename: Filename pattern for the plots. it is defined as the input
+    for more details. Defaults to ``~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}``
+  * plot_filename:
+    Filename pattern for the plots. it is defined as the input
     files in in ``config-developer.yml``. See
     https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-    for more details. Defaults to `{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``
-  * config_file: Path to the monitor config file. Defaults to
-    `monitor_config.yml` in the same folder as the diagnostic script.
+    for more details. Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``
+  * config_file:
+    Path to the monitor config file. Defaults to
+    ``monitor_config.yml`` in the same folder as the diagnostic script.
 
 Plot specific options:
 ^^^^^^^^^^^^^^^^^^^^^^
 
 - monclim:
-   + maps: List of maps to plot, as defined in the config file. Defaults to `[global]`.
-   + months: Select only specific months. Defaults to `None` (do not select).
-   + plot_size: Size of ech individual figure. Default's to `(5, 4)`.
-   + columns: Number of columns in the plot. Defaults to `3`.
-   + rows: Number of rows in the plot. Defaults to `4`.
+   + maps:
+     List of maps to plot, as defined in the config file. Defaults to ``[global]``.
+   + months:
+     Select only specific months. Defaults to ``None`` (do not select).
+   + plot_size:
+     Size of ech individual figure. Default's to ``(5, 4)``.
+   + columns:
+     Number of columns in the plot. Defaults to ``3``.
+   + rows:
+     Number of rows in the plot. Defaults to ``4``.
 - seasonclim:
-   + maps: List of maps to plot, as defined in the config file. Defaults to `[global]`.
+   + maps:
+     List of maps to plot, as defined in the config file. Defaults to ``[global]``.
 - clim:
-   + maps: List of maps to plot, as defined in the config file. Defaults to `[global]`.
+   + maps:
+     List of maps to plot, as defined in the config file. Defaults to ``[global]``.
 - annual_cycle: No options
 - timeseries: No options.
 
@@ -62,9 +76,9 @@ monitor_config.yml
 
 A yaml file containing map and variable specific options.
 
-Contains two dictionaries, `maps` and `variables`.
+Contains two dictionaries, ``maps`` and ``variables``.
 
-Each entry in `maps` correspond to a map definitions. See below a sample with
+Each entry in ``maps`` correspond to a map definitions. See below a sample with
 comments to define each option
 
 .. code-block:: yaml
@@ -80,7 +94,7 @@ comments to define each option
          extent: null # If defined, restrict the projection to a region. Format [lon1, lon2, lat1, lat2]
          suptitle_pos: 0.87 # Title position in the figure.
 
-Each entry in `variable` correspond to a variable definitions.
+Each entry in ``variable`` correspond to a variable definitions.
 Use the default entry to apply generic options to al variables.
 See below a sample with comments to define each option
 
