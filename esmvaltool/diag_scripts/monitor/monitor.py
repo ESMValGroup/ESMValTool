@@ -7,16 +7,15 @@ import iris
 import iris.coord_categorisation
 import matplotlib.pyplot as plt
 import numpy as np
+from esmvalcore.preprocessor import climate_statistics
 from iris.coords import AuxCoord
 from mapgenerator.plotting.plotmap import PlotMap
 from mapgenerator.plotting.timeseries import PlotSeries
 
-from esmvalcore.preprocessor import climate_statistics
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import group_metadata
-
 
 logger = logging.getLogger(__name__)
 
@@ -71,8 +70,7 @@ class Monitor(MonitorBase):
             return
 
     def timeseries(self, cube, var_info):
-        """
-        Plot timeseries according to configuration.
+        """Plot timeseries according to configuration.
 
         The key 'timeseries' must be passed to the 'plots' option in the
         configuration.
@@ -106,8 +104,7 @@ class Monitor(MonitorBase):
                                  suptitle='Last 50 years')
 
     def plot_annual_cycle(self, cube, var_info):
-        """
-        Plot the annual cycle according to configuration.
+        """Plot the annual cycle according to configuration.
 
         The key 'annual_cycle' must be passed to the 'plots' option in the
         configuration.
@@ -154,8 +151,7 @@ class Monitor(MonitorBase):
         )
 
     def plot_monthly_climatology(self, cube, var_info):
-        """
-        Plot the monthly climatology as a multipanel plot.
+        """Plot the monthly climatology as a multipanel plot.
 
         The key 'monclim' must be passed to the 'plots' option in the
         configuration.
@@ -166,7 +162,6 @@ class Monitor(MonitorBase):
             Data to plot. Must be 3D with latitude, longitude and month_number
         var_info: dict
             Variable's metadata from ESMValTool
-
         """
         if 'monclim' not in self.plots:
             return
@@ -200,9 +195,12 @@ class Monitor(MonitorBase):
                 y=1.025 - rows * 0.025,
             )
             plt.subplots_adjust(
-                top=0.85, bottom=.05,
-                left=0, right=1,
-                hspace=.20, wspace=.15,
+                top=0.85,
+                bottom=.05,
+                left=0,
+                right=1,
+                hspace=.20,
+                wspace=.15,
             )
             filename = self.get_plot_path(f'monclim{map_name}',
                                           var_info,
@@ -247,8 +245,7 @@ class Monitor(MonitorBase):
         )
 
     def plot_seasonal_climatology(self, cube, var_info):
-        """
-        Plot the seasonal climatology as a multipanel plot.
+        """Plot the seasonal climatology as a multipanel plot.
 
         The key 'seasonclim' must be passed to the 'plots' option in the
         configuration.
@@ -307,7 +304,6 @@ class Monitor(MonitorBase):
                         **map_options,
                         **variable_options,
                     },
-
                 )
             plt.tight_layout()
             plt.suptitle(
@@ -315,11 +311,14 @@ class Monitor(MonitorBase):
                 f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})\n'
                 f'{cube.long_name} ({cube.units})',
                 fontsize=plot_map.fontsize + 4,
-                )
+            )
             plt.subplots_adjust(
-                top=0.85, bottom=.05,
-                left=0, right=1,
-                hspace=.20, wspace=.15,
+                top=0.85,
+                bottom=.05,
+                left=0,
+                right=1,
+                hspace=.20,
+                wspace=.15,
             )
             filename = self.get_plot_path(f'seasonclim{map_name}', var_info,
                                           'png')
@@ -338,8 +337,7 @@ class Monitor(MonitorBase):
         cube.remove_coord('season')
 
     def plot_climatology(self, cube, var_info):
-        """
-        Plot the climatology as a multipanel plot.
+        """Plot the climatology as a multipanel plot.
 
         The key 'clim' must be passed to the 'plots' option in the
         configuration.

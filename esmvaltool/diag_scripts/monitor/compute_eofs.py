@@ -1,13 +1,12 @@
-"""
-Diagnostic to compute and plot the first EOF of an arbitrary input.
+"""Diagnostic to compute and plot the first EOF of an arbitrary input.
 
 It is part of the monitoring recipe.
 """
 import logging
 
 import iris
-from eofs.iris import Eof
 import matplotlib.pyplot as plt
+from eofs.iris import Eof
 from mapgenerator.plotting.plotmap import PlotMap
 
 import esmvaltool.diag_scripts.shared
@@ -18,14 +17,12 @@ logger = logging.getLogger(__name__)
 
 
 class Eofs(MonitorBase):
-    """
-    Diagnostic to compute EOFs and plot them.
+    """Diagnostic to compute EOFs and plot them.
 
     It is also an example on how to derive the monitor class to use its
-    plotting capabilities in diagnostics that can not be done using only the
-    preprocessor.
+    plotting capabilities in diagnostics that can not be done using only
+    the preprocessor.
     """
-
     def compute(self):
         """Compute the diagnostic."""
         for module in ['matplotlib', 'fiona']:
