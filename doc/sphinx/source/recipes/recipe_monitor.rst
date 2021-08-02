@@ -11,13 +11,13 @@ Available recipes and diagnostics
 
 Recipes are stored in `recipes/``
 
-- recipe_monitor.yml
+  - recipe_monitor.yml
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
-- monitor.py - Plots preprocessor output directly from the preprocessor.
-- compute_eofs.py - A sample on how to use the monitor structure to show other metrics.
-  Computes and plots the map of the first EOF and the associated PC timeseries.
+  - monitor.py: Plots preprocessor output directly from the preprocessor.
+  - compute_eofs.py: A sample on how to use the monitor structure to show other metrics.
+    Computes and plots the map of the first EOF and the associated PC timeseries.
 
 User settings
 =============
@@ -27,20 +27,19 @@ User setting files are stored in recipes/ and in a dedicted yaml config file
 recipe_monitor.yml
 ------------------
 
-- plots: a dictionary containing the plots to make, with its own options.
-- cartopy_data_dir: Path to cartopy data dir. Defaults to None.
-  See https://scitools.org.uk/cartopy/docs/latest/cartopy.html
-- plot_folder: Path to the folder to store the figures. It is defined as the
-  input paths in `config-developer.yml`. See
-  https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-  for more details. Defaults to `~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}`
-- plot_filename: Filename pattern for the plots. it is defined as the input
-  files in in `config-developer.yml`. See
-  https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
-  for more details. Defaults to `{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``
-- config_file: Path to the monitor config file. Defaults to
-  `monitor_config.yml` in the same folder as the diagnostic script.
-
+  * plots: a dictionary containing the plots to make, with its own options.
+  * cartopy_data_dir: Path to cartopy data dir. Defaults to None.
+    See https://scitools.org.uk/cartopy/docs/latest/cartopy.html
+  * plot_folder: Path to the folder to store the figures. It is defined as the
+    input paths in ``config-developer.yml``. See
+    https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
+    for more details. Defaults to `~/plots/{dataset}/{exp}/{modeling_realm}/{real_name}`
+  * plot_filename: Filename pattern for the plots. it is defined as the input
+    files in in ``config-developer.yml``. See
+    https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#input-file-paths
+    for more details. Defaults to `{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``
+  * config_file: Path to the monitor config file. Defaults to
+    `monitor_config.yml` in the same folder as the diagnostic script.
 
 Plot specific options:
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -175,7 +174,7 @@ Monthly climatology of sivol, only for March and September.
 Timeseries of Niño 3.4 index, computed directly with the preprocessor.
 
 .. _fig_annual_cycle:
-.. figure::  /recipes/figures/monitor/annual_cycle.png
+.. figure::  /recipes/figures/monitor/annualcycle.png
    :align:   center
    :width:   14cm
 
