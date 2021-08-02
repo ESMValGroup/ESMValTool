@@ -33,7 +33,7 @@ class MonitorBase():
         self.plots = config.get('plots', {})
         default_config = os.path.join(os.path.dirname(__file__),
                                       "monitor_config.yml")
-        cartopy_data_dir = config.get('cartopy_data_dir', )
+        cartopy_data_dir = config.get('cartopy_data_dir', None)
         if cartopy_data_dir:
             cartopy.config['data_dir'] = cartopy_data_dir
         with open(config.get('config_file', default_config)) as config_file:

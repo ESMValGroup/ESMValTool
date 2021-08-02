@@ -1,6 +1,6 @@
 ---
 maps:
-  global:
+  global: # Map name
     projection: PlateCarree
     projection_kwargs:
       central_longitude: 285
@@ -55,10 +55,6 @@ variables:
     colors: RdYlBu_r
     N: 20
     bad: [0.9, 0.9, 0.9]
-  # tas:
-  #   <<: *default
-  #   extend: both
-  #   bounds: 220-315,5
   pr:
     <<: *default
     colors: gist_earth_r

@@ -107,6 +107,7 @@ Other
    recipe_examples
    recipe_capacity_factor
    recipe_ensclus
+   recipe_monitor
    recipe_multimodel_products
    recipe_rainfarm
    recipe_pv_capacity_factor
