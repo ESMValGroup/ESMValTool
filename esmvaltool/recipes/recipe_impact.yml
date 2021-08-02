@@ -22,16 +22,60 @@ documentation:
 datasets:
   # CMIP5
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: ACCESS1-0, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: ACCESS1-3, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: bcc-csm1-1, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: bcc-csm1-1-m, ensemble: r1i1p1, tag: model}
   - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: BNU-ESM, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CanESM2, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CCSM4, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CESM1-BGC, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CESM1-CAM5, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CMCC-CESM, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CMCC-CM, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CMCC-CMS, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CNRM-CM5, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: EC-EARTH, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: FGOALS-g2, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: FGOALS-s2, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: FIO-ESM, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: GFDL-CM3, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: GFDL-ESM2G, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: GFDL-ESM2M, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: GISS-E2-H, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: GISS-E2-H-CC, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: GISS-E2-R, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: GISS-E2-R-CC, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: HadGEM2-AO, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: HadGEM2-CC, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: HadGEM2-ES, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: inmcm4, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: IPSL-CM5A-LR, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: IPSL-CM5A-MR, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: IPSL-CM5B-LR, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: MIROC-ESM, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: MIROC-ESM-CHEM, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: MIROC5, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: MPI-ESM-LR, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: MPI-ESM-MR, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: MRI-CGCM3, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: MRI-ESM1, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: NorESM1-M, ensemble: r1i1p1, tag: model}
+  - {mip: Amon, project: CMIP5, exp: [historical, rcp85], dataset: NorESM1-ME, ensemble: r1i1p1, tag: model}
   # CMIP6
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CAS-ESM2-0, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FIO-ESM-2-0, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: IITM-ESM, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, tag: model}
@@ -39,7 +83,20 @@ datasets:
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: NESM3, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn, tag: model}
-
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CIESM, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: E3SM-1-1, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: EC-Earth3-Veg-LR, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1, tag: model}
+  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1, tag: model}
 
 observations: &observations
   - {mip: Amon, dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, tag: observations}
