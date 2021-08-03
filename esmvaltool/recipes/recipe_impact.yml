@@ -65,7 +65,6 @@ datasets:
   # CMIP6
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-CM2, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: ACCESS-ESM1-5, ensemble: r1i1p1f1, grid: gn, tag: model}
-  - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, tag: model}
   - {mip: Amon, project: CMIP6, exp: [historical, ssp585], dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, tag: model}
