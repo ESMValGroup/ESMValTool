@@ -199,7 +199,7 @@ def make_mean_of_cube_list(cube_list):
         try: model_name = cube_mean.metadata[4]['source_id']
         except: model_name = ''
         print(i, model_name, cube.coord('time'))
-        cube_mean+=cube
+        cube_mean.data+=cube.data
 
     cube_mean.data = cube_mean.data/ float(len(cube_list))
 

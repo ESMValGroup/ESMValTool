@@ -98,10 +98,19 @@ def make_mean_of_cube_list(cube_list):
     if len(cube_list)==1:
         return cube_list[0]
 
-    for cube in cube_list:
+    year_counts = {}
+
+    # perform checks:
+    for i, cube in enumerate(cube_list):
         try: iris.coord_categorisation.add_year(cube, 'time', name='year')
         except: pass
         years = cube.coord('year')
+        
+        count = len(years.points)
+        if year_counts.get(count, False):
+            year_counts[count].append(i)
+        else:
+            year_counts[count]= [i, ]
 
         for year in cube.coord('year').points:
             try:
@@ -109,12 +118,32 @@ def make_mean_of_cube_list(cube_list):
             except:
                 full_times[year] = 1
 
+    if len(year_counts.keys())>1:
+        print('make_mean_of_cube_list: ERROR: more than one dataset length:', year_counts)
+        print('make_mean_of_cube_list: ERROR: list of years:', full_times)
+        assert 0
+
+    print('make_mean_of_cube_list: INFO:, everything is right size:', year_counts)
+    output_datas = {}
     cube_mean=cube_list[0]
+    for i, cube in enumerate(cube_list):
+        years = cube.coord('year')
 
-    for i, cube in enumerate(cube_list[1:]):
-        cube_mean+=cube
+        for yr, year in enumerate(years.points):
+            if output_datas.get(year, False):
+                output_datas[year].append(cube.data[yr])
+            else:
+                 output_datas[year] = [cube.data[yr], ]
+    datas = []
+    for yr in sorted(output_datas.keys()):
+        print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])    
+        datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
 
-    cube_mean.data = cube_mean.data/ float(len(cube_list))
+    cube_mean.data = np.array(datas)
+    # need to align the time range...
+    #or i, cube in enumerate(cube_list[1:]):
+    #   cube_mean.data+=cube.data
+    #ube_mean.data = cube_mean.data/ float(len(cube_list))
 
     if cube_mean.data.max()> np.max([c.data.max() for c in cube_list]):
         print('something is not working here:',  cube_mean.data.max(), '>', [c.data.max() for c in cube_list])
@@ -764,6 +793,7 @@ def load_timeseries(cfg, short_names):
         sh = shelve.open(data_dict_shelve)
         data_dict = sh['data_dict']
         sh.close()
+        return data_dict
     else:
         data_dict = {}
 
@@ -833,7 +863,7 @@ def load_timeseries(cfg, short_names):
             exp = metadatas[fn]['exp']
             dataset = metadatas[fn]['dataset']
             ensemble = metadatas[fn]['ensemble']
-            if data_dict.get(dataset, short_name, exp, ensemble), False): continue
+            if data_dict.get((dataset, short_name, exp, ensemble), False): continue
             if isinstance(ensemble ,list): ensemble = tuple(ensemble)
             print(dataset, short_name, exp, ensemble)
 
@@ -937,6 +967,7 @@ def load_timeseries(cfg, short_names):
             elif len(cubes) == 1:
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = cubes[0]
             else:
+                print('calculating:make_mean_of_cube_list', ('CMIP6', short_name, exp, 'ensemble_mean'))
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
 
     save_data_dict(data_dict, data_dict_shelve)
@@ -1021,6 +1052,8 @@ def cube_to_years(cube):
         List of floats showing the time coordinate in decimal time.
 
     """
+    if isinstance(cube, dict):
+        return np.array([int(t)+0.5 for t in cube['time']])
     if not cube.coords('year'):
         iris.coord_categorisation.add_year(cube, 'time')
     return cube.coord('year').points
@@ -1049,7 +1082,7 @@ def load_co2_forcing(cfg, data_dict):
         datasets[dataset] = True
     # load the co2 from the file.
     for fn in files:
-        if data_dict.get((dataset, 'co2', key, 'ensemble_mean' ), False): continue
+        #f data_dict.get((dataset, 'co2', key, 'ensemble_mean' ), False): continue
         open_fn = open(fn, 'r')
         key = os.path.basename(fn).replace('_co2.dat', '')
         times = []
@@ -1060,6 +1093,8 @@ def load_co2_forcing(cfg, data_dict):
                 if '' in line: line.remove('')
                 if '\n' in line: line.remove('\n')
             t = float(line[0]) + 0.5
+            if t > 2100.: continue
+            if t < 1850.: assert 0
             times.append(t)
             data.append(float(line[1]))
         if key == 'historical':
@@ -1079,6 +1114,7 @@ def load_co2_forcing(cfg, data_dict):
     # Check for historical-ssp scenarios pairs.
     tmp_dict = {}
     for (dataset, short_name, exp, ensemble), ssp_cube in data_dict.items():
+        continue
         if short_name in ['co2', 'areacella', 'areacello',]:
             continue
         if (dataset, 'co2', 'historical-'+exp, 'historical-ssp585-'+exp, ensemble ) in tmp_dict.keys():
@@ -1120,9 +1156,8 @@ def load_co2_forcing(cfg, data_dict):
                 new_times.extend(data_dict[(dataset, 'co2', ssp_only, ensemble)]['time'])
                 new_datas.extend(data_dict[(dataset, 'co2', ssp_only, ensemble)]['co2'])
 
-
         if len(new_times) != len(ssp_times):
-            print('New times do not match old times:', len(new_times), '!=', len(ssp_times),'\nnew:',new_times, '\nssp:',ssp_times)
+            print('New times do not match old times:',dataset,short_name, exp, ensemble, len(new_times), '!=', len(ssp_times),'\nnew:',new_times, '\nssp:',ssp_times)
             assert 0
         print('co2', exp, ensemble, len(new_times), len(new_datas))
         tmp_dict[(dataset, 'co2', exp, ensemble )] ={'time': new_times, 'co2':new_datas}
@@ -2038,7 +2073,7 @@ def make_cumulative_timeseries(cfg, data_dict,
 
     data = {k:{} for k in colours.keys()}
     for ssp_it, ensemble, key, dataset in product(exps, ensembles, colours.keys(),datasets):
-        print('load data', (datasetkey, ssp_it, ensemble))
+        print('load data', (dataset, key, ssp_it, ensemble))
         tmp_data = data_dict.get((dataset, key, ssp_it, ensemble), False)
         if not tmp_data: continue
         print('load data: found:', (dataset, key, ssp_it, ensemble))
@@ -2517,8 +2552,9 @@ def main(cfg):
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'nbpgt')
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
+
+            #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+            #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
             plot_types = ['pair', 'distribution','pc', 'simple_ts', 'area', 'area_over_zero']
             ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
