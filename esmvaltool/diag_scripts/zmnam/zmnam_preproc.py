@@ -8,9 +8,14 @@ Copernicus C3S 34a lot 2 (MAGIC)
 import cdo as cd
 
 
-def zmnam_preproc(ifile, hemisphere):
+def zmnam_preproc(ifile, hemisphere, tempdir=None):
     """Preprocessing of the input dataset files."""
-    cdo = cd.Cdo()
+
+    # Avoid using /tmp for larger files
+    if tempdir is not None:
+        cdo = cd.Cdo(tempdir=tempdir)
+    else:
+        cdo = cd.Cdo()
 
     # Select hemisphere depending on recipe parameter
     if hemisphere == 'NH':
