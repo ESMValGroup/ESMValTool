@@ -92,12 +92,12 @@ def make_mean_of_dict_list(dict_list, short_name):
     Assumes annual 1D data.
     """
     year_counts = {}
-
+    full_times = {} 
     # perform checks:
     for i, ddict in enumerate(dict_list):
         years = ddict['time']
 
-        count = len(years.points)
+        count = len(years)
         if year_counts.get(count, False):
             year_counts[count].append(i)
         else:
@@ -1065,7 +1065,7 @@ def load_timeseries(cfg, short_names):
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = cubes[0]
                 continue
             if isinstance(cubes[0], dict):
-                data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes)
+                data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes, short_name)
             else:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
 
@@ -1109,7 +1109,7 @@ def load_timeseries(cfg, short_names):
 
             print('calculating:make_mean_of_cube_list', ('CMIP6', short_name, exp, 'ensemble_mean'))
             if isinstance(cubes[0], dict):
-                data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes)
+                data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes, short_name)
             else:
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
 
@@ -2218,7 +2218,10 @@ def make_cumulative_timeseries(cfg, data_dict,
     for ssp_it, ensemble, key, dataset in product(exps, ensembles, colours.keys(),datasets):
         print('load data', (dataset, key, ssp_it, ensemble))
         tmp_data = data_dict.get((dataset, key, ssp_it, ensemble), False)
-        if not tmp_data: continue
+        if not tmp_data: 
+            print('Did not find:', (dataset, key, ssp_it, ensemble))
+            assert 0
+            continue
         print('load data: found:', (dataset, key, ssp_it, ensemble))
         if key in cube_keys:
             tmp_data = {'time': diagtools.cube_time_to_float(tmp_data),
