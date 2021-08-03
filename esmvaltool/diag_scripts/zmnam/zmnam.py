@@ -22,7 +22,7 @@ from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 # Import zmnam diagnostic routines
 from zmnam_calc import zmnam_calc
 from zmnam_plot import zmnam_plot
-from zmnam_preproc import zmnam_preproc
+from zmnam_preproc import (zmnam_preproc, zmnam_preproc_clean)
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +118,9 @@ def main(cfg):
                                                     ancestor_files=[ifile])
                 with ProvenanceLogger(cfg) as provenance_logger:
                     provenance_logger.log(file, prov_record)
+
+        # Clean temporary files for current model to avoid cluttering
+        zmnam_preproc_clean(tempdir=run_dir)
 
 
 # Run the diagnostics

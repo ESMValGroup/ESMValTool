@@ -47,3 +47,17 @@ def zmnam_preproc(ifile, hemisphere, tempdir=None):
     gh_mo_an = cdo.sub(input=gh_mo + ' ' + gh_mo_mm)
 
     return (gh_da_an_zm, gh_mo_an)
+
+
+def zmnam_preproc_clean(tempdir=None):
+    """ Clean up temporary files after processing """
+
+    if tempdir is not None:
+        cdo = cd.Cdo(tempdir=tempdir)
+    else:
+        cdo = cd.Cdo()
+
+    # Delete files like cdoPy* in tmp directory
+    cdo.cleanTempDir()
+
+    return None
