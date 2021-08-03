@@ -105,7 +105,7 @@ def make_mean_of_cube_list(cube_list):
         try: iris.coord_categorisation.add_year(cube, 'time', name='year')
         except: pass
         years = cube.coord('year')
-        
+
         count = len(years.points)
         if year_counts.get(count, False):
             year_counts[count].append(i)
@@ -136,7 +136,7 @@ def make_mean_of_cube_list(cube_list):
                  output_datas[year] = [cube.data[yr], ]
     datas = []
     for yr in sorted(output_datas.keys()):
-        print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])    
+        print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])
         datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
 
     cube_mean.data = np.array(datas)
@@ -187,6 +187,62 @@ ssp_title_dict = {
     'ssp370': 'SSP3 7.0',
     'ssp585': 'SSP5 8.5',
     }
+
+def quick_ts_plot(cfg, data_dict, path, short_namei=None, dataseti=None, expi = None):
+    if os.path.exists(path):
+        return
+    title = ''
+    for t in dataseti, short_namei, expi:
+        if t: title = ' '.join([title, t])
+    print('quick_ts_plot: INFO: plotting:', title)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
+        if dataseti and dataset!= dataseti: continue
+        if short_namei and short_namei != short_name: continue
+        if expi and expi != exp: continue
+
+        times = cube_to_years(cube)
+
+        if isinstance(cube, dict):
+            data = cube[short_name]
+        else:
+            data = cube.data
+
+        label = ''
+        for t in (dataset, short_name, exp, ensemble):
+            if t in [short_namei, dataseti,expi]: continue
+            label = ' '.join([label, t])
+        plt.plot(times, data, label=label)
+
+    plt.title(title)
+    plt.legend(fontsize="x-small")
+
+    plt.savefig(path)
+    plt.close()
+
+
+def plot_data_dict(cfg, data_dict):
+    """
+    Make a simple plot of every model-shortname pair.
+    """
+    datasets = {}
+    short_names = {}
+    exps = {}
+    for (dataset, short_name, exp, ensemble), cube in data_dict.items():
+        datasets[dataset] = True
+        short_names[short_name] = True
+        exps[exp] = True
+    for short_namei, dataseti in product(datasets.keys(), short_names.keys()):
+        image_extention = diagtools.get_image_format(cfg)
+        path = diagtools.folder([cfg['plot_dir'], 'data_dict_checks', short_namei ])
+        path += '_'.join(['data_dict_checks', short_namei, dataseti]) + image_extention
+        quick_ts_plot(cfg, data_dict, path, short_namei=short_namei, dataseti=dataseti, path)
+        for expi in exps:
+            path = diagtools.folder([cfg['plot_dir'], 'data_dict_checks', short_namei ])
+            path += '_'.join(['data_dict_checks'], short_namei, dataseti, expi) + image_extention
+            quick_ts_plot(cfg, data_dict, path, short_namei=short_namei, dataseti=dataseti,expi=expi)
+
 
 
 def moving_average(cube, window):
@@ -2546,6 +2602,7 @@ def main(cfg):
     for do_ma in [True, ]:#False]:
         data_dict = load_timeseries(cfg, short_names)
         thresholds_dict = load_thresholds(cfg, data_dict)
+        plot_data_dict(cfg, data_dict)
 
         if jobtype == 'cumulative_plot':
             #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls')
