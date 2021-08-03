@@ -29,8 +29,8 @@ logger = logging.getLogger(__name__)
 
 def get_provenance_record(caption, vatt, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = (caption + " between "
-               "{start_year} and {end_year} ".format(**vatt))
+    caption = (caption + " for "
+               "{start_year}-{end_year}".format(**vatt))
     record = {
         'caption': caption,
         'authors': [
@@ -110,7 +110,7 @@ def main(cfg):
                 elif 'eofs' in file:
                     caption = 'Empirical orthogonal functions'
                 else:  # please add additional diagnostic description
-                    caption = 'Not specified diagnostic'
+                    caption = 'Unspecified zmnam diagnostic'
 
                 prov_record = get_provenance_record(caption, props,
                                                     ancestor_files=[ifile])
