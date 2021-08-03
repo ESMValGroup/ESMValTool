@@ -276,7 +276,7 @@ def quick_ts_plot(cfg, data_dict, path, short_namei=None, dataseti=None, expi = 
             label = ' '.join([label, t])
         plt.plot(times, data, label=label)
         something+=1
-    if not something: 
+    if not something:
         plt.close()
         return
     plt.title(title)
@@ -555,7 +555,8 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
     test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacello':
-            areas[dataset] =  cube
+            area = cube.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+            areas[dataset] =  area
 
     tmp_dict = {}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
@@ -571,7 +572,7 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
         #if not isinstance(area, (type(np.array([0])), float, list, )):
         # assume properly masked! (done in preprocessor)
         # print(dataset, 'areacella cube:', area)
-        area = area.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+        #area = area.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
         #areas[dataset] = area.data[0]
 
         cubegt = cube.copy()
@@ -696,7 +697,8 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
     test_data_dict(data_dict)
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if short_name == 'areacella':
-            areas[dataset] = cube
+            area = cube.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+            areas[dataset] = area
 
     tmp_dict={}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
@@ -706,9 +708,7 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
             assert 0
         # assume properly masked! (done in preprocessor)
         #print(dataset, 'areacella cube:', area)
-        area = area.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
         #print(area.data)
-
         #rint('land_gt:', short_name, exp, ensemble, [short,gt])
         if short_name != short:
         #   print('land_gt:', short_name,'!=', short)
@@ -824,16 +824,21 @@ def tas_norm(data_dict):
     baselines={}
     datasets = {}
     for (dataset, short_name, exp, ensemble), cube  in data_dict.items():
+
         exps[exp] = True
         ensembles[ensemble] = True
         datasets[dataset] = True
         if short_name != 'tas': continue
         if exp != 'historical': continue
+        if data_dict.get((dataset, 'tas_norm', exp, ensemble), False): continue
+
         baselines[(dataset, short_name, ensemble)] = calculate_anomaly(cube, [1850, 1900], calc_average=True)
         print('baseline tas:',(dataset, short_name, ensemble), baselines[(dataset, short_name, ensemble)])
 
     for exp, ensemble, dataset in product(exps, ensembles, datasets):
         if not (dataset, 'tas', exp, ensemble) in data_dict.keys(): continue
+        if data_dict.get((dataset, 'tas_norm', exp, ensemble), False): continue
+
         cube = data_dict[(dataset, 'tas', exp, ensemble)].copy()
         if isinstance(ensemble, str):
             bline = baselines.get((dataset, 'tas', ensemble), None)
@@ -910,7 +915,7 @@ def load_timeseries(cfg, short_names):
     assume only one model
     """
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
-    load_from_shelve=True 
+    load_from_shelve=True
 
     if load_from_shelve and glob.glob(data_dict_shelve+'*'):
         print('loading:', data_dict_shelve )
@@ -1524,6 +1529,10 @@ def load_luegt(cfg, data_dict):
         ensembles[ensemble] = True
         datasets[dataset] = True
     print(exps, ensembles, datasets)
+
+    #for exp, ensemble,dataset in product(exps.keys(), ensembles.keys(),datasets.keys()):
+    #    if data_dict.get((dataset, short, exp, ensemble), False: continue
+
     # assert 0
     # This data was added to the esmvaltool/diagnostics/ocean/aux_data directory.
     aux_fn = cfg['auxiliary_data_dir']+'/land_usage/landusage_ssp.txt'
@@ -1552,6 +1561,7 @@ def load_luegt(cfg, data_dict):
                 data[header[d]].append(float(da))
 
     for exp, ensemble,dataset in product(exps.keys(), ensembles.keys(),datasets.keys()):
+        if data_dict.get((dataset, short, exp, ensemble), False: continue
         print(exp, ensemble)
         da =  data.get(exp, [])
         if not da:
@@ -2570,7 +2580,6 @@ def make_cumulative_vs_threshold(cfg, data_dict,
     # nbp and
 
 
-
 def main(cfg):
     """
     Load the config file and some metadata, then make plots.
@@ -2586,8 +2595,6 @@ def main(cfg):
     #    do you even need the areacella for air? probably not, right?
     #    change the recipe to add the other ensemble members to the job.
     #    email the figues to other authors.
-
-
 
     # short_names = ['tas', 'tas_norm', 'nppgt', 'fgco2gt', 'rhgt', 'exchange']
     # short_names_x = ['time','tas', 'tas_norm','nppgt', 'fgco2gt', 'rhgt', 'exchange']
@@ -2627,7 +2634,6 @@ def main(cfg):
         #'intpp', 'epc100', 'intdic', 'intpoc', 'fric', 'froc'] #'nppgt', 'fgco2gt', 'rhgt', 'exchange']
         #short_names_y = ['nppgt', 'nppgt_norm','rhgt_norm','exchange_norm','fgco2gt_norm', 'co2',]
         short_names_y = ['tas_norm', 'co2', 'intpp', 'fgco2', 'epc100', 'intdic', 'intpoc', 'fric', 'froc','frc', 'fgco2gt', 'intppgt','epc100gt', 'intdicgt', 'intpocgt', 'fricgt', 'frocgt', 'frcgt',]
-
 
     if jobtype == 'bulk':
         short_names = ['tas', 'tas_norm', 'co2', 'emissions', 'cumul_emissions'
@@ -2672,7 +2678,6 @@ def main(cfg):
                          'rh', 'rhgt',
                          'exchange',
                          'nppgt_norm','rhgt_norm','exchange_norm',]
-
 
     if jobtype == 'full':
         short_names = ['tas', 'tas_norm', 'co2',
@@ -2749,7 +2754,6 @@ def main(cfg):
                 #pairs.append((y, x))
 
     logger.info('Success')
-
 
 
 if __name__ == '__main__':
