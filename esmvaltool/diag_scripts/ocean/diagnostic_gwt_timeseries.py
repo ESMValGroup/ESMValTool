@@ -85,6 +85,62 @@ data_dict_linked_ens = {# model: {ssp:hist'
     }
 
 
+def make_mean_of_dict_list(dict_list, short_name):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    Assumes annual 1D data.
+    """
+    year_counts = {}
+
+    # perform checks:
+    for i, ddict in enumerate(dict_list):
+        years = ddict['time']
+
+        count = len(years.points)
+        if year_counts.get(count, False):
+            year_counts[count].append(i)
+        else:
+            year_counts[count]= [i, ]
+
+        for year in years:
+            try:
+                full_times[year] += 1
+            except:
+                full_times[year] = 1
+
+    if len(year_counts.keys())>1:
+        print('make_mean_of_dict_list: ERROR: more than one dataset length:', year_counts)
+        print('make_mean_of_dict_list: ERROR: list of years:', full_times)
+        assert 0
+
+    print('make_mean_of_dict_list: INFO:, everything is right size:', year_counts)
+    output_datas = {}
+    dict_mean=dict_list[0]
+    for i, ddict in enumerate(dict_list):
+        years = ddict['time']
+
+        for yr, year in enumerate(years):
+            d = ddict[short_name][yr]
+            if output_datas.get(year, False):
+                output_datas[year].append(d)
+            else:
+                 output_datas[year] = [d, ]
+    datas = []
+    years = []
+    for yr in sorted(output_datas.keys()):
+        print('calculating average', yr, np.sum(output_datas[yr])/float(len(output_datas[yr])),':',output_datas[yr])
+        datas.append(np.sum(output_datas[yr])/float(len(output_datas[yr])))
+        years.append(yr)
+
+    dict_mean[short_name] =  np.array(datas)
+    dict_mean['time'] = np.array(years)
+    return dict_mean
+
+
+
+
+
 
 def make_mean_of_cube_list(cube_list):
     """
@@ -197,11 +253,16 @@ def quick_ts_plot(cfg, data_dict, path, short_namei=None, dataseti=None, expi = 
     print('quick_ts_plot: INFO: plotting:', title)
     fig = plt.figure()
     ax = fig.add_subplot(111)
+
+    something = 0
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         if dataseti and dataset!= dataseti: continue
         if short_namei and short_namei != short_name: continue
+        #print((dataset, short_name, exp, ensemble), (dataseti, short_namei, expi))
+
         if expi and expi != exp: continue
 
+        #print('adding', (dataset, short_name, exp, ensemble))
         times = cube_to_years(cube)
 
         if isinstance(cube, dict):
@@ -214,7 +275,10 @@ def quick_ts_plot(cfg, data_dict, path, short_namei=None, dataseti=None, expi = 
             if t in [short_namei, dataseti,expi]: continue
             label = ' '.join([label, t])
         plt.plot(times, data, label=label)
-
+        something+=1
+    if not something: 
+        plt.close()
+        return
     plt.title(title)
     plt.legend(fontsize="x-small")
 
@@ -229,18 +293,22 @@ def plot_data_dict(cfg, data_dict):
     datasets = {}
     short_names = {}
     exps = {}
+    image_extention = diagtools.get_image_format(cfg)
+
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
+        if short_name in ['areacello', 'areacella']: continue
         datasets[dataset] = True
         short_names[short_name] = True
         exps[exp] = True
-    for short_namei, dataseti in product(datasets.keys(), short_names.keys()):
-        image_extention = diagtools.get_image_format(cfg)
-        path = diagtools.folder([cfg['plot_dir'], 'data_dict_checks', short_namei ])
+
+    for dataseti, short_namei in product(datasets.keys(), short_names.keys()):
+        path = diagtools.folder([cfg['plot_dir'], 'data_dict_checks' ])
         path += '_'.join(['data_dict_checks', short_namei, dataseti]) + image_extention
-        quick_ts_plot(cfg, data_dict, path, short_namei=short_namei, dataseti=dataseti, path)
+        quick_ts_plot(cfg, data_dict, path, short_namei=short_namei, dataseti=dataseti)
         for expi in exps:
-            path = diagtools.folder([cfg['plot_dir'], 'data_dict_checks', short_namei ])
-            path += '_'.join(['data_dict_checks'], short_namei, dataseti, expi) + image_extention
+            continue
+            path = diagtools.folder([cfg['plot_dir'], 'data_dict_checks' ])
+            path += '_'.join(['data_dict_checks', short_namei, dataseti, expi]) + image_extention
             quick_ts_plot(cfg, data_dict, path, short_namei=short_namei, dataseti=dataseti,expi=expi)
 
 
@@ -724,7 +792,7 @@ def exchange(data_dict, inverse=False):
         ensembles[ensemble] = True
         datasets[dataset] = True
 
-    for dataset, exp, ensemble in product(exps, ensembles, datasets):
+    for exp, ensemble, dataset in product(exps, ensembles, datasets):
         if (dataset,'nppgt', exp, ensemble) not in data_dict: continue
         if inverse == False:
             cube = data_dict[(dataset,'nppgt', exp, ensemble)].copy()
@@ -842,14 +910,14 @@ def load_timeseries(cfg, short_names):
     assume only one model
     """
     data_dict_shelve = diagtools.folder([cfg['work_dir'], 'gwt_timeseries'])+'data_dict.shelve'
-    load_from_shelve=True
+    load_from_shelve=True 
+
     if load_from_shelve and glob.glob(data_dict_shelve+'*'):
         print('loading:', data_dict_shelve )
-        #assert 0
         sh = shelve.open(data_dict_shelve)
         data_dict = sh['data_dict']
         sh.close()
-        return data_dict
+        #return data_dict
     else:
         data_dict = {}
 
@@ -962,12 +1030,19 @@ def load_timeseries(cfg, short_names):
         short_names, exps, datasets = {}, {}, {}
         for (dataset, short_name, exp, ensemble) in  data_dict.keys():
             if short_name in ['areacello', 'areacella']:continue
+            if dataset in ['CMIP6', ]: continue
             short_names[short_name] = True
             exps[exp] = True
             datasets[dataset] = True
+
         for short_name, exp, dataset in product(short_names.keys(), exps.keys(), datasets.keys()):
-            if short_name in ['areacello', 'areacella']:continue
-            if data_dict.get((dataset, short_name, exp, 'ensemble_mean'), False): continue
+            if short_name in ['areacello', 'areacella']:
+                continue
+            if dataset in ['CMIP6', ]: continue
+
+            if data_dict.get((dataset, short_name, exp, 'ensemble_mean'), False):
+                continue
+
             print('calculate_model_mean',  short_name, exp, dataset)
             cubes = []
             for (dataset_i,short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
@@ -976,17 +1051,24 @@ def load_timeseries(cfg, short_names):
                 if exp_i != exp: continue
                 if ensemble_i == 'ensemble_mean': continue
                 if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
-                     continue
-                print("calculate_model_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
-                cube = regrid_time(cube, 'yr')
+                     pass
+                     #continue
+                #rint("calculate_model_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
+                else:
+                    cube = regrid_time(cube, 'yr')
                 cubes.append(cube)
 
             if not len(cubes):
                 continue
-            elif len(cubes) == 1:
+
+            if len(cubes) == 1:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = cubes[0]
+                continue
+            if isinstance(cubes[0], dict):
+                data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes)
             else:
                 data_dict[(dataset, short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
+
     save_data_dict(data_dict, data_dict_shelve)
 
 
@@ -1004,26 +1086,31 @@ def load_timeseries(cfg, short_names):
             cubes = []
             if short_name in ['areacello', 'areacella']:continue
             print("calculate_cmip6_mean: including:", short_name, exp)
+            if data_dict.get(('CMIP6', short_name, exp, 'ensemble_mean'), False): continue
+
             for (dataset_i,short_name_i, exp_i, ensemble_i),cube in  data_dict.items():
                 if dataset_i == 'CMIP6': continue
                 if short_name != short_name_i: continue
                 if exp_i != exp: continue
                 if ensemble_i != 'ensemble_mean': continue
                 if short_name in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
-                     continue
-                if data_dict.get(('CMIP6', short_name, exp, 'ensemble_mean'), False): continue
-
-                cube = regrid_time(cube, 'yr')
+                     pass #ue
+                else:
+                    cube = regrid_time(cube, 'yr')
                 cubes.append(cube)
                 print("calculate_cmip6_mean: including:", dataset_i,short_name_i, exp_i, ensemble_i)
 
             print('calculate_cmip6_mean:', short_name, exp, len(cubes))
             if not len(cubes):
                 continue
-            elif len(cubes) == 1:
+            if len(cubes) == 1:
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = cubes[0]
+                continue
+
+            print('calculating:make_mean_of_cube_list', ('CMIP6', short_name, exp, 'ensemble_mean'))
+            if isinstance(cubes[0], dict):
+                data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_dict_list(cubes)
             else:
-                print('calculating:make_mean_of_cube_list', ('CMIP6', short_name, exp, 'ensemble_mean'))
                 data_dict[('CMIP6', short_name, exp, 'ensemble_mean')] = make_mean_of_cube_list(cubes)
 
     save_data_dict(data_dict, data_dict_shelve)
@@ -1464,7 +1551,7 @@ def load_luegt(cfg, data_dict):
                 if da == ' ': continue
                 data[header[d]].append(float(da))
 
-    for exp, ensemble,datase in product(exps.keys(), ensembles.keys(),datasets.keys()):
+    for exp, ensemble,dataset in product(exps.keys(), ensembles.keys(),datasets.keys()):
         print(exp, ensemble)
         da =  data.get(exp, [])
         if not da:
@@ -2146,13 +2233,14 @@ def make_cumulative_timeseries(cfg, data_dict,
     for key in ['nbpgt_cumul', 'fgco2gt_cumul']:
         print('adding atmospheric stock', key)
         key_times, key_dat = unzip_time(data[key])
+        print(tmp_dat, key_dat)
         tmp_dat = tmp_dat - key_dat
 
     data['atmos'] = zip_time({'time':tmp_times, 'atmos':tmp_dat}, 'atmos')
     #colours['atmos'] = 'purple'
 
     thresholds = {}
-    for ssp_it, ensembledataset,  in product(exps, ensembles, datasets):
+    for ssp_it, ensemble, dataset in product(exps, ensembles, datasets):
         dicts = thresholds_dict.get((dataset, 'tas', ssp_it, ensemble), False)
         if not dicts:continue
         thresholds= thresholds|dicts
