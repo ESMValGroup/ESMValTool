@@ -64,6 +64,7 @@ def main(cfg):
 
     plot_dir = cfg['plot_dir']
     out_dir = cfg['work_dir']
+    run_dir = cfg['run_dir']
     write_plots = cfg['write_plots']
     fig_fmt = cfg['output_file_type']
 
@@ -86,7 +87,8 @@ def main(cfg):
 
             # Call diagnostics functions
             print("prepro")
-            (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile, hemisphere)
+            (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile, hemisphere,
+                                                        tempdir=run_dir)
             print("calc")
             outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
 
