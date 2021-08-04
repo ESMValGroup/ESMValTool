@@ -17,19 +17,22 @@ Download and processing instructions
 Modification history
    20210607-weigel_katja: Fix for monthly time bounds.
    20210408-weigel_katja: written.
-
 """
 
 import logging
 import os
 
 import iris
-
-from esmvalcore.preprocessor import concatenate
 from esmvalcore.cmor.check import _get_time_bounds
-from esmvaltool.cmorizers.obs.utilities import (convert_timeunits, fix_coords,
-                                                fix_var_metadata,
-                                                save_variable, set_global_atts)
+from esmvalcore.preprocessor import concatenate
+
+from esmvaltool.cmorizers.obs.utilities import (
+    convert_timeunits,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +48,7 @@ def extract_variable(var_info, raw_info, attrs, year):
             convert_timeunits(cube, year)
             fix_coords(cube, overwrite_time_bounds=False)
             set_global_atts(cube, attrs)
-            # Remove disfunctional ancillary data without sandard name
+            # Remove dysfunctional ancillary data without sandard name
             for ancillary_variable_, dim in cube._ancillary_variables_and_dims:
                 cube.remove_ancillary_variable(ancillary_variable_)
             return cube
@@ -71,8 +74,8 @@ def cmorization(in_dir, out_dir, cfg, _):
                 raw_info['file'] = inpfile.format(year=year, month=month)
                 logger.info("CMORizing var %s from file type %s", var,
                             raw_info['file'])
-                monthly_cubes.append(extract_variable(var_info, raw_info,
-                                                      glob_attrs, year))
+                monthly_cubes.append(
+                    extract_variable(var_info, raw_info, glob_attrs, year))
             yearly_cube = concatenate(monthly_cubes)
             # Fix monthly time bounds
             time = yearly_cube.coord('time')

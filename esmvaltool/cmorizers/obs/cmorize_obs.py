@@ -1,15 +1,13 @@
-"""
-Run the CMORization module as a utility executable.
+"""Run the CMORization module as a utility executable.
 
 This utility allows the user to call and execute CMOR reformatting
-scripts (support for NCL and Python at the moment), that will use
-two I/O variables passed by this utility: an input directory as
-specified in config-user.yml by the RAWOBS key, and an output dir
-created in the form of output_dir/CMOR_DATE_TIME/TierTIER/DATASET.
-The user can specify a list of DATASETS that the CMOR reformatting
-can by run on by using -o (--obs-list-cmorize) command line argument.
-The CMOR reformatting scripts are to be found in:
-esmvalcore.cmor/cmorizers/obs
+scripts (support for NCL and Python at the moment), that will use two
+I/O variables passed by this utility: an input directory as specified in
+config-user.yml by the RAWOBS key, and an output dir created in the form
+of output_dir/CMOR_DATE_TIME/TierTIER/DATASET. The user can specify a
+list of DATASETS that the CMOR reformatting can by run on by using -o
+(--obs-list-cmorize) command line argument. The CMOR reformatting
+scripts are to be found in: esmvalcore.cmor/cmorizers/obs
 """
 import argparse
 import datetime
@@ -21,9 +19,8 @@ import subprocess
 import time
 from pathlib import Path
 
-import yaml
-
 import esmvalcore.cmor
+import yaml
 
 from .utilities import read_cmor_config
 
@@ -99,7 +96,6 @@ def configure_logging(output_dir, log_level='INFO'):
         Output directory for the log files.
     log_level : str, optional
         If `None`, use the default (INFO).
-
     """
     fmt = '%(asctime)s UTC [%(process)d] %(levelname)-7s %(message)s'
     debugfmt = ('%(asctime)s UTC [%(process)d] %(levelname)-7s '

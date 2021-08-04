@@ -20,12 +20,10 @@ removing gridpoints solely relying on climatological infilling).
 """
 
 import copy
-import gzip
 import logging
 import os
 from warnings import catch_warnings, filterwarnings
 
-import cf_units
 import cftime
 import iris
 import numpy as np
@@ -52,13 +50,10 @@ def _get_centered_timecoord(cube):
     times = time.units.num2date(time.points)
 
     # get bounds
-    starts = [
-        cftime.DatetimeNoLeap(c.year, c.month, 1)
-        for c in times
-    ]
+    starts = [cftime.DatetimeNoLeap(c.year, c.month, 1) for c in times]
     ends = [
-        cftime.DatetimeNoLeap(c.year, c.month + 1, 1) if c.month < 12
-        else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
+        cftime.DatetimeNoLeap(c.year, c.month + 1, 1)
+        if c.month < 12 else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
         for c in times
     ]
     time.bounds = time.units.date2num(np.stack([starts, ends], -1))
@@ -160,9 +155,11 @@ def _extract_variable(short_name, var, version, cfg, filepath, out_dir):
 
     # Save variable
     attrs = copy.deepcopy(cfg['attributes'])
-    attrs.update({'comment': 'constrained on gridpoint values beeing based on'
-                             'at least 1 station',
-                  'version': attrs['version'] + '-numgauge1'})
+    attrs.update({
+        'comment': 'constrained on gridpoint values being based on'
+        'at least 1 station',
+        'version': attrs['version'] + '-numgauge1'
+    })
     attrs['mip'] = var['mip']
 
     utils.save_variable(cube,

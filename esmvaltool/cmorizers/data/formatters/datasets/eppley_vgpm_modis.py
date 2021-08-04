@@ -20,14 +20,10 @@ Modification history
 import glob
 import logging
 import os
-from datetime import datetime as dt
-import glob
-import xarray as xr
-import numpy as np
-import pandas as pd
 
 import iris
 import numpy as np
+import pandas as pd
 import xarray as xr
 
 from esmvaltool.cmorizers.data.utilities import (

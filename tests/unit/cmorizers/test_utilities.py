@@ -157,11 +157,10 @@ def test_add_scalar_height_coord():
     assert cube.coord("height").attributes["positive"] == "up"
 
 
-@pytest.mark.parametrize('time_units',
-                         ['months since 1950-01-01 00:00:00',
-                          'days since 0000-01-01 00:00:00',
-                          'days since 1950-1-1',
-                          'days since 1950-1-1 00:00:00'])
+@pytest.mark.parametrize('time_units', [
+    'months since 1950-01-01 00:00:00', 'days since 0000-01-01 00:00:00',
+    'days since 1950-1-1', 'days since 1950-1-1 00:00:00'
+])
 def test_convert_time_units(time_units):
     """Test convert time units functionlity."""
     cube = _create_sample_cube()
@@ -216,7 +215,8 @@ def test_fix_coords():
     assert cube.coord("depth").has_bounds()
     assert cube.coord('latitude').coord_system is None
     assert cube.coord('longitude').coord_system is None
-    utils.fix_coords(cube_2, overwrite_time_bounds=False,
+    utils.fix_coords(cube_2,
+                     overwrite_time_bounds=False,
                      overwrite_lon_bounds=False,
                      overwrite_lat_bounds=False,
                      overwrite_lev_bounds=False)

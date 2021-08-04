@@ -122,11 +122,13 @@ def convert_timeunits(cube, start_year):
     return cube
 
 
-def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
-               overwrite_lat_bounds=True, overwrite_lev_bounds=True,
+def fix_coords(cube,
+               overwrite_time_bounds=True,
+               overwrite_lon_bounds=True,
+               overwrite_lat_bounds=True,
+               overwrite_lev_bounds=True,
                overwrite_airpres_bounds=True):
-    """
-    Fix coordinates to CMOR standards.
+    """Fix coordinates to CMOR standards.
 
     Fixes coordinates eg time to have correct units, bounds etc;
     longitude to be CMOR-compliant 0-360deg; fixes some attributes
@@ -157,7 +159,6 @@ def fix_coords(cube, overwrite_time_bounds=True, overwrite_lon_bounds=True,
     -------
     cube: iris.cube.Cube
         data cube with fixed coordinates.
-
     """
     # first fix any completely missing coord var names
     fix_dim_coordnames(cube)
@@ -512,7 +513,9 @@ def unpack_files_in_folder(folder):
     decompress = True
     while decompress:
         decompress = False
-        for filename in os.listdir(folder):
+        files = os.listdir(folder)
+        files.sort()
+        for filename in files:
             full_path = os.path.join(folder, filename)
             if os.path.isdir(full_path):
                 logger.info('Moving files from folder %s', filename)
