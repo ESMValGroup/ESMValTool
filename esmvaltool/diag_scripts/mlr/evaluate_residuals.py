@@ -33,8 +33,7 @@ rmse_plot: dict, optional
 savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    `<https://seaborn.pydata.org/generated/seaborn.set.html>`_.
+    Options for :func:`seaborn.set` (affects all plots).
 weighted_samples: dict
     If specified, use weighted root mean square error. The given keyword
     arguments are directly passed to

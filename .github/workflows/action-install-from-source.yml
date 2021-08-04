@@ -1,11 +1,10 @@
 name: Source Install
 
-# runs on a push on master and at the end of every day
+# runs on a push on main and at the end of every day
 on:
   push:
     branches:
-    - master
-    - github-actions2  # testing branch
+    - main
   schedule:
     - cron: '0 0 * * *'
 
@@ -14,7 +13,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:

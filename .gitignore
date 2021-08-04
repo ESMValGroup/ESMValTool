@@ -45,6 +45,7 @@ __pycache__/
 
 #Create by VSCode
 .vscode
+*.code-workspace
 
 #pytest
 .cache
@@ -107,3 +108,6 @@ esmvaltool.Rproj
 
 # Julia installation
 esmvaltool/install/Julia/Manifest.toml
+
+# Cylc suite
+esmvaltool/utils/testing/regression/.service/

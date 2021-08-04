@@ -7,14 +7,14 @@ Running
 ESMValTool is mostly used as a command line tool. Whenever your
 conda environment for ESMValTool is active, you can just run the command
 ``esmvaltool``. See
-`running esmvaltool <https://docs.esmvaltool.org/projects/esmvalcore/en/latest/quickstart/run.html>`_
+:ref:`running esmvaltool <esmvalcore:running>`
 in the ESMValCore documentation for a short introduction.
 
 Running a recipe
 ================
 
 An
-`example recipe <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_python.yml>`_
+`example recipe <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
 is available in the ESMValTool installation folder as
 ``examples/recipe_python.yml``.
 
@@ -22,7 +22,7 @@ This recipe finds data from CanESM2 and MPI-ESM-LR for 2000 - 2002,
 extracts a single level (850 hPa), regrids it to a 1x1 degree mesh and runs
 a diagnostic script that creates some plots of Air temperature and
 precipitation flux. You can download the recipe from
-`github <https://github.com/ESMValGroup/ESMValTool/blob/master/esmvaltool/recipes/examples/recipe_python.yml>`_
+`github <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
 and save it in your project directory as (e.g.) ``recipe_python.yml``
 and then run ESMValTool with
 
@@ -61,7 +61,7 @@ It is also possible to get help on specific commands, e.g.
 
 will display the help message with all options for the ``run`` command.
 
-There is a step-by-step description available in the 
+There is a step-by-step description available in the
 `ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
 on how to run your first recipe. It can be found
 `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/04-recipe/index.html>`_.
@@ -81,7 +81,7 @@ To see a list of installed recipes run
 Running multiple recipes
 ========================
 
-It is possible to run more tha one recipe in one go: currently this relies on the user
+It is possible to run more than one recipe in one go: currently this relies on the user
 having access to a HPC that has ``rose`` and ``cylc`` installed since the procedure involves
 installing and submitting a Rose suite. the utility that allows you to do this is
 ``esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py``.

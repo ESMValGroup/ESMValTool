@@ -16,19 +16,23 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
+calculate_mmm : bool, optional (default: True)
+    Calculate multi-model mean TCR.
 plot : bool, optional (default: True)
     Plot temperature vs. time.
 read_external_file : str, optional
     Read TCR from external file. The path can be given relative to this
     diagnostic script or as absolute path.
+savefig_kwargs : dict, optional
+    Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots), see
-    <https://seaborn.pydata.org/generated/seaborn.set.html>.
+    Options for :func:`seaborn.set` (affects all plots).
 
 """
 
 import logging
 import os
+from copy import deepcopy
 from pprint import pformat
 
 import cf_units
@@ -41,8 +45,15 @@ import yaml
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    group_metadata, io, run_diagnostic, select_metadata, variables_available)
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    run_diagnostic,
+    select_metadata,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -91,9 +102,74 @@ def _get_anomaly_cube(onepct_cube, pi_cube):
     return onepct_cube
 
 
+def _get_anomaly_cubes(cfg):
+    """Get all anomaly cubes."""
+    logger.info("Calculating anomalies")
+    cubes = {}
+    ancestors = {}
+    input_data = cfg['input_data'].values()
+    onepct_data = select_metadata(input_data, short_name='tas', exp='1pctCO2')
+
+    # Process data
+    for dataset in onepct_data:
+        dataset_name = dataset['dataset']
+        pi_data = select_metadata(input_data,
+                                  short_name='tas',
+                                  exp='piControl',
+                                  dataset=dataset_name)
+        if not pi_data:
+            raise ValueError("No 'piControl' data available for dataset "
+                             "'dataset_name'")
+        onepct_cube = iris.load_cube(dataset['filename'])
+        pi_cube = iris.load_cube(pi_data[0]['filename'])
+        anomaly_cube = _get_anomaly_cube(onepct_cube, pi_cube)
+        cubes[dataset_name] = anomaly_cube
+        ancestors[dataset_name] = [dataset['filename'], pi_data[0]['filename']]
+
+    # Calculate multi-model mean if desired
+    if cfg.get('calculate_mmm', True):
+        (mmm_cube, mmm_ancestors) = _get_mmm_anomaly(cubes, ancestors, cfg)
+        cubes['MultiModelMean'] = mmm_cube
+        ancestors['MultiModelMean'] = mmm_ancestors
+
+    return (cubes, ancestors)
+
+
+def _get_mmm_anomaly(cubes, ancestors, cfg):
+    """Get multi-model mean anomaly."""
+    logger.info("Calculating multi-model mean anomaly")
+    mmm_ancestors = [f for sublist in ancestors.values() for f in sublist]
+    project = list(cfg['input_data'].values())[0]['project']
+    datasets = []
+    mmm_anomaly = []
+    for (dataset_name, cube) in cubes.items():
+        datasets.append(dataset_name)
+        mmm_anomaly.append(cube.data)
+    mmm_anomaly = np.ma.array(mmm_anomaly)
+    dataset_0 = list(cubes.keys())[0]
+    mmm_cube = cubes[dataset_0].copy(data=np.ma.mean(mmm_anomaly, axis=0))
+    mmm_cube.attributes = {
+        'ancestors': mmm_ancestors,
+        'dataset': 'MultiModelMean',
+        'datasets': '|'.join(datasets),
+        'project': project,
+        'short_name': mmm_cube.var_name,
+    }
+    time_coord = iris.coords.DimCoord(
+        np.arange(mmm_cube.coord('time').shape[0]),
+        var_name='time',
+        standard_name='time',
+        long_name='time',
+        units='years',
+    )
+    mmm_cube.remove_coord('time')
+    mmm_cube.add_dim_coord(time_coord, 0)
+    return (mmm_cube, mmm_ancestors)
+
+
 def _plot(cfg, cube, dataset_name, tcr):
     """Create scatterplot of temperature anomaly vs. time."""
-    if not cfg['write_plots'] or not cfg.get('plot', True):
+    if not cfg.get('plot', True):
         return (None, None)
     logger.debug("Plotting temperature anomaly vs. time for '%s'",
                  dataset_name)
@@ -126,7 +202,7 @@ def _plot(cfg, cube, dataset_name, tcr):
 
     # Save plot
     plot_path = get_plot_filename(dataset_name, cfg)
-    plt.savefig(plot_path, orientation='landscape', bbox_inches='tight')
+    plt.savefig(plot_path, **cfg['savefig_kwargs'])
     logger.info("Wrote %s", plot_path)
     plt.close()
 
@@ -150,42 +226,23 @@ def calculate_tcr(cfg):
     """Calculate transient climate response (TCR)."""
     tcr = {}
 
-    # Get data
-    input_data = cfg['input_data'].values()
-    onepct_data = select_metadata(input_data, short_name='tas', exp='1pctCO2')
+    # Get anomaly cubes
+    (anomaly_cubes, ancestors) = _get_anomaly_cubes(cfg)
 
-    # Iterate over all datasets
-    for dataset in onepct_data:
-        pi_data = select_metadata(input_data,
-                                  short_name='tas',
-                                  exp='piControl',
-                                  dataset=dataset['dataset'])
-        if not pi_data:
-            raise ValueError(f"No 'piControl' data available for dataset "
-                             f"'{dataset['dataset']}'")
-
-        onepct_cube = iris.load_cube(dataset['filename'])
-        pi_cube = iris.load_cube(pi_data[0]['filename'])
-
-        # Get anomaly cube
-        anomaly_cube = _get_anomaly_cube(onepct_cube, pi_cube)
-
-        # Calculate TCR
+    # Iterate over cubes and calculate TCR
+    for (dataset_name, anomaly_cube) in anomaly_cubes.items():
         tas_2x = anomaly_cube[START_YEAR_IDX:END_YEAR_IDX].collapsed(
             'time', iris.analysis.MEAN).data
         new_tcr = tas_2x
-        tcr[dataset['dataset']] = new_tcr
-        logger.info("TCR (%s) = %.2f %s", dataset['dataset'], new_tcr,
+        tcr[dataset_name] = new_tcr
+        logger.info("TCR (%s) = %.2f %s", dataset_name, new_tcr,
                     anomaly_cube.units)
 
         # Plot
-        (path, provenance_record) = _plot(cfg, anomaly_cube,
-                                          dataset['dataset'], new_tcr)
+        (path, provenance_record) = _plot(cfg, anomaly_cube, dataset_name,
+                                          new_tcr)
         if path is not None:
-            provenance_record['ancestors'] = [
-                dataset['filename'],
-                pi_data[0]['filename'],
-            ]
+            provenance_record['ancestors'] = ancestors[dataset_name]
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(path, provenance_record)
 
@@ -245,6 +302,17 @@ def read_external_file(cfg):
     return (tcr, filepath)
 
 
+def set_default_cfg(cfg):
+    """Set default values for cfg."""
+    cfg = deepcopy(cfg)
+    cfg.setdefault('savefig_kwargs', {
+        'dpi': 300,
+        'orientation': 'landscape',
+        'bbox_inches': 'tight',
+    })
+    return cfg
+
+
 def write_data(cfg, tcr, external_file=None):
     """Write netcdf files."""
     var_attr = {
@@ -271,6 +339,7 @@ def write_data(cfg, tcr, external_file=None):
 
 def main(cfg):
     """Run the diagnostic."""
+    cfg = set_default_cfg(cfg)
     sns.set(**cfg.get('seaborn_settings', {}))
 
     # Read external file if desired

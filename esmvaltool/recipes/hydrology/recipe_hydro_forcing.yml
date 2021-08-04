@@ -1,0 +1,103 @@
+# ESMValTool
+# recipe_hydro_forcing.yml
+---
+documentation:
+  description: |
+    This recipe can be used to assess the agreement between forcing datasets
+    (i.e. MSWEP, ERA5, ERA-Interim) for a certain catchment. The recipe can be
+    used to:
+
+    1. Plot a timeseries of the raw daily data
+    2. Plot monthly aggregrated data over a certain period
+    3. Plot the monthly climate statistics over a certain period
+
+  authors:
+    - smeets_stef
+    - aerts_jerom
+
+  projects:
+    - ewatercycle
+
+  references:
+    - acknow_project
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  - {dataset: MSWEP, project: native6, exp: historical, ensemble: r1i1p1, type: reanaly, version: 220, tier: 3}
+
+preprocessors:
+  daily:
+    extract_shape: &extract_shape
+      # In aux (config-user.yml)
+      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp
+      method: contains
+      crop: true
+    area_statistics:
+      operator: mean
+  monthly:
+    extract_shape: *extract_shape
+    area_statistics:
+      operator: mean
+    monthly_statistics:
+      operator: sum
+  climatology_month:
+    extract_shape: *extract_shape
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: month
+      operator: mean
+  climatology_day:
+    extract_shape: *extract_shape
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: day
+      operator: mean
+
+diagnostics:
+  sample_year:
+    variables:
+      pr:
+        mip: day
+        start_year: 2015
+        end_year: 2016
+        preprocessor: daily
+    scripts:
+      plot:
+        script: hydrology/hydro_forcing.py
+        plot_type: timeseries
+        time_period: day
+
+  total_precipitation:
+    variables:
+      pr:
+        mip: day
+        start_year: 2015
+        end_year: 2016
+        preprocessor: monthly
+    scripts:
+      plot:
+        script: hydrology/hydro_forcing.py
+        plot_type: timeseries
+        time_period: month
+
+  climatology:
+    variables:
+      pr_month:
+        mip: day
+        short_name: pr
+        start_year: 2015
+        end_year: 2016
+        preprocessor: climatology_month
+      pr_day:
+        mip: day
+        short_name: pr
+        start_year: 2015
+        end_year: 2016
+        preprocessor: climatology_day
+    scripts:
+      plot:
+        script: hydrology/hydro_forcing.py
+        plot_type: climatology
