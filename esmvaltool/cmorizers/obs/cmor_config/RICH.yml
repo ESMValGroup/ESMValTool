@@ -1,0 +1,55 @@
+---
+# Filename (will be extended by fixed)
+filename: '{version}_gridded_2019.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: rich
+  version: 
+    v1: 'rio00'
+    v2: 'rio01'
+    v3: 'rio02'
+    v4: 'rio03'
+    v5: 'rio04'
+    v6: 'rio05'
+    v7: 'rio06'
+    v8: 'rio07'
+    v9: 'rio08'
+    v10: 'rio09'
+    v11: 'rio10'
+    v12: 'rio11'
+    v13: 'rio12'
+    v14: 'rio13'
+    v15: 'rio14'
+    v16: 'rio15'
+    v17: 'rio16'
+    v18: 'rio17'
+    v19: 'rio18'
+    v20: 'rio19'
+    v21: 'rio20'
+    v22: 'rio21'
+    v23: 'rio22'
+    v24: 'rio23'
+    v25: 'rio24'
+    v26: 'rio25'
+    v27: 'rio26'
+    v28: 'rio27'
+    v29: 'rio28'
+    v30: 'rio29'
+    v31: 'rio30'
+    v32: 'rio31'
+
+  tier: 3
+  modeling_realm: atmos
+  project_id: OBS
+  source: 'Institut fuer Meteorologie und Geophysik, leopold.haimberger@univie.ac.at'
+  reference: 'rich'
+  comment: 'cmorized data, anomalies with respect to 1981-2010 climatology'
+
+# Variables to cmorize
+variables:
+  ta:
+    mip: Amon
+    raw: anomalies
+    raw_units: K
+    add_mon: false
