@@ -15,9 +15,9 @@ class BaseDownloader():
     overwrite : bool
         Overwrite already downloaded files
     """
-    def __init__(self, config, dataset, overwrite):
+    def __init__(self, config, dataset, overwrite, tier=3):
         self._config = config
-        self.tier = 3
+        self.tier = tier
         self.dataset = dataset
         self.overwrite = overwrite
 

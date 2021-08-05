@@ -1,5 +1,7 @@
 """Script to download CDS-SATELLITE-ALBEDO from the Climate Data Store."""
 
+import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
@@ -22,7 +24,10 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
     overwrite : bool
         Overwrite already downloaded files
     """
-    loop_date = start_date
+    if start_date is None:
+        start_date = datetime.datetime(1998, 4, 1)
+    if end_date is None:
+        end_date = datetime.datetime(2013, 5, 1)
 
     downloader = CDSDownloader(
         product_name='satellite-albedo',
@@ -43,6 +48,7 @@ def download_dataset(config, dataset, start_date, end_date, overwrite):
         overwrite=overwrite,
     )
 
+    loop_date = start_date
     while loop_date <= end_date:
         downloader.download(loop_date.year, loop_date.month)
         loop_date += relativedelta.relativedelta(months=1)

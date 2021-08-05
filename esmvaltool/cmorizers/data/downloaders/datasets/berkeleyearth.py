@@ -19,11 +19,10 @@ def download_dataset(config, dataset, _, __, overwrite):
     overwrite : bool
         Overwrite already downloaded files
     """
-    downloader = WGetDownloader(
-        config=config,
-        dataset=dataset,
-        overwrite=overwrite,
-    )
+    downloader = WGetDownloader(config=config,
+                                dataset=dataset,
+                                overwrite=overwrite,
+                                tier=2)
 
     downloader.download_file(
         "http://berkeleyearth.lbl.gov/auto/Global/Gridded/"

@@ -379,7 +379,7 @@ class DataCommand():
         print('-' * 71)
         for dataset, dataset_info in self._info['datasets'].items():
             date = datetime.datetime.strptime(str(dataset_info['last_access']),
-                                              "%Y%m%d")
+                                              "%Y-%m-%d")
             print(f"| {dataset:30} | {dataset_info['tier']:4} "
                   f"| {self.formatter.has_downloader(dataset):13} "
                   f"|  {date.strftime('%Y-%m-%d')} |")

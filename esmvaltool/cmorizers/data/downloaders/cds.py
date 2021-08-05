@@ -95,8 +95,12 @@ class CDSDownloader(BaseDownloader):
                 logger.info('File %s already downloaded. Skipping...',
                             filename)
                 return
-        self._client.retrieve(
-            self._product_name,
-            request,
-            filename,
-        )
+        try:
+            self._client.retrieve(
+                self._product_name,
+                request,
+                filename,
+            )
+        except Exception:
+            logger.error('Failed request: %s', request)
+            raise
