@@ -86,14 +86,6 @@ begin
       return(out)
     end if
 
-    if (units_to.eq."1e-6") then
-      out = out * 1.e6
-      out@units = units_to
-      leave_msg(scriptname, funcname)
-      return(out)
-    end if
-  end if
-
   if (units_from.eq."K") then
     if (any(units_to.eq.(/"degC"/))) then
       out = out - 273.15
