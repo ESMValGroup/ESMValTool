@@ -26,7 +26,7 @@ import iris
 from esmvalcore.cmor.check import _get_time_bounds
 from esmvalcore.preprocessor import concatenate
 
-from esmvaltool.cmorizers.obs.utilities import (
+from ...utilities import (
     convert_timeunits,
     fix_coords,
     fix_var_metadata,

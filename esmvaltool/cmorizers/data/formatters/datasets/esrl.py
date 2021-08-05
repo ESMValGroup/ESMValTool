@@ -28,7 +28,7 @@ import pandas as pd
 import requests
 from cf_units import Unit
 
-from . import utilities as utils
+from ... import utilities as utils
 
 logger = logging.getLogger(__name__)
 

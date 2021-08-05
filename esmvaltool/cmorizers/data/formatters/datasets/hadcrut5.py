@@ -27,7 +27,7 @@ import iris
 import numpy as np
 from cf_units import Unit
 
-from . import utilities as utils
+from ... import utilities as utils
 
 logger = logging.getLogger(__name__)
 

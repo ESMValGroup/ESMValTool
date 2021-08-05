@@ -43,7 +43,7 @@ import iris
 import numpy as np
 import xarray as xr
 import xesmf as xe
-from esmvalcore.preprocessor._regrid import _stock_cube
+from esmvalcore.preprocessor._regrid import _global_stock_cube
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -218,7 +218,7 @@ def _regrid_dataset(in_dir, var, cfg):
         _, infile_tail = os.path.split(infile)
         outfile = os.path.join(cfg['work_dir'], infile_tail)
         targetgrid_ds = xr.DataArray.from_iris(
-            _stock_cube(cfg['custom']['regrid']))
+            _global_stock_cube(cfg['custom']['regrid']))
         input_ds = xr.open_dataset(infile)
         # Do renaming for consistency of coordinate names
         input_ds = input_ds.rename({'latitude': 'lat', 'longitude': 'lon'})

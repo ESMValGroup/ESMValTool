@@ -39,7 +39,7 @@ from cf_units import Unit
 from dateutil import relativedelta
 from esmvalcore.preprocessor import regrid_time
 
-from esmvaltool.cmorizers.obs import utilities as utils
+from ... import utilities as utils
 
 logger = logging.getLogger(__name__)
 

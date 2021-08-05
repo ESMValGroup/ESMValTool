@@ -27,7 +27,7 @@ import iris
 from cf_units import Unit
 from esmvalcore.preprocessor import daily_statistics, monthly_statistics
 
-from . import utilities as utils
+from ... import utilities as utils
 
 logger = logging.getLogger(__name__)
 
