@@ -106,7 +106,7 @@ def main(cfg):
                 elif 'pc_mo' in file or 'mo_ts' in file:
                     caption = 'Monthly principal component timeseries'
                 elif 'mo_reg' in file:
-                    caption = 'Monthly regression maps'
+                    caption = 'Monthly regression map'
                 elif 'da_pdf' in file:
                     caption = 'Daily probability distribution function'
                 elif 'eofs' in file:
