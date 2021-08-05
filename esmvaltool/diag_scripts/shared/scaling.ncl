@@ -85,6 +85,7 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
+  end if
 
   if (units_from.eq."K") then
     if (any(units_to.eq.(/"degC"/))) then
