@@ -1,0 +1,23 @@
+---
+# Filename (will be extended by fixed)
+filename: '{version}_gridded_2019.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: raobcore
+  version: 
+    v1: 'raobcore17' 
+  tier: 3
+  modeling_realm: atmos
+  project_id: OBS
+  source: 'Institut fuer Meteorologie und Geophysik, leopold.haimberger@univie.ac.at'
+  reference: 'raobcore'
+  comment: 'cmorized data, anomalies with respect to 1981-2010 climatology'
+
+# Variables to cmorize
+variables:
+  ta:
+    mip: Amon
+    raw: anomalies
+    raw_units: K
+    add_mon: false
