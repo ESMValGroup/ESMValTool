@@ -179,6 +179,24 @@ def plot_htmltable(dataframe, ancestors, cfg):
     log_provenance(filename, ancestors, caption, cfg)
 
 
+def make_tidy(dataset, ancestors, cfg):
+    """Convert xarray data to tidy dataframe."""
+    dataframe = dataset.rename(
+        tas='Temperature (K)',
+        pr='Precipitation (kg/m2/s)',
+    ).to_dataframe()
+    dataframe.columns.name = 'variable'
+    tidy_df = dataframe.stack('variable').unstack('metric')
+
+    # Save intermediate output (used for result-viewer front-end)
+    filename = get_diagnostic_filename('bias_vs_change', cfg, extension='csv')
+    tidy_df.to_csv(filename)
+    caption = "Bias and change for each variable"
+    log_provenance(filename, ancestors, caption, cfg)
+
+    return tidy_df
+
+
 def main(cfg):
     """Calculate, visualize and save the bias and change for each model."""
     metadata = cfg['input_data'].values()
@@ -219,13 +237,7 @@ def main(cfg):
         'Bias (RMSD of all gridpoints)', 'Mean change (Future - Reference)'
     ]
 
-    dataframe = combined.rename(
-        tas='Temperature (K)',
-        pr='Precipitation (kg/m2/s)',
-    ).to_dataframe()
-    dataframe.columns.name = 'variable'
-    tidy_df = dataframe.stack('variable').unstack('metric')
-
+    tidy_df = make_tidy(combined, ancestors, cfg)
     plot_scatter(tidy_df, ancestors, cfg)
     plot_table(tidy_df, ancestors, cfg)
     plot_htmltable(tidy_df, ancestors, cfg)
