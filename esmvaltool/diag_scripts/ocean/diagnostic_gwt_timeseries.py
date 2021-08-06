@@ -77,6 +77,7 @@ data_dict_skips = {
     'CESM2-WACCM':['r2i1p1f1', 'r3i1p1f1'], # no hist data.
     'CESM2-WACCM-FV2': ['r1i1p1f1', 'r2i1p1f1', 'r3i1p1f1'], # no SSP data at all.
     'MPI-ESM1-2-LR': ['r2i1p1f1', 'r3i1p1f1'], # no hist data.
+    'NorCPM1': ['r1i1p1f1', ], #fgco2 off by 1e-10
     }
 
 # For models (like UKESM), where the hist and ssp have different ensemble ids:
@@ -564,6 +565,7 @@ def marine_gt(data_dict, short, gt): #, cumul=False):
             continue
         if (dataset, gt, exp, ensemble) in data_dict.items():
             continue
+        if dataset in ['CMIP6',]: continue
 
         area = areas.get(dataset, None)
         if not area:
@@ -703,6 +705,7 @@ def land_gt(data_dict, short='npp', gt='nppgt'):
     tmp_dict={}
     for (dataset, short_name, exp, ensemble), cube in data_dict.items():
         area = areas.get(dataset, None)
+        if dataset in ['CMIP6',]: continue
         if not area:
             print(dataset, 'area not found', sorted(areas.keys()))
             assert 0
@@ -922,7 +925,7 @@ def load_timeseries(cfg, short_names):
         sh = shelve.open(data_dict_shelve)
         data_dict = sh['data_dict']
         sh.close()
-        #return data_dict
+        return data_dict
     else:
         data_dict = {}
 
@@ -1386,7 +1389,7 @@ def load_emissions_forcing(cfg, data_dict):
     #ssp585_times = []
     exps = {}
     ensembles = {'ensemble_mean': True}
-    datasets = {}
+    datasets = {'CMIP6':True}
 
     for (dataset, short_name, exp, ensemble)  in data_dict.keys():
         exps[exp] = True
@@ -1416,11 +1419,35 @@ def load_emissions_forcing(cfg, data_dict):
             # no need to double up.
             continue
 
+        # historical-ssp:
+        times=np.array(times)
+        cumsumdata = np.cumsum(data)
         for dataset, ensemble in product(datasets,ensembles):
             data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
             #if scenario.find('ssp119')> -1:
             #    print('load_emissions_forcing:', scenario, len(times), len(data))
-            data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':np.cumsum(data)}
+            data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':cumsumdata}
+            if dataset == 'CMIP6': print('load_emissions_forcing', dataset, 'cumul_emissions', scenario, ensemble)
+
+        # historical only:
+        histdata = np.ma.masked_where(times > 2015., data).compressed()
+        histcumsumdata = np.ma.masked_where(times > 2015., cumsumdata).compressed()
+        histtimes = np.ma.masked_where(times > 2015., times).compressed()
+        for dataset, ensemble in product(datasets,ensembles):
+            data_dict[(dataset, 'emissions', 'historical', ensemble)] = {'time': histtimes, 'emissions':histdata}
+            data_dict[(dataset, 'cumul_emissions', 'historical', ensemble)] = {'time': histtimes, 'cumul_emissions':histcumsumdata}
+
+        # SSP only:
+        scenario = scenario.replace('historical-', '')
+        times=np.array(times)
+        data = np.ma.masked_where(times <2015., data).compressed()
+        cumsumdata = np.ma.masked_where(times <2015., cumsumdata).compressed()
+        times = np.ma.masked_where(times <2015., times).compressed()
+        for dataset, ensemble in product(datasets,ensembles):
+            data_dict[(dataset, 'emissions', scenario, ensemble)] = {'time': times, 'emissions':data}
+            data_dict[(dataset, 'cumul_emissions', scenario, ensemble)] = {'time': times, 'cumul_emissions':cumsumdata}
+            if dataset == 'CMIP6': print('load_emissions_forcing', dataset, 'cumul_emissions', scenario, ensemble)
+
     return data_dict
 
 
@@ -1480,6 +1507,9 @@ def calc_atmos_carbon(cfg, data_dict):
         # tmp_data = {time:times, 'cumul_emissions': dat}
         tmp_data = zip_time(tmp_data, short)
         tmp_data = {int(t):d for t, d in tmp_data.items()}
+        if not len(tmp_data):
+            print('calc_atmos_carbon: ERROR:',(dataset, short, exp, ensemble), 'no data:', tmp_data)
+            assert 0
 
         # subtrack nbp & ocean carbon flux.
         for cube_key in  ['fgco2gt_cumul', 'nbpgt_cumul']:
@@ -1489,16 +1519,24 @@ def calc_atmos_carbon(cfg, data_dict):
                     if tmp_cube_data: continue
                     tmp_cube_data = data_dict.get((dataset, cube_key, exp, ens), False)
                 if not tmp_cube_data:
-                     print('Fail to find:', (cube_key, exp, ensemble))
+                     print('Fail to find:', (dataset, cube_key, exp, ensemble))
                      # print(data_dict.keys())
                      continue
+                if not len(tmp_cube_data):
+                     print('Fail to find:', (dataset, cube_key, exp, ensemble))
+                     continue
+
             tmp_cube_data = {'time': diagtools.cube_time_to_float(tmp_cube_data),
                              cube_key: tmp_cube_data.data}
             tmp_cube_data = zip_time(tmp_cube_data, cube_key)
             for t,d in tmp_cube_data.items():
                 t = int(t)
-                tmp_data[t] = tmp_data[t] - d
+                if not tmp_data.get(t,False): 
+                    print('calc_atmos_carbon: ERROR: unable to find year', t, 'in',(dataset, cube_key, exp, ensemble))
+                    print(tmp_data)
 
+                tmp_data[t] = tmp_data[t] - d
+         
         tmp_times, tmp_dat = unzip_time(tmp_data)
         tmp_times = tmp_times+0.5
 
@@ -1561,7 +1599,7 @@ def load_luegt(cfg, data_dict):
                 data[header[d]].append(float(da))
 
     for exp, ensemble,dataset in product(exps.keys(), ensembles.keys(),datasets.keys()):
-        if data_dict.get((dataset, short, exp, ensemble), False: continue
+        if data_dict.get((dataset, short, exp, ensemble), False): continue
         print(exp, ensemble)
         da =  data.get(exp, [])
         if not da:
@@ -1662,7 +1700,8 @@ def load_ensemble(data_dict, short_name, exp, ensemble):
 def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     markers='thresholds',
     draw_line=True,
-    do_moving_average=True,
+    do_moving_average=False,
+    plot_dataset='all_models',
     ensemble_mean = False,
     fig=None,
     ax=None,
@@ -1687,6 +1726,28 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
          ensembles[ensemble] = True
          datasets[dataset] = True
          print(dataset, short_name, exp, ensemble)
+
+    if plot_dataset != 'all_models':
+        if isinstance(plot_dataset, str):
+            datasets = {plot_dataset:True}
+        else:
+            datasets = {pd:True for pd in plot_dataset}
+            plot_dataset = '_'.join(plot_dataset)
+
+    # set path:
+    image_extention = diagtools.get_image_format(cfg)
+
+    path = diagtools.folder([cfg['plot_dir'], 'ts_figure'])
+
+    if ensemble_mean:
+        ensemble_mean_txt = 'ensemble_mean'
+    else:
+        ensemble_mean_txt = 'all'
+
+    path += '_'.join([x, y, markers, ensemble_mean_txt, plot_dataset]) + image_extention
+    if do_moving_average:
+        path = path.replace(image_extention, '_21ma'+image_extention)
+    #if os.path.exists(path): return
 
     exp_colours = {'historical':'black',
                    'ssp119':'green',
@@ -1802,7 +1863,7 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             #break
 
         if 0 in [len(x_data), len(y_data), len(x_times), len(y_times)]:
-            print('no data found', x,'vs',y, (exp_1, ensemble_1), 'x:', len(x_data), 'y:',len(y_data))
+            print('no data found',(exp_1, ensemble_1,dataset_1),  x,'vs',y, 'x:', len(x_data), 'y:',len(y_data))
             #assert 0
             continue
 
@@ -1811,6 +1872,9 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             assert 0
 
         label = ' '.join([exp_1, ]) #ensemble_1])
+        # masks fromn the year 2005 of hist data, so that they can line up properly.
+
+        hist_ssp_sync = False
         if draw_line:
             x_times = np.ma.array(x_times)
             y_times = np.ma.array(y_times)
@@ -1820,12 +1884,17 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
             else:
                 lw=0.5
             if exp_1 == 'historical':
-                histx_t = np.ma.masked_where(x_times > 2005., x_times)
-                histy_t = np.ma.masked_where(y_times > 2005., y_times)
-                histx_d = np.ma.masked_where(histx_t.mask, x_data).compressed()
-                histy_d = np.ma.masked_where(histy_t.mask, y_data).compressed()
-
-                print('historical', histx_t, histy_t, histx_d, histy_d)
+                if hist_ssp_sync: 
+                    histx_t = np.ma.masked_where(x_times > 2005., x_times)
+                    histy_t = np.ma.masked_where(y_times > 2005., y_times)
+                    histx_d = np.ma.masked_where(histx_t.mask, x_data).compressed()
+                    histy_d = np.ma.masked_where(histy_t.mask, y_data).compressed()
+                else:
+                    histx_t = x_times
+                    histy_t = y_times
+                    histx_d = x_data
+                    histy_d = y_data 
+                # print('historical', histx_t, histy_t, histx_d, histy_d)
 
                 #plt.plot(np.ma.masked_where(x_times > 2005., x_data),
                 #         np.ma.masked_where(y_times > 2005., y_data),
@@ -1838,28 +1907,34 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
                          color=exp_colours[exp_1])
 
             else:
-                #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
-                tdatcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_times).compressed()
-                tdatcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_times).compressed()
-                datcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_data).compressed()
-                datcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_data).compressed()
-                print('2004-2015:', (x,y),exp_1, tdatcx, tdatcy, datcx, datcy)
-                if len(tdatcx) == len(tdatcy):
-                    plt.plot(
-                        datcx, # np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data).compressed(),
-                        datcy, # np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data).compressed(),
-                        lw=lw,
-                        color=exp_colours['historical'])
+                if hist_ssp_sync:
+                    #print(exp_1, np.ma.masked_where((2005 > x_times) + (x_times > 2015), x_times))
+                    tdatcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_times).compressed()
+                    tdatcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_times).compressed()
+                    datcx = np.ma.masked_where((2004. > x_times) + (x_times > 2015.), x_data).compressed()
+                    datcy = np.ma.masked_where((2004. > y_times) + (y_times > 2015.), y_data).compressed()
+                    #print('2004-2015:', (x,y),exp_1, tdatcx, tdatcy, datcx, datcy)
+                    if len(tdatcx) == len(tdatcy):
+                        plt.plot(
+                            datcx, # np.ma.masked_where((2004 > x_times) + (x_times > 2015), x_data).compressed(),
+                            datcy, # np.ma.masked_where((2004 > y_times) + (y_times > 2015), y_data).compressed(),
+                            lw=lw,
+                            color=exp_colours['historical'])
 
-                xdatc = np.ma.masked_where((x_times < 2015.) + (x_times > 2100.), x_data).compressed()
-                ydatc = np.ma.masked_where((y_times < 2015.) + (y_times > 2100. ), y_data).compressed()
-                xtdatc = np.ma.masked_where((x_times < 2015.) + (x_times > 2100.), x_times).compressed()
-                ytdatc = np.ma.masked_where((y_times < 2015.) + (y_times > 2100. ), y_times).compressed()
+                    xdatc = np.ma.masked_where((x_times < 2015.) + (x_times > 2100.), x_data).compressed()
+                    ydatc = np.ma.masked_where((y_times < 2015.) + (y_times > 2100. ), y_data).compressed()
+                    xtdatc = np.ma.masked_where((x_times < 2015.) + (x_times > 2100.), x_times).compressed()
+                    ytdatc = np.ma.masked_where((y_times < 2015.) + (y_times > 2100. ), y_times).compressed()
 
-                print('< 2015', exp_1, xdatc, ydatc, xtdatc, ytdatc)
-                if len(xtdatc) == len(ytdatc):
-                    plt.plot(xdatc, # np.ma.masked_where(x_times < 2015., x_data).compressed(),
-                         ydatc, # np.ma.masked_where(y_times < 2015., y_data).compressed(),
+                    # print('< 2015', exp_1, xdatc, ydatc, xtdatc, ytdatc)
+                    if len(xtdatc) == len(ytdatc):
+                        plt.plot(xdatc, # np.ma.masked_where(x_times < 2015., x_data).compressed(),
+                             ydatc, # np.ma.masked_where(y_times < 2015., y_data).compressed(),
+                             lw=lw,
+                             color=exp_colours[exp_1])
+                else:
+                    plt.plot(x_data,
+                         y_data,
                          lw=lw,
                          color=exp_colours[exp_1])
 
@@ -1943,25 +2018,32 @@ def make_ts_figure(cfg, data_dict, thresholds_dict, x='time', y='npp',
     diagtools.add_legend_outside_right(
                 plot_details, plt.gca(), column_width=0.175)
 
+    # set labels:
     plt.xlabel(x_label)
     plt.ylabel(y_label)
+
+    # set title:
     if x == 'time':
-        plt.title(get_long_name(y))
+        title = get_long_name(y)
     else:
-        plt.title(' '.join([get_long_name(x), 'by', get_long_name(y)]))
+        title = ' '.join([get_long_name(x), 'by', get_long_name(y)])
 
-    image_extention = diagtools.get_image_format(cfg)
+    if plot_dataset != 'all_models': 
+        title += ' '+plot_dataset 
 
-    path = diagtools.folder(cfg['plot_dir'])
+    plt.title(title)
 
-    if ensemble_mean:
-        ensemble_mean_txt = 'ensemble_mean'
-    else:
-        ensemble_mean_txt = 'all'
+    # set path:
+    #image_extention = diagtools.get_image_format(cfg)
+    #path = diagtools.folder([cfg['plot_dir'], 'ts_figure'])
+    #if ensemble_mean:
+    #    ensemble_mean_txt = 'ensemble_mean'
+    #else:
+    #    ensemble_mean_txt = 'all'
+    #path += '_'.join([x, y, markers, ensemble_mean_txt, plot_dataset]) + image_extention
+    #if do_moving_average:
+    #    path = path.replace(image_extention, '_21ma'+image_extention)
 
-    path += '_'.join([x, y, markers, ensemble_mean_txt]) + image_extention
-    if do_moving_average:
-        path = path.replace(image_extention, '_21ma'+image_extention)
     print('saving figure:', path)
     if make_figure_here:
         plt.savefig(path)
@@ -1986,6 +2068,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
     fgco2gts = []
     experiments = []
 
+    
     for (t_dataset, t_short, t_exp, t_ens), threshold_times in thresholds_dict.items():
         print((t_dataset, t_short, t_exp, t_ens), threshold_times)
         if t_dataset != 'CMIP6': continue
@@ -2045,7 +2128,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
             n_xpoint = get_threshold_point(landc_cumul, time.year)
             f_xpoint = get_threshold_point(fgco2gt_cumul, time.year)
 
-            print("make_bar_chart",thresh, time, 'atmos', e_xpoint, 'land:', n_xpoint, 'ocean', f_xpoint)
+            print("make_bar_chart",thresh, time, 'atmos_carbon', e_xpoint, 'land:', n_xpoint, 'ocean', f_xpoint)
             if year0:
                 assert 0
                 #e_baseline = get_threshold_point(cumul_emissions, year0)
@@ -2134,7 +2217,7 @@ def make_bar_chart(cfg, data_dict, thresholds_dict, threshold = '2.0',
                     verticalalignment='center',horizontalalignment='center')
 
     # Add mean year:
-    add_mean_year = True
+    add_mean_year = False
     if add_mean_year:
         for e, exp in enumerate(experiments):
             t = totals[e]
@@ -2204,7 +2287,7 @@ def make_cumulative_timeseries(cfg, data_dict,
    # load data.
     cube_keys = ['fgco2gt_cumul', 'nbpgt_cumul']
     colours = {'cumul_emissions': 'silver',
-        'atmos': 'silver',
+        'atmos_carbon': 'silver',
         'fgco2gt_cumul':'dodgerblue',
         'nbpgt_cumul':'orange',
         'tls':'mediumseagreen'}
@@ -2230,7 +2313,6 @@ def make_cumulative_timeseries(cfg, data_dict,
         tmp_data = data_dict.get((dataset, key, ssp_it, ensemble), False)
         if not tmp_data: 
             print('Did not find:', (dataset, key, ssp_it, ensemble))
-            assert 0
             continue
         print('load data: found:', (dataset, key, ssp_it, ensemble))
         if key in cube_keys:
@@ -2249,8 +2331,8 @@ def make_cumulative_timeseries(cfg, data_dict,
         print(tmp_dat, key_dat)
         tmp_dat = tmp_dat - key_dat
 
-    data['atmos'] = zip_time({'time':tmp_times, 'atmos':tmp_dat}, 'atmos')
-    #colours['atmos'] = 'purple'
+    data['atmos_carbon'] = zip_time({'time':tmp_times, 'atmos_carbon':tmp_dat}, 'atmos_carbon')
+    #colours['atmos_carbon'] = 'purple'
 
     thresholds = {}
     for ssp_it, ensemble, dataset in product(exps, ensembles, datasets):
@@ -2292,9 +2374,9 @@ def make_cumulative_timeseries(cfg, data_dict,
         emt, emd = unzip_time(data['cumul_emissions'])
         lat, lad = unzip_time(data['tls'])
         ont, ond = unzip_time(data['fgco2gt_cumul'])
-        lut, lud = unzip_time(data['luegt'])
+        #lut, lud = unzip_time(data['luegt'])
         nbt, nbd = unzip_time(data['nbpgt_cumul'])
-        att, atd = unzip_time(data['atmos'])
+        att, atd = unzip_time(data['atmos_carbon'])
 
         if plot_type in ['area',] :
             ond = -1.* ond
@@ -2312,7 +2394,7 @@ def make_cumulative_timeseries(cfg, data_dict,
         #     label = )
         ax.fill_between(# zero and blue line
             ont,
-            np.zeroes_like(ond),
+            np.zeros_like(ond),
             ond, # zero and blue line
             lw=0,
             label='Ocean',
@@ -2358,9 +2440,9 @@ def make_cumulative_timeseries(cfg, data_dict,
         emt, emd = unzip_time(data['cumul_emissions'])
         lat, lad = unzip_time(data['tls'])
         ont, ond = unzip_time(data['fgco2gt_cumul'])
-        lut, lud = unzip_time(data['luegt'])
+        #lut, lud = unzip_time(data['luegt'])
         nbt, nbd = unzip_time(data['nbpgt_cumul'])
-        att, atd = unzip_time(data['atmos'])
+        att, atd = unzip_time(data['atmos_carbon'])
 
         total = ond + lad + atd
         water_land_line = (ond/total)*100.
@@ -2617,9 +2699,8 @@ def main(cfg):
                        'tls', #true land sink = nbp + land-use emissions
                        'atmos_carbon', # remant antrho carbon in atmosphere
                        ]
+        short_names_x = ['time', ] #'atmos_carbon', 'tas_norm', 'cumul_emissions', 'fgco2gt_cumul','nbpgt_cumul', ]
 
-        short_names_x = short_names.copy()
-        short_names_x.append('time')
         short_names_y = short_names.copy()
 
     if jobtype == 'marine':
@@ -2645,7 +2726,7 @@ def main(cfg):
                        'tls', #true land sink = nbp + land-use emissions
                        'atmos_carbon', # remant antrho carbon in atmosphere
                        ]
-        short_names_x = ['time', 'co2', 'tas', 'emissions','cumul_emissions', 'tas_norm', 'fgco2gt', 'nbpgt', 'fgco2gt_cumul','nbpgt_cumul', 'tls', 'luegt']
+        short_names_x = ['time', 'co2', 'tas_norm', 'cumul_emissions', 'fgco2gt_cumul','nbpgt_cumul', ]
         short_names_y = short_names.copy()
 
     if jobtype == 'debug':
@@ -2706,10 +2787,10 @@ def main(cfg):
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical-ssp585',)
             #make_cumulative_timeseries(cfg, data_dict, thresholds_dict, ssp='historical',)
 
-            #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
-            #make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {})
+            make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = {}, thresholds=['2075', '2050', '2025'])
 
-            plot_types = ['pair', 'distribution','pc', 'simple_ts', 'area', 'area_over_zero']
+            plot_types = ['pair', 'pc', 'simple_ts', 'area', 'area_over_zero'] # 'distribution'
             ssps = ['historical', 'ssp119', 'ssp126', 'ssp245', 'ssp370', 'ssp585']
             for pt, exp in product(plot_types, ssps):
 
@@ -2732,26 +2813,38 @@ def main(cfg):
             ]
             make_cumulative_vs_threshold(cfg, data_dict, thresholds_dict, land_carbon = 'tls', LHS_panes = LHS_panes)
 
+        datasets = {'all_models':True}
         for (dataset, short_name, exp, ensemble),cube  in data_dict.items():
-            if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
-                data_dict[(dataset, short_name, exp, ensemble)] = moving_average(cube, '21 years')
+            datasets[dataset] = True
+        #    if do_ma and short_name not in ['co2', 'emissions', 'cumul_emissions', 'luegt', 'tls', 'atmos_carbon']:
+        #        data_dict[(dataset, short_name, exp, ensemble)] = moving_average(cube, '21 years')
 
-        print(short_names)
+        #print(data_dict.keys())
+        #print(datasets)
+        #assert 0
 
         for x in short_names_x:
             for y in short_names_y:
-                if x == y: continue
-                if (x, y) in pairs: continue
-                print('main:', do_ma, x, y)
-                make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                for plot_dataset in datasets:
+                    if x == y: continue
+                    #if (x, y) in pairs: continue
+                    print('main:', do_ma, x, y)
+                    make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
                                markers='thresholds', do_moving_average=False,
-                               ensemble_mean=True)
-                if jobtype == 'debug': continue
-                make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
-                               markers='thresholds', do_moving_average=True,
+                               plot_dataset=plot_dataset,
                                ensemble_mean=False)
-                pairs.append((x, y))
-                #pairs.append((y, x))
+ 
+                    make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                               markers='thresholds', do_moving_average=False,
+                               plot_dataset=plot_dataset,
+                               ensemble_mean=True)
+                    #if jobtype == 'debug': continue
+                    #make_ts_figure(cfg, data_dict, thresholds_dict, x=x, y=y,
+                    #           markers='thresholds', do_moving_average=True,
+                    #           plot_dataset=plot_dataset,
+                    #           ensemble_mean=False)
+                    #pairs.append((x, y))
+                    #pairs.append((y, x))
 
     logger.info('Success')
 
