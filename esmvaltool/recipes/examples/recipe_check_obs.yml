@@ -1159,11 +1159,11 @@ diagnostics:
       tsn_Amon:
         short_name: tsn
         mip: Amon
-      va_Amon:
-        short_name: va
+      uas_Amon:
+        short_name: uas
         mip: Amon
-      zg_Amon:
-        short_name: zg
+      vas_Amon:
+        short_name: vas
         mip: Amon
       orog:
         mip: fx
