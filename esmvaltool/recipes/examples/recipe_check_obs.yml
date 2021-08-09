@@ -1135,11 +1135,17 @@ diagnostics:
       rls_Amon:
         short_name: rls
         mip: Amon
+      rlus_Amon:
+        short_name: rlus
+        mip: Amon
       rsds_Amon:
         short_name: rsds
         mip: Amon
       rsdt_Amon:
         short_name: rsdt
+        mip: Amon
+      rsus_Amon:
+        short_name: rsus
         mip: Amon
       rss_Amon:
         short_name: rss
