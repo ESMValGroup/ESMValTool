@@ -760,8 +760,8 @@ begin
   do is = 0, numseas - 1
     log_provenance(nc_outfile_bias, plotfile(is), caption, statistics, \
                    domain, plottype, "", "", climofiles)
-    log_provenance(nc_outfile_zonal, plotfile(is), caption, statistics, \
-                   domain, plottype, "", "", climofiles)
+    ; log_provenance(nc_outfile_zonal, plotfile(is), caption, statistics, \
+    ;                domain, plottype, "", "", climofiles)
   end do
 
   leave_msg(DIAG_SCRIPT, "")

@@ -29,24 +29,8 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
-      exclude: [reference_dataset]
-
-  clim_ref:
-    regrid:
-      target_grid: reference_dataset
-      scheme: linear
-    multi_model_statistics:
-      span: full
-      statistics: [mean]
-      exclude: [reference_dataset]
-
-  clim_mask:
-    regrid:
-      target_grid: 2x2
-      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
     multi_model_statistics:
       span: overlap
       statistics: [mean]
@@ -411,7 +395,7 @@ diagnostics:
       - atmos
     variables:
       swcre: &var_swcre
-        preprocessor: clim_mask
+        preprocessor: clim
         reference_dataset: CERES-EBAF
         project: CMIP3
         exp: 20c3m
