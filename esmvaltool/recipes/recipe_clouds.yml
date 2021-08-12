@@ -1534,7 +1534,7 @@ diagnostics:
 #        filename_add: cmip5_all
 #
 ## ############################################################################
-#
+
 #  clouds_matrices_cmip5_ocean:
 #    description: cloud matrices - dynamical regimes vs. cloud parameter
 #    themes:
@@ -1658,8 +1658,8 @@ diagnostics:
 #      - {dataset: GISS-E2-H, ensemble: r1i1p1}
 #      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
 #      - {dataset: GISS-E2-R, ensemble: r1i1p1}
-##time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
-##time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+##nowap      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+##time_series_incomplete      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
 #      - {dataset: inmcm4, ensemble: r1i1p1}
 #      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
 #      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
@@ -1685,8 +1685,8 @@ diagnostics:
 #        xmax: 305
 #        ymin: -10
 #        ymax: 10
-#        zmin: 0
-#        zmax: 100
+#        zmin: 5
+#        zmax: 95
 #        zdmin: -45
 #        zdmax: 45
 #        filename_add: cmip5_ocean
@@ -1798,7 +1798,7 @@ diagnostics:
 #        ymin: -10
 #        ymax: 10
 #        zmin: 0.0
-#        zmax: 0.5
+#        zmax: 0.45
 #        zdmin: -0.09
 #        zdmax: 0.09
 #        filename_add: cmip5_ocean
@@ -2470,26 +2470,37 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-#      ts:
-#        preprocessor: clim_ocean
-#        mip: Amon
-#        project: CMIP6
-#        exp: historical
-#        start_year: 2003
-#        end_year: 2012
-#        reference_dataset: ERA-Interim
-#        additional_datasets:
-#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
-#      wap:
-#        preprocessor: clim500_ocean
-#        mip: Amon
-#        project: CMIP6
-#        exp: historical
-#        start_year: 2003
-#        end_year: 2012
-#        reference_dataset: ERA-Interim
-#        additional_datasets:
-#          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      ts:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      lts:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      wap:
+        preprocessor: clim500_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
 #      clivi:
 #        preprocessor: clim_ocean
 #        mip: Amon
@@ -2511,40 +2522,40 @@ diagnostics:
 #        reference_dataset: ESACCI-CLOUD
 #        additional_datasets:
 #          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
-      swcre:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2003
-        end_year: 2012
-        derive: true
-        reference_dataset: CERES-EBAF
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
-      lwcre:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2003
-        end_year: 2012
-        derive: true
-        reference_dataset: CERES-EBAF
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
-      prw:
-        preprocessor: clim_ocean
-        mip: Amon
-        project: CMIP6
-        exp: historical
-        start_year: 2003
-        end_year: 2012
-        reference_dataset: ESACCI-WATERVAPOUR
-        additional_datasets:
-          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
-             version: CDR2-L3S-05deg_fv3.1, tier: 3}
-#             version: L3S-COMBI-TCWV-05deg-fv3.1, tier: 3}
+#      swcre:
+#        preprocessor: clim_ocean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2012
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+#      lwcre:
+#        preprocessor: clim_ocean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2012
+#        derive: true
+#        reference_dataset: CERES-EBAF
+#        additional_datasets:
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+#      prw:
+#        preprocessor: clim_ocean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        start_year: 2003
+#        end_year: 2012
+#        reference_dataset: ESACCI-WATERVAPOUR
+#        additional_datasets:
+#          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+#             version: CDR2-L3S-05deg_fv3.1, tier: 3}
+##             version: L3S-COMBI-TCWV-05deg-fv3.1, tier: 3}
     additional_datasets:
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
       - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
@@ -2586,8 +2597,8 @@ diagnostics:
 #        xmax: 305
 #        ymin: -10
 #        ymax: 10
-#        zmin: 0
-#        zmax: 100
+#        zmin: 5
+#        zmax: 95
 #        zdmin: -45
 #        zdmax: 45
 #        filename_add: cmip6_ocean
@@ -2675,20 +2686,20 @@ diagnostics:
 #        zdmin: -9
 #        zdmax: 9
 #        filename_add: cmip6_ocean
-      dynprwrad2:
-        script: clouds/clouds_dyn_matrix.ncl
-        var_x: swcreclt
-        var_y: lwcreclt
-        var_z: prw
-        xmin: -200
-        xmax: 0
-        ymin: 0
-        ymax: 130
-        zmin: 3
-        zmax: 57
-        zdmin: -9
-        zdmax: 9
-        filename_add: cmip6_ocean
+#      dynprwrad2:
+#        script: clouds/clouds_dyn_matrix.ncl
+#        var_x: swcreclt
+#        var_y: lwcreclt
+#        var_z: prw
+#        xmin: -200
+#        xmax: 0
+#        ymin: 0
+#        ymax: 130
+#        zmin: 3
+#        zmax: 57
+#        zdmin: -9
+#        zdmax: 9
+#        filename_add: cmip6_ocean
 #      dynicefrac:
 #        script: clouds/clouds_dyn_matrix.ncl
 #        var_x: ts
@@ -2713,7 +2724,7 @@ diagnostics:
 #        ymin: -10
 #        ymax: 10
 #        zmin: 0.0
-#        zmax: 0.5
+#        zmax: 0.45
 #        zdmin: -0.09
 #        zdmax: 0.09
 #        filename_add: cmip6_ocean
@@ -2759,6 +2770,34 @@ diagnostics:
 #        zdmin: -9
 #        zdmax: 9
 #        filename_add: cmip6_ocean
+      dynlts:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: lts
+        var_y: ts
+        var_z: clt
+        xmin: 0
+        xmax: 30
+        ymin: 275
+        ymax: 305
+        zmin: 5
+        zmax: 95
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_ocean
+      dynlts2:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: lts
+        var_y: wap
+        var_z: clt
+        xmin: 5
+        xmax: 30
+        ymin: -10
+        ymax: 10
+        zmin: 5
+        zmax: 95
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_ocean
 #
 ## ############################################################################
 #

@@ -215,6 +215,7 @@ begin
 
       ; ice fraction = ice / (ice + lwp) * 100%
       y = 100.0 * y / mass
+      delete(mass)
 
       y@units = "%"
       y@long_name = "cloud ice fraction"
