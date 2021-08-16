@@ -527,25 +527,26 @@ def extract_depth_range(data, depths, drange='surface', threshold=-1000.):
     return data
 
 
-def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = ''):
+def plot_z_line(depths, data, ax0, ax1, ls='-', c='blue', lw=2., label = '', zorder=1):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
         data2 = extract_depth_range(data, depths, drange=drange)
         ax.plot(data2, depths,
             lw=lw,
             ls=ls,
             c=c,
-            label= label)
+            label= label, zorder= zorder)
     return ax0, ax1
 
 
-def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.5, label = ''):
+def plot_z_area(depths, data_min, data_max, ax0, ax1, color='blue', alpha=0.5, label = '', zorder=1):
     for ax, drange in zip([ax0, ax1], ['surface', 'depths']):
         data_min2 = extract_depth_range(data_min, depths, drange=drange)
         data_max2 = extract_depth_range(data_max, depths, drange=drange)
         ax.fill_betweenx(depths, data_min2, data_max2,
             color=color,
             alpha = alpha,
-            label= label)
+            label= label, 
+            zorder=zorder)
     return ax0, ax1
 
 
@@ -874,7 +875,6 @@ def make_multi_model_profiles_plotpair(
 
     model_cubes = {}
     model_cubes_paths = {}
-    hist_means
     for variable_group, filenames in profile_fns.items():
         for i, fn in enumerate(filenames):
             cube = iris.load_cube(fn)
@@ -928,8 +928,12 @@ def make_multi_model_profiles_plotpair(
         if 'means' in plotting:
             ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
 
-        if 'means_split' in plotting and scenario in ['historical', 'hist']:
-            ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario)
+        if scenario in ['historical', 'hist']:
+            zorder = 5
+        else: zorder=1
+
+        if 'means_split' in plotting:
+            ax0, ax1 = plot_z_line(depths, mean, ax0, ax1, ls='-', c=color, lw=2., label = scenario, zorder=zorder)
 
         if 'medians' in plotting:
             medians = [np.median(data_values[z]) for z in depths]
@@ -955,23 +959,26 @@ def make_multi_model_profiles_plotpair(
             maxs = [np.percentile(data_values[z], 95.) for z in depths]
             data_dict[scenario]['5pc'] = mins
             data_dict[scenario]['95pc'] = maxs
-            if scenario in ['historical', 'hist']
+            if scenario in ['historical', 'hist']:
                 ax0, ax1 =  plot_z_area(depths, mins, maxs, ax0, ax1, color= ipcc_colours[scenario], alpha=0.5)
 
     # plot rhs
-    for scenario, ddict in data_dict.items():
-        if scenario in ['hist', 'historical']:
-            continue
-        hist_data = ddict['historical']['mean']
-        color = ipcc_colours[scenario]
+    hist_data = np.array(data_dict['historical']['mean'])
 
-        if 'means_split' in plotting and scenario not in ['historical', 'hist']:
-            ax2, ax3 = plot_z_line(ddict[scenario]['depths'], ddict[scenario]['mean'] - hist_data, ax2, ax3, ls='-', c=color, lw=2., label = scenario)
+    for scenario, ddict in data_dict.items():
+        #if scenario in ['hist', 'historical']:
+        #    continue
+
+        color = ipcc_colours[scenario]
+        if 'means_split' in plotting: # and scenario not in ['historical', 'hist']:
+            ax2, ax3 = plot_z_line(ddict['depths'], 
+                np.array(ddict['mean']) - hist_data, 
+                ax2, ax3, ls='-', c=color, lw=2., label = scenario)
 
         if '5-95_split' in plotting:
-            mins = data_dict[scenario]['5pc'] - hist_data
-            maxs = data_dict[scenario]['95pc'] - hist_data
-            ax2, ax3 =  plot_z_area(ddict[scenario]['depths'], mins, maxs, ax2, ax3, color=color, alpha=0.5)
+            mins = np.array(ddict['5pc']) - hist_data
+            maxs = np.array(ddict['95pc']) - hist_data
+            ax2, ax3 =  plot_z_area(ddict['depths'], mins, maxs, ax2, ax3, color=color, alpha=0.5)
 
     # for (dataset, scenario, ensemble, metric), cube_mean in cubes.items():
     #     if metric != 'mean': continue
@@ -1064,6 +1071,12 @@ def make_multi_model_profiles_plotpair(
     ax2.xaxis.set_ticks_position('none')
     ax2.xaxis.set_ticklabels([])
     ax3.spines['top'].set_visible(False)
+
+    # Hide RHS y axis ticks:
+    ax2.yaxis.set_ticks_position('none')
+    ax2.yaxis.set_ticklabels([])
+    ax3.yaxis.set_ticks_position('none')
+    ax3.yaxis.set_ticklabels([])
 
     # draw a line between figures
     ax0.axhline(-999., ls='--', lw=1.5, c='black')
