@@ -5,7 +5,6 @@ on:
   push:
     branches:
     - main
-    - use_mamba_GA_test
 
   schedule:
     - cron: '0 0 * * *'
@@ -27,7 +26,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniconda-version: "latest"
           channels: conda-forge
-          # use-mamba: true
+          # use-mamba: true  # try this in the future, might speed things up, all the same now though
       - shell: bash -l {0}
         run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - shell: bash -l {0}
