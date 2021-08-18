@@ -60,6 +60,49 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+
+def make_stddev_of_cube_list_notime(cube_list, mean_cube,):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    """
+    # Fix empty times
+
+    cube_var_list=(cube_list[0] - mean_cube)*(cube_list[0] - mean_cube)
+
+    #cube_mean = fix_depth(cube_mean)
+    for i, cube in enumerate(cube_list):
+        try: cube.remove_coord('year')
+        except: pass
+        cube_var_list.append((cube - mean_cube)*(cube - mean_cube))
+
+    cube_var = diagtools.make_mean_of_cube_list_notime(cube_var_list)
+
+    cube_var.data = np.math.sqrt(cube_var.data)
+
+    return cube_var
+
+
+def make_count_of_cube_list_notime(cube_list,):
+    """
+    Takes the mean of a list of cubes (not an iris.cube.CubeList).
+    Assumes all the cubes are the same shape.
+    """
+    # Fix empty times
+    cube_count = cube_list[0]
+    cube_count.data = -1* np.ma.masked_invalid(cube_count.data).mask
+    if len(cube_list)==1:
+        return cube_count
+
+    for i, cube in enumerate(cube_list[1:]):
+        try: cube.remove_coord('year')
+        except: pass
+
+        cube_count.data+=-1* np.ma.masked_invalid(cube.data).mask
+
+    return cube_count
+
+
 def make_map_plots(
         cfg,
         metadata,
@@ -398,7 +441,6 @@ def make_file_mean(cfg, metadata, fn, operator='mean', ):
     print('make_file_mean, path:', path)
     if os.path.exists(path):return path
 
-
     cube = iris.load_cube( fn)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
 
@@ -409,6 +451,99 @@ def make_file_mean(cfg, metadata, fn, operator='mean', ):
     map_plot(cfg, metadata, cube, unique_keys = unique_keys)
 
     return path
+
+
+def calculate_ensemble_stats(cfg, metadatas, key_short_name, key_scenario, key_start_time):
+    """
+    Calculate the mean, std_dev & number of contributing multi_model_statistics
+    for each point in the 1x1 grid.
+    """
+
+    unique_keys = [key_short_name, key_scenario, key_start_time]
+
+    work_dir = diagtools.folder([cfg['work_dir'], 'variable_group_stats'])
+    mean_path = work_dir+'_'.join((unique_keys))+'_mean.nc'
+    stddev_path = work_dir+'_'.join((unique_keys))+'_stddev.nc'
+    count_path = work_dir+'_'.join((unique_keys))+'_count.nc'
+
+    if False not in [os.path.exists(pth) for pth in [mean_path, stddev_path, count_path]]:
+        make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_data)
+        return
+
+    files_list = []
+    cubes = {}
+    for filename, metadata in sorted(metadatas.items()):
+        short_name = short_names[metadata['short_name']]
+        if short_name != key_short_name: continue
+
+        scenario = short_names[metadata['scenario']]
+        if scenario != key_scenario: continue
+
+        start_time = short_names[metadata['start_time']]
+        if start_time != key_start_time: continue
+
+        files_list.append(filename)
+        cube = iris.load_cube(filename)
+
+        # take mean along time axis.
+        cube = climate_statistics(cube, operator='mean')
+        cubes[filename] = cube
+
+    mean
+    if not len(files_list):
+        return
+
+    base_cube = files_list[filename[0]]
+    #times = diagtools.cube_time_to_float(base_cube)
+
+    cube_list = [cube for fn, cube in cubes.items()]
+
+    mean_cube = diagtools.make_mean_of_cube_list_notime(cube_list)
+    stddev_cube = make_stddev_of_cube_list_notime(cube_list, mean_cube)
+    count_cube = make_count_of_cube_list_notime(cube_list)
+
+    #save cubes:
+    iris.save(mean_cube, mean_path)
+    iris.save(stddev_cube, stddev_path)
+    iris.save(count_cube, count_data)
+
+    # make a plot:
+    make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_data)
+
+
+def make_three_pane_plot(cfg, unique_keys, mean_path, stddev_path, count_data):
+    """
+    Make a three pane plot showing mean, std, count.
+    """
+    #make a plot
+    image_extention = diagtools.get_image_format(cfg)
+    path = diagtools.folder([cfg['plot_dir'],'three_pane_plot'])
+    path += '_'.join(unique_keys)+image_extention
+
+    if os.path.exists(path):return
+
+    mean_cube= iris.load_cube(mean_path)
+    stddev_cube = iris.load_cube(stddev_path)
+    count_cube= iris.load_cube(count_data)
+
+    fig = plt.figure()
+
+    for sbp, cube, title in zip(
+            [311,312,313],
+            [mean_cube,stddev_cube, count_cube],
+            ['Mean', 'Standard deviation', 'Count'],
+            ):
+        plt.add_subplot(sbp)
+        qplt.contourf(cube, 11,)
+        plt.title(title)
+        plt.gca().coastlines()
+
+    # Add title to plot
+    title = ' '.join(unique_keys)
+    plt.suptitle(title)
+    logger.info('Saving plots to %s', path)
+    plt.savefig(path)
+    plt.close()
 
 
 def main(cfg):
@@ -423,13 +558,31 @@ def main(cfg):
     """
     # cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
+    short_names = {}
+    datasets = {}
+    ensembles = {}
+    start_times = {}
+    scenarios = {}
+
+    metadatas = diagtools.get_input_files(cfg, )
+    for fn, metadata in metadatas.items():
+        short_names[metadata['short_name']] = True
+        datasets[metadata['dataset']] = True
+        ensembles[metadata['ensemble']] = True
+        start_times[metadata['start_time']] = True
+        scenarios[metadata['scenario']] = True
+
+    for short_name, scenario, start_time in product(short_names, scenarios, start_times):
+        if short_name == 'areacello': continue
+        calculate_ensemble_stats(cfg, metadatas, short_name, scenario, start_time)
+
+    return
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s',
             metadata_filename,
         )
 
-        metadatas = diagtools.get_input_files(cfg, index=index)
         # thresholds = diagtools.load_thresholds(cfg, metadatas)
 
         # if thresholds:
