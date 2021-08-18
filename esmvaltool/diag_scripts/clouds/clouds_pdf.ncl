@@ -235,7 +235,7 @@ begin
     res@tiXAxisString = data1@long_name + " (" + data1@units + ")"
     res@tmYLOn = False
     res@tiYAxisOn = False
-    res@tiMainString             = names(ii)
+    res@tiMainString             = names(imod)
 
     plot(ii) = gsn_histogram(wks, ndtooned(data1), res)
 
@@ -262,7 +262,7 @@ begin
       data_all@units = data_out@units
     end if
 
-    data_all(ii, :) = tofloat(data_out)
+    data_all(imod, :) = tofloat(data_out)
 
     delete(data_out)
 
