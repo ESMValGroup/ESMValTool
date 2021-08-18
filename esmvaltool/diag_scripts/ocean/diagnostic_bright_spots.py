@@ -388,7 +388,7 @@ def map_plot(cfg, metadata, cube, unique_keys = []):
     plt.close()
 
 
-def make_file_mean(cfg, metadata, fn, operator='mean'):
+def make_file_mean(cfg, metadata, fn, operator='mean', ):
 
     unique_keys = [metadata[k] for k in ['dataset', 'short_name',]]
     unique_keys.append( operator)
@@ -428,7 +428,6 @@ def main(cfg):
             'metadata filename:\t%s',
             metadata_filename,
         )
-        print
 
         metadatas = diagtools.get_input_files(cfg, index=index)
         # thresholds = diagtools.load_thresholds(cfg, metadatas)
@@ -443,9 +442,9 @@ def main(cfg):
 
         for filename, metadata in sorted(metadatas.items()):
             # Is this data is a multi-model dataset?
-            multi_model = metadata['dataset'].find('MultiModel') > -1
-            if not multi_model:
-                continue
+            #multi_model = metadata['dataset'].find('MultiModel') > -1
+            #if not multi_model:
+            #    continue
 
             logger.info('-----------------')
             logger.info(
