@@ -57,7 +57,8 @@ def main(cfg):
         anom_cube = mean_cube - cube
         
         iris.quickplot.plot(anom_cube, label=datasetnames[alias],
-                            color=mpqb_cfg['datasetcolors'][alias])
+                            color=mpqb_cfg['datasetcolors'][alias],
+                            linewidth=0.5)
     plt.legend()
     plt.xticks(rotation=90)
     # Add the zero line when plotting anomalies
@@ -73,7 +74,8 @@ def main(cfg):
     ax1.grid(True, which='major', axis='x')
 
     ax1.set_ylim(ylims)
-
+    ax1.set_ylabel('Normalized temporal STD')  #new for rainfall numbers
+    
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
 
     filename = get_plot_filename(baseplotname, cfg)

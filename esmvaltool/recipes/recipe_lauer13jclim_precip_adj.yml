@@ -19,21 +19,58 @@ documentation:
     - esmval
     - embrace
 
+extract_tropics: &extr_trop
+  extract_region: 
+    start_longitude: 0
+    end_longitude: 360
+    start_latitude: -30
+    end_latitude: 30
+
+extract_itcz: &extr_itcz
+  extract_region: 
+    start_longitude: 136
+    end_longitude: 275
+    start_latitude: 0
+    end_latitude: 12
+ 
+extract_southasianmonsoon: &extr_samonsoon
+  extract_region:
+    start_longitude: 65
+    end_longitude: 95
+    start_latitude: 5
+    end_latitude: 30
+
+extract_europe: &extr_europe
+  extract_region: 
+    end_latitude: 53
+    end_longitude: 20
+    start_latitude: 42
+    start_longitude: 0
+
+
 datasets:
   - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', 
      tier: 3, start_year: 1983, end_year: 2016}       
-  # - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
-     # tier: 2, start_year: 1983, end_year: 2016}  
+  - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
+     tier: 2, start_year: 1983, end_year: 2016}  
   - {dataset: JRA-55, project: ana4mips, type: reanalysis, mip: Amon,
      tier: 1, start_year: 1983, end_year: 2016}  
   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, 
      tier: 1, start_year: 1983, end_year: 2016}  
-  # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_25, 
-     # tier: 2, start_year: 1983, end_year: 2016}  
+  - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_25, 
+     tier: 2, start_year: 1983, end_year: 2016}  
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1,
      tier: 3, start_year: 1983, end_year: 2016}  
   - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
      tier: 3, start_year: 1983, end_year: 2016}  
+  # - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+     # tier: 1, start_year: 1983, end_year: 2016}
+  - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+     tier: 3, start_year: 1983, end_year: 2016}
+  # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+     # tier: 3, start_year: 1983, end_year: 2016}
+  - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+     tier: 3, start_year: 1983, end_year: 2016}
 
 
 preprocessors:
@@ -42,11 +79,14 @@ preprocessors:
       target_grid: 2.5x2.5
       scheme: linear
     mask_fillvalues:
-      threshold_fraction: 0.95
+      threshold_fraction: 0.80
     multi_model_statistics:
       span: overlap
       statistics: [mean]
       exclude: [reference_dataset]
+    # <<: *extr_trop
+    mask_landsea:
+      mask_out: sea
 
 
 diagnostics:
@@ -83,7 +123,11 @@ diagnostics:
         # - annualclim: 1 plot (annual mean)
         # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
         timemean: annualclim
-        showdiff: false
+        showdiff: true
+        #region: [42., 53., 0., 20.]     # Europe
+        #region: [0., 12., 136., 275.]    # ITCZ
+        #region: [5., 30., 65., 95.]    # SA Monsoon
+        region: [-30., 30., 0., 360.]    # Tropics
 
   # # ==========================================================================
   # # Lauer and Hamilton (2013) - Figure 3

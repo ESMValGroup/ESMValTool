@@ -1,0 +1,304 @@
+# ESMValTool
+# recipe_extract_cmip6_foramy.yml
+---
+documentation:
+  description: |
+    Extract data for Amy's SSW calculations.
+
+  authors:
+    - hassler_birgit
+
+  maintainer:
+    - hassler_birgit
+    
+  projects:
+    - esmval
+
+datasets:
+# historical
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p2f1,  start_year: 1960,  end_year: 2014} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p2f1,  start_year: 1850,  end_year: 1949} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p2f1,  start_year: 1950,  end_year: 2014} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1860} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1871,  end_year: 1900} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1901,  end_year: 1959} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r2i1p2f1,  start_year: 1960,  end_year: 2014} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p2f1,  start_year: 1960,  end_year: 2014}   
+#  - {dataset: BCC-CSM2-MR,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: historical,  grid: gr2, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: historical,  grid: gr2, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1900}
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: historical,  grid: gr2, ensemble: r1i1p1f1,  start_year: 1901,  end_year: 1959}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f3,  start_year: 1960,  end_year: 2014}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f3,  start_year: 1850,  end_year: 1900}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f3,  start_year: 1901,  end_year: 1959}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r2i1p1f3,  start_year: 1960,  end_year: 2014}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r2i1p1f3,  start_year: 1850,  end_year: 1900}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r2i1p1f3,  start_year: 1901,  end_year: 1959}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f3,  start_year: 1960,  end_year: 2014}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f3,  start_year: 1850,  end_year: 1900}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f3,  start_year: 1901,  end_year: 1959}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r4i1p1f2,  start_year: 1960,  end_year: 1999}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r4i1p1f2,  start_year: 1850,  end_year: 1900}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r4i1p1f2,  start_year: 1900,  end_year: 1959} 
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 2014} 
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1899}
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1900,  end_year: 1959}
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 1999}
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2000,  end_year: 2014}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1899}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1900,  end_year: 1949}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 1999}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: historical,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2000,  end_year: 2014}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 1959}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r2i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r2i1p1f1,  start_year: 1950,  end_year: 1959}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f1,  start_year: 1960,  end_year: 1969}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f1,  start_year: 1980,  end_year: 1989}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f1,  start_year: 2000,  end_year: 2014}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f1,  start_year: 1950,  end_year: 1959}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1980,  end_year: 1985}  
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2014}  
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r2i1p1f1,  start_year: 1960,  end_year: 2014}  
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r3i1p1f1,  start_year: 1960,  end_year: 2014} 
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1960,  end_year: 2007} 
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1850,  end_year: 1900} 
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1901,  end_year: 1929} 
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1938,  end_year: 1939} 
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1946,  end_year: 1949} 
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1950,  end_year: 1959} 
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1900}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r1i1p1f1,  start_year: 1901,  end_year: 1959}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1850,  end_year: 1900}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r2i1p1f1,  start_year: 1901,  end_year: 1959}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r3i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r3i1p1f1,  start_year: 1850,  end_year: 1900}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: historical,  grid: gr, ensemble: r3i1p1f1,  start_year: 1901,  end_year: 1959}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1900}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1901,  end_year: 1959}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2014}
+#  - {dataset: GISS-E2-1-G,  institute: NASA-GISS,  project: CMIP6,  mip: day,  exp: historical,  grid: gn, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2014}
+
+#amip
+#  - {dataset: BCC-CSM2-MR,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: amip,  grid: gr, ensemble: r1i1p1f2,  start_year: 1979,  end_year: 2014}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: amip,  grid: gr, ensemble: r1i1p1f2,  start_year: 1979,  end_year: 2014}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r2i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r3i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: amip,  grid: gr2, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: amip,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: amip,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r3i1p1f1,  start_year: 1979,  end_year: 2014} 
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: amip,  grid: gr, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r1i1p1f3,  start_year: 1979,  end_year: 2014}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r2i1p1f3,  start_year: 1979,  end_year: 2014}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r1i1p1f2,  start_year: 1979,  end_year: 2014}
+#  - {dataset: EC-Earth3-Veg,  project: CMIP6,  mip: day,  exp: amip,  grid: gr, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: amip,  grid: gn, ensemble: r1i1p1f1,  start_year: 1979,  end_year: 2014}
+#  - {dataset: GISS-E2-2-G,  institute: NASA-GISS,  project: CMIP6,  mip: Eday,  exp: amip,  grid: gn, ensemble: r1i1p3f1,  start_year: 1979,  end_year: 2014}
+
+#piControl
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 5201,  end_year: 5300} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 5501,  end_year: 5600} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 5601,  end_year: 6000}   
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p2f1,  start_year: 5550,  end_year: 5649} 
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p2f1,  start_year: 5650,  end_year: 5749}   
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p2f1,  start_year: 5750,  end_year: 5849}   
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p2f1,  start_year: 5850,  end_year: 5949}   
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p2f1,  start_year: 5950,  end_year: 6000}   
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1949}
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 1950,  end_year: 2049}
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 2050,  end_year: 2149}
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 2150,  end_year: 2249}
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 2250,  end_year: 2349}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1949}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 1950,  end_year: 2049}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 2050,  end_year: 2149}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 2150,  end_year: 2249}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f2,  start_year: 2250,  end_year: 2349}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1,  end_year: 9}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 10,  end_year: 49}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 50,  end_year: 100}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 101,  end_year: 200}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 201,  end_year: 300}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 301,  end_year: 400}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 401,  end_year: 500}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 501,  end_year: 600}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 601,  end_year: 700}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 701,  end_year: 800}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 801,  end_year: 900}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 901,  end_year: 1000}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1001,  end_year: 1100}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1101,  end_year: 1200}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1,  end_year: 9}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 10,  end_year: 19}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 20,  end_year: 29}
+  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 30,  end_year: 39}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 40,  end_year: 49}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 50,  end_year: 59}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 60,  end_year: 69}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 72,  end_year: 79}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 80,  end_year: 89}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 90,  end_year: 99}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 100,  end_year: 199}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 200,  end_year: 300}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 301,  end_year: 400}
+#  - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 401,  end_year: 489}
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr2, ensemble: r1i1p1f1,  start_year: 276,  end_year: 340}
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr2, ensemble: r1i1p1f1,  start_year: 341,  end_year: 415}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1996,  end_year: 2095}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2096,  end_year: 2195}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2196,  end_year: 2295}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2296,  end_year: 2395}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2396,  end_year: 2495}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2496,  end_year: 2595}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2596,  end_year: 2695}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2696,  end_year: 2795}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2796,  end_year: 2895}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2896,  end_year: 2995}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2996,  end_year: 3095}
+  # - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 3096,  end_year: 3196}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1949}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2049}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2050,  end_year: 2149}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2150,  end_year: 2249}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2250,  end_year: 2349}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr1, ensemble: r1i1p1f1,  start_year: 2350,  end_year: 2380}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1949} 
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2049} 
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1949}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2049}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2050,  end_year: 2149}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2150,  end_year: 2249}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2250,  end_year: 2349}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2350,  end_year: 2449}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2450,  end_year: 2549}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2550,  end_year: 2649}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2650,  end_year: 2749}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2750,  end_year: 2849}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2850,  end_year: 2949}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2950,  end_year: 3049}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1949}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2049}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 2050,  end_year: 2149}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 2150,  end_year: 2249}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 2250,  end_year: 2349}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 1960,  end_year: 2059}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2060,  end_year: 2159}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2160,  end_year: 2259}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2260,  end_year: 2359}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2360,  end_year: 2459}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2460,  end_year: 2559}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2560,  end_year: 2659}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2660,  end_year: 2759}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2760,  end_year: 2859}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2860,  end_year: 2959}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f2,  start_year: 2960,  end_year: 3059}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2259,  end_year: 2309}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2310,  end_year: 2359}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2360,  end_year: 2409}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2410,  end_year: 2459}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2460,  end_year: 2509}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2510,  end_year: 2559}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2560,  end_year: 2609}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2610,  end_year: 2659}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2660,  end_year: 2709}
+#  - {dataset: EC-Earth3,  project: CMIP6,  mip: day,  exp: piControl,  grid: gr, ensemble: r1i1p1f1,  start_year: 2710,  end_year: 2759}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 3200,  end_year: 3299}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 3300,  end_year: 3399}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 3400,  end_year: 3499}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 3500,  end_year: 3599}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 3600,  end_year: 3699}
+#  - {dataset: GISS-E2-2-G,  institute: NASA-GISS,  project: CMIP6,  mip: Eday,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 2015,  end_year: 2054}
+#  - {dataset: GISS-E2-2-G,  institute: NASA-GISS,  project: CMIP6,  mip: Eday,  exp: piControl,  grid: gn, ensemble: r1i1p1f1,  start_year: 2110,  end_year: 2150}
+  
+  
+#1pctCO2
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 2000}  
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gr, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1999}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gr, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1999}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 21,  end_year: 60}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 71,  end_year: 100}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 111,  end_year: 151}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1,  end_year: 50}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 51,  end_year: 100}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 101,  end_year: 151}  
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gr2, ensemble: r1i1p1f1,  start_year: 1,  end_year: 150}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1999}
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1899}
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1900,  end_year: 1962}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1860,  end_year: 1939} 
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2000} 
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gr, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 1999}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f3,  start_year: 1850,  end_year: 1999}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1999}
+#  - {dataset: SAM0-UNICON,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1999}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 3200,  end_year: 3349}
+#  - {dataset: GISS-E2-2-G,  institute: NASA-GISS,  project: CMIP6,  mip: Eday,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1890}
+#  - {dataset: GISS-E2-2-G,  institute: NASA-GISS,  project: CMIP6,  mip: Eday,  exp: 1pctCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2000}
+
+#abrupt-4xCO2
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1916}  
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1918,  end_year: 2000}  
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p2f1,  start_year: 1850,  end_year: 1925}  
+#  - {dataset: CanESM5,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p2f1,  start_year: 1926,  end_year: 2000}  
+#  - {dataset: CNRM-CM6-1,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1999}
+#  - {dataset: CNRM-ESM2-1,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1999}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 11,  end_year: 20}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 31,  end_year: 40}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 51,  end_year: 60}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 91,  end_year: 100}
+#  - {dataset: CESM2,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 121,  end_year: 150}  
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1,  end_year: 150}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 51,  end_year: 100}
+#  - {dataset: CESM2-WACCM,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 101,  end_year: 150}
+#  - {dataset: GFDL-CM4,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr2, ensemble: r1i1p1f1,  start_year: 1,  end_year: 150}
+#  - {dataset: INM-CM4-8,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1999}
+#  - {dataset: INM-CM5-0,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr1, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1999}
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1899} 
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1900,  end_year: 1949} 
+#  - {dataset: MRI-ESM2-0,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1950,  end_year: 2000} 
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr, ensemble: r1i1p1f1,  start_year: 2150,  end_year: 2349}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr, ensemble: r1i1p1f1,  start_year: 2350,  end_year: 2549}
+#  - {dataset: IPSL-CM6A-LR,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gr, ensemble: r1i1p1f1,  start_year: 2550,  end_year: 2749}
+#  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f3,  start_year: 1850,  end_year: 1999}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f2,  start_year: 1850,  end_year: 1999}
+#  - {dataset: SAM0-UNICON,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1999}
+#  - {dataset: MIROC6,  project: CMIP6,  mip: day,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 3200,  end_year: 3349}
+#  - {dataset: GISS-E2-2-G,  institute: NASA-GISS,  project: CMIP6,  mip: Eday,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1850,  end_year: 1890}
+#  - {dataset: GISS-E2-2-G,  institute: NASA-GISS,  project: CMIP6,  mip: Eday,  exp: abrupt-4xCO2,  grid: gn, ensemble: r1i1p1f1,  start_year: 1960,  end_year: 2000}
+
+
+
+preprocessors:
+  preprocessor_1:
+    extract_levels:
+      levels: 1000
+      scheme: nearest
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+      lat_offset: false
+#    extract_region:
+#      start_longitude: 0
+#      end_longitude: 360
+#      start_latitude: 59.9
+#      end_latitude: 60.1
+    zonal_statistics:
+      operator: mean
+
+diagnostics:
+  variable_extraction:
+    description: variables are extracted and preprocessed
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ua:
+        preprocessor: preprocessor_1
+    scripts: null

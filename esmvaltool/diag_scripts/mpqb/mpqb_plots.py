@@ -24,11 +24,13 @@ def _parse_cmap(plotkwargs):
     # replace the cmap key with the cmap object,
     # and add grey shading for masked values
     # Diverging colorbar centred around zero
-    nbins = 11 # has to be uneven
+    #nbins = 11 # has to be uneven
+    nbins = 19 # has to be uneven
 
     cmapname = plotkwargs.pop('cmap')
     cmap = matplotlib.cm.get_cmap(cmapname)
     color_list = cmap(np.linspace(0, 1, nbins))
+    #color_list = cmap(np.linspace(0, 1, 13))
     cmap_name = cmap.name + str(nbins)
     cmap = cmap.from_list(cmap_name, color_list, nbins)
 
@@ -40,7 +42,7 @@ def _parse_cmap(plotkwargs):
     if symmetric:
         print("Deleting middle level")
         # Remove zero from levels
-        levels = np.delete(levels, len(levels) / 2)
+        levels = np.delete(levels, int(len(levels) / 2))
 
     color_list = list(color_list)
 
@@ -84,6 +86,7 @@ def mpqb_mapplot(cube, dataset_cfg, filename, **plotkwargs):
     # Colorbar
     colorbar = plt.colorbar(pcols, orientation='horizontal', extend=extend)
     colorbar.set_label(cube.units)
+    #colorbar.set_label("mm.day-1")
     colorbar.ax.tick_params(labelsize=8)
 
     if addglobmeanvalue:

@@ -17,7 +17,7 @@ mmm_stat_obs: &mmm_stat_obs
   multi_model_statistics:
     span: overlap
     statistics: [mean]
-    exclude: [ERA5-Land, ERA5, ERA-Interim, JRA-55]
+    exclude: [ERA5-Land, ERA5, ERA-Interim, JRA-55, MERRA2, WFDE5]
 
 mpqbregridder: &mpqbregridder
   regrid:
@@ -339,12 +339,12 @@ default_pp_line: &pp_line
 ################################################
 
 datasets:
-  # - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', 
-     # tier: 3, alias: ERA-Interim}       
-  # - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
-     # tier: 2, alias: PERSIANN-CDR}
-  # - {dataset: JRA-55, project: ana4mips, type: reanalysis, mip: Amon,
-     # tier: 1, alias: JRA-55}
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', 
+     tier: 3, alias: ERA-Interim}       
+  - {dataset: PERSIANN-CDR, project: OBS, type: reanaly, version: v01r01,
+     tier: 2, alias: PERSIANN-CDR}
+  - {dataset: JRA-55, project: ana4mips, type: reanalysis, mip: Amon,
+     tier: 1, alias: JRA-55}
   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, 
      tier: 1, alias: GPCP-SG}
   # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
@@ -355,6 +355,12 @@ datasets:
      # tier: 3, alias: ERA5-Land}
   # - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
      # tier: 1, alias: TRMM-L3}
+  - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+     tier: 3, alias: MERRA2}
+  # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+     # tier: 3, alias: E-OBS}
+  # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+     # tier: 3, alias: WFDE5}
 
      
 preprocessors:
@@ -648,8 +654,8 @@ hist_def: &histdef
   #vmin: 0
   #vmax: 100
   vmin: 0
-  vmax: 0.0001
-  number_of_bars: 25
+  vmax: 5     # was 1: 12
+  number_of_bars: 10      # was 25; 4
   #histtype: step
   logarithmic: False
  
@@ -675,6 +681,7 @@ hist_def_zoom: &histdef_zoom
 
   
 diagnostics:
+##### HISTOGRAMS
   # # histogram_without_gl:
     # # description: histogram for 1x1 gridded data
     # # variables:
@@ -704,7 +711,8 @@ diagnostics:
         # <<: *precipdef
     # scripts:
       # mpqb_trop:
-        # <<: *histdef_zoom
+        # <<: *histdef
+        # #<<: *histdef_zoom
   # histogram_landonly_trop:
     # description: histogram for 1x1 gridded data
     # variables:
@@ -715,9 +723,14 @@ diagnostics:
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
     # scripts:
       # mpqb_trop:
         # <<: *histdef
+        # #<<: *histdef_zoom
   # histogram_seaonly_trop:
     # description: histogram for 1x1 gridded data
     # variables:
@@ -727,7 +740,8 @@ diagnostics:
         # <<: *precipdef
     # scripts:
       # mpqb_trop:
-        # <<: *histdef_zoom
+        # <<: *histdef
+        # #<<: *histdef_zoom
   # histogram_without_itcz:
     # description: histogram for 1x1 gridded data
     # variables:
@@ -737,7 +751,8 @@ diagnostics:
         # <<: *precipdef
     # scripts:
       # mpqb_itcz:
-        # <<: *histdef_long
+        # #<<: *histdef_long
+        # <<: *histdef
   # # # histogram_with_itcz:
     # # # description: histogram for 1x1 gridded data
     # # # variables:
@@ -757,7 +772,8 @@ diagnostics:
         # <<: *precipdef
     # scripts:
       # mpqb_samonsoon:
-        # <<: *histdef_zoom
+        # <<: *histdef
+        # #<<: *histdef_zoom
   # histogram_without_europe:
     # description: histogram for 1x1 gridded data
     # variables:
@@ -768,6 +784,12 @@ diagnostics:
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
+      # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+         # tier: 3, alias: E-OBS}
     # scripts:
       # mpqb_europe:
         # <<: *histdef
@@ -781,9 +803,15 @@ diagnostics:
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
     # scripts:
       # mpqb_northamerica:
         # <<: *histdef
+
+##### RESOLUTION
   # resolution:
     # description: resolution
     # variables:
@@ -794,21 +822,32 @@ diagnostics:
     # scripts: 
       # mpqb_res:
         # script: mpqb/mpqb_resolution.py
-  # mapplots:
-    # description: mapplots
-    # variables:
-      # pr:
-        # preprocessor: pp_mpqb_precip_nomask
-        # # derive: true
-        # <<: *precipdef
-    # scripts:
-      # mpqb:
-        # #reference_dataset: MultiModelMean
-        # reference_dataset: ERA5
-        # script: mpqb/mpqb_comparison.py
-      # # mpqb_taylor:
-        # # reference_dataset: MultiModelMean
-        # # script: mpqb/mpqb_taylordiagram.py
+
+##### MAPPLOTS
+  mapplots:
+    description: mapplots
+    variables:
+      pr:
+        preprocessor: pp_mpqb_precip_nomask
+        # derive: true
+        <<: *precipdef
+    additional_datasets:
+      - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         tier: 3, alias: ERA5-Land}
+      - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         tier: 2, alias: GPCC}
+      - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         tier: 3, alias: WFDE5}
+    scripts:
+      mpqb:
+        #reference_dataset: MultiModelMean
+        reference_dataset: GPCP-SG
+        script: mpqb/mpqb_comparison.py
+      # mpqb_taylor:
+        # reference_dataset: MultiModelMean
+        # script: mpqb/mpqb_taylordiagram.py
+
+##### TIMESERIES
   # lineplots_without_gl:
     # description: lineplots
     # variables:
@@ -839,13 +878,16 @@ diagnostics:
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot.py
-  # # lineplots_without_trop_short:
+  # lineplots_without_trop_short:
     # description: lineplots
     # variables:
       # pr:
         # preprocessor: pp_lineplots_without_trop
         # #derive: true
         # <<: *precipdef_short
+    # additional_datasets:
+      # - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+         # tier: 1, alias: TRMM-L3}
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot.py
@@ -859,6 +901,10 @@ diagnostics:
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot.py
@@ -872,17 +918,87 @@ diagnostics:
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot.py
-  ### works!!      
-  lineplots_anncyc_without_trop:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_anncyc_without_trop
-        derive: true
-        <<: *precipdef
-    scripts:
-      lineplot_trop:
-        script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_without_itcz:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_itcz
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_itcz:
+        # script: mpqb/mpqb_lineplot.py
+  # # # lineplots_with_itcz:
+    # # # description: lineplots
+    # # # variables:
+      # # # pr:
+        # # # preprocessor: pp_lineplots_with_itcz
+        # # # #derive: true
+        # # # <<: *precipdef
+    # # # scripts:
+      # # # lineplot_itcz:
+        # # # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_samonsoon:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_samonsoon
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_samonsoon:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_europe:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_europe
+        # #derive: true
+        # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
+      # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+         # tier: 3, alias: E-OBS}
+    # scripts:
+      # lineplot_europe:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_without_northamerica:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_without_northamerica
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_northamerica:
+        # script: mpqb/mpqb_lineplot.py
+  # lineplots_with_samonsoon:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_with_samonsoon
+        # #derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_samonsoon:
+        # script: mpqb/mpqb_lineplot.py
+
+##### ANNUAL CYCLE
+  # lineplots_anncyc_without_trop:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_trop
+        # derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_trop:
+        # script: mpqb/mpqb_lineplot_anncyc.py
   # lineplots_anncyc_landonly_trop:
     # description: lineplots
     # variables:
@@ -893,6 +1009,10 @@ diagnostics:
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot_anncyc.py
@@ -906,67 +1026,72 @@ diagnostics:
     # scripts:
       # lineplot_trop:
         # script: mpqb/mpqb_lineplot_anncyc.py
-  lineplots_anncyc_without_gl:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_anncyc_without_gl
-        derive: true
-        <<: *precipdef
-    scripts:
-      lineplot_gl:
-        script: mpqb/mpqb_lineplot_anncyc.py
-  lineplots_anncyc_without_samonsoon:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_anncyc_without_samonsoon
-        derive: true
-        <<: *precipdef
-    scripts:
-      lineplot_samonsoon:
-        script: mpqb/mpqb_lineplot_anncyc.py
-  lineplots_anncyc_without_europe:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_anncyc_without_europe
-        derive: true
-        <<: *precipdef
+  # lineplots_anncyc_without_gl:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_gl
+        # derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_gl:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_samonsoon:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_samonsoon
+        # derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_samonsoon:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_europe:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_europe
+        # derive: true
+        # <<: *precipdef
     # additional_datasets:
       # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
          # tier: 3, alias: ERA5-Land}
       # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
          # tier: 2, alias: GPCC}
-    scripts:
-      lineplot_europe:
-        script: mpqb/mpqb_lineplot_anncyc.py
-  lineplots_anncyc_without_northamerica:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_anncyc_without_northamerica
-        derive: true
-        <<: *precipdef
-    # additional_datasets:
-      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         # tier: 3, alias: ERA5-Land}
-      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
-         # tier: 2, alias: GPCC}
-    scripts:
-      lineplot_northamerica:
-        script: mpqb/mpqb_lineplot_anncyc.py
-  lineplots_anncyc_without_itcz:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_anncyc_without_itcz
-        derive: true
-        <<: *precipdef
-    scripts:
-      lineplot_itcz:
-        script: mpqb/mpqb_lineplot_anncyc.py
-  ###
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
+      # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+         # tier: 3, alias: E-OBS}
+    # scripts:
+      # lineplot_europe:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+  # # lineplots_anncyc_without_northamerica:
+    # # description: lineplots
+    # # variables:
+      # # pr:
+        # # preprocessor: pp_lineplots_anncyc_without_northamerica
+        # # derive: true
+        # # <<: *precipdef
+    # # # additional_datasets:
+      # # # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # # # tier: 3, alias: ERA5-Land}
+      # # # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # # # tier: 2, alias: GPCC}
+    # # scripts:
+      # # lineplot_northamerica:
+        # # script: mpqb/mpqb_lineplot_anncyc.py
+  # lineplots_anncyc_without_itcz:
+    # description: lineplots
+    # variables:
+      # pr:
+        # preprocessor: pp_lineplots_anncyc_without_itcz
+        # derive: true
+        # <<: *precipdef
+    # scripts:
+      # lineplot_itcz:
+        # script: mpqb/mpqb_lineplot_anncyc.py
+
+##### STANDARD DEVIATION
   # lineplots_without_trop_std:
     # description: lineplots_std
     # variables:
@@ -991,6 +1116,15 @@ diagnostics:
       # pr:
         # preprocessor: pp_lineplots_without_europe_std
         # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
+      # - {dataset: E-OBS, project: OBS, type: ground, version: v21.0e-0.1,
+         # tier: 3, alias: E-OBS}
     # scripts:
       # lineplot_europe:
         # script: mpqb/mpqb_lineplot.py
@@ -1003,85 +1137,21 @@ diagnostics:
     # scripts:
       # lineplot_northamerica:
         # script: mpqb/mpqb_lineplot.py
-  lineplots_without_itcz:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_without_itcz
-        #derive: true
-        <<: *precipdef
-    scripts:
-      lineplot_itcz:
-        script: mpqb/mpqb_lineplot.py
-  # # lineplots_with_itcz:
-    # # description: lineplots
-    # # variables:
-      # # pr:
-        # # preprocessor: pp_lineplots_with_itcz
-        # # #derive: true
-        # # <<: *precipdef
-    # # scripts:
-      # # lineplot_itcz:
-        # # script: mpqb/mpqb_lineplot.py
-  lineplots_without_samonsoon:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_without_samonsoon
-        #derive: true
-        <<: *precipdef
-    scripts:
-      lineplot_samonsoon:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_without_europe:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_without_europe
-        #derive: true
-        <<: *precipdef
-    # additional_datasets:
-      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
-         # tier: 3, alias: ERA5-Land}
-    scripts:
-      lineplot_europe:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_without_northamerica:
-    description: lineplots
-    variables:
-      pr:
-        preprocessor: pp_lineplots_without_northamerica
-        #derive: true
-        <<: *precipdef
-    scripts:
-      lineplot_northamerica:
-        script: mpqb/mpqb_lineplot.py
-  # lineplots_with_samonsoon:
-    # description: lineplots
-    # variables:
-      # pr:
-        # preprocessor: pp_lineplots_with_samonsoon
-        # #derive: true
-        # <<: *precipdef
-    # scripts:
-      # lineplot_samonsoon:
-        # script: mpqb/mpqb_lineplot.py
-  # # mapplots_std:
-    # # description: mapplots
-    # # variables:
-      # # lai:
-        # # preprocessor: pp_mpqb_sm_std
-        # # <<: *laidef
-    # # scripts:
-      # # mpqb:
-        # # reference_dataset: MultiModelMedian
-        # # script: mpqb/mpqb_comparison.py
+
+##### MAPS OWN GRID
   # maps_aux_owngrid:
     # description: auxiliary maps (trend; climatology)
     # variables:
       # pr:
         # preprocessor: pp_maps_annual
         # <<: *precipdef
+    # additional_datasets:
+      # - {dataset: ERA5-Land, project: OBS6, type: reanaly, version: v1,
+         # tier: 3, alias: ERA5-Land}
+      # - {dataset: GPCC, project: OBS, type: reanaly, version: v2018_025, 
+         # tier: 2, alias: GPCC}
+      # - {dataset: WFDE5, project: OBS6, type: ground, version: v1.1-CRU+GPCC,
+         # tier: 3, alias: WFDE5}
     # scripts:
       # aux_maps:
         # script: mpqb/mpqb_auxmaps.py

@@ -67,12 +67,20 @@ def main(cfg):
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
 
+        cube.units = "mm.s-1"
+        cube.convert_units("mm.day-1")     #new for rainfall numbers
+
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
+        linewidth = 0.7
 
-        iris.quickplot.plot(cube, label=label, color=color)
+        iris.quickplot.plot(cube, label=label, color=color, linewidth=linewidth)
+        #iris.quickplot.plot(cube_rain, label=label, color=color, linewidth=linewidth)
     plt.xticks(rotation=90)
+    
+    plt.title("Precipitation")    # for presentation as rainfall
+
     # Add the zero line when plotting anomalies
     if 'ano' in dataset_cfg['preprocessor']:
         plt.axhline(y=0, linestyle=':', color='k')
@@ -85,6 +93,7 @@ def main(cfg):
     ax.xaxis.set_major_formatter(years_fmt)
     ax.grid(True, which='major', axis='x')
     ax.set_ylim(ylims)
+    ax.set_ylabel('Precipitation / mm day-1')  #new for rainfall numbers
 
     h,l = ax.get_legend_handles_labels()
     leg = lax.legend(h,l, borderaxespad=0, ncol=4, loc='center')

@@ -29,6 +29,8 @@ datasetnames:
   GPCP-SG: GPCP-SG
   GPCC: GPCC
   TRMM-L3: TRMM-L3
+  E-OBS: E-OBS
+  WFDE5: WFDE5
   CDS-XCH4: CDS-XCH4
   BCC-CSM2-MR: BCC-CSM2-MR
   CNRM-ESM2-1: CNRM-ESM2-1
@@ -39,14 +41,17 @@ datasetnames:
 
 datasetcolors:
   ERA-Interim-Land: '#1f77b4'
-  ERA-Interim: '#1f77b4'
+  #ERA-Interim: '#1f77b4'
+  ERA-Interim: '#9F5C16'
   CDS-SATELLITE-SOIL-MOISTURE_COMBINED: '#ff7f0e'
   CDS-SATELLITE-SOIL-MOISTURE_PASSIVE: '#bcbd22'
   cds-era5-land-monthly: '#2ca02c'
   cds-era5-monthly: '#d62728'
-  ERA5-Land: '#2ca02c'
+  #ERA5-Land: '#2ca02c'
+  ERA5-Land: '#E38421'
   ERA5: '#d62728'
-  MERRA2: '#9467bd'
+  #MERRA2: '#9467bd'
+  MERRA2: '#693F8E'
   cds-satellite-lai-fapar: '#8c564b'
   CDS-SATELLITE-ALBEDO: '#e377c2'
   GRACE: '#7f7f7f'
@@ -54,11 +59,17 @@ datasetcolors:
   PATMOS-x: '#ff7f00'
   MODIS: '#2ca02c'
   MAC-LWP: '#bcbd22'
-  JRA-55: '#9467bd'
-  PERSIANN-CDR: '#8c564b'
-  GPCP-SG: '#ff7f00'
-  GPCC: '#8c564b'
-  TRMM-L3: '#04ffff'
+  JRA-55: '#CCA6EE'
+  #PERSIANN-CDR: '#8c564b'#
+  PERSIANN-CDR: '#B2F993'
+  #GPCP-SG: '#ff7f00'
+  GPCP-SG: '#49B21B'
+  #GPCC: '#8c564b'
+  GPCC: '#265B0F'
+  #TRMM-L3: '#04ffff'
+  TRMM-L3: '#4CD9F7'
+  E-OBS: '#289DB6'
+  WFDE5: '#EABA2B'
   CDS-XCH4: '#d62728'
   BCC-CSM2-MR: '#458ef6'
   CNRM-ESM2-1: '#2ca02c'
@@ -401,36 +412,44 @@ colormaps:
       vmin: -1.
       vmax: 1.
       cmap: BrBG
+      extend: both
     ubrmsd:
       title: ubrmsd
       vmin: 0.
       vmax: 100.
       cmap: YlOrBr
+      extend: max
     rmsd:
       title: rmsd
       vmin: 0.
       vmax: 100.
       cmap: YlOrBr
+      extend: max
     absdiff:
       title: absdiff
       vmin: -0.00003
       vmax: 0.00003
       cmap: BrBG
+      extend: both
     reldiff:
       title: reldiff
       cmap: BrBG
       vmin: -50
       vmax: 50
+      extend: both
     theilsenmk:
       title: theilsen
       cmap: BrBG
       vmin: -0.05
       vmax: 0.05
+      extend: both
     timemean:
       title: timemean
       cmap: YlGnBu
       vmin: 0.0
-      vmax: 0.0001
+      #vmax: 0.0001
+      vmax: 8.5
+      extend: max
       
   xch4:
     pearsonr:

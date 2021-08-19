@@ -106,6 +106,10 @@ class MPQBpair:
             logger.info("Saving analysis results to %s", diagnostic_file)
             iris.save(cube, target=diagnostic_file)
 
+            #cube_rain = cube * 86400.      #new for rainfall numbers
+            #cube.units = "mm.s-1"
+            #cube.convert_units("mm.day-1")
+
             plot_file = get_plot_filename(basename, cfg)
             logger.info("Plotting analysis results to %s", plot_file)
 
@@ -124,6 +128,7 @@ class MPQBpair:
             # Overwrite plot title to be dataset name
             plot_kwargs['title'] = self.ds1
             mpqb_mapplot(cube, cfg, plot_file, **plot_kwargs)
+            #mpqb_mapplot(cube_rain, cfg, plot_file, **plot_kwargs)
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                         pformat(provenance_record))
@@ -137,7 +142,8 @@ def main():
     reference_dataset = cfg['reference_dataset']
 
     # The metrics to be calculated.
-    metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff', 'ubrmsd']
+    #metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff', 'ubrmsd']
+    metrics_to_calculate = ['reldiff']
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -154,9 +160,11 @@ def main():
             # Opening the pair
             pair = MPQBpair(grouped_input_data, alias, reference_dataset)
             pair.load()
+            
             # Execute the requested metrics
             for metricname in metrics_to_calculate:
                 try:
+                    #getattr(pair_rain, metricname)()
                     getattr(pair, metricname)()
                 except AttributeError:
                     logger.error("Metric %s is not defined. ", metricname)

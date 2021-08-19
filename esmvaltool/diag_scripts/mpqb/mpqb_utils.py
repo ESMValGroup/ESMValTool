@@ -26,3 +26,4 @@ def get_mpqb_cfg(cfgtype, cfgkey):
             return mpqb_cfg['datasetcolors'][cfgkey]
         else:
             return 'k'
+    #raise ValueError("Inappropriate argument value")

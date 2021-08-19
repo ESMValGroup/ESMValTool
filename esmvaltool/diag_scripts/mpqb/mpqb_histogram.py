@@ -35,9 +35,15 @@ def _get_lower_upper(input_data):
     for dataset in input_data:
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(input_data[dataset][0]['filename'])
+        
+        cube.units = "mm.s-1"
+        cube.convert_units("mm.day-1")
+        
         l_u = [
             da.min(cube.core_data().flatten()).compute(),
             da.max(cube.core_data().flatten()).compute()
+            #da.min(cube_rain.core_data().flatten()).compute(),
+            #da.max(cube_rain.core_data().flatten()).compute()
         ]
         if l_u[0] < lower_upper[0]:
             lower_upper[0] = l_u[0]
@@ -57,7 +63,6 @@ def _plot_histograms(hists, cfg, grouped_input_data):
         dataset_cfg = grouped_input_data[alias][0]
         dataset = dataset_cfg['dataset']
 
-
         width = np.diff(hist["bins"]) / len(hists)
         xvals = hist["bins"][:-1] + width * (
             list(hists.keys()).index(alias) + 0.5)
@@ -72,7 +77,7 @@ def _plot_histograms(hists, cfg, grouped_input_data):
                 label=label,
                 color=color,
             )
-            plt.vlines(hist["bins"], 0, 1, linestyles='dashed', alpha=0.3)
+            plt.vlines(hist["bins"], 0, 1, linestyles='dashed', color="black", alpha=0.3)
             plt.legend()
         elif histtype == 'step':
             ax1.hist(hist["bins"][:-1],
@@ -88,17 +93,22 @@ def _plot_histograms(hists, cfg, grouped_input_data):
         else:
             logger.warning("Unsupported argument for histtype: %s", histtype)
     ax1.tick_params(axis='both', which='major', labelsize='large')
-    plt.xlabel(grouped_input_data[alias][0]['long_name'] + " [" +
-               grouped_input_data[alias][0]['units'] + "]", fontsize='large')
+    #plt.xlabel(grouped_input_data[alias][0]['long_name'] + " [" +
+    #           grouped_input_data[alias][0]['units'] + "]", fontsize='large')
+    plt.xlabel("Precipitation [mm.day-1]", fontsize='large')
     plt.ylabel("frequency",  fontsize='x-large')
     if cfg.pop('logarithmic', False):
         ax1.set_yscale('log', nonposy='clip')
     ax1.tick_params(axis='both', which='major', labelsize=12)
 
+    print(1.1 * np.max([np.max(content["hist"])
+                      for _, content in hists.items()]))
+                      
     plt.ylim(
         0,
         1.1 * np.max([np.max(content["hist"])
                       for _, content in hists.items()]))
+                      
     plt.ylim(cfg.pop('y0', None), cfg.pop('y1', None))
     plt.tight_layout()
     filename = get_plot_filename('histogram', cfg)
@@ -112,6 +122,9 @@ def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     lower_upper = [cfg.pop('vmin', None), cfg.pop('vmax', None)]
     nbars = cfg.pop('number_of_bars', 10)
+
+    print("lower_upper")
+    print(lower_upper)
 
     grouped_input_data = group_metadata(cfg['input_data'].values(),
                                         'alias',
@@ -129,8 +142,16 @@ def main(cfg):
 
         logger.info("Opening dataset: %s", alias)
         cube = iris.load_cube(grouped_input_data[alias][0]['filename'])
+        
+        
+        cube.units = "mm.s-1"
+        cube.convert_units("mm.day-1")
+        dataset_cfg["units"] = "mm.day-1"
+        
         hists.update(
             {alias: _calculate_histograms(cube, nbars, lower_upper)})
+        #hists.update(
+        #    {alias: _calculate_histograms(cube_rain, nbars, lower_upper)})
     logger.info("Plotting the histograms.")
     _plot_histograms(hists, cfg, grouped_input_data)
     logger.info("Finished!")

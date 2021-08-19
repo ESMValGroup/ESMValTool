@@ -54,7 +54,8 @@ def _array2cube(array_in, cube_template):
 
 def main(cfg):
     """Compute the time average for each input dataset."""
-    metrics_to_calculate = ['theilsenmk', 'timemean']
+    #metrics_to_calculate = ['theilsenmk', 'timemean']
+    metrics_to_calculate = ['timemean']
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -70,10 +71,18 @@ def main(cfg):
         # Opening the pair
         cube = iris.load_cube(dataset_cfg['filename'])
 
+        cube.units = "mm.s-1"
+        cube.convert_units("mm.day-1")
+
         for metricname in metrics_to_calculate:
             try:
                 # Functions are defined in this script
                 resultcube = globals()[metricname](cube)
+                #resultcube = globals()[metricname](cube_rain)
+                
+                #resultcube_rain = resultcube * 86400.
+                #resultcube_rain.units = "mm.day-1"
+                
             except KeyError:
                 logger.error("Metric %s is not defined. ", metricname)
                 continue
@@ -93,6 +102,7 @@ def main(cfg):
                 if metricname == 'timemean':
                     plot_kwargs['addglobmeanvalue'] = True
                 mpqb_mapplot(resultcube, cfg, plot_file, **plot_kwargs)
+                #mpqb_mapplot(resultcube_rain, cfg, plot_file, **plot_kwargs)
             logger.info("Finished aux plots for dataset: %s", dataset)
     logger.info("Finished!")
 

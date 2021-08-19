@@ -57,7 +57,10 @@ def main(cfg):
         grouped_input_data.move_to_end('ERA-Interim-Land')
 
     plt.clf()
-    fig, (ax,lax) = plt.subplots(nrows=2, gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
+    #fig, (ax,lax) = plt.subplots(nrows=2, gridspec_kw={"height_ratios":[10,1]}, figsize=(10,5))
+    #fig = plt.figure(figsize=(10, 4))
+    fig = plt.figure(figsize=(6, 4))
+    ax = fig.add_subplot()  
 
     for dataset in grouped_input_data:
         dataset_cfg = grouped_input_data[dataset][0]
@@ -66,12 +69,20 @@ def main(cfg):
         logger.info("Opening dataset: %s", dataset)
         cube = iris.load_cube(dataset_cfg['filename'])
 
+        cube.units = "mm.s-1"
+        cube.convert_units("mm.day-1")      #new for rainfall numbers
+        
         # Set default if not defined.
         label = get_mpqb_cfg('datasetname', alias)
         color = get_mpqb_cfg('datasetcolor', alias)
         
         iris.quickplot.plot(cube, label=label, color=color)
-    plt.legend()
+        #iris.quickplot.plot(cube_rain, label=label, color=color)
+    
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
+          ncol=3, fancybox=True, fontsize="medium")       # added for rainfall
+    #plt.legend()     # taken out for rainfall...
+    plt.title("Precipitation")
     #plt.xticks(rotation=90)
     ## Add the zero line when plotting anomalies
     #if 'ano' in dataset_cfg['preprocessor']:
@@ -85,11 +96,12 @@ def main(cfg):
     #ax1.xaxis.set_major_locator(months)
     ##ax1.xaxis.set_major_formatter(years_fmt)
     ax.set_xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    ax.set_xticklabels(['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'])
+    ax.set_xticklabels(['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'])
     ax.set_xlabel('month')
     ax.grid(True, which='major', axis='x')
 
     ax.set_ylim(ylims)
+    ax.set_ylabel('Precipitation / mm day-1')  #new for rainfall numbers
 
     baseplotname = f"lineplot_{dataset_cfg['variable_group']}_{dataset_cfg['start_year']}-{dataset_cfg['end_year']}"
                    
