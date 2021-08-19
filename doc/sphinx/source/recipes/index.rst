@@ -110,6 +110,7 @@ Other
    recipe_ensclus
    recipe_multimodel_products
    recipe_rainfarm
+   recipe_pv_capacity_factor
    recipe_seaice_feedback
    recipe_seaice
    recipe_seaice_drift
