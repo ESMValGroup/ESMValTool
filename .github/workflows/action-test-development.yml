@@ -12,6 +12,7 @@ on:
   push:
     branches:
     - main
+    - unpin_iris
   schedule:
     - cron: '0 0 * * *'
 
