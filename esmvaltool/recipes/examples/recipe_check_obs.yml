@@ -1069,12 +1069,28 @@ diagnostics:
       rlds_E1hr:
         short_name: rlds
         mip: E1hr
+      rlns_E1hr:
+        short_name: rlns
+        mip: E1hr
+        frequency: 1hr
+      rlus_E1hr:
+        short_name: rlus
+        mip: E1hr
+        frequency: 1hr
       rsds_E1hr:
         short_name: rsds
         mip: E1hr
       rsdt_E1hr:
         short_name: rsdt
         mip: E1hr
+      rsns_E1hr:
+        short_name: rsns
+        mip: E1hr
+        frequency: 1hr
+      rsus_E1hr:
+        short_name: rsus
+        mip: E1hr
+        frequency: 1hr
       rss_E1hr:
         short_name: rss
         mip: E1hr
@@ -1135,6 +1151,9 @@ diagnostics:
       rls_Amon:
         short_name: rls
         mip: Amon
+      rlns_Amon:
+        short_name: rlns
+        mip: Amon
       rlus_Amon:
         short_name: rlus
         mip: Amon
@@ -1143,6 +1162,9 @@ diagnostics:
         mip: Amon
       rsdt_Amon:
         short_name: rsdt
+        mip: Amon
+      rsns_Amon:
+        short_name: rsns
         mip: Amon
       rsus_Amon:
         short_name: rsus
