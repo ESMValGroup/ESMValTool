@@ -27,15 +27,11 @@ build:
 requirements:
   run:
     - python>=3.7
-    - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
-    - esmvaltool-julia>=2.2.0
-    - esmvaltool-ncl>=2.2.0
-    - esmvaltool-python>=2.2.0
-    - esmvaltool-r>=2.2.0
-    # - {{ pin_subpackage('esmvaltool-julia', exact=False) }}
-    # - {{ pin_subpackage('esmvaltool-ncl', exact=False) }}
-    # - {{ pin_subpackage('esmvaltool-python', exact=False) }}
-    # - {{ pin_subpackage('esmvaltool-r', exact=False) }}
+    - iris>=3.0.2
+    - {{ pin_subpackage('esmvaltool-julia', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-ncl', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-python', exact=True) }}
+    - {{ pin_subpackage('esmvaltool-r', exact=True) }}
 
 test:
   source_files:
@@ -82,14 +78,14 @@ outputs:
         - cython
         - dask>=2.12
         - ecmwf-api-client  # in esmvalgroup channel
-        - eofs>=1.4
-        - esmpy>=8.0.1
-        - esmvalcore>=2.3.1,<2.4  # in esmvalgroup channel
-        - fiona>=1.8.18
-        - gdal>=3.1.4
-        - iris>=3.0.2,<3.0.4  # iris=3.0.4 dropped support for Python 3.6 but we haven't just yet
-        - jinja2>=2.11
-        - joblib>=1.0
+        - eofs
+        - esmpy
+        - esmvalcore>=2.3.0,<2.4  # in esmvalgroup channel
+        - fiona
+        - gdal
+        - iris>=3.0.2
+        - jinja2
+        - joblib
         - lime
         - matplotlib>3.3.1,<3.4  # bug in 3.3.1, issue with nc-time-axis for >=3.4
         - mpich<3.4  # issues with 3.4.1 and 3.4.2 that install external_0 build
