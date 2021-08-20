@@ -1,3 +1,6 @@
+# To run the doctests:
+# % cd ESMValTool/esmvaltool/
+# % python -m doctest diag_scripts/radiation_budget/radiation_budget.py
 import logging
 import os
 
@@ -165,6 +168,17 @@ def validate_variable_data(variable_data, name, unit):
     -------
     dictionary
         The validated variable.
+
+    Examples
+    --------
+    >>> var1 = {"name": "sw_reflected_clouds", "unit": "W m-2", "data": 79.0}
+    >>> var2 = {"name": "toa_outgoing_longwave_flux", "unit": "W m-2",
+    ...         "data": 239.0}
+    >>> variable_data = [var1, var2]
+    >>> name = "sw_reflected_clouds"
+    >>> unit = "W m-2"
+    >>> validated_variable = validate_variable_data(variable_data, name, unit)
+    >>> assert validated_variable == var1
     """
     items = [item for item in variable_data if item["name"] == name]
 
@@ -182,8 +196,10 @@ def validate_variable_data(variable_data, name, unit):
     return variable
 
 
-def organise_variables(cubes, obs_names, obs_units):
-    """Return variables in the order defined by ``obs_names``.
+def order_model_data(cubes, obs_names, obs_units):
+    """Return the data from the cubes in the order defined by ``obs_names``.
+
+    The units from the cubes are checked against ``obs_units``.
 
     Parameters
     ----------
@@ -197,18 +213,24 @@ def organise_variables(cubes, obs_names, obs_units):
     Returns
     -------
     list
-        The organised cubes.
+        The ordered data from the model cubes.
     """
-    logger = logging.getLogger(__name__)
+    variable_data = []
+    for cube in cubes:
+        variable = {}
+        variable["name"] = cube.name()
+        variable["unit"] = cube.units
+        variable["data"] = cube.data
+        variable_data.append(variable)
 
-    named_cubes = {cube.name(): cube for cube in cubes}
+    ordered_model_data = []
+    for index, obs_name in enumerate(obs_names):
+        obs_unit = obs_units[index]
+        validated_variable = validate_variable_data(variable_data, obs_name,
+                                                    obs_unit)
+        ordered_model_data.append(validated_variable["data"])
 
-    organised_cubes = [named_cubes[name] for name in obs_names]
-
-    for cube in organised_cubes:
-        logger.info(f"{cube.name()}, {cube.units}, {cube.data}")
-
-    return organised_cubes
+    return ordered_model_data
 
 
 def read_text_file(filepath):
@@ -260,8 +282,6 @@ def load_obs_data():
         The names, units, stephens data, stephens error and demory data
         from the observation files.
     """
-    logger = logging.getLogger(__name__)
-
     # Stephens data contains name, units part 1, units part 2, data, error.
     stephens_filepath = os.path.join(CWD, STEPHENS_FILENAME)
     stephens_contents = read_text_file(stephens_filepath)
@@ -287,11 +307,6 @@ def load_obs_data():
         demory_line = validate_variable_data(demory_contents, name, unit)
         demory_data.append(demory_line["data"])
 
-    for index, name in enumerate(names):
-        logger.info(f"{name}, {units[index]}, {stephens_data[index]}, "
-                    f"{stephens_error[index]}")
-        logger.info(f"{name}, {units[index]}, {demory_data[index]}")
-
     return names, units, stephens_data, stephens_error, demory_data
 
 
@@ -312,8 +327,13 @@ def main(config):
     input_data = config["input_data"]
     model_datasets = group_metadata(input_data.values(), "dataset")
 
-    obs_names, obs_units, stephens_data, stephens_error, demory_data = (
-        load_obs_data())
+    (
+        obs_names,
+        obs_units,
+        stephens_data,
+        stephens_error,
+        demory_data,
+    ) = load_obs_data()
 
     for model_dataset, group in model_datasets.items():
         # 'model_dataset' is the name of the model dataset.
@@ -322,8 +342,8 @@ def main(config):
         filenames = get_filenames(group)
         model_data = load_model_data(filenames)
         all_model_data = derive_additional_variables(model_data)
-        organised_model_data = organise_variables(all_model_data, obs_names,
-                                                  obs_units)
+        organised_model_data = order_model_data(all_model_data, obs_names,
+                                                obs_units)
         plot_data(organised_model_data)
 
 
