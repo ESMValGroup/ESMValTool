@@ -79,7 +79,7 @@ outputs:
         - ecmwf-api-client  # in esmvalgroup channel
         - eofs
         - esmpy
-        - esmvalcore>=2.3.0,<2.4  # in esmvalgroup channel
+        - esmvalcore>=2.3.1,<2.4  # in esmvalgroup channel
         - fiona
         - gdal
         - iris>=3.0.2
